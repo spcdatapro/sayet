@@ -1,0 +1,1736 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/controllers/formsretventactrl.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/controllers/rptasistelibrosctrl.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/controllers/rptretenedoresctrl.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pages/formsretventa.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pages/rptasistelibros.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pages/rptretenedores.html" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/php/gencierreparcial.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/php/rptasistelibros.php" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/php/rptretenedores.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/libs/tcpdf" afterPath="$PROJECT_DIR$/libs/tcpdf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cpmidx.html" afterPath="$PROJECT_DIR$/cpmidx.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app.js" afterPath="$PROJECT_DIR$/js/app.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/compractrl.js" afterPath="$PROJECT_DIR$/js/controllers/compractrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/cpmidxctrl.js" afterPath="$PROJECT_DIR$/js/controllers/cpmidxctrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/empresactrl.js" afterPath="$PROJECT_DIR$/js/controllers/empresactrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/rptbalancegeneralctrl.js" afterPath="$PROJECT_DIR$/js/controllers/rptbalancegeneralctrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/rptbalancesaldosctrl.js" afterPath="$PROJECT_DIR$/js/controllers/rptbalancesaldosctrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/rptestadoresultadosctrl.js" afterPath="$PROJECT_DIR$/js/controllers/rptestadoresultadosctrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/rptlibdiactrl.js" afterPath="$PROJECT_DIR$/js/controllers/rptlibdiactrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/rptlibmayctrl.js" afterPath="$PROJECT_DIR$/js/controllers/rptlibmayctrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/rptlibrocomprasctrl.js" afterPath="$PROJECT_DIR$/js/controllers/rptlibrocomprasctrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/rptlibroventasctrl.js" afterPath="$PROJECT_DIR$/js/controllers/rptlibroventasctrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/rptrecclictrl.js" afterPath="$PROJECT_DIR$/js/controllers/rptrecclictrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/tranbancctrl.js" afterPath="$PROJECT_DIR$/js/controllers/tranbancctrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/services/comprasrvc.js" afterPath="$PROJECT_DIR$/js/services/comprasrvc.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/services/empresasrvc.js" afterPath="$PROJECT_DIR$/js/services/empresasrvc.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/services/rptlibrocomprassrvc.js" afterPath="$PROJECT_DIR$/js/services/rptlibrocomprassrvc.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/services/tranbancsrvc.js" afterPath="$PROJECT_DIR$/js/services/tranbancsrvc.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/empresa.html" afterPath="$PROJECT_DIR$/pages/empresa.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/rptbalgen.html" afterPath="$PROJECT_DIR$/pages/rptbalgen.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/rptbalsal.html" afterPath="$PROJECT_DIR$/pages/rptbalsal.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/rptestres.html" afterPath="$PROJECT_DIR$/pages/rptestres.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/rptlibcomp.html" afterPath="$PROJECT_DIR$/pages/rptlibcomp.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/rptlibdia.html" afterPath="$PROJECT_DIR$/pages/rptlibdia.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/rptlibmay.html" afterPath="$PROJECT_DIR$/pages/rptlibmay.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/rptlibventa.html" afterPath="$PROJECT_DIR$/pages/rptlibventa.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/rptreccli.html" afterPath="$PROJECT_DIR$/pages/rptreccli.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/tranbanc.html" afterPath="$PROJECT_DIR$/pages/tranbanc.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/tranfactcompra.html" afterPath="$PROJECT_DIR$/pages/tranfactcompra.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/tranreembolso.html" afterPath="$PROJECT_DIR$/pages/tranreembolso.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/activo_adjunto.php" afterPath="$PROJECT_DIR$/php/activo_adjunto.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/cliente.php" afterPath="$PROJECT_DIR$/php/cliente.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/compra.php" afterPath="$PROJECT_DIR$/php/compra.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/empresa.php" afterPath="$PROJECT_DIR$/php/empresa.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/facturacion.php" afterPath="$PROJECT_DIR$/php/facturacion.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/genpartidasventa.php" afterPath="$PROJECT_DIR$/php/genpartidasventa.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/printcheck.php" afterPath="$PROJECT_DIR$/php/printcheck.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/printchequera.php" afterPath="$PROJECT_DIR$/php/printchequera.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/printchequeragyt.php" afterPath="$PROJECT_DIR$/php/printchequeragyt.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/printchequeraint.php" afterPath="$PROJECT_DIR$/php/printchequeraint.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/proyecto_adjunto.php" afterPath="$PROJECT_DIR$/php/proyecto_adjunto.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptbalancegeneral.php" afterPath="$PROJECT_DIR$/php/rptbalancegeneral.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptbalancesaldos.php" afterPath="$PROJECT_DIR$/php/rptbalancesaldos.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptestadoresultados.php" afterPath="$PROJECT_DIR$/php/rptestadoresultados.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptingegrproy.php" afterPath="$PROJECT_DIR$/php/rptingegrproy.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptlibdia.php" afterPath="$PROJECT_DIR$/php/rptlibdia.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptlibmay.php" afterPath="$PROJECT_DIR$/php/rptlibmay.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptlibrocompras.php" afterPath="$PROJECT_DIR$/php/rptlibrocompras.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptlibroventas.php" afterPath="$PROJECT_DIR$/php/rptlibroventas.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptreccli.php" afterPath="$PROJECT_DIR$/php/rptreccli.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/tranbanc.php" afterPath="$PROJECT_DIR$/php/tranbanc.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/venta.php" afterPath="$PROJECT_DIR$/php/venta.php" />
+    </list>
+    <ignored path="cpm.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <ignored path=".idea/dataSources.local.xml" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="DatabaseView">
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_TABLE_DETAILS" value="true" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <PATH>
+      <PATH_ELEMENT>
+        <option name="myItemId" />
+        <option name="myItemType" value="com.intellij.database.view.DatabaseStructure$Root" />
+      </PATH_ELEMENT>
+    </PATH>
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="cpm" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="rptlibdia.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pages/rptlibdia.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-20.923077">
+              <caret line="32" column="6" selection-start-line="32" selection-start-column="6" selection-end-line="32" selection-end-column="6" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptlibdiactrl.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/controllers/rptlibdiactrl.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="21" column="47" selection-start-line="21" selection-start-column="47" selection-end-line="21" selection-end-column="47" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptlibmay.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/php/rptlibmay.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-0.65384614">
+              <caret line="1" column="18" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="18" />
+              <folding>
+                <element signature="n#getSelectHeader#0;n#!!top" expanded="false" />
+                <marker date="1520374847472" expanded="true" signature="306:331" placeholder="DELETE FROM ..." />
+                <marker date="1520374847472" expanded="true" signature="353:397" placeholder="ALTER TABLE rptlibromayor..." />
+                <marker date="1520374847472" expanded="true" signature="419:588" placeholder="INSERT INTO rptlibromayor..." />
+                <marker date="1520374847472" expanded="true" signature="487:559" placeholder="SELECT id, c..cuentac..." />
+                <marker date="1520374847472" expanded="true" signature="1455:1512" placeholder="UPDATE rptli..." />
+                <marker date="1520374847472" expanded="true" signature="1623:1721" placeholder="SELECT DISTI..rptlibromayor..." />
+                <marker date="1520374847472" expanded="true" signature="1911:2033" placeholder="SELECT id, i..rptlibromayor..." />
+                <marker date="1520374847472" expanded="true" signature="2663:2782" placeholder="UPDATE rptli..." />
+                <marker date="1520374847472" expanded="true" signature="3928:3983" placeholder="SELECT nomem..empresa..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptestadoresultados.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/php/rptestadoresultados.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-0.65384614">
+              <caret line="1" column="18" selection-start-line="1" selection-start-column="18" selection-end-line="1" selection-end-column="18" />
+              <folding>
+                <marker date="1520375154887" expanded="true" signature="396:427" placeholder="DELETE FROM ..." />
+                <marker date="1520375154887" expanded="true" signature="449:499" placeholder="ALTER TABLE rptestadoresultados..." />
+                <marker date="1520375154887" expanded="true" signature="1018:1188" placeholder="SELECT b.des..confrptcont..." />
+                <marker date="1520375154887" expanded="true" signature="1391:1473" placeholder="INSERT INTO rptestadoresultados..." />
+                <marker date="1520375154887" expanded="true" signature="2013:2112" placeholder="INSERT INTO rptestadoresultados..." />
+                <marker date="1520375154887" expanded="true" signature="2503:2601" placeholder="INSERT INTO rptestadoresultados..." />
+                <marker date="1520375154887" expanded="true" signature="3255:3342" placeholder="INSERT INTO rptestadoresultados..." />
+                <marker date="1520375154887" expanded="true" signature="3600:3727" placeholder="SELECT DISTI..rptestadoresultados..." />
+                <marker date="1520375154887" expanded="true" signature="3821:3948" placeholder="SELECT id, i..rptestadoresultados..." />
+                <marker date="1520375154887" expanded="true" signature="4300:4413" placeholder="UPDATE rptes..." />
+                <marker date="1520375154887" expanded="true" signature="4774:4829" placeholder="SELECT nomem..empresa..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptbalancegeneral.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/php/rptbalancegeneral.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-0.65384614">
+              <caret line="1" column="18" selection-start-line="1" selection-start-column="18" selection-end-line="1" selection-end-column="18" />
+              <folding>
+                <marker date="1520375161358" expanded="true" signature="306:335" placeholder="DELETE FROM ..." />
+                <marker date="1520375161358" expanded="true" signature="357:405" placeholder="ALTER TABLE rptbalancegeneral..." />
+                <marker date="1520375161358" expanded="true" signature="1005:1169" placeholder="SELECT b.des..confrptcont..." />
+                <marker date="1520375161358" expanded="true" signature="1372:1453" placeholder="INSERT INTO rptbalancegeneral..." />
+                <marker date="1520375161358" expanded="true" signature="1991:2089" placeholder="INSERT INTO rptbalancegeneral..." />
+                <marker date="1520375161358" expanded="true" signature="2446:2543" placeholder="INSERT INTO rptbalancegeneral..." />
+                <marker date="1520375161358" expanded="true" signature="2882:3007" placeholder="SELECT DISTI..rptbalancegeneral..." />
+                <marker date="1520375161358" expanded="true" signature="3101:3226" placeholder="SELECT id, i..rptbalancegeneral..." />
+                <marker date="1520375161358" expanded="true" signature="3576:3687" placeholder="UPDATE rptba..." />
+                <marker date="1520375161358" expanded="true" signature="3768:3878" placeholder="SELECT id, i..rptbalancegeneral..." />
+                <marker date="1520375161358" expanded="true" signature="4075:4130" placeholder="SELECT nomem..empresa..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptbalancesaldos.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/php/rptbalancesaldos.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-0.65384614">
+              <caret line="1" column="18" selection-start-line="1" selection-start-column="18" selection-end-line="1" selection-end-column="18" />
+              <folding>
+                <marker date="1520375172551" expanded="true" signature="323:351" placeholder="DELETE FROM ..." />
+                <marker date="1520375172551" expanded="true" signature="377:424" placeholder="ALTER TABLE rptbalancesaldos..." />
+                <marker date="1520375172551" expanded="true" signature="450:622" placeholder="INSERT INTO rptbalancesaldos..." />
+                <marker date="1520375172551" expanded="true" signature="521:593" placeholder="SELECT id, c..cuentac..." />
+                <marker date="1520375172551" expanded="true" signature="1519:1579" placeholder="UPDATE rptba..." />
+                <marker date="1520375172551" expanded="true" signature="1702:1803" placeholder="SELECT DISTI..rptbalancesaldos..." />
+                <marker date="1520375172551" expanded="true" signature="2013:2138" placeholder="SELECT id, i..rptbalancesaldos..." />
+                <marker date="1520375172551" expanded="true" signature="2815:2937" placeholder="UPDATE rptba..." />
+                <marker date="1520375172551" expanded="true" signature="3596:3651" placeholder="SELECT nomem..empresa..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptlibdia.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/rptlibdia.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.17606445">
+              <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+              <folding>
+                <marker date="1520375179654" expanded="true" signature="7628:7683" placeholder="SELECT nomem..empresa..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="CSS File" />
+        <option value="Html5" />
+        <option value="JavaScript File" />
+        <option value="HTML File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GradleLocalSettings">
+    <option name="externalProjectsViewState">
+      <projects_view />
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/js/controllers/rptlibrocomprasctrl.js" />
+        <option value="$PROJECT_DIR$/pages/rptlibcomp.html" />
+        <option value="$PROJECT_DIR$/php/rptreccli.php" />
+        <option value="$PROJECT_DIR$/js/controllers/rptrecclictrl.js" />
+        <option value="$PROJECT_DIR$/pages/rptreccli.html" />
+        <option value="$PROJECT_DIR$/php/printchequeragyt.php" />
+        <option value="$PROJECT_DIR$/php/printcheck.php" />
+        <option value="$PROJECT_DIR$/php/printchequera.php" />
+        <option value="$PROJECT_DIR$/php/printchequeraint.php" />
+        <option value="$PROJECT_DIR$/js/services/comprasrvc.js" />
+        <option value="$PROJECT_DIR$/php/tranbanc.php" />
+        <option value="$PROJECT_DIR$/js/services/tranbancsrvc.js" />
+        <option value="$PROJECT_DIR$/php/rptlibroventas.php" />
+        <option value="$PROJECT_DIR$/pages/tranbanc.html" />
+        <option value="$PROJECT_DIR$/php/printchequeragytcontinuo.php" />
+        <option value="$PROJECT_DIR$/php/printchequeraintcontinuo.php" />
+        <option value="$PROJECT_DIR$/php/printcheckcontinuo.php" />
+        <option value="$PROJECT_DIR$/php/printchequeracontinuo.php" />
+        <option value="$PROJECT_DIR$/php/gencierreparcial.php" />
+        <option value="$PROJECT_DIR$/js/controllers/tranbancctrl.js" />
+        <option value="$PROJECT_DIR$/js/controllers/rptlibroventasctrl.js" />
+        <option value="$PROJECT_DIR$/pages/rptasistelibros.html" />
+        <option value="$PROJECT_DIR$/js/app.js" />
+        <option value="$PROJECT_DIR$/cpmidx.html" />
+        <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/js/controllers/rptasistelibrosctrl.js" />
+        <option value="$PROJECT_DIR$/js/controllers/compractrl.js" />
+        <option value="$PROJECT_DIR$/php/compra.php" />
+        <option value="$PROJECT_DIR$/pages/tranfactcompra.html" />
+        <option value="$PROJECT_DIR$/php/proyecto_adjunto.php" />
+        <option value="$PROJECT_DIR$/php/activo_adjunto.php" />
+        <option value="$PROJECT_DIR$/php/cliente.php" />
+        <option value="$PROJECT_DIR$/pages/formsretventa.html" />
+        <option value="$PROJECT_DIR$/php/rptasistelibros.php" />
+        <option value="$PROJECT_DIR$/pages/tranreembolso.html" />
+        <option value="$PROJECT_DIR$/php/facturacion.php" />
+        <option value="$PROJECT_DIR$/pages/rptlibmay.html" />
+        <option value="$PROJECT_DIR$/js/controllers/rptlibmayctrl.js" />
+        <option value="$PROJECT_DIR$/pages/rptbalsal.html" />
+        <option value="$PROJECT_DIR$/js/controllers/rptbalancesaldosctrl.js" />
+        <option value="$PROJECT_DIR$/pages/rptbalgen.html" />
+        <option value="$PROJECT_DIR$/js/controllers/rptbalancegeneralctrl.js" />
+        <option value="$PROJECT_DIR$/pages/rptestres.html" />
+        <option value="$PROJECT_DIR$/js/controllers/rptestadoresultadosctrl.js" />
+        <option value="$PROJECT_DIR$/pages/rptlibdia.html" />
+        <option value="$PROJECT_DIR$/js/controllers/rptlibdiactrl.js" />
+        <option value="$PROJECT_DIR$/php/rptlibmay.php" />
+        <option value="$PROJECT_DIR$/php/rptestadoresultados.php" />
+        <option value="$PROJECT_DIR$/php/rptbalancegeneral.php" />
+        <option value="$PROJECT_DIR$/php/rptbalancesaldos.php" />
+        <option value="$PROJECT_DIR$/php/rptlibdia.php" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" />
+  <component name="JsBuildToolPackageJson" detection-done="true" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="Bundled (Maven 3)" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="MavenProjectNavigator">
+    <treeState />
+  </component>
+  <component name="PhpServers">
+    <servers />
+  </component>
+  <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" interpreter_name="PHP 5.6.8" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1936" />
+    <option name="height" value="1056" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="2" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="Scratches" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cpm" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cpm" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sayet" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cpm" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sayet" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="php" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cpm" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sayet" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pages" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cpm" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sayet" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cpm" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sayet" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="controllers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.appearance" />
+    <property name="settings.editor.splitter.proportion" value="0.2" />
+    <property name="list.type.of.created.stylesheet" value="CSS" />
+    <property name="js-jscs-nodeInterpreter" value="C:\Program Files\nodejs\node.exe" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\xampp\htdocs\sayet\php" />
+      <recent name="C:\xampp\htdocs\sayet\js\services" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Node.js.clientectrl.js">
+    <configuration default="false" name="clientectrl.js" type="NodeJSConfigurationType" factoryName="Node.js" temporary="true" path-to-node="C:/Program Files/nodejs/node" path-to-js-file="clientectrl.js" working-dir="$PROJECT_DIR$/js/controllers">
+      <method />
+    </configuration>
+    <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
+      <module name="" />
+      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
+      <option name="PROGRAM_PARAMETERS" />
+      <method />
+    </configuration>
+    <configuration default="true" type="AndroidRunConfigurationType" factoryName="Android Application">
+      <module name="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="DEPLOY" value="true" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="TARGET_SELECTION_MODE" value="EMULATOR" />
+      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
+      <option name="PREFERRED_AVD" value="" />
+      <option name="USE_COMMAND_LINE" value="true" />
+      <option name="COMMAND_LINE" value="" />
+      <option name="WIPE_USER_DATA" value="false" />
+      <option name="DISABLE_BOOT_ANIMATION" value="false" />
+      <option name="NETWORK_SPEED" value="full" />
+      <option name="NETWORK_LATENCY" value="none" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
+      <option name="FILTER_LOGCAT_AUTOMATICALLY" value="true" />
+      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="0" />
+      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
+      <option name="SELECTED_CLOUD_DEVICE_CONFIGURATION_ID" value="0" />
+      <option name="SELECTED_CLOUD_DEVICE_PROJECT_ID" value="" />
+      <option name="IS_VALID_CLOUD_MATRIX_SELECTION" value="false" />
+      <option name="INVALID_CLOUD_MATRIX_SELECTION_ERROR" value="" />
+      <option name="IS_VALID_CLOUD_DEVICE_SELECTION" value="false" />
+      <option name="INVALID_CLOUD_DEVICE_SELECTION_ERROR" value="" />
+      <option name="CLOUD_DEVICE_SERIAL_NUMBER" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Tests">
+      <module name="" />
+      <option name="TESTING_TYPE" value="0" />
+      <option name="INSTRUMENTATION_RUNNER_CLASS" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TARGET_SELECTION_MODE" value="EMULATOR" />
+      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
+      <option name="PREFERRED_AVD" value="" />
+      <option name="USE_COMMAND_LINE" value="true" />
+      <option name="COMMAND_LINE" value="" />
+      <option name="WIPE_USER_DATA" value="false" />
+      <option name="DISABLE_BOOT_ANIMATION" value="false" />
+      <option name="NETWORK_SPEED" value="full" />
+      <option name="NETWORK_LATENCY" value="none" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
+      <option name="FILTER_LOGCAT_AUTOMATICALLY" value="true" />
+      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="0" />
+      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
+      <option name="SELECTED_CLOUD_DEVICE_CONFIGURATION_ID" value="0" />
+      <option name="SELECTED_CLOUD_DEVICE_PROJECT_ID" value="" />
+      <option name="IS_VALID_CLOUD_MATRIX_SELECTION" value="false" />
+      <option name="INVALID_CLOUD_MATRIX_SELECTION_ERROR" value="" />
+      <option name="IS_VALID_CLOUD_DEVICE_SELECTION" value="false" />
+      <option name="INVALID_CLOUD_DEVICE_SELECTION_ERROR" value="" />
+      <option name="CLOUD_DEVICE_SERIAL_NUMBER" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <module />
+      <method />
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="ArquillianJUnit" factoryName="">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration default="true" type="ArquillianTestNG" factoryName="">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SUITE_NAME" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="GROUP_NAME" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="OUTPUT_DIRECTORY" />
+      <option name="ANNOTATION_TYPE" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <option name="USE_DEFAULT_REPORTERS" value="false" />
+      <option name="PROPERTIES_FILE" />
+      <envs />
+      <properties />
+      <listeners />
+      <method />
+    </configuration>
+    <configuration default="true" type="CucumberJavaRunConfigurationType" factoryName="Cucumber java">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="myFilePath" />
+      <option name="GLUE" />
+      <option name="myNameFilter" />
+      <option name="myGeneratedName" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="FlashRunConfigurationType" factoryName="Flash App">
+      <option name="BCName" value="" />
+      <option name="IOSSimulatorSdkPath" value="" />
+      <option name="adlOptions" value="" />
+      <option name="airProgramParameters" value="" />
+      <option name="appDescriptorForEmulator" value="Android" />
+      <option name="debugTransport" value="USB" />
+      <option name="debuggerSdkRaw" value="BC SDK" />
+      <option name="emulator" value="NexusOne" />
+      <option name="emulatorAdlOptions" value="" />
+      <option name="fastPackaging" value="true" />
+      <option name="fullScreenHeight" value="0" />
+      <option name="fullScreenWidth" value="0" />
+      <option name="launchUrl" value="false" />
+      <option name="launcherParameters">
+        <LauncherParameters>
+          <option name="browser" value="a7bb68e0-33c0-4d6f-a81a-aac1fdb870c8" />
+          <option name="launcherType" value="OSDefault" />
+          <option name="newPlayerInstance" value="false" />
+          <option name="playerPath" value="FlashPlayerDebugger.exe" />
+        </LauncherParameters>
+      </option>
+      <option name="mobileRunTarget" value="Emulator" />
+      <option name="moduleName" value="" />
+      <option name="overriddenMainClass" value="" />
+      <option name="overriddenOutputFileName" value="" />
+      <option name="overrideMainClass" value="false" />
+      <option name="runTrusted" value="true" />
+      <option name="screenDpi" value="0" />
+      <option name="screenHeight" value="0" />
+      <option name="screenWidth" value="0" />
+      <option name="url" value="http://" />
+      <option name="usbDebugPort" value="7936" />
+      <method />
+    </configuration>
+    <configuration default="true" type="FlexUnitRunConfigurationType" factoryName="FlexUnit" appDescriptorForEmulator="Android" class_name="" emulatorAdlOptions="" method_name="" package_name="" scope="Class">
+      <option name="BCName" value="" />
+      <option name="launcherParameters">
+        <LauncherParameters>
+          <option name="browser" value="a7bb68e0-33c0-4d6f-a81a-aac1fdb870c8" />
+          <option name="launcherType" value="OSDefault" />
+          <option name="newPlayerInstance" value="false" />
+          <option name="playerPath" value="FlashPlayerDebugger.exe" />
+        </LauncherParameters>
+      </option>
+      <option name="moduleName" value="" />
+      <option name="trusted" value="true" />
+      <method />
+    </configuration>
+    <configuration default="true" type="GradleRunConfiguration" factoryName="Gradle">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list />
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <method />
+    </configuration>
+    <configuration default="true" type="GrailsRunConfigurationType" factoryName="Grails">
+      <module name="" />
+      <setting name="vmparams" value="" />
+      <setting name="cmdLine" value="run-app" />
+      <setting name="depsClasspath" value="false" />
+      <setting name="passParentEnv" value="true" />
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <setting name="launchBrowser" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration default="true" type="JUnitTestDiscovery" factoryName="JUnit Test Discovery" changeList="All">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration default="true" type="JarApplication" factoryName="JAR Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="Java Scratch" factoryName="Java Scratch">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="SCRATCH_FILE_ID" value="0" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
+      <method />
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType" factoryName="Kotlin">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="cpm" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="NodeJSConfigurationType" factoryName="Node.js" working-dir="">
+      <method />
+    </configuration>
+    <configuration default="true" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
+      <TestRunner />
+      <method />
+    </configuration>
+    <configuration default="true" type="PhpLocalRunConfigurationType" factoryName="PHP Console">
+      <method />
+    </configuration>
+    <configuration default="true" type="Remote" factoryName="Remote">
+      <option name="USE_SOCKET_TRANSPORT" value="true" />
+      <option name="SERVER_MODE" value="false" />
+      <option name="SHMEM_ADDRESS" value="javadebug" />
+      <option name="HOST" value="localhost" />
+      <option name="PORT" value="5005" />
+      <method />
+    </configuration>
+    <configuration default="true" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="TestNG" factoryName="TestNG">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SUITE_NAME" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="GROUP_NAME" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="OUTPUT_DIRECTORY" />
+      <option name="ANNOTATION_TYPE" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <option name="USE_DEFAULT_REPORTERS" value="false" />
+      <option name="PROPERTIES_FILE" />
+      <envs />
+      <properties />
+      <listeners />
+      <method />
+    </configuration>
+    <configuration default="true" type="TestNGTestDiscovery" factoryName="TestNG Test Discovery" changeList="All">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SUITE_NAME" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="GROUP_NAME" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="OUTPUT_DIRECTORY" />
+      <option name="ANNOTATION_TYPE" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <option name="USE_DEFAULT_REPORTERS" value="false" />
+      <option name="PROPERTIES_FILE" />
+      <envs />
+      <properties />
+      <listeners />
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <node-options />
+      <gulpfile />
+      <tasks />
+      <arguments />
+      <pass-parent-envs>true</pass-parent-envs>
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.npm" factoryName="npm">
+      <command value="run-script" />
+      <scripts />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="mocha-javascript-test-runner" factoryName="Mocha">
+      <node-options />
+      <working-directory>$PROJECT_DIR$</working-directory>
+      <pass-parent-env>true</pass-parent-env>
+      <envs />
+      <ui>bdd</ui>
+      <extra-mocha-options />
+      <test-kind>DIRECTORY</test-kind>
+      <test-directory />
+      <recursive>false</recursive>
+      <method />
+    </configuration>
+    <configuration default="true" type="osgi.bnd.run" factoryName="Run Launcher">
+      <method />
+    </configuration>
+    <configuration default="true" type="osgi.bnd.run" factoryName="Test Launcher (JUnit)">
+      <method />
+    </configuration>
+    <list size="1">
+      <item index="0" class="java.lang.String" itemvalue="Node.js.clientectrl.js" />
+    </list>
+    <recent_temporary>
+      <list size="1">
+        <item index="0" class="java.lang.String" itemvalue="Node.js.clientectrl.js" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="" />
+      <created>1448151293903</created>
+      <option name="number" value="Default" />
+      <updated>1448151293903</updated>
+      <workItem from="1448151295187" duration="4093000" />
+      <workItem from="1448333781469" duration="2646000" />
+      <workItem from="1448399169675" duration="5920000" />
+      <workItem from="1448900244784" duration="8026000" />
+      <workItem from="1449152919946" duration="3163000" />
+      <workItem from="1449252103901" duration="2139000" />
+      <workItem from="1449498850128" duration="16984000" />
+      <workItem from="1449584522257" duration="29012000" />
+      <workItem from="1449758243169" duration="16642000" />
+      <workItem from="1450374121510" duration="250000" />
+      <workItem from="1450374393091" duration="5603000" />
+      <workItem from="1450666935777" duration="10281000" />
+      <workItem from="1450708197623" duration="15699000" />
+      <workItem from="1450801444746" duration="3218000" />
+      <workItem from="1450805235149" duration="6303000" />
+      <workItem from="1451955978308" duration="1254000" />
+      <workItem from="1452005107275" duration="5994000" />
+      <workItem from="1452020954611" duration="16584000" />
+      <workItem from="1452186675798" duration="8757000" />
+      <workItem from="1452266223816" duration="3222000" />
+      <workItem from="1452278439239" duration="155000" />
+      <workItem from="1452278610062" duration="4930000" />
+      <workItem from="1452467421618" duration="10605000" />
+      <workItem from="1452525085568" duration="38000" />
+      <workItem from="1452525138139" duration="16414000" />
+      <workItem from="1452609105798" duration="4120000" />
+      <workItem from="1452694896255" duration="14882000" />
+      <workItem from="1452781194640" duration="4294000" />
+      <workItem from="1452797378970" duration="6000" />
+      <workItem from="1453239583961" duration="1522000" />
+      <workItem from="1453300599453" duration="14168000" />
+      <workItem from="1453399981546" duration="8772000" />
+      <workItem from="1453510273544" duration="2034000" />
+      <workItem from="1453591777420" duration="4420000" />
+      <workItem from="1453675580740" duration="766000" />
+      <workItem from="1453736037582" duration="13240000" />
+      <workItem from="1453856979458" duration="11186000" />
+      <workItem from="1453913586045" duration="16328000" />
+      <workItem from="1454083510519" duration="6783000" />
+      <workItem from="1454336370220" duration="13367000" />
+      <workItem from="1454422127706" duration="10347000" />
+      <workItem from="1454993660888" duration="27609000" />
+      <workItem from="1456081468649" duration="15645000" />
+      <workItem from="1456831667810" duration="5219000" />
+      <workItem from="1457455385179" duration="5316000" />
+      <workItem from="1462913960183" duration="10838000" />
+      <workItem from="1462969826858" duration="11918000" />
+      <workItem from="1463003499490" duration="1377000" />
+      <workItem from="1463496114744" duration="7701000" />
+      <workItem from="1463582954059" duration="19681000" />
+      <workItem from="1463670651887" duration="9118000" />
+      <workItem from="1463695001412" duration="2001000" />
+      <workItem from="1464018694305" duration="13760000" />
+      <workItem from="1464100997380" duration="9335000" />
+      <workItem from="1464121181288" duration="7171000" />
+      <workItem from="1464218732973" duration="11000" />
+      <workItem from="1465254615248" duration="8624000" />
+      <workItem from="1465301950545" duration="17120000" />
+      <workItem from="1465399330959" duration="58000" />
+      <workItem from="1465834683985" duration="2205000" />
+      <workItem from="1465918885324" duration="4967000" />
+      <workItem from="1467123268260" duration="14942000" />
+      <workItem from="1467203206511" duration="6953000" />
+      <workItem from="1467293988479" duration="668000" />
+      <workItem from="1468336369662" duration="22459000" />
+      <workItem from="1468435402614" duration="11169000" />
+      <workItem from="1468512883898" duration="56000" />
+      <workItem from="1468520302454" duration="86000" />
+      <workItem from="1468960511364" duration="9173000" />
+      <workItem from="1469022323997" duration="775000" />
+      <workItem from="1469050710425" duration="23000" />
+      <workItem from="1470067196762" duration="15556000" />
+      <workItem from="1470140944335" duration="14031000" />
+      <workItem from="1470235560266" duration="247000" />
+      <workItem from="1470235816114" duration="2485000" />
+      <workItem from="1470758247958" duration="9988000" />
+      <workItem from="1470834213676" duration="11718000" />
+      <workItem from="1471362270018" duration="9833000" />
+      <workItem from="1471444065708" duration="19545000" />
+      <workItem from="1471529831980" duration="10000" />
+      <workItem from="1471533832379" duration="13890000" />
+      <workItem from="1471876329615" duration="664000" />
+      <workItem from="1472137469364" duration="22457000" />
+      <workItem from="1472225873327" duration="909000" />
+      <workItem from="1472573101934" duration="212000" />
+      <workItem from="1473280530936" duration="6086000" />
+      <workItem from="1473295332352" duration="148000" />
+      <workItem from="1473346325394" duration="26494000" />
+      <workItem from="1473399989268" duration="47000" />
+      <workItem from="1473400571019" duration="639000" />
+      <workItem from="1473700895692" duration="6000" />
+      <workItem from="1473779160200" duration="22592000" />
+      <workItem from="1473866285739" duration="4087000" />
+      <workItem from="1474304610779" duration="9105000" />
+      <workItem from="1474469270540" duration="2170000" />
+      <workItem from="1474907850574" duration="4280000" />
+      <workItem from="1474990949694" duration="9749000" />
+      <workItem from="1475077983706" duration="2498000" />
+      <workItem from="1475097501811" duration="125000" />
+      <workItem from="1475595495027" duration="15955000" />
+      <workItem from="1475683449410" duration="12000" />
+      <workItem from="1476112626153" duration="9838000" />
+      <workItem from="1476195677344" duration="4025000" />
+      <workItem from="1476221738536" duration="1495000" />
+      <workItem from="1476394756018" duration="823000" />
+      <workItem from="1476808828401" duration="13339000" />
+      <workItem from="1476882459244" duration="11154000" />
+      <workItem from="1476912456004" duration="709000" />
+      <workItem from="1477409456243" duration="21672000" />
+      <workItem from="1477476516967" duration="12475000" />
+      <workItem from="1477496716447" duration="625000" />
+      <workItem from="1477581699171" duration="11218000" />
+      <workItem from="1477924264581" duration="15000" />
+      <workItem from="1478130251563" duration="607000" />
+      <workItem from="1478136686338" duration="1706000" />
+      <workItem from="1478170144875" duration="10851000" />
+      <workItem from="1478190440373" duration="6058000" />
+      <workItem from="1478529865737" duration="13000" />
+      <workItem from="1478623756785" duration="2407000" />
+      <workItem from="1478644388458" duration="5871000" />
+      <workItem from="1478705767549" duration="3842000" />
+      <workItem from="1478780256656" duration="6000" />
+      <workItem from="1478793292124" duration="12058000" />
+      <workItem from="1478895670499" duration="6000" />
+      <workItem from="1479158151551" duration="1629000" />
+      <workItem from="1479219190296" duration="20273000" />
+      <workItem from="1479306806908" duration="36746000" />
+      <workItem from="1479367602459" duration="207000" />
+      <workItem from="1479394270864" duration="4572000" />
+      <workItem from="1479503420910" duration="35000" />
+      <workItem from="1479763034116" duration="7766000" />
+      <workItem from="1479824933112" duration="12197000" />
+      <workItem from="1479915881294" duration="118000" />
+      <workItem from="1479916441614" duration="8719000" />
+      <workItem from="1479955118150" duration="1370000" />
+      <workItem from="1479999257000" duration="17378000" />
+      <workItem from="1480094633181" duration="5000" />
+      <workItem from="1480351136778" duration="19442000" />
+      <workItem from="1480435302659" duration="7382000" />
+      <workItem from="1480519353845" duration="10064000" />
+      <workItem from="1480584504218" duration="2165000" />
+      <workItem from="1480591652499" duration="7000" />
+      <workItem from="1480597197758" duration="496000" />
+      <workItem from="1480597733857" duration="3451000" />
+      <workItem from="1480610213634" duration="2702000" />
+      <workItem from="1480954664891" duration="7000" />
+      <workItem from="1481044931789" duration="8368000" />
+      <workItem from="1481143733430" duration="4393000" />
+      <workItem from="1481191559964" duration="13000" />
+      <workItem from="1481211051701" duration="3392000" />
+      <workItem from="1481559485823" duration="14841000" />
+      <workItem from="1481588938308" duration="6742000" />
+      <workItem from="1481640960861" duration="5000" />
+      <workItem from="1481735243367" duration="11020000" />
+      <workItem from="1481813804148" duration="11195000" />
+      <workItem from="1482166942024" duration="5000" />
+      <workItem from="1482249809800" duration="11674000" />
+      <workItem from="1482331711202" duration="17121000" />
+      <workItem from="1482418926079" duration="2536000" />
+      <workItem from="1482767379785" duration="1843000" />
+      <workItem from="1482848642092" duration="6396000" />
+      <workItem from="1482936207258" duration="15665000" />
+      <workItem from="1483026482778" duration="6870000" />
+      <workItem from="1483375369255" duration="12894000" />
+      <workItem from="1483456155208" duration="2935000" />
+      <workItem from="1483541314524" duration="6000" />
+      <workItem from="1484147528990" duration="12917000" />
+      <workItem from="1484228116935" duration="779000" />
+      <workItem from="1484341897933" duration="1260000" />
+      <workItem from="1484601010768" duration="5000" />
+      <workItem from="1484774386531" duration="6686000" />
+      <workItem from="1484824173837" duration="16757000" />
+      <workItem from="1484951217556" duration="1386000" />
+      <workItem from="1485195549933" duration="6000" />
+      <workItem from="1485355516270" duration="6488000" />
+      <workItem from="1485444941098" duration="144000" />
+      <workItem from="1485874792434" duration="14626000" />
+      <workItem from="1485950671557" duration="25286000" />
+      <workItem from="1486011068042" duration="6000" />
+      <workItem from="1486012717066" duration="1000" />
+      <workItem from="1486037232678" duration="13183000" />
+      <workItem from="1486239390169" duration="114000" />
+      <workItem from="1486479648103" duration="8965000" />
+      <workItem from="1486563974005" duration="18804000" />
+      <workItem from="1486648083629" duration="3840000" />
+      <workItem from="1486749997318" duration="5029000" />
+      <workItem from="1486917502754" duration="8472000" />
+      <workItem from="1486995262227" duration="11834000" />
+      <workItem from="1487081491405" duration="2256000" />
+      <workItem from="1487094203385" duration="1839000" />
+      <workItem from="1487167827010" duration="1213000" />
+      <workItem from="1487182726080" duration="8967000" />
+      <workItem from="1487236339984" duration="10461000" />
+      <workItem from="1487689501274" duration="13000" />
+      <workItem from="1487854967445" duration="4529000" />
+      <workItem from="1487864273147" duration="77000" />
+      <workItem from="1488209990394" duration="189000" />
+      <workItem from="1488393003783" duration="1041000" />
+      <workItem from="1488407633875" duration="320000" />
+      <workItem from="1488817740911" duration="15033000" />
+      <workItem from="1488896966588" duration="17727000" />
+      <workItem from="1488984696909" duration="7180000" />
+      <workItem from="1489071229435" duration="6789000" />
+      <workItem from="1489176106277" duration="9000" />
+      <workItem from="1490031341053" duration="5884000" />
+      <workItem from="1490113803619" duration="4000" />
+      <workItem from="1490194864127" duration="20760000" />
+      <workItem from="1490282794315" duration="3870000" />
+      <workItem from="1490306423675" duration="4000" />
+      <workItem from="1490717103048" duration="4286000" />
+      <workItem from="1490739234148" duration="1241000" />
+      <workItem from="1490784352330" duration="4695000" />
+      <workItem from="1490886347632" duration="19647000" />
+      <workItem from="1491235114331" duration="8239000" />
+      <workItem from="1491317864751" duration="3000" />
+      <workItem from="1491413992627" duration="6089000" />
+      <workItem from="1491484157289" duration="14073000" />
+      <workItem from="1491837874125" duration="11000" />
+      <workItem from="1492636309079" duration="3698000" />
+      <workItem from="1493133806220" duration="517000" />
+      <workItem from="1493223215857" duration="29552000" />
+      <workItem from="1493307310735" duration="1490000" />
+      <workItem from="1493402820726" duration="9000" />
+      <workItem from="1493737772887" duration="1648000" />
+      <workItem from="1493747459383" duration="9222000" />
+      <workItem from="1493780060989" duration="4000" />
+      <workItem from="1493832175938" duration="1656000" />
+      <workItem from="1493846861922" duration="1315000" />
+      <workItem from="1493915030454" duration="10888000" />
+      <workItem from="1494023774248" duration="107000" />
+      <workItem from="1494450284591" duration="6712000" />
+      <workItem from="1494513795407" duration="8190000" />
+      <workItem from="1494862020197" duration="2294000" />
+      <workItem from="1494943992049" duration="6000" />
+      <workItem from="1494964404659" duration="7724000" />
+      <workItem from="1495042670519" duration="4000" />
+      <workItem from="1495729559754" duration="631000" />
+      <workItem from="1495816302382" duration="3000" />
+      <workItem from="1496080282545" duration="8781000" />
+      <workItem from="1496115538527" duration="6566000" />
+      <workItem from="1496159403537" duration="36000" />
+      <workItem from="1496176015213" duration="265000" />
+      <workItem from="1496759734329" duration="5279000" />
+      <workItem from="1496850605397" duration="8258000" />
+      <workItem from="1496878550006" duration="187000" />
+      <workItem from="1496878912347" duration="11413000" />
+      <workItem from="1496926712131" duration="6315000" />
+      <workItem from="1497041465673" duration="2193000" />
+      <workItem from="1497243455817" duration="3521000" />
+      <workItem from="1497293539832" duration="7396000" />
+      <workItem from="1497367002525" duration="15892000" />
+      <workItem from="1497460451136" duration="35878000" />
+      <workItem from="1497537533860" duration="18732000" />
+      <workItem from="1497633497788" duration="6662000" />
+      <workItem from="1497880960775" duration="9617000" />
+      <workItem from="1497968995915" duration="19983000" />
+      <workItem from="1498059971623" duration="12462000" />
+      <workItem from="1498146132799" duration="5473000" />
+      <workItem from="1498500471474" duration="2096000" />
+      <workItem from="1498575402737" duration="10461000" />
+      <workItem from="1498664076703" duration="9263000" />
+      <workItem from="1498745938515" duration="14728000" />
+      <workItem from="1499096767823" duration="9059000" />
+      <workItem from="1499178932805" duration="12866000" />
+      <workItem from="1499313160523" duration="7744000" />
+      <workItem from="1499789728730" duration="394000" />
+      <workItem from="1499869284378" duration="8142000" />
+      <workItem from="1499945249483" duration="14887000" />
+      <workItem from="1500308695054" duration="16887000" />
+      <workItem from="1500390975705" duration="9444000" />
+      <workItem from="1500480166488" duration="13807000" />
+      <workItem from="1515439551657" duration="2433000" />
+      <workItem from="1515516380817" duration="4905000" />
+      <workItem from="1515594646119" duration="13573000" />
+      <workItem from="1515771877618" duration="2012000" />
+      <workItem from="1516246268858" duration="680000" />
+      <workItem from="1516282713320" duration="7069000" />
+      <workItem from="1516397941019" duration="1736000" />
+      <workItem from="1516634029144" duration="9021000" />
+      <workItem from="1516648528876" duration="625000" />
+      <workItem from="1516744091265" duration="3561000" />
+      <workItem from="1516812564905" duration="4047000" />
+      <workItem from="1516990799361" duration="3401000" />
+      <workItem from="1517234271415" duration="11017000" />
+      <workItem from="1517274602648" duration="1084000" />
+      <workItem from="1517332205680" duration="3520000" />
+      <workItem from="1517409601508" duration="11615000" />
+      <workItem from="1517502439547" duration="2394000" />
+      <workItem from="1517592311132" duration="890000" />
+      <workItem from="1517884726762" duration="9000" />
+      <workItem from="1517932565411" duration="3878000" />
+      <workItem from="1518023758270" duration="5167000" />
+      <workItem from="1518099350191" duration="5518000" />
+      <workItem from="1518109532759" duration="2845000" />
+      <workItem from="1518449256230" duration="6942000" />
+      <workItem from="1518539491331" duration="16788000" />
+      <workItem from="1518624111454" duration="12070000" />
+      <workItem from="1518706779135" duration="8420000" />
+      <workItem from="1519060182751" duration="607000" />
+      <workItem from="1519135709967" duration="13466000" />
+      <workItem from="1519228904008" duration="15525000" />
+      <workItem from="1519405983386" duration="4059000" />
+      <workItem from="1519419302416" duration="8000" />
+      <workItem from="1519668411800" duration="8581000" />
+      <workItem from="1519750174166" duration="1217000" />
+      <workItem from="1519855490108" duration="9353000" />
+      <workItem from="1519936190732" duration="2422000" />
+      <workItem from="1520266206280" duration="11955000" />
+      <workItem from="1520345352676" duration="16738000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="2173686000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32976446" sideWeight="0.5" order="11" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32995737" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36403033" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26279318" sideWeight="0.49571735" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32889125" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24962178" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24946696" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1881663" sideWeight="0.50428265" order="4" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39978564" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="PHP-CGI Server" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32827735" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/libs/tcpdf" />
+    </ignored-roots>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <option name="time" value="9" />
+    </breakpoint-manager>
+    <watches-manager />
+  </component>
+  <component name="antWorkspaceConfiguration">
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
+    <option name="FILTER_TARGETS" value="false" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/js/controllers/tranbancctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6960894">
+          <caret line="703" column="196" selection-start-line="703" selection-start-column="12" selection-end-line="703" selection-end-column="196" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/tranbanc.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2347526">
+          <caret line="189" column="122" selection-start-line="189" selection-start-column="122" selection-end-line="189" selection-end-column="122" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/printcheckcontinuo.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7387802">
+          <caret line="156" column="40" selection-start-line="156" selection-start-column="40" selection-end-line="156" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/gencierreparcial.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.1173763">
+          <caret line="40" column="41" selection-start-line="40" selection-start-column="41" selection-end-line="40" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptlibrocomprasctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="24" column="54" selection-start-line="24" selection-start-column="54" selection-end-line="24" selection-end-column="54" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptlibroventasctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="65" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/gfacectrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.47486034">
+          <caret line="25" column="63" selection-start-line="19" selection-start-column="12" selection-end-line="25" selection-end-column="63" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/gface.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-22.23077">
+          <caret line="40" column="18" selection-start-line="11" selection-start-column="12" selection-end-line="40" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/filters/pad.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptasistelibros.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.136939">
+          <caret line="7" column="40" selection-start-line="7" selection-start-column="40" selection-end-line="7" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.018994413">
+          <caret line="44" column="84" selection-start-line="44" selection-start-column="84" selection-end-line="44" selection-end-column="84" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cpmidx.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.019562716">
+          <caret line="199" column="88" selection-start-line="199" selection-start-column="4" selection-end-line="199" selection-end-column="88" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/services/comprasrvc.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6837989">
+          <caret line="36" column="83" selection-start-line="36" selection-start-column="83" selection-end-line="36" selection-end-column="83" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/compractrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.018994413">
+          <caret line="74" column="93" selection-start-line="74" selection-start-column="83" selection-end-line="74" selection-end-column="93" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/compra.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.019562716">
+          <caret line="212" column="25" selection-start-line="212" selection-start-column="25" selection-end-line="212" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/proyecto.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.2692308">
+          <caret line="5" column="65" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/proyecto_adjunto.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-28.192308">
+          <caret line="76" column="3" selection-start-line="53" selection-start-column="0" selection-end-line="76" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/activo_adjunto.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-26.153847">
+          <caret line="80" column="3" selection-start-line="56" selection-start-column="0" selection-end-line="80" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/cliente.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.11967779">
+          <caret line="532" column="77" selection-start-line="532" selection-start-column="77" selection-end-line="532" selection-end-column="77" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/db.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.30114943">
+          <caret line="60" column="56" selection-start-line="60" selection-start-column="56" selection-end-line="60" selection-end-column="56" />
+          <folding>
+            <marker date="1515439582174" expanded="true" signature="1624:1764" placeholder="SELECT id, d..isr..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/formsretventactrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="84" column="127" selection-start-line="84" selection-start-column="119" selection-end-line="84" selection-end-column="127" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/formsretventa.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-4.576923">
+          <caret line="73" column="46" selection-start-line="73" selection-start-column="46" selection-end-line="73" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptlibrocompras.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.15650173">
+          <caret line="19" column="17" selection-start-line="19" selection-start-column="17" selection-end-line="19" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptasistelibrosctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.51284915">
+          <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptasistelibros.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.93793106">
+          <caret line="48" column="40" selection-start-line="48" selection-start-column="40" selection-end-line="48" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/reembolsoctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="267" column="89" selection-start-line="267" selection-start-column="89" selection-end-line="267" selection-end-column="89" />
+          <folding>
+            <marker date="1515620507057" expanded="true" signature="33707:33745" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/tranreembolso.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="93" column="67" selection-start-line="93" selection-start-column="67" selection-end-line="93" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/facturacion.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-18.615385">
+          <caret line="366" column="27" selection-start-line="366" selection-start-column="27" selection-end-line="366" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/services/cuentacsrvc.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.07597765">
+          <caret line="4" column="36" selection-start-line="4" selection-start-column="25" selection-end-line="4" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/tranfactura.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.31300345">
+          <caret line="67" column="32" selection-start-line="67" selection-start-column="32" selection-end-line="67" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/tranfactcompra.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-17.653847">
+          <caret line="426" column="34" selection-start-line="426" selection-start-column="34" selection-end-line="426" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/services/jsreportsrvc.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/empresa.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.41081703">
+          <caret line="21" column="28" selection-start-line="21" selection-start-column="28" selection-end-line="21" selection-end-column="28" />
+          <folding>
+            <marker date="1518556388692" expanded="true" signature="2182:2331" placeholder="INSERT INTO empresa..." />
+            <marker date="1518556388692" expanded="true" signature="2912:2930" placeholder="UPDATE empre..." />
+            <marker date="1518556388692" expanded="true" signature="3460:3491" placeholder="DELETE FROM ..." />
+            <marker date="1518556388692" expanded="true" signature="4798:4927" placeholder="INSERT INTO detcontempresa..." />
+            <marker date="1518556388692" expanded="true" signature="5119:5223" placeholder="UPDATE detco..." />
+            <marker date="1518556388692" expanded="true" signature="5422:5460" placeholder="DELETE FROM ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptlibmay.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-22.307692">
+          <caret line="112" column="128" selection-start-line="112" selection-start-column="128" selection-end-line="112" selection-end-column="128" />
+          <folding>
+            <element signature="n#style#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/services/rptbalancesaldossrvc.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptbalsal.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-22.307692">
+          <caret line="39" column="89" selection-start-line="39" selection-start-column="89" selection-end-line="39" selection-end-column="89" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptbalancesaldosctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2659218">
+          <caret line="14" column="108" selection-start-line="14" selection-start-column="16" selection-end-line="14" selection-end-column="108" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/mntpresupuesto.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.11071429">
+          <caret line="288" column="42" selection-start-line="288" selection-start-column="42" selection-end-line="288" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptbalgen.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.68469507">
+          <caret line="35" column="25" selection-start-line="35" selection-start-column="25" selection-end-line="35" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptlibmayctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="74" column="161" selection-start-line="74" selection-start-column="16" selection-end-line="74" selection-end-column="161" />
+          <folding>
+            <element signature="e#1129#1348#0" expanded="false" />
+            <element signature="e#1389#1544#0" expanded="false" />
+            <element signature="e#1614#2729#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptbalancegeneralctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="14" column="108" selection-start-line="14" selection-start-column="16" selection-end-line="14" selection-end-column="108" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptestadoresultadosctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6837989">
+          <caret line="36" column="66" selection-start-line="36" selection-start-column="66" selection-end-line="36" selection-end-column="66" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptestres.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.97813576">
+          <caret line="50" column="10" selection-start-line="50" selection-start-column="10" selection-end-line="50" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptlibdiactrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="21" column="47" selection-start-line="21" selection-start-column="47" selection-end-line="21" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptlibdia.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-20.923077">
+          <caret line="32" column="6" selection-start-line="32" selection-start-column="6" selection-end-line="32" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptlibmay.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.65384614">
+          <caret line="1" column="18" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="18" />
+          <folding>
+            <element signature="n#getSelectHeader#0;n#!!top" expanded="false" />
+            <marker date="1520374847472" expanded="true" signature="306:331" placeholder="DELETE FROM ..." />
+            <marker date="1520374847472" expanded="true" signature="353:397" placeholder="ALTER TABLE rptlibromayor..." />
+            <marker date="1520374847472" expanded="true" signature="419:588" placeholder="INSERT INTO rptlibromayor..." />
+            <marker date="1520374847472" expanded="true" signature="487:559" placeholder="SELECT id, c..cuentac..." />
+            <marker date="1520374847472" expanded="true" signature="1455:1512" placeholder="UPDATE rptli..." />
+            <marker date="1520374847472" expanded="true" signature="1623:1721" placeholder="SELECT DISTI..rptlibromayor..." />
+            <marker date="1520374847472" expanded="true" signature="1911:2033" placeholder="SELECT id, i..rptlibromayor..." />
+            <marker date="1520374847472" expanded="true" signature="2663:2782" placeholder="UPDATE rptli..." />
+            <marker date="1520374847472" expanded="true" signature="3928:3983" placeholder="SELECT nomem..empresa..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptestadoresultados.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.65384614">
+          <caret line="1" column="18" selection-start-line="1" selection-start-column="18" selection-end-line="1" selection-end-column="18" />
+          <folding>
+            <marker date="1520375154887" expanded="true" signature="396:427" placeholder="DELETE FROM ..." />
+            <marker date="1520375154887" expanded="true" signature="449:499" placeholder="ALTER TABLE rptestadoresultados..." />
+            <marker date="1520375154887" expanded="true" signature="1018:1188" placeholder="SELECT b.des..confrptcont..." />
+            <marker date="1520375154887" expanded="true" signature="1391:1473" placeholder="INSERT INTO rptestadoresultados..." />
+            <marker date="1520375154887" expanded="true" signature="2013:2112" placeholder="INSERT INTO rptestadoresultados..." />
+            <marker date="1520375154887" expanded="true" signature="2503:2601" placeholder="INSERT INTO rptestadoresultados..." />
+            <marker date="1520375154887" expanded="true" signature="3255:3342" placeholder="INSERT INTO rptestadoresultados..." />
+            <marker date="1520375154887" expanded="true" signature="3600:3727" placeholder="SELECT DISTI..rptestadoresultados..." />
+            <marker date="1520375154887" expanded="true" signature="3821:3948" placeholder="SELECT id, i..rptestadoresultados..." />
+            <marker date="1520375154887" expanded="true" signature="4300:4413" placeholder="UPDATE rptes..." />
+            <marker date="1520375154887" expanded="true" signature="4774:4829" placeholder="SELECT nomem..empresa..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptbalancegeneral.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.65384614">
+          <caret line="1" column="18" selection-start-line="1" selection-start-column="18" selection-end-line="1" selection-end-column="18" />
+          <folding>
+            <marker date="1520375161358" expanded="true" signature="306:335" placeholder="DELETE FROM ..." />
+            <marker date="1520375161358" expanded="true" signature="357:405" placeholder="ALTER TABLE rptbalancegeneral..." />
+            <marker date="1520375161358" expanded="true" signature="1005:1169" placeholder="SELECT b.des..confrptcont..." />
+            <marker date="1520375161358" expanded="true" signature="1372:1453" placeholder="INSERT INTO rptbalancegeneral..." />
+            <marker date="1520375161358" expanded="true" signature="1991:2089" placeholder="INSERT INTO rptbalancegeneral..." />
+            <marker date="1520375161358" expanded="true" signature="2446:2543" placeholder="INSERT INTO rptbalancegeneral..." />
+            <marker date="1520375161358" expanded="true" signature="2882:3007" placeholder="SELECT DISTI..rptbalancegeneral..." />
+            <marker date="1520375161358" expanded="true" signature="3101:3226" placeholder="SELECT id, i..rptbalancegeneral..." />
+            <marker date="1520375161358" expanded="true" signature="3576:3687" placeholder="UPDATE rptba..." />
+            <marker date="1520375161358" expanded="true" signature="3768:3878" placeholder="SELECT id, i..rptbalancegeneral..." />
+            <marker date="1520375161358" expanded="true" signature="4075:4130" placeholder="SELECT nomem..empresa..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptbalancesaldos.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.65384614">
+          <caret line="1" column="18" selection-start-line="1" selection-start-column="18" selection-end-line="1" selection-end-column="18" />
+          <folding>
+            <marker date="1520375172551" expanded="true" signature="323:351" placeholder="DELETE FROM ..." />
+            <marker date="1520375172551" expanded="true" signature="377:424" placeholder="ALTER TABLE rptbalancesaldos..." />
+            <marker date="1520375172551" expanded="true" signature="450:622" placeholder="INSERT INTO rptbalancesaldos..." />
+            <marker date="1520375172551" expanded="true" signature="521:593" placeholder="SELECT id, c..cuentac..." />
+            <marker date="1520375172551" expanded="true" signature="1519:1579" placeholder="UPDATE rptba..." />
+            <marker date="1520375172551" expanded="true" signature="1702:1803" placeholder="SELECT DISTI..rptbalancesaldos..." />
+            <marker date="1520375172551" expanded="true" signature="2013:2138" placeholder="SELECT id, i..rptbalancesaldos..." />
+            <marker date="1520375172551" expanded="true" signature="2815:2937" placeholder="UPDATE rptba..." />
+            <marker date="1520375172551" expanded="true" signature="3596:3651" placeholder="SELECT nomem..empresa..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.03912543">
+          <caret line="2" column="6" selection-start-line="0" selection-start-column="0" selection-end-line="2" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptlibdia.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.17606445">
+          <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <folding>
+            <marker date="1520375179654" expanded="true" signature="7628:7683" placeholder="SELECT nomem..empresa..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ScopeChooserConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>

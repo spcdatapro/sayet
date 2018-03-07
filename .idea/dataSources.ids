@@ -1,0 +1,1308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="dataSourceStorage">
+  <data-source name="MySQL - sayet@localhost" uuid="2be104d0-a93e-48f5-9a9c-537d306b6df8">
+    <database-info product="MySQL" version="5.7.13-log" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.35 ( Revision: 5fb9c5849535c13917c2cf9baaece6ef9693ef27 )">
+      <extra-name-characters>#@</extra-name-characters>
+      <identifier-quote-string>`</identifier-quote-string>
+    </database-info>
+    <case-sensitivity plain-identifiers="lower" quoted-identifiers="lower"/>
+    <database-model serializer="dbm" rdbms="MYSQL" format-version="2.2">
+      <schema id="1" name="sayet"/>
+      <table id="2" parent="1" name="activo"/>
+      <table id="3" parent="1" name="activo_adjunto"/>
+      <table id="4" parent="1" name="banco"/>
+      <table id="5" parent="1" name="bitacoraactivo"/>
+      <table id="6" parent="1" name="compra"/>
+      <table id="7" parent="1" name="cuentac"/>
+      <table id="8" parent="1" name="detalle_activo_proyecto"/>
+      <table id="9" parent="1" name="detalle_docs_proyecto"/>
+      <table id="10" parent="1" name="detallecontable"/>
+      <table id="11" parent="1" name="detcontempresa"/>
+      <table id="12" parent="1" name="detcontprov"/>
+      <table id="13" parent="1" name="detpagocompra"/>
+      <table id="14" parent="1" name="detunidacont"/>
+      <table id="15" parent="1" name="directa"/>
+      <table id="16" parent="1" name="doctotranban"/>
+      <table id="17" parent="1" name="empresa"/>
+      <table id="18" parent="1" name="gastocontable"/>
+      <table id="19" parent="1" name="itemmenu"/>
+      <table id="20" parent="1" name="menu"/>
+      <table id="21" parent="1" name="modulo"/>
+      <table id="22" parent="1" name="moneda"/>
+      <table id="23" parent="1" name="municipio"/>
+      <table id="24" parent="1" name="periodocontable"/>
+      <table id="25" parent="1" name="permiso"/>
+      <table id="26" parent="1" name="proveedor"/>
+      <table id="27" parent="1" name="proyecto"/>
+      <table id="28" parent="1" name="proyecto_adjunto"/>
+      <table id="29" parent="1" name="proyectounidad"/>
+      <table id="30" parent="1" name="solicitudot"/>
+      <table id="31" parent="1" name="tipo_activo"/>
+      <table id="32" parent="1" name="tipo_adjunto"/>
+      <table id="33" parent="1" name="tipo_proyecto"/>
+      <table id="34" parent="1" name="tipocompra"/>
+      <table id="35" parent="1" name="tipoconfigconta"/>
+      <table id="36" parent="1" name="tipodocproy"/>
+      <table id="37" parent="1" name="tipodocsoptranban"/>
+      <table id="38" parent="1" name="tipogasto"/>
+      <table id="39" parent="1" name="tipolocal"/>
+      <table id="40" parent="1" name="tipomovtranban"/>
+      <table id="41" parent="1" name="tiposervicio"/>
+      <table id="42" parent="1" name="tranban"/>
+      <table id="43" parent="1" name="unidad"/>
+      <table id="44" parent="1" name="unidadservicio"/>
+      <table id="45" parent="1" name="usuario"/>
+      <column id="46" parent="2" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="47" parent="2" name="idempresa">
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="48" parent="2" name="nomclienteajeno">
+        <data-type>varchar(200)</data-type>
+      </column>
+      <column id="49" parent="2" name="departamento">
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="50" parent="2" name="finca">
+        <data-type>varchar(10)</data-type>
+      </column>
+      <column id="51" parent="2" name="folio">
+        <data-type>varchar(10)</data-type>
+      </column>
+      <column id="52" parent="2" name="libro">
+        <data-type>varchar(10)</data-type>
+      </column>
+      <column id="53" parent="2" name="horizontal">
+        <data-type>tinyint(4)</data-type>
+      </column>
+      <column id="54" parent="2" name="direccion_cat">
+        <data-type>varchar(250)</data-type>
+      </column>
+      <column id="55" parent="2" name="direccion_mun">
+        <data-type>varchar(250)</data-type>
+      </column>
+      <column id="56" parent="2" name="direcciondos">
+        <data-type>varchar(250)</data-type>
+      </column>
+      <column id="57" parent="2" name="iusi">
+        <data-type>decimal(10,2)</data-type>
+      </column>
+      <column id="58" parent="2" name="por_iusi">
+        <data-type>decimal(10,2)</data-type>
+      </column>
+      <column id="59" parent="2" name="valor_registro">
+        <data-type>decimal(10,2)</data-type>
+      </column>
+      <column id="60" parent="2" name="metros_registro">
+        <data-type>decimal(10,2)</data-type>
+      </column>
+      <column id="61" parent="2" name="valor_dicabi">
+        <data-type>decimal(10,2)</data-type>
+      </column>
+      <column id="62" parent="2" name="metros_dicabi">
+        <data-type>decimal(10,2)</data-type>
+      </column>
+      <column id="63" parent="2" name="valor_muni">
+        <data-type>decimal(10,2)</data-type>
+      </column>
+      <column id="64" parent="2" name="metros_muni">
+        <data-type>decimal(10,2)</data-type>
+      </column>
+      <column id="65" parent="2" name="solvencia_muni">
+        <data-type>varchar(250)</data-type>
+      </column>
+      <column id="66" parent="2" name="actualizadopor">
+        <data-type>varchar(15)</data-type>
+      </column>
+      <column id="67" parent="2" name="actualiza_info">
+        <data-type>datetime</data-type>
+      </column>
+      <column id="68" parent="2" name="observaciones">
+        <data-type>text</data-type>
+      </column>
+      <column id="69" parent="2" name="tipo_activo">
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="70" parent="2" name="nombre_corto">
+        <data-type>varchar(150)</data-type>
+      </column>
+      <column id="71" parent="2" name="nombre_largo">
+        <data-type>varchar(250)</data-type>
+      </column>
+      <column id="72" parent="2" name="zona">
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="73" parent="2" name="creadopor">
+        <data-type>varchar(15)</data-type>
+      </column>
+      <column id="74" parent="2" name="fhcreacion">
+        <data-type>datetime</data-type>
+      </column>
+      <column id="75" parent="2" name="multilotes">
+        <mandatory>1</mandatory>
+        <data-type>bit(1)</data-type>
+        <default-expression>b&apos;0&apos;</default-expression>
+      </column>
+      <index id="76" parent="2" name="FincaFolioLibroASC">
+        <columns>finca
+folio
+libro</columns>
+        <unique>1</unique>
+      </index>
+      <key id="77" parent="2" name="FincaFolioLibroASC">
+        <columns>finca
+folio
+libro</columns>
+        <underlying-index>FincaFolioLibroASC</underlying-index>
+      </key>
+      <key id="78" parent="2" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="79" parent="3" name="idadjunto">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="80" parent="3" name="headerid">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="81" parent="3" name="nomadjunto">
+        <mandatory>1</mandatory>
+        <data-type>varchar(254)</data-type>
+      </column>
+      <column id="82" parent="3" name="tipo_adjunto">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="83" parent="3" name="ubicacion">
+        <mandatory>1</mandatory>
+        <data-type>varchar(254)</data-type>
+      </column>
+      <key id="84" parent="3" name="PRIMARY">
+        <columns>idadjunto</columns>
+        <primary>1</primary>
+      </key>
+      <column id="85" parent="4" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="86" parent="4" name="idempresa">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="87" parent="4" name="idcuentac">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="88" parent="4" name="nombre">
+        <mandatory>1</mandatory>
+        <data-type>varchar(75)</data-type>
+      </column>
+      <column id="89" parent="4" name="nocuenta">
+        <mandatory>1</mandatory>
+        <data-type>varchar(20)</data-type>
+      </column>
+      <column id="90" parent="4" name="siglas">
+        <mandatory>1</mandatory>
+        <data-type>varchar(15)</data-type>
+      </column>
+      <column id="91" parent="4" name="nomcuenta">
+        <mandatory>1</mandatory>
+        <data-type>varchar(150)</data-type>
+      </column>
+      <column id="92" parent="4" name="correlativo">
+        <mandatory>1</mandatory>
+        <data-type>varchar(45)</data-type>
+      </column>
+      <column id="93" parent="4" name="idmoneda">
+        <data-type>int(11)</data-type>
+      </column>
+      <index id="94" parent="4" name="nocuenta_UNIQUE">
+        <columns>nocuenta</columns>
+        <unique>1</unique>
+      </index>
+      <key id="95" parent="4" name="nocuenta_UNIQUE">
+        <columns>nocuenta</columns>
+        <underlying-index>nocuenta_UNIQUE</underlying-index>
+      </key>
+      <key id="96" parent="4" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="97" parent="5" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="98" parent="5" name="idactivo">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="99" parent="5" name="fhbitacora">
+        <mandatory>1</mandatory>
+        <data-type>datetime</data-type>
+      </column>
+      <column id="100" parent="5" name="usuario">
+        <mandatory>1</mandatory>
+        <data-type>varchar(15)</data-type>
+      </column>
+      <column id="101" parent="5" name="bitacora">
+        <mandatory>1</mandatory>
+        <data-type>varchar(5000)</data-type>
+      </column>
+      <key id="102" parent="5" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="103" parent="6" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="104" parent="6" name="idempresa">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="105" parent="6" name="idproveedor">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="106" parent="6" name="serie">
+        <mandatory>1</mandatory>
+        <data-type>varchar(15)</data-type>
+      </column>
+      <column id="107" parent="6" name="documento">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="108" parent="6" name="fechaingreso">
+        <mandatory>1</mandatory>
+        <data-type>date</data-type>
+      </column>
+      <column id="109" parent="6" name="mesiva">
+        <mandatory>1</mandatory>
+        <data-type>smallint(2) unsigned</data-type>
+      </column>
+      <column id="110" parent="6" name="fechafactura">
+        <mandatory>1</mandatory>
+        <data-type>date</data-type>
+      </column>
+      <column id="111" parent="6" name="idtipocompra">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="112" parent="6" name="conceptomayor">
+        <mandatory>1</mandatory>
+        <data-type>varchar(500)</data-type>
+      </column>
+      <column id="113" parent="6" name="creditofiscal">
+        <mandatory>1</mandatory>
+        <data-type>bit(1)</data-type>
+        <default-expression>b&apos;0&apos;</default-expression>
+      </column>
+      <column id="114" parent="6" name="extraordinario">
+        <mandatory>1</mandatory>
+        <data-type>bit(1)</data-type>
+        <default-expression>b&apos;0&apos;</default-expression>
+      </column>
+      <column id="115" parent="6" name="fechapago">
+        <mandatory>1</mandatory>
+        <data-type>date</data-type>
+      </column>
+      <column id="116" parent="6" name="ordentrabajo">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="117" parent="6" name="totfact">
+        <mandatory>1</mandatory>
+        <data-type>decimal(20,2) unsigned</data-type>
+      </column>
+      <column id="118" parent="6" name="noafecto">
+        <mandatory>1</mandatory>
+        <data-type>decimal(20,2) unsigned</data-type>
+      </column>
+      <column id="119" parent="6" name="subtotal">
+        <mandatory>1</mandatory>
+        <data-type>decimal(20,2) unsigned</data-type>
+      </column>
+      <column id="120" parent="6" name="iva">
+        <mandatory>1</mandatory>
+        <data-type>decimal(20,2) unsigned</data-type>
+      </column>
+      <column id="121" parent="6" name="compracol">
+        <data-type>varchar(45)</data-type>
+      </column>
+      <key id="122" parent="6" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="123" parent="7" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="124" parent="7" name="idempresa">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="125" parent="7" name="codigo">
+        <mandatory>1</mandatory>
+        <data-type>varchar(10)</data-type>
+      </column>
+      <column id="126" parent="7" name="nombrecta">
+        <mandatory>1</mandatory>
+        <data-type>varchar(75)</data-type>
+      </column>
+      <column id="127" parent="7" name="tipocuenta">
+        <mandatory>1</mandatory>
+        <data-type>bit(1)</data-type>
+        <default-expression>b&apos;0&apos;</default-expression>
+      </column>
+      <index id="128" parent="7" name="Codigo_UNIQUE">
+        <columns>codigo
+idempresa</columns>
+        <unique>1</unique>
+      </index>
+      <key id="129" parent="7" name="Codigo_UNIQUE">
+        <columns>codigo
+idempresa</columns>
+        <underlying-index>Codigo_UNIQUE</underlying-index>
+      </key>
+      <key id="130" parent="7" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="131" parent="8" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="132" parent="8" name="idproyecto">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="133" parent="8" name="idactivo">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <key id="134" parent="8" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="135" parent="9" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="136" parent="9" name="idproyecto">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="137" parent="9" name="tipo_documento">
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="138" parent="9" name="entidad">
+        <data-type>varchar(250)</data-type>
+      </column>
+      <column id="139" parent="9" name="documento">
+        <data-type>varchar(25)</data-type>
+      </column>
+      <column id="140" parent="9" name="vigencia_del">
+        <data-type>date</data-type>
+      </column>
+      <column id="141" parent="9" name="vegencia_al">
+        <data-type>date</data-type>
+      </column>
+      <key id="142" parent="9" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="143" parent="10" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="144" parent="10" name="origen">
+        <mandatory>1</mandatory>
+        <data-type>smallint(5) unsigned</data-type>
+      </column>
+      <column id="145" parent="10" name="idorigen">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="146" parent="10" name="idcuenta">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="147" parent="10" name="debe">
+        <mandatory>1</mandatory>
+        <data-type>decimal(10,2)</data-type>
+      </column>
+      <column id="148" parent="10" name="haber">
+        <mandatory>1</mandatory>
+        <data-type>decimal(10,2)</data-type>
+      </column>
+      <column id="149" parent="10" name="conceptomayor">
+        <mandatory>1</mandatory>
+        <data-type>varchar(500)</data-type>
+      </column>
+      <key id="150" parent="10" name="PRIMARY">
+        <columns>id
+origen</columns>
+        <primary>1</primary>
+      </key>
+      <column id="151" parent="11" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="152" parent="11" name="idempresa">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="153" parent="11" name="idtipoconfig">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="154" parent="11" name="idcuentac">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <index id="155" parent="11" name="IdEmpresaIdConfASC">
+        <columns>idempresa
+idtipoconfig</columns>
+        <unique>1</unique>
+      </index>
+      <key id="156" parent="11" name="IdEmpresaIdConfASC">
+        <columns>idempresa
+idtipoconfig</columns>
+        <underlying-index>IdEmpresaIdConfASC</underlying-index>
+      </key>
+      <key id="157" parent="11" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="158" parent="12" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="159" parent="12" name="idproveedor">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="160" parent="12" name="idcuentac">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <index id="161" parent="12" name="IdProvIdCuentaCASC">
+        <columns>idproveedor
+idcuentac</columns>
+        <unique>1</unique>
+      </index>
+      <key id="162" parent="12" name="IdProvIdCuentaCASC">
+        <columns>idproveedor
+idcuentac</columns>
+        <underlying-index>IdProvIdCuentaCASC</underlying-index>
+      </key>
+      <key id="163" parent="12" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="164" parent="13" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="165" parent="13" name="idcompra">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="166" parent="13" name="idtranban">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="167" parent="13" name="monto">
+        <data-type>decimal(20,2)</data-type>
+      </column>
+      <key id="168" parent="13" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="169" parent="14" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="170" parent="14" name="idunidad">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="171" parent="14" name="contador">
+        <mandatory>1</mandatory>
+        <data-type>varchar(150)</data-type>
+      </column>
+      <column id="172" parent="14" name="alta">
+        <data-type>varchar(45)</data-type>
+      </column>
+      <column id="173" parent="14" name="baja">
+        <data-type>varchar(45)</data-type>
+      </column>
+      <column id="174" parent="14" name="mcubbase">
+        <data-type>decimal(20,2)</data-type>
+      </column>
+      <column id="175" parent="14" name="parafactura">
+        <data-type>varchar(50)</data-type>
+      </column>
+      <key id="176" parent="14" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="177" parent="15" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="178" parent="15" name="idempresa">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="179" parent="15" name="fecha">
+        <mandatory>1</mandatory>
+        <data-type>date</data-type>
+      </column>
+      <key id="180" parent="15" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="181" parent="16" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="182" parent="16" name="idtranban">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="183" parent="16" name="idtipodoc">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="184" parent="16" name="fechadoc">
+        <mandatory>1</mandatory>
+        <data-type>date</data-type>
+      </column>
+      <column id="185" parent="16" name="serie">
+        <data-type>varchar(15)</data-type>
+      </column>
+      <column id="186" parent="16" name="documento">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="187" parent="16" name="monto">
+        <mandatory>1</mandatory>
+        <data-type>decimal(20,2) unsigned</data-type>
+      </column>
+      <key id="188" parent="16" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="189" parent="17" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="190" parent="17" name="idmoneda">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="191" parent="17" name="nomempresa">
+        <mandatory>1</mandatory>
+        <data-type>varchar(100)</data-type>
+      </column>
+      <column id="192" parent="17" name="propia">
+        <mandatory>1</mandatory>
+        <data-type>bit(1)</data-type>
+        <default-expression>b&apos;1&apos;</default-expression>
+      </column>
+      <key id="193" parent="17" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="194" parent="18" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="195" parent="18" name="descgastoconta">
+        <mandatory>1</mandatory>
+        <data-type>varchar(50)</data-type>
+      </column>
+      <key id="196" parent="18" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="197" parent="19" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="198" parent="19" name="idmenu">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="199" parent="19" name="descitemmenu">
+        <mandatory>1</mandatory>
+        <data-type>varchar(50)</data-type>
+      </column>
+      <column id="200" parent="19" name="url">
+        <mandatory>1</mandatory>
+        <data-type>varchar(100)</data-type>
+      </column>
+      <key id="201" parent="19" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="202" parent="20" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="203" parent="20" name="idmodulo">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="204" parent="20" name="descmenu">
+        <mandatory>1</mandatory>
+        <data-type>varchar(50)</data-type>
+      </column>
+      <key id="205" parent="20" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="206" parent="21" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="207" parent="21" name="descmodulo">
+        <mandatory>1</mandatory>
+        <data-type>varchar(50)</data-type>
+      </column>
+      <key id="208" parent="21" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="209" parent="22" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="210" parent="22" name="nommoneda">
+        <mandatory>1</mandatory>
+        <data-type>varchar(50)</data-type>
+      </column>
+      <column id="211" parent="22" name="simbolo">
+        <mandatory>1</mandatory>
+        <data-type>varchar(3)</data-type>
+      </column>
+      <key id="212" parent="22" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="213" parent="23" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="214" parent="23" name="codigo">
+        <data-type>varchar(10)</data-type>
+      </column>
+      <column id="215" parent="23" name="nombre">
+        <data-type>varchar(50)</data-type>
+      </column>
+      <column id="216" parent="23" name="depto">
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="217" parent="23" name="nomdepto">
+        <data-type>varchar(50)</data-type>
+      </column>
+      <column id="218" parent="23" name="habilitado">
+        <mandatory>1</mandatory>
+        <data-type>bit(1)</data-type>
+        <default-expression>b&apos;0&apos;</default-expression>
+      </column>
+      <key id="219" parent="23" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="220" parent="24" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="221" parent="24" name="del">
+        <mandatory>1</mandatory>
+        <data-type>date</data-type>
+      </column>
+      <column id="222" parent="24" name="al">
+        <mandatory>1</mandatory>
+        <data-type>date</data-type>
+      </column>
+      <column id="223" parent="24" name="abierto">
+        <data-type>bit(1)</data-type>
+        <default-expression>b&apos;0&apos;</default-expression>
+      </column>
+      <key id="224" parent="24" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="225" parent="25" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="226" parent="25" name="idusuario">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="227" parent="25" name="iditemmenu">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="228" parent="25" name="accesar">
+        <mandatory>1</mandatory>
+        <data-type>bit(1)</data-type>
+        <default-expression>b&apos;0&apos;</default-expression>
+      </column>
+      <column id="229" parent="25" name="crear">
+        <mandatory>1</mandatory>
+        <data-type>bit(1)</data-type>
+        <default-expression>b&apos;0&apos;</default-expression>
+      </column>
+      <column id="230" parent="25" name="modificar">
+        <mandatory>1</mandatory>
+        <data-type>bit(1)</data-type>
+        <default-expression>b&apos;0&apos;</default-expression>
+      </column>
+      <column id="231" parent="25" name="eliminar">
+        <mandatory>1</mandatory>
+        <data-type>bit(1)</data-type>
+        <default-expression>b&apos;0&apos;</default-expression>
+      </column>
+      <index id="232" parent="25" name="UsrItemASC">
+        <columns>idusuario
+iditemmenu</columns>
+        <unique>1</unique>
+      </index>
+      <key id="233" parent="25" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <key id="234" parent="25" name="UsrItemASC">
+        <columns>idusuario
+iditemmenu</columns>
+        <underlying-index>UsrItemASC</underlying-index>
+      </key>
+      <column id="235" parent="26" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="236" parent="26" name="nit">
+        <mandatory>1</mandatory>
+        <data-type>varchar(50)</data-type>
+      </column>
+      <column id="237" parent="26" name="nombre">
+        <mandatory>1</mandatory>
+        <data-type>varchar(150)</data-type>
+      </column>
+      <column id="238" parent="26" name="direccion">
+        <data-type>varchar(150)</data-type>
+      </column>
+      <column id="239" parent="26" name="telefono">
+        <data-type>varchar(50)</data-type>
+      </column>
+      <column id="240" parent="26" name="correo">
+        <data-type>varchar(45)</data-type>
+      </column>
+      <column id="241" parent="26" name="concepto">
+        <data-type>varchar(200)</data-type>
+      </column>
+      <column id="242" parent="26" name="chequesa">
+        <data-type>varchar(150)</data-type>
+      </column>
+      <column id="243" parent="26" name="retensionisr">
+        <data-type>bit(1)</data-type>
+        <default-expression>b&apos;0&apos;</default-expression>
+      </column>
+      <column id="244" parent="26" name="diascred">
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="245" parent="26" name="limitecred">
+        <data-type>decimal(20,2)</data-type>
+      </column>
+      <column id="246" parent="26" name="pequeniocont">
+        <data-type>bit(1)</data-type>
+        <default-expression>b&apos;0&apos;</default-expression>
+      </column>
+      <index id="247" parent="26" name="nit_UNIQUE">
+        <columns>nit</columns>
+        <unique>1</unique>
+      </index>
+      <key id="248" parent="26" name="nit_UNIQUE">
+        <columns>nit</columns>
+        <underlying-index>nit_UNIQUE</underlying-index>
+      </key>
+      <key id="249" parent="26" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="250" parent="27" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="251" parent="27" name="nomproyecto">
+        <mandatory>1</mandatory>
+        <data-type>varchar(80)</data-type>
+      </column>
+      <column id="252" parent="27" name="registro">
+        <data-type>varchar(20)</data-type>
+      </column>
+      <column id="253" parent="27" name="direccion">
+        <data-type>varchar(80)</data-type>
+      </column>
+      <column id="254" parent="27" name="notas">
+        <data-type>text</data-type>
+      </column>
+      <column id="255" parent="27" name="metros">
+        <data-type>decimal(10,2)</data-type>
+      </column>
+      <column id="256" parent="27" name="idempresa">
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="257" parent="27" name="metros_rentable">
+        <data-type>decimal(10,2)</data-type>
+      </column>
+      <column id="258" parent="27" name="tipo_proyecto">
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="259" parent="27" name="subarrendado">
+        <data-type>tinyint(4)</data-type>
+      </column>
+      <column id="260" parent="27" name="notas_contrato">
+        <data-type>text</data-type>
+      </column>
+      <column id="261" parent="27" name="referencia">
+        <data-type>varchar(20)</data-type>
+      </column>
+      <key id="262" parent="27" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="263" parent="28" name="idadjunto">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="264" parent="28" name="headerid">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="265" parent="28" name="nomadjunto">
+        <mandatory>1</mandatory>
+        <data-type>varchar(254)</data-type>
+      </column>
+      <column id="266" parent="28" name="tipo_adjunto">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="267" parent="28" name="ubicacion">
+        <mandatory>1</mandatory>
+        <data-type>varchar(254)</data-type>
+      </column>
+      <column id="268" parent="28" name="idtipodocproy">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+        <default-expression>&apos;0&apos;</default-expression>
+      </column>
+      <column id="269" parent="28" name="numero">
+        <data-type>varchar(50)</data-type>
+      </column>
+      <column id="270" parent="28" name="fvence">
+        <data-type>date</data-type>
+      </column>
+      <key id="271" parent="28" name="PRIMARY">
+        <columns>idadjunto</columns>
+        <primary>1</primary>
+      </key>
+      <column id="272" parent="29" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="273" parent="29" name="idproyecto">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="274" parent="29" name="idunidad">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <index id="275" parent="29" name="ProyUnidUnique">
+        <columns>idproyecto
+idunidad</columns>
+        <unique>1</unique>
+      </index>
+      <key id="276" parent="29" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <key id="277" parent="29" name="ProyUnidUnique">
+        <columns>idproyecto
+idunidad</columns>
+        <underlying-index>ProyUnidUnique</underlying-index>
+      </key>
+      <column id="278" parent="30" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="279" parent="30" name="idtipogasto">
+        <mandatory>1</mandatory>
+        <data-type>int(11) unsigned</data-type>
+      </column>
+      <column id="280" parent="30" name="idgastocontable">
+        <mandatory>1</mandatory>
+        <data-type>int(11) unsigned</data-type>
+      </column>
+      <column id="281" parent="30" name="idempresa">
+        <mandatory>1</mandatory>
+        <data-type>int(11) unsigned</data-type>
+      </column>
+      <column id="282" parent="30" name="idproveedor">
+        <mandatory>1</mandatory>
+        <data-type>int(11) unsigned</data-type>
+      </column>
+      <column id="283" parent="30" name="idproyecto">
+        <mandatory>1</mandatory>
+        <data-type>int(11) unsigned</data-type>
+      </column>
+      <column id="284" parent="30" name="numorden">
+        <mandatory>1</mandatory>
+        <data-type>int(12) unsigned</data-type>
+      </column>
+      <column id="285" parent="30" name="fechasolicitud">
+        <data-type>date</data-type>
+      </column>
+      <column id="286" parent="30" name="valormaterial">
+        <data-type>decimal(20,2)</data-type>
+      </column>
+      <column id="287" parent="30" name="valorobramano">
+        <data-type>decimal(20,2)</data-type>
+      </column>
+      <column id="288" parent="30" name="montosolicita">
+        <data-type>decimal(20,2)</data-type>
+      </column>
+      <column id="289" parent="30" name="descripcion">
+        <data-type>text</data-type>
+      </column>
+      <column id="290" parent="30" name="trabajomayor">
+        <data-type>tinyint(1)</data-type>
+      </column>
+      <column id="291" parent="30" name="ivaincluido">
+        <data-type>tinyint(1)</data-type>
+      </column>
+      <column id="292" parent="30" name="dolares">
+        <data-type>tinyint(1)</data-type>
+      </column>
+      <key id="293" parent="30" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="294" parent="31" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="295" parent="31" name="descripcion">
+        <mandatory>1</mandatory>
+        <data-type>varchar(50)</data-type>
+      </column>
+      <key id="296" parent="31" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="297" parent="32" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="298" parent="32" name="nombre">
+        <mandatory>1</mandatory>
+        <data-type>varchar(25)</data-type>
+      </column>
+      <key id="299" parent="32" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="300" parent="33" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(11)</data-type>
+      </column>
+      <column id="301" parent="33" name="descripcion">
+        <mandatory>1</mandatory>
+        <data-type>varchar(50)</data-type>
+      </column>
+      <key id="302" parent="33" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="303" parent="34" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="304" parent="34" name="desctipocompra">
+        <mandatory>1</mandatory>
+        <data-type>varchar(50)</data-type>
+      </column>
+      <key id="305" parent="34" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="306" parent="35" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="307" parent="35" name="desctipoconfconta">
+        <mandatory>1</mandatory>
+        <data-type>varchar(50)</data-type>
+      </column>
+      <key id="308" parent="35" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="309" parent="36" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="310" parent="36" name="descripcion">
+        <mandatory>1</mandatory>
+        <data-type>varchar(30)</data-type>
+      </column>
+      <key id="311" parent="36" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="312" parent="37" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="313" parent="37" name="idtipomovtranban">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="314" parent="37" name="desctipodoc">
+        <mandatory>1</mandatory>
+        <data-type>varchar(45)</data-type>
+      </column>
+      <column id="315" parent="37" name="abreviatipodoc">
+        <data-type>varchar(5)</data-type>
+      </column>
+      <key id="316" parent="37" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="317" parent="38" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(11) unsigned</data-type>
+      </column>
+      <column id="318" parent="38" name="desctipogast">
+        <mandatory>1</mandatory>
+        <data-type>varchar(50)</data-type>
+      </column>
+      <key id="319" parent="38" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="320" parent="39" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="321" parent="39" name="descripcion">
+        <mandatory>1</mandatory>
+        <data-type>varchar(50)</data-type>
+      </column>
+      <key id="322" parent="39" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="323" parent="40" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="324" parent="40" name="abreviatura">
+        <mandatory>1</mandatory>
+        <data-type>varchar(3)</data-type>
+      </column>
+      <column id="325" parent="40" name="descripcion">
+        <mandatory>1</mandatory>
+        <data-type>varchar(75)</data-type>
+      </column>
+      <index id="326" parent="40" name="abreviatura_UNIQUE">
+        <columns>abreviatura</columns>
+        <unique>1</unique>
+      </index>
+      <key id="327" parent="40" name="abreviatura_UNIQUE">
+        <columns>abreviatura</columns>
+        <underlying-index>abreviatura_UNIQUE</underlying-index>
+      </key>
+      <key id="328" parent="40" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="329" parent="41" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="330" parent="41" name="descripcion">
+        <mandatory>1</mandatory>
+        <data-type>varchar(50)</data-type>
+      </column>
+      <key id="331" parent="41" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="332" parent="42" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="333" parent="42" name="idbanco">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="334" parent="42" name="tipotrans">
+        <mandatory>1</mandatory>
+        <data-type>varchar(1)</data-type>
+      </column>
+      <column id="335" parent="42" name="numero">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="336" parent="42" name="fecha">
+        <mandatory>1</mandatory>
+        <data-type>date</data-type>
+      </column>
+      <column id="337" parent="42" name="monto">
+        <mandatory>1</mandatory>
+        <data-type>decimal(20,2)</data-type>
+      </column>
+      <column id="338" parent="42" name="beneficiario">
+        <mandatory>1</mandatory>
+        <data-type>varchar(300)</data-type>
+      </column>
+      <column id="339" parent="42" name="concepto">
+        <data-type>varchar(2000)</data-type>
+      </column>
+      <column id="340" parent="42" name="operado">
+        <mandatory>1</mandatory>
+        <data-type>bit(1)</data-type>
+        <default-expression>b&apos;0&apos;</default-expression>
+      </column>
+      <index id="341" parent="42" name="BcoTipoNumeASC">
+        <columns>idbanco
+tipotrans
+numero</columns>
+        <unique>1</unique>
+      </index>
+      <key id="342" parent="42" name="BcoTipoNumeASC">
+        <columns>idbanco
+tipotrans
+numero</columns>
+        <underlying-index>BcoTipoNumeASC</underlying-index>
+      </key>
+      <key id="343" parent="42" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="344" parent="43" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="345" parent="43" name="idempresa">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+        <default-expression>&apos;0&apos;</default-expression>
+      </column>
+      <column id="346" parent="43" name="idproyecto">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+        <default-expression>&apos;0&apos;</default-expression>
+      </column>
+      <column id="347" parent="43" name="idtipolocal">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+        <default-expression>&apos;0&apos;</default-expression>
+      </column>
+      <column id="348" parent="43" name="nombre">
+        <mandatory>1</mandatory>
+        <data-type>varchar(50)</data-type>
+      </column>
+      <column id="349" parent="43" name="mcuad">
+        <mandatory>1</mandatory>
+        <data-type>decimal(20,2) unsigned</data-type>
+      </column>
+      <column id="350" parent="43" name="descripcion">
+        <mandatory>1</mandatory>
+        <data-type>varchar(150)</data-type>
+      </column>
+      <column id="351" parent="43" name="nolineastel">
+        <data-type>int(11)</data-type>
+        <default-expression>&apos;0&apos;</default-expression>
+      </column>
+      <column id="352" parent="43" name="numeros">
+        <data-type>varchar(500)</data-type>
+      </column>
+      <column id="353" parent="43" name="conteegsa">
+        <data-type>varchar(50)</data-type>
+      </column>
+      <column id="354" parent="43" name="observaciones">
+        <data-type>varchar(500)</data-type>
+      </column>
+      <key id="355" parent="43" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="356" parent="44" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="357" parent="44" name="idunidad">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="358" parent="44" name="idtiposervicio">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="359" parent="44" name="descripcion">
+        <mandatory>1</mandatory>
+        <data-type>varchar(100)</data-type>
+      </column>
+      <key id="360" parent="44" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <column id="361" parent="45" name="id">
+        <mandatory>1</mandatory>
+        <data-type>int(10) unsigned</data-type>
+      </column>
+      <column id="362" parent="45" name="nombre">
+        <mandatory>1</mandatory>
+        <data-type>varchar(75)</data-type>
+      </column>
+      <column id="363" parent="45" name="usuario">
+        <mandatory>1</mandatory>
+        <data-type>varchar(15)</data-type>
+      </column>
+      <column id="364" parent="45" name="contrasenia">
+        <mandatory>1</mandatory>
+        <data-type>varchar(150)</data-type>
+      </column>
+      <column id="365" parent="45" name="correoe">
+        <mandatory>1</mandatory>
+        <data-type>varchar(50)</data-type>
+      </column>
+      <index id="366" parent="45" name="UsrContraASC">
+        <columns>usuario
+contrasenia</columns>
+        <unique>1</unique>
+      </index>
+      <key id="367" parent="45" name="PRIMARY">
+        <columns>id</columns>
+        <primary>1</primary>
+      </key>
+      <key id="368" parent="45" name="UsrContraASC">
+        <columns>usuario
+contrasenia</columns>
+        <underlying-index>UsrContraASC</underlying-index>
+      </key>
+    </database-model>
+  </data-source>
+</component>
