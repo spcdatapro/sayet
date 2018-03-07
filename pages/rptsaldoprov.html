@@ -1,0 +1,76 @@
+<div class="container" ng-controller="rptSaldoProveedoresCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body" style="text-align: right">
+                <div class="row" style="text-align: left">
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="txtDel">Del:</label>
+                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.del" placeholder="Del"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="txtAl">Al:</label>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.al" placeholder="Al"/>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" ng-click="getSalProv()">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+
+                <button type="button" class="btn btn-primary" ng-click="getSalProvXLSX()">
+                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <!--
+        <div class="col-md-6">
+            <div id="toPrint">
+                <div class="row">
+                    <div style="text-align: center">
+                        <h2>BALANCE DE SALDOS</h2>
+                    </div>
+                </div>
+                <div class="row" ng-show="balanceSaldos.length > 0">
+                    <div style="text-align: center">
+                        <h4>DEL:&nbsp;{{params.del | date:'dd/MM/yyyy'}}&nbsp;AL:&nbsp;{{params.al | date:'dd/MM/yyyy'}}</h4>
+                    </div>
+                </div>
+                <div class="panel" ng-show="balanceSaldos.length > 0">
+                    <div class="panel-body">
+                        <table class="table table-responsive table-condensed table-hover">
+                            <thead>
+                            <tr>
+                                <th>Cuenta contable</th>
+                                <th>Nombre de cuenta</th>
+                                <th style="text-align: right">Saldo anterior</th>
+                                <th style="text-align: right">Debe</th>
+                                <th style="text-align: right">Haber</th>
+                                <th style="text-align: right">Saldo actual</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="bal in balanceSaldos" ng-class="{'linea-de-totales': bal.tipocuenta == 1}">
+                                <td>{{bal.codigo}}</td>
+                                <td>{{bal.nombrecta}}</td>
+                                <td style="text-align: right">{{bal.anterior | number:2}}</td>
+                                <td style="text-align: right">{{bal.debe | number:2}}</td>
+                                <td style="text-align: right">{{bal.haber | number:2}}</td>
+                                <td style="text-align: right">{{bal.actual | number:2}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        -->
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 100em"></object>
+        </div>
+    </div>
+</div>

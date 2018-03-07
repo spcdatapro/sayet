@@ -1,0 +1,67 @@
+<div class="container" ng-controller="rptDocsVenceCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body" style="text-align: right">
+                <div class="row" style="text-align: left">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="txtFAl">Al:</label>
+                            <input name="txtFAl" id="txtFAl" type="date" class="form-control" ng-model="params.fal" required/>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="getRptDocsVence()">
+                    <span class="glyphicon glyphicon-ok"></span>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="printVersion()">
+                    <span class="glyphicon glyphicon-print"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="toPrint">
+        <div class="row">
+            <div style="text-align: center">
+                <h2>VENCIMIENTO DE DOCUMENTO(S)</h2>
+            </div>
+        </div>
+
+        <div class="panel panel-default" ng-repeat="d in data">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-7 col-md-7">
+                        <label>Proyecto:&nbsp;</label>{{d.nombre}}
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <table class="table table-responsive table-condensed">
+                    <thead>
+                    <tr>
+                        <th>Vence</th>
+                        <th>Tipo</th>
+                        <th>No.</th>
+                        <th>Descripci&oacute;n</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="det in d.docs">
+                        <td>{{det.fvence | date:'dd/MM/yyyy'}}</td>
+                        <td>{{det.tipo}}</td>
+                        <td>{{det.numero}}</td>
+                        <td>{{det.nombre}}</td>
+                        <td>
+                            <a class="btn btn-default btn-xs" href="{{det.ubicacion}}" target="_blank">
+                                <span class="glyphicon glyphicon-download"></span>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</div>

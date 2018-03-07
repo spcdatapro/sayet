@@ -1,0 +1,221 @@
+<div class="container" ng-controller="solicitudotCtrl">
+    <div class="tab-content">
+            <form name="frmSlctdot" id="frmSlctdot" ng-submit="frmSlctdot.$valid && addSolicitud(laSolicitud)" novalidate>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Solicitud de OT</div>
+                        <div class="panel-body">
+                            <div class="form-group">
+
+                                <div class="row">
+                                    
+
+                <!--_______________________-->
+                        <div class="col-md-4">
+                                    <div class="form-group" ng-class="{'has-error':frmSlctdot.txtNumorden.$invalid && !frmSlctdot.txtNumorden.$pristine}">
+                                        <label for="txtNumorden">No. Orden:</label>
+                                        <input name="txtNumorden" id="txtNumorden" type="text" class="form-control" ng-model="laSolicitud.numorden"
+                                        placeholder="0000000000" maxlength="12" required/>
+                                    </div>
+                                </div>
+                                
+                            <div class="col-md-1">
+                                    </div>
+                                    
+                        <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmSlctdot.chkTrbjMayor.$invalid && !frmSlctdot.chkTrbjMayor.$pristine}">
+                                    <label for="chkTrbjMayor">Trabajo Mayor</label>
+                                    <input name="chkTrbjMayor" id="chkTrbjMayor" type="checkbox" class="form-control"
+                                           ng-model="laSolicitud.trabajomayor" ng-true-value="1" ng-false-value="0"/>
+                                </div>
+                    </div>
+                    
+                    <div class="col-md-1">
+                                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group" ng-class="{'has-error':frmSlctdot.dateFchSolctd.$invalid && !frmSlctdot.dateFchSolctd.$pristine}">
+                            <label for="dateFchSolctd">Fecha de Solicitud:</label>
+                            <input name="dateFchSolctd" id="dateFchSolctd" type="date" class="form-control" ng-model="laSolicitud.fechasolicitud" required/>
+                            {{laSolicitud.fe}}
+                        </div>
+                    </div>
+                <!--_______________________-->
+                    <div class="col-md-2">
+                    </div>
+                             
+                </div>
+
+                <!--_______________________________________________________________-->
+
+                <div class="row">
+                    
+                    
+                <!--_______________________-->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="form-group" ng-class="{'has-error':frmSlctdot.selProyecto.$invalid && !frmSlctdot.selProyecto.$pristine}">
+                                <label for="selProyecto">Proyecto que Afecta:</label>
+                                <select name="selProyecto" id="selProyecto" class="form-control" ng-model="laSolicitud.objProyecto"
+                                        ng-options="obj.nomproyecto for obj in losProyectos track by obj.id" required>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="form-group" ng-class="{'has-error':frmSlctdot.selProveedor.$invalid && !frmSlctdot.selProveedor.$pristine}" >
+                                <label for="selProveedor">Contratista:</label>
+                                <select name="selProveedor" id="selProveedor" class="form-control" ng-model="laSolicitud.objProveedor"
+                                        ng-options="obj.nombre for obj in losProvs track by obj.id" required>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                <!--_______________________-->
+                    
+                </div>
+
+                <!--_______________________________________________________________-->
+
+                <div class="row">
+
+                <div class="col-md-1">
+                    </div>
+                <!--_______________________-->
+                <div class="col-md-9">
+                        <div class="form-group">
+                            <div class="form-group" ng-class="{'has-error':frmSlctdot.selEmpresa.$invalid && !frmSlctdot.selEmpresa.$pristine}">
+                                <label for="selEmpresa">Empresa a Facturar:</label>
+                                <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="laSolicitud.objEmpresa"
+                                        ng-options="obj.nomempresa for obj in lasEmpresas track by obj.id" required>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                <!--_______________________-->
+                    
+                </div>
+
+                <!--_______________________________________________________________-->
+
+                <div class="row">
+
+                
+                <!--_______________________-->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="form-group" ng-class="{'has-error':frmSlctdot.selTipogast.$invalid && !frmSlctdot.selTipogast.$pristine}">
+                                <label for="selTipogast">Tipo de Gasto:</label>
+                                <select name="selTipogast" id="selTipogast" class="form-control" ng-model="laSolicitud.objTipogasto"
+                                        ng-options="obj.desctipogast for obj in losTipoGastos track by obj.id" required>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="form-group" ng-class="{'has-error':frmSlctdot.selGastoconta.$invalid && !frmSlctdot.selGastoconta.$pristine}">
+                                <label for="selGastoconta">Gasto Contable:</label>
+                                <select name="selGastoconta" id="selGastoconta" class="form-control" ng-model="laSolicitud.objGastoContable"
+                                        ng-options="obj.descgastoconta for obj in losGastosContables track by obj.id" required>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                  
+                <!--_______________________-->
+                    <div class="col-md-2">
+                    </div>
+                </div>
+
+                <!--_______________________________________________________________-->
+
+                <div class="row">
+                    
+                <!--_______________________-->
+                    <div class="col-md-6">
+                        <div class="form-group" ng-class="{'has-error':frmSlctdot.txtValMaterial.$invalid && !frmSlctdot.txtValMaterial.$pristine}">
+                            <label for="txtValMaterial">Valor de Materiales:</label>
+                            <input name="txtValMaterial" id="txtValMaterial" type="text" class="form-control" ng-model="laSolicitud.valormaterial"
+                                   placeholder="000,000.00" min="0" maxlength="12" required/>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group" ng-class="{'has-error':frmSlctdot.txtValMano.$invalid && !frmSlctdot.txtValMano.$pristine}">
+                            <label for="txtValMano">Valor Mano de Obra:</label>
+                            <input name="txtValMano" id="txtValMano" type="text" class="form-control" ng-model="laSolicitud.valorobramano"
+                                   placeholder="000,000.00" min="0" maxlength="12" required/>
+                        </div>
+                    </div>
+                <!--________________________-->
+                    
+ 
+                </div>
+
+                <!--_______________________________________________________________-->
+
+                <div class="row">
+
+                <div class="col-md-1">
+                    </div>
+                <!--________________________-->
+                    <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmSlctdot.chkIVA.$invalid && !frmSlctdot.chkIVA.$pristine}">
+                                    <label for="chkIVA">IVA inclu&iacute;do</label>
+                                    <input name="chkIVA" id="chkIVA" type="checkbox" class="form-control"
+                                           ng-model="laSolicitud.ivaincluido" ng-true-value="1" ng-false-value="0" />
+                                </div>
+                    </div>
+
+                    <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmSlctdot.chkDlrs.$invalid && !frmSlctdot.chkDlrs.$pristine}">
+                                    <label for="chkDlrs">U.S. D&oacute;lares</label>
+                                    <input name="chkDlrs" id="chkDlrs" type="checkbox" class="form-control"
+                                           ng-model="laSolicitud.dolares" ng-true-value="1" ng-false-value="0" />
+                                </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group" ng-class="{'has-error':frmSlctdot.txtMntSolct.$invalid && !frmSlctdot.txtMntSolct.$pristine}">
+                            <label for="txtMntSolct">Monto a Solicitar:</label>
+                            <input name="txtMntSolct" id="txtMntSolct" type="text" class="form-control" ng-model="laSolicitud.montosolicita"
+                                   placeholder="000,000.00" min="0" maxlength="12" required/>
+                        </div>
+                    </div>
+                <!--________________________-->
+                    
+                <!--_______________________________________________________________-->
+                    
+                </div>
+                <!--_______________________________________________________________-->
+                <div class="row">
+                <div class="col-md-1">
+                    </div>
+
+                <div class="col-md-10">
+                        <div class="form-group" ng-class="{'has-error':frmSlctdot.txtDescripcion.$invalid && !frmSlctdot.txtDescripcion.$pristine}">
+                            <label for="txtDescripcion">Descripci&oacute;n:</label>
+                            <textarea name="txtDescripcion" id="txtDescripcion" type="text" class="form-control" ng-model="laSolicitud.descripcion"
+                                   placeholder="Notas de la Orden de Trabajo" maxlength="150" required></textarea>
+                        </div>
+                </div>
+
+                
+
+                </div>
+                <div class="row">
+                <center><div class="btn-group" role="group" aria-label="...">
+                    <button type="submit" class="btn btn-primary" ng-disabled="frmSlctdot.$invalid">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                </div></center>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    </div>
+</div>

@@ -1,0 +1,110 @@
+<div class="container" ng-controller="municipioCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Municipio(s)</div>
+        <div class="panel-body">
+            <form name="frmMuni" id="frmMuni" ng-submit="frmMuni.$valid && addMuni(elMuni)" novalidate>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group" ng-class="{'has-error':frmMuni.txtCodigo.$invalid && !frmMuni.txtCodigo.$pristine}">
+                            <label for="txtCodigo">C&oacute;digo:</label>
+                            <input name="txtCodigo" id="txtCodigo" type="text" class="form-control" ng-model="elMuni.codigo"
+                                   placeholder="C&oacute;digo del municipio" maxlength="10"/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group" ng-class="{'has-error':frmMuni.txtNombre.$invalid && !frmMuni.txtNombre.$pristine}">
+                            <label for="txtNombre">Nombre:</label>
+                            <input name="txtNombre" id="txtNombre" type="text" class="form-control" ng-model="elMuni.nombre"
+                                   placeholder="Nombre del municipio" maxlength="50" required/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group" ng-class="{'has-error':frmMuni.txtDepto.$invalid && !frmMuni.txtDepto.$pristine}">
+                            <label for="txtDepto">No. de departamento:</label>
+                            <input name="txtDepto" id="txtDepto" type="number" class="form-control" ng-model="elMuni.depto"
+                                   min="1"/>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group" ng-class="{'has-error':frmMuni.txtNomDepto.$invalid && !frmMuni.txtNomDepto.$pristine}">
+                            <label for="txtNomDepto">Departamento:</label>
+                            <input name="txtNomDepto" id="txtNomDepto" type="text" class="form-control" ng-model="elMuni.nomdepto"
+                                   placeholder="Departamento al que pertenece" maxlength="50" required/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group" ng-class="{'has-error':frmMuni.chkHabilitado.$invalid && !frmMuni.chkHabilitado.$pristine}">
+                            <label for="chkHabilitado">Habilitar:</label>
+                            <input name="chkHabilitado" id="chkHabilitado" type="checkbox" class="form-control" ng-model="elMuni.habilitado"
+                                   ng-true-value="1" ng-false-value="0" required/>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="submit" class="btn btn-primary" ng-disabled="frmMuni.$invalid">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                </div>
+            </form>
+            <hr/>
+            <table class="table table-responsive table-hover">
+                <thead>
+                <tr>
+                    <th>No. de departamento</th>
+                    <th>Departamento</th>
+                    <th>C&oacute;digo</th>
+                    <th>Municipio</th>
+                    <th>Habilitado</th>
+                    <th>&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="m in municipios">
+                    <td>
+                            <span editable-text="m.depto" e-name="depto" e-form="rowform" e-required
+                                  e-class="form-control" e-type="number" e-min="0">
+                                {{m.depto}}
+                            </span>
+                    </td>
+                    <td>
+                            <span editable-text="m.nomdepto" e-name="nomdepto" e-form="rowform" e-required
+                                  e-class="form-control" e-type="text" e-maxlength="50">
+                                {{m.nomdepto}}
+                            </span>
+                    </td>
+                    <td>
+                            <span editable-text="m.codigo" e-name="codigo" e-form="rowform" e-required
+                                  e-class="form-control" e-type="text" e-maxlength="10">
+                                {{m.codigo}}
+                            </span>
+                    </td>
+                    <td>
+                            <span editable-text="m.nombre" e-name="nombre" e-form="rowform" e-required
+                                  e-class="form-control" e-type="text" e-maxlength="50">
+                                {{m.nombre}}
+                            </span>
+                    </td>
+                    <td>
+                        <span editable-checkbox="m.habilitado" e-name="habilitado" e-form="rowform" e-title="Habilitar municipio"
+                              e-ng-true-value="1" e-ng-false-value="0">
+                                {{m.habilitado === 1 ? 'S&iacute;' : 'No'}}
+                        </span>
+                    </td>
+                    <td style="white-space: nowrap">
+                        <edit-row-form
+                                editing-row="m"
+                                update-func="updMuni(fila, qid)"
+                                delete-func="delMuni(qid)">
+                        </edit-row-form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

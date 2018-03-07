@@ -1,0 +1,190 @@
+<div class="container" ng-controller="beneficiarioCtrl">
+
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divFrmBene" data-toggle="tab">BENEFICIARIO(S)</a>
+        </li>
+        <!--
+        <li ng-show="editando">
+            <a show-tab href="#divFrmDetContProv" data-toggle="tab">DETALLE CONTABLE</a>
+        </li>
+        -->
+    </ul>
+
+    <div class="tab-content">
+        <div id="divFrmBene" class="tab-pane fade in active">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Beneficiario(s) <span class="badge">{{strBene}}</span></div>
+                <div class="panel-body">
+                    <form name="frmBene" id="frmBene" ng-submit="frmBene.$valid && addBene(bene)" novalidate>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group" ng-class="{'has-error':frmBene.txtNit.$invalid && !frmBene.txtNit.$pristine}">
+                                    <label for="txtNit">N.I.T.:</label>
+                                    <input name="txtNit" id="txtNit" type="text" class="form-control" ng-model="bene.nit"
+                                           placeholder="N&uacute;mero de identificaci&oacute;n tributaria" maxlength="50" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group" ng-class="{'has-error':frmBene.txtNombre.$invalid && !frmBene.txtNombre.$pristine}">
+                                    <label for="txtNombre">Nombre:</label>
+                                    <input name="txtNombre" id="txtNombre" type="text" class="form-control" ng-model="bene.nombre"
+                                           placeholder="Nombre" maxlength="150" required/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="txtDireccion">Direcci&oacute;n:</label>
+                                    <input name="txtDireccion" id="txtDireccion" type="text" class="form-control"
+                                           ng-model="bene.direccion" placeholder="Direcci&oacute;n" maxlength="150" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="txtTel">Tel&eacute;fono:</label>
+                                    <input name="txtTel" id="txtTel" type="text" class="form-control"
+                                           ng-model="bene.telefono" placeholder="Tel&eacute;fono" maxlength="50" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="txtCorreo">Correo:</label>
+                                    <input name="txtCorreo" id="txtCorreo" type="email" class="form-control"
+                                           ng-model="bene.correo" placeholder="Correo electr&oacute;nico" maxlength="45" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="txtConcepto">Concepto:</label>
+                                    <input name="txtConcepto" id="txtConcepto" type="text" class="form-control"
+                                           ng-model="bene.concepto" placeholder="Concepto" maxlength="200" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="{'has-error':frmBene.selMoneda.$invalid && !frmBene.selMoneda.$pristine}">
+                                    <label for="selMoneda">Moneda por defecto:</label>
+                                    <select name="selMoneda" id="selMoneda" class="form-control" ng-model="bene.objMoneda"
+                                            ng-options="obj.nommoneda for obj in monedas track by obj.id"
+                                            ng-change="bene.tipocambioprov = bene.objMoneda.tipocambio"
+                                            required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="{'has-error':frmBene.txtCambio.$invalid && !frmBene.txtCambio.$pristine}">
+                                    <lable for="txtTCambioSug">Tipo de cambio por defecto:</lable>
+                                    <input name="txtTCambioSug" id="txtTCambioSug" class="form-control" ng-model="bene.tipocambioprov"
+                                           type="text" min="1" fcsa-number="{ min:1, maxDecimals:dectc }" required/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-primary" ng-disabled="frmBene.$invalid || !permiso.c" ng-hide="editando">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="frmBene.$invalid || !permiso.m" ng-show="editando" ng-click="updBene(bene, bene.id)">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="frmBene.$invalid || !permiso.c" ng-show="editando" ng-click="resetbene()">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover table-condensed">
+                        <thead>
+                        <tr>
+                            <th style="text-align: right">No.</th>
+                            <th>Beneficiario</th>
+                            <th>Tel.</th>
+                            <th>Correo</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="prov in beneficiarios" ng-click="getBene(prov.id)">
+                            <td style="text-align: right">{{prov.id | padNumber:5}}</td>
+                            <td style="white-space: nowrap;">{{prov.nitnombre}}</td>
+                            <td>{{prov.telefono}}</td>
+                            <td>{{prov.correo}}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger" ng-click="delBene(prov.id)" ng-disabled="!permiso.e">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!--
+        <div id="divFrmDetContProv" class="tab-pane fade">
+            <div class="panel panel-success">
+                <div class="panel-heading">Detalle contable de <span class="badge">{{strProveedor}}</span></div>
+                <div class="panel-body">
+                    <form name="frmDetProv" id="frmDetProv" ng-submit="frmDetProv.$valid && addDetProv(elDetContProv)" novalidate>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="{'has-error':frmDetProv.selEmpresa.$invalid && !frmDetProv.selEmpresa.$pristine}">
+                                    <label for="selEmpresa">Empresa:</label>
+                                    <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="objEmpresa"
+                                            ng-options="obj.nomempresa for obj in lasEmpresas track by obj.id" ng-change="getLstCuentas()" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="selCuenta">Cuenta:</label>
+                                    <input name="txtFiltroCta" id="txtFiltroCta" type="text" class="form-control" ng-model="searchcta"
+                                           placeholder="Cuenta contable"/>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="form-group" ng-class="{'has-error':frmDetProv.selCuenta.$invalid && !frmDetProv.selCuenta.$pristine}">
+                                    <label for="selCuenta">&nbsp;</label>
+                                    <select name="selCuenta" id="selCuenta" class="form-control" ng-model="elDetContProv.objCuentaC"
+                                            ng-options="obj.codcta for obj in lasCuentas | filter:{codcta:searchcta}" multiple required>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-success" ng-disabled="frmDetProv.$invalid || !permiso.m">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover table-condensed">
+                        <thead>
+                        <tr>
+                            <th>Empresa</th>
+                            <th>Cuenta contable</th>
+                            <th>Descripci&oacute;n</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="dt in detContProv">
+                            <td>{{dt.nomempresa}}</td>
+                            <td>{{dt.codigo}}</td>
+                            <td>{{dt.nombrecta}}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger" ng-click="delDetProv(dt.id)" ng-disabled="!permiso.e">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        -->
+    </div>
+</div>

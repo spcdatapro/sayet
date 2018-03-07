@@ -1,0 +1,151 @@
+<div class="container" ng-controller="rptDetContFactCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body" style="text-align: right">
+                <div class="row" style="text-align: left">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="selProv" class="control-label">Proveedor:</label>
+                            <!--
+                            <select name="selProv" id="selProv" class="form-control" ng-model="objProv"
+                                    ng-options="obj.nitnombre for obj in losProvs | filter:{nitnombre:search}" multiple>
+                            </select>
+                            -->                            
+                            <ui-select id="selProv" ng-model="params.idprov"
+                                       title="Seleccione un proveedor..."
+                                       theme="bootstrap"
+                                       autofocus="true"
+                                       ng-required="true">
+                                <ui-select-match placeholder="Buscar proveedor..." allow-clear="true">
+                                    <span ng-bind="$select.selected.nombre"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="item.id as item in losProvs | filter:$select.search">
+                                    <div ng-bind-html="item.nombre | highlight: $select.search"></div>
+                                    <small>
+                                        <strong>N.I.T.:</strong>&nbsp;<span ng-bind-html="item.nit | highlight: $select.search" ></span>
+                                    </small>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="selEmpresa">Empresa:</label>                           
+                            <ui-select id="selEmpresa" ng-model="params.idempresa"
+                                       title="Seleccione una empresa..."
+                                       theme="bootstrap"
+                                       autofocus="false">
+                                <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
+                                    <span ng-bind="$select.selected.nomempresa"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+                                    <div ng-bind-html="item.nomempresa | highlight: $select.search"></div>
+                                    <small>
+                                        <strong>Abreviatura:</strong>&nbsp;<span ng-bind-html="item.abreviatura | highlight: $select.search" ></span>
+                                    </small>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="text-align: left">
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="txtDel">Del:</label>
+                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.fDel" placeholder="Del"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="txtAl">Al:</label>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fAl" placeholder="Al"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="txtSerie">Serie:</label>
+                            <input name="txtSerie" id="txtSerie" type="text" class="form-control" ng-model="params.serie" placeholder="Serie"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="txtDoc">N&uacute;mero:</label>
+                            <input name="txtDoc" id="txtDoc" type="text" class="form-control" ng-model="params.documento" placeholder="N&uacute;mero"/>
+                        </div>
+                    </div>
+                </div>
+                <!-- ng-disabled="params.idprov == null || params.idprov == undefined" -->
+                <button type="button" class="btn btn-primary btn-sm" ng-click="getDetContFact()">
+                    <span class="glyphicon glyphicon-ok"></span>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="printVersion()">
+                    <span class="glyphicon glyphicon-print"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toPrint">
+        <div class="row">
+            <div style="text-align: center">
+                <h2>DETALLE CONTABLE DE FACTURA(S)</h2>
+            </div>
+        </div>
+        <div class="panel panel-default" ng-repeat="d in data">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3 col-md-3">
+                        <label>N.I.T.:&nbsp;</label>{{d.nit}}
+                    </div>
+                    <div class="col-xs-7 col-md-7">
+                        <label>Proveedor:&nbsp;</label>{{d.nombre}}
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="panel" ng-repeat="c in d.facturas">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3 col-md-3">
+                                <label>Factura:&nbsp;</label>{{c.documento}}
+                            </div>
+                            <div class="col-xs-3 col-md-3">
+                                <label>Fecha:&nbsp;</label>{{c.fechafactura | date:'dd/MM/yyyy'}}
+                            </div>
+                            <div class="col-xs-3 col-md-3">
+                                <label>A pagar:&nbsp;</label>{{c.fechapago | date:'dd/MM/yyyy'}}
+                            </div>
+                            <div class="col-xs-3 col-md-3">
+                                <label>Total:&nbsp;</label>{{c.totfact | number:2}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-responsive table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>C&oacute;digo</th>
+                                    <th>Cuenta</th>
+                                    <th style="text-align: right">Debe</th>
+                                    <th style="text-align: right">Haber</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="det in c.detcont" ng-class="{'linea-de-totales': det.codigo.toUpperCase().indexOf('TOTAL') > -1}">
+                                <td>{{det.codigo}}</td>
+                                <td style="white-space: nowrap">{{det.nombrecta}}</td>
+                                <td style="text-align: right">{{det.codigo != '' && det.debe > 0 ? (det.debe | number:2) : ''}}</td>
+                                <td style="text-align: right">{{det.codigo != '' && det.haber > 0 ? (det.haber | number:2) : ''}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,79 @@
+<div class="container" ng-controller="cuentacCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Cuentas contables</div>
+        <div class="panel-body">
+            <form name="frmCta" id="frmCta" ng-submit="frmCta.$valid && addCuenta(laCta)" novalidate>
+                <div class="form-group" ng-class="{'has-error':frmCta.selEmpresa.$invalid && !frmCta.selEmpresa.$pristine}">
+                    <label for="selEmpresa">Empresa:</label>
+                    <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="laCta.objEmpresa"
+                            ng-options="obj.nomempresa for obj in lasEmpresas track by obj.id" ng-change="getLstCuentas()" required>
+                    </select>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group" ng-class="{'has-error':frmCta.txtCodigo.$invalid && !frmCta.txtCodigo.$pristine}">
+                            <label for="txtCodigo">C&oacute;digo:</label>
+                            <input name="txtCodigo" id="txtCodigo" type="text" class="form-control" ng-model="laCta.codigo" placeholder="C&oacute;digo de la cuenta contable" maxlength="10" required />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <div class="form-group" ng-class="{'has-error':frmCta.txtNombreCta.$invalid && !frmCta.txtNombreCta.$pristine}">
+                                <label for="txtNombreCta">Nombre de cuenta contable:</label>
+                                <input name="txtNombreCta" id="txtNombreCta" type="text" class="form-control" ng-model="laCta.nombrecta" placeholder="Nombre de la cuenta contable" maxlength="75" required />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <div class="form-group" ng-class="{'has-error':frmCta.chkTipoCta.$invalid && !frmCta.chkTipoCta.$pristine}">
+                                <center><label for="chkTipoCta">¿Es cuenta de totales?</label>
+                                <input name="chkTipoCta" id="chkTipoCta" type="checkbox" class="checkbox" ng-model="laCta.tipocuenta" ng-true-value="1" ng-false-value="0" /></center>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="submit" class="btn btn-primary" ng-disabled="frmCta.$invalid" ng-hide="editando">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-disabled="frmCta.$invalid" ng-show="editando" ng-click="updCuenta(laCta, laCta.id)">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-disabled="!laCta.objEmpresa" ng-click="printCatalogo(laCta.objEmpresa.id)">
+                        <span class="glyphicon glyphicon-print"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-disabled="frmCta.$invalid" ng-show="editando" ng-click="resetLaCta()">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+                </div>
+            </form>
+            <hr/>
+            <table id="dtCuentaC" class="table table-hover table-striped table-condensed">
+                <caption>
+                    <input ng-model="searchCta.$" class="form-control" placeholder="Buscar cuenta..." style="width: 100%"/>
+                </caption>
+                <thead>
+                    <tr>
+                        <th>C&oacute;digo</th>
+                        <th>Nombre</th>
+                        <th>Cuenta de totales</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="cta in lasCuentas | filter:searchCta" ng-click="getDataCta(cta.id)">
+                        <td>{{cta.codigo}}</td>
+                        <td>{{cta.nombrecta}}</td>
+                        <td>{{cta.tipocuenta === 1 ? 'S&iacute;' : 'No'}}</td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm" ng-click="delCuenta(cta.id)">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

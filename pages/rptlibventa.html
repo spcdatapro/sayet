@@ -1,0 +1,50 @@
+<div class="container" ng-controller="rptLibroVentasCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">Libro de ventas</div>
+            <div class="panel-body" style="text-align: right">
+                <div class="row" style="text-align: left">
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                            <label for="selMes">Mes:</label>
+                            <select name="selMes" id="selMes" class="form-control" ng-model="params.mes" ng-change="resetData()">
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Mayo</option>
+                                <option value="6">Junio</option>
+                                <option value="7">Julio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Septiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11">Noviembre</option>
+                                <option value="12">Diciembre</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                            <label for="txtAnio">A&ntilde;o:</label>
+                            <input name="txtAnio" id="txtAnio" type="number" class="form-control" ng-model="params.anio" placeholder="A&ntilde;o" ng-change="resetData()"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                            <label for="chkAlfa">&Oacute;rden alfab&eacute;tico:</label>
+                            <input name="chkAlfa" id="chkAlfa" type="checkbox" class="form-control" ng-model="params.alfa" ng-true-value="1" ng-false-value="0"/>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="getLibVenta()">
+					<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 100em"></object>
+        </div>
+    </div>
+</div>

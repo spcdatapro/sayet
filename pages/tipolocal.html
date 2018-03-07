@@ -1,0 +1,52 @@
+<div class="container" ng-controller="tipoLocalCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Tipos de locales</div>
+        <div class="panel-body">
+            <form name="frmTipoLocal" id="frmTipoLocal" ng-submit="frmTipoLocal.$valid && addTipo(tipo)" novalidate>
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group" ng-class="{'has-error':frmTipoLocal.txtOrd.$invalid && !frmTipoLocal.txtOrd.$pristine}">
+                            <label for="txtOrd">&Oacute;rden:</label>
+                            <input name="txtOrd" id="txtOrd" type="number" class="form-control" ng-model="tipo.orden" placeholder="&Oacute;rden de prioridad"
+                                   min="0" required ng-disabled="sl.tipo"/>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group" ng-class="{'has-error':frmTipoLocal.txtDesc.$invalid && !frmTipoLocal.txtDesc.$pristine}">
+                            <label for="txtDesc">Descripci&oacute;n:</label>
+                            <input name="txtDesc" id="txtDesc" type="text" class="form-control" ng-model="tipo.descripcion" placeholder="Descripci&oacute;n del tipo de local"
+                                   maxlength="50" required ng-disabled="sl.tipo"/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group" ng-class="{'has-error':frmTipoLocal.chkRent.$invalid && !frmTipoLocal.chkRent.$pristine}">
+                            <label for="chkRent">Rentable:</label>
+                            <input name="chkRent" id="chkRent" type="checkbox" class="form-control" ng-model="tipo.esrentable" ng-true-value="1" ng-false-value="0" ng-disabled="sl.tipo"/>
+                        </div>
+                    </div>
+                </div>
+                <form-buttons vis="grpBtnTipo" btn-dis="frmTipoLocal.$invalid" obj="tipo"
+                              uf="updTipo(tipo)" df="delTipo(tipo.id)"
+                              nf="nuevoTipo()" cf="cancelEditTipo()" ef="startEditTipo()" pf="imprimirTipo()">
+                </form-buttons>
+            </form>
+            <hr/>
+            <table class="table table-responsive table-hover table-condensed">
+                <thead>
+                <tr>
+                    <th>&Oacute;rden</th>
+                    <th>Descripci&oacute;n</th>
+                    <th>Rentable</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="t in tipos" ng-click="getTipo(t.id)">
+                    <td style="text-align: center">{{t.orden | number:0}}</td>
+                    <td>{{t.descripcion}}</td>
+                    <td>{{+t.esrentable == 1 ? 'Sí' : 'No'}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

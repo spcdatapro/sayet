@@ -1,0 +1,122 @@
+<div class="container-fluid" ng-controller="MntPrestamoController">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#/pln/mnt/prestamo">Préstamo</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <form class="navbar-form navbar-left" ng-submit="buscar(bus)">
+            <div class="form-group">
+              <input type="text" ng-model="bus.termino" class="form-control" placeholder="Buscar">
+            </div>
+            <button type="submit" class="btn btn-default">
+                <i class="glyphicon glyphicon-search"></i>
+            </button>
+          </form>
+          <button type="button" class="btn btn-xs btn-default navbar-btn" ng-click="mostrarForm()">
+              <i class="glyphicon glyphicon-plus"></i> Nuevo
+          </button>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-fluid -->
+    </nav>
+
+    <div class="panel panel-primary" ng-show="formulario">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                Formulario para préstamo
+                <button class="btn btn-xs btn-danger pull-right" ng-click="formulario = false">
+                    <i class="glyphicon glyphicon-remove"></i>
+                </button>
+            </h3>
+        </div>
+        <div class="panel-body">
+            <form class="form-horizontal" role="form" ng-submit="guardar(pre)">
+                <div class="form-group form-group-sm">
+                    <label for="selectEmpleado" class="col-sm-2 control-label">Empleado:</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" name="empleado" ng-model="pre.empleado" id="selectEmpleado">
+                            <option value="">------</option>
+                            <option ng-repeat="empleado in empleados" value="{{empleado.id}}">{{empleado.nombre}} {{empleado.apellidos}}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group form-group-sm">
+                    <label for="inputMonto" class="col-sm-2 control-label">Monto Q.:</label>
+                    <div class="col-sm-4">
+                        <input type="number" step="0.01" class="form-control" id="inputMonto" name="monto" ng-model="pre.monto" required="required">
+                    </div>
+                    <label for="inputCuotaMensual" class="col-sm-2 control-label">Cuota Mensual:</label>
+                    <div class="col-sm-4">
+                        <input type="number" step="0.01" class="form-control" id="inputCuotaMensual" name="cuotamensual" ng-model="pre.cuotamensual" required="required">
+                    </div>
+                </div>
+
+                <div class="form-group form-group-sm">
+                    <label for="inputInicioPago" class="col-sm-2 control-label">Inicio de Pago:</label>
+                    <div class="col-sm-4">
+                        <input type="date" class="form-control" id="inputInicioPago" name="iniciopago" ng-model="pre.iniciopago" required="required">
+                    </div>
+                    <label for="inputFechaLiquidacion" class="col-sm-2 control-label" title="Cancelación por Liquidación">Cancelación:</label>
+                    <div class="col-sm-4">
+                        <input type="date" class="form-control" id="inputFechaLiquidacion" name="liquidacion" ng-model="pre.liquidacion">
+                    </div>
+                </div>
+
+                <div class="form-group form-group-sm">
+                    <label for="areaConcepto" class="col-sm-2 control-label">Concepto:</label>
+                    <div class="col-sm-10">
+                        <textarea name="concepto" ng-model="pre.concepto" class="form-control" id="areaConcepto" required="required" rows="3" placeholder="Concepto de préstamo"></textarea>
+                    </div>
+                </div>
+                
+        
+                <div class="form-group">
+                    <div class="col-sm-10 col-sm-offset-2 text-right">
+                        <button type="button" class="btn btn-warning btn-sm" ng-show="pre.id">
+                            <i class="glyphicon glyphicon-ban-circle"></i> No Descontar
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="glyphicon glyphicon-floppy-disk"></i> Guardar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="panel panel-primary" ng-show="resultados">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Descrición</th>
+                    </tr>
+                </thead>
+                <tbody ng-cloak>
+                    <tr ng-repeat="p in prestamos track by $index" ng-click="getPuesto($index)">
+                        <td>{{ p.id }}</td>
+                        <td>{{ p.descripcion }}</td>
+                    </tr>
+                </tbody>
+                <tfoot ng-show="buscarmas">
+                    <tr>
+                        <td colspan="2" class="text-center">
+                            <button type="button" class="btn btn-default" ng-click="mas()">Más</button>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,42 @@
+<div class="container" ng-controller="razonAnulacionCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Razon(es) de anulaci&oacute;n</div>
+        <div class="panel-body">
+            <form name="frmRazon" id="frmRazon" ng-submit="frmRazon.$valid && addRazon(razon)" novalidate>
+                <div class="form-group" ng-class="{'has-error':frmRazon.txtRazon.$invalid && !frmRazon.txtRazon.$pristine}">
+                    <label for="txtRazon">Raz&oacute;n:</label>
+                    <input name="txtRazon" id="txtRazon" type="text" class="form-control" ng-model="razon.razon" placeholder="Raz&oacute;n de anular un cheque, factura, etc..." maxlength="150" required />
+                </div>
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="submit" class="btn btn-primary" ng-disabled="frmRazon.$invalid || !permiso.c" ng-hide="razon.id > 0">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-disabled="frmRazon.$invalid || !permiso.m" ng-show="razon.id > 0" ng-click="updRazon(razon, razon.id)">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                    <button type="button" class="btn btn-danger" ng-disabled="frmRazon.$invalid || !permiso.e" ng-show="razon.id > 0" ng-click="delRazon(razon.id)">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-disabled="!permiso.c" ng-show="razon.id > 0" ng-click="resetRazon()">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+                </div>
+            </form>
+            <hr/>
+            <table class="table table-responsive table-hover">
+                <thead>
+                <tr>
+                    <th>Raz&oacute;n</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="r in razones" ng-click="getRazon(r.id)">
+                    <td>
+                        {{r.razon}}
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

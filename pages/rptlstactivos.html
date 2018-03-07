@@ -1,0 +1,148 @@
+<div class="container" ng-controller="rptActivosCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body" style="text-align: right">
+                <div class="row" style="text-align: left">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="selEmpresa">Empresa:</label>
+                            <input name="txtFiltroEmpre" id="txtFiltroEmpre" type="text" class="form-control" ng-model="search" placeholder="Empresa"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="selEmpresa">&nbsp;</label>
+                            <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="objEmpresa"
+                                    ng-options="obj.nomempresa for obj in lasEmpresas | filter:{nomempresa:search}" ng-change="setLstEmpresas()" multiple>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="selMuni">Municipio:</label>
+                            <input name="txtFiltroMuni" id="txtFiltroMuni" type="text" class="form-control" ng-model="searchmuni" placeholder="Municipio"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="selMuni">&nbsp;</label>
+                            <select name="selMuni" id="selMuni" class="form-control" ng-model="objMuni"
+                                    ng-options="obj.descripcion for obj in municipios | filter:{descripcion:searchmuni}" ng-change="setLstMunis()" multiple>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="text-align: left">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="selTipo">Tipo de activo:</label>
+                            <input name="txtFiltroAct" id="txtFiltroAct" type="text" class="form-control" ng-model="searchact" placeholder="Tipo de activo"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="selTipo">&nbsp;</label>
+                            <select name="selTipo" id="selTipo" class="form-control" ng-model="objTipo"
+                                    ng-options="obj.descripcion for obj in losTipoActivo | filter:{descripcion:searchact}" ng-change="setLstTipos()" multiple>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="text-align: left">
+                    <div class="col-md-4" ng-show="objEmpresa.length > 0">
+                        <div class="well">
+                            <label for="prgEmpresas">Empresas seleccionadas:</label>
+                            <p id="prgEmpresas">{{empresastr}}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4" ng-show="objMuni.length > 0">
+                        <div class="well">
+                            <label for="prgMunis">Municipios seleccionados:</label>
+                            <p id="prgMunis">{{municipiostr}}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4" ng-show="objTipo.length > 0">
+                        <div class="well">
+                            <label for="prgTipo">Tipos de activo seleccionados:</label>
+                            <p id="prgTipo">{{tipostr}}</p>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="getRptActivos()">
+                    <span class="glyphicon glyphicon-ok"></span>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="printVersion()">
+                    <span class="glyphicon glyphicon-print"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 50em"></object>
+        </div>
+    </div>
+    <!--
+    <div id="toPrint">
+        <div class="row">
+            <div style="text-align: center">
+                <h2>CAT&Aacute;LOGO DE ACTIVOS</h2>
+            </div>
+        </div>
+
+        <div class="panel panel-default" ng-repeat="d in data">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-7 col-md-7">
+                        <label>Empresa:&nbsp;</label>{{d.nombre}}
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="panel" ng-repeat="t in d.tipos">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-12">
+                                <label>Tipo de activo:&nbsp;</label>{{t.tipo}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-responsive table-condensed table-hover">
+                            <thead>
+                            <tr>
+                                <th colspan="4">&nbsp;</th>
+                                <th colspan="4" style="text-align: center; border-left: solid 1px lightgray; border-right: solid 1px lightgray; border-top: solid 1px lightgray">Municipalidad</th>
+                            </tr>
+                            <tr>
+                                <th>Finca-Folio-Libro</th>
+                                <th>Direcci&oacute;n</th>
+                                <th style="text-align: right">Base IUSI (Q)</th>
+                                <th style="text-align: center">Multi-proyectos</th>
+                                <th style="text-align: right">Valor (Q)</th>
+                                <th style="text-align: right">Mts<sup>2</sup></th>
+                                <th style="text-align: center">Horizontal</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="det in t.activos" ng-click="openActivo(det.idactivo)">
+                                <td>{{det.finca}}</td>
+                                <td>{{det.direccion}}</td>
+                                <td style="text-align: right">{{det.baseiusi | number:2}}</td>
+                                <td style="text-align: center">{{det.esmultilotes}}</td>
+                                <td style="text-align: right; width: 10%">{{det.valor | number:2}}</td>
+                                <td style="text-align: right; width: 10%">{{det.mtscuad | number:2}}</td>
+                                <td style="text-align: center; width: 10%">{{det.horizontal}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    -->
+
+</div>

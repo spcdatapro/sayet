@@ -1,0 +1,189 @@
+<div class="container" ng-controller="empresaCtrl">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divFrmEmpresa" data-toggle="tab">EMPRESAS</a>
+        </li>
+        <li ng-show="editando">
+            <a show-tab href="#divFrmConfCont" data-toggle="tab">CONFIGURACI&Oacute;N CONTABLE</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div id="divFrmEmpresa" class="tab-pane fade in active">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Empresas</div>
+                <div class="panel-body">
+                    <form name="frmEmpresa" id="frmEmpresa" ng-submit="frmEmpresa.$valid && addEmpresa(laEmpresa)" novalidate>
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="form-group" ng-class="{'has-error':frmEmpresa.txtNombre.$invalid && !frmEmpresa.txtNombre.$pristine}">
+                                    <label for="txtNombre">Nombre:</label>
+                                    <input type="text" name="txtNombre" id="txtNombre" class="form-control" ng-model="laEmpresa.nomempresa" placeholder="Nombre de la empresa" maxlength="100" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmEmpresa.txtAbrev.$invalid && !frmEmpresa.txtAbrev.$pristine}">
+                                    <label for="txtAbrev">Abreviatura:</label>
+                                    <input type="text" name="txtAbrev" id="txtAbrev" class="form-control" ng-model="laEmpresa.abreviatura" placeholder="Abreviatura" maxlength="3" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmEmpresa.chkPropia.$invalid && !frmEmpresa.chkPropia.$pristine}">
+                                    <label for="chkPropia">Es propia:</label>
+                                    <input type="checkbox" name="chkPropia" id="chkPropia" class="form-control"
+                                           ng-model="laEmpresa.propia" ng-true-value="1" ng-false-value="0"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmEmpresa.txtNitEmp.$invalid && !frmEmpresa.txtNitEmp.$pristine}">
+                                    <label for="txtNitEmp">N.I.T.:</label>
+                                    <input type="text" name="txtNitEmp" id="txtNitEmp" class="form-control" ng-model="laEmpresa.nit" placeholder="N.I.T." maxlength="25" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group" ng-class="{'has-error':frmEmpresa.txtDirEmp.$invalid && !frmEmpresa.txtDirEmp.$pristine}">
+                                    <label for="txtDirEmp">Direcci&oacute;n:</label>
+                                    <input type="text" name="txtDirEmp" id="txtDirEmp" class="form-control" ng-model="laEmpresa.direccion" placeholder="Direcci&oacute;n" maxlength="100" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmEmpresa.selMoneda.$invalid && !frmEmpresa.selMoneda.$pristine}">
+                                    <label for="selMoneda">Moneda por defecto:</label>
+                                    <select id="selMoneda" name="selMoneda" class="form-control" ng-model="laEmpresa.idmoneda"
+                                            ng-options="obj.id as obj.nommoneda for obj in lasMonedas" required>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" ng-show="+laEmpresa.congface == 0 && +laEmpresa.sifactura == 1">
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmEmpresa.txtSerieEmp.$invalid && !frmEmpresa.txtSerieEmp.$pristine}">
+                                    <label for="txtSerieEmp">Serie:</label>
+                                    <input type="text" name="txtSerieEmp" id="txtSerieEmp" class="form-control" ng-model="laEmpresa.seriefact" placeholder="Serie" maxlength="50"/>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmEmpresa.txtCorrelaEmp.$invalid && !frmEmpresa.txtCorrelaEmp.$pristine}">
+                                    <label for="txtCorrelaEmp">Correlativo (el que toca):</label>
+                                    <input type="number" name="txtCorrelaEmp" id="txtCorrelaEmp" class="form-control" ng-model="laEmpresa.correlafact" placeholder="Correlativo" ng-required="+laEmpresa.congface == 0 && +laEmpresa.sifactura == 1"/>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmEmpresa.txtFvenceEmp.$invalid && !frmEmpresa.txtFvenceEmp.$pristine}">
+                                    <label for="txtFvenceEmp">Vencimiento de facturas:</label>
+                                    <input type="date" name="txtFvenceEmp" id="txtFvenceEmp" class="form-control" ng-model="laEmpresa.fechavencefact" ng-required="+laEmpresa.congface == 0 && +laEmpresa.sifactura == 1"/>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmEmpresa.txtUltCorrelaEmp.$invalid && !frmEmpresa.txtUltCorrelaEmp.$pristine}">
+                                    <label for="txtUltCorrelaEmp">&Uacute;ltimo correlativo:</label>
+                                    <input type="number" name="txtUltCorrelaEmp" id="txtUltCorrelaEmp" class="form-control" ng-model="laEmpresa.ultimocorrelativofact" placeholder="&Uacute;ltimo correlativo de la serie"
+                                           ng-required="+laEmpresa.congface == 0 && +laEmpresa.sifactura == 1"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-primary" ng-disabled="frmEmpresa.$invalid" ng-hide="+laEmpresa.id > 0">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="frmEmpresa.$invalid" ng-click="updEmpresa(laEmpresa)" ng-show="+laEmpresa.id > 0">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="submit" class="btn btn-primary" ng-click="resetEmpresa()" ng-show="+laEmpresa.id > 0">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table class="table table-responsive table-hover">
+                        <thead>
+                        <tr>
+                            <th>Empresa</th>
+                            <th>N.I.T.</th>
+                            <th>Es propia</th>
+                            <th>Moneda por defecto</th>
+                            <!--<th>&nbsp;</th>-->
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="e in lstEmpresas" ng-click="getEmpresa(e.id)">
+                            <td>{{e.nomempresa}} ({{e.abreviatura}})</td>
+                            <td>{{e.nit}}</td>
+                            <td>{{e.propia === 1 ? 'Sí' : 'No'}}</td>
+                            <td>{{e.nommoneda}} ({{e.simbolo}})</td>
+                            <!--
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm" ng-click="delEmpresa(e.id)" ng-disabled="true">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>
+                            </td>
+                            -->
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="divFrmConfCont" class="tab-pane fade">
+            <div class="panel panel-success">
+                <div class="panel-heading">Configuraci&oacute;n contable de <span class="badge">{{etiqueta.nomempresa}}</span></div>
+                <div class="panel-body">
+                    <form name="frmConfigCont" ng-submit="frmConfigCont.$valid && addConfCont(detConf)" novalidate>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="{'has-error':frmConfigCont.selCta.$invalid && !frmConfigCont.selCta.$pristine}">
+                                    <label for="selTipoConf">Configuraci&oacute;n:</label>
+                                    <select name="selTipoConf" id="selTipoConf" class="form-control" ng-model="detConf.objTipoConf"
+                                            ng-options="obj.desctipoconfconta for obj in losTiposConf track by obj.id" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="selCta">Cuenta:</label>
+                                    <input name="txtFiltroCta" id="txtFiltroCta" type="text" class="form-control" ng-model="searchcta"
+                                           placeholder="Cuenta contable"/>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="form-group" ng-class="{'has-error':frmConfigCont.selCta.$invalid && !frmConfigCont.selCta.$pristine}">
+                                    <label for="selCta">&nbsp;</label>
+                                    <select name="selCta" id="selCta" class="form-control" ng-model="detConf.objCuenta"
+                                            ng-options="obj.codcta for obj in lasCtasMov | filter:{codcta:searchcta}" multiple required>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-success" ng-disabled="frmConfigCont.$invalid">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table class="table table-responsive table-hover">
+                        <thead>
+                            <tr>
+                                <th>Configuraci&oacute;n</th>
+                                <th>Cuenta contable</th>
+                                <th>&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="conf in lasConfsConta">
+                                <td>{{conf.desctipoconfconta}}</td>
+                                <td>{{conf.cuentac}}</td>
+                                <td>
+                                    <button class="btn btn-danger" ng-click="delConfConta(conf.id)">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

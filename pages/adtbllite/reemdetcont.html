@@ -1,0 +1,73 @@
+<div class="row">
+    <div class="col-md-11">
+        <form name="frmDetContReem" id="frmDetContReem" class="form-inline" ng-submit="frmDetContReem.$valid && addDetCont(detcont)" ng-hide="reembolso.estatus == 2" novalidate>
+            <div class="form-group">
+                <label for="selCuenta">Cuenta:</label>
+                <input name="txtFiltroCta" id="txtFiltroCta" type="text" class="form-control input-sm"
+                       ng-model="searchcta" placeholder="Cta. cont." style="width: 6em" ng-change="selectCuentaC(searchcta)"/>
+            </div>
+            <div class="form-group">
+                <label for="selCuenta">&nbsp;</label>
+                <select name="selCuenta" id="selCuenta" class="form-control input-sm" ng-model="detcont.objCuenta" style="width: 10em"
+                        ng-options="obj.codcta for obj in cuentasc | filter:{codcta:searchcta}" style="width:15em" required>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="txtDebe">Debe:</label>
+                <input name="txtDebe" id="txtDebe" type="text" class="form-control input-sm" ng-model="detcont.debe"
+                       fcsa-number="{ maxDecimals:2 }" style="width:6em" ng-change="zeroHaber(detcont.debe)" required/>
+            </div>
+
+            <div class="form-group">
+                <label for="txtHaber">Haber:</label>
+                <input name="txtHaber" id="txtHaber" type="text" class="form-control input-sm" ng-model="detcont.haber"
+                       fcsa-number="{ maxDecimals:2 }" style="width:6em" ng-change="zeroDebe(detcont.haber)" required/>
+            </div>
+
+            <div class="form-group">
+                <label for="txtCMayor">Concepto mayor:</label>
+                <input name="txtCMayor" id="txtCMayor" type="text" class="form-control input-sm" style="width:11em" ng-model="detcont.conceptomayor" required/>
+            </div>
+            <button type="submit" class="btn-success btn-sm" ng-disabled="frmDetContReem.$invalid || reembolso.estatus == 2">
+                <span class="glyphicon glyphicon-floppy-save"></span>
+            </button>
+        </form>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-11">
+        <!--<table datatable="ng" dt-options="dtOptionsDetCont" class="table table-responsive table-hover">-->
+        <div class="table-responsive">
+        <table class="table table-responsive table-hover table-condensed">    
+            <thead>
+            <tr>
+                <th>Cuenta</th>
+                <th>Debe</th>
+                <th>Haber</th>
+                <th>Concepto mayor</th>
+                <th>&nbsp;</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!--<tr ng-repeat="dc in item.detcont" ng-show="dc.desccuentacont.toUpperCase().indexOf('TOTAL') < 0">-->
+            <tr ng-repeat="dc in item.detcont" ng-class="{'partida-cuadrada': +dc.id == 0 && +dc.idcuenta == 0, 'partida-descuadrada': +dc.id == 0 && +dc.idcuenta == -1}">
+                <td>{{dc.desccuentacont}}</td>
+                <td>{{dc.debe | number:2}}</td>
+                <td>{{dc.haber | number:2}}</td>
+                <td>{{dc.conceptomayor}}</td>
+                <td>
+                    <div class="btn-group" role="group" aria-label="...">
+                        <button type="button" class="btn btn-info btn-sm" ng-click="updDetCont(dc)" ng-hide="dc.id == 0" data-toggle="tooltip" data-placement="auto" title="Modificar este detalle contable...">
+                            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm" ng-click="delDetCont(dc)" ng-hide="dc.id == 0 || reembolso.estatus == 2">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                    </div>
+                </td>
+            </tr>            
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>

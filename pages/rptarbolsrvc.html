@@ -1,0 +1,42 @@
+<div class="container" ng-controller="rptArbolSrvcCtrl">
+    <div class="panel panel-default">
+        <div class="panel-heading">Reporte de Agua</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="selMes">Mes:</label>
+                        <select name="selMes" id="selMes" class="form-control" ng-model="params.mes">
+                            <option value="1">Enero</option>
+                            <option value="2">Febrero</option>
+                            <option value="3">Marzo</option>
+                            <option value="4">Abril</option>
+                            <option value="5">Mayo</option>
+                            <option value="6">Junio</option>
+                            <option value="7">Julio</option>
+                            <option value="8">Agosto</option>
+                            <option value="9">Septiembre</option>
+                            <option value="10">Octubre</option>
+                            <option value="11">Noviembre</option>
+                            <option value="12">Diciembre</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <label for="txtAnio">A&ntilde;o:</label>
+                    <input name="txtAnio" id="txtAnio" type="number" class="form-control" ng-model="params.anio" min="2015"/>                    
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer" style="text-align: right">
+            <button type="button" class="btn btn-primary" ng-click="getRptAgua()">
+                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 50em"></object>
+        </div>
+    </div>
+</div>

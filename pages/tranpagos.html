@@ -1,0 +1,108 @@
+<div class="container-fluid" ng-controller="tranPagosCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Generaci&oacute;n de pagos</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtFechaLimite">Fecha l&iacute;mite de pago:</label>
+                        <div class="input-group">
+                            <input name="txtFechaLimite" id="txtFechaLimite" type="date" ng-model="feclimite" class="form-control" required/>
+                            <span class="input-group-btn">
+                                <button class="btn btn-secondary" type="button" ng-click="getPagos(objEmpresa.id, null)">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label for="selBanco">Generar el/los cheque(s) del banco: </label>
+                        <select name="selBanco" id="selBanco" class="form-control" ng-model="objBanco"
+                                ng-options="obj.bancomonedacorrela for obj in losBancos track by obj.id"
+                                ng-change="getPagos(objEmpresa.id, objBanco)" ng-disabled="esperando" required>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtFechaTran">Fecha de transacci&oacute;n bancaria:</label>
+                        <input name="txtFechaTran" id="txtFechaTran" type="date" ng-model="fechatran" class="form-control" required/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <button name="btnGenerar" id="btnGenerar" type="button" class="btn btn-primary" ng-click="generaCheques()"
+                                ng-disabled="objBanco.id === null || objBanco.id === undefined" ng-hide="esperando">Generar</button>
+                        <img name="imgLoading" id="imgLoading" src="img/loading.gif" alt="Generando cheques..."
+                             ng-show="esperando" style="width: 4em; height: 2.5em"/>
+                    </div>
+                </div>
+            </div>
+            <hr/>
+            <table class="table table-responsive table-hover table-condensed">
+                <caption>
+                    <input ng-model="search.$" class="form-control" placeholder="Buscar documento..." style="color:black; width: 100%"/>
+                </caption>
+                <thead>
+                <tr>
+                    <th>Proveedor</th>
+                    <th>No. Fact.</th>
+                    <th>A pagar</th>
+                    <th>Concepto</th>
+                    <th>Mon(TC)</th>
+                    <th>Total</th>
+                    <th>I.S.R.</th>
+                    <th>Saldo</th>
+                    <th>Pagar total</th>
+                    <th>Monto a pagar</th>
+                    <th>Pagar</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="pago in losPagos | filter:search:strict">
+                    <td>{{pago.proveedor}}</td>
+                    <td>{{pago.serie}} {{pago.documento}}</td>
+                    <td>{{pago.fechapago | date:'dd/MM/yyyy'}}</td>
+                    <td>{{pago.conceptomayor}}</td>
+                    <td style="text-align:right">{{pago.moneda}}({{pago.tipocambio | number:2}})</td>
+                    <td style="text-align:right">{{pago.totfact | number:2}}</td>
+                    <td style="text-align:right">{{pago.isr | number:2}}</td>
+                    <td style="text-align:right">{{pago.saldo | number:2}}</td>
+                    <td style="text-align:center">
+                        <input name="chkFull_{{pago.id}}" id="chkFull_{{pago.id}}" type="checkbox" class="form-control input-sm"
+                               ng-model="pago.pagatodo" ng-true-value="1" ng-false-value="0" ng-change="setMontoAPagar(pago); refrescarInfo()"/>
+                    </td>
+                    <td style="text-align:right">
+                        <input name="txtAPagar_{{pago.id}}" id="txtAPagar_{{pago.id}}" type="text"
+                               class="form-control input-sm" style="text-align:right; width: 7em"
+                               ng-model="pago.montoapagar" fcsa-number="{ maxDecimals: 2 }"
+                               ng-disabled="pago.pagatodo === 1" ng-change="chkMontoAPagar(pago); refrescarInfo()" required/>
+                    </td>
+                    <td style="text-align:center">
+                        <input name="chkPagar_{{pago.id}}" id="chkPagar_{{pago.id}}" type="checkbox" class="form-control input-sm"
+                               ng-model="pago.pagar" ng-true-value="1" ng-false-value="0" ng-change="refrescarInfo()"/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="panel-footer">
+            <div style="width: 100%">
+                <table style="width: auto; margin-right: 0px; margin-left: auto;">
+                    <tr>
+                        <th class="num">Facturas seleccionadas:</th><td class="num" style="padding-left: 0.75em;">{{totales.cantfacts | number:0}}</td>
+                    </tr>
+                    <tr>
+                        <th class="num">Monto total a pagar:</th><td class="num" style="padding-left: 0.75em;">{{totales.monto | number:2}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

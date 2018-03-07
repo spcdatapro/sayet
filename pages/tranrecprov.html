@@ -1,0 +1,254 @@
+<div class="container" ng-controller="reciboProveedoresCtrl">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divFrmRecProv" data-toggle="tab">RECIBOS DE PROVEEDORES</a>
+        </li>
+        <li ng-show="recprov.id > 0">
+            <a show-tab href="#divDocs" data-toggle="tab">DOCUMENTOS A REBAJAR</a>
+        </li>
+        <li ng-show="recprov.id > 0">
+            <a show-tab href="#divDetCont" data-toggle="tab">DETALLE CONTABLE</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div id="divFrmRecProv" class="tab-pane fade in active">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Recibos de proveedores</div>
+                <div class="panel-body">
+                    <form name="frmRecProv" id="frmRecProv" ng-submit="frmRecProv.$valid && addRecProv(recprov)" novalidate>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="lblNoRec">No.</label>
+                                    <span name="lblNoRec" id="lblNoRec" class="form-control">{{ recprov.id != null && recprov.id != undefined ? (recprov.id | padNumber:5) : ''}}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmRecProv.txtFecha.$invalid && !frmRecProv.txtFecha.$pristine}">
+                                    <label for="txtFecha">Fecha:</label>
+                                    <input name="txtFecha" id="txtFecha" type="date" class="form-control" ng-model="recprov.fecha" required />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" ng-model="query" placeholder="Buscar transacci&oacute;n bancaria..."/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group" ng-class="{'has-error':frmRecProv.selTranBan.$invalid && !frmRecProv.selTranBan.$pristine}">
+                                    <label for="selTranBan">Nota de d&eacute;bito/Transferencia (si aplica):</label>
+                                    <select name="selTranBan" id="selTranBan" class="form-control" ng-model="recprov.objTranBan"
+                                            ng-options="(tb.fecha | date:'dd/MM/yyyy') + ' - ' + tb.nombre + ' - ' + tb.tipotrans + ' - ' + tb.numero + ' - ' + tb.simbolo + ' ' + (tb.monto | number:2)
+                                        for tb in tranban | filter: filtrar" multiple>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-primary" ng-disabled="frmRecProv.$invalid || !permiso.c" ng-hide="recprov.id > 0">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="frmRecProv.$invalid || !permiso.m" ng-show="recprov.id > 0" ng-click="updRecProv(recprov)">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <!--
+                            <button type="button" class="btn btn-warning" ng-disabled="frmRecProv.$invalid || laTran.anulado === 1" ng-show="editando && laTran.tipotrans === 'C'" ng-click="anular(laTran)">
+                                <span class="glyphicon glyphicon-ban-circle"></span>
+                            </button>
+                            -->
+                            <!--
+                            <a class="btn btn-primary" target="_blank" ng-href="php/printcheck.php?c={{laTran.id}}" ng-show="editando && laTran.tipotrans === 'C'"
+                               ng-disabled="frmRecProv.$invalid || laTran.anulado === 1 || laTran.impreso === 1" ng-click="laTran.impreso = 1">
+                                <span class="glyphicon glyphicon-print">&nbsp;Cheque</span>
+                            </a>
+                            -->
+                            <!--
+                            <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printVersion()">
+                                <span class="glyphicon glyphicon-print"></span>
+                            </button>
+                            -->
+                            <button type="button" class="btn btn-primary" ng-show="recprov.id > 0" ng-click="resetRecProv()" ng-disabled="!permiso.c">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table class="table table-hover table-condensed">
+                        <caption>
+                            <input type="text" ng-model="fltrRecs.$" class="form-control" style="width: 100%" placeholder="Buscar recibo..."/>
+                        </caption>
+                        <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Fecha</th>
+                            <th>Nota de d&eacute;bito/Transferencia</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="rec in recibosprovs | filter:fltrRecs:strict" ng-click="getRecProv(rec.id)">
+                            <td>{{rec.id | padNumber:5}}</td>
+                            <td>{{rec.fecha | date:'dd/MM/yyyy'}}</td>
+                            <td>{{rec.tipotrans}} {{rec.numero}} {{rec.nombre}} {{rec.simbolo}} {{rec.monto | number:2}}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm" ng-click="delRecProv(rec)" ng-disabled="!permiso.e">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="divDocs" class="tab-pane fade">
+            <div class="panel panel-success">
+                <div class="panel-heading">Documentos a rebajar</div>
+                <div class="panel-body">
+                    <form name="frmDetRecProv" id="frmDetRecProv" ng-submit="frmDetRecProv.$valid && addDetRecProv(detrecprov)" novalidate>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <input type="text" ng-model="fltrCompReem" placeholder="Buscar factura de compra o reembolso/caja chica..." class="form-control"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group" ng-class="{'has-error':frmDetRecProv.selDocPend.$invalid && !frmDetRecProv.selDocPend.$pristine}">
+                                    <label for="selDocPend">Compra/Reembolso:</label>
+                                    <select name="selDocPend" id="selDocPend" class="form-control" ng-model="detrecprov.objDocPend" style="height:10em"
+                                            ng-options="obj.cadena for obj in lstdocspend | filter:{cadena:fltrCompReem}" ng-change="setMontoSugerido()" multiple required>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmDetRecProv.txtMonto.$invalid && !frmDetRecProv.txtMonto.$pristine}">
+                                    <label for="txtMonto">Monto a rebajar:</label>
+                                    <input name="txtMonto" id="txtMonto" type="text" ng-model="detrecprov.arebajar" class="form-control" fcsa-number="{ min:1, maxDecimals:2 }"
+                                           ng-disabled="detrecprov.objDocPend[0].origen == 5" required/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-success" ng-disabled="frmDetRecProv.$invalid || !permiso.c">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table class="table table-condensed table-hover">
+                        <thead>
+                        <tr>
+                            <th>Documento rebajado</th>
+                            <th style="text-align: right">Monto rebajado</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="dr in lstdetrecprov">
+                            <td>{{dr.cadena}}</td>
+                            <td style="text-align: right">{{dr.arebajar | number:2}}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm" ng-click="delDetRecProv(dr)" ng-disabled="!permiso.e">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="divDetCont" class="tab-pane fade">
+            <div class="panel panel-info">
+                <div class="panel-heading">Detalle contable</div>
+                <div class="panel-body">
+                    <form name="frmDetCont" id="frmDetCont" ng-submit="frmDetCont.$valid && addDetCont(elDetCont)" novalidate>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="selCta">Cuenta:</label>
+                                    <input name="txtFiltroCta" id="txtFiltroCta" type="text" class="form-control" ng-model="searchcta"
+                                           placeholder="Cuenta contable"/>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="form-group" ng-class="{'has-error':frmDetCont.selCta.$invalid && !frmDetCont.selCta.$pristine}">
+                                    <label for="selCta">&nbsp;</label>
+                                    <select name="selCta" id="selCta" class="form-control" ng-model="elDetCont.objCuenta"
+                                            ng-options="obj.codcta for obj in cuentas | filter:{codcta:searchcta}" multiple required>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group" ng-class="{'has-error':frmDetCont.txtDebe.$invalid && !frmDetCont.txtDebe.$pristine}">
+                                    <label for="txtDebe">Debe:</label>
+                                    <input name="txtDebe" id="txtDebe" type="text" class="form-control" ng-model="elDetCont.debe"
+                                           placeholder="Debe" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="zeroHaber(elDetCont.debe)" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group" ng-class="{'has-error':frmDetCont.txtHaber.$invalid && !frmDetCont.txtHaber.$pristine}">
+                                    <label for="txtHaber">Haber:</label>
+                                    <input name="txtHaber" id="txtHaber" type="text" class="form-control" ng-model="elDetCont.haber"
+                                           placeholder="Haber" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="zeroDebe(elDetCont.haber)" required />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group" ng-class="{'has-error':frmDetCont.txtConceptoMayor.$invalid && !frmDetCont.txtConceptoMayor.$pristine}">
+                                    <label for="txtConceptoMayor">Concepto mayor:</label>
+                                    <textarea name="txtConceptoMayor" id="txtConceptoMayor" class="form-control"
+                                              ng-model="elDetCont.conceptomayor" placeholder="Concepto para el libro mayor"
+                                              style="width:100%" rows="3" required>
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-info" ng-disabled="frmDetCont.$invalid">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover">
+                        <thead>
+                        <tr>
+                            <th>Cuenta</th>
+                            <th style="text-align: right">Debe</th>
+                            <th style="text-align: right">Haber</th>
+                            <th>Concepto mayor</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="dc in lstdetcont">
+                            <td>{{dc.desccuentacont}}</td>
+                            <td style="text-align: right">{{dc.debe | number:2}}</td>
+                            <td style="text-align: right">{{dc.haber | number:2}}</td>
+                            <td>{{dc.conceptomayor}}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger" ng-click="delDetCont(dc)" ng-hide="dc.id == 0">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

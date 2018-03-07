@@ -1,0 +1,69 @@
+<div class="container-fluid" ng-controller="MntTipoProyectoOrden">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="well well-sm">
+        <form class="form-inline" name="formOrden">
+          <div class="form-group">
+            <label for="selectTipoProyecto">Tipo proyecto:</label>
+            <select class="form-control" id="selectTipoProyecto" ng-model="data.idtipo_proyecto" required>
+              <option ng-repeat="option in listaTipoProyecto" value="{{option.id}}">{{option.descripcion}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="selectTipoProyecto">Tipo local:</label>
+            <select class="form-control" id="selectTipoProyecto" ng-model="data.idtipolocal" required>
+              <option ng-repeat="option in listaTipoLocal" value="{{option.id}}">{{option.descripcion}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="inputOrden">Orden:</label>
+            <input type="number" class="form-control" id="inputOrden" placeholder="Orden" ng-model="data.orden" required>
+          </div>
+          <button type="submit" class="btn btn-default" ng-click="guardarOrden()" ng-disabled="formOrden.$invalid">
+            <i class="glyphicon glyphicon-floppy-disk"></i> Guardar
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <table class="table table-condensed table-striped">
+          <thead>
+            <tr>
+              <th colspan="5">
+                <input type="text" ng-model="search" class="form-control input-sm" placeholder="Buscar...">
+              </th>
+            </tr>
+            <tr>
+              <th>Tipo Proyecto</th>
+              <th>Tipo Local</th>
+              <th>Orden</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+          <tr ng-repeat="orden in ordenes | filter:search ">
+            <td>{{ orden.tipoproyecto }}</td>
+            <td>{{ orden.tipolocal }}</td>
+            <td>{{ orden.orden }}</td>
+            <td>
+              <button class="btn btn-xs btn-info" ng-click="editarOrden(orden)">
+                <i class="glyphicon glyphicon-pencil"></i>
+              </button>
+            </td>
+            <td>
+              <button class="btn btn-xs btn-danger" ng-click="eliminarOrden(orden)">
+                <i class="glyphicon glyphicon-trash"></i>
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+        
+    </div>
+  </div>
+</div>

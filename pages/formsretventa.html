@@ -1,0 +1,171 @@
+<div class="container" ng-controller="formsRetVentaCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Ingreso de formularios de retenci&oacute;n de I.S.R./I.V.A.</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtDel">Del:</label>
+                        <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.fdel" placeholder="Del"/>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtAl">Al:</label>
+                        <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fal" placeholder="Al"/>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="selEmpresa">Empresa:</label>
+                        <ui-select id="selEmpresa" ng-model="params.idempresa"
+                                   title="Seleccione una empresa.."
+                                   theme="bootstrap"
+                                   autofocus="false"
+                                   append-to-body="true">
+                            <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
+                                <span ng-bind="$select.selected.nomempresa"></span>
+                            </ui-select-match>
+                            <ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+                                <div ng-bind-html="item.nomempresa | highlight: $select.search"></div>
+                                <small>
+                                    <strong>Abreviatura:</strong>&nbsp;<span ng-bind-html="item.abreviatura | highlight: $select.search" ></span>
+                                </small>
+                            </ui-select-choices>
+                            <ui-select-no-choice>
+                                No hay resultados...
+                            </ui-select-no-choice>
+                        </ui-select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtNum">N&uacute;mero:</label>
+                        <input name="txtNum" id="txtNum" type="text" class="form-control" ng-model="params.numero" placeholder="N&uacute;mero de factura..."/>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary" ng-click="loadFacturasConRet()">
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-hover table-stripped table-condensed" style="font-size: 9pt">
+                <thead>
+                <tr>
+                    <th>Empresa</th>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Serie</th>
+                    <th>N&uacute;mero</th>
+                    <th class="num">Total</th>
+                    <th class="num">I.V.A.</th>
+                    <th class="num">Ret. I.S.R.</th>
+                    <th>Form. I.S.R.</th>
+                    <th class="num">Ret. I.V.A.</th>
+                    <th>Form. I.V.A.</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="vta in ventas">
+                    <td>{{vta.empresa}}</td>
+                    <td>{{vta.fecha}}</td>
+                    <td>{{vta.nombre | shortenStr:25}}</td>
+                    <td>{{vta.serie}}</td>
+                    <td>{{vta.numero}}</td>
+                    <td class="num">{{vta.total}}</td>
+                    <td class="num">{{vta.iva}}</td>
+                    <td class="num">{{vta.retisr}}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm btn-block" ng-click="modalISR(vta)" ng-disabled="+vta.retisr == 0">
+                            {{vta.noaccisr || 'Agregar'}}
+                        </button>
+                    </td>
+                    <td class="num">{{vta.retiva}}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-sm btn-block" ng-click="modalIVA(vta)" ng-disabled="+vta.retiva == 0">
+                            {{vta.noacciva || 'Agregar'}}
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script type="text/ng-template" id="modalISR.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Formulario de retenci&oacute;n I.S.R.</h3>
+        <h4 class="modal-title">{{venta.cliente}}</h4>
+        <h4 class="modal-title">Factura {{venta.serie}}&nbsp;{{venta.documento}}&nbsp;por&nbsp;{{venta.moneda}}&nbsp;{{venta.total | number:2}}</h4>
+    </div>
+
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="txtNoFormISR">No. de formulario:</label>
+            <input name="txtNoFormISR" id="txtNoFormISR" type="text" class="form-control"  maxlength="30" ng-model="venta.noformisr"/>
+        </div>
+        <div class="form-group">
+            <label for="txtNoAccISR">No. de acceso:</label>
+            <input name="txtNoAccISR" id="txtNoAccISR" type="text" class="form-control"  maxlength="30" ng-model="venta.noaccisr" />
+        </div>
+        <div class="form-group">
+            <label for="txtFecPagoISR">Fecha de pago:</label>
+            <input name="txtFecPagoISR" id="txtFecPagoISR" type="date" class="form-control"  ng-change="setMesAnio()" ng-model="venta.fecpagoformisr"/>
+
+        </div>
+        <!-- inicio modificacion de error formilariosr 17/11/2017-->
+        <div class="form-group">
+            <label for="txtMesISR">Mes:</label>
+            <input name="txtMesISR" id="txtMesISR" type="text" class="form-control" ng-model="venta.mesisr"  min="0" max="12"  />
+        </div>
+        <div class="form-group">
+            <label for="txtAnioISR">A&ntilde;o:</label>
+            <input name="txtAnioISR" id="txtAnioISR" type="text" class="form-control" ng-model="venta.anioisr"  min="2000" max="3000" />
+        </div>
+        <!--fin modificacion 17/11/2017-->
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()">Aceptar</button>
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
+    </div>
+</script>
+<script type="text/ng-template" id="modalIVA.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Formulario de retenci&oacute;n I.V.A.</h3>
+        <h4 class="modal-title">{{venta.cliente}}</h4>
+        <h4 class="modal-title">Factura {{venta.serie}}&nbsp;{{venta.documento}}&nbsp;por&nbsp;{{venta.moneda}}&nbsp;{{venta.total | number:2}}</h4>
+    </div>
+
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="txtNoFormISR">No. de formulario:</label>
+            <input name="txtNoFormISR" id="txtNoFormIVA" type="text" class="form-control"  maxlength="30" ng-model="venta.noformiva"/>
+        </div>
+        <div class="form-group">
+            <label for="txtNoAccISR">No. de acceso:</label>
+            <input name="txtNoAccISR" id="txtNoAccIVA" type="text" class="form-control"  maxlength="30" ng-model="venta.noacciva" />
+        </div>
+        <div class="form-group">
+            <label for="txtFecPagoISR">Fecha de pago:</label>
+            <input name="txtFecPagoISR" id="txtFecPagoIVA" type="date" class="form-control"  ng-change="setMesAnio()" ng-model="venta.fecpagoformiva"/>
+
+        </div>
+        <div class="form-group">
+            <label for="txtMesISR">Mes:</label>
+            <input name="txtMesISR" id="txtMesIVA" type="text" class="form-control" ng-model="venta.mespagoiva"  min="0" max="12"  />
+        </div>
+        <div class="form-group">
+            <label for="txtAnioISR">A&ntilde;o:</label>
+            <input name="txtAnioISR" id="txtAnioIVA" type="text" class="form-control" ng-model="venta.aniopagoiva"  min="2000" max="3000" />
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()">Aceptar</button>
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
+    </div>
+</script>

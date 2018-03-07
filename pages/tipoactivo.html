@@ -1,0 +1,70 @@
+<div class="container" ng-controller="tipoactivoCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Tipo de Activo</div>
+
+        <div class="panel-body">
+    
+            <form name="frmTipoActivo" id="frmTipoActivo" class="col-md-4 ng-valid-maxlength ng-dirty ng-submitted ng-valid-parse ng-invalid ng-invalid-required" ng-submit="frmTipoActivo.$valid && editaTipoActivo(elTipoactivo, 'c')" novalidate>
+                
+                        
+                            <div class="form-group">
+                            <label for="txtDesctipoactv">Descripci&oacute;n:</label>
+                                 <input type="text" name="txtDesctipoactv" id="txtDesctipoactv" class="form-control" ng-model="elTipoactivo.descripcion" placeholder="Describa el Activo" maxlength="50" required/>
+                            </div> 
+                                <!--____Boton___-->
+                                 <center><div class="btn-group" role="group" aria-label="...">
+                                    <button type="submit" class="btn btn-primary" ng-disabled="frmTipoActivo.$invalid">
+                                            <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                </div></center>
+                            
+                        <!--tbody-->
+            </form>
+                <!--____________________________Lista____________________________-->
+
+        <div class="col-md-8" style="border-left: 1px solid #E6E6E6; height: auto">
+
+                        <!--center><h3>Tipo de Activos</h3></center-->
+
+                     
+                <table class="table table-responsive table-hover">
+                    <thead>
+                        <tr>
+                            <!--th><center>ID</th></center-->
+                            <th>Descripci&oacute;n del Activo</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="e in losTipoActivos">
+                            <!--td>
+                                <span>
+                                    <center>{{e.id}}</center>
+                                </span>
+                            </td-->
+                            <td>
+                                <span editable-text="e.descripcion" e-name="descripcion" e-form="rowform" e-required
+                                    e-class="form-control" e-type="text" e-maxlength="50">
+                                    {{e.descripcion}}
+                                </span>
+                            </td>
+                            <td style="white-space: nowrap">
+                                <edit-row-form
+                                        editing-row="e"
+                                        update-func="updTipoActivo(fila, qid)"
+                                        delete-func="delTipoActivo(qid)">
+                                </edit-row-form>
+                            </td>
+                            </tr>
+                      </tbody>
+                 </table>    
+        </div>
+
+        </div>
+        <!--
+        <div class="panel-footer">
+
+        </div>
+        -->
+    </div>
+</div>

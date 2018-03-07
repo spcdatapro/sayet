@@ -1,0 +1,365 @@
+<div class="container" ng-controller="activoCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Activos</div>
+        <div class="panel-body">
+            <div class="col-md-12">
+                <form name="frmActivo" id="frmActivo" ng-submit="frmActivo.$valid && addActivo(elActivo)" novalidate>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group" ng-class="{'has-error':frmActivo.selEmpresa.$invalid && !frmActivo.selEmpresa.$pristine}">
+                                <label for="selEmpresa">Empresa:</label>
+                                <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="elActivo.objEmpresa"
+                                        ng-options="obj.nomempresa for obj in lasEmpresas track by obj.id">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group" ng-class="{'has-error':frmActivo.selTipoActivo.$invalid && !frmActivo.selTipoActivo.$pristine}">
+                                <label for="selTipoActivo">Tipo de Activo:</label>
+                                <select name="selTipoActivo" id="selTipoActivo" class="form-control" ng-model="elActivo.objTipoActivo"
+                                        ng-options="obj.descripcion for obj in losTipoActivo track by obj.id">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group" ng-class="{'has-error':frmActivo.txtNombreLargo.$invalid && !frmActivo.txtNombreLargo.$pristine}">
+                                <label for="txtNombreLargo">Desc. Larga:</label>
+                                <input name="txtNombreLargo" id="txtNombreLargo" type="text" class="form-control" ng-model="elActivo.nombre_largo"
+                                       placeholder="Descripci&oacute;n larga del activo" maxlength="250"/>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group" ng-class="{'has-error':frmActivo.txtNombreCorto.$invalid && !frmActivo.txtNombreCorto.$pristine}">
+                                <label for="txtNombreCorto">Desc. Corta:</label>
+                                <input name="txtNombreCorto" id="txtNombreCorto" type="text" class="form-control" ng-model="elActivo.nombre_corto"
+                                       placeholder="Descripci&oacute;n corta del activo" maxlength="15"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group" ng-class="{'has-error':frmActivo.selDepartamento.$invalid && !frmActivo.selDepartamento.$pristine}">
+                                <label for="selDepartamento">Departamento:</label>
+                                <select name="selDepartamento" id="selDepartamento" class="form-control" ng-model="elActivo.objDepartamento"
+                                        ng-options="obj.descripcion for obj in losMunicipios track by obj.id">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group" ng-class="{'has-error':frmActivo.txtFinca.$invalid && !frmActivo.txtFinca.$pristine}">
+                                <label for="txtFinca">Finca:</label>
+                                <input name="txtFinca" id="txtFinca" type="text" class="form-control" ng-model="elActivo.finca"
+                                       placeholder="Finca" maxlength="10"/>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group" ng-class="{'has-error':frmActivo.txtFolio.$invalid && !frmActivo.txtFolio.$pristine}">
+                                <label for="txtFolio">Folio:</label>
+                                <input name="txtFolio" id="txtFolio" type="text" class="form-control" ng-model="elActivo.folio"
+                                       placeholder="Folio" maxlength="10"/>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group" ng-class="{'has-error':frmActivo.txtLibro.$invalid && !frmActivo.txtLibro.$pristine}">
+                                <label for="txtLibro">Libro:</label>
+                                <input name="txtLibro" id="txtLibro" type="text" class="form-control" ng-model="elActivo.libro"
+                                       placeholder="Libro" maxlength="10"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="form-group" ng-class="{'has-error':frmActivo.txtIusi.$invalid && !frmActivo.txtIusi.$pristine}">
+                                <label for="txtIusi">Valor de propiedad para base IUSI:</label>
+                                <input name="txtIusi" id="txtIusi" type="text" class="form-control" ng-model="elActivo.iusi"
+                                       placeholder="IUSI" min="0"/>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2"></div>
+
+                        <div class="col-md-2">
+                            <div class="form-group" ng-class="{'has-error':frmActivo.txtPorIusi.$invalid && !frmActivo.txtPorIusi.$pristine}">
+                                <label for="txtPorIusi">% IUSI:</label>
+                                <input name="txtPorIusi" id="txtPorIusi" type="text" class="form-control" ng-model="elActivo.por_iusi"
+                                       placeholder="Libro" min="0"/>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2"></div>
+
+                        <div class="col-md-2">
+                            <div class="form-group" ng-class="{'has-error':frmActivo.chkHorizontal.$invalid && !frmActivo.chkHorizontal.$pristine}">
+                                <label for="chkHorizontal">¿Es horizontal?</label>
+                                <input name="chkHorizontal" id="chkHorizontal" type="checkbox" class="form-control"
+                                       ng-model="elActivo.horizontal" ng-true-value="1" ng-false-value="0" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group" ng-class="{'has-error':frmActivo.txtDirMun.$invalid && !frmActivo.txtDirMun.$pristine}">
+                                <label for="txtDirMun">Direccion Municipal:</label>
+                                <input name="txtDirMun" id="txtDirMun" type="text" class="form-control" ng-model="elActivo.direccion_mun"
+                                       placeholder="Direcci&oacute;n Municipal" maxlength="250"/>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group" ng-class="{'has-error':frmActivo.txtZona.$invalid && !frmActivo.txtZona.$pristine}">
+                                <label for="txtZona">Zona:</label>
+                                <input name="txtZona" id="txtZona" type="text" class="form-control" ng-model="elActivo.zona"
+                                       placeholder="Zona en la que se encuentra la direccion" min="0"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4"></div>
+                        <div class="col-md-4">
+                            <label>Valor</label>
+                        </div>
+                        <div class="col-md-4">
+                            <label>Metros</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Registro de propiedad:</label>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group" ng-class="{'has-error':frmActivo.txtValReg.$invalid && !frmActivo.txtValReg.$pristine}">
+                                <input name="txtValReg" id="txtValReg" type="text" class="form-control" ng-model="elActivo.valor_registro"
+                                       placeholder="Valor" min="0"/>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group" ng-class="{'has-error':frmActivo.txtMtsReg.$invalid && !frmActivo.txtMtsReg.$pristine}">
+                                <input name="txtMtsReg" id="txtMtsReg" type="text" class="form-control" ng-model="elActivo.metros_registro"
+                                       placeholder="Metros" min="0"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>DICABI:</label>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group" ng-class="{'has-error':frmActivo.txtValDic.$invalid && !frmActivo.txtValDic.$pristine}">
+                                <input name="txtValDic" id="txtValDic" type="text" class="form-control" ng-model="elActivo.valor_dicabi"
+                                       placeholder="Valor" min="0"/>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group" ng-class="{'has-error':frmActivo.txtMtsDic.$invalid && !frmActivo.txtMtsDic.$pristine}">
+                                <input name="txtMtsDic" id="txtMtsDic" type="text" class="form-control" ng-model="elActivo.metros_dicabi"
+                                       placeholder="Metros" min="0"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Municipalidad de Guatemala:</label>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group" ng-class="{'has-error':frmActivo.txtValMun.$invalid && !frmActivo.txtValMun.$pristine}">
+                                <input name="txtValMun" id="txtValMun" type="text" class="form-control" ng-model="elActivo.valor_muni"
+                                       placeholder="Valor" min="0"/>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group" ng-class="{'has-error':frmActivo.txtMtsMun.$invalid && !frmActivo.txtMtsMun.$pristine}">
+                                <input name="txtMtsMun" id="txtMtsMun" type="text" class="form-control" ng-model="elActivo.metros_muni"
+                                       placeholder="Metros" min="0"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group" ng-class="{'has-error':frmActivo.txtObs.$invalid && !frmActivo.txtObs.$pristine}">
+                                <label for="txtObs">Observaciones:</label>
+                                <input name="txtObs" id="txtObs" type="text" class="form-control" ng-model="elActivo.observaciones"
+                                       placeholder="Observaciones y notas"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group" role="group" aria-label="...">
+                        <button type="submit" class="btn btn-primary" ng-disabled="frmActivo.$invalid">
+                            <span class="glyphicon glyphicon-floppy-save"></span>
+                        </button>
+                    </div>
+                    <div class="btn-group" role="group" aria-label="...">
+                        <button type="button" class="btn btn-primary" ng-disabled="frmActivo.$invalid" ng-click="updActivo(elActivo,elActivo.id)" ng-show="elActivo.id > 0">
+                            <span class="glyphicon glyphicon-pencil"></span>
+                        </button>
+                    </div>
+                    <div class="btn-group" role="group" aria-label="...">
+                        <button type="button" class="btn btn-danger" ng-disabled="frmActivo.$invalid" ng-click="delActivo(elActivo.id)" ng-show="elActivo.id > 0">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </button>
+                    </div>
+                    <div class="btn-group" role="group" aria-label="...">
+                        <button type="button" class="btn btn-primary" ng-disabled="frmActivo.$invalid" ng-click="resetElActivo()" ng-show="elActivo.id > 0">
+                            <span>Nuevo</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-md-12"><hr/></div>
+
+            <h2><span class="label label-primary">Adjuntos</span></h2>
+
+            <form name="frmActivoAdjunto" id="frmActivoAdjunto" ng-submit="frmActivoAdjunto.$valid && addActivoAdjunto(elActivoAdjunto,elActivo)" ng-show="elActivo.id > 0" novalidate>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group" ng-class="{'has-error':frmActivoAdjunto.txtNomAdjunto.$invalid && !frmActivoAdjunto.txtNomAdjunto.$pristine}">
+                                <label for="txtNomAjunto">Observaciones:</label>
+                                <input name="txtNomAjunto" id="txtNomAjunto" type="text" class="form-control" ng-model="elActivoAdjunto.nomadjunto"
+                                       placeholder="Descripcion del adjunto"/>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group" ng-class="{'has-error':frmActivoAdjunto.selTipoAdjunto.$invalid && !frmActivoAdjunto.selTipoAdjunto.$pristine}">
+                                <label for="selTipoAdjunto">Tipo de Adjunto:</label>
+                                <select name="selTipoAdjunto" id="selTipoAdjunto" class="form-control" ng-model="elActivoAdjunto.objTipoAdjunto"
+                                        ng-options="obj.nombre for obj in losTipoAdjunto track by obj.id">
+                                </select>
+                            </div>
+                        </div>
+                        <!--
+                        <div class="col-md-4">
+                            <div class="form-group" ng-class="{'has-error':frmActivoAdjunto.txtUbicacion.$invalid && !frmActivoAdjunto.txtUbicacion.$pristine}">
+                                <label for="txtNomAjunto">Ubicacion:</label>
+                                <input name="txtUbicacion" id="txtUbicacion" type="text" class="form-control" ng-model="elActivoAdjunto.ubicacion"
+                                       placeholder="Ubicacion del adjunto"/>
+                            </div>
+                        </div>
+                        -->
+                        <div class="form-group">
+                            <div class="col-md-2">
+                                <label for="adjuntar_btn">Documento</label>
+                                <button name="adjuntar_btn" id="adjuntar_btn" type="button" class="btn btn-primary" ngf-select ng-model="file" name="file" ngf-pattern="'image/*,application/pdf'"
+                                     ngf-accept="'image/*,application/pdf'" ngf-max-size="20MB">Adjuntar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row col-md-2">
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary" ng-disabled="frmActivoAdjunto.$invalid">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="col-md-12">
+                <div id="activoAdjuntoLista">
+                    <table class="table table-responsive table-hover table-condensed">
+                        <thead>
+                        <tr>
+                            <th>Descripcion</th>
+                            <th>Tipo</th>
+                            <th>Ext</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="activo_adjunto in losActivosAdjuntos">
+                            <td>
+                                <span editable-text="activo_adjunto.nomadjunto" e-name="nomadjunto" e-form="rowform" e-required
+                                      e-class="form-control" e-type="text" e-maxlength="254">
+                                    {{activo_adjunto.nomadjunto}}
+                                </span>
+                            </td>
+                            <td>
+                                {{activo_adjunto.nomtipo_adjunto}}
+                            </td>
+                            <td>
+                                {{activo_adjunto.extension}}
+                            </td>
+                            <td>
+                                <a class="btn btn-primary" href="{{activo_adjunto.ubicacion}}" target="_blank">
+                                    <span class="glyphicon glyphicon-download"></span>
+                                </a>
+                            </td>
+                            <td style="white-space: nowrap">
+                                <edit-row-form
+                                        editing-row="activo_adjunto"
+                                        update-func="updActivoAdjunto(fila, qid)"
+                                        delete-func="delActivoAdjunto(qid)">
+                                </edit-row-form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-12"><hr/></div>
+
+            <h2><span class="label label-primary">Listado de Activos</span></h2>
+
+            <div id="activosLista">
+                <table datatable="ng"  dt-options="dtOptions" class="table table-responsive table-hover table-condensed">
+                    <thead>
+                    <tr>
+                        <th>Empresa</th>
+                        <th>Desc. Corta</th>
+                        <th>Finca</th>
+                        <th>Folio</th>
+                        <th>Libro</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="activo in losActivos">
+                        <td>
+                            {{activo.nomempresa}}
+                        </td>
+                        <td>
+                            {{activo.nombre_corto}}
+                        </td>
+                        <td>
+                            {{activo.finca}}
+                        </td>
+                        <td>
+                            {{activo.folio}}
+                        </td>
+                        <td>
+                            {{activo.libro}}
+                        </td>
+                        <td style="white-space: nowrap">
+                            <div class="btn-group" role="group" aria-label="...">
+                                <button type="button" class="btn btn-primary" ng-click="getActivo(activo.id)">
+                                    <span class="glyphicon glyphicon-th-list"></span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!--
+    <div class="row col-md-2">
+        <div class="form-group">
+            <button type="button" class="btn btn-primary" ng-click="getScope()">Ver Scope</button>
+        </div>
+    </div>
+    -->
+</div>
+

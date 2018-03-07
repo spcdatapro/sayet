@@ -1,0 +1,40 @@
+<div class="container" ng-controller="rptAguaCtrl">
+    <div class="panel panel-default">
+        <div class="panel-heading">Reporte de Agua</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtFecha">A fecha:</label>
+                        <input name="txtFecha" id="txtFecha" type="date" class="form-control" ng-model="params.fvence"/>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <label for="selEmpresa">Empresa:</label>
+                    <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="params.idempresa"
+                            ng-options="obj.id as obj.nomempresa for obj in empresas"
+                            ng-change="loadProyectos()">
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="selProy">Proyecto:</label>
+                    <select name="selProy" id="selProy" class="form-control" ng-model="params.idproyecto"
+                            ng-options="obj.id as obj.nomproyecto for obj in proyectos">
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer" style="text-align: right">
+            <button type="button" class="btn btn-primary" ng-click="getRptAgua()">
+                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 50em"></object>
+        </div>
+    </div>
+</div>

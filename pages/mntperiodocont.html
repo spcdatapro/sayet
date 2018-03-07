@@ -1,0 +1,76 @@
+<div class="container" ng-controller="periodoContableCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Per&iacute;odo(s) contable(s)</div>
+        <div class="panel-body">
+            <form name="frmPCont" id="frmPCont" ng-submit="frmPCont.$valid && addPeriodo(elPeriodo)" novalidate>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group" ng-class="{'has-error':frmPCont.txtDel.$invalid && !frmPCont.txtDel.$pristine}">
+                            <label for="txtDel">Del:</label>
+                            <input name="txtDel" id="txtDel" type="date" class="form-control"
+                                   ng-model="elPeriodo.del" required />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group" ng-class="{'has-error':frmPCont.txtAl.$invalid && !frmPCont.txtAl.$pristine}">
+                            <label for="txtAl">Al:</label>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="elPeriodo.al" required />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group" ng-class="{'has-error':frmPCont.chkAbierto.$invalid && !frmPCont.chkAbierto.$pristine}">
+                            <center><label for="chkAbierto">Abierto:</label>
+                            <input name="chkAbierto" id="chkAbierto" type="checkbox" class="checkbox"
+                                   ng-model="elPeriodo.abierto" ng-true-value="1" ng-false-value="0"/></center>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="submit" class="btn btn-primary" ng-disabled="frmPCont.$invalid">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                </div>
+            </form>
+            <hr/>
+            <table class="table table-responsive table-hover">
+                <thead>
+                    <tr>
+                        <th>Del</th>
+                        <th>Al</th>
+                        <th>Abierto</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="p in losPeriodos">
+                        <td>
+                            <span editable-text="p.del" e-name="del" e-form="rowform" e-required
+                                  e-class="form-control" e-type="date">
+                                {{p.del | date:'dd/MM/yyyy'}}
+                            </span>
+                        </td>
+                        <td>
+                            <span editable-text="p.al" e-name="al" e-form="rowform" e-required
+                                  e-class="form-control" e-type="date">
+                                {{p.al | date:'dd/MM/yyyy'}}
+                            </span>
+                        </td>
+                        <td>
+                            <span editable-checkbox="p.abierto" e-name="abierto" e-form="rowform" e-title="Abrir período"
+                                  e-ng-true-value="1" e-ng-false-value="0">
+                                {{p.abierto === 1 ? 'S&iacute;' : 'No'}}
+                            </span>
+                        </td>
+                        <td style="white-space: nowrap">
+                            <edit-row-form
+                                    editing-row="p"
+                                    update-func="updPeriodo(fila, qid)"
+                                    delete-func="delPeriodo(qid)">
+                            </edit-row-form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

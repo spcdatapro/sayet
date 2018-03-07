@@ -1,0 +1,45 @@
+<div class="container" ng-controller="tipoServicioCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Tipo(s) de servicio b&aacute;sico</div>
+        <div class="panel-body">
+            <form name="frmSrvc" id="frmSrvc" ng-submit="frmSrvc.$valid && addTipo(tipo)" novalidate>
+                <div class="form-group" ng-class="{'has-error':frmSrvc.txtDesc.$invalid && !frmSrvc.txtDesc.$pristine}">
+                    <label for="txtDesc">Descripci&oacute;n:</label>
+                    <input name="txtDesc" id="txtDesc" type="text" class="form-control" ng-model="tipo.descripcion" placeholder="Descripci&oacute;n del tipo de servicio"
+                           maxlength="50" required />
+                </div>
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="submit" class="btn btn-primary" ng-disabled="frmSrvc.$invalid">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                </div>
+            </form>
+            <hr/>
+            <table class="table table-responsive table-hover table-condensed">
+                <thead>
+                <tr>
+                    <th>Descripci&oacute;n</th>
+                    <th>&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="t in tipos">
+                    <td>
+                        <span editable-text="t.descripcion" e-name="descripcion" e-form="rowform" e-required
+                              e-class="form-control" e-type="text" e-maxlength="50">
+                                {{t.descripcion}}
+                        </span>
+                    </td>
+                    <td style="white-space: nowrap">
+                        <edit-row-form
+                                editing-row="t"
+                                update-func="updTipo(fila, qid)"
+                                delete-func="delTipo(qid)">
+                        </edit-row-form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

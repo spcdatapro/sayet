@@ -1,0 +1,23 @@
+<div class="btn-group" role="group" aria-label="...">
+    <button type="submit" class="btn btn-info" ng-disabled="btnDis" ng-show="vis.i">
+        <span class="glyphicon glyphicon-floppy-save"></span>
+    </button>
+    <button type="button" class="btn btn-info" ng-show="vis.p" ng-click="pf({obj:obj})">
+        <span class="glyphicon glyphicon-print"></span>
+    </button>
+    <button type="button" class="btn btn-info" ng-click="ef()" ng-show="vis.e">
+        <span class="glyphicon glyphicon-edit"></span>
+    </button>
+    <button type="button" class="btn btn-info" ng-disabled="btnDis" ng-click="uf({obj:obj})" ng-show="vis.u">
+        <span class="glyphicon glyphicon-floppy-save"></span>
+    </button>
+    <button type="button" class="btn btn-warning" ng-click="cf()" ng-show="vis.c">
+        <span class="glyphicon glyphicon-remove-circle"></span>
+    </button>
+    <button type="button" class="btn btn-danger" ng-click="df({obj:obj})" ng-show="vis.d">
+        <span class="glyphicon glyphicon-trash"></span>
+    </button>
+    <button type="button" class="btn btn-info" ng-click="nf()" ng-show="vis.a">
+        <span class="glyphicon glyphicon-plus"></span>
+    </button>
+</div>

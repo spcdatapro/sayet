@@ -1,0 +1,743 @@
+<div class="container" ng-controller="compraCtrl">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divFrmCompra" data-toggle="tab">FACTURAS DE COMPRA</a>
+        </li>
+        <li ng-show="+laCompra.id > 0">
+            <a show-tab href="#divFrmCompraProyecto" data-toggle="tab">PROYECTOS AFECTADOS</a>
+        </li>
+        <li ng-show="editando">
+            <a show-tab href="#divFrmDetContCompra" data-toggle="tab">DETALLE CONTABLE</a>
+        </li>
+        <li ng-show="false">
+            <a show-tab href="#divPrintVer" data-toggle="tab">VERSI&Oacute;N IMPRIMIBLE</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div id="divFrmCompra" class="tab-pane fade in active">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Facturas de compra&nbsp;<span class="badge">{{facturastr}}</span></div>
+                <div class="panel-body">
+                    <form name="frmCompra" id="frmCompra" ng-submit="frmCompra.$valid && addCompra(laCompra)" novalidate>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.selProv.$invalid && !frmCompra.selProv.$pristine}">
+                                    <label class="control-label">Proveedor:</label>
+                                    <ui-select ng-model="laCompra.objProveedor"
+                                               title="Seleccione un proveedor..."
+                                               theme="bootstrap"
+                                               autofocus="true"
+                                               ng-required="true"
+                                               on-select="getConcepto($item)">
+                                        <ui-select-match placeholder="Buscar proveedor..." allow-clear="false">
+                                            <span ng-bind="$select.selected.nombre"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="item in losProvs | filter:$select.search">
+                                            <div ng-bind-html="item.nombre | highlight: $select.search"></div>
+                                            <small>
+                                                <strong>N.I.T.:</strong>&nbsp;<span ng-bind-html="item.nit | highlight: $select.search" ></span>
+                                            </small>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.selTipoFact.$invalid && !frmCompra.selTipoFact.$pristine}">
+                                    <label class="control-label">Tipo:</label>
+                                    <ui-select ng-model="laCompra.objTipoFactura"
+                                               title="Seleccione un tipo de factura..."
+                                               theme="bootstrap"
+                                               autofocus="false"
+                                               ng-required="true"
+                                               on-select="calcular()">
+                                        <ui-select-match placeholder="Buscar..." allow-clear="false">
+                                            <span ng-bind="$select.selected.siglas"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="item in lsttiposfact | filter:{desctipofact: $select.search, siglas: $select.search, paracompra: 1}">
+                                            <div ng-bind-html="item.siglas | highlight: $select.search"></div>
+                                            <small>
+                                                <span ng-bind-html="item.desctipofact | highlight: $select.search" ></span>
+                                            </small>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.txtSerie.$invalid && !frmCompra.txtSerie.$pristine}">
+                                    <label for="txtSerie" class="control-label">Serie:</label>
+                                    <input name="txtSerie" id="txtSerie" type="text" class="form-control" ng-model="laCompra.serie"
+                                           placeholder="Serie" maxlength="15" ng-change="chkExisteCompra()" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.txtDocu.$invalid && !frmCompra.txtDocu.$pristine}">
+                                    <label for="txtDocu" class="control-label">Documento:</label>
+                                    <input name="txtDocu" id="txtDocu" type="text" class="form-control" ng-model="laCompra.documento" ng-change="chkExisteCompra()" placeholder="Documento" required />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.txtFechaIng.$invalid && !frmCompra.txtFechaIng.$pristine}">
+                                    <label for="txtFechaIng" class="control-label">Fecha de ingreso:</label>
+                                    <input name="txtFechaIng" id="txtFechaIng" type="date" class="form-control"
+                                           ng-model="laCompra.fechaingreso" ng-change="chkFecha(laCompra.fechaingreso, 1); setMesIva(laCompra.fechaingreso);" required />
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.txtMesIva.$invalid && !frmCompra.txtMesIva.$pristine}">
+                                    <label for="txtMesIva" class="control-label">Mes I.V.A.:</label>
+                                    <input name="txtMesIva" id="txtMesIva" type="number" class="form-control" ng-model="laCompra.mesiva"
+                                           min="1" max="12" required ng-disabled="true" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.txtFechaFact.$invalid && !frmCompra.txtFechaFact.$pristine}">
+                                    <label for="txtFechaFact" class="control-label">Fecha de factura:</label>
+                                    <input name="txtFechaFact" id="txtFechaFact" type="date" class="form-control" ng-model="laCompra.fechafactura" required />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.selTipoCompra.$invalid && !frmCompra.selTipoCompra.$pristine}">
+                                    <label for="selTipoCompra" class="control-label">Tipo de compra:</label>
+                                    <select name="selTipoCompra" id="selTipoCompra" class="form-control" ng-model="laCompra.objTipoCompra"
+                                            ng-options="obj.desctipocompra for obj in losTiposCompra track by obj.id" ng-change="calcular()" required>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Cuando el tipo de compra es combustible -->
+                        <div class="row" ng-show="laCompra.objTipoCompra.id == 3">
+                            <div class="col-md-4">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.selTipoComb.$invalid && !frmCompra.selTipoComb.$pristine}">
+                                    <label for="selTipoComb" class="control-label">Tipo de combustible:</label>
+                                    <select name="selTipoComb" id="selTipoComb" class="form-control" ng-model="laCompra.objTipoCombustible"
+                                            ng-options="obj.descripcion for obj in combustibles track by obj.id" ng-change="calcular()">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.txtGalones.$invalid && !frmCompra.txtGalones.$pristine}">
+                                    <label for="txtGalones" class="control-label">Galones:</label>
+                                    <input name="txtGalones" id="txtGalones" type="text" class="form-control" ng-model="laCompra.galones"
+                                           fcsa-number="{min:0, maxDecimals:2}" ng-change="calcular()"/>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Fin de cuando el tipo de compra es combustible -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.selProy.$invalid && !frmCompra.selProy.$pristine}">
+                                    <label class="control-label">Proyecto:</label>
+                                    <ui-select ng-model="laCompra.idproyecto"
+                                               title="Seleccione un proyecto..."
+                                               theme="bootstrap"
+                                               autofocus="false"
+                                               ng-required="true">
+                                        <ui-select-match placeholder="Buscar proyecto..." allow-clear="false">
+                                            <span ng-bind="$select.selected.nomproyecto"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="item.id as item in proyectos | filter:$select.search">
+                                            <div ng-bind-html="item.nomproyecto | highlight: $select.search"></div>
+                                            <small>
+                                                <strong>Referencia:</strong>&nbsp;<span ng-bind-html="item.referencia | highlight: $select.search" ></span>
+                                            </small>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.txtConceptoMayor.$invalid && !frmCompra.txtConceptoMayor.$pristine}">
+                                    <label for="txtConceptoLibroMayor" class="control-label">Concepto para el libro mayor:</label>
+                                    <textarea name="txtConceptoLibroMayor" id="txtConceptoLibroMayor" class="form-control"
+                                              ng-model="laCompra.conceptomayor" rows="2" style="width:100%" required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.chkCredFiscal.$invalid && !frmCompra.chkCredFiscal.$pristine}">
+                                    <label for="chkCredFiscal">Cr&eacute;dito fiscal:</label>
+                                    <input name="chkCredFiscal" id="chkCredFiscal" type="checkbox" class="checkbox"
+                                           ng-model="laCompra.creditofiscal" ng-true-value="1" ng-false-value="0"/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.chkExtraord.$invalid && !frmCompra.chkExtraord.$pristine}">
+                                    <label for="chkExtraord">Extraordinario:</label>
+                                    <input name="chkExtraord" id="chkExtraord" type="checkbox" class="checkbox"
+                                           ng-model="laCompra.extraordinario" ng-true-value="1" ng-false-value="0"/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.txtFechaPago.$invalid && !frmCompra.txtFechaPago.$pristine}">
+                                    <label for="txtFechaPago" class="control-label">Fecha de pago:</label>
+                                    <input name="txtFechaPago" id="txtFechaPago" type="date" class="form-control" ng-model="laCompra.fechapago" required />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.selMoneda.$invalid && !frmCompra.selMoneda.$pristine}">
+                                    <label for="selMoneda" class="control-label">Moneda:</label>
+                                    <select name="selMoneda" id="selMoneda" class="form-control" ng-model="laCompra.objMoneda"
+                                            ng-options="obj.nommoneda for obj in monedas track by obj.id"
+                                            ng-change="setTipoCambio(laCompra.objMoneda)" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.txtCambio.$invalid && !frmCompra.txtCambio.$pristine}">
+                                    <label for="txtTCambioSug" class="control-label">Tipo de cambio:</label>
+                                    <input name="txtTCambioSug" id="txtTCambioSug" class="form-control" ng-model="laCompra.tipocambio"
+                                           type="text" min="1" fcsa-number="{ min:1, maxDecimals:dectc }" required/>
+                                </div>
+                            </div>
+                            <!--
+                            <div class="col-md-5">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtOT.$invalid && !frmCompra.txtOT.$pristine}">
+                                    <label>Orden de trabajo:</label>
+                                    <ui-select ng-model="laCompra.ordentrabajo"
+                                               title="Seleccione una orden de trabajo..."
+                                               theme="bootstrap"
+                                               autofocus="false">
+                                        <ui-select-match placeholder="Buscar orden de trabajo..." allow-clear="true">
+                                            <span ng-bind="$select.selected.ot"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="item.id as item in ots | filter:$select.search">
+                                            <div ng-bind-html="item.ot | highlight: $select.search"></div>
+                                            <small>
+                                                <strong>Proveedor:</strong>&nbsp;<span ng-bind-html="item.proveedor | highlight: $select.search" ></span><br/>
+                                                <strong>Empresa:</strong>&nbsp;<span ng-bind-html="item.empresa | highlight: $select.search" ></span><br/>
+                                                <strong>Monto:</strong>&nbsp;<span ng-bind-html="item.moneda | highlight: $select.search" ></span>&nbsp;<span ng-bind-html="item.monto | highlight: $select.search" ></span>
+                                            </small>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            -->
+                        </div>
+                        <!--<div class="row"></div>-->
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.txtTotal.$invalid && !frmCompra.txtTotal.$pristine}">
+                                    <label for="txtTotal" class="control-label">Total:</label>
+                                    <input name="txtTotal" id="txtTotal" type="text" class="form-control" ng-model="laCompra.totfact"
+                                           placeholder="Total de factura" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="calcular()" required/>
+                                </div>
+                            </div>
+                            <!-- IDP -->
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtIDP.$invalid && !frmCompra.txtIDP.$pristine}">
+                                    <label for="txtIDP">I.D.P.:</label>
+                                    <input name="txtIDP" id="txtIDP" type="text" class="form-control" ng-model="laCompra.idp"
+                                           placeholder="I.D.P." fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true"/>
+                                </div>
+                            </div>
+                            <!-- Fin de IDP -->
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtNoAfecto.$invalid && !frmCompra.txtNoAfecto.$pristine}">
+                                    <label for="txtNoAfecto">No afecto:</label>
+                                    <input name="txtNoAfecto" id="txtNoAfecto" type="text" class="form-control" ng-model="laCompra.noafecto"
+                                           placeholder="No afecto a impuesto" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="calcular()" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtSubtot.$invalid && !frmCompra.txtSubtot.$pristine}">
+                                    <label for="txtSubtot">Subtotal:</label>
+                                    <input name="txtSubtot" id="txtSubtot" type="text" class="form-control" ng-model="laCompra.subtotal"
+                                           placeholder="Subtotal" fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true"/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtIVA.$invalid && !frmCompra.txtIVA.$pristine}">
+                                    <label for="txtIVA">I.V.A.:</label>
+                                    <input name="txtIVA" id="txtIVA" type="text" class="form-control" ng-model="laCompra.iva"
+                                           placeholder="I.V.A." fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true"/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtISR.$invalid && !frmCompra.txtISR.$pristine}">
+                                    <label for="txtISR">I.S.R.:</label>
+                                    <input name="txtISR" id="txtISR" type="text" class="form-control" ng-model="laCompra.isr"
+                                           placeholder="I.S.R." fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" ng-show="yaPagada">
+                            <div class="col-md-6 col-md-offset-3" style="background-color: #DCF8C6">
+                                <table class="table table-responsive table-condensed table-hover">
+                                    <caption style="font-weight: bold; color: #0c0c0c">
+                                        Factura pagada con las siguientes transacciones
+                                    </caption>
+                                    <thead>
+                                    <tr>
+                                        <th>Tipo</th>
+                                        <th style="text-align: right">No.</th>
+                                        <th>Banco</th>
+                                        <th style="text-align: right">Monto</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="t in tranpago">
+                                        <td>{{t.tipodoc}}</td>
+                                        <td style="text-align: right">{{t.numero}}</td>
+                                        <td>{{t.banco}}</td>
+                                        <td style="text-align: right">{{t.monto | number:2}}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row" ng-show="laCompra.isr > 0">
+                            <div class="col-md-6 col-md-offset-3" ng-show="laCompra.noformisr != null && laCompra.noformisr != undefined">
+                                <div class="well well-sm" style="text-align: center">
+                                    <h4>Formulario de retenci&oacute;n de I.S.R.</h4>
+                                    <h5>No. formulario: {{laCompra.noformisr}}&nbsp;--&nbsp;No. acceso: {{laCompra.noaccisr}}</h5>
+                                    <h5>Fecha de pago: {{laCompra.fecpagoformisr | date:'dd/MM/yyyy'}}&nbsp;--&nbsp;Mes: {{laCompra.mesisr}}&nbsp;--&nbsp;A&ntilde;o: {{laCompra.anioisr}}</h5>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-md-offset-3" ng-hide="laCompra.noformisr != null && laCompra.noformisr != undefined">
+                                <div class="well well-sm" style="text-align: center">
+                                    <span style="font-weight: bold">
+                                        FORMULARIO DE RETENCI&Oacute;N DE I.S.R. NO REGISTRADO.&nbsp;
+                                        <button type="button" class="btn" ng-click="modalISR()">Registrar</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-primary" ng-disabled="frmCompra.$invalid" ng-hide="editando">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="false" ng-show="editando" ng-click="updCompra(laCompra)">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printVersion(laCompra)">
+                                <span class="glyphicon glyphicon-print"></span>
+                            </button>
+                            <button type="button" class="btn btn-danger" ng-disabled="yaPagada" ng-show="editando" ng-click="delCompra(laCompra)">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="frmCompra.$invalid" ng-show="editando" ng-click="resetCompra()">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <!--<table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover">-->
+                    <div class="table-responsive">
+                        <table class="table table-responsive table-hover table-condensed">
+                            <caption>
+                                <form class="form-inline">
+                                    <label for="srchTxtDel">Del:</label>
+                                    <input name="srchTxtDel" id="srchTxtDel" type="date" class="form-control input-sm" ng-model="fltrcomp.fdel"/>
+                                    <label for="srchTxtAl">al:</label>
+                                    <div class="input-group">
+                                        <input name="srchTxtAl" id="srchTxtAl" type="date" class="form-control input-sm" ng-model="fltrcomp.fal"/>
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-primary btn-sm" ng-click="getLstCompras()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                </span>
+                                    </div>
+                                    <input name="srchTxt" id="srchTxt" type="text" class="form-control input-sm" style="width: 50em" ng-model="lookFor.$" placeholder="Proveedor, tipo, serie, documento, monto, total..."/>
+                                </form>
+                            </caption>
+                            <thead>
+                            <tr>
+                                <th>A pagar</th>
+                                <th>Fecha</th>
+                                <th>Proveedor</th>
+                                <th>Tipo</th>
+                                <th>Documento</th>
+                                <th>Mon(TC)</th>
+                                <th>Total</th>
+                                <th>&nbsp;</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="lc in lasCompras | filter:lookFor" ng-click="getCompra(lc.id)">
+                                <td>{{lc.fechapago | date:'dd/MM/yyyy'}}</td>
+                                <td>{{lc.fechafactura | date:'dd/MM/yyyy'}}</td>
+                                <td>{{lc.nomproveedor}}</td>
+                                <td>{{lc.tipofactura}}</td>
+                                <td>{{lc.serie}}-{{lc.documento}}</td>
+                                <td>{{lc.moneda}}({{lc.tipocambio | number:dectc}})</td>
+                                <td style="text-align: right">{{lc.totfact | number:2}}</td>
+                                <td ng-class="{'factura-pagada': lc.cantpagos > 0}">
+                                    <span class="glyphicon glyphicon-ok " ng-show="lc.cantpagos > 0"></span>
+                                    <span ng-hide="lc.cantpagos > 0">&nbsp;</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="divFrmCompraProyecto" class="tab-pane fade">
+            <div class="panel-info">
+                <div class="panel-heading">Proyectos afectados&nbsp;<span class="badge" style="color: white !important;">{{facturastr}}</span></div>
+                <div class="panel-body">
+                    <form name="frmCompProy" ng-submit="frmCompProy.$valid && addProyectoCompra(proyectocompra)" novalidate>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="{'has-error':frmCompProy.selProyDet.$invalid && !frmCompProy.selProyDet.$pristine}">
+                                    <label>Proyecto:</label>
+                                    <ui-select ng-model="proyectocompra.idproyecto"
+                                               title="Seleccione un proyecto..."
+                                               theme="bootstrap"
+                                               autofocus="false"
+                                               ng-required="true">
+                                        <ui-select-match placeholder="Buscar proyecto..." allow-clear="false">
+                                            <span ng-bind="$select.selected.nomproyecto"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="item.id as item in proyectos | filter:$select.search">
+                                            <div ng-bind-html="item.nomproyecto | highlight: $select.search"></div>
+                                            <small>
+                                                <strong>Referencia:</strong>&nbsp;<span ng-bind-html="item.referencia | highlight: $select.search" ></span>
+                                            </small>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="{'has-error':frmCompProy.selCtaDet.$invalid && !frmCompProy.selCtaDet.$pristine}">
+                                    <label>Cuenta contable:</label>
+                                    <ui-select ng-model="proyectocompra.idcuentac"
+                                               title="Seleccione una cuenta contable..."
+                                               theme="bootstrap"
+                                               autofocus="false"
+                                               ng-required="true">
+                                        <ui-select-match placeholder="Buscar cuenta contable..." allow-clear="false">
+                                            <span ng-bind="$select.selected.nombrecta"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="item.id as item in lasCtasMov | filter:$select.search">
+                                            <div ng-bind-html="item.nombrecta | highlight: $select.search"></div>
+                                            <small>
+                                                <strong>C&oacute;digo:</strong>&nbsp;<span ng-bind-html="item.codigo | highlight: $select.search" ></span>
+                                            </small>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="{'has-error':frmCompProy.txtMontoDet.$invalid && !frmCompProy.txtMontoDet.$pristine}">
+                                    <label for="txtMontoDet">Monto sin I.V.A.:</label>
+                                    <input name="txtMontoDet" id="txtMontoDet" type="text" class="form-control" ng-model="proyectocompra.monto" placeholder="Monto" fcsa-number="{ min:0, maxDecimals: 2 }" required />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-info" ng-disabled="frmCompProy.$invalid" ng-hide="+proyectocompra.id > 0">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-info" ng-disabled="frmCompProy.$invalid" ng-show="+proyectocompra.id > 0" ng-click="updProyectoCompra(proyectocompra)">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-danger" ng-show="+proyectocompra.id > 0" ng-click="delProyectoCompra(proyectocompra)">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                            <button type="button" class="btn btn-info" ng-show="+proyectocompra.id > 0" ng-click="resetProyectoCompra()">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table class="table table-condensed table-hover">
+                        <thead>
+                        <tr>
+                            <th>Proyecto</th>
+                            <th>Cuenta contable</th>
+                            <th class="num">Monto sin I.V.A.</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="cp in lstproyectoscompra" ng-click="getProyectoCompra(cp.id)">
+                            <td>{{cp.nomproyecto}}</td>
+                            <td>({{cp.codigo}}) {{cp.nombrecta}}</td>
+                            <td class="num">{{cp.monto | number:2}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="divFrmDetContCompra" class="tab-pane fade">
+            <div class="panel panel-success">
+                <div class="panel-heading">Detalle contable</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <form name="frmDetCont" id="frmDetCont" ng-submit="frmDetCont.$valid && addDetCont(elDetCont)" novalidate>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group" ng-class="{'has-error':frmDetCont.selCta.$invalid && !frmDetCont.selCta.$pristine}">
+                                            <label>Cuenta contable:</label>
+                                            <ui-select ng-model="elDetCont.objCuenta"
+                                                       title="Seleccione una cuenta contable..."
+                                                       theme="bootstrap"
+                                                       autofocus="false">
+                                                <ui-select-match placeholder="Buscar cuenta contable..." allow-clear="false">
+                                                    <span ng-bind="$select.selected.nombrecta"></span>
+                                                </ui-select-match>
+                                                <ui-select-choices repeat="item in lasCtasMov | filter:$select.search">
+                                                    <div ng-bind-html="item.nombrecta | highlight: $select.search"></div>
+                                                    <small>
+                                                        <strong>C&oacute;digo:</strong>&nbsp;<span ng-bind-html="item.codigo | highlight: $select.search" ></span>
+                                                    </small>
+                                                </ui-select-choices>
+                                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                            </ui-select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group" ng-class="{'has-error':frmDetCont.txtDebe.$invalid && !frmDetCont.txtDebe.$pristine}">
+                                            <label for="txtDebe">Debe:</label>
+                                            <input name="txtDebe" id="txtDebe" type="text" class="form-control" ng-model="elDetCont.debe"
+                                                   placeholder="Debe" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="zeroHaber(elDetCont.debe)" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group" ng-class="{'has-error':frmDetCont.txtHaber.$invalid && !frmDetCont.txtHaber.$pristine}">
+                                            <label for="txtHaber">Haber:</label>
+                                            <input name="txtHaber" id="txtHaber" type="text" class="form-control" ng-model="elDetCont.haber"
+                                                   placeholder="Haber" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="zeroDebe(elDetCont.haber)" required />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group" ng-class="{'has-error':frmDetCont.txtConceptoMayor.$invalid && !frmDetCont.txtConceptoMayor.$pristine}">
+                                            <label for="txtConceptoMayor">Concepto mayor:</label>
+                                    <textarea name="txtConceptoMayor" id="txtConceptoMayor" class="form-control"
+                                              ng-model="elDetCont.conceptomayor" placeholder="Concepto para el libro mayor"
+                                              style="width:100%" rows="3" required>
+                                    </textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <button type="submit" class="btn btn-info" ng-disabled="frmDetCont.$invalid">
+                                        <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-3">
+                            <small>
+                                <table class="table table-bordered table-condensed table-hover table-striped">
+                                    <caption style="text-align: center"><strong>{{laCompra.nomproveedor}}</strong></caption>
+                                    <tbody>
+                                    <tr><th class="num">Documento:</th><td>{{laCompra.siglas}}-{{laCompra.serie}}-{{laCompra.documento}}</td></tr>
+                                    <tr><th class="num">Fecha:</th><td>{{laCompra.fechafactura | date:'dd/MM/yyyy'}}</td></tr>
+                                    <tr><th class="num">Tipo:</th><td>{{laCompra.desctipocompra}}</td></tr>
+                                    <tr><th class="num">Total:</th><td class="num">{{laCompra.moneda}}&nbsp;{{laCompra.totfact | number:2}}</td></tr>
+                                    <tr><th class="num">No afecto:</th><td class="num">{{laCompra.moneda}}&nbsp;{{laCompra.noafecto | number:2}}</td></tr>
+                                    <tr><th class="num">Subtotal:</th><td class="num">{{laCompra.moneda}}&nbsp;{{laCompra.subtotal | number:2}}</td></tr>
+                                    <tr><th class="num">I.V.A.:</th><td class="num">{{laCompra.moneda}}&nbsp;{{laCompra.iva | number:2}}</td></tr>
+                                    <tr><th class="num">I.S.R.:</th><td class="num">{{laCompra.moneda}}&nbsp;{{laCompra.isr | number:2}}</td></tr>
+                                    <tr><th class="num">I.D.P.:</th><td class="num">{{laCompra.moneda}}&nbsp;{{laCompra.idp | number:2}}</td></tr>
+                                    </tbody>
+                                </table>
+                            </small>
+                        </div>
+                    </div>
+                    <hr/>
+                    <!--<table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover">-->
+                    <div class="table-responsive">
+                        <table class="table table-hover table-condensed table-hover">
+                            <thead>
+                            <tr>
+                                <th>Cuenta</th>
+                                <th style="text-align: right">Debe</th>
+                                <th style="text-align: right">Haber</th>
+                                <th>Concepto mayor</th>
+                                <th>&nbsp;</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="dc in losDetCont"
+                                ng-class="{
+                                'bld': dc.desccuentacont.toUpperCase().indexOf('TOTAL DE PARTIDA') > -1,
+                                'dblbtmbrd': dc.desccuentacont.toUpperCase().indexOf('TOTAL DE PARTIDA') > -1,
+                                'partida-cuadrada': +dc.debe === +dc.haber && dc.desccuentacont.toUpperCase().indexOf('TOTAL DE PARTIDA') > -1,
+                                'partida-descuadrada': +dc.debe !== +dc.haber && dc.desccuentacont.toUpperCase().indexOf('TOTAL DE PARTIDA') > -1
+                                }">
+                                <td>{{dc.desccuentacont}}</td>
+                                <td style="text-align: right">{{dc.debe | number:2}}</td>
+                                <td style="text-align: right">{{dc.haber | number:2}}</td>
+                                <td>{{dc.conceptomayor}}</td>
+                                <td style="white-space: nowrap">
+                                    <div class="btn-group" role="group" aria-label="...">
+                                        <button type="button" class="btn btn-info btn-sm" ng-click="updDetCont(dc)" ng-hide="dc.id == 0" data-toggle="tooltip" data-placement="auto" title="Modificar este detalle contable...">
+                                            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-sm" ng-click="delDetCont(dc)" ng-hide="dc.id == 0" data-toggle="tooltip" data-placement="auto" title="Eliminar este detalle contable...">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="divPrintVer" class="tab-pane fade">
+            <div id="toPrint">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h3>{{laCompra.nomproveedor}}</h3>
+                        <h4>{{laCompra.objTipoFactura.siglas}}&nbsp;{{laCompra.serie}}&nbsp;-&nbsp;{{laCompra.documento}},&nbsp;{{laCompra.moneda}}&nbsp;{{laCompra.totfact | number:2}}</h4>
+                        <h4>{{laCompra.conceptomayor}}</h4>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <table class="table table-condensed table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Cuenta</th>
+                                <th style="text-align: right">Debe</th>
+                                <th style="text-align: right">Haber</th>
+                                <th>Concepto mayor</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="dc in losDetCont" ng-class="{'linea-de-totales' : dc.desccuentacont.toUpperCase().indexOf('TOTAL DE PARTIDA') > 0}">
+                                <td>{{dc.desccuentacont}}</td>
+                                <td style="text-align: right">{{dc.debe > 0 ? (dc.debe | number:2) : ''}}</td>
+                                <td style="text-align: right">{{dc.haber > 0 ? (dc.haber | number:2) : ''}}</td>
+                                <td>{{dc.conceptomayor}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Template de la modal //Este usa el controlador ModalInstanceCtrl-->
+    <script type="text/ng-template" id="modalSelectCtaGastoProv.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Selecci&oacute;n de cuenta de gasto de proveedor</h3>
+        </div>
+        <div class="modal-body">
+            <label for="selCtaGasto">¿Qu&eacute; cuenta de gasto de este proveedor desea usar para el detalle contable?</label>
+            <select name="selCtaGasto" id="selCtaGasto" class="form-control" ng-model="selectedCta"
+                    ng-options="obj.cuentac for obj in lasCtasGasto" multiple required>
+            </select>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">Aceptar</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
+        </div>
+    </script>
+    <!--Fin de Template de la modal-->
+    <!--Template de la modal //Este usa el controlador ModalInstanceCtrl-->
+    <script type="text/ng-template" id="modalISR.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Formulario de retenci&oacute;n I.S.R.</h3>
+            <h4 class="modal-title">{{compra.nomproveedor}}</h4>
+            <h4 class="modal-title">Factura {{compra.serie}}&nbsp;{{compra.documento}}&nbsp;por&nbsp;{{compra.moneda}}&nbsp;{{compra.totfact | number:2}}</h4>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="txtNoFormISR">No. de formulario:</label>
+                <input name="txtNoFormISR" id="txtNoFormISR" type="text" class="form-control" ng-model="compra.noformisr" maxlength="30"/>
+            </div>
+            <div class="form-group">
+                <label for="txtNoAccISR">No. de acceso:</label>
+                <input name="txtNoAccISR" id="txtNoAccISR" type="text" class="form-control" ng-model="compra.noaccisr" maxlength="30"/>
+            </div>
+            <div class="form-group">
+                <label for="txtFecPagoISR">Fecha de pago:</label>
+                <input name="txtFecPagoISR" id="txtFecPagoISR" type="date" class="form-control" ng-model="compra.fecpagoformisr" ng-change="setMesAnio()"/>
+            </div>
+            <div class="form-group">
+                <label for="txtMesISR">Mes:</label>
+                <input name="txtMesISR" id="txtMesISR" type="number" class="form-control" ng-model="compra.mesisr" min="0" max="12"/>
+            </div>
+            <div class="form-group">
+                <label for="txtAnioISR">A&ntilde;o:</label>
+                <input name="txtAnioISR" id="txtAnioISR" type="number" class="form-control" ng-model="compra.anioisr" min="2000" max="3000"/>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">Aceptar</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
+        </div>
+    </script>
+    <!--Fin de Template de la modal-->
+    <script type="text/ng-template" id="modalUpdDetCont.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Modificar detalle contable</h3>
+        </div>
+        <div class="modal-body">
+            <form name="frmModalDetCont" id="frmModalDetCont" novalidate>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group" ng-class="{'has-error':frmModalDetCont.selCta.$invalid && !frmModalDetCont.selCta.$pristine}">
+                            <label>Cuenta contable:</label>
+                            <ui-select ng-model="detcont.idcuenta"
+                                       title="Seleccione una cuenta contable..."
+                                       theme="bootstrap"
+                                       autofocus="false"
+                                       ng-required="true">
+                                <ui-select-match placeholder="Buscar cuenta contable..." allow-clear="false">
+                                    <span ng-bind="$select.selected.nombrecta"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="item.id as item in cuentas | filter:$select.search">
+                                    <div ng-bind-html="item.nombrecta | highlight: $select.search"></div>
+                                    <small>
+                                        <strong>C&oacute;digo:</strong>&nbsp;<span ng-bind-html="item.codigo | highlight: $select.search" ></span>
+                                    </small>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group" ng-class="{'has-error':frmModalDetCont.txtDebe.$invalid && !frmModalDetCont.txtDebe.$pristine}">
+                            <label for="txtModalDebe">Debe:</label>
+                            <input name="txtModalDebe" id="txtModalDebe" type="text" class="form-control" ng-model="detcont.debe"
+                                   placeholder="Debe" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="zeroHaber(detcont.debe)" required />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group" ng-class="{'has-error':frmModalDetCont.txtHaber.$invalid && !frmModalDetCont.txtHaber.$pristine}">
+                            <label for="txtModalHaber">Haber:</label>
+                            <input name="txtModalHaber" id="txtModalHaber" type="text" class="form-control" ng-model="detcont.haber"
+                                   placeholder="Haber" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="zeroDebe(detcont.haber)" required />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group" ng-class="{'has-error':frmModalDetCont.txtConceptoMayor.$invalid && !frmModalDetCont.txtConceptoMayor.$pristine}">
+                            <label for="txtModalConceptoMayor">Concepto mayor:</label>
+                            <textarea name="txtModalConceptoMayor" id="txtModalConceptoMayor" class="form-control"
+                                      ng-model="detcont.conceptomayor" placeholder="Concepto para el libro mayor" style="width:100%" rows="3" required>
+                            </textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="button" class="btn btn-info" ng-disabled="frmModalDetCont.$invalid" ng-click="actualizar(detcont)">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <!--<button class="btn btn-primary" type="button" ng-click="ok()">Aceptar</button>-->
+            <button class="btn btn-primary" type="button" ng-click="cancel()"><i class="fa fa-ban" aria-hidden="true"></i></button>
+        </div>
+    </script>
+</div>

@@ -1,0 +1,66 @@
+<div class="container" ng-controller="rptDetContratoCtrl">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Contrato:</label>
+                        <ui-select ng-model="params.idcontrato"
+                                   title="Seleccione un contrato..."
+                                   theme="bootstrap"
+                                   autofocus="true"
+                                   append-to-body="true">
+                            <ui-select-match placeholder="Buscar contrato..." allow-clear="true">
+                                <span ng-bind="$select.selected.nombre"></span>
+                            </ui-select-match>
+                            <ui-select-choices repeat="item.id as item in contratos | filter:$select.search">
+                                <div ng-bind-html="item.nombre | highlight: $select.search"></div>
+                                <small>
+                                    <strong>Nombre corto:</strong>&nbsp;<span ng-bind-html="item.nombrecorto | highlight: $select.search" ></span><br/>
+                                    <strong>Unidades:</strong>&nbsp;<span ng-bind-html="item.unidades | highlight: $select.search" ></span><br/>
+                                    <strong>No. contrato:</strong>&nbsp;<span ng-bind-html="item.nocontrato | highlight: $select.search" ></span>
+                                </small>
+                            </ui-select-choices>
+                            <ui-select-no-choice>
+                                No hay resultados...
+                            </ui-select-no-choice>
+                        </ui-select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="txtDel">Del:</label>
+                        <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.del"/>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="txtAl">Al:</label>
+                        <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.al"/>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="selTipoServicio">Tipo:</label>
+                        <select name="selTipoServicio" id="selTipoServicio" class="form-control" ng-model="params.idtiposervicio"
+                                ng-options="ts.id as ts.desctiposervventa for ts in fltrtsventa">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary btn-sm" ng-disabled="+params.idcontrato <= 0" ng-click="getRptDetContrato()">
+                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" ng-click="resetParams()">
+                <i class="fa fa-refresh" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 50em"></object>
+        </div>
+    </div>
+</div>

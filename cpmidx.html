@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="max-age=0" />
+    <meta http-equiv="Cache-Control" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta http-equiv="Expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <title>SAYET</title>
+    <!--imprimir-->
+    <!--<link rel="stylesheet" href="libs/bootstrap/css/bootstrap-theme.min.css" media="print">-->
+    <!--pag estilo-->
+    <link rel="stylesheet" href="libs/bootstrap/css/bootstrap.min.css">
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cerulean/bootstrap.min.css" rel="stylesheet" integrity="sha384-zF4BRsG/fLiTGfR9QL82DrilZxrwgY/+du4p/c7J72zZj+FLYq4zY00RylP9ZjiT" crossorigin="anonymous">
+
+    <!--<link rel="stylesheet" href="libs/bootstrap/css/bootstrap-paper-theme.css" >-->
+    <!--<link rel="stylesheet" href="libs/bootstrap-submenu/css/bootstrap-submenu.min.css">-->
+    <link rel="stylesheet" href="libs/node_modules/angularjs-toaster/toaster.min.css">
+    <link rel="stylesheet" href="libs/angularxeditable/css/xeditable.css">
+    <link rel="stylesheet" href="libs/datatables/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="libs/datatables/css/datatables.bootstrap.min.css">
+    <link rel="stylesheet" href="libs/chosen/chosen.min.css">
+    <link rel="image_src" href="libs/chosen/chosen-sprite.png">
+    <link rel="stylesheet" href="libs/select/select.min.css">
+    <link rel="stylesheet" href="libs/angucomplete-alt/angucomplete-alt.css">
+    <link rel="stylesheet" href="libs/treegrid/treeGrid.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/styles.css">
+
+    <script src="https://www.google.com/cloudprint/client/cpgadget.js"></script>
+
+</head>
+<body ng-app="cpm" style="margin-top: 6em">
+    <header>
+        <nav ng-controller="cpmIdxCtrl" class="navbar navbar-default navbar-fixed-top">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#/">
+                        <img src="img/logoin.png" alt="SAYET" style="height: 25px"/>
+                    </a>
+                </div><!--.navbar-header-->
+                <menu-cpm mnu-obj="menuUsr"
+                          obj-emp="qEmpresa"
+                          set-emp-func="openSetEmpresa()"
+                          lst-emp="lasEmpresas"
+                          log-out-func="doLogOut()">
+                </menu-cpm>
+            </div><!--.container-fluid-->
+        </nav>
+    </header>
+
+    <h1>{{tituloPagina}}</h1>
+    <div id="views" ng-view></div>
+
+    <!--Inclusion de scripts-->
+    <script type="text/javascript" src="libs/jquery/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="libs/datatables/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="libs/chosen/chosen.jquery.min.js"></script>
+    <!--Angular JS 1.4.8-->
+    <script type="text/javascript" src="libs/angularjs/angular.min.js"></script>
+    <script type="text/javascript" src="libs/datatables/angular-datatables.min.js"></script>
+    <script type="text/javascript" src="libs/angularjs/angular-route.min.js"></script>
+    <script type="text/javascript" src="libs/angularjs/angular-animate.min.js"></script>
+    <script type="text/javascript" src="libs/angularjs/angular-sanitize.min.js"></script>
+    <script type="text/javascript" src="libs/datatables/angular-datatables.bootstrap.min.js"></script>
+    <script type="text/javascript" src="libs/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="libs/node_modules/angularjs-toaster/toaster.min.js"></script>
+    <script type="text/javascript" src="libs/angular-chosen/angular-chosen.min.js"></script>
+    <!--<script type="text/javascript" src="libs/bootstrap-submenu/js/bootstrap-submenu.min.js"></script>-->
+    <script type="text/javascript" src="libs/angularxeditable/js/xeditable.min.js"></script>
+    <script type="text/javascript" src="libs/uibootstrap/ui-bootstrap-tpls-1.1.0.min.js"></script>
+    <script type="text/javascript" src="libs/ng_file_upload/ng-file-upload.min.js"></script>
+    <script type="text/javascript" src="libs/fcsanumber/fcsaNumber.min.js"></script>
+    <script type="text/javascript" src="libs/angular-confirm/angular-confirm.min.js"></script>
+    <script type="text/javascript" src="libs/momentjs/moment.min.js"></script>
+    <script type="text/javascript" src="libs/momentjs/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="libs/adaptstrap/adapt-strap.min.js"></script>
+    <script type="text/javascript" src="libs/adaptstrap/adapt-strap.tpl.min.js"></script>
+    <script type="text/javascript" src="libs/roundprogressbar/roundProgress.min.js"></script>
+    <script src="https://use.fontawesome.com/d16b75498d.js"></script>
+    <script type="text/javascript" src="libs/select/select.min.js"></script>
+    <script type="text/javascript" src="libs/angucomplete-alt/angucomplete-alt.min.js"></script>
+    <script type="text/javascript" src="libs/filesaver/FileSaver.min.js"></script>
+    <script type="text/javascript" src="libs/desktop-notification/angular-desktop-notification.js"></script>
+    <script type="text/javascript" src="libs/treegrid/tree-grid-directive.js"></script>
+    <script type="text/javascript" src="libs/infinite-scroll/infinite-scroll.js"></script>
+    <script type="text/javascript" src="js/funcs.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+    <!--Controllers-->
+    <script type="text/javascript" src="js/controllers/pagesctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/indexctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/cpmidxctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/usrctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/menuctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/empresactrl.js"></script>
+    <script type="text/javascript" src="js/controllers/monedactrl.js"></script>
+    <script type="text/javascript" src="js/controllers/cuentacctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/bancoctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/proveedorctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/setemprectrl.js"></script>
+    <script type="text/javascript" src="js/controllers/tranbancctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/activoctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/proyectoctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/conciliactrl.js"></script>
+    <script type="text/javascript" src="js/controllers/compractrl.js"></script>
+    <script type="text/javascript" src="js/controllers/periodocontable.js"></script>
+    <script type="text/javascript" src="js/controllers/clientectrl.js"></script>
+    <script type="text/javascript" src="js/controllers/tranpagosctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/trandirectactrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptactivosctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/tipoactivoctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/tipoadjuntoctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/tipocompractrl.js"></script>
+    <script type="text/javascript" src="js/controllers/tipogastocontablectrl.js"></script>
+    <script type="text/javascript" src="js/controllers/tipogastoctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/tipomovtranbanctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/tipoproyectoctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/solicitudotctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptcatbcoctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptcatprov.js"></script>
+    <script type="text/javascript" src="js/controllers/rptcorrch.js"></script>
+    <script type="text/javascript" src="js/controllers/rptdetcontdocs.js"></script>
+    <script type="text/javascript" src="js/controllers/rptdetcontfact.js"></script>
+    <script type="text/javascript" src="js/controllers/rptdocscircula.js"></script>
+    <script type="text/javascript" src="js/controllers/rptestadocta.js"></script>
+    <script type="text/javascript" src="js/controllers/rptfactprov.js"></script>
+    <script type="text/javascript" src="js/controllers/rpthistpagos.js"></script>
+    <script type="text/javascript" src="js/controllers/rptpagoiusi.js"></script>
+    <script type="text/javascript" src="js/controllers/municipioctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/tipodocproyctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptlstproyctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptdocsvence.js"></script>
+    <script type="text/javascript" src="js/controllers/unidadctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/dashboardctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/tiposervicioctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/serviciobasicoctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/tipolocalctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/reembolsoctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/beneficiarioctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/razonanulacionctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptbalancesaldosctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptlibrocomprasctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptlibmayctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptestadoresultadosctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptbalancegeneralctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptlibroventasctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptlibdiactrl.js"></script>
+    <script type="text/javascript" src="js/controllers/isrctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/reciboprovctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/reciboclictrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptconciliabcoctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/tiposervicioventactrl.js"></script>
+    <script type="text/javascript" src="js/controllers/tranfacturactrl.js"></script>
+    <script type="text/javascript" src="js/controllers/serviciopropioctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptauditoria.js"></script>
+    <script type="text/javascript" src="js/controllers/tipoipcctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/presupuestoctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/tranaprobpresupctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/transegpresupctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptincdecctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptvencimientosctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptcatactctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptfichaproyctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptdetcontrato.js"></script>
+    <script type="text/javascript" src="js/controllers/rptfichaclientectrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptalquileresctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/lecturaservicioctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/gfacectrl.js"></script>
+    <script type="text/javascript" src="js/controllers/asginactasubtipogastoctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptsumarioctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptaguactrl.js"></script>
+    <script type="text/javascript" src="js/controllers/ventactrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptserviciosctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptrescheqctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptchqaprob.js"></script>
+    <!--Los siguientes seis controles fueron creados por RChinchilla-->
+    <script type="text/javascript" src="js/controllers/rptsaldoclictrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptsaldoprovctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptanticliectrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptantiprovctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptecuentaprovctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptecuentaclictrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptctrlccctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptbuscafactcompctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptingegrproyctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptfactsemitidasctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptarbolsrvcctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptivaventasctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptrecclictrl.js"></script>
+    <script type="text/javascript" src="js/controllers/formsretventactrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptretenedoresctrl.js"></script>
+    <script type="text/javascript" src="js/controllers/rptasistelibrosctrl.js"></script>
+    <!--Services-->
+    <script type="text/javascript" src="js/services/comunsrvc.js"></script>
+    <script type="text/javascript" src="js/services/authsrvc.js"></script>
+    <script type="text/javascript" src="js/services/menusrvc.js"></script>
+    <script type="text/javascript" src="js/services/empresasrvc.js"></script>
+    <script type="text/javascript" src="js/services/monedasrvc.js"></script>
+    <script type="text/javascript" src="js/services/cuentacsrvc.js"></script>
+    <script type="text/javascript" src="js/services/bancosrvc.js"></script>
+    <script type="text/javascript" src="js/services/proveedorsrvc.js"></script>
+    <script type="text/javascript" src="js/services/tranbancsrvc.js"></script>
+    <script type="text/javascript" src="js/services/activosrvc.js"></script>
+    <script type="text/javascript" src="js/services/tipoactivosrvc.js"></script>
+    <script type="text/javascript" src="js/services/activoadjuntosrvc.js"></script>
+    <script type="text/javascript" src="js/services/tipoadjuntosrvc.js"></script>
+    <script type="text/javascript" src="js/services/proyectosrvc.js"></script>
+    <script type="text/javascript" src="js/services/proyectoadjuntosrvc.js"></script>
+    <script type="text/javascript" src="js/services/tipoproyectosrvc.js"></script>
+    <script type="text/javascript" src="js/services/municipiosrvc.js"></script>
+    <script type="text/javascript" src="js/services/tipodocsoptranban.js"></script>
+    <script type="text/javascript" src="js/services/tipomovtranban.js"></script>
+    <script type="text/javascript" src="js/services/periodocontable.js"></script>
+    <script type="text/javascript" src="js/services/detcontsrvc.js"></script>
+    <script type="text/javascript" src="js/services/comprasrvc.js"></script>
+    <script type="text/javascript" src="js/services/tipocomprasrvc.js"></script>
+    <script type="text/javascript" src="js/services/proyectoactivosrvc.js"></script>
+    <script type="text/javascript" src="js/services/clientesrvc.js"></script>
+    <script type="text/javascript" src="js/services/tipoconfigconta.js"></script>
+    <script type="text/javascript" src="js/services/tranpagos.js"></script>
+    <script type="text/javascript" src="js/services/tipoactivosrvc.js"></script>
+    <script type="text/javascript" src="js/services/tipoadjuntosrvc.js"></script>
+    <script type="text/javascript" src="js/services/tipogastosrvc.js"></script>
+    <script type="text/javascript" src="js/services/tipocomprasrvc.js"></script>
+    <script type="text/javascript" src="js/services/tipoproyectosrvc.js"></script>
+    <script type="text/javascript" src="js/services/tipomovtranban.js"></script>
+    <script type="text/javascript" src="js/services/tipogastocontablesrvc.js"></script>
+    <script type="text/javascript" src="js/services/solicitudotsrvc.js"></script>
+    <script type="text/javascript" src="js/services/tipodocproysrvc.js"></script>
+    <script type="text/javascript" src="js/services/unidadsrvc.js"></script>
+    <script type="text/javascript" src="js/services/tipolocalsrvc.js"></script>
+    <script type="text/javascript" src="js/services/tiposerviciosrvc.js"></script>
+    <script type="text/javascript" src="js/services/dashboardsrvc.js"></script>
+    <script type="text/javascript" src="js/services/localstoragesrvc.js"></script>
+    <script type="text/javascript" src="js/services/serviciobasicosrvc.js"></script>
+    <script type="text/javascript" src="js/services/noordensrvc.js"></script>
+    <script type="text/javascript" src="js/services/tipoclientesrvc.js"></script>
+    <script type="text/javascript" src="js/services/tiposervicioventasrvc.js"></script>
+    <script type="text/javascript" src="js/services/periodicidadsrvc.js"></script>
+    <script type="text/javascript" src="js/services/trandirectasrvc.js"></script>
+    <script type="text/javascript" src="js/services/tipocambiosrvc.js"></script>
+    <script type="text/javascript" src="js/services/reembolsosrvc.js"></script>
+    <script type="text/javascript" src="js/services/tiporeembolsosrvc.js"></script>
+    <script type="text/javascript" src="js/services/tipofacturasrvc.js"></script>
+    <script type="text/javascript" src="js/services/beneficiariosrvc.js"></script>
+    <script type="text/javascript" src="js/services/razonanulacionsrvc.js"></script>
+    <script type="text/javascript" src="js/services/rptbalancesaldossrvc.js"></script>
+    <script type="text/javascript" src="js/services/rptlibrocomprassrvc.js"></script>
+    <script type="text/javascript" src="js/services/tipocombustiblesrvc.js"></script>
+    <script type="text/javascript" src="js/services/rptlibmaysrvc.js"></script>
+    <script type="text/javascript" src="js/services/rptestadoresultadossrvc.js"></script>
+    <script type="text/javascript" src="js/services/rptbalancegeneralsrvc.js"></script>
+    <script type="text/javascript" src="js/services/rptlibventasrvc.js"></script>
+    <script type="text/javascript" src="js/services/reciboprovsrvc.js"></script>
+    <script type="text/javascript" src="js/services/reciboclisrvc.js"></script>
+    <script type="text/javascript" src="js/services/rptconciliabcosrvc.js"></script>
+    <script type="text/javascript" src="js/services/jsreportsrvc.js"></script>
+    <script type="text/javascript" src="js/services/tranfacturasrvc.js"></script>
+    <script type="text/javascript" src="js/services/serviciopropiosrvc.js"></script>
+    <script type="text/javascript" src="js/services/tipoipcsrvc.js"></script>
+    <script type="text/javascript" src="js/services/presupuestosrvc.js"></script>
+    <script type="text/javascript" src="js/services/tranfacturaaguasrvc.js"></script>
+    <script type="text/javascript" src="js/services/tranfacturaotrossrvc.js"></script>
+    <script type="text/javascript" src="js/services/tipoimpchequesrvc.js"></script>
+    <script type="text/javascript" src="js/services/ventasrvc.js"></script>
+    <!--Los siguientes seis servicios fueron creados por RChinchilla-->
+    <script type="text/javascript" src="js/services/rptsaldoclisrvc.js"></script>
+    <script type="text/javascript" src="js/services/rptsaldoprovsrvc.js"></script>
+    <script type="text/javascript" src="js/services/rptanticlisrvc.js"></script>
+    <script type="text/javascript" src="js/services/rptantiprovsrvc.js"></script>
+    <script type="text/javascript" src="js/services/rptecuentaprovsrvc.js"></script>
+    <script type="text/javascript" src="js/services/rptecuentaclisrvc.js"></script>
+    <script type="text/javascript" src="js/services/rptingegrproysrvc.js"></script>
+    <!--Directives-->
+    <script type="text/javascript" src="js/directives/menucpm.js"></script>
+    <script type="text/javascript" src="js/directives/showtab.js"></script>
+    <script type="text/javascript" src="js/directives/editrowform.js"></script>
+    <script type="text/javascript" src="js/directives/datatablewrapper.js"></script>
+    <script type="text/javascript" src="js/directives/frmbtns.js"></script>
+    <script type="text/javascript" src="js/directives/onfinishrender.js"></script>
+    <script type="text/javascript" src="js/directives/onreadfile.js"></script>
+    <script type="text/javascript" src="js/directives/focus.js"></script>
+    <!-- Filters -->
+    <script type="text/javascript" src="js/filters/getbyid.js"></script>
+    <script type="text/javascript" src="js/filters/pad.js"></script>
+    <script type="text/javascript" src="js/filters/getbycodcta.js"></script>
+    <script type="text/javascript" src="js/filters/shortenstr.js"></script>
+    <script type="text/javascript" src="js/filters/textCleaner.js"></script>
+    <script type="text/javascript" src="js/filters/dropdigits.js"></script>
+	
+	<!-- PLANILLA --> 
+    <script type="text/javascript" src="pln/js/controllers/rutas.js"></script>
+    <script type="text/javascript" src="pln/js/controllers/mante.js"></script>
+    <script type="text/javascript" src="pln/js/controllers/trans.js"></script>
+    <script type="text/javascript" src="pln/js/controllers/reporte.js"></script>
+    <script type="text/javascript" src="pln/js/services/mante.js"></script>
+    <script type="text/javascript" src="pln/js/services/trans.js"></script>
+    <script type="text/javascript" src="pln/js/directives/inputs.js"></script>
+    <!-- FIN PLANILLA --> 
+</body>
+</html>

@@ -1,0 +1,275 @@
+<div class="container" ng-controller="proveedorCtrl">
+
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divFrmProveedor" data-toggle="tab">PROVEEDOR(ES)</a>
+        </li>
+        <li ng-show="editando">
+            <a show-tab href="#divFrmDetContProv" data-toggle="tab">DETALLE CONTABLE</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="divFrmProveedor" class="tab-pane fade in active">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Proveedor(es) <span class="badge">{{strProveedor}}</span></div>
+                <div class="panel-body">
+                    <!--id, nit, nombre, direccion, telefono, correo, concepto, chequesa, retensionisr, diascred, limitecred, pequeniocont-->
+                    <form name="frmProv" id="frmProv" ng-submit="frmProv.$valid && addProv(elProv)" novalidate>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group required" ng-class="{'has-error':frmProv.txtNit.$invalid && !frmProv.txtNit.$pristine}">
+                                    <label for="txtNit" class="control-label">N.I.T.:</label>
+                                    <input name="txtNit" id="txtNit" type="text" class="form-control" ng-model="elProv.nit"
+                                           placeholder="N&uacute;mero de identificaci&oacute;n tributaria" maxlength="50" ng-blur="existeProveedor(elProv.nit)" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required" ng-class="{'has-error':frmProv.txtNombre.$invalid && !frmProv.txtNombre.$pristine}">
+                                    <label for="txtNombre" class="control-label">Nombre:</label>
+                                    <input name="txtNombre" id="txtNombre" type="text" class="form-control" ng-model="elProv.nombre"
+                                           placeholder="Nombre" maxlength="150" required/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="txtDireccion">Direcci&oacute;n:</label>
+                                    <input name="txtDireccion" id="txtDireccion" type="text" class="form-control"
+                                           ng-model="elProv.direccion" placeholder="Direcci&oacute;n" maxlength="150" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="txtTel">Tel&eacute;fono:</label>
+                                    <input name="txtTel" id="txtTel" type="text" class="form-control"
+                                           ng-model="elProv.telefono" placeholder="Tel&eacute;fono" maxlength="50" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="txtCorreo">Correo:</label>
+                                    <input name="txtCorreo" id="txtCorreo" type="email" class="form-control"
+                                           ng-model="elProv.correo" placeholder="Correo electr&oacute;nico" maxlength="45" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group required">
+                                    <label for="txtConcepto" class="control-label">Concepto:</label>
+                                    <input name="txtConcepto" id="txtConcepto" type="text" class="form-control"
+                                           ng-model="elProv.concepto" placeholder="Concepto" maxlength="200" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group required">
+                                    <label for="txtChequesA" class="control-label">Cheques a nombre de:</label>
+                                    <input name="txtChequesA" id="txtChequesA" type="text" class="form-control"
+                                           ng-model="elProv.chequesa" placeholder="Nombre de a quien se sacan los cheques"
+                                           maxlength="150" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <center><label for="chkRetenISR">¿Retener I.S.R.?</label>
+                                    <input name="chkRetenISR" id="chkRetenISR" type="checkbox" class="checkbox"
+                                           ng-model="elProv.retensionisr" ng-true-value="1" ng-false-value="0" /></center>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <center><label for="chkPequeCont">¿Es peque&ntilde;o contribuyente?</label>
+                                    <input name="chkPequeCont" id="chkPequeCont" type="checkbox" class="checkbox"
+                                           ng-model="elProv.pequeniocont" ng-true-value="1" ng-false-value="0" /></center>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txtDiasCred">D&iacute;as de cr&eacute;dito:</label>
+                                    <input name="txtDiasCred" id="txtDiasCred" type="number" class="form-control"
+                                           ng-model="elProv.diascred"
+                                           placeholder="¿Cu&aacute;ntos d&iacute;as de cr&eacute;dito tiene?" min="0" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txtLimCred">L&iacute;mite de cr&eacute;dito (Q):</label>
+                                    <input name="txtLimCred" id="txtLimCred" type="text" class="form-control"
+                                           ng-model="elProv.limitecred"
+                                           placeholder="¿Cu&aacute;l es el l&iacute;mite de cr&eacute;dito? (En Q.)"
+                                           min="0" fcsa-number="{ min:0, maxDecimals: 2 }"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group required" ng-class="{'has-error':frmProv.selMoneda.$invalid && !frmProv.selMoneda.$pristine}">
+                                    <label for="selMoneda" class="control-label">Moneda por defecto:</label>
+                                    <select name="selMoneda" id="selMoneda" class="form-control" ng-model="elProv.objMoneda"
+                                            ng-options="obj.nommoneda for obj in monedas track by obj.id"
+                                            ng-change="elProv.tipocambioprov = elProv.objMoneda.tipocambio"
+                                            required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required" ng-class="{'has-error':frmProv.txtCambio.$invalid && !frmProv.txtCambio.$pristine}">
+                                    <lable for="txtTCambioSug" class="control-label">Tipo de cambio por defecto:</lable>
+                                    <input name="txtTCambioSug" id="txtTCambioSug" class="form-control" ng-model="elProv.tipocambioprov"
+                                           type="text" min="1" fcsa-number="{ min:1, maxDecimals:dectc }" required/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-primary" ng-disabled="frmProv.$invalid || !permiso.c" ng-hide="editando">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="frmProv.$invalid || !permiso.m" ng-show="editando" ng-click="updProv(elProv, elProv.id)">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="frmProv.$invalid || !permiso.c" ng-show="editando" ng-click="resetElProv()">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover table-condensed">
+                        <thead>
+                            <tr>
+                                <th style="text-align: right">No.</th>
+                                <th>Proveedor</th>
+                                <th>Tel.</th>
+                                <th>Correo</th>
+                                <!--
+                                <th>Cheques A</th>
+                                <th>D&iacute;as de cr&eacute;d.</th>
+                                <th>L&iacute;mite de cr&eacute;d.</th>
+                                -->
+                                <th>&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="prov in losProvs" ng-click="getDataProv(prov.id)">
+                                <td style="text-align: right">{{prov.id | padNumber:5}}</td>
+                                <td style="white-space: nowrap;">{{prov.nitnombre}}</td>
+                                <td>{{prov.telefono}}</td>
+                                <td>{{prov.correo}}</td>
+                                <!--
+                                <td>{{prov.chequesa}}</td>
+                                <td>{{prov.diascred}}</td>
+                                <td>{{prov.limitecred | number:2}}</td>
+                                -->
+                                <td>
+                                    <button type="button" class="btn btn-danger" ng-click="delProv(prov.id)" ng-disabled="!permiso.e">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="divFrmDetContProv" class="tab-pane fade">
+            <div class="panel panel-success">
+                <div class="panel-heading">Detalle contable de <span class="badge">{{strProveedor}}</span></div>
+                <div class="panel-body">
+                    <form name="frmDetProv" id="frmDetProv" ng-submit="frmDetProv.$valid && addDetProv(elDetContProv)" novalidate>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="{'has-error':frmDetProv.selEmpresa.$invalid && !frmDetProv.selEmpresa.$pristine}">
+                                    <label for="selEmpresa">Empresa:</label>
+                                    <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="objEmpresa"
+                                            ng-options="obj.nomempresa for obj in lasEmpresas track by obj.id" ng-change="getLstCuentas()" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="{'has-error':frmDetProv.selCuenta.$invalid && !frmDetProv.selCuenta.$pristine}">
+                                    <label for="selCuenta">Cuenta de gasto:</label>
+                                    <!--
+                                    <select name="selCuenta" id="selCuenta" class="form-control" ng-model="elDetContProv.objCuentaC"
+                                            ng-options="obj.codcta for obj in lasCuentas | filter:{codcta:searchcta}" multiple required>
+                                    </select>
+                                    -->
+                                    <ui-select id="selCuenta" ng-model="elDetContProv.idcuentac"
+                                               title="Seleccione una cuenta contable..."
+                                               theme="bootstrap"
+                                               autofocus="false">
+                                        <ui-select-match placeholder="Buscar cuenta contable..." allow-clear="false">
+                                            <span ng-bind="$select.selected.nombrecta"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="item.id as item in lasCuentas | filter:$select.search">
+                                            <div ng-bind-html="item.nombrecta | highlight: $select.search"></div>
+                                            <small>
+                                                <strong>C&oacute;digo:</strong>&nbsp;<span ng-bind-html="item.codigo | highlight: $select.search" ></span>
+                                            </small>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="{'has-error':frmDetProv.selCuenta.$invalid && !frmDetProv.selCuenta.$pristine}">
+                                    <label for="selCxP">Cuenta por pagar:</label>
+                                    <ui-select id="selCxP" ng-model="elDetContProv.idcxp"
+                                               title="Seleccione una cuenta contable..."
+                                               theme="bootstrap"
+                                               autofocus="false">
+                                        <ui-select-match placeholder="Buscar cuenta contable..." allow-clear="false">
+                                            <span ng-bind="$select.selected.nombrecta"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="item.id as item in lasCuentas | filter:$select.search">
+                                            <div ng-bind-html="item.nombrecta | highlight: $select.search"></div>
+                                            <small>
+                                                <strong>C&oacute;digo:</strong>&nbsp;<span ng-bind-html="item.codigo | highlight: $select.search" ></span>
+                                            </small>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-success" ng-disabled="frmDetProv.$invalid || !permiso.m">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <!--
+                            <button type="button" class="btn btn-success" ng-disabled="frmProv.$invalid" ng-show="editando" ng-click="updProv(elProv, elProv.id)">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            -->
+                        </div>
+                    </form>
+                    <hr/>
+                    <table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Empresa</th>
+                                <th>Cuenta de gasto</th>
+                                <th>Cuenta por pagar</th>
+                                <th>&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="dt in detContProv">
+                                <td>{{dt.nomempresa}}</td>
+                                <td>({{dt.codigo}}) {{dt.nombrecta}}</td>
+                                <td>({{dt.codigocxp}}) {{dt.cuentacxp}}</td>
+                                <td>
+                                    <button type="button" class="btn btn-danger" ng-click="delDetProv(dt.id)" ng-disabled="!permiso.e">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

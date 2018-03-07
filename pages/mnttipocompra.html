@@ -1,0 +1,79 @@
+<div class="container" ng-controller="tipoCompraCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Tipos de compra/venta</div>
+        <div class="panel-body">
+            <form name="frmTipoCompra" id="frmTipoCompra" ng-submit="frmTipoCompra.$valid && addTipoCompra(compra)" novalidate>
+                <div class="row">
+                    <div class="col-md-12 nopadding">
+                        <div class="form-group" ng-class="{'has-error':frmTipoCompra.txtDescripcion.$invalid && !frmTipoCompra.txtDescripcion.$pristine}">
+                            <label for="txtDescripcion">Tipo de compra/venta:</label>
+                            <input name="txtDescripcion" id="txtDescripcion" type="text" class="form-control input-sm" ng-model="tipocompra.desctipocompra"
+                                   placeholder="Descripci&oacute;n del tipo de compra" maxlength="50" required/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 nopadding">
+                        <div class="form-group">
+                            <label for="selCta">I.V.A. cr&eacute;dito:</label>
+                            <input name="txtFiltroCta" id="txtFiltroCta" type="text" class="form-control input-sm" ng-model="searchcta" placeholder="Cuenta contable"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4 nopadding">
+                        <div class="form-group" ng-class="{'has-error':frmTipoCompra.selCta.$invalid && !frmTipoCompra.selCta.$pristine}">
+                            <label for="selCta">&nbsp;</label>
+                            <select name="selCta" id="selCta" class="form-control input-sm" ng-model="tipocompra.objCuentaC"
+                                    ng-options="obj.codcta for obj in cuentasc | filter:{codcta:searchcta}" multiple required>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2 nopadding">
+                        <div class="form-group">
+                            <label for="selCtaV">I.V.A. d&eacute;bito:</label>
+                            <input name="txtFiltroCtaV" id="txtFiltroCtaV" type="text" class="form-control input-sm" ng-model="searchctav" placeholder="Cuenta contable"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4 nopadding">
+                        <div class="form-group" ng-class="{'has-error':frmTipoCompra.selCtaV.$invalid && !frmTipoCompra.selCtaV.$pristine}">
+                            <label for="selCtaV">&nbsp;</label>
+                            <select name="selCtaV" id="selCtaV" class="form-control input-sm" ng-model="tipocompra.objCuentaCV"
+                                    ng-options="obj.codcta for obj in cuentasc | filter:{codcta:searchctav}" multiple required>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="submit" class="btn btn-primary" ng-disabled="frmTipoCompra.$invalid" ng-hide="tipocompra.id > 0">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-disabled="frmTipoCompra.$invalid" ng-show="tipocompra.id > 0" ng-click="updTipoCompra(tipocompra)">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                    <button type="button" class="btn btn-danger" ng-disabled="frmTipoCompra.$invalid" ng-show="tipocompra.id > 0" ng-click="delTipoCompra(tipocompra)">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-disabled="frmTipoCompra.$invalid" ng-show="tipocompra.id > 0" ng-click="resetTipoCompra()">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+                </div>
+            </form>
+            <hr>
+            <table class="table table-responsive table-hover table-condensed">
+                <thead>
+                <tr>
+                    <th>Tipo de compra/venta</th>
+                    <th>I.V.A. cr&eacute;dito</th>
+                    <th>I.V.A. d&eacute;bito</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="tc in tiposcompra" ng-click="getTipoCompra(tc.id)">
+                    <td>{{tc.desctipocompra}}</td>
+                    <td>{{tc.codcta}}</td>
+                    <td>{{tc.codctaventa}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

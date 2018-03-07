@@ -1,0 +1,82 @@
+<div class="container" ng-controller="tipogastoCtrl">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divFrmTipoGasto" data-toggle="tab">TIPO DE GASTO</a>
+        </li>
+        <li ng-show="+elTipogasto.id > 0">
+            <a show-tab href="#divFrmSubTipoGasto" data-toggle="tab">SUB-TIPO DE GASTO</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div id="divFrmTipoGasto" class="tab-pane fade in active">
+            <div class="panel panel-info">
+                <div class="panel-heading">Tipo de gasto</div>
+                <div class="panel-body">
+                    <form name="frmTipogasto" id="frmTipogasto" ng-submit="frmTipogasto.$valid && addTipogasto(elTipogasto)" novalidate>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="txtDesctipogast">Descripci&oacute;n:</label>
+                                    <input type="text" name="txtDesctipogast" id="txtDesctipogast" class="form-control" ng-model="elTipogasto.desctipogast"
+                                           placeholder="Descripci&oacute;n del tipo de gasto" maxlength="150" required ng-disabled="sl.tipogasto"/>
+                                </div>
+                            </div>
+                        </div>
+                        <form-buttons vis="grpBtnTipoGasto" btn-dis="frmTipogasto.$invalid" obj="elTipogasto"
+                                      uf="updTipogasto(elTipogasto)" df="delTipogasto(elTipogasto)"
+                                      nf="nuevoTipogasto()" cf="cancelEditTipogasto()" ef="startEditTipogasto()" pf="imprimirTipogasto()">
+                        </form-buttons>
+                    </form>
+                    <hr/>
+                    <table class="table table-responsive table-hover">
+                        <thead>
+                        <tr>
+                            <th>Descripci&oacute;n del Gasto</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="e in lstTipogastos" ng-click="getTipogasto(e.id)">
+                            <td>{{e.desctipogast}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="divFrmSubTipoGasto" class="tab-pane fade">
+            <div class="panel panel-info">
+                <div class="panel-heading">Sub-tipo de gasto</div>
+                <div class="panel-body">
+                    <form name="frmSubTipogasto" id="frmSubTipogasto" ng-submit="frmSubTipogasto.$valid && addSubTipogasto(subtiposgasto)" novalidate>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="txtDescSubtipogast">Descripci&oacute;n:</label>
+                                    <input type="text" name="txtDescSubtipogast" id="txtDescSubtipogast" class="form-control" ng-model="subtiposgasto.descripcion"
+                                           placeholder="Descripci&oacute;n del sub-tipo de gasto" maxlength="150" required ng-disabled="sl.subtipogasto"/>
+                                </div>
+                            </div>
+                        </div>
+                        <form-buttons vis="grpBtnSubTipoGasto" btn-dis="frmSubTipogasto.$invalid" obj="subtiposgasto"
+                                      uf="updSubTipogasto(subtiposgasto)" df="delSubTipogasto(subtiposgasto)"
+                                      nf="nuevoSubTipogasto()" cf="cancelEditSubTipogasto()" ef="startEditSubTipogasto()" pf="imprimirSubTipogasto()">
+                        </form-buttons>
+                    </form>
+                    <hr/>
+                    <table class="table table-responsive table-hover">
+                        <thead>
+                        <tr>
+                            <th>Descripci&oacute;n del Gasto</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="s in lstsubtiposgasto" ng-click="getSubTipogasto(s.id)">
+                            <td>{{s.descripcion}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

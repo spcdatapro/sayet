@@ -1,0 +1,121 @@
+<div class="container" ng-controller="cpmUsrCtrl">
+
+    <ul class="nav nav-tabs">
+        <li>
+            <a show-tab href="#divPerfiles" data-toggle="tab">PERFILES</a>
+        </li>
+        <li class="active">
+            <a show-tab href="#divFrmDatosGenerales" data-toggle="tab">DATOS GENERALES</a>
+        </li>
+        <li>
+            <a show-tab href="#divFrmPermisos" data-toggle="tab" ng-show="editando">PERMISOS</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="divFrmDatosGenerales" class="tab-pane fade in active">
+            <form name="frmDatosGen" ng-submit="frmDatosGen.$valid && savePerfil(perfil)" novalidate>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Datos generales</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label>No. {{perfil.id}}</label>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error':frmDatosGen.txtNombre.$invalid && !frmDatosGen.txtNombre.$pristine}">
+                            <label for="txtNombre">Nombre:</label>
+                            <input id="txtNombre" name="txtNombre" type="text" ng-model="perfil.nombre" class="form-control" placeholder="Nombre del usuario" required/>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error':frmDatosGen.txtUsuario.$invalid && !frmDatosGen.txtUsuario.$pristine}">
+                            <label for="txtUsuario">Usuario:</label>
+                            <input id="txtUsuario" name="txtUsuario" type="text" ng-model="perfil.usuario" class="form-control" placeholder="Usuario" required/>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error':frmDatosGen.txtCorreo.$invalid && !frmDatosGen.txtCorreo.$pristine}">
+                            <label for="txtCorreo">Correo electr&oacute;nico:</label>
+                            <input id="txtCorreo" name="txtCorreo" type="email" ng-model="perfil.correoe" class="form-control" placeholder="Correo electr&oacute;nico" required/>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error':frmDatosGen.txtPass.$invalid && !frmDatosGen.txtPass.$pristine}">
+                            <label for="txtPass">Contrase&ntilde;a:</label>
+                            <input id="txtPass" name="txtPass" type="password" ng-model="perfil.contrasenia" class="form-control" placeholder="Contrase&ntilde;a" required/>
+                        </div>
+                    </div><!-- .panel-body -->
+                    <div class="panel-footer">
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-primary" ng-disabled="frmDatosGen.$invalid" ng-show="editando">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="frmDatosGen.$invalid" ng-hide="editando" ng-click="addPerfil(perfil)">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="frmDatosGen.$invalid" ng-show="editando" ng-click="resetPerfil()">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div><!--.tab-pane Perfil-->
+        <div id="divFrmPermisos" class="tab-pane fade">
+            <div class="panel panel-success">
+                <div class="panel-heading">Permisos</div>
+                <div class="panel-body">
+
+                    <table class="table table-responsive table-hover">
+                        <thead>
+                            <tr>
+                                <th>M&oacute;dulo</th>
+                                <th>Men&uacute;</th>
+                                <th>Item</th>
+                                <th>Accesar</th>
+                                <th>Crear</th>
+                                <th>Modificar</th>
+                                <th>Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="permiso in permisos">
+                                <td>{{permiso.descmodulo}}</td>
+                                <td>{{permiso.descmenu}}</td>
+                                <td>{{permiso.descitemmenu}}</td>
+                                <td align="center">
+                                    <input type="checkbox" ng-model="permiso.accesar" ng-true-value="1" ng-false-value="0"  class="checkbox" ng-change="updPermiso('a', permiso.idpermiso, permiso.accesar)"/>
+                                </td>
+                                <td align="center">
+                                    <input type="checkbox" ng-model="permiso.crear" ng-true-value="1" ng-false-value="0" ng-change="updPermiso('c', permiso.idpermiso, permiso.crear)"/>
+                                </td>
+                                <td align="center">
+                                    <input type="checkbox" ng-model="permiso.modificar" ng-true-value="1" ng-false-value="0" ng-change="updPermiso('m', permiso.idpermiso, permiso.modificar)"/>
+                                </td>
+                                <td align="center">
+                                    <input type="checkbox" ng-model="permiso.eliminar" ng-true-value="1" ng-false-value="0" ng-change="updPermiso('e', permiso.idpermiso, permiso.eliminar)"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div><!--.tab-pane Permisos-->
+        <div id="divPerfiles" class="tab-pane fade">
+            <div class="panel panel-info">
+                <div class="panel-heading">Lista de perfiles</div>
+                <div class="panel-body">
+                    <table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover">
+                        <thead>
+                            <th>Nombre</th>
+                            <th>Usuario</th>
+                            <th>Correo electr&oacute;nico</th>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="p in losPerfiles" ng-click="halaPerfil(p.id)">
+                                <td>{{p.nombre}}</td>
+                                <td>{{p.usuario}}</td>
+                                <td>{{p.correoe}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div><!--.tab-pane Perfiles-->
+        <!--toaster-container toaster-options="{'time-out':2000, 'position-class':'toast-bottom-full-width'}"></toaster-container-->
+    </div><!--.tab-content-->
+
+</div>

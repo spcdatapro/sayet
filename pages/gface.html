@@ -1,0 +1,57 @@
+<div class="container" ng-controller="gfaceCtrl">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divDescargaGFACE" data-toggle="tab">BAJAR ARHCIVO PARA GFACE</a>
+        </li>
+        <li>
+            <a show-tab href="#divCargaGFACE" data-toggle="tab">SUBIR ARCHIVO DE GFACE</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div id="divDescargaGFACE" class="tab-pane fade in active">
+            <div class="panel panel-info">
+                <div class="panel-heading">Bajar archivo para GFACE</div>
+                <div class="panel-body">
+                    <form name="frmGetGFace" id="frmGetGFace" novalidate>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="selEmpresa">Empresa:</label>
+                                    <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="params.idempresa" ng-options="obj.id as obj.nomempresa for obj in empresas" required></select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="txtFDel">Del:</label>
+                                    <input name="txtFDel" id="txtFDel" type="date" class="form-control" ng-model="params.fdel" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="txtFAl">Al:</label>
+                                    <input name="txtFAl" id="txtFAl" type="date" class="form-control" ng-model="params.fal" required/>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary" ng-disabled="frmGetGFace.$invalid" ng-click="getGFACE()">
+                            <span class="glyphicon glyphicon-download"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div id="divCargaGFACE" class="tab-pane fade">
+            <div class="panel panel-info">
+                <div class="panel-heading">Subir archivo de GFACE</div>
+                <div class="panel-body">
+                    <h4>Seleccionar archivo:</h4>
+                    <input name="txtFile" id="txtFile" type="file" on-read-file="showContent($fileContent)" />
+                    <div ng-if="content">
+                        <h5>Contenido del archivo:</h5>
+                        <pre>{{ content }}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,828 @@
+<style>
+    .app-modal-window .modal-dialog { width: 500px; }
+    .num{ text-align: right; white-space: nowrap}
+    .paddleft {padding-left: 0.2em }
+    .paddtop {padding-top: 0.3em }
+</style>
+<div class="container" ng-controller="facturacionCtrl">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divFacturacion" data-toggle="tab">FACTURACI&Oacute;N</a>
+        </li>
+        <li>
+            <a show-tab href="#divFacturacionAgua" data-toggle="tab">FACTURACI&Oacute;N DE SERVICIO DE AGUA</a>
+        </li>
+        <li>
+            <a show-tab href="#divFacturacionOtros" data-toggle="tab">FACTURAR OTROS</a>
+        </li>
+        <li>
+            <a show-tab href="#divPrintPreimpresas" data-toggle="tab">IMRPRIMIR FACTURAS</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div id="divFacturacion" class="tab-pane fade in active">
+            <div class="panel panel-info">
+                <div class="panel-heading">Facturaci&oacute;n</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12 nopadding" style="text-align: right">
+                            <button type="button" class="btn btn-info btn-xs" ng-click="showparams = !showparams" ng-hide="showparams" aria-label="Toggle ngHide">
+                                <span class="glyphicon glyphicon-chevron-down"></span>
+                            </button>
+                            <button type="button" class="btn btn-info btn-xs" ng-click="showparams = !showparams" ng-show="showparams" aria-label="Toggle ngHide">
+                                <span class="glyphicon glyphicon-chevron-up"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row check-element animate-show" ng-show="showparams">
+                        <div class="col-md-3 nopadding">
+                            <div class="form-group">
+                                <label for="selEmpresa">Empresa</label>
+                                <select name="selEmpresa" id="selEmpresa" class="form-control input-sm" ng-model="params.idempresa"
+                                        ng-options="obj.id as obj.nomempresa for obj in empresas">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3 nopadding">
+                            <div class="form-group">
+                                <label for="txtFVence">Fecha de vencimiento:</label>
+                                <input name="txtFVence" id="txtFVence" type="date" class="form-control input-sm" ng-model="params.fvence"/>
+                            </div>
+                        </div>
+                        <div class="col-md-3 nopadding">
+                            <div class="form-group">
+                                <label for="txtFFactura">Fecha de factura:</label>
+                                <input name="txtFFactura" id="txtFFactura" type="date" class="form-control input-sm" ng-model="params.ffactura"/>
+                            </div>
+                        </div>
+                        <div class="col-md-3 nopadding">
+                            <div class="form-group">
+                                <label for="txtTC">Tasa de cambio:</label>
+                                <input name="txtTC" id="txtTC" type="number" class="form-control input-sm" ng-model="params.tc" step="0.01" min="1"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row check-element animate-show" ng-show="showparams">
+                        <div class="col-md-12 nopadding">
+                            <div class="form-group">
+                                <label>Facturar:</label>
+                                <ui-select multiple ng-model="params.objTipo" title="Seleccione conceptos a facturar..." theme="bootstrap"
+                                           autofocus="true" append-to-body="true" sortable="true">
+                                    <ui-select-match placeholder="Buscar concepto a facturar..." allow-clear="true">
+                                        <span>{{$item.desctiposervventa}}</span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item in tipos | filter:$select.search">
+                                        <div ng-bind-html="item.desctiposervventa | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>
+                                        No hay resultados...
+                                    </ui-select-no-choice>
+                                </ui-select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row check-element animate-show" ng-show="showparams">
+                        <div class="col-md-12 nopadding" style="text-align: right">
+                            <button type="button" class="btn btn-info" ng-click="printPreliminar()">
+                                <span>Proyecci&oacute;n</span>
+                            </button>
+                            <button type="button" class="btn btn-info" ng-click="getPendientes()">
+                                <span class="glyphicon glyphicon-search"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <hr/>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5>{{paramsstr}}</h5>
+                        </div>
+                    </div>
+                    <hr/>
+                    <div class="row" ng-show="pendientes.length > 0">
+                        <div class="col-md-11">
+                            <input type="text" ng-model="fltrPends.$" class="form-control" placeholder="Buscar cobro..." />
+                        </div>
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-primary" ng-click="printFactPreview()">
+                                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <hr ng-show="pendientes.length > 0"/>
+                    <div class="row" ng-show="pendientes.length > 0">
+                        <div class="col-md-12" style="text-align: right !important;">
+                            <div class="form-inline">
+                                <input name="chkAllNone" id="chkAllNone" type="checkbox" ng-model="allnone" ng-true-value="1" ng-false-value="0" ng-change="marcarDesmarcar()"/>
+                                <label for="chkAllNone">Marcar/Desmarcar todos</label><br/>
+                                <span><strong>Seleccionadas:</strong> {{suma.cantidad}}</span><br/>
+                                <span style="text-decoration: underline"><strong>Monto a facturar:</strong> Q {{suma.totmonto | number:2}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" ng-repeat="p in pendientes | filter:fltrPends" on-finish-render="epups">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-3"><span style="font-weight: bold;">Cliente</span></div>
+                                <div class="col-md-2"><span style="font-weight: bold;">Facturar a</span></div>
+                                <div class="col-md-2" style="text-align: right"><span style="font-weight: bold;">A pagar</span></div>
+                                <div class="col-md-3"><span style="font-weight: bold;">Tipo</span></div>
+                                <div class="col-md-1">&nbsp;</div>
+                                <div class="col-md-1" style="font-weight: bold; text-align: center">Facturar</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">{{p.clientecorto}}</div>
+                                <div class="col-md-2">{{p.facturara}}</div>
+                                <div class="col-md-2" style="text-align: right">{{p.montoconiva | number:2}}</div>
+                                <div class="col-md-3">
+                                    <div data-html="true" data-toggle="popover" title="Concepto" data-placement="auto" data-trigger="hover" data-content="{{p.tipo}}">
+                                        {{p.tipo | shortenStr:20}}
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-info" ng-click="verDetFact(p)">
+                                        <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <div class="col-md-1" style="text-align: center">
+                                    <input type="checkbox" ng-model="p.facturar" ng-true-value="1" ng-false-value="0" ng-change="calculaMontos()"/>
+                                </div>
+                            </div>
+                            <hr/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" ng-show="pendientes.length > 0">
+                    <div class="col-md-12" style="text-align: right !important;">
+                        <div class="form-inline">
+                            <input name="chkAllNone1" id="chkAllNone1" type="checkbox" ng-model="allnone" ng-true-value="1" ng-false-value="0" ng-change="marcarDesmarcar()"/>
+                            <label for="chkAllNone1">Marcar/Desmarcar todos</label><br/>
+                            <span><strong>Seleccionadas:</strong> {{suma.cantidad}}</span><br/>
+                            <span><strong>Monto a facturar:</strong> Q {{suma.totmonto | number:2}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col-md-10"></div>
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-info" ng-show="pendientes.length > 0" ng-click="factSelected()">Facturar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="divFacturacionAgua" class="tab-pane fade">
+            <div class="panel panel-info">
+                <div class="panel-heading">Facturaci&oacute;n de servicio de agua</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12 nopadding" style="text-align: right">
+                            <button type="button" class="btn btn-info btn-xs" ng-click="showparamsh2o = !showparamsh2o" ng-hide="showparamsh2o" aria-label="Toggle ngHide">
+                                <span class="glyphicon glyphicon-chevron-down"></span>
+                            </button>
+                            <button type="button" class="btn btn-info btn-xs" ng-click="showparamsh2o = !showparamsh2o" ng-show="showparamsh2o" aria-label="Toggle ngHide">
+                                <span class="glyphicon glyphicon-chevron-up"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row check-element animate-show" ng-show="showparamsh2o">
+                        <div class="col-md-3 nopadding">
+                            <div class="form-group">
+                                <label for="selEmpresaH2O">Empresa:</label>
+                                <select name="selEmpresaH2O" id="selEmpresaH2O" class="form-control input-sm" ng-model="paramsh2o.idempresa"
+                                        ng-options="obj.id as obj.nomempresa for obj in empresas">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3 nopadding">
+                            <div class="form-group">
+                                <label for="txtFVenceH2O">Fecha de vencimiento:</label>
+                                <input name="txtFVenceH2O" id="txtFVenceH2O" type="date" class="form-control input-sm" ng-model="paramsh2o.fvence"/>
+                            </div>
+                        </div>
+                        <div class="col-md-3 nopadding">
+                            <div class="form-group">
+                                <label for="txtFFacturaH2O">Fecha de factura:</label>
+                                <input name="txtFFacturaH2O" id="txtFFacturaH2O" type="date" class="form-control input-sm" ng-model="paramsh2o.ffactura"/>
+                            </div>
+                        </div>
+                        <div class="col-md-3 nopadding">
+                            <div class="form-group">
+                                <label for="txtTCH2O">Tasa de cambio:</label>
+                                <input name="txtTCH2O" id="txtTCH2O" type="number" class="form-control input-sm" ng-model="paramsh2o.tc" step="0.01" min="1"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row check-element animate-show" ng-show="showparamsh2o">
+                        <div class="col-md-12 nopadding" style="text-align: right">
+                            <button type="button" class="btn btn-info" ng-click="getPendientesH2O()">
+                                <span class="glyphicon glyphicon-search"></span>
+                            </button>
+                            <button type="button" class="btn btn-info" ng-click="printPreliminarAgua()">
+                                <span>Proyecci&oacute;n</span>
+                            </button>
+                        </div>
+                    </div>
+                    <hr/>
+                    <table class="table table-condensed table-hover table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Facturar a</th>
+                            <th>Contador</th>
+                            <th>Per&iacute;odo</th>
+                            <th class="num">Anterior</th>
+                            <th class="num">Actual</th>
+                            <th class="num">Consumo</th>
+                            <th class="num">Base</th>
+                            <th class="num">A facturar (m<sup>3</sup>)</th>
+                            <th class="num">A facturar (Q)</th>
+                            <th style="text-align: center">Facturar</th>
+                            <!--<th>&nbsp;</th>-->
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="p in pendientesh2o">
+                            <td>{{p.nombrecorto}}</td>
+                            <td>{{p.facturara | shortenStr:30}}</td>
+                            <td style="white-space: nowrap">{{p.numidentificacion}}</td>
+                            <td>{{p.mes | padNumber:2}}/{{p.anio}}</td>
+                            <td class="num">{{p.ultimalecturafact | number:2}}</td>
+                            <td class="num">{{p.lectura | number:2}}</td>
+                            <td class="num">{{p.consumo | number:2}}</td>
+                            <td class="num">{{p.mcubsug | number:2}}</td>
+                            <td class="num">{{p.consumoafacturar | number:2}}</td>
+                            <td class="num">{{p.montoconiva | number:2}}</td>
+                            <td style="text-align: center">
+                                <input name="chkFactAgua_{{p.id}}" id="chkFactAgua_{{p.id}}" type="checkbox" ng-model="p.facturar" ng-true-value="'1'" ng-false-value="'0'" ng-disabled="!(+p.consumoafacturar > 0)"/>
+                            </td>
+                            <!--<td>&nbsp;</td>-->
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col-md-10"></div>
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-info" ng-show="pendientesh2o.length > 0" ng-click="factSelectedH2O()">Facturar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="divFacturacionOtros" class="tab-pane fade">
+            <div class="panel panel-info">
+                <div class="panel-heading">Facturar otros</div>
+                <div class="panel-body">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a show-tab href="#divListaFacturacionOtros" data-toggle="tab">LISTA DE FACTURAS</a>
+                        </li>
+                        <li>
+                            <a show-tab href="#divCreaEditaFacturasOtros" data-toggle="tab">FACTURAR OTROS</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="divListaFacturacionOtros" class="tab-pane fade in active">
+                            <table class="table table-hover table-condensed table-striped">
+                                <caption>
+                                    <input ng-model="search.$" class="form-control" placeholder="Buscar factura..." style="width: 100%"/><br/>
+                                    <button type="button" class="btn btn-success btn-sm" ng-click="loadFacturas(0, 1)"><span class="badge">Pendientes</span></button>
+                                    <button type="button" class="btn btn-info btn-sm" ng-click="loadFacturas(0, 0)"><span class="badge">Todas</span></button>
+                                </caption>
+                                <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Empresa</th>
+                                    <th>Cliente</th>
+                                    <th>Factura</th>
+                                    <th class="num">Monto</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="fact in facturas | filter:search:strict" ng-click="getFactura(fact.id)">
+                                    <td>{{fact.fecha | date:'dd/MM/yyyy'}}</td>
+                                    <td>{{fact.abreviaempre}}</td>
+                                    <td style="color: #157AB5;">{{fact.cliente}}&nbsp;({{fact.nit}})</td>
+                                    <td style="white-space: nowrap">{{fact.serie}}&nbsp;{{fact.numero}}</td>
+                                    <td class="num">{{fact.subtotal | number:2}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="divCreaEditaFacturasOtros" class="tab-pane fade" style="margin: 0 !important;">
+                            <form name="frmFact" id="frmFact" ng-submit="frmFact.$valid && addFactura(factura)" novalidate>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group required">
+                                            <label for="selEmpresaOtr" class="control-label">Empresa:</label>
+                                            <select name="selEmpresaOtr" id="selEmpresaOtr" class="form-control" ng-model="factura.idempresa"
+                                                    ng-options="obj.id as obj.nomempresa for obj in empresas" ng-change="setTipoFactura(factura.idempresa); loadProyectos(factura.idempresa);" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group required">
+                                            <label for="selTipoFactura" class="control-label">Tipo de factura:</label>
+                                            <select name="selTipoFactura" id="selTipoFactura" class="form-control" ng-model="factura.idtipofactura"
+                                                    ng-options="obj.id as obj.desctipofact for obj in tiposfactura" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group required">
+                                            <label for="txtCliente" class="control-label">Cliente:</label>
+                                            <div angucomplete-alt id="txtCliente"
+                                                 placeholder="Buscar cliente..."
+                                                 pause="400"
+                                                 selected-object="clienteSelected"
+                                                 remote-url="php/facturaotros.php/srchcli/{{factura.idempresa}}/"
+                                                 remote-url-error-callback="errorSearch"
+                                                 remote-url-data-field="results"
+                                                 title-field="facturara"
+                                                 description-field="nit"
+                                                 input-class="form-control form-control-sm"
+                                                 match-class="highlight"
+                                                 minlength="1"
+                                                 field-required="true"
+                                                 input-name="txtCliente"
+                                                 override-suggestions="true"
+                                            ></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group required">
+                                            <label for="txtNit" class="control-label">N.I.T.</label>
+                                            <input name="txtNit" id="txtNit" type="text" class="form-control" ng-model="factura.nit" maxlength="25" required/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4" ng-show="contratos.length > 0">
+                                        <div class="form-group">
+                                            <label>Contrato (si aplica):</label>
+                                            <ui-select ng-model="factura.idcontrato"
+                                                       title="Seleccione un contrato si aplica.."
+                                                       theme="bootstrap"
+                                                       append-to-body="true"
+                                                       on-select="setProyecto($item, $model)">
+                                                <ui-select-match placeholder="Buscar contrato si aplica..." allow-clear="true">
+                                                    <span ng-bind="$select.selected.unidad"></span>
+                                                </ui-select-match>
+                                                <ui-select-choices repeat="item.id as item in contratos | filter:$select.search">
+                                                    <div ng-bind-html="item.unidad | highlight: $select.search"></div>
+                                                    <small>
+                                                        <strong>No. contrato:</strong>&nbsp;<span ng-bind-html="item.nocontrato | highlight: $select.search" ></span><br/>
+                                                        <strong>Proyecto:</strong>&nbsp;<span ng-bind-html="item.proyecto | highlight: $select.search" ></span>
+                                                    </small>
+                                                </ui-select-choices>
+                                                <ui-select-no-choice>
+                                                    No hay resultados...
+                                                </ui-select-no-choice>
+                                            </ui-select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group required">
+                                            <label for="selProyectoFact" class="control-label">Proyecto:</label>
+                                            <ui-select id="selProyectoFact"
+                                                       ng-model="factura.idproyecto"
+                                                       title="Seleccione un proyecto..."
+                                                       theme="bootstrap"
+                                                       append-to-body="false"
+                                                       ng-required="true">
+                                                <ui-select-match placeholder="Buscar proyecto..." allow-clear="false">
+                                                    <span ng-bind="$select.selected.nomproyecto"></span>
+                                                </ui-select-match>
+                                                <ui-select-choices repeat="item.id as item in proyectos | filter:$select.search">
+                                                    <div ng-bind-html="item.nomproyecto | highlight: $select.search"></div>
+                                                    <small>
+                                                        <strong>Empresa:</strong>&nbsp;<span ng-bind-html="item.empresa | highlight: $select.search" ></span>
+                                                    </small>
+                                                </ui-select-choices>
+                                                <ui-select-no-choice>
+                                                    No hay resultados...
+                                                </ui-select-no-choice>
+                                            </ui-select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="txtFDir">Direcci&oacute;n:</label>
+                                            <input name="txtFDir" id="txtFDir" type="text" class="form-control" ng-model="factura.direccion" maxlength="250" placeholder="Direcci&oacute;n del cliente..."/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="txtSerie">Serie:</label>
+                                            <input name="txtSerie" id="txtSerie" type="text" class="form-control" ng-model="factura.serie" maxlength="30" placeholder="Serie de factura..."/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="txtNumero">N&uacute;mero:</label>
+                                            <input name="txtNumero" id="txtNumero" type="text" class="form-control" ng-model="factura.numero" maxlength="200" placeholder="N&uacute;mero de factura..."/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group required">
+                                            <label for="txtFIng" class="control-label">Fecha de ingreso:</label>
+                                            <input name="txtFIng" id="txtFIng" type="date" class="form-control" ng-model="factura.fechaingreso" required/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group required">
+                                            <label for="txtFFact" class="control-label">Fecha de factura:</label>
+                                            <input name="txtFFact" id="txtFFact" type="date" class="form-control" ng-model="factura.fecha" required/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <div class="form-group required">
+                                            <label for="selTVenta" class="control-label">Tipo de venta:</label>
+                                            <select name="selTVenta" id="selTVenta" class="form-control" ng-model="factura.idtipoventa"
+                                                    ng-options="obj.id as obj.desctipocompra for obj in tiposventa" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group required" ng-class="{'has-error':frmFact.txtTipC.$invalid && !frmFact.txtTipC.$pristine}">
+                                            <label for="txtTipC" class="control-label">Tipo de cambio:</label>
+                                            <input name="txtTipC" id="txtTipC" type="number" class="form-control" ng-model="factura.tipocambio" min="1.00" placeholder="Tipo de cambio..." step="0.01" required/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label for="chkRetenerISR">Retener I.S.R.:</label>
+                                            <input name="chkRetenerISR" id="chkRetenerISR" type="checkbox" class="form-control" ng-model="factura.retenerisr" ng-true-value="1" ng-false-value="0"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label for="chkRetenerIVA">Retener I.V.A.</label>
+                                            <input name="chkRetenerIVA" id="chkRetenerIVA" type="checkbox" class="form-control" ng-model="factura.reteneriva" ng-true-value="1" ng-false-value="0"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group required" ng-class="{'has-error':frmFact.selMesAfecta.$invalid && !frmFact.selMesAfecta.$pristine}">
+                                            <label for="selMesAfecta" class="control-label">Mes que afecta:</label>
+                                            <select name="selMesAfecta" id="selMesAfecta" class="form-control" ng-model="factura.mesafecta" required>
+                                                <option value="1">Ene</option>
+                                                <option value="2">Feb</option>
+                                                <option value="3">Mar</option>
+                                                <option value="4">Abr</option>
+                                                <option value="5">May</option>
+                                                <option value="6">Jun</option>
+                                                <option value="7">Jul</option>
+                                                <option value="8">Ago</option>
+                                                <option value="9">Sep</option>
+                                                <option value="10">Oct</option>
+                                                <option value="11">Nov</option>
+                                                <option value="12">Dic</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group required" ng-class="{'has-error':frmFact.txtAnioAfecta.$invalid && !frmFact.txtAnioAfecta.$pristine}">
+                                            <label for="txtAnioAfecta" class="control-label">A&ntilde;o que afecta:</label>
+                                            <input name="txtAnioAfecta" id="txtAnioAfecta" type="number" class="form-control" ng-model="factura.anioafecta" min="2016" required/>
+                                        </div>
+                                    </div>
+                                    <!--
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="txtConMay">Concepto:</label>
+                                            <textarea name="txtConMay" id="txtConMay" class="form-control" ng-model="factura.conceptomayor" placeholder="Concepto de factura"
+                                                      rows="3" style="width: 100%;" maxlength="500">
+                                            </textarea>
+                                        </div>
+                                    </div>
+                                    -->
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label for="txtSubTot">Total:</label>
+                                            <input name="txtSubTot" id="txtSubTot" type="text" class="form-control" ng-model="factura.subtotal" ng-disabled="true" fcsa-number="{ maxDecimals:2 }" style="text-align: right"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label for="txtIva">I.V.A.:</label>
+                                            <input name="txtIva" id="txtIva" type="text" class="form-control" ng-model="factura.iva" ng-disabled="true" fcsa-number="{ maxDecimals:2 }" style="text-align: right"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label for="txtRetISR">I.S.R.:</label>
+                                            <input name="txtRetISR" id="txtRetISR" type="text" class="form-control" ng-model="factura.retisr" ng-disabled="true" fcsa-number="{ maxDecimals:2 }" style="text-align: right"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label for="txtRetIVA">Ret. I.V.A.:</label>
+                                            <input name="txtRetIVA" id="txtRetIVA" type="text" class="form-control" ng-model="factura.retiva" ng-disabled="true" fcsa-number="{ maxDecimals:2 }" style="text-align: right"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label for="txtDescuento">Descuento:</label>
+                                            <input name="txtDescuento" id="txtDescuento" type="text" class="form-control" ng-model="factura.totdescuento" ng-disabled="true" fcsa-number="{ maxDecimals:2 }" style="text-align: right"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label for="txtAPagar">A pagar:</label>
+                                            <input name="txtAPagar" id="txtAPagar" type="text" class="form-control" ng-model="factura.total" ng-disabled="true" fcsa-number="{ maxDecimals:2 }" style="text-align: right"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <button type="submit" class="btn btn-primary" ng-disabled="frmFact.$invalid" ng-hide="factura.id > 0">
+                                        <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary" ng-disabled="frmFact.$invalid" ng-show="factura.id > 0" ng-click="updFactura(factura)">
+                                        <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-danger" ng-disabled="frmFact.$invalid" ng-show="factura.id > 0" ng-click="delFactura(factura)">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary" ng-show="factura.id > 0" ng-click="resetFactura()">
+                                        <span class="glyphicon glyphicon-plus"></span>
+                                    </button>
+                                </div>
+                            </form>
+                            <hr/>
+                            <table class="table table-hover table-condensed" ng-show="+factura.id > 0">
+                                <caption style="vertical-align: top !important;">
+                                    <form name="frmDFact" id="frmDFact" class="form-inline" style="vertical-align: top !important;" ng-submit="frmDFact.$valid && addDetFact(detfact)" novalidate>
+                                        <input name="txtCant" id="txtCant" class="form-control input-sm" style="width:8em" type="number" min="1" ng-model="detfact.cantidad" placeholder="Cantidad" required/>
+                                        <select name="selTSV" id="selTSV" class="form-control input-sm" ng-model="detfact.idtiposervicio" ng-options="obj.id as obj.desctiposervventa for obj in tsv" required></select>
+                                        <input name="txtPU" id="txtPU" class="form-control input-sm" type="number" min="0" ng-model="detfact.preciounitario" placeholder="Precio unitario" required/>
+                                        <input name="txtDesc" id="txtDesc" class="form-control input-sm" type="number" min="0" ng-model="detfact.descuento" placeholder="Descuento" required/><br/>
+                                        <textarea name="txtDescrip" id="txtDescrip" class="form-control input-sm" type="text" maxlength="200" ng-model="detfact.descripcion"
+                                                  placeholder="Descripci&oacute;n" style="width:627px;" rows="4" required></textarea>
+                                        <button type="submit" class="btn btn-primary btn-sm" ng-disabled="frmDFact.$invalid" ng-hide="detfact.id > 0">
+                                            <span class="glyphicon glyphicon-floppy-save"></span>
+                                        </button>
+                                    </form>
+                                </caption>
+                                <thead>
+                                <tr>
+                                    <th class="num">Cantidad</th>
+                                    <th>Tipo</th>
+                                    <th>Descripci&oacute;n</th>
+                                    <th class="num">Precio/U</th>
+                                    <th class="num">Total</th>
+                                    <th class="num">Descuento</th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="det in detsfact">
+                                    <td class="num">{{det.cantidad}}</td>
+                                    <td>{{det.tiposervicio}}</td>
+                                    <td>{{det.descripcion}}</td>
+                                    <td class="num">{{det.preciounitario | number:2}}</td>
+                                    <td class="num">{{det.preciotot | number:2}}</td>
+                                    <td class="num">{{det.descuento | number:2}}</td>
+                                    <th>
+                                        <button type="button" class="btn btn-danger btn-sm" ng-show="factura.id > 0" ng-click="delDetFact(det)">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </button>
+                                    </th>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="divPrintPreimpresas" class="tab-pane fade">
+            <div class="panel panel-info">
+                <div class="panel-heading">Imprimir facturas pre-impresas</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-3 nopadding">
+                            <div class="form-group">
+                                <label for="selEmpresaImp">Empresa:</label>
+                                <select name="selEmpresaImp" id="selEmpresaImp" class="form-control input-sm" ng-model="paramsimp.idempresa"
+                                        ng-options="obj.id as obj.nomempresa for obj in empresas | filter:{congface:'0', sifactura:'1'}" ng-change="formatoFactura()">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3 nopadding">
+                            <div class="form-group">
+                                <label for="txtDelImp">Del:</label>
+                                <input name="txtDelImp" id="txtDelImp" type="date" class="form-control input-sm" ng-model="paramsimp.fdel"/>
+                            </div>
+                        </div>
+                        <div class="col-md-3 nopadding">
+                            <div class="form-group">
+                                <label for="txtAllImp">Al:</label>
+                                <input name="txtAllImp" id="txtAllImp" type="date" class="form-control input-sm" ng-model="paramsimp.fal"/>
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
+                <div class="panel-footer" style="text-align: right">
+                    <button id="btnGetPrint" name="btnGetPrint" class="btn btn-primary btn-sm" ng-click="getLstImpFact()">
+                        <span class="glyphicon glyphicon-list"></span>
+                    </button>
+                </div>
+            </div>
+            <hr/>
+            <table class="table table-hover table-stripped table-condensed">
+                <thead>
+                    <tr>
+                        <th>Documento</th>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Monto (Q)</th>
+                        <th>Imprimir</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <td colspan="5" class="num">
+                            <button id="btnImprimirFactPreImp" name="btnImprimirFactPreImp" class="btn btn-primary btn-sm" ng-click="imprimirFactPreImp()">
+                                Imprimir
+                            </button>                            
+                        </td>
+                    </tr>
+                </tfoot>
+                <tbody>
+                    <tr ng-repeat="f in lstimpfact">
+                        <td>{{f.serie}}{{f.numero}}</td>
+                        <td>{{f.fecha | date:'dd/MM/yyyy'}}</td>
+                        <td>{{f.cliente}}</td>
+                        <td class="num">{{f.totfact | number:2}}</td>
+                        <td style="text-align:center">
+                            <input type="checkbox" ng-model="f.imprimir" ng-true-value="1" ng-false-value="0"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!--Template de la modal //Este usa el controlador ModalDetFactCtrl-->
+<script type="text/ng-template" id="modalDetalleFactura.html">
+    <div class="modal-header">
+        <h5>{{p.proyecto}}&nbsp;-&nbsp;{{p.unidades}}</h5><br/>
+    </div>
+    <div class="modal-body" style="height: 600px; overflow-y: scroll;">
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-hover table-condensed" style="width:30em">
+                    <thead>
+                    <tr>
+                        <th style="text-align: right" colspan="2">Marcar todos:</th>
+                        <th style="text-align: center">
+                            <input type="checkbox" ng-model="todos" ng-true-value="1" ng-false-value="0" ng-change="toggleFact(todos)"/>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th style="text-align: right">Monto sin I.V.A.:</th><th style="text-align: right">{{p.montosiniva | number:2}}</th><th>&nbsp;</th>
+                    </tr>
+                    <tr>
+                        <th style="text-align: right">Monto con I.V.A.:</th><th style="text-align: right">{{p.montoconiva | number:2}}</th><th>&nbsp;</th>
+                    </tr>
+                    <tr>
+                        <th style="text-align: right">I.S.R. por retener:</th><th style="text-align: right">{{p.retisr | number:2}}</th><th>&nbsp;</th>
+                    </tr>
+                    <tr>
+                        <th style="text-align: right">I.V.A. por retener:</th><th style="text-align: right">{{p.ivaaretener | number:2}}</th><th>&nbsp;</th>
+                    </tr>
+                    <tr>
+                        <th style="text-align: right; border-bottom: double 0.35em black">
+                            Total a pagar:
+                        </th>
+                        <th style="text-align: right; border-bottom: double 0.35em black">
+                            {{p.totapagar | number:2}}
+                        </th>
+                        <th style="text-align: right; border-bottom: double 0.35em black">&nbsp;</th>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    <tr ng-repeat="det in p.detalle">
+                        <td style="width:20em">{{det.tipo}}&nbsp;{{det.nommes}}&nbsp;{{det.anio | number:0}}</td>
+                        <td style="text-align: right">{{det.montoconiva | number:2}}</td>
+                        <td style="text-align: center">
+                            <input type="checkbox" ng-model="det.facturar" ng-true-value="1" ng-false-value="0" ng-change="recalcular(p)"/>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()">Aceptar</button>
+        <button class="btn btn-info" type="button" ng-click="cancel()">Cancelar</button>
+    </div>
+</script>
+<!--Fin de Template de la modal-->
+<!--Template de la modal //Este usa el controlador ModalDetFactCtrl-->
+<script type="text/ng-template" id="modalRptPreliminar.html">
+    <div class="modal-header">
+        <h3>Proyecci&oacute;n de facturaci&oacute;n</h3>
+    </div>
+    <div class="modal-body" style="height: 400px; overflow-y: auto;">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="txtFDelProy">Del:</label>
+                    <input name="txtFDelProy" id="txtFDelProy" type="date" class="form-control" ng-model="params.fdel" required/>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="txtFAlProy">Al:</label>
+                    <input name="txtFAlProy" id="txtFAlProy" type="date" class="form-control" ng-model="params.fal" required/>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="selEmpresas">Empresas:</label>
+                    <ui-select id="selEmpresas"
+                               multiple
+                               ng-model="params.objEmpresa"
+                               title="Seleccione una empresa.."
+                               theme="bootstrap"
+                               append-to-body="false"
+                               ng-class="form-control;">
+                        <ui-select-match placeholder="Buscar empresa..." allow-clear="true" ng-class="form-control;">
+                            <span>{{$item.nomempresa}}</span>
+                        </ui-select-match>
+                        <ui-select-choices repeat="item in empresas | filter:$select.search">
+                            <div ng-bind-html="item.nomempresa | highlight: $select.search"></div>
+                        </ui-select-choices>
+                        <ui-select-no-choice>
+                            No hay resultados...
+                        </ui-select-no-choice>
+                    </ui-select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="selProyectos">Proyectos:</label>
+                    <ui-select id="selProyectos"
+                               multiple
+                               ng-model="params.objProyecto"
+                               title="Seleccione un proyecto..."
+                               theme="bootstrap"
+                               append-to-body="false"
+                               ng-class="form-control;">
+                        <ui-select-match placeholder="Buscar proyecto..." allow-clear="true" ng-class="form-control;">
+                            <span>{{$item.nomproyecto}}</span>
+                        </ui-select-match>
+                        <ui-select-choices repeat="item in proyectos | filter:$select.search">
+                            <div ng-bind-html="item.nomproyecto | highlight: $select.search"></div>
+                            <small>
+                                <strong>Empresa:</strong>&nbsp;<span ng-bind-html="item.empresa | highlight: $select.search" ></span>
+                            </small>
+                        </ui-select-choices>
+                        <ui-select-no-choice>
+                            No hay resultados...
+                        </ui-select-no-choice>
+                    </ui-select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="txtTCProy">Tasa de cambio:</label>
+                    <input name="txtTCProy" id="txtTCProy" type="number" class="form-control" ng-model="params.tc" step="0.01"/>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="chkIva">Incluir I.V.A.:</label>
+                    <input name="chkIva" id="chkIva" type="checkbox" class="form-control" ng-model="params.coniva" ng-true-value="1" ng-false-value="0" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()" ng-disabled="params.fdelstr == null || params.fdelstr == undefined || params.falstr == null || params.falstr == undefined">Aceptar</button>
+        <button class="btn btn-info" type="button" ng-click="cancel()">Cancelar</button>
+    </div>
+</script>
+<!--Fin de Template de la modal-->

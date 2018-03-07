@@ -1,0 +1,251 @@
+<div class="container" ng-controller="servicioBasicoCtrl">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divFrmSrvc" data-toggle="tab">SERVICIOS PROPIOS Y DE TERCEROS</a>
+        </li>
+        <li ng-show="servicio.id > 0">
+            <a show-tab href="#divHistorial" data-toggle="tab">HISTORIAL</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div id="divFrmSrvc" class="tab-pane fade in active">
+            <div class="panel panel-info">
+                <div class="panel-heading">Servicios propios y de terceros</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12 nopadding" style="text-align: right">
+                            <button type="button" class="btn btn-info btn-xs" ng-click="showForm.servbas = !showForm.servbas" ng-hide="showForm.servbas" aria-label="Toggle ngHide">
+                                <span class="glyphicon glyphicon-chevron-down"></span>
+                            </button>
+                            <button type="button" class="btn btn-info btn-xs" ng-click="showForm.servbas = !showForm.servbas" ng-show="showForm.servbas" aria-label="Toggle ngHide">
+                                <span class="glyphicon glyphicon-chevron-up"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <form name="frmSrvc" id="frmSrvc" ng-submit="frmSrvc.$valid && addServicio(servicio)" class="check-element animate-show" ng-show="showForm.servbas" novalidate>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmSrvc.selEsProp.$invalid && !frmSrvc.selEsProp.$pristine}">
+                                    <label for="selEsProp">¿Propio o de terceros?</label>
+                                    <select name="selEsProp" id="selEsProp" class="form-control" ng-model="servicio.espropio" required>
+                                        <option value="1">Propio</option>
+                                        <option value="0">Terceros</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmSrvc.selTipo.$invalid && !frmSrvc.selTipo.$pristine}">
+                                    <label for="selTipo">Tipo:</label>
+                                    <select name="selTipo" id="selTipo" class="form-control" ng-model="servicio.objTipo"
+                                            ng-options="obj.desctiposervventa for obj in tipos track by obj.id" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6" ng-hide="+servicio.espropio == 1">
+                                <div class="form-group">
+                                    <label>Proveedor:</label>
+                                    <ui-select ng-model="servicio.objProveedor"
+                                               title="Seleccione un proveedor.."
+                                               theme="bootstrap"
+                                               append-to-body="true">
+                                        <ui-select-match placeholder="Buscar proveedor..." allow-clear="false">
+                                            <span ng-bind="$select.selected.nitnombre"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="item in proveedores | filter:$select.search">
+                                            <div ng-bind-html="item.nitnombre | highlight: $select.search"></div>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>
+                                            No hay resultados...
+                                        </ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group" ng-class="{'has-error':frmSrvc.txtNoId.$invalid && !frmSrvc.txtNoId.$pristine}">
+                                    <label for="txtNoId">No. de identificaci&oacute;n:</label>
+                                    <input name="txtNoId" id="txtNoId" type="text" class="form-control" ng-model="servicio.numidentificacion"
+                                           placeholder="No. contador, etc..." maxlength="50" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group" ng-class="{'has-error':frmSrvc.txtNoRef.$invalid && !frmSrvc.txtNoRef.$pristine}">
+                                    <label for="txtNoRef">No. de referencia:</label>
+                                    <input name="txtNoRef" id="txtNoRef" type="text" class="form-control" ng-model="servicio.numreferencia"
+                                           placeholder="No. de correlativo, tel&eacute;fono, etc..." maxlength="50" required/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="{'has-error':frmSrvc.selEmpresa.$invalid && !frmSrvc.selEmpresa.$pristine}">
+                                    <label for="selEmpresa">Empresa</label>
+                                    <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="servicio.objEmpresa"
+                                            ng-options="obj.nomempresa for obj in empresas track by obj.id" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2" ng-hide="+servicio.espropio == 1">
+                                <div class="form-group" ng-class="{'has-error':frmSrvc.chkPagaCli.$invalid && !frmSrvc.chkPagaCli.$pristine}">
+                                    <label for="chkPagaCli">Pagado por cliente:</label>
+                                    <input name="chkPagaCli" id="chkPagaCli" type="checkbox" class="form-control" ng-model="servicio.pagacliente"
+                                           ng-true-value="1" ng-false-value="0"/>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="form-group" ng-class="{'has-error':frmSrvc.selPadre.$invalid && !frmSrvc.selPadre.$pristine}">
+                                    <label for="selPadre">Contador padre:</label>
+                                    <ui-select name="selPadre"
+                                               id="selPadre"
+                                               ng-model="servicio.idpadre"
+                                               title="Seleccione un contador.."
+                                               theme="bootstrap"
+                                               append-to-body="true"
+                                               ng-required="false">
+                                        <ui-select-match placeholder="Buscar contador..." allow-clear="true">
+                                            <span ng-bind="$select.selected.numidentificacion"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="item.id as item in servicios | filter:$select.search">
+                                            <div ng-bind-html="item.numidentificacion | highlight: $select.search"></div>
+                                            <small>
+                                                <strong>Empresa:</strong>&nbsp;<span ng-bind-html="item.empresa | highlight: $select.search" ></span><br/>
+                                                <strong>Referencia:</strong>&nbsp;<span ng-bind-html="item.numreferencia | highlight: $select.search" ></span><br/>
+                                                <strong>Contador padre:</strong>&nbsp;<span ng-bind-html="item.contadorpadre | highlight: $select.search" ></span>
+                                            </small>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>
+                                            No hay resultados...
+                                        </ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="form-group">
+                                    <label for="chkCobrar">¿Cobrar?</label>
+                                    <input name="chkCobrar" id="chkCobrar" type="checkbox" class="form-control" ng-model="servicio.cobrar" ng-true-value="1" ng-false-value="0"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txtUbicadoEn">Ubicado en:</label>
+                                    <input name="txtUbicadoEn" id="txtUbicadoEn" type="text" class="form-control" ng-model="servicio.ubicadoen" maxlength="100"
+                                           placeholder='Ej.: "Al pie del tanque", "En salida del pozo", "Predio de trailer", entre otros...'/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="chkDeBaja">De baja:</label>
+                                    <input name="chkDeBaja" id="chkDeBaja" type="checkbox" class="form-control" ng-model="servicio.debaja" ng-true-value="1" ng-false-value="0"/>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="txtFBaja">Fecha de baja:</label>
+                                    <input name="txtFBaja" id="txtFBaja" type="date" class="form-control" ng-model="servicio.fechabaja"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="txtNotas">Notas:</label>
+                                    <textarea name="txtNotas" id="txtNotas" class="form-control" style="width: 100%;" ng-model="servicio.notas" rows="4" placeholder="Cualquier anotación relacionada con el servicio..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-info" ng-disabled="frmSrvc.$invalid" ng-hide="servicio.id > 0">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-info" ng-disabled="frmSrvc.$invalid" ng-show="servicio.id > 0" ng-click="updServicio(servicio)">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-danger" ng-show="servicio.id > 0" ng-click="delServicio(servicio)" ng-disabled="+servicio.asignado == 1">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                            <button type="button" class="btn btn-info" ng-show="servicio.id > 0" ng-click="resetservicio()">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover table-condensed">
+                        <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Proveedor</th>
+                            <th>No. Identificaci&oacute;n</th>
+                            <th>No. Referencia</th>
+                            <th>Empresa</th>
+                            <th>Pagado por cliente</th>
+                            <th>Fecha de baja</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="s in servicios" ng-click="getServicio(s.id)">
+                            <td>{{s.tiposervicio}}</td>
+                            <td>{{s.proveedor || 'Propio'}}</td>
+                            <td>{{s.numidentificacion}}</td>
+                            <td>{{s.numreferencia}}</td>
+                            <td>{{s.empresa}}</td>
+                            <td>{{s.pagacliente === 1 ? 'Sí' : 'No'}}</td>
+                            <td>{{s.fechabaja | date:'dd/MM/yyyy'}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="divHistorial" class="tab-pane fade">
+            <div class="panel panel-success">
+                <div class="panel-heading">Historial</div>
+                <div class="panel-body">
+                    <table class="table table-responsive table-hover table-condensed">
+                        <caption><h4>Ha estado en:</h4></caption>
+                        <thead>
+                        <tr>
+                            <th>Proyecto</th>
+                            <th>Unidad</th>
+                            <th>De</th>
+                            <th>A</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="h in historico">
+                            <td>{{h.proyecto}}</td>
+                            <td>{{h.tipolocal}} - {{h.nombre}} - {{h.descripcion}}</td>
+                            <td>{{h.fini | date:'dd/MM/yyyy'}}</td>
+                            <td>{{h.ffin | date:'dd/MM/yyyy'}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <hr/>
+                    <table class="table table-responsive table-hover table-condensed">
+                        <caption><h4>Cambios en la cantidad base:</h4></caption>
+                        <thead>
+                        <tr>
+                            <th>Proyecto</th>
+                            <th>Unidad</th>
+                            <th>Usuario</th>
+                            <th>Fecha de cambio</th>
+                            <th style="text-align: right">Cantidad base</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="cb in histocantbase">
+                            <td>{{cb.proyecto}}</td>
+                            <td>{{cb.unidad}}</td>
+                            <td>{{cb.usuario}}</td>
+                            <td>{{cb.fechacambio | date:'dd/MM/yyyy HH:mm:ss'}}</td>
+                            <td style="text-align: right">{{cb.cantbase | number:2}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,231 @@
+<style>
+    .half-row{ height: 50%; }
+    .tbl{ width:100%; height: 75%; }
+    .divborder{ border: solid 0.025em #DDDDDD; }
+    .colh{ height: 100%; }
+    .btnSize{
+        height: 100%;
+        width:10em;
+        vertical-align: middle;
+        text-wrap: normal;
+    }
+    .tdfav{
+        width: 33.33%;
+        padding: 0;
+        margin: 0;
+        border-collapse: collapse;
+    }
+    .tdbtn{
+        padding: 0;
+        /*border: solid 0.01em black;*/
+        margin: 0;
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+    .editbtns{ width: 100%; height: 100%; }
+    .tab{ padding-left: 1.5em}
+    .doubletab{ padding-left: 3em}
+    .txtrght{ text-align: right }
+</style>
+<div class="container-fluid" ng-controller="dashBoardCtrl">
+    <div class="panel panel-info">
+        <div class="panel-heading">DASHBOARD</div>
+        <div class="panel-body" style="height: 44em">
+            <div class="row half-row">
+                <div class="col-md-6 divborder colh">
+                    <h3>Favoritos</h3>
+                    <table class="table table-bordered table-condensed tbl">
+                        <tr>
+                            <td class="tdfav">
+                                <table style="width: 100%; height: 100%;">
+                                    <tr>
+                                        <td class="tdbtn">
+                                            <a href="#/{{favoritos[1].url}}" class="btn btn-info btnSize" ng-show="+favoritos[1].posicion > 0"
+                                               data-html="true" data-toggle="popover" title="Favorito No. 1" data-placement="auto" data-trigger="hover"
+                                               data-content="<h4>{{favoritos[1].modulo}}</h4><h5 class='tab'>{{favoritos[1].menu}}</h5><h6 class='doubletab'>{{favoritos[1].descitemmenu}}</h6>">
+                                                {{favoritos[1].descitemmenu | shortenStr:15}}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="editbtns txtrght">
+                                                <button type="button" class="btn btn-info btn-sm" ng-click="asigfav(1)">
+                                                    <span class="glyphicon glyphicon-edit"></span>
+                                                </button>
+                                                <button type="button" class="btn btn-danger btn-sm" ng-click="freepos(1)" ng-show="+favoritos[1].posicion > 0">
+                                                    <span class="glyphicon glyphicon-remove"></span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="tdfav">
+                                <table style="width: 100%; height: 100%;">
+                                    <tr>
+                                        <td class="tdbtn">
+                                            <a href="#/{{favoritos[2].url}}" class="btn btn-info btnSize" ng-show="+favoritos[2].posicion > 0"
+                                               data-html="true" data-toggle="popover" title="Favorito No. 2" data-placement="auto" data-trigger="hover"
+                                               data-content="<h4>{{favoritos[2].modulo}}</h4><h5 class='tab'>{{favoritos[2].menu}}</h5><h6 class='doubletab'>{{favoritos[2].descitemmenu}}</h6>">
+                                                {{favoritos[2].descitemmenu | shortenStr:15}}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="editbtns txtrght">
+                                                <button type="button" class="btn btn-info btn-sm" ng-click="asigfav(2)">
+                                                    <span class="glyphicon glyphicon-edit"></span>
+                                                </button>
+                                                <button type="button" class="btn btn-danger btn-sm" ng-click="freepos(2)" ng-show="+favoritos[2].posicion > 0">
+                                                    <span class="glyphicon glyphicon-remove"></span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="tdfav">
+                                <table style="width: 100%; height: 100%;">
+                                    <tr>
+                                        <td class="tdbtn">
+                                            <a href="#/{{favoritos[3].url}}" class="btn btn-info btnSize" ng-show="+favoritos[3].posicion > 0"
+                                               data-html="true" data-toggle="popover" title="Favorito No. 3" data-placement="auto" data-trigger="hover"
+                                               data-content="<h4>{{favoritos[3].modulo}}</h4><h5 class='tab'>{{favoritos[3].menu}}</h5><h6 class='doubletab'>{{favoritos[3].descitemmenu}}</h6>">
+                                                {{favoritos[3].descitemmenu | shortenStr:15}}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="editbtns txtrght">
+                                                <button type="button" class="btn btn-info btn-sm" ng-click="asigfav(3)">
+                                                    <span class="glyphicon glyphicon-edit"></span>
+                                                </button>
+                                                <button type="button" class="btn btn-danger btn-sm" ng-click="freepos(3)" ng-show="+favoritos[3].posicion > 0">
+                                                    <span class="glyphicon glyphicon-remove"></span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdfav">
+                                <table style="width: 100%; height: 100%;">
+                                    <tr>
+                                        <td class="tdbtn">
+                                            <a href="#/{{favoritos[4].url}}" class="btn btn-info btnSize" ng-show="+favoritos[4].posicion > 0"
+                                               data-html="true" data-toggle="popover" title="Favorito No. 4" data-placement="auto" data-trigger="hover"
+                                               data-content="<h4>{{favoritos[4].modulo}}</h4><h5 class='tab'>{{favoritos[4].menu}}</h5><h6 class='doubletab'>{{favoritos[4].descitemmenu}}</h6>">
+                                                {{favoritos[4].descitemmenu | shortenStr:15}}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="editbtns txtrght">
+                                                <button type="button" class="btn btn-info btn-sm" ng-click="asigfav(4)">
+                                                    <span class="glyphicon glyphicon-edit"></span>
+                                                </button>
+                                                <button type="button" class="btn btn-danger btn-sm" ng-click="freepos(4)" ng-show="+favoritos[4].posicion > 0">
+                                                    <span class="glyphicon glyphicon-remove"></span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="tdfav">
+                                <table style="width: 100%; height: 100%;">
+                                    <tr>
+                                        <td class="tdbtn">
+                                            <a href="#/{{favoritos[5].url}}" class="btn btn-info btnSize" ng-show="+favoritos[5].posicion > 0"
+                                               data-html="true" data-toggle="popover" title="Favorito No. 5" data-placement="auto" data-trigger="hover"
+                                               data-content="<h4>{{favoritos[5].modulo}}</h4><h5 class='tab'>{{favoritos[5].menu}}</h5><h6 class='doubletab'>{{favoritos[5].descitemmenu}}</h6>">
+                                                {{favoritos[5].descitemmenu | shortenStr:15}}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="editbtns txtrght">
+                                                <button type="button" class="btn btn-info btn-sm" ng-click="asigfav(5)">
+                                                    <span class="glyphicon glyphicon-edit"></span>
+                                                </button>
+                                                <button type="button" class="btn btn-danger btn-sm" ng-click="freepos(5)" ng-show="+favoritos[5].posicion > 0">
+                                                    <span class="glyphicon glyphicon-remove"></span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="tdfav">
+                                <table style="width: 100%; height: 100%;">
+                                    <tr>
+                                        <td class="tdbtn">
+                                            <a href="#/{{favoritos[6].url}}" class="btn btn-info btnSize" ng-show="+favoritos[6].posicion > 0"
+                                               data-html="true" data-toggle="popover" title="Favorito No. 6" data-placement="auto" data-trigger="hover"
+                                               data-content="<h4>{{favoritos[6].modulo}}</h4><h5 class='tab'>{{favoritos[6].menu}}</h5><h6 class='doubletab'>{{favoritos[6].descitemmenu}}</h6>">
+                                                {{favoritos[6].descitemmenu | shortenStr:15}}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="editbtns txtrght">
+                                                <button type="button" class="btn btn-info btn-sm" ng-click="asigfav(6)">
+                                                    <span class="glyphicon glyphicon-edit"></span>
+                                                </button>
+                                                <button type="button" class="btn btn-danger btn-sm" ng-click="freepos(6)" ng-show="+favoritos[6].posicion > 0">
+                                                    <span class="glyphicon glyphicon-remove"></span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6 divborder colh">
+
+                </div>
+            </div>
+            <div class="row half-row">
+                <div class="col-md-6 divborder colh">
+
+                </div>
+                <div class="col-md-6 divborder colh">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Template de la modal -->
+<script type="text/ng-template" id="modalAsignaFavorito.html">
+    <div class="modal-header">
+        <h4 class="modal-title">Asignar favorito</h4>
+    </div>
+    <div class="modal-body">
+        <form name="frmFav" id="frmFav" novalidate>
+            <!--
+            <select chosen name="selMenuPend" id="selMenuPend" class="form-control" ng-model="favorito.iditemmenu"
+                    ng-options="obj.id as obj.itemmenu for obj in favspend" data-placeholder="Seleccione opción del menú..." required>
+            </select>
+            -->
+            <select name="selMenuPend" id="selMenuPend" class="form-control" ng-model="favorito.iditemmenu"
+                    ng-options="obj.id as obj.itemmenu for obj in favspend" required>
+            </select>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-info" type="button" ng-click="ok()">Asignar</button>
+        <button class="btn btn-info" type="button" ng-click="cancel()">Cancelar</button>
+    </div>
+</script>
+<!--Fin de Template de la modal-->

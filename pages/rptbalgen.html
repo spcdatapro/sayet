@@ -1,0 +1,45 @@
+<div class="container" ng-controller="rptBalanceGeneralCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">Balance General</div>
+            <div class="panel-body" style="text-align: right">
+                <div class="row" style="text-align: left">
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="txtAl">Al:</label>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.al" placeholder="Al" ng-change="balancegeneral = []"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="chkSoloMov">Solo cuentas con movimiento:</label>
+                            <input name="chkSoloMov" id="chkSoloMov" type="checkbox" class="form-control" ng-model="params.solomov" ng-true-value="1" ng-false-value="0"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="selNivel">Al nivel:</label>
+                            <select name="selNivel" id="selNivel" class="form-control" ng-model="params.nivel">
+                                <option value="1">1</option>
+                                <option value="3">2</option>
+                                <option value="5">3</option>
+                                <option value="7">4</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" ng-click="getBalGen()">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-primary" ng-click="getBalGenXlsx()">
+                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 100em"></object>
+        </div>
+    </div>
+</div>

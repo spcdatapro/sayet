@@ -1,0 +1,38 @@
+<div class="container" ng-controller="rptAsisteLibrosCtrl">
+    <div class="panel panel-info">
+        <div class="panel-heading">Bajar archivo para Asiste Libros</div>
+        <div class="panel-body">
+            <form name="frmGetAsisteLibros" id="frmGetAsisteLibros" novalidate>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label for="selEmpresa">Empresa:</label>
+                            <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="params.idempresa" ng-options="obj.id as obj.nomempresa for obj in empresas" required></select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="txtEstablecimiento">Establecimiento:</label>
+                            <input name="txtEstablecimiento" id="txtEstablecimiento" type="number" class="form-control" ng-model="params.establecimiento" min="1" max="99999" required/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="txtMes">Mes:</label>
+                            <input name="txtMes" id="txtMes" type="number" class="form-control" ng-model="params.mes" min="1" max="12" required/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="txtAnio">Anio:</label>
+                            <input name="txtAnio" id="txtAnio" type="number" class="form-control" ng-model="params.anio" min="2016" required/>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" ng-disabled="frmGetAsisteLibros.$invalid" ng-click="getAsisteLibros()">
+                    <span class="glyphicon glyphicon-download"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

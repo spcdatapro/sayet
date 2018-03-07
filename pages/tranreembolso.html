@@ -1,0 +1,725 @@
+<style>
+    .app-modal-window .modal-dialog { width: 1000px; }
+</style>
+<div class="container" ng-controller="reembolsoCtrl">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divFrmReemb" data-toggle="tab">REEMBOLSO(S)</a>
+        </li>
+        <li ng-show="reembolso.id > 0">
+            <a show-tab href="#divFrmCompras" data-toggle="tab">COMPRA(S)</a>
+        </li>
+        <li ng-show="reembolso.id > 0 && detcontreem.length > 0">
+            <a show-tab href="#divDetCont" data-toggle="tab">DETALLE CONTABLE</a>
+        </li>
+        <li ng-show="false">
+            <a show-tab href="#divPrintVer" data-toggle="tab">VERSI&Oacute;N IMPRIMIBLE</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="divFrmReemb" class="tab-pane fade in active">
+            <div class="pane panel-primary">
+                <div class="panel-heading">Reembolso(s)&nbsp;<span class="badge">{{reemstr}}</span></div>
+                <div class="panel-body">
+                    <form name="frmReembolso" id="frmReembolso" ng-submit="frmReembolso.$valid && addReembolso(reembolso)" novalidate>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmReembolso.selTipoR.$invalid && !frmReembolso.selTipoR.$pristine}">
+                                    <label for="selTipoR">Tipo:</label>
+                                    <select name="selTipoR" id="selTipoR" class="form-control" ng-model="reembolso.objTipoReembolso"
+                                            ng-options="obj.desctiporeembolso for obj in tiposreembolso track by obj.id" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmReembolso.txtFIni.$invalid && !frmReembolso.txtFIni.$pristine}">
+                                    <label for="txtFIni">Inicia el:</label>
+                                    <input name="txtFIni" id="txtFIni" type="date" class="form-control" ng-model="reembolso.finicio" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-3" ng-show="reembolso.estatus == 2">
+                                <div class="form-group">
+                                    <label for="txtFFin">Finaliza el:</label>
+                                    <span name="txtFFin" id="txtFFin" class="form-control">{{reembolso.ffin | date:'dd/MM/yyyy'}}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3" ng-show="+reembolso.objTipoReembolso.id == 2">
+                                <div class="form-group" ng-class="{'has-error':frmReembolso.txtFondoAsig.$invalid && !frmReembolso.txtFondoAsig.$pristine}">
+                                    <label for="txtFondoAsig">Fondo asignado:</label>
+                                    <input name="txtFondoAsig" id="txtFondoAsig" type="number" class="form-control" ng-model="reembolso.fondoasignado" 
+                                    ng-required="+reembolso.objTipoReembolso.id == 2"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="{'has-error':frmReembolso.selBene.$invalid && !frmReembolso.selBene.$pristine}">
+                                    <label for="selBene">Beneficiario:</label>
+                                    <input name="txtFiltroBene" id="txtFiltroBene" type="text" class="form-control" ng-model="searchbene" placeholder="N.I.T./nombre"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group" ng-class="{'has-error':frmReembolso.selBene.$invalid && !frmReembolso.selBene.$pristine}">
+                                    <label for="selBene">&nbsp;</label>
+                                    <select name="selBene" id="selBene" class="form-control" ng-model="reembolso.objBeneficiario"
+                                            ng-options="obj.nitnombre for obj in beneficiarios | filter:{nitnombre:searchbene}"
+                                            ng-change="reembolso.beneficiario = reembolso.objBeneficiario[0].nombre" multiple required>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group" ng-class="{'has-error':frmReembolso.txtBene.$invalid && !frmReembolso.txtBene.$pristine}">
+                                    <label for="txtBene">Beneficiario:</label>
+                                    <input name="txtBene" id="txtBene" type="text" class="form-control" ng-model="reembolso.beneficiario"
+                                           maxlength="150" placeholder="Beneficiario del reembolso..." required/>
+                                    <!--
+                                    <datalist id="sugerencias">
+                                        <option ng-repeat="obj.nombre for obj in lstBene track by obj.id" value="{{obj.nombre}}"></option>
+                                    </datalist>
+                                    -->
+                                </div>
+                            </div>
+                            <div class="col-md-6" ng-show="+reembolso.objTipoReembolso.id == 1">
+                                <div class="form-group required" ng-class="{'has-error':frmReembolso.selIdSubTipoGastRee.$invalid && !frmReembolso.selIdSubTipoGastRee.$pristine}">
+                                    <label for="selIdSubTipoGastRee" class="control-label">Sub-tipo de gasto:</label>
+                                    <ui-select id="selIdSubTipoGastRee"
+                                               name="selIdSubTipoGastRee"
+                                               ng-model="reembolso.idsubtipogasto"
+                                               title="Seleccione un sub-tipo de gasto..."
+                                               theme="bootstrap"
+                                               autofocus="false"
+                                               ng-required="false">
+                                        <ui-select-match placeholder="Buscar sub-tipo de gasto..." allow-clear="false">
+                                            <span ng-bind="$select.selected.descripcion"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="item.id as item in subtiposgasto | filter:$select.search">
+                                            <div ng-bind-html="item.descripcion | highlight: $select.search"></div>
+                                            <small>
+                                                <strong>Tipo de gasto:</strong>&nbsp;<span ng-bind-html="item.tipogasto | highlight: $select.search" ></span>
+                                            </small>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" ng-show="tranban.length > 0">
+                            <div class="col-md-6 col-md-offset-3" style="background-color: #DCF8C6">
+                                <table class="table table-responsive table-condensed table-hover">
+                                    <caption style="font-weight: bold; color: #0c0c0c">
+                                        Reembolso cancelado con las siguientes transacciones
+                                    </caption>
+                                    <thead>
+                                    <tr>
+                                        <th>Tipo</th>
+                                        <th style="text-align: right">No.</th>
+                                        <th>Banco</th>
+                                        <th style="text-align: right">Monto</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="t in tranban" ng-click="goToTranBan(+t.idtranban, +t.origen)">
+                                        <td>{{t.tipodoc}}</td>
+                                        <td style="text-align: right">{{t.numero}}</td>
+                                        <td>{{t.banco}}</td>
+                                        <td style="text-align: right">{{t.monto | number:2}}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-primary" ng-disabled="frmReembolso.$invalid || !permiso.c" ng-hide="reembolso.id > 0">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="frmReembolso.$invalid || !permiso.m || reembolso.estatus == 2" ng-show="reembolso.id > 0" ng-click="updReembolso(reembolso)">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="frmReembolso.$invalid || !permiso.m || reembolso.estatus == 2" ng-show="reembolso.id > 0" ng-click="closeReembolso(reembolso)">
+                                <span class="glyphicon glyphicon-lock"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="frmReembolso.$invalid || !permiso.m || tranban.length > 0" ng-show="reembolso.id > 0 && reembolso.estatus == 2" ng-click="genChequeReembolso(reembolso)">
+                                <span class="glyphicon glyphicon-credit-card"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="frmReembolso.$invalid || !permiso.m || tranban.length > 0" ng-show="reembolso.id > 0 && reembolso.estatus == 2" ng-click="reabrirCC(reembolso)">
+                                <span class="glyphicon glyphicon-repeat"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-show="reembolso.id > 0" ng-click="printVersion()">
+                                <span class="glyphicon glyphicon-print"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-show="+reembolso.idempresa > 0" ng-click="printPendientes()">
+                                <span class="glyphicon glyphicon-print"></span>&nbsp;Pendientes
+                            </button>
+                            <button type="button" class="btn btn-danger" ng-disabled="!permiso.e || reembolso.estatus == 2" ng-show="reembolso.id > 0" ng-click="delReembolso(reembolso)">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="!permiso.c" ng-show="reembolso.id > 0" ng-click="resetReembolso()">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover table-condensed">
+                        <caption>Lista de reembolsos</caption>
+                        <thead>
+                        <tr>
+                            <th style="text-align: right">No.</th>
+                            <th>Tipo</th>
+                            <th>Inicia</th>
+                            <th>Finaliza</th>
+                            <th>Beneficiario</th>
+                            <th style="text-align: right">Monto</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="r in reembolsos" ng-click="getReembolso(r.id)">
+                            <td style="text-align: right">{{r.id | padNumber:5}}</td>
+                            <td>{{r.tipo}}</td>
+                            <td>{{r.finicio | date:'dd/MM/yyyy'}}</td>
+                            <td>{{(r.ffin | date:'dd/MM/yyyy') || 'En curso'}}</td>
+                            <td>{{r.beneficiario}}</td>
+                            <td style="text-align: right">{{r.totreembolso | number:2}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="divFrmCompras" class="tab-pane fade">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    Compra(s)&nbsp;<span class="badge" style="color: white">{{reemstr}}</span>&nbsp;Documento&nbsp;<span class="badge" style="color: white">{{comprastr}}</span>
+                </div>
+                <div class="panel-body">
+                    <form name="frmCompra" id="frmCompra" ng-submit="frmCompra.$valid && addCompra(compra)" novalidate>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.selTFact.$invalid && !frmCompra.selTFact.$pristine}">
+                                    <label for="selTFact">Tipo:</label>
+                                    <select name="selTFact" id="selTFact" class="form-control input-sm" ng-model="compra.objTipoFactura"
+                                            ng-options="obj.desctipofact for obj in tiposfactura | filter:{paracompra:1}"
+                                            ng-change="calcIVA(compra); esrec();" required >
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtNit.$invalid && !frmCompra.txtNit.$pristine}">
+                                    <label for="txtNit">N.I.T.:</label>
+                                    <!--
+                                    <input name="txtNit" id="txtNit" type="text" class="form-control form-control-sm input-sm"
+                                           ng-model="compra.nit" maxlength="50" required/>
+                                    -->
+                                    <div angucomplete-alt id="txtNit"
+                                         placeholder="Buscar proveedor"
+                                         pause="400"
+                                         selected-object="nitSelected"
+                                         remote-url="php/reembolso.php/srchnit/"
+                                         remote-url-data-field="results"
+                                         title-field="nit"
+                                         description-field="proveedor"
+                                         input-class="form-control form-control-sm input-sm"
+                                         match-class="highlight"
+                                         minlength="1"
+                                         field-required="true"
+                                         input-name="txtNit"
+                                         override-suggestions="true"
+                                         disable-input="+compra.objTipoFactura.id == 5"
+                                    ></div>
+                                </div>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtProveedor.$invalid && !frmCompra.txtProveedor.$pristine}">
+                                    <label for="txtProveedor">Proveedor:</label>
+                                    <input name="txtProveedor" id="txtProveedor" type="text" class="form-control input-sm"
+                                           ng-model="compra.proveedor" maxlength="150" required/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-1">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtSerie.$invalid && !frmCompra.txtSerie.$pristine}">
+                                    <label for="txtSerie">Serie:</label>
+                                    <input name="txtSerie" id="txtSerie" type="text" class="form-control form-control-sm input-sm"
+                                           ng-model="compra.serie" maxlength="30" ng-disabled="+compra.objTipoFactura.id == 5" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtDoc.$invalid && !frmCompra.txtDoc.$pristine}">
+                                    <label for="txtDoc">Documento:</label>
+                                    <input name="txtDoc" id="txtDoc" type="number" class="form-control form-control-sm input-sm"
+                                           ng-model="compra.documento" min="1" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtFIng.$invalid && !frmCompra.txtFIng.$pristine}">
+                                    <label for="txtFIng">Fecha de ingreso:</label>
+                                    <input name="txtFIng" id="txtFIng" type="date" class="form-control form-control-sm input-sm"
+                                           ng-model="compra.fechaingreso" ng-change="setMesIva(compra.fechaingreso)" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtMesIVA.$invalid && !frmCompra.txtMesIVA.$pristine}">
+                                    <label for="txtMesIVA">Mes I.V.A.:</label>
+                                    <input name="txtMesIVA" id="txtMesIVA" type="number" class="form-control form-control-sm input-sm"
+                                           ng-model="compra.mesiva" min="1" max="12" required ng-disabled="true" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtFFact.$invalid && !frmCompra.txtFFact.$pristine}">
+                                    <label for="txtFFact">Fecha de factura:</label>
+                                    <input name="txtFFact" id="txtFFact" type="date" class="form-control form-control-sm input-sm"
+                                           ng-model="compra.fechafactura" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.selTComp.$invalid && !frmCompra.selTComp.$pristine}">
+                                    <label for="selTComp">Tipo de compra:</label>
+                                    <select name="selTComp" id="selTComp" class="form-control input-sm" ng-model="compra.objTipoCompra"
+                                            ng-options="obj.desctipocompra for obj in tiposcompra track by obj.id" required >
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" ng-show="+compra.objTipoCompra.id == 3">
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.selTipoComb.$invalid && !frmCompra.selTipoComb.$pristine}">
+                                    <label for="selTipoComb">Tipo de combustible:</label>
+                                    <select name="selTipoComb" id="selTipoComb" class="form-control input-sm" ng-model="compra.objTipoCombustible"
+                                            ng-options="obj.descripcion for obj in combustibles track by obj.id" ng-change="calcIVA(compra)">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtGalones.$invalid && !frmCompra.txtGalones.$pristine}">
+                                    <label for="txtGalones">Galones:</label>
+                                    <input name="txtGalones" id="txtGalones" type="text" class="form-control input-sm" ng-model="compra.galones"
+                                           fcsa-number="{min:0, maxDecimals:2}" ng-change="calcIVA(compra)"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtTot.$invalid && !frmCompra.txtTot.$pristine}">
+                                    <label for="txtTot">Total:</label>
+                                    <input name="txtTot" id="txtTot" type="text" class="form-control input-sm" ng-model="compra.totfact"
+                                           fcsa-number="{ min:0, maxDecimals:2 }" ng-change="calcIVA(compra); calcISR()"
+                                           ng-disabled="!(compra.objTipoFactura != null && compra.objTipoFactura != undefined)" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtIDP.$invalid && !frmCompra.txtIDP.$pristine}">
+                                    <label for="txtIDP">I.D.P.:</label>
+                                    <input name="txtIDP" id="txtIDP" type="text" class="form-control input-sm" ng-model="compra.idp"
+                                           fcsa-number="{ min:0, maxDecimals:2 }" ng-disabled="true" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtNoAfecto.$invalid && !frmCompra.txtNoAfecto.$pristine}">
+                                    <label for="txtNoAfecto">No afecto:</label>
+                                    <input name="txtNoAfecto" id="txtNoAfecto" type="text" class="form-control input-sm" ng-model="compra.noafecto"
+                                           fcsa-number="{ min:0, maxDecimals:2 }" ng-change="calcIVA(compra)"
+                                           ng-disabled="!(compra.objTipoFactura != null && compra.objTipoFactura != undefined)" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtSubTot.$invalid && !frmCompra.txtSubTot.$pristine}">
+                                    <label for="txtSubTot">Subtotal:</label>
+                                    <input name="txtSubTot" id="txtSubTot" type="text" class="form-control input-sm" ng-model="compra.subtotal"
+                                           fcsa-number="{ min:0, maxDecimals:2 }" ng-disabled="true" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtIVA.$invalid && !frmCompra.txtIVA.$pristine}">
+                                    <label for="txtIVA">I.V.A.:</label>
+                                    <input name="txtIVA" id="txtIVA" type="text" class="form-control input-sm" ng-model="compra.iva"
+                                           fcsa-number="{ min:0, maxDecimals:2 }" ng-disabled="true" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.chkRetISR.$invalid && !frmCompra.chkRetISR.$pristine}">
+                                    <label for="chkRetISR">Retener I.S.R.:</label>
+                                    <input name="chkRetISR" id="chkRetISR" type="checkbox" class="form-control input-sm" ng-model="compra.retenerisr"
+                                           ng-change="calcISR()" ng-true-value="1" ng-false-value="0"/>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtISR.$invalid && !frmCompra.txtISR.$pristine}">
+                                    <label for="txtISR">I.S.R.:</label>
+                                    <input name="txtISR" id="txtISR" type="text" class="form-control input-sm" ng-model="compra.isr"
+                                           fcsa-number="{ min:0, maxDecimals:2 }" ng-disabled="true" required/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.selProy.$invalid && !frmCompra.selProy.$pristine}">
+                                    <label class="control-label">Proyecto:</label>
+                                    <ui-select ng-model="compra.idproyecto"
+                                               title="Seleccione un proyecto..."
+                                               theme="bootstrap"
+                                               autofocus="false"
+                                               ng-required="true">
+                                        <ui-select-match placeholder="Buscar proyecto..." allow-clear="false">
+                                            <span ng-bind="$select.selected.nomproyecto"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="item.id as item in proyectos | filter:$select.search">
+                                            <div ng-bind-html="item.nomproyecto | highlight: $select.search"></div>
+                                            <small>
+                                                <strong>Referencia:</strong>&nbsp;<span ng-bind-html="item.referencia | highlight: $select.search" ></span>
+                                            </small>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.selIdSubTipoGast.$invalid && !frmCompra.selIdSubTipoGast.$pristine}">
+                                    <label for="selIdSubTipoGast" class="control-label">Sub-tipo de gasto:</label>
+                                    <ui-select id="selIdSubTipoGast"
+                                               name="selIdSubTipoGast"
+                                               ng-model="compra.idsubtipogasto"
+                                               title="Seleccione un sub-tipo de gasto..."
+                                               theme="bootstrap"
+                                               autofocus="false"
+                                               ng-required="true">
+                                        <ui-select-match placeholder="Buscar sub-tipo de gasto..." allow-clear="false">
+                                            <span ng-bind="$select.selected.descripcion"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="item.id as item in subtiposgasto | filter:$select.search">
+                                            <div ng-bind-html="item.descripcion | highlight: $select.search"></div>
+                                            <small>
+                                                <strong>Tipo de gasto:</strong>&nbsp;<span ng-bind-html="item.tipogasto | highlight: $select.search" ></span>
+                                            </small>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtConcMay.$invalid && !frmCompra.txtConcMay.$pristine}">
+                                    <label for="txtConcMay">Concepto para el mayor:</label>
+                                    <input name="txtConcMay" id="txtConcMay" type="text" class="form-control input-sm" ng-model="compra.conceptomayor" maxlength="500" required/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-primary" ng-disabled="frmCompra.$invalid || !permiso.c" ng-hide="compra.id > 0">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="frmCompra.$invalid || !permiso.m" ng-show="compra.id > 0" ng-click="updCompra(compra)">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="frmCompra.$invalid || !permiso.m || +compra.revisada == 1" ng-show="compra.id > 0" ng-click="revisada(compra)">
+                                <span class="glyphicon glyphicon-ok"></span>&nbsp;Revisada
+                            </button>
+                            <button type="button" class="btn btn-danger" ng-disabled="!permiso.e" ng-show="compra.id > 0" ng-click="delCompra(compra)">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="!permiso.c" ng-show="compra.id > 0" ng-click="resetCompra()">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <!--<hr/>-->
+                    <div class="table-responsive" ng-show="+reembolso.id > 0">
+                        <table class="table table-condensed table-hover">
+                            <tbody>
+                            <tr>
+                                <td style="font-weight: bold; color: gray; font-size: 14pt; text-align:center;">
+                                    {{infocompras.cantidad | number:0}} documentos ingresados con un monto total de Q {{infocompras.sumtotfact | number:2}}
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <ad-table-lite
+                                table-name="tblCompras"
+                                enable-column-search="true"
+                                column-definition="comprasColDef"
+                                local-data-source="compras"
+                                table-classes="table table-hover table-responsive table-condensed"
+                                items-not-found-message="Compras(s) no encontrada(s)..."
+                                on-row-click="getCompra"
+                                row-expand-template="pages/adtbllite/reemdetcont.html"
+                                row-expand-callback="rowFacturaExpanded"
+                        >
+                        </ad-table-lite>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="divDetCont" class="tab-pane fade">
+            <div class="panel panel-info">
+                <div class="panel-heading">Detalle contable&nbsp;<span class="badge">{{reemstr}}</span></div>
+                <div class="panel-body">
+                    <table datatable="ng" dt-options="dtOptionsDetCont" class="table table-responsive table-hover">
+                        <thead>
+                        <tr>
+                            <th>Cuenta</th>
+                            <th>Debe</th>
+                            <th>Haber</th>
+                            <th>Concepto mayor</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="dc in detcontreem">
+                            <td>{{dc.desccuentacont}}</td>
+                            <td>{{dc.debe | number:2}}</td>
+                            <td>{{dc.haber | number:2}}</td>
+                            <td>{{dc.conceptomayor}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="divPrintVer" class="tab-pane fade">
+            <div id="toPrint">
+                <div class="panel">
+                    <div class="panel-body">
+                        <div class="row">
+                            <!--<div class="col-xs-12 nopadding">-->
+                                <h3>{{reembolso.beneficiario}}</h3>
+                                <h4>{{reembolso.finicio | date:'dd/MM/yyyy'}}&nbsp;-&nbsp;{{(reembolso.ffin | date:'dd/MM/yyyy') || 'a la fecha'}}</h4>
+                                <h4>{{reembolso.tipo}}&nbsp;No.&nbsp;{{reembolso.id | padNumber:5}}&nbsp;por:&nbsp;Q&nbsp;{{reembolso.totreembolso | number:2}}</h4>
+                            <!--</div>-->
+                        </div>
+                        <div class="row" ng-repeat="dtp in dataToPrint">
+                            <div class="row" style="font-weight: bold">
+                                <div class="col-xs-12">Proveedor:&nbsp;{{dtp.proveedor}}&nbsp;({{dtp.nit}})</div>
+                            </div>
+                            <div class="row" style="font-weight: bold">
+                                <div class="col-xs-2">Tipo:&nbsp;{{dtp.siglas}}</div>
+                                <div class="col-xs-3">Documento:&nbsp;{{dtp.serie}}&nbsp;{{dtp.documento}}</div>
+                                <div class="col-xs-2">Fecha:&nbsp;{{dtp.fechafactura | date:'dd/MM/yyyy'}}</div>
+                                <div class="col-xs-2">Compra:&nbsp;{{dtp.tipocompra}}</div>
+                                <div class="col-xs-2">Total:&nbsp;{{dtp.simbolo}}&nbsp;{{dtp.totfact | number:2}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <table class="table table-condensed table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th style="width: 40%">Cuenta</th>
+                                            <th style="text-align: right; width: 10%">Debe</th>
+                                            <th style="text-align: right; width: 10%">Haber</th>
+                                            <th style="width: 40%">Concepto mayor</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="dc in dtp.detcont" ng-class="{'linea-de-totales' : dc.desccuentacont.toUpperCase().indexOf('TOTAL --->') > 0}">
+                                            <td style="width: 40%">{{dc.desccuentacont}}</td>
+                                            <td style="text-align: right; width: 10%">{{dc.debe > 0 ? (dc.debe | number:2) : ''}}</td>
+                                            <td style="text-align: right; width: 10%">{{dc.haber > 0 ? (dc.haber | number:2) : ''}}</td>
+                                            <td style="width: 40%">{{dc.conceptomayor}}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <table class="table table-condensed table-bordered">
+                                <thead>
+                                <tr>
+                                    <th style="width: 40%">Suma de totales ---></th>
+                                    <th style="text-align: right; width: 10%">{{total.debe | number:2}}</th>
+                                    <th style="text-align: right; width: 10%">{{total.haber | number:2}}</th>
+                                    <th style="width: 40%">&nbsp;</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Template de la modal //Este usa el controlador ModalInstanceCtrl-->
+    <script type="text/ng-template" id="modalCierreReembolso.html">
+        <div class="modal-header">
+            <h4 class="modal-title">Fecha de cierre del reembolso</h4>
+            <h5 class="modal-title">(Luego de este proceso &uacute;nicamente podr&aacute; generar el pago.)</h5>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="txtFFCierre">Fecha de cierre:</label>
+                    <input name="txtFFCierre" id="txtFFCierre" class="form-control" ng-model="fcierre" type="date" required/>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">Aceptar</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
+        </div>
+    </script>
+    <!--Fin de Template de la modal-->
+    <!--Template de la modal //Este usa el controlador ModalInstanceCtrl-->
+    <script type="text/ng-template" id="modalGenChequeReembolso.html">
+        <div class="modal-header">
+            <h4 class="modal-title">Datos para la transacci&oacute;n bancaria</h4>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="selBanco">Banco:</label>
+                    <select name="selBanco" id="selBanco" class="form-control" ng-model="selectedBanco"
+                            ng-options="obj.bancomoneda for obj in bancos track by obj.id" ng-change="resetParams()" required>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="selTipoMov">Tipo:</label>
+                    <select name="selTipoMov" id="selTipoMov" class="form-control" ng-model="selectedTipoMov"
+                            ng-options="obj.abreviadesc for obj in tipostrans track by obj.id" ng-change="getNumCheque()" required>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="txtNumero">N&uacute;mero:</label>
+                    <input name="txtNumero" id="txtNumero" class="form-control" ng-model="numerotranban" type="text" ng-change="revisaExistencia()"/>
+                </div>
+                <div class="col-md-6">
+                    <label for="txtFTrans">Fecha de la transacci&oacute;n:</label>
+                    <input name="txtFTrans" id="txtFTrans" class="form-control" ng-model="fechatrans" type="date"/>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()" ng-disabled="selectedBanco == undefined || selectedTipoMov == undefined">
+                Aceptar
+            </button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
+        </div>
+    </script>
+    <!--Fin de Template de la modal-->
+    <!--Template de la modal //Este usa el controlador ModalInstanceCtrl-->
+    <script type="text/ng-template" id="modalSelectCtaGastoProvReem.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Selecci&oacute;n de cuenta de gasto de proveedor</h3>
+        </div>
+        <div class="modal-body">
+            <label for="selCtaGasto">¿Qu&eacute; cuenta de gasto de este proveedor desea usar para el detalle contable?</label>
+            <select name="selCtaGasto" id="selCtaGasto" class="form-control" ng-model="selectedCta"
+                    ng-options="obj.cuentac for obj in lasCtasGasto" multiple required>
+            </select>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">Aceptar</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
+        </div>
+    </script>
+    <!--Fin de Template de la modal-->
+    <script type="text/ng-template" id="modalUpdDetCont.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Modificar detalle contable</h3>
+        </div>
+        <div class="modal-body">
+            <form name="frmModalDetCont" id="frmModalDetCont" novalidate>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group" ng-class="{'has-error':frmModalDetCont.selCta.$invalid && !frmModalDetCont.selCta.$pristine}">
+                            <label>Cuenta contable:</label>
+                            <ui-select ng-model="detcont.idcuenta"
+                                       title="Seleccione una cuenta contable..."
+                                       theme="bootstrap"
+                                       autofocus="false"
+                                       ng-required="true">
+                                <ui-select-match placeholder="Buscar cuenta contable..." allow-clear="false">
+                                    <span ng-bind="$select.selected.nombrecta"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="item.id as item in cuentas | filter:$select.search">
+                                    <div ng-bind-html="item.nombrecta | highlight: $select.search"></div>
+                                    <small>
+                                        <strong>C&oacute;digo:</strong>&nbsp;<span ng-bind-html="item.codigo | highlight: $select.search" ></span>
+                                    </small>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group" ng-class="{'has-error':frmModalDetCont.txtDebe.$invalid && !frmModalDetCont.txtDebe.$pristine}">
+                            <label for="txtModalDebe">Debe:</label>
+                            <input name="txtModalDebe" id="txtModalDebe" type="text" class="form-control" ng-model="detcont.debe"
+                                   placeholder="Debe" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="zeroHaber(detcont.debe)" required />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group" ng-class="{'has-error':frmModalDetCont.txtHaber.$invalid && !frmModalDetCont.txtHaber.$pristine}">
+                            <label for="txtModalHaber">Haber:</label>
+                            <input name="txtModalHaber" id="txtModalHaber" type="text" class="form-control" ng-model="detcont.haber"
+                                   placeholder="Haber" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="zeroDebe(detcont.haber)" required />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group" ng-class="{'has-error':frmModalDetCont.txtConceptoMayor.$invalid && !frmModalDetCont.txtConceptoMayor.$pristine}">
+                            <label for="txtModalConceptoMayor">Concepto mayor:</label>
+                            <textarea name="txtModalConceptoMayor" id="txtModalConceptoMayor" class="form-control"
+                                      ng-model="detcont.conceptomayor" placeholder="Concepto para el libro mayor" style="width:100%" rows="3" required>
+                            </textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="button" class="btn btn-info" ng-disabled="frmModalDetCont.$invalid" ng-click="actualizar(detcont)">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <!--<button class="btn btn-primary" type="button" ng-click="ok()">Aceptar</button>-->
+            <button class="btn btn-primary" type="button" ng-click="cancel()"><i class="fa fa-ban" aria-hidden="true"></i></button>
+        </div>
+    </script>
+    <!--Template de la modal //Este usa el controlador ModalPrintPendintes-->
+    <script type="text/ng-template" id="modalPrintPendientes.html">
+        <div class="modal-header">
+            <h4 class="modal-title">Reembolsos pendientes de liquidaci&oacute;n</h4>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtFecDel">Del:</label>
+                        <input name="txtFecDel" id="txtFecDel" type="date" class="form-control" ng-model="params.fdel"/>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtFecAl">Al:</label>
+                        <input name="txtFecAl" id="txtFecAl" type="date" class="form-control" ng-model="params.fal"/>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <br/>
+                        <button name="btnPDF" id="btnPDF" type="button" class="btn btn-info" ng-click="genReporte()">
+                            <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <object data="{{content}}" type="application/pdf" style="width: 100%; height: 550px"></object>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <!--<button class="btn btn-warning" type="button" ng-click="ok()" ng-disabled="+obj.idrazonanula <= 0">Anular</button>-->
+            <button class="btn btn-primary" type="button" ng-click="cancel()">Terminar</button>
+        </div>
+    </script>
+    <!--Fin de Template de la modal-->
+</div>

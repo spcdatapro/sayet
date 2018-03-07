@@ -1,0 +1,103 @@
+<style>
+	td {
+		padding-left: 0px;
+		padding-right: 0px;
+	}
+
+	td > input {
+		width: 85px;
+	}
+
+	#tablaNomina {
+		font-size: 0.8em;
+	}
+</style>
+
+<div class="container-fluid" ng-controller="transNominaController">
+	<nav class="navbar navbar-default">
+	  <div class="container-fluid">
+	    <!-- Brand and toggle get grouped for better mobile display -->
+	    <div class="navbar-header">
+	      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+	        <span class="sr-only">Toggle navigation</span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	      </button>
+	    </div>
+
+	    <!-- Collect the nav links, forms, and other content for toggling -->
+	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+	      <form class="navbar-form navbar-left" ng-submit="buscar(bus)">
+	      	<div class="form-group">
+	      		<label for="selectEmpresa">Empresa:</label>
+	      		<select class="form-control" ng-model="bus.empresa" id="selectEmpresa">
+	      			<option ng-repeat="option in empresas" value="{{option.id}}">{{option.nomempresa}}</option>
+	      		</select>
+	      	</div>
+	        <div class="form-group">
+	          <input type="date" ng-model="bus.fch" class="form-control" placeholder="yyyy-MM-dd">
+	        </div>
+	        <button type="submit" class="btn btn-default" id="btnBuscar" data-loading-text="Buscando...">
+	        	<i class="glyphicon glyphicon-search"></i>
+	        </button>
+	      </form>
+	    </div><!-- /.navbar-collapse -->
+	  </div><!-- /.container-fluid -->
+	</nav>
+
+	
+	<div class="row">
+		<div class="col-sm-2">
+			<div class="well well-sm">
+				<div class="list-group">
+				  <a href="javascript:;" class="list-group-item" ng-click="showIngresos()">Devengados</a>
+				  <a href="javascript:;" class="list-group-item" ng-click="showDescuentos()">Deducidos</a>
+				  <a href="javascript:;" class="list-group-item">Terminar</a>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-10">
+			<div class="panel panel-primary">
+				<table class="table table-condensed table-hover" id="tablaNomina">
+					<thead>
+						<tr>
+							<th>Empleado</th>
+							<th class="text-right" ng-show="shingresos">Viáticos</th>
+							<th class="text-right" ng-show="shingresos">Aguinaldo</th>
+							<th class="text-right" ng-show="shingresos">Indemnización</th>
+							<th class="text-right" ng-show="shingresos">Bono 14</th>
+							<th class="text-right" ng-show="shingresos">Vaciones</th>
+							<th class="text-right" ng-show="shingresos" title="Otros Ingresos">Otros</th>
+							<th class="text-right" ng-show="shingresos" title="Días Tabajados">Días</th>
+							
+							<th class="text-right" ng-show="shdescuentos" title="Retención de ISR">ISR</th>
+							<th class="text-right" ng-show="shdescuentos" title="Otros Descuentos">Otros</th>
+							<th class="text-right" ng-show="shdescuentos">Horas Extras</th>
+							<th class="text-right" ng-show="shdescuentos" title="Descuento Vacaciones">Vacaciones</th>
+						</tr>
+					</thead>
+					<tbody ng-cloak>
+						<tr ng-repeat="i in nomina track by $index">
+							<td>{{ i.nempleado }}</td>
+							<td class="text-right" ng-show="shingresos"><input type="number" step="0.01" ng-model="i.viaticos" string-to-number ng-blur="actualizarNomina(i)"></td>
+							<td class="text-right" ng-show="shingresos"><input type="number" step="0.01" ng-model="i.aguinaldo" string-to-number ng-blur="actualizarNomina(i)"></td>
+							<td class="text-right" ng-show="shingresos"><input type="number" step="0.01" ng-model="i.indemnizacion" string-to-number ng-blur="actualizarNomina(i)"></td>
+							<td class="text-right" ng-show="shingresos"><input type="number" step="0.01" ng-model="i.bonocatorce" string-to-number ng-blur="actualizarNomina(i)"></td>
+							<td class="text-right" ng-show="shingresos"><input type="number" step="0.01" ng-model="i.vacaciones" string-to-number ng-blur="actualizarNomina(i)"></td>
+							<td class="text-right" ng-show="shingresos"><input type="number" step="0.01" ng-model="i.otrosingresos" string-to-number ng-blur="actualizarNomina(i)"></td>
+							<td class="text-right" ng-show="shingresos"><input type="number" step="0.01"></td>
+
+							<td class="text-right" ng-show="shdescuentos"><input type="number" step="0.01" ng-model="i.descisr" string-to-number ng-blur="actualizarNomina(i)"></td>
+							<td class="text-right" ng-show="shdescuentos"><input type="number" step="0.01" ng-model="i.descotros" string-to-number ng-blur="actualizarNomina(i)"></td>
+							<td class="text-right" ng-show="shdescuentos"><input type="number" step="0.01"></td>
+							<td class="text-right" ng-show="shdescuentos"><input type="number" step="0.01"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+	

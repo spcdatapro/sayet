@@ -1,0 +1,35 @@
+<div class="container" ng-controller="rptDocsCirculaCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body" style="text-align: right">
+                <div class="row" style="text-align: left">
+                    <div class="col-md-6">
+                        <div class="form-group required">
+                            <label for="selBanco" class="control-label">Banco:</label>
+                            <select name="selBanco" id="selBanco" class="form-control" ng-model="params.idbanco"
+                                    ng-options="obj.id as obj.bancomoneda for obj in losBancos">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group required">
+                            <label for="txtAl" class="control-label">A fecha:</label>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fAl" placeholder="Al"/>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="getDocsCirculando()">
+                    <span class="glyphicon glyphicon-ok"></span>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="resetParams()">
+                    <span class="glyphicon glyphicon-refresh"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 50em"></object>
+        </div>
+    </div>
+</div>

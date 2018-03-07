@@ -1,0 +1,88 @@
+<style>
+	td {
+		padding-left: 0px;
+		padding-right: 0px;
+	}
+
+	td > input {
+		width: 80px;
+	}
+
+	#tablaProsueldo {
+		font-size: 0.8em;
+	}
+</style>
+
+<div class="container-fluid" ng-controller="MntProsueldoController">
+	<nav class="navbar navbar-default">
+	  <div class="container-fluid">
+	    <!-- Brand and toggle get grouped for better mobile display -->
+	    <div class="navbar-header">
+	      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+	        <span class="sr-only">Toggle navigation</span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	      </button>
+	      <a class="navbar-brand" href="#/pln/mnt/prosueldo">Proyección</a>
+	    </div>
+
+	    <!-- Collect the nav links, forms, and other content for toggling -->
+	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+	      <form class="navbar-form navbar-left" ng-submit="buscar(bus)">
+	        <div class="form-group">
+	          <input type="number" ng-model="bus.anio" class="form-control" placeholder="Año">
+	        </div>
+	        <button type="submit" class="btn btn-default">
+	        	<i class="glyphicon glyphicon-search"></i>
+	        </button>
+	      </form>
+	    </div><!-- /.navbar-collapse -->
+	  </div><!-- /.container-fluid -->
+	</nav>
+
+	<div class="panel panel-primary" ng-show="resultados">
+		
+		<div class="table-responsive">
+			<table class="table table-hover" id="tablaProsueldo">
+				<thead>
+					<tr>
+						<th>Empleado</th>
+						<th>Enero</th>
+						<th>Febrero</th>
+						<th>Marzo</th>
+						<th>Abril</th>
+						<th>Mayo</th>
+						<th>Junio</th>
+						<th>Julio</th>
+						<th>Agosto</th>
+						<th>Septiembre</th>
+						<th>Octubre</th>
+						<th>Noviembre</th>
+						<th>Diciembre</th>
+					</tr>
+				</thead>
+				<tbody ng-cloak>
+					<tr ng-repeat="i in proyecciones track by $index">
+						<td style="width: 250px;">{{ i.nombre }}</td>
+						<td><input type="number" step="0.01" ng-model="i.enero" string-to-number ng-blur="actProsueldo(i)"></td>
+						<td><input type="number" step="0.01" ng-model="i.febrero" string-to-number ng-blur="actProsueldo(i)"></td>
+						<td><input type="number" step="0.01" ng-model="i.marzo" string-to-number ng-blur="actProsueldo(i)"></td>
+						<td><input type="number" step="0.01" ng-model="i.abril" string-to-number ng-blur="actProsueldo(i)"></td>
+						<td><input type="number" step="0.01" ng-model="i.mayo" string-to-number ng-blur="actProsueldo(i)"></td>
+						<td><input type="number" step="0.01" ng-model="i.junio" string-to-number ng-blur="actProsueldo(i)"></td>
+						<td><input type="number" step="0.01" ng-model="i.julio" string-to-number ng-blur="actProsueldo(i)"></td>
+						<td><input type="number" step="0.01" ng-model="i.agosto" string-to-number ng-blur="actProsueldo(i)"></td>
+						<td><input type="number" step="0.01" ng-model="i.septiembre" string-to-number ng-blur="actProsueldo(i)"></td>
+						<td><input type="number" step="0.01" ng-model="i.octubre" string-to-number ng-blur="actProsueldo(i)"></td>
+						<td><input type="number" step="0.01" ng-model="i.noviembre" string-to-number ng-blur="actProsueldo(i)"></td>
+						<td><input type="number" step="0.01" ng-model="i.diciembre" string-to-number ng-blur="actProsueldo(i)"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+	</div>
+</div>
+
+	

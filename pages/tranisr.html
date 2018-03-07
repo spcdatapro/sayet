@@ -1,0 +1,128 @@
+<div class="container" ng-controller="isrCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Facturas con retenci&oacute;n de I.S.R.</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="txtFDel">Fecha de factura del:</label>
+                        <input name="txtFDel" id="txtFDel" type="date" class="form-control input-sm" ng-model="params.fdel"/>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="txtFAl">al:</label>
+                        <input name="txtFAl" id="txtFAl" type="date" class="form-control input-sm" ng-model="params.fal"/>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="selVer">Ver:</label>
+                        <select name="selVer" id="selVer" class="form-control input-sm" ng-model="params.cuales">
+                            <option value="0">Todas</option>
+                            <option value="1">Con formulario</option>
+                            <option value="2">Sin formulario</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="txtISREmple">I.S.R. Empleados:</label>
+                        <input name="txtISREmple" id="txtISREmple" type="number" class="form-control input-sm" ng-model="params.isrempleados" step="0.01"/>
+                    </div>
+                </div>
+				<div class="col-md-2">
+                    <div class="form-group">
+                        <label for="txtISRCapital">Rentas de Capital:</label>
+                        <input name="txtISRCapital" id="txtISRCapital" type="number" class="form-control input-sm" ng-model="params.isrcapital" step="0.01"/>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="btnGen">&nbsp;</label><br/>
+                        <button name="btnGen" id="btnGen" class="btn btn-primary btn-sm" ng-click="lstIsr()">
+                            <span class="glyphicon glyphicon-ok"></span>
+                        </button>
+                        <button name="btnGenPDF" id="btnGenPDF" class="btn btn-primary btn-sm" ng-click="printPDF()">
+                            <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <hr/>
+            <div class="row">
+                <div class="col-md-12">
+                    <table datatable="ng" dt-options="dtOptions" class="table table-condensed table-hover">
+                        <thead>
+                        <tr>                            
+                            <th>Fecha</th>
+                            <th>Documento</th>
+                            <th>Proveedor</th>                            
+                            <th>Total</th>
+                            <th>I.V.A.</th>
+                            <th>Base</th>
+                            <th style="white-space: nowrap">I.S.R.</th>
+                            <th style="white-space: nowrap">Retenci&oacute;n</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="c in compras" ng-click="getCompra(c.id)">
+                            <td>{{c.fechafactura | date:'dd/MM/yyyy'}}</td>
+                            <td style="text-align: right">{{c.serie}}&nbsp;{{c.documento}}</td>
+                            <td style="white-space: nowrap">{{c.nit}} - {{c.nomproveedor}}</td>
+                            <td style="text-align: right">{{c.totfactlocal | number:2}}</td>
+                            <td style="text-align: right">{{c.iva | number:2}}</td>
+                            <td style="text-align: right">{{c.montobase | number:2}}</td>
+                            <td style="text-align: right">{{c.isrlocal | number:2}}</td>
+                            <td style="text-align: center">{{c.noaccisr}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row" ng-show="sumaisr > 0">
+                <div class="col-md-6 col-md-offset-3">
+                    <div class="well well-sm" style="text-align: right">
+                        <h3>
+                            Total de I.S.R. ---> Q&nbsp;{{sumaisr | number:2}}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/ng-template" id="modalISR.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Formulario de retenci&oacute;n I.S.R.</h3>
+            <h4 class="modal-title">{{compra.nomproveedor}}&nbsp;({{compra.nit}})</h4>
+            <h4 class="modal-title">Factura {{compra.serie}}&nbsp;{{compra.documento}}&nbsp;por&nbsp;{{compra.moneda}}&nbsp;{{compra.totfact | number:2}}</h4>
+            <h4 class="modal-title">I.S.R. Q {{compra.isrlocal | number:2}}</h4>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="txtNoFormISR">No. de formulario:</label>
+                <input name="txtNoFormISR" id="txtNoFormISR" type="text" class="form-control" ng-model="compra.noformisr" maxlength="30"/>
+            </div>
+            <div class="form-group">
+                <label for="txtNoAccISR">No. de acceso:</label>
+                <input name="txtNoAccISR" id="txtNoAccISR" type="text" class="form-control" ng-model="compra.noaccisr" maxlength="30"/>
+            </div>
+            <div class="form-group">
+                <label for="txtFecPagoISR">Fecha de pago:</label>
+                <input name="txtFecPagoISR" id="txtFecPagoISR" type="date" class="form-control" ng-model="compra.fecpagoformisr" ng-change="setMesAnio()"/>
+            </div>
+            <div class="form-group">
+                <label for="txtMesISR">Mes:</label>
+                <input name="txtMesISR" id="txtMesISR" type="number" class="form-control" ng-model="compra.mesisr" min="0" max="12"/>
+            </div>
+            <div class="form-group">
+                <label for="txtAnioISR">A&ntilde;o:</label>
+                <input name="txtAnioISR" id="txtAnioISR" type="number" class="form-control" ng-model="compra.anioisr" min="2000" max="3000"/>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">Aceptar</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
+        </div>
+    </script>
+</div>

@@ -1,0 +1,58 @@
+<div class="container" ng-controller="rptAuditoriaCtrl">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="txtUsr">Usuario:</label>
+                        <input name="txtUsr" id="txtUsr" type="text" class="form-control" ng-model="params.usuario" placeholder="Nombre completo/usuario..."/>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="txtTabla">Tabla:</label>
+                        <input name="txtTabla" id="txtTabla" type="text" class="form-control" ng-model="params.tabla" placeholder="Ej.: contratos, clientes, etc..."/>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="selTipo">Acci&oacute;n</label>
+                        <select name="selTipo" id="selTipo" class="form-control" ng-model="params.tipo">
+                            <option value="I">Inserci&oacute;n (Creaci&oacute;n)</option>
+                            <option value="U">Actualizaci&oacute;n (Modificaci&oacute;n)</option>
+                            <option value="D">Borrado (Eliminado)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="txtFDel">Del:</label>
+                        <input name="txtFDel" id="txtFDel" type="date" class="form-control" ng-model="params.fdel"/>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="txtFAl">Al:</label>
+                        <input name="txtFAl" id="txtFAl" type="date" class="form-control" ng-model="params.fal"/>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="txtDescrip">Cambio:</label>
+                        <input name="txtDescrip" id="txtDescrip" type="text" class="form-control" ng-model="params.descripcion" placeholder="Descripci&oacute;n del cambio..."/>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary btn-sm" ng-click="getRptAuditoria()">
+                <span class="glyphicon glyphicon-ok"></span>
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 50em"></object>
+        </div>
+    </div>
+</div>

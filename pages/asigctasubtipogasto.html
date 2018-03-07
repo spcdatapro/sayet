@@ -1,0 +1,114 @@
+<style>
+    .app-modal-window .modal-dialog { width: 800px; }
+</style>
+<div class="container" ng-controller="asignaCtaSubTipoGastoCtrl">
+    <div class="panel panel-info">
+        <div class="panel-heading">Asignar cuenta contable al subtipo de gasto</div>
+        <div class="panel-body">
+            <table class="table table-condensed table-hover">
+                <caption>
+                    <input ng-model="search.$" class="form-control" placeholder="Busqueda..." style="width: 100%"/>
+                </caption>
+                <thead>
+                    <tr>
+                        <th>Tipo de Gasto</th>
+                        <th>Sub-tipo de Gasto</th>
+                        <th style="text-align: center">Asignar Cuenta contable</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="st in subtiposgasto | filter:search:strict">
+                        <td>{{st.tipogasto}}</td>
+                        <td>{{st.descripcion}}</td>
+                        <td style="text-align: center">                            
+                            <button type="button" class="btn btn-info btn-sm" ng-click="asignaCuenta(st)" data-toggle="tooltip" data-placement="auto" 
+                            title="Asignar cuenta contable a sub-tipo de gasto">
+                                <span class="glyphicon glyphicon-folder-open"></span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>    
+</div>
+<!--Template de la modal //Este usa el controlador ModalCargosCtrl-->
+<script type="text/ng-template" id="modalAsignaCta.html">
+    <div class="modal-header">
+        <h4 class="modal-title">Asignar cuenta contable</h4>
+        <h5>Tipo:&nbsp;{{subtipogasto.tipogasto}}<br/>Sub-tipo:&nbsp;{{subtipogasto.descripcion}}</h5>
+    </div>
+    <div class="modal-body" style="height: 30em; overflow-y: scroll">        
+        <form name="frmAsigCta" id="frmAsigCta" ng-submit="frmAsigCta.$valid && asginaCta(detsubtipo)" novalidate>
+            <div class="row">
+                <div class="col-md-12">
+                    <ui-select ng-model="detsubtipo.idempresa"
+                       title="Seleccione una empresa..."
+                       theme="bootstrap"
+                       autofocus="true" 
+                       on-select="getCuentas($item, $model)">
+                       <ui-select-match placeholder="Buscar empresa..." allow-clear="false">
+                           <span ng-bind="$select.selected.nomempresa"></span>
+                       </ui-select-match>
+                       <ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+                           <div ng-bind-html="item.nomempresa | highlight: $select.search"></div>
+                           <small>
+                               <strong>Nombre corto:</strong>&nbsp;<span ng-bind-html="item.abreviatura | highlight: $select.search" ></span>
+                           </small>
+                       </ui-select-choices>
+                       <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                    </ui-select>
+                </div>                
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <ui-select ng-model="detsubtipo.idcuentac"
+                       title="Seleccione una cuenta contable..."
+                       theme="bootstrap"
+                       autofocus="false">
+                       <ui-select-match placeholder="Buscar cuenta contable..." allow-clear="false">
+                           <span ng-bind="$select.selected.nombrecta"></span>
+                       </ui-select-match>
+                       <ui-select-choices repeat="item.id as item in cuentas | filter:$select.search">
+                           <div ng-bind-html="item.nombrecta | highlight: $select.search"></div>
+                           <small>
+                               <strong>C&oacute;digo:</strong>&nbsp;<span ng-bind-html="item.codigo | highlight: $select.search" ></span>
+                           </small>
+                       </ui-select-choices>
+                       <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                    </ui-select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" 
+                    ng-disabled="frmAsigCta.$invalid || detsubtipo.idcuentac == undefined || detsubtipo.idcuentac == null || detsubtipo.idempresa == undefined || detsubtipo.idempresa == null">
+                <span class="glyphicon glyphicon-floppy-save"></span>
+            </button>
+        </form>
+        <hr/>
+        <table class="table table-hover table-condensed">            
+            <thead>
+            <tr>
+                <th>Empresa</th>
+                <th>Cuenta Contable</th>
+                <th>&nbsp;</th>                
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="det in detalles">
+                <td>{{det.empresa}}</td>
+                <td>{{det.cuentac}}</td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm" ng-click="delDetSubtipo(det)">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                </td>                
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <!--<button class="btn btn-primary" type="button" ng-click="ok()">Aceptar</button>-->
+        <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
+    </div>
+</script>
+<!--Fin de Template de la modal-->

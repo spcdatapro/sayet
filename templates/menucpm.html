@@ -1,0 +1,70 @@
+<div class="collapse navbar-collapse" style="white-space: nowrap; font-size: small">
+    <ul class="nav navbar-nav navbar-left"><!-- este usa el controlador cpmIdxCtrl-->
+        <li class="dropdown" ng-repeat="modulo in mnuObj">
+            <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+               aria-expanded="false" tabindex="0" data-target="#">
+                <!--<a tabindex="0" data-toggle="dropdown" data-submenu>-->
+                {{modulo.descmodulo}}<span class="caret"></span>
+            </a>
+
+            <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+                <li class="dropdown-submenu" ng-repeat="mnu in modulo.menus">
+                    <a tabindex="-1" href="">{{mnu.descmenu}}</a>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="submnu in mnu.items">
+                            <a href="#/{{submnu.url}}">{{submnu.descitemmenu}}</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+
+        <toaster-container toaster-options="{'time-out':3000, 'preventDuplicates':'true', 'position-class':'toast-bottom-full-width'}"></toaster-container>
+        <!--Template de la modal //Este usa el controlador ModalInstanceCtrl-->
+        <script type="text/ng-template" id="modalSelectEmpresa.html">
+            <div class="modal-header">
+                <h3 class="modal-title">Selecci&oacute;n de empresa a trabajar</h3>
+            </div>
+            <div class="modal-body">
+                <label for="selEmpresa">¿Qu&eacute; empresa desea trabajar?</label>
+                <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="objEmpresa"
+                        ng-options="obj.nomempresa for obj in lasEmpresas track by obj.id" ng-change="yaSelecciono()" required>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="button" ng-click="ok()">Aceptar</button>
+                <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
+            </div>
+        </script>
+        <!--Fin de Template de la modal-->
+        <!--Template de la modal //Este usa el controlador ModalNotificacionesCtrl-->
+        <script type="text/ng-template" id="modalNotificaciones.html">
+            <div class="modal-header">
+                <h4 class="modal-title">Solicitudes de pago de OTs</h4>
+            </div>
+            <div class="modal-body" style="overflow-y: auto; overflow-x: auto">
+                <h5>¿Dejar de ver las notificaciones de estas solicitudes?</h5>
+                <table class="table table-condensed table-hover">
+                    <tbody>
+                    <tr ng-repeat="o in ots">
+                        <td>{{o.notificacion}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="button" ng-click="ok()">S&iacute;</button>
+                <button class="btn btn-warning" type="button" ng-click="cancel()">No</button>
+            </div>
+        </script>
+        <!--Fin de Template de la modal-->
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+        <li style="min-width: 0.5em; max-width: 15.5em; white-space: nowrap">
+            <a href="" ng-click="setEmpFunc()">Empresa:
+                <span style="font-size: x-small">{{objEmp.nomempresa || 'click para seleccionar.' | limitTo:25}}</span>
+            </a>
+        </li>
+        <li><a href="" ng-click="logOutFunc()">Cerrar sesión</a></li>
+    </ul>
+</div>

@@ -1,0 +1,237 @@
+<style>
+    .app-modal-window .modal-dialog { width: 900px; }
+    .num { text-align: right }
+</style>
+<div class="container" ng-controller="tranSegPresupCtrl">
+    <div class="panel panel-info">
+        <div class="panel-heading">Seguimiento de &oacute;rdenes de trabajo</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-11 nopadding"><input type="text" class="form-control input-sm" ng-model="filterString" placeholder="Buscar..." style="width: 100%"/></div>
+                <div class="col-md-1 nopadding">
+                    <button ng-click="my_tree.expand_all()" class="btn btn-primary btn-sm"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                    <button ng-click="my_tree.collapse_all()" class="btn btn-primary btn-sm"><i class="fa fa-minus" aria-hidden="true"></i></button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 nopadding">
+                    <tree-grid tree-data="ots" col_defs="col_defs" expand-on="expanding_Property" on-select="verSegOt(branch)" tree-control="my_tree"></tree-grid>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Template de la modal //Este usa el controlador ModalCargosCtrl-->
+<script type="text/ng-template" id="modalSeguimientoOt.html">
+    <div class="modal-header">
+        <h4 class="modal-title">
+            Seguimiento de OT No.: {{ot.idpresupuesto}}-{{ot.correlativo}}<br/>
+            Total: {{ot.moneda}}&nbsp;{{ot.total | number:2}}
+        </h4>
+    </div>
+    <div class="modal-body" style="height: 550px; overflow-y: scroll;">
+        <div class="row">
+            <div class="col-md-5 nopadding">
+                <div style="height: 250px; overflow-y: auto; font-size: 0.95em;">
+                    <small>
+                    <table class="table table-bordered table-condensed table-hover" style="font-size: 0.95em;">
+                        <tbody>
+                        <tr>
+                            <th style="text-align: right">Fecha de solicitud:</th>
+                            <td>{{ot.fechasolicitud | date:'dd/MM/yyyy'}}</td>
+                        </tr>
+                        <tr>
+                            <th style="text-align: right">Proyecto:</th>
+                            <td>{{ot.proyecto}}</td>
+                        </tr>
+                        <tr>
+                            <th style="text-align: right">Proveedor:</th>
+                            <td>{{ot.proveedor}}</td>
+                        </tr>
+                        <tr>
+                            <th style="text-align: right">Empresa a facturar:</th>
+                            <td>{{ot.empresa}}</td>
+                        </tr>
+                        <tr>
+                            <th style="text-align: right">Tipo de gasto:</th>
+                            <td>{{ot.tipogasto}}</td>
+                        </tr>
+                        <tr>
+                            <th style="text-align: right">Sub-tipo de gasto:</th>
+                            <td>{{ot.subtipogasto}}</td>
+                        </tr>
+                        <tr>
+                            <th style="text-align: right">Monto:</th>
+                            <td>
+                                {{ot.moneda}}&nbsp;{{ot.monto | number:2}}&nbsp;({{+ot.coniva == 1 ? 'Con' : 'Sin'}}&nbsp;IVA)&nbsp;
+                                <button type="button" class="btn btn-xs btn-info" ng-click="verDetPagos(ot)">
+                                    <i class="fa fa-money fa-lg" aria-hidden="true"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    </small>
+                </div>
+                <div style="height: 225px; overflow-y: auto; font-size: 0.95em;">
+                    <form name="frmNotas" id="frmNotas" ng-show="verFrmNotas" novalidate>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.95em">
+                            <tr>
+                                <td>
+                                    <input name="txtNota" id="txtNota" type="text" class="form-control input-sm" ng-model="nota.nota" maxlength="5000" required/>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-info btn-sm" ng-disabled="frmNotas.$invalid" ng-click="addNota(nota)">
+                                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-warning btn-sm" ng-click="cancelAddNote()">
+                                        <span class="glyphicon glyphicon-remove-circle"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                    <table class="table table-bordered table-condensed table-hover">
+                        <caption>Notas de la OT</caption>
+                        <tbody>
+                        <tr ng-repeat="n in notas" data-toggle="tooltip" data-placement="auto" title="{{n.nota}}">
+                            <td style="width:37%">{{n.fechahora | date:'dd/MM/yyyy HH:mm:ss'}}</td>
+                            <td>
+                                {{n.nota | shortenStr:33}}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-7 nopadding">
+                <div style="height: 375px; overflow-y: auto; font-size: 0.95em">
+                    <small>
+                        <table class="table table-bordered table-condensed table-hover">
+                            <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Documento</th>
+                                <th style="text-align: right">Monto</th>
+                                <th style="text-align: right">I.S.R.</th>
+                                <th style="text-align: right">T.C.</th>
+                                <th>Fact.</th>
+                                <th>Concepto</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="avance in avances">
+                                <td>{{avance.fecha | date:'dd/MM/yyyy'}}</td>
+                                <td>{{+avance.origen == 1 ? (avance.banco + ' - ' + avance.tipotrans + ' - ' + avance.numero) : ('FACT - ' + avance.numero)}}</td>
+                                <td style="text-align: right">{{avance.moneda}}&nbsp;{{avance.monto | number:2}}</td>
+                                <td style="text-align: right">{{+avance.isr > 0 ? (avance.isr | number:2) : ''}}</td>
+                                <td style="text-align: right">{{avance.tipocambio | number:4}}</td>
+                                <td>{{avance.factura}}</td>
+                                <td>{{avance.concepto}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </small>
+                </div>
+                <div style="height: 100px">
+                    <table style="height: 100%; width: 100%; border-collapse: collapse; border-spacing: 0">
+                        <tr>
+                            <td>
+                                <button class="btn btn-info" style="width:100%" type="button" ng-click="verFrmNota()">Agregar nota</button>
+                            </td>
+                            <td>
+                                <button class="btn btn-info" style="width:100%" type="button" ng-click="cancel()">Regresar</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button class="btn btn-info" style="width:100%" type="button" ng-click="printOt(ot.id)">Imprimir orden</button>
+                            </td>
+                            <td>
+                                <button class="btn btn-info" style="width:100%" type="button" ng-click="closeOt()" ng-disabled="true">Cerrar orden</button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--
+    <div class="modal-footer">
+
+        <button class="btn btn-primary" type="button" ng-click="ok()" ng-disabled="selectedBanco == undefined || selectedTipoMov == undefined">
+            Aceptar
+        </button>
+        <button class="btn btn-info" type="button" ng-click="cancel()">Cerrar</button>
+
+    </div>
+    -->
+</script>
+<!--Fin de Template de la modal-->
+<script type="text/ng-template" id="modalSegDetPagosOt.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Formas de pago de OT No. {{ot.idpresupuesto}}-{{ot.correlativo}}</h3>
+        <h4>
+            Proveedor/beneficiario: {{ot.proveedor}}<br/>
+            Sub-tipo de gasto: {{ot.subtipogasto}}<br/>
+            Total de presupuesto: {{ot.moneda}}&nbsp;{{ot.total | number:2}}<br/>
+            Monto de OT: {{ot.moneda}}&nbsp;{{ot.monto | number:2}}
+        </h4>
+    </div>
+    <div class="modal-body" style="height: 300px; overflow-y: auto">
+        <form name="frmDetPago" id="frmDetPago" ng-submit="frmDetPago.$valid && addFormaPago(fpago)" ng-show="sumporcentaje < porexcede" novalidate>
+            <div class="row">
+                <div class="col-md-3 nopadding">
+                    <div class="form-group">
+                        <label for="txtPorcentaje">Porcentaje (%):</label>
+                        <input name="txtPorcentaje" id="txtPorcentaje" type="number" class="form-control input-sm" ng-model="fpago.porcentaje" step="0.0001" min="0.0001" ng-blur="calcValor()" required/>
+                    </div>
+                </div>
+                <div class="col-md-3 nopadding">
+                    <div class="form-group">
+                        <label for="txtMontoDetP">Monto:</label>
+                        <input name="txtMontoDetP" id="txtMontoDetP" type="number" class="form-control input-sm" ng-model="fpago.monto" step="0.01" min="0.01" ng-blur="calcPorcentaje()" required/>
+                    </div>
+                </div>
+                <div class="col-md-6 nopadding">
+                    <div class="form-group">
+                        <label for="txtNotas">Notas:</label>
+                        <textarea name="txtNotas" id="txtNotas" class="form-control input-sm" rows="1" maxlength="1000" ng-model="fpago.notas" placeholder="Notas para el pago..." style="width: 100%"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-group" role="group" aria-label="...">
+                <button type="submit" class="btn btn-info" ng-disabled="frmDetPago.$invalid">
+                    <span class="glyphicon glyphicon-floppy-save"></span>
+                </button>
+            </div>
+        </form>
+        <hr ng-show="sumporcentaje < porexcede"/>
+        <table class="table table-hover table-condensed">
+            <thead>
+            <tr>
+                <th style="text-align: right">No.</th>
+                <th style="text-align: right">%</th>
+                <th style="text-align: right">Monto</th>
+                <th>&nbsp;</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="det in lstdetpagos">
+                <td style="text-align: right">{{det.nopago}}</td>
+                <td style="text-align: right">{{det.porcentaje | number:4}}</td>
+                <td style="text-align: right">{{det.monto | number:2}}</td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm" ng-click="delFormaPago(det)">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <!--<button class="btn btn-info" type="button" ng-click="ok()">Aceptar</button>-->
+        <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
+    </div>
+</script>

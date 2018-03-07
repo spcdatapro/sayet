@@ -1,0 +1,86 @@
+<div class="container" ng-controller="rptRecibosClienteCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">Recibos de cliente</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="txtDel">Del:</label>
+                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.fdel" placeholder="Del"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="txtAl">Al:</label>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fal" placeholder="Al"/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="selEmpresas">Empresas:</label>
+                            <ui-select
+                                    id="selEmpresas"
+                                    multiple
+                                    ng-model="params.lasEmpresas"
+                                    title="Seleccione una o mas empresas..."
+                                    theme="bootstrap"
+                                    autofocus="false"
+                                    append-to-body="true"
+                                    sortable="true">
+                                <ui-select-match placeholder="Click para empresa" allow-clear="true">
+                                    <span>{{$item.abreviatura}}</span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="item in empresas | filter:$select.search">
+                                    <div ng-bind-html="item.nomempresa | highlight: $select.search"></div>
+                                    <small>
+                                        <strong>Abreviatura:</strong>&nbsp;<span ng-bind-html="item.abreviatura | highlight: $select.search" ></span>
+                                    </small>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="txtSerie">Serie:</label>
+                            <input name="txtSerie" id="txtSerie" type="text" maxlength="5" class="form-control" ng-model="params.serie" placeholder="Serie"/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="txtNumDel">N&uacute;mero del:</label>
+                            <input name="txtNumDel" id="txtNumDel" type="number" class="form-control" ng-model="params.numdel" placeholder="Número del"/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="txtNumAl">al:</label>
+                            <input name="txtNumAl" id="txtNumAl" type="number" class="form-control" ng-model="params.numal" placeholder="al"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="selMoneda">Moneda:</label>
+                            <select name="selMoneda" id="selMoneda" class="form-control" ng-model="params.idmoneda"
+                                    ng-options="obj.id as obj.nommoneda for obj in monedas">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer text-right">
+                <button type="button" class="btn btn-primary" ng-click="getRptRecibosCliente()" ng-disabled="!params.fdel || !params.fal">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 100em"></object>
+        </div>
+    </div>
+</div>

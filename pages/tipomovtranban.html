@@ -1,0 +1,82 @@
+<div class="container" ng-controller="tipomovtranbanCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Tipo de Transacciones Bancarias</div>
+
+        <div class="panel-body">
+    
+            <form name="frmTipomovtranban" id="frmTipomovtranban" class="col-md-4" ng-submit="frmTipomovtranban.$valid && editaTipoMovTranBan(elTipomovtranban, 'c')" novalidate>
+                
+                        
+                            <div class="form-group">
+                            <label for="txtDescripcion">Descripci&oacute;n:</label>
+                                 <input type="text" name="txtNombre" id="txtDescripcion" class="form-control" ng-model="elTipomovtranban.descripcion" placeholder="Describa el Adjunto" maxlength="50" required/>
+                            </div> 
+                            <div class="form-group">
+                            <label for="txtAbrevia">Abreviatura:</label>
+                                 <input type="text" name="txtAbrevia" id="txtAbrevia" class="form-control" ng-model="elTipomovtranban.abreviatura" placeholder="Abreviatura de Transacci&oacute;n" maxlength="3" required/>
+                            </div> 
+                                <!--____Boton___-->
+                                 <center><div class="btn-group" role="group" aria-label="...">
+                                    <button type="submit" class="btn btn-primary" ng-disabled="frmTipoactivo.$invalid">
+                                            <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                </div></center>
+                            
+                        <!--tbody-->
+            </form>
+                <!--____________________________Lista____________________________-->
+
+        <div class="col-md-8" style="border-left: 1px solid #E6E6E6; height: auto">
+
+                        <!--center><h3>Tipo de Transacci&oacute;n</h3></center-->
+
+                     
+                <table class="table table-responsive table-hover">
+                    <thead>
+                        <tr>
+                            <!--th><center>ID</th></center-->
+                            <th>Descripci&oacute;n de la Transacci&oacute;n</th>
+                            <th>Abreviatura</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="e in lstTipomovtranbans">
+                            <!--td>
+                                <span>
+                                    <center>{{e.id}}</center>
+                                </span>
+                            </td-->
+                            <td>
+                                <span editable-text="e.descripcion" e-name="descripcion" e-form="rowform" e-required
+                                    e-class="form-control" e-type="text" e-maxlength="50">
+                                    {{e.descripcion}}
+                                </span>
+                            </td>
+                            <td>
+                                <span editable-text="e.abreviatura" e-name="abreviatura" e-form="rowform" e-required
+                                    e-class="form-control" e-type="text" e-maxlength="3">
+                                    {{e.abreviatura}}
+                                </span>
+                            </td>
+                            <td style="white-space: nowrap">
+                                <edit-row-form
+                                        editing-row="e"
+                                        update-func="updTipMovTranBan(fila, qid)"
+                                        delete-func="delTipoMovTranBan(qid)">
+                                </edit-row-form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>    
+        </div>
+        </div>
+
+        </div>
+        <!--
+        <div class="panel-footer">
+
+        </div>
+        -->
+    </div>
+</div>

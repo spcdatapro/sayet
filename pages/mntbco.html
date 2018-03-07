@@ -1,0 +1,179 @@
+<div class="container" ng-controller="bancoCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Bancos</div>
+        <div class="panel-body">
+            <form name="frmBco" id="frmBco" ng-submit="frmBco.$valid && addBanco(elBco)" novalidate>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group" ng-class="{'has-error':frmBco.selEmpresa.$invalid && !frmBco.selEmpresa.$pristine}">
+                            <label for="selEmpresa">Empresa:</label>
+                            <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="elBco.objEmpresa"
+                                    ng-options="obj.nomempresa for obj in lasEmpresas track by obj.id" ng-change="getLstBancos()" required>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="form-group" ng-class="{'has-error':frmBco.selCuenta.$invalid && !frmBco.selCuenta.$pristine}">
+                                <label for="selCuenta">Cuenta contable:</label>
+                                <select name="selCuenta" id="selCuenta" class="form-control" ng-model="elBco.objCuentaC"
+                                        ng-options="obj.codcta for obj in lasCuentas track by obj.id" required>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group" ng-class="{'has-error':frmBco.txtNombre.$invalid && !frmBco.txtNombre.$pristine}">
+                            <label for="txtNombre">Nombre:</label>
+                            <input name="txtNombre" id="txtNombre" type="text" class="form-control" ng-model="elBco.nombre"
+                                   placeholder="Nombre del banco" maxlength="75" required/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group" ng-class="{'has-error':frmBco.txtNoCuenta.$invalid && !frmBco.txtNoCuenta.$pristine}">
+                            <label for="txtNoCuenta">No. de cuenta:</label>
+                            <input name="txtNoCuenta" id="txtNoCuenta" type="text" class="form-control" ng-model="elBco.nocuenta"
+                                   placeholder="N&uacute;mero de cuenta" maxlength="20" required/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group" ng-class="{'has-error':frmBco.txtSiglas.$invalid && !frmBco.txtSiglas.$pristine}">
+                            <label for="txtSiglas">Siglas:</label>
+                            <input name="txtSiglas" id="txtSiglas" type="text" class="form-control" ng-model="elBco.siglas"
+                                   placeholder="Siglas" maxlength="15" required/>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group" ng-class="{'has-error':frmBco.txtNomCta.$invalid && !frmBco.txtNomCta.$pristine}">
+                            <label for="txtNomCta">Nombre de la cuenta:</label>
+                            <input name="txtNomCta" id="txtNomCta" type="text" class="form-control" ng-model="elBco.nomcuenta"
+                                   placeholder="Nombre de la cuenta" maxlength="150" required/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group" ng-class="{'has-error':frmBco.selMoneda.$invalid && !frmBco.selMoneda.$pristine}">
+                            <label for="selMoneda">Moneda:</label>
+                            <select name="selMoneda" id="selMoneda" class="form-control" ng-model="elBco.objMoneda"
+                                    ng-options="obj.nommoneda for obj in lasMonedas track by obj.id" required>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group" ng-class="{'has-error':frmBco.txtCorrela.$invalid && !frmBco.txtCorrela.$pristine}">
+                            <label for="txtCorrela">Correlativo del cheque que toca:</label>
+                            <input name="txtCorrela" id="txtCorrela" type="number" class="form-control" ng-model="elBco.correlativo"
+                                   placeholder="Correlativo del cheque que toca" min="1" required/>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group" ng-class="{'has-error':frmBco.selTipoImp.$invalid && !frmBco.selTipoImp.$pristine}">
+                            <label for="selTipoImp">Formato de cheque:</label>
+                            <select name="selTipoImp" id="selTipoImp" class="form-control" ng-model="elBco.idtipoimpresion"
+                                    ng-options="obj.id as obj.descripcion for obj in tiposimp" required>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group" ng-class="{'has-error':frmBco.chkBaja.$invalid && !frmBco.chkBaja.$pristine}">
+                            <label for="chkBaja">De baja:</label>
+                            <input name="chkBaja" id="chkBaja" type="checkbox" class="form-control" ng-model="elBco.debaja" ng-true-value="1" ng-false-value="0"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="submit" class="btn btn-primary" ng-disabled="frmBco.$invalid || !permiso.c" ng-hide="elBco.idbanco > 0">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-disabled="frmBco.$invalid || !permiso.m" ng-show="elBco.idbanco > 0" ng-click="updBanco(elBco, elBco.idbanco)">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                    <button type="button" class="btn btn-danger" ng-disabled="frmBco.$invalid || !permiso.e" ng-show="elBco.idbanco > 0" ng-click="delBanco(elBco.idbanco)">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-disabled="!permiso.c" ng-show="elBco.idbanco > 0" ng-click="resetBanco()">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+                </div>
+            </form>
+            <hr/>
+            <table class="table table-responsive table-hover">
+                <thead>
+                    <tr>
+                        <th>Cuenta contable</th>
+                        <th>Nombre</th>
+                        <th>No. de cuenta</th>
+                        <th>Siglas</th>
+                        <th>Nombre de la cuenta</th>
+                        <th>Moneda</th>
+                        <th>Correlativo</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="bco in losBancos" ng-click="getBanco(bco.id)">
+                        <td>
+                            <span editable-select="bco.idcuentac" e-name="idcuentac" e-form="rowform"
+                                  e-ng-options="obj.id as obj.codcta for obj in lasCuentas"
+                                  e-required e-class="form-control">
+                                {{bco.nombrecta}}
+                            </span>
+                        </td>
+                        <td>
+                            <span editable-text="bco.nombre" e-name="nombre" e-form="rowform" e-required
+                                  e-class="form-control" e-type="text" e-maxlength="75">
+                                {{bco.nombre}}
+                            </span>
+                        </td>
+                        <td>
+                            <span editable-text="bco.nocuenta" e-name="nocuenta" e-form="rowform" e-required
+                                  e-class="form-control" e-type="text" e-maxlength="20">
+                                {{bco.nocuenta}}
+                            </span>
+                        </td>
+                        <td>
+                            <span editable-text="bco.siglas" e-name="siglas" e-form="rowform" e-required
+                                  e-class="form-control" e-type="text" e-maxlength="15">
+                                {{bco.siglas}}
+                            </span>
+                        </td>
+                        <td>
+                            <span editable-text="bco.nomcuenta" e-name="nomcuenta" e-form="rowform" e-required
+                                  e-class="form-control" e-type="text" e-maxlength="150">
+                                {{bco.nomcuenta}}
+                            </span>
+                        </td>
+                        <td>
+                            <span editable-select="bco.idmoneda" e-name="idmoneda" e-form="rowform"
+                                  e-ng-options="obj.id as obj.nommoneda for obj in lasMonedas"
+                                  e-required e-class="form-control">
+                                {{bco.descmoneda}}
+                            </span>
+                        </td>
+                        <td style="text-align: right;">
+                            <span editable-text="bco.correlativo" e-name="correlativo" e-form="rowform" e-required
+                                  e-class="form-control" e-type="number" e-min="1">
+                                {{bco.correlativo}}
+                            </span>
+                        </td>
+                        <!--
+                        <td style="white-space: nowrap">
+                            <edit-row-form
+                                    editing-row="bco"
+                                    update-func="updBanco(fila, qid)"
+                                    delete-func="delBanco(qid)"
+                                    m="permiso.m" e="permiso.e">
+                            </edit-row-form>
+                        </td>
+                        -->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

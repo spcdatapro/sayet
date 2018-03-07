@@ -1,0 +1,121 @@
+<div class="container" ng-controller="rptAlquileresCtrl">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtFDel">Del:</label>
+                        <input name="txtFDel" id="txtFDel" type="date" class="form-control" ng-model="params.fdel"/>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtFAl">Al:</label>
+                        <input name="txtFAl" id="txtFAl" type="date" class="form-control" ng-model="params.fal"/>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="chkPorUnidad">Ordenar por unidad:</label>
+                        <input name="chkPorUnidad" id="chkPorUnidad" type="checkbox" class="form-control" ng-model="params.porlocal" ng-true-value="1" ng-false-value="0"/>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="chkSinProy">Sin proyecto:</label>
+                        <input name="chkSinProy" id="chkSinProy" type="checkbox" class="form-control" ng-model="params.sinproy" ng-true-value="1" ng-false-value="0"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="selEmpresas">Empresas:</label>
+                        <ui-select
+                                id="selEmpresas"
+                                multiple
+                                ng-model="params.empresatmp" 
+                                ng-change="mostrarProyectos()" 
+                                title="Seleccione una o mas empresas..."
+                                theme="bootstrap"
+                                autofocus="false"
+                                append-to-body="true"
+                                sortable="true">
+                            <ui-select-match placeholder="Click para empresa" allow-clear="true">
+                                <span>{{$item.abreviatura}}</span>
+                            </ui-select-match>
+                            <ui-select-choices repeat="item in empresas | filter:$select.search">
+                                <div ng-bind-html="item.nomempresa | highlight: $select.search"></div>
+                                <small>
+                                    <strong>Abreviatura:</strong>&nbsp;<span ng-bind-html="item.abreviatura | highlight: $select.search" ></span>
+                                </small>
+                            </ui-select-choices>
+                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                        </ui-select>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="selProy">Proyectos:</label>
+                        <ui-select
+                                id="selProy"
+                                multiple
+                                ng-model="params.proyectotmp" 
+                                title="Seleccione uno o mas proyectos..."
+                                theme="bootstrap"
+                                autofocus="false"
+                                append-to-body="true"
+                                sortable="true">
+                            <ui-select-match placeholder="Click para proyectos..." allow-clear="true">
+                                <span>{{$item.nomproyecto}}</span>
+                            </ui-select-match>
+                            <ui-select-choices repeat="item in proyectos | filter:$select.search">
+                                <div ng-bind-html="item.nomproyecto | highlight: $select.search"></div>
+                                <small>
+                                    <strong>Referencia:</strong>&nbsp;<span ng-bind-html="item.referencia | highlight: $select.search" ></span>
+                                </small>
+                            </ui-select-choices>
+                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                        </ui-select>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="selTSV">Concepto:</label>
+                        <ui-select
+                                id="selTSV"
+                                multiple
+                                ng-model="params.tipotmp" 
+                                title="Seleccione uno o mas conceptos..."
+                                theme="bootstrap"
+                                autofocus="false"
+                                append-to-body="true"
+                                sortable="true">
+                            <ui-select-match placeholder="Click para conceptos..." allow-clear="true">
+                                <span>{{$item.desctiposervventa}}</span>
+                            </ui-select-match>
+                            <ui-select-choices repeat="item in tipos | filter:$select.search">
+                                <div ng-bind-html="item.desctiposervventa | highlight: $select.search"></div>
+                            </ui-select-choices>
+                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                        </ui-select>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-primary btn-sm" ng-click="getRptAlquileres()">
+                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" ng-click="resetParams()">
+                <i class="fa fa-refresh" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 50em"></object>
+        </div>
+    </div>
+</div>

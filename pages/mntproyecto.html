@@ -1,0 +1,781 @@
+<div class="container" ng-controller="proyectoCtrl">
+
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divLstProyectos" data-toggle="tab">LISTA DE PROYECTOS</a>
+        </li>
+        <li>
+            <a show-tab href="#divFrmProyectos" data-toggle="tab">PROYECTOS</a>
+        </li>
+        <li>
+            <a show-tab href="#divFrmAdjuntos" data-toggle="tab" ng-show="elProyecto.id > 0">ADJUNTOS</a>
+        </li>
+        <li>
+            <a show-tab href="#divFrmActivorelacion" data-toggle="tab" ng-show="elProyecto.id > 0">ACTIVO RELACIONADO AL PROYECTO</a>
+        </li>
+        <li>
+            <a show-tab href="#divFrmUnidades" data-toggle="tab" ng-show="elProyecto.id > 0">UNIDADES DEL PROYECTO</a>
+        </li>
+        <li ng-show="params.idproyecto > 0">
+            <a show-tab href="#divProyPrint" data-toggle="tab">IMPRESI&Oacute;N DEL PROYECTO</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="divLstProyectos" class="tab-pane fade in active">
+            <div class="panel panel-info">
+                <div class="panel-heading">Lista de proyectos</div>
+                <div class="panel-body">
+                    <table class="table table-responsive table-hover table-condensed">
+                        <caption>
+                            <input ng-model="search.$" class="form-control" placeholder="Buscar proyecto..." style="color:black; width: 100%"/>
+                        </caption>
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Direccion</th>
+                            <th>Referencia</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="proyecto in losProyectos | filter:search:strict" ng-click="getProyecto(proyecto.id)">
+                            <td>
+                                {{proyecto.nomproyecto}}
+                            </td>
+                            <td>
+                                {{proyecto.direccion}}
+                            </td>
+                            <td>
+                                {{proyecto.referencia}}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="divFrmProyectos" class="tab-pane fade">
+                <div class="panel panel-info">
+                    <div class="panel-heading">Datos Generales&nbsp;<span class="badge" style="color: white;">{{proyectostr}}</span></div>
+                    <div class="panel-body">
+                        <form name="frmProyecto" id="frmProyecto" ng-submit="frmProyecto.$valid && addProyecto(elProyecto)" novalidate>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group" ng-class="{'has-error':frmProyecto.txtNomproyecto.$invalid && !frmProyecto.txtNomproyecto.$pristine}">
+                                        <label for="txtNomproyecto">Nombre:</label>
+                                        <input name="txtNomproyecto" id="txtNomproyecto" type="text" class="form-control" ng-model="elProyecto.nomproyecto"
+                                               placeholder="Nombre del proyecto" maxlength="250" ng-disabled="slproyecto" required/>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group" ng-class="{'has-error':frmProyecto.txtReferencia.$invalid && !frmProyecto.txtReferencia.$pristine}">
+                                        <label for="txtReferencia">Referencia:</label>
+                                        <input name="txtReferencia" id="txtReferencia" type="text" class="form-control" ng-model="elProyecto.referencia"
+                                               placeholder="Referencia del proyecto" maxlength="250" ng-disabled="slproyecto"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group" ng-class="{'has-error':frmProyecto.selEmpresa.$invalid && !frmProyecto.selEmpresa.$pristine}">
+                                        <label for="selEmpresa">Empresa:</label>
+                                        <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="elProyecto.objEmpresa"
+                                                ng-options="obj.nomempresa for obj in lasEmpresas track by obj.id" ng-disabled="slproyecto" required>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group" ng-class="{'has-error':frmProyecto.selTipoProyecto.$invalid && !frmProyecto.selTipoProyecto.$pristine}">
+                                        <label for="selTipoProyecto">Tipo de Proyecto:</label>
+                                        <select name="selTipoProyecto" id="selTipoProyecto" class="form-control" ng-model="elProyecto.objTipoProyecto"
+                                                ng-options="obj.descripcion for obj in losTipoProyecto track by obj.id" ng-disabled="slproyecto" required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group" ng-class="{'has-error':frmProyecto.txtDireccion.$invalid && !frmProyecto.txtDireccion.$pristine}">
+                                        <label for="txtDireccion">Direccion:</label>
+                                        <input name="txtDireccion" id="txtDireccion" type="text" class="form-control" ng-model="elProyecto.direccion"
+                                               placeholder="Direccion del proyecto" maxlength="250" ng-disabled="slproyecto"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group" ng-class="{'has-error':frmProyecto.txtMetros_rentable.$invalid && !frmProyecto.txtMetros_rentable.$pristine}">
+                                        <label for="txtMetros_rentable">M<sup>2</sup> rentables:</label>
+                                        <span id="txtMetros_rentable" class="form-control" ng-disabled="true">{{elProyecto.metros_rentable | number:4}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group" ng-class="{'has-error':frmProyecto.txtMetros.$invalid && !frmProyecto.txtMetros.$pristine}">
+                                        <label for="txtMetros">M<sup>2</sup> de los activos relacionados:</label>
+                                        <span id="txtMetros" class="form-control" ng-disabled="true">{{elProyecto.metros | number:4}}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group" ng-class="{'has-error':frmProyecto.chkSubarrendado.$invalid && !frmProyecto.chkSubarrendado.$pristine}">
+                                        <label for="chkSubarrendado">Subarrendado:</label>
+                                        <input name="chkSubarrendado" id="chkSubarrendado" type="checkbox" class="form-control"
+                                               ng-model="elProyecto.subarrendado" ng-true-value="1" ng-false-value="0" ng-disabled="slproyecto"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group" ng-class="{'has-error':frmProyecto.txtFApert.$invalid && !frmProyecto.txtFApert.$pristine}">
+                                        <label for="txtFApert">Fecha de apertura:</label>
+                                        <input name="txtFApert" id="txtFApert" type="date" class="form-control" ng-model="elProyecto.fechaapertura" ng-disabled="slproyecto"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group" ng-class="{'has-error':frmProyecto.chkMultiemp.$invalid && !frmProyecto.chkMultiemp.$pristine}">
+                                        <label for="chkMultiemp">Multiempresa:</label>
+                                        <input name="chkMultiemp" id="chkMultiemp" type="checkbox" class="form-control"
+                                               ng-model="elProyecto.multiempresa" ng-true-value="1" ng-false-value="0" ng-disabled="slproyecto"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group" ng-class="{'has-error':frmProyecto.txtNotas.$invalid && !frmProyecto.txtNotas.$pristine}">
+                                        <label for="txtNotas">Notas:</label>
+                                        <textarea name="txtNotas" id="txtNotas" type="text" class="form-control" ng-model="elProyecto.notas"
+                                               placeholder="Notas del proyecto" maxlength="4000" ng-disabled="slproyecto" rows="5" style="width: 100%">
+                                        </textarea>
+                                    </div>
+                                </div>
+                                <!--
+                                <div class="col-md-6">
+                                    <div class="form-group" ng-class="{'has-error':frmProyecto.txtNotas_contrato.$invalid && !frmProyecto.txtNotas_contrato.$pristine}">
+                                        <label for="txtNotas_contrato">Notas de Contrato:</label>
+                                        <input name="txtNotas_contrato" id="txtNotas_contrato" type="text" class="form-control" ng-model="elProyecto.notas_contrato"
+                                               placeholder="Notas del contrato del proyecto" maxlength="250" ng-disabled="slproyecto"/>
+                                    </div>
+                                </div>
+                                -->
+                            </div>
+                            <div class="btn-group" role="group" aria-label="...">
+                                <button type="submit" class="btn btn-info" ng-disabled="frmProyecto.$invalid" ng-show="grpBtnProyecto.i">
+                                    <span class="glyphicon glyphicon-floppy-save"></span>
+                                </button>
+                                <button type="button" class="btn btn-info" ng-show="elProyecto.id > 0" ng-click="printProyecto(elProyecto.id)">
+                                    <span class="glyphicon glyphicon-print"></span>
+                                </button>
+                                <button type="button" class="btn btn-info" ng-disabled="frmCliente.$invalid" ng-click="btnEP()" ng-show="grpBtnProyecto.e">
+                                    <span class="glyphicon glyphicon-edit"></span>
+                                </button>
+                                <button type="button" class="btn btn-info" ng-disabled="frmProyecto.$invalid" ng-click="updProyecto(elProyecto,elProyecto.id)" ng-show="grpBtnProyecto.u">
+                                    <span class="glyphicon glyphicon-floppy-save"></span>
+                                </button>
+                                <button type="button" class="btn btn-warning" ng-click="btnCP()" ng-show="grpBtnProyecto.c">
+                                    <span class="glyphicon glyphicon-remove-circle"></span>
+                                </button>
+                                <button type="button" class="btn btn-danger" ng-disabled="frmProyecto.$invalid" ng-click="delProyecto(elProyecto)" ng-show="grpBtnProyecto.d">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>
+                                <button type="button" class="btn btn-info" ng-click="btnAP()" ng-show="grpBtnProyecto.a">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </button>
+                                <button type="button" class="btn btn-info" ng-disabled="frmProyecto.$invalid" ng-click="replicarAUnidad()" ng-show="elProyecto.id > 0">
+                                    <span class="glyphicon glyphicon-copy"></span>
+                                </button>
+                                <button type="button" class="btn btn-info" ng-disabled="frmProyecto.$invalid" ng-click="asignarUsuarios()" ng-show="elProyecto.id > 0">
+                                    <span class="glyphicon glyphicon-user"></span>
+                                </button>
+                                <button type="button" class="btn btn-info" ng-disabled="frmProyecto.$invalid" ng-click="asignarServicios()" ng-show="elProyecto.id > 0">
+                                    <span class="glyphicon glyphicon-list"></span>&nbsp;Servicios
+                                </button>
+                            </div>
+                        </form>
+                        <!--<hr/>-->
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="divFrmAdjuntos" class="tab-pane fade">
+            <div class="panel panel-info">
+                <div class="panel-heading">Adjuntos del proyecto&nbsp;<span class="badge" style="color: white;">{{proyectostr}}</span></div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12 nopadding" style="text-align: right">
+                            <button type="button" class="btn btn-info btn-xs" ng-click="showForm.adjunto = !showForm.adjunto" ng-hide="showForm.adjunto" aria-label="Toggle ngHide">
+                                <span class="glyphicon glyphicon-chevron-down"></span>
+                            </button>
+                            <button type="button" class="btn btn-info btn-xs" ng-click="showForm.adjunto = !showForm.adjunto" ng-show="showForm.adjunto" aria-label="Toggle ngHide">
+                                <span class="glyphicon glyphicon-chevron-up"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <form name="frmProyectoAdjunto" id="frmProyectoAdjunto"
+                          ng-submit="frmProyectoAdjunto.$valid && addProyectoAdjunto(elProyectoAdjunto,elProyecto)" class="check-element animate-show" ng-show="elProyecto.id > 0 && showForm.adjunto" novalidate>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="{'has-error':frmProyectoAdjunto.txtNomAdjunto.$invalid && !frmProyectoAdjunto.txtNomAdjunto.$pristine}">
+                                    <label for="txtNomAjunto">Observaciones:</label>
+                                    <input name="txtNomAjunto" id="txtNomAjunto" type="text" class="form-control" ng-model="elProyectoAdjunto.nomadjunto"
+                                           placeholder="Descripcion del adjunto" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmProyectoAdjunto.selTipoAdjunto.$invalid && !frmProyectoAdjunto.selTipoAdjunto.$pristine}">
+                                    <label for="selTipoAdjunto">Tipo de Adjunto:</label>
+                                    <select name="selTipoAdjunto" id="selTipoAdjunto" class="form-control" ng-model="elProyectoAdjunto.objTipoAdjunto"
+                                            ng-options="obj.nombre for obj in losTipoAdjunto track by obj.id" required>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmProyectoAdjunto.selTipoDoc.$invalid && !frmProyectoAdjunto.selTipoDoc.$pristine}">
+                                    <label for="selTipoDoc">Tipo de documento:</label>
+                                    <select name="selTipoDoc" id="selTipoDoc" class="form-control" ng-model="elProyectoAdjunto.objTipoDoc"
+                                            ng-options="obj.descripcion for obj in tiposDocProy track by obj.id" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="form-group" ng-class="{'has-error':frmProyectoAdjunto.txtNum.$invalid && !frmProyectoAdjunto.txtNum.$pristine}">
+                                    <label for="txtNum">N&uacute;mero:</label>
+                                    <input name="txtNum" id="txtNum" type="text" class="form-control" ng-model="elProyectoAdjunto.numero"
+                                           placeholder="No. de fianza, licencia, entre otros..."/>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmProyectoAdjunto.txtFVence.$invalid && !frmProyectoAdjunto.txtFVence.$pristine}">
+                                    <label for="txtFVence">Fecha de vencimiento:</label>
+                                    <input name="txtFVence" id="txtFVence" type="date" class="form-control" ng-model="elProyectoAdjunto.fvence"
+                                           placeholder="Fecha de vencimiento"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button name="adjuntar_btn" id="adjuntar_btn" type="button" class="btn btn-info"
+                                        ngf-select ng-model="file" name="file"
+                                        ngf-pattern="'image/*,application/pdf,.xls,.xlsx,.doc,.docx,.txt'"
+                                        ngf-accept="'image/*,application/pdf,.xls,.xlsx,.doc,.docx,.txt'"
+                                        ngf-max-size="20MB" style="width: 100%">
+                                    {{(file.name | textCleaner) || 'Seleccionar documento para subir'}}&nbsp;<span class="glyphicon glyphicon-upload"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-info" ng-disabled="frmProyectoAdjunto.$invalid || file == null || file == undefined">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table class="table table-responsive table-hover table-condensed">
+                        <thead>
+                        <tr>
+                            <th>Descripcion</th>
+                            <th>Tipo de adjunto</th>
+                            <th>Tipo de documento</th>
+                            <th>No.</th>
+                            <th>Vence</th>
+                            <th>&nbsp;</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="proyecto_adjunto in losProyectoAdjuntos">
+                            <td>{{proyecto_adjunto.nomadjunto}}</td>
+                            <td>{{proyecto_adjunto.nomtipo_adjunto}}</td>
+                            <td>{{proyecto_adjunto.tipodocproy}}</td>
+                            <td>{{proyecto_adjunto.numero}}</td>
+                            <td>{{proyecto_adjunto.fvence | date:'dd/MM/yyyy'}}</td>
+                            <td>
+                                <a class="btn btn-info" href="{{proyecto_adjunto.ubicacion}}" target="_blank">
+                                    <span class="glyphicon glyphicon-download"></span>
+                                </a>
+                            </td>
+                            <td style="white-space: nowrap">
+                                <button type="button" class="btn btn-danger" ng-click="delProyectoAdjunto(proyecto_adjunto.idadjunto)">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div><!--.tab-pane Adjuntos-->
+        <div id="divFrmActivorelacion" class="tab-pane fade">
+            <div class="panel panel-info">
+                <div class="panel-heading">Activos relacionados al proyecto&nbsp;<span class="badge" style="color: white;">{{proyectostr}}</span></div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12 nopadding" style="text-align: right">
+                            <button type="button" class="btn btn-info btn-xs" ng-click="showForm.activo = !showForm.activo" ng-hide="showForm.activo" aria-label="Toggle ngHide">
+                                <span class="glyphicon glyphicon-chevron-down"></span>
+                            </button>
+                            <button type="button" class="btn btn-info btn-xs" ng-click="showForm.activo = !showForm.activo" ng-show="showForm.activo" aria-label="Toggle ngHide">
+                                <span class="glyphicon glyphicon-chevron-up"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <form name="frmProyectoActivo" id="frmProyectoActivo" ng-submit="frmProyectoActivo.$valid && addProyectoActivo(elDetActivoProy,elProyecto.id)" class="check-element animate-show" ng-show="elProyecto.id > 0 && showForm.activo" novalidate>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="selActivo">Activo:</label>
+                                        <input name="txtFltAct" id="txtFltAct" type="text" class="form-control" ng-model="searchact" placeholder="Finca-Folio-Libro"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="form-group" ng-class="{'has-error':frmProyectoActivo.selActivo.$invalid && !frmProyectoActivo.selActivo.$pristine}">
+                                        <label for="selActivo">&nbsp;</label>
+                                        <select name="selActivo" id="selActivo" class="form-control" ng-model="elDetActivoProy.objActivo"
+                                                ng-options="obj.ffl for obj in losActivos | filter:{ffl:searchact}" multiple required>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row col-md-2">
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-info" ng-disabled="frmProyectoActivo.$invalid">
+                                        <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table class="table table-responsive table-hover table-condensed">
+                        <thead>
+                        <tr>
+                            <th>Finca-Folio-Libro</th>
+                            <th>Empresa</th>
+                            <th style="text-align: right">M<sup>2</sup> </th>
+                            <th>&nbsp;</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="act in losDetActivoProy" ng-class="{'linea-de-totales': act.nomempresa.toUpperCase().indexOf('TOTAL') > -1}">
+                            <td>{{act.finca}}-{{act.folio}}-{{act.libro}}</td>
+                            <td>{{act.nomempresa}}</td>
+                            <td style="text-align: right">{{act.metros_muni | number:4}}</td>
+                            <td style="white-space: nowrap">
+                                <button type="button" class="btn btn-danger" ng-click="delProyectoActivo(act)"
+                                        ng-hide="act.nomempresa.toUpperCase().indexOf('TOTAL') > -1">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div><!--tab-pane Activorelacion-->
+        <div id="divFrmUnidades" class="tab-pane fade">
+            <div class="panel panel-info">
+                <div class="panel-heading">Unidades del proyecto&nbsp;<span class="badge" style="color: white;">{{proyectostr}}</span></div>
+                <div class="panel-body">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a show-tab href="#divFrmDataGen" data-toggle="tab">DATOS GENERALES</a>
+                        </li>
+                        <li>
+                            <a show-tab href="#divFrmServUnid" data-toggle="tab" ng-show="unidad.id > 0">SERVICIOS</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="divFrmDataGen" class="tab-pane fade in active">
+                            <div class="row">
+                                <div class="col-md-12 nopadding" style="text-align: right">
+                                    <button type="button" class="btn btn-info btn-xs" ng-click="showForm.unidad = !showForm.unidad" ng-hide="showForm.unidad" aria-label="Toggle ngHide">
+                                        <span class="glyphicon glyphicon-chevron-down"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-info btn-xs" ng-click="showForm.unidad = !showForm.unidad" ng-show="showForm.unidad" aria-label="Toggle ngHide">
+                                        <span class="glyphicon glyphicon-chevron-up"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <form name="frmUnidadProy" id="frmUnidadProy" ng-submit="frmUnidadProy.$valid && addUnidadProyecto(unidad)" class="check-element animate-show" ng-show="showForm.unidad" novalidate>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group" ng-class="{'has-error':frmUnidadProy.selTipoLocal.$invalid && !frmUnidadProy.selTipoLocal.$pristine}">
+                                            <label for="selTipoLocal">Tipo de unidad:</label>
+                                            <select name="selTipoLocal" id="selTipoLocal" class="form-control" ng-model="unidad.objTipoLocal"
+                                                    ng-options="obj.descripcion for obj in tiposlocales track by obj.id" required ng-disabled="slunidad">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group" ng-class="{'has-error':frmUnidadProy.txtNom.$invalid && !frmUnidadProy.txtNom.$pristine}">
+                                            <label for="txtNom">Nombre corto:</label>
+                                            <input name="txtNom" id="txtNom" type="text" class="form-control" ng-model="unidad.nombre"
+                                                   maxlength="50" placeholder="Nombre corto" required ng-disabled="slunidad"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group" ng-class="{'has-error':frmUnidadProy.txtMCuad.$invalid && !frmUnidadProy.txtMCuad.$pristine}">
+                                            <label for="txtMCuad">Tama&ntilde;o m<sup>2</sup>:</label>
+                                            <input name="txtMCuad" id="txtMCuad" type="text" class="form-control" ng-model="unidad.mcuad" min="0"
+                                                   fcsa-number="{ maxDecimals: 4 }" required ng-disabled="slunidad"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group" ng-class="{'has-error':frmUnidadProy.chkMultiUnidad.$invalid && !frmUnidadProy.chkMultiUnidad.$pristine}">
+                                            <label for="chkMultiUnidad">Multiunidad:</label>
+                                            <input name="chkMultiUnidad" id="chkMultiUnidad" type="checkbox" class="form-control" ng-model="unidad.multiunidad" 
+                                                   ng-true-value="1" ng-false-value="0" ng-disabled="slunidad"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group" ng-class="{'has-error':frmUnidadProy.txtDescrip.$invalid && !frmUnidadProy.txtDescrip.$pristine}">
+                                            <label for="txtDescrip">Descripci&oacute;n:</label>
+                                            <input name="txtDescrip" id="txtDescrip" type="text" class="form-control" ng-model="unidad.descripcion"
+                                                   maxlength="300" placeholder="Descripci&oacute;n" required ng-disabled="slunidad"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group" ng-class="{'has-error':frmUnidadProy.txtObs.$invalid && !frmUnidadProy.txtObs.$pristine}">
+                                            <label for="txtObs">Observaciones:</label>
+                                    <textarea name="txtObs" id="txtObs" class="form-control" ng-model="unidad.observaciones"
+                                              maxlength="500" placeholder="Observaciones" style="width: 100%" rows="4" ng-disabled="slunidad"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <button type="submit" class="btn btn-info" ng-disabled="frmUnidadProy.$invalid" ng-show="grpBtnUnidad.i">
+                                        <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-info" ng-disabled="frmCliente.$invalid" ng-click="btnEPU()" ng-show="grpBtnUnidad.e">
+                                        <span class="glyphicon glyphicon-edit"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-info" ng-disabled="frmUnidadProy.$invalid" ng-click="updUnidad(unidad)" ng-show="grpBtnUnidad.u">
+                                        <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-warning" ng-click="btnCPU()" ng-show="grpBtnUnidad.c">
+                                        <span class="glyphicon glyphicon-remove-circle"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-danger" ng-disabled="frmUnidadProy.$invalid" ng-click="delUnidadProyecto(unidad)" ng-show="grpBtnUnidad.d">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-info" ng-click="btnAPU()" ng-show="grpBtnUnidad.a">
+                                        <span class="glyphicon glyphicon-plus"></span>
+                                    </button>
+                                </div>
+                            </form>
+                            <hr/>
+                            <table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover table-condensed">
+                                <thead>
+                                <tr>
+                                    <!--<th style="text-align: right">No. </th>-->
+                                    <th>Tipo</th>
+                                    <th>Nombre</th>
+                                    <th style="text-align: right">M<sup>2</sup></th>
+                                    <th>Descripci&oacute;n</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="u in unidadesProy" ng-click="getUnidad(u.id)">
+                                    <!--<td style="text-align: right">{{ u.id > 0 ? (u.id | padNumber:5) : ''}}</td>-->
+                                    <td>{{u.tipolocal}}</td>
+                                    <td>{{u.nombre}}</td>
+                                    <td style="text-align: right">{{u.mcuad | number:4}}</td>
+                                    <td>{{u.descripcion}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="divFrmServUnid" class="tab-pane fade">
+                            <small ng-show="+unidad.id > 0">
+                                <h5>{{unidad.nombre}}&nbsp;({{unidad.tipolocal}}) de {{unidad.mcuad | number:4}}&nbsp;m<sup>2</sup></h5>
+                            </small>
+                            <hr ng-show="+unidad.id > 0"/>
+                            <div class="row">
+                                <div class="col-md-12 nopadding" style="text-align: right">
+                                    <button type="button" class="btn btn-info btn-xs" ng-click="showForm.servicio = !showForm.servicio" ng-hide="showForm.servicio" aria-label="Toggle ngHide">
+                                        <span class="glyphicon glyphicon-chevron-down"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-info btn-xs" ng-click="showForm.servicio = !showForm.servicio" ng-show="showForm.servicio" aria-label="Toggle ngHide">
+                                        <span class="glyphicon glyphicon-chevron-up"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <form name="frmServUni" id="frmServUni" ng-submit="frmServUni.$valid && addServUni(servuni)" class="check-element animate-show" ng-show="showForm.servicio" novalidate>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group" ng-class="{'has-error':frmServUni.selEmpServ.$invalid && !frmServUni.selEmpServ.$pristine}">
+                                            <label for="selEmpServ">Empresa:</label>
+                                            <select name="selEmpServ" id="selEmpServ" class="form-control" ng-model="servuni.objEmpresa"
+                                                    ng-options="obj.nomempresa for obj in lasEmpresas track by obj.id"
+                                                    ng-change="getServiciosDisponibles(servuni.objEmpresa.id)" ng-disabled="slservbas">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="form-group" ng-class="{'has-error':frmServUni.selSrvc.$invalid && !frmServUni.selSrvc.$pristine}">
+                                            <label for="selSrvc">Servicio propio:</label>
+                                            <ui-select id="selSrvc" ng-model="servuni.objServBasico"
+                                                       title="Seleccione un servicio propio..."
+                                                       theme="bootstrap"
+                                                       autofocus="false"
+                                                       append-to-body="true"
+                                                       ng-disabled="slservbas">
+                                                <ui-select-match placeholder="Buscar servicio propio..." allow-clear="false">
+                                                    <span ng-bind="$select.selected.contador"></span>
+                                                </ui-select-match>
+                                                <ui-select-choices repeat="item in serviciosDisponibles | filter:$select.search">
+                                                    <div ng-bind-html="item.contador | highlight: $select.search"></div>
+                                                    <small>
+                                                        <strong>Tipo:</strong>&nbsp;<span ng-bind-html="item.tipo | highlight: $select.search" ></span><br/>
+                                                        <strong>Empresa:</strong>&nbsp;<span ng-bind-html="item.empresa | highlight: $select.search" ></span>
+                                                    </small>
+                                                </ui-select-choices>
+                                                <ui-select-no-choice>
+                                                    No hay resultados...
+                                                </ui-select-no-choice>
+                                            </ui-select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <button type="submit" class="btn btn-info" ng-disabled="frmServUni.$invalid" ng-show="grpBtnServBas.i">
+                                        <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-warning" ng-click="btnCPS()" ng-show="grpBtnServBas.c">
+                                        <span class="glyphicon glyphicon-remove-circle"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-info" ng-click="btnAPS()" ng-show="grpBtnServBas.a">
+                                        <span class="glyphicon glyphicon-plus"></span>
+                                    </button>
+                                </div>
+                            </form>
+                            <hr ng-show="servciosUnidad.length > 0"/>
+                            <table class="table table-responsive table-hover table-condensed" ng-show="servciosUnidad.length > 0">
+                                <caption>
+                                    <h5>SERVICIOS PROPIOS</h5>
+                                </caption>
+                                <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>No. Identificaci&oacute;n</th>
+                                    <th>No. Ref.</th>
+                                    <th>Empresa</th>
+                                    <th style="text-align: right">Precio</th>
+                                    <th style="text-align: right; width: 10em;">Cant. base</th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="su in servciosUnidad">
+                                    <td>{{su.tiposervicio}}</td>
+                                    <td>{{su.numidentificacion}}</td>
+                                    <td>{{su.numreferencia}}</td>
+                                    <td>{{su.empresa}}</td>
+                                    <td style="text-align: right; width: 10em;">
+                                        <input name="txtPBase_{{su.id}}" id="txtPBase_{{su.id}}" type="number" class="form-control input-sm" ng-model="su.preciomcubsug" step="0.01" style="text-align: right; width: 10em;"
+                                               placeholder="Precio base"/>
+                                    </td>
+                                    <td style="text-align: right; width: 10em;">
+                                        <input name="txtBase_{{su.id}}" id="txtBase_{{su.id}}" type="number" class="form-control input-sm" ng-model="su.mcubsug" step="0.01" style="text-align: right; width: 10em;"
+                                               placeholder="Cantidad base"/>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group" aria-label="...">
+                                            <button type="button" class="btn btn-info btn-sm" ng-click="updCantBase(su)">
+                                                <span class="glyphicon glyphicon-floppy-save"></span>
+                                            </button>
+                                            <button type="button" class="btn btn-danger btn-sm" ng-click="delServUni(su)">
+                                                <span class="glyphicon glyphicon-trash"></span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <hr ng-show="servubas.length > 0"/>
+                            <table class="table table-responsive table-hover table-condensed" ng-show="servubas.length > 0">
+                                <caption>
+                                    <h5>SERVICIOS DE TERCEROS</h5>
+                                </caption>
+                                <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Proveedor</th>
+                                    <th>No. Identificaci&oacute;n</th>
+                                    <th>No. Ref.</th>
+                                    <th>Empresa</th>
+                                    <th>Paga cliente</th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="sb in servubas">
+                                    <td>{{sb.tiposervicio}}</td>
+                                    <td>{{sb.proveedor}}</td>
+                                    <td>{{sb.numidentificacion}}</td>
+                                    <td>{{sb.numreferencia}}</td>
+                                    <td>{{sb.empresa}}</td>
+                                    <td>{{sb.pagacliente}}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm" ng-click="delServUni(sb)">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="divProyPrint" class="tab-pane fade">
+            <div class="row">
+                <div class="col-md-12">
+                    <object data="{{content}}" type="application/pdf" style="width: 100%; height: 50em"></object>
+                </div>
+            </div>
+        </div>
+        <toaster-container toaster-options="{'time-out':2000, 'position-class':'toast-bottom-full-width'}"></toaster-container>
+    </div>
+    <script type="text/ng-template" id="modalTipoLocal.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Replicaci&oacute;n de unidad</h3>
+        </div>
+        <div class="modal-body">
+            <form name="frmData" id="frmData" novalidate>
+                <div class="form-group">
+                    <label for="selTipoUnidad">Tipo de unidad:</label>
+                    <select name="selTipoUnidad" id="selTipoUnidad" class="form-control" ng-model="param.objTipoUnidad"
+                            ng-options="obj.descripcion for obj in tiposlocales track by obj.id" multiple required></select>
+                </div>
+                <div class="form-group">
+                    <label for="txtMCR">M<sup>2</sup>:</label>
+                    <input name="txtMCR" id="txtMCR" type="number" class="form-control" ng-model="param.mcuad" min="0" step="0.01" required/>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-info" type="button" ng-click="ok()">Aceptar</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
+        </div>
+    </script>
+    <script type="text/ng-template" id="modalUsuario.html">
+        <div class="modal-header">
+            <h3 class="modal-title">{{proyecto.nomproyecto}}</h3>
+            <h4>Asignar usuario</h4>
+        </div>
+        <div class="modal-body">
+            <form name="frmUsrProy" id="frmUsrProy" class="form-inline" ng-submit="frmUsrProy.$valid && addUsrProy(usuario)" novalidate>
+                <div class="form-group">
+                    <label for="selUsuario">Usuario:</label>
+                    <select name="selUsuario" id="selUsuario" class="form-control" ng-model="usuario.idusuario"
+                            ng-options="obj.id as obj.usuario for obj in usuarios track by obj.id" required>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-info" ng-disabled="frmUsrProy.$invalid">
+                    <span class="glyphicon glyphicon-floppy-save"></span>
+                </button>
+            </form>
+            <hr/>
+            <table class="table table-condensed table-hover">
+                <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="usr in asignados">
+                    <td>{{usr.usuario}}</td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm" ng-click="delUsrProy(usr)">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <!--<button class="btn btn-info" type="button" ng-click="ok()">Aceptar</button>-->
+            <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
+        </div>
+    </script>
+    <script type="text/ng-template" id="modalServicios.html">
+        <div class="modal-header">
+            <h3 class="modal-title">{{proyecto.nomproyecto}}</h3>
+            <h4>Asignar servicios</h4>
+        </div>
+        <div class="modal-body">
+            <form name="frmUsrSrv" id="frmUsrSrv" ng-submit="frmUsrSrv.$valid && addSrvProy(servicio)" novalidate>
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="form-group">
+                            <label for="selSrv">Servicio:</label>
+                            <ui-select name="selSrv"
+                                       id="selSrv"
+                                       ng-model="servicio.idserviciobasico"
+                                       title="Seleccione un contador.."
+                                       theme="bootstrap"
+                                       append-to-body="false"
+                                       ng-required="true">
+                                <ui-select-match placeholder="Buscar contador..." allow-clear="false">
+                                    <span ng-bind="$select.selected.numidentificacion"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="item.id as item in servicios | filter:$select.search">
+                                    <div ng-bind-html="item.numidentificacion | highlight: $select.search"></div>
+                                    <small>
+                                        <strong>Empresa:</strong>&nbsp;<span ng-bind-html="item.empresa | highlight: $select.search" ></span><br/>
+                                        <strong>Referencia:</strong>&nbsp;<span ng-bind-html="item.numreferencia | highlight: $select.search" ></span><br/>
+                                        <strong>Contador padre:</strong>&nbsp;<span ng-bind-html="item.contadorpadre | highlight: $select.search" ></span>
+                                    </small>
+                                </ui-select-choices>
+                                <ui-select-no-choice>
+                                    No hay resultados...
+                                </ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="btnSv" style="color: white">Boton</label>
+                            <button name="btnSv" id="btnSv" type="submit" class="btn btn-info" ng-disabled="frmUsrSrv.$invalid">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <hr/>
+            <table class="table table-condensed table-hover">
+                <thead>
+                <tr>
+                    <th>Servicio</th>
+                    <th>Empresa</th>
+                    <th>&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="srv in servproy">
+                    <td>{{srv.numidentificacion}}</td>
+                    <td>{{srv.empresaservicio}}</td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm" ng-click="delSrvProy(srv)">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <!--<button class="btn btn-info" type="button" ng-click="ok()">Aceptar</button>-->
+            <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
+        </div>
+    </script>
+</div>

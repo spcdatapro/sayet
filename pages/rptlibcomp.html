@@ -1,0 +1,87 @@
+<div class="container" ng-controller="rptLibroComprasCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body" style="text-align: right">
+                <div class="row" style="text-align: left">
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                            <label for="selMes">Mes:</label>
+                            <select name="selMes" id="selMes" class="form-control" ng-model="params.mes" ng-change="getGastosActivo()">
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Mayo</option>
+                                <option value="6">Junio</option>
+                                <option value="7">Julio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Septiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11">Noviembre</option>
+                                <option value="12">Diciembre</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                            <label for="txtAnio">A&ntilde;o:</label>
+                            <input name="txtAnio" id="txtAnio" type="number" class="form-control" ng-model="params.anio" placeholder="A&ntilde;o" ng-change="getGastosActivo()"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                            <label for="chkCredFiscal">Cr&eacute;dito fiscal:</label>
+                            <input name="chkCredFiscal" id="chkCredFiscal" type="checkbox" class="form-control" 
+                                ng-model="params.creditofiscal" ng-true-value="1" ng-false-value="0"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="text-align: left">
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                            <label for="txtMonAct">Monto de gastos activo:</label>
+                            <input name="txtMonAct" id="txtMonAct" type="number" class="form-control" ng-model="params.montoactivo" step="0.01"/>
+                        </div>
+                    </div>
+                    <div class="col-md-8 col-sm-8">
+                        <div class="form-group">
+                            <label for="txtRefAct">Referencia activo:</label>
+                            <input name="txtRefAct" id="txtRefAct" type="text" class="form-control" ng-model="params.refactivo" maxlength="50"/>
+                        </div>
+                    </div>                    
+                </div>
+				<div  class="row" style="text-align: left">
+					<div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="txtDel">Del:</label>
+                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.del" placeholder="Del"/>
+                        </div>
+                    </div>
+					<div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="txtAl">Al:</label>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.al" placeholder="Al"/>
+                        </div>
+                    </div>
+					<div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="selMes">Orden:</label>
+                            <select name="selOrd" id="selOrd" class="form-control" ng-model="params.orden" ng-change="resetData()">
+                                <option value="1">Fecha de Factura</option>
+                                <option value="2">Nombre de Proveedor</option>
+                            </select>
+                        </div>
+                    </div>
+				</div>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="getLibComp()">
+					<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+	<div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 100em"></object>
+        </div>
+    </div>
+</div>

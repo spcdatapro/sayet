@@ -1,0 +1,73 @@
+<div class="container" ng-controller="conciliaCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Conciliaci&oacute;n bancaria</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="selEmpresa">Empresa:</label>
+                    <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="laEmpresa"
+                            ng-options="obj.nomempresa for obj in lasEmpresas track by obj.id" ng-change="getLstBancos()" required>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="selBanco">Banco:</label>
+                    <select name="selBanco" id="selBanco" class="form-control" ng-model="elBanco"
+                            ng-options="obj.bancomoneda for obj in losBancos track by obj.id" ng-change="getLstTran()" required>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="txtAFecha">A fecha:</label>
+                        <input name="txtAFecha" id="txtAFecha" type="date" class="form-control" ng-model="afecha" ng-change="getLstTran()" required/>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="txtFConc">Fecha de conciliaci&oacute;n:</label>
+                        <input name="txtFConc" id="txtFConc" type="date" class="form-control" ng-model="fechaconcilia" required/>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="chkOperados">Ver operados:</label>
+                        <input name="chkOperados" id="chkOperados" type="checkbox" class="form-control" ng-model="qver" ng-change="getLstTran()" ng-true-value="1" ng-false-value="0"/>
+                    </div>
+                </div>
+            </div>
+            <hr/>
+            <table class="table table-responsive table-hover table-condensed">
+                <caption>
+                    <input type="text" class="form-control input-sm" placeholder="Buscar documento..." ng-model="searchdoc.$"/>
+                </caption>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>N&uacute;mero</th>
+                        <th>Monto</th>
+                        <th>Beneficiario</th>
+                        <th>Concepto</th>
+                        <th>Operado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="tb in lasTran | filter:searchdoc">
+                        <td>{{tb.fecha | date:'dd/MM/yyyy'}}</td>
+                        <td>{{tb.tipotrans}}</td>
+                        <td>{{tb.numero}}</td>
+                        <td>{{tb.monto | number:2}}</td>
+                        <td>{{tb.beneficiario}}</td>
+                        <td>{{tb.concepto}}</td>
+                        <td>
+                            <button type="button" class="btn" ng-class="{'btn-success': tb.operado, 'btn-warning': !tb.operado }" ng-click="updOperado(tb, tb.id)">
+                                <span class="glyphicon" ng-class="{'glyphicon-ok': tb.operado, 'glyphicon-remove': !tb.operado}"></span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

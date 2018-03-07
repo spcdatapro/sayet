@@ -1,0 +1,69 @@
+<div class="container" ng-controller="tipogastocontableCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Tipo de Gasto Contable</div>
+
+        <div class="panel-body">
+    
+            <form name="frmGastocontable" id="frmGastocontable" class="col-md-4" ng-submit="frmGastocontable.$valid && editaGastocontable(elGastocontable, 'c')" novalidate>
+                
+                        
+                            <div class="form-group">
+                            <label for="txtDescgastoconta">Descripci&oacute;n:</label>
+                                 <input type="text" name="txtDescgastoconta" id="txtDescgastoconta" class="form-control" ng-model="elGastocontable.descgastoconta" placeholder="Describa el gasto contable" maxlength="200" required/>
+                            </div> 
+                                <!--____Boton___-->
+                                 <center><div class="btn-group" role="group" aria-label="...">
+                                    <button type="submit" class="btn btn-primary" ng-disabled="frmGastocontable.$invalid">
+                                            <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                </div></center>
+                            
+            </form>  
+               <!--____________________________Lista____________________________-->
+
+        <div class="col-md-8" style="border-left: 1px solid #E6E6E6; height: auto">
+
+                        <!--center><h3>Gastos Contables</h3></center-->
+                            
+                     
+                <table class="table table-responsive table-hover">
+                    <thead>
+                        <tr>
+                            <!--th><center>ID</th></center-->
+                            <th>Descripci&oacute;n del Gasto Contable</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="e in lstGastoscontables">
+                            <!--td>
+                                <span>
+                                    <center>{{e.id}}</center>
+                                </span>
+                            </td-->
+                            <td>
+                                <span editable-text="e.descgastoconta" e-name="descgastoconta" e-form="rowform" e-required
+                                    e-class="form-control" e-type="text" e-maxlength="200">
+                                    {{e.descgastoconta}}
+                                </span>
+                            </td>
+                            <td style="white-space: nowrap">
+                                <edit-row-form
+                                        editing-row="e"
+                                        update-func="updGastocontable(fila, qid)"
+                                        delete-func="delGastocontable(qid)">
+                                </edit-row-form>
+                            </td>
+                            </tr>
+                      </tbody>
+                 </table>    
+        </div>
+
+        </div>
+        <!--
+        <div class="panel-footer">
+
+        </div>
+        -->
+    </div>
+</div>

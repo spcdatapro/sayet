@@ -1,0 +1,384 @@
+<div class="container" ng-controller="reciboClientesCtrl">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divFrmRecCli" data-toggle="tab">RECIBOS A CLIENTES</a>
+        </li>
+        <li ng-show="reccli.id > 0">
+            <a show-tab href="#divDocs" data-toggle="tab">DOCUMENTOS A REBAJAR</a>
+        </li>
+        <li ng-show="reccli.id > 0 && reccli.espropio == 1">
+            <a show-tab href="#divDetCont" data-toggle="tab">DETALLE CONTABLE</a>
+        </li>
+    </ul> 
+    <div class="tab-content">
+        <div id="divFrmRecCli" class="tab-pane fade in active">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Recibos a clientes</div>
+                <div class="panel-body">
+                    <form name="frmRecCli" id="frmRecCli" ng-submit="frmRecCli.$valid && addRecCli(reccli)" novalidate>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="lblNoRec">Correlativo:</label>
+                                    <span name="lblNoRec" id="lblNoRec" class="form-control">{{ reccli.id != null && reccli.id != undefined ? (reccli.id | padNumber:5) : ''}}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmRecCli.txtSerie.$invalid && !frmRecCli.txtSerie.$pristine}">
+                                    <label for="txtSerie">Serie:</label>
+                                    <input name="txtSerie" id="txtSerie" type="text" maxlength="5" class="form-control" ng-model="reccli.serie" required />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="{'has-error':frmRecCli.txtNumero.$invalid && !frmRecCli.txtNumero.$pristine}">
+                                    <label for="txtNumero">N&uacute;mero:</label>
+                                    <input name="txtNumero" id="txtNumero" type="number" class="form-control" ng-model="reccli.numero" required />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmRecCli.txtFecha.$invalid && !frmRecCli.txtFecha.$pristine}">
+                                    <label for="txtFecha">Fecha:</label>
+                                    <input name="txtFecha" id="txtFecha" type="date" class="form-control" ng-model="reccli.fecha" required />
+                                </div>
+                            </div>
+                            <!--
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="chkEsPropio">Propio:</label>
+                                    <input name="chkEsPropio" id="chkEsPropio" type="checkbox" class="form-control" ng-model="reccli.espropio" ng-true-value="1" ng-false-value="0" />
+                                </div>
+                            </div>
+                            -->
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="selCliente">Cliente:</label>
+                                    <input type="text" class="form-control" ng-model="queryCli" placeholder="Buscar cliente..."/>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="form-group" ng-class="{'has-error':frmRecCli.selCliente.$invalid && !frmRecCli.selCliente.$pristine}">
+                                    <label for="selCliente">&nbsp;</label>
+                                    <select name="selCliente" id="selCliente" class="form-control" ng-model="reccli.objCliente"
+                                            ng-options="obj.nombre for obj in clientes | filter:{nombre:queryCli}" multiple required>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="selTranBan">Dep&oacute;sito / Nota de cr&eacute;dito:</label>
+                                    <input type="text" class="form-control" ng-model="query" placeholder="Buscar transacci&oacute;n bancaria..."/>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="form-group" ng-class="{'has-error':frmRecCli.selTranBan.$invalid && !frmRecCli.selTranBan.$pristine}">
+                                    <label for="selTranBan">&nbsp;</label>
+                                    <select name="selTranBan" id="selTranBan" class="form-control" ng-model="reccli.objTranBan"
+                                            ng-options="(tb.fecha | date:'dd/MM/yyyy') + ' - ' + tb.nombre + ' - ' + tb.tipotrans + ' - ' + tb.numero + ' - ' + tb.simbolo + ' ' + (tb.monto | number:2)
+                                        for tb in tranban | filter: filtrar" multiple>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-right">
+                                <span class="bld">Fecha/hora creaci&oacute;n: {{reccli.fechacrea | date:'dd/MM/yyyy HH:mm:ss'}}</span><br/>
+                                <span class="bld">Hecho/modificado por: {{reccli.usuariocrea || 'N/A'}}</span>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-primary" ng-disabled="frmRecCli.$invalid || !permiso.c" ng-hide="reccli.id > 0">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="frmRecCli.$invalid || !permiso.m" ng-show="reccli.id > 0" ng-click="updRecCli(reccli)">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <!--
+                            <button type="button" class="btn btn-warning" ng-disabled="frmRecCli.$invalid || laTran.anulado === 1" ng-show="editando && laTran.tipotrans === 'C'" ng-click="anular(laTran)">
+                                <span class="glyphicon glyphicon-ban-circle"></span>
+                            </button>
+                            -->
+                            <!--
+                            <a class="btn btn-primary" target="_blank" ng-href="php/printcheck.php?c={{laTran.id}}" ng-show="editando && laTran.tipotrans === 'C'"
+                               ng-disabled="frmRecCli.$invalid || laTran.anulado === 1 || laTran.impreso === 1" ng-click="laTran.impreso = 1">
+                                <span class="glyphicon glyphicon-print">&nbsp;Cheque</span>
+                            </a>
+                            -->
+                            <!--
+                            <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printVersion()">
+                                <span class="glyphicon glyphicon-print"></span>
+                            </button>
+                            -->
+                            <button type="button" class="btn btn-primary" ng-show="reccli.id > 0" ng-click="resetRecCli()" ng-disabled="!permiso.c">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <!--inicio modificacion -->
+                    <table class="table table-hover table-condensed">
+                        <caption>
+                            <form>
+                                <div class="row" style="padding-bottom: 0.15em !important;">
+                                    <div class="col-md-3">
+                                        <label for="srchTxtDel">Fecha inicio:</label>
+                                        <input name="srchTxtDel" id="srchTxtDel" type="date" class="form-control input-sm" ng-model="fltrre.fdel"/>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="srchTxtAl">Fecha final:</label>
+                                        <input name="srchTxtAl" id="srchTxtAl" type="date" class="form-control input-sm" ng-model="fltrre.fal"/>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="srchTxtserierec">Serie:</label>
+                                        <input name="srchTxtserierec" id="srchTxtserierec" type="text" class="form-control input-sm" ng-model="fltrre.serie"/>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="srchTxtrec">N&uacute;mero:</label>
+                                        <input name="srchTxtrec" id="srchTxtrec" type="number" class="form-control input-sm" ng-model="fltrre.recibostr"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="srchTxtcli">Cliente:</label>
+                                        <input name="srchTxtcli" id="srchTxtcli" type="text" class="form-control input-sm" ng-model="fltrre.clientestr"/>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="srchTxtNumb">No. de Transacci&oacute;n:</label>
+                                        <input name="srchTxtNumb" id="srchTxtNumb" type="text" class="form-control input-sm" ng-model="fltrre.ban_numerostr"/>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="srchTxtNomb">Nombre del Banco:</label>
+                                        <div class="input-group">
+                                            <input name="srchTxtNomb" id="srchTxtNomb" type="text" class="form-control input-sm" ng-model="fltrre.ban_cuentastr"/>
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-primary btn-sm" ng-click="getLstRecibosCli()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                        </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </caption>
+                        <!--<label >&nbsp;</label>-->
+                        <thead>
+                        <tr>
+                            <th>N&uacute;mero</th>
+                            <th>Correlativo</th>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Dep&oacute;sito/Nota de cr&eacute;dito</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="rec in reciboscli" ng-click="getRecCli(rec.id)">
+                            <td>{{rec.serie || ''}}{{rec.numero || ''}}</td>
+                            <td>{{rec.id | padNumber:5}}</td>
+                            <td>{{rec.fecha | date:'dd/MM/yyyy'}}</td>
+                            <td>{{rec.cliente}}</td>
+                            <td>{{rec.tipotrans}} {{rec.notranban}} {{rec.nombre}} {{rec.simbolo}} {{rec.monto | number:2}}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm" ng-click="delRecCli(rec)" ng-disabled="!permiso.e">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!--Fin modificacion-->
+        <div id="divDocs" class="tab-pane fade">
+            <div class="panel panel-success">
+                <div class="panel-heading">Documentos a rebajar</div>
+                <div class="panel-body">
+                    <form name="frmDocsReb" id="frmDocsReb" ng-submit="frmDocsReb.$valid && addDetRecCli(detreccli)" novalidate>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group" ng-class="{'has-error':frmDocsReb.selFactCli.$invalid && !frmDocsReb.selFactCli.$pristine}">
+                                    <label for="selFactCli">Documento a rebajar:</label>
+                                    <select name="selFactCli" id="selFactCli" class="form-control" ng-model="detreccli.objDocPend"
+                                            ng-options="obj.cadena for obj in lstdocspend" ng-change="setMontoSugerido()" multiple required>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmDocsReb.txtMonto.$invalid && !frmDocsReb.txtMonto.$pristine}">
+                                    <label for="txtMonto">Abonar:</label>
+                                    <input name="txtMonto" id="txtMonto" class="form-control" type="text" fcsa-number="{ maxDecimals:2 } " ng-model="detreccli.monto" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="txtInteres">Inter&eacute;s:</label>
+                                    <input name="txtInteres" id="txtInteres" class="form-control" type="text" fcsa-number="{ maxDecimals:2 } " ng-model="detreccli.interes"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-success" ng-disabled="frmDocsReb.$invalid || !permiso.c" ng-hide="detreccli.id > 0">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-success" ng-show="detreccli.id > 0" ng-click="resetDetRecCli()" ng-disabled="!permiso.c">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table class="table table-hover table-condensed">
+                        <thead>
+                        <tr>
+                            <th>Documento</th>
+                            <th style="text-align: right">Abono</th>
+                            <th style="text-align: right">Inter&eacute;s</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- //Rony 2017-11-16 Editar monto abono -->
+                        <tr ng-repeat="tr in lstdetreccli" ng-include="getTemplate(tr)">
+
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- //Rony 2017-11-16 Editar monto abono -->
+        <script type="text/ng-template" id="display">
+        <td>{{tr.siglas}}&nbsp;{{tr.serie}}&nbsp;{{tr.numero}}&nbsp;{{tr.fecha | date:'dd/MM/yyyy'}}&nbsp;{{tr.simbolo}}&nbsp;{{tr.total | number:2}}</td>
+
+        <td ng-hide="showme" style="text-align: right">{{tr.monto | number:2}} </td>
+        <td ng-show="showme" style="text-align: right"><input type="text" name="editmonto" id="editmonto" value="{{tr.monto | number:2}}" ></td>
+
+        <td ng-hide="showme" style="text-align: right">{{tr.interes | number:2}}</td>
+        <td ng-show="showme" style="text-align: right"><input type="text" name="editmonto" id="editmonto" value="{{tr.interes | number:2}}" ></td>
+
+        <td>
+            <button type="button" class="btn btn-primary btn-sm" ng-click="editDetRecCli(tr)">
+                <span class="glyphicon glyphicon-edit"></span>
+            </button>
+            <button type="button" class="btn btn-danger btn-sm" ng-click="delDetRecCli(tr)" ng-disabled="!permiso.e">
+                <span class="glyphicon glyphicon-trash"></span>
+            </button>                                 
+        </td>
+        </script>
+        
+        <!-- //Rony 2017-11-16 Editar monto abono -->
+        <script type="text/ng-template" id="edit">
+            <td>{{tr.siglas}}&nbsp;{{tr.serie}}&nbsp;{{tr.numero}}&nbsp;{{tr.fecha | date:'dd/MM/yyyy'}}&nbsp;{{tr.simbolo}}&nbsp;{{tr.total | number:2}}</td>
+
+            <td><input class="form-control" 
+                        type="text" 
+                        fcsa-number="{ maxDecimals:2 } " 
+                        ng-model="tr.monto" required/>
+            </td>
+            <td><input class="form-control" 
+                        type="text" 
+                        fcsa-number="{ maxDecimals:2 } " 
+                        ng-model="tr.interes"/>
+            </td>
+
+            <td>
+             <button type="button" class="btn btn-success btn-sm" ng-click="updateDetRecCli(tr)">
+                <span class="glyphicon glyphicon-check"></span>
+             </button>
+             <button type="button" class="btn btn-danger btn-sm" ng-click="reset(tr)">
+                <span class="glyphicon glyphicon-share">
+             </button>
+            </td>                                
+
+        </script>
+
+
+        <div id="divDetCont" class="tab-pane fade">
+            <div class="panel panel-info">
+                <div class="panel-heading">Detalle contable</div>
+                <div class="panel-body">
+                    <form name="frmDetCont" id="frmDetCont" ng-submit="frmDetCont.$valid && addDetCont(elDetCont)" novalidate>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="selCta">Cuenta:</label>
+                                    <input name="txtFiltroCta" id="txtFiltroCta" type="text" class="form-control" ng-model="searchcta"
+                                           placeholder="Cuenta contable"/>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="form-group" ng-class="{'has-error':frmDetCont.selCta.$invalid && !frmDetCont.selCta.$pristine}">
+                                    <label for="selCta">&nbsp;</label>
+                                    <select name="selCta" id="selCta" class="form-control" ng-model="elDetCont.objCuenta"
+                                            ng-options="obj.codcta for obj in cuentas | filter:{codcta:searchcta}" multiple required>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group" ng-class="{'has-error':frmDetCont.txtDebe.$invalid && !frmDetCont.txtDebe.$pristine}">
+                                    <label for="txtDebe">Debe:</label>
+                                    <input name="txtDebe" id="txtDebe" type="text" class="form-control" ng-model="elDetCont.debe"
+                                           placeholder="Debe" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="zeroHaber(elDetCont.debe)" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group" ng-class="{'has-error':frmDetCont.txtHaber.$invalid && !frmDetCont.txtHaber.$pristine}">
+                                    <label for="txtHaber">Haber:</label>
+                                    <input name="txtHaber" id="txtHaber" type="text" class="form-control" ng-model="elDetCont.haber"
+                                           placeholder="Haber" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="zeroDebe(elDetCont.haber)" required />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group" ng-class="{'has-error':frmDetCont.txtConceptoMayor.$invalid && !frmDetCont.txtConceptoMayor.$pristine}">
+                                    <label for="txtConceptoMayor">Concepto mayor:</label>
+                                    <textarea name="txtConceptoMayor" id="txtConceptoMayor" class="form-control"
+                                              ng-model="elDetCont.conceptomayor" placeholder="Concepto para el libro mayor"
+                                              style="width:100%" rows="3" required>
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-info" ng-disabled="frmDetCont.$invalid">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover">
+                        <thead>
+                        <tr>
+                            <th>Cuenta</th>
+                            <th style="text-align: right">Debe</th>
+                            <th style="text-align: right">Haber</th>
+                            <th>Concepto mayor</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="dc in lstdetcont">
+                            <td>{{dc.desccuentacont}}</td>
+                            <td style="text-align: right">{{dc.debe | number:2}}</td>
+                            <td style="text-align: right">{{dc.haber | number:2}}</td>
+                            <td>{{dc.conceptomayor}}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger" ng-click="delDetCont(dc)" ng-hide="dc.id == 0">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

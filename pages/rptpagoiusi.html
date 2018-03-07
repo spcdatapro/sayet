@@ -1,0 +1,46 @@
+<div class="container" ng-controller="rptPagoIusiCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body" style="text-align: right">
+                <div class="row" style="text-align: left">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="selEmpre">Empresa:</label>
+                            <input name="txtFiltroEmpre" id="txtFiltroEmpre" type="text" class="form-control" ng-model="searchempre" placeholder="Empresa"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="selEmpre">&nbsp;</label>
+                            <select name="selEmpre" id="selEmpre" class="form-control" ng-model="objEmpresa"
+                                    ng-options="obj.nomempresa for obj in empresas | filter:{nomempresa:searchempre}" multiple>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="selDepto">Departamento:</label>
+                            <input name="txtFiltroDepto" id="txtFiltroDepto" type="text" class="form-control" ng-model="search" placeholder="Departamento"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="selDepto">&nbsp;</label>
+                            <select name="selDepto" id="selDepto" class="form-control" ng-model="objDepto"
+                                    ng-options="obj.descripcion for obj in losDeptos | filter:{descripcion:search}" multiple>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="getRepPagosIusi()">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 50em"></object>
+        </div>
+    </div>
+</div>

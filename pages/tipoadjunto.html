@@ -1,0 +1,70 @@
+<div class="container" ng-controller="tipoadjuntoCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Tipo de Adjunto</div>
+
+        <div class="panel-body">
+    
+            <form name="frmTipoadjunto" id="frmTipoadjunto" class="col-md-4" ng-submit="frmTipoadjunto.$valid && editaTipoadjunto(elTipoadjunto, 'c')" novalidate>
+                
+                        
+                            <div class="form-group">
+                            <label for="txtNombre">Descripci&oacute;n:</label>
+                                 <input type="text" name="txtNombre" id="txtNombre" class="form-control" ng-model="elTipoadjunto.nombre" placeholder="Describa el Adjunto" maxlength="50" required/>
+                            </div> 
+                                <!--____Boton___-->
+                                 <center><div class="btn-group" role="group" aria-label="...">
+                                    <button type="submit" class="btn btn-primary" ng-disabled="frmTipoactivo.$invalid">
+                                            <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                </div></center>
+                            
+                        <!--tbody-->
+            </form>
+                <!--____________________________Lista____________________________-->
+
+        <div class="col-md-8" style="border-left: 1px solid #E6E6E6; height: auto">
+
+                        <!--center><h3>Tipo de Adjuntos</h3></center-->
+
+                     
+                <table class="table table-responsive table-hover">
+                    <thead>
+                        <tr>
+                            <!--th><center>ID</th></center-->
+                            <th>Descripci&oacute;n del Adjunto</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="e in lstTipoadjuntos">
+                            <!--td>
+                                <span>
+                                    <center>{{e.id}}</center>
+                                </span>
+                            </td-->
+                            <td>
+                                <span editable-text="e.nombre" e-name="nombre" e-form="rowform" e-required
+                                    e-class="form-control" e-type="text" e-maxlength="50">
+                                    {{e.nombre}}
+                                </span>
+                            </td>
+                            <td style="white-space: nowrap">
+                                <edit-row-form
+                                        editing-row="e"
+                                        update-func="updTipoadjunto(fila, qid)"
+                                        delete-func="delTipoadjunto(qid)">
+                                </edit-row-form>
+                            </td>
+                        </tr>
+                   </tbody>
+                </table>    
+        </div>
+
+        </div>
+        <!--
+        <div class="panel-footer">
+
+        </div>
+        -->
+    </div>
+</div>

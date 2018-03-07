@@ -1,0 +1,163 @@
+<div class="container-fluid" ng-controller="tranDirectaCtrl">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divFrmDirecta" data-toggle="tab">PARTIDA(S) DIRECTA(S)</a>
+        </li>
+        <li ng-show="editando">
+            <a show-tab href="#divFrmDetContDirecta" data-toggle="tab">DETALLE CONTABLE</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div id="divFrmDirecta" class="tab-pane fade in active">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Partida(s) directa(s)</div>
+                <div class="panel-body">
+                    <form name="frmDirecta" id="frmDirecta" ng-submit="frmDirecta.$valid && addDirecta(laDirecta)" novalidate>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="txtCorrela">Correlativo:</label>
+                                    <input name="txtCorrela" id="txtCorrela" type="text" class="form-control"
+                                           ng-model="laDirecta.id" style="text-align: right"
+                                           placeholder="Correlativo" ng-disabled="true"/>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmDirecta.txtFecha.$invalid && !frmDirecta.txtFecha.$pristine}">
+                                    <label for="txtFecha">Fecha:</label>
+                                    <input name="txtFecha" id="txtFecha" type="date" class="form-control" ng-model="laDirecta.fecha" required/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="txtConc">Concepto:</label>
+                                    <textarea name="txtConc" id="txtConc" class="form-control" ng-model="laDirecta.concepto" rows="3" style="width: 100%" placeholder="Concepto general de la partida directa..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-primary" ng-disabled="frmDirecta.$invalid" ng-hide="editando">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="frmDirecta.$invlaid" ng-show="editando" ng-click="updDirecta(laDirecta)">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printDirecta()">
+                                <span class="glyphicon glyphicon-print"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="frmDirecta.$invalid" ng-show="editando" ng-click="resetDirecta()">
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover">
+                        <thead>
+                            <th>Fecha</th>
+                            <th>Correlativo</th>
+                            <th>Concepto</th>
+                            <th>&nbsp;</th>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="directa in lasDirectas" ng-click="getPartidaDirecta(directa.id)">
+                                <td>{{directa.fecha | date:'dd/MM/yyyy'}}</td>
+                                <td>{{directa.id}}</td>
+                                <td>{{directa.concepto | shortenStr:75}}</td>
+                                <th>
+                                    <button type="button" class="btn btn-danger" ng-click="delDirecta(directa.id)">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                </th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="divFrmDetContDirecta" class="tab-pane fade">
+            <div class="panel panel-success">
+                <div class="panel-heading">Detalle contable de <span class="badge">{{directastr}}</span></div>
+                <div class="panel-body">
+                    <form name="frmDetCont" id="frmDetCont" ng-submit="frmDetCont.$valid && addDetCont(elDetCont)" novalidate>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="selCta">Cuenta:</label>
+                                    <input name="txtFiltroCta" id="txtFiltroCta" type="text" class="form-control" ng-model="searchcta"
+                                           placeholder="Cuenta contable"/>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="form-group" ng-class="{'has-error':frmDetCont.selCta.$invalid && !frmDetCont.selCta.$pristine}">
+                                    <label for="selCta">&nbsp;</label>
+                                    <select name="selCta" id="selCta" class="form-control" ng-model="elDetCont.objCuenta"
+                                            ng-options="obj.codcta for obj in lasCtasMov | filter:{codcta:searchcta}" multiple required>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group" ng-class="{'has-error':frmDetCont.txtDebe.$invalid && !frmDetCont.txtDebe.$pristine}">
+                                    <label for="txtDebe">Debe:</label>
+                                    <input name="txtDebe" id="txtDebe" type="text" class="form-control" ng-model="elDetCont.debe"
+                                           placeholder="Debe" fcsa-number="{ maxDecimals: 2 }" ng-change="zeroHaber(elDetCont.debe)" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group" ng-class="{'has-error':frmDetCont.txtHaber.$invalid && !frmDetCont.txtHaber.$pristine}">
+                                    <label for="txtHaber">Haber:</label>
+                                    <input name="txtHaber" id="txtHaber" type="text" class="form-control" ng-model="elDetCont.haber"
+                                           placeholder="Haber" fcsa-number="{ maxDecimals: 2 }" ng-change="zeroDebe(elDetCont.haber)" required />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group" ng-class="{'has-error':frmDetCont.txtConceptoMayor.$invalid && !frmDetCont.txtConceptoMayor.$pristine}">
+                                    <label for="txtConceptoMayor">Concepto mayor:</label>
+                                    <textarea name="txtConceptoMayor" id="txtConceptoMayor" class="form-control"
+                                              ng-model="elDetCont.conceptomayor" placeholder="Concepto para el libro mayor"
+                                              style="width:100%" rows="3" required>
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-info" ng-disabled="frmDetCont.$invalid">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover">
+                        <thead>
+                        <tr>
+                            <th>Cuenta</th>
+                            <th>Debe</th>
+                            <th>Haber</th>
+                            <th>Concepto mayor</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="dc in losDetCont">
+                            <td>{{dc.desccuentacont}}</td>
+                            <td>{{dc.debe | number:2}}</td>
+                            <td>{{dc.haber | number:2}}</td>
+                            <td>{{dc.conceptomayor}}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger" ng-click="delDetCont(dc)" ng-hide="dc.id == 0">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

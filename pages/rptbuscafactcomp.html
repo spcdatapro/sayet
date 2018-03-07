@@ -1,0 +1,155 @@
+<div class="container" ng-controller="rptBuscaFacturaCompraCtrl">
+    <div class="panel panel-default">
+        <div class="panel-heading">Buscar facturas de compras</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group required">
+                        <label for="selFecha" class="control-label">Fecha:</label>
+                        <select name="selFecha" id="selFecha" class="form-control input-sm" ng-model="params.qfecha" required>
+                            <option value="fechafactura">De factura</option>
+                            <option value="fechaingreso">De ingreso</option>
+                            <option value="fechapago">De pago</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group required">
+                        <label for="txtFDel" class="control-label">Del:</label>
+                        <input name="txtFDel" id="txtFDel" type="date" class="form-control input-sm" ng-model="params.fdel" required/>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group required">
+                        <label for="txtFAl" class="control-label">Al:</label>
+                        <input name="txtFAl" id="txtFAl" type="date" class="form-control input-sm" ng-model="params.fal" required/>
+                    </div>
+                </div>
+            </div>            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="selEmpresas">Empresas:</label>
+                        <ui-select 
+                            multiple 
+                            ng-model="params.lasEmpresas" 
+                            title="Seleccione una o mas empresas..." 
+                            theme="bootstrap"
+                            autofocus="false" 
+                            append-to-body="true" 
+                            sortable="true">
+                            <ui-select-match placeholder="Click para empresa" allow-clear="true">
+                                <span>{{$item.abreviatura}}</span>
+                            </ui-select-match>
+                            <ui-select-choices repeat="item in empresas | filter:$select.search">
+                                <div ng-bind-html="item.nomempresa | highlight: $select.search"></div>
+                                <small>
+                                    <strong>Abreviatura:</strong>&nbsp;<span ng-bind-html="item.abreviatura | highlight: $select.search" ></span>                                 
+                                </small>
+                            </ui-select-choices>
+                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                        </ui-select>
+                    </div>
+                </div>   
+                <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="txtSerie">Serie:</label>
+                            <input name="txtSerie" id="txtSerie" type="text" class="form-control input-sm" ng-model="params.serie"/>
+                        </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="txtDoc">N&uacute;mero:</label>
+                        <input name="txtDoc" id="txtDoc" type="text" class="form-control input-sm" ng-model="params.documento"/>
+                    </div>
+                </div>             
+            </div>   
+            <div class="row">
+                <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="txtProv">Proveedor:</label>
+                            <input name="txtProv" id="txtProv" type="text" class="form-control input-sm" ng-model="params.proveedor"/>
+                        </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="txtNit">N.I.T.:</label>
+                        <input name="txtNit" id="txtNit" type="text" class="form-control input-sm" ng-model="params.nit"/>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="txtConcepto">Concepto:</label>
+                            <input name="txtConcepto" id="txtConcepto" type="text" class="form-control input-sm" ng-model="params.concepto"/>
+                        </div>
+                    </div>
+            </div> 
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group required">
+                        <label for="selOBy" class="control-label">Ordenar por:</label>
+                        <select name="selOBy" id="selOBy" class="form-control input-sm" ng-model="params.orderby" required>
+                            <option value="b.nomempresa">Empresa</option>
+                            <option value="13">Proveedor</option>
+                            <option value="a.fechafactura">Fecha de factura</option>
+                            <option value="a.documento">Numero</option>
+                        </select>
+                    </div>
+                </div>
+            </div>        
+            <button type="button" class="btn btn-primary" ng-click="getFacturas()" 
+            ng-disabled="params.fdel == null || params.fdel == undefined || params.fal == null || params.fal == undefined">
+                <span class="glyphicon glyphicon-check"></span>
+            </button>  
+            <button type="button" class="btn btn-primary" ng-click="resetParams()">
+                <span class="glyphicon glyphicon-refresh"></span>
+            </button>  
+            <hr/>
+            <small>
+            <div class="table-responsive">
+                <table class="table table-condensed table-hover table-stripped">
+                    <caption>
+                        <input type="text" ng-model="searchfact.$" class="form-control input-sm" style="width: 100%" placeholder="Buscar factura..."/>
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th>Empresa</th>
+                            <th>Proyecto</th>
+                            <th>Fecha</th>
+                            <th>Documento</th>
+                            <th>Monto</th>
+                            <th>Proveedor</th>
+                            <th>Concepto</th>
+                            <th>Reem./CC</th>
+                            <th>Tran. Ban.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="compra in compras | filter:searchfact">
+                            <td>{{compra.abreviaempresa}}</td>
+                            <td style="width: 25em">
+                                <div class="input-group input-group-sm">
+                                    <select class="form-control" ng-model="compra.idproyecto" 
+                                            ng-options="obj.id as obj.nomproyecto for obj in proyectos | filter:{ idempresa: compra.idempresa }"></select>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button" ng-click="updCompraProy(compra.id, compra.idproyecto)" ng-disabled="+compra.idproyecto <= 0">
+                                            <span class="glyphicon glyphicon-floppy-save"></span>                                            
+                                        </button>
+                                    </span>
+                                </div>
+                            </td>
+                            <td>{{compra.fechafactura}}</td>
+                            <td>{{compra.serie}} {{compra.documento}}</td>                        
+                            <td class="num">{{compra.totfact | number:2}}</td>
+                            <td>{{compra.proveedor}}</td>
+                            <td>{{compra.concepto}}</td>
+                            <td>{{+compra.idreembolso == 0 ? '' : (compra.idreembolso | padNumber:5)}}</td>
+                            <td>{{compra.tranban}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>   
+            </small>               
+        </div>        
+    </div>
+</div>

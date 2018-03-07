@@ -1,0 +1,93 @@
+<div id="rptFactProv" class="container" ng-controller="rptFactProvCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body" style="text-align: right">
+                <!--<label><input ng-model="search.$" class="form-control" placeholder="Buscar proveedor(es)..."></label>-->
+                <div class="row" style="text-align: left">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="selProv">Proveedor:</label>
+                            <input name="txtFiltroProv" id="txtFiltroProv" type="text" class="form-control" ng-model="search" placeholder="N.I.T./nombre"/>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label for="selProv">&nbsp;</label>
+                            <select name="selProv" id="selProv" class="form-control" ng-model="objProv"
+                                    ng-options="obj.nitnombre for obj in losProvs | filter:{nitnombre:search}" multiple>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="text-align: left">
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="txtDel">Fecha de ingreso del:</label>
+                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.fDel" placeholder="Del"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="txtAl">Al:</label>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fAl" placeholder="Al"/>
+                        </div>
+                    </div>
+                    <div class="col-md-5 col-centered">
+                        <div class="checkbox">
+                            <label><input name="chkPendientes" id="chkPendientes" type="checkbox" ng-model="params.pendientes"
+                                   ng-true-value="1" ng-false-value="0">Mostrar solo pendientes
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-primary btn-sm" ng-click="getFactProv()">
+                    <span class="glyphicon glyphicon-ok"></span>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="printVersion()">
+                    <span class="glyphicon glyphicon-print"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="toPrint">
+        <div class="row">
+            <div style="text-align: center">
+                <h2>FACTURA(S) DE PROVEEDOR(ES)</h2>
+            </div>
+        </div>
+        <div class="panel">
+            <!--<div class="panel-heading"><h4>{{prov.nombre}} ({{prov.nit}})</h4></div>-->
+            <div class="panel-body">
+                <table class="table table-responsive table-condensed">
+                    <thead>
+                    <tr>
+                        <th>NIT</th>
+                        <th>Proveedor</th>
+                        <th>Serie</th>
+                        <th>Factura</th>
+                        <th>Ingreso</th>
+                        <th>A pagar</th>
+                        <th>Concepto</th>
+                        <th>Total</th>
+                        <th>Saldo</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="fact in losPagos" ng-class="{'linea-de-totales': fact.documento.toUpperCase().indexOf('TOTAL') > -1}">
+                        <td>{{fact.nit}}</td>
+                        <td>{{fact.proveedor}}</td>
+                        <td>{{fact.serie}}</td>
+                        <td>{{fact.documento}}</td>
+                        <td>{{fact.fechaingreso | date:'dd/MM/yyyy'}}</td>
+                        <td>{{fact.fechapago | date:'dd/MM/yyyy'}}</td>
+                        <td>{{fact.conceptomayor}}</td>
+                        <td style="text-align: right">{{fact.documento != '' ? (fact.totfact | number:2) : ''}}</td>
+                        <td style="text-align: right">{{fact.documento != '' ? (fact.saldo | number:2) : ''}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

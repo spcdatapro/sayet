@@ -1,0 +1,51 @@
+<div class="container" ng-controller="rptCatActCtrl">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="selEmpresas">Empresa:</label>
+                        <select name="selEmpresas" id="selEmpresas" class="form-control" ng-model="params.idempresa"
+                                ng-options="obj.id as obj.nomempresa for obj in empresas">
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="selTipo"></label>
+                        <select name="selTipo" id="selTipo" class="form-control" ng-model="params.idtipo"
+                                ng-options="obj.id as obj.descripcion for obj in tipos">
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="selDepto"></label>
+                        <select name="selDepto" id="selDepto" class="form-control" ng-model="params.iddepto"
+                                ng-options="obj.id as obj.descripcion for obj in deptos">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="txtFFL">Finca/Folio/Libro:</label>
+                        <input name="txtFFL" id="txtFFL" type="text" class="form-control" ng-model="params.ffl" placeholder="Finca o Folio o Libro"/>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary btn-sm" ng-click="getRptCatAct()">
+                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" ng-click="resetParams()">
+                <i class="fa fa-refresh" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 50em"></object>
+        </div>
+    </div>
+</div>

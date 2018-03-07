@@ -1,0 +1,191 @@
+<div class="container" ng-controller="cpmMenuCtrl">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divFrmModulo" data-toggle="tab">M&Oacute;DULOS </a>
+        </li>
+        <li>
+            <a show-tab href="#divFrmMenu" data-toggle="tab">MEN&Uacute;</a>
+        </li>
+        <li>
+            <a show-tab href="#divFrmITem" data-toggle="tab">&Iacute;TEM</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="divFrmModulo" class="tab-pane fade in active">
+            <div class="panel panel-primary">
+                <div class="panel-heading">M&oacute;dulos</div>
+                <div class="panel-body">
+                    <form name="frmModulo" id="frmModulo" class="form-inline" ng-submit="frmModulo.$valid && addModulo(elModulo)" novalidate>
+                        <div class="form-group" ng-class="{'has-error':frmModulo.txtNomModulo.$invalid && !frmModulo.txtNomModulo.$pristine}">
+                            <label for="txtNomModulo">Nombre:</label>
+                            <input name="txtNomModulo" id="txtNomModulo" type="text" class="form-control" ng-model="elModulo.descmodulo" placeholder="Nombre del m&oacute;dulo" maxlength="50" required/>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-primary" ng-disabled="frmModulo.$invalid">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table class="table table-responsive table-hover">
+                        <thead>
+                            <tr>
+                                <th>M&oacute;dulo</th>
+                                <th>&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="modulo in lstModulos">
+                                <td>
+                                    <span editable-text="modulo.descmodulo" e-name="descmodulo" e-form="rowform" e-required
+                                          e-class="form-control" e-type="text" e-maxlength="50">
+                                        {{modulo.descmodulo}}
+                                    </span>
+                                </td>
+                                <td style="white-space: nowrap">
+                                    <edit-row-form
+                                            editing-row="modulo"
+                                            update-func="updModulo(fila, qid)"
+                                            delete-func="delModulo(qid)">
+                                    </edit-row-form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="divFrmMenu" class="tab-pane fade">
+            <div class="panel panel-success">
+                <div class="panel-heading">Men&uacute;</div>
+                <div class="panel-body">
+                    <form name="frmMenu" id="frmmenu" class="form-inline" ng-submit="frmMenu.$valid && addMenu(elMenu)" novalidate>
+                        <div class="form-group" ng-class="{'has-error':frmMenu.selMod.$invalid && !frmMenu.selMod.$pristine}">
+                            <label for="selMod">M&oacute;dulo</label>
+                            <select id="selMod" name="selMod" class="form-control"
+                                    ng-options="obj.descmodulo for obj in lstModulos track by obj.id" ng-model="elMenu.objModulo"
+                                    ng-change="getMenuByModulo()" required>
+                            </select>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error':frmMenu.txtNomMenu.$invalid && !frmMenu.txtNomMenu.$pristine}">
+                            <label for="txtNomMenu">Descripci&oacute;n:</label>
+                            <input name="txtNomMenu" id="txtNomMenu" type="text" class="form-control" ng-model="elMenu.descmenu" placeholder="Descripci&oacute;n del men&uacute;..." maxlength="50" required />
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-success" ng-disabled="frmMenu.$invalid">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table class="table table-responsive table-hover">
+                        <thead>
+                            <tr>
+                                <th>Men&uacute;</th>
+                                <th>&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="m in lstMenus">
+                                <td>
+                                    <span editable-select="m.idmodulo" e-name="idmodulo" e-form="rowform"
+                                          e-ng-options="obj.id as obj.descmodulo for obj in lstModulos"
+                                          e-required e-class="form-control">
+                                    </span>
+                                    <span editable-text="m.descmenu" e-name="descmenu" e-form="rowform" e-required
+                                          e-class="form-control" e-type="text" e-maxlength="50">
+                                        {{m.descmenu}}
+                                    </span>
+                                </td>
+                                <td style="white-space: nowrap">
+                                    <edit-row-form
+                                            editing-row="m"
+                                            update-func="updMenu(fila, qid)"
+                                            delete-func="delMenu(qid)">
+                                    </edit-row-form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="divFrmITem" class="tab-pane fade">
+            <div class="panel panel-info">
+                <div class="panel-heading">&Iacute;tems</div>
+                <div class="panel-body">
+                    <form name="frmItem" id="frmItem" class="form-inline" ng-submit="frmItem.$valid && addItem(elItem)" novalidate>
+                        <div class="form-group" ng-class="{'has-error':frmItem.selMod2.$invalid && !frmItem.selMod2.$pristine}">
+                            <label for="selMod2">M&oacute;dulo</label>
+                            <select id="selMod2" name="selMod2" class="form-control"
+                                    ng-options="obj.descmodulo for obj in lstModulos track by obj.id" ng-model="elMenu.objModulo"
+                                    ng-change="getMenuByModulo()" required>
+                            </select>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error':frmItem.selMenu.$invalid && !frmItem.selMenu.$pristine}">
+                            <label for="selMenu">Men&uacute;</label>
+                            <select id="selMenu" name="selMenu" class="form-control"
+                                    ng-options="obj.descmenu for obj in lstMenus track by obj.id" ng-model="elItem.objMenu"
+                                    ng-change="getItemsByMenus()" required>
+                            </select>
+                        </div>
+                        <div class="form-group" ng-class="{'has-error':frmItem.txtItem.$invalid && !frmItem.txtItem.$pristine}">
+                            <label for="txtItem">Descripci&oacute;n:</label>
+                            <input name="txtItem" id="txtItem" type="text" class="form-control" ng-model="elItem.descitemmenu" placeholder="Descripci&oacute;n del &iacute;tem del men&uacute;..." maxlength="50" required />
+                        </div>
+                        <div class="form-group" ng-class="{'has-error':frmItem.txtItemUrl.$invalid && !frmItem.txtItemUrl.$pristine}">
+                            <label for="txtItemUrl">Url:</label>
+                            <input name="txtItemUrl" id="txtItemUrl" type="text" class="form-control" ng-model="elItem.url" placeholder="Url..." maxlength="100" required />
+                        </div>
+                        <div class="btn-group" role="group" aria-label="...">
+                            <button type="submit" class="btn btn-info" ng-disabled="frmItem.$invalid">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table class="table table-responsive table-hover">
+                        <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>url</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="i in lstItems">
+                            <td>
+                                <span editable-select="i.idmenu" e-name="idmenu" e-form="rowform"
+                                      e-ng-options="obj.id as obj.descmenu for obj in lstMenus"
+                                      e-required e-class="form-control">
+                                </span>
+                                <span editable-text="i.descitemmenu" e-name="descitemmenu" e-form="rowform" e-required
+                                      e-class="form-control" e-type="text" e-maxlength="50">
+                                    {{i.descitemmenu}}
+                                </span>
+                            </td>
+                            <td>
+                                <span editable-text="i.url" e-name="url" e-form="rowform" e-required
+                                      e-class="form-control" e-type="text" e-maxlength="100">
+                                    {{i.url}}
+                                </span>
+                            </td>
+                            <td style="white-space: nowrap">
+                                <edit-row-form
+                                        editing-row="i"
+                                        update-func="updItem(fila, qid)"
+                                        delete-func="delItem(qid)">
+                                </edit-row-form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

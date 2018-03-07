@@ -1,0 +1,45 @@
+<div id="rptCatBco" class="container" ng-controller="rptCatBcoCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body" style="text-align: right">
+                <label><input ng-model="search.$" class="form-control" placeholder="Buscar banco(s)..."></label>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="printVersion()">
+                    <span class="glyphicon glyphicon-print"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="toPrint">
+    
+        <div class="row">
+            <div style="text-align: center">
+                <h2>CAT&Aacute;LOGO DE BANCOS</h2>
+            </div>
+        </div>
+        <div class="panel panel-primary" ng-repeat="bco in losBancos | filter:search:strict">
+            <div class="panel-heading"><h4 style="color: #FFFFFF">{{bco.nombre}}</h4></div>
+            <div class="panel-body">
+                <table class="table table-responsive">
+                    <thead>
+                        <tr>
+                            <th>Cuenta contable</th>
+                            <th>No. cuenta</th>
+                            <th>Siglas</th>
+                            <th>Moneda</th>
+                            <th>Correlativo de cheque</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="width:35%">{{bco.nombrecta}}</td>
+                            <td style="width:21%">{{bco.nocuenta}}</td>
+                            <td style="width:10%">{{bco.siglas}}</td>
+                            <td style="width:15%">{{bco.descmoneda}}</td>
+                            <td style="text-align: right; width:19%">{{bco.correlativo}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

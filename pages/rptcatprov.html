@@ -1,0 +1,78 @@
+<div id="rptCatProv" class="container" ng-controller="rptCatProvCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body" style="text-align: right">
+                <label><input ng-model="search.$" class="form-control" placeholder="Buscar proveedor(es)..."></label>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="printVersion()">
+                    <span class="glyphicon glyphicon-print"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="toPrint">
+        <div class="row">
+            <div style="text-align: center">
+                <h2>CAT&Aacute;LOGO DE PROVEEDORES</h2>
+            </div>
+        </div>
+        <div class="panel panel-primary" ng-repeat="prov in losProvs | filter:search:strict">
+            <div class="panel-heading"><h4 style="color: #FFFFFF">{{prov.nombre}} ({{prov.nit}})</h4></div>
+            <div class="panel-body">
+                <table class="table table-responsive">
+                    <thead>
+                    <tr>
+                        <th>Direcci&oacute;n</th>
+                        <th>Tel&eacute;fono</th>
+                        <th>E-mail</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td style="width:50%">{{prov.direccion}}</td>
+                        <td style="width:10%">{{prov.telefono}}</td>
+                        <td style="width:40%">{{prov.correo}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <table class="table table-responsive">
+                    <thead>
+                    <tr>
+                        <th>Concepto</th>
+                        <th>Cheques a</th>
+                        <th>D&iacute;as de cr&eacute;d.</th>
+                        <th>L&iacute;m. de cr&eacute;d.</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td style="width:40%">{{prov.concepto}}</td>
+                        <td style="width:40%">{{prov.chequesa}}</td>
+                        <td style="width:10%; text-align: right">{{prov.diascred}}</td>
+                        <td style="width:10%; text-align: right">{{prov.limitecred | number:2}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+				<!--
+                <hr/>
+                <table class="table table-responsive">
+                    <caption style="text-align: center"><strong>DETALLE CONTABLE</strong></caption>
+                    <thead>
+                    <tr>
+                        <th>Empresa</th>
+                        <th>Cuenta contable</th>
+                        <th>Descripci&oacute;n</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="dc in prov.detcont">
+                            <td style="width:30%">{{dc.nomempresa}}</td>
+                            <td style="width:20%">{{dc.codigo}}</td>
+                            <td style="width:50%">{{dc.nombrecta}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+				-->
+            </div>
+        </div>
+    </div>
+</div>

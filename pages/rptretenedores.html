@@ -1,0 +1,17 @@
+<div class="container" ng-controller="rptRetenedoresCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Agentes retenedores de I.S.R./I.V.A.&nbsp;
+                <button type="button" class="btn btn-primary btn-sm" ng-click="getRepRetenedores()">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 50em"></object>
+        </div>
+    </div>
+</div>

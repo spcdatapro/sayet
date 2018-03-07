@@ -1,0 +1,82 @@
+<div class="container" ng-controller="lecturaServicioCtrl">
+    <div class="panel panel-info">
+        <div class="panel-heading">Captura de lectura de contadores de agua</div>
+        <div class="panel-body">
+            <form name="frmLectura" id="frmLectura" class="form-inline" novalidate>
+                <div class="form-group">
+                    <label for="selMes">Mes:</label>
+                    <select name="selMes" id="selMes" class="form-control input-sm" ng-model="params.mes"
+                            ng-options="obj.id as obj.mes for obj in meses" ng-change="lecturas = []" required>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="txtAnio">A&ntilde;o:</label>
+                    <input name="txtAnio" id="txtAnio" type="number" class="form-control input-sm" ng-model="params.anio" placeholder="A&ntilde;o de lectura" min="2000" ng-change="lecturas = []" required/>
+                </div>
+                <button type="button" class="btn btn-info btn-sm" ng-click="getLecturas()">
+                    <span class="glyphicon glyphicon-search"></span>
+                </button>
+                <button type="button" class="btn btn-info btn-sm" ng-click="printLectura()" ng-disabled="lecturas.length <= 0">
+                    <span class="glyphicon glyphicon-print"></span>
+                </button>
+            </form>
+            <hr/>
+            <table class="table table-condensed table-hover">
+                <caption>
+                    <input ng-model="search.$" class="form-control input-sm" placeholder="Buscar contador..." style="width: 100%"/>
+                </caption>
+                <thead>
+                <tr>
+                    <th>Proyecto</th>
+                    <th>Unidad</th>
+                    <th>Contador</th>
+                    <th>
+                        Fecha de corte&nbsp;
+                        <button type="button" class="btn btn-info btn-xs" ng-click="replicaFecha()" ng-show="lecturas.length > 0">
+                            <i class="fa fa-repeat" aria-hidden="true"></i>
+                        </button>
+                    </th>
+                    <th>Lectura</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="l in lecturas | filter:search:strict">
+                    <td>{{l.proyecto}}</td>
+                    <td>{{l.unidad}}</td>
+                    <td>{{l.servicio}}</td>
+                    <td>
+                        <input name="txtFCorte_{{l.id}}" id="txtFCorte_{{l.id}}" type="date" class="form-control input-sm" style="width: 11.5em"
+                               ng-model="l.fechacorte" ng-blur="updLectura(l)" ng-disabled="+l.estatus > 1"/>
+                    </td>
+                    <td>
+                        <input name="txtLectura_{{l.id}}" id="txtLectura_{{l.id}}" type="number" class="form-control input-sm" style="width: 10em; text-align: right"
+                               ng-model="l.lectura" min="0" ng-blur="updLectura(l)" step="0.01" ng-disabled="+l.estatus > 1" data-index="{{$index}}" focus-on-control/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="panel-footer" style="text-align: right;">
+            <button type="button" class="btn btn-info" ng-click="envioFacturacion()" ng-show="lecturas.length > 0" ng-disabled="+lecturas[0].estatus > 1">
+                <i class="fa fa-paper-plane-o" aria-hidden="true"></i>&nbsp;Enviar a facturaci&oacute;n
+            </button>
+        </div>
+    </div>
+</div>
+<script type="text/ng-template" id="modalFechaCorte.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Replicar fecha de corte<br/>a todos los contadores</h3>
+    </div>
+    <div class="modal-body">
+        <form name="frmData" id="frmData" novalidate>
+            <div class="form-group">
+                <label for="txtFechaCorte">Fecha de corte:</label>
+                <input name="txtFechaCorte" id="txtFechaCorte" type="date" class="form-control" ng-model="fechacorte" required/>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-info" type="button" ng-click="ok()" ng-disabled="fechacorte == undefined || fechacorte == null">Aceptar</button>
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
+    </div>
+</script>

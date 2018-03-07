@@ -1,0 +1,42 @@
+<div class="container" ng-controller="rptFichaClienteCtrl">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label>Cliente:</label>
+                        <ui-select ng-model="params.idcliente"
+                                   title="Seleccione un cliente..."
+                                   theme="bootstrap"
+                                   autofocus="true"
+                                   append-to-body="true">
+                            <ui-select-match placeholder="Buscar cliente..." allow-clear="true">
+                                <span ng-bind="$select.selected.nombre"></span>
+                            </ui-select-match>
+                            <ui-select-choices repeat="item.id as item in clientes | filter:$select.search">
+                                <div ng-bind-html="item.nombre | highlight: $select.search"></div>
+                                <small>
+                                    <strong>Nombre corto:</strong>&nbsp;<span ng-bind-html="item.nombrecorto | highlight: $select.search" ></span>
+                                </small>
+                            </ui-select-choices>
+                            <ui-select-no-choice>
+                                No hay resultados...
+                            </ui-select-no-choice>
+                        </ui-select>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary btn-sm" ng-disabled="+params.idcliente <= 0" ng-click="getRptFichaCliente()">
+                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" ng-click="resetParams()">
+                <i class="fa fa-refresh" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 50em"></object>
+        </div>
+    </div>
+</div>

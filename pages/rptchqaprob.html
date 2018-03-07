@@ -1,0 +1,70 @@
+<div class="container" ng-controller="rptChequesAprobacionCtrl">
+    <div class="panel panel-default">
+        <div class="panel-heading">Generaci&oacute;n de archivo de cheques</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="txtFecha">Fecha:</label>
+                        <input name="txtFecha" id="txtFecha" type="date" class="form-control" ng-model="params.fecha"/>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="selEmpresa">Empresa:</label>
+                        <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="params.idempresa" 
+                                ng-options="obj.id as obj.nomempresa for obj in empresas">
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="selMoneda">Moneda:</label>
+                        <select name="selMoneda" id="selMoneda" class="form-control" ng-model="params.idmoneda" 
+                                ng-options="obj.id as obj.nommoneda for obj in monedas">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <!--
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="selBancos">Bancos:</label>
+                        <ui-select 
+                            multiple 
+                            ng-model="params.bco" 
+                            title="Seleccione uno o mas bancos..." 
+                            theme="bootstrap"
+                            autofocus="false" 
+                            append-to-body="true" 
+                            sortable="true">
+                            <ui-select-match placeholder="Click para buscar banco" allow-clear="false">
+                                <span>{{$item.siglas}}</span>
+                            </ui-select-match>
+                            <ui-select-choices repeat="item in bancos | filter:$select.search">
+                                <div ng-bind-html="item.nomcuenta | highlight: $select.search"></div>
+                                <small>
+                                    <strong>No. cuenta:</strong>&nbsp;<span ng-bind-html="item.nocuenta | highlight: $select.search" ></span><br/>
+                                    <strong>Nombre:</strong>&nbsp;<span ng-bind-html="item.nombre | highlight: $select.search" ></span><br/>
+                                    <strong>Siglas:</strong>&nbsp;<span ng-bind-html="item.siglas | highlight: $select.search" ></span><br/>
+                                    <strong>Empresa:</strong>&nbsp;<span ng-bind-html="(item.empresa + ' (' + item.abreviaempre + ')') | highlight: $select.search" ></span>                                    
+                                </small>
+                            </ui-select-choices>
+                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                        </ui-select>
+                    </div>
+                </div>                
+            </div>
+            -->
+            <button type="button" class="btn btn-primary" ng-click="getCheques()" 
+            ng-disabled="params.fecha == null || params.fecha == undefined">
+                <span class="glyphicon glyphicon-download"></span>
+            </button>  
+            <button type="button" class="btn btn-primary" ng-click="resetParams()">
+                <span class="glyphicon glyphicon-refresh"></span>
+            </button>                    
+        </div>
+    </div>
+
+</div>

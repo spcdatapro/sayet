@@ -1,0 +1,16 @@
+<div class="container" ng-controller="setEmpreCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Empresa a trabajar</div>
+        <div class="panel-body">
+            <label for="selEmpresa">¿Qu&eacute; empresa desea trabajar?</label>
+            <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="laEmpresa"
+                    ng-options="obj.nomempresa for obj in lasEmpresas track by obj.id" ng-change="setWorkingOn()" required>
+            </select>
+        </div>
+        <div class="panel-footer">
+            <button type="button" class="btn btn-primary" ng-disabled="laEmpresa === null || laEmpresa === undefined">
+                <span class="glyphicon glyphicon-floppy-save"></span>
+            </button>
+        </div>
+    </div>
+</div>

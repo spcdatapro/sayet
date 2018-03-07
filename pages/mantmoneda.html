@@ -1,0 +1,55 @@
+<div class="container" ng-controller="monedaCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Monedas</div>
+        <div class="panel-body">
+            <form name="frmMoneda" id="frmMoneda" class="form-inline" ng-submit="frmMoneda.$valid && addMoneda(laMoneda)" novalidate>
+                <div class="form-group" ng-class="{'has-error':frmMoneda.txtNombre.$invalid && !frmMoneda.txtNombre.$pristine}">
+                    <label for="txtNombre">Nombre:</label>
+                    <input name="txtNombre" id="txtNombre" type="text" class="form-control" ng-model="laMoneda.nommoneda" placeholder="Nombre de la moneda" maxlength="50" required />
+                </div>
+                <div class="form-group" ng-class="{'has-error':frmMoneda.txtSimbolo.$invalid && !frmMoneda.txtSimbolo.$pristine}">
+                    <label for="txtSimbolo">S&iacute;mbolo:</label>
+                    <input name="txtSimbolo" id="txtSimbolo" type="text" class="form-control" ng-model="laMoneda.simbolo" placeholder="S&iacute;mbolo" maxlength="3" required />
+                </div>
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="submit" class="btn btn-primary" ng-disabled="frmMoneda.$invalid">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                </div>
+            </form>
+            <hr/>
+            <table class="table table-responsive table-hover">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>S&iacute;mbolo</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="m in lasMonedas">
+                        <td>
+                            <span editable-text="m.nommoneda" e-name="nommoneda" e-form="rowform" e-required
+                                  e-class="form-control" e-type="text" e-maxlength="50">
+                                {{m.nommoneda}}
+                            </span>
+                        </td>
+                        <td>
+                            <span editable-text="m.simbolo" e-name="simbolo" e-form="rowform" e-required
+                                  e-class="form-control" e-type="text" e-maxlength="3">
+                                {{m.simbolo}}
+                            </span>
+                        </td>
+                        <td style="white-space: nowrap">
+                            <edit-row-form
+                                    editing-row="m"
+                                    update-func="updMoneda(fila, qid)"
+                                    delete-func="delMoneda(qid)">
+                            </edit-row-form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,105 @@
+<div class="container" ng-controller="rptHistPagosCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body" style="text-align: right">
+                <div class="row" style="text-align: left">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="selProv">Proveedor:</label>
+                            <input name="txtFiltroProv" id="txtFiltroProv" type="text" class="form-control" ng-model="search" placeholder="N.I.T./nombre"/>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label for="selProv">&nbsp;</label>
+                            <select name="selProv" id="selProv" class="form-control" ng-model="objProv"
+                                    ng-options="obj.nitnombre for obj in losProvs | filter:{nitnombre:search}" multiple>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="text-align: left">
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="txtDel">Fecha de pago del:</label>
+                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.fDel" placeholder="Del"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="txtAl">Al:</label>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fAl" placeholder="Al"/>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="getHistPagos()">
+                    <span class="glyphicon glyphicon-ok"></span>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="printVersion()">
+                    <span class="glyphicon glyphicon-print"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="toPrint">
+        <div class="row">
+            <div style="text-align: center">
+                <h2>HISTORIAL DE PAGOS</h2>
+            </div>
+        </div>
+
+        <div class="panel panel-default" ng-repeat="d in data">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3 col-md-3">
+                        <label>N.I.T.:&nbsp;</label>{{d.nit}}
+                    </div>
+                    <div class="col-xs-7 col-md-7">
+                        <label>Proveedor:&nbsp;</label>{{d.nombre}}
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="panel" ng-repeat="c in d.facturas">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3 col-md-3">
+                                <label>Factura:&nbsp;</label>{{c.documento}}
+                            </div>
+                            <div class="col-xs-3 col-md-3">
+                                <label>Total:&nbsp;</label>{{c.totfact | number:2}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-responsive table-condensed">
+                            <thead>
+                            <tr>
+                                <th>&nbsp;</th>
+                                <th style="text-align: right">N&uacute;mero</th>
+                                <th>Banco</th>
+                                <th>Fecha</th>
+                                <th>Beneficiario</th>
+                                <th style="text-align: right">Monto</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="det in c.detpago"
+                                ng-class="{'linea-de-totales': det.banco.toUpperCase().indexOf('TOTAL') > -1, 'linea-de-saldos': det.banco.toUpperCase().indexOf('SALDO') > -1}">
+                                <td>{{det.tipotranban}}</td>
+                                <td style="text-align: right">{{det.numero}}</td>
+                                <td style="white-space: nowrap">{{det.banco}}</td>
+                                <td>{{det.fecha | date:'dd/MM/yyyy'}}</td>
+                                <td style="white-space: nowrap">{{det.beneficiario}}</td>
+                                <td style="text-align: right">{{det.banco != '' ? (det.monto | number:2) : ''}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

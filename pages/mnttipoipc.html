@@ -1,0 +1,47 @@
+<div class="container" ng-controller="tipoIpcCtrl">
+    <div class="panel panel-info">
+        <div class="panel-heading">Incrementos</div>
+        <div class="panel-body">
+            <form name="frmIPC" id="frmIPC" ng-submit="frmIPC.$valid && addTipoIpc(tipoipc)" novalidate>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="txtDescrip">Descripci&oacute;n:</label>
+                            <input name="txtDescrip" id="txtDescrip" type="text" class="form-control" ng-model="tipoipc.descripcion" maxlength="50" required />
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="submit" class="btn btn-info" ng-disabled="frmIPC.$invalid" ng-hide="tipoipc.id > 0">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                    <button type="button" class="btn btn-info" ng-click="updTipoIpc(tipoipc)" ng-disabled="frmIPC.$invalid" ng-show="tipoipc.id > 0">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                    <button type="button" class="btn btn-info" ng-click="resetTipoIpc()" ng-show="tipoipc.id > 0">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+                </div>
+            </form>
+            <hr/>
+            <table class="table table-condensed table-hover">
+                <thead>
+                <tr>
+                    <th>Descripci&oacute;n</th>
+                    <th>&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="t in lsttipoipc" ng-click="getTipoIpc(t.id)">
+                    <td>{{t.descripcion}}</td>
+                    <td>
+                        <button type="button" class="btn btn-danger" ng-click="delTipoIpc(t)">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

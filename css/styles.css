@@ -1,0 +1,136 @@
+body{
+    font-family: Arial;
+}
+
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu>.dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -6px;
+    margin-left: -1px;
+    -webkit-border-radius: 0 6px 6px 6px;
+    -moz-border-radius: 0 6px 6px;
+    border-radius: 0 6px 6px 6px;
+}
+
+.dropdown-submenu:hover>.dropdown-menu {
+    display: block;
+}
+
+.dropdown-submenu>a:after {
+    display: block;
+    content: " ";
+    float: right;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 5px 0 5px 5px;
+    border-left-color: #ccc;
+    margin-top: 5px;
+    margin-right: -10px;
+}
+
+.dropdown-submenu:hover>a:after {
+    border-left-color: #fff;
+}
+
+.dropdown-submenu.pull-left {
+    float: none;
+}
+
+.dropdown-submenu.pull-left>.dropdown-menu {
+    left: -100%;
+    margin-left: 10px;
+    -webkit-border-radius: 6px 0 6px 6px;
+    -moz-border-radius: 6px 0 6px 6px;
+    border-radius: 6px 0 6px 6px;
+}
+
+.partida-cuadrada { background-color: #e5ffe5; }
+
+.partida-descuadrada { background-color: #ffe6e6; }
+
+/* centered columns styles */
+.row-centered {
+    text-align:center;
+}
+.col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
+}
+
+.linea-de-totales {
+    background-color: lightgray;
+    font-weight: bolder;
+    font-style: italic;
+}
+
+.linea-de-saldos {
+    background-color: #ffcdcd;
+    font-weight: bolder;
+    font-style: italic;
+}
+
+.texto-en-negrita{
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.cell-padding{
+    padding: 0.25em;
+}
+
+.nopadding {
+    padding: 0.3em !important;
+    margin: 0 !important;
+}
+
+.th-4Print{ text-align: right; width: 9.2em; }
+.td-4Print{ text-align: left; width: 9.8em; }
+.td-4PrintDetContrato{ text-align: left; width: 19.3em; }
+
+.animate-show {
+    line-height: 20px;
+    opacity: 1;
+    padding: 10px;
+    /*border: 1px solid black;*/
+    background: white;
+}
+
+.animate-show.ng-hide-add, .animate-show.ng-hide-remove {
+    transition: all linear 0.5s;
+}
+
+.animate-show.ng-hide {
+    line-height: 0;
+    opacity: 0;
+    padding: 0 10px;
+}
+
+.check-element {
+    padding: 10px;
+    /*border: 1px solid black;*/
+    background: white;
+}
+
+.label-pill{ border-radius: 10rem; }
+
+.num{ text-align: right; }
+.bld{ font-weight: bold; }
+.dblbtmbrd { border-bottom: double 0.25em black !important;}
+
+.form-group.required .control-label:after {
+    content:"*";
+    color:red;
+}
+
+.compra-pendiente{ background-color: lightsalmon; }
+.compra-revisada{ background-color: lightgreen; }

@@ -1,0 +1,69 @@
+<div class="container" ng-controller="rptEcuentaClientesCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+
+            <div class="panel-body" style="text-align: right">
+                <div class="row" style="text-align: left">
+                    <div class="col-md-6" style="text-align: left">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="selEmpre">Empresa:</label>
+                                <input name="txtFiltroEmpre" id="txtFiltroEmpre" type="text" class="form-control" ng-model="searchempre" placeholder="Empresa"/>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="selEmpre">&nbsp;</label>
+                                <select name="selEmpre" id="selEmpre" class="form-control" ng-model="objEmpresa"
+                                        ng-options="obj.nomempresa for obj in empresas | filter:{nomempresa:searchempre}" multiple>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6" style="text-align: left">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="txtAl">Al:</label>
+                                    <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.al" placeholder="Al"/>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label for="chkDet">Historico</label>
+                                    <input name="chkDet" id="chkDet" type="checkbox" class="form-control" ng-model="params.detalle" ng-true-value="1" ng-false-value="0" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-9">
+                                <div class="form-group">
+                                    <label for="selCLiente">Cliente:</label>
+                                    <select name="selCliente" id="selCLiente" class="form-control" ng-model="params.cliente"
+                                            option="clientes" ng-options="obj.nombre for obj in clientes"
+                                            data-placeholder="Seleccione el cliente">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <button type="button" class="btn btn-primary" ng-click="getEcuentaCli()">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+
+                <button type="button" class="btn btn-primary" ng-click="getEcuentaCliXLSX()">
+                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 100em"></object>
+        </div>
+    </div>
+</div>
