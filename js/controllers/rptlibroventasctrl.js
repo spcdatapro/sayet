@@ -62,6 +62,16 @@
             //    $scope.libroventas = procDataLibVentas(d);
             //});
         };
+
+        var test = false;
+        $scope.getLibroVentasExcel = function(){
+            $scope.params.alfa = $scope.params.alfa != null && $scope.params.alfa != undefined ? $scope.params.alfa : 0;
+            jsReportSrvc.getReport(test ? 'SyJpY4JFz' : 'Hk5Y04yKz', $scope.params).then(function (result) {
+                var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+                var nombre = $scope.meses[$scope.params.mes - 1] + '_' + $scope.params.anio;
+                saveAs(file, 'LibroVentas_' + nombre + '.xlsx');
+            });
+        };
 		
 		$scope.getLibIsr = function(){
 			$scope.params.resumen = 0;
