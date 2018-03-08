@@ -200,6 +200,10 @@ class Nomina extends Principal
 			$where .= "AND a.idempresa in ({$args['empresa']}) ";
 		}
 
+		if ($args["fal"] == 15) {
+			$where .= "AND b.formapago = 1 ";
+		}
+
 		$sql = <<<EOT
 SELECT 
     a.*, b.nombre, b.apellidos, b.dpi, c.nomempresa

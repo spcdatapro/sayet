@@ -185,7 +185,7 @@ $app->get('/imprimir', function(){
 				],
 				[
 					'campo' => 'tdescanticipot', 
-					'valor' => "Devengado"
+					'valor' => 'Anticipos:'
 				],
 				[
 					'campo' => 'tdeducidot', 
@@ -348,7 +348,7 @@ $app->get('/imprimir', function(){
 				}
 			}
 
-			$pdf->Output("factura.pdf", 'I');
+			$pdf->Output("nomina" . time() . ".pdf", 'I');
 			die();
 		} else {
 			echo "Nada que mostrar";

@@ -352,6 +352,11 @@ class Empleado extends Principal
 	public function get_bono_ley()
 	{
 		if ($this->dtrabajados > 0) {
+
+			if ($this->ndia != 15 && $this->dtrabajados == $this->ndia) {
+				return round($this->emp->bonificacionley,2 );
+			}
+
 			return round($this->get_bono_dia()*$this->dtrabajados, 2);
 		}
 
@@ -367,7 +372,7 @@ class Empleado extends Principal
 
 		if ($this->emp->formapago == 1 && $this->ndia == 15) {
 
-			return ($this->dtrabajados * $this->get_gana_dia());
+			return round( ($this->dtrabajados * ($this->get_gana_dia() + $this->get_bono_dia())), 2);
 		}
 
 		return 0;
