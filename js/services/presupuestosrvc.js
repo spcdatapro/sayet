@@ -21,8 +21,8 @@
             presupuestosPendientes: function(){
                 return comunFact.doGET(urlBase + '/lstpresupuestospend');
             },
-            presupuestosAprobados: function(){
-                return comunFact.doGET(urlBase + '/lstpresaprob');
+            presupuestosAprobados: function(obj){
+                return comunFact.doPOST(urlBase + '/lstpresaprob', obj);
             },
             notasPresupuesto: function(idot){
                 return comunFact.doGET(urlBase + '/lstnotas/' + idot);

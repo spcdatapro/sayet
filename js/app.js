@@ -42,7 +42,7 @@
         'cpm.rptecuentaprovsrvc', 'cpm.rptecuentaprovctrl','cpm.rptecuentaclisrvc', 'cpm.rptecuentaclictrl', 'cpm.rptctrlccctrl',
         'cpm.txtcleanerfltr', 'cpm.rptbuscafactcompctrl', 'cpm.rptingegrproysrvc', 'cpm.rptingegrproyctrl',
         'cpm.rptfactsemitidasctrl', 'cpm.rptarbolsrvcctrl', 'cpm.rptivaventactrl', 'cpm.dropdigitsfltr', 'cpm.rptrecclictrl',
-        'cpm.formsretventactrl', 'cpm.rptretenedoresctrl', 'cpm.rptasistelibrosctrl'
+        'cpm.formsretventactrl', 'cpm.rptretenedoresctrl', 'cpm.rptasistelibrosctrl', 'cpm.estatuspresupuestosrvc'
     ]);
 
     app.config(['$routeProvider', 'desktopNotificationProvider', function ($routeProvider, desktopNotificationProvider) {
