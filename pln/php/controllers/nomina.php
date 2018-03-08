@@ -185,7 +185,7 @@ $app->get('/imprimir', function(){
 				],
 				[
 					'campo' => 'tdescanticipot', 
-					'valor' => "Devengado"
+					'valor' => 'Anticipos:'
 				],
 				[
 					'campo' => 'tdeducidot', 
@@ -253,8 +253,14 @@ $app->get('/imprimir', function(){
 
 						if (!isset($conf->scalar) && $conf->visible == 1) {
 							$conf->psy = ($conf->psy+$espacio);
-							$pdf       = generar_fimpresion($pdf, $row['valor'], $conf);
 
+							if (is_numeric($row["valor"])) {
+								$valor = $row["campo"] === "vdiastrabajados" ? $row["valor"] : number_format($row["valor"], 2);
+							} else {
+								$valor = $row["valor"];
+							}
+
+							$pdf      = generar_fimpresion($pdf, $valor, $conf);
 							$sintotal = ['vdiastrabajados', 'vcodigo'];
 
 							if (is_numeric($row['valor']) && !in_array($row['campo'], $sintotal)) {
@@ -348,7 +354,7 @@ $app->get('/imprimir', function(){
 				}
 			}
 
-			$pdf->Output("factura.pdf", 'I');
+			$pdf->Output("nomina" . time() . ".pdf", 'I');
 			die();
 		} else {
 			echo "Nada que mostrar";
