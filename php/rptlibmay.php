@@ -1,5 +1,6 @@
 <?php
 set_time_limit(0);
+ini_set('memory_limit', '1536M');
 require 'vendor/autoload.php';
 require_once 'db.php';
 
