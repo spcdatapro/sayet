@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/rptingegrproy.html" afterPath="$PROJECT_DIR$/pages/rptingegrproy.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptingegrproy.php" afterPath="$PROJECT_DIR$/php/rptingegrproy.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptpresupuesto.php" afterPath="$PROJECT_DIR$/php/rptpresupuesto.php" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -38,49 +38,15 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="db.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/php/db.php">
+      <file leaf-file-name="rptpresupuesto.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/rptpresupuesto.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.136939">
-              <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
+            <state vertical-scroll-proportion="0.09781358">
+              <caret line="5" column="65" selection-start-line="5" selection-start-column="65" selection-end-line="5" selection-end-column="65" />
               <folding>
-                <marker date="1520527298368" expanded="true" signature="1624:1764" placeholder="SELECT id, d..isr..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rptingegrproy.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/rptingegrproy.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-12.423077">
-              <caret line="166" column="99" selection-start-line="166" selection-start-column="99" selection-end-line="166" selection-end-column="99" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rptingegrproy.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/php/rptingegrproy.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-13.538462">
-              <caret line="108" column="27" selection-start-line="108" selection-start-column="27" selection-end-line="108" selection-end-column="27" />
-              <folding>
-                <element signature="e#10161#12764#0#PHP" expanded="false" />
-                <marker date="1520526690870" expanded="true" signature="3669:3883" placeholder="SELECT a.mon..plaproy..." />
-                <marker date="1520526690870" expanded="true" signature="5779:6197" placeholder="SELECT DISTI..compraproyecto..." />
-                <marker date="1520526690870" expanded="true" signature="6214:6732" placeholder="SELECT DISTI..detallecontable..." />
-                <marker date="1520526690870" expanded="true" signature="7034:7485" placeholder="SELECT a.idc..compraproyecto..." />
-                <marker date="1520526690870" expanded="true" signature="7506:8018" placeholder="SELECT a.idc..detallecontable..." />
-                <marker date="1520526690870" expanded="true" signature="8327:8541" placeholder="SELECT a.mon..plaproy..." />
-                <marker date="1520526690870" expanded="true" signature="12939:13357" placeholder="SELECT DISTI..compraproyecto..." />
-                <marker date="1520526690870" expanded="true" signature="13374:13892" placeholder="SELECT DISTI..detallecontable..." />
-                <marker date="1520526690870" expanded="true" signature="14162:14613" placeholder="SELECT a.idc..compraproyecto..." />
-                <marker date="1520526690870" expanded="true" signature="14634:15128" placeholder="SELECT a.idc..detallecontable..." />
-                <marker date="1520526690870" expanded="true" signature="14634:15132" placeholder="SELECT a.idc..detallecontable..." />
-                <marker date="1520526690870" expanded="true" signature="14634:15146" placeholder="SELECT a.idc..detallecontable..." />
-                <marker date="1520526690870" expanded="true" signature="16346:17369" placeholder="SELECT e.id ..detallecontable..." />
-                <marker date="1520526690870" expanded="true" signature="18194:18408" placeholder="SELECT a.mon..plaproy..." />
+                <element signature="e#7200#11617#1#PHP" expanded="false" />
+                <marker date="1520531321901" expanded="true" signature="3269:3436" placeholder="SELECT a.idd..tranban..." />
+                <marker date="1520531321901" expanded="true" signature="4521:4688" placeholder="SELECT a.idd..tranban..." />
               </folding>
             </state>
           </provider>
@@ -109,7 +75,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/php/rptlibroventas.php" />
         <option value="$PROJECT_DIR$/pages/tranbanc.html" />
         <option value="$PROJECT_DIR$/php/printchequeragytcontinuo.php" />
         <option value="$PROJECT_DIR$/php/printchequeraintcontinuo.php" />
@@ -159,6 +124,7 @@
         <option value="$PROJECT_DIR$/js/controllers/presupuestoctrl.js" />
         <option value="$PROJECT_DIR$/pages/rptingegrproy.html" />
         <option value="$PROJECT_DIR$/php/rptingegrproy.php" />
+        <option value="$PROJECT_DIR$/php/rptpresupuesto.php" />
         <option value="$PROJECT_DIR$/php/db.php" />
       </list>
     </option>
@@ -1098,15 +1064,15 @@
       <workItem from="1520345352676" duration="16738000" />
       <workItem from="1520384618170" duration="1840000" />
       <workItem from="1520437236406" duration="19555000" />
-      <workItem from="1520518541151" duration="7821000" />
+      <workItem from="1520518541151" duration="11662000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2202902000" />
+    <option name="totallyTimeSpent" value="2206743000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1162,13 +1128,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/php/cliente.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.11967779">
-          <caret line="532" column="77" selection-start-line="532" selection-start-column="77" selection-end-line="532" selection-end-column="77" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/controllers/formsretventactrl.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1397,6 +1356,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.55005753">
           <caret line="273" column="4" selection-start-line="273" selection-start-column="4" selection-end-line="273" selection-end-column="4" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1404,6 +1364,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.35443038">
           <caret line="281" column="88" selection-start-line="281" selection-start-column="4" selection-end-line="281" selection-end-column="88" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1432,20 +1393,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.07597765">
           <caret line="4" column="58" selection-start-line="4" selection-start-column="36" selection-end-line="4" selection-end-column="58" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/mntpresupuesto.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.38550058">
-          <caret line="408" column="30" selection-start-line="408" selection-start-column="30" selection-end-line="408" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/presupuestoctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.12625699">
-          <caret line="202" column="68" selection-start-line="202" selection-start-column="68" selection-end-line="202" selection-end-column="68" />
         </state>
       </provider>
     </entry>
@@ -1533,9 +1480,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptingegrproy.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3716916">
+          <caret line="166" column="99" selection-start-line="166" selection-start-column="99" selection-end-line="166" selection-end-column="99" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/php/rptingegrproy.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-13.538462">
+        <state vertical-scroll-proportion="0.4050633">
           <caret line="108" column="27" selection-start-line="108" selection-start-column="27" selection-end-line="108" selection-end-column="27" />
           <folding>
             <element signature="e#10161#12764#0#PHP" expanded="false" />
@@ -1557,10 +1512,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pages/rptingegrproy.html">
+    <entry file="file://$PROJECT_DIR$/pages/mntpresupuesto.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-12.423077">
-          <caret line="166" column="99" selection-start-line="166" selection-start-column="99" selection-end-line="166" selection-end-column="99" />
+        <state vertical-scroll-proportion="-8.5">
+          <caret line="70" column="119" selection-start-line="70" selection-start-column="104" selection-end-line="70" selection-end-column="119" />
+          <folding>
+            <element signature="n#style#0;n#div#1;n#form#0;n#caption#0;n#table#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#p#0;n#td#5;n#tr#0;n#tbody#0;n#table#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#td#7;n#tr#0;n#tbody#0;n#table#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#td#7;n#tr#0;n#tbody#0;n#table#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/presupuestoctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.586207">
+          <caret line="143" column="69" selection-start-line="143" selection-start-column="60" selection-end-line="143" selection-end-column="69" />
           <folding />
         </state>
       </provider>
@@ -1570,7 +1538,19 @@
         <state vertical-scroll-proportion="0.136939">
           <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
           <folding>
-            <marker date="1520527298368" expanded="true" signature="1624:1764" placeholder="SELECT id, d..isr..." />
+            <marker date="1520532035832" expanded="true" signature="1624:1764" placeholder="SELECT id, d..isr..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptpresupuesto.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.09781358">
+          <caret line="5" column="65" selection-start-line="5" selection-start-column="65" selection-end-line="5" selection-end-column="65" />
+          <folding>
+            <element signature="e#7200#11617#1#PHP" expanded="false" />
+            <marker date="1520531321901" expanded="true" signature="3269:3436" placeholder="SELECT a.idd..tranban..." />
+            <marker date="1520531321901" expanded="true" signature="4521:4688" placeholder="SELECT a.idd..tranban..." />
           </folding>
         </state>
       </provider>
