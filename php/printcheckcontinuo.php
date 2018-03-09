@@ -97,7 +97,7 @@ $um = 'mm';
 //$pdf = new PDF('P', $um, 'Letter');
 $pdf = new PDF('P', $um, array(190, 215));
 $conv = $um == 'mm' ? 10 : 1;
-$pdf->SetMargins(0, 5, 0);
+$pdf->SetMargins(0, 20, 0);
 
 for($i = 0; $i < $registros; $i++){
     $registro = $result[$i];
@@ -134,7 +134,7 @@ for($i = 0; $i < $registros; $i++){
 
 
     $pdf->AddPage();
-    $pdf->SetFont('Arial','', 10);
+    $pdf->SetFont('Arial','', 9);
     $borde = 0;
     //Generación del cheque
     $pdf->Ln(0.15 * $conv);
@@ -149,9 +149,9 @@ for($i = 0; $i < $registros; $i++){
     $pdf->Ln();
     $pdf->Ln(0.4 * $conv);
     $pdf->Cell(2.5 * $conv);
-    $pdf->SetFont('Arial','', 9);
+    $pdf->SetFont('Arial','', 8);
     $pdf->Cell(11.3 * $conv, 0.65 * $conv, $n2l->to_word_int($cheque->monto), $borde, 0);
-    $pdf->SetFont('Arial','', 10);
+    $pdf->SetFont('Arial','', 9);
     $pdf->Ln(1.3 * $conv);
 
     if((int)$cheque->esnegociable == 0){
@@ -171,7 +171,7 @@ for($i = 0; $i < $registros; $i++){
     $pdf->Cell(20 * $conv, 0.45 * $conv, $cheque->banco, 0, 2);
     $pdf->Ln(25);
     //$pdf->cell(1);
-    $pdf->SetFont('Arial','', 10);
+    $pdf->SetFont('Arial','', 9);
 
     $header = [iconv('UTF-8', 'windows-1252', 'CÓDIGO'), 'CUENTA', 'Debe', 'Haber'];
     $anchura = [28, 95, 31, 31];
