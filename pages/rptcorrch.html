@@ -4,27 +4,36 @@
             <div class="panel-heading">Correlatividad de documentos</div>
             <div class="panel-body" style="text-align: right">
                 <div class="row" style="text-align: left">
-                    <div class="col-md-5">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label for="selBanco">Banco:</label>
-                            <select name="selBanco" id="selBanco" class="form-control" ng-model="objBanco" ng-options="obj.bancomoneda for obj in losBancos"></select>
+                            <select name="selBanco" id="selBanco" class="form-control input-sm" ng-model="objBanco" ng-options="obj.bancomoneda for obj in losBancos"></select>
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-3">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="selTipo">Tipo:</label>
+                            <select name="selTipo" id="selTipo" class="form-control input-sm" ng-model="params.tipo" ng-options="obj.abreviatura as obj.abreviatura for obj in tipos"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label for="txtDel">Fecha del:</label>
-                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.fDel" placeholder="Del"/>
+                            <input name="txtDel" id="txtDel" type="date" class="form-control input-sm" ng-model="params.fDel" placeholder="Del"/>
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label for="txtAl">Al:</label>
-                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fAl" placeholder="Al"/>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control input-sm" ng-model="params.fAl" placeholder="Al"/>
                         </div>
                     </div>
                 </div>
-                <button type="button" class="btn btn-primary btn-sm" ng-click="getCorrelativosCheques()" ng-disabled="objBanco == null || objBanco == undefined">
+                <button type="button" class="btn btn-primary" ng-click="getCorrelativosCheques()" ng-disabled="objBanco == null || objBanco == undefined">
                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-primary" ng-click="getCorrelativosChequesExcel()" ng-disabled="objBanco == null || objBanco == undefined">
+                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
                 </button>
             </div>
         </div>

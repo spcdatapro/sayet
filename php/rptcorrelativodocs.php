@@ -23,13 +23,15 @@ $app->post('/correlativo', function(){
     $query.= "a.beneficiario, a.concepto ";
     $query.= "FROM tranban a INNER JOIN tipomovtranban b ON b.abreviatura = a.tipotrans ";
     $query.= "WHERE a.idbanco = $d->idbanco AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' ";
+    $query.= $d->tipo != '' ? "AND a.tipotrans = '$d->tipo' " : '';
     $query.= "ORDER BY a.fecha, a.numero";
     $correlativo->docs = $db->getQuery($query);
 
     //Sumatorias
     $query = "SELECT FORMAT(SUM(IF(b.suma = 1, a.monto, 0.00)), 2) AS credito, FORMAT(SUM(IF(b.suma = 0, a.monto, 0.00)), 2) AS debito ";
     $query.= "FROM tranban a INNER JOIN tipomovtranban b ON b.abreviatura = a.tipotrans ";
-    $query.= "WHERE a.idbanco = $d->idbanco AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr'";
+    $query.= "WHERE a.idbanco = $d->idbanco AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' ";
+    $query.= $d->tipo != '' ? "AND a.tipotrans = '$d->tipo' " : '';
     $correlativo->sumas = $db->getQuery($query)[0];
 
     print json_encode($correlativo);
