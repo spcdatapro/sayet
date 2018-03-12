@@ -159,7 +159,7 @@ for($i = 0; $i < $registros; $i++){
         $pdf->Cell(3.5 * $conv, 0.65 * $conv, 'NO NEGOCIABLE', $borde, 0);
     }
 
-    $pdf->Ln(2.5 * $conv);
+    $pdf->Ln(2.9 * $conv);
     $pdf->Cell(1.55 * $conv);
     $pdf->MultiCell(10 * $conv, 0.45 * $conv, iconv('UTF-8', 'windows-1252', ($cheque->concepto.' / '.$conceptoextra)), $borde, 'L');
     //Generación del voucher
@@ -174,7 +174,7 @@ for($i = 0; $i < $registros; $i++){
     $pdf->SetFont('Arial','', 8.5);
 
     $header = [iconv('UTF-8', 'windows-1252', 'CÓDIGO'), 'CUENTA', 'Debe', 'Haber'];
-    $anchura = [25, 70, 31, 31];
+    $anchura = [25, 65, 29, 29];
     $pdf->ImprovedTable($header, $detcont, $anchura);
 
     $pdf->Cell(1.5 * $conv, 1 * $conv, '', 0, 2);
