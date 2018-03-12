@@ -108,17 +108,17 @@ $app->get('/generar', function(){
 $app->get('/regen', function(){
     $db = new dbcpm();
     $origen = 3;
-    $ids = "5070";
+    $ids = "4090, 4091, 4141, 4145, 4146, 4147, 4148, 4158, 4160, 4161, 4164, 4332, 4378, 4382";
     echo "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body><small><h3>Regeneración de facturas específicas</h3><h2>$ids</h2>";
 
     $query = "DELETE FROM detallecontable WHERE origen = $origen AND idorigen IN($ids)";
     $db->doQuery($query);
 
     $query = "SELECT a.id, a.idempresa, a.idcliente, a.idcontrato, TRIM(a.serie) AS serie, TRIM(a.numero) AS numero, TRIM(a.conceptomayor) AS conceptomayor, ";
-    $query.= "TRUNCATE(a.total, 2) AS pagoneto, ";
-    $query.= "TRUNCATE(a.retisr, 2) AS retisr, ";
-    $query.= "TRUNCATE(a.retiva, 2) AS retiva, ";
-    $query.= "TRUNCATE(a.iva, 2) AS iva, ";
+    $query.= "ROUND(a.total, 2) AS pagoneto, ";
+    $query.= "ROUND(a.retisr, 2) AS retisr, ";
+    $query.= "ROUND(a.retiva, 2) AS retiva, ";
+    $query.= "ROUND(a.iva, 2) AS iva, ";
     $query.= "a.anulada, a.esinsertada ";
     $query.= "FROM factura a ";
     $query.= "WHERE a.id IN($ids) ";
