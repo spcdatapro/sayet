@@ -138,21 +138,21 @@ for($i = 0; $i < $registros; $i++){
     $borde = 0;
     //Generación del cheque
     $pdf->Ln(0.15 * $conv);
-    $pdf->Cell(3 * $conv);
+    $pdf->Cell(2.2 * $conv);
     $pdf->Cell(11 * $conv, 0.275 * $conv, 'Guatemala, '.$cheque->dia.' de '.$meses[(int)$cheque->mes].' de '.$cheque->anio, $borde, 0);
-    $pdf->Cell(1 * $conv);
+    $pdf->Cell(0.75 * $conv);
     $pdf->Cell(3.5 * $conv, 0.275 * $conv, $cheque->montostr, $borde, 0);
     $pdf->Ln();
     $pdf->Ln(0.4 * $conv);
     $pdf->Cell(3 * $conv);
     $pdf->Cell(11.3 * $conv, 0.65 * $conv, iconv('UTF-8', 'windows-1252', $cheque->beneficiario), $borde, 0);
     $pdf->Ln();
-    $pdf->Ln(0.4 * $conv);
+    $pdf->Ln(0.1 * $conv);
     $pdf->Cell(2.5 * $conv);
     $pdf->SetFont('Arial','', 8);
     $pdf->Cell(11.3 * $conv, 0.65 * $conv, $n2l->to_word_int($cheque->monto), $borde, 0);
     $pdf->SetFont('Arial','', 9);
-    $pdf->Ln(1.3 * $conv);
+    $pdf->Ln(1.6 * $conv);
 
     if((int)$cheque->esnegociable == 0){
         $pdf->Cell(3.9 * $conv);
@@ -167,14 +167,14 @@ for($i = 0; $i < $registros; $i++){
 
     //$pdf->Cell(1.55 * $conv);
     //$pdf->Cell(20 * $conv, 0.45 * $conv, '', 0, 2);
-    $pdf->setxy(150,70);
+    $pdf->setxy(130, 70);
     $pdf->Cell(20 * $conv, 0.45 * $conv, $cheque->banco, 0, 2);
     $pdf->Ln(35);
     //$pdf->cell(1);
     $pdf->SetFont('Arial','', 9);
 
     $header = [iconv('UTF-8', 'windows-1252', 'CÓDIGO'), 'CUENTA', 'Debe', 'Haber'];
-    $anchura = [28, 95, 31, 31];
+    $anchura = [25, 85, 31, 31];
     $pdf->ImprovedTable($header, $detcont, $anchura);
 
     $pdf->Cell(1.5 * $conv, 1 * $conv, '', 0, 2);

@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/php/gencuadrereem.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/rptdetcontventasctrl.js" afterPath="$PROJECT_DIR$/js/controllers/rptdetcontventasctrl.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/rptdetcontventas.html" afterPath="$PROJECT_DIR$/pages/rptdetcontventas.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/printcheckcontinuo.php" afterPath="$PROJECT_DIR$/php/printcheckcontinuo.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptdetcontventas.php" afterPath="$PROJECT_DIR$/php/rptdetcontventas.php" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -47,7 +45,7 @@
             <state vertical-scroll-proportion="0.136939">
               <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
               <folding>
-                <marker date="1520869424845" expanded="true" signature="1624:1764" placeholder="SELECT id, d..isr..." />
+                <marker date="1520871233799" expanded="true" signature="1624:1764" placeholder="SELECT id, d..isr..." />
               </folding>
             </state>
           </provider>
@@ -78,8 +76,8 @@
       <file leaf-file-name="rptdetcontventas.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/php/rptdetcontventas.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="11" column="22" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
+            <state vertical-scroll-proportion="-29.5">
+              <caret line="46" column="12" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="12" />
               <folding>
                 <marker date="1520630519528" expanded="true" signature="291:1011" placeholder="SELECT a.ide..factura..." />
                 <marker date="1520630519528" expanded="true" signature="1238:1507" placeholder="SELECT z.ido..detallecontable..." />
@@ -91,17 +89,27 @@
       <file leaf-file-name="printcheckcontinuo.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/php/printcheckcontinuo.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-17.73077">
-              <caret line="171" column="14" selection-start-line="171" selection-start-column="14" selection-end-line="171" selection-end-column="14" />
+            <state vertical-scroll-proportion="-6.6153846">
+              <caret line="154" column="26" selection-start-line="154" selection-start-column="26" selection-end-line="154" selection-end-column="26" />
               <folding>
                 <element signature="n#PDF#0;n#!!top" expanded="false" />
                 <element signature="n#getConceptoExtra#0;n#!!top" expanded="false" />
-                <marker date="1520869240124" expanded="true" signature="1470:1532" placeholder="SELECT a.nom..proyecto..." />
-                <marker date="1520869240124" expanded="true" signature="1638:1775" placeholder="SELECT CONCA..detpagopresup..." />
-                <marker date="1520869240124" expanded="true" signature="3397:3535" placeholder="SELECT id FR..tranban..." />
-                <marker date="1520869240124" expanded="true" signature="5165:5376" placeholder="SELECT '' AS..detallecontable..." />
-                <marker date="1520869240124" expanded="true" signature="5513:5567" placeholder="SELECT UPPER..usuario..." />
+                <marker date="1520871194706" expanded="true" signature="1470:1532" placeholder="SELECT a.nom..proyecto..." />
+                <marker date="1520871194706" expanded="true" signature="1638:1775" placeholder="SELECT CONCA..detpagopresup..." />
+                <marker date="1520871194706" expanded="true" signature="3397:3535" placeholder="SELECT id FR..tranban..." />
+                <marker date="1520871194706" expanded="true" signature="5165:5376" placeholder="SELECT '' AS..detallecontable..." />
+                <marker date="1520871194706" expanded="true" signature="5513:5567" placeholder="SELECT UPPER..usuario..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="gencuadrereem.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/php/gencuadrereem.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-9.807693">
+              <caret line="15" column="12" selection-start-line="15" selection-start-column="12" selection-end-line="15" selection-end-column="12" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -129,8 +137,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/php/proyecto_adjunto.php" />
-        <option value="$PROJECT_DIR$/php/activo_adjunto.php" />
         <option value="$PROJECT_DIR$/php/cliente.php" />
         <option value="$PROJECT_DIR$/pages/formsretventa.html" />
         <option value="$PROJECT_DIR$/php/rptasistelibros.php" />
@@ -178,6 +184,8 @@
         <option value="$PROJECT_DIR$/php/rptdetcontventas.php" />
         <option value="$PROJECT_DIR$/pages/rptdetcontventas.html" />
         <option value="$PROJECT_DIR$/js/controllers/rptdetcontventasctrl.js" />
+        <option value="$PROJECT_DIR$/php/gencuadrereem.php" />
+        <option value="$PROJECT_DIR$/php/printcheck.php" />
         <option value="$PROJECT_DIR$/php/printcheckcontinuo.php" />
         <option value="$PROJECT_DIR$/php/db.php" />
       </list>
@@ -1121,12 +1129,12 @@
       <workItem from="1520518541151" duration="16174000" />
       <workItem from="1520609575123" duration="13895000" />
       <workItem from="1520633508122" duration="1020000" />
-      <workItem from="1520867772270" duration="1656000" />
+      <workItem from="1520867772270" duration="3464000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2227826000" />
+    <option name="totallyTimeSpent" value="2229634000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1185,13 +1193,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/php/rptconstproc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.09781358">
-          <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/frmbtns.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1518,17 +1519,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/php/printcheck.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/rptdetcontventas.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="11" column="22" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
+        <state vertical-scroll-proportion="-29.5">
+          <caret line="46" column="12" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="12" />
           <folding>
             <marker date="1520630519528" expanded="true" signature="291:1011" placeholder="SELECT a.ide..factura..." />
             <marker date="1520630519528" expanded="true" signature="1238:1507" placeholder="SELECT z.ido..detallecontable..." />
@@ -1536,18 +1530,40 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/php/printcheck.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.21518987">
+          <caret line="122" column="0" selection-start-line="122" selection-start-column="0" selection-end-line="122" selection-end-column="0" />
+          <folding>
+            <marker date="1520384362962" expanded="true" signature="1470:1532" placeholder="SELECT a.nom..proyecto..." />
+            <marker date="1520384362962" expanded="true" signature="1638:1775" placeholder="SELECT CONCA..detpagopresup..." />
+            <marker date="1520384362962" expanded="true" signature="4448:4659" placeholder="SELECT '' AS..detallecontable..." />
+            <marker date="1520384362962" expanded="true" signature="4780:4834" placeholder="SELECT UPPER..usuario..." />
+            <marker date="1520384362962" expanded="true" signature="5036:5078" placeholder="UPDATE tranb..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/gencuadrereem.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-9.807693">
+          <caret line="15" column="12" selection-start-line="15" selection-start-column="12" selection-end-line="15" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/php/printcheckcontinuo.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-17.73077">
-          <caret line="171" column="14" selection-start-line="171" selection-start-column="14" selection-end-line="171" selection-end-column="14" />
+        <state vertical-scroll-proportion="-6.6153846">
+          <caret line="154" column="26" selection-start-line="154" selection-start-column="26" selection-end-line="154" selection-end-column="26" />
           <folding>
             <element signature="n#PDF#0;n#!!top" expanded="false" />
             <element signature="n#getConceptoExtra#0;n#!!top" expanded="false" />
-            <marker date="1520869240124" expanded="true" signature="1470:1532" placeholder="SELECT a.nom..proyecto..." />
-            <marker date="1520869240124" expanded="true" signature="1638:1775" placeholder="SELECT CONCA..detpagopresup..." />
-            <marker date="1520869240124" expanded="true" signature="3397:3535" placeholder="SELECT id FR..tranban..." />
-            <marker date="1520869240124" expanded="true" signature="5165:5376" placeholder="SELECT '' AS..detallecontable..." />
-            <marker date="1520869240124" expanded="true" signature="5513:5567" placeholder="SELECT UPPER..usuario..." />
+            <marker date="1520871194706" expanded="true" signature="1470:1532" placeholder="SELECT a.nom..proyecto..." />
+            <marker date="1520871194706" expanded="true" signature="1638:1775" placeholder="SELECT CONCA..detpagopresup..." />
+            <marker date="1520871194706" expanded="true" signature="3397:3535" placeholder="SELECT id FR..tranban..." />
+            <marker date="1520871194706" expanded="true" signature="5165:5376" placeholder="SELECT '' AS..detallecontable..." />
+            <marker date="1520871194706" expanded="true" signature="5513:5567" placeholder="SELECT UPPER..usuario..." />
           </folding>
         </state>
       </provider>
@@ -1557,7 +1573,7 @@
         <state vertical-scroll-proportion="0.136939">
           <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
           <folding>
-            <marker date="1520869424845" expanded="true" signature="1624:1764" placeholder="SELECT id, d..isr..." />
+            <marker date="1520871233799" expanded="true" signature="1624:1764" placeholder="SELECT id, d..isr..." />
           </folding>
         </state>
       </provider>
