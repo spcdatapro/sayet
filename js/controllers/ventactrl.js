@@ -79,7 +79,7 @@
                     if($scope.venta.id > 0){
                         $scope.venta.objContrato = [$filter('getById')($scope.contratos, $scope.venta.idcontrato)];
                         $scope.ventastr = newValue[0].nombre + ', ' + $scope.venta.nocontrato + ', ' + $scope.venta.serie + ' - ' + $scope.venta.numero + ', ' +
-                            $scope.venta.moneda + ' ' + $filter('number')($scope.venta.total, 2);
+                            $scope.venta.moneda + ' ' + $filter('number')($scope.venta.subtotal, 2);
                     }
                 })
             }
