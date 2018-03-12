@@ -24,7 +24,7 @@
         $scope.getDetcontVentas = function(){
             $scope.params.fdelstr = moment($scope.params.del).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.al).format('YYYY-MM-DD');
-            jsReportSrvc.getPDFReport(test ? '' : '', $scope.params).then(function(pdf){ $scope.content = pdf; });
+            jsReportSrvc.getPDFReport(test ? 'HkXEMYVFM' : 'rk_mkqNKG', $scope.params).then(function(pdf){ $scope.content = pdf; });
         };
 
         /*
