@@ -45,7 +45,7 @@
             <state vertical-scroll-proportion="-4.576923">
               <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
               <folding>
-                <marker date="1520873355563" expanded="true" signature="1624:1764" placeholder="SELECT id, d..isr..." />
+                <marker date="1520874249777" expanded="true" signature="1624:1764" placeholder="SELECT id, d..isr..." />
               </folding>
             </state>
           </provider>
@@ -89,16 +89,16 @@
       <file leaf-file-name="printcheckcontinuo.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/php/printcheckcontinuo.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-21.0">
-              <caret line="176" column="21" selection-start-line="176" selection-start-column="21" selection-end-line="176" selection-end-column="21" />
+            <state vertical-scroll-proportion="-7.269231">
+              <caret line="141" column="28" selection-start-line="141" selection-start-column="28" selection-end-line="141" selection-end-column="28" />
               <folding>
                 <element signature="n#PDF#0;n#!!top" expanded="false" />
                 <element signature="n#getConceptoExtra#0;n#!!top" expanded="false" />
-                <marker date="1520873322529" expanded="true" signature="1470:1532" placeholder="SELECT a.nom..proyecto..." />
-                <marker date="1520873322529" expanded="true" signature="1638:1775" placeholder="SELECT CONCA..detpagopresup..." />
-                <marker date="1520873322529" expanded="true" signature="3397:3535" placeholder="SELECT id FR..tranban..." />
-                <marker date="1520873322529" expanded="true" signature="5165:5376" placeholder="SELECT '' AS..detallecontable..." />
-                <marker date="1520873322529" expanded="true" signature="5513:5567" placeholder="SELECT UPPER..usuario..." />
+                <marker date="1520874111113" expanded="true" signature="1470:1532" placeholder="SELECT a.nom..proyecto..." />
+                <marker date="1520874111113" expanded="true" signature="1638:1775" placeholder="SELECT CONCA..detpagopresup..." />
+                <marker date="1520874111113" expanded="true" signature="3397:3535" placeholder="SELECT id FR..tranban..." />
+                <marker date="1520874111113" expanded="true" signature="5165:5376" placeholder="SELECT '' AS..detallecontable..." />
+                <marker date="1520874111113" expanded="true" signature="5513:5567" placeholder="SELECT UPPER..usuario..." />
               </folding>
             </state>
           </provider>
@@ -107,47 +107,17 @@
       <file leaf-file-name="gencuadrereem.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/php/gencuadrereem.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.25431532">
-              <caret line="13" column="81" selection-start-line="13" selection-start-column="81" selection-end-line="13" selection-end-column="81" />
+            <state vertical-scroll-proportion="0.52819335">
+              <caret line="27" column="32" selection-start-line="27" selection-start-column="32" selection-end-line="27" selection-end-column="32" />
               <folding>
-                <marker date="1520873102816" expanded="true" signature="415:531" placeholder="SELECT id, i..compra..." />
-                <marker date="1520873102816" expanded="true" signature="698:782" placeholder="SELECT SUM(d..detallecontable..." />
-                <marker date="1520873102816" expanded="true" signature="698:783" placeholder="SELECT (SUM(..detallecontable..." />
-                <marker date="1520873102816" expanded="true" signature="698:792" placeholder="SELECT SUM(d..detallecontable..." />
-                <marker date="1520873102816" expanded="true" signature="896:994" placeholder="SELECT idcue..detcontempresa..." />
-                <marker date="1520873102816" expanded="true" signature="1053:1145" placeholder="INSERT INTO detallecontable..." />
-                <marker date="1520873102816" expanded="true" signature="1378:1420" placeholder="UPDATE compr..." />
-                <marker date="1520873102816" expanded="true" signature="1378:1421" placeholder="UPDATE compr..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="genpartidasventa.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/php/genpartidasventa.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-127.5">
-              <caret line="195" column="87" selection-start-line="195" selection-start-column="4" selection-end-line="195" selection-end-column="87" />
-              <folding>
-                <marker date="1520384362957" expanded="true" signature="361:471" placeholder="INSERT INTO detallecontable..." />
-                <marker date="1520384362957" expanded="true" signature="1682:1752" placeholder="SELECT COUNT..detallecontable..." />
-                <marker date="1520384362957" expanded="true" signature="2253:2330" placeholder="SELECT id FR..cuentac..." />
-                <marker date="1520384362957" expanded="true" signature="2797:2893" placeholder="SELECT idcue..detcontempresa..." />
-                <marker date="1520384362957" expanded="true" signature="3031:3058" placeholder="..." />
-                <marker date="1520384362957" expanded="true" signature="3378:3474" placeholder="SELECT idcue..detcontempresa..." />
-                <marker date="1520384362957" expanded="true" signature="3612:3639" placeholder="..." />
-                <marker date="1520384362957" expanded="true" signature="4710:4855" placeholder="SELECT b.id ..tiposervicioventa..." />
-                <marker date="1520384362957" expanded="true" signature="5014:5041" placeholder="..." />
-                <marker date="1520384362957" expanded="true" signature="5543:5570" placeholder="..." />
-                <marker date="1520384362957" expanded="true" signature="7248:7296" placeholder="SELECT TRIM(..contrato..." />
-                <marker date="1520384362957" expanded="true" signature="7533:7610" placeholder="SELECT id FR..cuentac..." />
-                <marker date="1520384362957" expanded="true" signature="7757:7784" placeholder="..." />
-                <marker date="1520384362957" expanded="true" signature="8311:8338" placeholder="..." />
-                <marker date="1520384362957" expanded="true" signature="8658:8754" placeholder="SELECT idcue..detcontempresa..." />
-                <marker date="1520384362957" expanded="true" signature="8892:8919" placeholder="..." />
-                <marker date="1520384362957" expanded="true" signature="9996:10023" placeholder="..." />
-                <marker date="1520384362957" expanded="true" signature="10298:10393" placeholder="SELECT idcue..detcontempresa..." />
-                <marker date="1520384362957" expanded="true" signature="10525:10552" placeholder="..." />
+                <marker date="1520873599209" expanded="true" signature="415:531" placeholder="SELECT id, i..compra..." />
+                <marker date="1520873599209" expanded="true" signature="698:782" placeholder="SELECT SUM(d..detallecontable..." />
+                <marker date="1520873599209" expanded="true" signature="698:783" placeholder="SELECT (SUM(..detallecontable..." />
+                <marker date="1520873599209" expanded="true" signature="698:792" placeholder="SELECT SUM(d..detallecontable..." />
+                <marker date="1520873599209" expanded="true" signature="896:994" placeholder="SELECT idcue..detcontempresa..." />
+                <marker date="1520873599209" expanded="true" signature="1053:1145" placeholder="INSERT INTO detallecontable..." />
+                <marker date="1520873599209" expanded="true" signature="1378:1420" placeholder="UPDATE compr..." />
+                <marker date="1520873599209" expanded="true" signature="1378:1421" placeholder="UPDATE compr..." />
               </folding>
             </state>
           </provider>
@@ -1168,12 +1138,12 @@
       <workItem from="1520518541151" duration="16174000" />
       <workItem from="1520609575123" duration="13895000" />
       <workItem from="1520633508122" duration="1020000" />
-      <workItem from="1520867772270" duration="5598000" />
+      <workItem from="1520867772270" duration="6620000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2231768000" />
+    <option name="totallyTimeSpent" value="2232790000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1634,9 +1604,19 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/php/db.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-4.576923">
+          <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
+          <folding>
+            <marker date="1520874249777" expanded="true" signature="1624:1764" placeholder="SELECT id, d..isr..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/php/genpartidasventa.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-127.5">
+        <state vertical-scroll-proportion="3.8147297">
           <caret line="195" column="87" selection-start-line="195" selection-start-column="4" selection-end-line="195" selection-end-column="87" />
           <folding>
             <marker date="1520384362957" expanded="true" signature="361:471" placeholder="INSERT INTO detallecontable..." />
@@ -1664,43 +1644,33 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/php/printcheckcontinuo.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-21.0">
-          <caret line="176" column="21" selection-start-line="176" selection-start-column="21" selection-end-line="176" selection-end-column="21" />
+        <state vertical-scroll-proportion="-7.269231">
+          <caret line="141" column="28" selection-start-line="141" selection-start-column="28" selection-end-line="141" selection-end-column="28" />
           <folding>
             <element signature="n#PDF#0;n#!!top" expanded="false" />
             <element signature="n#getConceptoExtra#0;n#!!top" expanded="false" />
-            <marker date="1520873322529" expanded="true" signature="1470:1532" placeholder="SELECT a.nom..proyecto..." />
-            <marker date="1520873322529" expanded="true" signature="1638:1775" placeholder="SELECT CONCA..detpagopresup..." />
-            <marker date="1520873322529" expanded="true" signature="3397:3535" placeholder="SELECT id FR..tranban..." />
-            <marker date="1520873322529" expanded="true" signature="5165:5376" placeholder="SELECT '' AS..detallecontable..." />
-            <marker date="1520873322529" expanded="true" signature="5513:5567" placeholder="SELECT UPPER..usuario..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/db.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-4.576923">
-          <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
-          <folding>
-            <marker date="1520873355563" expanded="true" signature="1624:1764" placeholder="SELECT id, d..isr..." />
+            <marker date="1520874111113" expanded="true" signature="1470:1532" placeholder="SELECT a.nom..proyecto..." />
+            <marker date="1520874111113" expanded="true" signature="1638:1775" placeholder="SELECT CONCA..detpagopresup..." />
+            <marker date="1520874111113" expanded="true" signature="3397:3535" placeholder="SELECT id FR..tranban..." />
+            <marker date="1520874111113" expanded="true" signature="5165:5376" placeholder="SELECT '' AS..detallecontable..." />
+            <marker date="1520874111113" expanded="true" signature="5513:5567" placeholder="SELECT UPPER..usuario..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/php/gencuadrereem.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.25431532">
-          <caret line="13" column="81" selection-start-line="13" selection-start-column="81" selection-end-line="13" selection-end-column="81" />
+        <state vertical-scroll-proportion="0.52819335">
+          <caret line="27" column="32" selection-start-line="27" selection-start-column="32" selection-end-line="27" selection-end-column="32" />
           <folding>
-            <marker date="1520873102816" expanded="true" signature="415:531" placeholder="SELECT id, i..compra..." />
-            <marker date="1520873102816" expanded="true" signature="698:782" placeholder="SELECT SUM(d..detallecontable..." />
-            <marker date="1520873102816" expanded="true" signature="698:783" placeholder="SELECT (SUM(..detallecontable..." />
-            <marker date="1520873102816" expanded="true" signature="698:792" placeholder="SELECT SUM(d..detallecontable..." />
-            <marker date="1520873102816" expanded="true" signature="896:994" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1520873102816" expanded="true" signature="1053:1145" placeholder="INSERT INTO detallecontable..." />
-            <marker date="1520873102816" expanded="true" signature="1378:1420" placeholder="UPDATE compr..." />
-            <marker date="1520873102816" expanded="true" signature="1378:1421" placeholder="UPDATE compr..." />
+            <marker date="1520873599209" expanded="true" signature="415:531" placeholder="SELECT id, i..compra..." />
+            <marker date="1520873599209" expanded="true" signature="698:782" placeholder="SELECT SUM(d..detallecontable..." />
+            <marker date="1520873599209" expanded="true" signature="698:783" placeholder="SELECT (SUM(..detallecontable..." />
+            <marker date="1520873599209" expanded="true" signature="698:792" placeholder="SELECT SUM(d..detallecontable..." />
+            <marker date="1520873599209" expanded="true" signature="896:994" placeholder="SELECT idcue..detcontempresa..." />
+            <marker date="1520873599209" expanded="true" signature="1053:1145" placeholder="INSERT INTO detallecontable..." />
+            <marker date="1520873599209" expanded="true" signature="1378:1420" placeholder="UPDATE compr..." />
+            <marker date="1520873599209" expanded="true" signature="1378:1421" placeholder="UPDATE compr..." />
           </folding>
         </state>
       </provider>

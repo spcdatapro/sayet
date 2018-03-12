@@ -30,6 +30,8 @@ $app->get('/generar', function(){
             $query = "UPDATE compra SET cuadrada = 1 WHERE id = $compra->id";
             echo $query."<br/>";
             $db->doQuery($query);
+        }else{
+            echo "<strong>No se encontró la cuenta por liquidar de la empresa $compra->idempresa para la compra con ID $compra->id del ree/cc No. $compra->idreembolso</strong><br/>";
         }
     }
 

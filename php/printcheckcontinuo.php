@@ -134,6 +134,7 @@ for($i = 0; $i < $registros; $i++){
 
 
     $pdf->AddPage();
+    $pdf->SetMargins(0, 20, 0);
     $pdf->SetFont('Arial','', 9);
     $borde = 0;
     //Generación del cheque
