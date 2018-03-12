@@ -169,7 +169,7 @@ for($i = 0; $i < $registros; $i++){
     //$pdf->Cell(20 * $conv, 0.45 * $conv, '', 0, 2);
     $pdf->setxy(150,70);
     $pdf->Cell(20 * $conv, 0.45 * $conv, $cheque->banco, 0, 2);
-    $pdf->Ln(25);
+    $pdf->Ln(35);
     //$pdf->cell(1);
     $pdf->SetFont('Arial','', 9);
 
