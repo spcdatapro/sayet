@@ -98,7 +98,7 @@ $um = 'mm';
 $pdf = new PDF('P', $um, array(190, 215));
 $conv = $um == 'mm' ? 10 : 1;
 $pdf->SetMargins(0, 20, 0);
-
+$y = 70;
 for($i = 0; $i < $registros; $i++){
     $registro = $result[$i];
 
@@ -134,11 +134,11 @@ for($i = 0; $i < $registros; $i++){
 
 
     $pdf->AddPage();
-    $pdf->SetMargins(0, 20 + $i, 0);
+    $pdf->SetMargins(0, 20, 0);
     $pdf->SetFont('Arial','', 9);
     $borde = 0;
     //Generación del cheque
-    $pdf->Ln(0.15 * $conv);
+    $pdf->Ln(0.15 * $conv + $i);
     $pdf->Cell(2.2 * $conv);
     $pdf->Cell(10 * $conv, 0.275 * $conv, 'Guatemala, '.$cheque->dia.' de '.$meses[(int)$cheque->mes].' de '.$cheque->anio, $borde, 0);
     $pdf->Cell(0.25 * $conv);
@@ -168,9 +168,9 @@ for($i = 0; $i < $registros; $i++){
 
     //$pdf->Cell(1.55 * $conv);
     //$pdf->Cell(20 * $conv, 0.45 * $conv, '', 0, 2);
-    $pdf->setxy(130, 70 + $i);
+    $pdf->setxy(130, $y + $i);
     $pdf->Cell(20 * $conv, 0.45 * $conv, $cheque->banco, 0, 2);
-    $pdf->Ln(35 + $i);
+    $pdf->Ln(25 + $i);
     //$pdf->cell(1);
     $pdf->SetFont('Arial','', 8.5);
 

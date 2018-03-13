@@ -40,14 +40,14 @@
       <file leaf-file-name="printcheckcontinuo.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/php/printcheckcontinuo.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.49195403">
-              <caret line="170" column="30" selection-start-line="170" selection-start-column="30" selection-end-line="170" selection-end-column="30" />
+            <state vertical-scroll-proportion="0.021864211">
+              <caret line="146" column="26" selection-start-line="146" selection-start-column="26" selection-end-line="146" selection-end-column="26" />
               <folding>
-                <marker date="1520955889026" expanded="true" signature="1470:1532" placeholder="SELECT a.nom..proyecto..." />
-                <marker date="1520955889026" expanded="true" signature="1638:1775" placeholder="SELECT CONCA..detpagopresup..." />
-                <marker date="1520955889026" expanded="true" signature="3397:3535" placeholder="SELECT id FR..tranban..." />
-                <marker date="1520955889026" expanded="true" signature="5165:5376" placeholder="SELECT '' AS..detallecontable..." />
-                <marker date="1520955889026" expanded="true" signature="5513:5567" placeholder="SELECT UPPER..usuario..." />
+                <marker date="1520957695644" expanded="true" signature="1470:1532" placeholder="SELECT a.nom..proyecto..." />
+                <marker date="1520957695644" expanded="true" signature="1638:1775" placeholder="SELECT CONCA..detpagopresup..." />
+                <marker date="1520957695644" expanded="true" signature="3397:3535" placeholder="SELECT id FR..tranban..." />
+                <marker date="1520957695644" expanded="true" signature="5173:5384" placeholder="SELECT '' AS..detallecontable..." />
+                <marker date="1520957695644" expanded="true" signature="5521:5575" placeholder="SELECT UPPER..usuario..." />
               </folding>
             </state>
           </provider>
@@ -1070,12 +1070,12 @@
       <workItem from="1520633508122" duration="1020000" />
       <workItem from="1520867772270" duration="13244000" />
       <workItem from="1520893836448" duration="2416000" />
-      <workItem from="1520954892979" duration="1006000" />
+      <workItem from="1520954892979" duration="2752000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2242836000" />
+    <option name="totallyTimeSpent" value="2244582000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1503,14 +1503,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/php/printcheckcontinuo.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.49195403">
-          <caret line="170" column="30" selection-start-line="170" selection-start-column="30" selection-end-line="170" selection-end-column="30" />
+        <state vertical-scroll-proportion="0.021864211">
+          <caret line="146" column="26" selection-start-line="146" selection-start-column="26" selection-end-line="146" selection-end-column="26" />
           <folding>
-            <marker date="1520955889026" expanded="true" signature="1470:1532" placeholder="SELECT a.nom..proyecto..." />
-            <marker date="1520955889026" expanded="true" signature="1638:1775" placeholder="SELECT CONCA..detpagopresup..." />
-            <marker date="1520955889026" expanded="true" signature="3397:3535" placeholder="SELECT id FR..tranban..." />
-            <marker date="1520955889026" expanded="true" signature="5165:5376" placeholder="SELECT '' AS..detallecontable..." />
-            <marker date="1520955889026" expanded="true" signature="5513:5567" placeholder="SELECT UPPER..usuario..." />
+            <marker date="1520957695644" expanded="true" signature="1470:1532" placeholder="SELECT a.nom..proyecto..." />
+            <marker date="1520957695644" expanded="true" signature="1638:1775" placeholder="SELECT CONCA..detpagopresup..." />
+            <marker date="1520957695644" expanded="true" signature="3397:3535" placeholder="SELECT id FR..tranban..." />
+            <marker date="1520957695644" expanded="true" signature="5173:5384" placeholder="SELECT '' AS..detallecontable..." />
+            <marker date="1520957695644" expanded="true" signature="5521:5575" placeholder="SELECT UPPER..usuario..." />
           </folding>
         </state>
       </provider>
