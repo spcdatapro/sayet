@@ -134,7 +134,7 @@ for($i = 0; $i < $registros; $i++){
 
 
     $pdf->AddPage();
-    $pdf->SetMargins(0, 20, 0);
+    $pdf->SetMargins(0, 20 + $i, 0);
     $pdf->SetFont('Arial','', 9);
     $borde = 0;
     //Generación del cheque
@@ -168,9 +168,9 @@ for($i = 0; $i < $registros; $i++){
 
     //$pdf->Cell(1.55 * $conv);
     //$pdf->Cell(20 * $conv, 0.45 * $conv, '', 0, 2);
-    $pdf->setxy(130, 70);
+    $pdf->setxy(130, 70 + $i);
     $pdf->Cell(20 * $conv, 0.45 * $conv, $cheque->banco, 0, 2);
-    $pdf->Ln(35);
+    $pdf->Ln(35 + $i);
     //$pdf->cell(1);
     $pdf->SetFont('Arial','', 8.5);
 
