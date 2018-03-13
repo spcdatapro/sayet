@@ -402,7 +402,7 @@ $app->get('/gettxt/:idempresa/:fdelstr/:falstr/:nombre', function($idempresa, $f
     $app->response->headers->set('Content-Type', 'text/plain;charset=windows-1252');
     $app->response->headers->set('Content-Disposition', 'attachment;filename="'.trim($nombre).'.txt"');
 
-    //$url = 'http://52.35.3.1:5489/api/report';
+    //$url = 'http://104.197.209.57:5489/api/report';
     $url = 'http://localhost:5489/api/report';
     $data = ['template' => ['shortid' => 'SJ2xzSzKx'], 'data' => ['idempresa' => "$idempresa", 'fdelstr' => "$fdelstr", 'falstr' => "$falstr"]];
     //print json_encode($data);

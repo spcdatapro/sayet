@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/printcheckcontinuo.php" afterPath="$PROJECT_DIR$/php/printcheckcontinuo.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/facturacion.php" afterPath="$PROJECT_DIR$/php/facturacion.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptchequesaprob.php" afterPath="$PROJECT_DIR$/php/rptchequesaprob.php" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -37,17 +38,51 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="printcheckcontinuo.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/php/printcheckcontinuo.php">
+      <file leaf-file-name="rptchqaprob.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pages/rptchqaprob.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.021864211">
-              <caret line="146" column="26" selection-start-line="146" selection-start-column="26" selection-end-line="146" selection-end-column="26" />
+            <state vertical-scroll-proportion="-0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptchqaprob.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/controllers/rptchqaprob.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="26" column="42" selection-start-line="26" selection-start-column="42" selection-end-line="26" selection-end-column="42" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptchequesaprob.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/rptchequesaprob.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.547756">
+              <caret line="28" column="6" selection-start-line="28" selection-start-column="6" selection-end-line="28" selection-end-column="6" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="facturacion.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/php/facturacion.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-13.730769">
+              <caret line="405" column="46" selection-start-line="405" selection-start-column="4" selection-end-line="405" selection-end-column="46" />
               <folding>
-                <marker date="1520957695644" expanded="true" signature="1470:1532" placeholder="SELECT a.nom..proyecto..." />
-                <marker date="1520957695644" expanded="true" signature="1638:1775" placeholder="SELECT CONCA..detpagopresup..." />
-                <marker date="1520957695644" expanded="true" signature="3397:3535" placeholder="SELECT id FR..tranban..." />
-                <marker date="1520957695644" expanded="true" signature="5173:5384" placeholder="SELECT '' AS..detallecontable..." />
-                <marker date="1520957695644" expanded="true" signature="5521:5575" placeholder="SELECT UPPER..usuario..." />
+                <marker date="1520960914256" expanded="true" signature="546:584" placeholder="SELECT retis..empresa..." />
+                <marker date="1520960914256" expanded="true" signature="3765:3829" placeholder="SELECT congf..empresa..." />
+                <marker date="1520960914256" expanded="true" signature="11292:11356" placeholder="SELECT congf..empresa..." />
+                <marker date="1520960914256" expanded="true" signature="11872:11892" placeholder="INSERT INTO factura..." />
+                <marker date="1520960914256" expanded="true" signature="13102:13258" placeholder="INSERT INTO detfact..." />
+                <marker date="1520960914256" expanded="true" signature="13696:13759" placeholder="UPDATE cargo..." />
+                <marker date="1520960914256" expanded="true" signature="13895:13961" placeholder="UPDATE empre..." />
+                <marker date="1520960914256" expanded="true" signature="16849:16973" placeholder="SELECT a.idp..contrato..." />
+                <marker date="1520960914256" expanded="true" signature="23306:23458" placeholder="UPDATE factu..." />
               </folding>
             </state>
           </provider>
@@ -76,8 +111,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/pages/tranreembolso.html" />
-        <option value="$PROJECT_DIR$/php/facturacion.php" />
         <option value="$PROJECT_DIR$/pages/rptlibmay.html" />
         <option value="$PROJECT_DIR$/js/controllers/rptlibmayctrl.js" />
         <option value="$PROJECT_DIR$/pages/rptbalsal.html" />
@@ -127,6 +160,8 @@
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/js/controllers/rptdetcontventasctrl.js" />
         <option value="$PROJECT_DIR$/php/printcheckcontinuo.php" />
+        <option value="$PROJECT_DIR$/php/facturacion.php" />
+        <option value="$PROJECT_DIR$/php/rptchequesaprob.php" />
       </list>
     </option>
   </component>
@@ -1070,12 +1105,12 @@
       <workItem from="1520633508122" duration="1020000" />
       <workItem from="1520867772270" duration="13244000" />
       <workItem from="1520893836448" duration="2416000" />
-      <workItem from="1520954892979" duration="2752000" />
+      <workItem from="1520954892979" duration="3560000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2244582000" />
+    <option name="totallyTimeSpent" value="2245390000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1089,7 +1124,7 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36403033" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16791044" sideWeight="0.49571735" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16791044" sideWeight="0.49571735" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32889125" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24946696" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24946696" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1134,41 +1169,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/php/presupuesto.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.55120826">
-          <caret line="203" column="134" selection-start-line="203" selection-start-column="134" selection-end-line="203" selection-end-column="134" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/transegpresup.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.35558113">
-          <caret line="163" column="171" selection-start-line="163" selection-start-column="171" selection-end-line="163" selection-end-column="171" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/transegpresupctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.32290503">
-          <caret line="166" column="40" selection-start-line="166" selection-start-column="40" selection-end-line="166" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/services/rptingegrproysrvc.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/compra.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-31.384615">
-          <caret line="219" column="22" selection-start-line="219" selection-start-column="22" selection-end-line="219" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/controllers/rptingegrproyctrl.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1512,6 +1512,56 @@
             <marker date="1520957695644" expanded="true" signature="5173:5384" placeholder="SELECT '' AS..detallecontable..." />
             <marker date="1520957695644" expanded="true" signature="5521:5575" placeholder="SELECT UPPER..usuario..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptrescheqctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptchqaprob.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptchqaprob.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="26" column="42" selection-start-line="26" selection-start-column="42" selection-end-line="26" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/facturacion.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-13.730769">
+          <caret line="405" column="46" selection-start-line="405" selection-start-column="4" selection-end-line="405" selection-end-column="46" />
+          <folding>
+            <marker date="1520960914256" expanded="true" signature="546:584" placeholder="SELECT retis..empresa..." />
+            <marker date="1520960914256" expanded="true" signature="3765:3829" placeholder="SELECT congf..empresa..." />
+            <marker date="1520960914256" expanded="true" signature="11292:11356" placeholder="SELECT congf..empresa..." />
+            <marker date="1520960914256" expanded="true" signature="11872:11892" placeholder="INSERT INTO factura..." />
+            <marker date="1520960914256" expanded="true" signature="13102:13258" placeholder="INSERT INTO detfact..." />
+            <marker date="1520960914256" expanded="true" signature="13696:13759" placeholder="UPDATE cargo..." />
+            <marker date="1520960914256" expanded="true" signature="13895:13961" placeholder="UPDATE empre..." />
+            <marker date="1520960914256" expanded="true" signature="16849:16973" placeholder="SELECT a.idp..contrato..." />
+            <marker date="1520960914256" expanded="true" signature="23306:23458" placeholder="UPDATE factu..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptchequesaprob.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.547756">
+          <caret line="28" column="6" selection-start-line="28" selection-start-column="6" selection-end-line="28" selection-end-column="6" />
+          <folding />
         </state>
       </provider>
     </entry>
