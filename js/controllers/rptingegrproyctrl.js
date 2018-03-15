@@ -46,7 +46,7 @@
             $scope.getDetallePDF = function(){
                 $scope.datos = undefined;
                 var test = false;
-                jsReportSrvc.getPDFReport(test ? '' : 'Hkd2m5q1z', $scope.params).then(function(pdf){
+                jsReportSrvc.getPDFReport(test ? 'Hkd2m5q1z' : 'Hkd2m5q1z', $scope.params).then(function(pdf){
                     $window.open(pdf);
                 });
             };

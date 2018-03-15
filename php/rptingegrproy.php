@@ -247,7 +247,7 @@ $app->post('/detalle', function() use($db){
             $querySum.= "FROM ($query) z";
             $sumaegr = $db->getOneField($querySum);
             $detegr[] = [
-                'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => '', 'beneficiario' => '', 'concepto' => '', 'simbolo' => '', 'monto' => '', 'idcompra' => '', 'proveedor' => '', 'nit' => '',
+                'fechaOrd'=> '', 'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => '', 'beneficiario' => '', 'concepto' => '', 'moneda' => '', 'montotranban' => '', 'idcompra' => '', 'proveedor' => '', 'nit' => '',
                 'serie' => '', 'documento' => 'Total:', 'monedafact' => '', 'montofact' => $sumaegr
             ];
         }
@@ -263,7 +263,7 @@ $app->post('/detalle', function() use($db){
         'concepto' => 'PLANILLA', 'monto' => $montoPlanilla,
         'detalle' => [
             [
-                'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => '', 'beneficiario' => '', 'concepto' => '', 'simbolo' => '', 'monto' => '', 'idcompra' => '', 'proveedor' => '', 'nit' => '',
+                'fechaOrd'=> '', 'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => '', 'beneficiario' => '', 'concepto' => '', 'moneda' => '', 'montotranban' => '', 'idcompra' => '', 'proveedor' => '', 'nit' => '',
                 'serie' => '', 'documento' => 'Total:', 'monedafact' => '', 'montofact' => $montoPlanilla
             ]
         ]

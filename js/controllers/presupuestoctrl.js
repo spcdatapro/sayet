@@ -23,7 +23,7 @@
         $scope.grpBtnPresupuesto = {i: false, p:false, e: false, u: false, c: false, d: false, a: true};
         $scope.grpBtnOt = {i: false, p:false, e: false, u: false, c: false, d: false, a: true};
         $scope.showForm = {presupuesto: false, ot: false};
-        $scope.fltrot = { fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), idestatuspresup: null };
+        $scope.fltrot = { fdel: moment('2017-10-01').toDate(), fal: moment().endOf('month').toDate(), idestatuspresup: null };
         $scope.lstestatuspresup = [];
 
         proyectoSrvc.lstProyecto().then(function(d){ $scope.proyectos = d; });

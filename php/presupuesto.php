@@ -20,7 +20,7 @@ $app->post('/lstpresupuestos', function(){
     $query.= "WHERE ";
     $query.= (int)$d->idestatuspresup == 0 ? "a.idestatuspresupuesto NOT IN(5, 6) " : "a.idestatuspresupuesto IN($d->idestatuspresup) ";
     $query.= "AND a.fechasolicitud >= '$d->fdelstr' AND a.fechasolicitud <= '$d->falstr' ";
-    $query.= "ORDER BY a.id";
+    $query.= "ORDER BY a.id DESC";
     //print $query;
     print $db->doSelectASJson($query);
 });
@@ -62,7 +62,7 @@ $app->post('/lstpresaprob', function(){
     $query.= "FROM presupuesto a INNER JOIN proyecto b ON b.id = a.idproyecto INNER JOIN empresa c ON c.id = a.idempresa INNER JOIN tipogasto d ON d.id = a.idtipogasto INNER JOIN moneda e ON e.id = a.idmoneda ";
     $query.= "WHERE a.idestatuspresupuesto = 3 ";
     $query.= "AND a.fechasolicitud >= '$d->fdelstr' AND a.fechasolicitud <= '$d->falstr' ";
-    $query.= "ORDER BY a.id, b.nomproyecto";
+    $query.= "ORDER BY a.id DESC, b.nomproyecto";
     $presupuestos = $db->getQuery($query);
     $cntPresup = count($presupuestos);
     if($cntPresup > 0){

@@ -9,7 +9,7 @@
         $scope.expanding_Property = "";
         $scope.col_defs = [];
         $scope.my_tree = $scope.ots = {};
-        $scope.fltrot = { fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate() };
+        $scope.fltrot = { fdel: moment('2017-10-01').toDate(), fal: moment().endOf('month').toDate() };
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withBootstrap().withOption('paging', false).withOption('order', false);
 
