@@ -50,7 +50,7 @@ $app->post('/rptlibdia', function(){
     $query.= "WHERE b.ffin >= '".$d->fdelstr."' AND b.ffin <= '".$d->falstr."' AND b.idempresa = ".$d->idempresa." AND b.estatus = 2 ";
     */
     $query.= "SELECT CONCAT('P', YEAR(b.fechaingreso), LPAD(MONTH(b.fechaingreso), 2, '0'), LPAD(DAY(b.fechaingreso), 2, '0'), LPAD(5, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fechaingreso AS fecha, ";
-    $query.= "CONCAT('Compra', ' ', b.serie, '-', b.documento, ' ') AS referencia, b.conceptomayor AS concepto, b.id, 2 AS origen ";
+    $query.= "CONCAT('Compra', ' ', b.serie, '-', b.documento, ' ') AS referencia, b.conceptomayor AS concepto, b.id, 5 AS origen ";
     $query.= "FROM compra b INNER JOIN reembolso d ON d.id = b.idreembolso ";
     $query.= "WHERE b.idreembolso > 0 AND b.fechaingreso >= '".$d->fdelstr."' AND b.fechaingreso <= '".$d->falstr."' AND b.idempresa = ".$d->idempresa." ";
     //#Contratos -> origen = 6
@@ -88,12 +88,14 @@ $app->post('/rptlibdia', function(){
     for($i = 0; $i < $cnt; $i++){
         $query = "SELECT b.codigo, b.nombrecta, a.debe, a.haber, 0 AS estotal ";
         $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta ";
-        $query.= "WHERE a.anulado = 0 AND a.origen = ".$ld[$i]->origen." AND a.idorigen = ".$ld[$i]->id." ";
+        $query.= "WHERE a.anulado = 0 AND a.origen = ".((int)$ld[$i]->origen != 5 ? $ld[$i]->origen : 2)." AND a.idorigen = ".$ld[$i]->id." ";
+        $query.= ((int)$ld[$i]->origen != 5 ? "AND a.activada = 1 " : "");
         $query.= "ORDER BY a.debe DESC, b.nombrecta";
         $det = $db->getQuery($query);
         $query = "SELECT 0 AS codigo, 'Totales' AS nombrecta, SUM(a.debe) AS debe, SUM(a.haber) AS haber, 1 AS estotal ";
         $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta ";
-        $query.= "WHERE a.anulado = 0 AND a.origen = ".$ld[$i]->origen." AND a.idorigen = ".$ld[$i]->id." ";
+        $query.= "WHERE a.anulado = 0 AND a.origen = ".((int)$ld[$i]->origen != 5 ? $ld[$i]->origen : 2)." AND a.idorigen = ".$ld[$i]->id." ";
+        $query.= ((int)$ld[$i]->origen != 5 ? "AND a.activada = 1 " : "");
         $query.= "GROUP BY a.origen, a.idorigen";
         $sum = $db->getQuery($query);
         if(count($det) > 0){ array_push($det, $sum[0]); }
