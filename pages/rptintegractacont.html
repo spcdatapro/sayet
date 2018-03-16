@@ -1,0 +1,70 @@
+<div class="container" ng-controller="rptIntegraCuentaContableCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">Integración de cuentas contables</div>
+            <div class="panel-body" style="text-align: right">
+                <div class="row" style="text-align: left">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="selEmpresa">Empresa:</label>
+                            <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="params.idempresa"
+                                    ng-options="obj.id as obj.nomempresa for obj in empresas" ng-change="loadCuentasContables()">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="txtDel">Del:</label>
+                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.fdel" placeholder="Del"/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="txtAl">Al:</label>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fal" placeholder="Al"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="text-align: left">
+                    <div class="col-md-10">
+                        <div class="form-group">
+                            <label for="txtCta">Cuenta:</label>
+                            <ui-select id="txtCta"
+                                       ng-model="params.idcuenta"
+                                       title="Seleccione una cuenta.."
+                                       theme="bootstrap"
+                                       autofocus="false"
+                                       append-to-body="true">
+                                <ui-select-match placeholder="Buscar cuenta..." allow-clear="false">
+                                    <span ng-bind="$select.selected.nombrecta"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="item.id as item in cuentas | filter:$select.search">
+                                    <div ng-bind-html="item.nombrecta | highlight: $select.search"></div>
+                                    <small>
+                                        <strong>C&oacute;digo:</strong>&nbsp;<span ng-bind-html="item.codigo | highlight: $select.search" ></span>
+                                    </small>
+                                </ui-select-choices>
+                                <ui-select-no-choice>
+                                    No hay resultados...
+                                </ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" ng-click="getIntegracion()">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+                <!--
+                <button type="button" class="btn btn-primary" ng-click="getLibroMayorXLSX()">
+                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                </button>
+                -->
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 100em"></object>
+        </div>
+    </div>
+</div>

@@ -17,7 +17,7 @@ $app->post('/integra', function()use($db){
 
     $query = "SELECT a.id, c.idtranban, a.idbanco, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, CONCAT(d.siglas, ' ',a.tipotrans, a.numero) AS transaccion, b.debe, b.haber, ";
     $query.= "GROUP_CONCAT(c.idcompra SEPARATOR ', ') AS compras, ";
-    $query.= "COUNT(c.idcompra) AS conteofacturas ";
+    $query.= "COUNT(c.idcompra) AS conteofacturas, a.beneficiario ";
     $query.= "FROM tranban a INNER JOIN detallecontable b ON a.id = b.idorigen LEFT JOIN detpagocompra c ON a.id = c.idtranban LEFT JOIN banco d ON d.id = a.idbanco ";
     $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND b.origen = 1 AND b.idcuenta = $d->idcuenta AND (c.esrecprov = 0 OR c.esrecprov IS NULL) ";
     $query.= "GROUP BY a.id ";
@@ -46,6 +46,7 @@ $app->post('/integra', function()use($db){
                     'idtranban' => $cheque->id,
                     'fecha' => $cheque->fecha,
                     'transaccion' => $cheque->transaccion,
+                    'beneficiario' => $cheque->beneficiario,
                     'debet' => number_format((float)$cheque->debe, 2),
                     'habert' => number_format((float)$cheque->haber, 2),
                     'idcompras' => !is_null($cheque->compras) ? $cheque->compras : '',
@@ -60,6 +61,7 @@ $app->post('/integra', function()use($db){
                 'idtranban' => $cheque->id,
                 'fecha' => $cheque->fecha,
                 'transaccion' => $cheque->transaccion,
+                'beneficiario' => $cheque->beneficiario,
                 'debet' => number_format((float)$cheque->debe, 2),
                 'habert' => number_format((float)$cheque->haber, 2),
                 'idcompras' => '',

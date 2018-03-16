@@ -15,7 +15,8 @@ $app->post('/rptlibdia', function(){
     $query = "SELECT CONCAT('P', YEAR(b.fecha), LPAD(MONTH(b.fecha), 2, '0'), LPAD(DAY(b.fecha), 2, '0'), LPAD(1, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fecha, ";
     $query.= "CONCAT(d.descripcion, ' ', b.numero, ' ', c.nombre) AS referencia, b.concepto, b.id, 1 AS origen ";
     $query.= "FROM tranban b INNER JOIN banco c ON c.id = b.idbanco INNER JOIN tipomovtranban d ON d.abreviatura = b.tipotrans ";
-    $query.= "WHERE b.fecha >= '".$d->fdelstr."' AND b.fecha <= '".$d->falstr."' AND c.idempresa = ".$d->idempresa." ";
+    //$query.= "WHERE b.fecha >= '".$d->fdelstr."' AND b.fecha <= '".$d->falstr."' AND c.idempresa = ".$d->idempresa." ";
+    $query.= "WHERE ((b.anulado = 0 AND b.fecha >= '$d->fdelstr' AND b.fecha <= '$d->falstr') OR (b.anulado = 1 AND b.fecha >= '$d->fdelstr' AND b.fecha <= '$d->falstr')) AND c.idempresa = $d->idempresa ";
     //#Compras -> origen = 2
     $query.= "UNION ALL ";
     $query.= "SELECT CONCAT('P', YEAR(b.fechaingreso), LPAD(MONTH(b.fechaingreso), 2, '0'), LPAD(DAY(b.fechaingreso), 2, '0'), LPAD(2, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fechaingreso AS fecha, ";
@@ -73,11 +74,13 @@ $app->post('/rptlibdia', function(){
     $query.= "FROM recibocli b ";
     $query.= "WHERE b.fecha >= '$d->fdelstr' AND b.fecha <= '$d->falstr' AND b.idempresa = $d->idempresa ";
     //#Liquidación de documentos -> origen = 9
+    /*
     $query.="UNION ALL ";
     $query.= "SELECT CONCAT('P', YEAR(b.fechaliquida), LPAD(MONTH(b.fechaliquida), 2, '0'), LPAD(DAY(b.fechaliquida), 2, '0'), LPAD(9, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fechaliquida AS fecha, ";
     $query.= "CONCAT(d.descripcion, ' ', b.numero, ' ', c.nombre) AS referencia, 'Liquidación de documento' AS concepto, b.id, 9 AS origen ";
     $query.= "FROM tranban b INNER JOIN banco c ON c.id = b.idbanco INNER JOIN tipomovtranban d ON d.abreviatura = b.tipotrans ";
     $query.= "WHERE b.fechaliquida >= '".$d->fdelstr."' AND b.fechaliquida <= '".$d->falstr."' AND c.idempresa = ".$d->idempresa." ";
+    */
     $query.= "ORDER BY 2, 1";
     $ld = $db->getQuery($query);
     $cnt = count($ld);
