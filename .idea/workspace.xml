@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptbalancesaldos.php" afterPath="$PROJECT_DIR$/php/rptbalancesaldos.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptlibdia.php" afterPath="$PROJECT_DIR$/php/rptlibdia.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptlibmay.php" afterPath="$PROJECT_DIR$/php/rptlibmay.php" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -60,20 +61,20 @@
       <file leaf-file-name="rptlibdia.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/php/rptlibdia.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-17.076923">
-              <caret line="34" column="37" selection-start-line="34" selection-start-column="37" selection-end-line="34" selection-end-column="37" />
+            <state vertical-scroll-proportion="-11.115385">
+              <caret line="23" column="27" selection-start-line="23" selection-start-column="27" selection-end-line="23" selection-end-column="27" />
               <folding>
-                <marker date="1521241987680" expanded="true" signature="8023:8078" placeholder="SELECT nomem..empresa..." />
+                <marker date="1521255513103" expanded="true" signature="8022:8077" placeholder="SELECT nomem..empresa..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="rptbalancesaldos.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="rptbalancesaldos.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/php/rptbalancesaldos.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.2566168">
-              <caret line="139" column="89" selection-start-line="139" selection-start-column="89" selection-end-line="139" selection-end-column="89" />
+            <state vertical-scroll-proportion="-28.192308">
+              <caret line="103" column="18" selection-start-line="103" selection-start-column="18" selection-end-line="103" selection-end-column="18" />
               <folding>
                 <marker date="1521251077568" expanded="true" signature="323:351" placeholder="DELETE FROM ..." />
                 <marker date="1521251077568" expanded="true" signature="377:424" placeholder="ALTER TABLE rptbalancesaldos..." />
@@ -84,6 +85,26 @@
                 <marker date="1521251077568" expanded="true" signature="2050:2175" placeholder="SELECT id, i..rptbalancesaldos..." />
                 <marker date="1521251077568" expanded="true" signature="2852:2974" placeholder="UPDATE rptba..." />
                 <marker date="1521251077568" expanded="true" signature="3633:3688" placeholder="SELECT nomem..empresa..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptlibmay.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/rptlibmay.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.32911393">
+              <caret line="193" column="34" selection-start-line="193" selection-start-column="34" selection-end-line="193" selection-end-column="34" />
+              <folding>
+                <marker date="1521255420418" expanded="true" signature="340:365" placeholder="DELETE FROM ..." />
+                <marker date="1521255420418" expanded="true" signature="387:431" placeholder="ALTER TABLE rptlibromayor..." />
+                <marker date="1521255420418" expanded="true" signature="453:622" placeholder="INSERT INTO rptlibromayor..." />
+                <marker date="1521255420418" expanded="true" signature="521:593" placeholder="SELECT id, c..cuentac..." />
+                <marker date="1521255420418" expanded="true" signature="1489:1546" placeholder="UPDATE rptli..." />
+                <marker date="1521255420418" expanded="true" signature="1657:1755" placeholder="SELECT DISTI..rptlibromayor..." />
+                <marker date="1521255420418" expanded="true" signature="1945:2067" placeholder="SELECT id, i..rptlibromayor..." />
+                <marker date="1521255420418" expanded="true" signature="2697:2816" placeholder="UPDATE rptli..." />
+                <marker date="1521255420418" expanded="true" signature="3961:4016" placeholder="SELECT nomem..empresa..." />
               </folding>
             </state>
           </provider>
@@ -158,11 +179,11 @@
         <option value="$PROJECT_DIR$/cpmidx.html" />
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/js/controllers/rptintegractacont.js" />
-        <option value="$PROJECT_DIR$/php/rptlibmay.php" />
-        <option value="$PROJECT_DIR$/php/rptlibdia.php" />
         <option value="$PROJECT_DIR$/pages/rptlibdia.html" />
         <option value="$PROJECT_DIR$/js/controllers/rptlibdiactrl.js" />
         <option value="$PROJECT_DIR$/php/rptbalancesaldos.php" />
+        <option value="$PROJECT_DIR$/php/rptlibmay.php" />
+        <option value="$PROJECT_DIR$/php/rptlibdia.php" />
       </list>
     </option>
   </component>
@@ -1110,12 +1131,12 @@
       <workItem from="1520979777145" duration="2200000" />
       <workItem from="1521039173551" duration="8460000" />
       <workItem from="1521126242581" duration="5708000" />
-      <workItem from="1521222151524" duration="17760000" />
+      <workItem from="1521222151524" duration="21469000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2281292000" />
+    <option name="totallyTimeSpent" value="2285001000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1578,24 +1599,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptlibmay.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.45224395">
-          <caret line="176" column="15" selection-start-line="176" selection-start-column="15" selection-end-line="176" selection-end-column="15" />
-          <folding>
-            <marker date="1521238012367" expanded="true" signature="340:365" placeholder="DELETE FROM ..." />
-            <marker date="1521238012367" expanded="true" signature="387:431" placeholder="ALTER TABLE rptlibromayor..." />
-            <marker date="1521238012367" expanded="true" signature="453:622" placeholder="INSERT INTO rptlibromayor..." />
-            <marker date="1521238012367" expanded="true" signature="521:593" placeholder="SELECT id, c..cuentac..." />
-            <marker date="1521238012367" expanded="true" signature="1489:1546" placeholder="UPDATE rptli..." />
-            <marker date="1521238012367" expanded="true" signature="1657:1755" placeholder="SELECT DISTI..rptlibromayor..." />
-            <marker date="1521238012367" expanded="true" signature="1945:2067" placeholder="SELECT id, i..rptlibromayor..." />
-            <marker date="1521238012367" expanded="true" signature="2697:2816" placeholder="UPDATE rptli..." />
-            <marker date="1521238012367" expanded="true" signature="3961:4016" placeholder="SELECT nomem..empresa..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pages/rptlibdia.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-15.692307">
@@ -1630,18 +1633,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/php/rptlibdia.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-17.076923">
-          <caret line="34" column="37" selection-start-line="34" selection-start-column="37" selection-end-line="34" selection-end-column="37" />
+        <state vertical-scroll-proportion="-11.115385">
+          <caret line="23" column="27" selection-start-line="23" selection-start-column="27" selection-end-line="23" selection-end-column="27" />
           <folding>
-            <marker date="1521241987680" expanded="true" signature="8023:8078" placeholder="SELECT nomem..empresa..." />
+            <marker date="1521255513103" expanded="true" signature="8022:8077" placeholder="SELECT nomem..empresa..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/php/rptbalancesaldos.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2566168">
-          <caret line="139" column="89" selection-start-line="139" selection-start-column="89" selection-end-line="139" selection-end-column="89" />
+        <state vertical-scroll-proportion="-28.192308">
+          <caret line="103" column="18" selection-start-line="103" selection-start-column="18" selection-end-line="103" selection-end-column="18" />
           <folding>
             <marker date="1521251077568" expanded="true" signature="323:351" placeholder="DELETE FROM ..." />
             <marker date="1521251077568" expanded="true" signature="377:424" placeholder="ALTER TABLE rptbalancesaldos..." />
@@ -1652,6 +1655,24 @@
             <marker date="1521251077568" expanded="true" signature="2050:2175" placeholder="SELECT id, i..rptbalancesaldos..." />
             <marker date="1521251077568" expanded="true" signature="2852:2974" placeholder="UPDATE rptba..." />
             <marker date="1521251077568" expanded="true" signature="3633:3688" placeholder="SELECT nomem..empresa..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptlibmay.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.32911393">
+          <caret line="193" column="34" selection-start-line="193" selection-start-column="34" selection-end-line="193" selection-end-column="34" />
+          <folding>
+            <marker date="1521255420418" expanded="true" signature="340:365" placeholder="DELETE FROM ..." />
+            <marker date="1521255420418" expanded="true" signature="387:431" placeholder="ALTER TABLE rptlibromayor..." />
+            <marker date="1521255420418" expanded="true" signature="453:622" placeholder="INSERT INTO rptlibromayor..." />
+            <marker date="1521255420418" expanded="true" signature="521:593" placeholder="SELECT id, c..cuentac..." />
+            <marker date="1521255420418" expanded="true" signature="1489:1546" placeholder="UPDATE rptli..." />
+            <marker date="1521255420418" expanded="true" signature="1657:1755" placeholder="SELECT DISTI..rptlibromayor..." />
+            <marker date="1521255420418" expanded="true" signature="1945:2067" placeholder="SELECT id, i..rptlibromayor..." />
+            <marker date="1521255420418" expanded="true" signature="2697:2816" placeholder="UPDATE rptli..." />
+            <marker date="1521255420418" expanded="true" signature="3961:4016" placeholder="SELECT nomem..empresa..." />
           </folding>
         </state>
       </provider>

@@ -201,8 +201,8 @@ function getSelectDetail($cual, $d, $idcuenta){
             $query.= "WHERE a.origen = 3 AND a.activada = 1 AND a.anulado = 0 AND a.idcuenta = ".$idcuenta." AND b.fecha >= '".$d->fdelstr."' AND b.fecha <= '".$d->falstr."' AND c.idempresa = ".$d->idempresa." ";
             $query.= "UNION ALL ";
             $query.= "SELECT CONCAT('P', YEAR(b.fecha), LPAD(MONTH(b.fecha), 2, '0'), LPAD(DAY(b.fecha), 2, '0'), LPAD(a.origen, 2, '0'), LPAD(a.idorigen, 7, '0')) AS poliza, ";
-            $query.= "b.fecha, CONCAT(f.siglas, SPACE($espacios), b.numero, SPACE($espacios), d.nombrecorto) AS referencia, a.conceptomayor, a.debe, a.haber, a.idorigen, a.origen, e.tranban AS transaccion ";
-            $query.= "FROM detallecontable a INNER JOIN factura b ON b.id = a.idorigen INNER JOIN cliente d ON d.id = b.idcliente ";
+            $query.= "b.fecha, CONCAT(f.siglas, SPACE($espacios), b.numero, SPACE($espacios), IF(d.id IS NOT NULL, d.nombrecorto, b.nombre)) AS referencia, a.conceptomayor, a.debe, a.haber, a.idorigen, a.origen, e.tranban AS transaccion ";
+            $query.= "FROM detallecontable a INNER JOIN factura b ON b.id = a.idorigen LEFT JOIN cliente d ON d.id = b.idcliente ";
             $query.= "LEFT JOIN (SELECT z.idfactura, GROUP_CONCAT(CONCAT(x.tipotrans, x.numero) SEPARATOR ', ') AS tranban FROM detcobroventa z INNER JOIN recibocli y ON y.id = z.idrecibocli INNER JOIN tranban x ON x.id = y.idtranban ";
             $query.= "GROUP BY z.idfactura) e ON b.id = e.idfactura LEFT JOIN tipofactura f ON f.id = b.idtipofactura ";
             $query.= "WHERE a.origen = 3 AND a.activada = 1 AND a.anulado = 0 AND a.idcuenta = ".$idcuenta." AND b.fecha >= '".$d->fdelstr."' AND b.fecha <= '".$d->falstr."' AND b.idempresa = ".$d->idempresa." ";
