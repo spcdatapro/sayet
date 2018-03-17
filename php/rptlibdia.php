@@ -3,8 +3,6 @@ set_time_limit(0);
 require 'vendor/autoload.php';
 require_once 'db.php';
 
-//header('Content-Type: application/json');
-
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
 
