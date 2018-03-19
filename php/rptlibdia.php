@@ -87,14 +87,14 @@ $app->post('/rptlibdia', function(){
         $query = "SELECT b.codigo, b.nombrecta, a.debe, a.haber, 0 AS estotal ";
         $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta ";
         //$query.= "WHERE a.anulado = 0 AND a.origen = ".((int)$ld[$i]->origen != 5 ? $ld[$i]->origen : 2)." AND a.idorigen = ".$ld[$i]->id." ";
-        $query.= "WHERE a.origen = ".((int)$ld[$i]->origen != 5 ? $ld[$i]->origen : 2)." AND a.idorigen = ".$ld[$i]->id." ";
+        $query.= "WHERE a.origen = ".((int)$ld[$i]->origen != 5 ? $ld[$i]->origen : 2)." ".((int)$ld[$i]->origen != 1 ? "AND a.anulado = 0" : "")." AND a.idorigen = ".$ld[$i]->id." ";
         $query.= ((int)$ld[$i]->origen != 5 ? "AND a.activada = 1 " : "");
         $query.= "ORDER BY a.debe DESC, b.nombrecta";
         $det = $db->getQuery($query);
         $query = "SELECT 0 AS codigo, 'Totales' AS nombrecta, SUM(a.debe) AS debe, SUM(a.haber) AS haber, 1 AS estotal ";
         $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta ";
         //$query.= "WHERE a.anulado = 0 AND a.origen = ".((int)$ld[$i]->origen != 5 ? $ld[$i]->origen : 2)." AND a.idorigen = ".$ld[$i]->id." ";
-        $query.= "WHERE a.origen = ".((int)$ld[$i]->origen != 5 ? $ld[$i]->origen : 2)." AND a.idorigen = ".$ld[$i]->id." ";
+        $query.= "WHERE a.origen = ".((int)$ld[$i]->origen != 5 ? $ld[$i]->origen : 2)." ".((int)$ld[$i]->origen != 1 ? "AND a.anulado = 0" : "")." AND a.idorigen = ".$ld[$i]->id." ";
         $query.= ((int)$ld[$i]->origen != 5 ? "AND a.activada = 1 " : "");
         $query.= "GROUP BY a.origen, a.idorigen";
         $sum = $db->getQuery($query);

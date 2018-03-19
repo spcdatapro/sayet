@@ -60,10 +60,10 @@
       <file leaf-file-name="rptlibdia.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/php/rptlibdia.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.3739931">
-              <caret line="83" column="22" selection-start-line="83" selection-start-column="22" selection-end-line="83" selection-end-column="22" />
+            <state vertical-scroll-proportion="0.6283084">
+              <caret line="96" column="183" selection-start-line="96" selection-start-column="183" selection-end-line="96" selection-end-column="183" />
               <folding>
-                <marker date="1521489285041" expanded="true" signature="8276:8331" placeholder="SELECT nomem..empresa..." />
+                <marker date="1521492079945" expanded="true" signature="8394:8449" placeholder="SELECT nomem..empresa..." />
               </folding>
             </state>
           </provider>
@@ -1175,12 +1175,12 @@
       <workItem from="1521039173551" duration="8460000" />
       <workItem from="1521126242581" duration="5708000" />
       <workItem from="1521222151524" duration="21568000" />
-      <workItem from="1521470530447" duration="8780000" />
+      <workItem from="1521470530447" duration="9538000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2293880000" />
+    <option name="totallyTimeSpent" value="2294638000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1684,10 +1684,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/php/rptlibdia.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3739931">
-          <caret line="83" column="22" selection-start-line="83" selection-start-column="22" selection-end-line="83" selection-end-column="22" />
+        <state vertical-scroll-proportion="0.6283084">
+          <caret line="96" column="183" selection-start-line="96" selection-start-column="183" selection-end-line="96" selection-end-column="183" />
           <folding>
-            <marker date="1521489285041" expanded="true" signature="8276:8331" placeholder="SELECT nomem..empresa..." />
+            <marker date="1521492079945" expanded="true" signature="8394:8449" placeholder="SELECT nomem..empresa..." />
           </folding>
         </state>
       </provider>
