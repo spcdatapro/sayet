@@ -26,7 +26,8 @@
             $scope.params.fdelstr = moment($scope.params.del).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.al).format('YYYY-MM-DD');
             jsReportSrvc.getReport(test ? 'B1Sn40tFf' : 'rJENFRKYG', $scope.params).then(function(result){
-                var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+                //var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+                var file = new Blob([result.data], {type: 'application/vnd.ms-excel'});
                 var nombre = $scope.empresa.abreviatura + '_' + moment($scope.params.del).format('DDMMYYYY') + '_' + moment($scope.params.al).format('DDMMYYYY');
                 saveAs(file, 'LD_' + nombre + '.xlsx');
             });
