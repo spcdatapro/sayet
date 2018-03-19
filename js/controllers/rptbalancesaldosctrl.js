@@ -30,7 +30,8 @@
             $scope.params.solomov = $scope.params.solomov != null && $scope.params.solomov != undefined ? $scope.params.solomov : 0;
 
             jsReportSrvc.getReport(test ? 'BJT2GuhOM' : 'rkQ3r_huG', $scope.params).then(function(result){
-                var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+                //var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+                var file = new Blob([result.data], {type: 'application/vnd.ms-excel'});
                 var nombre = $scope.empresa.abreviatura + '_' + moment($scope.params.del).format('DDMMYYYY') + '_' + moment($scope.params.al).format('DDMMYYYY');
                 saveAs(file, 'BS_' + nombre + '.xlsx');
             });

@@ -35,7 +35,8 @@
             }
 
             jsReportSrvc.getReport(test ? 'r1Ep8Kn_z' : 'HJsxKK3_z', $scope.params).then(function(result){
-                var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+                //var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+                var file = new Blob([result.data], {type: 'application/vnd.ms-excel'});
                 var nombre = $scope.empresa.abreviatura + '_' + moment($scope.params.fdelstr).format('DDMMYYYY') + '_' + moment($scope.params.al).format('DDMMYYYY');
                 saveAs(file, 'ER_' + nombre + '.xlsx');
             });

@@ -72,13 +72,15 @@
 
             if(+$scope.params.constproc == 0){
                 jsReportSrvc.getReport(test ? 'S1OS4Lhdf' : 'HJwukPndf', $scope.params).then(function(result){
-                    var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+                    //var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+                    var file = new Blob([result.data], {type: 'application/vnd.ms-excel'});
                     var nombre = $scope.empresa.abreviatura + '_' + moment($scope.params.del).format('DDMMYYYY') + '_' + moment($scope.params.al).format('DDMMYYYY');
                     saveAs(file, 'DMG_' + nombre + '.xlsx');
                 });
             }else{
                 jsReportSrvc.getReport(test ? 'rkv1lRrFM' : 'SkHHrArKG', $scope.params).then(function(result){
-                    var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+                    //var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+                    var file = new Blob([result.data], {type: 'application/vnd.ms-excel'});
                     var nombre = $scope.empresa.abreviatura + '_' + moment($scope.params.del).format('DDMMYYYY') + '_' + moment($scope.params.al).format('DDMMYYYY');
                     saveAs(file, 'INT_' + nombre + '.xlsx');
                 });
