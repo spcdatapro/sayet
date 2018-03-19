@@ -108,7 +108,7 @@ $app->get('/generar', function(){
 $app->get('/regen', function(){
     $db = new dbcpm();
     $origen = 3;
-    $ids = "4090, 4091, 4141, 4145, 4146, 4147, 4148, 4158, 4160, 4161, 4164, 4332, 4378, 4382";
+    $ids = "4897";
     echo "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body><small><h3>Regeneración de facturas específicas</h3><h2>$ids</h2>";
 
     $query = "DELETE FROM detallecontable WHERE origen = $origen AND idorigen IN($ids)";
