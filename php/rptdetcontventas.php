@@ -17,7 +17,7 @@ $app->post('/rptdetcontventas', function(){
     $query.= "IF(a.anulada = 0, '', 'ANULADA') AS estatus ";
     $query.= "FROM factura a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN tipofactura c ON c.id = a.idtipofactura ";
     $query.= "WHERE a.idempresa = $d->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' ";
-    $query.= "ORDER BY a.fecha";
+    $query.= "ORDER BY a.fecha, a.numero";
     //print $query;
     $facturas = $db->getQuery($query);
     $cntFacturas = count($facturas);
