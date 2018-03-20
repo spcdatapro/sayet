@@ -122,8 +122,8 @@ $app->get('/regen', function(){
     $query.= "a.anulada, a.esinsertada ";
     $query.= "FROM factura a ";
     $query.= "WHERE a.id IN($ids) ";
-    $query.= "AND a.idcontrato > 0 ";
-    //$query.= "AND a.idcontrato = 0 ";
+    //$query.= "AND a.idcontrato > 0 ";
+    $query.= "AND a.idcontrato = 0 ";
     $query.= "ORDER BY a.idempresa";
     $facturas = $db->getQuery($query);
     $cntFact = count($facturas);
@@ -136,9 +136,9 @@ $app->get('/regen', function(){
             echo "<strong>Insertando detalle contable de factura $factura->serie $factura->numero</strong><br/>";
 
             //Cuenta del cliente
-            $query = "SELECT TRIM(idcuentac) FROM contrato WHERE id = $factura->idcontrato";
-            $codctacliente = $db->getOneField($query);
-            //$codctacliente = '1120199';
+            //$query = "SELECT TRIM(idcuentac) FROM contrato WHERE id = $factura->idcontrato";
+            //$codctacliente = $db->getOneField($query);
+            $codctacliente = '1120199';
             echo "Codigo cuenta cliente = $codctacliente de empresa $factura->idempresa<br/>";
             $query = "SELECT id FROM cuentac WHERE TRIM(codigo) = '$codctacliente' AND idempresa = $factura->idempresa";
             $ctacliente = (int)$db->getOneField($query);
