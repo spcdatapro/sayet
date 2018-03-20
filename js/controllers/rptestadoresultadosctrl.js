@@ -42,6 +42,18 @@
             });
         };
 
+        $scope.getEstResA = function(){
+            $scope.params.fdelstr = $scope.params.resAn ;
+            $scope.params.falstr = $scope.params.resAn ;
+            jsReportSrvc.getReport(test ? 'r1Ep8Kn_z' : 'HJsxKK3_z', $scope.params).then(function(result){
+                //var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+                var file = new Blob([result.data], {type: 'application/vnd.ms-excel'});
+                saveAs(file, 'Estado de Resultado Periodo '+$scope.params.resAn+'.xlsx');
+
+            });
+            console.log('datos cont',$scope.params);
+        };
+
     }]);
 
 }());
