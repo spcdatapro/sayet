@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/rptactivosctrl.js" afterPath="$PROJECT_DIR$/js/controllers/rptactivosctrl.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/rptlstactivos.html" afterPath="$PROJECT_DIR$/pages/rptlstactivos.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptactivos.php" afterPath="$PROJECT_DIR$/php/rptactivos.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptalquileres.php" afterPath="$PROJECT_DIR$/php/rptalquileres.php" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -39,35 +37,34 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="rptlstactivos.html" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/pages/rptlstactivos.html">
+      <file leaf-file-name="rptalquileres.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pages/rptalquileres.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
+            <state vertical-scroll-proportion="-0.0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="rptactivosctrl.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/controllers/rptactivosctrl.js">
+      <file leaf-file-name="rptalquileresctrl.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/controllers/rptalquileresctrl.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="11" column="25" selection-start-line="11" selection-start-column="25" selection-end-line="11" selection-end-column="25" />
+              <caret line="26" column="54" selection-start-line="26" selection-start-column="45" selection-end-line="26" selection-end-column="54" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="rptactivos.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/php/rptactivos.php">
+      <file leaf-file-name="rptalquileres.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/rptalquileres.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-11.115385">
-              <caret line="17" column="101" selection-start-line="17" selection-start-column="101" selection-end-line="17" selection-end-column="101" />
+            <state vertical-scroll-proportion="0.39425287">
+              <caret line="112" column="120" selection-start-line="112" selection-start-column="120" selection-end-line="112" selection-end-column="120" />
               <folding>
-                <marker date="1521655872784" expanded="true" signature="280:423" placeholder="SELECT id, n..empresa..." />
-                <marker date="1521655872784" expanded="true" signature="515:588" placeholder="SELECT id, C..municipio..." />
-                <marker date="1521655872784" expanded="true" signature="1556:1758" placeholder="SELECT z.ida..detalle_activo_proyecto..." />
+                <marker date="1521657545801" expanded="true" signature="4330:4463" placeholder="SELECT MIN(c..cargo..." />
+                <marker date="1521657545801" expanded="true" signature="8005:8138" placeholder="SELECT MIN(c..cargo..." />
               </folding>
             </state>
           </provider>
@@ -96,7 +93,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/pages/transegpresup.html" />
         <option value="$PROJECT_DIR$/pages/mntpresupuesto.html" />
         <option value="$PROJECT_DIR$/php/rptpresupuesto.php" />
         <option value="$PROJECT_DIR$/pages/rptlibventa.html" />
@@ -147,6 +143,7 @@
         <option value="$PROJECT_DIR$/js/controllers/rptactivosctrl.js" />
         <option value="$PROJECT_DIR$/pages/rptlstactivos.html" />
         <option value="$PROJECT_DIR$/php/rptactivos.php" />
+        <option value="$PROJECT_DIR$/php/rptalquileres.php" />
       </list>
     </option>
   </component>
@@ -1080,12 +1077,12 @@
       <workItem from="1521470530447" duration="14678000" />
       <workItem from="1521562924848" duration="6940000" />
       <workItem from="1521583866837" duration="8000" />
-      <workItem from="1521643525145" duration="4055000" />
+      <workItem from="1521643525145" duration="4654000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2310781000" />
+    <option name="totallyTimeSpent" value="2311380000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1144,27 +1141,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptdetcontventasctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.49330357">
-          <caret line="26" column="69" selection-start-line="26" selection-start-column="69" selection-end-line="26" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/printcheckcontinuo.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.021864211">
-          <caret line="146" column="26" selection-start-line="146" selection-start-column="26" selection-end-line="146" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptrescheqctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/facturacion.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1520,9 +1496,25 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptlstactivos.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptactivosctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.20870535">
+          <caret line="11" column="25" selection-start-line="11" selection-start-column="25" selection-end-line="11" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/php/rptactivos.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-11.115385">
+        <state vertical-scroll-proportion="0.3321839">
           <caret line="17" column="101" selection-start-line="17" selection-start-column="101" selection-end-line="17" selection-end-column="101" />
           <folding>
             <marker date="1521655872784" expanded="true" signature="280:423" placeholder="SELECT id, n..empresa..." />
@@ -1532,19 +1524,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptactivosctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="11" column="25" selection-start-line="11" selection-start-column="25" selection-end-line="11" selection-end-column="25" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/rptlstactivos.html">
+    <entry file="file://$PROJECT_DIR$/pages/rptalquileres.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptalquileresctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="26" column="54" selection-start-line="26" selection-start-column="45" selection-end-line="26" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptalquileres.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.39425287">
+          <caret line="112" column="120" selection-start-line="112" selection-start-column="120" selection-end-line="112" selection-end-column="120" />
+          <folding>
+            <marker date="1521657545801" expanded="true" signature="4330:4463" placeholder="SELECT MIN(c..cargo..." />
+            <marker date="1521657545801" expanded="true" signature="8005:8138" placeholder="SELECT MIN(c..cargo..." />
+          </folding>
         </state>
       </provider>
     </entry>
