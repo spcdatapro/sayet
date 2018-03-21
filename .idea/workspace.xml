@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptalquileres.php" afterPath="$PROJECT_DIR$/php/rptalquileres.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptpagoiusi.php" afterPath="$PROJECT_DIR$/php/rptpagoiusi.php" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -37,8 +37,8 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="rptalquileres.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/rptalquileres.html">
+      <file leaf-file-name="rptpagoiusi.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pages/rptpagoiusi.html">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="-0.0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -47,25 +47,22 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="rptalquileresctrl.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/controllers/rptalquileresctrl.js">
+      <file leaf-file-name="rptpagoiusi.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/controllers/rptpagoiusi.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="26" column="54" selection-start-line="26" selection-start-column="45" selection-end-line="26" selection-end-column="54" />
+              <caret line="21" column="69" selection-start-line="21" selection-start-column="60" selection-end-line="21" selection-end-column="69" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="rptalquileres.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/php/rptalquileres.php">
+      <file leaf-file-name="rptpagoiusi.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/rptpagoiusi.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.39425287">
-              <caret line="112" column="120" selection-start-line="112" selection-start-column="120" selection-end-line="112" selection-end-column="120" />
-              <folding>
-                <marker date="1521657545801" expanded="true" signature="4330:4463" placeholder="SELECT MIN(c..cargo..." />
-                <marker date="1521657545801" expanded="true" signature="8005:8138" placeholder="SELECT MIN(c..cargo..." />
-              </folding>
+            <state vertical-scroll-proportion="1.0977012">
+              <caret line="68" column="191" selection-start-line="68" selection-start-column="191" selection-end-line="68" selection-end-column="191" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -93,7 +90,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/pages/mntpresupuesto.html" />
         <option value="$PROJECT_DIR$/php/rptpresupuesto.php" />
         <option value="$PROJECT_DIR$/pages/rptlibventa.html" />
         <option value="$PROJECT_DIR$/js/controllers/rptlibroventasctrl.js" />
@@ -144,6 +140,7 @@
         <option value="$PROJECT_DIR$/pages/rptlstactivos.html" />
         <option value="$PROJECT_DIR$/php/rptactivos.php" />
         <option value="$PROJECT_DIR$/php/rptalquileres.php" />
+        <option value="$PROJECT_DIR$/php/rptpagoiusi.php" />
       </list>
     </option>
   </component>
@@ -1077,12 +1074,12 @@
       <workItem from="1521470530447" duration="14678000" />
       <workItem from="1521562924848" duration="6940000" />
       <workItem from="1521583866837" duration="8000" />
-      <workItem from="1521643525145" duration="4654000" />
+      <workItem from="1521643525145" duration="7256000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2311380000" />
+    <option name="totallyTimeSpent" value="2313982000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1141,27 +1138,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/php/facturacion.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="405" column="46" selection-start-line="405" selection-start-column="4" selection-end-line="405" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptchequesaprob.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.05862069">
-          <caret line="3" column="0" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptchqaprob.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.49330357">
-          <caret line="26" column="42" selection-start-line="26" selection-start-column="42" selection-end-line="26" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pages/rptchqaprob.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1524,6 +1500,25 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptalquileres.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.29655173">
+          <caret line="107" column="37" selection-start-line="107" selection-start-column="37" selection-end-line="107" selection-end-column="37" />
+          <folding>
+            <marker date="1521657545801" expanded="true" signature="4330:4463" placeholder="SELECT MIN(c..cargo..." />
+            <marker date="1521657545801" expanded="true" signature="8005:8138" placeholder="SELECT MIN(c..cargo..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptalquileresctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.32254463">
+          <caret line="26" column="54" selection-start-line="26" selection-start-column="45" selection-end-line="26" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pages/rptalquileres.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1532,22 +1527,27 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptalquileresctrl.js">
+    <entry file="file://$PROJECT_DIR$/pages/rptpagoiusi.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="26" column="54" selection-start-line="26" selection-start-column="45" selection-end-line="26" selection-end-column="54" />
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptalquileres.php">
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptpagoiusi.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.39425287">
-          <caret line="112" column="120" selection-start-line="112" selection-start-column="120" selection-end-line="112" selection-end-column="120" />
-          <folding>
-            <marker date="1521657545801" expanded="true" signature="4330:4463" placeholder="SELECT MIN(c..cargo..." />
-            <marker date="1521657545801" expanded="true" signature="8005:8138" placeholder="SELECT MIN(c..cargo..." />
-          </folding>
+        <state vertical-scroll-proportion="0.0">
+          <caret line="21" column="69" selection-start-line="21" selection-start-column="60" selection-end-line="21" selection-end-column="69" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptpagoiusi.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.0977012">
+          <caret line="68" column="191" selection-start-line="68" selection-start-column="191" selection-end-line="68" selection-end-column="191" />
+          <folding />
         </state>
       </provider>
     </entry>
