@@ -2,10 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/rptestadoresultadosctrl.js" afterPath="$PROJECT_DIR$/js/controllers/rptestadoresultadosctrl.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/rptestres.html" afterPath="$PROJECT_DIR$/pages/rptestres.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptestadoresultadosanual.php" afterPath="$PROJECT_DIR$/php/rptestadoresultadosanual.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/rptactivosctrl.js" afterPath="$PROJECT_DIR$/js/controllers/rptactivosctrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/rptlstactivos.html" afterPath="$PROJECT_DIR$/pages/rptlstactivos.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptactivos.php" afterPath="$PROJECT_DIR$/php/rptactivos.php" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -40,49 +39,35 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="rptestres.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/rptestres.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.65384614">
-              <caret line="11" column="29" selection-start-line="11" selection-start-column="29" selection-end-line="11" selection-end-column="29" />
-              <folding>
-                <element signature="n#style#0;n#object#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#1;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rptestadoresultadosctrl.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/controllers/rptestadoresultadosctrl.js">
+      <file leaf-file-name="rptlstactivos.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/pages/rptlstactivos.html">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="39" column="59" selection-start-line="39" selection-start-column="59" selection-end-line="39" selection-end-column="59" />
-              <folding>
-                <element signature="e#928#1514#0" expanded="false" />
-              </folding>
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="rptestadoresultadosanual.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/php/rptestadoresultadosanual.php">
+      <file leaf-file-name="rptactivosctrl.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/controllers/rptactivosctrl.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.1954023">
-              <caret line="10" column="22" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="22" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="11" column="25" selection-start-line="11" selection-start-column="25" selection-end-line="11" selection-end-column="25" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptactivos.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/php/rptactivos.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-11.115385">
+              <caret line="17" column="101" selection-start-line="17" selection-start-column="101" selection-end-line="17" selection-end-column="101" />
               <folding>
-                <marker date="1521654164550" expanded="true" signature="377:408" placeholder="DELETE FROM ..." />
-                <marker date="1521654164550" expanded="true" signature="430:480" placeholder="ALTER TABLE rptestadoresultados..." />
-                <marker date="1521654164550" expanded="true" signature="1001:1171" placeholder="SELECT b.des..confrptcont..." />
-                <marker date="1521654164550" expanded="true" signature="1374:1456" placeholder="INSERT INTO rptestadoresultados..." />
-                <marker date="1521654164550" expanded="true" signature="4729:4902" placeholder="INSERT INTO rptestadoresultados..." />
-                <marker date="1521654164550" expanded="true" signature="5819:5989" placeholder="INSERT INTO rptestadoresultados..." />
-                <marker date="1521654164550" expanded="true" signature="7067:7212" placeholder="INSERT INTO rptestadoresultados..." />
-                <marker date="1521654164550" expanded="true" signature="8275:8402" placeholder="SELECT DISTI..rptestadoresultados..." />
-                <marker date="1521654164550" expanded="true" signature="8496:8623" placeholder="SELECT id, i..rptestadoresultados..." />
-                <marker date="1521654164550" expanded="true" signature="9250:10245" placeholder="UPDATE rptes..." />
-                <marker date="1521654164550" expanded="true" signature="10875:10930" placeholder="SELECT nomem..empresa..." />
+                <marker date="1521655872784" expanded="true" signature="280:423" placeholder="SELECT id, n..empresa..." />
+                <marker date="1521655872784" expanded="true" signature="515:588" placeholder="SELECT id, C..municipio..." />
+                <marker date="1521655872784" expanded="true" signature="1556:1758" placeholder="SELECT z.ida..detalle_activo_proyecto..." />
               </folding>
             </state>
           </provider>
@@ -111,9 +96,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/php/estatuspresupuesto.php" />
-        <option value="$PROJECT_DIR$/js/services/estatuspresupuestosrvc.js" />
-        <option value="$PROJECT_DIR$/js/services/presupuestosrvc.js" />
         <option value="$PROJECT_DIR$/pages/transegpresup.html" />
         <option value="$PROJECT_DIR$/pages/mntpresupuesto.html" />
         <option value="$PROJECT_DIR$/php/rptpresupuesto.php" />
@@ -162,6 +144,9 @@
         <option value="$PROJECT_DIR$/pages/rptestres.html" />
         <option value="$PROJECT_DIR$/php/rptestadoresultadosanual.php" />
         <option value="$PROJECT_DIR$/js/controllers/rptestadoresultadosctrl.js" />
+        <option value="$PROJECT_DIR$/js/controllers/rptactivosctrl.js" />
+        <option value="$PROJECT_DIR$/pages/rptlstactivos.html" />
+        <option value="$PROJECT_DIR$/php/rptactivos.php" />
       </list>
     </option>
   </component>
@@ -245,6 +230,52 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="php" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cpm" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sayet" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pages" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cpm" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sayet" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cpm" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sayet" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="controllers" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1049,12 +1080,12 @@
       <workItem from="1521470530447" duration="14678000" />
       <workItem from="1521562924848" duration="6940000" />
       <workItem from="1521583866837" duration="8000" />
-      <workItem from="1521643525145" duration="1960000" />
+      <workItem from="1521643525145" duration="4055000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2308686000" />
+    <option name="totallyTimeSpent" value="2310781000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1113,41 +1144,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/js/controllers/ventactrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2972067">
-          <caret line="93" column="106" selection-start-line="93" selection-start-column="106" selection-end-line="93" selection-end-column="106" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/tranventa.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33486766">
-          <caret line="243" column="88" selection-start-line="243" selection-start-column="88" selection-end-line="243" selection-end-column="88" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/tranbanc.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.80437285">
-          <caret line="730" column="9" selection-start-line="666" selection-start-column="0" selection-end-line="730" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/db.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.1367816">
-          <caret line="7" column="6" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/rptdetcontventas.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="26" column="71" selection-start-line="26" selection-start-column="71" selection-end-line="26" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/controllers/rptdetcontventasctrl.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.49330357">
@@ -1462,16 +1458,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptestadoresultadosctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="39" column="59" selection-start-line="39" selection-start-column="59" selection-end-line="39" selection-end-column="59" />
-          <folding>
-            <element signature="e#928#1514#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pages/rptestres.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.65384614">
@@ -1480,6 +1466,16 @@
             <element signature="n#style#0;n#object#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#1;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptestadoresultadosctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.27901787">
+          <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+          <folding>
+            <element signature="e#928#1514#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1501,6 +1497,54 @@
             <marker date="1521654164550" expanded="true" signature="9250:10245" placeholder="UPDATE rptes..." />
             <marker date="1521654164550" expanded="true" signature="10875:10930" placeholder="SELECT nomem..empresa..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/mntactivo.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.39425287">
+          <caret line="120" column="70" selection-start-line="120" selection-start-column="70" selection-end-line="120" selection-end-column="70" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/proyecto_activo.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1520384362970" expanded="true" signature="1092:1148" placeholder="INSERT INTO detalle_activo_proyecto..." />
+            <marker date="1520384362970" expanded="true" signature="1401:1475" placeholder="UPDATE detal..." />
+            <marker date="1520384362970" expanded="true" signature="1674:1721" placeholder="DELETE FROM ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptactivos.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-11.115385">
+          <caret line="17" column="101" selection-start-line="17" selection-start-column="101" selection-end-line="17" selection-end-column="101" />
+          <folding>
+            <marker date="1521655872784" expanded="true" signature="280:423" placeholder="SELECT id, n..empresa..." />
+            <marker date="1521655872784" expanded="true" signature="515:588" placeholder="SELECT id, C..municipio..." />
+            <marker date="1521655872784" expanded="true" signature="1556:1758" placeholder="SELECT z.ida..detalle_activo_proyecto..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptactivosctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="11" column="25" selection-start-line="11" selection-start-column="25" selection-end-line="11" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptlstactivos.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
