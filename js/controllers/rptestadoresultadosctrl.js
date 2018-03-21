@@ -4,7 +4,7 @@
 
     rptestresctrl.controller('rptEstadoResultadosCtrl', ['$scope', 'rptEstadoResultadosSrvc', 'empresaSrvc', 'authSrvc', 'jsReportSrvc', '$sce', function($scope, rptEstadoResultadosSrvc, empresaSrvc, authSrvc, jsReportSrvc, $sce){
 
-        $scope.params = {del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), idempresa: 0, acumulado: 0, nivel: '7'};
+        $scope.params = {del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), idempresa: 0, acumulado: 0, nivel: '7', resAn: moment().year()};
         $scope.estadoresultados = [];
         $scope.empresa = {};
 
@@ -45,13 +45,13 @@
         $scope.getEstResA = function(){
             $scope.params.fdelstr = $scope.params.resAn ;
             $scope.params.falstr = $scope.params.resAn ;
-            jsReportSrvc.getReport(test ? 'r1Ep8Kn_z' : 'HJsxKK3_z', $scope.params).then(function(result){
+            //console.log('datos cont', $scope.params);
+            jsReportSrvc.getReport(test ? 'SyQ63C8Mz' : 'SyQ63C8Mz', $scope.params).then(function(result){
                 //var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
                 var file = new Blob([result.data], {type: 'application/vnd.ms-excel'});
-                saveAs(file, 'Estado de Resultado Periodo '+$scope.params.resAn+'.xlsx');
-
+                var nombre = $scope.empresa.abreviatura + '_' + $scope.params.resAn;
+                saveAs(file, 'ER_' + nombre + '.xlsx');
             });
-            console.log('datos cont',$scope.params);
         };
 
     }]);

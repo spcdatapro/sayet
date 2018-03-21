@@ -13,7 +13,7 @@ $app->post('/rptestres', function(){
     $db->doQuery("ALTER TABLE rptestadoresultados AUTO_INCREMENT = 1");
     $inggas = [1, 0]; //1 = ingresos; 0 = gastos
     //$origenes = ['tranban' => 1, 'compra' => 2, 'venta' => 3, 'directa' => 4, 'reembolso' => 5, 'contrato' => 6, 'recprov' => 7, 'reccli' => 8, 'liquidadoc' => 9, 'ncdclientes' => 10, 'ncdproveedores' => 11];
-    $origenes = ['tranban' => 1, 'compra' => 2, 'venta' => 3, 'directa' => 4, 'reembolso' => 5, 'recprov' => 7, 'reccli' => 8, 'liquidadoc' => 9, 'ncdclientes' => 10, 'ncdproveedores' => 11];
+    $origenes = ['tranban' => 1, 'compra' => 2, 'venta' => 3, 'directa' => 4, 'reembolso' => 5, 'recprov' => 7, 'reccli' => 8/*'liquidadoc' => 9, 'ncdclientes' => 10, 'ncdproveedores' => 11*/];
     foreach($inggas AS $ig){
         $ctasing = $db->getQuery("SELECT b.descripcion AS tipo, a.empiezancon, b.ingresos FROM confrptcont a INNER JOIN tiporptconfcont b ON b.id = a.idtiporptconfcont WHERE b.estres = 1 AND b.ingresos = ".$ig);
         foreach($ctasing as $ing){
@@ -149,10 +149,10 @@ function getSelect($cual, $d, $mes, $ini){
             break;
         case 5:
             $query = "SELECT a.idcuenta, SUM(a.debe) AS debe, SUM(a.haber) AS haber, (SUM(a.debe) - SUM(a.haber)) AS anterior ";
-            $query.= "FROM detallecontable a INNER JOIN reembolso b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta ";
-            $query.= "WHERE a.origen = 5 AND a.activada = 1 AND a.anulado = 0 AND FILTROFECHA AND b.idempresa = ".$d->idempresa."  AND b.estatus = 2 AND c.codigo LIKE '".$ini."%' ";
+            $query.= "FROM detallecontable a INNER JOIN compra b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta INNER JOIN reembolso d ON d.id = b.idreembolso ";
+            $query.= "WHERE a.origen = 2 AND a.anulado = 0 AND b.idreembolso > 0 AND FILTROFECHA AND b.idempresa = ".$d->idempresa." AND c.codigo LIKE '".$ini."%' ";
             $query.= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
-            $query = str_replace("FILTROFECHA", ("YEAR(b.ffin) = '$d->resAn' AND MONTh(b.ffin) = '$mes'"), $query);
+            $query = str_replace("FILTROFECHA", ("YEAR(b.fechaingreso) = '$d->resAn' AND MONTh(b.fechaingreso) = '$mes'"), $query);
             break;
         case 7:
             $query = "SELECT a.idcuenta, SUM(a.debe) AS debe, SUM(a.haber) AS haber, (SUM(a.debe) - SUM(a.haber)) AS anterior ";
@@ -168,6 +168,7 @@ function getSelect($cual, $d, $mes, $ini){
             $query.= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
             $query = str_replace("FILTROFECHA", ("YEAR(b.fecha) = '$d->resAn' AND MONTh(b.fecha) = '$mes'"), $query);
             break;
+        /*
         case 9:
             $query = "SELECT a.idcuenta, SUM(a.debe) AS debe, SUM(a.haber) AS haber, (SUM(a.debe) - SUM(a.haber)) AS anterior ";
             $query.= "FROM detallecontable a INNER JOIN tranban b ON b.id = a.idorigen INNER JOIN banco c ON c.id = b.idbanco INNER JOIN cuentac d ON d.id = a.idcuenta ";
@@ -189,6 +190,7 @@ function getSelect($cual, $d, $mes, $ini){
             $query.= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
             $query = str_replace("FILTROFECHA", ("YEAR(b.fecha) = '$d->resAn' AND MONTh(b.fecha) = '$mes'"), $query);
             break;
+        */
     }
     return $query;
 }

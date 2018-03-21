@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/genpartidasventa.php" afterPath="$PROJECT_DIR$/php/genpartidasventa.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/rptestadoresultadosctrl.js" afterPath="$PROJECT_DIR$/js/controllers/rptestadoresultadosctrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/rptestres.html" afterPath="$PROJECT_DIR$/pages/rptestres.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptestadoresultadosanual.php" afterPath="$PROJECT_DIR$/php/rptestadoresultadosanual.php" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -37,72 +40,49 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="rptestres.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pages/rptestres.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-0.65384614">
+              <caret line="11" column="29" selection-start-line="11" selection-start-column="29" selection-end-line="11" selection-end-column="29" />
+              <folding>
+                <element signature="n#style#0;n#object#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#1;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="rptestadoresultadosctrl.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/controllers/rptestadoresultadosctrl.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="44" column="30" selection-start-line="44" selection-start-column="30" selection-end-line="44" selection-end-column="30" />
+              <caret line="39" column="59" selection-start-line="39" selection-start-column="59" selection-end-line="39" selection-end-column="59" />
               <folding>
-                <element signature="e#904#1490#0" expanded="false" />
+                <element signature="e#928#1514#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="rptestadoresultadosanual.php" pinned="false" current-in-tab="false">
+      <file leaf-file-name="rptestadoresultadosanual.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/php/rptestadoresultadosanual.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.1954023">
+              <caret line="10" column="22" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="22" />
               <folding>
-                <marker date="1515602055970" expanded="true" signature="377:408" placeholder="DELETE FROM ..." />
-                <marker date="1515602055970" expanded="true" signature="430:480" placeholder="ALTER TABLE rptestadoresultados..." />
-                <marker date="1515602055970" expanded="true" signature="999:1169" placeholder="SELECT b.des..confrptcont..." />
-                <marker date="1515602055970" expanded="true" signature="1372:1454" placeholder="INSERT INTO rptestadoresultados..." />
-                <marker date="1515602055970" expanded="true" signature="4727:4900" placeholder="INSERT INTO rptestadoresultados..." />
-                <marker date="1515602055970" expanded="true" signature="5817:5987" placeholder="INSERT INTO rptestadoresultados..." />
-                <marker date="1515602055970" expanded="true" signature="7065:7210" placeholder="INSERT INTO rptestadoresultados..." />
-                <marker date="1515602055970" expanded="true" signature="8273:8400" placeholder="SELECT DISTI..rptestadoresultados..." />
-                <marker date="1515602055970" expanded="true" signature="8494:8621" placeholder="SELECT id, i..rptestadoresultados..." />
-                <marker date="1515602055970" expanded="true" signature="9248:10243" placeholder="UPDATE rptes..." />
-                <marker date="1515602055970" expanded="true" signature="10873:10928" placeholder="SELECT nomem..empresa..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="genpartidasventa.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/php/genpartidasventa.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6087457">
-              <caret line="140" column="12" selection-start-line="140" selection-start-column="12" selection-end-line="140" selection-end-column="12" />
-              <folding>
-                <element signature="e#659#5844#1#PHP" expanded="false" />
-                <marker date="1521567163445" expanded="true" signature="361:471" placeholder="INSERT INTO detallecontable..." />
-                <marker date="1521567163445" expanded="true" signature="1682:1752" placeholder="SELECT COUNT..detallecontable..." />
-                <marker date="1521567163445" expanded="true" signature="2253:2330" placeholder="SELECT id FR..cuentac..." />
-                <marker date="1521567163445" expanded="true" signature="2477:2504" placeholder="..." />
-                <marker date="1521567163445" expanded="true" signature="2797:2893" placeholder="SELECT idcue..detcontempresa..." />
-                <marker date="1521567163445" expanded="true" signature="3031:3058" placeholder="..." />
-                <marker date="1521567163445" expanded="true" signature="3378:3474" placeholder="SELECT idcue..detcontempresa..." />
-                <marker date="1521567163445" expanded="true" signature="3612:3639" placeholder="..." />
-                <marker date="1521567163445" expanded="true" signature="4710:4855" placeholder="SELECT b.id ..tiposervicioventa..." />
-                <marker date="1521567163445" expanded="true" signature="5014:5041" placeholder="..." />
-                <marker date="1521567163445" expanded="true" signature="5316:5411" placeholder="SELECT idcue..detcontempresa..." />
-                <marker date="1521567163445" expanded="true" signature="5543:5570" placeholder="..." />
-                <marker date="1521567163445" expanded="true" signature="6112:6184" placeholder="DELETE FROM ..." />
-                <marker date="1521567163445" expanded="true" signature="6970:7040" placeholder="SELECT COUNT..detallecontable..." />
-                <marker date="1521567163445" expanded="true" signature="7256:7304" placeholder="SELECT TRIM(..contrato..." />
-                <marker date="1521567163445" expanded="true" signature="7541:7618" placeholder="SELECT id FR..cuentac..." />
-                <marker date="1521567163445" expanded="true" signature="7765:7792" placeholder="..." />
-                <marker date="1521567163445" expanded="true" signature="8085:8181" placeholder="SELECT idcue..detcontempresa..." />
-                <marker date="1521567163445" expanded="true" signature="8319:8346" placeholder="..." />
-                <marker date="1521567163445" expanded="true" signature="8666:8762" placeholder="SELECT idcue..detcontempresa..." />
-                <marker date="1521567163445" expanded="true" signature="8900:8927" placeholder="..." />
-                <marker date="1521567163445" expanded="true" signature="9700:9845" placeholder="SELECT b.id ..tiposervicioventa..." />
-                <marker date="1521567163445" expanded="true" signature="10004:10031" placeholder="..." />
-                <marker date="1521567163445" expanded="true" signature="10306:10401" placeholder="SELECT idcue..detcontempresa..." />
-                <marker date="1521567163445" expanded="true" signature="10533:10560" placeholder="..." />
+                <marker date="1521654164550" expanded="true" signature="377:408" placeholder="DELETE FROM ..." />
+                <marker date="1521654164550" expanded="true" signature="430:480" placeholder="ALTER TABLE rptestadoresultados..." />
+                <marker date="1521654164550" expanded="true" signature="1001:1171" placeholder="SELECT b.des..confrptcont..." />
+                <marker date="1521654164550" expanded="true" signature="1374:1456" placeholder="INSERT INTO rptestadoresultados..." />
+                <marker date="1521654164550" expanded="true" signature="4729:4902" placeholder="INSERT INTO rptestadoresultados..." />
+                <marker date="1521654164550" expanded="true" signature="5819:5989" placeholder="INSERT INTO rptestadoresultados..." />
+                <marker date="1521654164550" expanded="true" signature="7067:7212" placeholder="INSERT INTO rptestadoresultados..." />
+                <marker date="1521654164550" expanded="true" signature="8275:8402" placeholder="SELECT DISTI..rptestadoresultados..." />
+                <marker date="1521654164550" expanded="true" signature="8496:8623" placeholder="SELECT id, i..rptestadoresultados..." />
+                <marker date="1521654164550" expanded="true" signature="9250:10245" placeholder="UPDATE rptes..." />
+                <marker date="1521654164550" expanded="true" signature="10875:10930" placeholder="SELECT nomem..empresa..." />
               </folding>
             </state>
           </provider>
@@ -131,8 +111,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/php/rptbalancegeneral.php" />
-        <option value="$PROJECT_DIR$/php/rptconstproc.php" />
         <option value="$PROJECT_DIR$/php/estatuspresupuesto.php" />
         <option value="$PROJECT_DIR$/js/services/estatuspresupuestosrvc.js" />
         <option value="$PROJECT_DIR$/js/services/presupuestosrvc.js" />
@@ -180,8 +158,10 @@
         <option value="$PROJECT_DIR$/js/controllers/rptbalancegeneralctrl.js" />
         <option value="$PROJECT_DIR$/js/controllers/rptlibmayctrl.js" />
         <option value="$PROJECT_DIR$/php/rptdetcontventas.php" />
-        <option value="$PROJECT_DIR$/js/controllers/rptestadoresultadosctrl.js" />
         <option value="$PROJECT_DIR$/php/genpartidasventa.php" />
+        <option value="$PROJECT_DIR$/pages/rptestres.html" />
+        <option value="$PROJECT_DIR$/php/rptestadoresultadosanual.php" />
+        <option value="$PROJECT_DIR$/js/controllers/rptestadoresultadosctrl.js" />
       </list>
     </option>
   </component>
@@ -235,6 +215,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -267,75 +248,10 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cpm" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sayet" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pages" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cpm" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sayet" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cpm" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sayet" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="services" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cpm" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sayet" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controllers" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
       <pane id="Scratches" />
       <pane id="Scope" />
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -1131,12 +1047,14 @@
       <workItem from="1521126242581" duration="5708000" />
       <workItem from="1521222151524" duration="21568000" />
       <workItem from="1521470530447" duration="14678000" />
-      <workItem from="1521562924848" duration="3952000" />
+      <workItem from="1521562924848" duration="6940000" />
+      <workItem from="1521583866837" duration="8000" />
+      <workItem from="1521643525145" duration="1960000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2303730000" />
+    <option name="totallyTimeSpent" value="2308686000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1148,7 +1066,6 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32976446" sideWeight="0.5" order="11" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32995737" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36403033" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16791044" sideWeight="0.49571735" order="0" side_tool="false" content_ui="combo" />
@@ -1157,15 +1074,16 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24946696" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1881663" sideWeight="0.50428265" order="4" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39978564" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="PHP-CGI Server" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32827735" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39978564" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -1195,13 +1113,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/js/services/ventasrvc.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/controllers/ventactrl.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.2972067">
@@ -1468,13 +1379,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptestadoresultados.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="43.153847">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/rptlibmay.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-8.576923">
@@ -1500,7 +1404,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="32" column="87" selection-start-line="32" selection-start-column="16" selection-end-line="32" selection-end-column="87" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1522,9 +1425,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.24510932">
           <caret line="16" column="60" selection-start-line="16" selection-start-column="60" selection-end-line="16" selection-end-column="60" />
-          <folding>
-            <marker date="1521500785650" expanded="true" signature="291:473" placeholder="SELECT TRIM(..empresa..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1532,47 +1432,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.019562716">
           <caret line="82" column="18" selection-start-line="82" selection-start-column="18" selection-end-line="82" selection-end-column="18" />
-          <folding>
-            <marker date="1521251077568" expanded="true" signature="323:351" placeholder="DELETE FROM ..." />
-            <marker date="1521251077568" expanded="true" signature="377:424" placeholder="ALTER TABLE rptbalancesaldos..." />
-            <marker date="1521251077568" expanded="true" signature="450:622" placeholder="INSERT INTO rptbalancesaldos..." />
-            <marker date="1521251077568" expanded="true" signature="521:593" placeholder="SELECT id, c..cuentac..." />
-            <marker date="1521251077568" expanded="true" signature="1556:1616" placeholder="UPDATE rptba..." />
-            <marker date="1521251077568" expanded="true" signature="1739:1840" placeholder="SELECT DISTI..rptbalancesaldos..." />
-            <marker date="1521251077568" expanded="true" signature="2050:2175" placeholder="SELECT id, i..rptbalancesaldos..." />
-            <marker date="1521251077568" expanded="true" signature="2852:2974" placeholder="UPDATE rptba..." />
-            <marker date="1521251077568" expanded="true" signature="3633:3688" placeholder="SELECT nomem..empresa..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptestadoresultadosanual.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <marker date="1515602055970" expanded="true" signature="377:408" placeholder="DELETE FROM ..." />
-            <marker date="1515602055970" expanded="true" signature="430:480" placeholder="ALTER TABLE rptestadoresultados..." />
-            <marker date="1515602055970" expanded="true" signature="999:1169" placeholder="SELECT b.des..confrptcont..." />
-            <marker date="1515602055970" expanded="true" signature="1372:1454" placeholder="INSERT INTO rptestadoresultados..." />
-            <marker date="1515602055970" expanded="true" signature="4727:4900" placeholder="INSERT INTO rptestadoresultados..." />
-            <marker date="1515602055970" expanded="true" signature="5817:5987" placeholder="INSERT INTO rptestadoresultados..." />
-            <marker date="1515602055970" expanded="true" signature="7065:7210" placeholder="INSERT INTO rptestadoresultados..." />
-            <marker date="1515602055970" expanded="true" signature="8273:8400" placeholder="SELECT DISTI..rptestadoresultados..." />
-            <marker date="1515602055970" expanded="true" signature="8494:8621" placeholder="SELECT id, i..rptestadoresultados..." />
-            <marker date="1515602055970" expanded="true" signature="9248:10243" placeholder="UPDATE rptes..." />
-            <marker date="1515602055970" expanded="true" signature="10873:10928" placeholder="SELECT nomem..empresa..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptestadoresultadosctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="44" column="30" selection-start-line="44" selection-start-column="30" selection-end-line="44" selection-end-column="30" />
-          <folding>
-            <element signature="e#904#1490#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1580,33 +1439,67 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.6087457">
           <caret line="140" column="12" selection-start-line="140" selection-start-column="12" selection-end-line="140" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptestadoresultados.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.30689654">
+          <caret line="148" column="15" selection-start-line="148" selection-start-column="15" selection-end-line="148" selection-end-column="15" />
           <folding>
-            <element signature="e#659#5844#1#PHP" expanded="false" />
-            <marker date="1521567163445" expanded="true" signature="361:471" placeholder="INSERT INTO detallecontable..." />
-            <marker date="1521567163445" expanded="true" signature="1682:1752" placeholder="SELECT COUNT..detallecontable..." />
-            <marker date="1521567163445" expanded="true" signature="2253:2330" placeholder="SELECT id FR..cuentac..." />
-            <marker date="1521567163445" expanded="true" signature="2477:2504" placeholder="..." />
-            <marker date="1521567163445" expanded="true" signature="2797:2893" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1521567163445" expanded="true" signature="3031:3058" placeholder="..." />
-            <marker date="1521567163445" expanded="true" signature="3378:3474" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1521567163445" expanded="true" signature="3612:3639" placeholder="..." />
-            <marker date="1521567163445" expanded="true" signature="4710:4855" placeholder="SELECT b.id ..tiposervicioventa..." />
-            <marker date="1521567163445" expanded="true" signature="5014:5041" placeholder="..." />
-            <marker date="1521567163445" expanded="true" signature="5316:5411" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1521567163445" expanded="true" signature="5543:5570" placeholder="..." />
-            <marker date="1521567163445" expanded="true" signature="6112:6184" placeholder="DELETE FROM ..." />
-            <marker date="1521567163445" expanded="true" signature="6970:7040" placeholder="SELECT COUNT..detallecontable..." />
-            <marker date="1521567163445" expanded="true" signature="7256:7304" placeholder="SELECT TRIM(..contrato..." />
-            <marker date="1521567163445" expanded="true" signature="7541:7618" placeholder="SELECT id FR..cuentac..." />
-            <marker date="1521567163445" expanded="true" signature="7765:7792" placeholder="..." />
-            <marker date="1521567163445" expanded="true" signature="8085:8181" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1521567163445" expanded="true" signature="8319:8346" placeholder="..." />
-            <marker date="1521567163445" expanded="true" signature="8666:8762" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1521567163445" expanded="true" signature="8900:8927" placeholder="..." />
-            <marker date="1521567163445" expanded="true" signature="9700:9845" placeholder="SELECT b.id ..tiposervicioventa..." />
-            <marker date="1521567163445" expanded="true" signature="10004:10031" placeholder="..." />
-            <marker date="1521567163445" expanded="true" signature="10306:10401" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1521567163445" expanded="true" signature="10533:10560" placeholder="..." />
+            <marker date="1520384362982" expanded="true" signature="396:427" placeholder="DELETE FROM ..." />
+            <marker date="1520384362982" expanded="true" signature="449:499" placeholder="ALTER TABLE rptestadoresultados..." />
+            <marker date="1520384362982" expanded="true" signature="1018:1188" placeholder="SELECT b.des..confrptcont..." />
+            <marker date="1520384362982" expanded="true" signature="1391:1473" placeholder="INSERT INTO rptestadoresultados..." />
+            <marker date="1520384362982" expanded="true" signature="2013:2112" placeholder="INSERT INTO rptestadoresultados..." />
+            <marker date="1520384362982" expanded="true" signature="2503:2601" placeholder="INSERT INTO rptestadoresultados..." />
+            <marker date="1520384362982" expanded="true" signature="3255:3342" placeholder="INSERT INTO rptestadoresultados..." />
+            <marker date="1520384362982" expanded="true" signature="3600:3727" placeholder="SELECT DISTI..rptestadoresultados..." />
+            <marker date="1520384362982" expanded="true" signature="3821:3948" placeholder="SELECT id, i..rptestadoresultados..." />
+            <marker date="1520384362982" expanded="true" signature="4300:4413" placeholder="UPDATE rptes..." />
+            <marker date="1520384362982" expanded="true" signature="4774:4829" placeholder="SELECT nomem..empresa..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptestadoresultadosctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="39" column="59" selection-start-line="39" selection-start-column="59" selection-end-line="39" selection-end-column="59" />
+          <folding>
+            <element signature="e#928#1514#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptestres.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.65384614">
+          <caret line="11" column="29" selection-start-line="11" selection-start-column="29" selection-end-line="11" selection-end-column="29" />
+          <folding>
+            <element signature="n#style#0;n#object#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptestadoresultadosanual.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.1954023">
+          <caret line="10" column="22" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="22" />
+          <folding>
+            <marker date="1521654164550" expanded="true" signature="377:408" placeholder="DELETE FROM ..." />
+            <marker date="1521654164550" expanded="true" signature="430:480" placeholder="ALTER TABLE rptestadoresultados..." />
+            <marker date="1521654164550" expanded="true" signature="1001:1171" placeholder="SELECT b.des..confrptcont..." />
+            <marker date="1521654164550" expanded="true" signature="1374:1456" placeholder="INSERT INTO rptestadoresultados..." />
+            <marker date="1521654164550" expanded="true" signature="4729:4902" placeholder="INSERT INTO rptestadoresultados..." />
+            <marker date="1521654164550" expanded="true" signature="5819:5989" placeholder="INSERT INTO rptestadoresultados..." />
+            <marker date="1521654164550" expanded="true" signature="7067:7212" placeholder="INSERT INTO rptestadoresultados..." />
+            <marker date="1521654164550" expanded="true" signature="8275:8402" placeholder="SELECT DISTI..rptestadoresultados..." />
+            <marker date="1521654164550" expanded="true" signature="8496:8623" placeholder="SELECT id, i..rptestadoresultados..." />
+            <marker date="1521654164550" expanded="true" signature="9250:10245" placeholder="UPDATE rptes..." />
+            <marker date="1521654164550" expanded="true" signature="10875:10930" placeholder="SELECT nomem..empresa..." />
           </folding>
         </state>
       </provider>
