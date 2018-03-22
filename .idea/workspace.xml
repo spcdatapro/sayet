@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptpagoiusi.php" afterPath="$PROJECT_DIR$/php/rptpagoiusi.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptintegractacont.php" afterPath="$PROJECT_DIR$/php/rptintegractacont.php" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -37,32 +37,15 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="rptpagoiusi.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/rptpagoiusi.html">
+      <file leaf-file-name="rptintegractacont.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/rptintegractacont.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rptpagoiusi.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/controllers/rptpagoiusi.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="21" column="69" selection-start-line="21" selection-start-column="60" selection-end-line="21" selection-end-column="69" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rptpagoiusi.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/php/rptpagoiusi.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.0977012">
-              <caret line="68" column="191" selection-start-line="68" selection-start-column="191" selection-end-line="68" selection-end-column="191" />
-              <folding />
+            <state vertical-scroll-proportion="0.33563218">
+              <caret line="147" column="37" selection-start-line="147" selection-start-column="37" selection-end-line="147" selection-end-column="37" />
+              <folding>
+                <marker date="1521676678353" expanded="true" signature="4055:4687" placeholder="SELECT a.id ..compra..." />
+                <marker date="1521676678353" expanded="true" signature="4909:5539" placeholder="SELECT GROUP..tranban..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -117,7 +100,6 @@
         <option value="$PROJECT_DIR$/js/controllers/presupuestoctrl.js" />
         <option value="$PROJECT_DIR$/js/controllers/transegpresupctrl.js" />
         <option value="$PROJECT_DIR$/php/presupuesto.php" />
-        <option value="$PROJECT_DIR$/php/rptintegractacont.php" />
         <option value="$PROJECT_DIR$/pages/rptintegractacont.html" />
         <option value="$PROJECT_DIR$/js/app.js" />
         <option value="$PROJECT_DIR$/cpmidx.html" />
@@ -141,6 +123,7 @@
         <option value="$PROJECT_DIR$/php/rptactivos.php" />
         <option value="$PROJECT_DIR$/php/rptalquileres.php" />
         <option value="$PROJECT_DIR$/php/rptpagoiusi.php" />
+        <option value="$PROJECT_DIR$/php/rptintegractacont.php" />
       </list>
     </option>
   </component>
@@ -1074,12 +1057,12 @@
       <workItem from="1521470530447" duration="14678000" />
       <workItem from="1521562924848" duration="6940000" />
       <workItem from="1521583866837" duration="8000" />
-      <workItem from="1521643525145" duration="7256000" />
+      <workItem from="1521643525145" duration="12086000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2313982000" />
+    <option name="totallyTimeSpent" value="2318812000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1254,13 +1237,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.5318436">
           <caret line="28" column="0" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptintegractacont.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.81785715">
-          <caret line="75" column="9" selection-start-line="75" selection-start-column="4" selection-end-line="75" selection-end-column="9" />
         </state>
       </provider>
     </entry>
@@ -1527,6 +1503,22 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptpagoiusi.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.0977012">
+          <caret line="68" column="191" selection-start-line="68" selection-start-column="191" selection-end-line="68" selection-end-column="191" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptpagoiusi.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3984375">
+          <caret line="21" column="69" selection-start-line="21" selection-start-column="60" selection-end-line="21" selection-end-column="69" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pages/rptpagoiusi.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1535,19 +1527,14 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptpagoiusi.js">
+    <entry file="file://$PROJECT_DIR$/php/rptintegractacont.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="21" column="69" selection-start-line="21" selection-start-column="60" selection-end-line="21" selection-end-column="69" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptpagoiusi.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.0977012">
-          <caret line="68" column="191" selection-start-line="68" selection-start-column="191" selection-end-line="68" selection-end-column="191" />
-          <folding />
+        <state vertical-scroll-proportion="0.33563218">
+          <caret line="147" column="37" selection-start-line="147" selection-start-column="37" selection-end-line="147" selection-end-column="37" />
+          <folding>
+            <marker date="1521676678353" expanded="true" signature="4055:4687" placeholder="SELECT a.id ..compra..." />
+            <marker date="1521676678353" expanded="true" signature="4909:5539" placeholder="SELECT GROUP..tranban..." />
+          </folding>
         </state>
       </provider>
     </entry>
