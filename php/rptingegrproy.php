@@ -270,6 +270,12 @@ $app->post('/detalle', function() use($db){
     ];
     $totEgresos += $montoPlanilla;
 
+    usort($datos->egresos, function($a, $b){
+        if((float)$a['monto'] === (float)$b['monto']){
+            return 0;
+        }
+        return (float)$a['monto'] > (float)$b['monto'] ? -1 : 1;
+    });
 
     $datos->egresos[] = ['concepto' => 'TOTAL DE EGRESOS', 'monto' => $totEgresos, 'detalle' => []];
 
