@@ -238,6 +238,11 @@ $app->post('/genfact', function(){
                 $db->doQuery($query);
             }
         }
+        if((int)$lastid > 0){
+            $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
+            $data = ['ids' => $lastid, 'idcontrato' => 1];
+            $db->CallJSReportAPI('POST', $url, json_encode($data));
+        }
     }
 
     if((int)$empresa->congface == 0){

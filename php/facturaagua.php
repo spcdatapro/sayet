@@ -182,6 +182,12 @@ $app->post('/genfact', function(){
 
                 $query = "UPDATE serviciobasico SET ultimalecturafact = $p->lectura WHERE id = $p->idserviciobasico";
                 $db->doQuery($query);
+
+                if((int)$lastid > 0){
+                    $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
+                    $data = ['ids' => $lastid, 'idcontrato' => 1];
+                    $db->CallJSReportAPI('POST', $url, json_encode($data));
+                }
             }
         }else{
             $query = "UPDATE lecturaservicio SET estatus = 3, facturado = 1, idfactura = 0 WHERE id = $p->id";
