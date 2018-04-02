@@ -424,9 +424,7 @@ $app->post('/respuesta', function(){
     for($i = 0; $i < $cntFacts; $i++){
         if($d[$i]->id !== NULL){
             $factura = $d[$i];
-            $query = "UPDATE factura SET firmaelectronica = ".'"'.$factura->firma.'"'.", respuestagface = ".'"'.$factura->respuesta.'"'.", serie = '$factura->serie', numero = '$factura->numero', ";
-            //$query.= "nit = '$factura->nit', nombre = '".iconv('Windows-1252','UTF-8', $factura->nombre)."' ";
-            //$query.= "nit = '$factura->nit', nombre = ".'"'.$factura->nombre.'"'.", pendiente = 1 ";
+            $query = "UPDATE factura SET firmaelectronica = '$factura->firma', respuestagface = '$factura->respuesta', serie = '$factura->serie', numero = '$factura->numero', ";
             $query.= "nit = '$factura->nit', nombre = '$factura->nombre', pendiente = 1 ";
             $query.= "WHERE id = $factura->id";
             //print $query;
