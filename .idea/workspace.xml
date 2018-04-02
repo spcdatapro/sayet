@@ -74,28 +74,28 @@
       <file leaf-file-name="facturacion.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/php/facturacion.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5109321">
-              <caret line="430" column="33" selection-start-line="430" selection-start-column="33" selection-end-line="430" selection-end-column="33" />
+            <state vertical-scroll-proportion="0.47180668">
+              <caret line="428" column="47" selection-start-line="428" selection-start-column="47" selection-end-line="428" selection-end-column="47" />
               <folding>
                 <element signature="e#419#6209#1#PHP" expanded="false" />
                 <element signature="e#6237#10454#1#PHP" expanded="false" />
                 <element signature="e#10484#11041#1#PHP" expanded="false" />
-                <marker date="1522702362221" expanded="true" signature="546:584" placeholder="SELECT retis..empresa..." />
-                <marker date="1522702362221" expanded="true" signature="3765:3829" placeholder="SELECT congf..empresa..." />
-                <marker date="1522702362221" expanded="true" signature="11292:11356" placeholder="SELECT congf..empresa..." />
-                <marker date="1522702362221" expanded="true" signature="11872:11892" placeholder="INSERT INTO factura..." />
-                <marker date="1522702362221" expanded="true" signature="13102:13258" placeholder="INSERT INTO detfact..." />
-                <marker date="1522702362221" expanded="true" signature="13696:13759" placeholder="UPDATE cargo..." />
-                <marker date="1522702362221" expanded="true" signature="14140:14206" placeholder="UPDATE empre..." />
-                <marker date="1522702362221" expanded="true" signature="17094:17218" placeholder="SELECT a.idp..contrato..." />
-                <marker date="1522702362221" expanded="true" signature="23551:23588" placeholder="UPDATE factu..." />
-                <marker date="1522702362221" expanded="true" signature="23551:23589" placeholder="UPDATE factu..." />
-                <marker date="1522702362221" expanded="true" signature="23551:23624" placeholder="UPDATE factu..." />
-                <marker date="1522702362221" expanded="true" signature="23551:23625" placeholder="UPDATE factu..." />
-                <marker date="1522702362221" expanded="true" signature="23551:23626" placeholder="UPDATE factu..." />
-                <marker date="1522702362221" expanded="true" signature="23551:23656" placeholder="UPDATE factu..." />
-                <marker date="1522702362221" expanded="true" signature="23551:23703" placeholder="UPDATE factu..." />
-                <marker date="1522702362221" expanded="true" signature="23551:23704" placeholder="UPDATE factu..." />
+                <marker date="1522706413926" expanded="true" signature="546:584" placeholder="SELECT retis..empresa..." />
+                <marker date="1522706413926" expanded="true" signature="3765:3829" placeholder="SELECT congf..empresa..." />
+                <marker date="1522706413926" expanded="true" signature="11292:11356" placeholder="SELECT congf..empresa..." />
+                <marker date="1522706413926" expanded="true" signature="11872:11892" placeholder="INSERT INTO factura..." />
+                <marker date="1522706413926" expanded="true" signature="13102:13258" placeholder="INSERT INTO detfact..." />
+                <marker date="1522706413926" expanded="true" signature="13696:13759" placeholder="UPDATE cargo..." />
+                <marker date="1522706413926" expanded="true" signature="14140:14206" placeholder="UPDATE empre..." />
+                <marker date="1522706413926" expanded="true" signature="17094:17218" placeholder="SELECT a.idp..contrato..." />
+                <marker date="1522706413926" expanded="true" signature="23551:23588" placeholder="UPDATE factu..." />
+                <marker date="1522706413926" expanded="true" signature="23551:23589" placeholder="UPDATE factu..." />
+                <marker date="1522706413926" expanded="true" signature="23551:23624" placeholder="UPDATE factu..." />
+                <marker date="1522706413926" expanded="true" signature="23551:23625" placeholder="UPDATE factu..." />
+                <marker date="1522706413926" expanded="true" signature="23551:23626" placeholder="UPDATE factu..." />
+                <marker date="1522706413926" expanded="true" signature="23551:23683" placeholder="UPDATE factu..." />
+                <marker date="1522706413926" expanded="true" signature="23551:23730" placeholder="UPDATE factu..." />
+                <marker date="1522706413926" expanded="true" signature="23551:23731" placeholder="UPDATE factu..." />
               </folding>
             </state>
           </provider>
@@ -1241,12 +1241,12 @@
       <workItem from="1521729199591" duration="1370000" />
       <workItem from="1521753592687" duration="2065000" />
       <workItem from="1521838035007" duration="2191000" />
-      <workItem from="1522688788139" duration="9821000" />
+      <workItem from="1522688788139" duration="10834000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2334346000" />
+    <option name="totallyTimeSpent" value="2335359000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1760,28 +1760,28 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/php/facturacion.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5109321">
-          <caret line="430" column="33" selection-start-line="430" selection-start-column="33" selection-end-line="430" selection-end-column="33" />
+        <state vertical-scroll-proportion="0.47180668">
+          <caret line="428" column="47" selection-start-line="428" selection-start-column="47" selection-end-line="428" selection-end-column="47" />
           <folding>
             <element signature="e#419#6209#1#PHP" expanded="false" />
             <element signature="e#6237#10454#1#PHP" expanded="false" />
             <element signature="e#10484#11041#1#PHP" expanded="false" />
-            <marker date="1522702362221" expanded="true" signature="546:584" placeholder="SELECT retis..empresa..." />
-            <marker date="1522702362221" expanded="true" signature="3765:3829" placeholder="SELECT congf..empresa..." />
-            <marker date="1522702362221" expanded="true" signature="11292:11356" placeholder="SELECT congf..empresa..." />
-            <marker date="1522702362221" expanded="true" signature="11872:11892" placeholder="INSERT INTO factura..." />
-            <marker date="1522702362221" expanded="true" signature="13102:13258" placeholder="INSERT INTO detfact..." />
-            <marker date="1522702362221" expanded="true" signature="13696:13759" placeholder="UPDATE cargo..." />
-            <marker date="1522702362221" expanded="true" signature="14140:14206" placeholder="UPDATE empre..." />
-            <marker date="1522702362221" expanded="true" signature="17094:17218" placeholder="SELECT a.idp..contrato..." />
-            <marker date="1522702362221" expanded="true" signature="23551:23588" placeholder="UPDATE factu..." />
-            <marker date="1522702362221" expanded="true" signature="23551:23589" placeholder="UPDATE factu..." />
-            <marker date="1522702362221" expanded="true" signature="23551:23624" placeholder="UPDATE factu..." />
-            <marker date="1522702362221" expanded="true" signature="23551:23625" placeholder="UPDATE factu..." />
-            <marker date="1522702362221" expanded="true" signature="23551:23626" placeholder="UPDATE factu..." />
-            <marker date="1522702362221" expanded="true" signature="23551:23656" placeholder="UPDATE factu..." />
-            <marker date="1522702362221" expanded="true" signature="23551:23703" placeholder="UPDATE factu..." />
-            <marker date="1522702362221" expanded="true" signature="23551:23704" placeholder="UPDATE factu..." />
+            <marker date="1522706413926" expanded="true" signature="546:584" placeholder="SELECT retis..empresa..." />
+            <marker date="1522706413926" expanded="true" signature="3765:3829" placeholder="SELECT congf..empresa..." />
+            <marker date="1522706413926" expanded="true" signature="11292:11356" placeholder="SELECT congf..empresa..." />
+            <marker date="1522706413926" expanded="true" signature="11872:11892" placeholder="INSERT INTO factura..." />
+            <marker date="1522706413926" expanded="true" signature="13102:13258" placeholder="INSERT INTO detfact..." />
+            <marker date="1522706413926" expanded="true" signature="13696:13759" placeholder="UPDATE cargo..." />
+            <marker date="1522706413926" expanded="true" signature="14140:14206" placeholder="UPDATE empre..." />
+            <marker date="1522706413926" expanded="true" signature="17094:17218" placeholder="SELECT a.idp..contrato..." />
+            <marker date="1522706413926" expanded="true" signature="23551:23588" placeholder="UPDATE factu..." />
+            <marker date="1522706413926" expanded="true" signature="23551:23589" placeholder="UPDATE factu..." />
+            <marker date="1522706413926" expanded="true" signature="23551:23624" placeholder="UPDATE factu..." />
+            <marker date="1522706413926" expanded="true" signature="23551:23625" placeholder="UPDATE factu..." />
+            <marker date="1522706413926" expanded="true" signature="23551:23626" placeholder="UPDATE factu..." />
+            <marker date="1522706413926" expanded="true" signature="23551:23683" placeholder="UPDATE factu..." />
+            <marker date="1522706413926" expanded="true" signature="23551:23730" placeholder="UPDATE factu..." />
+            <marker date="1522706413926" expanded="true" signature="23551:23731" placeholder="UPDATE factu..." />
           </folding>
         </state>
       </provider>
