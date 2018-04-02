@@ -40,20 +40,21 @@
       <file leaf-file-name="rptingegrproy.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/php/rptingegrproy.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.11967779">
+            <state vertical-scroll-proportion="0.47180668">
               <caret line="236" column="30" selection-start-line="236" selection-start-column="30" selection-end-line="236" selection-end-column="30" />
               <folding>
-                <marker date="1522710394109" expanded="true" signature="3669:3883" placeholder="SELECT a.mon..plaproy..." />
-                <marker date="1522710394109" expanded="true" signature="5779:6197" placeholder="SELECT DISTI..compraproyecto..." />
-                <marker date="1522710394109" expanded="true" signature="6214:6732" placeholder="SELECT DISTI..detallecontable..." />
-                <marker date="1522710394109" expanded="true" signature="7034:7485" placeholder="SELECT a.idc..compraproyecto..." />
-                <marker date="1522710394109" expanded="true" signature="7506:8018" placeholder="SELECT a.idc..detallecontable..." />
-                <marker date="1522710394109" expanded="true" signature="8327:8541" placeholder="SELECT a.mon..plaproy..." />
-                <marker date="1522710394109" expanded="true" signature="12939:13357" placeholder="SELECT DISTI..compraproyecto..." />
-                <marker date="1522710394109" expanded="true" signature="13374:13892" placeholder="SELECT DISTI..detallecontable..." />
-                <marker date="1522710394109" expanded="true" signature="14162:14613" placeholder="SELECT a.idc..compraproyecto..." />
-                <marker date="1522710394109" expanded="true" signature="14634:15146" placeholder="SELECT a.idc..detallecontable..." />
-                <marker date="1522710394109" expanded="true" signature="18221:18435" placeholder="SELECT a.mon..plaproy..." />
+                <marker date="1522710641711" expanded="true" signature="3669:3883" placeholder="SELECT a.mon..plaproy..." />
+                <marker date="1522710641711" expanded="true" signature="5779:6197" placeholder="SELECT DISTI..compraproyecto..." />
+                <marker date="1522710641711" expanded="true" signature="6214:6732" placeholder="SELECT DISTI..detallecontable..." />
+                <marker date="1522710641711" expanded="true" signature="7034:7485" placeholder="SELECT a.idc..compraproyecto..." />
+                <marker date="1522710641711" expanded="true" signature="7506:8018" placeholder="SELECT a.idc..detallecontable..." />
+                <marker date="1522710641711" expanded="true" signature="8327:8541" placeholder="SELECT a.mon..plaproy..." />
+                <marker date="1522710641711" expanded="true" signature="12939:13357" placeholder="SELECT DISTI..compraproyecto..." />
+                <marker date="1522710641711" expanded="true" signature="13374:13892" placeholder="SELECT DISTI..detallecontable..." />
+                <marker date="1522710641711" expanded="true" signature="14162:14613" placeholder="SELECT a.idc..compraproyecto..." />
+                <marker date="1522710641711" expanded="true" signature="14162:14617" placeholder="SELECT a.idc..compraproyecto..." />
+                <marker date="1522710641711" expanded="true" signature="14638:15150" placeholder="SELECT a.idc..detallecontable..." />
+                <marker date="1522710641711" expanded="true" signature="18225:18439" placeholder="SELECT a.mon..plaproy..." />
               </folding>
             </state>
           </provider>
@@ -1088,12 +1089,12 @@
       <workItem from="1521729199591" duration="1370000" />
       <workItem from="1521753592687" duration="2065000" />
       <workItem from="1521838035007" duration="2191000" />
-      <workItem from="1522688788139" duration="14773000" />
+      <workItem from="1522688788139" duration="15020000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2339298000" />
+    <option name="totallyTimeSpent" value="2339545000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1630,20 +1631,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/php/rptingegrproy.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.11967779">
+        <state vertical-scroll-proportion="0.47180668">
           <caret line="236" column="30" selection-start-line="236" selection-start-column="30" selection-end-line="236" selection-end-column="30" />
           <folding>
-            <marker date="1522710394109" expanded="true" signature="3669:3883" placeholder="SELECT a.mon..plaproy..." />
-            <marker date="1522710394109" expanded="true" signature="5779:6197" placeholder="SELECT DISTI..compraproyecto..." />
-            <marker date="1522710394109" expanded="true" signature="6214:6732" placeholder="SELECT DISTI..detallecontable..." />
-            <marker date="1522710394109" expanded="true" signature="7034:7485" placeholder="SELECT a.idc..compraproyecto..." />
-            <marker date="1522710394109" expanded="true" signature="7506:8018" placeholder="SELECT a.idc..detallecontable..." />
-            <marker date="1522710394109" expanded="true" signature="8327:8541" placeholder="SELECT a.mon..plaproy..." />
-            <marker date="1522710394109" expanded="true" signature="12939:13357" placeholder="SELECT DISTI..compraproyecto..." />
-            <marker date="1522710394109" expanded="true" signature="13374:13892" placeholder="SELECT DISTI..detallecontable..." />
-            <marker date="1522710394109" expanded="true" signature="14162:14613" placeholder="SELECT a.idc..compraproyecto..." />
-            <marker date="1522710394109" expanded="true" signature="14634:15146" placeholder="SELECT a.idc..detallecontable..." />
-            <marker date="1522710394109" expanded="true" signature="18221:18435" placeholder="SELECT a.mon..plaproy..." />
+            <marker date="1522710641711" expanded="true" signature="3669:3883" placeholder="SELECT a.mon..plaproy..." />
+            <marker date="1522710641711" expanded="true" signature="5779:6197" placeholder="SELECT DISTI..compraproyecto..." />
+            <marker date="1522710641711" expanded="true" signature="6214:6732" placeholder="SELECT DISTI..detallecontable..." />
+            <marker date="1522710641711" expanded="true" signature="7034:7485" placeholder="SELECT a.idc..compraproyecto..." />
+            <marker date="1522710641711" expanded="true" signature="7506:8018" placeholder="SELECT a.idc..detallecontable..." />
+            <marker date="1522710641711" expanded="true" signature="8327:8541" placeholder="SELECT a.mon..plaproy..." />
+            <marker date="1522710641711" expanded="true" signature="12939:13357" placeholder="SELECT DISTI..compraproyecto..." />
+            <marker date="1522710641711" expanded="true" signature="13374:13892" placeholder="SELECT DISTI..detallecontable..." />
+            <marker date="1522710641711" expanded="true" signature="14162:14613" placeholder="SELECT a.idc..compraproyecto..." />
+            <marker date="1522710641711" expanded="true" signature="14162:14617" placeholder="SELECT a.idc..compraproyecto..." />
+            <marker date="1522710641711" expanded="true" signature="14638:15150" placeholder="SELECT a.idc..detallecontable..." />
+            <marker date="1522710641711" expanded="true" signature="18225:18439" placeholder="SELECT a.mon..plaproy..." />
           </folding>
         </state>
       </provider>
