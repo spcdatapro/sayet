@@ -168,8 +168,8 @@ function updateDatosFactura($d){
 
 
     $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
-    $data = ['ids' => $d->idfactura, 'idcontrato' => (int)$db->getOneField("SELECT idcontrato FROM factura WHERE id = $d->idfactura")];
-    $db->CallJSReportAPI('POST', $url, json_encode($data));
+    $dataa = ['ids' => $d->idfactura, 'idcontrato' => (int)$db->getOneField("SELECT idcontrato FROM factura WHERE id = $d->idfactura")];
+    $db->CallJSReportAPI('POST', $url, json_encode($dataa));
 }
 
 $app->post('/cd', function(){
