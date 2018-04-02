@@ -217,7 +217,7 @@ $app->post('/genfact', function(){
         $query.= "$params->idempresa, $p->tipofact, $p->idcontrato, $p->idcliente, $p->seriefact, $p->numfact, ";
         $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '". str_replace(',', ', ', strip_tags($p->tipo))."', $p->iva, ";
         $query.= "$p->totapagar, 0.00, $p->montoconiva, '".$n2l->to_word($p->totapagar, 'GTQ')."', 1, $params->tc, ";
-        $query.= "$p->retisr, $p->ivaaretener, $p->descuento, '$p->nit', '$p->facturara', '$p->direccion', $p->montocargoconiva, $p->montocargoflat";
+        $query.= "$p->retisr, $p->ivaaretener, $p->descuento, '$p->nit', ".'"'.$p->facturara.'"'.", '$p->direccion', $p->montocargoconiva, $p->montocargoflat";
         $query.= ")";
         //print $query.'<br/><br/>';
         if((float)$p->montoconiva != 0){
