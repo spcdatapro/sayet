@@ -144,7 +144,7 @@ INNER JOIN serviciobasico d ON d.id = a.idserviciobasico
 INNER JOIN (
 	SELECT DISTINCT b.idcliente, a.id AS idunidad
 	FROM unidad a, contrato b
-	WHERE FIND_IN_SET(a.id, b.idunidad) AND b.inactivo = 0
+	WHERE FIND_IN_SET(a.id, b.idunidad) AND b.inactivo = 0 AND TRIM(b.abogado) NOT LIKE '%iusi%'
 ) e ON e.idunidad = a.idunidad
 INNER JOIN cliente f ON f.id = e.idcliente
 LEFT JOIN (

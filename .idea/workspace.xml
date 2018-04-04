@@ -37,48 +37,28 @@
     <favorites_list name="cpm" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="lecturaservicio.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/lecturaservicio.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="lecturaservicioctrl.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/controllers/lecturaservicioctrl.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="73" column="69" selection-start-line="73" selection-start-column="60" selection-end-line="73" selection-end-column="69" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
+    <leaf>
       <file leaf-file-name="serviciopropio.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/php/serviciopropio.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.041426927">
-              <caret line="131" column="22" selection-start-line="131" selection-start-column="22" selection-end-line="131" selection-end-column="22" />
+            <state vertical-scroll-proportion="0.19885057">
+              <caret line="145" column="0" selection-start-line="145" selection-start-column="0" selection-end-line="145" selection-end-column="0" />
               <folding>
-                <marker date="1522794284533" expanded="true" signature="2851:2951" placeholder="INSERT INTO serviciobasico..." />
-                <marker date="1522794284533" expanded="true" signature="3390:3415" placeholder="UPDATE servi..." />
-                <marker date="1522794284533" expanded="true" signature="3847:3885" placeholder="DELETE FROM ..." />
-                <marker date="1522794284533" expanded="true" signature="4048:4137" placeholder="INSERT INTO lecturaservicio..." />
-                <marker date="1522794284533" expanded="true" signature="4155:4323" placeholder="SELECT a.id,..serviciobasico..." />
-                <marker date="1522794284533" expanded="true" signature="4546:4649" placeholder="SELECT idser..lecturaservicio..." />
-                <marker date="1522794284533" expanded="true" signature="4666:4797" placeholder="SELECT a.id ..serviciobasico..." />
-                <marker date="1522794284533" expanded="true" signature="5677:5868" placeholder="SELECT a.id ..serviciobasico..." />
-                <marker date="1522794284533" expanded="true" signature="6333:6447" placeholder="UPDATE lectu..." />
-                <marker date="1522794284533" expanded="true" signature="6617:6767" placeholder="UPDATE lectu..." />
-                <marker date="1522794284533" expanded="true" signature="7295:9135" placeholder="SELECT DISTI..lecturaservicio..." />
-                <marker date="1522794284533" expanded="true" signature="7857:7985" placeholder="SELECT DISTI..unidad..." />
-                <marker date="1522794284533" expanded="true" signature="8073:8689" placeholder="SELECT a.ids..lecturaservicio..." />
-                <marker date="1522794284533" expanded="true" signature="8372:8603" placeholder="SELECT DISTI..serviciobasico..." />
-                <marker date="1522794284533" expanded="true" signature="8810:9051" placeholder="SELECT DISTI..serviciobasico..." />
+                <marker date="1522856794878" expanded="true" signature="2851:2951" placeholder="INSERT INTO serviciobasico..." />
+                <marker date="1522856794878" expanded="true" signature="3390:3415" placeholder="UPDATE servi..." />
+                <marker date="1522856794878" expanded="true" signature="3847:3885" placeholder="DELETE FROM ..." />
+                <marker date="1522856794878" expanded="true" signature="4048:4137" placeholder="INSERT INTO lecturaservicio..." />
+                <marker date="1522856794878" expanded="true" signature="4155:4323" placeholder="SELECT a.id,..serviciobasico..." />
+                <marker date="1522856794878" expanded="true" signature="4546:4649" placeholder="SELECT idser..lecturaservicio..." />
+                <marker date="1522856794878" expanded="true" signature="4666:4797" placeholder="SELECT a.id ..serviciobasico..." />
+                <marker date="1522856794878" expanded="true" signature="5677:5868" placeholder="SELECT a.id ..serviciobasico..." />
+                <marker date="1522856794878" expanded="true" signature="6333:6447" placeholder="UPDATE lectu..." />
+                <marker date="1522856794878" expanded="true" signature="6617:6767" placeholder="UPDATE lectu..." />
+                <marker date="1522856794878" expanded="true" signature="7295:9173" placeholder="SELECT DISTI..lecturaservicio..." />
+                <marker date="1522856794878" expanded="true" signature="7857:8023" placeholder="SELECT DISTI..unidad..." />
+                <marker date="1522856794878" expanded="true" signature="8111:8727" placeholder="SELECT a.ids..lecturaservicio..." />
+                <marker date="1522856794878" expanded="true" signature="8410:8641" placeholder="SELECT DISTI..serviciobasico..." />
+                <marker date="1522856794878" expanded="true" signature="8848:9089" placeholder="SELECT DISTI..serviciobasico..." />
               </folding>
             </state>
           </provider>
@@ -211,7 +191,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
@@ -245,73 +224,10 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cpm" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sayet" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pages" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cpm" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sayet" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cpm" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sayet" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="services" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cpm" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sayet" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controllers" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
       <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -1114,12 +1030,14 @@
       <workItem from="1521753592687" duration="2065000" />
       <workItem from="1521838035007" duration="2191000" />
       <workItem from="1522688788139" duration="17393000" />
-      <workItem from="1522794033389" duration="329000" />
+      <workItem from="1522794033389" duration="755000" />
+      <workItem from="1522795008364" duration="9000" />
+      <workItem from="1522855738120" duration="1059000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2342247000" />
+    <option name="totallyTimeSpent" value="2343741000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1178,13 +1096,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/js/services/proveedorsrvc.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-15.827586">
-          <caret line="27" column="65" selection-start-line="27" selection-start-column="51" selection-end-line="27" selection-end-column="65" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/reembolso.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-15.038462">
@@ -1441,12 +1352,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.23590334">
           <caret line="86" column="28" selection-start-line="86" selection-start-column="28" selection-end-line="86" selection-end-column="28" />
-          <folding>
-            <element signature="n#calculaISR#0;n#dbcpm#0;n#!!top" expanded="false" />
-            <element signature="n#calculaRetIVA#0;n#dbcpm#0;n#!!top" expanded="false" />
-            <element signature="n#nombreMes#0;n#dbcpm#0;n#!!top" expanded="false" />
-            <marker date="1520894191133" expanded="true" signature="1624:1764" placeholder="SELECT id, d..isr..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1517,21 +1422,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.6628308">
           <caret line="182" column="25" selection-start-line="182" selection-start-column="25" selection-end-line="182" selection-end-column="25" />
-          <folding>
-            <element signature="e#196#8947#1#PHP" expanded="false" />
-            <marker date="1522710641711" expanded="true" signature="3669:3883" placeholder="SELECT a.mon..plaproy..." />
-            <marker date="1522710641711" expanded="true" signature="5779:6197" placeholder="SELECT DISTI..compraproyecto..." />
-            <marker date="1522710641711" expanded="true" signature="6214:6732" placeholder="SELECT DISTI..detallecontable..." />
-            <marker date="1522710641711" expanded="true" signature="7034:7485" placeholder="SELECT a.idc..compraproyecto..." />
-            <marker date="1522710641711" expanded="true" signature="7506:8018" placeholder="SELECT a.idc..detallecontable..." />
-            <marker date="1522710641711" expanded="true" signature="8327:8541" placeholder="SELECT a.mon..plaproy..." />
-            <marker date="1522710641711" expanded="true" signature="12939:13357" placeholder="SELECT DISTI..compraproyecto..." />
-            <marker date="1522710641711" expanded="true" signature="13374:13892" placeholder="SELECT DISTI..detallecontable..." />
-            <marker date="1522710641711" expanded="true" signature="14162:14613" placeholder="SELECT a.idc..compraproyecto..." />
-            <marker date="1522710641711" expanded="true" signature="14162:14617" placeholder="SELECT a.idc..compraproyecto..." />
-            <marker date="1522710641711" expanded="true" signature="14638:15150" placeholder="SELECT a.idc..detallecontable..." />
-            <marker date="1522710641711" expanded="true" signature="18225:18439" placeholder="SELECT a.mon..plaproy..." />
-          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/lecturaservicioctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.50614524">
+          <caret line="73" column="69" selection-start-line="73" selection-start-column="60" selection-end-line="73" selection-end-column="69" />
         </state>
       </provider>
     </entry>
@@ -1539,38 +1436,46 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/lecturaservicioctrl.js">
+    <entry file="file://$PROJECT_DIR$/php/serviciobasico.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="73" column="69" selection-start-line="73" selection-start-column="60" selection-end-line="73" selection-end-column="69" />
-          <folding />
+        <state vertical-scroll-proportion="28.653847">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1520384363011" expanded="true" signature="4659:4707" placeholder="SELECT nivel..serviciobasico..." />
+            <marker date="1520384363011" expanded="true" signature="5026:5126" placeholder="INSERT INTO serviciobasico..." />
+            <marker date="1520384363011" expanded="true" signature="5926:5951" placeholder="UPDATE servi..." />
+            <marker date="1520384363011" expanded="true" signature="6582:6646" placeholder="UPDATE unida..." />
+            <marker date="1520384363011" expanded="true" signature="6678:6728" placeholder="UPDATE servi..." />
+            <marker date="1520384363011" expanded="true" signature="6898:6945" placeholder="SELECT asign..serviciobasico..." />
+            <marker date="1520384363011" expanded="true" signature="7003:7055" placeholder="DELETE FROM ..." />
+            <marker date="1520384363011" expanded="true" signature="7087:7125" placeholder="DELETE FROM ..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/php/serviciopropio.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.041426927">
-          <caret line="131" column="22" selection-start-line="131" selection-start-column="22" selection-end-line="131" selection-end-column="22" />
+        <state vertical-scroll-proportion="0.19885057">
+          <caret line="145" column="0" selection-start-line="145" selection-start-column="0" selection-end-line="145" selection-end-column="0" />
           <folding>
-            <marker date="1522794284533" expanded="true" signature="2851:2951" placeholder="INSERT INTO serviciobasico..." />
-            <marker date="1522794284533" expanded="true" signature="3390:3415" placeholder="UPDATE servi..." />
-            <marker date="1522794284533" expanded="true" signature="3847:3885" placeholder="DELETE FROM ..." />
-            <marker date="1522794284533" expanded="true" signature="4048:4137" placeholder="INSERT INTO lecturaservicio..." />
-            <marker date="1522794284533" expanded="true" signature="4155:4323" placeholder="SELECT a.id,..serviciobasico..." />
-            <marker date="1522794284533" expanded="true" signature="4546:4649" placeholder="SELECT idser..lecturaservicio..." />
-            <marker date="1522794284533" expanded="true" signature="4666:4797" placeholder="SELECT a.id ..serviciobasico..." />
-            <marker date="1522794284533" expanded="true" signature="5677:5868" placeholder="SELECT a.id ..serviciobasico..." />
-            <marker date="1522794284533" expanded="true" signature="6333:6447" placeholder="UPDATE lectu..." />
-            <marker date="1522794284533" expanded="true" signature="6617:6767" placeholder="UPDATE lectu..." />
-            <marker date="1522794284533" expanded="true" signature="7295:9135" placeholder="SELECT DISTI..lecturaservicio..." />
-            <marker date="1522794284533" expanded="true" signature="7857:7985" placeholder="SELECT DISTI..unidad..." />
-            <marker date="1522794284533" expanded="true" signature="8073:8689" placeholder="SELECT a.ids..lecturaservicio..." />
-            <marker date="1522794284533" expanded="true" signature="8372:8603" placeholder="SELECT DISTI..serviciobasico..." />
-            <marker date="1522794284533" expanded="true" signature="8810:9051" placeholder="SELECT DISTI..serviciobasico..." />
+            <marker date="1522856794878" expanded="true" signature="2851:2951" placeholder="INSERT INTO serviciobasico..." />
+            <marker date="1522856794878" expanded="true" signature="3390:3415" placeholder="UPDATE servi..." />
+            <marker date="1522856794878" expanded="true" signature="3847:3885" placeholder="DELETE FROM ..." />
+            <marker date="1522856794878" expanded="true" signature="4048:4137" placeholder="INSERT INTO lecturaservicio..." />
+            <marker date="1522856794878" expanded="true" signature="4155:4323" placeholder="SELECT a.id,..serviciobasico..." />
+            <marker date="1522856794878" expanded="true" signature="4546:4649" placeholder="SELECT idser..lecturaservicio..." />
+            <marker date="1522856794878" expanded="true" signature="4666:4797" placeholder="SELECT a.id ..serviciobasico..." />
+            <marker date="1522856794878" expanded="true" signature="5677:5868" placeholder="SELECT a.id ..serviciobasico..." />
+            <marker date="1522856794878" expanded="true" signature="6333:6447" placeholder="UPDATE lectu..." />
+            <marker date="1522856794878" expanded="true" signature="6617:6767" placeholder="UPDATE lectu..." />
+            <marker date="1522856794878" expanded="true" signature="7295:9173" placeholder="SELECT DISTI..lecturaservicio..." />
+            <marker date="1522856794878" expanded="true" signature="7857:8023" placeholder="SELECT DISTI..unidad..." />
+            <marker date="1522856794878" expanded="true" signature="8111:8727" placeholder="SELECT a.ids..lecturaservicio..." />
+            <marker date="1522856794878" expanded="true" signature="8410:8641" placeholder="SELECT DISTI..serviciobasico..." />
+            <marker date="1522856794878" expanded="true" signature="8848:9089" placeholder="SELECT DISTI..serviciobasico..." />
           </folding>
         </state>
       </provider>
