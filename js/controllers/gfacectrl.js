@@ -57,6 +57,10 @@
             }
         };
 
+        $scope.getRptPendientes = function(){
+            jsReportSrvc.getPDFReport(test ? 'S1wR9_Mif' : 'HyJCJizjf', $scope.params).then(function(pdf){ $scope.content = pdf; });
+        }
+
     }]);
 }());
 
