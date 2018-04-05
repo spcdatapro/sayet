@@ -189,7 +189,7 @@ $app->post('/ocupacion', function(){
         if((int)$unidad->ocupado == 1){ $ocupadas++; }else{ $disponibles++; }
         if((int)$unidad->idcontrato > 0){
             $query = "SELECT a.id, a.idcontrato, a.noperiodo, DATE_FORMAT(a.fdel, '%d/%m/%Y') AS fdel, DATE_FORMAT(a.fal, '%d/%m/%Y') AS fal, a.idtipoventa, b.desctiposervventa AS tipoventa, a.idmoneda, ";
-            $query.= "c.simbolo AS moneda, a.monto, FORMAT((a.monto / $unidad->mcuad), 2) AS costomcuad ";
+            $query.= "c.simbolo AS moneda, FORMAT(a.monto, 2) AS monto, FORMAT((a.monto / $unidad->mcuad), 2) AS costomcuad ";
             $query.= "FROM detfactcontrato a INNER JOIN tiposervicioventa b ON b.id = a.idtipoventa INNER JOIN moneda c ON c.id = a.idmoneda ";
             $query.= "WHERE a.idcontrato = $unidad->idcontrato AND DATE(NOW()) >= a.fdel AND DATE(NOW()) <= a.fal";
             $unidad->facturacion = $db->getQuery($query);
