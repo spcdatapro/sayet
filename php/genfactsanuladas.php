@@ -8,13 +8,13 @@ $db = new dbcpm();
 
 $app->get('/generar', function() use($db){
 
-    $idempresa = 6;
+    $idempresa = 7;
     $serie = 'FACE-63-FEA-001';
     $numero = '180000000';
     $fecha = '2018-04-02';
     $insertadas = [];
 
-    for($i = 262; $i <= 318; $i++){
+    for($i = 199; $i <= 201; $i++){
         $query = "INSERT INTO factura(";
         $query.= "idempresa, idtipofactura, idcontrato, idcliente, serie, numero, ";
         $query.= "fechaingreso, mesiva, fecha, idtipoventa, conceptomayor, iva, ";
