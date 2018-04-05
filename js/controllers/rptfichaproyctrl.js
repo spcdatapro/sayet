@@ -10,11 +10,14 @@
 
         var test = false;
         $scope.getRptFichaProy = function(){
-            //console.log($scope.params); return;
             jsReportSrvc.getPDFReport(test ? 'BJGZI7Bkg' : 'SJuVsQByg', $scope.params).then(function(pdf){ $scope.content = pdf; });
         };
 
-        $scope.resetParams = function(){ $scope.params = {idproyecto: '0'}; };
+        $scope.getRptOcupaProy = function(){
+            jsReportSrvc.getPDFReport(test ? 'S1d6O1moz' : 'rk1aSNQoz', $scope.params).then(function(pdf){ $scope.content = pdf; });
+        };
+
+        $scope.resetParams = function(){ $scope.params = {idproyecto: undefined}; };
 
     }]);
 }());

@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/filters/textCleaner.js" afterPath="$PROJECT_DIR$/js/filters/textCleaner.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/rptfichaproyctrl.js" afterPath="$PROJECT_DIR$/js/controllers/rptfichaproyctrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/rptfichaproy.html" afterPath="$PROJECT_DIR$/pages/rptfichaproy.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptfichaproy.php" afterPath="$PROJECT_DIR$/php/rptfichaproy.php" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -37,35 +39,41 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="mntproyecto.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/mntproyecto.html">
+      <file leaf-file-name="rptfichaproy.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pages/rptfichaproy.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-4.6153846">
-              <caret line="210" column="84" selection-start-line="210" selection-start-column="66" selection-end-line="210" selection-end-column="84" />
+            <state vertical-scroll-proportion="-20.26923">
+              <caret line="31" column="128" selection-start-line="31" selection-start-column="128" selection-end-line="31" selection-end-column="128" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="proyectoctrl.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/controllers/proyectoctrl.js">
+      <file leaf-file-name="rptfichaproyctrl.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/controllers/rptfichaproyctrl.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="384" column="28" selection-start-line="384" selection-start-column="28" selection-end-line="384" selection-end-column="28" />
-              <folding>
-                <element signature="e#3871#4449#0" expanded="false" />
-                <element signature="e#5458#6176#0" expanded="false" />
-              </folding>
+              <caret line="16" column="69" selection-start-line="16" selection-start-column="69" selection-end-line="16" selection-end-column="69" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="textCleaner.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/js/filters/textCleaner.js">
+      <file leaf-file-name="rptfichaproy.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/rptfichaproy.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.265625">
-              <caret line="14" column="4" selection-start-line="14" selection-start-column="4" selection-end-line="14" selection-end-column="4" />
-              <folding />
+            <state vertical-scroll-proportion="1.0551724">
+              <caret line="202" column="21" selection-start-line="202" selection-start-column="21" selection-end-line="202" selection-end-column="21" />
+              <folding>
+                <element signature="e#188#4181#1#PHP" expanded="false" />
+                <element signature="e#4208#8616#1#PHP" expanded="false" />
+                <marker date="1522906051717" expanded="true" signature="727:784" placeholder="SELECT DISTI..unidad..." />
+                <marker date="1522906051717" expanded="true" signature="1882:1986" placeholder="SELECT DISTI..unidad..." />
+                <marker date="1522906051717" expanded="true" signature="7411:7588" placeholder="SELECT DISTI..unidad..." />
+                <marker date="1522906051717" expanded="true" signature="8751:9383" placeholder="SELECT a.id,..proyecto..." />
+                <marker date="1522906051717" expanded="true" signature="9457:10655" placeholder="SELECT a.id,..unidad..." />
+                <marker date="1522906051717" expanded="true" signature="9970:10473" placeholder="SELECT DISTI..unidad..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -93,9 +101,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/php/db.php" />
-        <option value="$PROJECT_DIR$/pages/rptdetcontventas.html" />
-        <option value="$PROJECT_DIR$/js/controllers/rptdetcontventasctrl.js" />
         <option value="$PROJECT_DIR$/php/printcheckcontinuo.php" />
         <option value="$PROJECT_DIR$/php/rptchequesaprob.php" />
         <option value="$PROJECT_DIR$/pages/rptlibmay.html" />
@@ -144,6 +149,9 @@
         <option value="$PROJECT_DIR$/php/rptpendgface.php" />
         <option value="$PROJECT_DIR$/js/controllers/gfacectrl.js" />
         <option value="$PROJECT_DIR$/js/filters/textCleaner.js" />
+        <option value="$PROJECT_DIR$/php/rptfichaproy.php" />
+        <option value="$PROJECT_DIR$/pages/rptfichaproy.html" />
+        <option value="$PROJECT_DIR$/js/controllers/rptfichaproyctrl.js" />
       </list>
     </option>
   </component>
@@ -1102,12 +1110,12 @@
       <workItem from="1522688788139" duration="17393000" />
       <workItem from="1522794033389" duration="755000" />
       <workItem from="1522795008364" duration="9000" />
-      <workItem from="1522855738120" duration="7102000" />
+      <workItem from="1522855738120" duration="16468000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2349784000" />
+    <option name="totallyTimeSpent" value="2359150000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1166,20 +1174,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/pages/rptlstactivos.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptactivosctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.20870535">
-          <caret line="11" column="25" selection-start-line="11" selection-start-column="25" selection-end-line="11" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/rptactivos.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.3321839">
@@ -1379,30 +1373,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/php/serviciopropio.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.19885057">
-          <caret line="145" column="0" selection-start-line="145" selection-start-column="0" selection-end-line="145" selection-end-column="0" />
-          <folding>
-            <marker date="1522856794878" expanded="true" signature="2851:2951" placeholder="INSERT INTO serviciobasico..." />
-            <marker date="1522856794878" expanded="true" signature="3390:3415" placeholder="UPDATE servi..." />
-            <marker date="1522856794878" expanded="true" signature="3847:3885" placeholder="DELETE FROM ..." />
-            <marker date="1522856794878" expanded="true" signature="4048:4137" placeholder="INSERT INTO lecturaservicio..." />
-            <marker date="1522856794878" expanded="true" signature="4155:4323" placeholder="SELECT a.id,..serviciobasico..." />
-            <marker date="1522856794878" expanded="true" signature="4546:4649" placeholder="SELECT idser..lecturaservicio..." />
-            <marker date="1522856794878" expanded="true" signature="4666:4797" placeholder="SELECT a.id ..serviciobasico..." />
-            <marker date="1522856794878" expanded="true" signature="5677:5868" placeholder="SELECT a.id ..serviciobasico..." />
-            <marker date="1522856794878" expanded="true" signature="6333:6447" placeholder="UPDATE lectu..." />
-            <marker date="1522856794878" expanded="true" signature="6617:6767" placeholder="UPDATE lectu..." />
-            <marker date="1522856794878" expanded="true" signature="7295:9173" placeholder="SELECT DISTI..lecturaservicio..." />
-            <marker date="1522856794878" expanded="true" signature="7857:8023" placeholder="SELECT DISTI..unidad..." />
-            <marker date="1522856794878" expanded="true" signature="8111:8727" placeholder="SELECT a.ids..lecturaservicio..." />
-            <marker date="1522856794878" expanded="true" signature="8410:8641" placeholder="SELECT DISTI..serviciobasico..." />
-            <marker date="1522856794878" expanded="true" signature="8848:9089" placeholder="SELECT DISTI..serviciobasico..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pages/tranfactura.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.35517243">
@@ -1517,18 +1487,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptfichaproy.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <marker date="1520384362995" expanded="true" signature="727:784" placeholder="SELECT DISTI..unidad..." />
-            <marker date="1520384362995" expanded="true" signature="1882:1986" placeholder="SELECT DISTI..unidad..." />
-            <marker date="1520384362995" expanded="true" signature="7411:7588" placeholder="SELECT DISTI..unidad..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/rptintegractacont.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.29310346">
@@ -1568,25 +1526,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pages/mntproyecto.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-4.6153846">
-          <caret line="210" column="84" selection-start-line="210" selection-start-column="66" selection-end-line="210" selection-end-column="84" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/proyectoctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="384" column="28" selection-start-line="384" selection-start-column="28" selection-end-line="384" selection-end-column="28" />
-          <folding>
-            <element signature="e#3871#4449#0" expanded="false" />
-            <element signature="e#5458#6176#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/upload.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.1954023">
@@ -1597,9 +1536,85 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/js/filters/textCleaner.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.265625">
-          <caret line="14" column="4" selection-start-line="14" selection-start-column="4" selection-end-line="14" selection-end-column="4" />
+        <state vertical-scroll-proportion="0.30357143">
+          <caret line="16" column="4" selection-start-line="16" selection-start-column="4" selection-end-line="16" selection-end-column="4" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/proyectoctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.37388393">
+          <caret line="384" column="28" selection-start-line="384" selection-start-column="28" selection-end-line="384" selection-end-column="28" />
+          <folding>
+            <element signature="e#3871#4449#0" expanded="false" />
+            <element signature="e#5458#6176#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/mntproyecto.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.13793103">
+          <caret line="210" column="84" selection-start-line="210" selection-start-column="66" selection-end-line="210" selection-end-column="84" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/serviciopropio.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.17011495">
+          <caret line="142" column="26" selection-start-line="142" selection-start-column="26" selection-end-line="142" selection-end-column="26" />
+          <folding>
+            <marker date="1522856794878" expanded="true" signature="2851:2951" placeholder="INSERT INTO serviciobasico..." />
+            <marker date="1522856794878" expanded="true" signature="3390:3415" placeholder="UPDATE servi..." />
+            <marker date="1522856794878" expanded="true" signature="3847:3885" placeholder="DELETE FROM ..." />
+            <marker date="1522856794878" expanded="true" signature="4048:4137" placeholder="INSERT INTO lecturaservicio..." />
+            <marker date="1522856794878" expanded="true" signature="4155:4323" placeholder="SELECT a.id,..serviciobasico..." />
+            <marker date="1522856794878" expanded="true" signature="4546:4649" placeholder="SELECT idser..lecturaservicio..." />
+            <marker date="1522856794878" expanded="true" signature="4666:4797" placeholder="SELECT a.id ..serviciobasico..." />
+            <marker date="1522856794878" expanded="true" signature="5677:5868" placeholder="SELECT a.id ..serviciobasico..." />
+            <marker date="1522856794878" expanded="true" signature="6333:6447" placeholder="UPDATE lectu..." />
+            <marker date="1522856794878" expanded="true" signature="6617:6767" placeholder="UPDATE lectu..." />
+            <marker date="1522856794878" expanded="true" signature="7295:9173" placeholder="SELECT DISTI..lecturaservicio..." />
+            <marker date="1522856794878" expanded="true" signature="7857:8023" placeholder="SELECT DISTI..unidad..." />
+            <marker date="1522856794878" expanded="true" signature="8111:8727" placeholder="SELECT a.ids..lecturaservicio..." />
+            <marker date="1522856794878" expanded="true" signature="8410:8641" placeholder="SELECT DISTI..serviciobasico..." />
+            <marker date="1522856794878" expanded="true" signature="8848:9089" placeholder="SELECT DISTI..serviciobasico..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptfichaproyctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="16" column="69" selection-start-line="16" selection-start-column="69" selection-end-line="16" selection-end-column="69" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptfichaproy.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-20.26923">
+          <caret line="31" column="128" selection-start-line="31" selection-start-column="128" selection-end-line="31" selection-end-column="128" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptfichaproy.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.0551724">
+          <caret line="202" column="21" selection-start-line="202" selection-start-column="21" selection-end-line="202" selection-end-column="21" />
+          <folding>
+            <element signature="e#188#4181#1#PHP" expanded="false" />
+            <element signature="e#4208#8616#1#PHP" expanded="false" />
+            <marker date="1522906051717" expanded="true" signature="727:784" placeholder="SELECT DISTI..unidad..." />
+            <marker date="1522906051717" expanded="true" signature="1882:1986" placeholder="SELECT DISTI..unidad..." />
+            <marker date="1522906051717" expanded="true" signature="7411:7588" placeholder="SELECT DISTI..unidad..." />
+            <marker date="1522906051717" expanded="true" signature="8751:9383" placeholder="SELECT a.id,..proyecto..." />
+            <marker date="1522906051717" expanded="true" signature="9457:10655" placeholder="SELECT a.id,..unidad..." />
+            <marker date="1522906051717" expanded="true" signature="9970:10473" placeholder="SELECT DISTI..unidad..." />
+          </folding>
         </state>
       </provider>
     </entry>

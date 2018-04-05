@@ -157,4 +157,54 @@ $app->post('/catproy', function(){
     print json_encode($proyectos);
 });
 
+$app->post('/ocupacion', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "SELECT a.id, a.nomproyecto, a.referencia, a.idempresa, b.nomempresa AS empresa, a.tipo_proyecto, c.descripcion AS tipoproyecto, a.direccion, FORMAT(a.metros_rentable, 2) AS mcuadrentable, ";
+    $query.= "FORMAT(a.metros, 2) AS mcuadactivos, IF(a.subarrendado = 1, 'Sí', 'No') AS subarrendado, DATE_FORMAT(a.fechaapertura, '%d/%m/%Y') AS apertura, IF(a.multiempresa = 1, 'Sí', 'No') AS multiempresa, ";
+    $query.= "DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy, a.notas ";
+    $query.= "FROM proyecto a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN tipo_proyecto c ON c.id = a.tipo_proyecto ";
+    $query.= "WHERE a.id = $d->idproyecto";
+    $proyecto = $db->getQuery($query)[0];
+
+    $query = "SELECT a.id, a.idtipolocal, b.descripcion AS tipolocal, a.nombre, a.mcuad, IF(a.multiunidad = 1, 'Sí', 'No') AS multiunidad, a.descripcion, a.observaciones, c.idcontrato, c.cliente, c.monedadep, c.deposito, c.plazofdel, c.plazofal,
+            IF(c.ocupado IS NULL, 0, c.ocupado) AS ocupado, IF(b.esrentable = 1, 'Sí', 'No') AS esrentablestr, FORMAT(a.mcuad, 4) AS mcuadstr, b.esrentable
+            FROM unidad a
+            INNER JOIN tipolocal b ON b.id = a.idtipolocal
+            LEFT JOIN (
+                SELECT DISTINCT z.id AS idunidad, y.id AS idcontrato, y.idcliente, x.nombre AS cliente, y.idmonedadep, w.simbolo AS monedadep, FORMAT(y.deposito, 2) AS deposito,
+                DATE_FORMAT(y.plazofdel, '%d/%m/%Y') AS plazofdel, DATE_FORMAT(y.plazofal, '%d/%m/%Y') plazofal, 1 AS ocupado
+                FROM unidad z, contrato y, cliente x, moneda w
+                WHERE FIND_IN_SET(z.id, y.idunidad) AND x.id = y.idcliente AND w.id = y.idmonedadep AND z.idproyecto = $d->idproyecto AND y.inactivo = 0
+            ) c ON a.id = c.idunidad
+            WHERE a.idproyecto = $d->idproyecto
+            ORDER BY c.ocupado DESC, b.descripcion, CAST(digits(a.nombre) AS UNSIGNED), a.nombre";
+
+    $proyecto->unidades = $db->getQuery($query);
+    $cntUnidades = count($proyecto->unidades);
+    $ocupadas = 0; $disponibles = 0;
+    for($i = 0; $i < $cntUnidades; $i++){
+        $unidad = $proyecto->unidades[$i];
+        if((int)$unidad->ocupado == 1){ $ocupadas++; }else{ $disponibles++; }
+        if((int)$unidad->idcontrato > 0){
+            $query = "SELECT a.id, a.idcontrato, a.noperiodo, DATE_FORMAT(a.fdel, '%d/%m/%Y') AS fdel, DATE_FORMAT(a.fal, '%d/%m/%Y') AS fal, a.idtipoventa, b.desctiposervventa AS tipoventa, a.idmoneda, ";
+            $query.= "c.simbolo AS moneda, a.monto, FORMAT((a.monto / $unidad->mcuad), 2) AS costomcuad ";
+            $query.= "FROM detfactcontrato a INNER JOIN tiposervicioventa b ON b.id = a.idtipoventa INNER JOIN moneda c ON c.id = a.idmoneda ";
+            $query.= "WHERE a.idcontrato = $unidad->idcontrato AND DATE(NOW()) >= a.fdel AND DATE(NOW()) <= a.fal";
+            $unidad->facturacion = $db->getQuery($query);
+        } else {
+            $unidad->facturacion = [];
+        }
+    }
+
+    $proyecto->totalunidades = $cntUnidades;
+    $proyecto->ocupadas = $ocupadas;
+    $proyecto->disponibles = $disponibles;
+    $proyecto->porcentajeocupado = ($cntUnidades > 0 ? number_format($ocupadas * 100 / $cntUnidades, 2) : number_format(0.00, 2)).'%';
+
+    print json_encode($proyecto);
+
+});
+
 $app->run();
