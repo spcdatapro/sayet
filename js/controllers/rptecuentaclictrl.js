@@ -41,13 +41,17 @@
 
         };
 
+        var test = false;
+
         $scope.getEcuentaCliXLSX = function(){
             $scope.params.falstr = moment($scope.params.al).format('YYYY-MM-DD');
             $scope.params.clistr = $scope.params.cliente.id;
+            $scope.params.idempresa = $scope.objEmpresa[0] != null && $scope.objEmpresa[0] != undefined ? $scope.objEmpresa[0].id : 0;
 
-            jsReportSrvc.ecuentaClientesXlsx($scope.params).then(function (result) {
+            jsReportSrvc.getReport(test ? 'HJMvjIxYz' : 'B1Q3xDgFf', $scope.params).then(function(result){
                 var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-                saveAs(file, 'EcuentaClientes.xlsx');
+                var nombre = moment($scope.params.al).format('DDMMYYYY');
+                saveAs(file, 'EC_al_' + nombre + '.xlsx');
             });
         };
 

@@ -69,11 +69,9 @@
             <button type="button" class="btn btn-default btn-sm" ng-click="getDetalle()" ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
                 <i class="fa fa-html5" aria-hidden="true"></i>&nbsp;Detalle
             </button>
-            <!--
             <button type="button" class="btn btn-default btn-sm" ng-click="getDetallePDF()" ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
                 <i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp;Detalle
             </button>
-            -->
         </div>
     </div>
     <hr/>
@@ -174,10 +172,10 @@
                             <tr ng-repeat="det in egr.detalle">
                                 <td style="width: 10%; vertical-align: top;">{{det.fecha}}</td>
                                 <td style="width: 10%; vertical-align: top;">{{det.tipotrans}}{{det.numero}}</td>
-                                <td style="width: 10%; vertical-align: top;">{{det.beneficiario}}</td>
-                                <td style="width: 10%; vertical-align: top;">{{det.concepto}}</td>
+                                <td style="width: 10%; vertical-align: top;">{{det.beneficiario | shortenStr:15}}</td>
+                                <td style="width: 10%; vertical-align: top;">{{det.concepto | shortenStr:20}}</td>
                                 <td class="num" style="width: 10%; vertical-align: top;">{{det.moneda}}&nbsp;{{det.montotranban | number:2}}</td>
-                                <td style="width: 10%;  padding-left: 0.75em;; vertical-align: top;" ng-class="{'bld num': $last}">{{det.serie}}{{det.documento}}</td>
+                                <td style="width: 10%;  padding-left: 0.75em;; vertical-align: top;" ng-class="{'bld num': $last}">{{det.documento}}</td>
                                 <td class="num" style="width: 10%; vertical-align: top;" ng-class="{'bld suma': $last}">{{det.monedafact}}&nbsp;{{det.montofact | number:2}}</td>
                             </tr>
                             </tbody>

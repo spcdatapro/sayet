@@ -26,7 +26,8 @@ $app->get('/gettxt/:idempresa/:fechastr/:idmoneda/:nombre', function($idempresa,
     $app->response->headers->set('Content-Type', 'text/csv;charset=windows-1252');
     $app->response->headers->set('Content-Disposition', 'attachment;filename="'.trim($nombre).'.csv"');
 
-    $url = 'http://52.35.3.1:5489/api/report';
+    //$url = 'http://104.197.209.57:5489/api/report';
+    $url = 'http://localhost:5489/api/report';
     $data = ['template' => ['shortid' => 'B1ICfUfDb'], 'data' => ['idempresa' => "$idempresa", 'fechastr' => "$fechastr", 'idmoneda' => "$idmoneda"]];
     //print json_encode($data);
 

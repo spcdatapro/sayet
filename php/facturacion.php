@@ -238,6 +238,11 @@ $app->post('/genfact', function(){
                 $db->doQuery($query);
             }
         }
+        if((int)$lastid > 0){
+            $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
+            $data = ['ids' => $lastid, 'idcontrato' => 1];
+            $db->CallJSReportAPI('POST', $url, json_encode($data));
+        }
     }
 
     if((int)$empresa->congface == 0){
@@ -402,7 +407,7 @@ $app->get('/gettxt/:idempresa/:fdelstr/:falstr/:nombre', function($idempresa, $f
     $app->response->headers->set('Content-Type', 'text/plain;charset=windows-1252');
     $app->response->headers->set('Content-Disposition', 'attachment;filename="'.trim($nombre).'.txt"');
 
-    //$url = 'http://52.35.3.1:5489/api/report';
+    //$url = 'http://104.197.209.57:5489/api/report';
     $url = 'http://localhost:5489/api/report';
     $data = ['template' => ['shortid' => 'SJ2xzSzKx'], 'data' => ['idempresa' => "$idempresa", 'fdelstr' => "$fdelstr", 'falstr' => "$falstr"]];
     //print json_encode($data);
@@ -419,9 +424,8 @@ $app->post('/respuesta', function(){
     for($i = 0; $i < $cntFacts; $i++){
         if($d[$i]->id !== NULL){
             $factura = $d[$i];
-            $query = "UPDATE factura SET firmaelectronica = '$factura->firma', respuestagface = '$factura->respuesta', serie = '$factura->serie', numero = '$factura->numero', ";
-            //$query.= "nit = '$factura->nit', nombre = '".iconv('Windows-1252','UTF-8', $factura->nombre)."' ";
-            $query.= "nit = '$factura->nit', nombre = '$factura->nombre', pendiente = 1 ";
+            $query = "UPDATE factura SET firmaelectronica = '$factura->firma', respuestagface = '".str_replace("'", " ", $factura->respuesta)."', serie = '$factura->serie', numero = '$factura->numero', ";
+            $query.= "nit = '$factura->nit', nombre = '".str_replace("'", " ", $factura->nombre)."', pendiente = 1 ";
             $query.= "WHERE id = $factura->id";
             //print $query;
             $db->doQuery($query);

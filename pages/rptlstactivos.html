@@ -70,9 +70,6 @@
                     </div>
                 </div>
                 <button type="button" class="btn btn-primary btn-sm" ng-click="getRptActivos()">
-                    <span class="glyphicon glyphicon-ok"></span>
-                </button>
-                <button type="button" class="btn btn-primary btn-sm" ng-click="printVersion()">
                     <span class="glyphicon glyphicon-print"></span>
                 </button>
             </div>
@@ -83,66 +80,4 @@
             <object data="{{content}}" type="application/pdf" style="width: 100%; height: 50em"></object>
         </div>
     </div>
-    <!--
-    <div id="toPrint">
-        <div class="row">
-            <div style="text-align: center">
-                <h2>CAT&Aacute;LOGO DE ACTIVOS</h2>
-            </div>
-        </div>
-
-        <div class="panel panel-default" ng-repeat="d in data">
-            <div class="panel-heading">
-                <div class="row">
-                    <div class="col-xs-7 col-md-7">
-                        <label>Empresa:&nbsp;</label>{{d.nombre}}
-                    </div>
-                </div>
-            </div>
-            <div class="panel-body">
-                <div class="panel" ng-repeat="t in d.tipos">
-                    <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-xs-12 col-md-12">
-                                <label>Tipo de activo:&nbsp;</label>{{t.tipo}}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="panel-body">
-                        <table class="table table-responsive table-condensed table-hover">
-                            <thead>
-                            <tr>
-                                <th colspan="4">&nbsp;</th>
-                                <th colspan="4" style="text-align: center; border-left: solid 1px lightgray; border-right: solid 1px lightgray; border-top: solid 1px lightgray">Municipalidad</th>
-                            </tr>
-                            <tr>
-                                <th>Finca-Folio-Libro</th>
-                                <th>Direcci&oacute;n</th>
-                                <th style="text-align: right">Base IUSI (Q)</th>
-                                <th style="text-align: center">Multi-proyectos</th>
-                                <th style="text-align: right">Valor (Q)</th>
-                                <th style="text-align: right">Mts<sup>2</sup></th>
-                                <th style="text-align: center">Horizontal</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr ng-repeat="det in t.activos" ng-click="openActivo(det.idactivo)">
-                                <td>{{det.finca}}</td>
-                                <td>{{det.direccion}}</td>
-                                <td style="text-align: right">{{det.baseiusi | number:2}}</td>
-                                <td style="text-align: center">{{det.esmultilotes}}</td>
-                                <td style="text-align: right; width: 10%">{{det.valor | number:2}}</td>
-                                <td style="text-align: right; width: 10%">{{det.mtscuad | number:2}}</td>
-                                <td style="text-align: center; width: 10%">{{det.horizontal}}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-    -->
-
 </div>

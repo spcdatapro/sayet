@@ -20,6 +20,7 @@ $app->post('/rptbalsal', function(){
             $db->doQuery($query);
             $query = "UPDATE rptbalancesaldos a INNER JOIN (".getSelect($v, $d, true).") b ON a.idcuentac = b.idcuenta SET a.debe = a.debe + b.debe, a.haber = a.haber + b.haber";
             $db->doQuery($query);
+            //if($v == 3){ exit(); }
         }
         $db->doQuery("UPDATE rptbalancesaldos SET actual = anterior + debe - haber");
 
@@ -92,7 +93,7 @@ function getSelect($cual, $d, $enrango){
             $query.= "FROM detallecontable a INNER JOIN factura b ON b.id = a.idorigen ";
             $query.= "WHERE a.origen = 3 AND a.activada = 1 AND a.anulado = 0 AND FILTROFECHA AND b.idempresa = ".$d->idempresa." ";
             $query.= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
-            $query = str_replace("FILTROFECHA", ($enrango ? "b.fecha < '".$d->fdelstr."'" : "b.fecha >= '".$d->fdelstr."' AND b.fecha <= '".$d->falstr."'"), $query);
+            $query = str_replace("FILTROFECHA", (!$enrango ? "b.fecha < '".$d->fdelstr."'" : "b.fecha >= '".$d->fdelstr."' AND b.fecha <= '".$d->falstr."'"), $query);
             break;
         case 4:
             $query = "SELECT a.idcuenta, SUM(a.debe) AS debe, SUM(a.haber) AS haber, (SUM(a.debe) - SUM(a.haber)) AS anterior ";

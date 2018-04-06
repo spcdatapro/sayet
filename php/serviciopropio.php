@@ -134,7 +134,7 @@ $app->post('/rptagua', function(){
     $mesAnterior = (int)$d->mes > 1 ? ((int)$d->mes - 1) : 12;
     $anio = (int)$d->mes > 1 ? (int)$d->anio : ((int)$d->anio - 1);
 
-    $query = "SELECT a.id, b.nomproyecto AS proyecto, f.nombre, f.nombrecorto, c.nombre AS unidad, d.numidentificacion AS servicio, DATE_FORMAT(g.fechacorte, '%d/%m/%Y') AS fechaanterior, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechaactual,
+    $query = "SELECT DISTINCT a.id, b.nomproyecto AS proyecto, f.nombre, f.nombrecorto, c.nombre AS unidad, d.numidentificacion AS servicio, DATE_FORMAT(g.fechacorte, '%d/%m/%Y') AS fechaanterior, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechaactual,
 IF(g.lectura IS NOT NULL, g.lectura, 0.00) AS anterior, a.lectura AS actual,
 (a.lectura - IF(g.lectura IS NOT NULL, g.lectura, 0.00)) AS consumo
 FROM lecturaservicio a
@@ -142,9 +142,9 @@ INNER JOIN proyecto b ON b.id = a.idproyecto
 INNER JOIN unidad c ON c.id = a.idunidad
 INNER JOIN serviciobasico d ON d.id = a.idserviciobasico
 INNER JOIN (
-	SELECT b.idcliente, a.id AS idunidad
+	SELECT DISTINCT b.idcliente, a.id AS idunidad
 	FROM unidad a, contrato b
-	WHERE FIND_IN_SET(a.id, b.idunidad)
+	WHERE FIND_IN_SET(a.id, b.idunidad) AND b.inactivo = 0 AND TRIM(b.abogado) NOT LIKE '%iusi%'
 ) e ON e.idunidad = a.idunidad
 INNER JOIN cliente f ON f.id = e.idcliente
 LEFT JOIN (
@@ -155,7 +155,7 @@ LEFT JOIN (
 	INNER JOIN serviciobasico d ON d.id = a.idserviciobasico
 	WHERE a.mes = $mesAnterior AND a.anio = $anio AND a.idserviciobasico IN
 	(
-		SELECT a.id
+		SELECT DISTINCT a.id
 		FROM serviciobasico a
 		INNER JOIN unidadservicio b ON a.id = b.idserviciobasico
 		INNER JOIN unidad c ON c.id = b.idunidad
@@ -166,7 +166,7 @@ LEFT JOIN (
 ) g ON a.idserviciobasico = g.idserviciobasico
 WHERE a.mes = $d->mes AND a.anio = $d->anio AND a.idserviciobasico IN
 (
-	SELECT a.id
+	SELECT DISTINCT a.id
     FROM serviciobasico a
     INNER JOIN unidadservicio b ON a.id = b.idserviciobasico
     INNER JOIN unidad c ON c.id = b.idunidad

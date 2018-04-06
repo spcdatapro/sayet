@@ -6,6 +6,9 @@
         <li>
             <a show-tab href="#divCargaGFACE" data-toggle="tab">SUBIR ARCHIVO DE GFACE</a>
         </li>
+        <li>
+            <a show-tab href="#divRptPendientes" data-toggle="tab">PENDIENTES DE SUBIR A GFACE</a>
+        </li>
     </ul>
     <div class="tab-content">
         <div id="divDescargaGFACE" class="tab-pane fade in active">
@@ -17,7 +20,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="selEmpresa">Empresa:</label>
-                                    <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="params.idempresa" ng-options="obj.id as obj.nomempresa for obj in empresas" required></select>
+                                    <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="params.idempresa" ng-options="obj.id as obj.nomempresa for obj in empresas | filter:{congface:'1'}" required></select>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -49,6 +52,32 @@
                     <div ng-if="content">
                         <h5>Contenido del archivo:</h5>
                         <pre>{{ content }}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="divRptPendientes" class="tab-pane fade">
+            <div class="panel panel-info">
+                <div class="panel-heading">Pendientes de subir a GFACE</div>
+                <div class="panel-body">
+                    <form name="frmPendGface" id="frmPendGface" novalidate>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="selEmpPend">Empresa:</label>
+                                    <select name="selEmpPend" id="selEmpPend" class="form-control" ng-model="params.idempresa"
+                                            ng-options="obj.id as obj.nomempresa for obj in empresas | filter:{congface:'1'}" required></select>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary" ng-disabled="frmPendGface.$invalid" ng-click="getRptPendientes()">
+                            <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                        </button>
+                    </form>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 50em"></object>
+                        </div>
                     </div>
                 </div>
             </div>

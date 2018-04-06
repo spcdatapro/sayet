@@ -11,12 +11,16 @@ $app->post('/lstpresupuestos', function(){
     $db = new dbcpm();
     $query = "SELECT a.id, a.fechasolicitud, a.idproyecto, b.nomproyecto AS proyecto, a.idempresa, c.nomempresa AS empresa, a.idtipogasto, d.desctipogast AS tipogasto, a.idmoneda, e.simbolo, ";
     $query.= "a.total, a.notas, a.idusuario, f.nombre AS usuario, a.idestatuspresupuesto, g.descestatuspresup AS estatus, a.fechacreacion, a.fhenvioaprobacion, a.fhaprobacion, ";
-    $query.= "a.idusuarioaprueba, h.nombre AS aprobadopor, a.tipo, a.idproveedor, a.idsubtipogasto, a.coniva, a.monto, a.tipocambio, a.excedente, TRIM(c.abreviatura) AS abreviaempre, a.origenprov ";
+    $query.= "a.idusuarioaprueba, h.nombre AS aprobadopor, a.tipo, a.idproveedor, a.idsubtipogasto, a.coniva, a.monto, a.tipocambio, a.excedente, TRIM(c.abreviatura) AS abreviaempre, a.origenprov, i.proveedor ";
     $query.= "FROM presupuesto a INNER JOIN proyecto b ON b.id = a.idproyecto INNER JOIN empresa c ON c.id = a.idempresa ";
     $query.= "INNER JOIN tipogasto d ON d.id = a.idtipogasto INNER JOIN moneda e ON e.id = a.idmoneda INNER JOIN usuario f ON f.id = a.idusuario ";
     $query.= "INNER JOIN estatuspresupuesto g ON g.id = a.idestatuspresupuesto LEFT JOIN usuario h ON h.id = a.idusuarioaprueba ";
-    $query.= "WHERE a.idestatuspresupuesto NOT IN(5, 6) AND a.fechasolicitud >= '$d->fdelstr' AND a.fechasolicitud <= '$d->falstr' ";
-    $query.= "ORDER BY a.id";
+    $query.= "LEFT JOIN (SELECT x.idpresupuesto, GROUP_CONCAT(DISTINCT x.proveedor ORDER BY x.proveedor SEPARATOR ', ') AS proveedor FROM (SELECT z.idpresupuesto, y.nombre AS proveedor FROM detpresupuesto z INNER JOIN proveedor y ON y.id = z.idproveedor ";
+    $query.= "WHERE z.origenprov = 1 UNION SELECT z.idpresupuesto, y.nombre AS proveedor FROM detpresupuesto z INNER JOIN beneficiario y ON y.id = z.idproveedor WHERE z.origenprov = 2) x GROUP BY x.idpresupuesto) i ON a.id = i.idpresupuesto ";
+    $query.= "WHERE ";
+    $query.= (int)$d->idestatuspresup == 0 ? "a.idestatuspresupuesto NOT IN(5, 6) " : "a.idestatuspresupuesto IN($d->idestatuspresup) ";
+    $query.= "AND a.fechasolicitud >= '$d->fdelstr' AND a.fechasolicitud <= '$d->falstr' ";
+    $query.= "ORDER BY a.id DESC";
     //print $query;
     print $db->doSelectASJson($query);
 });
@@ -49,14 +53,16 @@ $app->get('/lstpresupuestospend', function(){
     print $db->doSelectASJson($query);
 });
 
-$app->get('/lstpresaprob', function(){
+$app->post('/lstpresaprob', function(){
+    $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
     $query = "SELECT a.id, a.idestatuspresupuesto, a.fechasolicitud, a.idproyecto, b.nomproyecto AS proyecto, a.idempresa, TRIM(c.abreviatura) AS empresa, a.idtipogasto, d.desctipogast AS tipogasto, ";
     $query.= "a.idmoneda, e.simbolo AS moneda, a.total, a.notas AS descripcion, a.tipo, a.idproveedor, a.idsubtipogasto, a.coniva, a.monto, a.tipocambio, a.excedente ";
     $query.= "FROM presupuesto a INNER JOIN proyecto b ON b.id = a.idproyecto INNER JOIN empresa c ON c.id = a.idempresa INNER JOIN tipogasto d ON d.id = a.idtipogasto INNER JOIN moneda e ON e.id = a.idmoneda ";
     $query.= "WHERE a.idestatuspresupuesto = 3 ";
-    $query.= "ORDER BY a.id, b.nomproyecto";
+    $query.= "AND a.fechasolicitud >= '$d->fdelstr' AND a.fechasolicitud <= '$d->falstr' ";
+    $query.= "ORDER BY a.id DESC, b.nomproyecto";
     $presupuestos = $db->getQuery($query);
     $cntPresup = count($presupuestos);
     if($cntPresup > 0){
@@ -182,6 +188,20 @@ $app->post('/np', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
     $query = "UPDATE presupuesto SET idestatuspresupuesto = 4, fhaprobacion = NOW(), idusuarioaprueba = $d->idusuario, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE id = $d->id";
+    $db->getQuery($query);
+});
+
+$app->post('/tp', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $query = "UPDATE presupuesto SET idestatuspresupuesto = 5, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE id = $d->id";
+    $db->getQuery($query);
+});
+
+$app->post('/rp', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $query = "UPDATE presupuesto SET idestatuspresupuesto = 3, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE id = $d->id";
     $db->getQuery($query);
 });
 

@@ -1,5 +1,6 @@
 <?php
-    ini_set('upload-max-filesize', '20M');
+    set_time_limit(0);
+    ini_set('upload-max-filesize', '200M');
     //ini_set('post_max_size', '20M');
     //$filename = $_FILES['file']['name'];
     $filename = preg_replace('/[^A-Za-z0-9.\-]/', '', $_FILES['file']['name']);

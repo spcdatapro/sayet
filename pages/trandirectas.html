@@ -149,7 +149,10 @@
                             <td>{{dc.haber | number:2}}</td>
                             <td>{{dc.conceptomayor}}</td>
                             <td>
-                                <button type="button" class="btn btn-danger" ng-click="delDetCont(dc)" ng-hide="dc.id == 0">
+                                <button type="button" class="btn btn-info btn-sm" ng-click="updDetCont(dc)" ng-hide="dc.id == 0" data-toggle="tooltip" data-placement="auto" title="Modificar este detalle contable...">
+                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger btn-sm" ng-click="delDetCont(dc)" ng-hide="dc.id == 0">
                                     <span class="glyphicon glyphicon-trash"></span>
                                 </button>
                             </td>
@@ -161,3 +164,68 @@
         </div>
     </div>
 </div>
+<script type="text/ng-template" id="modalUpdDetCont.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Modificar detalle contable</h3>
+    </div>
+    <div class="modal-body">
+        <form name="frmModalDetCont" id="frmModalDetCont" novalidate>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group" ng-class="{'has-error':frmModalDetCont.selCta.$invalid && !frmModalDetCont.selCta.$pristine}">
+                        <label>Cuenta contable:</label>
+                        <ui-select ng-model="detcont.idcuenta"
+                                   title="Seleccione una cuenta contable..."
+                                   theme="bootstrap"
+                                   autofocus="false"
+                                   ng-required="true">
+                            <ui-select-match placeholder="Buscar cuenta contable..." allow-clear="false">
+                                <span ng-bind="$select.selected.nombrecta"></span>
+                            </ui-select-match>
+                            <ui-select-choices repeat="item.id as item in cuentas | filter:$select.search">
+                                <div ng-bind-html="item.nombrecta | highlight: $select.search"></div>
+                                <small>
+                                    <strong>C&oacute;digo:</strong>&nbsp;<span ng-bind-html="item.codigo | highlight: $select.search" ></span>
+                                </small>
+                            </ui-select-choices>
+                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                        </ui-select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group" ng-class="{'has-error':frmModalDetCont.txtDebe.$invalid && !frmModalDetCont.txtDebe.$pristine}">
+                        <label for="txtModalDebe">Debe:</label>
+                        <input name="txtModalDebe" id="txtModalDebe" type="text" class="form-control" ng-model="detcont.debe"
+                               placeholder="Debe" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="zeroHaber(detcont.debe)" required />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group" ng-class="{'has-error':frmModalDetCont.txtHaber.$invalid && !frmModalDetCont.txtHaber.$pristine}">
+                        <label for="txtModalHaber">Haber:</label>
+                        <input name="txtModalHaber" id="txtModalHaber" type="text" class="form-control" ng-model="detcont.haber"
+                               placeholder="Haber" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="zeroDebe(detcont.haber)" required />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group" ng-class="{'has-error':frmModalDetCont.txtConceptoMayor.$invalid && !frmModalDetCont.txtConceptoMayor.$pristine}">
+                        <label for="txtModalConceptoMayor">Concepto mayor:</label>
+                            <textarea name="txtModalConceptoMayor" id="txtModalConceptoMayor" class="form-control"
+                                      ng-model="detcont.conceptomayor" placeholder="Concepto para el libro mayor" style="width:100%" rows="3" required>
+                            </textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-group" role="group" aria-label="...">
+                <button type="button" class="btn btn-info" ng-disabled="frmModalDetCont.$invalid" ng-click="actualizar(detcont)">
+                    <span class="glyphicon glyphicon-floppy-save"></span>
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <!--<button class="btn btn-primary" type="button" ng-click="ok()">Aceptar</button>-->
+        <button class="btn btn-primary" type="button" ng-click="cancel()"><i class="fa fa-ban" aria-hidden="true"></i></button>
+    </div>
+</script>

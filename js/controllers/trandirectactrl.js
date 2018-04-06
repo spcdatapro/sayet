@@ -2,7 +2,7 @@
 
     var trandirectactrl = angular.module('cpm.trandirectactrl', []);
 
-    trandirectactrl.controller('tranDirectaCtrl', ['$scope', 'directaSrvc', 'authSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'toaster', '$confirm', 'cuentacSrvc', 'detContSrvc', '$window', 'jsReportSrvc', function($scope, directaSrvc, authSrvc, empresaSrvc, DTOptionsBuilder, toaster, $confirm, cuentacSrvc, detContSrvc, $window, jsReportSrvc){
+    trandirectactrl.controller('tranDirectaCtrl', ['$scope', 'directaSrvc', 'authSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'toaster', '$confirm', 'cuentacSrvc', 'detContSrvc', '$window', 'jsReportSrvc', '$uibModal', function($scope, directaSrvc, authSrvc, empresaSrvc, DTOptionsBuilder, toaster, $confirm, cuentacSrvc, detContSrvc, $window, jsReportSrvc, $uibModal){
 
         $scope.objEmpresa = {};
         $scope.laDirecta = {};
@@ -119,9 +119,45 @@
             });
         };
 
+        $scope.updDetCont = function(obj){
+            var modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: 'modalUpdDetCont.html',
+                controller: 'ModalUpdDetContCtrl',
+                resolve:{
+                    detalle: function(){ return obj; },
+                    idempresa: function(){return +$scope.laDirecta.idempresa; }
+                }
+            });
+
+            modalInstance.result.then(function(){
+                $scope.getDetCont(obj.idorigen);
+            }, function(){ $scope.getDetCont(obj.idorigen); });
+        };
+
         $scope.delDetCont = function(obj){
             $confirm({text: '¿Seguro(a) de eliminar esta cuenta?', title: 'Eliminar cuenta contable', ok: 'Sí', cancel: 'No'}).then(function() {
                 detContSrvc.editRow({id:obj.id}, 'd').then(function(){ $scope.getDetCont(obj.idorigen); });
+            });
+        };
+
+    }]);
+
+    trandirectactrl.controller('ModalUpdDetContCtrl', ['$scope', '$uibModalInstance', 'detalle', 'cuentacSrvc', 'idempresa', 'detContSrvc', '$confirm', function($scope, $uibModalInstance, detalle, cuentacSrvc, idempresa, detContSrvc, $confirm){
+        $scope.detcont = detalle;
+        $scope.cuentas = [];
+
+        cuentacSrvc.getByTipo(idempresa, 0).then(function(d){ $scope.cuentas = d; });
+
+        $scope.ok = function () { $uibModalInstance.close(); };
+        $scope.cancel = function () { $uibModalInstance.dismiss('cancel'); };
+
+        $scope.zeroDebe = function(valor){ $scope.detcont.debe = parseFloat(valor) > 0 ? 0.0 : $scope.detcont.debe; };
+        $scope.zeroHaber = function(valor){ $scope.detcont.haber = parseFloat(valor) > 0 ? 0.0 : $scope.detcont.haber; };
+
+        $scope.actualizar = function(obj){
+            $confirm({text: '¿Seguro(a) de guardar los cambios?', title: 'Modificar detalle contable', ok: 'Sí', cancel: 'No'}).then(function() {
+                detContSrvc.editRow(obj, 'u').then(function(){ $scope.ok(); });
             });
         };
 

@@ -1,0 +1,43 @@
+<div class="container" ng-controller="rptDetContVentas">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">Detalle contable de facturas de venta</div>
+            <div class="panel-body" style="text-align: right">
+                <div class="row" style="text-align: left">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="selEmpre">Empresa:</label>
+                            <select name="selEmpre" id="selEmpre" class="form-control input-sm" ng-model="params.idempresa" ng-options="obj.id as obj.nomempresa for obj in empresas"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="txtDel">Del:</label>
+                            <input name="txtDel" id="txtDel" type="date" class="form-control input-sm" ng-model="params.del" placeholder="Del"/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="txtAl">al:</label>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control input-sm" ng-model="params.al" placeholder="Al"/>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" ng-click="getDetcontVentas()">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+                <!--
+                <button type="button" class="btn btn-primary" ng-click="getCorrelativosChequesExcel()" ng-disabled="objBanco == null || objBanco == undefined">
+                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                </button>
+                -->
+            </div>
+        </div>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 75em"></object>
+        </div>
+    </div>
+</div>

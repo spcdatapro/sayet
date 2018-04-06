@@ -7,7 +7,20 @@
         <div class="panel-heading">Seguimiento de &oacute;rdenes de trabajo</div>
         <div class="panel-body">
             <div class="row">
-                <div class="col-md-11 nopadding"><input type="text" class="form-control input-sm" ng-model="filterString" placeholder="Buscar..." style="width: 100%"/></div>
+                <div class="col-md-5 nopadding">
+                    <form name="frmBusqueda" class="form-inline">
+                        <label for="srchTxtDel">Del:</label>
+                        <input name="srchTxtDel" id="srchTxtDel" type="date" class="form-control input-sm" ng-model="fltrot.fdel" required/>
+                        <label for="srchTxtAl">al:</label>
+                        <div class="input-group">
+                            <input name="srchTxtAl" id="srchTxtAl" type="date" class="form-control input-sm" ng-model="fltrot.fal" required/>
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-primary btn-sm" ng-click="getAprobados()" ng-disabled="frmBusqueda.$invalid"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                </span>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-6 nopadding"><input type="text" class="form-control input-sm" ng-model="filterString" placeholder="Buscar..." style="width: 100%"/></div>
                 <div class="col-md-1 nopadding">
                     <button ng-click="my_tree.expand_all()" class="btn btn-primary btn-sm"><i class="fa fa-plus" aria-hidden="true"></i></button>
                     <button ng-click="my_tree.collapse_all()" class="btn btn-primary btn-sm"><i class="fa fa-minus" aria-hidden="true"></i></button>
@@ -148,7 +161,7 @@
                                 <button class="btn btn-info" style="width:100%" type="button" ng-click="printOt(ot.id)">Imprimir orden</button>
                             </td>
                             <td>
-                                <button class="btn btn-info" style="width:100%" type="button" ng-click="closeOt()" ng-disabled="true">Cerrar orden</button>
+                                <button class="btn btn-info" style="width:100%" type="button" ng-click="closeOt()" ng-disabled="true" ng-show="false">Cerrar orden</button>
                             </td>
                         </tr>
                     </table>

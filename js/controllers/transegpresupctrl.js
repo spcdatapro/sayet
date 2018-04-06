@@ -9,6 +9,7 @@
         $scope.expanding_Property = "";
         $scope.col_defs = [];
         $scope.my_tree = $scope.ots = {};
+        $scope.fltrot = { fdel: moment('2017-10-01').toDate(), fal: moment().endOf('month').toDate() };
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withBootstrap().withOption('paging', false).withOption('order', false);
 
@@ -42,8 +43,9 @@
         }
 
         $scope.getAprobados = function(){
-            presupuestoSrvc.presupuestosAprobados().then(function(d){
-                //$scope.ots = procData(d);
+            $scope.fltrot.fdelstr = moment($scope.fltrot.fdel).format('YYYY-MM-DD');
+            $scope.fltrot.falstr = moment($scope.fltrot.fal).format('YYYY-MM-DD');
+            presupuestoSrvc.presupuestosAprobados($scope.fltrot).then(function(d){
                 $scope.ots = setData(d);
             });
         };

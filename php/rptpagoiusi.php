@@ -25,12 +25,12 @@ $app->post('/pagosiusi', function(){
         $query.= "ORDER BY 2";
         $activo->deptos = $db->getQuery($query);
         $cntDep = count($activo->deptos);
-        $sumEmp = ['iusi' => 0.00, 'apagar' => 0.00];
+        $sumEmp = ['iusi' => 0.00, 'apagar' => 0.00, 'trimestral' => 0.00];
         if($cntDep > 0){
             for($j = 0; $j < $cntDep; $j++){
                 $depto = $activo->deptos[$j];
                 $query = "SELECT CONCAT(a.finca, '-', a.folio, '-', a.libro) AS finca, ";
-                $query.= "IF(a.horizontal = 0, '', 'Sí') AS eshorizontal, a.iusi, ROUND((a.iusi * (a.por_iusi / 1000)), 2) AS apagar, a.por_iusi ";
+                $query.= "IF(a.horizontal = 0, '', 'Sí') AS eshorizontal, a.iusi, ROUND((a.iusi * (a.por_iusi / 1000)), 2) AS apagar, a.por_iusi, ROUND((a.iusi * (a.por_iusi / 1000)) / 4, 2) AS trimestral ";
                 $query.= "FROM activo a LEFT JOIN municipio b ON b.id = a.departamento LEFT JOIN empresa c ON c.id = a.idempresa ";
                 $query.= "WHERE a.idempresa = $activo->idempresa AND a.departamento = $depto->iddepto ";
                 //$query.= "ORDER BY digits(a.finca), digits(a.folio), digits(a.libro)";
@@ -38,31 +38,35 @@ $app->post('/pagosiusi', function(){
                 $depto->activos = $db->getQuery($query);
                 $cntDet = count($depto->activos);
                 if($cntDet > 0){
-                    $sumAct = ['iusi' => 0.00, 'apagar' => 0.00];
+                    $sumAct = ['iusi' => 0.00, 'apagar' => 0.00, 'trimestral' => 0.00];
                     for($k = 0; $k < $cntDet; $k++){
                         $det = $depto->activos[$k];
                         $sumAct['iusi'] += (float)$det->iusi;
                         $sumAct['apagar'] += (float)$det->apagar;
+                        $sumAct['trimestral'] += (float) $det->trimestral;
                     }
                     $depto->activos[] = [
-                        'finca' => '', 'eshorizontal' => ('Total de '.$depto->departamento), 'iusi' => round($sumAct['iusi'], 2), 'apagar' => round($sumAct['apagar'], 2), 'por_iusi' => ''
+                        'finca' => '', 'eshorizontal' => ('Total de '.$depto->departamento), 'iusi' => round($sumAct['iusi'], 2), 'apagar' => round($sumAct['apagar'], 2), 'trimestral' => round($sumAct['trimestral'], 2), 'por_iusi' => ''
                     ];
                     $sumEmp['iusi'] += $sumAct['iusi'];
                     $sumEmp['apagar'] += $sumAct['apagar'];
+                    $sumEmp['trimestral'] += $sumAct['trimestral'];
                 }
             }
             $activo->totiusiempre = $sumEmp['iusi'];
             $activo->totapagarempre = $sumEmp['apagar'];
+            $activo->totapagarempretrimestral = $sumEmp['trimestral'];
         }
     }
 
-    $sumGen = ['iusi' => 0.00, 'apagar' => 0.00];
+    $sumGen = ['iusi' => 0.00, 'apagar' => 0.00, 'trimestral' => 0.00];
     for($l = 0; $l < $cntAct; $l++){
         $sumGen['iusi'] += $activos[$l]->totiusiempre;
         $sumGen['apagar'] += $activos[$l]->totapagarempre;
+        $sumGen['trimestral'] += $activos[$l]->totapagarempretrimestral;
     }
 
-    print json_encode(['activos' => $activos, 'totiusigen' => round($sumGen['iusi'], 2), 'totapagargen' => round($sumGen['apagar'], 2)]);
+    print json_encode(['activos' => $activos, 'totiusigen' => round($sumGen['iusi'], 2), 'totapagargen' => round($sumGen['apagar'], 2), 'totapagartrimestral' => round($sumGen['trimestral'], 2)]);
 });
 
 

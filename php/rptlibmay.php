@@ -1,5 +1,6 @@
 <?php
 set_time_limit(0);
+ini_set('memory_limit', '1536M');
 require 'vendor/autoload.php';
 require_once 'db.php';
 
@@ -200,8 +201,8 @@ function getSelectDetail($cual, $d, $idcuenta){
             $query.= "WHERE a.origen = 3 AND a.activada = 1 AND a.anulado = 0 AND a.idcuenta = ".$idcuenta." AND b.fecha >= '".$d->fdelstr."' AND b.fecha <= '".$d->falstr."' AND c.idempresa = ".$d->idempresa." ";
             $query.= "UNION ALL ";
             $query.= "SELECT CONCAT('P', YEAR(b.fecha), LPAD(MONTH(b.fecha), 2, '0'), LPAD(DAY(b.fecha), 2, '0'), LPAD(a.origen, 2, '0'), LPAD(a.idorigen, 7, '0')) AS poliza, ";
-            $query.= "b.fecha, CONCAT(f.siglas, SPACE($espacios), b.numero, SPACE($espacios), d.nombrecorto) AS referencia, a.conceptomayor, a.debe, a.haber, a.idorigen, a.origen, e.tranban AS transaccion ";
-            $query.= "FROM detallecontable a INNER JOIN factura b ON b.id = a.idorigen INNER JOIN cliente d ON d.id = b.idcliente ";
+            $query.= "b.fecha, CONCAT(f.siglas, SPACE($espacios), b.numero, SPACE($espacios), IF(d.id IS NOT NULL, d.nombrecorto, b.nombre)) AS referencia, a.conceptomayor, a.debe, a.haber, a.idorigen, a.origen, e.tranban AS transaccion ";
+            $query.= "FROM detallecontable a INNER JOIN factura b ON b.id = a.idorigen LEFT JOIN cliente d ON d.id = b.idcliente ";
             $query.= "LEFT JOIN (SELECT z.idfactura, GROUP_CONCAT(CONCAT(x.tipotrans, x.numero) SEPARATOR ', ') AS tranban FROM detcobroventa z INNER JOIN recibocli y ON y.id = z.idrecibocli INNER JOIN tranban x ON x.id = y.idtranban ";
             $query.= "GROUP BY z.idfactura) e ON b.id = e.idfactura LEFT JOIN tipofactura f ON f.id = b.idtipofactura ";
             $query.= "WHERE a.origen = 3 AND a.activada = 1 AND a.anulado = 0 AND a.idcuenta = ".$idcuenta." AND b.fecha >= '".$d->fdelstr."' AND b.fecha <= '".$d->falstr."' AND b.idempresa = ".$d->idempresa." ";
@@ -231,7 +232,9 @@ function getSelectDetail($cual, $d, $idcuenta){
             $query.= "b.fecha AS fecha, CONCAT('RC', LPAD(b.id, 5, '0')) AS referencia, a.conceptomayor, a.debe, a.haber, a.idorigen, a.origen, '' AS transaccion ";
             $query.= "FROM detallecontable a INNER JOIN recibocli b ON b.id = a.idorigen ";
             $query.= "WHERE a.origen = 8 AND a.activada = 1 AND a.anulado = 0 AND a.idcuenta = ".$idcuenta." AND b.fecha >= '".$d->fdelstr."' AND b.fecha <= '".$d->falstr."' AND b.idempresa = ".$d->idempresa." ";
+            /*
             $query.= "UNION ALL ";
+
             //Liquidación de documentos -> origen = 9
             $query.= "SELECT CONCAT('P', YEAR(b.fechaliquida), LPAD(MONTH(b.fechaliquida), 2, '0'), LPAD(DAY(b.fechaliquida), 2, '0'), LPAD(a.origen, 2, '0'), LPAD(a.idorigen, 7, '0')) AS poliza, ";
             $query.= "b.fechaliquida AS fecha, CONCAT(c.siglas, SPACE($espacios), d.abreviatura, b.numero) AS referencia, a.conceptomayor, a.debe, a.haber, a.idorigen, a.origen, CONCAT(d.abreviatura, b.numero) AS transaccion ";
@@ -241,6 +244,8 @@ function getSelectDetail($cual, $d, $idcuenta){
 			$query.= "((b.anulado = 0 AND b.fechaliquida >= '$d->fdelstr' AND b.fechaliquida <= '$d->falstr') OR (b.anulado = 1 AND b.fechaliquida >= '$d->fdelstr' AND b.fechaliquida <= '$d->falstr')) AND ";
             $query.= "c.idempresa = ".$d->idempresa." ";
             $query.= "UNION ALL ";
+            */
+            /*
             //NCD clientes -> origen = 10
             $query.= "SELECT CONCAT('P', YEAR(b.fecha), LPAD(MONTH(b.fecha), 2, '0'), LPAD(DAY(b.fecha), 2, '0'), LPAD(a.origen, 2, '0'), LPAD(a.idorigen, 7, '0')) AS poliza, ";
             $query.= "b.fecha AS fecha, CONCAT(IF(b.tipo = 0, 'NdCC', 'NdDC'), TRIM(b.serie), '-', TRIM(b.numero)) AS referencia, a.conceptomayor, a.debe, a.haber, a.idorigen, a.origen, '' AS transaccion ";
@@ -252,6 +257,7 @@ function getSelectDetail($cual, $d, $idcuenta){
             $query.= "b.fecha AS fecha, CONCAT(IF(b.tipo = 0, 'NdCP', 'NdDP'), TRIM(b.serie), '-', TRIM(b.numero)) AS referencia, a.conceptomayor, a.debe, a.haber, a.idorigen, a.origen, '' AS transaccion ";
             $query.= "FROM detallecontable a INNER JOIN ncdproveedor b ON b.id = a.idorigen ";
             $query.= "WHERE a.origen = 11 AND a.activada = 1 AND a.anulado = 0 AND a.idcuenta = ".$idcuenta." AND b.fecha >= '".$d->fdelstr."' AND b.fecha <= '".$d->falstr."' AND b.idempresa = ".$d->idempresa." ";
+            */
             $query.= "ORDER BY 2, 3";
             break;
     }

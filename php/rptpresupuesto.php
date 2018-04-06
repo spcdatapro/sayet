@@ -55,16 +55,17 @@ $app->post('/rptpresupuesto', function(){
         for($i = 0; $i < $cntOts; $i++){
             $ot = $presupuesto->ots[$i];
             $query = "SELECT 1 AS origen, a.id, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, b.siglas AS banco, a.tipotrans, a.numero, c.simbolo AS moneda, FORMAT(a.monto, 2) AS monto,  ";
-            $query.= "a.concepto, IF(a.tipocambio > 1, FORMAT(a.tipocambio, 2), '') AS tipocambio, 0.00 AS isr, ";
-            $query.= "(SELECT GROUP_CONCAT(CONCAT(serie, '-', documento) SEPARATOR ', ') FROM doctotranban WHERE idtranban = a.id GROUP BY idtranban) AS factura, ";
-            $query.= "CONCAT(b.siglas, '-', a.tipotrans, '-', a.numero) AS docto , a.beneficiario ";
+            $query.= "a.concepto, IF(a.tipocambio > 1, FORMAT(a.tipocambio, 2), '') AS tipocambio, ";
+            $query.= "(SELECT SUM(y.isr) FROM doctotranban z INNER JOIN compra y ON y.id = z.iddocto WHERE z.idtipodoc = 1 AND z.idtranban = a.id GROUP BY idtranban) AS isr, ";
+            $query.= "(SELECT GROUP_CONCAT(CONCAT(serie, documento) SEPARATOR ', ') FROM doctotranban WHERE idtranban = a.id GROUP BY idtranban) AS factura, ";
+            $query.= "CONCAT(b.siglas, '-', a.tipotrans, a.numero) AS docto , a.beneficiario ";
             $query.= "FROM tranban a LEFT JOIN banco b ON b.id = a.idbanco LEFT JOIN moneda c ON c.id = b.idmoneda ";
             $query.= "WHERE a.anulado = 0 AND a.iddetpresup = $ot->idot ";
             $query.= "UNION ALL ";
             $query.= "SELECT 2 AS origen, a.id, DATE_FORMAT(a.fechafactura, '%d/%m/%Y') AS fecha, '' AS banco, '' AS tipotrans, CONCAT(a.serie, '-',a.documento) AS numero, b.simbolo AS moneda, FORMAT(a.totfact, 2) AS monto, ";
             $query.= "a.conceptomayor AS concepto, IF(a.tipocambio > 1, FORMAT(a.tipocambio, 2), '') AS tipocambio, FORMAT(a.isr, 2) AS isr, NULL AS factura, ";
-            $query.= "CONCAT('FACT - ', a.serie, '-', a.documento) AS docto , m.beneficiario  ";
-            $query.= "FROM compra a LEFT JOIN moneda b ON b.id = a.idmoneda LEFT JOIN proyecto n ON n.id=a.idproyecto LEFT JOIN tranban m ON m.idproyecto= n.id  ";
+            $query.= "CONCAT(z.siglas, a.serie, a.documento) AS docto , m.beneficiario  ";
+            $query.= "FROM compra a LEFT JOIN moneda b ON b.id = a.idmoneda LEFT JOIN proyecto n ON n.id=a.idproyecto LEFT JOIN tranban m ON m.idproyecto= n.id LEFT JOIN tipofactura z ON z.id = a.idtipofactura ";
             $query.= "WHERE a.ordentrabajo = $ot->idot ";
             $query.= "ORDER BY 3 DESC, 4, 5, 6";
             $ot->avance = $db->getQuery($query);

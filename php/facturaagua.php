@@ -182,6 +182,12 @@ $app->post('/genfact', function(){
 
                 $query = "UPDATE serviciobasico SET ultimalecturafact = $p->lectura WHERE id = $p->idserviciobasico";
                 $db->doQuery($query);
+
+                if((int)$lastid > 0){
+                    $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
+                    $data = ['ids' => $lastid, 'idcontrato' => 1];
+                    $db->CallJSReportAPI('POST', $url, json_encode($data));
+                }
             }
         }else{
             $query = "UPDATE lecturaservicio SET estatus = 3, facturado = 1, idfactura = 0 WHERE id = $p->id";
@@ -238,6 +244,21 @@ $app->post('/rptagua', function(){
             $query.= "WHERE a.estatus IN(2, 3) AND b.pagacliente = 0 AND c.inactivo = 0 AND a.mes = MONTH('$d->fvencestr') AND a.anio = YEAR('$d->fvencestr') AND b.idempresa = $contador->idempresa AND a.idproyecto = $proyecto->idproyecto ";
             $query.= "ORDER BY CAST(digits(h.nombre) AS UNSIGNED), h.nombre, b.numidentificacion";
             $proyecto->consumos = $db->getQuery($query);
+            $cntConsumos = count($proyecto->consumos);
+            if($cntConsumos > 0){
+                $query = "SELECT ";
+                $query.= "FORMAT(SUM((a.lectura - LecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr')))), 2) as consumo, ";
+                $query.= "FORMAT(SUM(ROUND(IF(((a.lectura - LecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr'))) - b.mcubsug) > 0, ((a.lectura - LecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr'))) - b.mcubsug) * b.preciomcubsug, 0.00 ), 2)), 2) AS montosiniva ";
+                $query.= "FROM lecturaservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico INNER JOIN contrato c ON c.id = (SELECT b.id FROM contrato b WHERE FIND_IN_SET(a.idunidad, b.idunidad) LIMIT 1) ";
+                $query.= "INNER JOIN cliente d ON d.id = c.idcliente INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio INNER JOIN proyecto g ON g.id = a.idproyecto INNER JOIN unidad h ON h.id = a.idunidad INNER JOIN empresa i ON i.id = b.idempresa ";
+                $query.= "WHERE a.estatus IN(2, 3) AND b.pagacliente = 0 AND c.inactivo = 0 AND a.mes = MONTH('$d->fvencestr') AND a.anio = YEAR('$d->fvencestr') AND b.idempresa = $contador->idempresa AND a.idproyecto = $proyecto->idproyecto ";
+                $sumas = $db->getQuery($query)[0];
+                $proyecto->consumos[] =[
+                    'id' => '', 'lectura' => 'Total:', 'numidentificacion' => '', 'preciomcubsug' => '', 'mcubsug' => '',
+                    'consumo' => $sumas->consumo, 'montosiniva' => $sumas->montosiniva,
+                    'nombre' => '', 'unidad' => '', 'fechafinal' => '', 'fechainicial' => '', 'lecturainicial' => ''
+                ];
+            }
         }
 
         $query = "SELECT ";

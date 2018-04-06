@@ -5,7 +5,7 @@
     directasrvc.factory('directaSrvc', ['comunFact', function(comunFact){
         var urlBase = 'php/directa.php';
 
-        var directaSrvc = {
+        return {
             lstDirectas: function(idempresa){
                 return comunFact.doGET(urlBase + '/lstdirectas/' + idempresa);
             },
@@ -16,7 +16,6 @@
                 return comunFact.doPOST(urlBase + '/' + op, obj);
             }
         };
-        return directaSrvc;
     }]);
 
 }());

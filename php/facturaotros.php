@@ -165,6 +165,11 @@ function updateDatosFactura($d){
     $query.= "montocargoiva = $data->montocargoiva, montocargoflat = $data->montocargoflat ";
     $query.= "WHERE id = $d->idfactura";
     $db->doQuery($query);
+
+
+    $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
+    $dataa = ['ids' => $d->idfactura, 'idcontrato' => (int)$db->getOneField("SELECT idcontrato FROM factura WHERE id = $d->idfactura")];
+    $db->CallJSReportAPI('POST', $url, json_encode($dataa));
 }
 
 $app->post('/cd', function(){

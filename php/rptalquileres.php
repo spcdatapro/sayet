@@ -53,7 +53,7 @@ $app->post('/alquileres', function(){
             $cntCli = count($proyecto->clientes);
             for($k = 0; $k < $cntCli; $k++){
                 $cliente = $proyecto->clientes[$k];
-                $query = "SELECT b.id AS idcontrato, UnidadesPorContrato(b.id) AS unidades, a.monto, b.fechainicia, b.fechavence, z.idtipoventa, y.desctiposervventa AS servicio, a.fechacobro, x.simbolo ";
+                $query = "SELECT b.id AS idcontrato, UnidadesPorContrato(b.id) AS unidades, (a.monto - a.descuento) AS monto, b.fechainicia, b.fechavence, z.idtipoventa, y.desctiposervventa AS servicio, a.fechacobro, x.simbolo ";
                 $query.= "FROM cargo a INNER JOIN contrato b ON b.id = a.idcontrato INNER JOIN detfactcontrato z ON z.id = a.iddetcont INNER JOIN tiposervicioventa y ON y.id = z.idtipoventa ";
                 $query.= "INNER JOIN moneda x ON x.id = z.idmoneda ";
                 $query.= "WHERE ((b.inactivo = 0 AND a.fechacobro >= '$d->fdelstr' AND a.fechacobro <= '$d->falstr') OR ";
@@ -110,7 +110,7 @@ $app->post('/sinproy', function(){
         $cntCli = count($alquiler->clientes);
         for($k = 0; $k < $cntCli; $k++){
             $cliente = $alquiler->clientes[$k];
-            $query = "SELECT b.id AS idcontrato, UnidadesPorContrato(b.id) AS unidades, a.monto, b.fechainicia, b.fechavence, z.idtipoventa, y.desctiposervventa AS servicio, a.fechacobro, x.simbolo ";
+            $query = "SELECT b.id AS idcontrato, UnidadesPorContrato(b.id) AS unidades, (a.monto - a.descuento) AS monto, b.fechainicia, b.fechavence, z.idtipoventa, y.desctiposervventa AS servicio, a.fechacobro, x.simbolo ";
             $query.= "FROM cargo a INNER JOIN contrato b ON b.id = a.idcontrato INNER JOIN detfactcontrato z ON z.id = a.iddetcont INNER JOIN tiposervicioventa y ON y.id = z.idtipoventa ";
             $query.= "INNER JOIN moneda x ON x.id = z.idmoneda ";
             $query.= "WHERE ((b.inactivo = 0 AND a.fechacobro >= '$d->fdelstr' AND a.fechacobro <= '$d->falstr') OR ";
