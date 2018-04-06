@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-md-11">
-        <form name="frmDetContReem" id="frmDetContReem" class="form-inline" ng-submit="frmDetContReem.$valid && addDetCont(detcont)" ng-hide="reembolso.estatus == 2" novalidate>
+        <form name="frmDetContReem" id="frmDetContReem" class="form-inline" ng-submit="frmDetContReem.$valid && addDetCont(detcont)" novalidate>
             <div class="form-group">
                 <label for="selCuenta">Cuenta:</label>
                 <input name="txtFiltroCta" id="txtFiltroCta" type="text" class="form-control input-sm"
@@ -28,7 +28,7 @@
                 <label for="txtCMayor">Concepto mayor:</label>
                 <input name="txtCMayor" id="txtCMayor" type="text" class="form-control input-sm" style="width:11em" ng-model="detcont.conceptomayor" required/>
             </div>
-            <button type="submit" class="btn-success btn-sm" ng-disabled="frmDetContReem.$invalid || reembolso.estatus == 2">
+            <button type="submit" class="btn-success btn-sm" ng-disabled="frmDetContReem.$invalid">
                 <span class="glyphicon glyphicon-floppy-save"></span>
             </button>
         </form>
