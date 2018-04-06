@@ -330,7 +330,7 @@ class Empleado extends Principal
 			}
 		} else {
 			if ($this->nanio >= $ianio) {
-				$this->dtrabajados = $this->ndia;
+				$this->dtrabajados = $this->ndia == 15 ? 15 : 30;
 			}
 		}
 	}
