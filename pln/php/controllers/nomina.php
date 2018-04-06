@@ -1,8 +1,8 @@
 <?php 
 
-ini_set('display_errors', 1);
+/*ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+error_reporting(E_ALL);*/
 
 require dirname(dirname(dirname(__DIR__))) . '/php/vendor/autoload.php';
 require dirname(dirname(dirname(__DIR__))) . '/php/ayuda.php';
@@ -65,7 +65,7 @@ $app->get('/imprimir_recibo', function(){
 				}
 			}
 
-			$pdf->Output("factura.pdf", 'I');
+			$pdf->Output("recibo.pdf", 'I');
 			die();
 		} else {
 			echo "Nada que mostrar";
@@ -80,7 +80,7 @@ $app->get('/imprimir', function(){
 	$g = new General();
 
 	if (elemento($_GET, 'fdel') && elemento($_GET, 'fal')) {
-		require dirname(dirname(dirname(__DIR__))) . '/libs/tcpdf/tcpdf.php';
+		require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
 		$s = [215.9, 330.2]; # Oficio mm
 
 		$pdf = new TCPDF('L', 'mm', $s);

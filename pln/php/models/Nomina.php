@@ -19,7 +19,7 @@ class Nomina extends Principal
 		$condicion = ['activo' => 1];
 
 		if (elemento($args, 'empresa')) {
-			$condicion["idempresaactual"] = $args['empresa'];
+			$condicion["idempresadebito"] = $args['empresa'];
 		}
 
 		$tmp = $this->db->select(
@@ -35,7 +35,7 @@ class Nomina extends Principal
 				[
 					'AND' => [
 						'idplnempleado' => $row['id'], 
-						'idempresa'     => $row['idempresaactual'], 
+						'idempresa'     => $row['idempresadebito'], 
 						'fecha'         => $fecha
 					]
 				]
@@ -44,7 +44,7 @@ class Nomina extends Principal
 			if (isset($ex->scalar)) {
 				$datos = [
 					'idplnempleado' => $row['id'], 
-					'idempresa'     => $row['idempresaactual'], 
+					'idempresa'     => $row['idempresadebito'], 
 					'fecha'         => $fecha
 				];
 
@@ -206,15 +206,15 @@ class Nomina extends Principal
 
 		$sql = <<<EOT
 SELECT 
-    a.*, b.nombre, b.apellidos, b.dpi, c.nomempresa
+    a.*, b.nombre, b.apellidos, b.dpi, b.idempresadebito, c.nomempresa
 FROM
     plnnomina a
         JOIN
     plnempleado b ON b.id = a.idplnempleado
         JOIN
-    empresa c ON c.id = a.idempresa
+    empresa c ON c.id = b.idempresadebito
     where b.activo = 1 and a.fecha between '{$args["fdel"]}' and '{$args["fal"]}' 
-    {$where} order by a.idempresa, b.nombre, b.apellidos
+    {$where} order by c.nomempresa, b.nombre, b.apellidos
 EOT;
 		$res   = $this->db->query($sql)->fetchAll();
 		$datos = [];
@@ -225,7 +225,7 @@ EOT;
 			$datos[] = [
 				[
 					'campo' => 'vidempresa', 
-					'valor' => $row->idempresa
+					'valor' => $row->idempresadebito
 				], # El id de la empresa debe ir como primer arreglo, NO LO CAMBIÈS
 				[
 					'campo' => 'vempresa', 
