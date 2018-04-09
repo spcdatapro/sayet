@@ -60,7 +60,14 @@ $app->get('/imprimir_recibo', function(){
 
 					if (!isset($conf->scalar) && $conf->visible == 1) {
 						$conf->psy = ($key%$cantidad == 0)?$conf->psy:($conf->psy+(($s[1]/$cantidad)*$cont));
-						$pdf = generar_fimpresion($pdf, $row['valor'], $conf);
+
+						if (is_numeric($row["valor"]) && !in_array($row['campo'], ['vcodigo', 'vdiastrabajados'])) {
+							$valor = number_format($row["valor"], 2);
+						} else {
+							$valor = $row["valor"];
+						}
+
+						$pdf = generar_fimpresion($pdf, $valor, $conf);
 					}
 				}
 			}
@@ -81,6 +88,7 @@ $app->get('/imprimir', function(){
 
 	if (elemento($_GET, 'fdel') && elemento($_GET, 'fal')) {
 		require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
+		
 		$s = [215.9, 330.2]; # Oficio mm
 
 		$pdf = new TCPDF('L', 'mm', $s);
@@ -254,8 +262,8 @@ $app->get('/imprimir', function(){
 						if (!isset($conf->scalar) && $conf->visible == 1) {
 							$conf->psy = ($conf->psy+$espacio);
 
-							if (is_numeric($row["valor"])) {
-								$valor = $row["campo"] === "vdiastrabajados" ? $row["valor"] : number_format($row["valor"], 2);
+							if (is_numeric($row["valor"]) && !in_array($row['campo'], ['vcodigo', 'vdiastrabajados'])) {
+								$valor = number_format($row["valor"], 2);
 							} else {
 								$valor = $row["valor"];
 							}
@@ -282,6 +290,8 @@ $app->get('/imprimir', function(){
 							}
 						}
 					}
+
+					# $pdf = generar_fimpresion($pdf, $valor, $conf);
 
 					$espacio += $confe->espacio;
 

@@ -214,7 +214,7 @@ FROM
         JOIN
     empresa c ON c.id = b.idempresadebito
     where b.activo = 1 and a.fecha between '{$args["fdel"]}' and '{$args["fal"]}' 
-    {$where} order by c.nomempresa, b.nombre, b.apellidos
+    {$where} order by c.nomempresa, b.nombre 
 EOT;
 		$res   = $this->db->query($sql)->fetchAll();
 		$datos = [];
@@ -285,6 +285,14 @@ EOT;
 				],
 				[
 					'campo' => 'vsueldoordinario', 
+					'valor' => $row->sueldoordinario
+				],
+				[
+					'campo' => 'thorasextras', 
+					'valor' => 'Horas Extras:'
+				],
+				[
+					'campo' => 'vhorasextras', 
 					'valor' => $row->sueldoordinario
 				],
 				[
@@ -429,7 +437,7 @@ EOT;
 				],
 				[
 					'campo' => 'tsaldoprestamo', 
-					'valor' => 'Saldo del Préstamo'
+					'valor' => 'Saldo de Préstamo'
 				], 
 				[
 					'campo' => 'vsaldoprestamo', 
