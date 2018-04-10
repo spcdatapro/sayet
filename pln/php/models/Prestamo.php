@@ -31,8 +31,8 @@ class Prestamo extends Principal
     public function guardar($args = [])
 	{
 		if (is_array($args) && !empty($args)) {
-			if (elemento($args, 'empleado')) {
-				$this->set_dato('idplnempleado', $args['empleado']);
+			if (elemento($args, 'idplnempleado')) {
+				$this->set_dato('idplnempleado', $args['idplnempleado']);
 			}
 
 			if (elemento($args, 'monto', FALSE)) {
@@ -44,12 +44,15 @@ class Prestamo extends Principal
 			}
 
 			if (elemento($args, 'iniciopago', FALSE)) {
-				$this->set_dato('iniciopago', fecha_angularjs($args['iniciopago']));
+				$this->set_dato('iniciopago', $args['iniciopago']);
 			}
 
 			if (elemento($args, 'liquidacion', FALSE)) {
-				$this->set_dato('liquidacion', fecha_angularjs($args['liquidacion']));
+				$this->set_dato('liquidacion', $args['liquidacion']);
 				$this->set_dato('finalizado', 1);
+			} else {
+				$this->set_dato('liquidacion', 'NULL');
+				$this->set_dato('finalizado', '0');
 			}
 
 			if (elemento($args, 'concepto', FALSE)) {
@@ -59,7 +62,7 @@ class Prestamo extends Principal
 
 		if (!empty($this->datos)) {
 			if ($this->pre) {
-				if ($this->pre->finalizado) {
+				if ($this->pre->finalizado == 0) {
 					if ($this->db->update($this->tabla, $this->datos, ["id" => $this->pre->id])) {
 						$this->cargar_prestamo($this->pre->id);
 
@@ -93,6 +96,44 @@ class Prestamo extends Principal
 
 		return FALSE;
 	}
-}
 
-?>
+	public function guardar_omision($args = [])
+	{
+		if (elemento($args, 'fecha', FALSE)) {
+			$datos = [
+				'fecha' => $args['fecha'], 
+				'idusuario' => $_SESSION['uid'], 
+				'idplnprestamo' => $this->pre->id
+			];
+
+			$lid = $this->db->insert('plnpresnodesc', $datos);
+
+			if ($lid) {
+				return TRUE;
+			} else {
+				$this->set_mensaje('Error en la base de datos al guardar: ' . $this->db->error()[2]);
+			}
+		} else {
+			$this->set_mensaje('Por favor ingrese una fecha.');
+		}
+
+		return FALSE;
+	}
+
+	public function get_omisiones()
+	{
+		return $this->db->select("plnpresnodesc", [
+				'[><]usuario(b)' => ['plnpresnodesc.idusuario' => 'id']
+			], 
+			[
+				"plnpresnodesc.id",
+				"plnpresnodesc.fecha",
+				"plnpresnodesc.registro",
+				"b.nombre"
+			],
+			[
+				'idplnprestamo' => $this->pre->id
+			]
+		);
+	}
+}

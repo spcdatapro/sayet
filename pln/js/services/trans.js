@@ -46,4 +46,28 @@ angular.module('cpm')
             return comunFact.doGET(urlBase + '/lista');
         },
     };
+}])
+.factory('preServicios', ['comunFact', function(comunFact){
+    var urlBase = 'pln/php/controllers/prestamo.php'
+
+    return {
+        buscar: function(obj){
+            return comunFact.doGETJ(urlBase + '/buscar', obj)
+        },
+        getPuesto: function(emp){
+            return comunFact.doGET(urlBase + '/get_puesto/' + emp)
+        },
+        guardar: function(datos){
+            return comunFact.doPOSTFiles(urlBase + '/guardar', datos)
+        }, 
+        lista: function(obj){
+            return comunFact.doGET(urlBase + '/lista')
+        },
+        guardarOmision: function(datos, pre){
+            return comunFact.doPOSTFiles(urlBase + '/guardar_omision/' + pre, datos)
+        }, 
+        getOmisiones: function(pre) {
+            return comunFact.doGET(urlBase + '/ver_omisiones/' + pre)
+        }
+    };
 }]);

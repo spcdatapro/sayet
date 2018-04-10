@@ -160,6 +160,7 @@ class Nomina extends Principal
 					$datos['sueldoordinario'] = $e->get_sueldo();
 					$datos['diastrabajados']  = $e->get_dias_trabajados();
 					$datos['descigss']        = $e->get_descingss();
+					$datos['descprestamo']    = $e->get_descprestamo();
 				}
 
 				$this->db->update("plnnomina", $datos, ["id" => $row['id']]);

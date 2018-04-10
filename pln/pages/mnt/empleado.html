@@ -239,6 +239,13 @@
 								<select class="form-control" ng-model="emp.idproyecto" id="selectProyectoAfecta" ng-options="item.id as item.nomproyecto for item in proyectos">
 									</select>
 							</div>
+							<div class="col-sm-offset-2 col-sm-4">
+									<div class="checkbox">
+										<label>
+											<input type="checkbox" ng-model="emp.activo" ng-true-value="1" ng-false-value="0"> Activo
+										</label>
+									</div>
+							</div>
 						</div>
 					</fieldset>
 				

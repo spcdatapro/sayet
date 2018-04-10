@@ -90,7 +90,8 @@ angular.module('cpm')
              $scope.emp.descuentoisr = parseFloat($scope.emp.descuentoisr);
              $scope.emp.bonificacionley = parseFloat($scope.emp.bonificacionley);
              $scope.emp.sueldo = parseFloat($scope.emp.sueldo);
-             $scope.emp.porcentajeigss = parseFloat($scope.emp.porcentajeigss);
+             $scope.emp.porcentajeigss = parseFloat($scope.emp.porcentajeigss); 
+             $scope.emp.activo = parseInt($scope.emp.activo);
 
              if ($scope.emp.fechanacimiento) {
                 $scope.emp.fchnac = $scope.formatoFechajs($scope.emp.fechanacimiento);
@@ -107,6 +108,8 @@ angular.module('cpm')
              if ($scope.emp.baja) {
                 $scope.emp.fchbaj = $scope.formatoFechajs($scope.emp.baja);
              }
+
+             console.log($scope.emp);
 
              $scope.formulario = true;
              $scope.hay = true;
@@ -261,87 +264,6 @@ angular.module('cpm')
              $scope.hay = true;
              goTop();
         };
-
-        $scope.buscar({});
-    }
-])
-.controller('MntPrestamoController', ['$scope', '$http', 'preServicios', 'empServicios',  
-    function($scope, $http, preServicios, empServicios){
-        $scope.formulario  = false;
-        $scope.resultados  = false;
-        $scope.prestamos     = [];
-        $scope.inicio      = 0;
-        $scope.datosbuscar = [];
-        $scope.buscarmas   = true;
-        $scope.hay         = false;
-        $scope.empleados   = [];
-        
-
-        $scope.mostrarForm = function() {
-            $scope.pre = {};
-            $scope.formulario = true;
-            $scope.hay = false;
-        };
-
-        $scope.guardar = function(pre){
-            preServicios.guardar(pre).then(function(data){
-                alert(data.mensaje);
-                $scope.hay = true;
-                $scope.pre = {};
-                
-                if (data.up == 0) {
-                    $scope.prestamos.push(data.prestamo);
-                }
-            });
-        };
-
-        $scope.buscar = function(datos) {
-            $scope.formulario = false;
-
-            if (datos) {
-                $scope.datosbuscar = {'inicio':0, 'termino': datos.termino};
-            } else {
-                $scope.datosbuscar = {'inicio':0};
-            }
-            
-            preServicios.buscar($scope.datosbuscar).then(function(data){
-                $scope.datosbuscar.inicio = data.cantidad;
-                $scope.prestamos  = data.resultados;
-                $scope.resultados = true;
-
-                $scope.ocultarbtn(data.cantidad, data.maximo);
-            });
-        };
-
-        $scope.mas = function() {
-            pstServicios.buscar($scope.datosbuscar).then(function(data){
-                $scope.datosbuscar.inicio += parseInt(data.cantidad);
-
-                $scope.prestamos = $scope.puestos.concat(data.resultados);
-
-                $scope.ocultarbtn(data.cantidad, data.maximo);
-                $scope.$digest();
-            });
-        }
-
-        $scope.ocultarbtn = function(cantidad, maximo) {
-            if ( parseInt(cantidad) < parseInt(maximo) ) {
-                $scope.buscarmas = false;
-            } else {
-                $scope.buscarmas = true;
-            }
-        }
-
-        $scope.getPrestamo = function(index){
-             $scope.pst = $scope.puestos[index];
-             $scope.formulario = true;
-             $scope.hay = true;
-             goTop();
-        };
-
-        empServicios.buscar({'sin_limite':1}).then(function(d) {
-            $scope.empleados = d.resultados;
-        });
 
         $scope.buscar({});
     }

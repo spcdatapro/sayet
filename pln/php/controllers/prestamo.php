@@ -4,6 +4,8 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+session_start();
+
 require dirname(dirname(dirname(__DIR__))) . '/php/vendor/autoload.php';
 require dirname(dirname(dirname(__DIR__))) . '/php/ayuda.php';
 require dirname(__DIR__) . '/Principal.php';
@@ -56,6 +58,32 @@ $app->post('/guardar', function(){
 	}
 
     enviar_json($data);
+});
+
+$app->post('/guardar_omision/:prestamo', function($prestamo){
+	$data = ['exito' => 0];
+
+	$pre = new Prestamo($prestamo);
+	
+	if ($pre->guardar_omision($_POST)) {
+		$data['exito']   = 1;
+		$data['mensaje'] = 'Se ha guardado con èxito.';
+	} else {
+		$data['mensaje'] = $pre->get_mensaje();
+	}
+	
+	enviar_json($data);
+});
+
+$app->get('/ver_omisiones/:prestamo', function($prestamo){
+	$pre = new Prestamo($prestamo);
+	enviar_json(['omisiones' => $pre->get_omisiones()]);
+});
+
+$app->get('/test', function(){
+	echo "<pre>";
+	print_r($_SESSION);
+	echo "</pre>";
 });
 
 $app->run();

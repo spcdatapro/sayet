@@ -19,7 +19,9 @@ class General extends Principal
 			$condicion["nombre[~]"] = $args['termino'];
 		}
 
-		$condicion["LIMIT"] = [elemento($args, 'inicio', 0), get_limite()];
+		if (!elemento($args, 'sin_limite')) {
+			$condicion["LIMIT"] = [elemento($args, 'inicio', 0), get_limite()];
+		}
 
 		return $this->db->select(
 			'plnempleado', 
@@ -111,6 +113,42 @@ class General extends Principal
 					'tipo'  => $tipo
 				]
 			]
+		);
+	}
+
+	public function buscar_prestamo($args = [])
+	{
+		$condicion = [];
+
+		if (elemento($args, 'termino')) {
+			$condicion['AND'] = [
+				'OR' => [
+					"plnprestamo.concepto[~]" => $args['termino'], 
+					"b.nombre[~]" => $args['termino']
+				]
+			];
+		}
+		
+		$condicion["LIMIT"] = [elemento($args, 'inicio', 0), get_limite()];
+		
+		return $this->db->select("plnprestamo", [
+				'[><]plnempleado(b)' => ['plnprestamo.idplnempleado' => 'id']
+			], 
+			[
+				"plnprestamo.id",
+				"plnprestamo.idplnempleado",
+				"plnprestamo.fecha",
+				"plnprestamo.monto",
+				"plnprestamo.cuotamensual",
+				"plnprestamo.iniciopago",
+				"plnprestamo.liquidacion",
+				"plnprestamo.concepto",
+				"plnprestamo.finalizado",
+				"plnprestamo.saldo", 
+				"b.nombre", 
+				"b.apellidos"
+			],
+			$condicion
 		);
 	}
 }

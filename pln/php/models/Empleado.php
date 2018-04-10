@@ -36,7 +36,7 @@ class Empleado extends Principal
 		);
 	}
 
-	public function guardar($args = '')
+	public function guardar($args = [])
 	{
 		if (is_array($args) && !empty($args)) {
 			if (elemento($args, 'nombre')) {
@@ -86,7 +86,8 @@ class Empleado extends Principal
 			if (elemento($args, 'igss')) {
 				$this->set_dato('igss', $args['igss']);
 			}
-			
+
+			$this->set_dato('activo', elemento($args, 'activo', 0));
 			$this->set_dato('ingreso', elemento($args, 'ingreso', NULL));
 			$this->set_dato('reingreso', elemento($args, 'reingreso', NULL));
 			$this->set_dato('baja', elemento($args, 'baja', NULL));
@@ -398,6 +399,48 @@ class Empleado extends Principal
 		}
 
 		return 0;
+	}
+
+	public function get_descprestamo()
+	{
+		$total = 0;
+
+		if ($this->ndia != 15) {
+			$prestamos = $this->db->select(
+				"plnprestamo", 
+				['id', 'cuotamensual'], 
+				[
+					'AND' => [
+						'idplnempleado[=]' => $this->emp->id,
+						"finalizado[=]" => 0,
+						"iniciopago[<=]" => $this->nfecha
+					]
+				]
+			);
+
+			if (count($prestamos) > 0) {
+				foreach ($prestamos as $row) {
+					$ant = $this->db->get(
+						"plnpresnodesc",
+						['*'],
+						[
+							'AND' => [
+								"fecha" => $this->nfecha,
+								"idplnprestamo" => $row['id']
+							]
+						]
+					);
+
+					if ($ant && count($ant) > 0 && isset($ant['scalar'])) {
+						continue;
+					} else {
+						$total += $row['cuotamensual'];
+					}
+				}
+			}
+		}
+
+		return $total;
 	}
 
 	public function get_descingss()
