@@ -216,6 +216,21 @@ $app->get('/imprimir', function(){
 					'valor' => "Página No. "
 				]
 			];
+
+			$firmas = [
+				[
+					'campo' => 'elaborado', 
+					'valor' => 'Elaborado por _______________________'
+				], 
+				[
+					'campo' => 'revisado', 
+					'valor' => 'Revisado VoBo _______________________'
+				], 
+				[
+					'campo' => 'autorizado', 
+					'valor' => 'Autorizado VoBo _______________________'
+				]
+			];
 			
 			for ($i=0; $i < ((count($todos)+(count($datos)*2))/$rpag) ; $i++) { 
 				$pdf->AddPage();
@@ -336,7 +351,18 @@ $app->get('/imprimir', function(){
 					}
 				}
 
-				$espacio += $confe->espacio;
+				$espacio += $confe->espacio;	
+			}
+
+			$espacio += 20;
+
+			foreach ($firmas as $linea) {
+				$conf = $g->get_campo_impresion($linea['campo'], 2);
+
+				if (!isset($conf->scalar) && $conf->visible == 1) {
+					$conf->psy = ($conf->psy+$espacio);
+					$pdf = generar_fimpresion($pdf, $linea['valor'], $conf);
+				}
 			}
 
 			$pie  = $g->get_campo_impresion("vtotalespie", 2);
