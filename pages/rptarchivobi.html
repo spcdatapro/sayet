@@ -1,0 +1,32 @@
+<div class="container" ng-controller="rptArchivoBICtrl">
+    <div class="panel panel-info">
+        <div class="panel-heading">Bajar archivo de planilla para BI</div>
+        <div class="panel-body">
+            <form name="frmGetArchivoBI" id="frmGetArchivoBI" novalidate>
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label for="selEmpresa">Empresa:</label>
+                            <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="params.idempresa" ng-options="obj.id as obj.nomempresa for obj in empresas" required></select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="txDel">Del:</label>
+                            <input name="txDel" id="txDel" type="date" class="form-control" ng-model="params.fdel" required/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="txAl">Al:</label>
+                            <input name="txAl" id="txAl" type="date" class="form-control" ng-model="params.fal" required/>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" ng-disabled="frmGetArchivoBI.$invalid" ng-click="getArchivoBI()">
+                    <span class="glyphicon glyphicon-download"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
