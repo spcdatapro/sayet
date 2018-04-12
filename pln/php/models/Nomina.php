@@ -240,13 +240,13 @@ class Nomina extends Principal
 
 		$sql = <<<EOT
 SELECT 
-    a.*, b.nombre, b.apellidos, b.dpi, b.idempresadebito, c.nomempresa
+    a.*, b.nombre, b.apellidos, b.dpi, b.idempresaactual, c.nomempresa
 FROM
     plnnomina a
         JOIN
     plnempleado b ON b.id = a.idplnempleado
         JOIN
-    empresa c ON c.id = b.idempresadebito
+    empresa c ON c.id = b.idempresaactual
 	where b.activo = 1 and a.fecha between '{$args["fdel"]}' and '{$args["fal"]}' 
 	and a.devengado <> 0 
     {$where} order by c.nomempresa, b.nombre 
@@ -262,7 +262,7 @@ EOT;
 			$datos[] = [
 				[
 					'campo' => 'vidempresa', 
-					'valor' => $row->idempresadebito
+					'valor' => $row->idempresaactual
 				], # El id de la empresa debe ir como primer arreglo, NO LO CAMBIÈS
 				[
 					'campo' => 'vempresa', 
