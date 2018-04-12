@@ -403,7 +403,7 @@ class Empleado extends Principal
 
 	public function get_descprestamo()
 	{
-		$total = 0;
+		$prest = ['prestamo' => [], 'total' => 0];
 
 		if ($this->ndia != 15) {
 			$prestamos = $this->db->select(
@@ -434,17 +434,43 @@ class Empleado extends Principal
 					if ($ant && count($ant) > 0 && isset($ant['scalar'])) {
 						continue;
 					} else {
-						$total += $row['cuotamensual'];
+						$prest['prestamo'][] = $row;
+						$prest['total']     += $row['cuotamensual'];
 					}
 				}
 			}
 		}
 
-		return $total;
+		return $prest;
 	}
 
 	public function get_descingss()
 	{
 		return round(($this->emp->porcentajeigss/100) * $this->sueldo, 2);
+	}
+
+	public function get_saldo_prestamo()
+	{
+		$saldo = 0;
+
+		$tmp = $this->db->select(
+			'plnprestamo', 
+			['id'],
+			[
+				'AND' => [
+					'idplnempleado' => $this->emp->id, 
+					'finalizado'    => 0
+				]
+			]
+		);
+
+		if ($tmp) {
+			foreach ($tmp as $row) {
+				$pre    = new Prestamo($row['id']);
+				$saldo += $pre->get_saldo();
+			}
+		}
+
+		return $saldo;
 	}
 }

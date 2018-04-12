@@ -7,6 +7,7 @@ error_reporting(E_ALL);*/
 require dirname(dirname(dirname(__DIR__))) . '/php/vendor/autoload.php';
 require dirname(dirname(dirname(__DIR__))) . '/php/ayuda.php';
 require dirname(__DIR__) . '/Principal.php';
+require dirname(__DIR__) . '/models/Prestamo.php';
 require dirname(__DIR__) . '/models/Empleado.php';
 require dirname(__DIR__) . '/models/Nomina.php';
 require dirname(__DIR__) . '/models/General.php';

@@ -58,6 +58,10 @@ class Prestamo extends Principal
 			if (elemento($args, 'concepto', FALSE)) {
 				$this->set_dato('concepto', $args['concepto']);
 			}
+
+			if (elemento($args, 'saldo', FALSE)) {
+				$this->set_dato('saldo', $args['saldo']);
+			}
 		}
 
 		if (!empty($this->datos)) {
@@ -135,5 +139,34 @@ class Prestamo extends Principal
 				'idplnprestamo' => $this->pre->id
 			]
 		);
+	}
+
+	public function get_saldo($args = [])
+	{
+		if ($this->pre->finalizado == 1) {
+			return 0;
+		} else {
+			$abonos = 0;
+
+			$tmp = $this->db->select(
+				'plnpresnom', 
+				['monto'],
+				['idplnprestamo' => $this->pre->id]
+			);
+
+			if ($tmp) {
+				foreach ($tmp as $row) {
+					$abonos += $row['monto'];
+				}
+			}
+
+			$saldo = round($this->pre->monto - $abonos, 2);
+
+			if ($saldo != $this->pre->saldo) {
+				$this->guardar(['saldo' => $saldo]);
+			}
+
+			return $saldo;
+		}
 	}
 }

@@ -160,7 +160,40 @@ class Nomina extends Principal
 					$datos['sueldoordinario'] = $e->get_sueldo();
 					$datos['diastrabajados']  = $e->get_dias_trabajados();
 					$datos['descigss']        = $e->get_descingss();
-					$datos['descprestamo']    = $e->get_descprestamo();
+					
+					$prest = $e->get_descprestamo();
+					
+					$datos['descprestamo'] = $prest['total'];
+
+					foreach ($prest['prestamo'] as $prestamo) {
+						$tmp = (object)$this->db->get(
+							"plnpresnom", 
+							['*'], 
+							[
+								'AND' => [
+									'idplnprestamo' => $prestamo['id'], 
+									'idplnnomina'   => $row['id']
+								]
+							]
+						);
+
+						if (isset($tmp->scalar)) {
+							$this->db->insert(
+								"plnpresnom", 
+								[
+									'idplnprestamo' => $prestamo['id'],
+									'idplnnomina'   => $row['id'],
+									'monto'         => $prestamo['cuotamensual']
+								]
+							);
+						} else {
+							$this->db->update(
+								"plnpresnom", 
+								['monto' => $prestamo['cuotamensual']],
+								['id' => $tmp->id]
+							);
+						}
+					}
 				}
 
 				$this->db->update("plnnomina", $datos, ["id" => $row['id']]);
@@ -223,6 +256,8 @@ EOT;
 		foreach ($res as $row) {
 			$row = (object)$row;
 			$dia = date('d', strtotime($row->fecha));
+			$emp = new Empleado($row->idplnempleado);
+
 			$datos[] = [
 				[
 					'campo' => 'vidempresa', 
@@ -294,7 +329,7 @@ EOT;
 				],
 				[
 					'campo' => 'vhorasextras', 
-					'valor' => $row->sueldoordinario
+					'valor' => 0
 				],
 				[
 					'campo' => 'tsueldoextra', 
@@ -442,7 +477,7 @@ EOT;
 				], 
 				[
 					'campo' => 'vsaldoprestamo', 
-					'valor' => $row->descprestamo
+					'valor' => $emp->get_saldo_prestamo()
 				],
 				[
 					'campo' => 'vdiastrabajados', 
@@ -455,6 +490,14 @@ EOT;
 				[
 					'campo' => 'trecibi', 
 					'valor' => 'Recibí Conforme'
+				],
+				[
+					'campo' => 'tbonoanual',
+					'valor' => 'Bonifi. anual p/trab. sector privado y público:'
+				], 
+				[
+					'campo' => 'vbonoanual',
+					'valor' => 0
 				]
 			];
 		}
