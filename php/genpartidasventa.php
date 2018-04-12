@@ -108,7 +108,7 @@ $app->get('/generar', function(){
 $app->get('/regen', function(){
     $db = new dbcpm();
     $origen = 3;
-    $ids = "5336, 5337, 5571, 5572, 5573, 5574, 5575, 5576, 5577, 5578, 5579, 5580, 5581, 5582, 5583, 5584, 5585, 5586, 5587, 5588, 5589, 5590, 5591, 5592, 5593, 5594, 5595, 5596, 5597, 5598, 5599, 5600, 5601, 5602, 5603, 5604, 5605, 5606, 5607, 5608, 5609, 5610, 5611, 5612, 5613, 5614, 5615, 5616, 5617, 5618, 5619, 5620, 5621, 5622, 5623, 5624, 5625, 5626, 5627, 5628, 5629, 5630";
+    $ids = "5450, 5451, 5452, 5453, 5454, 5455, 5456, 5457, 5458, 5459, 5460, 5461, 5462, 5463, 5464, 5465, 5466, 5467, 5468, 5469, 5470, 5471, 5472, 5473, 5474, 5475, 5476, 5477, 5478, 5479, 5480, 5481, 5482, 5483, 5484, 5485, 5486, 5487, 5488, 5489, 5490, 5491, 5492, 5493, 5495, 5496, 5497, 5498, 5499, 5500, 5501, 5502, 5503, 5504, 5505, 5506, 5507, 5508, 5509, 5510, 5511, 5512, 5513, 5514, 5515, 5516";
     echo "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body><small><h3>Regeneración de facturas específicas</h3><h2>$ids</h2>";
 
     $query = "DELETE FROM detallecontable WHERE origen = $origen AND idorigen IN($ids)";
@@ -122,8 +122,8 @@ $app->get('/regen', function(){
     $query.= "a.anulada, a.esinsertada ";
     $query.= "FROM factura a ";
     $query.= "WHERE a.id IN($ids) ";
-    //$query.= "AND a.idcontrato > 0 ";
-    $query.= "AND a.idcontrato = 0 ";
+    $query.= "AND a.idcontrato > 0 ";
+    //$query.= "AND a.idcontrato = 0 ";
     $query.= "ORDER BY a.idempresa";
     $facturas = $db->getQuery($query);
     $cntFact = count($facturas);
@@ -136,9 +136,9 @@ $app->get('/regen', function(){
             echo "<strong>Insertando detalle contable de factura $factura->serie $factura->numero</strong><br/>";
 
             //Cuenta del cliente
-            //$query = "SELECT TRIM(idcuentac) FROM contrato WHERE id = $factura->idcontrato";
-            //$codctacliente = $db->getOneField($query);
-            $codctacliente = '1120199';
+            $query = "SELECT TRIM(idcuentac) FROM contrato WHERE id = $factura->idcontrato";
+            $codctacliente = $db->getOneField($query);
+            //$codctacliente = '1120199';
             echo "Codigo cuenta cliente = $codctacliente de empresa $factura->idempresa<br/>";
             $query = "SELECT id FROM cuentac WHERE TRIM(codigo) = '$codctacliente' AND idempresa = $factura->idempresa";
             $ctacliente = (int)$db->getOneField($query);
