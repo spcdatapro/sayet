@@ -247,7 +247,8 @@ FROM
     plnempleado b ON b.id = a.idplnempleado
         JOIN
     empresa c ON c.id = b.idempresadebito
-    where b.activo = 1 and a.fecha between '{$args["fdel"]}' and '{$args["fal"]}' 
+	where b.activo = 1 and a.fecha between '{$args["fdel"]}' and '{$args["fal"]}' 
+	and a.devengado <> 0 
     {$where} order by c.nomempresa, b.nombre 
 EOT;
 		$res   = $this->db->query($sql)->fetchAll();
