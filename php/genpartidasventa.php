@@ -108,7 +108,7 @@ $app->get('/generar', function(){
 $app->get('/regen', function(){
     $db = new dbcpm();
     $origen = 3;
-    $ids = "5274, 5275, 5278, 5279, 5280, 5281, 5282, 5283, 5284, 5285, 5286, 5287, 5288, 5289, 5290, 5291, 5292, 5293, 5294, 5295, 5296, 5297, 5298, 5299, 5300, 5301, 5302, 5303, 5304, 5305, 5306, 5307, 5308, 5309, 5310, 5311, 5312, 5313, 5314, 5315, 5316, 5317, 5318, 5319, 5320, 5321, 5322, 5323, 5324, 5325, 5326, 5327, 5329, 5330, 5331, 5332, 5333, 5334, 5335, 5338, 5339, 5340, 5341, 5342, 5343, 5344, 5345, 5346, 5347, 5348, 5349, 5350, 5351, 5352, 5353, 5354, 5355, 5356, 5357, 5358, 5359, 5360, 5361, 5362, 5363, 5364, 5365, 5366, 5367, 5368, 5369, 5370, 5371, 5372, 5373, 5374, 5375, 5376, 5377, 5378, 5379, 5380, 5381, 5382, 5383, 5384, 5385, 5386, 5387, 5388, 5389, 5390, 5391, 5392, 5393, 5394, 5395, 5396, 5397, 5398, 5399, 5400, 5401, 5402, 5403, 5404, 5405, 5406, 5407, 5408, 5409, 5410, 5411, 5412, 5413, 5414, 5415, 5416, 5417, 5418, 5419, 5420, 5421, 5422, 5423, 5424, 5425, 5426, 5427, 5428, 5429, 5430, 5431, 5432, 5433, 5434, 5435, 5436, 5437, 5438, 5439, 5440, 5441, 5442, 5443, 5444, 5445, 5446, 5447, 5448, 5449";
+    $ids = "5336, 5337, 5571, 5572, 5573, 5574, 5575, 5576, 5577, 5578, 5579, 5580, 5581, 5582, 5583, 5584, 5585, 5586, 5587, 5588, 5589, 5590, 5591, 5592, 5593, 5594, 5595, 5596, 5597, 5598, 5599, 5600, 5601, 5602, 5603, 5604, 5605, 5606, 5607, 5608, 5609, 5610, 5611, 5612, 5613, 5614, 5615, 5616, 5617, 5618, 5619, 5620, 5621, 5622, 5623, 5624, 5625, 5626, 5627, 5628, 5629, 5630";
     echo "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body><small><h3>Regeneración de facturas específicas</h3><h2>$ids</h2>";
 
     $query = "DELETE FROM detallecontable WHERE origen = $origen AND idorigen IN($ids)";
@@ -122,8 +122,8 @@ $app->get('/regen', function(){
     $query.= "a.anulada, a.esinsertada ";
     $query.= "FROM factura a ";
     $query.= "WHERE a.id IN($ids) ";
-    $query.= "AND a.idcontrato > 0 ";
-    //$query.= "AND a.idcontrato = 0 ";
+    //$query.= "AND a.idcontrato > 0 ";
+    $query.= "AND a.idcontrato = 0 ";
     $query.= "ORDER BY a.idempresa";
     $facturas = $db->getQuery($query);
     $cntFact = count($facturas);
@@ -136,9 +136,9 @@ $app->get('/regen', function(){
             echo "<strong>Insertando detalle contable de factura $factura->serie $factura->numero</strong><br/>";
 
             //Cuenta del cliente
-            $query = "SELECT TRIM(idcuentac) FROM contrato WHERE id = $factura->idcontrato";
-            $codctacliente = $db->getOneField($query);
-            //$codctacliente = '1120199';
+            //$query = "SELECT TRIM(idcuentac) FROM contrato WHERE id = $factura->idcontrato";
+            //$codctacliente = $db->getOneField($query);
+            $codctacliente = '1120199';
             echo "Codigo cuenta cliente = $codctacliente de empresa $factura->idempresa<br/>";
             $query = "SELECT id FROM cuentac WHERE TRIM(codigo) = '$codctacliente' AND idempresa = $factura->idempresa";
             $ctacliente = (int)$db->getOneField($query);
