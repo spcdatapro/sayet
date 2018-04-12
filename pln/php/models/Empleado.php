@@ -373,7 +373,8 @@ class Empleado extends Principal
 
 		if ($this->emp->formapago == 1 && $this->ndia == 15) {
 
-			return round( ($this->dtrabajados * ($this->get_gana_dia() + $this->get_bono_dia())), 2);
+			#return round( ($this->dtrabajados * ($this->get_gana_dia() + $this->get_bono_dia())), 2);
+			return round(($this->sueldo+$this->emp->bonificacionley)/2, 2);
 		}
 
 		return 0;
