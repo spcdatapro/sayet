@@ -87,10 +87,21 @@ class Empleado extends Principal
 				$this->set_dato('igss', $args['igss']);
 			}
 
-			$this->set_dato('activo', elemento($args, 'activo', 0));
-			$this->set_dato('ingreso', elemento($args, 'ingreso', NULL));
-			$this->set_dato('reingreso', elemento($args, 'reingreso', NULL));
-			$this->set_dato('baja', elemento($args, 'baja', NULL));
+			if (isset($args['activo'])) {
+				$this->set_dato('activo', $args['activo']);
+			}
+
+			if (isset($args['ingreso'])) {
+				$this->set_dato('ingreso', elemento($args, 'ingreso', NULL));
+			}
+
+			if (isset($args['reingreso'])) {
+				$this->set_dato('reingreso', elemento($args, 'reingreso', NULL));
+			}
+
+			if (isset($args['baja'])) {
+				$this->set_dato('baja', elemento($args, 'baja', NULL));
+			}
 			
 			if (elemento($args, 'idplnpuesto')) {
 				$this->set_dato('idplnpuesto', $args['idplnpuesto']);

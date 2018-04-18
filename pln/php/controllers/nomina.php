@@ -116,122 +116,15 @@ $app->get('/imprimir', function(){
 			$hojas = 1;
 			$rpag = 32;
 
-			$mes  = ucwords(get_meses(date('m', strtotime($_GET['fal']))));
+			$mes  = date('m', strtotime($_GET['fal']));
 			$anio = date('Y', strtotime($_GET['fal']));
+			$dia  = date('d', strtotime($_GET['fal']));
 
-			$cabecera = [
-				[
-					'campo' => 'titulon', 
-					'valor' => 'Módulo de Planillas'
-				], 
-				[
-					'campo' => 'subtitulo', 
-					'valor' => 'Planilla General'
-				], 
-				[
-					'campo' => 'mes', 
-					'valor' => "del mes de {$mes} de {$anio}"
-				], 
-				[
-					'campo' => 'tcodigot', 
-					'valor' => "Código"
-				], 
-				[
-					'campo' => 'tnombre', 
-					'valor' => "Nombre"
-				], 
-				[
-					'campo' => 'tdiastrabajadost', 
-					'valor' => "DíasTrab"
-				], 
-				[
-					'campo' => 'tsueldoot', 
-					'valor' => "Sueldo O."
-				],
-				[
-					'campo' => 'tsueldoextrat', 
-					'valor' => "Sueldo E."
-				],
-				[
-					'campo' => 'tsueldototalt', 
-					'valor' => "Sueldo T."
-				],
-				[
-					'campo' => 'tbonificaciont', 
-					'valor' => "Bonifica"
-				],
-				[
-					'campo' => 'tanticipot', 
-					'valor' => "Anticipos"
-				],
-				[
-					'campo' => 'tvacacionest', 
-					'valor' => "Vacaciones"
-				],
-				[
-					'campo' => 'tbono14t', 
-					'valor' => "Bono14"
-				],
-				[
-					'campo' => 'taguinaldot', 
-					'valor' => "Aguinaldo"
-				],
-				[
-					'campo' => 'tdevengadot', 
-					'valor' => "Devengado"
-				],
-				[
-					'campo' => 'tigsst', 
-					'valor' => "IGSS"
-				],
-				[
-					'campo' => 'tisrt', 
-					'valor' => "ISR"
-				],
-				[
-					'campo' => 'tdescprestamot', 
-					'valor' => "Préstamos"
-				],
-				[
-					'campo' => 'tdescanticipot', 
-					'valor' => 'Anticipos:'
-				],
-				[
-					'campo' => 'tdeducidot', 
-					'valor' => "Deducido"
-				],
-				[
-					'campo' => 'tliquidot', 
-					'valor' => "Líquido"
-				],
-				[
-					'campo' => 'tlineat', 
-					'valor' => str_repeat("_", 250)
-				],
-				[
-					'campo' => 'tlineapiet', 
-					'valor' => str_repeat("_", 250)
-				], 
-				[
-					'campo' => 'tnopaginat', 
-					'valor' => "Página No. "
-				]
-			];
-
-			$firmas = [
-				[
-					'campo' => 'elaborado', 
-					'valor' => 'Elaborado por _______________________'
-				], 
-				[
-					'campo' => 'revisado', 
-					'valor' => 'Revisado VoBo _______________________'
-				], 
-				[
-					'campo' => 'autorizado', 
-					'valor' => 'Autorizado VoBo _______________________'
-				]
-			];
+			$cabecera = $b->get_cabecera([
+				'dia'  => $dia, 
+				'mes'  => $mes, 
+				'anio' => $anio
+			]);
 			
 			for ($i=0; $i < ((count($todos)+(count($datos)*2))/$rpag) ; $i++) { 
 				$pdf->AddPage();
@@ -357,11 +250,10 @@ $app->get('/imprimir', function(){
 
 			$espacio += 20;
 
-			foreach ($firmas as $linea) {
+			foreach ($b->get_firmas() as $linea) {
 				$conf = $g->get_campo_impresion($linea['campo'], 2);
 
 				if (!isset($conf->scalar) && $conf->visible == 1) {
-					$conf->psy = ($conf->psy+$espacio);
 					$pdf = generar_fimpresion($pdf, $linea['valor'], $conf);
 				}
 			}

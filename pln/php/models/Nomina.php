@@ -505,4 +505,143 @@ EOT;
 
 		return $datos;
 	}
+
+	public function get_cabecera($args = [])
+	{
+		$subtitulo = $args['dia'] == 15 ? 'Anticipo Quincena # ' . (int)$args['mes'] : 'Planilla General';
+		$nmes = ucwords(get_meses($args['mes']));
+		
+		return [
+			[
+				'campo' => 'titulon', 
+				'valor' => 'Módulo de Planillas'
+			], 
+			[
+				'campo' => 'subtitulo', 
+				'valor' => $subtitulo
+			], 
+			[
+				'campo' => 'mes', 
+				'valor' => "del mes de {$nmes} de {$args['anio']}"
+			], 
+			[
+				'campo' => 'tcodigot', 
+				'valor' => "Código"
+			], 
+			[
+				'campo' => 'tnombre', 
+				'valor' => "Nombre"
+			], 
+			[
+				'campo' => 'tdiastrabajadost', 
+				'valor' => "DíasTrab"
+			], 
+			[
+				'campo' => 'tsueldoot', 
+				'valor' => "Sueldo O."
+			],
+			[
+				'campo' => 'tsueldoextrat', 
+				'valor' => "Sueldo E."
+			],
+			[
+				'campo' => 'tsueldototalt', 
+				'valor' => "Sueldo T."
+			],
+			[
+				'campo' => 'tbonificaciont', 
+				'valor' => "Bonifica"
+			],
+			[
+				'campo' => 'tanticipot', 
+				'valor' => "Anticipos"
+			],
+			[
+				'campo' => 'tvacacionest', 
+				'valor' => "Vacaciones"
+			],
+			[
+				'campo' => 'tbono14t', 
+				'valor' => "Bono14"
+			],
+			[
+				'campo' => 'taguinaldot', 
+				'valor' => "Aguinaldo"
+			],
+			[
+				'campo' => 'tdevengadot', 
+				'valor' => "Devengado"
+			],
+			[
+				'campo' => 'tigsst', 
+				'valor' => "IGSS"
+			],
+			[
+				'campo' => 'tisrt', 
+				'valor' => "ISR"
+			],
+			[
+				'campo' => 'tdescprestamot', 
+				'valor' => "Préstamos"
+			],
+			[
+				'campo' => 'tdescanticipot', 
+				'valor' => 'Anticipos:'
+			],
+			[
+				'campo' => 'tdeducidot', 
+				'valor' => "Deducido"
+			],
+			[
+				'campo' => 'tliquidot', 
+				'valor' => "Líquido"
+			],
+			[
+				'campo' => 'tlineat', 
+				'valor' => str_repeat("_", 250)
+			],
+			[
+				'campo' => 'tlineapiet', 
+				'valor' => str_repeat("_", 250)
+			], 
+			[
+				'campo' => 'tnopaginat', 
+				'valor' => "Página No. "
+			], 
+			[
+				'campo' => 'linea_devengados', 
+				'valor' => str_repeat("_", 41) . 'Devengados' . str_repeat('_', 41)
+			], 
+			[
+				'campo' => 'linea_devengados_total',
+				'valor' => 'Total'
+			],
+			[
+				'campo' => 'linea_deducidos',
+				'valor' => str_repeat("_", 18) . 'Deducido' . str_repeat('_', 18)
+			],
+			[
+				'campo' => 'linea_deducidos_total',
+				'valor' => 'Total'
+			]
+		];
+	}
+
+	public function get_firmas()
+	{
+		return [
+			[
+				'campo' => 'elaborado', 
+				'valor' => 'Elaborado por: _______________________'
+			], 
+			[
+				'campo' => 'revisado', 
+				'valor' => 'Revisado VoBo: _______________________'
+			], 
+			[
+				'campo' => 'autorizado', 
+				'valor' => 'Autorizado VoBo: _______________________'
+			]
+		];
+	}
 }
