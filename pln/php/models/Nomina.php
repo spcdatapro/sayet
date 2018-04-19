@@ -278,7 +278,7 @@ EOT;
 				],
 				[
 					'campo' => 'rango', 
-					'valor' => "Planilla del {$args['fdel']} al {$args['fal']}"
+					'valor' => 'Planilla del '.formatoFecha($args['fdel'],1).' al '.formatoFecha($args['fal'], 1)
 				],
 				[
 					'campo' => 'templeado', 
@@ -437,11 +437,11 @@ EOT;
 					'valor' => $row->descprestamo
 				],
 				[
-					'campo' => 'totros', 
+					'campo' => 'tdescotros', 
 					'valor' => 'Otros:'
 				],
 				[
-					'campo' => 'votros', 
+					'campo' => 'vdescotros', 
 					'valor' => $row->descotros
 				],
 				[
@@ -585,6 +585,10 @@ EOT;
 				'valor' => "Préstamos"
 			],
 			[
+				'campo' => 'tdescotrost', 
+				'valor' => "Otros"
+			],
+			[
 				'campo' => 'tdescanticipot', 
 				'valor' => 'Anticipos:'
 			],
@@ -610,7 +614,7 @@ EOT;
 			], 
 			[
 				'campo' => 'linea_devengados', 
-				'valor' => str_repeat("_", 41) . 'Devengados' . str_repeat('_', 41)
+				'valor' => str_repeat("_", 40) . 'Devengados' . str_repeat('_', 40)
 			], 
 			[
 				'campo' => 'linea_devengados_total',
@@ -618,7 +622,7 @@ EOT;
 			],
 			[
 				'campo' => 'linea_deducidos',
-				'valor' => str_repeat("_", 18) . 'Deducido' . str_repeat('_', 18)
+				'valor' => str_repeat("_", 22) . 'Deducido' . str_repeat('_', 22)
 			],
 			[
 				'campo' => 'linea_deducidos_total',
@@ -632,15 +636,15 @@ EOT;
 		return [
 			[
 				'campo' => 'elaborado', 
-				'valor' => 'Elaborado por: _______________________'
+				'valor' => 'Elaborado por: ' . str_repeat('_', 25)
 			], 
 			[
 				'campo' => 'revisado', 
-				'valor' => 'Revisado VoBo: _______________________'
+				'valor' => 'Revisado VoBo: ' . str_repeat('_', 25)
 			], 
 			[
 				'campo' => 'autorizado', 
-				'valor' => 'Autorizado VoBo: _______________________'
+				'valor' => 'Autorizado VoBo: ' . str_repeat('_', 25)
 			]
 		];
 	}

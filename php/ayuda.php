@@ -155,3 +155,30 @@ if (! function_exists('generar_fimpresion')) {
 		return $pdf;
 	}
 }
+
+if ( ! function_exists('formatoFecha')) {
+	function formatoFecha($fecha, $tipo = '')
+	{
+		$date = new DateTime($fecha);
+
+		switch ($tipo) {
+			case 1:
+				$formato = 'd/m/Y';
+				break;
+			case 2: # Devuelve el día
+				$formato = 'd';
+				break;
+			case 3: # Devuelve mes
+				$formato = 'm';
+				break;
+			case 4: # Devuelve año
+				$formato = 'Y';
+				break;
+			default:
+				$formato = "d/m/Y H:i";
+				break;
+		}
+		
+		return $date->format($formato);
+	}
+}
