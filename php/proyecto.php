@@ -206,19 +206,20 @@ $app->post('/ucb', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
     $cambio = 1;
-    $query = "SELECT IF((SELECT cantbase FROM detunidadservicio WHERE idunidadservicio = 1 ORDER BY fechacambio DESC LIMIT 1) IS NULL, 0.00, (SELECT cantbase FROM detunidadservicio WHERE idunidadservicio = 1 ORDER BY fechacambio DESC LIMIT 1))";
+    $query = "SELECT IF((SELECT cantbase FROM detunidadservicio WHERE idserviciobasico = $d->idserviciobasico ORDER BY fechacambio DESC LIMIT 1) IS NULL, 0.00, (SELECT cantbase FROM detunidadservicio WHERE idserviciobasico = $d->idserviciobasico ORDER BY fechacambio DESC LIMIT 1))";
     $ultcambio = round((float)$db->getOneField($query), 2);
-    if(round((float)$d->mcubsug, 2) != $ultcambio){
+    $mcs = round((float)$d->mcubsug, 2);
+    if($mcs != $ultcambio){
         $query = "INSERT INTO detunidadservicio(idunidadservicio, idproyecto, idunidad, fechacambio, usrcambio, cantbase, idserviciobasico) VALUES(";
-        $query.= "$d->id, $d->idproyecto, $d->idunidad, NOW(), $d->idusuario, $d->mcubsug, $d->idserviciobasico";
+        $query.= "$d->id, $d->idproyecto, $d->idunidad, NOW(), $d->idusuario, $mcs, $d->idserviciobasico";
         $query.= ")";
+        //print $query;
         $db->doQuery($query);
         $cambio = 1;
-        $query = "UPDATE serviciobasico SET mcubsug = $d->mcubsug WHERE id = $d->idserviciobasico";
-        $db->doQuery($query);
     }
 
-    $query = "UPDATE serviciobasico SET preciomcubsug = $d->preciomcubsug WHERE id = $d->idserviciobasico";
+    $query = "UPDATE serviciobasico SET preciomcubsug = $d->preciomcubsug, mcubsug = $mcs WHERE id = $d->idserviciobasico";
+    //print $query;
     $db->doQuery($query);
 
     print json_encode(['cambio' => $cambio]);
