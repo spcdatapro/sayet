@@ -301,27 +301,27 @@ class Empleado extends Principal
 
 	public function get_gana_dia()
 	{
-		return round($this->sueldo/30, 2);
+		return $this->sueldo/30;
 	}
 
 	public function get_bono_dia()
 	{
-		return round($this->emp->bonificacionley/30, 2);
+		return $this->emp->bonificacionley/30;
 	}
 
 	public function get_gana_hora()
 	{
-		return round($this->get_gana_dia()/8, 2);
+		return $this->get_gana_dia()/8;
 	}
 
 	public function get_horas_extras_simples()
 	{
-		return round($this->emp->cantidad_horas_simples*$this->get_gana_hora()*$this->horasimple, 2);
+		return $this->emp->cantidad_horas_simples*$this->get_gana_hora()*$this->horasimple;
 	}
 
 	public function get_horas_extras_dobles()
 	{
-		return round($this->emp->cantidad_horas_dobles*$this->get_gana_hora()*$this->horadoble, 2);
+		return $this->emp->cantidad_horas_dobles*$this->get_gana_hora()*$this->horadoble;
 	}
 
 	public function get_total_horas_extras()
@@ -355,7 +355,7 @@ class Empleado extends Principal
 	public function get_sueldo_ordinario()
 	{
 		if ($this->dtrabajados > 0) {
-			return round($this->get_gana_dia()*$this->dtrabajados, 2);
+			return $this->get_gana_dia()*$this->dtrabajados;
 		}
 
 		return 0;
@@ -366,10 +366,10 @@ class Empleado extends Principal
 		if ($this->dtrabajados > 0) {
 
 			if ($this->ndia != 15 && $this->dtrabajados == $this->ndia) {
-				return round($this->emp->bonificacionley,2 );
+				return $this->emp->bonificacionley;
 			}
 
-			return round($this->get_bono_dia()*$this->dtrabajados, 2);
+			return $this->get_bono_dia()*$this->dtrabajados;
 		}
 
 		return 0;
@@ -385,7 +385,7 @@ class Empleado extends Principal
 		if ($this->emp->formapago == 1 && $this->ndia == 15) {
 
 			#return round( ($this->dtrabajados * ($this->get_gana_dia() + $this->get_bono_dia())), 2);
-			return round(($this->sueldo+$this->emp->bonificacionley)/2, 2);
+			return (($this->sueldo+$this->emp->bonificacionley)/2);
 		}
 
 		return 0;

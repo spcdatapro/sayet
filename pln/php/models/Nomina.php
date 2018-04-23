@@ -631,6 +631,70 @@ EOT;
 		];
 	}
 
+	public function get_cabecera_igss($args = [])
+	{
+		$nmes = strtoupper(get_meses($args['mes']));
+
+		return [
+			[
+				'campo' => 'titulo', 
+				'valor' => 'INSTITUTO GUATEMALTECO DE SEGURIDAD SOCIAL'
+			], 
+			[
+				'campo' => 'subtitulo', 
+				'valor' => 'PLANILLA DE SEGURIDAD SOCIAL'
+			], 
+			[
+				'campo' => 'mes',
+				'valor' => "CORRESPONDIENTE AL MES DE {$nmes} DE {$args['anio']}"
+			], 
+			[
+				'campo' => 'periodo', 
+				'valor' => 'POR EL PERIODO DEL 01/'.$args['mes'].'/'.$args['anio'].' AL '.$args['dia'].'/'.$args['mes'].'/'.$args['anio']
+			], 
+			[
+				'campo' => 't_razon_social',
+				'valor' => 'Nombre o Razón Social:'
+			],
+			[
+				'campo' => 't_direccion_patrono',
+				'valor' => 'Dirección del Patrono:'
+			],
+			[
+				'campo' => 't_numero_patronal',
+				'valor' => 'Número Patronal:'
+			],
+			[
+				'campo' => 't_afiliacion', 
+				'valor' => "No. Afiliación"
+			], 
+			[
+				'campo' => 't_nombre_empleado',
+				'valor' => 'Nombre del Empleado'
+			],
+			[
+				'campo' => 't_fecha_baja',
+				'valor' => 'Fecha de Baja'
+			],
+			[
+				'campo' => 't_sueldo_ordinario',
+				'valor' => 'Sueldo Ordinario'
+			],
+			[
+				'campo' => 't_sueldo_extraordinario',
+				'valor' => 'Sueldo Extraordinario'
+			],
+			[
+				'campo' => 't_sueldo_total',
+				'valor' => 'Sueldo Total'
+			],
+			[
+				'campo' => 't_igss',
+				'valor' => 'IGSS'
+			]
+		];
+	}
+
 	public function get_firmas()
 	{
 		return [
