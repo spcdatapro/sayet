@@ -4,12 +4,16 @@ angular.module('cpm')
         $scope.resultados = false;
         $scope.nomina = [];
         $scope.empresas  = [];
-        $scope.shingresos = false;
+        $scope.shingresos_uno = false;
         $scope.shdescuentos = false;
+        $scope.primeraQuincena = false;
+        $scope.shingresos_dos = false;
 
         $scope.buscar = function(datos) {
             $("#btnBuscar").button('loading');
             $scope.nomina = [];
+
+            $scope.primeraQuincena = datos.fch.getDate() === 15 ? true : false;
 
             datos.fecha = datos.fch.getFullYear()+'-'+(datos.fch.getMonth()+1)+'-'+datos.fch.getDate();
 
@@ -23,6 +27,7 @@ angular.module('cpm')
                 $("#btnBuscar").button('reset');
                 
                 $scope.resultados = true;
+                $scope.showIngresos();
         	});
         };
 
@@ -32,12 +37,20 @@ angular.module('cpm')
 
         $scope.showIngresos = function() {
             $scope.shdescuentos = false;
-            $scope.shingresos   = true;
+
+            if ($scope.primeraQuincena) {
+                $scope.shingresos_uno = true;
+                $scope.shingresos_dos = false;
+            } else {
+                $scope.shingresos_uno = false;
+                $scope.shingresos_dos = true;
+            }
         }
 
         $scope.showDescuentos = function() {
-            $scope.shingresos   = false;
-            $scope.shdescuentos = true;
+            $scope.shdescuentos = $scope.primeraQuincena === true ? false : true;
+            $scope.shingresos_uno = false;
+            $scope.shingresos_dos = false;
         }
 
         $scope.actualizarNomina = function(n) {

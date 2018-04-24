@@ -63,35 +63,42 @@
 					<thead>
 						<tr>
 							<th>Empleado</th>
-							<th class="text-right" ng-show="shingresos">Viáticos</th>
-							<th class="text-right" ng-show="shingresos">Aguinaldo</th>
-							<th class="text-right" ng-show="shingresos">Indemnización</th>
-							<th class="text-right" ng-show="shingresos">Bono 14</th>
-							<th class="text-right" ng-show="shingresos">Vaciones</th>
-							<th class="text-right" ng-show="shingresos" title="Otros Ingresos">Otros</th>
-							<th class="text-right" ng-show="shingresos" title="Días Tabajados">Días</th>
+							<th class="text-right" ng-show="shingresos_uno">Anticipo</th>
+							
+							<th class="text-right" ng-show="shingresos_dos" title="Sueldo Ordinario">S. Ordinario</th>
+							<th class="text-right" ng-show="shingresos_dos">Viáticos</th>
+							<th class="text-right" ng-show="shingresos_dos">Aguinaldo</th>
+							<th class="text-right" ng-show="shingresos_dos">Indemnización</th>
+							<th class="text-right" ng-show="shingresos_dos">Bono 14</th>
+							<th class="text-right" ng-show="shingresos_dos">Vaciones</th>
+							<th class="text-right" ng-show="shingresos_dos" title="Otros Ingresos">Otros</th>
+							<!-- th class="text-right" ng-show="shingresos_dos" title="Días Tabajados">Días</th -->
 							
 							<th class="text-right" ng-show="shdescuentos" title="Retención de ISR">ISR</th>
 							<th class="text-right" ng-show="shdescuentos" title="Otros Descuentos">Otros</th>
-							<th class="text-right" ng-show="shdescuentos">Horas Extras</th>
-							<th class="text-right" ng-show="shdescuentos" title="Descuento Vacaciones">Vacaciones</th>
+							<!-- th class="text-right" ng-show="shdescuentos">Horas Extras</th>
+							<th class="text-right" ng-show="shdescuentos" title="Descuento Vacaciones">Vacaciones</th -->
 						</tr>
 					</thead>
 					<tbody ng-cloak>
 						<tr ng-repeat="i in nomina track by $index">
 							<td>{{ i.nempleado }}</td>
-							<td class="text-right" ng-show="shingresos"><input type="number" step="0.01" ng-model="i.viaticos" string-to-number ng-blur="actualizarNomina(i)"></td>
-							<td class="text-right" ng-show="shingresos"><input type="number" step="0.01" ng-model="i.aguinaldo" string-to-number ng-blur="actualizarNomina(i)"></td>
-							<td class="text-right" ng-show="shingresos"><input type="number" step="0.01" ng-model="i.indemnizacion" string-to-number ng-blur="actualizarNomina(i)"></td>
-							<td class="text-right" ng-show="shingresos"><input type="number" step="0.01" ng-model="i.bonocatorce" string-to-number ng-blur="actualizarNomina(i)"></td>
-							<td class="text-right" ng-show="shingresos"><input type="number" step="0.01" ng-model="i.vacaciones" string-to-number ng-blur="actualizarNomina(i)"></td>
-							<td class="text-right" ng-show="shingresos"><input type="number" step="0.01" ng-model="i.otrosingresos" string-to-number ng-blur="actualizarNomina(i)"></td>
-							<td class="text-right" ng-show="shingresos"><input type="number" step="0.01"></td>
+
+							<td class="text-right" ng-show="shingresos_uno"><input type="number" step="0.01" ng-model="i.anticipo" string-to-number ng-blur="actualizarNomina(i)"></td>
+
+							<td class="text-right" ng-show="shingresos_dos"><input type="number" step="0.01" ng-model="i.sueldoordinario" string-to-number ng-blur="actualizarNomina(i)"></td>
+							<td class="text-right" ng-show="shingresos_dos"><input type="number" step="0.01" ng-model="i.viaticos" string-to-number ng-blur="actualizarNomina(i)"></td>
+							<td class="text-right" ng-show="shingresos_dos"><input type="number" step="0.01" ng-model="i.aguinaldo" string-to-number ng-blur="actualizarNomina(i)"></td>
+							<td class="text-right" ng-show="shingresos_dos"><input type="number" step="0.01" ng-model="i.indemnizacion" string-to-number ng-blur="actualizarNomina(i)"></td>
+							<td class="text-right" ng-show="shingresos_dos"><input type="number" step="0.01" ng-model="i.bonocatorce" string-to-number ng-blur="actualizarNomina(i)"></td>
+							<td class="text-right" ng-show="shingresos_dos"><input type="number" step="0.01" ng-model="i.vacaciones" string-to-number ng-blur="actualizarNomina(i)"></td>
+							<td class="text-right" ng-show="shingresos_dos"><input type="number" step="0.01" ng-model="i.otrosingresos" string-to-number ng-blur="actualizarNomina(i)"></td>
+							<!-- td class="text-right" ng-show="shingresos_dos"><input type="number" step="0.01"></td -->
 
 							<td class="text-right" ng-show="shdescuentos"><input type="number" step="0.01" ng-model="i.descisr" string-to-number ng-blur="actualizarNomina(i)"></td>
 							<td class="text-right" ng-show="shdescuentos"><input type="number" step="0.01" ng-model="i.descotros" string-to-number ng-blur="actualizarNomina(i)"></td>
-							<td class="text-right" ng-show="shdescuentos"><input type="number" step="0.01"></td>
-							<td class="text-right" ng-show="shdescuentos"><input type="number" step="0.01"></td>
+							<!-- td class="text-right" ng-show="shdescuentos"><input type="number" step="0.01"></td>
+							<td class="text-right" ng-show="shdescuentos"><input type="number" step="0.01"></td -->
 						</tr>
 					</tbody>
 				</table>

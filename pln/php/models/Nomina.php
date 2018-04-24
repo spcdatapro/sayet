@@ -109,6 +109,14 @@ class Nomina extends Principal
 				$datos["descotros"] = $args["descotros"];
 			}
 
+			if (elemento($args, "sueldoordinario")) {
+				$datos["sueldoordinario"] = $args["sueldoordinario"];
+			}
+
+			if (elemento($args, "anticipo")) {
+				$datos["anticipo"] = $args["anticipo"];
+			}
+
 			if (!empty($datos)) {
 				if ($this->db->update("plnnomina", $datos, ["id" => $args['id']])) {
 					return TRUE;
