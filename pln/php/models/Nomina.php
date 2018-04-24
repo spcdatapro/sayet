@@ -347,7 +347,7 @@ EOT;
 				],
 				[
 					'campo' => 'vhorasextras', 
-					'valor' => $row->horasextras
+					'valor' => $row->horasmes
 				],
 				[
 					'campo' => 'tsueldoextra', 
