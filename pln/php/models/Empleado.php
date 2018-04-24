@@ -314,9 +314,12 @@ class Empleado extends Principal
 		return $this->get_gana_dia()/8;
 	}
 
-	public function get_horas_extras_simples()
+	public function get_horas_extras_simples($args = [])
 	{
-		return $this->emp->cantidad_horas_simples*$this->get_gana_hora()*$this->horasimple;
+		if (isset($args['horas'])) {
+			return ($args['horas']*$this->get_gana_hora())*$this->horasimple;
+		}
+		return 0;
 	}
 
 	public function get_horas_extras_dobles()
