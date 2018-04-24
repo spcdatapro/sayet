@@ -113,8 +113,16 @@ class Nomina extends Principal
 				$datos["sueldoordinario"] = $args["sueldoordinario"];
 			}
 
+			if (elemento($args, "sueldoextra")) {
+				$datos["sueldoextra"] = $args["sueldoextra"];
+			}
+
 			if (elemento($args, "anticipo")) {
 				$datos["anticipo"] = $args["anticipo"];
+			}
+
+			if (elemento($args, "horasmes")) {
+				$datos["horasmes"] = $args["horasmes"];
 			}
 
 			if (!empty($datos)) {
@@ -338,7 +346,7 @@ EOT;
 				],
 				[
 					'campo' => 'vhorasextras', 
-					'valor' => 0
+					'valor' => $row->horasextras
 				],
 				[
 					'campo' => 'tsueldoextra', 
