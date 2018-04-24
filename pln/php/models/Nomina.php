@@ -176,6 +176,7 @@ class Nomina extends Principal
 					$datos['sueldoordinario'] = $e->get_sueldo();
 					$datos['diastrabajados']  = $e->get_dias_trabajados();
 					$datos['descigss']        = $e->get_descingss();
+					$datos['descisr']		  = $e->emp->descuentoisr;
 					
 					$prest = $e->get_descprestamo();
 					
