@@ -9,7 +9,7 @@ $app->response->headers->set('Content-Type', 'application/json');
 $app->get('/lstproyecto', function(){
     $db = new dbcpm();
     $query = "SELECT a.id, a.nomproyecto, a.registro, a.direccion, a.notas, a.metros, a.idempresa, a.metros_rentable, a.tipo_proyecto, a.subarrendado, a.notas_contrato, a.referencia, a.fechaapertura, ";
-    $query.= "b.nomempresa AS empresa, c.descripcion AS tipoproyecto, a.multiempresa ";
+    $query.= "b.nomempresa AS empresa, c.descripcion AS tipoproyecto, a.multiempresa, a.apiurlparqueo ";
     $query.= "FROM proyecto a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN tipo_proyecto c ON c.id = a.tipo_proyecto ";
     $query.= "ORDER BY a.nomproyecto";
     print $db->doSelectASJson($query);
@@ -18,7 +18,7 @@ $app->get('/lstproyecto', function(){
 $app->get('/lstproyectoporempresa/:idempresa', function($idempresa){
     $db = new dbcpm();
     $query = "SELECT a.id, a.nomproyecto, a.registro, a.direccion, a.notas, a.metros, a.idempresa, a.metros_rentable, a.tipo_proyecto, a.subarrendado, a.notas_contrato, a.referencia, a.fechaapertura, ";
-    $query.= "b.nomempresa AS empresa, c.descripcion AS tipoproyecto, a.multiempresa ";
+    $query.= "b.nomempresa AS empresa, c.descripcion AS tipoproyecto, a.multiempresa, a.apiurlparqueo ";
     $query.= "FROM proyecto a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN tipo_proyecto c ON c.id = a.tipo_proyecto ";
     $query.= "WHERE a.idempresa = $idempresa OR a.multiempresa = 1 ";
     $query.= "ORDER BY a.nomproyecto";
@@ -29,7 +29,7 @@ $app->get('/getproyecto/:idproyecto', function($idproyecto){
     $db = new dbcpm();
     $conn = $db->getConn();
     $data = $conn->select('proyecto',['id', 'nomproyecto', 'registro', 'direccion', 'notas', 'metros', 'idempresa',
-                                'metros_rentable', 'tipo_proyecto', 'subarrendado', 'notas_contrato', 'referencia', 'fechaapertura', 'multiempresa']
+                                'metros_rentable', 'tipo_proyecto', 'subarrendado', 'notas_contrato', 'referencia', 'fechaapertura', 'multiempresa', 'apiurlparqueo']
                         ,['id' => $idproyecto, 'ORDER' => 'nomproyecto']);
     print json_encode($data[0]);
 });

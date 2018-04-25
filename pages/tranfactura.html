@@ -18,6 +18,9 @@
         <li>
             <a show-tab href="#divPrintPreimpresas" data-toggle="tab">IMRPRIMIR FACTURAS</a>
         </li>
+        <li>
+            <a show-tab href="#divFacturasParqueo" data-toggle="tab">FACTURAS PARQUEO</a>
+        </li>
     </ul>
     <div class="tab-content">
         <div id="divFacturacion" class="tab-pane fade in active">
@@ -672,6 +675,66 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+        <div id="divFacturasParqueo" class="tab-pane fade">
+            <div class="panel panel-info">
+                <div class="panel-heading">Descargar Facturas de Parqueo</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="selEmpresaParqueo">Empresa</label>
+                                <select name="selEmpresaParqueo" id="selEmpresaParqueo" class="form-control input-sm" ng-model="paramsParqueo.idempresa"
+                                        ng-options="obj.id as obj.nomempresa for obj in empresas" ng-change="loadProyectosParqueo()">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="selProyParq">Proyecto:</label>
+                                <select name="selProyParq" id="selProyParq" class="form-control input-sm" ng-model="paramsParqueo.idproyecto"
+                                        ng-options="obj.id as obj.nomproyecto for obj in proyectosParqueo | filter:{apiurlparqueo:''}">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="txtFDel">Del:</label>
+                                <input name="txtFDel" id="txtFDel" type="date" class="form-control input-sm" ng-model="paramsParqueo.fdel"/>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="txtFAl">Al:</label>
+                                <input name="txtFAl" id="txtFAl" type="date" class="form-control input-sm" ng-model="paramsParqueo.fal"/>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="txtTCParq">Tasa de cambio:</label>
+                                <input name="txtTCParq" id="txtTCParq" type="number" class="form-control input-sm" ng-model="paramsParqueo.tc"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer text-right">
+                    <button id="btnGetFacts" name="btnGetFacts" class="btn btn-primary btn-sm" ng-click="getFacturasParqueo()" ng-disabled="!paramsParqueo.idempresa || !paramsParqueo.idproyecto || !paramsParqueo.tc">
+                        <span class="glyphicon glyphicon-download"></span>
+                    </button>
+                </div>
+            </div>
+            <div class="row" ng-show="generando">
+                <div class="col-md-12 text-center">
+                    <div class="well well-lg">
+                        <h1>
+                            {{mensaje}}
+                        </h1>
+                    </div>
+                    <img id="imgGenerando" ng-src="img/generando.gif" alt="Loading..." height="100" width="100"/>
+                </div>
+            </div>
         </div>
     </div>
 </div>
