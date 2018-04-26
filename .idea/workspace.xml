@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptcontratoinactivo.php" afterPath="$PROJECT_DIR$/php/rptcontratoinactivo.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cpmidx.html" afterPath="$PROJECT_DIR$/cpmidx.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app.js" afterPath="$PROJECT_DIR$/js/app.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/tipoproyectordenctrl.js" afterPath="$PROJECT_DIR$/js/controllers/tipoproyectordenctrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/mnttipoproyectoorden.html" afterPath="$PROJECT_DIR$/pages/mnttipoproyectoorden.html" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -38,38 +41,67 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="mntcliente.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/mntcliente.html">
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-4.4727273">
-              <caret line="613" column="129" selection-start-line="613" selection-start-column="108" selection-end-line="613" selection-end-column="129" />
+            <state vertical-scroll-proportion="-15.038462">
+              <caret line="197" column="4" selection-start-line="197" selection-start-column="4" selection-end-line="197" selection-end-column="4" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="clientectrl.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/controllers/clientectrl.js">
+      <file leaf-file-name="cpmidx.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cpmidx.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-11.103448">
-              <caret line="304" column="69" selection-start-line="304" selection-start-column="60" selection-end-line="304" selection-end-column="69" />
+            <state vertical-scroll-proportion="-23.461538">
+              <caret line="204" column="89" selection-start-line="204" selection-start-column="4" selection-end-line="204" selection-end-column="89" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="rptcontratoinactivo.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/php/rptcontratoinactivo.php">
+      <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.17606445">
-              <caret line="23" column="35" selection-start-line="23" selection-start-column="35" selection-end-line="23" selection-end-column="35" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="45" column="122" selection-start-line="45" selection-start-column="122" selection-end-line="45" selection-end-column="122" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="mnttipoproyectoorden.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pages/mnttipoproyectoorden.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-7.1923075">
+              <caret line="11" column="34" selection-start-line="11" selection-start-column="34" selection-end-line="11" selection-end-column="34" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="tipoproyectordenctrl.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/controllers/tipoproyectordenctrl.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="3" column="58" selection-start-line="3" selection-start-column="58" selection-end-line="3" selection-end-column="58" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptfichaproy.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/rptfichaproy.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.136939">
+              <caret line="13" column="0" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
               <folding>
-                <element signature="e#178#807#1#PHP" expanded="false" />
-                <marker date="1524717482022" expanded="true" signature="1092:2201" placeholder="SELECT e.nom..contrato..." />
-                <marker date="1524717482022" expanded="true" signature="1092:2205" placeholder="SELECT e.nom..contrato..." />
-                <marker date="1524717482022" expanded="true" signature="1436:1566" placeholder="SELECT CONCA..cargo..." />
-                <marker date="1524717482022" expanded="true" signature="1436:1580" placeholder="SELECT CONCA..cargo..." />
-                <marker date="1524717482022" expanded="true" signature="1697:1938" placeholder="SELECT CONCA..factura..." />
+                <marker date="1522906989192" expanded="true" signature="727:784" placeholder="SELECT DISTI..unidad..." />
+                <marker date="1522906989192" expanded="true" signature="1882:1986" placeholder="SELECT DISTI..unidad..." />
+                <marker date="1522906989192" expanded="true" signature="7411:7588" placeholder="SELECT DISTI..unidad..." />
+                <marker date="1522906989192" expanded="true" signature="9457:10655" placeholder="SELECT a.id,..unidad..." />
+                <marker date="1522906989192" expanded="true" signature="9970:10473" placeholder="SELECT DISTI..unidad..." />
               </folding>
             </state>
           </provider>
@@ -98,8 +130,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/php/rptlibmay.php" />
-        <option value="$PROJECT_DIR$/php/rptlibdia.php" />
         <option value="$PROJECT_DIR$/js/controllers/rptlibdiactrl.js" />
         <option value="$PROJECT_DIR$/js/controllers/rptbalancesaldosctrl.js" />
         <option value="$PROJECT_DIR$/js/controllers/rptbalancegeneralctrl.js" />
@@ -141,14 +171,16 @@
         <option value="$PROJECT_DIR$/php/facturaagua.php" />
         <option value="$PROJECT_DIR$/php/genpartidasventa.php" />
         <option value="$PROJECT_DIR$/php/proyecto.php" />
-        <option value="$PROJECT_DIR$/js/app.js" />
-        <option value="$PROJECT_DIR$/cpmidx.html" />
-        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/js/services/factsparqueosrvc.js" />
         <option value="$PROJECT_DIR$/php/factsparqueo.php" />
         <option value="$PROJECT_DIR$/pages/tranfactura.html" />
         <option value="$PROJECT_DIR$/js/controllers/tranfacturactrl.js" />
         <option value="$PROJECT_DIR$/php/rptcontratoinactivo.php" />
+        <option value="$PROJECT_DIR$/pages/mnttipoproyectoorden.html" />
+        <option value="$PROJECT_DIR$/js/app.js" />
+        <option value="$PROJECT_DIR$/cpmidx.html" />
+        <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/js/controllers/tipoproyectordenctrl.js" />
       </list>
     </option>
   </component>
@@ -1104,12 +1136,12 @@
       <workItem from="1524252305228" duration="746000" />
       <workItem from="1524508404527" duration="7000" />
       <workItem from="1524670390657" duration="23185000" />
-      <workItem from="1524715088583" duration="2078000" />
+      <workItem from="1524715088583" duration="3970000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2414168000" />
+    <option name="totallyTimeSpent" value="2416060000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1168,27 +1200,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/php/upload.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.1954023">
-          <caret line="10" column="29" selection-start-line="10" selection-start-column="29" selection-end-line="10" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/filters/textCleaner.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.30357143">
-          <caret line="16" column="4" selection-start-line="16" selection-start-column="4" selection-end-line="16" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/serviciopropio.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.17011495">
-          <caret line="142" column="26" selection-start-line="142" selection-start-column="26" selection-end-line="142" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/controllers/rptfichaproyctrl.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1207,13 +1218,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.15650173">
           <caret line="8" column="42" selection-start-line="8" selection-start-column="42" selection-end-line="8" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptfichaproy.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2735632">
-          <caret line="162" column="0" selection-start-line="162" selection-start-column="0" selection-end-line="162" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -1333,6 +1337,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="23" column="69" selection-start-line="23" selection-start-column="60" selection-end-line="23" selection-end-column="69" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1354,6 +1359,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.018973215">
           <caret line="599" column="42" selection-start-line="599" selection-start-column="39" selection-end-line="599" selection-end-column="42" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1361,6 +1367,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1375,27 +1382,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="33" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5505747">
-          <caret line="278" column="4" selection-start-line="278" selection-start-column="4" selection-end-line="278" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cpmidx.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.52873564">
-          <caret line="286" column="82" selection-start-line="286" selection-start-column="4" selection-end-line="286" selection-end-column="82" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/app.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.47433037">
-          <caret line="45" column="111" selection-start-line="45" selection-start-column="111" selection-end-line="45" selection-end-column="111" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1427,6 +1414,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1434,6 +1422,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1441,6 +1430,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.58816963">
           <caret line="31" column="14" selection-start-line="29" selection-start-column="12" selection-end-line="31" selection-end-column="14" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1465,6 +1455,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.45535713">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1486,6 +1477,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.24665178">
           <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1493,6 +1485,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.15625">
           <caret line="515" column="64" selection-start-line="515" selection-start-column="64" selection-end-line="515" selection-end-column="64" />
+          <folding>
+            <element signature="e#29626#31786#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1500,22 +1495,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.47241378">
           <caret line="729" column="46" selection-start-line="729" selection-start-column="46" selection-end-line="729" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/mntcliente.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-4.4727273">
-          <caret line="613" column="129" selection-start-line="613" selection-start-column="108" selection-end-line="613" selection-end-column="129" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/clientectrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-11.103448">
-          <caret line="304" column="69" selection-start-line="304" selection-start-column="60" selection-end-line="304" selection-end-column="69" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1530,6 +1509,84 @@
             <marker date="1524717482022" expanded="true" signature="1436:1566" placeholder="SELECT CONCA..cargo..." />
             <marker date="1524717482022" expanded="true" signature="1436:1580" placeholder="SELECT CONCA..cargo..." />
             <marker date="1524717482022" expanded="true" signature="1697:1938" placeholder="SELECT CONCA..factura..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/clientectrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.37182447">
+          <caret line="304" column="69" selection-start-line="304" selection-start-column="60" selection-end-line="304" selection-end-column="69" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/mntcliente.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.29285714">
+          <caret line="613" column="129" selection-start-line="613" selection-start-column="108" selection-end-line="613" selection-end-column="129" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/mnttipoproyectoorden.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.1923075">
+          <caret line="11" column="34" selection-start-line="11" selection-start-column="34" selection-end-line="11" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="45" column="122" selection-start-line="45" selection-start-column="122" selection-end-line="45" selection-end-column="122" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cpmidx.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-23.461538">
+          <caret line="204" column="89" selection-start-line="204" selection-start-column="4" selection-end-line="204" selection-end-column="89" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-15.038462">
+          <caret line="197" column="4" selection-start-line="197" selection-start-column="4" selection-end-line="197" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/activoctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="12" selection-start-line="0" selection-start-column="12" selection-end-line="0" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/tipoproyectordenctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="3" column="58" selection-start-line="3" selection-start-column="58" selection-end-line="3" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptfichaproy.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.136939">
+          <caret line="13" column="0" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+          <folding>
+            <marker date="1522906989192" expanded="true" signature="727:784" placeholder="SELECT DISTI..unidad..." />
+            <marker date="1522906989192" expanded="true" signature="1882:1986" placeholder="SELECT DISTI..unidad..." />
+            <marker date="1522906989192" expanded="true" signature="7411:7588" placeholder="SELECT DISTI..unidad..." />
+            <marker date="1522906989192" expanded="true" signature="9457:10655" placeholder="SELECT a.id,..unidad..." />
+            <marker date="1522906989192" expanded="true" signature="9970:10473" placeholder="SELECT DISTI..unidad..." />
           </folding>
         </state>
       </provider>
