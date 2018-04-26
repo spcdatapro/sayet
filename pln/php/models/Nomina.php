@@ -170,9 +170,9 @@ class Nomina extends Principal
 					$datos['bonificacion']    = $e->get_bono_ley();
 					$datos['sueldoordinario'] = $e->get_sueldo();
 					$datos['diastrabajados']  = $e->get_dias_trabajados();
-					$datos['descigss']        = $e->get_descingss();
 					$datos['descisr']		  = $e->emp->descuentoisr;
 					$datos['sueldoextra'] 	  = $e->get_horas_extras_simples(['horas' => $row['horasmes']]);
+					$datos['descigss']        = $e->get_descingss(['sueldoextra' => $datos['sueldoextra']]);
 					
 					$prest = $e->get_descprestamo();
 					

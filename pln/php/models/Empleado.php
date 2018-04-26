@@ -459,9 +459,9 @@ class Empleado extends Principal
 		return $prest;
 	}
 
-	public function get_descingss()
+	public function get_descingss($args = [])
 	{
-		return round(($this->emp->porcentajeigss/100) * $this->sueldo, 2);
+		return round(($this->emp->porcentajeigss/100) * ($this->sueldo+$args['sueldoextra']), 2);
 	}
 
 	public function get_saldo_prestamo()
