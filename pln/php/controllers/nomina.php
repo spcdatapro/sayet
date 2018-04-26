@@ -334,8 +334,10 @@ $app->get('/imprimir_igss', function(){
 	$b = new Nomina();
 	$g = new General();
 
-	if (elemento($_GET, 'fdel') && elemento($_GET, 'fal')) {
+	if (elemento($_GET, 'fal')) {
 		require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
+
+		$_GET['fdel'] = formatoFecha($_GET['fal'], 4).'-'.formatoFecha($_GET['fal'], 3).'-01';
 		
 		$s = [215.9, 279.4]; # Carta mm
 
@@ -493,8 +495,10 @@ $app->get('/imprimir_isr', function(){
 	$b = new Nomina();
 	$g = new General();
 
-	if (elemento($_GET, 'fdel') && elemento($_GET, 'fal')) {
+	if (elemento($_GET, 'fal')) {
 		require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
+
+		$_GET['fdel'] = formatoFecha($_GET['fal'], 4).'-'.formatoFecha($_GET['fal'], 3).'-01';
 
 		$s = [215.9, 279.4]; # Carta mm
 

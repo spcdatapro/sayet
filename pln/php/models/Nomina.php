@@ -113,17 +113,12 @@ class Nomina extends Principal
 				$datos["sueldoordinario"] = $args["sueldoordinario"];
 			}
 
-			if (elemento($args, "sueldoextra")) {
-				$datos["sueldoextra"] = $args["sueldoextra"];
-			}
-
 			if (elemento($args, "anticipo")) {
 				$datos["anticipo"] = $args["anticipo"];
 			}
 
-			if (elemento($args, "horasmes")) {
-				$datos["horasmes"] = $args["horasmes"];
-			}
+			$datos["horasmes"]    = elemento($args, "horasmes", 0);
+			$datos["sueldoextra"] = elemento($args, "sueldoextra", 0);
 
 			if (!empty($datos)) {
 				if ($this->db->update("plnnomina", $datos, ["id" => $args['id']])) {
