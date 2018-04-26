@@ -2,15 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/services/factsparqueosrvc.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/php/factsparqueo.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cpmidx.html" afterPath="$PROJECT_DIR$/cpmidx.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app.js" afterPath="$PROJECT_DIR$/js/app.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/tranfacturactrl.js" afterPath="$PROJECT_DIR$/js/controllers/tranfacturactrl.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/tranfactura.html" afterPath="$PROJECT_DIR$/pages/tranfactura.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/proyecto.php" afterPath="$PROJECT_DIR$/php/proyecto.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptcontratoinactivo.php" afterPath="$PROJECT_DIR$/php/rptcontratoinactivo.php" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -44,7 +37,45 @@
     <favorites_list name="cpm" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf>
+      <file leaf-file-name="mntcliente.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pages/mntcliente.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-4.4727273">
+              <caret line="613" column="129" selection-start-line="613" selection-start-column="108" selection-end-line="613" selection-end-column="129" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="clientectrl.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/controllers/clientectrl.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-11.103448">
+              <caret line="304" column="69" selection-start-line="304" selection-start-column="60" selection-end-line="304" selection-end-column="69" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptcontratoinactivo.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/rptcontratoinactivo.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.17606445">
+              <caret line="23" column="35" selection-start-line="23" selection-start-column="35" selection-end-line="23" selection-end-column="35" />
+              <folding>
+                <element signature="e#178#807#1#PHP" expanded="false" />
+                <marker date="1524717482022" expanded="true" signature="1092:2201" placeholder="SELECT e.nom..contrato..." />
+                <marker date="1524717482022" expanded="true" signature="1092:2205" placeholder="SELECT e.nom..contrato..." />
+                <marker date="1524717482022" expanded="true" signature="1436:1566" placeholder="SELECT CONCA..cargo..." />
+                <marker date="1524717482022" expanded="true" signature="1436:1580" placeholder="SELECT CONCA..cargo..." />
+                <marker date="1524717482022" expanded="true" signature="1697:1938" placeholder="SELECT CONCA..factura..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -67,7 +98,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/php/rptbalancesaldos.php" />
         <option value="$PROJECT_DIR$/php/rptlibmay.php" />
         <option value="$PROJECT_DIR$/php/rptlibdia.php" />
         <option value="$PROJECT_DIR$/js/controllers/rptlibdiactrl.js" />
@@ -118,6 +148,7 @@
         <option value="$PROJECT_DIR$/php/factsparqueo.php" />
         <option value="$PROJECT_DIR$/pages/tranfactura.html" />
         <option value="$PROJECT_DIR$/js/controllers/tranfacturactrl.js" />
+        <option value="$PROJECT_DIR$/php/rptcontratoinactivo.php" />
       </list>
     </option>
   </component>
@@ -171,9 +202,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="Scratches" />
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -206,8 +234,57 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cpm" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sayet" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pages" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cpm" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sayet" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cpm" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sayet" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="controllers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -1026,16 +1103,17 @@
       <workItem from="1524248795091" duration="2559000" />
       <workItem from="1524252305228" duration="746000" />
       <workItem from="1524508404527" duration="7000" />
-      <workItem from="1524670390657" duration="22497000" />
+      <workItem from="1524670390657" duration="23185000" />
+      <workItem from="1524715088583" duration="2078000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2411402000" />
+    <option name="totallyTimeSpent" value="2414168000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -1043,7 +1121,6 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32976446" sideWeight="0.5" order="11" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32995737" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36403033" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18336888" sideWeight="0.49571735" order="0" side_tool="false" content_ui="combo" />
@@ -1052,15 +1129,16 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24946696" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1881663" sideWeight="0.50428265" order="4" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39978564" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="PHP-CGI Server" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32827735" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39978564" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -1090,27 +1168,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/php/rptpendgface.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-10.461538">
-          <caret line="16" column="96" selection-start-line="16" selection-start-column="96" selection-end-line="16" selection-end-column="96" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/gfacectrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7589286">
-          <caret line="60" column="69" selection-start-line="60" selection-start-column="69" selection-end-line="60" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/gface.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.68390805">
-          <caret line="78" column="108" selection-start-line="78" selection-start-column="108" selection-end-line="78" selection-end-column="108" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/upload.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.1954023">
@@ -1269,7 +1326,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1277,7 +1333,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="23" column="69" selection-start-line="23" selection-start-column="60" selection-end-line="23" selection-end-column="69" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1285,27 +1340,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.020689655">
           <caret line="227" column="34" selection-start-line="227" selection-start-column="34" selection-end-line="227" selection-end-column="34" />
-          <folding>
-            <element signature="e#229#4466#1#PHP" expanded="false" />
-            <element signature="e#4496#9269#1#PHP" expanded="false" />
-            <element signature="e#9296#13145#1#PHP" expanded="false" />
-            <marker date="1524251972433" expanded="true" signature="356:394" placeholder="SELECT retis..empresa..." />
-            <marker date="1524251972433" expanded="true" signature="3464:3528" placeholder="SELECT congf..empresa..." />
-            <marker date="1524251972433" expanded="true" signature="4653:4691" placeholder="SELECT retis..empresa..." />
-            <marker date="1524251972433" expanded="true" signature="7418:7482" placeholder="SELECT congf..empresa..." />
-            <marker date="1524251972433" expanded="true" signature="9520:9584" placeholder="SELECT congf..empresa..." />
-            <marker date="1524251972433" expanded="true" signature="10347:10367" placeholder="INSERT INTO factura..." />
-            <marker date="1524251972433" expanded="true" signature="11505:11525" placeholder="INSERT INTO detfact..." />
-            <marker date="1524251972433" expanded="true" signature="11984:12070" placeholder="UPDATE lectu..." />
-            <marker date="1524251972433" expanded="true" signature="12144:12213" placeholder="UPDATE servi..." />
-            <marker date="1524251972433" expanded="true" signature="12611:12691" placeholder="UPDATE lectu..." />
-            <marker date="1524251972433" expanded="true" signature="12757:12826" placeholder="UPDATE servi..." />
-            <marker date="1524251972433" expanded="true" signature="12956:13022" placeholder="UPDATE empre..." />
-            <marker date="1524251972433" expanded="true" signature="16739:16766" placeholder="SELECT b.id ..contrato..." />
-            <marker date="1524251972433" expanded="true" signature="16739:17029" placeholder="SELECT b.id ..contrato..." />
-            <marker date="1524251972433" expanded="true" signature="18984:19011" placeholder="SELECT b.id ..contrato..." />
-            <marker date="1524251972433" expanded="true" signature="21413:21440" placeholder="SELECT b.id ..contrato..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1313,7 +1347,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.01954023">
           <caret line="587" column="115" selection-start-line="587" selection-start-column="104" selection-end-line="587" selection-end-column="115" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1321,7 +1354,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.018973215">
           <caret line="599" column="42" selection-start-line="599" selection-start-column="39" selection-end-line="599" selection-end-column="42" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1329,7 +1361,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1337,49 +1368,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.101149425">
           <caret line="120" column="40" selection-start-line="120" selection-start-column="40" selection-end-line="120" selection-end-column="40" />
-          <folding>
-            <element signature="n#idc#0;n#!!top" expanded="false" />
-            <element signature="e#659#5844#1#PHP" expanded="false" />
-            <element signature="e#10857#15994#1#PHP" expanded="false" />
-            <marker date="1524670430539" expanded="true" signature="361:471" placeholder="INSERT INTO detallecontable..." />
-            <marker date="1524670430539" expanded="true" signature="1682:1752" placeholder="SELECT COUNT..detallecontable..." />
-            <marker date="1524670430539" expanded="true" signature="2253:2330" placeholder="SELECT id FR..cuentac..." />
-            <marker date="1524670430539" expanded="true" signature="2477:2504" placeholder="..." />
-            <marker date="1524670430539" expanded="true" signature="2797:2893" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1524670430539" expanded="true" signature="3031:3058" placeholder="..." />
-            <marker date="1524670430539" expanded="true" signature="3378:3474" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1524670430539" expanded="true" signature="3612:3639" placeholder="..." />
-            <marker date="1524670430539" expanded="true" signature="4710:4855" placeholder="SELECT b.id ..tiposervicioventa..." />
-            <marker date="1524670430539" expanded="true" signature="5014:5041" placeholder="..." />
-            <marker date="1524670430539" expanded="true" signature="5316:5411" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1524670430539" expanded="true" signature="5543:5570" placeholder="..." />
-            <marker date="1524670430539" expanded="true" signature="6094:6166" placeholder="DELETE FROM ..." />
-            <marker date="1524670430539" expanded="true" signature="6952:7022" placeholder="SELECT COUNT..detallecontable..." />
-            <marker date="1524670430539" expanded="true" signature="7236:7284" placeholder="SELECT TRIM(..contrato..." />
-            <marker date="1524670430539" expanded="true" signature="7521:7598" placeholder="SELECT id FR..cuentac..." />
-            <marker date="1524670430539" expanded="true" signature="7745:7772" placeholder="..." />
-            <marker date="1524670430539" expanded="true" signature="8065:8161" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1524670430539" expanded="true" signature="8299:8326" placeholder="..." />
-            <marker date="1524670430539" expanded="true" signature="8646:8742" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1524670430539" expanded="true" signature="8880:8907" placeholder="..." />
-            <marker date="1524670430539" expanded="true" signature="9680:9825" placeholder="SELECT b.id ..tiposervicioventa..." />
-            <marker date="1524670430539" expanded="true" signature="9984:10011" placeholder="..." />
-            <marker date="1524670430539" expanded="true" signature="10286:10381" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1524670430539" expanded="true" signature="10513:10540" placeholder="..." />
-            <marker date="1524670430539" expanded="true" signature="11140:11212" placeholder="DELETE FROM ..." />
-            <marker date="1524670430539" expanded="true" signature="11998:12068" placeholder="SELECT COUNT..detallecontable..." />
-            <marker date="1524670430539" expanded="true" signature="12360:12408" placeholder="SELECT TRIM(..contrato..." />
-            <marker date="1524670430539" expanded="true" signature="12685:12762" placeholder="SELECT id FR..cuentac..." />
-            <marker date="1524670430539" expanded="true" signature="12909:12936" placeholder="..." />
-            <marker date="1524670430539" expanded="true" signature="13229:13325" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1524670430539" expanded="true" signature="13463:13490" placeholder="..." />
-            <marker date="1524670430539" expanded="true" signature="13810:13906" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1524670430539" expanded="true" signature="14044:14071" placeholder="..." />
-            <marker date="1524670430539" expanded="true" signature="14844:14989" placeholder="SELECT b.id ..tiposervicioventa..." />
-            <marker date="1524670430539" expanded="true" signature="15148:15175" placeholder="..." />
-            <marker date="1524670430539" expanded="true" signature="15450:15545" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1524670430539" expanded="true" signature="15677:15704" placeholder="..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1387,7 +1375,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="33" selection-end-column="5" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1395,7 +1382,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.5505747">
           <caret line="278" column="4" selection-start-line="278" selection-start-column="4" selection-end-line="278" selection-end-column="4" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1403,7 +1389,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.52873564">
           <caret line="286" column="82" selection-start-line="286" selection-start-column="4" selection-end-line="286" selection-end-column="82" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1411,7 +1396,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.47433037">
           <caret line="45" column="111" selection-start-line="45" selection-start-column="111" selection-end-line="45" selection-end-column="111" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1419,40 +1403,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-3.2692308">
           <caret line="5" column="65" selection-start-line="1" selection-start-column="0" selection-end-line="5" selection-end-column="65" />
-          <folding>
-            <marker date="1524676883321" expanded="true" signature="3263:3350" placeholder="INSERT INTO proyecto..." />
-            <marker date="1524676883321" expanded="true" signature="4055:4110" placeholder="UPDATE proye..." />
-            <marker date="1524676883321" expanded="true" signature="4775:4859" placeholder="SELECT CONCA..proyecto_adjunto..." />
-            <marker date="1524676883321" expanded="true" signature="4998:5044" placeholder="DELETE FROM ..." />
-            <marker date="1524676883321" expanded="true" signature="5073:5128" placeholder="DELETE FROM ..." />
-            <marker date="1524676883321" expanded="true" signature="5157:5203" placeholder="DELETE FROM ..." />
-            <marker date="1524676883321" expanded="true" signature="5228:5260" placeholder="DELETE FROM ..." />
-            <marker date="1524676883321" expanded="true" signature="5409:5511" placeholder="SELECT a.id ..tipolocal..." />
-            <marker date="1524676883321" expanded="true" signature="7625:7732" placeholder="INSERT INTO unidad..." />
-            <marker date="1524676883321" expanded="true" signature="8114:8216" placeholder="UPDATE unida..." />
-            <marker date="1524676883321" expanded="true" signature="8539:8569" placeholder="DELETE FROM ..." />
-            <marker date="1524676883321" expanded="true" signature="10776:10894" placeholder="INSERT INTO unidadservicio..." />
-            <marker date="1524676883321" expanded="true" signature="10916:10966" placeholder="UPDATE servi..." />
-            <marker date="1524676883321" expanded="true" signature="11124:11174" placeholder="UPDATE unida..." />
-            <marker date="1524676883321" expanded="true" signature="11203:11253" placeholder="UPDATE servi..." />
-            <marker date="1524676883321" expanded="true" signature="11424:11691" placeholder="SELECT IF((S..." />
-            <marker date="1524676883321" expanded="true" signature="11841:11970" placeholder="INSERT INTO detunidadservicio..." />
-            <marker date="1524676883321" expanded="true" signature="12198:12285" placeholder="UPDATE servi..." />
-            <marker date="1524676883321" expanded="true" signature="13914:14017" placeholder="INSERT INTO proyectoservicio..." />
-            <marker date="1524676883321" expanded="true" signature="14039:14089" placeholder="UPDATE servi..." />
-            <marker date="1524676883321" expanded="true" signature="14264:14321" placeholder="SELECT idser..proyectoservicio..." />
-            <marker date="1524676883321" expanded="true" signature="14349:14428" placeholder="UPDATE proye..." />
-            <marker date="1524676883321" expanded="true" signature="14519:14569" placeholder="UPDATE servi..." />
-            <marker date="1524676883321" expanded="true" signature="14601:14651" placeholder="UPDATE servi..." />
-            <marker date="1524676883321" expanded="true" signature="14814:14854" placeholder="DELETE FROM ..." />
-            <marker date="1524676883321" expanded="true" signature="14882:14932" placeholder="UPDATE servi..." />
-            <marker date="1524676883321" expanded="true" signature="15497:15676" placeholder="SELECT id, C..usuario..." />
-            <marker date="1524676883321" expanded="true" signature="15582:15639" placeholder="SELECT idusu..usuarioproyecto..." />
-            <marker date="1524676883321" expanded="true" signature="15851:15939" placeholder="INSERT INTO usuarioproyecto..." />
-            <marker date="1524676883321" expanded="true" signature="16076:16115" placeholder="DELETE FROM ..." />
-            <marker date="1524676883321" expanded="true" signature="17246:17338" placeholder="SELECT idpro..." />
-            <marker date="1524676883321" expanded="true" signature="17355:17498" placeholder="SELECT a.idp..unidad..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1460,9 +1410,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-8.5">
           <caret line="43" column="55" selection-start-line="43" selection-start-column="4" selection-end-line="43" selection-end-column="55" />
-          <folding>
-            <marker date="1523550922151" expanded="true" signature="3830:3865" placeholder="SELECT SUM(y..${$query}..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1480,7 +1427,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1488,7 +1434,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1496,7 +1441,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.58816963">
           <caret line="31" column="14" selection-start-line="29" selection-start-column="12" selection-end-line="31" selection-end-column="14" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1514,7 +1458,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-1.9615384">
           <caret line="3" column="49" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="49" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1522,7 +1465,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-0.45535713">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1530,17 +1472,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-1.3076923">
           <caret line="2" column="33" selection-start-line="1" selection-start-column="0" selection-end-line="2" selection-end-column="33" />
-          <folding>
-            <marker date="1521255420418" expanded="true" signature="340:365" placeholder="DELETE FROM ..." />
-            <marker date="1521255420418" expanded="true" signature="387:431" placeholder="ALTER TABLE rptlibromayor..." />
-            <marker date="1521255420418" expanded="true" signature="453:622" placeholder="INSERT INTO rptlibromayor..." />
-            <marker date="1521255420418" expanded="true" signature="521:593" placeholder="SELECT id, c..cuentac..." />
-            <marker date="1521255420418" expanded="true" signature="1489:1546" placeholder="UPDATE rptli..." />
-            <marker date="1521255420418" expanded="true" signature="1657:1755" placeholder="SELECT DISTI..rptlibromayor..." />
-            <marker date="1521255420418" expanded="true" signature="1945:2067" placeholder="SELECT id, i..rptlibromayor..." />
-            <marker date="1521255420418" expanded="true" signature="2697:2816" placeholder="UPDATE rptli..." />
-            <marker date="1521255420418" expanded="true" signature="3961:4016" placeholder="SELECT nomem..empresa..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1548,19 +1479,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.49195403">
           <caret line="58" column="33" selection-start-line="58" selection-start-column="33" selection-end-line="58" selection-end-column="33" />
-          <folding>
-            <marker date="1524695972688" expanded="true" signature="1047:1095" placeholder="SELECT * FRO..factura..." />
-            <marker date="1524695972688" expanded="true" signature="1047:1096" placeholder="SELECT * FRO..factura..." />
-            <marker date="1524695972688" expanded="true" signature="1047:1099" placeholder="SELECT * FRO..factura..." />
-            <marker date="1524695972688" expanded="true" signature="1047:1113" placeholder="SELECT * FRO..factura..." />
-            <marker date="1524695972688" expanded="true" signature="1047:1126" placeholder="SELECT * FRO..factura..." />
-            <marker date="1524695972688" expanded="true" signature="1047:1127" placeholder="SELECT * FRO..factura..." />
-            <marker date="1524695972688" expanded="true" signature="1047:1170" placeholder="SELECT * FRO..factura..." />
-            <marker date="1524695972688" expanded="true" signature="1047:1202" placeholder="SELECT * FRO..factura..." />
-            <marker date="1524695972688" expanded="true" signature="1047:1220" placeholder="SELECT COUNT..factura..." />
-            <marker date="1524695972688" expanded="true" signature="1642:1662" placeholder="INSERT INTO factura..." />
-            <marker date="1524695972688" expanded="true" signature="2747:2903" placeholder="INSERT INTO detfact..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1568,7 +1486,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.24665178">
           <caret line="13" column="13" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1576,9 +1493,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.15625">
           <caret line="515" column="64" selection-start-line="515" selection-start-column="64" selection-end-line="515" selection-end-column="64" />
-          <folding>
-            <element signature="e#29626#31786#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1586,11 +1500,36 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.47241378">
           <caret line="729" column="46" selection-start-line="729" selection-start-column="46" selection-end-line="729" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/mntcliente.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-4.4727273">
+          <caret line="613" column="129" selection-start-line="613" selection-start-column="108" selection-end-line="613" selection-end-column="129" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/clientectrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-11.103448">
+          <caret line="304" column="69" selection-start-line="304" selection-start-column="60" selection-end-line="304" selection-end-column="69" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptcontratoinactivo.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.17606445">
+          <caret line="23" column="35" selection-start-line="23" selection-start-column="35" selection-end-line="23" selection-end-column="35" />
           <folding>
-            <element signature="n#div#0;n#div#0;n#div#0;n#!!top" expanded="false" />
-            <element signature="n#div#1;n#div#0;n#div#0;n#!!top" expanded="false" />
-            <element signature="n#div#2;n#div#0;n#div#0;n#!!top" expanded="false" />
-            <element signature="n#div#3;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="e#178#807#1#PHP" expanded="false" />
+            <marker date="1524717482022" expanded="true" signature="1092:2201" placeholder="SELECT e.nom..contrato..." />
+            <marker date="1524717482022" expanded="true" signature="1092:2205" placeholder="SELECT e.nom..contrato..." />
+            <marker date="1524717482022" expanded="true" signature="1436:1566" placeholder="SELECT CONCA..cargo..." />
+            <marker date="1524717482022" expanded="true" signature="1436:1580" placeholder="SELECT CONCA..cargo..." />
+            <marker date="1524717482022" expanded="true" signature="1697:1938" placeholder="SELECT CONCA..factura..." />
           </folding>
         </state>
       </provider>
