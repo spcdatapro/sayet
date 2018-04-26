@@ -2,7 +2,7 @@
 
     var facturacionctrl = angular.module('cpm.facturacionctrl', []);
 
-    facturacionctrl.controller('facturacionCtrl', ['$scope', 'facturacionSrvc', 'facturacionAguaSrvc', 'facturaOtrosSrvc', 'authSrvc', 'empresaSrvc', 'tipoServicioVentaSrvc', '$filter', 'tipoCambioSrvc', 'jsReportSrvc', '$window', '$uibModal', 'toaster', 'clienteSrvc', 'tipoFacturaSrvc', 'tipoCompraSrvc', '$confirm', 'proyectoSrvc', function($scope, facturacionSrvc, facturacionAguaSrvc, facturaOtrosSrvc, authSrvc, empresaSrvc, tipoServicioVentaSrvc, $filter, tipoCambioSrvc, jsReportSrvc, $window, $uibModal, toaster, clienteSrvc, tipoFacturaSrvc, tipoCompraSrvc, $confirm, proyectoSrvc){
+    facturacionctrl.controller('facturacionCtrl', ['$scope', 'facturacionSrvc', 'facturacionAguaSrvc', 'facturaOtrosSrvc', 'authSrvc', 'empresaSrvc', 'tipoServicioVentaSrvc', '$filter', 'tipoCambioSrvc', 'jsReportSrvc', '$window', '$uibModal', 'toaster', 'clienteSrvc', 'tipoFacturaSrvc', 'tipoCompraSrvc', '$confirm', 'proyectoSrvc', 'factsParqueoSrvc', function($scope, facturacionSrvc, facturacionAguaSrvc, facturaOtrosSrvc, authSrvc, empresaSrvc, tipoServicioVentaSrvc, $filter, tipoCambioSrvc, jsReportSrvc, $window, $uibModal, toaster, clienteSrvc, tipoFacturaSrvc, tipoCompraSrvc, $confirm, proyectoSrvc, factsParqueoSrvc){
 
         $scope.params = { idempresa: '0', fvence: moment().endOf('month').toDate(), ffactura: moment().toDate(), idtipo: '0', tc: 1.00, objTipo: undefined, params:'', pedientes: [] };
         $scope.paramsh2o = { idempresa: '0', fvence: moment().endOf('month').toDate(), ffactura: moment().toDate(), tc: 1.00 };
@@ -17,12 +17,14 @@
         $scope.empredefault = undefined;
         $scope.allnone = 1;
         $scope.suma = { cantidad: 0, totmonto: 0.00 };
+        $scope.paramsParqueo = {idempresa: undefined, idproyecto: undefined, fdel: moment().toDate(), fal: moment().toDate(), tc: 1.00};
 
         authSrvc.getSession().then(function(usrLogged){
             empresaSrvc.lstEmpresas().then(function(d){
                 $scope.empresas = d;
                 $scope.params.idempresa = usrLogged.workingon.toString();
                 $scope.paramsh2o.idempresa = usrLogged.workingon.toString();
+                $scope.paramsParqueo.idempresa = usrLogged.workingon.toString();
                 $scope.empredefault = usrLogged.workingon.toString();
                 $scope.resetFactura();
             });
@@ -39,6 +41,7 @@
             tipoCambioSrvc.getLastTC().then(function(d){
                 $scope.params.tc = parseFloat(parseFloat(d.lasttc).toFixed(2));
                 $scope.paramsh2o.tc = parseFloat(parseFloat(d.lasttc).toFixed(2));
+                $scope.paramsParqueo.tc = parseFloat(parseFloat(d.lasttc).toFixed(2));
             });
         });
 
@@ -495,6 +498,73 @@
         };
 
         $scope.loadFacturas(0, 1);
+
+        //--------------------------- Facturas de parqueo -----------------------------------------------------------------------------------------------------//
+        $scope.proyectosParqueo = [];
+        //$scope.paramsParqueo = {idempresa: undefined, idproyecto: undefined, fdel: moment().toDate(), fal: moment().toDate()};
+        $scope.factsparqueo = [];
+        $scope.generando = false;
+        $scope.fechaactual = '';
+        $scope.mensaje = '';
+
+        $scope.$watch('paramsParqueo.idempresa', function(newValue, oldValue){
+            if(newValue != null && newValue != undefined){
+                $scope.loadProyectosParqueo();
+            }
+        });
+
+        $scope.$watch('generando', function(newValue, oldValue){
+            // console.log('Generando:', newValue);
+        });
+
+        $scope.loadProyectosParqueo = function(){
+            proyectoSrvc.lstProyectosPorEmpresa(+$scope.paramsParqueo.idempresa).then(function(d){ $scope.proyectosParqueo = d; });
+        };
+
+        function getFacts(url){ return factsParqueoSrvc.getFacturas({url: url}).then(function(d){return d; }); }
+
+        $scope.getFacturasParqueo = async function(){
+            var url = $scope.proyectosParqueo[$scope.proyectosParqueo.map(function(p){ return p.id}).indexOf($scope.paramsParqueo.idproyecto)].apiurlparqueo;
+            var fechaini = moment($scope.paramsParqueo.fdel), fechafin = moment($scope.paramsParqueo.fal), facturas = [];
+            var texto = '';
+            $scope.generando = true;
+            while(fechaini <= fechafin){
+                // console.log('Fecha:', fechaini.format('DD/MM/YYYY'));
+                $scope.fechaactual = fechaini.format('DD/MM/YYYY');
+                $scope.mensaje = 'Descargando facturas del ' + $scope.fechaactual + '.';
+                var facts = await getFacts(url + fechaini.format('DD-MM-YYYY'));
+                facturas = facturas.concat(facts);
+                fechaini = fechaini.add(1, 'days');
+            }
+
+            if(facturas.length > 0){
+                texto = 'Se van a insertar ' + $filter('number')(facturas.length, 0) + ' facturas de parqueo. ¿Seguro(a) de continuar?';
+            } else {
+                texto = 'Lo siento, no se encontraron facturas de parqueo en el rango seleccionado. Intente de nuevo, por favor.';
+            }
+
+            $confirm({text: texto, title: 'Facturas de parqueo', ok: 'Sí', cancel: 'No'}).then(function() {
+                if(facturas.length > 0){
+                    var obj = {
+                        idempresa: $scope.paramsParqueo.idempresa,
+                        idproyecto: $scope.paramsParqueo.idproyecto,
+                        tc: $scope.paramsParqueo.tc,
+                        facturas: facturas
+                    };
+                    $scope.mensaje = 'Insertando ' + $filter('number')(facturas.length, 0) + ' facturas de parqueo...';
+                    factsParqueoSrvc.insertaFacturas(obj).then(function(d){
+                        $scope.generando = false;
+                        toaster.pop('info', 'Facturas de parqueo', $filter('number')(facturas.length, 0) + ' facturas de parqueo insertadas.');
+                    });
+                } else {
+                    $scope.generando = false;
+                    toaster.pop('info', 'No se insertó ninguna factura de parqueo.');
+                }
+            }, function(){
+                $scope.generando = false;
+                toaster.pop('info', 'No se insertó ninguna factura de parqueo.');
+            });
+        }
 
     }]);
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
