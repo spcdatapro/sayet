@@ -350,7 +350,7 @@ $app->get('/imprimir_igss', function(){
 
 			$registros = 0;
 			$hojas = 1;
-			$rpag = 32; # Registros por página
+			$rpag = 40; # Registros por página
 
 			$mes  = date('m', strtotime($_GET['fal']));
 			$anio = date('Y', strtotime($_GET['fal']));
@@ -524,7 +524,7 @@ $app->get('/imprimir_isr', function(){
 			}
 
 			$hojas = 1;
-			$rpag = 32; # Registros por página
+			$rpag = 40; # Registros por página
 
 			$mes  = date('m', strtotime($_GET['fal']));
 			$anio = date('Y', strtotime($_GET['fal']));
