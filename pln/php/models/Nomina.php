@@ -278,6 +278,68 @@ EOT;
 			$emp = new Empleado($row->idplnempleado);
 
 			$datos[] = [
+				/*'vidempresa' 	   => $row->idempresaactual,
+				'vempresa'         => $row->nomempresa,
+				'tempresa'         => 'Empresa:',
+				'titulo'           => 'RECIBO DE PAGO',
+				'rango'            => 'Planilla del '.formatoFecha($args['fdel'],1).' al '.formatoFecha($args['fal'], 1),
+				'templeado'        => 'Nombre:',
+				'vempleado'        => "{$row->nombre} {$row->apellidos}",
+				'tcodigo'          => 'Código:',
+				'vcodigo'          => $row->idplnempleado,
+				'tdpi'             => 'DPI:',
+				'vdpi'             => $row->dpi,
+				'tdevengados'      => 'DEVENGADOS',
+				'tdeducidos'       => 'DEDUCIDOS',
+				'division'         => 'linea',
+				'tsueldoordinario' => 'Sueldo Ordinario:',
+				'vsueldoordinario' => $row->sueldoordinario,
+				'thorasextras'     => 'Horas Extras:',
+				'vhorasextras'     => $row->horasmes,
+				'tsueldoextra'     => 'Sueldo Extra:',
+				'vsueldoextra'     => $row->sueldoextra,
+				'vsueldototal'     => ($row->sueldoordinario+$row->sueldoextra),
+				'tbonificacion'    => 'Bonificación:',
+				'vbonificacion'    => $row->bonificacion,
+				'tviaticos'        => 'Viáticos:',
+				'vviaticos'        => $row->viaticos,
+				'totrosingresos'   => 'Otros:',
+				'votrosingresos'   => $row->otrosingresos,
+				'tanticipo'        => 'Anticipos:',
+				'vanticipo'        => $row->anticipo,
+				'tvacaciones'      => 'Vacacioness:',
+				'vvacaciones'      => $row->vacaciones,
+				'vbono14'          => $row->bonocatorce,
+				'taguinaldo'       => 'Aguinaldo:',
+				'vaguinaldo'       => $row->aguinaldo,
+				'tindemnizacion'   => 'Indemnizacion:',
+				'vindemnizacion'   => $row->indemnizacion,
+				'tigss'            => 'IGSS:',
+				'vigss'            => $row->descigss,
+				'tisr'             => 'ISR:',
+				'visr'             => $row->descisr,
+				'tdescanticipo'    => 'Anticipos:',
+				'vdescanticipo'    => $row->descanticipo,
+				'tprestamo'        => 'Préstamos:',
+				'vprestamo'        => $row->descprestamo,
+				'tdescotros'       => 'Otros:',
+				'vdescotros'       => $row->descotros,
+				'tdevengado'       => 'Total Devengado:',
+				'vdevengado'       => $row->devengado,
+				'tdeducido'        => 'Total Deducido:',
+				'vdeducido'        => $row->deducido,
+				'tliquido'         => 'Líquido a Recibir:',
+				'vliquido'         => $row->liquido,
+				'recprestamo'      => 'rectangulo',
+				'tsaldoprestamo'   => 'Saldo de Préstamo',
+				'vsaldoprestamo'   => $emp->get_saldo_prestamo(),
+				'vdiastrabajados'  => $row->diastrabajados,
+				'lrecibi'          => str_repeat("_", 35) ,
+				'trecibi'          => 'Recibí Conforme',
+				'tbonoanual'       => 'Bonifi. anual p/trab. sector privado y público:',
+				'vbonoanual'       => 0,
+				'vafiliacionigss'  => $emp->emp->igss,
+				'vbaja'            => ($emp->emp->baja =  =  = NULL ? '': formatoFecha($emp->emp->baja, 1))*/
 				[
 					'campo' => 'vidempresa', 
 					'valor' => $row->idempresaactual
@@ -517,6 +579,14 @@ EOT;
 				[
 					'campo' => 'vbonoanual',
 					'valor' => 0
+				],
+				[
+					'campo' => 'vafiliacionigss',
+					'valor' => $emp->emp->igss
+				],
+				[
+					'campo' => 'vbaja',
+					'valor' => ($emp->emp->baja === NULL ? '':formatoFecha($emp->emp->baja, 1))
 				]
 			];
 		}
@@ -530,122 +600,54 @@ EOT;
 		$nmes = ucwords(get_meses($args['mes']));
 		
 		return [
-			[
-				'campo' => 'titulon', 
-				'valor' => 'Módulo de Planillas'
-			], 
-			[
-				'campo' => 'subtitulo', 
-				'valor' => $subtitulo
-			], 
-			[
-				'campo' => 'mes', 
-				'valor' => "del mes de {$nmes} de {$args['anio']}"
-			], 
-			[
-				'campo' => 'tcodigot', 
-				'valor' => "Código"
-			], 
-			[
-				'campo' => 'tnombre', 
-				'valor' => "Nombre"
-			], 
-			[
-				'campo' => 'tdiastrabajadost', 
-				'valor' => "DíasTrab"
-			], 
-			[
-				'campo' => 'tsueldoot', 
-				'valor' => "Sueldo O."
-			],
-			[
-				'campo' => 'tsueldoextrat', 
-				'valor' => "Sueldo E."
-			],
-			[
-				'campo' => 'tsueldototalt', 
-				'valor' => "Sueldo T."
-			],
-			[
-				'campo' => 'tbonificaciont', 
-				'valor' => "Bonifica"
-			],
-			[
-				'campo' => 'tanticipot', 
-				'valor' => "Anticipos"
-			],
-			[
-				'campo' => 'tvacacionest', 
-				'valor' => "Vacaciones"
-			],
-			[
-				'campo' => 'tbono14t', 
-				'valor' => "Bono14"
-			],
-			[
-				'campo' => 'taguinaldot', 
-				'valor' => "Aguinaldo"
-			],
-			[
-				'campo' => 'tdevengadot', 
-				'valor' => "Devengado"
-			],
-			[
-				'campo' => 'tigsst', 
-				'valor' => "IGSS"
-			],
-			[
-				'campo' => 'tisrt', 
-				'valor' => "ISR"
-			],
-			[
-				'campo' => 'tdescprestamot', 
-				'valor' => "Préstamos"
-			],
-			[
-				'campo' => 'tdescotrost', 
-				'valor' => "Otros"
-			],
-			[
-				'campo' => 'tdescanticipot', 
-				'valor' => 'Anticipos:'
-			],
-			[
-				'campo' => 'tdeducidot', 
-				'valor' => "Deducido"
-			],
-			[
-				'campo' => 'tliquidot', 
-				'valor' => "Líquido"
-			],
-			[
-				'campo' => 'tlineat', 
-				'valor' => str_repeat("_", 250)
-			],
-			[
-				'campo' => 'tlineapiet', 
-				'valor' => str_repeat("_", 250)
-			], 
-			[
-				'campo' => 'tnopaginat', 
-				'valor' => "Página No. "
-			], 
-			[
-				'campo' => 'linea_devengados', 
-				'valor' => str_repeat("_", 40) . 'Devengados' . str_repeat('_', 40)
-			], 
-			[
-				'campo' => 'linea_devengados_total',
-				'valor' => 'Total'
-			],
-			[
-				'campo' => 'linea_deducidos',
-				'valor' => str_repeat("_", 22) . 'Deducido' . str_repeat('_', 22)
-			],
-			[
-				'campo' => 'linea_deducidos_total',
-				'valor' => 'Total'
-			]
+			'titulon'                => 'Módulo de Planillas',
+			'subtitulo'              => $subtitulo,
+			'mes'                    => "del mes de {$nmes} de {$args['anio']}",
+			'tcodigot'               => "Código",
+			'tnombre'                => "Nombre",
+			'tdiastrabajadost'       => "DíasTrab",
+			'tsueldoot'              => "Sueldo O.",
+			'tsueldoextrat'          => "Sueldo E.",
+			'tsueldototalt'          => "Sueldo T.",
+			'tbonificaciont'         => "Bonifica",
+			'tanticipot'             => "Anticipos",
+			'tvacacionest'           => "Vacaciones",
+			'tbono14t'               => "Bono14",
+			'taguinaldot'            => "Aguinaldo",
+			'tdevengadot'            => "Devengado",
+			'tigsst'                 => "IGSS",
+			'tisrt'                  => "ISR",
+			'tdescprestamot'         => "Préstamos",
+			'tdescotrost'            => "Otros",
+			'tdescanticipot'         => 'Anticipos:',
+			'tdeducidot'             => "Deducido",
+			'tliquidot'              => "Líquido",
+			'tlineat'				 => str_repeat("_", 250),
+			'tlineapiet'             => str_repeat("_", 250),
+			'tnopaginat'             => "Página No. ",
+			'linea_devengados'       => str_repeat("_", 40) . 'Devengados' . str_repeat('_', 40),
+			'linea_devengados_total' => 'Total',
+			'linea_deducidos'        => str_repeat("_", 22) . 'Deducido' . str_repeat('_', 22),
+			'linea_deducidos_total'  => 'Total'
+		];
+	}
+
+	public function get_cabecera_isr($args = [])
+	{
+		$subtitulo = $args['dia'] == 15 ? 'Anticipo Quincena # ' . (int)$args['mes'] : 'Planilla General';
+		$nmes = ucwords(get_meses($args['mes']));
+		
+		return [
+			'titulon'                => 'Módulo de Planillas',
+			'subtitulo'              => "Descuento de ISR",
+			'mes'                    => 'Planilla del 01/'.$args['mes'].'/'.$args['anio'].' al '.$args['dia'].'/'.$args['mes'].'/'.$args['anio'],
+			'tcodigot'               => "Código",
+			'tnombre'                => "Nombre",
+			'tdevengadot'            => "Total Devengado",
+			'tisrt'                  => "ISR",
+			'tlineat'				 => str_repeat("_", 160),
+			'tlineapiet'             => str_repeat("_", 160),
+			'tnopaginat'             => "Página No. "
 		];
 	}
 
@@ -654,80 +656,58 @@ EOT;
 		$nmes = strtoupper(get_meses($args['mes']));
 
 		return [
-			[
-				'campo' => 'titulo', 
-				'valor' => 'INSTITUTO GUATEMALTECO DE SEGURIDAD SOCIAL'
-			], 
-			[
-				'campo' => 'subtitulo', 
-				'valor' => 'PLANILLA DE SEGURIDAD SOCIAL'
-			], 
-			[
-				'campo' => 'mes',
-				'valor' => "CORRESPONDIENTE AL MES DE {$nmes} DE {$args['anio']}"
-			], 
-			[
-				'campo' => 'periodo', 
-				'valor' => 'POR EL PERIODO DEL 01/'.$args['mes'].'/'.$args['anio'].' AL '.$args['dia'].'/'.$args['mes'].'/'.$args['anio']
-			], 
-			[
-				'campo' => 't_razon_social',
-				'valor' => 'Nombre o Razón Social:'
-			],
-			[
-				'campo' => 't_direccion_patrono',
-				'valor' => 'Dirección del Patrono:'
-			],
-			[
-				'campo' => 't_numero_patronal',
-				'valor' => 'Número Patronal:'
-			],
-			[
-				'campo' => 't_afiliacion', 
-				'valor' => "No. Afiliación"
-			], 
-			[
-				'campo' => 't_nombre_empleado',
-				'valor' => 'Nombre del Empleado'
-			],
-			[
-				'campo' => 't_fecha_baja',
-				'valor' => 'Fecha de Baja'
-			],
-			[
-				'campo' => 't_sueldo_ordinario',
-				'valor' => 'Sueldo Ordinario'
-			],
-			[
-				'campo' => 't_sueldo_extraordinario',
-				'valor' => 'Sueldo Extraordinario'
-			],
-			[
-				'campo' => 't_sueldo_total',
-				'valor' => 'Sueldo Total'
-			],
-			[
-				'campo' => 't_igss',
-				'valor' => 'IGSS'
-			]
+			'igss_titulo'             => 'INSTITUTO GUATEMALTECO DE SEGURIDAD SOCIAL',
+			'igss_subtitulo'          => 'PLANILLA DE SEGURIDAD SOCIAL',
+			'igss_mes'                => "CORRESPONDIENTE AL MES DE {$nmes} DE {$args['anio']}",
+			'igss_periodo'            => 'POR EL PERIODO DEL 01/'.$args['mes'].'/'.$args['anio'].' AL '.$args['dia'].'/'.$args['mes'].'/'.$args['anio'],
+			't_razon_social'          => 'Nombre o Razón Social:',
+			'v_razon_social'		  => $args['razon_social'],
+			't_direccion_patrono'     => 'Dirección del Patrono:',
+			'v_direccion_patrono'	  => $args['direccion_patrono'],
+			't_numero_patronal'       => 'Número Patronal:',
+			'v_numero_patronal'	      => $args['numero_patronal'],
+			't_afiliacion'            => "No. Afiliación",
+			't_nombre_empleado'       => 'Nombre del Empleado',
+			't_fecha_baja'            => 'Fecha de Baja',
+			't_sueldo_ordinario'      => 'Sueldo Ordinario',
+			't_sueldo_extraordinario' => 'Sueldo Extraordinario',
+			't_sueldo_total'          => 'Sueldo Total',
+			't_igss'                  => 'IGSS',
+			'tlineat'				  => str_repeat("_", 160)
 		];
 	}
 
 	public function get_firmas()
 	{
 		return [
-			[
-				'campo' => 'elaborado', 
-				'valor' => 'Elaborado por: ' . str_repeat('_', 25)
-			], 
-			[
-				'campo' => 'revisado', 
-				'valor' => 'Revisado VoBo: ' . str_repeat('_', 25)
-			], 
-			[
-				'campo' => 'autorizado', 
-				'valor' => 'Autorizado VoBo: ' . str_repeat('_', 25)
-			]
+			'elaborado'  => 'Elaborado por: ' . str_repeat('_', 25),
+			'revisado'   => 'Revisado VoBo: ' . str_repeat('_', 25),
+			'autorizado' => 'Autorizado VoBo: ' . str_repeat('_', 25)
+		];
+	}
+
+	public function get_resumen_igss($args = [])
+	{
+		return [
+			'r_igss_concepto'           => 'Concepto',
+			'r_igss_cuota_patronal'     => 'Cuota Patronal',
+			'r_igss_cuota_trabajadores' => 'Cuota Trabajadores',
+			'r_igss_total_pagar'        => 'Total a Pagar',
+			'con_igss'                  => 'IGSS',
+			'con_intecap'               => 'INTECAP',
+			'con_irtra'                 => 'IRTRA',
+			'con_total'                 => 'Total',
+			'cp_igss'                   => number_format($args['cp_igss'], 2),
+			'cp_intecap'                => number_format($args['cp_intecap'], 2),
+			'cp_irtra'                  => number_format($args['cp_irtra'], 2),
+			'cp_total'                  => number_format($args['cp_igss']+$args['cp_intecap']+$args['cp_irtra'], 2),
+			'ct_igss'                   => number_format($args['ct_igss'], 2),
+			'ct_total'                  => number_format($args['ct_igss'], 2),
+			'tp_igss'                   => number_format($args['cp_igss']+$args['ct_igss'], 2),
+			'tp_intecap'                => number_format($args['cp_intecap'], 2),
+			'tp_irtra'                  => number_format($args['cp_irtra'], 2),
+			'tp_total'                  => number_format($args['cp_igss']+$args['cp_intecap']+$args['cp_irtra']+$args['ct_igss'], 2),
+			'r_igss_firma'				=> str_repeat("_", 50) . "\n(Firma del Patrono o su Representante Lega)"
 		];
 	}
 }

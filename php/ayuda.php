@@ -100,8 +100,6 @@ if (! function_exists('generar_fimpresion')) {
 	 */
 	function generar_fimpresion($pdf, $dato, $conf)
 	{
-		$borde = 0;
-
 		$pdf->SetY($conf->psy);
 		$pdf->SetX($conf->psx);
 		$pdf->SetFont($conf->letra, $conf->estilo, $conf->tamanio);
@@ -138,7 +136,7 @@ if (! function_exists('generar_fimpresion')) {
 				$conf->ancho, 
 				$conf->espacio, 
 				$dato, 
-				$borde, 
+				$conf->borde, 
 				$conf->alineacion 
 			);
 		} else {					
@@ -146,7 +144,7 @@ if (! function_exists('generar_fimpresion')) {
 				$conf->ancho, 
 				$conf->espacio, 
 				$dato, 
-				$borde, 
+				$conf->borde, 
 				0, 
 				$conf->alineacion 
 			);
