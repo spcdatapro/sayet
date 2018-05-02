@@ -129,11 +129,11 @@ $app->get('/imprimir', function(){
 			for ($i=0; $i < ((count($todos)+(count($datos)*2))/$rpag) ; $i++) { 
 				$pdf->AddPage();
 
-				foreach ($cabecera as $row) {
-					$conf = $g->get_campo_impresion($row['campo'], 2);
+				foreach ($cabecera as $campo => $valor) {
+					$conf = $g->get_campo_impresion($campo, 2);
 
 					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$pdf = generar_fimpresion($pdf, $row['valor'], $conf);
+						$pdf = generar_fimpresion($pdf, $valor, $conf);
 					}
 				}
 			}
@@ -250,11 +250,11 @@ $app->get('/imprimir', function(){
 
 			$espacio += 20;
 
-			foreach ($b->get_firmas() as $linea) {
-				$conf = $g->get_campo_impresion($linea['campo'], 2);
+			foreach ($b->get_firmas() as $campo => $valor) {
+				$conf = $g->get_campo_impresion($campo, 2);
 
 				if (!isset($conf->scalar) && $conf->visible == 1) {
-					$pdf = generar_fimpresion($pdf, $linea['valor'], $conf);
+					$pdf = generar_fimpresion($pdf, $valor, $conf);
 				}
 			}
 
@@ -334,8 +334,10 @@ $app->get('/imprimir_igss', function(){
 	$b = new Nomina();
 	$g = new General();
 
-	if (elemento($_GET, 'fdel') && elemento($_GET, 'fal')) {
+	if (elemento($_GET, 'fal')) {
 		require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
+
+		$_GET['fdel'] = formatoFecha($_GET['fal'], 4).'-'.formatoFecha($_GET['fal'], 3).'-01';
 		
 		$s = [215.9, 279.4]; # Carta mm
 
@@ -347,48 +349,206 @@ $app->get('/imprimir_igss', function(){
 		if (count($todos) > 0) {
 
 			$registros = 0;
-			$datos = [];
-
-			/*foreach ($todos as $fila) {
-				if (isset($datos[$fila[0]['valor']])) {
-					$datos[$fila[0]['valor']]['empleados'][] = $fila;
-				} else {
-					$datos[$fila[0]['valor']] = [
-						'nombre'    => $fila[1]['valor'], 
-						'conf'      => $g->get_campo_impresion('vidempresa', 2), 
-						'empleados' => [$fila]
-					];
-				}
-			}*/
-
-			
-
 			$hojas = 1;
-			$rpag = 32; # Registros por página
+			$rpag = 40; # Registros por página
 
 			$mes  = date('m', strtotime($_GET['fal']));
 			$anio = date('Y', strtotime($_GET['fal']));
 			$dia  = date('d', strtotime($_GET['fal']));
 
+			$emp = $g->get_empresa(['id' => $_GET['empresa']])[0];
+
 			$cabecera = $b->get_cabecera_igss([
+				'dia'               => $dia, 
+				'mes'               => $mes, 
+				'anio'              => $anio,
+				'razon_social'      => $emp['nomempresa'],
+				'direccion_patrono' => $emp['direccion'],
+				'numero_patronal'   => $emp['numero_patronal']
+			]);
+
+			$totales = [];
+			
+			# Se imprime un encabezado más para agregar la tabla final
+			$totalPaginas = ceil(count($todos)/$rpag)+1;
+			for ($i=1; $i <= $totalPaginas; $i++) { 
+				$pdf->AddPage();
+
+				foreach ($cabecera as $campo => $valor) {
+					$conf = $g->get_campo_impresion($campo, 3);
+
+					if (!isset($conf->scalar) && $conf->visible == 1) {
+						$pdf = generar_fimpresion($pdf, $valor, $conf);
+					}
+				}
+			}
+
+			$pagina = 1;
+
+			$pdf->setPage($pagina);
+
+			$espacio = 0;
+			$totales = [];
+
+			foreach ($todos as $empleado) {
+				$registros++;
+				$espaciotmp = 0;
+
+				foreach ($empleado as $row) {
+					$conf = $g->get_campo_impresion($row['campo'], 3);
+
+					if (!isset($conf->scalar) && $conf->visible == 1) {
+						if ($espaciotmp === 0) {
+							$espaciotmp = $conf->espacio;
+						}
+						
+						$conf->psy = ($conf->psy+$espacio);
+
+						if (is_numeric($row["valor"]) && !in_array($row['campo'], ['vcodigo', 'vafiliacionigss'])) {
+							$valor = number_format($row["valor"], 2);
+						} else {
+							$valor = $row["valor"];
+						}
+
+						$pdf = generar_fimpresion($pdf, $valor, $conf);
+
+						$sintotal = ['vdiastrabajados', 'vcodigo', 'vafiliacionigss'];
+
+						if (is_numeric($row['valor']) && !in_array($row['campo'], $sintotal)) {
+							if (isset($totales[$row['campo']])) {
+								$totales[$row['campo']] += $row['valor'];
+							} else {
+								$totales[$row['campo']] = $row['valor'];
+							}
+						}
+					}
+				}
+
+				# $pdf = generar_fimpresion($pdf, $valor, $conf);
+
+				$espacio += $espaciotmp;
+
+				if ($registros == $rpag) {
+					$espacio   = 0;
+					$registros = 0;
+					$pagina++;
+					$pdf->setPage($pagina);
+				}
+
+				$pdf->SetLineStyle(array(
+					'width' => 0.2, 
+					'cap' => 'butt', 
+					'join' => 'miter', 
+					'dash' => 0, 
+					'color' => array(0, 0, 0)
+				));
+			}
+
+			$pdf->setPage($totalPaginas);
+			$conf = $g->get_campo_impresion('t_cantidad_empleado', 3);
+			if (!isset($conf->scalar) && $conf->visible == 1) {
+				$pdf = generar_fimpresion($pdf, "Empleados: " . count($todos), $conf);
+			}
+
+			foreach ($totales as $campo => $total) {
+				$conf = $g->get_campo_impresion($campo, 3);
+
+				if (!isset($conf->scalar) && $conf->visible == 1) {
+					$pdf = generar_fimpresion($pdf, number_format($total, 2), $conf);
+
+					$y = ($conf->psy+$conf->espacio);
+
+					$pdf->Line($conf->psx, $y, $conf->psx+$conf->ancho, $y);
+					$pdf->Line($conf->psx, $y+1, $conf->psx+$conf->ancho, $y+1);
+				}
+			}
+
+			$dresumen = [
+				'cp_igss'    => ($totales['vsueldototal'] * 0.1067),
+				'cp_intecap' => ($totales['vsueldototal'] * 0.01),
+				'cp_irtra'   => ($totales['vsueldototal'] * 0.01),
+				'ct_igss'    => $totales['vigss'],
+				'ct_total'   => $totales['vigss']
+			];
+
+			foreach ($b->get_resumen_igss($dresumen) as $campo => $valor) {
+				$conf = $g->get_campo_impresion($campo, 3);
+
+				if (!isset($conf->scalar) && $conf->visible == 1) {
+					$pdf = generar_fimpresion($pdf, $valor, $conf);
+				}
+			}
+
+			#~$conf = $g->get_campo_impresion('')
+
+			$pdf->Output("planilla_igss_" . time() . ".pdf", 'I');
+			die();
+		} else {
+			echo "Nada que mostrar";
+		}
+	} else {
+		echo "Faltan datos obligatorios";
+	}
+});
+
+$app->get('/imprimir_isr', function(){
+	$b = new Nomina();
+	$g = new General();
+
+	if (elemento($_GET, 'fal')) {
+		require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
+
+		$_GET['fdel'] = formatoFecha($_GET['fal'], 4).'-'.formatoFecha($_GET['fal'], 3).'-01';
+
+		$s = [215.9, 279.4]; # Carta mm
+
+		$pdf = new TCPDF('P', 'mm', $s);
+		$pdf->SetAutoPageBreak(TRUE, 0);
+
+		$todos = $b->get_datos_recibo($_GET);
+
+		if (count($todos) > 0) {
+			$registros = 0;
+			$datos = [];
+
+			foreach ($todos as $fila) {
+				if (isset($datos[$fila[0]['valor']])) {
+					$datos[$fila[0]['valor']]['empleados'][] = $fila;
+				} else {
+					$datos[$fila[0]['valor']] = [
+						'nombre'    => $fila[1]['valor'], 
+						'conf'      => $g->get_campo_impresion('vidempresa', 4), 
+						'empleados' => [$fila]
+					];
+				}
+			}
+
+			$hojas = 1;
+			$rpag = 40; # Registros por página
+
+			$mes  = date('m', strtotime($_GET['fal']));
+			$anio = date('Y', strtotime($_GET['fal']));
+			$dia  = date('d', strtotime($_GET['fal']));
+
+			$cabecera = $b->get_cabecera_isr([
 				'dia'  => $dia, 
 				'mes'  => $mes, 
 				'anio' => $anio
 			]);
 			
-			for ($i=0; $i < ((count($todos)*2)/$rpag) ; $i++) { 
+			for ($i=0; $i < ((count($todos)+(count($datos)*2))/$rpag) ; $i++) { 
 				$pdf->AddPage();
 
-				foreach ($cabecera as $row) {
-					$conf = $g->get_campo_impresion($row['campo'], 3);
+				foreach ($cabecera as $campo => $valor) {
+					$conf = $g->get_campo_impresion($campo, 4);
 
 					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$pdf = generar_fimpresion($pdf, $row['valor'], $conf);
+						$pdf = generar_fimpresion($pdf, $valor, $conf);
 					}
 				}
 			}
 
-			/*$pagina = 1;
+			$pagina = 1;
 
 			$pdf->setPage($pagina);
 
@@ -405,7 +565,7 @@ $app->get('/imprimir_igss', function(){
 					$pdf->setPage($pagina);
 				}
 				
-				$confe      = $g->get_campo_impresion('idempresa', 2);
+				$confe      = $g->get_campo_impresion('idempresa', 4);
 				$confe->psy = ($confe->psy+$espacio);
 				$espacio    += $confe->espacio;
 				$pdf        = generar_fimpresion($pdf, "{$key} {$empresa['nombre']}", $confe);
@@ -416,7 +576,7 @@ $app->get('/imprimir_igss', function(){
 					$registros++;
 
 					foreach ($empleado as $row) {
-						$conf = $g->get_campo_impresion($row['campo'], 2);
+						$conf = $g->get_campo_impresion($row['campo'], 4);
 
 						if (!isset($conf->scalar) && $conf->visible == 1) {
 							$conf->psy = ($conf->psy+$espacio);
@@ -480,7 +640,7 @@ $app->get('/imprimir_igss', function(){
 				));
 
 				foreach ($etotales as $campo => $total) {
-					$conf = $g->get_campo_impresion($campo, 2);
+					$conf = $g->get_campo_impresion($campo, 4);
 
 					if (!isset($conf->scalar) && $conf->visible == 1) {
 						$conf->psy = ($conf->psy+$espacio);
@@ -498,23 +658,13 @@ $app->get('/imprimir_igss', function(){
 				$espacio += $confe->espacio;	
 			}
 
-			$espacio += 20;
-
-			foreach ($b->get_firmas() as $linea) {
-				$conf = $g->get_campo_impresion($linea['campo'], 2);
-
-				if (!isset($conf->scalar) && $conf->visible == 1) {
-					$pdf = generar_fimpresion($pdf, $linea['valor'], $conf);
-				}
-			}
-
-			$pie  = $g->get_campo_impresion("vtotalespie", 2);
+			$pie  = $g->get_campo_impresion("vtotalespie", 4);
 
 			foreach ($totales as $key => $subtotales) {
 				$pdf->setPage($key);
 
 				foreach ($subtotales as $campo => $total) {
-					$conf = $g->get_campo_impresion($campo, 2);
+					$conf = $g->get_campo_impresion($campo, 4);
 
 					if (!isset($conf->scalar) && $conf->visible == 1) {
 						$conf->psy = $pie->psy;
@@ -527,11 +677,11 @@ $app->get('/imprimir_igss', function(){
 					}
 				}
 
-				$conf = $g->get_campo_impresion("vnopagina", 2);
+				$conf = $g->get_campo_impresion("vnopagina", 4);
 				if (!isset($conf->scalar) && $conf->visible == 1) {
 					$pdf = generar_fimpresion($pdf, $key, $conf);
 				}
-			}*/
+			}
 
 			$pdf->Output("nomina" . time() . ".pdf", 'I');
 			die();

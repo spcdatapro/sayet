@@ -57,6 +57,21 @@ class General extends Principal
 		);
 	}
 
+	public function get_empresa($args = [])
+	{
+		$where = [];
+
+		if (elemento($args, 'id')) {
+			$where['id'] = $args['id'];
+		}
+
+		return $this->db->select(
+			'empresa', 
+			['*'],
+			$where
+		);
+	}
+
 	/* 
 	Verifica si un empleado activo tiene registro en la tabla pln_proempleado 
 	para el año que se quiere trabajar 

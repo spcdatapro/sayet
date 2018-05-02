@@ -68,6 +68,12 @@ angular.module('cpm')
         }, 
         getOmisiones: function(pre) {
             return comunFact.doGET(urlBase + '/ver_omisiones/' + pre)
+        },
+        guardarAbono: function(datos, pre) {
+            return comunFact.doPOSTFiles(urlBase + '/guardar_abono/' + pre, datos)
+        },
+        getAbonos: function(pre) {
+            return comunFact.doGET(urlBase + '/ver_abonos/' + pre)
         }
     };
 }]);

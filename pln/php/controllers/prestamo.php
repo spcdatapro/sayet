@@ -80,6 +80,26 @@ $app->get('/ver_omisiones/:prestamo', function($prestamo){
 	enviar_json(['omisiones' => $pre->get_omisiones()]);
 });
 
+$app->post('/guardar_abono/:prestamo', function($prestamo){
+	$data = ['exito' => 0];
+
+	$pre = new Prestamo($prestamo);
+	
+	if ($pre->guardar_abono($_POST)) {
+		$data['exito']   = 1;
+		$data['mensaje'] = 'Se ha guardado con èxito.';
+	} else {
+		$data['mensaje'] = $pre->get_mensaje();
+	}
+	
+	enviar_json($data);
+});
+
+$app->get('/ver_abonos/:prestamo', function($prestamo){
+	$pre = new Prestamo($prestamo);
+	enviar_json(['abonos' => $pre->get_abonos()]);
+});
+
 $app->get('/test', function(){
 	echo "<pre>";
 	print_r($_SESSION);
