@@ -66,8 +66,10 @@ class Nomina extends Principal
 				    a.fecha = '{$fecha}' AND b.activo = 1 ";
 
 		if (elemento($args, 'empresa')) {
-			$sql .= "AND a.idempresa = {$args['empresa']}";
+			$sql .= "AND a.idempresa = {$args['empresa']} ";
 		}
+
+		$sql .= "order by b.nombre ASC";
 
 		return $this->db->query($sql)->fetchAll();
 	}
@@ -77,48 +79,53 @@ class Nomina extends Principal
 		if (elemento($args, 'id')) {
 			$datos = [];
 
-			if (elemento($args, "viaticos")) {
-				$datos["viaticos"] = $args["viaticos"];
+			if (isset($args['viaticos'])) {
+				$datos["viaticos"] = elemento($args, "viaticos", 0);
 			}
 
-			if (elemento($args, "aguinaldo")) {
-				$datos["aguinaldo"] = $args["aguinaldo"];
+			if (isset($args["aguinaldo"])) {
+				$datos["aguinaldo"] = elemento($args, "aguinaldo", 0);
 			}
 
-			if (elemento($args, "indemnizacion")) {
-				$datos["indemnizacion"] = $args["indemnizacion"];
+			if (isset($args["indemnizacion"])) {
+				$datos["indemnizacion"] = elemento($args, "indemnizacion", 0);
 			}
 
-			if (elemento($args, "bonocatorce")) {
-				$datos["bonocatorce"] = $args["bonocatorce"];
+			if (isset($args["bonocatorce"])) {
+				$datos["bonocatorce"] = elemento($args, "bonocatorce", 0);
 			}
 
-			if (elemento($args, "vacaciones")) {
-				$datos["vacaciones"] = $args["vacaciones"];
+			if (isset($args["vacaciones"])) {
+				$datos["vacaciones"] = elemento($args, "vacaciones", 0);
 			}
 
-			if (elemento($args, "otrosingresos")) {
-				$datos["otrosingresos"] = $args["otrosingresos"];
+			if (isset($args["otrosingresos"])) {
+				$datos["otrosingresos"] = elemento($args, "otrosingresos", 0);
 			}
 
-			if (elemento($args, "descisr")) {
-				$datos["descisr"] = $args["descisr"];
+			if (isset($args["descisr"])) {
+				$datos["descisr"] = elemento($args, "descisr", 0);
 			}
 
-			if (elemento($args, "descotros")) {
-				$datos["descotros"] = $args["descotros"];
+			if (isset($args["descotros"])) {
+				$datos["descotros"] = elemento($args, "descotros", 0);
 			}
 
-			if (elemento($args, "sueldoordinario")) {
-				$datos["sueldoordinario"] = $args["sueldoordinario"];
+			if (isset($args["sueldoordinario"])) {
+				$datos["sueldoordinario"] = elemento($args, "sueldoordinario", 0);
 			}
 
-			if (elemento($args, "anticipo")) {
-				$datos["anticipo"] = $args["anticipo"];
+			if (isset($args["anticipo"])) {
+				$datos["anticipo"] = elemento($args, "anticipo", 0);
 			}
 
-			$datos["horasmes"]    = elemento($args, "horasmes", 0);
-			$datos["sueldoextra"] = elemento($args, "sueldoextra", 0);
+			if (isset($args["horasmes"])) {
+				$datos["horasmes"] = elemento($args, "horasmes", 0);
+			}
+
+			if (isset($args["sueldoextra"])) {
+				$datos["sueldoextra"] = elemento($args, "sueldoextra", 0);
+			}
 
 			if (!empty($datos)) {
 				if ($this->db->update("plnnomina", $datos, ["id" => $args['id']])) {
@@ -273,68 +280,6 @@ EOT;
 			$emp = new Empleado($row->idplnempleado);
 
 			$datos[] = [
-				/*'vidempresa' 	   => $row->idempresaactual,
-				'vempresa'         => $row->nomempresa,
-				'tempresa'         => 'Empresa:',
-				'titulo'           => 'RECIBO DE PAGO',
-				'rango'            => 'Planilla del '.formatoFecha($args['fdel'],1).' al '.formatoFecha($args['fal'], 1),
-				'templeado'        => 'Nombre:',
-				'vempleado'        => "{$row->nombre} {$row->apellidos}",
-				'tcodigo'          => 'Código:',
-				'vcodigo'          => $row->idplnempleado,
-				'tdpi'             => 'DPI:',
-				'vdpi'             => $row->dpi,
-				'tdevengados'      => 'DEVENGADOS',
-				'tdeducidos'       => 'DEDUCIDOS',
-				'division'         => 'linea',
-				'tsueldoordinario' => 'Sueldo Ordinario:',
-				'vsueldoordinario' => $row->sueldoordinario,
-				'thorasextras'     => 'Horas Extras:',
-				'vhorasextras'     => $row->horasmes,
-				'tsueldoextra'     => 'Sueldo Extra:',
-				'vsueldoextra'     => $row->sueldoextra,
-				'vsueldototal'     => ($row->sueldoordinario+$row->sueldoextra),
-				'tbonificacion'    => 'Bonificación:',
-				'vbonificacion'    => $row->bonificacion,
-				'tviaticos'        => 'Viáticos:',
-				'vviaticos'        => $row->viaticos,
-				'totrosingresos'   => 'Otros:',
-				'votrosingresos'   => $row->otrosingresos,
-				'tanticipo'        => 'Anticipos:',
-				'vanticipo'        => $row->anticipo,
-				'tvacaciones'      => 'Vacacioness:',
-				'vvacaciones'      => $row->vacaciones,
-				'vbono14'          => $row->bonocatorce,
-				'taguinaldo'       => 'Aguinaldo:',
-				'vaguinaldo'       => $row->aguinaldo,
-				'tindemnizacion'   => 'Indemnizacion:',
-				'vindemnizacion'   => $row->indemnizacion,
-				'tigss'            => 'IGSS:',
-				'vigss'            => $row->descigss,
-				'tisr'             => 'ISR:',
-				'visr'             => $row->descisr,
-				'tdescanticipo'    => 'Anticipos:',
-				'vdescanticipo'    => $row->descanticipo,
-				'tprestamo'        => 'Préstamos:',
-				'vprestamo'        => $row->descprestamo,
-				'tdescotros'       => 'Otros:',
-				'vdescotros'       => $row->descotros,
-				'tdevengado'       => 'Total Devengado:',
-				'vdevengado'       => $row->devengado,
-				'tdeducido'        => 'Total Deducido:',
-				'vdeducido'        => $row->deducido,
-				'tliquido'         => 'Líquido a Recibir:',
-				'vliquido'         => $row->liquido,
-				'recprestamo'      => 'rectangulo',
-				'tsaldoprestamo'   => 'Saldo de Préstamo',
-				'vsaldoprestamo'   => $emp->get_saldo_prestamo(),
-				'vdiastrabajados'  => $row->diastrabajados,
-				'lrecibi'          => str_repeat("_", 35) ,
-				'trecibi'          => 'Recibí Conforme',
-				'tbonoanual'       => 'Bonifi. anual p/trab. sector privado y público:',
-				'vbonoanual'       => 0,
-				'vafiliacionigss'  => $emp->emp->igss,
-				'vbaja'            => ($emp->emp->baja =  =  = NULL ? '': formatoFecha($emp->emp->baja, 1))*/
 				[
 					'campo' => 'vidempresa', 
 					'valor' => $row->idempresaactual
@@ -591,7 +536,7 @@ EOT;
 
 	public function get_cabecera($args = [])
 	{
-		$subtitulo = $args['dia'] == 15 ? 'Anticipo Quincena # ' . (int)$args['mes'] : 'Planilla General';
+		$subtitulo = $args['dia'] == 15 ? 'Anticipo Quincena # ' . (int)$args['mes'] : 'Planilla General # ' . (int)$args['mes'];
 		$nmes = ucwords(get_meses($args['mes']));
 		
 		return [

@@ -141,6 +141,50 @@ class Prestamo extends Principal
 		);
 	}
 
+	public function guardar_abono($args = [])
+	{
+		if ($this->get_saldo() >= $args['monto']) {
+			$datos = [
+				'fecha' => $args['fecha'],
+				'monto' => $args['monto'],
+				'concepto' => $args['concepto'],
+				'idusuario' => $_SESSION['uid'],
+				'idplnprestamo' => $this->pre->id
+			];
+
+			$lid = $this->db->insert('plnpresabono', $datos);
+
+			if ($lid) {
+				return TRUE;
+			} else {
+				$this->set_mensaje('Error al guardar: ' . $this->db->error()[2]);
+			}
+		} else {
+			$this->set_mensaje('El saldo es inferior al monto ingresado. Por favor verifique e intente nuevamente.');
+		}
+
+		return FALSE;
+	}
+
+	public function get_abonos()
+	{
+		return $this->db->select("plnpresabono", [
+				'[><]usuario(b)' => ['plnpresabono.idusuario' => 'id']
+			], 
+			[
+				"plnpresabono.id",
+				"plnpresabono.fecha",
+				"plnpresabono.monto",
+				"plnpresabono.concepto",
+				"plnpresabono.registro",
+				"b.nombre"
+			],
+			[
+				'idplnprestamo' => $this->pre->id
+			]
+		);
+	}
+
 	public function get_saldo($args = [])
 	{
 		if ($this->pre->finalizado == 1) {
@@ -156,6 +200,18 @@ class Prestamo extends Principal
 
 			if ($tmp) {
 				foreach ($tmp as $row) {
+					$abonos += $row['monto'];
+				}
+			}
+
+			$tmpdir = $this->db->select(
+				'plnpresabono', 
+				['monto'],
+				['idplnprestamo' => $this->pre->id]
+			);
+
+			if ($tmpdir) {
+				foreach ($tmpdir as $row) {
 					$abonos += $row['monto'];
 				}
 			}

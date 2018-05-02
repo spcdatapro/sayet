@@ -90,6 +90,7 @@ angular.module('cpm')
         $scope.hay         = false
         $scope.empleados   = []
         $scope.omisiones   = []
+        $scope.abonos      = []
         
         $scope.mostrarForm = function() {
             $scope.pre = {}
@@ -202,6 +203,28 @@ angular.module('cpm')
             } else {
                 alert('Por favor ingrese una fecha válida.')
             }
+        }
+
+        $scope.guardarAbono = function(ab) {
+            if (ab.fecha_abono && ab.monto && ab.concepto) {
+                $('#btnGuardarAbono').button('loading')
+                ab.fecha = $scope.formatoFecha(ab.fecha_abono)
+                preServicios.guardarAbono(ab, $scope.pre.id).then(function(data){
+                    $scope.verAbonos($scope.pre.id)
+                    alert(data.mensaje)
+                    $('#btnGuardarAbono').button('reset')
+                    $('#mdlAbono').modal('hide')
+                    $scope.abono = {}
+                })
+            } else {
+                alert('Por favor llene el formulario. Todos los campos son obligatorios.')
+            }
+        }
+
+        $scope.verAbonos = function(pre) {
+            preServicios.getAbonos(pre).then(function(d){
+                $scope.abonos = d.abonos
+            })
         }
 
         $scope.buscar({})
