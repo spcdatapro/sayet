@@ -216,7 +216,9 @@ $app->post('/rptagua', function(){
     $mesAnterior = (int)$tiempo->mes > 1 ? ((int)$tiempo->mes - 1) : 12;
     $anioAnterior = (int)$tiempo->mes > 1 ? (int)$tiempo->anio : ((int)$tiempo->anio - 1);
 
-    $qEnding = "FROM lecturaservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico INNER JOIN contrato c ON c.id = (SELECT b.id FROM contrato b WHERE FIND_IN_SET(a.idunidad, b.idunidad) LIMIT 1) ";
+    $qEnding = "FROM lecturaservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico INNER JOIN contrato c ON c.id = (";
+    $qEnding.= "SELECT b.id FROM contrato b WHERE IF(b.inactivo = 1 AND MONTH(b.fechainactivo) = MONTH('$d->fvencestr') AND YEAR(b.fechainactivo) = YEAR('$d->fvencestr'), FIND_IN_SET(a.idunidad, b.idunidadbck), FIND_IN_SET(a.idunidad, b.idunidad)) LIMIT 1";
+    $qEnding.= ") ";
     $qEnding.= "INNER JOIN cliente d ON d.id = c.idcliente INNER JOIN detclientefact e ON d.id = e.idcliente INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio INNER JOIN proyecto g ON g.id = a.idproyecto ";
     $qEnding.= "INNER JOIN unidad h ON h.id = a.idunidad INNER JOIN empresa i ON i.id = b.idempresa ";
     $qEnding.= "WHERE a.estatus IN(2, 3) AND b.pagacliente = 0 AND c.inactivo = 0 AND e.fal IS NULL AND a.mes = MONTH('$d->fvencestr') AND a.anio = YEAR('$d->fvencestr') ";

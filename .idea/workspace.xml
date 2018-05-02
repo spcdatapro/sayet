@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/facturaotros.php" afterPath="$PROJECT_DIR$/php/facturaotros.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/clientectrl.js" afterPath="$PROJECT_DIR$/js/controllers/clientectrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/mntcliente.html" afterPath="$PROJECT_DIR$/pages/mntcliente.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/facturaagua.php" afterPath="$PROJECT_DIR$/php/facturaagua.php" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -38,35 +39,23 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="facturaotros.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/php/facturaotros.php">
+      <file leaf-file-name="mntcliente.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pages/mntcliente.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.33563218">
-              <caret line="182" column="17" selection-start-line="182" selection-start-column="17" selection-end-line="182" selection-end-column="17" />
+            <state vertical-scroll-proportion="-5.7090907">
+              <caret line="459" column="155" selection-start-line="459" selection-start-column="140" selection-end-line="459" selection-end-column="155" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="clientectrl.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/js/controllers/clientectrl.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.3137255">
+              <caret line="632" column="83" selection-start-line="632" selection-start-column="83" selection-end-line="632" selection-end-column="83" />
               <folding>
-                <marker date="1525268988499" expanded="true" signature="525:600" placeholder="SELECT DISTI..." />
-                <marker date="1525268988499" expanded="true" signature="3380:3400" placeholder="INSERT INTO factura..." />
-                <marker date="1525268988499" expanded="true" signature="4420:4438" placeholder="UPDATE factu..." />
-                <marker date="1525268988499" expanded="true" signature="5277:5357" placeholder="UPDATE detfa..." />
-                <marker date="1525268988499" expanded="true" signature="5577:5637" placeholder="DELETE FROM ..." />
-                <marker date="1525268988499" expanded="true" signature="5686:5724" placeholder="DELETE FROM ..." />
-                <marker date="1525268988499" expanded="true" signature="5773:5804" placeholder="DELETE FROM ..." />
-                <marker date="1525268988499" expanded="true" signature="7416:7478" placeholder="SELECT SUM(p..detfact..." />
-                <marker date="1525268988499" expanded="true" signature="7546:7610" placeholder="SELECT SUM(d..detfact..." />
-                <marker date="1525268988499" expanded="true" signature="7742:7783" placeholder="SELECT idemp..factura..." />
-                <marker date="1525268988499" expanded="true" signature="7850:7953" placeholder="SELECT idtip..contrato..." />
-                <marker date="1525268988499" expanded="true" signature="7897:7939" placeholder="SELECT idcon..factura..." />
-                <marker date="1525268988499" expanded="true" signature="8004:8046" placeholder="SELECT reten..factura..." />
-                <marker date="1525268988499" expanded="true" signature="8110:8152" placeholder="SELECT reten..factura..." />
-                <marker date="1525268988499" expanded="true" signature="8289:8344" placeholder="SELECT SUM(m..detfact..." />
-                <marker date="1525268988499" expanded="true" signature="8396:8438" placeholder="SELECT tipoc..factura..." />
-                <marker date="1525268988499" expanded="true" signature="8508:8586" placeholder="SELECT ROUND..detfact..." />
-                <marker date="1525268988499" expanded="true" signature="8649:8743" placeholder="SELECT GROUP..detfact..." />
-                <marker date="1525268988499" expanded="true" signature="8912:9025" placeholder="UPDATE factu..." />
-                <marker date="1525268988499" expanded="true" signature="9541:9583" placeholder="SELECT idcon..factura..." />
-                <marker date="1525268988499" expanded="true" signature="9789:9809" placeholder="INSERT INTO detfact..." />
-                <marker date="1525268988499" expanded="true" signature="10543:10561" placeholder="UPDATE detfa..." />
-                <marker date="1525268988499" expanded="true" signature="11036:11067" placeholder="DELETE FROM ..." />
+                <element signature="e#31679#32107#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -95,7 +84,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/js/controllers/rptlibdiactrl.js" />
         <option value="$PROJECT_DIR$/js/controllers/rptbalancesaldosctrl.js" />
         <option value="$PROJECT_DIR$/js/controllers/rptbalancegeneralctrl.js" />
         <option value="$PROJECT_DIR$/js/controllers/rptlibmayctrl.js" />
@@ -113,7 +101,6 @@
         <option value="$PROJECT_DIR$/js/controllers/trandirectactrl.js" />
         <option value="$PROJECT_DIR$/pages/trandirectas.html" />
         <option value="$PROJECT_DIR$/pages/mntproyecto.html" />
-        <option value="$PROJECT_DIR$/pages/mntcliente.html" />
         <option value="$PROJECT_DIR$/pages/mntactivo.html" />
         <option value="$PROJECT_DIR$/php/upload.php" />
         <option value="$PROJECT_DIR$/php/facturacion.php" />
@@ -132,7 +119,6 @@
         <option value="$PROJECT_DIR$/pages/rptarchivobi.html" />
         <option value="$PROJECT_DIR$/js/controllers/rptarchivobictrl.js" />
         <option value="$PROJECT_DIR$/php/generaplnbi.php" />
-        <option value="$PROJECT_DIR$/php/facturaagua.php" />
         <option value="$PROJECT_DIR$/php/genpartidasventa.php" />
         <option value="$PROJECT_DIR$/php/proyecto.php" />
         <option value="$PROJECT_DIR$/js/services/factsparqueosrvc.js" />
@@ -146,6 +132,9 @@
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/js/controllers/tipoproyectordenctrl.js" />
         <option value="$PROJECT_DIR$/php/facturaotros.php" />
+        <option value="$PROJECT_DIR$/php/facturaagua.php" />
+        <option value="$PROJECT_DIR$/pages/mntcliente.html" />
+        <option value="$PROJECT_DIR$/js/controllers/clientectrl.js" />
       </list>
     </option>
   </component>
@@ -229,6 +218,52 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="php" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cpm" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sayet" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pages" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cpm" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sayet" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cpm" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sayet" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="controllers" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1057,12 +1092,12 @@
       <workItem from="1524670390657" duration="23185000" />
       <workItem from="1524715088583" duration="4416000" />
       <workItem from="1524803842900" duration="13000" />
-      <workItem from="1525268864335" duration="198000" />
+      <workItem from="1525268864335" duration="3627000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2416717000" />
+    <option name="totallyTimeSpent" value="2420146000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1076,7 +1111,7 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36403033" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18336888" sideWeight="0.49571735" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18336888" sideWeight="0.49571735" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32889125" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24946696" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24946696" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1240,27 +1275,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pages/rptagua.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptaguactrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="23" column="69" selection-start-line="23" selection-start-column="60" selection-end-line="23" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/facturaagua.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.020689655">
-          <caret line="227" column="34" selection-start-line="227" selection-start-column="34" selection-end-line="227" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pages/mntproyecto.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.01954023">
@@ -1404,20 +1418,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/clientectrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.37182447">
-          <caret line="304" column="69" selection-start-line="304" selection-start-column="60" selection-end-line="304" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/mntcliente.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.29285714">
-          <caret line="613" column="129" selection-start-line="613" selection-start-column="108" selection-end-line="613" selection-end-column="129" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pages/mnttipoproyectoorden.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1507,6 +1507,66 @@
             <marker date="1525268988499" expanded="true" signature="9789:9809" placeholder="INSERT INTO detfact..." />
             <marker date="1525268988499" expanded="true" signature="10543:10561" placeholder="UPDATE detfa..." />
             <marker date="1525268988499" expanded="true" signature="11036:11067" placeholder="DELETE FROM ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/facturaagua.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.060919542">
+          <caret line="220" column="20" selection-start-line="220" selection-start-column="20" selection-end-line="220" selection-end-column="20" />
+          <folding>
+            <marker date="1525287039564" expanded="true" signature="356:394" placeholder="SELECT retis..empresa..." />
+            <marker date="1525287039564" expanded="true" signature="3464:3528" placeholder="SELECT congf..empresa..." />
+            <marker date="1525287039564" expanded="true" signature="4653:4691" placeholder="SELECT retis..empresa..." />
+            <marker date="1525287039564" expanded="true" signature="7418:7482" placeholder="SELECT congf..empresa..." />
+            <marker date="1525287039564" expanded="true" signature="9520:9584" placeholder="SELECT congf..empresa..." />
+            <marker date="1525287039564" expanded="true" signature="10347:10367" placeholder="INSERT INTO factura..." />
+            <marker date="1525287039564" expanded="true" signature="11505:11525" placeholder="INSERT INTO detfact..." />
+            <marker date="1525287039564" expanded="true" signature="11984:12070" placeholder="UPDATE lectu..." />
+            <marker date="1525287039564" expanded="true" signature="12144:12213" placeholder="UPDATE servi..." />
+            <marker date="1525287039564" expanded="true" signature="12611:12691" placeholder="UPDATE lectu..." />
+            <marker date="1525287039564" expanded="true" signature="12757:12826" placeholder="UPDATE servi..." />
+            <marker date="1525287039564" expanded="true" signature="12956:13022" placeholder="UPDATE empre..." />
+            <marker date="1525287039564" expanded="true" signature="13681:13920" placeholder="SELECT b.id ..contrato..." />
+            <marker date="1525287039564" expanded="true" signature="13681:13940" placeholder="SELECT b.id ..contrato..." />
+            <marker date="1525287039564" expanded="true" signature="16939:16966" placeholder="SELECT b.id ..contrato..." />
+            <marker date="1525287039564" expanded="true" signature="19184:19211" placeholder="SELECT b.id ..contrato..." />
+            <marker date="1525287039564" expanded="true" signature="21613:21640" placeholder="SELECT b.id ..contrato..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptaguactrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.43638393">
+          <caret line="23" column="69" selection-start-line="23" selection-start-column="60" selection-end-line="23" selection-end-column="69" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptagua.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/mntcliente.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.7090907">
+          <caret line="459" column="155" selection-start-line="459" selection-start-column="140" selection-end-line="459" selection-end-column="155" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/clientectrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3137255">
+          <caret line="632" column="83" selection-start-line="632" selection-start-column="83" selection-end-line="632" selection-end-column="83" />
+          <folding>
+            <element signature="e#31679#32107#0" expanded="false" />
           </folding>
         </state>
       </provider>

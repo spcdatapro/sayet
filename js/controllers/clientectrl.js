@@ -635,10 +635,10 @@
             obj.plazofalstr = moment(obj.plazofal).isValid() ? moment(obj.plazofal).format('YYYY-MM-DD') : '';
             obj.fechainactivostr = moment(obj.fechainactivo).isValid() ? moment(obj.fechainactivo).format('YYYY-MM-DD') : '';
 
-            if(+obj.idtipocliente == 3){
+            // if(+obj.idtipocliente == 3){
                 obj.retiva = 0;
                 obj.retisr = 0;
-            }
+            //}
 
             return obj;
         }
