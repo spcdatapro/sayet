@@ -19,11 +19,13 @@
         $scope.cuentas = [];
         $scope.ventastr = '';
         $scope.razonesanula = [];
+        $scope.params = {idempresa: undefined, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), fdelstr: '', falstr: ''};
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
 
         authSrvc.getSession().then(function(usrLogged){
             $scope.idempresa = parseInt(usrLogged.workingon);
+            $scope.params.idempresa = $scope.idempresa;
             if($scope.idempresa > 0){
                 empresaSrvc.getEmpresa($scope.idempresa).then(function(d){
                     $scope.dectc = parseInt(d[0].dectc);
@@ -125,7 +127,10 @@
         }
 
         $scope.getLstVentas = function(idempresa){
-            ventaSrvc.lstVentas(idempresa).then(function(d){
+            $scope.params.idempresa = +idempresa;
+            $scope.params.fdelstr = moment($scope.params.fdel).format('YYYY-MM-DD');
+            $scope.params.falstr = moment($scope.params.fal).format('YYYY-MM-DD');
+            ventaSrvc.lstVentasPost($scope.params).then(function(d){
                 $scope.ventas = procDataVenta(d);
             });
         };
@@ -268,7 +273,7 @@
             obj.idorigen = parseInt($scope.venta.id);
             obj.debe = parseFloat(parseFloat(obj.debe).toFixed(2));
             obj.haber = parseFloat(parseFloat(obj.haber).toFixed(2));
-            obj.idcuenta = parseInt(obj.objCuenta[0].id);
+            obj.idcuenta = parseInt(obj.objCuenta.id);
             detContSrvc.editRow(obj, 'c').then(function(){
                 detContSrvc.lstDetalleCont($scope.origen, parseInt($scope.venta.id)).then(function(detc){
                     $scope.losDetCont = procDataDet(detc);

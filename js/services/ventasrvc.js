@@ -9,6 +9,9 @@
             lstVentas: function(idempresa){
                 return comunFact.doGET(urlBase + '/lstventas/' + idempresa);
             },
+            lstVentasPost: function(obj){
+                return comunFact.doPOST(urlBase + '/lstventas', obj);
+            },
             getVenta: function(idfactura){
                 return comunFact.doGET(urlBase + '/getventa/' + idfactura);
             },
