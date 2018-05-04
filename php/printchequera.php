@@ -113,15 +113,15 @@ $pdf->AddPage();
 $pdf->SetFont('Arial','', 9);
 $borde = 0;
 //Generación del cheque
-$pdf->Cell(1 * $conv);
-$pdf->Cell(8.5 * $conv, 0.25 * $conv, 'Guatemala, '.$cheque->dia.' de '.$meses[(int)$cheque->mes].' de '.$cheque->anio, $borde, 0);
 $pdf->Cell(2 * $conv);
+$pdf->Cell(8.5 * $conv, 0.25 * $conv, 'Guatemala, '.$cheque->dia.' de '.$meses[(int)$cheque->mes].' de '.$cheque->anio, $borde, 0);
+$pdf->Cell(3 * $conv);
 $pdf->Cell(4.5 * $conv, 0.25 * $conv, $cheque->montostr, $borde, 0);
 $pdf->Ln();
-$pdf->Cell(1 * $conv);
+$pdf->Cell(1.5 * $conv);
 $pdf->Cell(12.3 * $conv, 0.8 * $conv, iconv('UTF-8', 'windows-1252', $cheque->beneficiario), $borde, 0);
 $pdf->Ln();
-$pdf->Cell(1 * $conv);
+$pdf->Cell(1.5 * $conv);
 $pdf->Cell(12.5 * $conv, 0.8 * $conv, $n2l->to_word_int($cheque->monto), $borde, 0);
 $pdf->Ln(2.5 * $conv);
 
@@ -144,7 +144,7 @@ $pdf->Cell(20 * $conv, 0.7 * $conv, $cheque->banco, 0, 2);
 $pdf->SetFont('Arial','', 9);
 
 $header = [iconv('UTF-8', 'windows-1252', 'CÓDIGO'), 'CUENTA', 'Debe', 'Haber'];
-$anchura = [20, 40, 20, 20];
+$anchura = [25, 65, 20, 20];
 $pdf->ImprovedTable($header, $detcont, $anchura);
 
 $pdf->Cell(1.5 * $conv, 1 * $conv, '', 0, 2);
