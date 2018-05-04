@@ -60,8 +60,8 @@
       <file leaf-file-name="facturaotros.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/php/facturaotros.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-2.909091">
-              <caret line="176" column="22" selection-start-line="176" selection-start-column="22" selection-end-line="176" selection-end-column="22" />
+            <state vertical-scroll-proportion="-5.072727">
+              <caret line="183" column="25" selection-start-line="183" selection-start-column="25" selection-end-line="183" selection-end-column="25" />
               <folding>
                 <marker date="1525444905408" expanded="true" signature="525:600" placeholder="SELECT DISTI..." />
                 <marker date="1525444905408" expanded="true" signature="3380:3400" placeholder="INSERT INTO factura..." />
@@ -94,11 +94,11 @@
       <file leaf-file-name="printfacturas.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/php/printfacturas.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.64787114">
-              <caret line="154" column="19" selection-start-line="154" selection-start-column="19" selection-end-line="154" selection-end-column="19" />
+            <state vertical-scroll-proportion="0.589183">
+              <caret line="157" column="32" selection-start-line="157" selection-start-column="32" selection-end-line="157" selection-end-column="32" />
               <folding>
                 <element signature="e#4343#4439#0#PHP" expanded="false" />
-                <marker date="1525445688162" expanded="true" signature="3797:3854" placeholder="UPDATE factu..." />
+                <marker date="1525445870258" expanded="true" signature="3797:3854" placeholder="UPDATE factu..." />
               </folding>
             </state>
           </provider>
@@ -1137,15 +1137,15 @@
       <workItem from="1524803842900" duration="13000" />
       <workItem from="1525268864335" duration="8551000" />
       <workItem from="1525362266606" duration="2301000" />
-      <workItem from="1525442861847" duration="2584000" />
+      <workItem from="1525442861847" duration="2765000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2429955000" />
+    <option name="totallyTimeSpent" value="2430136000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1568,8 +1568,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/php/facturaotros.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.909091">
-          <caret line="176" column="22" selection-start-line="176" selection-start-column="22" selection-end-line="176" selection-end-column="22" />
+        <state vertical-scroll-proportion="-5.072727">
+          <caret line="183" column="25" selection-start-line="183" selection-start-column="25" selection-end-line="183" selection-end-column="25" />
           <folding>
             <marker date="1525444905408" expanded="true" signature="525:600" placeholder="SELECT DISTI..." />
             <marker date="1525444905408" expanded="true" signature="3380:3400" placeholder="INSERT INTO factura..." />
@@ -1600,11 +1600,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/php/printfacturas.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.64787114">
-          <caret line="154" column="19" selection-start-line="154" selection-start-column="19" selection-end-line="154" selection-end-column="19" />
+        <state vertical-scroll-proportion="0.589183">
+          <caret line="157" column="32" selection-start-line="157" selection-start-column="32" selection-end-line="157" selection-end-column="32" />
           <folding>
             <element signature="e#4343#4439#0#PHP" expanded="false" />
-            <marker date="1525445688162" expanded="true" signature="3797:3854" placeholder="UPDATE factu..." />
+            <marker date="1525445870258" expanded="true" signature="3797:3854" placeholder="UPDATE factu..." />
           </folding>
         </state>
       </provider>

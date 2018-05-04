@@ -122,7 +122,7 @@ for($i = 0; $i < $cntFacturas; $i++){
     $pdf->Cell(35, $h, $factura->fecha);
 
     //Detalle de factura
-	$pdf->SetFont('Arial','', 9.5);
+	$pdf->SetFont('Arial','', 10);
     $y = $addy + 29;
     foreach($factura->detfact as $det){
         $pdf->SetXY(13, $y); 
@@ -155,7 +155,7 @@ for($i = 0; $i < $cntFacturas; $i++){
     $pdf->SetXY(185, $y);
     $pdf->Cell(25, $h, $factura->monto, 0, 0, 'R');
 
-    $pdf->SetFont('Arial','', 8.5);
+    $pdf->SetFont('Arial','', 10);
     $pdf->SetXY(90, $addy + 118);
     $pdf->MultiCell(90, $h, utf8_encode($factura->montoenletras));
 
