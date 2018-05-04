@@ -128,7 +128,7 @@ for($i = 0; $i < $cntFacturas; $i++){
         $pdf->SetXY(13, $y); 
         $pdf->MultiCell(110, $h+2, utf8_decode($det->descripcion));
         $yDescrip = $pdf->GetY();
-        $pdf->SetXY(175, $y);
+        $pdf->SetXY(185, $y);
         $pdf->Cell(25, $h+2, $det->montoconiva, 0, 0, 'R');
         $y = $yDescrip + 2;
     }
@@ -152,7 +152,7 @@ for($i = 0; $i < $cntFacturas; $i++){
     $pdf->Cell(35, $h, 'Total: ', 0, 0, 'R');
     $pdf->Cell(35, $h, $factura->monto, 0, 1, 'R');
         
-    $pdf->SetXY(180, $y);
+    $pdf->SetXY(185, $y);
     $pdf->Cell(25, $h, $factura->monto, 0, 0, 'R');
 
     $pdf->SetFont('Arial','', 8.5);
