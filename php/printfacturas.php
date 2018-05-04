@@ -132,7 +132,7 @@ for($i = 0; $i < $cntFacturas; $i++){
         $pdf->Cell(25, $h+2, $det->montoconiva, 0, 0, 'R');
         $y = $yDescrip + 2;
     }
-	$pdf->SetFont('Arial','', 9);
+	$pdf->SetFont('Arial','', 10);
 
     //Pie de factura
     $pdf->SetXY(23, $addy + 106);
