@@ -97,7 +97,7 @@ for($i = 0; $i < $cntFacturas; $i++){
 	
 	//$facpage++;
 	
-	$pdf->SetFont('Arial','', 9);
+	$pdf->SetFont('Arial','', 10);
 	$pdf->SetMargins(0, 0, 0, 0);
 	$pdf->AddPage();
 	
@@ -152,7 +152,7 @@ for($i = 0; $i < $cntFacturas; $i++){
     $pdf->Cell(35, $h, 'Total: ', 0, 0, 'R');
     $pdf->Cell(35, $h, $factura->monto, 0, 1, 'R');
         
-    $pdf->SetXY(175, $y);
+    $pdf->SetXY(180, $y);
     $pdf->Cell(25, $h, $factura->monto, 0, 0, 'R');
 
     $pdf->SetFont('Arial','', 8.5);
@@ -161,7 +161,7 @@ for($i = 0; $i < $cntFacturas; $i++){
 
 	$pdf->SetXY(13, $addy + 130);
     $pdf->Cell(25, $h, $factura->nombrecorto, 0, 0, 'R');
-	$pdf->SetXY(150, $addy + 130);
+	$pdf->SetXY(155, $addy + 130);
     $pdf->Cell(25, $h, $factura->serie." ".$factura->numero, 0, 0, 'R');
 	
 	/*if($facpage==2){

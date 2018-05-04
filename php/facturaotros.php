@@ -179,7 +179,7 @@ $app->post('/cd', function(){
     $query = "INSERT INTO detfact(";
     $query.= "idfactura, cantidad, idtiposervicio, mes, anio, descripcion, preciounitario, preciotot, descuento, montoconiva, montoflatconiva";
     $query.= ") VALUES(";
-    $query.= "$d->idfactura, $d->cantidad, $d->idtiposervicio, $d->mes, $d->anio, '$d->descripcion', ".round(((float)$d->preciounitario - (float)$d->descuento)/(int)$d->cantidad, 2).", ".((float)$d->preciotot - (float)$d->descuento).", $d->descuento, $d->preciotot, $d->preciotot";
+    $query.= "$d->idfactura, $d->cantidad, $d->idtiposervicio, $d->mes, $d->anio, '$d->descripcion', ".round(((float)$d->preciotot - (float)$d->descuento)/(int)$d->cantidad, 2).", ".((float)$d->preciotot - (float)$d->descuento).", $d->descuento, $d->preciotot, $d->preciotot";
     $query.= ")";
     $db->doQuery($query);
     $lastid = $db->getLastId();

@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/facturaagua.php" afterPath="$PROJECT_DIR$/php/facturaagua.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/facturaotros.php" afterPath="$PROJECT_DIR$/php/facturaotros.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/printfacturas.php" afterPath="$PROJECT_DIR$/php/printfacturas.php" />
     </list>
     <ignored path="cpm.iws" />
@@ -59,14 +58,48 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="facturaotros.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/php/facturaotros.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-3.5272727">
+              <caret line="178" column="36" selection-start-line="178" selection-start-column="36" selection-end-line="178" selection-end-column="36" />
+              <folding>
+                <marker date="1525444905408" expanded="true" signature="525:600" placeholder="SELECT DISTI..." />
+                <marker date="1525444905408" expanded="true" signature="3380:3400" placeholder="INSERT INTO factura..." />
+                <marker date="1525444905408" expanded="true" signature="4420:4438" placeholder="UPDATE factu..." />
+                <marker date="1525444905408" expanded="true" signature="5277:5357" placeholder="UPDATE detfa..." />
+                <marker date="1525444905408" expanded="true" signature="5577:5637" placeholder="DELETE FROM ..." />
+                <marker date="1525444905408" expanded="true" signature="5686:5724" placeholder="DELETE FROM ..." />
+                <marker date="1525444905408" expanded="true" signature="5773:5804" placeholder="DELETE FROM ..." />
+                <marker date="1525444905408" expanded="true" signature="7416:7478" placeholder="SELECT SUM(p..detfact..." />
+                <marker date="1525444905408" expanded="true" signature="7546:7610" placeholder="SELECT SUM(d..detfact..." />
+                <marker date="1525444905408" expanded="true" signature="7742:7783" placeholder="SELECT idemp..factura..." />
+                <marker date="1525444905408" expanded="true" signature="7850:7953" placeholder="SELECT idtip..contrato..." />
+                <marker date="1525444905408" expanded="true" signature="7897:7939" placeholder="SELECT idcon..factura..." />
+                <marker date="1525444905408" expanded="true" signature="8004:8046" placeholder="SELECT reten..factura..." />
+                <marker date="1525444905408" expanded="true" signature="8110:8152" placeholder="SELECT reten..factura..." />
+                <marker date="1525444905408" expanded="true" signature="8289:8344" placeholder="SELECT SUM(m..detfact..." />
+                <marker date="1525444905408" expanded="true" signature="8396:8438" placeholder="SELECT tipoc..factura..." />
+                <marker date="1525444905408" expanded="true" signature="8508:8586" placeholder="SELECT ROUND..detfact..." />
+                <marker date="1525444905408" expanded="true" signature="8649:8743" placeholder="SELECT GROUP..detfact..." />
+                <marker date="1525444905408" expanded="true" signature="8912:9025" placeholder="UPDATE factu..." />
+                <marker date="1525444905408" expanded="true" signature="9541:9583" placeholder="SELECT idcon..factura..." />
+                <marker date="1525444905408" expanded="true" signature="9789:9809" placeholder="INSERT INTO detfact..." />
+                <marker date="1525444905408" expanded="true" signature="10538:10556" placeholder="UPDATE detfa..." />
+                <marker date="1525444905408" expanded="true" signature="11031:11062" placeholder="DELETE FROM ..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="printfacturas.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/php/printfacturas.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5505747">
-              <caret line="158" column="17" selection-start-line="158" selection-start-column="17" selection-end-line="158" selection-end-column="17" />
+            <state vertical-scroll-proportion="2.8193326">
+              <caret line="163" column="19" selection-start-line="163" selection-start-column="19" selection-end-line="163" selection-end-column="19" />
               <folding>
-                <element signature="e#4342#4438#0#PHP" expanded="false" />
-                <marker date="1525443341861" expanded="true" signature="3797:3854" placeholder="UPDATE factu..." />
+                <element signature="e#4343#4439#0#PHP" expanded="false" />
+                <marker date="1525445189913" expanded="true" signature="3797:3854" placeholder="UPDATE factu..." />
               </folding>
             </state>
           </provider>
@@ -137,7 +170,6 @@
         <option value="$PROJECT_DIR$/cpmidx.html" />
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/js/controllers/tipoproyectordenctrl.js" />
-        <option value="$PROJECT_DIR$/php/facturaotros.php" />
         <option value="$PROJECT_DIR$/pages/mntcliente.html" />
         <option value="$PROJECT_DIR$/js/controllers/clientectrl.js" />
         <option value="$PROJECT_DIR$/php/venta.php" />
@@ -145,6 +177,7 @@
         <option value="$PROJECT_DIR$/pages/tranventa.html" />
         <option value="$PROJECT_DIR$/js/controllers/ventactrl.js" />
         <option value="$PROJECT_DIR$/php/facturaagua.php" />
+        <option value="$PROJECT_DIR$/php/facturaotros.php" />
         <option value="$PROJECT_DIR$/php/printfacturas.php" />
       </list>
     </option>
@@ -1105,12 +1138,12 @@
       <workItem from="1524803842900" duration="13000" />
       <workItem from="1525268864335" duration="8551000" />
       <workItem from="1525362266606" duration="2301000" />
-      <workItem from="1525442861847" duration="494000" />
+      <workItem from="1525442861847" duration="2093000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2427865000" />
+    <option name="totallyTimeSpent" value="2429464000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1427,13 +1460,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/php/facturaotros.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33563218">
-          <caret line="182" column="17" selection-start-line="182" selection-start-column="17" selection-end-line="182" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/controllers/rptaguactrl.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.43638393">
@@ -1541,13 +1567,45 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/php/facturaotros.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.5272727">
+          <caret line="178" column="36" selection-start-line="178" selection-start-column="36" selection-end-line="178" selection-end-column="36" />
+          <folding>
+            <marker date="1525444905408" expanded="true" signature="525:600" placeholder="SELECT DISTI..." />
+            <marker date="1525444905408" expanded="true" signature="3380:3400" placeholder="INSERT INTO factura..." />
+            <marker date="1525444905408" expanded="true" signature="4420:4438" placeholder="UPDATE factu..." />
+            <marker date="1525444905408" expanded="true" signature="5277:5357" placeholder="UPDATE detfa..." />
+            <marker date="1525444905408" expanded="true" signature="5577:5637" placeholder="DELETE FROM ..." />
+            <marker date="1525444905408" expanded="true" signature="5686:5724" placeholder="DELETE FROM ..." />
+            <marker date="1525444905408" expanded="true" signature="5773:5804" placeholder="DELETE FROM ..." />
+            <marker date="1525444905408" expanded="true" signature="7416:7478" placeholder="SELECT SUM(p..detfact..." />
+            <marker date="1525444905408" expanded="true" signature="7546:7610" placeholder="SELECT SUM(d..detfact..." />
+            <marker date="1525444905408" expanded="true" signature="7742:7783" placeholder="SELECT idemp..factura..." />
+            <marker date="1525444905408" expanded="true" signature="7850:7953" placeholder="SELECT idtip..contrato..." />
+            <marker date="1525444905408" expanded="true" signature="7897:7939" placeholder="SELECT idcon..factura..." />
+            <marker date="1525444905408" expanded="true" signature="8004:8046" placeholder="SELECT reten..factura..." />
+            <marker date="1525444905408" expanded="true" signature="8110:8152" placeholder="SELECT reten..factura..." />
+            <marker date="1525444905408" expanded="true" signature="8289:8344" placeholder="SELECT SUM(m..detfact..." />
+            <marker date="1525444905408" expanded="true" signature="8396:8438" placeholder="SELECT tipoc..factura..." />
+            <marker date="1525444905408" expanded="true" signature="8508:8586" placeholder="SELECT ROUND..detfact..." />
+            <marker date="1525444905408" expanded="true" signature="8649:8743" placeholder="SELECT GROUP..detfact..." />
+            <marker date="1525444905408" expanded="true" signature="8912:9025" placeholder="UPDATE factu..." />
+            <marker date="1525444905408" expanded="true" signature="9541:9583" placeholder="SELECT idcon..factura..." />
+            <marker date="1525444905408" expanded="true" signature="9789:9809" placeholder="INSERT INTO detfact..." />
+            <marker date="1525444905408" expanded="true" signature="10538:10556" placeholder="UPDATE detfa..." />
+            <marker date="1525444905408" expanded="true" signature="11031:11062" placeholder="DELETE FROM ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/php/printfacturas.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5505747">
-          <caret line="158" column="17" selection-start-line="158" selection-start-column="17" selection-end-line="158" selection-end-column="17" />
+        <state vertical-scroll-proportion="2.8193326">
+          <caret line="163" column="19" selection-start-line="163" selection-start-column="19" selection-end-line="163" selection-end-column="19" />
           <folding>
-            <element signature="e#4342#4438#0#PHP" expanded="false" />
-            <marker date="1525443341861" expanded="true" signature="3797:3854" placeholder="UPDATE factu..." />
+            <element signature="e#4343#4439#0#PHP" expanded="false" />
+            <marker date="1525445189913" expanded="true" signature="3797:3854" placeholder="UPDATE factu..." />
           </folding>
         </state>
       </provider>
