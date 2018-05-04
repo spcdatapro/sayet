@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/printfacturas.php" afterPath="$PROJECT_DIR$/php/printfacturas.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/facturacion.php" afterPath="$PROJECT_DIR$/php/facturacion.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/printfacturaparagon.php" afterPath="$PROJECT_DIR$/php/printfacturaparagon.php" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -57,10 +58,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="facturaotros.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="facturaotros.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/php/facturaotros.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.29166666">
+            <state vertical-scroll-proportion="-4.4545455">
               <caret line="181" column="114" selection-start-line="181" selection-start-column="114" selection-end-line="181" selection-end-column="114" />
               <folding>
                 <marker date="1525444905408" expanded="true" signature="525:600" placeholder="SELECT DISTI..." />
@@ -91,14 +92,48 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="facturacion.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/php/facturacion.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-2.6153846">
+              <caret line="336" column="72" selection-start-line="336" selection-start-column="72" selection-end-line="336" selection-end-column="72" />
+              <folding>
+                <element signature="e#419#6209#1#PHP" expanded="false" />
+                <element signature="e#6237#10454#1#PHP" expanded="false" />
+                <marker date="1525448546120" expanded="true" signature="546:584" placeholder="SELECT retis..empresa..." />
+                <marker date="1525448546120" expanded="true" signature="3765:3829" placeholder="SELECT congf..empresa..." />
+                <marker date="1525448546120" expanded="true" signature="11292:11356" placeholder="SELECT congf..empresa..." />
+                <marker date="1525448546120" expanded="true" signature="11872:11892" placeholder="INSERT INTO factura..." />
+                <marker date="1525448546120" expanded="true" signature="13102:13258" placeholder="INSERT INTO detfact..." />
+                <marker date="1525448546120" expanded="true" signature="13696:13759" placeholder="UPDATE cargo..." />
+                <marker date="1525448546120" expanded="true" signature="14140:14206" placeholder="UPDATE empre..." />
+                <marker date="1525448546120" expanded="true" signature="17094:17218" placeholder="SELECT a.idp..contrato..." />
+                <marker date="1525448546120" expanded="true" signature="23697:23877" placeholder="UPDATE factu..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="printfacturas.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/php/printfacturas.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-17.73077">
+            <state vertical-scroll-proportion="-27.538462">
               <caret line="157" column="32" selection-start-line="157" selection-start-column="32" selection-end-line="157" selection-end-column="32" />
               <folding>
                 <element signature="e#4343#4439#0#PHP" expanded="false" />
                 <marker date="1525446511334" expanded="true" signature="3797:3854" placeholder="UPDATE factu..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="printfacturaparagon.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/printfacturaparagon.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.7433832">
+              <caret line="158" column="17" selection-start-line="158" selection-start-column="17" selection-end-line="158" selection-end-column="17" />
+              <folding>
+                <marker date="1525448908646" expanded="true" signature="3801:3858" placeholder="UPDATE factu..." />
               </folding>
             </state>
           </provider>
@@ -127,7 +162,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/php/rptestadoresultadosanual.php" />
         <option value="$PROJECT_DIR$/js/controllers/rptestadoresultadosctrl.js" />
         <option value="$PROJECT_DIR$/js/controllers/rptactivosctrl.js" />
         <option value="$PROJECT_DIR$/pages/rptlstactivos.html" />
@@ -141,7 +175,6 @@
         <option value="$PROJECT_DIR$/pages/mntproyecto.html" />
         <option value="$PROJECT_DIR$/pages/mntactivo.html" />
         <option value="$PROJECT_DIR$/php/upload.php" />
-        <option value="$PROJECT_DIR$/php/facturacion.php" />
         <option value="$PROJECT_DIR$/php/rptingegrproy.php" />
         <option value="$PROJECT_DIR$/php/serviciopropio.php" />
         <option value="$PROJECT_DIR$/pages/gface.html" />
@@ -178,6 +211,8 @@
         <option value="$PROJECT_DIR$/php/facturaagua.php" />
         <option value="$PROJECT_DIR$/php/facturaotros.php" />
         <option value="$PROJECT_DIR$/php/printfacturas.php" />
+        <option value="$PROJECT_DIR$/php/facturacion.php" />
+        <option value="$PROJECT_DIR$/php/printfacturaparagon.php" />
       </list>
     </option>
   </component>
@@ -1137,15 +1172,15 @@
       <workItem from="1524803842900" duration="13000" />
       <workItem from="1525268864335" duration="8551000" />
       <workItem from="1525362266606" duration="2301000" />
-      <workItem from="1525442861847" duration="3432000" />
+      <workItem from="1525442861847" duration="5000000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2430803000" />
+    <option name="totallyTimeSpent" value="2432371000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1192,7 +1227,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="12" />
+      <option name="time" value="13" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -1201,13 +1236,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/pln/js/services/trans.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="15" column="58" selection-start-line="15" selection-start-column="58" selection-end-line="15" selection-end-column="58" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pln/php/controllers/nomina.php">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-15.807693">
@@ -1366,13 +1394,6 @@
     <entry file="file://$PROJECT_DIR$/img/generando.gif">
       <provider selected="true" editor-type-id="images">
         <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/facturacion.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.9615384">
-          <caret line="3" column="49" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="49" />
-        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/controllers/rptsumarioctrl.js">
@@ -1566,20 +1587,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/php/printfacturas.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-17.73077">
-          <caret line="157" column="32" selection-start-line="157" selection-start-column="32" selection-end-line="157" selection-end-column="32" />
-          <folding>
-            <element signature="e#4343#4439#0#PHP" expanded="false" />
-            <marker date="1525446511334" expanded="true" signature="3797:3854" placeholder="UPDATE factu..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/facturaotros.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.29166666">
+        <state vertical-scroll-proportion="-4.4545455">
           <caret line="181" column="114" selection-start-line="181" selection-start-column="114" selection-end-line="181" selection-end-column="114" />
           <folding>
             <marker date="1525444905408" expanded="true" signature="525:600" placeholder="SELECT DISTI..." />
@@ -1605,6 +1615,47 @@
             <marker date="1525444905408" expanded="true" signature="9789:9809" placeholder="INSERT INTO detfact..." />
             <marker date="1525444905408" expanded="true" signature="10538:10556" placeholder="UPDATE detfa..." />
             <marker date="1525444905408" expanded="true" signature="11031:11062" placeholder="DELETE FROM ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/printfacturas.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-27.538462">
+          <caret line="157" column="32" selection-start-line="157" selection-start-column="32" selection-end-line="157" selection-end-column="32" />
+          <folding>
+            <element signature="e#4343#4439#0#PHP" expanded="false" />
+            <marker date="1525446511334" expanded="true" signature="3797:3854" placeholder="UPDATE factu..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/facturacion.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-2.6153846">
+          <caret line="336" column="72" selection-start-line="336" selection-start-column="72" selection-end-line="336" selection-end-column="72" />
+          <folding>
+            <element signature="e#419#6209#1#PHP" expanded="false" />
+            <element signature="e#6237#10454#1#PHP" expanded="false" />
+            <marker date="1525448546120" expanded="true" signature="546:584" placeholder="SELECT retis..empresa..." />
+            <marker date="1525448546120" expanded="true" signature="3765:3829" placeholder="SELECT congf..empresa..." />
+            <marker date="1525448546120" expanded="true" signature="11292:11356" placeholder="SELECT congf..empresa..." />
+            <marker date="1525448546120" expanded="true" signature="11872:11892" placeholder="INSERT INTO factura..." />
+            <marker date="1525448546120" expanded="true" signature="13102:13258" placeholder="INSERT INTO detfact..." />
+            <marker date="1525448546120" expanded="true" signature="13696:13759" placeholder="UPDATE cargo..." />
+            <marker date="1525448546120" expanded="true" signature="14140:14206" placeholder="UPDATE empre..." />
+            <marker date="1525448546120" expanded="true" signature="17094:17218" placeholder="SELECT a.idp..contrato..." />
+            <marker date="1525448546120" expanded="true" signature="23697:23877" placeholder="UPDATE factu..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/printfacturaparagon.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7433832">
+          <caret line="158" column="17" selection-start-line="158" selection-start-column="17" selection-end-line="158" selection-end-column="17" />
+          <folding>
+            <marker date="1525448908646" expanded="true" signature="3801:3858" placeholder="UPDATE factu..." />
           </folding>
         </state>
       </provider>
