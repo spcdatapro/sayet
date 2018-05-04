@@ -112,13 +112,13 @@ for($i = 0; $i < $cntFacturas; $i++){
     $factura = $facturas[$i];
 
     //Encabezado de la factura
-    $pdf->SetXY(17, $addy + 0.5); 
+    $pdf->SetXY(19, $addy + 0.5);
     $pdf->MultiCell(80, $h, utf8_decode($factura->nombre));
-    $pdf->SetXY(19, $addy + 9); 
+    $pdf->SetXY(21, $addy + 9);
     $pdf->MultiCell(115, $h, utf8_decode($factura->direccion));
-    $pdf->SetXY(107, $addy + 0.5);
+    $pdf->SetXY(127, $addy + 0.5);
     $pdf->Cell(30, $h, $factura->nit);
-    $pdf->SetXY(145, $addy + 8);
+    $pdf->SetXY(165, $addy + 8);
     $pdf->Cell(35, $h, $factura->fecha);
 
     //Detalle de factura
@@ -128,7 +128,7 @@ for($i = 0; $i < $cntFacturas; $i++){
         $pdf->SetXY(13, $y); 
         $pdf->MultiCell(110, $h+2, utf8_decode($det->descripcion));
         $yDescrip = $pdf->GetY();
-        $pdf->SetXY(155, $y);
+        $pdf->SetXY(175, $y);
         $pdf->Cell(25, $h+2, $det->montoconiva, 0, 0, 'R');
         $y = $yDescrip + 2;
     }
@@ -152,11 +152,11 @@ for($i = 0; $i < $cntFacturas; $i++){
     $pdf->Cell(35, $h, 'Total: ', 0, 0, 'R');
     $pdf->Cell(35, $h, $factura->monto, 0, 1, 'R');
         
-    $pdf->SetXY(155, $y);
+    $pdf->SetXY(175, $y);
     $pdf->Cell(25, $h, $factura->monto, 0, 0, 'R');
 
     $pdf->SetFont('Arial','', 8.5);
-    $pdf->SetXY(80, $addy + 118); 
+    $pdf->SetXY(90, $addy + 118);
     $pdf->MultiCell(90, $h, utf8_encode($factura->montoenletras));
 
 	$pdf->SetXY(13, $addy + 130);
