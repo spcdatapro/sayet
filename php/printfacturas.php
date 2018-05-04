@@ -155,8 +155,8 @@ for($i = 0; $i < $cntFacturas; $i++){
     $pdf->SetXY(185, $y);
     $pdf->Cell(25, $h, $factura->monto, 0, 0, 'R');
 
-    $pdf->SetFont('Arial','', 10);
-    $pdf->SetXY(90, $addy + 118);
+    $pdf->SetFont('Arial','', 8.5);
+    $pdf->SetXY(90, $addy + 120);
     $pdf->MultiCell(90, $h, utf8_encode($factura->montoenletras));
 
 	$pdf->SetXY(13, $addy + 130);
