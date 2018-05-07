@@ -143,7 +143,16 @@ class General extends Principal
 				]
 			];
 		}
+
+		if (elemento($args, 'fal')) {
+			$condicion['plnprestamo.iniciopago[<=]'] = $args['fal'];
+		}
+
+		if (isset($args['finalizado'])) {
+			$condicion['finalizado'] = $args['finalizado'];
+		}
 		
+		$condicion["ORDER"] = "plnprestamo.iniciopago DESC";
 		$condicion["LIMIT"] = [elemento($args, 'inicio', 0), get_limite()];
 		
 		return $this->db->select("plnprestamo", [
@@ -161,7 +170,8 @@ class General extends Principal
 				"plnprestamo.finalizado",
 				"plnprestamo.saldo", 
 				"b.nombre", 
-				"b.apellidos"
+				"b.apellidos",
+				"b.idempresaactual"
 			],
 			$condicion
 		);

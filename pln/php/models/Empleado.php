@@ -446,7 +446,7 @@ class Empleado extends Principal
 						]
 					);
 
-					if ($ant && count($ant) > 0 && isset($ant['scalar'])) {
+					if ($ant && count($ant) > 0 && !isset($ant['scalar'])) {
 						continue;
 					} else {
 						$prest['prestamo'][] = $row;
