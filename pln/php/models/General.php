@@ -134,25 +134,33 @@ class General extends Principal
 	public function buscar_prestamo($args = [])
 	{
 		$condicion = [];
+		$where     = [];
 
 		if (elemento($args, 'termino')) {
-			$condicion['AND'] = [
-				'OR' => [
-					"plnprestamo.concepto[~]" => $args['termino'], 
-					"b.nombre[~]" => $args['termino']
-				]
+			$where['OR'] = [
+				"plnprestamo.concepto[~]" => $args['termino'], 
+				"b.nombre[~]" => $args['termino']
 			];
 		}
 
 		if (elemento($args, 'fal')) {
-			$condicion['plnprestamo.iniciopago[<=]'] = $args['fal'];
+			$where['plnprestamo.iniciopago[<=]'] = $args['fal'];
 		}
 
 		if (isset($args['finalizado'])) {
-			$condicion['finalizado'] = $args['finalizado'];
+			$where['finalizado[=]'] = $args['finalizado'];
+		}
+
+		$condicion['AND'] = $where;
+
+		if (isset($args['orden'])) {
+			if ($args['orden'] === 'empleado') {
+				$condicion["ORDER"] = "b.nombre ASC";
+			}
+		} else {
+			$condicion["ORDER"] = "plnprestamo.iniciopago DESC";
 		}
 		
-		$condicion["ORDER"] = "plnprestamo.iniciopago DESC";
 		$condicion["LIMIT"] = [elemento($args, 'inicio', 0), get_limite()];
 		
 		return $this->db->select("plnprestamo", [

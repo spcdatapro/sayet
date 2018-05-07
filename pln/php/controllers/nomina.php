@@ -1,8 +1,8 @@
 <?php 
 
-/*ini_set('display_errors', 1);
+ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);*/
+error_reporting(E_ALL);
 
 require dirname(dirname(dirname(__DIR__))) . '/php/vendor/autoload.php';
 require dirname(dirname(dirname(__DIR__))) . '/php/ayuda.php';
@@ -337,7 +337,7 @@ $app->get('/imprimir_igss', function(){
 	if (elemento($_GET, 'fal')) {
 		require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
 
-		$_GET['fdel'] = formatoFecha($_GET['fal'], 4).'-'.formatoFecha($_GET['fal'], 3).'-01';
+		$_GET['fdel'] = formatoFecha($_GET['fal'], 4).'-'.formatoFecha($_GET['fal'], 3).'-16';
 		
 		$s = [215.9, 279.4]; # Carta mm
 
@@ -498,7 +498,7 @@ $app->get('/imprimir_isr', function(){
 	if (elemento($_GET, 'fal')) {
 		require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
 
-		$_GET['fdel'] = formatoFecha($_GET['fal'], 4).'-'.formatoFecha($_GET['fal'], 3).'-01';
+		$_GET['fdel'] = formatoFecha($_GET['fal'], 4).'-'.formatoFecha($_GET['fal'], 3).'-16';
 
 		$s = [215.9, 279.4]; # Carta mm
 
@@ -524,7 +524,7 @@ $app->get('/imprimir_isr', function(){
 			}
 
 			$hojas = 1;
-			$rpag = 40; # Registros por página
+			$rpag = 45; # Registros por página
 
 			$mes  = date('m', strtotime($_GET['fal']));
 			$anio = date('Y', strtotime($_GET['fal']));
@@ -690,6 +690,85 @@ $app->get('/imprimir_isr', function(){
 		}
 	} else {
 		echo "Faltan datos obligatorios";
+	}
+});
+
+# imprimir saldos prestamos
+$app->get('/imprimir_sp', function(){
+	$g = new General();
+
+	if (elemento($_GET, 'fal')) {
+		$todos = $g->buscar_prestamo([
+			'fal'        => $_GET['fal'],
+			'orden'      => 'empleado',
+			'finalizado' => 0
+		]);
+
+		if (count($todos) > 0) {
+			require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
+
+			$s = [215.9, 330.2]; # Oficio mm
+
+			$pdf = new TCPDF('L', 'mm', $s);
+			$pdf->SetAutoPageBreak(TRUE, 0);
+
+			$datos = [];
+
+			/*foreach ($todos as $fila) {
+				if (isset($datos[$fila['idempresaactual']])) {
+					$datos[$fila['idempresaactual']]['empleados'][] = $fila;
+				} else {
+					$emp = $g->get_empresa(['id' => $fila['idempresaactual']]);
+
+					$datos[$fila['idempresaactual']] = [
+						'nombre'    => $emp->nomempresa, 
+						'conf'      => $g->get_campo_impresion('vidempresa', 2), 
+						'empleados' => [$fila]
+					];
+				}
+			}*/
+
+			$cabecera = [
+				'sp_titulo'              => 'Módulo de Planillas',
+				'sp_subtitulo'           => 'ANTICIPOS A SUELDOS',
+				'sp_fecha'               => "Reporte al: " . formatoFecha($_GET['fal'], 1),
+				't_codigo'               => 'Código',
+				't_nombre'               => 'Nombre:',
+				't_vale'                 => 'Vale',
+				't_fecha'                => 'Fecha',
+				't_valor_prestamo'       => "Valor\nPréstamo",
+				't_descuento_mensual'    => "Descuento\nMensual",
+				't_saldo_anterior'       => "Saldo\nAnterior",
+				't_nuevos_prestamos'     => "Nuevo\nPréstamos",
+				't_descuentos_planillas' => "Descuentos\nPlanillas",
+				't_otros_abonos'         => "Otros\nAbonos",
+				't_total_descuentos'     => "Total\nDescuentos",
+				't_saldo_actual'         => "Saldo\nActual",
+				't_linea'                => str_repeat("_", 250)
+			];
+
+			$rpag = 32; # Registros por página
+			$totalPaginas = ceil(count($todos)/$rpag);
+
+			for ($i=0; $i < $totalPaginas ; $i++) { 
+				$pdf->AddPage();
+
+				foreach ($cabecera as $campo => $valor) {
+					$conf = $g->get_campo_impresion($campo, 5);
+
+					if (!isset($conf->scalar) && $conf->visible == 1) {
+						$pdf = generar_fimpresion($pdf, $valor, $conf);
+					}
+				}
+			}
+
+			$pdf->Output("planilla_sp_" . time() . ".pdf", 'I');
+			die();
+		} else {
+			echo "Nada que mostrar.";
+		}
+	} else {
+		echo "Faltan datos obligatorios.";
 	}
 });
 
