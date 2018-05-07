@@ -65,11 +65,22 @@ class General extends Principal
 			$where['id'] = $args['id'];
 		}
 
-		return $this->db->select(
+		if (isset($args['uno'])) {
+			$where['LIMIT'] = 1;
+		}
+
+		$tmp = $this->db->select(
 			'empresa', 
 			['*'],
 			$where
 		);
+
+		if (isset($args['uno'])) {
+			return $tmp[0];
+		} else {
+			return $tmp;
+		}
+		
 	}
 
 	/* 
@@ -147,11 +158,17 @@ class General extends Principal
 			$where['plnprestamo.iniciopago[<=]'] = $args['fal'];
 		}
 
+		if (elemento($args, 'empresa')) {
+			$where['b.idempresadebito[=]'] = $args['empresa'];
+		}
+
 		if (isset($args['finalizado'])) {
 			$where['finalizado[=]'] = $args['finalizado'];
 		}
 
-		$condicion['AND'] = $where;
+		if (!empty($where)) {
+			$condicion['AND'] = $where;
+		}
 
 		if (isset($args['orden'])) {
 			if ($args['orden'] === 'empleado') {

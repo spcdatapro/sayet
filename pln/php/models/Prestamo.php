@@ -28,6 +28,15 @@ class Prestamo extends Principal
 		);
     }
 
+    public function get_empleado()
+    {
+    	return (object)$this->db->get(
+			'plnempleado', 
+			['id', 'nombre', 'apellidos'], 
+			['id' => $this->pre->idplnempleado]
+		);
+    }
+
     public function guardar($args = [])
 	{
 		if (is_array($args) && !empty($args)) {
@@ -190,33 +199,8 @@ class Prestamo extends Principal
 		if ($this->pre->finalizado == 1) {
 			return 0;
 		} else {
-			$abonos = 0;
-
-			$tmp = $this->db->select(
-				'plnpresnom', 
-				['monto'],
-				['idplnprestamo' => $this->pre->id]
-			);
-
-			if ($tmp) {
-				foreach ($tmp as $row) {
-					$abonos += $row['monto'];
-				}
-			}
-
-			$tmpdir = $this->db->select(
-				'plnpresabono', 
-				['monto'],
-				['idplnprestamo' => $this->pre->id]
-			);
-
-			if ($tmpdir) {
-				foreach ($tmpdir as $row) {
-					$abonos += $row['monto'];
-				}
-			}
-
-			$saldo = round($this->pre->monto - $abonos, 2);
+			$abonos = $this->get_total_descuentos();
+			$saldo  = ($this->pre->monto - $abonos);
 
 			if ($saldo != $this->pre->saldo) {
 				$this->guardar(['saldo' => $saldo]);
@@ -224,5 +208,88 @@ class Prestamo extends Principal
 
 			return $saldo;
 		}
+	}
+
+	public function get_total_descuentos()
+	{
+		return ($this->get_descuentos_planilla() + $this->get_otro_abonos());
+	}
+
+	public function get_descuentos_planilla()
+	{
+		$abonos = 0;
+
+		$tmp = $this->db->select(
+			'plnpresnom', 
+			['monto'],
+			['idplnprestamo' => $this->pre->id]
+		);
+
+		if ($tmp) {
+			foreach ($tmp as $row) {
+				$abonos += $row['monto'];
+			}
+		}
+
+		return $abonos;
+	}
+
+	public function get_otro_abonos()
+	{
+		$abonos = 0;
+
+		$tmpdir = $this->db->select(
+			'plnpresabono', 
+			['monto'],
+			['idplnprestamo' => $this->pre->id]
+		);
+
+		if ($tmpdir) {
+			foreach ($tmpdir as $row) {
+				$abonos += $row['monto'];
+			}
+		}
+
+		return $abonos;
+	}
+
+	public function get_saldo_anterior($args=[])
+	{
+		$abonos = 0;
+
+		$tmp = $this->db->select("plnpresnom", [
+				'[><]plnnomina(b)' => ['plnpresnom.idplnnomina' => 'id']
+			], 
+			[
+				"plnpresnom.monto"
+			],
+			[
+				'plnpresnom.idplnprestamo' => $this->pre->id,
+				'b.fecha[<]' => $args['fecha']
+			]
+		);
+
+		if ($tmp) {
+			foreach ($tmp as $row) {
+				$abonos += $row['monto'];
+			}
+		}
+
+		$tmpdir = $this->db->select(
+			'plnpresabono', 
+			['monto'],
+			[
+				'idplnprestamo' => $this->pre->id,
+				'fecha[<]' => $args['fecha']
+			]
+		);
+
+		if ($tmpdir) {
+			foreach ($tmpdir as $row) {
+				$abonos += $row['monto'];
+			}
+		}
+
+		return ($this->pre->monto - $abonos);
 	}
 }
