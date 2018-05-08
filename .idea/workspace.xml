@@ -2,22 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/controllers/genpagosplnctrl.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/js/services/planillasrvc.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/pages/genpagospln.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/php/planilla.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cpmidx.html" afterPath="$PROJECT_DIR$/cpmidx.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app.js" afterPath="$PROJECT_DIR$/js/app.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/empresactrl.js" afterPath="$PROJECT_DIR$/js/controllers/empresactrl.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/rptarchivobictrl.js" afterPath="$PROJECT_DIR$/js/controllers/rptarchivobictrl.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/services/tranbancsrvc.js" afterPath="$PROJECT_DIR$/js/services/tranbancsrvc.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/empresa.html" afterPath="$PROJECT_DIR$/pages/empresa.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/rptarchivobi.html" afterPath="$PROJECT_DIR$/pages/rptarchivobi.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/empresa.php" afterPath="$PROJECT_DIR$/php/empresa.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/generaplnbi.php" afterPath="$PROJECT_DIR$/php/generaplnbi.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/tranbanc.php" afterPath="$PROJECT_DIR$/php/tranbanc.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/genpartidasventa.php" afterPath="$PROJECT_DIR$/php/genpartidasventa.php" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -51,7 +36,60 @@
     <favorites_list name="cpm" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="genpartidasventa.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/genpartidasventa.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.25431532">
+              <caret line="110" column="24" selection-start-line="110" selection-start-column="24" selection-end-line="110" selection-end-column="24" />
+              <folding>
+                <element signature="n#idc#0;n#!!top" expanded="false" />
+                <element signature="e#659#5844#1#PHP" expanded="false" />
+                <element signature="e#10863#16000#1#PHP" expanded="false" />
+                <marker date="1525823226211" expanded="true" signature="361:471" placeholder="INSERT INTO detallecontable..." />
+                <marker date="1525823226211" expanded="true" signature="1682:1752" placeholder="SELECT COUNT..detallecontable..." />
+                <marker date="1525823226211" expanded="true" signature="2253:2330" placeholder="SELECT id FR..cuentac..." />
+                <marker date="1525823226211" expanded="true" signature="2477:2504" placeholder="..." />
+                <marker date="1525823226211" expanded="true" signature="2797:2893" placeholder="SELECT idcue..detcontempresa..." />
+                <marker date="1525823226211" expanded="true" signature="3031:3058" placeholder="..." />
+                <marker date="1525823226211" expanded="true" signature="3378:3474" placeholder="SELECT idcue..detcontempresa..." />
+                <marker date="1525823226211" expanded="true" signature="3612:3639" placeholder="..." />
+                <marker date="1525823226211" expanded="true" signature="4710:4855" placeholder="SELECT b.id ..tiposervicioventa..." />
+                <marker date="1525823226211" expanded="true" signature="5014:5041" placeholder="..." />
+                <marker date="1525823226211" expanded="true" signature="5316:5411" placeholder="SELECT idcue..detcontempresa..." />
+                <marker date="1525823226211" expanded="true" signature="5543:5570" placeholder="..." />
+                <marker date="1525823226211" expanded="true" signature="6100:6172" placeholder="DELETE FROM ..." />
+                <marker date="1525823226211" expanded="true" signature="6958:7028" placeholder="SELECT COUNT..detallecontable..." />
+                <marker date="1525823226211" expanded="true" signature="7242:7290" placeholder="SELECT TRIM(..contrato..." />
+                <marker date="1525823226211" expanded="true" signature="7527:7604" placeholder="SELECT id FR..cuentac..." />
+                <marker date="1525823226211" expanded="true" signature="7751:7778" placeholder="..." />
+                <marker date="1525823226211" expanded="true" signature="8071:8167" placeholder="SELECT idcue..detcontempresa..." />
+                <marker date="1525823226211" expanded="true" signature="8305:8332" placeholder="..." />
+                <marker date="1525823226211" expanded="true" signature="8652:8748" placeholder="SELECT idcue..detcontempresa..." />
+                <marker date="1525823226211" expanded="true" signature="8886:8913" placeholder="..." />
+                <marker date="1525823226211" expanded="true" signature="9686:9831" placeholder="SELECT b.id ..tiposervicioventa..." />
+                <marker date="1525823226211" expanded="true" signature="9990:10017" placeholder="..." />
+                <marker date="1525823226211" expanded="true" signature="10292:10387" placeholder="SELECT idcue..detcontempresa..." />
+                <marker date="1525823226211" expanded="true" signature="10519:10546" placeholder="..." />
+                <marker date="1525823226211" expanded="true" signature="11146:11218" placeholder="DELETE FROM ..." />
+                <marker date="1525823226211" expanded="true" signature="12004:12074" placeholder="SELECT COUNT..detallecontable..." />
+                <marker date="1525823226211" expanded="true" signature="12366:12414" placeholder="SELECT TRIM(..contrato..." />
+                <marker date="1525823226211" expanded="true" signature="12691:12768" placeholder="SELECT id FR..cuentac..." />
+                <marker date="1525823226211" expanded="true" signature="12915:12942" placeholder="..." />
+                <marker date="1525823226211" expanded="true" signature="13235:13331" placeholder="SELECT idcue..detcontempresa..." />
+                <marker date="1525823226211" expanded="true" signature="13469:13496" placeholder="..." />
+                <marker date="1525823226211" expanded="true" signature="13816:13912" placeholder="SELECT idcue..detcontempresa..." />
+                <marker date="1525823226211" expanded="true" signature="14050:14077" placeholder="..." />
+                <marker date="1525823226211" expanded="true" signature="14850:14995" placeholder="SELECT b.id ..tiposervicioventa..." />
+                <marker date="1525823226211" expanded="true" signature="15154:15181" placeholder="..." />
+                <marker date="1525823226211" expanded="true" signature="15456:15551" placeholder="SELECT idcue..detcontempresa..." />
+                <marker date="1525823226211" expanded="true" signature="15683:15710" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -87,7 +125,6 @@
         <option value="$PROJECT_DIR$/php/genfactsanuladas.php" />
         <option value="$PROJECT_DIR$/pages/adtbllite/reemdetcont.html" />
         <option value="$PROJECT_DIR$/js/controllers/rptasistelibrosctrl.js" />
-        <option value="$PROJECT_DIR$/php/genpartidasventa.php" />
         <option value="$PROJECT_DIR$/php/proyecto.php" />
         <option value="$PROJECT_DIR$/js/services/factsparqueosrvc.js" />
         <option value="$PROJECT_DIR$/php/factsparqueo.php" />
@@ -125,6 +162,7 @@
         <option value="$PROJECT_DIR$/js/controllers/genpagosplnctrl.js" />
         <option value="$PROJECT_DIR$/js/controllers/empresactrl.js" />
         <option value="$PROJECT_DIR$/pages/empresa.html" />
+        <option value="$PROJECT_DIR$/php/genpartidasventa.php" />
       </list>
     </option>
   </component>
@@ -1137,16 +1175,16 @@
       <workItem from="1525442861847" duration="5722000" />
       <workItem from="1525453833111" duration="4727000" />
       <workItem from="1525717125074" duration="15680000" />
-      <workItem from="1525790324484" duration="22539000" />
+      <workItem from="1525790324484" duration="23166000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2476039000" />
+    <option name="totallyTimeSpent" value="2476666000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
-    <editor active="false" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -1201,13 +1239,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/pages/rptagua.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/controllers/clientectrl.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.019607844">
@@ -1706,6 +1737,56 @@
             <marker date="1525734684915" expanded="true" signature="4917:5046" placeholder="INSERT INTO detcontempresa..." />
             <marker date="1525734684915" expanded="true" signature="5238:5342" placeholder="UPDATE detco..." />
             <marker date="1525734684915" expanded="true" signature="5541:5579" placeholder="DELETE FROM ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/genpartidasventa.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.25431532">
+          <caret line="110" column="24" selection-start-line="110" selection-start-column="24" selection-end-line="110" selection-end-column="24" />
+          <folding>
+            <element signature="n#idc#0;n#!!top" expanded="false" />
+            <element signature="e#659#5844#1#PHP" expanded="false" />
+            <element signature="e#10863#16000#1#PHP" expanded="false" />
+            <marker date="1525823226211" expanded="true" signature="361:471" placeholder="INSERT INTO detallecontable..." />
+            <marker date="1525823226211" expanded="true" signature="1682:1752" placeholder="SELECT COUNT..detallecontable..." />
+            <marker date="1525823226211" expanded="true" signature="2253:2330" placeholder="SELECT id FR..cuentac..." />
+            <marker date="1525823226211" expanded="true" signature="2477:2504" placeholder="..." />
+            <marker date="1525823226211" expanded="true" signature="2797:2893" placeholder="SELECT idcue..detcontempresa..." />
+            <marker date="1525823226211" expanded="true" signature="3031:3058" placeholder="..." />
+            <marker date="1525823226211" expanded="true" signature="3378:3474" placeholder="SELECT idcue..detcontempresa..." />
+            <marker date="1525823226211" expanded="true" signature="3612:3639" placeholder="..." />
+            <marker date="1525823226211" expanded="true" signature="4710:4855" placeholder="SELECT b.id ..tiposervicioventa..." />
+            <marker date="1525823226211" expanded="true" signature="5014:5041" placeholder="..." />
+            <marker date="1525823226211" expanded="true" signature="5316:5411" placeholder="SELECT idcue..detcontempresa..." />
+            <marker date="1525823226211" expanded="true" signature="5543:5570" placeholder="..." />
+            <marker date="1525823226211" expanded="true" signature="6100:6172" placeholder="DELETE FROM ..." />
+            <marker date="1525823226211" expanded="true" signature="6958:7028" placeholder="SELECT COUNT..detallecontable..." />
+            <marker date="1525823226211" expanded="true" signature="7242:7290" placeholder="SELECT TRIM(..contrato..." />
+            <marker date="1525823226211" expanded="true" signature="7527:7604" placeholder="SELECT id FR..cuentac..." />
+            <marker date="1525823226211" expanded="true" signature="7751:7778" placeholder="..." />
+            <marker date="1525823226211" expanded="true" signature="8071:8167" placeholder="SELECT idcue..detcontempresa..." />
+            <marker date="1525823226211" expanded="true" signature="8305:8332" placeholder="..." />
+            <marker date="1525823226211" expanded="true" signature="8652:8748" placeholder="SELECT idcue..detcontempresa..." />
+            <marker date="1525823226211" expanded="true" signature="8886:8913" placeholder="..." />
+            <marker date="1525823226211" expanded="true" signature="9686:9831" placeholder="SELECT b.id ..tiposervicioventa..." />
+            <marker date="1525823226211" expanded="true" signature="9990:10017" placeholder="..." />
+            <marker date="1525823226211" expanded="true" signature="10292:10387" placeholder="SELECT idcue..detcontempresa..." />
+            <marker date="1525823226211" expanded="true" signature="10519:10546" placeholder="..." />
+            <marker date="1525823226211" expanded="true" signature="11146:11218" placeholder="DELETE FROM ..." />
+            <marker date="1525823226211" expanded="true" signature="12004:12074" placeholder="SELECT COUNT..detallecontable..." />
+            <marker date="1525823226211" expanded="true" signature="12366:12414" placeholder="SELECT TRIM(..contrato..." />
+            <marker date="1525823226211" expanded="true" signature="12691:12768" placeholder="SELECT id FR..cuentac..." />
+            <marker date="1525823226211" expanded="true" signature="12915:12942" placeholder="..." />
+            <marker date="1525823226211" expanded="true" signature="13235:13331" placeholder="SELECT idcue..detcontempresa..." />
+            <marker date="1525823226211" expanded="true" signature="13469:13496" placeholder="..." />
+            <marker date="1525823226211" expanded="true" signature="13816:13912" placeholder="SELECT idcue..detcontempresa..." />
+            <marker date="1525823226211" expanded="true" signature="14050:14077" placeholder="..." />
+            <marker date="1525823226211" expanded="true" signature="14850:14995" placeholder="SELECT b.id ..tiposervicioventa..." />
+            <marker date="1525823226211" expanded="true" signature="15154:15181" placeholder="..." />
+            <marker date="1525823226211" expanded="true" signature="15456:15551" placeholder="SELECT idcue..detcontempresa..." />
+            <marker date="1525823226211" expanded="true" signature="15683:15710" placeholder="..." />
           </folding>
         </state>
       </provider>
