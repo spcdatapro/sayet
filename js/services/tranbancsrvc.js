@@ -53,6 +53,9 @@
             },
             imprimir: function(idtran){
                 return comunFact.doGET(urlBase + '/imprimir/' + idtran);
+            },
+            existe: function(obj){
+                return comunFact.doPOST(urlBase + '/existe', obj);
             }
         };
     }]);

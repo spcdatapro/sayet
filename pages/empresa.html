@@ -56,6 +56,14 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="{'has-error':frmEmpresa.txtNDPlanilla.$invalid && !frmEmpresa.txtNDPlanilla.$pristine}">
+                                    <label for="txtNDPlanilla">Correlativo de ND de planilla (el que toca):</label>
+                                    <input type="number" name="txtNDPlanilla" id="txtNDPlanilla" class="form-control" ng-model="laEmpresa.ndplanilla" placeholder="Correlativo de ND de planilla"/>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row" ng-show="+laEmpresa.congface == 0 && +laEmpresa.sifactura == 1">
                             <div class="col-md-3">
                                 <div class="form-group" ng-class="{'has-error':frmEmpresa.txtSerieEmp.$invalid && !frmEmpresa.txtSerieEmp.$pristine}">

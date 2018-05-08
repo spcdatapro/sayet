@@ -580,4 +580,12 @@ $app->get('/imprimir/:idtran', function($idtran){
 });
 //Fin de realizada por Rony Coyote
 
+$app->post('/existe', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $query = "SELECT COUNT(*) FROM tranban WHERE idbanco = $d->idbanco AND tipotrans = '$d->tipotrans' AND numero = $d->numero AND anulado = 0";
+    $existe = (int)$db->getOneField($query) > 0;
+    print json_encode(['existe' => ($existe ? 1 : 0)]);
+});
+
 $app->run();

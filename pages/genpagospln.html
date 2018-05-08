@@ -1,0 +1,160 @@
+<style>
+    .app-modal-window .modal-dialog { width: 800px; }
+</style>
+<div class="container" ng-controller="genPagosPlnCtrl">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divGenND" data-toggle="tab">GENERACI&Oacute;N DE NOTA DE D&Eacute;BITO</a>
+        </li>
+        <li>
+            <a show-tab href="#divGenCheque" data-toggle="tab">GENERACI&Oacute;N DE CHEQUES</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div id="divGenND" class="tab-pane fade in active">
+            <div class="panel panel-info">
+                <div class="panel-heading">Generaci&oacute;n de notas de d&eacute;bito</div>
+                <div class="panel-body">
+                    <form name="frmGenND" id="frmGenND" novalidate>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="txDel">Del:</label>
+                                    <input name="txDel" id="txDel" type="date" class="form-control" ng-model="params.fdel" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="txAl">Al:</label>
+                                    <input name="txAl" id="txAl" type="date" class="form-control" ng-model="params.fal" required/>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary" ng-disabled="frmGenND.$invalid" ng-click="genND()">
+                            <span class="glyphicon glyphicon-link"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div id="divGenCheque" class="tab-pane fade">
+            <div class="panel panel-info">
+                <div class="panel-heading">Generaci&oacute;n de cheques</div>
+                <div class="panel-body">
+                    <form name="frmGenChq" id="frmGenChq" novalidate>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="txDelChq">Del:</label>
+                                    <input name="txDelChq" id="txDelChq" type="date" class="form-control" ng-model="params.fdel" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="txAlChq">Al:</label>
+                                    <input name="txAlChq" id="txAlChq" type="date" class="form-control" ng-model="params.fal" required/>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary" ng-disabled="frmGenChq.$invalid" ng-click="genChq()">
+                            <span class="glyphicon glyphicon-link"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/ng-template" id="modalDatosND.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Generaci&oacute;n de nota de d&eacute;bito</h3>
+    </div>
+    <div class="modal-body">
+        <form name="frmDatosND" id="frmDatosND" novalidate>
+            <table class="table table-bordered table-condensed table-hover">
+                <thead>
+                <th>Empresa</th>
+                <th>Correlativo</th>
+                <th>Banco</th>
+                </thead>
+                <tbody>
+                <tr ng-repeat="empresa in empresas">
+                    <td>{{empresa.empresa}}</td>
+                    <td>
+                        <input name="ndplanilla_{{$index}}" id="ndplanilla_{{$index}}" type="text" style="width: 75px; text-align: right" class="form-control input-sm" ng-model="empresa.ndplanilla"
+                               ng-blur="existeND($index, empresa.idbanco, empresa.ndplanilla)" required/>
+                    </td>
+                    <td>
+                        <select name="selBcoND_{{$index}}" id="selBcoND_{{$index}}" class="form-control input-sm" ng-model="empresa.idbanco"
+                                ng-options="obj.id as obj.bancomoneda for obj in empresa.bancos" ng-change="existeND($index, empresa.idbanco, empresa.ndplanilla)" required></select>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()" ng-disabled="frmDatosND.$invalid">Aceptar</button>
+        <button class="btn btn-primary" type="button" ng-click="cancel()">Cancelar</button>
+    </div>
+</script>
+<script type="text/ng-template" id="modalDatosChq.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Generaci&oacute;n de cheques</h3>
+    </div>
+    <div class="modal-body">
+        <form name="frmDatosND" id="frmDatosChq" novalidate>
+            <table class="table table-bordered table-condensed table-hover">
+                <thead>
+                <th>Empresa</th>
+                <th>Banco</th>
+                </thead>
+                <tbody>
+                <tr ng-repeat="empresa in empresas">
+                    <td>{{empresa.empresa}}</td>
+                    <td>
+                        <select name="selBcoChq_{{$index}}" id="selBcoChq_{{$index}}" class="form-control input-sm" ng-model="empresa.idbanco"
+                                ng-options="obj.id as obj.bancomonedacorrela for obj in empresa.bancos" required></select>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()" ng-disabled="frmDatosChq.$invalid">Aceptar</button>
+        <button class="btn btn-primary" type="button" ng-click="cancel()">Cancelar</button>
+    </div>
+</script>
+<script type="text/ng-template" id="modalGenerados.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Cheques generados</h3>
+    </div>
+    <div class="modal-body">
+        <table class="table table-condensed table-hover" style="font-size: 8pt">
+            <thead>
+            <th>Empresa</th>
+            <th>Banco</th>
+            <th>Cheques</th>
+            </thead>
+            <tbody>
+            <tr ng-repeat="gen in generados">
+                <td style="vertical-align: top">{{gen.empresa}}</td>
+                <td style="vertical-align: top">{{gen.banco}}</td>
+                <td style="vertical-align: top">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 8pt">
+                        <tr ng-repeat="chq in gen.cheques">
+                            <td style="vertical-align: top">{{chq.numero}}</td>
+                            <td style="vertical-align: top">{{chq.beneficiario}}</td>
+                            <td style="vertical-align: top">{{chq.monto}}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()">Aceptar</button>
+    </div>
+</script>

@@ -26,6 +26,7 @@
                 d[x].correlafact = parseInt(d[x].correlafact);
                 d[x].ultimocorrelativofact = parseInt(d[x].ultimocorrelativofact);
                 d[x].fechavencefact = moment(d[x].fechavencefact).isValid() ? moment(d[x].fechavencefact).toDate() : null;
+                d[x].ndplanilla = parseInt(d[x].ndplanilla);
             }
             return d;
         };
@@ -51,6 +52,7 @@
             obj.correlafact = obj.correlafact != null && obj.correlafact != undefined ? obj.correlafact : 0;
             obj.fechavencefactstr = moment(obj.fechavencefact).isValid() ? moment(obj.fechavencefact).format('YYYY-MM-DD') : '';
             obj.ultimocorrelativofact = obj.ultimocorrelativofact != null && obj.ultimocorrelativofact != undefined ? obj.ultimocorrelativofact : 0;
+            obj.ndplanilla = obj.ndplanilla != null && obj.ndplanilla != undefined ? obj.ndplanilla : 0;
             return obj;
         };
 
