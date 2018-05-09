@@ -56,16 +56,16 @@ $app->get('/imprimir_recibo', function(){
 					$cont++;
 				}
 
-				foreach ($fila as $row) {
-					$conf = $g->get_campo_impresion($row['campo'], 1);
+				foreach ($fila as $campo => $valor) {
+					$conf = $g->get_campo_impresion($campo, 1);
 
 					if (!isset($conf->scalar) && $conf->visible == 1) {
 						$conf->psy = ($key%$cantidad == 0)?$conf->psy:($conf->psy+(($s[1]/$cantidad)*$cont));
 
-						if (is_numeric($row["valor"]) && !in_array($row['campo'], ['vcodigo', 'vdiastrabajados'])) {
-							$valor = number_format($row["valor"], 2);
+						if (is_numeric($valor) && !in_array($campo, ['vcodigo', 'vdiastrabajados'])) {
+							$valor = number_format($valor, 2);
 						} else {
-							$valor = $row["valor"];
+							$valor = $valor;
 						}
 
 						$pdf = generar_fimpresion($pdf, $valor, $conf);
@@ -102,11 +102,11 @@ $app->get('/imprimir', function(){
 			$datos = [];
 
 			foreach ($todos as $fila) {
-				if (isset($datos[$fila[0]['valor']])) {
-					$datos[$fila[0]['valor']]['empleados'][] = $fila;
+				if (isset($datos[$fila['vidempresa']])) {
+					$datos[$fila['vidempresa']]['empleados'][] = $fila;
 				} else {
-					$datos[$fila[0]['valor']] = [
-						'nombre'    => $fila[1]['valor'], 
+					$datos[$fila['vidempresa']] = [
+						'nombre'    => $fila['vempresa'], 
 						'conf'      => $g->get_campo_impresion('vidempresa', 2), 
 						'empleados' => [$fila]
 					];
@@ -165,35 +165,35 @@ $app->get('/imprimir', function(){
 				foreach ($empresa['empleados'] as $empleado) {
 					$registros++;
 
-					foreach ($empleado as $row) {
-						$conf = $g->get_campo_impresion($row['campo'], 2);
+					foreach ($empleado as $campo => $valor) {
+						$conf = $g->get_campo_impresion($campo, 2);
 
 						if (!isset($conf->scalar) && $conf->visible == 1) {
 							$conf->psy = ($conf->psy+$espacio);
 
-							if (is_numeric($row["valor"]) && !in_array($row['campo'], ['vcodigo', 'vdiastrabajados'])) {
-								$valor = number_format($row["valor"], 2);
+							if (is_numeric($valor) && !in_array($campo, ['vcodigo', 'vdiastrabajados'])) {
+								$valor = number_format($valor, 2);
 							} else {
-								$valor = $row["valor"];
+								$valor = $valor;
 							}
 
 							$pdf      = generar_fimpresion($pdf, $valor, $conf);
 							$sintotal = ['vdiastrabajados', 'vcodigo'];
 
-							if (is_numeric($row['valor']) && !in_array($row['campo'], $sintotal)) {
-								if (isset($etotales[$row['campo']])) {
-									$etotales[$row['campo']] += $row['valor'];
+							if (is_numeric($valor) && !in_array($campo, $sintotal)) {
+								if (isset($etotales[$campo])) {
+									$etotales[$campo] += $valor;
 								} else {
-									$etotales[$row['campo']] = $row['valor'];
+									$etotales[$campo] = $valor;
 								}
 								
-								if (isset($totales[$pdf->getPage()][$row['campo']])) {
-									$totales[$pdf->getPage()][$row['campo']] += $row['valor'];
+								if (isset($totales[$pdf->getPage()][$campo])) {
+									$totales[$pdf->getPage()][$campo] += $valor;
 								} else {
-									if (isset($totales[$pdf->getPage()-1][$row['campo']])) {
-										$totales[$pdf->getPage()][$row['campo']] = $row['valor']+$totales[$pdf->getPage()-1][$row['campo']];
+									if (isset($totales[$pdf->getPage()-1][$campo])) {
+										$totales[$pdf->getPage()][$campo] = $valor+$totales[$pdf->getPage()-1][$campo];
 									} else {
-										$totales[$pdf->getPage()][$row['campo']] = $row['valor'];
+										$totales[$pdf->getPage()][$campo] = $valor;
 									}
 								}
 							}
@@ -347,7 +347,7 @@ $app->get('/imprimir_igss', function(){
 		$todos = $b->get_datos_recibo($_GET);
 
 		if (count($todos) > 0) {
-
+			$totalIgss = 0;
 			$registros = 0;
 			$hojas = 1;
 			$rpag = 40; # Registros por página
@@ -390,12 +390,17 @@ $app->get('/imprimir_igss', function(){
 			$espacio = 0;
 			$totales = [];
 
+			#echo "<table>";
+
 			foreach ($todos as $empleado) {
 				$registros++;
 				$espaciotmp = 0;
+				$totalIgss += ($empleado['vsueldototal'] * (float)$empleado['vpigss']);
+				#echo "<tr><td>" . $empleado['vsueldototal'] . "</td><td>" . (float)$empleado['vpigss'] . "</td></tr>";
 
-				foreach ($empleado as $row) {
-					$conf = $g->get_campo_impresion($row['campo'], 3);
+				foreach ($empleado as $campo => $valor) {
+
+					$conf = $g->get_campo_impresion($campo, 3);
 
 					if (!isset($conf->scalar) && $conf->visible == 1) {
 						if ($espaciotmp === 0) {
@@ -404,21 +409,21 @@ $app->get('/imprimir_igss', function(){
 						
 						$conf->psy = ($conf->psy+$espacio);
 
-						if (is_numeric($row["valor"]) && !in_array($row['campo'], ['vcodigo', 'vafiliacionigss'])) {
-							$valor = number_format($row["valor"], 2);
+						if (is_numeric($valor) && !in_array($campo, ['vcodigo', 'vafiliacionigss'])) {
+							$valor = number_format($valor, 2);
 						} else {
-							$valor = $row["valor"];
+							$valor = $valor;
 						}
 
 						$pdf = generar_fimpresion($pdf, $valor, $conf);
 
 						$sintotal = ['vdiastrabajados', 'vcodigo', 'vafiliacionigss'];
 
-						if (is_numeric($row['valor']) && !in_array($row['campo'], $sintotal)) {
-							if (isset($totales[$row['campo']])) {
-								$totales[$row['campo']] += $row['valor'];
+						if (is_numeric($valor) && !in_array($campo, $sintotal)) {
+							if (isset($totales[$campo])) {
+								$totales[$campo] += $valor;
 							} else {
-								$totales[$row['campo']] = $row['valor'];
+								$totales[$campo] = $valor;
 							}
 						}
 					}
@@ -444,6 +449,9 @@ $app->get('/imprimir_igss', function(){
 				));
 			}
 
+			#echo "</table>";
+			#die();
+
 			$pdf->setPage($totalPaginas);
 			$conf = $g->get_campo_impresion('t_cantidad_empleado', 3);
 			if (!isset($conf->scalar) && $conf->visible == 1) {
@@ -464,7 +472,8 @@ $app->get('/imprimir_igss', function(){
 			}
 
 			$dresumen = [
-				'cp_igss'    => ($totales['vsueldototal'] * 0.1067),
+				#'cp_igss'    => ($totales['vsueldototal'] * 0.1067),
+				'cp_igss'    => $totalIgss,
 				'cp_intecap' => ($totales['vsueldototal'] * 0.01),
 				'cp_irtra'   => ($totales['vsueldototal'] * 0.01),
 				'ct_igss'    => $totales['vigss'],
@@ -512,12 +521,12 @@ $app->get('/imprimir_isr', function(){
 			$datos = [];
 
 			foreach ($todos as $fila) {
-				if (isset($datos[$fila[0]['valor']])) {
-					$datos[$fila[0]['valor']]['empleados'][] = $fila;
+				if (isset($datos[$fila['vidempresa']])) {
+					$datos[$fila['vidempresa']]['empleados'][] = $fila;
 				} else {
-					$datos[$fila[0]['valor']] = [
-						'nombre'    => $fila[1]['valor'], 
-						'conf'      => $g->get_campo_impresion('vidempresa', 4), 
+					$datos[$fila['vidempresa']] = [
+						'nombre'    => $fila['vempresa'], 
+						'conf'      => $g->get_campo_impresion('vidempresa', 2), 
 						'empleados' => [$fila]
 					];
 				}
@@ -575,35 +584,35 @@ $app->get('/imprimir_isr', function(){
 				foreach ($empresa['empleados'] as $empleado) {
 					$registros++;
 
-					foreach ($empleado as $row) {
-						$conf = $g->get_campo_impresion($row['campo'], 4);
+					foreach ($empleado as $campo => $valor) {
+						$conf = $g->get_campo_impresion($campo, 4);
 
 						if (!isset($conf->scalar) && $conf->visible == 1) {
 							$conf->psy = ($conf->psy+$espacio);
 
-							if (is_numeric($row["valor"]) && !in_array($row['campo'], ['vcodigo', 'vdiastrabajados'])) {
-								$valor = number_format($row["valor"], 2);
+							if (is_numeric($valor) && !in_array($campo, ['vcodigo', 'vdiastrabajados'])) {
+								$valor = number_format($valor, 2);
 							} else {
-								$valor = $row["valor"];
+								$valor = $valor;
 							}
 
 							$pdf      = generar_fimpresion($pdf, $valor, $conf);
 							$sintotal = ['vdiastrabajados', 'vcodigo'];
 
-							if (is_numeric($row['valor']) && !in_array($row['campo'], $sintotal)) {
-								if (isset($etotales[$row['campo']])) {
-									$etotales[$row['campo']] += $row['valor'];
+							if (is_numeric($valor) && !in_array($campo, $sintotal)) {
+								if (isset($etotales[$campo])) {
+									$etotales[$campo] += $valor;
 								} else {
-									$etotales[$row['campo']] = $row['valor'];
+									$etotales[$campo] = $valor;
 								}
 								
-								if (isset($totales[$pdf->getPage()][$row['campo']])) {
-									$totales[$pdf->getPage()][$row['campo']] += $row['valor'];
+								if (isset($totales[$pdf->getPage()][$campo])) {
+									$totales[$pdf->getPage()][$campo] += $valor;
 								} else {
-									if (isset($totales[$pdf->getPage()-1][$row['campo']])) {
-										$totales[$pdf->getPage()][$row['campo']] = $row['valor']+$totales[$pdf->getPage()-1][$row['campo']];
+									if (isset($totales[$pdf->getPage()-1][$campo])) {
+										$totales[$pdf->getPage()][$campo] = $valor+$totales[$pdf->getPage()-1][$campo];
 									} else {
-										$totales[$pdf->getPage()][$row['campo']] = $row['valor'];
+										$totales[$pdf->getPage()][$campo] = $valor;
 									}
 								}
 							}

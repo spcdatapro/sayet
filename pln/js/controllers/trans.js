@@ -101,10 +101,14 @@ angular.module('cpm')
         $scope.guardar = function(pre){
             if (pre.fechainicio) {
                 pre.iniciopago = $scope.formatoFecha(pre.fechainicio)
+            } else {
+                pre.iniciopago = 0;
             }
 
             if (pre.fechafin) {
                 pre.liquidacion = $scope.formatoFecha(pre.fechafin)
+            } else {
+                pre.liquidacion = 0;
             }
 
             preServicios.guardar(pre).then(function(data){

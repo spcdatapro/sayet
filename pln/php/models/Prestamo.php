@@ -58,7 +58,7 @@ class Prestamo extends Principal
 
 			if (elemento($args, 'liquidacion', FALSE)) {
 				$this->set_dato('liquidacion', $args['liquidacion']);
-				$this->set_dato('finalizado', 1);
+				$this->set_dato('finalizado', TRUE);
 			} else {
 				$this->set_dato('liquidacion', NULL);
 				$this->set_dato('finalizado', FALSE);

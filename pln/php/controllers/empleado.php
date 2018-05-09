@@ -138,4 +138,10 @@ $app->post('/guardar_prosueldo', function(){
     enviar_json($data);
 });
 
+$app->get('/get_empresas', function(){
+	$g = new General();
+
+	enviar_json(['empresas' => $e->get_plnempresa]);
+});
+
 $app->run();

@@ -83,6 +83,37 @@ class General extends Principal
 		
 	}
 
+	/**
+	 * devuelve empresa para planilla
+	 * @param  array  $args [description]
+	 * @return [type]       [description]
+	 */
+	public function get_plnempresa($args = [])
+	{
+		$where = [];
+
+		if (elemento($args, 'id')) {
+			$where['id'] = $args['id'];
+		}
+
+		if (isset($args['uno'])) {
+			$where['LIMIT'] = 1;
+		}
+
+		$tmp = $this->db->select(
+			'plnempresa', 
+			['*'],
+			$where
+		);
+
+		if (isset($args['uno'])) {
+			return $tmp[0];
+		} else {
+			return $tmp;
+		}
+		
+	}
+
 	/* 
 	Verifica si un empleado activo tiene registro en la tabla pln_proempleado 
 	para el año que se quiere trabajar 

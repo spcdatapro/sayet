@@ -26,6 +26,9 @@ angular.module('cpm')
         }, 
         guardarProsueldo: function(obj) {
             return comunFact.doPOST(urlBase + '/guardar_prosueldo', obj);
+        },
+        getEmpresas: function(){
+            return comunFact.doGET(urlBase + '/get_empresas')
         }
     };
 }])

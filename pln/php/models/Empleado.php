@@ -39,52 +39,52 @@ class Empleado extends Principal
 	public function guardar($args = [])
 	{
 		if (is_array($args) && !empty($args)) {
-			if (elemento($args, 'nombre')) {
+			if (elemento($args, 'nombre', FALSE)) {
 				$this->set_dato('nombre', $args['nombre']);
 			}
 
-			if (elemento($args, 'apellidos')) {
-				$this->set_dato('apellidos', $args['apellidos']);
+			if (isset($args['apellidos'])) {
+				$this->set_dato('apellidos',  elemento($args, 'apellidos'));
 			}
 
-			if (elemento($args, 'direccion')) {
-				$this->set_dato('direccion', $args['direccion']);
+			if (isset($args['direccion'])) {
+				$this->set_dato('direccion',  elemento($args, 'direccion'));
 			}
 
-			if (elemento($args, 'telefono')) {
-				$this->set_dato('telefono', $args['telefono']);
+			if (isset($args['telefono'])) {
+				$this->set_dato('telefono',  elemento($args, 'telefono'));
 			}
 
-			if (elemento($args, 'correo')) {
-				$this->set_dato('correo', $args['correo']);
+			if (isset($args['correo'])) {
+				$this->set_dato('correo',  elemento($args, 'correo'));
 			}
 			
-			if (elemento($args, 'sexo')) {
-				$this->set_dato('sexo', $args['sexo']);
+			if (isset($args['sexo'])) {
+				$this->set_dato('sexo',  elemento($args, 'sexo'));
 			}
 			
-			if (elemento($args, 'estadocivil')) {
-				$this->set_dato('estadocivil', $args['estadocivil']);
+			if (isset($args['estadocivil'])) {
+				$this->set_dato('estadocivil',  elemento($args, 'estadocivil'));
 			}
 			
-			if (elemento($args, 'fechanacimiento')) {
-				$this->set_dato('fechanacimiento', $args['fechanacimiento']);
+			if (isset($args['fechanacimiento'])) {
+				$this->set_dato('fechanacimiento',  elemento($args, 'fechanacimiento'));
 			}
 			
-			if (elemento($args, 'dpi')) {
-				$this->set_dato('dpi', $args['dpi']);
+			if (isset($args['dpi'])) {
+				$this->set_dato('dpi',  elemento($args, 'dpi'));
 			}
 			
-			if (elemento($args, 'extendido')) {
-				$this->set_dato('extendido', $args['extendido']);
+			if (isset($args['extendido'])) {
+				$this->set_dato('extendido',  elemento($args, 'extendido'));
 			}
 			
-			if (elemento($args, 'nit')) {
-				$this->set_dato('nit', $args['nit']);
+			if (isset($args['nit'])) {
+				$this->set_dato('nit',  elemento($args, 'nit'));
 			}
 			
-			if (elemento($args, 'igss')) {
-				$this->set_dato('igss', $args['igss']);
+			if (isset($args['igss'])) {
+				$this->set_dato('igss',  elemento($args, 'igss'));
 			}
 
 			if (isset($args['activo'])) {
@@ -107,28 +107,28 @@ class Empleado extends Principal
 				$this->set_dato('idplnpuesto', $args['idplnpuesto']);
 			}
 			
-			if (elemento($args, 'cuentapersonal')) {
-				$this->set_dato('cuentapersonal', $args['cuentapersonal']);
+			if (isset($args['cuentapersonal'])) {
+				$this->set_dato('cuentapersonal', elemento($args, 'cuentapersonal'));
 			}
 			
-			if (elemento($args, 'descuentoisr')) {
-				$this->set_dato('descuentoisr', $args['descuentoisr']);
+			if (isset($args['descuentoisr'])) {
+				$this->set_dato('descuentoisr', elemento($args, 'descuentoisr'));
 			}
 			
 			if (elemento($args, 'idempresaactual')) {
 				$this->set_dato('idempresaactual', $args['idempresaactual']);
 			}
 			
-			if (elemento($args, 'bonificacionley')) {
-				$this->set_dato('bonificacionley', $args['bonificacionley']);
+			if (isset($args['bonificacionley'])) {
+				$this->set_dato('bonificacionley', elemento($args, 'bonificacionley', 0));
 			}
 			
-			if (elemento($args, 'sueldo')) {
-				$this->set_dato('sueldo', $args['sueldo']);
+			if (isset($args['sueldo'])) {
+				$this->set_dato('sueldo', elemento($args, 'sueldo'));
 			}
 			
-			if (elemento($args, 'porcentajeigss')) {
-				$this->set_dato('porcentajeigss', $args['porcentajeigss']);
+			if (isset($args['porcentajeigss'])) {
+				$this->set_dato('porcentajeigss', elemento($args, 'porcentajeigss', 0));
 			}
 			
 			if (elemento($args, 'formapago')) {
@@ -143,8 +143,8 @@ class Empleado extends Principal
 				$this->set_dato('idempresadebito', $args['idempresadebito']);
 			}
 			
-			if (elemento($args, 'cuentabanco')) {
-				$this->set_dato('cuentabanco', $args['cuentabanco']);
+			if (isset($args['cuentabanco'])) {
+				$this->set_dato('cuentabanco', elemento($args, 'cuentabanco'));
 			}
 			
 			if (elemento($args, 'idproyecto')) {

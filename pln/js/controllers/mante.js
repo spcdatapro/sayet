@@ -14,6 +14,7 @@ angular.module('cpm')
         $scope.cuentas   = [];
         $scope.puestos   = [];
         $scope.archivotipo = [];
+        $scope.empresasPlanilla = []
 
 		$scope.mostrarForm = function() {
 			$scope.emp = {};
@@ -24,18 +25,26 @@ angular.module('cpm')
 		$scope.guardar = function(emp){
             if ($scope.emp.fchnac) {
                 $scope.emp.fechanacimiento = $scope.formatoFecha($scope.emp.fchnac);
+            } else {
+                $scope.emp.fechanacimiento = 0
             }
 
             if ($scope.emp.fching) {
                 $scope.emp.ingreso = $scope.formatoFecha($scope.emp.fching);
+            } else {
+                $scope.emp.ingreso = 0
             }
              
             if ($scope.emp.fchrei) {
                 $scope.emp.reingreso = $scope.formatoFecha($scope.emp.fchrei);
+            } else {
+                $scope.emp.reingreso = 0
             }
 
             if ($scope.emp.fchbaj) {
                 $scope.emp.baja = $scope.formatoFecha($scope.emp.fchbaj);
+            } else {
+                $scope.emp.baja = 0
             }
 
 			empServicios.guardar(emp).then(function(data){
@@ -156,6 +165,10 @@ angular.module('cpm')
         empServicios.getArchivoTipo().then(function(d) {
             $scope.archivotipo = d;
         });
+
+        empServicios.getEmpresas().then(function(res){
+            $scope.empresasPlanilla = res.empresas
+        })
 
         $scope.formatoFecha = function(fecha) {
             return fecha.getFullYear()+'-'+(fecha.getMonth()+1)+'-'+fecha.getDate();

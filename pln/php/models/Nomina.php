@@ -264,16 +264,16 @@ class Nomina extends Principal
 
 		$sql = <<<EOT
 SELECT 
-    a.*, b.nombre, b.apellidos, b.dpi, b.idempresaactual, c.nomempresa
+    a.*, b.nombre, b.apellidos, b.dpi, b.idempresaactual, c.nombre AS nomempresa, c.pigss
 FROM
     plnnomina a
         JOIN
     plnempleado b ON b.id = a.idplnempleado
         JOIN
-    empresa c ON c.id = b.idempresaactual
+    plnempresa c ON c.id = b.idempresaactual
 	where b.activo = 1 and a.fecha between '{$args["fdel"]}' and '{$args["fal"]}' 
 	and a.devengado <> 0 
-    {$where} order by c.nomempresa, b.nombre 
+    {$where} order by c.nombre, b.nombre 
 EOT;
 		$res   = $this->db->query($sql)->fetchAll();
 		$datos = [];
@@ -284,254 +284,69 @@ EOT;
 			$emp = new Empleado($row->idplnempleado);
 
 			$datos[] = [
-				[
-					'campo' => 'vidempresa', 
-					'valor' => $row->idempresaactual
-				], # El id de la empresa debe ir como primer arreglo, NO LO CAMBIÈS
-				[
-					'campo' => 'vempresa', 
-					'valor' => $row->nomempresa
-				], # Y el nombre de la empresa como segundo arreglo
-				[
-					'campo' => 'tempresa', 
-					'valor' => 'Empresa:'
-				],
-				[
-					'campo' => 'titulo', 
-					'valor' => 'RECIBO DE PAGO'
-				],
-				[
-					'campo' => 'rango', 
-					'valor' => 'Planilla del '.formatoFecha($args['fdel'],1).' al '.formatoFecha($args['fal'], 1)
-				],
-				[
-					'campo' => 'templeado', 
-					'valor' => 'Nombre:'
-				],
-				[
-					'campo' => 'vempleado', 
-					'valor' => "{$row->nombre} {$row->apellidos}"
-				],
-				[
-					'campo' => 'tcodigo', 
-					'valor' => 'Código:'
-				],
-				[
-					'campo' => 'vcodigo', 
-					'valor' => $row->idplnempleado
-				],
-				[
-					'campo' => 'tdpi', 
-					'valor' => 'DPI:'
-				],
-				[
-					'campo' => 'vdpi', 
-					'valor' => $row->dpi
-				],
-				[
-					'campo' => 'tdevengados' ,
-					'valor' => 'DEVENGADOS'
-				],
-				[
-					'campo' => 'tdeducidos', 
-					'valor' => 'DEDUCIDOS'
-				], 
-				[
-					'campo' => 'division', 
-					'valor' => 'linea'
-				],
-				[
-					'campo' => 'tsueldoordinario', 
-					'valor' => 'Sueldo Ordinario:'
-				],
-				[
-					'campo' => 'vsueldoordinario', 
-					'valor' => $row->sueldoordinario
-				],
-				[
-					'campo' => 'thorasextras', 
-					'valor' => 'Horas Extras:'
-				],
-				[
-					'campo' => 'vhorasextras', 
-					'valor' => $row->horasmes
-				],
-				[
-					'campo' => 'tsueldoextra', 
-					'valor' => 'Sueldo Extra:'
-				],
-				[
-					'campo' => 'vsueldoextra', 
-					'valor' => $row->sueldoextra
-				],
-				[
-					'campo' => 'vsueldototal', 
-					'valor' => ($row->sueldoordinario+$row->sueldoextra)
-				],
-				[
-					'campo' => 'tbonificacion', 
-					'valor' => 'Bonificación:'
-				],
-				[
-					'campo' => 'vbonificacion', 
-					'valor' => $row->bonificacion
-				],
-				[
-					'campo' => 'tviaticos', 
-					'valor' => 'Viáticos:'
-				],
-				[
-					'campo' => 'vviaticos', 
-					'valor' => $row->viaticos
-				],
-				[
-					'campo' => 'totrosingresos', 
-					'valor' => 'Otros:'
-				],
-				[
-					'campo' => 'votrosingresos', 
-					'valor' => $row->otrosingresos
-				],
-				[
-					'campo' => 'tanticipo', 
-					'valor' => 'Anticipos:'
-				],
-				[
-					'campo' => 'vanticipo', 
-					'valor' => $row->anticipo
-				],
-				[
-					'campo' => 'tvacaciones', 
-					'valor' => 'Vacacioness:'
-				],
-				[
-					'campo' => 'vvacaciones', 
-					'valor' => $row->vacaciones
-				],
-				[
-					'campo' => 'vbono14', 
-					'valor' => $row->bonocatorce
-				],
-				[
-					'campo' => 'taguinaldo', 
-					'valor' => 'Aguinaldo:'
-				],
-				[
-					'campo' => 'vaguinaldo', 
-					'valor' => $row->aguinaldo
-				],
-				[
-					'campo' => 'tindemnizacion', 
-					'valor' => 'Indemnizacion:'
-				],
-				[
-					'campo' => 'vindemnizacion', 
-					'valor' => $row->indemnizacion
-				],
-				[
-					'campo' => 'tigss', 
-					'valor' => 'IGSS:'
-				],
-				[
-					'campo' => 'vigss', 
-					'valor' => $row->descigss
-				],
-				[
-					'campo' => 'tisr', 
-					'valor' => 'ISR:'
-				],
-				[
-					'campo' => 'visr', 
-					'valor' => $row->descisr
-				],
-				[
-					'campo' => 'tdescanticipo', 
-					'valor' => 'Anticipos:'
-				],
-				[
-					'campo' => 'vdescanticipo', 
-					'valor' => $row->descanticipo
-				],
-				[
-					'campo' => 'tprestamo', 
-					'valor' => 'Préstamos:'
-				],
-				[
-					'campo' => 'vprestamo', 
-					'valor' => $row->descprestamo
-				],
-				[
-					'campo' => 'tdescotros', 
-					'valor' => 'Otros:'
-				],
-				[
-					'campo' => 'vdescotros', 
-					'valor' => $row->descotros
-				],
-				[
-					'campo' => 'tdevengado', 
-					'valor' => 'Total Devengado:'
-				],
-				[
-					'campo' => 'vdevengado', 
-					'valor' => $row->devengado
-				],
-				[
-					'campo' => 'tdeducido', 
-					'valor' => 'Total Deducido:'
-				],
-				[
-					'campo' => 'vdeducido', 
-					'valor' => $row->deducido
-				],
-				[
-					'campo' => 'tliquido', 
-					'valor' => 'Líquido a Recibir:'
-				],
-				[
-					'campo' => 'vliquido', 
-					'valor' => $row->liquido
-				],
-				[
-					'campo' => 'recprestamo', 
-					'valor' => 'rectangulo'
-				],
-				[
-					'campo' => 'tsaldoprestamo', 
-					'valor' => 'Saldo de Préstamo'
-				], 
-				[
-					'campo' => 'vsaldoprestamo', 
-					'valor' => $emp->get_saldo_prestamo()
-				],
-				[
-					'campo' => 'vdiastrabajados', 
-					'valor' => $row->diastrabajados
-				],
-				[
-					'campo' => 'lrecibi', 
-					'valor' => str_repeat("_", 35) 
-				],
-				[
-					'campo' => 'trecibi', 
-					'valor' => 'Recibí Conforme'
-				],
-				[
-					'campo' => 'tbonoanual',
-					'valor' => 'Bonifi. anual p/trab. sector privado y público:'
-				], 
-				[
-					'campo' => 'vbonoanual',
-					'valor' => 0
-				],
-				[
-					'campo' => 'vafiliacionigss',
-					'valor' => $emp->emp->igss
-				],
-				[
-					'campo' => 'vbaja',
-					'valor' => ($emp->emp->baja === NULL ? '':formatoFecha($emp->emp->baja, 1))
-				]
+				'vidempresa'       => $row->idempresaactual, 
+				'vempresa'         => $row->nomempresa, 
+				'tempresa'         => 'Empresa:',
+				'titulo'           => 'RECIBO DE PAGO',
+				'rango'            => 'Planilla del '.formatoFecha($args['fdel'],1).' al '.formatoFecha($args['fal'], 1),
+				'templeado'        => 'Nombre:',
+				'vempleado'        => "{$row->nombre} {$row->apellidos}",
+				'tcodigo'          => 'Código:',
+				'vcodigo'          => $row->idplnempleado,
+				'tdpi'             => 'DPI:',
+				'vdpi'             => $row->dpi,
+				'tdevengados'      => 'DEVENGADOS',
+				'tdeducidos'       => 'DEDUCIDOS', 
+				'division'         => 'linea',
+				'tsueldoordinario' => 'Sueldo Ordinario:',
+				'vsueldoordinario' => $row->sueldoordinario,
+				'thorasextras'     => 'Horas Extras:',
+				'vhorasextras'     => $row->horasmes,
+				'tsueldoextra'     => 'Sueldo Extra:',
+				'vsueldoextra'     => $row->sueldoextra,
+				'vsueldototal'     => ($row->sueldoordinario+$row->sueldoextra),
+				'tbonificacion'    => 'Bonificación:',
+				'vbonificacion'    => $row->bonificacion,
+				'tviaticos'        => 'Viáticos:',
+				'vviaticos'        => $row->viaticos,
+				'totrosingresos'   => 'Otros:',
+				'votrosingresos'   => $row->otrosingresos,
+				'tanticipo'        => 'Anticipos:',
+				'vanticipo'        => $row->anticipo,
+				'tvacaciones'      => 'Vacacioness:',
+				'vvacaciones'      => $row->vacaciones,
+				'vbono14'          => $row->bonocatorce,
+				'taguinaldo'       => 'Aguinaldo:',
+				'vaguinaldo'       => $row->aguinaldo,
+				'tindemnizacion'   => 'Indemnizacion:',
+				'vindemnizacion'   => $row->indemnizacion,
+				'tigss'            => 'IGSS:',
+				'vigss'            => $row->descigss,
+				'tisr'             => 'ISR:',
+				'visr'             => $row->descisr,
+				'tdescanticipo'    => 'Anticipos:',
+				'vdescanticipo'    => $row->descanticipo,
+				'tprestamo'        => 'Préstamos:',
+				'vprestamo'        => $row->descprestamo,
+				'tdescotros'       => 'Otros:',
+				'vdescotros'       => $row->descotros,
+				'tdevengado'       => 'Total Devengado:',
+				'vdevengado'       => $row->devengado,
+				'tdeducido'        => 'Total Deducido:',
+				'vdeducido'        => $row->deducido,
+				'tliquido'         => 'Líquido a Recibir:',
+				'vliquido'         => $row->liquido,
+				'recprestamo'      => 'rectangulo',
+				'tsaldoprestamo'   => 'Saldo de Préstamo', 
+				'vsaldoprestamo'   => $emp->get_saldo_prestamo(),
+				'vdiastrabajados'  => $row->diastrabajados,
+				'lrecibi'          => str_repeat("_", 35) ,
+				'trecibi'          => 'Recibí Conforme',
+				'tbonoanual'       => 'Bonifi. anual p/trab. sector privado y público:', 
+				'vbonoanual'       => 0,
+				'vafiliacionigss'  => $emp->emp->igss,
+				'vbaja'            => ($emp->emp->baja === NULL ? '':formatoFecha($emp->emp->baja, 1)),
+				'vpigss'           => $row->pigss
 			];
 		}
 
