@@ -711,7 +711,8 @@ $app->get('/imprimir_sp', function(){
 			'fal'        => $_GET['fal'],
 			'orden'      => 'empleado',
 			'empresa'    => isset($_GET['empresa']) ? $_GET['empresa'] : NULL,
-			'finalizado' => 0
+			'finalizado' => 0, 
+			'sinlimite'  => TRUE
 		]);
 
 		if (count($todos) > 0) {
@@ -825,14 +826,6 @@ $app->get('/imprimir_sp', function(){
 							$nonumerico = ['v_vale', 'v_codigo'];
 
 							if (is_numeric($valor) && !in_array($campo, $nonumerico)) {
-								$valor = number_format($valor, 2);
-							} else {
-								$valor = $valor;
-							}
-
-							$pdf      = generar_fimpresion($pdf, $valor, $conf);
-
-							if (is_numeric($valor) && !in_array($campo, $nonumerico)) {
 								if (isset($etotales[$campo])) {
 									$etotales[$campo] += $valor;
 								} else {
@@ -849,10 +842,16 @@ $app->get('/imprimir_sp', function(){
 									}
 								}
 							}
+
+							if (is_numeric($valor) && !in_array($campo, $nonumerico)) {
+								$valor = number_format($valor, 2);
+							} else {
+								$valor = $valor;
+							}
+
+							$pdf = generar_fimpresion($pdf, $valor, $conf);
 						}
 					}
-
-					# $pdf = generar_fimpresion($pdf, $valor, $conf);
 
 					$espacio += $confe->espacio;
 

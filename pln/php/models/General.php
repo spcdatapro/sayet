@@ -208,8 +208,12 @@ class General extends Principal
 		} else {
 			$condicion["ORDER"] = "plnprestamo.iniciopago DESC";
 		}
-		
-		$condicion["LIMIT"] = [elemento($args, 'inicio', 0), get_limite()];
+
+		if (isset($args['sinlimite'])) {
+			# Sin limite...
+		} else {
+			$condicion["LIMIT"] = [elemento($args, 'inicio', 0), get_limite()];
+		}
 		
 		return $this->db->select("plnprestamo", [
 				'[><]plnempleado(b)' => ['plnprestamo.idplnempleado' => 'id']
