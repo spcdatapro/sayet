@@ -8,6 +8,10 @@ angular.module('cpm')
         $scope.shdescuentos = false;
         $scope.primeraQuincena = false;
         $scope.shingresos_dos = false;
+        $scope.edicion = true;
+        
+        $scope.nfecha = null
+        $scope.nempresa = null
 
         $scope.buscar = function(datos) {
             $("#btnBuscar").button('loading');
@@ -16,6 +20,9 @@ angular.module('cpm')
             $scope.primeraQuincena = datos.fch.getDate() === 15 ? true : false;
 
             datos.fecha = datos.fch.getFullYear()+'-'+(datos.fch.getMonth()+1)+'-'+datos.fch.getDate();
+
+            $scope.nfecha = datos.fecha
+            $scope.nempresa = datos.empresa
 
         	nominaServicios.buscar(datos).then(function(data){
                 if (data.exito == 1) {
@@ -36,6 +43,7 @@ angular.module('cpm')
         });
 
         $scope.showIngresos = function() {
+            $scope.edicion = true;
             $scope.shdescuentos = false;
 
             if ($scope.primeraQuincena) {
@@ -48,14 +56,33 @@ angular.module('cpm')
         }
 
         $scope.showDescuentos = function() {
+            $scope.edicion = true;
             $scope.shdescuentos = $scope.primeraQuincena === true ? false : true;
             $scope.shingresos_uno = false;
             $scope.shingresos_dos = false;
         }
 
+        $scope.showTerminar = function() {
+            $scope.edicion = false;
+        }
+
         $scope.actualizarNomina = function(n) {
             nominaServicios.actualizarNomina(n).then(function(data){
             });
+        }
+
+        $scope.terminarPlanilla = function() {
+            if (confirm('¿Desea continuar?')) {
+                if ($scope.fecha !== null) {
+                    var datos = {'fecha':$scope.nfecha}
+                    if ($scope.nempresa) { datos['empresa'] = $scope.nempresa }
+                    nominaServicios.terminarPlanilla(datos).then(function(res){
+                        alert(res.mensaje)
+                    })
+                } else {
+                    alert('Por favor seleccione una fecha y haga clic en buscar')
+                }
+            }
         }
     }
 ])
@@ -140,11 +167,10 @@ angular.module('cpm')
         }
 
         $scope.mas = function() {
-            pstServicios.buscar($scope.datosbuscar).then(function(data){
+            preServicios.buscar($scope.datosbuscar).then(function(data){
                 $scope.datosbuscar.inicio += parseInt(data.cantidad)
-                $scope.prestamos = $scope.puestos.concat(data.resultados)
+                $scope.prestamos = $scope.prestamos.concat(data.resultados)
                 $scope.ocultarbtn(data.cantidad, data.maximo)
-                $scope.$digest()
             })
         }
 

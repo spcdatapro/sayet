@@ -910,4 +910,23 @@ $app->get('/imprimir_sp', function(){
 	}
 });
 
+$app->post('/terminar_planilla', function(){
+	$res = ['exito' => 0];
+	
+	if (elemento($_POST, 'fecha')) {
+		$b = new Nomina();
+
+		if ($b->terminar_planilla($_POST)) {
+			$res['exito'] = 1;
+			$res['mensaje'] = 'Planilla terminada con éxito.';
+		} else {
+			$res['mensaje'] = $b->get_mensaje();
+		}
+	} else {
+		$res['mensaje'] = 'Es necesario que seleccione una fecha.';
+	}
+
+	enviar_json($res);
+});
+
 $app->run();

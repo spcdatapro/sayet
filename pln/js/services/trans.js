@@ -26,6 +26,9 @@ angular.module('cpm')
         }, 
         guardarProsueldo: function(obj) {
             return comunFact.doPOST(urlBase + '/guardar_prosueldo', obj);
+        },
+        terminarPlanilla: function(obj) {
+            return comunFact.doPOSTFiles(urlBase + '/terminar_planilla', obj)
         }
     };
 }])

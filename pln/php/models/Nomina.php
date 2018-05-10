@@ -11,10 +11,34 @@ class Nomina extends Principal
 		parent::__construct();
 	}
 
+	public function terminar_planilla($args=[])
+	{
+		$condiciones = [
+			'fecha'     => $args['fecha'],
+			'terminada' => 0
+		];
+
+		if (elemento($args, 'empresa')) {
+			$datos['empresa'] = $args['empresa'];
+		}
+
+		if ($this->db->update("plnnomina", ['terminada' => 1], ['AND' => $condiciones])) {
+			return TRUE;
+		} else {
+			if ($this->db->error()[0] == 0) {
+				$this->set_mensaje('Nada que actualizar.');
+			} else {
+				$this->set_mensaje('Error en la base de datos al actualizar: ' . $this->db->error()[2]);
+			}
+		}
+	}
+
 	public function buscar($args=[])
 	{
 		$fecha = $args['fecha'];
 		$dia   = date('d', strtotime($fecha));
+
+		$this->limpiar_nomina(['fecha' => $fecha]);
 
 		$condicion = ['activo' => 1];
 
@@ -132,7 +156,7 @@ class Nomina extends Principal
 			}
 
 			if (!empty($datos)) {
-				if ($this->db->update("plnnomina", $datos, ["id" => $args['id']])) {
+				if ($this->db->update("plnnomina", $datos, ['AND' => ["id" => $args['id'], 'terminada' => 0]])) {
 					return TRUE;
 				} else {
 					if ($this->db->error()[0] == 0) {
@@ -214,13 +238,23 @@ class Nomina extends Principal
 							$this->db->update(
 								"plnpresnom", 
 								['monto' => $prestamo['cuotamensual']],
-								['id' => $tmp->id]
+								[
+									'AND' => [
+										'id'        => $tmp->id,
+										'terminada' => 0
+									]
+								]
 							);
 						}
 					}
 				}
 
-				$this->db->update("plnnomina", $datos, ["id" => $row['id']]);
+				$this->db->update("plnnomina", $datos, [
+					'AND' => [
+						"id"        => $row['id'], 
+						'terminada' => 0
+					]
+				]);
 			}
 			
 			return TRUE;
@@ -229,6 +263,33 @@ class Nomina extends Principal
 		}
 
 		return FALSE;
+	}
+
+	public function limpiar_nomina($args=[])
+	{
+		if (elemento($args, 'fecha')) {
+			$tmp = $this->db->select("plnnomina", [
+					'[><]plnempleado(b)' => ['plnnomina.idplnempleado' => 'id']
+				], 
+				[
+					"plnnomina.id",
+					"b.activo"
+				],
+				[
+					'AND' => [
+						'plnnomina.fecha'     => $args['fecha'],
+						'plnnomina.terminada' => 0
+					]
+					
+				]
+			);
+
+			foreach ($tmp as $row) {
+				if ($row['activo'] == 0) {
+					$this->db->delete("plnnomina", ['id' => $row['id']]);
+				}
+			}
+		}
 	}
 
 	public function get_anticipos(Array $args)
