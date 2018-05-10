@@ -47,6 +47,7 @@ $app->post('/rptpresupuesto', function(){
     $query.= "SELECT a.ordentrabajo AS idot, a.totfact AS monto , b.simbolo  , FORMAT(a.isr, 2) AS isr  ";
     $query.= "FROM compra a LEFT JOIN moneda b ON b.id = a.idmoneda ) v GROUP BY v.idot ) t ON a.id = t.idot ";
     $query.= "WHERE a.origenprov = 2 AND a.idpresupuesto = $d->idpresupuesto ";
+    $query.= "ORDER BY 3";
 
     $presupuesto->ots = $db->getQuery($query);
     $cntOts = count($presupuesto->ots);
