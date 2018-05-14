@@ -1,3 +1,8 @@
+<style>
+    .ancho{ width: 100% !important; }
+    .brdbtm{ border-bottom: solid 0.1em lightgrey}
+    .bld{ font-weight: bold; }
+</style>
 <div class="container" ng-controller="rptFacturasEmitidasCtrl">
     <div class="row">
         <div class="panel panel-default">
@@ -37,14 +42,15 @@
                                  remote-url-error-callback="errorSearch"
                                  remote-url-data-field="results"
                                  title-field="facturara"
-                                 description-field="nit"
-                                 input-class="form-control form-control-sm"
+                                 description-field="infocliente"
+                                 input-class="form-control form-control-sm ancho"
                                  match-class="highlight"
                                  minlength="1"
                                  field-required="true"
                                  input-name="txtCliente"
                                  input-changed="focusOut"
                                  override-suggestions="true"
+                                 template-url="/my-custom-template.html"
                             ></div>
                         </div>
                     </div>
@@ -72,3 +78,36 @@
         </div>
     </div>
 </div>
+<script type="text/ng-template" id="/my-custom-template.html">
+    <div class="angucomplete-holder ancho" ng-class="{'angucomplete-dropdown-visible': showDropdown}">
+        <input ng-model="searchStr"
+               ng-disabled="disableInput"
+               type="text"
+               placeholder="{{placeholder}}"
+               ng-focus="onFocusHandler()"
+               class="{{inputClass}}"
+               ng-focus="resetHideResults()"
+               ng-blur="hideResults($event)"
+               autocapitalize="off"
+               autocorrect="off"
+               autocomplete="off"
+               ng-change="inputChangeHandler(searchStr)"/>
+        <div class="angucomplete-dropdown ancho" ng-show="showDropdown">
+            <div class="angucomplete-searching ancho" ng-show="searching" ng-bind="textSearching"></div>
+            <div class="angucomplete-searching ancho" ng-show="!searching && (!results || results.length == 0)" ng-bind="textNoResults"></div>
+            <div class="angucomplete-row ancho brdbtm" ng-repeat="result in results" ng-click="selectResult(result)" ng-mouseenter="hoverRow($index)" ng-class="{'angucomplete-selected-row': $index == currentIndex}">
+                <div ng-if="imageField" class="angucomplete-image-holder">
+                    <img ng-if="result.image && result.image != ''" ng-src="{{result.image}}" class="angucomplete-image"/>
+                    <div ng-if="!result.image && result.image != ''" class="angucomplete-image-default"></div>
+                </div>
+                <div class="angucomplete-title ancho bld" ng-if="matchClass" ng-bind-html="result.title"></div>
+                <div class="angucomplete-title ancho bld" ng-if="!matchClass">{{ result.title }}</div>
+                <div ng-if="matchClass && result.description && result.description != ''" class="angucomplete-description ancho" ng-bind-html="result.description"></div>
+                <div ng-if="!matchClass && result.description && result.description != ''" class="angucomplete-description ancho">{{result.description}}</div>
+            </div>
+            <div class="angucomplete-row ancho" ng-click="selectResult({title: searchStr, originalObject: { name: searchStr, custom: true }})" ng-mouseenter="hoverRow(results.length)" ng-class="{'angucomplete-selected-row': results.length == currentIndex}">
+                <div class="angucomplete-title ancho">Selecci&oacute;n de cliente '{{ searchStr }}'</div>
+            </div>
+        </div>
+    </div>
+</script>

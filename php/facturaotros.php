@@ -17,7 +17,12 @@ $app->notFound(function () use ($app) {
 $app->get('/srchcli/:idempresa/:qstra+', function($idempresa, $qstra){
     $db = new dbcpm();
     $qstr = $qstra[0];
-    $query = "SELECT DISTINCT idcliente, facturara, nit, retisr, retiva, direccion FROM (";
+    $query = "SELECT DISTINCT idcliente, facturara, nit, retisr, retiva, direccion, ";
+    $query.= "CONCAT(";
+
+    $query.= "'<small>',nit, '<br/>', IFNULL(direccion, ''),'</small>'";
+
+    $query.= ") AS infocliente FROM (";
 
     $query.= "SELECT DISTINCT a.idcliente, a.facturara, a.nit, a.retisr, a.retiva, a.direccion ";
     $query.= "FROM detclientefact a INNER JOIN cliente b ON b.id = a.idcliente INNER JOIN contrato c ON b.id = c.idcliente ";

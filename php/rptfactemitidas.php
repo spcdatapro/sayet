@@ -48,6 +48,7 @@ $app->post('/factemitidas', function(){
     $query.= ") c ON a.id = c.idfactura LEFT JOIN cliente d ON d.id = a.idcliente ";
     $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.idempresa = $d->idempresa AND LENGTH(a.numero) > 0 ";
     $query.= trim($d->cliente) != '' && (int)$d->idcliente > 0 ? "AND a.anulada = 0 AND (a.idcliente = $d->idcliente OR a.nombre LIKE '%$d->cliente%' OR a.nit LIKE '%$d->cliente%' OR d.nombre LIKE '%$d->cliente%' OR d.nombrecorto LIKE '%$d->cliente%') " : '';
+    $query.= trim($d->cliente) != '' && (int)$d->idcliente == 0 ? "AND a.anulada = 0 AND (a.nombre LIKE '%$d->cliente%' OR a.nit LIKE '%$d->cliente%' OR d.nombre LIKE '%$d->cliente%' OR d.nombrecorto LIKE '%$d->cliente%') " : '';
     $query.= (int)$d->tipo == 2 ? "AND a.pagada = 1 " : ((int)$d->tipo == 3 ? "AND a.pagada = 0 " : '');
     $query.= "ORDER BY a.numero";
     $info->facturas = $db->getQuery($query);
@@ -56,6 +57,7 @@ $app->post('/factemitidas', function(){
     $query.= "FROM factura a INNER JOIN empresa b ON b.id = a.idempresa LEFT JOIN cliente d ON d.id = a.idcliente ";
     $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.idempresa = $d->idempresa AND a.anulada = 0 AND LENGTH(a.numero) > 0 ";
     $query.= trim($d->cliente) != '' && (int)$d->idcliente > 0 ? "AND a.anulada = 0 AND (a.idcliente = $d->idcliente OR a.nombre LIKE '%$d->cliente%' OR a.nit LIKE '%$d->cliente%' OR d.nombre LIKE '%$d->cliente%' OR d.nombrecorto LIKE '%$d->cliente%') " : '';
+    $query.= trim($d->cliente) != '' && (int)$d->idcliente == 0 ? "AND a.anulada = 0 AND (a.nombre LIKE '%$d->cliente%' OR a.nit LIKE '%$d->cliente%' OR d.nombre LIKE '%$d->cliente%' OR d.nombrecorto LIKE '%$d->cliente%') " : '';
 	$query.= (int)$d->tipo == 2 ? "AND a.pagada = 1 " : ((int)$d->tipo == 3 ? "AND a.pagada = 0 " : '');
     $info->general->totfacturado = $db->getOneField($query);
 

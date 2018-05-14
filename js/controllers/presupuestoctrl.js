@@ -49,6 +49,7 @@
                 data[i].idestatuspresupuesto = parseInt(data[i].idestatuspresupuesto);
                 data[i].idusuarioaprueba = parseInt(data[i].idusuarioaprueba);
                 data[i].total = parseFloat(parseFloat(data[i].total).toFixed(2));
+                data[i].gastado = parseFloat(parseFloat(data[i].gastado).toFixed(2));
                 data[i].fechasolicitud = moment(data[i].fechasolicitud).toDate();
                 data[i].fechacreacion = moment(data[i].fechacreacion).toDate();
                 data[i].fhenvioaprobacion = moment(data[i].fhenvioaprobacion).isValid() ? moment(data[i].fhenvioaprobacion).toDate() : null;
