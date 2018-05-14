@@ -29,8 +29,8 @@ $app->get('/gettxt/:idempresa/:fdelstr/:falstr/:nombre', function($idempresa, $f
     $app->response->headers->set('Content-Disposition', 'attachment;filename="'.$nombre.'.txt"');
 
     $url = 'http://localhost:5489/api/report';
-    $data = ['template' => ['shortid' => 'B1BikIhjG'], 'data' => ['idempresa' => "$idempresa", 'fdelstr' => "$fdelstr", 'falstr' => "$falstr"]];
-    //$data = ['template' => ['shortid' => 'BJty9IhoM'], 'data' => ['idempresa' => "$idempresa", 'fdelstr' => "$fdelstr", 'falstr' => "$falstr"]];
+    //$data = ['template' => ['shortid' => 'B1BikIhjG'], 'data' => ['idempresa' => "$idempresa", 'fdelstr' => "$fdelstr", 'falstr' => "$falstr"]];
+    $data = ['template' => ['shortid' => 'BJty9IhoM'], 'data' => ['idempresa' => "$idempresa", 'fdelstr' => "$fdelstr", 'falstr' => "$falstr"]];
 
     $respuesta = $db->CallJSReportAPI('POST', $url, json_encode($data));
     print iconv('UTF-8','Windows-1252', $respuesta);
