@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/printchequeragyt.php" afterPath="$PROJECT_DIR$/php/printchequeragyt.php" />
     </list>
     <ignored path="cpm.iws" />
@@ -46,10 +45,10 @@
               <folding>
                 <element signature="n#PDF#0;n#!!top" expanded="false" />
                 <element signature="n#getConceptoExtra#0;n#!!top" expanded="false" />
-                <marker date="1526396970611" expanded="true" signature="1463:1525" placeholder="SELECT a.nom..proyecto..." />
-                <marker date="1526396970611" expanded="true" signature="1631:1768" placeholder="SELECT CONCA..detpagopresup..." />
-                <marker date="1526396970611" expanded="true" signature="4324:4513" placeholder="SELECT '' AS..detallecontable..." />
-                <marker date="1526396970611" expanded="true" signature="4780:4822" placeholder="UPDATE tranb..." />
+                <marker date="1526398998984" expanded="true" signature="1463:1525" placeholder="SELECT a.nom..proyecto..." />
+                <marker date="1526398998984" expanded="true" signature="1631:1768" placeholder="SELECT CONCA..detpagopresup..." />
+                <marker date="1526398998984" expanded="true" signature="4324:4513" placeholder="SELECT '' AS..detallecontable..." />
+                <marker date="1526398998984" expanded="true" signature="4780:4822" placeholder="UPDATE tranb..." />
               </folding>
             </state>
           </provider>
@@ -1062,12 +1061,12 @@
       <workItem from="1525790324484" duration="23375000" />
       <workItem from="1525961530413" duration="4547000" />
       <workItem from="1526310824750" duration="9028000" />
-      <workItem from="1526396826844" duration="149000" />
+      <workItem from="1526396826844" duration="1278000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2490599000" />
+    <option name="totallyTimeSpent" value="2491728000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1523,10 +1522,10 @@
           <folding>
             <element signature="n#PDF#0;n#!!top" expanded="false" />
             <element signature="n#getConceptoExtra#0;n#!!top" expanded="false" />
-            <marker date="1526396970611" expanded="true" signature="1463:1525" placeholder="SELECT a.nom..proyecto..." />
-            <marker date="1526396970611" expanded="true" signature="1631:1768" placeholder="SELECT CONCA..detpagopresup..." />
-            <marker date="1526396970611" expanded="true" signature="4324:4513" placeholder="SELECT '' AS..detallecontable..." />
-            <marker date="1526396970611" expanded="true" signature="4780:4822" placeholder="UPDATE tranb..." />
+            <marker date="1526398998984" expanded="true" signature="1463:1525" placeholder="SELECT a.nom..proyecto..." />
+            <marker date="1526398998984" expanded="true" signature="1631:1768" placeholder="SELECT CONCA..detpagopresup..." />
+            <marker date="1526398998984" expanded="true" signature="4324:4513" placeholder="SELECT '' AS..detallecontable..." />
+            <marker date="1526398998984" expanded="true" signature="4780:4822" placeholder="UPDATE tranb..." />
           </folding>
         </state>
       </provider>

@@ -115,7 +115,7 @@ $borde = 0;
 $pdf->SetFont('Arial','', 10);
 $pdf->Cell(1 * $conv);
 $pdf->Cell(7.5 * $conv, 0.3 * $conv, 'Guatemala, '.$cheque->dia.' de '.$meses[(int)$cheque->mes].' de '.$cheque->anio, $borde, 0);
-$pdf->Cell(5 * $conv);
+$pdf->Cell(6 * $conv);
 $pdf->Cell(3.5 * $conv, 0.3 * $conv, $cheque->montostr, $borde, 0);
 $pdf->Ln();
 $pdf->SetFont('Arial','', 9);
