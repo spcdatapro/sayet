@@ -149,6 +149,7 @@
                         <th class="text-right">Cuota</th>
                         <th class="text-right">Monto</th>
                         <th class="text-right">Saldo</th>
+                        <th class="text-right"></th>
                     </tr>
                 </thead>
                 <tbody ng-cloak>
@@ -160,11 +161,16 @@
                         <td class="text-right">{{ p.cuotamensual | number }}</td>
                         <td class="text-right">{{ p.monto | number }}</td>
                         <td class="text-right">{{ p.saldo | number }}</td>
+                        <td class="text-right">
+                            <a ng-href="/sayet/pln/php/controllers/prestamo.php/imprimir/{{p.id}}" target="_blank">
+                                <i class="glyphicon glyphicon-print"></i>
+                            </a>
+                        </td>
                     </tr>
                 </tbody>
                 <tfoot ng-show="buscarmas">
                     <tr>
-                        <td colspan="7" class="text-center">
+                        <td colspan="8" class="text-center">
                             <button type="button" class="btn btn-default" ng-click="mas()">Más</button>
                         </td>
                     </tr>

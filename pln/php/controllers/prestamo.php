@@ -1,16 +1,21 @@
 <?php 
 
-ini_set('display_errors', 1);
+/*ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+error_reporting(E_ALL);*/
 
 session_start();
 
-require dirname(dirname(dirname(__DIR__))) . '/php/vendor/autoload.php';
-require dirname(dirname(dirname(__DIR__))) . '/php/ayuda.php';
-require dirname(__DIR__) . '/Principal.php';
-require dirname(__DIR__) . '/models/Prestamo.php';
-require dirname(__DIR__) . '/models/General.php';
+define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
+define('PLNPATH', BASEPATH . '/pln');
+
+require BASEPATH . "/php/vendor/autoload.php";
+require BASEPATH . "/php/ayuda.php";
+require BASEPATH . "/php/NumberToLetterConverter.class.php";
+
+require PLNPATH . '/php/Principal.php';
+require PLNPATH . '/php/models/Prestamo.php';
+require PLNPATH . '/php/models/General.php';
 
 $app = new \Slim\Slim();
 
@@ -100,10 +105,28 @@ $app->get('/ver_abonos/:prestamo', function($prestamo){
 	enviar_json(['abonos' => $pre->get_abonos()]);
 });
 
-$app->get('/test', function(){
-	echo "<pre>";
-	print_r($_SESSION);
-	echo "</pre>";
+$app->get('/imprimir/:prestamo', function($prestamo){
+	$gen = new General();
+	$pre = new Prestamo($prestamo);
+	
+	require BASEPATH . '/libs/tcpdf/tcpdf.php';
+
+	$s = [215.9, 279.4]; # Carta mm
+
+	$pdf = new TCPDF('P', 'mm', $s);
+	$pdf->AddPage();
+
+	foreach ($pre->get_datos_impresion() as $campo => $valor) {
+		$conf = $gen->get_campo_impresion($campo, 6);
+
+		if (!isset($conf->scalar) && $conf->visible == 1) {
+			$pdf = generar_fimpresion($pdf, $valor, $conf);
+		}
+	}
+
+	$pdf->Output("prestamo_{$pre->pre->id}.pdf", 'I');
+	die();
+
 });
 
 $app->run();

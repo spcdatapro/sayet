@@ -32,7 +32,7 @@ class Prestamo extends Principal
     {
     	return (object)$this->db->get(
 			'plnempleado', 
-			['id', 'nombre', 'apellidos'], 
+			['id', 'nombre', 'apellidos', 'idempresadebito'], 
 			['id' => $this->pre->idplnempleado]
 		);
     }
@@ -291,5 +291,49 @@ class Prestamo extends Principal
 		}
 
 		return ($this->pre->monto - $abonos);
+	}
+
+	public function get_datos_impresion($args = [])
+	{
+		$gen = new General();
+		$ltr = new NumberToLetterConverter();
+		
+		$empleado = $this->get_empleado();
+		$empresa  = $gen->get_empresa([
+			'id'  => $empleado->idempresadebito, 
+			'uno' => TRUE
+		]);
+
+		return [
+			't_empresa'         => 'EMPRESA: ',
+			'v_empresa'         => $empresa['nomempresa'],
+			'ln_empresa'        => str_repeat('_', 90),
+			'titulo'            => 'ANTICIPOS DE SUELDOS',
+			'numero'            => "No. {$this->pre->id}",
+			't_vale'            => 'VALE POR:',
+			'v_cantidad_letras' => $ltr->to_word($this->pre->monto, 'GTQ'),
+			'v_en_numero'       => 'Q. ' . number_format($this->pre->monto, 2),
+			'ln_principal'      => str_repeat('_', 96),
+			't_cantidad_letras' => '(Cantidad en letras)',
+			't_en_numero'       => '(En números)',
+			't_texto'           => 'Valor de anticipo de salario recibido, para cancelar de la siguiente forma:',
+			't_moneda'          => 'Q.',
+			'v_mensual'         => number_format($this->pre->cuotamensual, 2),
+			'ln_mensual'        => str_repeat('_', 13),
+			't_mensual'         => '(Mensuales)',
+			't_apartirde'       => 'A partir de: ',
+			'v_iniciopago'      => formatoFecha($this->pre->iniciopago, 1),
+			'ln_apartirde'      => str_repeat('_', 15),
+			't_vence'           => 'Con vencimiento el: ',
+			'v_liquidacion'     => formatoFecha($this->pre->liquidacion, 1),
+			'ln_vence'          => str_repeat('_', 15),
+			't_conforme'        => 'Recibí conforme: ',
+			'v_empleado'        => $empleado->nombre.' '.$empleado->apellidos,
+			'ln_conforme'       => str_repeat('_', 85),
+			't_anticipo'        => 'ANTICIPO A SUELDOS.',
+			'ln_autorizado'     => str_repeat('_', 27),
+			't_autorizado'      => 'Autorizado', 
+			't_nota'            => 'NOTA: Me comprometo a no solicitar otro préstamo hasta cancelar mi saldo.'
+		];
 	}
 }
