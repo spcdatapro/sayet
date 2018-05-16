@@ -176,7 +176,7 @@ $app->post('/detalle', function() use($db){
         $query.= "ORDER BY e.nombre";
         $deting = $db->getQuery($query);
         if(count($deting) > 0){
-            $query = "SELECT FORMAT(SUM(MCuadPorContrato(c.id)), 2) ";
+            $query = "SELECT FORMAT(SUM(MCuadPorContrato(c.id)), 4) ";
             $query.= "FROM factura a INNER JOIN detfact b ON a.id = b.idfactura INNER JOIN contrato c ON c.id = a.idcontrato INNER JOIN tiposervicioventa d ON d.id = b.idtiposervicio INNER JOIN cliente e ON e.id = a.idcliente ";
             $query.= "WHERE a.anulada = 0 AND MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio AND c.idproyecto = $d->idproyecto AND a.idempresa = $d->idempresa AND b.idtiposervicio = ".$conceptos[$i]->idtiposervicio." ";
             $suma = $db->getOneField($query);
@@ -189,6 +189,27 @@ $app->post('/detalle', function() use($db){
         $datos->ingresos[] = ['concepto' => $conceptos[$i]->concepto, 'monto' => $montoIngreso, 'detalle' => $deting];
         $totIngresos += (float)$montoIngreso;
     }
+    // Locales vacíos
+    $query = "SELECT '' AS idfactura, '' AS cliente, '' AS abreviacliente, '' AS nocontrato, a.nombre AS unidadescontrato, '' AS serie, '' AS numero, '' AS totalneto, FORMAT(a.mcuad, 4) AS mcuadcontrato, '' AS montomcuad ";
+    $query.= "FROM unidad a WHERE a.id NOT IN(";
+    $query.= "SELECT unidad.id FROM unidad, contrato WHERE unidad.idproyecto = $d->idproyecto AND contrato.inactivo = 0 AND contrato.idempresa = $d->idempresa AND FIND_IN_SET(unidad.id, contrato.idunidad)";
+    $query.= ") AND a.idproyecto = $d->idproyecto ";
+    $query.= "ORDER BY a.nombre";
+    $vacios = $db->getQuery($query);
+    if(count($vacios) > 0){
+        $query = "SELECT FORMAT(SUM(a.mcuad), 4)  ";
+        $query.= "FROM unidad a WHERE a.id NOT IN(";
+        $query.= "SELECT unidad.id FROM unidad, contrato WHERE unidad.idproyecto = $d->idproyecto AND contrato.inactivo = 0 AND contrato.idempresa = $d->idempresa AND FIND_IN_SET(unidad.id, contrato.idunidad)";
+        $query.= ") AND a.idproyecto = $d->idproyecto ";
+        $query.= "ORDER BY a.nombre";
+        $suma = $db->getOneField($query);
+        $vacios[] = [
+            'idfactura' => '', 'cliente' => '', 'abreviacliente' => '', 'nocontrato' => '', 'unidadescontrato' => 'Total:',
+            'serie' => '', 'numero' => '', 'totalneto' => '', 'mcuadcontrato' => $suma, 'montomcuad' => ''
+        ];
+        $datos->ingresos[] = ['concepto' => 'LOCALES VACÍOS', 'monto' => '', 'detalle' => $vacios];
+    }
+
     $datos->ingresos[] = ['concepto' => 'TOTAL DE INGRESOS', 'monto' => $totIngresos, 'detalle' => []];
 
     //Egresos con detalle
