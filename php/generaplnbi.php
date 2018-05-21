@@ -36,7 +36,164 @@ $app->get('/gettxt/:idempresa/:fdelstr/:falstr/:nombre', function($idempresa, $f
     print iconv('UTF-8','Windows-1252', $respuesta);
 });
 
-function generand($d, $db, $empleados, $total, $generales){
+function getCuentaConfig($idempresa, $idconfig){
+    $db = new dbcpm();
+    return (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $idempresa AND idtipoconfig = $idconfig");
+}
+
+function insertaDetalleContable($origen, $iddocto, $idcuentac, $debe, $haber, $conceptomayor, $activada, $anulado){
+    $db = new dbcpm();
+    $query = "INSERT INTO detallecontable(";
+    $query.= "origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado";
+    $query.= ") VALUES(";
+    $query.= "$origen, $iddocto, $idcuentac, $debe, $haber, '$conceptomayor', $activada, $anulado";
+    $query.= ")";
+    $db->doQuery($query);
+}
+
+function genDetContDoc($db, $d, $idtranban, $concepto, $idctabanco, $mediopago, $idempleado = 0){
+
+    $query = "SELECT b.idempresadebito AS deptodeb, a.fecha, SUM(a.anticipo) AS anticipo, SUM(a.sueldoordinario) AS suel_ord, SUM(a.sueldoextra) AS suel_ext, SUM(a.bonificacion) AS bonifica, ";
+    $query.= "SUM(a.viaticos) AS viaticos, SUM(a.otrosingresos) AS otros_ingr, SUM(a.vacaciones) AS vacaciones, SUM(a.aguinaldo) AS aguinaldo, SUM(a.bonocatorce) AS bono_14, SUM(a.indemnizacion) AS indemniza, ";
+    $query.= "SUM(a.descigss) AS desc_igss, SUM(a.descisr) AS desc_isr, SUM(a.descanticipo) AS desc_anti, SUM(a.descprestamo) AS desc_prest, SUM(a.descotros) AS otros_desc, SUM(a.liquido) AS liquido ";
+    $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado ";
+    $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido > 0 ";
+    $query.= $mediopago == 3 ? "AND b.cuentabanco IS NOT NULL AND LENGTH(TRIM(b.cuentabanco)) > 0 " : '';
+    $query.= "AND b.mediopago = $mediopago AND a.idempresa = $d->idempresa ";
+    $query.= $idempleado == 0 ? '' : "AND a.idplnempleado = $idempleado ";
+    //print $query;
+    $sumas = $db->getQuery($query);
+    if(count($sumas) > 0){
+        $suma = $sumas[0];
+        $origen = 1;
+
+        if((float)$suma->anticipo != 0.00){
+            $ctaAnticipo = getCuentaConfig($d->idempresa, 15);
+            if($ctaAnticipo > 0){
+                insertaDetalleContable($origen, $idtranban, $ctaAnticipo, $suma->anticipo, 0.00, "PLANILLA $concepto", 1, 0);
+            }
+        }
+
+        if((float)$suma->suel_ord != 0.00){
+            $ctaSueldosOrdinarios = getCuentaConfig($d->idempresa, 16);
+            if($ctaSueldosOrdinarios > 0){
+                insertaDetalleContable($origen, $idtranban, $ctaSueldosOrdinarios, $suma->suel_ord, 0.00, "PLANILLA $concepto", 1, 0);
+            }
+
+        }
+
+        if((float)$suma->suel_ext != 0.00){
+            $ctaSueldosExtraordinarios = getCuentaConfig($d->idempresa, 17);
+            if($ctaSueldosExtraordinarios > 0){
+                insertaDetalleContable($origen, $idtranban, $ctaSueldosExtraordinarios, $suma->suel_ext, 0.00, "PLANILLA $concepto", 1, 0);
+            }
+
+        }
+
+        if((float)$suma->bonifica != 0.00 || (float)$suma->viaticos != 0.00 || (float)$suma->otros_ingr != 0.00){
+            $otrosIngresos = (float)$suma->bonifica + (float)$suma->viaticos + (float)$suma->otros_ingr;
+            $ctaOtrosIngresos = getCuentaConfig($d->idempresa, 18);
+            if($ctaOtrosIngresos > 0){
+                insertaDetalleContable($origen, $idtranban, $ctaOtrosIngresos, $otrosIngresos, 0.00, "PLANILLA $concepto", 1, 0);
+            }
+        }
+
+        if((float)$suma->vacaciones != 0.00){
+            $ctaVacaciones = getCuentaConfig($d->idempresa, 19);
+            if($ctaVacaciones > 0){
+                insertaDetalleContable($origen, $idtranban, $ctaVacaciones, $suma->vacaciones, 0.00, "PLANILLA $concepto", 1, 0);
+            }
+        }
+
+        if((float)$suma->aguinaldo != 0.00){
+            $ctaAguinaldo = getCuentaConfig($d->idempresa, 20);
+            if($ctaAguinaldo > 0){
+                insertaDetalleContable($origen, $idtranban, $ctaAguinaldo, $suma->aguinaldo, 0.00, "PLANILLA $concepto", 1, 0);
+            }
+        }
+
+        if((float)$suma->bono_14 != 0.00){
+            $ctaBono14 = getCuentaConfig($d->idempresa, 21);
+            if($ctaBono14 > 0){
+                insertaDetalleContable($origen, $idtranban, $ctaBono14, $suma->bono_14, 0.00, "PLANILLA $concepto", 1, 0);
+            }
+        }
+
+        if((float)$suma->indemniza != 0.00){
+            $ctaIndemnizacion = getCuentaConfig($d->idempresa, 22);
+            if($ctaIndemnizacion > 0){
+                insertaDetalleContable($origen, $idtranban, $ctaIndemnizacion, $suma->indemniza, 0.00, "PLANILLA $concepto", 1, 0);
+            }
+        }
+
+        if((float)$suma->suel_ord != 0.00 || (float)$suma->suel_ext != 0.00 || (float)$suma->vacaciones != 0.00){
+            $cuotaPatronal = round(((float)$suma->suel_ord + (float)$suma->suel_ext + (float)$suma->vacaciones) * 0.1267, 2);
+            $ctaCuotaPatronal = getCuentaConfig($d->idempresa, 23);
+            if($ctaCuotaPatronal > 0){
+                insertaDetalleContable($origen, $idtranban, $ctaCuotaPatronal, $cuotaPatronal, 0.00, "PLANILLA $concepto", 1, 0);
+            }
+        }
+
+        //Deducidos
+        if((float)$suma->desc_igss != 0.00){
+            $ctaIgssCuotaLaboral = getCuentaConfig($d->idempresa, 24);
+            if($ctaIgssCuotaLaboral > 0){
+                insertaDetalleContable($origen, $idtranban, $ctaIgssCuotaLaboral, 0.00, $suma->desc_igss, "PLANILLA $concepto", 1, 0);
+            }
+        }
+
+        if((float)$suma->desc_isr != 0.00){
+            $ctaRetencionISR = getCuentaConfig($d->idempresa, 25);
+            if($ctaRetencionISR > 0){
+                insertaDetalleContable($origen, $idtranban, $ctaRetencionISR, 0.00, $suma->desc_isr, "PLANILLA $concepto", 1, 0);
+            }
+        }
+
+        if((float)$suma->desc_anti != 0.00){
+            $ctaAnticipos = getCuentaConfig($d->idempresa, 15);
+            if($ctaAnticipos > 0){
+                insertaDetalleContable($origen, $idtranban, $ctaAnticipos, 0.00, $suma->desc_anti, "PLANILLA $concepto", 1, 0);
+            }
+        }
+
+        if((float)$suma->suel_ord != 0.00 || (float)$suma->suel_ext != 0.00 || (float)$suma->vacaciones != 0.00){
+            $cuotaPatronal = round(((float)$suma->suel_ord + (float)$suma->suel_ext + (float)$suma->vacaciones) * 0.1267, 2);
+            $ctaCuotaPatronal = getCuentaConfig($d->idempresa, 26);
+            if($ctaCuotaPatronal > 0){
+                insertaDetalleContable($origen, $idtranban, $ctaCuotaPatronal, 0.00, $cuotaPatronal, "PLANILLA $concepto", 1, 0);
+            }
+        }
+
+        //Préstamos
+        if((float)$suma->desc_prest != 0.00){
+            $query = "SELECT b.idempresadebito AS deptodeb, a.fecha, a.descprestamo AS desc_prest, b.cuentapersonal, CONCAT(IFNULL(TRIM(b.nombre), ''), ' ', IFNULL(TRIM(b.apellidos), '')) AS nombre ";
+            $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado ";
+            $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido > 0 ";
+            $query.= $mediopago == 3 ? "AND b.cuentabanco IS NOT NULL AND LENGTH(TRIM(b.cuentabanco)) > 0 " : '';
+            $query.= "AND a.descprestamo <> 0 AND b.mediopago = $mediopago AND ";
+            $query.= "a.idempresa = $d->idempresa ";
+            $query.= $idempleado == 0 ? '' : "AND a.idplnempleado = $idempleado ";
+            $query.= "ORDER BY b.nombre, b.apellidos";
+            //print $query;
+            $prestamos = $db->getQuery($query);
+            $cntPrestamos = count($prestamos);
+            for($i = 0; $i < $cntPrestamos; $i++){
+                $prestamo = $prestamos[$i];
+                $query = "SELECT id FROM cuentac WHERE idempresa = $d->idempresa AND TRIM(codigo) = '".trim($prestamo->cuentapersonal)."'";
+                $idctaempleado = (int)$db->getOneField($query);
+                if($idctaempleado > 0){
+                    insertaDetalleContable($origen, $idtranban, $idctaempleado, 0.00, $prestamo->desc_prest, "PLANILLA $concepto", 1, 0);
+                }
+            }
+        }
+
+        if($idctabanco > 0 && (float)$suma->liquido != 0.00){
+            insertaDetalleContable($origen, $idtranban, $idctabanco, 0.00, $suma->liquido, "PLANILLA $concepto", 1, 0);
+        }
+    }
+}
+
+function generand($d, $db, $total, $generales){
     $query = "SELECT COUNT(*) FROM tranban WHERE idbanco = $d->idbanco AND tipotrans = 'B' AND esplanilla = 1 AND fechaplanilla = '$d->falstr'";
     $existe = (int)$db->getOneField($query) > 0;
     if(!$existe){
@@ -47,34 +204,15 @@ function generand($d, $db, $empleados, $total, $generales){
         $query.= ")";
         $db->doQuery($query);
         $lastId = (int)$db->getLastId();
+
         if($lastId > 0){
-            $cntEmpleados = count($empleados);
-            for($i = 0; $i < $cntEmpleados; $i++){
-                $empleado = $empleados[$i];
-                $query = "SELECT id FROM cuentac WHERE idempresa = $d->idempresa AND TRIM(codigo) = '".trim($empleado->cuentacontable)."'";
-                $idcuentac = (int)$db->getOneField($query);
-                if($idcuentac > 0){
-                    $query = "INSERT INTO detallecontable(";
-                    $query.= "origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado";
-                    $query.= ") VALUES(";
-                    $query.= "1, $lastId, $idcuentac, $empleado->monto, 0.00, 'PLANILLA $generales->concepto', 1, 0";
-                    $query.= ")";
-                    $db->doQuery($query);
-                }
-            }
             $query = "SELECT idcuentac FROM banco WHERE id = $d->idbanco";
             $idctabco = (int)$db->getOneField($query);
-            if($idctabco > 0){
-                $query = "INSERT INTO detallecontable(";
-                $query.= "origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado";
-                $query.= ") VALUES(";
-                $query.= "1, $lastId, $idctabco, 0.00, $total, 'PLANILLA $generales->concepto', 1, 0";
-                $query.= ")";
-                $db->doQuery($query);
-            }
+            genDetContDoc($db, $d, $lastId, $generales->concepto, $idctabco, 3);
             $query = "UPDATE empresa SET ndplanilla = $d->notadebito + 1 WHERE id = $d->idempresa";
             $db->doQuery($query);
         }
+
     }
 };
 
@@ -104,7 +242,7 @@ $app->post('/generand', function() use($db){
     if($cntEmpleados > 0){
         $qSuma = "SELECT SUM(y.monto) FROM ($query) y";
         $suma = $db->getOneField($qSuma);
-        generand($d, $db, $empleados, $suma, $generales);
+        generand($d, $db, $suma, $generales);
         $empleados[] = ['tipo' => 'TOTAL:', 'cuenta' => '', 'contador' => '', 'nombre' => '', 'monto' => number_format($suma, 2)];
 
         for($i = 0; $i < $cntEmpleados; $i++){
@@ -130,27 +268,10 @@ function generachq($d, $db, $empresa, $empleado){
         $db->doQuery($query);
         $lastId = (int)$db->getLastId();
         if($lastId > 0){
-            $query = "SELECT id FROM cuentac WHERE idempresa = $empresa->idempresa AND TRIM(codigo) = '".trim($empleado->cuentacontable)."'";
-            $idcuentac = (int)$db->getOneField($query);
-            if($idcuentac > 0){
-                $query = "INSERT INTO detallecontable(";
-                $query.= "origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado";
-                $query.= ") VALUES(";
-                $query.= "1, $lastId, $idcuentac, $empleado->monto, 0.00, 'PLANILLA $empleado->concepto', 1, 0";
-                $query.= ")";
-                $db->doQuery($query);
-            }
-
             $query = "SELECT idcuentac FROM banco WHERE id = $empresa->idbanco";
             $idctabco = (int)$db->getOneField($query);
-            if($idctabco > 0){
-                $query = "INSERT INTO detallecontable(";
-                $query.= "origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado";
-                $query.= ") VALUES(";
-                $query.= "1, $lastId, $idctabco, 0.00, $empleado->monto, 'PLANILLA $empleado->concepto', 1, 0";
-                $query.= ")";
-                $db->doQuery($query);
-            }
+            $d->idempresa = $empresa->idempresa;
+            genDetContDoc($db, $d, $lastId, $empleado->concepto, $idctabco, 1, (int)$empleado->idempleado);
             $query = "UPDATE banco SET correlativo = $empresa->correlativo + 1 WHERE id = $empresa->idbanco";
             $db->doQuery($query);
         }
