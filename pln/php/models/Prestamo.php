@@ -293,6 +293,15 @@ class Prestamo extends Principal
 		return ($this->pre->monto - $abonos);
 	}
 
+	public function get_vencimiento()
+	{
+		$meses = ceil($this->pre->monto/$this->pre->cuotamensual);
+		$sql   = "select DATE_ADD('{$this->pre->iniciopago}', INTERVAL {$meses} MONTH) as fecha";
+		$res   = $this->db->query($sql)->fetchAll();
+		
+		return $res[0]['fecha'];
+	}
+
 	public function get_datos_impresion($args = [])
 	{
 		$gen = new General();
@@ -325,7 +334,7 @@ class Prestamo extends Principal
 			'v_iniciopago'      => formatoFecha($this->pre->iniciopago, 1),
 			'ln_apartirde'      => str_repeat('_', 15),
 			't_vence'           => 'Con vencimiento el: ',
-			'v_liquidacion'     => formatoFecha($this->pre->liquidacion, 1),
+			'v_liquidacion'     => formatoFecha($this->get_vencimiento(), 1),
 			'ln_vence'          => str_repeat('_', 15),
 			't_conforme'        => 'Recibí conforme: ',
 			'v_empleado'        => $empleado->nombre.' '.$empleado->apellidos,

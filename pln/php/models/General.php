@@ -206,7 +206,7 @@ class General extends Principal
 				$condicion["ORDER"] = "b.nombre ASC";
 			}
 		} else {
-			$condicion["ORDER"] = "plnprestamo.iniciopago DESC";
+			$condicion["ORDER"] = "plnprestamo.fecha DESC";
 		}
 
 		if (isset($args['sinlimite'])) {

@@ -122,6 +122,9 @@
                         </table>
                     </div>
                     <div class="col-sm-4 text-right">
+                        <a class="btn btn-default btn-sm" ng-href="/sayet/pln/php/controllers/prestamo.php/imprimir/{{pre.id}}" ng-show="hay" target="_blank" title="Imprimir préstamo">
+                            <i class="glyphicon glyphicon-print"></i>
+                        </a>
                         <button type="button" class="btn btn-success btn-sm" ng-show="pre.finalizado == 0" data-toggle="modal" data-target="#mdlAbono">
                             <i class="glyphicon glyphicon-plus"></i> Abono Directo
                         </button>
@@ -143,6 +146,7 @@
                 <thead>
                     <tr>
                         <th>#</th>
+                        <th title="Fecha de ingreso del préstamo al sistema">Ingreso</th>
                         <th>Inicio</th>
                         <th>Empleado</th>
                         <th>Concepto</th>
@@ -155,6 +159,7 @@
                 <tbody ng-cloak>
                     <tr ng-repeat="p in prestamos track by $index" ng-click="getPrestamo($index)">
                         <td>{{ p.id }}</td>
+                        <td>{{ p.fecha | date:'dd/MM/yyyy HH:mm:ss' }}</td>
                         <td>{{ p.iniciopago | date:'dd/MM/yyyy' }}</td>
                         <td>{{ p.nombre}} {{p.apellidos}}</td>
                         <td>{{ p.concepto }}</td>
@@ -170,7 +175,7 @@
                 </tbody>
                 <tfoot ng-show="buscarmas">
                     <tr>
-                        <td colspan="8" class="text-center">
+                        <td colspan="9" class="text-center">
                             <button type="button" class="btn btn-default" ng-click="mas()">Más</button>
                         </td>
                     </tr>
