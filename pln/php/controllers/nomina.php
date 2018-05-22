@@ -816,10 +816,10 @@ $app->get('/imprimir_sp', function(){
 						'v_descuento_mensual' => $prestamo->pre->cuotamensual,
 						'v_saldo_anterior' => $prestamo->get_saldo_anterior(['fecha' => $_GET['fal']]),
 						'v_nuevos_prestamos' => 0,
-						'v_descuentos_planillas' => $prestamo->get_descuentos_planilla(),
-						'v_otros_abonos' => $prestamo->get_otro_abonos(),
-						'v_total_descuentos' => $prestamo->get_total_descuentos(),
-						'v_saldo_actual' => $prestamo->get_saldo()
+						'v_descuentos_planillas' => $prestamo->get_descuentos_planilla(['fecha' => $_GET['fal']]),
+						'v_otros_abonos' => $prestamo->get_otro_abonos(['fecha' => $_GET['fal']]),
+						'v_total_descuentos' => $prestamo->get_total_descuentos(['fecha' => $_GET['fal']]),
+						'v_saldo_actual' => $prestamo->get_saldo(['fecha' => $_GET['fal']])
 					];
 
 					foreach ($tmpdatos as $campo => $valor) {
