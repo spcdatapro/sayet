@@ -216,12 +216,12 @@ $app->post('/rptagua', function(){
     $mesAnterior = (int)$tiempo->mes > 1 ? ((int)$tiempo->mes - 1) : 12;
     $anioAnterior = (int)$tiempo->mes > 1 ? (int)$tiempo->anio : ((int)$tiempo->anio - 1);
 
-    $qEnding = "FROM lecturaservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico INNER JOIN contrato c ON c.id = (";
+    $qEnding = "FROM lecturaservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico LEFT JOIN contrato c ON c.id = (";
     $qEnding.= "SELECT b.id FROM contrato b WHERE IF(b.inactivo = 1 AND MONTH(b.fechainactivo) = MONTH('$d->fvencestr') AND YEAR(b.fechainactivo) = YEAR('$d->fvencestr'), FIND_IN_SET(a.idunidad, b.idunidadbck), FIND_IN_SET(a.idunidad, b.idunidad)) LIMIT 1";
     $qEnding.= ") ";
-    $qEnding.= "INNER JOIN cliente d ON d.id = c.idcliente INNER JOIN detclientefact e ON d.id = e.idcliente INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio INNER JOIN proyecto g ON g.id = a.idproyecto ";
-    $qEnding.= "INNER JOIN unidad h ON h.id = a.idunidad INNER JOIN empresa i ON i.id = b.idempresa ";
-    $qEnding.= "WHERE a.estatus IN(2, 3) AND b.pagacliente = 0 AND c.inactivo = 0 AND e.fal IS NULL AND a.mes = MONTH('$d->fvencestr') AND a.anio = YEAR('$d->fvencestr') ";
+    $qEnding.= "LEFT JOIN cliente d ON d.id = c.idcliente LEFT JOIN detclientefact e ON d.id = e.idcliente LEFT JOIN tiposervicioventa f ON f.id = b.idtiposervicio LEFT JOIN proyecto g ON g.id = a.idproyecto ";
+    $qEnding.= "LEFT JOIN unidad h ON h.id = a.idunidad LEFT JOIN empresa i ON i.id = b.idempresa ";
+    $qEnding.= "WHERE a.estatus IN(2, 3) AND b.pagacliente = 0 AND (c.inactivo = 0 OR c.inactivo IS NULL) AND e.fal IS NULL AND a.mes = MONTH('$d->fvencestr') AND a.anio = YEAR('$d->fvencestr') ";
     $qEnding.= $d->idempresa != '' ? "AND b.idempresa IN($d->idempresa) " : "";
 	$qEnding.= $d->idproyecto != '' ? "AND a.idproyecto IN ($d->idproyecto) " : "";
 
@@ -243,14 +243,15 @@ $app->post('/rptagua', function(){
             $query.= "d.nombre, h.nombre AS unidad, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechafinal, DATE_FORMAT(FechaLecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr')), '%d/%m/%Y') AS fechainicial, ";
             $query.= "FORMAT(LecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr')), 2) AS lecturainicial ";
             $query.= "FROM lecturaservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico ";
-            $query.= "INNER JOIN contrato c ON c.id = (";
+            $query.= "LEFT JOIN contrato c ON c.id = (";
             $query.= "SELECT b.id FROM contrato b ";
             $query.= "WHERE IF(b.inactivo = 1 AND MONTH(b.fechainactivo) = MONTH('$d->fvencestr') AND YEAR(b.fechainactivo) = YEAR('$d->fvencestr'), FIND_IN_SET(a.idunidad, b.idunidadbck), FIND_IN_SET(a.idunidad, b.idunidad)) LIMIT 1";
             $query.= ") ";
-            $query.= "INNER JOIN cliente d ON d.id = c.idcliente INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio INNER JOIN proyecto g ON g.id = a.idproyecto INNER JOIN unidad h ON h.id = a.idunidad INNER JOIN empresa i ON i.id = b.idempresa ";
-            $query.= "WHERE a.estatus IN(2, 3) AND b.pagacliente = 0 AND (c.inactivo = 0 OR (c.inactivo = 1 AND MONTH(c.fechainactivo) = MONTH('$d->fvencestr') AND YEAR(c.fechainactivo) = YEAR('$d->fvencestr'))) ";
+            $query.= "LEFT JOIN cliente d ON d.id = c.idcliente LEFT JOIN tiposervicioventa f ON f.id = b.idtiposervicio LEFT JOIN proyecto g ON g.id = a.idproyecto LEFT JOIN unidad h ON h.id = a.idunidad LEFT JOIN empresa i ON i.id = b.idempresa ";
+            $query.= "WHERE a.estatus IN(2, 3) AND b.pagacliente = 0 AND (c.inactivo = 0 OR (c.inactivo = 1 AND MONTH(c.fechainactivo) = MONTH('$d->fvencestr') AND YEAR(c.fechainactivo) = YEAR('$d->fvencestr')) OR c.inactivo IS NULL) ";
             $query.= "AND a.mes = MONTH('$d->fvencestr') AND a.anio = YEAR('$d->fvencestr') AND b.idempresa = $contador->idempresa AND a.idproyecto = $proyecto->idproyecto ";
             $query.= "ORDER BY CAST(digits(h.nombre) AS UNSIGNED), h.nombre, b.numidentificacion";
+            //print $query;
             $proyecto->consumos = $db->getQuery($query);
             $cntConsumos = count($proyecto->consumos);
             if($cntConsumos > 0){
@@ -258,12 +259,12 @@ $app->post('/rptagua', function(){
                 $query.= "FORMAT(SUM((a.lectura - LecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr')))), 2) as consumo, ";
                 $query.= "FORMAT(SUM(ROUND(IF(((a.lectura - LecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr'))) - (SELECT IFNULL((SELECT cantbase FROM detunidadservicio WHERE idunidad = a.idunidad AND idserviciobasico = a.idserviciobasico AND DATE(fechacambio) <= '$d->fvencestr' ORDER BY fechacambio DESC LIMIT 1) , 0.00))) > 0, ((a.lectura - LecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr'))) - (SELECT IFNULL((SELECT cantbase FROM detunidadservicio WHERE idunidad = a.idunidad AND idserviciobasico = a.idserviciobasico AND DATE(fechacambio) <= '$d->fvencestr' ORDER BY fechacambio DESC LIMIT 1) , 0.00))) * b.preciomcubsug, 0.00 ), 2)), 2) AS montosiniva ";
                 $query.= "FROM lecturaservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico ";
-                $query.= "INNER JOIN contrato c ON c.id = (";
+                $query.= "LEFT JOIN contrato c ON c.id = (";
                 $query.= "SELECT b.id FROM contrato b ";
                 $query.= "WHERE IF(b.inactivo = 1 AND MONTH(b.fechainactivo) = MONTH('$d->fvencestr') AND YEAR(b.fechainactivo) = YEAR('$d->fvencestr'), FIND_IN_SET(a.idunidad, b.idunidadbck), FIND_IN_SET(a.idunidad, b.idunidad)) LIMIT 1";
                 $query.= ") ";
-                $query.= "INNER JOIN cliente d ON d.id = c.idcliente INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio INNER JOIN proyecto g ON g.id = a.idproyecto INNER JOIN unidad h ON h.id = a.idunidad INNER JOIN empresa i ON i.id = b.idempresa ";
-                $query.= "WHERE a.estatus IN(2, 3) AND b.pagacliente = 0 AND (c.inactivo = 0 OR (c.inactivo = 1 AND MONTH(c.fechainactivo) = MONTH('$d->fvencestr') AND YEAR(c.fechainactivo) = YEAR('$d->fvencestr'))) ";
+                $query.= "LEFT JOIN cliente d ON d.id = c.idcliente LEFT JOIN tiposervicioventa f ON f.id = b.idtiposervicio LEFT JOIN proyecto g ON g.id = a.idproyecto LEFT JOIN unidad h ON h.id = a.idunidad LEFT JOIN empresa i ON i.id = b.idempresa ";
+                $query.= "WHERE a.estatus IN(2, 3) AND b.pagacliente = 0 AND (c.inactivo = 0 OR (c.inactivo = 1 AND MONTH(c.fechainactivo) = MONTH('$d->fvencestr') AND YEAR(c.fechainactivo) = YEAR('$d->fvencestr')) OR c.inactivo IS NULL) ";
                 $query.= "AND a.mes = MONTH('$d->fvencestr') AND a.anio = YEAR('$d->fvencestr') AND b.idempresa = $contador->idempresa AND a.idproyecto = $proyecto->idproyecto ";
                 $sumas = $db->getQuery($query)[0];
                 $proyecto->consumos[] =[
@@ -278,12 +279,12 @@ $app->post('/rptagua', function(){
         $query.= "FORMAT(SUM((a.lectura - LecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr')))), 2) as consumo, ";
         $query.= "FORMAT(SUM(ROUND(IF(((a.lectura - LecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr'))) - (SELECT IFNULL((SELECT cantbase FROM detunidadservicio WHERE idunidad = a.idunidad AND idserviciobasico = a.idserviciobasico AND DATE(fechacambio) <= '$d->fvencestr' ORDER BY fechacambio DESC LIMIT 1) , 0.00))) > 0, ((a.lectura - LecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr'))) - (SELECT IFNULL((SELECT cantbase FROM detunidadservicio WHERE idunidad = a.idunidad AND idserviciobasico = a.idserviciobasico AND DATE(fechacambio) <= '$d->fvencestr' ORDER BY fechacambio DESC LIMIT 1) , 0.00))) * b.preciomcubsug, 0.00 ), 2)), 2) AS montosiniva ";
         $query.= "FROM lecturaservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico ";
-        $query.= "INNER JOIN contrato c ON c.id = (";
+        $query.= "LEFT JOIN contrato c ON c.id = (";
         $query.= "SELECT b.id FROM contrato b ";
         $query.= "WHERE IF(b.inactivo = 1 AND MONTH(b.fechainactivo) = MONTH('$d->fvencestr') AND YEAR(b.fechainactivo) = YEAR('$d->fvencestr'), FIND_IN_SET(a.idunidad, b.idunidadbck), FIND_IN_SET(a.idunidad, b.idunidad)) LIMIT 1";
         $query.= ") ";
-        $query.= "INNER JOIN cliente d ON d.id = c.idcliente INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio INNER JOIN proyecto g ON g.id = a.idproyecto INNER JOIN unidad h ON h.id = a.idunidad INNER JOIN empresa i ON i.id = b.idempresa ";
-        $query.= "WHERE a.estatus IN(2, 3) AND b.pagacliente = 0 AND (c.inactivo = 0 OR (c.inactivo = 1 AND MONTH(c.fechainactivo) = MONTH('$d->fvencestr') AND YEAR(c.fechainactivo) = YEAR('$d->fvencestr'))) ";
+        $query.= "LEFT JOIN cliente d ON d.id = c.idcliente LEFT JOIN tiposervicioventa f ON f.id = b.idtiposervicio LEFT JOIN proyecto g ON g.id = a.idproyecto LEFT JOIN unidad h ON h.id = a.idunidad LEFT JOIN empresa i ON i.id = b.idempresa ";
+        $query.= "WHERE a.estatus IN(2, 3) AND b.pagacliente = 0 AND (c.inactivo = 0 OR (c.inactivo = 1 AND MONTH(c.fechainactivo) = MONTH('$d->fvencestr') AND YEAR(c.fechainactivo) = YEAR('$d->fvencestr')) OR c.inactivo IS NULL) ";
         $query.= "AND a.mes = MONTH('$d->fvencestr') AND a.anio = YEAR('$d->fvencestr') AND b.idempresa = $contador->idempresa ";
         $query.= $d->idproyecto != '' ? "AND a.idproyecto IN ($d->idproyecto) " : "";
         $contador->sumatoria = $db->getQuery($query)[0];
