@@ -276,7 +276,7 @@ $app->post('/rptagua', function(){
 
         $query = "SELECT ";
         $query.= "FORMAT(SUM((a.lectura - LecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr')))), 2) as consumo, ";
-        $query.= "FORMAT(SUM(ROUND(IF(((a.lectura - LecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr'))) - (SELECT IFNULL((SELECT cantbase FROM detunidadservicio WHERE idunidad = a.idunidad AND idserviciobasico = a.idserviciobasico AND DATE(fechacambio) <= '$d->fvencestr' ORDER BY fechacambio DESC LIMIT 1) , 0.00))) > 0, ((a.lectura - LecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr'))) - b.mcubsug) * (SELECT IFNULL((SELECT cantbase FROM detunidadservicio WHERE idunidad = a.idunidad AND idserviciobasico = a.idserviciobasico AND DATE(fechacambio) <= '$d->fvencestr' ORDER BY fechacambio DESC LIMIT 1) , 0.00)), 0.00 ), 2)), 2) AS montosiniva ";
+        $query.= "FORMAT(SUM(ROUND(IF(((a.lectura - LecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr'))) - (SELECT IFNULL((SELECT cantbase FROM detunidadservicio WHERE idunidad = a.idunidad AND idserviciobasico = a.idserviciobasico AND DATE(fechacambio) <= '$d->fvencestr' ORDER BY fechacambio DESC LIMIT 1) , 0.00))) > 0, ((a.lectura - LecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr'))) - (SELECT IFNULL((SELECT cantbase FROM detunidadservicio WHERE idunidad = a.idunidad AND idserviciobasico = a.idserviciobasico AND DATE(fechacambio) <= '$d->fvencestr' ORDER BY fechacambio DESC LIMIT 1) , 0.00))) * b.preciomcubsug, 0.00 ), 2)), 2) AS montosiniva ";
         $query.= "FROM lecturaservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico ";
         $query.= "INNER JOIN contrato c ON c.id = (";
         $query.= "SELECT b.id FROM contrato b ";
@@ -284,9 +284,8 @@ $app->post('/rptagua', function(){
         $query.= ") ";
         $query.= "INNER JOIN cliente d ON d.id = c.idcliente INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio INNER JOIN proyecto g ON g.id = a.idproyecto INNER JOIN unidad h ON h.id = a.idunidad INNER JOIN empresa i ON i.id = b.idempresa ";
         $query.= "WHERE a.estatus IN(2, 3) AND b.pagacliente = 0 AND (c.inactivo = 0 OR (c.inactivo = 1 AND MONTH(c.fechainactivo) = MONTH('$d->fvencestr') AND YEAR(c.fechainactivo) = YEAR('$d->fvencestr'))) ";
-        $query.= "AND a.mes = MONTH('$d->fvencestr') AND a.anio = YEAR('$d->fvencestr') AND ";
-		$query.= "b.idempresa = $contador->idempresa ";
-		$query.= $d->idproyecto != '' ? "AND a.idproyecto IN ($d->idproyecto) " : "";
+        $query.= "AND a.mes = MONTH('$d->fvencestr') AND a.anio = YEAR('$d->fvencestr') AND b.idempresa = $contador->idempresa ";
+        $query.= $d->idproyecto != '' ? "AND a.idproyecto IN ($d->idproyecto) " : "";
         $contador->sumatoria = $db->getQuery($query)[0];
     }
 
