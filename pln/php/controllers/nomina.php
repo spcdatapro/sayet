@@ -1,8 +1,11 @@
 <?php 
-
+/*
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
+set_time_limit(0);
+*/
 
 require dirname(dirname(dirname(__DIR__))) . '/php/vendor/autoload.php';
 require dirname(dirname(dirname(__DIR__))) . '/php/ayuda.php';
@@ -171,13 +174,6 @@ $app->get('/imprimir', function(){
 						if (!isset($conf->scalar) && $conf->visible == 1) {
 							$conf->psy = ($conf->psy+$espacio);
 
-							if (is_numeric($valor) && !in_array($campo, ['vcodigo', 'vdiastrabajados'])) {
-								$valor = number_format($valor, 2);
-							} else {
-								$valor = $valor;
-							}
-
-							$pdf      = generar_fimpresion($pdf, $valor, $conf);
 							$sintotal = ['vdiastrabajados', 'vcodigo'];
 
 							if (is_numeric($valor) && !in_array($campo, $sintotal)) {
@@ -197,6 +193,14 @@ $app->get('/imprimir', function(){
 									}
 								}
 							}
+
+							if (is_numeric($valor) && !in_array($campo, $sintotal)) {
+								$valor = number_format($valor, 2);
+							} else {
+								$valor = $valor;
+							}
+
+							$pdf = generar_fimpresion($pdf, $valor, $conf);
 						}
 					}
 
@@ -406,16 +410,8 @@ $app->get('/imprimir_igss', function(){
 						if ($espaciotmp === 0) {
 							$espaciotmp = $conf->espacio;
 						}
-						
+
 						$conf->psy = ($conf->psy+$espacio);
-
-						if (is_numeric($valor) && !in_array($campo, ['vcodigo', 'vafiliacionigss'])) {
-							$valor = number_format($valor, 2);
-						} else {
-							$valor = $valor;
-						}
-
-						$pdf = generar_fimpresion($pdf, $valor, $conf);
 
 						$sintotal = ['vdiastrabajados', 'vcodigo', 'vafiliacionigss'];
 
@@ -426,6 +422,14 @@ $app->get('/imprimir_igss', function(){
 								$totales[$campo] = $valor;
 							}
 						}
+
+						if (is_numeric($valor) && !in_array($campo, ['vcodigo', 'vafiliacionigss'])) {
+							$valor = number_format($valor, 2);
+						} else {
+							$valor = $valor;
+						}
+
+						$pdf = generar_fimpresion($pdf, $valor, $conf);
 					}
 				}
 
@@ -590,13 +594,6 @@ $app->get('/imprimir_isr', function(){
 						if (!isset($conf->scalar) && $conf->visible == 1) {
 							$conf->psy = ($conf->psy+$espacio);
 
-							if (is_numeric($valor) && !in_array($campo, ['vcodigo', 'vdiastrabajados'])) {
-								$valor = number_format($valor, 2);
-							} else {
-								$valor = $valor;
-							}
-
-							$pdf      = generar_fimpresion($pdf, $valor, $conf);
 							$sintotal = ['vdiastrabajados', 'vcodigo'];
 
 							if (is_numeric($valor) && !in_array($campo, $sintotal)) {
@@ -616,6 +613,14 @@ $app->get('/imprimir_isr', function(){
 									}
 								}
 							}
+
+							if (is_numeric($valor) && !in_array($campo, ['vcodigo', 'vdiastrabajados'])) {
+								$valor = number_format($valor, 2);
+							} else {
+								$valor = $valor;
+							}
+
+							$pdf = generar_fimpresion($pdf, $valor, $conf);
 						}
 					}
 
@@ -811,10 +816,10 @@ $app->get('/imprimir_sp', function(){
 						'v_descuento_mensual' => $prestamo->pre->cuotamensual,
 						'v_saldo_anterior' => $prestamo->get_saldo_anterior(['fecha' => $_GET['fal']]),
 						'v_nuevos_prestamos' => 0,
-						'v_descuentos_planillas' => $prestamo->get_descuentos_planilla(),
-						'v_otros_abonos' => $prestamo->get_otro_abonos(),
-						'v_total_descuentos' => $prestamo->get_total_descuentos(),
-						'v_saldo_actual' => $prestamo->get_saldo()
+						'v_descuentos_planillas' => $prestamo->get_descuentos_planilla(['fecha' => $_GET['fal']]),
+						'v_otros_abonos' => $prestamo->get_otro_abonos(['fecha' => $_GET['fal']]),
+						'v_total_descuentos' => $prestamo->get_total_descuentos(['fecha' => $_GET['fal']]),
+						'v_saldo_actual' => $prestamo->get_saldo(['fecha' => $_GET['fal']])
 					];
 
 					foreach ($tmpdatos as $campo => $valor) {

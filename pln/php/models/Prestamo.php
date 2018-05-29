@@ -199,7 +199,7 @@ class Prestamo extends Principal
 		if ($this->pre->finalizado == 1) {
 			return 0;
 		} else {
-			$abonos = $this->get_total_descuentos();
+			$abonos = $this->get_total_descuentos($args);
 			$saldo  = ($this->pre->monto - $abonos);
 
 			if ($saldo != $this->pre->saldo) {
@@ -210,19 +210,27 @@ class Prestamo extends Principal
 		}
 	}
 
-	public function get_total_descuentos()
+	public function get_total_descuentos($args = [])
 	{
-		return ($this->get_descuentos_planilla() + $this->get_otro_abonos());
+		return ($this->get_descuentos_planilla($args) + $this->get_otro_abonos($args));
 	}
 
-	public function get_descuentos_planilla()
+	public function get_descuentos_planilla($args = [])
 	{
 		$abonos = 0;
 
-		$tmp = $this->db->select(
-			'plnpresnom', 
-			['monto'],
-			['idplnprestamo' => $this->pre->id]
+		$tmp = $this->db->select("plnpresnom", [
+				'[><]plnnomina(b)' => ['plnpresnom.idplnnomina' => 'id']
+			], 
+			[
+				"plnpresnom.monto"
+			],
+			[
+				'AND' => [
+					'plnpresnom.idplnprestamo' => $this->pre->id,
+					'b.fecha[=]' => $args['fecha']
+				]
+			]
 		);
 
 		if ($tmp) {
@@ -234,14 +242,19 @@ class Prestamo extends Principal
 		return $abonos;
 	}
 
-	public function get_otro_abonos()
+	public function get_otro_abonos($args = [])
 	{
 		$abonos = 0;
 
 		$tmpdir = $this->db->select(
 			'plnpresabono', 
 			['monto'],
-			['idplnprestamo' => $this->pre->id]
+			[
+				'AND' => [
+					'idplnprestamo' => $this->pre->id,
+					'fecha[=]' => $args['fecha']
+				]
+			]
 		);
 
 		if ($tmpdir) {
@@ -264,8 +277,10 @@ class Prestamo extends Principal
 				"plnpresnom.monto"
 			],
 			[
-				'plnpresnom.idplnprestamo' => $this->pre->id,
-				'b.fecha[<]' => $args['fecha']
+				'AND' => [
+					'plnpresnom.idplnprestamo' => $this->pre->id,
+					'b.fecha[<]' => $args['fecha']
+				]
 			]
 		);
 
@@ -279,8 +294,10 @@ class Prestamo extends Principal
 			'plnpresabono', 
 			['monto'],
 			[
-				'idplnprestamo' => $this->pre->id,
-				'fecha[<]' => $args['fecha']
+				'AND' => [
+					'idplnprestamo' => $this->pre->id,
+					'fecha[<]' => $args['fecha']
+				]
 			]
 		);
 
