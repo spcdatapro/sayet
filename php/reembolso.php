@@ -308,11 +308,15 @@ $app->post('/gentranban', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
+    /*
     $query = "SELECT SUM(b.debe) AS debe FROM compra a INNER JOIN detallecontable b ON a.id = b.idorigen AND b.origen = 2 WHERE a.idreembolso = ".$d->id;
     $haber = (float)$db->getOneField($query);
     $query = "SELECT SUM(b.haber) AS haber FROM compra a INNER JOIN detallecontable b ON a.id = b.idorigen AND b.origen = 2 WHERE a.idreembolso = ".$d->id;
     $restar = (float)$db->getOneField($query);
     $haber = round(($haber - $restar), 2);
+    */
+    $query = "SELECT SUM(totfact) FROM compra WHERE idreembolso = $d->id";
+    $haber = (float)$db->getOneField($query);
     //Generación del cheque/nota de débito para pagar el reembolso
     $getCorrela = $d->numero;
     $query = "INSERT INTO tranban(idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, origenbene, idbeneficiario) ";
