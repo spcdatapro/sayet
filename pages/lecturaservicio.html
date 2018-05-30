@@ -13,6 +13,19 @@
                     <label for="txtAnio">A&ntilde;o:</label>
                     <input name="txtAnio" id="txtAnio" type="number" class="form-control input-sm" ng-model="params.anio" placeholder="A&ntilde;o de lectura" min="2000" ng-change="lecturas = []" required/>
                 </div>
+                <div class="form-group" ng-show="+params.idusuario == 9">
+                    <label for="selProyecto">Proyecto:</label>
+                    <div class="input-group">
+                        <select name="selProyecto" id="selProyecto" class="form-control input-sm" ng-model="params.idproyecto"
+                                ng-options="obj.idproyecto as obj.proyecto for obj in proyectos" ng-required="+params.idusuario == 9"></select>
+                        <span class="input-group-btn">
+                            <button class="btn btn-info btn-sm" type="button" ng-click="params.idproyecto = undefined;" ng-disabled="params.idproyecto == undefined || params.idproyecto == null"
+                                    data-toggle="tooltip" data-placement="auto" title="Quitar filtro de proyecto...">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                        </span>
+                    </div>
+                </div>
                 <button type="button" class="btn btn-info btn-sm" ng-click="getLecturas()">
                     <span class="glyphicon glyphicon-search"></span>
                 </button>

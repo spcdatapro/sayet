@@ -2,8 +2,6 @@
 require 'vendor/autoload.php';
 require_once 'db.php';
 
-//header('Content-Type: application/json');
-
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
 
@@ -82,7 +80,7 @@ $app->post('/d', function(){
 
 //API de lectura de servicios
 
-$app->get('/lectura/:idusuario/:mes/:anio', function($idusuario, $mes, $anio){
+$app->get('/lectura/:idusuario/:mes/:anio(/:idproyecto)', function($idusuario, $mes, $anio, $idproyecto = 0){
     $db = new dbcpm();
 
     $query = "INSERT INTO lecturaservicio(idserviciobasico, idusuario, idproyecto, idunidad, mes, anio) ";
@@ -101,9 +99,20 @@ $app->get('/lectura/:idusuario/:mes/:anio', function($idusuario, $mes, $anio){
     $query.= "WHERE a.mes = $mes AND a.anio = $anio AND d.debaja = 0 AND a.idserviciobasico IN(";
     $query.= "SELECT a.id FROM serviciobasico a INNER JOIN unidadservicio b ON a.id = b.idserviciobasico INNER JOIN unidad c ON c.id = b.idunidad INNER JOIN usuarioproyecto d ON d.idproyecto = c.idproyecto ";
     $query.= "WHERE d.idusuario = $idusuario AND a.debaja = 0) ";
+    $query.= (int)$idproyecto > 0 ? "AND a.idproyecto = $idproyecto " : '';
     $query.= "ORDER BY b.nomproyecto, CAST(digits(c.nombre) AS UNSIGNED), c.nombre";
     print $db->doSelectASJson($query);
 
+});
+
+$app->get('/proyusr/:idusuario', function($idusuario){
+    $db = new dbcpm();
+
+    $query = "SELECT a.idproyecto, b.nomproyecto AS proyecto ";
+    $query.= "FROM usuarioproyecto a INNER JOIN proyecto b ON b.id = a.idproyecto ";
+    $query.= "WHERE a.idusuario = $idusuario ";
+    $query.= "ORDER BY b.nomproyecto";
+    print $db->doSelectASJson($query);
 });
 
 $app->post('/ul', function(){
