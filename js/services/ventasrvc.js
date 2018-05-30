@@ -23,6 +23,9 @@
             },
             editRow: function(obj, op){
                 return comunFact.doPOST(urlBase + '/' + op, obj);
+            },
+            lstClientes: function(){
+                return comunFact.doGET(urlBase + '/clientes');
             }
         };
     }]);

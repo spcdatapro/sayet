@@ -1,6 +1,7 @@
 <div class="container" ng-controller="rptLibroVentasCtrl">
     <div class="row">
         <div class="panel panel-default">
+            <div class="panel-heading">Pago de I.S.R.</div>
             <div class="panel-body" style="text-align: right">
                 <div class="row" style="text-align: left">
                     <div class="col-md-4 col-sm-4">
@@ -22,13 +23,13 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-4 col-sm-4">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="txtAnio">A&ntilde;o:</label>
                             <input name="txtAnio" id="txtAnio" type="number" class="form-control" ng-model="params.anio" placeholder="A&ntilde;o" ng-change="resetData()"/>
                         </div>
                     </div>
-					<div class="col-md-4 col-sm-4">
+					<div class="col-md-4">
 						<div class="form-group">
 							<label for="chkDet">Sin Retencion</label>
 							<input name="chkDet" id="chkDet" type="checkbox" class="form-control" ng-model="params.sinret" ng-true-value="1" ng-false-value="0" />
@@ -36,16 +37,31 @@
 					</div>
 				</div>
 				<div class="row" style="text-align: left">
-					<div class="col-md-4 col-sm-4">
+					<div class="col-md-3">
                         <div class="form-group">
                             <label for="txtParqueo">Parqueo:</label>
                             <input name="txtParqueo" id="txtParqueo" type="number" class="form-control" ng-model="params.parqueo" placeholder="Parqueo" ng-change="resetData()"/>
                         </div>
                     </div>
-					<div class="col-md-4 col-sm-4">
+					<div class="col-md-3">
                         <div class="form-group">
                             <label for="txtRetenido">Retenciones ISR:</label>
                             <input name="txtRetenido" id="txtRetenido" type="number" class="form-control" ng-model="params.retenido" placeholder="Retencion" ng-change="resetData()"/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="selCliente">Cliente:</label>
+                            <div class="input-group">
+                                <select name="selCliente" id="selCliente" class="form-control" ng-model="params.cliente"
+                                        ng-options="obj.cliente as obj.cliente for obj in clientes"></select>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button" ng-click="params.cliente = undefined;" ng-disabled="params.cliente == undefined || params.cliente == null"
+                                            data-toggle="tooltip" data-placement="auto" title="Quitar filtro de cliente...">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </button>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>

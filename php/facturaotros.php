@@ -32,7 +32,7 @@ $app->get('/srchcli/:idempresa/:qstra+', function($idempresa, $qstra){
 
     $query.= "SELECT DISTINCT 0 AS idcliente, nombre AS facturara, nit, retenerisr AS retisr, reteneriva AS retiva, direccion ";
     $query.= "FROM factura ";
-    $query.= "WHERE idempresa = $idempresa AND nombre LIKE '%$qstr%' AND (idcontrato = 0 OR idcontrato IS NULL) ";
+    $query.= "WHERE fecha >= '2017-09-01' AND idempresa = $idempresa AND nombre LIKE '%$qstr%' AND (idcontrato = 0 OR idcontrato IS NULL) ";
     //$query.= "AND TRIM(nit) NOT IN(SELECT TRIM(nit) FROM detclientefact WHERE fal IS NULL AND facturara LIKE '%$qstr%') ";
     $query.= "ORDER BY 2";
 
