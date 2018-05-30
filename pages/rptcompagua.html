@@ -1,0 +1,59 @@
+<div class="container" ng-controller="rptComparativoAguaCtrl">
+    <div class="panel panel-default">
+        <div class="panel-heading">Cuadro Comparativo Mensual de Consumo de Agua</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="selMes">Mes:</label>
+                        <select name="selMes" id="selMes" class="form-control" ng-model="params.mes">
+                            <option value="1">Enero</option>
+                            <option value="2">Febrero</option>
+                            <option value="3">Marzo</option>
+                            <option value="4">Abril</option>
+                            <option value="5">Mayo</option>
+                            <option value="6">Junio</option>
+                            <option value="7">Julio</option>
+                            <option value="8">Agosto</option>
+                            <option value="9">Septiembre</option>
+                            <option value="10">Octubre</option>
+                            <option value="11">Noviembre</option>
+                            <option value="12">Diciembre</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="txtAnio">A&ntilde;o:</label>
+                        <input name="txtAnio" id="txtAnio" type="number" class="form-control" ng-model="params.anio"/>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="selEmpresa">Empresa:</label>
+                    <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="params.empresas"
+                            ng-options="obj.id as obj.nomempresa for obj in empresas"
+                            ng-change="loadProyectos()">
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="selProy">Proyecto:</label>
+                    <select name="selProy" id="selProy" class="form-control" ng-model="params.proyectos"
+                            ng-options="obj.id as obj.nomproyecto for obj in proyectos">
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer" style="text-align: right">
+            <button type="button" class="btn btn-primary" ng-click="getRptCompAgua()">
+                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 50em"></object>
+        </div>
+    </div>
+</div>
