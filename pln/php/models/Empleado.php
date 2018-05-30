@@ -464,7 +464,7 @@ class Empleado extends Principal
 		return round(($this->emp->porcentajeigss/100) * ($this->sueldo+$args['sueldoextra']), 2);
 	}
 
-	public function get_saldo_prestamo()
+	public function get_saldo_prestamo($args = [])
 	{
 		$saldo = 0;
 
@@ -482,7 +482,7 @@ class Empleado extends Principal
 		if ($tmp) {
 			foreach ($tmp as $row) {
 				$pre    = new Prestamo($row['id']);
-				$saldo += $pre->get_saldo();
+				$saldo += $pre->get_saldo($args);
 			}
 		}
 
