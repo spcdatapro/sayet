@@ -308,6 +308,7 @@
                         $scope.factura.reteneriva = 0;
                         $scope.factura.retenerisr = 0;
                         $scope.factura.direccion = undefined;
+                        $scope.contratos = [];
                         break;
                     case 'object':
                         $scope.factura.nombre = item.originalObject.facturara;
@@ -320,6 +321,12 @@
                             clienteSrvc.lstContratosEmpresa(+item.originalObject.idcliente, +$scope.factura.idempresa).then(function(d){
                                 $scope.contratos = d;
                             });
+                        } else {
+                            $scope.factura.idcontrato = 0;
+                            $scope.factura.reteneriva = 0;
+                            $scope.factura.retenerisr = 0;
+                            $scope.factura.direccion = undefined;
+                            $scope.contratos = [];
                         }
                         break;
                 }

@@ -63,6 +63,7 @@ $app->post('/rptisr', function(){
     $query.= "FROM factura a LEFT JOIN contrato b ON b.id = a.idcontrato LEFT JOIN tipofactura c ON c.id = a.idtipofactura LEFT JOIN cliente d ON d.id = a.idcliente ";
     $query.= "WHERE a.anulada = 0 and a.idtipoventa <> 5 AND c.id <> 5 AND a.idempresa = ".$idempresa." AND a.mesiva = ".$mes." AND YEAR(a.fecha) = ".$anio." ";
 	$query.= $qrret;
+	$query.= $d->cliente != '' ? "AND a.nombre = '$d->cliente' " : '';
     $query.= "ORDER BY 3, 4";
 	
 	$detisr = $db->getQuery($query);

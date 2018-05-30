@@ -184,6 +184,13 @@ $app->post('/anula', function(){
     $db->doQuery($query);
 });
 
+$app->get('/clientes', function(){
+    $db = new dbcpm();
+
+    $query = "SELECT DISTINCT TRIM(nombre) AS cliente FROM factura WHERE fecha >= '2017-09-01' ORDER BY TRIM(nombre)";
+    print $db->doSelectASJson($query);
+});
+
 //API para detalle de ventas
 $app->get('/lstdetfact/:idfactura', function($idfactura){
     $db = new dbcpm();
