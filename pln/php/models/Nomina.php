@@ -399,7 +399,7 @@ EOT;
 				'vliquido'         => $row->liquido,
 				'recprestamo'      => 'rectangulo',
 				'tsaldoprestamo'   => 'Saldo de Préstamo', 
-				'vsaldoprestamo'   => $emp->get_saldo_prestamo(),
+				'vsaldoprestamo'   => $emp->get_saldo_prestamo(['fecha' => $args['fal']]),
 				'vdiastrabajados'  => $row->diastrabajados,
 				'lrecibi'          => str_repeat("_", 35) ,
 				'trecibi'          => 'Recibí Conforme',
