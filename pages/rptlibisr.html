@@ -65,6 +65,20 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="txtFDel">Del:</label>
+                            <input name="txtFDel" id="txtFDel" type="date" class="form-control" ng-model="params.fdel" ng-change="resetData()"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="txtFAl">Al:</label>
+                            <input name="txtFAl" id="txtFAl" type="date" class="form-control" ng-model="params.fal" ng-change="resetData()"/>
+                        </div>
+                    </div>
+                </div>
 				<button type="button" class="btn btn-primary btn-sm" ng-click="getLibIsr()">
 					<span>Detalle</span>
 					<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
