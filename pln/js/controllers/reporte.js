@@ -16,4 +16,14 @@ angular.module('cpm')
             $scope.empresas = d;
         });
     }
+])
+.controller('repFiniquitoController', ['$scope', '$http', 'empresaSrvc', 'empServicios', 
+    function($scope, $http, empresaSrvc, empServicios){
+        $scope.empleados = []
+
+        empServicios.buscar({'sin_limite':1}).then(function(res){
+            $scope.empleados = res.resultados
+            setTimeout(function() { $("#selectEmpleado").chosen({width:'100%'}) }, 3)
+        });
+    }
 ]);

@@ -23,6 +23,8 @@ class General extends Principal
 			$condicion["LIMIT"] = [elemento($args, 'inicio', 0), get_limite()];
 		}
 
+		$condicion["ORDER"] = "nombre ASC";
+
 		return $this->db->select(
 			'plnempleado', 
 			['*'], 

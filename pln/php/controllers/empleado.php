@@ -144,4 +144,34 @@ $app->get('/get_empresas', function(){
 	enviar_json(['empresas' => $e->get_plnempresa]);
 });
 
+$app->post('/finiquito', function(){
+	if (elemento($_POST, 'empleado', FALSE)) {
+		require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
+
+		# $_GET['fdel'] = formatoFecha($_GET['fal'], 4).'-'.formatoFecha($_GET['fal'], 3).'-16';
+
+		$s = [215.9, 279.4]; # Carta mm
+
+		$pdf = new TCPDF('P', 'mm', $s);
+		$pdf->SetAutoPageBreak(TRUE, 0);
+		$pdf->AddPage();
+
+		$emp = new Empleado($_POST['empleado']);
+		$gen = new General();
+
+		foreach ($emp->get_datos_finiquito($_POST) as $campo => $valor) {
+			$conf = $gen->get_campo_impresion($campo, 7);
+
+			if (!isset($conf->scalar) && $conf->visible == 1) {
+				$pdf = generar_fimpresion($pdf, $valor, $conf);
+			}
+		}
+
+		$pdf->Output("finiquito_laboral_" . time() . ".pdf", 'I');
+		die();
+	} else {
+		echo "forbidden";
+	}
+});
+
 $app->run();

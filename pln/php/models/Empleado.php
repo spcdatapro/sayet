@@ -488,4 +488,30 @@ class Empleado extends Principal
 
 		return $saldo;
 	}
+
+	public function get_datos_finiquito($args=[])
+	{
+
+		$lugar_fecha = "Guatemala, ".formatoFecha($args['fecha_egreso'],2)." de ".get_meses(formatoFecha($args['fecha_egreso'], 3))." de ".formatoFecha($args['fecha_egreso'],4);
+
+		$gen = new General();
+		$empresa = $gen->get_empresa(['empresa' => $this->emp->idempresadebito, 'uno' => TRUE]);
+
+		$texto_motivo = <<<EOT
+Desde la presente fecha se dan por terminadas las relaciones de trabajo entre el señor(a) {$this->emp->nombre} {$this->emp->apellidos} y {$empresa['nomempresa']}.\n
+Por motivo: {$args['motivo']}.\n
+Recibe en esta misma fecha todas las prestaciones a que tiene derecho según el CÓDIGO DE TRABAJO VIGENTE, como se detalla a continuación:
+EOT;
+
+		return [
+			'titulo' => 'Finiquito Laboral',
+			'lugar_fecha' => $lugar_fecha,
+			'texto_motivo' => $texto_motivo,
+			'linea_uno_resumen' => str_repeat("_", 90),
+			'fecha_ingreso_etiqueta' => 'Fecha de Ingreso:',
+			'fecha_ingreso' => formatoFecha($this->emp->ingreso,1),
+			'fecha_egreso_etiqueta' => 'Fecha de Egreso:',
+			'fecha_egreso' => formatoFecha($args['fecha_egreso'],1)
+		];
+	}
 }
