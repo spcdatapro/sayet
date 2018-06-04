@@ -6,3 +6,4 @@ php/fox
 libs/tcpdf/.git/
 libs/tcpdf/.git
 pln/archivos/*
+.idea/*
