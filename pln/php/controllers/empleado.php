@@ -1,5 +1,9 @@
 <?php
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require dirname(dirname(dirname(__DIR__))) . '/php/vendor/autoload.php';
 require dirname(dirname(dirname(__DIR__))) . '/php/ayuda.php';
 require dirname(__DIR__) . '/Principal.php';
@@ -158,6 +162,8 @@ $app->post('/finiquito', function(){
 
 		$emp = new Empleado($_POST['empleado']);
 		$gen = new General();
+
+		$emp->set_meses_calculo($_POST['meses_calculo']);
 
 		foreach ($emp->get_datos_finiquito($_POST) as $campo => $valor) {
 			$conf = $gen->get_campo_impresion($campo, 7);
