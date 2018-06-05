@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/tranfacturactrl.js" afterPath="$PROJECT_DIR$/js/controllers/tranfacturactrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptingegrproy.php" afterPath="$PROJECT_DIR$/php/rptingegrproy.php" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -38,64 +38,25 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="tranfactura.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/tranfactura.html">
+      <file leaf-file-name="rptingegrproy.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/rptingegrproy.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-2.7307692">
-              <caret line="355" column="51" selection-start-line="355" selection-start-column="51" selection-end-line="355" selection-end-column="51" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="tranfacturactrl.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/js/controllers/tranfacturactrl.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.31487888">
-              <caret line="352" column="21" selection-start-line="352" selection-start-column="21" selection-end-line="352" selection-end-column="21" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="tranfacturaotrossrvc.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/services/tranfacturaotrossrvc.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="facturaotros.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/php/facturaotros.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="22.0">
-              <caret line="30" column="26" selection-start-line="30" selection-start-column="26" selection-end-line="30" selection-end-column="26" />
+            <state vertical-scroll-proportion="0.12068965">
+              <caret line="130" column="0" selection-start-line="130" selection-start-column="0" selection-end-line="130" selection-end-column="0" />
               <folding>
-                <marker date="1527715823790" expanded="true" signature="3579:3599" placeholder="INSERT INTO factura..." />
-                <marker date="1527715823790" expanded="true" signature="4619:4637" placeholder="UPDATE factu..." />
-                <marker date="1527715823790" expanded="true" signature="5476:5556" placeholder="UPDATE detfa..." />
-                <marker date="1527715823790" expanded="true" signature="5776:5836" placeholder="DELETE FROM ..." />
-                <marker date="1527715823790" expanded="true" signature="5885:5923" placeholder="DELETE FROM ..." />
-                <marker date="1527715823790" expanded="true" signature="5972:6003" placeholder="DELETE FROM ..." />
-                <marker date="1527715823790" expanded="true" signature="7615:7677" placeholder="SELECT SUM(p..detfact..." />
-                <marker date="1527715823790" expanded="true" signature="7745:7809" placeholder="SELECT SUM(d..detfact..." />
-                <marker date="1527715823790" expanded="true" signature="7941:7982" placeholder="SELECT idemp..factura..." />
-                <marker date="1527715823790" expanded="true" signature="8049:8152" placeholder="SELECT idtip..contrato..." />
-                <marker date="1527715823790" expanded="true" signature="8096:8138" placeholder="SELECT idcon..factura..." />
-                <marker date="1527715823790" expanded="true" signature="8203:8245" placeholder="SELECT reten..factura..." />
-                <marker date="1527715823790" expanded="true" signature="8309:8351" placeholder="SELECT reten..factura..." />
-                <marker date="1527715823790" expanded="true" signature="8488:8543" placeholder="SELECT SUM(m..detfact..." />
-                <marker date="1527715823790" expanded="true" signature="8595:8637" placeholder="SELECT tipoc..factura..." />
-                <marker date="1527715823790" expanded="true" signature="8707:8785" placeholder="SELECT ROUND..detfact..." />
-                <marker date="1527715823790" expanded="true" signature="8848:8942" placeholder="SELECT GROUP..detfact..." />
-                <marker date="1527715823790" expanded="true" signature="9111:9224" placeholder="UPDATE factu..." />
-                <marker date="1527715823790" expanded="true" signature="9740:9782" placeholder="SELECT idcon..factura..." />
-                <marker date="1527715823790" expanded="true" signature="9988:10008" placeholder="INSERT INTO detfact..." />
-                <marker date="1527715823790" expanded="true" signature="10737:10755" placeholder="UPDATE detfa..." />
-                <marker date="1527715823790" expanded="true" signature="11230:11261" placeholder="DELETE FROM ..." />
+                <marker date="1528225590610" expanded="true" signature="3669:3883" placeholder="SELECT a.mon..plaproy..." />
+                <marker date="1528225590610" expanded="true" signature="5779:6197" placeholder="SELECT DISTI..compraproyecto..." />
+                <marker date="1528225590610" expanded="true" signature="6214:6732" placeholder="SELECT DISTI..detallecontable..." />
+                <marker date="1528225590610" expanded="true" signature="7034:7485" placeholder="SELECT a.idc..compraproyecto..." />
+                <marker date="1528225590610" expanded="true" signature="7506:8018" placeholder="SELECT a.idc..detallecontable..." />
+                <marker date="1528225590610" expanded="true" signature="8533:8747" placeholder="SELECT a.mon..plaproy..." />
+                <marker date="1528225590610" expanded="true" signature="14169:14359" placeholder="SELECT unida..unidad..." />
+                <marker date="1528225590610" expanded="true" signature="14638:14828" placeholder="SELECT unida..unidad..." />
+                <marker date="1528225590610" expanded="true" signature="15513:15931" placeholder="SELECT DISTI..compraproyecto..." />
+                <marker date="1528225590610" expanded="true" signature="15948:16466" placeholder="SELECT DISTI..detallecontable..." />
+                <marker date="1528225590610" expanded="true" signature="16736:17191" placeholder="SELECT a.idc..compraproyecto..." />
+                <marker date="1528225590610" expanded="true" signature="17212:17724" placeholder="SELECT a.idc..detallecontable..." />
+                <marker date="1528225590610" expanded="true" signature="21586:21800" placeholder="SELECT a.mon..plaproy..." />
               </folding>
             </state>
           </provider>
@@ -167,7 +128,6 @@
         <option value="$PROJECT_DIR$/php/facturaotros.php" />
         <option value="$PROJECT_DIR$/php/reembolso.php" />
         <option value="$PROJECT_DIR$/pages/rptingegrproy.html" />
-        <option value="$PROJECT_DIR$/php/rptingegrproy.php" />
         <option value="$PROJECT_DIR$/pages/rptlibisr.html" />
         <option value="$PROJECT_DIR$/js/controllers/rptlibroventasctrl.js" />
         <option value="$PROJECT_DIR$/php/rptventaisr.php" />
@@ -175,6 +135,7 @@
         <option value="$PROJECT_DIR$/pages/rptivaventas.html" />
         <option value="$PROJECT_DIR$/php/rptivaventa.php" />
         <option value="$PROJECT_DIR$/js/controllers/tranfacturactrl.js" />
+        <option value="$PROJECT_DIR$/php/rptingegrproy.php" />
       </list>
     </option>
   </component>
@@ -228,7 +189,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
@@ -328,6 +288,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -1170,12 +1131,13 @@
       <workItem from="1527694139494" duration="18244000" />
       <workItem from="1527777538092" duration="8001000" />
       <workItem from="1527873988565" duration="638000" />
-      <workItem from="1528125757642" duration="3089000" />
+      <workItem from="1528125757642" duration="5122000" />
+      <workItem from="1528225423350" duration="224000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2563776000" />
+    <option name="totallyTimeSpent" value="2566033000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1187,7 +1149,6 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32900432" sideWeight="0.5" order="11" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32995737" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="WINDOWED" visible="false" show_stripe_button="true" weight="1.0" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" x="-3" y="20" width="1926" height="1023" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.15458423" sideWeight="0.49571735" order="0" side_tool="false" content_ui="combo" />
@@ -1196,15 +1157,16 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24946696" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1881663" sideWeight="0.50428265" order="4" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39978564" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="PHP-CGI Server" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32827735" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39978564" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -1503,13 +1465,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptingegrproy.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.153846">
-          <caret line="269" column="48" selection-start-line="269" selection-start-column="48" selection-end-line="269" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/controllers/rptingegrproyctrl.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1566,6 +1521,22 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/pages/tranfactura.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="355" column="51" selection-start-line="355" selection-start-column="51" selection-end-line="355" selection-end-column="51" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/tranfacturactrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.32700893">
+          <caret line="351" column="13" selection-start-line="351" selection-start-column="13" selection-end-line="351" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/js/services/tranfacturaotrossrvc.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1576,7 +1547,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/php/facturaotros.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="22.0">
+        <state vertical-scroll-proportion="0.5862069">
           <caret line="30" column="26" selection-start-line="30" selection-start-column="26" selection-end-line="30" selection-end-column="26" />
           <folding>
             <marker date="1527715823790" expanded="true" signature="3579:3599" placeholder="INSERT INTO factura..." />
@@ -1605,19 +1576,25 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pages/tranfactura.html">
+    <entry file="file://$PROJECT_DIR$/php/rptingegrproy.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.7307692">
-          <caret line="355" column="51" selection-start-line="355" selection-start-column="51" selection-end-line="355" selection-end-column="51" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/tranfacturactrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.31487888">
-          <caret line="352" column="21" selection-start-line="352" selection-start-column="21" selection-end-line="352" selection-end-column="21" />
-          <folding />
+        <state vertical-scroll-proportion="0.12068965">
+          <caret line="130" column="0" selection-start-line="130" selection-start-column="0" selection-end-line="130" selection-end-column="0" />
+          <folding>
+            <marker date="1528225590610" expanded="true" signature="3669:3883" placeholder="SELECT a.mon..plaproy..." />
+            <marker date="1528225590610" expanded="true" signature="5779:6197" placeholder="SELECT DISTI..compraproyecto..." />
+            <marker date="1528225590610" expanded="true" signature="6214:6732" placeholder="SELECT DISTI..detallecontable..." />
+            <marker date="1528225590610" expanded="true" signature="7034:7485" placeholder="SELECT a.idc..compraproyecto..." />
+            <marker date="1528225590610" expanded="true" signature="7506:8018" placeholder="SELECT a.idc..detallecontable..." />
+            <marker date="1528225590610" expanded="true" signature="8533:8747" placeholder="SELECT a.mon..plaproy..." />
+            <marker date="1528225590610" expanded="true" signature="14169:14359" placeholder="SELECT unida..unidad..." />
+            <marker date="1528225590610" expanded="true" signature="14638:14828" placeholder="SELECT unida..unidad..." />
+            <marker date="1528225590610" expanded="true" signature="15513:15931" placeholder="SELECT DISTI..compraproyecto..." />
+            <marker date="1528225590610" expanded="true" signature="15948:16466" placeholder="SELECT DISTI..detallecontable..." />
+            <marker date="1528225590610" expanded="true" signature="16736:17191" placeholder="SELECT a.idc..compraproyecto..." />
+            <marker date="1528225590610" expanded="true" signature="17212:17724" placeholder="SELECT a.idc..detallecontable..." />
+            <marker date="1528225590610" expanded="true" signature="21586:21800" placeholder="SELECT a.mon..plaproy..." />
+          </folding>
         </state>
       </provider>
     </entry>
