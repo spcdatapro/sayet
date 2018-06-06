@@ -1,8 +1,8 @@
 <?php
 
-ini_set('display_errors', 1);
+/*ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+error_reporting(E_ALL);*/
 
 require dirname(dirname(dirname(__DIR__))) . '/php/vendor/autoload.php';
 require dirname(dirname(dirname(__DIR__))) . '/php/ayuda.php';
@@ -145,7 +145,7 @@ $app->post('/guardar_prosueldo', function(){
 $app->get('/get_empresas', function(){
 	$g = new General();
 
-	enviar_json(['empresas' => $e->get_plnempresa]);
+	enviar_json(['empresas' => $g->get_plnempresa()]);
 });
 
 $app->post('/finiquito', function(){

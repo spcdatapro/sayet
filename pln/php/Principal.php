@@ -16,6 +16,8 @@ class Principal extends dbcpm
 	{
 		parent::__construct();
 		$this->db = $this->getConn();
+
+		session_start();
 	}
 
 	/**
