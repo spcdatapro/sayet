@@ -4,7 +4,10 @@
 
     rptlibventactrl.controller('rptLibroVentasCtrl', ['$scope', 'rptLibroVentaSrvc', 'authSrvc', 'empresaSrvc','$sce', 'jsReportSrvc', 'ventaSrvc', function($scope, rptLibroVentaSrvc, authSrvc, empresaSrvc, $sce, jsReportSrvc, ventaSrvc){
 
-        $scope.params = {mes: (moment().month() + 1).toString(), anio: moment().year(), idempresa: 0, sinret: 0, resumen: 0, parqueo: 0.00, retenido: 0.00, alfa:0, cliente: undefined};
+        $scope.params = {
+            mes: (moment().month() + 1).toString(), anio: moment().year(), idempresa: 0, sinret: 0, resumen: 0, parqueo: 0.00, retenido: 0.00, alfa:0, cliente: undefined,
+            fdel: undefined, fal: undefined
+        };
         $scope.libroventas = [];
         $scope.meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         $scope.totiva = {activo: 0.0, bien: 0.0, servicio: 0.0};
@@ -48,6 +51,8 @@
 		$scope.getLibIsr = function(){
 			$scope.params.resumen = 0;
             $scope.params.cliente = $scope.params.cliente != null && $scope.params.cliente != undefined ? $scope.params.cliente : '';
+            $scope.params.fdelstr = $scope.params.fdel != null && $scope.params.fdel != undefined && moment($scope.params.fdel).isValid() ? moment($scope.params.fdel).format('YYYY-MM-DD') : '';
+            $scope.params.falstr = $scope.params.fal != null && $scope.params.fal != undefined && moment($scope.params.fal).isValid() ? moment($scope.params.fal).format('YYYY-MM-DD') : '';
 			
 			jsReportSrvc.libroisr($scope.params).then(function (result) {
                     var file = new Blob([result.data], {type: 'application/pdf'});

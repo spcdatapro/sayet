@@ -95,7 +95,7 @@ $app->post('/resumen', function() use($db){
                 FROM compraproyecto a
                 INNER JOIN compra b ON b.id = a.idcompra
                 INNER JOIN cuentac c ON c.id = a.idcuentac
-                WHERE b.idproyecto = $d->idproyecto AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND b.idempresa = $d->idempresa AND b.idreembolso = 0
+                WHERE b.idproyecto = $d->idproyecto AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND b.idempresa = $d->idempresa AND b.idreembolso = 0 AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%' OR TRIM(c.codigo) = '1120299')
                 UNION
                 SELECT DISTINCT a.idcuenta, c.nombrecta AS concepto
                 FROM detallecontable a
@@ -130,10 +130,29 @@ $app->post('/resumen', function() use($db){
         }
 
         //Egresos de planilla
-        $query = "SELECT a.monto FROM plaproy a INNER JOIN proyecto b ON b.id = a.idproyecto INNER JOIN empresa c ON c.id = b.idempresa WHERE a.mes = $d->mes AND a.anio = $d->anio AND a.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa";
-        $montoPlanilla = (float)$db->getOneField($query);
-        $datos->egresos[] = ['concepto' => 'PLANILLA', 'monto' => $montoPlanilla];
-        $totEgresos += $montoPlanilla;
+        $query = "SELECT IF( '$d->anio-".((int)$d->mes < 10 ? ('0'.$d->mes) : $d->mes)."-01' > '2018-03-31', 1, 0)";
+        $antesAbrPla = (int)$db->getOneField($query) == 0;
+        if($antesAbrPla){
+            $query = "SELECT a.monto FROM plaproy a INNER JOIN proyecto b ON b.id = a.idproyecto INNER JOIN empresa c ON c.id = b.idempresa WHERE a.mes = $d->mes AND a.anio = $d->anio AND a.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa";
+            $montoPlanilla = (float)$db->getOneField($query);
+            $datos->egresos[] = ['concepto' => 'PLANILLA', 'monto' => $montoPlanilla];
+            $totEgresos += $montoPlanilla;
+        }else{
+            $query = "SELECT ";
+            $query.= "(SUM(a.descigss) + SUM(a.descisr) + ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * 0.1267), 2) + SUM(a.liquido)) AS totplanilla ";
+            $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado ";
+            $query.= "WHERE a.fecha > '$d->anio-$d->mes-15' AND MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio AND b.idproyecto = $d->idproyecto";
+            $datosPlanilla = $db->getQuery($query);
+            if(count($datosPlanilla) > 0){
+                $pln = $datosPlanilla[0];
+                $datos->egresos[] = [
+                    'concepto' => 'PLANILLA',
+                    'monto' => (float)$pln->totplanilla
+                ];
+                $totEgresos += (float)$pln->totplanilla;
+            }
+        }
+        //Fin de Egresos de planilla
 
         $datos->egresos[] = ['concepto' => 'TOTAL DE EGRESOS', 'monto' => $totEgresos];
 
@@ -218,7 +237,7 @@ $app->post('/detalle', function() use($db){
                 FROM compraproyecto a
                 INNER JOIN compra b ON b.id = a.idcompra
                 INNER JOIN cuentac c ON c.id = a.idcuentac
-                WHERE b.idproyecto = $d->idproyecto AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND b.idempresa = $d->idempresa AND b.idreembolso = 0
+                WHERE b.idproyecto = $d->idproyecto AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND b.idempresa = $d->idempresa AND b.idreembolso = 0 AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%' OR TRIM(c.codigo) = '1120299')
                 UNION
                 SELECT DISTINCT a.idcuenta, c.nombrecta AS concepto
                 FROM detallecontable a
@@ -238,7 +257,7 @@ $app->post('/detalle', function() use($db){
                     FROM compraproyecto a
                     INNER JOIN compra b ON b.id = a.idcompra
                     INNER JOIN cuentac c ON c.id = a.idcuentac
-                    WHERE b.idproyecto = $d->idproyecto AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND b.idempresa = $d->idempresa AND b.idreembolso = 0 AND a.idcuentac = $concepto->idcuenta
+                    WHERE b.idproyecto = $d->idproyecto AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND b.idempresa = $d->idempresa AND b.idreembolso = 0 AND a.idcuentac = $concepto->idcuenta AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%' OR TRIM(c.codigo) = '1120299')
                     UNION ALL
                     SELECT a.idcuenta, a.debe AS monto
                     FROM detallecontable a
@@ -252,7 +271,7 @@ $app->post('/detalle', function() use($db){
 
         $query = "SELECT e.fecha AS fechaOrd, e.id AS idtranban, e.tipotrans, e.numero, DATE_FORMAT(e.fecha, '%d/%m/%Y') AS fecha, e.beneficiario, e.concepto, g.simbolo AS moneda, e.monto AS montotranban, ";
         $query.= "b.id AS idcompra, IF(h.id IS NULL, b.proveedor, h.nombre) AS proveedor, IF(h.id IS NULL, b.nit, h.nit) AS nit, b.serie, b.documento, i.simbolo AS monedafact, a.monto AS montofact, ";
-        $query.= "IFNULL(CONCAT(k.idpresupuesto, '-', k.correlativo), '') AS ot ";
+        $query.= "IFNULL(CONCAT(k.idpresupuesto, '-', k.correlativo), '') AS ot, DATE_FORMAT(b.fechafactura, '%d/%m/%Y') AS fechafactura ";
         $query.= "FROM compraproyecto a INNER JOIN compra b ON b.id = a.idcompra INNER JOIN cuentac c ON c.id = a.idcuentac INNER JOIN detpagocompra d ON b.id = d.idcompra INNER JOIN tranban e ON e.id = d.idtranban ";
         $query.= "INNER JOIN banco f ON f.id = e.idbanco INNER JOIN moneda g ON g.id = f.idmoneda INNER JOIN moneda i ON i.id = b.idmoneda LEFT JOIN proveedor h ON h.id = b.idproveedor ";
         $query.= "LEFT JOIN detpagopresup j ON j.id = e.iddetpagopresup LEFT JOIN detpresupuesto k ON k.id = j.iddetpresup ";
@@ -260,7 +279,7 @@ $app->post('/detalle', function() use($db){
         $query.= "UNION ALL ";
         $query.= "SELECT e.fecha AS fechaOrd, e.id AS idtranban, e.tipotrans, e.numero, DATE_FORMAT(e.fecha, '%d/%m/%Y') AS fecha, e.beneficiario, e.concepto, g.simbolo AS moneda, e.monto AS montotranban, ";
         $query.= "b.id AS idcompra, IF(h.id IS NULL, b.proveedor, h.nombre) AS proveedor, IF(h.id IS NULL, b.nit, h.nit) AS nit, b.serie, b.documento, i.simbolo AS monedafact, a.debe AS montofact, ";
-        $query.= "IFNULL(CONCAT(k.idpresupuesto, '-', k.correlativo), '') AS ot ";
+        $query.= "IFNULL(CONCAT(k.idpresupuesto, '-', k.correlativo), '') AS ot, DATE_FORMAT(b.fechafactura, '%d/%m/%Y') AS fechafactura ";
         $query.= "FROM detallecontable a INNER JOIN compra b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta INNER JOIN reembolso d ON d.id = b.idreembolso LEFT JOIN tranban e ON e.id = d.idtranban ";
         $query.= "LEFT JOIN banco f ON f.id = e.idbanco LEFT JOIN moneda g ON g.id = f.idmoneda LEFT JOIN moneda i ON i.id = b.idmoneda LEFT JOIN proveedor h ON h.id = b.idproveedor ";
         $query.= "LEFT JOIN detpagopresup j ON j.id = e.iddetpagopresup LEFT JOIN detpresupuesto k ON k.id = j.iddetpresup ";
@@ -274,7 +293,7 @@ $app->post('/detalle', function() use($db){
             $sumaegr = $db->getOneField($querySum);
             $detegr[] = [
                 'fechaOrd'=> '', 'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => '', 'beneficiario' => '', 'concepto' => '', 'moneda' => '', 'montotranban' => '', 'idcompra' => '', 'proveedor' => '', 'nit' => '',
-                'serie' => '', 'documento' => 'Total:', 'monedafact' => '', 'montofact' => $sumaegr, 'ot' => ''
+                'serie' => '', 'documento' => '', 'monedafact' => '', 'montofact' => $sumaegr, 'ot' => '', 'fechafactura' => 'Total:'
             ];
         }
 
@@ -282,19 +301,68 @@ $app->post('/detalle', function() use($db){
         $totEgresos += (float)$montoEgreso;
     }
 
+
     //Egresos de planilla
-    $query = "SELECT a.monto FROM plaproy a INNER JOIN proyecto b ON b.id = a.idproyecto INNER JOIN empresa c ON c.id = b.idempresa WHERE a.mes = $d->mes AND a.anio = $d->anio AND a.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa";
-    $montoPlanilla = (float)$db->getOneField($query);
-    $datos->egresos[] = [
-        'concepto' => 'PLANILLA', 'monto' => $montoPlanilla,
-        'detalle' => [
-            [
-                'fechaOrd'=> '', 'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => '', 'beneficiario' => '', 'concepto' => '', 'moneda' => '', 'montotranban' => '', 'idcompra' => '', 'proveedor' => '', 'nit' => '',
-                'serie' => '', 'documento' => 'Total:', 'monedafact' => '', 'montofact' => $montoPlanilla, 'ot' => ''
+    $query = "SELECT IF( '$d->anio-".((int)$d->mes < 10 ? ('0'.$d->mes) : $d->mes)."-01' > '2018-03-31', 1, 0)";
+    $antesAbrPla = (int)$db->getOneField($query) == 0;
+    if($antesAbrPla){
+        $query = "SELECT a.monto FROM plaproy a INNER JOIN proyecto b ON b.id = a.idproyecto INNER JOIN empresa c ON c.id = b.idempresa WHERE a.mes = $d->mes AND a.anio = $d->anio AND a.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa";
+        $montoPlanilla = (float)$db->getOneField($query);
+        $datos->egresos[] = [
+            'concepto' => 'PLANILLA', 'monto' => $montoPlanilla,
+            'detalle' => [
+                [
+                    'fechaOrd'=> '', 'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => '', 'beneficiario' => '', 'concepto' => '', 'moneda' => '', 'montotranban' => '', 'idcompra' => '', 'proveedor' => '', 'nit' => '',
+                    'serie' => '', 'documento' => '', 'monedafact' => '', 'montofact' => $montoPlanilla, 'ot' => '', 'fechafactura' => 'Total:'
+                ]
             ]
-        ]
-    ];
-    $totEgresos += $montoPlanilla;
+        ];
+        $totEgresos += $montoPlanilla;
+    }else{
+        $query = "SELECT b.idproyecto, SUM(a.descigss) AS descigss, SUM(a.descisr) AS descisr, ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * 0.1267), 2) AS cuotapatronal, SUM(a.liquido) AS liquido, ";
+        $query.= "DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.fecha AS fechaOrd, ";
+        $query.= "(SUM(a.descigss) + SUM(a.descisr) + ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * 0.1267), 2) + SUM(a.liquido)) AS totplanilla ";
+        $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado ";
+        $query.= "WHERE a.fecha > '$d->anio-$d->mes-15' AND MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio AND b.idproyecto = $d->idproyecto";
+        $datosPlanilla = $db->getQuery($query);
+        if(count($datosPlanilla) > 0){
+            $pln = $datosPlanilla[0];
+            $detPln = [
+                [
+                    'fechaOrd'=> $pln->fechaOrd, 'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => $pln->fecha, 'beneficiario' => '',
+                    'concepto' => 'I.G.S.S.', 'moneda' => '', 'montotranban' => '', 'idcompra' => '', 'proveedor' => '', 'nit' => '',
+                    'serie' => '', 'documento' => '', 'monedafact' => '', 'montofact' => (float)$pln->descigss, 'ot' => '', 'fechafactura' => ''
+                ],
+                [
+                    'fechaOrd'=> $pln->fechaOrd, 'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => $pln->fecha, 'beneficiario' => '',
+                    'concepto' => 'I.S.R.', 'moneda' => '', 'montotranban' => '', 'idcompra' => '', 'proveedor' => '', 'nit' => '',
+                    'serie' => '', 'documento' => '', 'monedafact' => '', 'montofact' => (float)$pln->descisr, 'ot' => '', 'fechafactura' => ''
+                ],
+                [
+                    'fechaOrd'=> $pln->fechaOrd, 'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => $pln->fecha, 'beneficiario' => '',
+                    'concepto' => 'Cuota Patronal', 'moneda' => '', 'montotranban' => '', 'idcompra' => '', 'proveedor' => '', 'nit' => '',
+                    'serie' => '', 'documento' => '', 'monedafact' => '', 'montofact' => (float)$pln->cuotapatronal, 'ot' => '', 'fechafactura' => ''
+                ],
+                [
+                    'fechaOrd'=> $pln->fechaOrd, 'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => $pln->fecha, 'beneficiario' => '',
+                    'concepto' => 'Líquido', 'moneda' => '', 'montotranban' => '', 'idcompra' => '', 'proveedor' => '', 'nit' => '',
+                    'serie' => '', 'documento' => '', 'monedafact' => '', 'montofact' => (float)$pln->liquido, 'ot' => '', 'fechafactura' => ''
+                ],
+                [
+                    'fechaOrd'=> '', 'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => '', 'beneficiario' => '',
+                    'concepto' => '', 'moneda' => '', 'montotranban' => '', 'idcompra' => '', 'proveedor' => '', 'nit' => '',
+                    'serie' => '', 'documento' => '', 'monedafact' => '', 'montofact' => (float)$pln->totplanilla, 'ot' => '', 'fechafactura' => 'Total:'
+                ]
+            ];
+            $datos->egresos[] = [
+                'concepto' => 'PLANILLA',
+                'monto' => (float)$pln->totplanilla,
+                'detalle' => $detPln
+            ];
+            $totEgresos += (float)$pln->totplanilla;
+        }
+    }
+    //Fin de Egresos de planilla
 
     usort($datos->egresos, function($a, $b){
         if((float)$a['monto'] === (float)$b['monto']){

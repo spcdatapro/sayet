@@ -250,7 +250,7 @@
 
         $scope.factura = {
             id: 0, fechaingreso: moment().toDate(), fecha: moment().toDate(), idtipoventa: '2', idmoneda: 1, tipocambio: null, conceptomayor: undefined, idempresa: $scope.empredefault,
-            anioafecta: null, mesafecta: null, retenerisr: 0, reteneriva: 0, idproyecto: undefined
+            anioafecta: null, mesafecta: null, retenerisr: 0, reteneriva: 0, idproyecto: undefined, idcontrato: undefined, direccion: undefined
         };
         $scope.contratos = [];
         $scope.tiposfactura = [];
@@ -361,11 +361,12 @@
             $scope.detsfact = [];
             $scope.detfact = {};
             facturaOtrosSrvc.getFactura(idfactura).then(function(d){
-                $scope.factura = procDataFact(d)[0];
-                $scope.$broadcast('angucomplete-alt:changeInput', 'txtCliente', {nit: $scope.factura.nit, facturara: $scope.factura.nombre});
-                if(+$scope.factura.idcliente > 0){
-                    clienteSrvc.lstContratos(+$scope.factura.idcliente).then(function(d){ $scope.contratos = d; });
+                // console.log($scope.factura);
+                $scope.$broadcast('angucomplete-alt:changeInput', 'txtCliente', {nit: d[0].nit, facturara: d[0].nombre});
+                if(+d[0].idcliente > 0){
+                    clienteSrvc.lstContratos(+d[0].idcliente).then(function(d){ $scope.contratos = d; });
                 }
+                $scope.factura = procDataFact(d)[0];
 
                 $scope.loadDetalleFactura(idfactura);
                 $scope.resetDetalleFactura();

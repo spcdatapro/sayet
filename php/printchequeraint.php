@@ -81,7 +81,7 @@ $meses = [1 => 'enero', 2 => 'febrero', 3 => 'marzo', 4 => 'abril', 5 => 'mayo',
 $db = new dbcpm();
 $numCheque = (int)$_GET['c'];
 $query = "SELECT a.id, a.numero, a.fecha, DAY(a.fecha) AS dia, MONTH(a.fecha) AS mes, YEAR(a.fecha) AS anio, FORMAT(a.monto, 2) AS montostr, a.monto, a.beneficiario, a.concepto, a.esnegociable, ";
-$query.= "CONCAT(b.nombre, ' / ', c.nommoneda, ' / ', b.nocuenta, ' / Cheque No. ', a.numero) AS banco, d.nomempresa AS empresa, a.idproyecto, a.iddetpagopresup ";
+$query.= "CONCAT(b.nombre, ' / ', c.nommoneda, ' / ', b.nocuenta, ' / Cheque No. ', a.numero) AS banco, d.nomempresa AS empresa, a.idproyecto, a.iddetpagopresup, CONCAT(b.siglas, ' / #',a.numero) as siglas ";
 $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN moneda c ON c.id = b.idmoneda INNER JOIN empresa d ON d.id = b.idempresa ";
 $query.= "WHERE a.id = ".$numCheque;
 $cheque = $db->getQuery($query)[0];
@@ -112,16 +112,18 @@ $pdf->AddPage();
 $pdf->SetFont('Arial','', 9);
 $borde = 0;
 //Generación del cheque
+$pdf->Cell(4.2 * $conv);
+$pdf->Cell(7.5 * $conv, 0.7 * $conv, 'Guatemala, '.$cheque->dia.' de '.$meses[(int)$cheque->mes].' de '.$cheque->anio, $borde, 0);
+$pdf->Cell(2.5 * $conv);
+$pdf->SetFont('Arial','', 10);
+$pdf->Cell(3.5 * $conv, 0.7 * $conv, $cheque->montostr, $borde, 0);
+$pdf->SetFont('Arial','', 9);
+$pdf->Ln();
 $pdf->Cell(3 * $conv);
-$pdf->Cell(7.5 * $conv, 0.3 * $conv, 'Guatemala, '.$cheque->dia.' de '.$meses[(int)$cheque->mes].' de '.$cheque->anio, $borde, 0);
-$pdf->Cell(1.5 * $conv);
-$pdf->Cell(3.5 * $conv, 0.3 * $conv, $cheque->montostr, $borde, 0);
+$pdf->Cell(11.3 * $conv, 0.8 * $conv, iconv('UTF-8', 'windows-1252', $cheque->beneficiario), $borde, 0);
 $pdf->Ln();
-$pdf->Cell(2.5 * $conv);
-$pdf->Cell(11.3 * $conv, 1 * $conv, iconv('UTF-8', 'windows-1252', $cheque->beneficiario), $borde, 0);
-$pdf->Ln();
-$pdf->Cell(2.5 * $conv);
-$pdf->Cell(11.5 * $conv, 0.9 * $conv, $n2l->to_word_int($cheque->monto), $borde, 0);
+$pdf->Cell(3 * $conv);
+$pdf->Cell(11.5 * $conv, 0.8 * $conv, $n2l->to_word_int($cheque->monto), $borde, 0);
 $pdf->Ln(1 * $conv);
 
 if((int)$cheque->esnegociable == 0){
@@ -129,18 +131,23 @@ if((int)$cheque->esnegociable == 0){
     $pdf->Cell(3.5 * $conv, 0.65 * $conv, 'NO NEGOCIABLE', $borde, 0);
 }
 
-$pdf->Ln(3 * $conv);
+$pdf->Ln(3.1 * $conv);
+$pdf->Cell(1.55 * $conv);
+$pdf->SetFont('Arial','', 11);
+$pdf->Cell(20 * $conv, 0.7 * $conv, $cheque->siglas, 0, 2);
+$pdf->SetFont('Arial','', 9);
+$pdf->Ln();
 $pdf->Cell(1.8 * $conv);
 //$pdf->Cell(10 * $conv, 0.8 * $conv, iconv('UTF-8', 'windows-1252', $cheque->concepto), $borde, 0,2);
 $pdf->MultiCell(10 * $conv, 0.45 * $conv, iconv('UTF-8', 'windows-1252', ($cheque->concepto.' / '.$conceptoextra)), $borde, 'L');
 //Generación del voucher
 $pdf->Ln();
 
-$pdf->Cell(1.55 * $conv);
-$pdf->Cell(20 * $conv, 0.7 * $conv, $cheque->empresa, 0, 2);
+//$pdf->Cell(1.55 * $conv);
+//$pdf->Cell(20 * $conv, 0.7 * $conv, $cheque->empresa, 0, 2);
 
-$pdf->Cell(20 * $conv, 0.7 * $conv, $cheque->banco, 0, 2);
-$pdf->SetFont('Arial','', 9);
+//$pdf->Cell(20 * $conv, 0.7 * $conv, $cheque->banco, 0, 2);
+//$pdf->SetFont('Arial','', 9);
 
 $header = [iconv('UTF-8', 'windows-1252', 'CÓDIGO'), 'CUENTA', 'Debe', 'Haber'];
 $anchura = [20, 40, 20, 20];

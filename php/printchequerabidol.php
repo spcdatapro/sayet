@@ -102,45 +102,44 @@ array_push($detcont, $totdet[0]);
 $query = "UPDATE tranban SET impreso = 1 WHERE id = ".$numCheque;
 $db->doQuery($query);
 
+
 //Creación del PDF
 $um = 'mm';
 //$pdf = new FPDF('P', $um, 'Letter');
 $pdf = new PDF('P', $um, 'Letter');
 $conv = $um == 'mm' ? 10 : 1;
-$pdf->SetMargins(0, 0, 0);
+$pdf->SetMargins(0, 0 , 0);
 $pdf->AddPage();
 $pdf->SetFont('Arial','', 9);
 $borde = 0;
 //Generación del cheque
-$pdf->SetFont('Arial','', 10);
 $pdf->Cell(2 * $conv);
-$pdf->Cell(7.5 * $conv, 0.7 * $conv, 'Guatemala, '.$cheque->dia.' de '.$meses[(int)$cheque->mes].' de '.$cheque->anio, $borde, 0);
-$pdf->Cell(5 * $conv);
-$pdf->Cell(3.5 * $conv, 0.7 * $conv, $cheque->montostr, $borde, 0);
-$pdf->Ln();
+$pdf->Cell(8.5 * $conv, 0.6 * $conv, 'Guatemala, '.$cheque->dia.' de '.$meses[(int)$cheque->mes].' de '.$cheque->anio, $borde, 0);
+$pdf->Cell(3 * $conv);
+$pdf->SetFont('Arial','', 10);
+$pdf->Cell(4.5 * $conv, 0.6 * $conv, $cheque->montostr, $borde, 0);
 $pdf->SetFont('Arial','', 9);
-$pdf->Cell(1 * $conv);
-$pdf->Cell(11.3 * $conv, 0.8 * $conv, iconv('UTF-8', 'windows-1252', $cheque->beneficiario), $borde, 0);
 $pdf->Ln();
-$pdf->SetFont('Arial','', 8.5);
-$pdf->Cell(1 * $conv);
-$pdf->Cell(11.5 * $conv, 0.8 * $conv, $n2l->to_word_int($cheque->monto), $borde, 0);
-$pdf->Ln(1 * $conv);
-$pdf->SetFont('Arial','', 9);
+$pdf->Cell(1.5 * $conv);
+$pdf->Cell(12.3 * $conv, 0.8 * $conv, iconv('UTF-8', 'windows-1252', $cheque->beneficiario), $borde, 0);
+$pdf->Ln();
+$pdf->Cell(1.5 * $conv);
+$pdf->Cell(12.5 * $conv, 0.7 * $conv, $n2l->to_word_int($cheque->monto), $borde, 0);
+$pdf->Ln(1.7 * $conv);
 
 if((int)$cheque->esnegociable == 0){
-    $pdf->Cell(1 * $conv);
-    $pdf->Cell(3.5 * $conv, 0.65 * $conv, 'NO NEGOCIABLE', $borde, 0);
+    $pdf->Cell(3.5 * $conv);
+    $pdf->Cell(4.5 * $conv, 0.65 * $conv, 'NO NEGOCIABLE', $borde, 0);
 }
 
-$pdf->Ln(3.2 * $conv);
+$pdf->Ln(2.5 * $conv);
 $pdf->Cell(1.55 * $conv);
 $pdf->SetFont('Arial','', 11);
 $pdf->Cell(20 * $conv, 0.7 * $conv, $cheque->siglas, 0, 2);
 $pdf->SetFont('Arial','', 9);
 $pdf->Ln();
 $pdf->Cell(1.8 * $conv);
-//$pdf->Cell(10 * $conv, 0.8 * $conv, iconv('UTF-8', 'windows-1252', $cheque->concepto), $borde, 0,2);
+//$pdf->Cell(10 * $conv, 0.8 * $conv, iconv('UTF-8', 'windows-1252', $cheque->concepto), $borde, 0, 2);
 $pdf->MultiCell(10 * $conv, 0.45 * $conv, iconv('UTF-8', 'windows-1252', ($cheque->concepto.' / '.$conceptoextra)), $borde, 'L');
 //Generación del voucher
 $pdf->Ln();
@@ -149,10 +148,10 @@ $pdf->Ln();
 //$pdf->Cell(20 * $conv, 0.7 * $conv, $cheque->empresa, 0, 2);
 
 //$pdf->Cell(20 * $conv, 0.7 * $conv, $cheque->banco, 0, 2);
-//$pdf->SetFont('Arial','', 9);
+$pdf->SetFont('Arial','', 9);
 
 $header = [iconv('UTF-8', 'windows-1252', 'CÓDIGO'), 'CUENTA', 'Debe', 'Haber'];
-$anchura = [20, 40, 20, 20];
+$anchura = [25, 65, 20, 20];
 $pdf->ImprovedTable($header, $detcont, $anchura);
 
 $pdf->Cell(1.5 * $conv, 1 * $conv, '', 0, 2);
