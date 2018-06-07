@@ -4,8 +4,6 @@
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);*/
 
-session_start();
-
 define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
 define('PLNPATH', BASEPATH . '/pln');
 

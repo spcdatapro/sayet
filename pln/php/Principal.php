@@ -17,7 +17,9 @@ class Principal extends dbcpm
 		parent::__construct();
 		$this->db = $this->getConn();
 
-		session_start();
+		if (session_status() == PHP_SESSION_NONE) {
+			session_start();
+		}
 	}
 
 	/**
