@@ -51,13 +51,13 @@ $app->post('/rptecuentacli', function(){
             $msumsaldo = 0.00;
 
             $querydet1 = "SELECT a.nombre,b.venta,b.factura,b.serie,b.fecha,
-                    if(pagada=1,0.00,round(b.monto,2)) as saldo,round(b.totalfac,2) as totalfac, round(b.retisr,2) as retisr, substr(b.concepto,1,31) as concepto, b.contrato, b.proyecto, b.nomproyecto, round(b.apagar,2) as apagar,b.empresa,b.idempresa,round(b.retiva,2) as retiva,pagada
+                    if(pagada=1 and abonos=0,0.00,round(b.monto,2)) as saldo,round(b.totalfac,2) as totalfac, round(b.retisr,2) as retisr, substr(b.concepto,1,31) as concepto, b.contrato, b.proyecto, b.nomproyecto, round(b.apagar,2) as apagar,b.empresa,b.idempresa,round(b.retiva,2) as retiva,pagada
                 from sayet.cliente a
                 inner join (
 
                     select a.orden,a.cliente,a.venta,a.fecha,a.factura,a.serie,
                         a.concepto,(a.monto-(ifnull(sum(b.monto),0)+a.retisr+a.retiva)) as monto,a.codigo,a.tc_cambio,a.fecpago,a.dias,a.monto as totalfac,a.retisr,a.contrato,a.proyecto,a.nomproyecto,
-						(a.monto-a.retisr-a.retiva) as apagar,a.empresa,a.idempresa,a.retiva,a.pagada
+						(a.monto-a.retisr-a.retiva) as apagar,a.empresa,a.idempresa,a.retiva,a.pagada,ifnull(sum(b.monto),0) as abonos
                     from (
                         SELECT 1 as orden,c.idcliente as cliente,c.id as venta,c.fecha,c.numero as factura,c.serie,c.conceptomayor as concepto,
                             round(c.subtotal-c.totdescuento,2) as monto,e.simbolo as codigo,c.tipocambio as tc_cambio,
