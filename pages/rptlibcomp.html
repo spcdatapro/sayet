@@ -1,6 +1,7 @@
 <div class="container" ng-controller="rptLibroComprasCtrl">
     <div class="row">
         <div class="panel panel-default">
+            <div class="panel-heading">Libro de compras</div>
             <div class="panel-body" style="text-align: right">
                 <div class="row" style="text-align: left">
                     <div class="col-md-4 col-sm-4">
@@ -40,7 +41,13 @@
                     <div class="col-md-4 col-sm-4">
                         <div class="form-group">
                             <label for="txtMonAct">Monto de gastos activo:</label>
-                            <input name="txtMonAct" id="txtMonAct" type="number" class="form-control" ng-model="params.montoactivo" step="0.01"/>
+                            <div class="input-group">
+                                <input name="txtMonAct" id="txtMonAct" type="number" class="form-control" ng-model="params.montoactivo" step="0.01"/>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button" ng-click="rptIntegraGastosActivo()"
+                                            ng-disabled="!params.mes || !params.anio || !params.montoactivo">Ver detalle</button>
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-8 col-sm-8">

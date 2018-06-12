@@ -18,6 +18,8 @@
             rptLibroComprasSrvc.getGastosActivo($scope.params.idempresa, $scope.params.mes, $scope.params.anio).then(function(d){
                 if(parseFloat(d.gastosactivo)){
                     $scope.params.montoactivo = parseFloat(d.gastosactivo);
+                } else {
+                    $scope.params.montoactivo = 0.00;
                 }
             });
         };
@@ -48,6 +50,15 @@
                     var fileURL = URL.createObjectURL(file);
                     $scope.content = $sce.trustAsResourceUrl(fileURL);
                 });
+        };
+
+        $scope.rptIntegraGastosActivo = function(){
+            var test = false;
+            jsReportSrvc.getPDFReport(test ? 'HJbOVt6xQ' : 'HJbOVt6xQ', {
+                mes: $scope.params.mes, anio: $scope.params.anio, idempresa: $scope.params.idempresa
+            }).then(function(pdf){
+                $scope.content = pdf;
+            });
         };
 
         $scope.printVersion = function(){
