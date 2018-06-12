@@ -3,6 +3,7 @@
 /*ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);*/
+set_time_limit(0);
 
 require dirname(dirname(dirname(__DIR__))) . '/php/vendor/autoload.php';
 require dirname(dirname(dirname(__DIR__))) . '/php/ayuda.php';
@@ -221,7 +222,7 @@ $app->get('/descargar', function(){
 	}
 
 	$hojas = 1;
-	$rpag = 40; # Registros por página
+	$rpag = 32; # Registros por página
 	$fecha = date("d/m/Y H:i");
 
 	$cabecera = [
@@ -235,10 +236,11 @@ $app->get('/descargar', function(){
 		'tempresadebito' => 'Empresa Débito',
 		'tsueldo'        => 'Sueldo',
 		'tbonificacion'  => 'Bonificación', 
-		'tisr'           => 'ISR'
+		'tisr'           => 'ISR',
+		'tnopaginat'     => "Página No. "
 	];
 
-	$totalPaginas = ceil(count($todos)/$rpag);
+	$totalPaginas = ceil((count($todos)+count($datos))/$rpag);
 
 	for ($i=0; $i < $totalPaginas ; $i++) { 
 		$pdf->AddPage();
@@ -249,6 +251,11 @@ $app->get('/descargar', function(){
 			if (!isset($conf->scalar) && $conf->visible == 1) {
 				$pdf = generar_fimpresion($pdf, $valor, $conf);
 			}
+		}
+
+		$conf = $bus->get_campo_impresion("vnopagina", 8);
+		if (!isset($conf->scalar) && $conf->visible == 1) {
+			$pdf = generar_fimpresion($pdf, ($i+1), $conf);
 		}
 	}
 
@@ -299,8 +306,6 @@ $app->get('/descargar', function(){
 					$pdf = generar_fimpresion($pdf, $valor, $conf);
 				}
 			}
-
-			# $pdf = generar_fimpresion($pdf, $valor, $conf);
 
 			$espacio += $confe->espacio;
 

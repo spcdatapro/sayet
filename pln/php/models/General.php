@@ -13,10 +13,36 @@ class General extends Principal
 
 	public function buscar_empleado($args=[])
 	{
-		$condicion = [];
+		$where = [];
 
 		if (elemento($args, 'termino')) {
-			$condicion["nombre[~]"] = $args['termino'];
+			$where["nombre[~]"] = $args['termino'];
+		}
+
+		if (elemento($args, 'proyecto')) {
+			$where['idproyecto'] = $args['proyecto'];
+		}
+
+		if (elemento($args, 'actual')) {
+			$where['idempresaactual'] = $args['actual'];
+		}
+
+		if (elemento($args, 'debito')) {
+			$where['idempresadebito'] = $args['debito'];
+		}
+
+		if (elemento($args, 'estatus')) {
+			if ($args['estatus'] == 1) {
+				$where['activo'] = 1;
+			} else if ($args['estatus'] == 2) {
+				$where['activo'] = 0;
+			}
+		}
+
+		if (count($where) > 1) {
+			$condicion = ['AND' => $where];
+		} else {
+			$condicion = $where;
 		}
 
 		if (!elemento($args, 'sin_limite')) {
