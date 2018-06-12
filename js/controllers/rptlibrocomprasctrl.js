@@ -54,7 +54,7 @@
 
         $scope.rptIntegraGastosActivo = function(){
             var test = false;
-            jsReportSrvc.getPDFReport(test ? 'HJbOVt6xQ' : 'HJbOVt6xQ', {
+            jsReportSrvc.getPDFReport(test ? 'HJbOVt6xQ' : 'rJP5-9pxQ', {
                 mes: $scope.params.mes, anio: $scope.params.anio, idempresa: $scope.params.idempresa
             }).then(function(pdf){
                 $scope.content = pdf;
