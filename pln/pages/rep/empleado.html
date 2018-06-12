@@ -1,0 +1,61 @@
+<div class="container-fluid" ng-controller="repEmpleadoController">
+	<div class="row">
+		<div class="col-sm-offset-3 col-sm-6">
+			<div class="jumbotron" id="contenidoGenerar">
+				<form action="/sayet/pln/php/controllers/empleado.php/descargar" method="GET" class="form-horizontal" role="form" target="_blank">
+					<div class="form-group form-group-sm">
+						<label for="selectEmpresaDebito" class="col-sm-3 control-label">Empresa Débito:</label>
+						<div class="col-sm-9">
+							<select class="form-control" name="debito" id="selectEmpresaDebito">
+								<option value="">------</option>
+								<option ng-repeat="emp in empresas" value="{{emp.id}}">{{emp.nomempresa}}</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="form-group form-group-sm">
+						<label for="selectEmpresaActual" class="col-sm-3 control-label">Empresa Actual:</label>
+						<div class="col-sm-9">
+							<select class="form-control" name="actual" id="selectEmpresaActual">
+								<option value="">------</option>
+								<option ng-repeat="emp in empresasPlanilla" value="{{emp.id}}">{{emp.nombre}}</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="form-group form-group-sm">
+						<label for="selectProyecto" class="col-sm-3 control-label">Proyecto:</label>
+						<div class="col-sm-9">
+							<select class="form-control" name="proyecto" id="selectProyecto">
+								<option value="">------</option>
+								<option ng-repeat="emp in proyectos" value="{{emp.id}}">{{emp.nomproyecto}}</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="form-group form-group-sm">
+						<div class="col-sm-offset-3 col-sm-9">
+							<label class="radio-inline">
+							  <input type="radio" name="estatus" id="inlineRadio1" value="1"> Activos
+							</label>
+							<label class="radio-inline">
+							  <input type="radio" name="estatus" id="inlineRadio2" value="2"> De baja
+							</label>
+							<label class="radio-inline">
+							  <input type="radio" name="estatus" id="inlineRadio3" value="3" checked="checked"> Todos
+							</label>
+						</div>
+					</div>
+				
+					<div class="form-group form-group-sm">
+						<div class="col-sm-10 col-sm-offset-2 text-right">
+							<button type="submit" class="btn btn-primary btn-sm">
+								<i class="glyphicon glyphicon-search"></i> Buscar
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

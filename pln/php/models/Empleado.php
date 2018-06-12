@@ -37,6 +37,15 @@ class Empleado extends Principal
 		);
 	}
 
+	public function get_proyecto()
+	{
+		return (object)$this->db->get(
+			'proyecto', 
+			['*'], 
+			['id[=]' => $this->emp->idproyecto]
+		);
+	}
+
 	public function guardar($args = [])
 	{
 		if (is_array($args) && !empty($args)) {
@@ -699,5 +708,35 @@ EOT;
 			'bonoc_monto'              => $this->get_finiquito_bono14_monto(),
 			'sabon_texto'              => 'Salario y bonificación de:'
 		];
+	}
+
+	public function get_empresa_debito()
+	{
+		$gen = new General();
+
+		return (object)$gen->get_empresa([
+			'empresa' => $this->emp->idempresadebito, 
+			'uno' => TRUE
+		]);
+	}
+
+	public function get_datos_impresion()
+	{
+		$debito = $this->get_empresa_debito();
+
+		$tmp = (array)$this->emp;
+		$tmp['nombre'] = $this->emp->nombre . ' ' . $this->emp->apellidos;
+		
+		if (isset($debito->scalar)) {
+			$tmp['empresa_debito'] = 'SIN EMPRESA';
+		} else {
+			$tmp['empresa_debito'] = $debito->nomempresa;
+		}
+		
+		$tmp['fecha_nacimiento'] = formatoFecha($this->emp->fechanacimiento, 1);
+		$tmp['ingreso'] = formatoFecha($this->emp->ingreso, 1);
+		$tmp['baja'] = empty($this->emp->baja) ? '' : formatoFecha($this->emp->baja, 1);
+
+		return $tmp;
 	}
 }

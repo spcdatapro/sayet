@@ -180,4 +180,150 @@ $app->post('/finiquito', function(){
 	}
 });
 
+$app->get('/descargar', function(){
+	$bus = new General();
+	$params = $_GET;
+	$params['sin_limite'] = TRUE;
+
+	$todos = $bus->buscar_empleado($params);
+
+	require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
+
+	$s = [215.9, 330.2]; # Oficio mm
+
+	$pdf = new TCPDF('L', 'mm', $s);
+	$pdf->SetAutoPageBreak(TRUE, 0);
+
+	$datos = [];
+
+	foreach ($todos as $fila) {
+		$emp = new Empleado($fila['id']);
+
+		if (isset($datos[$fila['idproyecto']])) {
+			$datos[$fila['idproyecto']]['empleados'][] = $emp->get_datos_impresion();
+		} else {
+			$pro = $emp->get_proyecto();
+			
+			if (isset($pro->scalar)) {
+				$idproyecto = 0; # No tiene proyecto
+				$nomproyecto = 'SIN PROYECTO';
+			} else {
+				$idproyecto  = $fila['idproyecto'];
+				$nomproyecto = $pro->nomproyecto;
+			}
+
+			$datos[$idproyecto] = [
+				'nombre'    => $nomproyecto, 
+				#'conf'      => $g->get_campo_impresion('proyecto', 2), 
+				'empleados' => [$emp->get_datos_impresion()]
+			];
+		}
+	}
+
+	$hojas = 1;
+	$rpag = 40; # Registros por página
+	$fecha = date("d/m/Y H:i");
+
+	$cabecera = [
+		'titulo'         => "Reporte de Empleados\n{$fecha}",
+		'tcodigo'        => 'Código',
+		'tnombre'        => 'Nombre',
+		'ttelefono'      => 'Teléfono',
+		'tdpi'           => 'DPI',
+		'tingreso'       => 'Ingreso',
+		'tbaja'          => 'Baja',
+		'tempresadebito' => 'Empresa Débito',
+		'tsueldo'        => 'Sueldo',
+		'tbonificacion'  => 'Bonificación', 
+		'tisr'           => 'ISR'
+	];
+
+	$totalPaginas = ceil(count($todos)/$rpag);
+
+	for ($i=0; $i < $totalPaginas ; $i++) { 
+		$pdf->AddPage();
+
+		foreach ($cabecera as $campo => $valor) {
+			$conf = $bus->get_campo_impresion($campo, 8);
+
+			if (!isset($conf->scalar) && $conf->visible == 1) {
+				$pdf = generar_fimpresion($pdf, $valor, $conf);
+			}
+		}
+	}
+
+	$pagina = 1;
+
+	$pdf->setPage($pagina);
+
+	$espacio = 0;
+	$registros = 0;
+
+	foreach ($datos as $key => $proyecto) {
+		$registros++;
+
+		if ($registros == $rpag) {
+			$espacio   = 0;
+			$registros = 0;
+			$pagina++;
+			$pdf->setPage($pagina);
+		}
+
+		$confe      = $bus->get_campo_impresion('idproyecto', 8);
+		$confe->psy = ($confe->psy+$espacio);
+		$espacio    += $confe->espacio;
+		$pdf        = generar_fimpresion($pdf, "{$key} {$proyecto['nombre']}", $confe);
+
+		foreach ($proyecto['empleados'] as $empleado) {
+			unset($empleado['idproyecto']);
+			$registros++;
+
+			foreach ($empleado as $campo => $valor) {
+				$conf = $bus->get_campo_impresion($campo, 8);
+
+				if (!isset($conf->scalar) && $conf->visible == 1) {
+					$conf->psy = ($conf->psy+$espacio);
+
+					$numericos = [
+						'bonificacionley',
+						'sueldo',
+						'descuentoisr'
+					];
+
+					if (in_array($campo, $numericos)) {
+						$valor = number_format($valor, 2);
+					} else {
+						$valor = $valor;
+					}
+
+					$pdf = generar_fimpresion($pdf, $valor, $conf);
+				}
+			}
+
+			# $pdf = generar_fimpresion($pdf, $valor, $conf);
+
+			$espacio += $confe->espacio;
+
+			if ($registros == $rpag) {
+				$espacio   = 0;
+				$registros = 0;
+				$pagina++;
+				$pdf->setPage($pagina);
+			}
+		}
+
+		$registros++;
+
+		if ($registros == $rpag) {
+			$espacio   = 0;
+			$registros = 0;
+			$pagina++;
+			$pdf->setPage($pagina);
+		}
+	}
+
+	$pdf->Output("reporte_empleados_" . time() . ".pdf", 'I');
+	die();
+});
+
 $app->run();

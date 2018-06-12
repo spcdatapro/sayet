@@ -14,7 +14,7 @@ $app->post('/comparativo', function() use($db){
 
     $qGen ="SELECT b.idempresa, i.nomempresa AS empresa, a.idproyecto, g.nomproyecto AS proyecto, a.idserviciobasico, b.numidentificacion, a.idunidad, h.nombre AS unidad, ";
     $qGen.= "0.00 AS mes01, 0.00 AS mes02, 0.00 AS mes03, 0.00 AS mes04, 0.00 AS mes05, 0.00 AS mes06, 0.00 AS mes07, 0.00 AS mes08, 0.00 AS mes09, 0.00 AS mes10, 0.00 AS mes11, 0.00 AS mes12, ";
-    $qGen.= "0.00 AS promedio, (a.lectura - LecturaAnterior(a.idserviciobasico, $d->mes, $d->anio)) AS consumoactual ";
+    $qGen.= "0.00 AS promedio, (a.lectura - LecturaAnterior(a.idserviciobasico, $d->mes, $d->anio)) AS consumoactual, IFNULL(d.nombrecorto, 'VACANTE') AS cliente ";
     $qGen.= "FROM lecturaservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico LEFT JOIN contrato c ON c.id = (SELECT b.id FROM contrato b WHERE IF(b.inactivo = 1 AND MONTH(b.fechainactivo) = $d->mes AND YEAR(b.fechainactivo) = $d->anio, FIND_IN_SET(a.idunidad, b.idunidadbck), FIND_IN_SET(a.idunidad, b.idunidad)) LIMIT 1) ";
     $qGen.= "LEFT JOIN cliente d ON d.id = c.idcliente LEFT JOIN tiposervicioventa f ON f.id = b.idtiposervicio LEFT JOIN proyecto g ON g.id = a.idproyecto LEFT JOIN unidad h ON h.id = a.idunidad LEFT JOIN empresa i ON i.id = b.idempresa ";
     $qGen.= "WHERE a.estatus IN(2, 3) AND b.pagacliente = 0 AND (c.inactivo = 0 OR (c.inactivo = 1 AND MONTH(c.fechainactivo) = $d->mes AND YEAR(c.fechainactivo) = $d->anio) OR c.inactivo IS NULL) AND a.mes = $d->mes AND a.anio = $d->anio ";
@@ -34,7 +34,7 @@ $app->post('/comparativo', function() use($db){
             $proyecto = $empresa->proyectos[$j];
             $query = "SELECT z.idserviciobasico, z.numidentificacion, z.idunidad, z.unidad, ";
             //$query.= "z.mes01, z.mes02, z.mes03, z.mes04, z.mes05, z.mes06, z.mes07, z.mes08, z.mes09, z.mes10, z.mes11, z.mes12, ";
-            $query.= "z.promedio, z.consumoactual ";
+            $query.= "z.promedio, z.consumoactual, z.cliente ";
             $query.= "FROM ($qGen) z WHERE z.idempresa = $empresa->idempresa AND z.idproyecto = $proyecto->idproyecto ";
             $query.= "ORDER BY CAST(digits(z.unidad) AS UNSIGNED), z.unidad, z.numidentificacion";
             $proyecto->contadores = $db->getQuery($query);

@@ -118,4 +118,47 @@ $app->get('/gastact/:idempresa/:mes/:anio', function($idempresa, $mes, $anio){
 	print json_encode(['gastosactivo' => $db->getOneField($query)]);
 });
 
+$app->get('/detgastact/:idempresa/:mes/:anio', function($idempresa, $mes, $anio){
+	$db = new dbcpm();
+
+	$query = "SELECT DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy, a.nomempresa AS empresa, (SELECT UPPER(nombre) FROM mes WHERE id = $mes) AS mes, $anio AS anio, '' AS totactivos ";
+	$query.= "FROM empresa a WHERE id = $idempresa";
+	$generales = $db->getQuery($query)[0];
+
+	$cuentas = ['12101', '12102'];
+	$activos = [];
+	$totActivos = 0.00;
+	for($i = 0; $i < 2; $i++){
+		$cuenta = $cuentas[$i];
+		$query = "SELECT codigo, nombrecta AS cuenta FROM cuentac WHERE idempresa = $idempresa AND codigo = '$cuenta'";
+		$ctaActivo = $db->getQuery($query)[0];
+		$query = "SELECT c.id, DATE_FORMAT(c.fechaingreso, '%d/%m/%Y') AS fechaingreso, c.serie, c.documento, IFNULL(TRIM(d.nombre), TRIM(c.proveedor)) AS proveedor, b.codigo, b.nombrecta AS cuenta, FORMAT(a.debe, 2) AS debe, a.conceptomayor ";
+		$query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta INNER JOIN compra c ON c.id = a.idorigen LEFT JOIN proveedor d ON d.id = c.idproveedor ";
+		$query.= "WHERE a.origen = 2 AND a.anulado = 0 AND c.idempresa = $idempresa AND c.mesiva = $mes AND YEAR(c.fechaingreso) = $anio AND b.codigo LIKE '$cuenta%' ";
+		$query.= "ORDER BY c.fechaingreso";
+		$compras = $db->getQuery($query);
+		if(count($compras) > 0){
+			$query = "SELECT SUM(a.debe) ";
+			$query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta INNER JOIN compra c ON c.id = a.idorigen LEFT JOIN proveedor d ON d.id = c.idproveedor ";
+			$query.= "WHERE a.origen = 2 AND a.anulado = 0 AND c.idempresa = $idempresa AND c.mesiva = $mes AND YEAR(c.fechaingreso) = $anio AND b.codigo LIKE '$cuenta%' ";
+			$query.= "ORDER BY c.fechaingreso";
+			$suma = $db->getOneField($query);
+			$totActivos += (float)$suma;
+			$compras[] = [
+				'id' => '', 'fechaingreso' => '', 'serie' => '', 'documento' => '', 'proveedor' => '', 'codigo' => '', 'cuenta' => 'Total:', 'debe' => number_format((float)$suma, 2), 'conceptomayor' => ''
+			];
+			$activos[] = [
+				'codigo' => $ctaActivo->codigo,
+				'cuenta' => $ctaActivo->cuenta,
+				'compras' => $compras
+			];
+		}
+	}
+
+	$generales->totactivos = number_format($totActivos, 2);
+
+	print json_encode(['generales' => $generales, 'activos' => $activos]);
+
+});
+
 $app->run();
