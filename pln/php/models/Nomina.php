@@ -131,6 +131,10 @@ class Nomina extends Principal
 				$datos["descisr"] = elemento($args, "descisr", 0);
 			}
 
+			if (isset($args["descigss"])) {
+				$datos["descigss"] = elemento($args, "descigss", 0);
+			}
+
 			if (isset($args["descotros"])) {
 				$datos["descotros"] = elemento($args, "descotros", 0);
 			}
