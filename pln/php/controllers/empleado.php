@@ -185,6 +185,7 @@ $app->get('/descargar', function(){
 	$bus = new General();
 	$params = $_GET;
 	$params['sin_limite'] = TRUE;
+	$params['ordenar_proyecto'] = TRUE;
 
 	$todos = $bus->buscar_empleado($params);
 
@@ -200,22 +201,27 @@ $app->get('/descargar', function(){
 	foreach ($todos as $fila) {
 		$emp = new Empleado($fila['id']);
 
-		if (isset($datos[$fila['idproyecto']])) {
-			$datos[$fila['idproyecto']]['empleados'][] = $emp->get_datos_impresion();
+		$idproyecto = empty($fila['idproyecto']) ? 0 : $fila['idproyecto'];
+
+		if (isset($datos[$idproyecto])) {
+			$datos[$idproyecto]['empleados'][] = $emp->get_datos_impresion();
 		} else {
-			$pro = $emp->get_proyecto();
 			
-			if (isset($pro->scalar)) {
-				$idproyecto = 0; # No tiene proyecto
+
+			if ($idproyecto === 0) {
 				$nomproyecto = 'SIN PROYECTO';
 			} else {
-				$idproyecto  = $fila['idproyecto'];
-				$nomproyecto = $pro->nomproyecto;
+				$pro = $emp->get_proyecto();
+
+				if (isset($pro->scalar)) {
+					$nomproyecto = 'SIN CONFIGURAR';
+				} else {
+					$nomproyecto = $pro->nomproyecto;
+				}
 			}
 
 			$datos[$idproyecto] = [
 				'nombre'    => $nomproyecto, 
-				#'conf'      => $g->get_campo_impresion('proyecto', 2), 
 				'empleados' => [$emp->get_datos_impresion()]
 			];
 		}
@@ -225,8 +231,25 @@ $app->get('/descargar', function(){
 	$rpag = 32; # Registros por página
 	$fecha = date("d/m/Y H:i");
 
+	switch ($_GET['estatus']) {
+		case 1:
+			$subtitulo = "Activos";
+			break;
+		case 2:
+			$subtitulo = "de Baja";
+			break;
+		case 3:
+			$subtitulo = "Todos";
+			break;
+		default:
+			$subtitulo = "N/A";
+			break;
+	}
+
 	$cabecera = [
-		'titulo'         => "Reporte de Empleados\n{$fecha}",
+		'titulo'         => "Reporte de Empleados",
+		'subtitulo'      => $subtitulo,
+		'mes'            => $fecha,
 		'tcodigo'        => 'Código',
 		'tnombre'        => 'Nombre',
 		'ttelefono'      => 'Teléfono',
@@ -237,6 +260,8 @@ $app->get('/descargar', function(){
 		'tsueldo'        => 'Sueldo',
 		'tbonificacion'  => 'Bonificación', 
 		'tisr'           => 'ISR',
+		'tlineat'		 => str_repeat("_", 250),
+		'tlineapiet'     => str_repeat("_", 250),
 		'tnopaginat'     => "Página No. "
 	];
 
@@ -263,12 +288,10 @@ $app->get('/descargar', function(){
 
 	$pdf->setPage($pagina);
 
-	$espacio = 0;
+	$espacio   = 0;
 	$registros = 0;
 
 	foreach ($datos as $key => $proyecto) {
-		$registros++;
-
 		if ($registros == $rpag) {
 			$espacio   = 0;
 			$registros = 0;
@@ -281,9 +304,17 @@ $app->get('/descargar', function(){
 		$espacio    += $confe->espacio;
 		$pdf        = generar_fimpresion($pdf, "{$key} {$proyecto['nombre']}", $confe);
 
+		$registros++;
+
 		foreach ($proyecto['empleados'] as $empleado) {
 			unset($empleado['idproyecto']);
-			$registros++;
+
+			if ($registros == $rpag) {
+				$espacio   = 0;
+				$registros = 0;
+				$pagina++;
+				$pdf->setPage($pagina);
+			}
 
 			foreach ($empleado as $campo => $valor) {
 				$conf = $bus->get_campo_impresion($campo, 8);
@@ -308,22 +339,7 @@ $app->get('/descargar', function(){
 			}
 
 			$espacio += $confe->espacio;
-
-			if ($registros == $rpag) {
-				$espacio   = 0;
-				$registros = 0;
-				$pagina++;
-				$pdf->setPage($pagina);
-			}
-		}
-
-		$registros++;
-
-		if ($registros == $rpag) {
-			$espacio   = 0;
-			$registros = 0;
-			$pagina++;
-			$pdf->setPage($pagina);
+			$registros++;
 		}
 	}
 
