@@ -62,7 +62,7 @@
         $scope.getLstPresupuestos = function(idestatuspresup){
             $scope.fltrot.fdelstr = moment($scope.fltrot.fdel).format('YYYY-MM-DD');
             $scope.fltrot.falstr = moment($scope.fltrot.fal).format('YYYY-MM-DD');
-            $scope.fltrot.idestatuspresup = idestatuspresup != null && idestatuspresup != undefined ? idestatuspresup : 0;
+            $scope.fltrot.idestatuspresup = idestatuspresup != null && idestatuspresup != undefined ? idestatuspresup : '';
             presupuestoSrvc.lstPresupuestos($scope.fltrot).then(function(d){
                 $scope.lstpresupuestos = procDataPresup(d);
             });
@@ -164,7 +164,7 @@
         $scope.addPresupuesto = function(obj){
             obj = setPresupuesto(obj);
             presupuestoSrvc.editRow(obj, 'c').then(function(d){
-                $scope.getLstPresupuestos(null);
+                $scope.getLstPresupuestos('1,2,3');
                 $scope.getPresupuesto(parseInt(d.lastid));
                 $scope.srchproy = '';
                 $scope.srchemp = '';
@@ -175,7 +175,7 @@
             obj = setPresupuesto(obj);
             //console.log(obj); return;
             presupuestoSrvc.editRow(obj, 'u').then(function(d){
-                $scope.getLstPresupuestos(null);
+                $scope.getLstPresupuestos('1,2,3');
                 $scope.getPresupuesto(obj.id);
                 $scope.srchproy = '';
                 $scope.srchemp = '';
@@ -184,7 +184,7 @@
 
         $scope.delPresupuesto = function(obj){
             $confirm({text: '¿Esta seguro(a) de eliminar el presupuesto No. ' + obj.id +'?', title: 'Eliminar presupuesto', ok: 'Sí', cancel: 'No'}).then(function() {
-                presupuestoSrvc.editRow({id: obj.id}, 'd').then(function(){ $scope.getLstPresupuestos(null); $scope.resetPresupuesto(); });
+                presupuestoSrvc.editRow({id: obj.id}, 'd').then(function(){ $scope.getLstPresupuestos('1,2,3'); $scope.resetPresupuesto(); });
             });
         };
 
@@ -192,7 +192,7 @@
             $confirm({text: '¿Esta seguro(a) de enviar el presupuesto No. ' + obj.id +' para aprobación?', title: 'Envio de presupuesto', ok: 'Sí', cancel: 'No'}).then(function() {
                 obj.idusuario = $scope.usrdata.uid;
                 presupuestoSrvc.editRow(obj, '/ep').then(function(){
-                    $scope.getLstPresupuestos(null);
+                    $scope.getLstPresupuestos('1,2,3');
                     toaster.pop('info', 'Envio de presupuesto', 'Presupuesto No. ' + obj.id + ' enviado a aprobación...', 'timeout:1500');
                 });
             });
@@ -202,7 +202,7 @@
             $confirm({text: '¿Esta seguro(a) de terminar el presupuesto No. ' + obj.id +'? Si lo termina, ya no podrá modificarlo a menos que lo reaperturen.', title: 'Terminar presupuesto', ok: 'Sí', cancel: 'No'}).then(function() {
                 obj.idusuario = $scope.usrdata.uid;
                 presupuestoSrvc.editRow(obj, '/tp').then(function(){
-                    $scope.getLstPresupuestos(null);
+                    $scope.getLstPresupuestos('1,2,3');
                     $scope.getPresupuesto(obj.id, true);
                     toaster.pop('info', 'Terminar presupuesto', 'Presupuesto No. ' + obj.id + ' terminado...', 'timeout:1500');
                 });
@@ -213,7 +213,7 @@
             $confirm({text: '¿Esta seguro(a) de abrir nuevamente el presupuesto No. ' + obj.id +'?', title: 'Re-abrir presupuesto', ok: 'Sí', cancel: 'No'}).then(function() {
                 obj.idusuario = $scope.usrdata.uid;
                 presupuestoSrvc.editRow(obj, '/rp').then(function(){
-                    $scope.getLstPresupuestos(null);
+                    $scope.getLstPresupuestos('1,2,3');
                     $scope.getPresupuesto(obj.id, true);
                     toaster.pop('info', 'Re-abrir presupuesto', 'Presupuesto No. ' + obj.id + ' reaperturado...', 'timeout:1500');
                 });
@@ -234,11 +234,11 @@
                 moveToTab('divFrmPresup', 'divLstPresup');
                 $scope.resetPresupuesto();
                 $scope.confGrpBtn('grpBtnPresupuesto', false, false, false, true, false, false, false);
-                $scope.getLstPresupuestos(null);
+                $scope.getLstPresupuestos('1,2,3');
             }, function(){ return 0; });
         };
 
-        $scope.getLstPresupuestos(null);
+        $scope.getLstPresupuestos('1,2,3');
 
         function procDataOts(data){
             for(var i = 0; i < data.length; i++){
@@ -321,7 +321,7 @@
             obj = setDataOt(obj);
             //console.log(obj); return;
             presupuestoSrvc.editRow(obj, 'cd').then(function(d){
-                $scope.getLstPresupuestos(null);
+                $scope.getLstPresupuestos('1,2,3');
                 $scope.getPresupuesto($scope.presupuesto.id, false);
                 $scope.getLstOts($scope.presupuesto.id);
                 $scope.getOt(parseInt(d.lastid));

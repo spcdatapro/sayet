@@ -169,7 +169,13 @@
 
         $scope.printOt = function(idot){
             var test = false;
-            jsReportSrvc.getPDFReport(test ? 'BJdOgyV2W' : 'S1eAuyN2b', {idot: idot}).then(function(pdf){ $window.open(pdf); });
+            //r1cGFmmhZ
+            //jsReportSrvc.getPDFReport(test ? 'BJdOgyV2W' : 'S1eAuyN2b', {idot: idot}).then(function(pdf){ $window.open(pdf); });
+            jsReportSrvc.getPDFReport(test ? 'r1cGFmmhZ' : 'r1cGFmmhZ', {
+                idpresupuesto: +$scope.ot.idpresupuesto,
+                idot: idot,
+                detallado: 1
+            }).then(function(pdf){ $window.open(pdf); });
         };
 
     }]);

@@ -2,7 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/rptlibrocomprasctrl.js" afterPath="$PROJECT_DIR$/js/controllers/rptlibrocomprasctrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/presupuestoctrl.js" afterPath="$PROJECT_DIR$/js/controllers/presupuestoctrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers/transegpresupctrl.js" afterPath="$PROJECT_DIR$/js/controllers/transegpresupctrl.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pages/mntpresupuesto.html" afterPath="$PROJECT_DIR$/pages/mntpresupuesto.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/presupuesto.php" afterPath="$PROJECT_DIR$/php/presupuesto.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/php/rptpresupuesto.php" afterPath="$PROJECT_DIR$/php/rptpresupuesto.php" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -37,42 +42,103 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="rptlibcomp.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/rptlibcomp.html">
+      <file leaf-file-name="presupuestoctrl.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/controllers/presupuestoctrl.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.0">
-              <caret line="0" column="59" selection-start-line="0" selection-start-column="59" selection-end-line="0" selection-end-column="59" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="144" column="69" selection-start-line="144" selection-start-column="60" selection-end-line="144" selection-end-column="69" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="rptlibrocomprasctrl.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/js/controllers/rptlibrocomprasctrl.js">
+      <file leaf-file-name="presupuestosrvc.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/services/presupuestosrvc.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.62053573">
-              <caret line="56" column="69" selection-start-line="56" selection-start-column="69" selection-end-line="56" selection-end-column="69" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="rptlibrocompras.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/php/rptlibrocompras.php">
+      <file leaf-file-name="presupuesto.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/php/presupuesto.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.0754716">
-              <caret line="129" column="23" selection-start-line="129" selection-start-column="23" selection-end-line="129" selection-end-column="23" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="10" column="22" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="22" />
               <folding>
-                <element signature="e#179#5356#1#PHP" expanded="false" />
-                <element signature="e#5404#5877#1#PHP" expanded="false" />
-                <marker date="1528824854069" expanded="true" signature="4982:5093" placeholder="SELECT nomem..empresa..." />
-                <marker date="1528824854069" expanded="true" signature="5995:6162" placeholder="SELECT DATE_..." />
-                <marker date="1528824854069" expanded="true" signature="5995:6202" placeholder="SELECT DATE_..empresa..." />
-                <marker date="1528824854069" expanded="true" signature="5995:6203" placeholder="SELECT DATE_..empresa..." />
-                <marker date="1528824854069" expanded="true" signature="6076:6117" placeholder="SELECT UPPER..mes..." />
-                <marker date="1528824854069" expanded="true" signature="6076:6118" placeholder="SELECT UPPER..mes..." />
-                <marker date="1528824854069" expanded="true" signature="6392:6491" placeholder="SELECT codig..cuentac..." />
-                <marker date="1528824854069" expanded="true" signature="6547:7139" placeholder="SELECT c.id,..detallecontable..." />
+                <marker date="1528841338559" expanded="true" signature="2914:3028" placeholder="SELECT z.idp..." />
+                <marker date="1528841338559" expanded="true" signature="7459:7608" placeholder="UPDATE presu..." />
+                <marker date="1528841338559" expanded="true" signature="7491:7581" placeholder="SELECT IF(IS..detpresupuesto..." />
+                <marker date="1528841338559" expanded="true" signature="7756:7874" placeholder="SELECT IF(IS..detpresupuesto..." />
+                <marker date="1528841338559" expanded="true" signature="7943:7994" placeholder="SELECT exced..confpresupuestos..." />
+                <marker date="1528841338559" expanded="true" signature="8016:8043" placeholder="INSERT INTO detpresupuesto..." />
+                <marker date="1528841338559" expanded="true" signature="8611:8662" placeholder="SELECT exced..confpresupuestos..." />
+                <marker date="1528841338559" expanded="true" signature="8684:8708" placeholder="INSERT INTO presupuesto..." />
+                <marker date="1528841338559" expanded="true" signature="9570:9595" placeholder="UPDATE detpr..." />
+                <marker date="1528841338559" expanded="true" signature="10041:10063" placeholder="UPDATE presu..." />
+                <marker date="1528841338559" expanded="true" signature="10815:10864" placeholder="DELETE FROM ..." />
+                <marker date="1528841338559" expanded="true" signature="10892:10927" placeholder="DELETE FROM ..." />
+                <marker date="1528841338559" expanded="true" signature="11065:11204" placeholder="UPDATE presu..." />
+                <marker date="1528841338559" expanded="true" signature="11367:11535" placeholder="UPDATE presu..." />
+                <marker date="1528841338559" expanded="true" signature="11699:11867" placeholder="UPDATE presu..." />
+                <marker date="1528841338559" expanded="true" signature="12031:12143" placeholder="UPDATE presu..." />
+                <marker date="1528841338559" expanded="true" signature="12307:12419" placeholder="UPDATE presu..." />
+                <marker date="1528841338559" expanded="true" signature="12590:12740" placeholder="UPDATE presu..." />
+                <marker date="1528841338559" expanded="true" signature="16036:16154" placeholder="SELECT IF(IS..detpresupuesto..." />
+                <marker date="1528841338559" expanded="true" signature="16223:16274" placeholder="SELECT exced..confpresupuestos..." />
+                <marker date="1528841338559" expanded="true" signature="16296:16323" placeholder="INSERT INTO detpresupuesto..." />
+                <marker date="1528841338559" expanded="true" signature="16916:16941" placeholder="UPDATE detpr..." />
+                <marker date="1528841338559" expanded="true" signature="17409:17461" placeholder="SELECT idpre..detpresupuesto..." />
+                <marker date="1528841338559" expanded="true" signature="17489:17527" placeholder="DELETE FROM ..." />
+                <marker date="1528841338559" expanded="true" signature="19541:19569" placeholder="INSERT INTO notapresupuesto..." />
+                <marker date="1528841338559" expanded="true" signature="19921:19947" placeholder="UPDATE notap..." />
+                <marker date="1528841338559" expanded="true" signature="20224:20263" placeholder="DELETE FROM ..." />
+                <marker date="1528841338559" expanded="true" signature="20405:20579" placeholder="SELECT a.id,..detpagopresup..." />
+                <marker date="1528841338559" expanded="true" signature="20721:20856" placeholder="SELECT a.id,..detpagopresup..." />
+                <marker date="1528841338559" expanded="true" signature="25506:25596" placeholder="SELECT IF(MA..detpagopresup..." />
+                <marker date="1528841338559" expanded="true" signature="25629:25772" placeholder="INSERT INTO detpagopresup..." />
+                <marker date="1528841338559" expanded="true" signature="25988:26090" placeholder="UPDATE detpa..." />
+                <marker date="1528841338559" expanded="true" signature="26254:26291" placeholder="DELETE FROM ..." />
+                <marker date="1528841338559" expanded="true" signature="26421:26542" placeholder="UPDATE detpa..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="transegpresup.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pages/transegpresup.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="160" column="111" selection-start-line="160" selection-start-column="104" selection-end-line="160" selection-end-column="111" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="transegpresupctrl.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/controllers/transegpresupctrl.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="174" column="56" selection-start-line="174" selection-start-column="56" selection-end-line="174" selection-end-column="56" />
+              <folding>
+                <marker date="1528843498890" expanded="true" signature="4564:4594" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptpresupuesto.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/rptpresupuesto.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.1383721">
+              <caret line="32" column="0" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
+              <folding>
+                <marker date="1528927975471" expanded="true" signature="2143:2330" placeholder="SELECT a.idd..tranban..." />
+                <marker date="1528927975471" expanded="true" signature="3720:3984" placeholder="SELECT a.idd..tranban..." />
+                <marker date="1528927975471" expanded="true" signature="3720:4125" placeholder="SELECT a.idd..tranban..." />
+                <marker date="1528927975471" expanded="true" signature="5498:5763" placeholder="SELECT a.idd..tranban..." />
               </folding>
             </state>
           </provider>
@@ -101,7 +167,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/php/printcheckcontinuo.php" />
         <option value="$PROJECT_DIR$/php/printchequera.php" />
         <option value="$PROJECT_DIR$/php/printcheck.php" />
         <option value="$PROJECT_DIR$/php/empresa.php" />
@@ -113,11 +178,7 @@
         <option value="$PROJECT_DIR$/pages/genpagospln.html" />
         <option value="$PROJECT_DIR$/js/controllers/empresactrl.js" />
         <option value="$PROJECT_DIR$/pages/empresa.html" />
-        <option value="$PROJECT_DIR$/php/rptpresupuesto.php" />
         <option value="$PROJECT_DIR$/js/controllers/rptarchivobictrl.js" />
-        <option value="$PROJECT_DIR$/php/presupuesto.php" />
-        <option value="$PROJECT_DIR$/js/controllers/presupuestoctrl.js" />
-        <option value="$PROJECT_DIR$/pages/mntpresupuesto.html" />
         <option value="$PROJECT_DIR$/php/rptfactemitidas.php" />
         <option value="$PROJECT_DIR$/pages/rptfactsemitidas.html" />
         <option value="$PROJECT_DIR$/php/printchequeragyt.php" />
@@ -152,6 +213,11 @@
         <option value="$PROJECT_DIR$/php/rptlibrocompras.php" />
         <option value="$PROJECT_DIR$/pages/rptlibcomp.html" />
         <option value="$PROJECT_DIR$/js/controllers/rptlibrocomprasctrl.js" />
+        <option value="$PROJECT_DIR$/js/controllers/presupuestoctrl.js" />
+        <option value="$PROJECT_DIR$/php/presupuesto.php" />
+        <option value="$PROJECT_DIR$/pages/mntpresupuesto.html" />
+        <option value="$PROJECT_DIR$/js/controllers/transegpresupctrl.js" />
+        <option value="$PROJECT_DIR$/php/rptpresupuesto.php" />
       </list>
     </option>
   </component>
@@ -176,9 +242,8 @@
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" interpreter_name="PHP 5.6.8" />
   <component name="ProjectFrameBounds">
     <option name="x" value="-8" />
-    <option name="y" value="-8" />
     <option name="width" value="1936" />
-    <option name="height" value="1056" />
+    <option name="height" value="1047" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -205,6 +270,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -303,9 +371,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scratches" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -1151,15 +1216,16 @@
       <workItem from="1528225423350" duration="1880000" />
       <workItem from="1528299157485" duration="6000" />
       <workItem from="1528306835657" duration="716000" />
-      <workItem from="1528815118033" duration="9596000" />
+      <workItem from="1528815118033" duration="17283000" />
+      <workItem from="1528910161335" duration="9655000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2578007000" />
+    <option name="totallyTimeSpent" value="2595349000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
+    <frame x="-8" y="0" width="1936" height="1047" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -1168,7 +1234,6 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32900432" sideWeight="0.5" order="11" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32995737" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="WINDOWED" visible="false" show_stripe_button="true" weight="1.0" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" x="-3" y="20" width="1926" height="1023" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.15458423" sideWeight="0.49571735" order="0" side_tool="false" content_ui="combo" />
@@ -1177,15 +1242,16 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24946696" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1881663" sideWeight="0.50428265" order="4" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39978564" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="PHP-CGI Server" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32827735" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39978564" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -1215,93 +1281,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/pages/rptfactsemitidas.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-37.692307">
-          <caret line="84" column="26" selection-start-line="84" selection-start-column="26" selection-end-line="84" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/printchequeragyt.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.11967779">
-          <caret line="109" column="21" selection-start-line="109" selection-start-column="21" selection-end-line="109" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/services/rptingegrproysrvc.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/tranbanc.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="205" column="86" selection-start-line="205" selection-start-column="76" selection-end-line="205" selection-end-column="86" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/db.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.35172415">
-          <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-          <folding>
-            <marker date="1526494887236" expanded="true" signature="1624:1764" placeholder="SELECT id, d..isr..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/compra.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334">
-          <caret line="126" column="169" selection-start-line="126" selection-start-column="4" selection-end-line="126" selection-end-column="169" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/genpagosplnctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.20223464">
-          <caret line="67" column="0" selection-start-line="67" selection-start-column="0" selection-end-line="67" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/generaplnbi.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.07825086">
-          <caret line="4" column="24" selection-start-line="4" selection-start-column="24" selection-end-line="4" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptaguatree.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.09770115">
-          <caret line="5" column="65" selection-start-line="1" selection-start-column="0" selection-end-line="5" selection-end-column="65" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptbalancesaldos.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.17586207">
-          <caret line="9" column="55" selection-start-line="9" selection-start-column="4" selection-end-line="9" selection-end-column="55" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/rptagua.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="39" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/rptcompagua.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.55005753">
-          <caret line="41" column="103" selection-start-line="41" selection-start-column="103" selection-end-line="41" selection-end-column="103" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/app.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.018994413">
@@ -1334,13 +1313,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-5.9615383">
           <caret line="110" column="28" selection-start-line="110" selection-start-column="28" selection-end-line="110" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/mntpresupuesto.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-21.307692">
-          <caret line="88" column="238" selection-start-line="88" selection-start-column="166" selection-end-line="88" selection-end-column="238" />
         </state>
       </provider>
     </entry>
@@ -1502,21 +1474,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.28390804">
           <caret line="318" column="10" selection-start-line="318" selection-start-column="10" selection-end-line="318" selection-end-column="10" />
-          <folding>
-            <marker date="1528306946970" expanded="true" signature="3669:3883" placeholder="SELECT a.mon..plaproy..." />
-            <marker date="1528306946970" expanded="true" signature="5779:6274" placeholder="SELECT DISTI..compraproyecto..." />
-            <marker date="1528306946970" expanded="true" signature="6291:6809" placeholder="SELECT DISTI..detallecontable..." />
-            <marker date="1528306946970" expanded="true" signature="7111:7562" placeholder="SELECT a.idc..compraproyecto..." />
-            <marker date="1528306946970" expanded="true" signature="7583:8095" placeholder="SELECT a.idc..detallecontable..." />
-            <marker date="1528306946970" expanded="true" signature="8610:8824" placeholder="SELECT a.mon..plaproy..." />
-            <marker date="1528306946970" expanded="true" signature="14263:14453" placeholder="SELECT unida..unidad..." />
-            <marker date="1528306946970" expanded="true" signature="14732:14922" placeholder="SELECT unida..unidad..." />
-            <marker date="1528306946970" expanded="true" signature="15607:16102" placeholder="SELECT DISTI..compraproyecto..." />
-            <marker date="1528306946970" expanded="true" signature="16119:16637" placeholder="SELECT DISTI..detallecontable..." />
-            <marker date="1528306946970" expanded="true" signature="16907:17439" placeholder="SELECT a.idc..compraproyecto..." />
-            <marker date="1528306946970" expanded="true" signature="17460:17972" placeholder="SELECT a.idc..detallecontable..." />
-            <marker date="1528306946970" expanded="true" signature="21834:22048" placeholder="SELECT a.mon..plaproy..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1524,7 +1481,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="23" column="69" selection-start-line="23" selection-start-column="60" selection-end-line="23" selection-end-column="69" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1532,7 +1488,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.32254463">
           <caret line="17" column="25" selection-start-line="17" selection-start-column="25" selection-end-line="17" selection-end-column="25" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1540,24 +1495,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.14022988">
           <caret line="232" column="0" selection-start-line="232" selection-start-column="0" selection-end-line="232" selection-end-column="0" />
-          <folding>
-            <marker date="1528817011663" expanded="true" signature="356:394" placeholder="SELECT retis..empresa..." />
-            <marker date="1528817011663" expanded="true" signature="3464:3528" placeholder="SELECT congf..empresa..." />
-            <marker date="1528817011663" expanded="true" signature="4653:4691" placeholder="SELECT retis..empresa..." />
-            <marker date="1528817011663" expanded="true" signature="7418:7482" placeholder="SELECT congf..empresa..." />
-            <marker date="1528817011663" expanded="true" signature="9520:9584" placeholder="SELECT congf..empresa..." />
-            <marker date="1528817011663" expanded="true" signature="10347:10367" placeholder="INSERT INTO factura..." />
-            <marker date="1528817011663" expanded="true" signature="11505:11525" placeholder="INSERT INTO detfact..." />
-            <marker date="1528817011663" expanded="true" signature="11984:12070" placeholder="UPDATE lectu..." />
-            <marker date="1528817011663" expanded="true" signature="12144:12213" placeholder="UPDATE servi..." />
-            <marker date="1528817011663" expanded="true" signature="12611:12691" placeholder="UPDATE lectu..." />
-            <marker date="1528817011663" expanded="true" signature="12757:12826" placeholder="UPDATE servi..." />
-            <marker date="1528817011663" expanded="true" signature="12956:13022" placeholder="UPDATE empre..." />
-            <marker date="1528817011663" expanded="true" signature="13680:13919" placeholder="SELECT b.id ..contrato..." />
-            <marker date="1528817011663" expanded="true" signature="17062:17089" placeholder="SELECT b.id ..contrato..." />
-            <marker date="1528817011663" expanded="true" signature="19403:19430" placeholder="SELECT b.id ..contrato..." />
-            <marker date="1528817011663" expanded="true" signature="21906:21933" placeholder="SELECT b.id ..contrato..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1565,13 +1502,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.47241378">
           <caret line="36" column="63" selection-start-line="36" selection-start-column="63" selection-end-line="36" selection-end-column="63" />
-          <folding>
-            <marker date="1528817283360" expanded="true" signature="291:481" placeholder="SELECT DATE_..mes..." />
-            <marker date="1528817283360" expanded="true" signature="2183:2255" placeholder="SELECT DISTI..${$qGen}..." />
-            <marker date="1528817283360" expanded="true" signature="2428:2543" placeholder="SELECT DISTI..${$qGen}..." />
-            <marker date="1528817283360" expanded="true" signature="4140:4276" placeholder="SELECT (IFNU..lecturaservicio..." />
-            <marker date="1528817283360" expanded="true" signature="4698:4785" placeholder="SELECT CONCA..mes..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1579,49 +1509,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.37126437">
           <caret line="122" column="31" selection-start-line="122" selection-start-column="31" selection-end-line="122" selection-end-column="31" />
-          <folding>
-            <element signature="n#idc#0;n#!!top" expanded="false" />
-            <element signature="e#659#5844#1#PHP" expanded="false" />
-            <element signature="e#10857#15994#1#PHP" expanded="false" />
-            <marker date="1528821333143" expanded="true" signature="361:471" placeholder="INSERT INTO detallecontable..." />
-            <marker date="1528821333143" expanded="true" signature="1682:1752" placeholder="SELECT COUNT..detallecontable..." />
-            <marker date="1528821333143" expanded="true" signature="2253:2330" placeholder="SELECT id FR..cuentac..." />
-            <marker date="1528821333143" expanded="true" signature="2477:2504" placeholder="..." />
-            <marker date="1528821333143" expanded="true" signature="2797:2893" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1528821333143" expanded="true" signature="3031:3058" placeholder="..." />
-            <marker date="1528821333143" expanded="true" signature="3378:3474" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1528821333143" expanded="true" signature="3612:3639" placeholder="..." />
-            <marker date="1528821333143" expanded="true" signature="4710:4855" placeholder="SELECT b.id ..tiposervicioventa..." />
-            <marker date="1528821333143" expanded="true" signature="5014:5041" placeholder="..." />
-            <marker date="1528821333143" expanded="true" signature="5316:5411" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1528821333143" expanded="true" signature="5543:5570" placeholder="..." />
-            <marker date="1528821333143" expanded="true" signature="6094:6166" placeholder="DELETE FROM ..." />
-            <marker date="1528821333143" expanded="true" signature="6952:7022" placeholder="SELECT COUNT..detallecontable..." />
-            <marker date="1528821333143" expanded="true" signature="7236:7284" placeholder="SELECT TRIM(..contrato..." />
-            <marker date="1528821333143" expanded="true" signature="7521:7598" placeholder="SELECT id FR..cuentac..." />
-            <marker date="1528821333143" expanded="true" signature="7745:7772" placeholder="..." />
-            <marker date="1528821333143" expanded="true" signature="8065:8161" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1528821333143" expanded="true" signature="8299:8326" placeholder="..." />
-            <marker date="1528821333143" expanded="true" signature="8646:8742" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1528821333143" expanded="true" signature="8880:8907" placeholder="..." />
-            <marker date="1528821333143" expanded="true" signature="9680:9825" placeholder="SELECT b.id ..tiposervicioventa..." />
-            <marker date="1528821333143" expanded="true" signature="9984:10011" placeholder="..." />
-            <marker date="1528821333143" expanded="true" signature="10286:10381" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1528821333143" expanded="true" signature="10513:10540" placeholder="..." />
-            <marker date="1528821333143" expanded="true" signature="11140:11212" placeholder="DELETE FROM ..." />
-            <marker date="1528821333143" expanded="true" signature="11998:12068" placeholder="SELECT COUNT..detallecontable..." />
-            <marker date="1528821333143" expanded="true" signature="12360:12408" placeholder="SELECT TRIM(..contrato..." />
-            <marker date="1528821333143" expanded="true" signature="12685:12762" placeholder="SELECT id FR..cuentac..." />
-            <marker date="1528821333143" expanded="true" signature="12909:12936" placeholder="..." />
-            <marker date="1528821333143" expanded="true" signature="13229:13325" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1528821333143" expanded="true" signature="13463:13490" placeholder="..." />
-            <marker date="1528821333143" expanded="true" signature="13810:13906" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1528821333143" expanded="true" signature="14044:14071" placeholder="..." />
-            <marker date="1528821333143" expanded="true" signature="14844:14989" placeholder="SELECT b.id ..tiposervicioventa..." />
-            <marker date="1528821333143" expanded="true" signature="15148:15175" placeholder="..." />
-            <marker date="1528821333143" expanded="true" signature="15450:15545" placeholder="SELECT idcue..detcontempresa..." />
-            <marker date="1528821333143" expanded="true" signature="15677:15704" placeholder="..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1629,7 +1516,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.53125">
           <caret line="28" column="123" selection-start-line="28" selection-start-column="12" selection-end-line="28" selection-end-column="123" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1637,7 +1523,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.22767857">
           <caret line="12" column="58" selection-start-line="12" selection-start-column="51" selection-end-line="12" selection-end-column="58" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1645,18 +1530,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-3.0754716">
           <caret line="129" column="23" selection-start-line="129" selection-start-column="23" selection-end-line="129" selection-end-column="23" />
-          <folding>
-            <element signature="e#179#5356#1#PHP" expanded="false" />
-            <element signature="e#5404#5877#1#PHP" expanded="false" />
-            <marker date="1528824854069" expanded="true" signature="4982:5093" placeholder="SELECT nomem..empresa..." />
-            <marker date="1528824854069" expanded="true" signature="5995:6162" placeholder="SELECT DATE_..." />
-            <marker date="1528824854069" expanded="true" signature="5995:6202" placeholder="SELECT DATE_..empresa..." />
-            <marker date="1528824854069" expanded="true" signature="5995:6203" placeholder="SELECT DATE_..empresa..." />
-            <marker date="1528824854069" expanded="true" signature="6076:6117" placeholder="SELECT UPPER..mes..." />
-            <marker date="1528824854069" expanded="true" signature="6076:6118" placeholder="SELECT UPPER..mes..." />
-            <marker date="1528824854069" expanded="true" signature="6392:6491" placeholder="SELECT codig..cuentac..." />
-            <marker date="1528824854069" expanded="true" signature="6547:7139" placeholder="SELECT c.id,..detallecontable..." />
-          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptlibrocomprasctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.8292411">
+          <caret line="67" column="8" selection-start-line="67" selection-start-column="8" selection-end-line="67" selection-end-column="8" />
         </state>
       </provider>
     </entry>
@@ -1664,15 +1544,234 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="59" selection-start-line="0" selection-start-column="59" selection-end-line="0" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/mntpresupuesto.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-48.384617">
+          <caret line="74" column="55" selection-start-line="74" selection-start-column="55" selection-end-line="74" selection-end-column="55" />
+          <folding>
+            <element signature="n#style#0;n#th#0;n#tr#0;n#thead#0;n#table#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#th#6;n#tr#0;n#thead#0;n#table#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#th#7;n#tr#0;n#thead#0;n#table#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#td#0;n#tr#0;n#tbody#0;n#table#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#p#0;n#td#5;n#tr#0;n#tbody#0;n#table#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#td#6;n#tr#0;n#tbody#0;n#table#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#td#7;n#tr#0;n#tbody#0;n#table#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#td#8;n#tr#0;n#tbody#0;n#table#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#div#0;n#td#8;n#tr#0;n#tbody#0;n#table#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="false" />
+            <element signature="n#style#0;n#textarea#0;n#div#0;n#div#0;n#div#3;n#form#0;n#div#1;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/transegpresup.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="160" column="111" selection-start-line="160" selection-start-column="104" selection-end-line="160" selection-end-column="111" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptlibrocomprasctrl.js">
+    <entry file="file://$PROJECT_DIR$/php/presupuesto.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.62053573">
-          <caret line="56" column="69" selection-start-line="56" selection-start-column="69" selection-end-line="56" selection-end-column="69" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="10" column="22" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="22" />
+          <folding>
+            <marker date="1528841338559" expanded="true" signature="2914:3028" placeholder="SELECT z.idp..." />
+            <marker date="1528841338559" expanded="true" signature="7459:7608" placeholder="UPDATE presu..." />
+            <marker date="1528841338559" expanded="true" signature="7491:7581" placeholder="SELECT IF(IS..detpresupuesto..." />
+            <marker date="1528841338559" expanded="true" signature="7756:7874" placeholder="SELECT IF(IS..detpresupuesto..." />
+            <marker date="1528841338559" expanded="true" signature="7943:7994" placeholder="SELECT exced..confpresupuestos..." />
+            <marker date="1528841338559" expanded="true" signature="8016:8043" placeholder="INSERT INTO detpresupuesto..." />
+            <marker date="1528841338559" expanded="true" signature="8611:8662" placeholder="SELECT exced..confpresupuestos..." />
+            <marker date="1528841338559" expanded="true" signature="8684:8708" placeholder="INSERT INTO presupuesto..." />
+            <marker date="1528841338559" expanded="true" signature="9570:9595" placeholder="UPDATE detpr..." />
+            <marker date="1528841338559" expanded="true" signature="10041:10063" placeholder="UPDATE presu..." />
+            <marker date="1528841338559" expanded="true" signature="10815:10864" placeholder="DELETE FROM ..." />
+            <marker date="1528841338559" expanded="true" signature="10892:10927" placeholder="DELETE FROM ..." />
+            <marker date="1528841338559" expanded="true" signature="11065:11204" placeholder="UPDATE presu..." />
+            <marker date="1528841338559" expanded="true" signature="11367:11535" placeholder="UPDATE presu..." />
+            <marker date="1528841338559" expanded="true" signature="11699:11867" placeholder="UPDATE presu..." />
+            <marker date="1528841338559" expanded="true" signature="12031:12143" placeholder="UPDATE presu..." />
+            <marker date="1528841338559" expanded="true" signature="12307:12419" placeholder="UPDATE presu..." />
+            <marker date="1528841338559" expanded="true" signature="12590:12740" placeholder="UPDATE presu..." />
+            <marker date="1528841338559" expanded="true" signature="16036:16154" placeholder="SELECT IF(IS..detpresupuesto..." />
+            <marker date="1528841338559" expanded="true" signature="16223:16274" placeholder="SELECT exced..confpresupuestos..." />
+            <marker date="1528841338559" expanded="true" signature="16296:16323" placeholder="INSERT INTO detpresupuesto..." />
+            <marker date="1528841338559" expanded="true" signature="16916:16941" placeholder="UPDATE detpr..." />
+            <marker date="1528841338559" expanded="true" signature="17409:17461" placeholder="SELECT idpre..detpresupuesto..." />
+            <marker date="1528841338559" expanded="true" signature="17489:17527" placeholder="DELETE FROM ..." />
+            <marker date="1528841338559" expanded="true" signature="19541:19569" placeholder="INSERT INTO notapresupuesto..." />
+            <marker date="1528841338559" expanded="true" signature="19921:19947" placeholder="UPDATE notap..." />
+            <marker date="1528841338559" expanded="true" signature="20224:20263" placeholder="DELETE FROM ..." />
+            <marker date="1528841338559" expanded="true" signature="20405:20579" placeholder="SELECT a.id,..detpagopresup..." />
+            <marker date="1528841338559" expanded="true" signature="20721:20856" placeholder="SELECT a.id,..detpagopresup..." />
+            <marker date="1528841338559" expanded="true" signature="25506:25596" placeholder="SELECT IF(MA..detpagopresup..." />
+            <marker date="1528841338559" expanded="true" signature="25629:25772" placeholder="INSERT INTO detpagopresup..." />
+            <marker date="1528841338559" expanded="true" signature="25988:26090" placeholder="UPDATE detpa..." />
+            <marker date="1528841338559" expanded="true" signature="26254:26291" placeholder="DELETE FROM ..." />
+            <marker date="1528841338559" expanded="true" signature="26421:26542" placeholder="UPDATE detpa..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/services/presupuestosrvc.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/presupuestoctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="144" column="69" selection-start-line="144" selection-start-column="60" selection-end-line="144" selection-end-column="69" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/transegpresupctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="174" column="56" selection-start-line="174" selection-start-column="56" selection-end-line="174" selection-end-column="56" />
+          <folding>
+            <marker date="1528843498890" expanded="true" signature="4564:4594" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pln/pages/mnt/empleado.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.6973534">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/generaplnbi.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.17836593">
+          <caret line="286" column="41" selection-start-line="286" selection-start-column="41" selection-end-line="286" selection-end-column="41" />
+          <folding>
+            <marker date="1526942080546" expanded="true" signature="2310:2395" placeholder="SELECT idcue..detcontempresa..." />
+            <marker date="1526942080546" expanded="true" signature="2564:2592" placeholder="INSERT INTO detallecontable..." />
+            <marker date="1526942080546" expanded="true" signature="9791:9902" placeholder="SELECT id FR..cuentac..." />
+            <marker date="1526942080546" expanded="true" signature="10453:10581" placeholder="SELECT COUNT..tranban..." />
+            <marker date="1526942080546" expanded="true" signature="10669:10689" placeholder="INSERT INTO tranban..." />
+            <marker date="1526942080546" expanded="true" signature="11167:11206" placeholder="SELECT idcue..banco..." />
+            <marker date="1526942080546" expanded="true" signature="11378:11440" placeholder="UPDATE empre..." />
+            <marker date="1526942080546" expanded="true" signature="13203:13238" placeholder="SELECT SUM(y..${$query}..." />
+            <marker date="1526942080546" expanded="true" signature="13788:13940" placeholder="SELECT COUNT..tranban..." />
+            <marker date="1526942080546" expanded="true" signature="14049:14069" placeholder="INSERT INTO tranban..." />
+            <marker date="1526942080546" expanded="true" signature="14633:14672" placeholder="SELECT idcue..banco..." />
+            <marker date="1526942080546" expanded="true" signature="14926:14994" placeholder="UPDATE banco..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/services/tranbancsrvc.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/tranbanc.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.230769">
+          <caret line="74" column="58" selection-start-line="74" selection-start-column="50" selection-end-line="74" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/tranbancctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="251" column="32" selection-start-line="251" selection-start-column="32" selection-end-line="251" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/tranbanc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.923077">
+          <caret line="56" column="109" selection-start-line="56" selection-start-column="109" selection-end-line="56" selection-end-column="109" />
+          <folding>
+            <marker date="1525796639343" expanded="true" signature="3396:3485" placeholder="SELECT esloc..moneda..." />
+            <marker date="1525796639343" expanded="true" signature="3435:3473" placeholder="SELECT idmon..banco..." />
+            <marker date="1525796639343" expanded="true" signature="3822:3861" placeholder="SELECT idemp..banco..." />
+            <marker date="1525796639343" expanded="true" signature="3914:3953" placeholder="SELECT idcue..banco..." />
+            <marker date="1525796639343" expanded="true" signature="4146:4235" placeholder="SELECT idcue..detcontempresa..." />
+            <marker date="1525796639343" expanded="true" signature="4315:4406" placeholder="INSERT INTO detallecontable..." />
+            <marker date="1525796639343" expanded="true" signature="4595:4686" placeholder="INSERT INTO detallecontable..." />
+            <marker date="1525796639343" expanded="true" signature="5017:5179" placeholder="INSERT INTO tranban..." />
+            <marker date="1525796639343" expanded="true" signature="5704:5762" placeholder="UPDATE banco..." />
+            <marker date="1525796639343" expanded="true" signature="6015:6094" placeholder="UPDATE detpa..." />
+            <marker date="1525796639343" expanded="true" signature="6250:6289" placeholder="SELECT idcue..banco..." />
+            <marker date="1525796639343" expanded="true" signature="6352:6443" placeholder="INSERT INTO detallecontable..." />
+            <marker date="1525796639343" expanded="true" signature="6807:6858" placeholder="UPDATE tranb..." />
+            <marker date="1525796639343" expanded="true" signature="8006:8084" placeholder="UPDATE detpa..." />
+            <marker date="1525796639343" expanded="true" signature="8783:8841" placeholder="SELECT tipot..tranban..." />
+            <marker date="1525796639343" expanded="true" signature="8907:8963" placeholder="UPDATE banco..." />
+            <marker date="1525796639343" expanded="true" signature="8998:9075" placeholder="UPDATE reemb..." />
+            <marker date="1525796639343" expanded="true" signature="9097:9140" placeholder="DELETE FROM ..." />
+            <marker date="1525796639343" expanded="true" signature="9168:9212" placeholder="DELETE FROM ..." />
+            <marker date="1525796639343" expanded="true" signature="9240:9300" placeholder="DELETE FROM ..." />
+            <marker date="1525796639343" expanded="true" signature="9328:9359" placeholder="DELETE FROM ..." />
+            <marker date="1525796639343" expanded="true" signature="10552:10699" placeholder="SELECT id , ..tranban..." />
+            <marker date="1525796639343" expanded="true" signature="11129:11251" placeholder="UPDATE tranb..." />
+            <marker date="1525796639343" expanded="true" signature="11432:11519" placeholder="UPDATE tranb..." />
+            <marker date="1525796639343" expanded="true" signature="11665:11790" placeholder="UPDATE tranb..." />
+            <marker date="1525796639343" expanded="true" signature="11819:11890" placeholder="UPDATE detal..." />
+            <marker date="1525796639343" expanded="true" signature="11916:11960" placeholder="DELETE FROM ..." />
+            <marker date="1525796639343" expanded="true" signature="11986:12039" placeholder="UPDATE reemb..." />
+            <marker date="1525796639343" expanded="true" signature="12139:12271" placeholder="SELECT id, C..proveedor..." />
+            <marker date="1525796639343" expanded="true" signature="12139:12277" placeholder="SELECT id, C..." />
+            <marker date="1525796639343" expanded="true" signature="12295:12442" placeholder="SELECT id, C..beneficiario..." />
+            <marker date="1525796639343" expanded="true" signature="12665:12750" placeholder="SELECT b.idm..tranban..." />
+            <marker date="1525796639343" expanded="true" signature="12804:12890" placeholder="SELECT b.ide..tranban..." />
+            <marker date="1525796639343" expanded="true" signature="13485:13588" placeholder="SELECT idcom..detpagocompra..." />
+            <marker date="1525796639343" expanded="true" signature="14503:14633" placeholder="SELECT idree..compra..." />
+            <marker date="1525796639343" expanded="true" signature="15860:15926" placeholder="SELECT SUM(m..doctotranban..." />
+            <marker date="1525796639343" expanded="true" signature="16114:16155" placeholder="SELECT estat..reembolso..." />
+            <marker date="1525796639343" expanded="true" signature="16212:16274" placeholder="UPDATE reemb..." />
+            <marker date="1525796639343" expanded="true" signature="16348:16437" placeholder="UPDATE reemb..." />
+            <marker date="1525796639343" expanded="true" signature="17910:17994" placeholder="INSERT INTO detallecontable..." />
+            <marker date="1525796639343" expanded="true" signature="18445:18538" placeholder="SELECT idcue..detcontempresa..." />
+            <marker date="1525796639343" expanded="true" signature="18597:18727" placeholder="SELECT SUM(b..compra..." />
+            <marker date="1525796639343" expanded="true" signature="18818:18950" placeholder="SELECT SUM(b..compra..." />
+            <marker date="1525796639343" expanded="true" signature="19042:19134" placeholder="INSERT INTO detallecontable..." />
+            <marker date="1525796639343" expanded="true" signature="19404:19494" placeholder="SELECT (a.to..compra..." />
+            <marker date="1525796639343" expanded="true" signature="19783:19850" placeholder="UPDATE tranb..." />
+            <marker date="1525796639343" expanded="true" signature="20028:20118" placeholder="INSERT INTO doctotranban..." />
+            <marker date="1525796639343" expanded="true" signature="20488:20600" placeholder="INSERT INTO detpagocompra..." />
+            <marker date="1525796639343" expanded="true" signature="20781:20848" placeholder="UPDATE tranb..." />
+            <marker date="1525796639343" expanded="true" signature="23699:23766" placeholder="UPDATE tranb..." />
+            <marker date="1525796639343" expanded="true" signature="24046:24099" placeholder="UPDATE docto..." />
+            <marker date="1525796639343" expanded="true" signature="24128:24188" placeholder="UPDATE detpa..." />
+            <marker date="1525796639343" expanded="true" signature="24218:24308" placeholder="SELECT (a.to..compra..." />
+            <marker date="1525796639343" expanded="true" signature="24853:24889" placeholder="DELETE FROM ..." />
+            <marker date="1525796639343" expanded="true" signature="24918:24961" placeholder="DELETE FROM ..." />
+            <marker date="1525796639343" expanded="true" signature="24992:25082" placeholder="SELECT (a.to..compra..." />
+            <marker date="1525796639343" expanded="true" signature="34593:34721" placeholder="SELECT COUNT..tranban..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptpresupuesto.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.1383721">
+          <caret line="32" column="0" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
+          <folding>
+            <marker date="1528927975471" expanded="true" signature="2143:2330" placeholder="SELECT a.idd..tranban..." />
+            <marker date="1528927975471" expanded="true" signature="3720:3984" placeholder="SELECT a.idd..tranban..." />
+            <marker date="1528927975471" expanded="true" signature="3720:4125" placeholder="SELECT a.idd..tranban..." />
+            <marker date="1528927975471" expanded="true" signature="5498:5763" placeholder="SELECT a.idd..tranban..." />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -1,5 +1,6 @@
 <style>
     .tipo{ font-size: 9pt !important; }
+    .bld{ font-weight: bold; }
 </style>
 <div class="container" ng-controller="presupuestoCtrl">
     <ul class="nav nav-tabs">
@@ -33,8 +34,19 @@
                                 </div>
                                 <input type="text" class="form-control input-sm" style="width: 50em" ng-model="buscador.$" placeholder="Buscar..."/><br/>
                                 <div class="btn-group" role="group" aria-label="..." style="padding-top: 0.75em; width: 100%; margin: 0 auto !important;">
+                                    <!--
                                     <button type="button" class="btn btn-default btn-sm tipo" ng-repeat="ep in lstestatuspresup" ng-click="getLstPresupuestos(ep.id)">
                                         {{ep.descestatuspresup}}
+                                    </button>
+                                    -->
+                                    <button type="button" class="btn btn-default btn-sm tipo" ng-click="getLstPresupuestos('1,2,3')">
+                                        En proceso
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-sm tipo" ng-click="getLstPresupuestos('4,5')">
+                                        Terminados
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-sm tipo" ng-click="getLstPresupuestos('6')">
+                                        Anulados
                                     </button>
                                     <button type="button" class="btn btn-default btn-sm tipo" ng-click="getLstPresupuestos(null)">
                                         Todos
@@ -56,8 +68,8 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="p in lstpresupuestos | filter:buscador" ng-click="getPresupuesto(p.id)">
-                            <td style="white-space: nowrap">{{+p.tipo == 1 ? 'OTS' : 'OTM'}}-{{p.id}}</td>
+                        <tr ng-repeat="p in lstpresupuestos | filter:buscador" ng-click="getPresupuesto(p.id)" ng-class="{'bld': +p.tipo!= 1}">
+                            <td style="white-space: nowrap">{{p.tipostr}}-{{p.id}}</td>
                             <td>{{p.fechasolicitud | date:'dd/MM/yyyy'}}</td>
                             <td>{{p.proyecto | shortenStr:20}}</td>
                             <td>{{p.abreviaempre}}</td>

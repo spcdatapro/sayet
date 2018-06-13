@@ -12,6 +12,9 @@ $app->post('/rptpresupuesto', function(){
     $query = "SELECT DATE_FORMAT(NOW(), '%d/%m/%Y') AS fecha";
     $generales = $db->getQuery($query)[0];
 
+    $idot = 0;
+    if(isset($d->idot)){ $idot = (int)$d->idot > 0 ? (int)$d->idot : 0; }
+
     $query = "SELECT a.id AS idpresupuesto, a.idestatuspresupuesto, b.descestatuspresup AS estatuspresupuesto, DATE_FORMAT(a.fechasolicitud, '%d/%m/%Y') AS fechasolicitud, a.idproyecto, c.nomproyecto AS proyecto, ";
     $query.= "a.idempresa, d.nomempresa AS empresa, d.abreviatura AS abreviaempresa, a.idtipogasto, e.desctipogast AS tipogasto, a.idmoneda, f.simbolo AS moneda, FORMAT(a.total, 2) AS totalpresupuesto, a.notas, ";
     $query.= "DATE_FORMAT(a.fechacreacion, '%d/%m/%Y') AS fechacreacion, a.idusuario, g.iniciales AS creadopor, DATE_FORMAT(a.fhenvioaprobacion, '%d/%m/%Y') AS fhaprobacion, a.idusuarioaprueba, h.iniciales AS aprobadopor, ";
@@ -20,33 +23,41 @@ $app->post('/rptpresupuesto', function(){
     $query.= "FROM presupuesto a LEFT JOIN estatuspresupuesto b ON b.id = a.idestatuspresupuesto LEFT JOIN proyecto c ON c.id = a.idproyecto LEFT JOIN empresa d ON d.id = a.idempresa LEFT JOIN tipogasto e ON e.id = a.idtipogasto ";
     $query.= "LEFT JOIN moneda f ON f.id = a.idmoneda LEFT JOIN usuario g ON g.id = a.idusuario LEFT JOIN usuario h ON h.id = a.idusuarioaprueba LEFT JOIN usuario i ON i.id = a.lastuser ";
     $query.= "LEFT JOIN ( SELECT t.total, t.simbolo ,t.isr ,a.idpresupuesto FROM detpresupuesto a LEFT JOIN subtipogasto c ON c.id = a.idsubtipogasto ";
-    $query.= "LEFT JOIN ( SELECT v.idot,SUM(v.monto) AS total , v.simbolo AS simbolo, SUM(v.isr) AS isr FROM ( SELECT a.iddetpresup AS idot, a.monto AS monto, c.simbolo  , 0.00 AS isr FROM tranban a LEFT JOIN banco b ON b.id = a.idbanco ";
-    $query.= "LEFT JOIN moneda c ON c.id = b.idmoneda WHERE a.anulado = 0 UNION ALL SELECT a.ordentrabajo AS idot, a.totfact AS monto , b.simbolo  , FORMAT(a.isr, 2) AS isr FROM compra a LEFT JOIN moneda b ON b.id = a.idmoneda ) v ";
+    $query.= "LEFT JOIN ( SELECT v.idot,SUM(v.monto) AS total , v.simbolo AS simbolo, SUM(v.isr) AS isr FROM ( ";
+    $query.= "SELECT a.iddetpresup AS idot, IF(c.simbolo <> f.simbolo, ROUND(a.monto / d.tipocambio, 2), a.monto) AS monto, c.simbolo  , 0.00 AS isr FROM tranban a LEFT JOIN banco b ON b.id = a.idbanco ";
+    $query.= "LEFT JOIN moneda c ON c.id = b.idmoneda LEFT JOIN detpresupuesto d ON d.id = a.iddetpresup LEFT JOIN presupuesto e ON e.id = d.idpresupuesto LEFT JOIN moneda f ON f.id = e.idmoneda ";
+    $query.= "WHERE a.anulado = 0 AND a.iddetpresup > 0 UNION ALL SELECT a.ordentrabajo AS idot, a.totfact AS monto , b.simbolo  , FORMAT(a.isr, 2) AS isr FROM compra a LEFT JOIN moneda b ON b.id = a.idmoneda ) v ";
     $query.= "GROUP BY v.idot ) t ON a.id = t.idot ) st ON st.idpresupuesto= a.id ";
     $query.= "WHERE a.id = $d->idpresupuesto";
     $presupuesto = $db->getQuery($query)[0];
 
     $query = "SELECT a.id AS idot, a.idpresupuesto, a.correlativo, a.idproveedor, b.nombre AS proveedor, a.idsubtipogasto, c.descripcion AS subtipogasto, IF(a.coniva = 1, 'Incluye I.V.A.', '') AS coniva, FORMAT(a.monto, 2) AS monto, ";
-    $query.= "FORMAT(a.tipocambio, 2), CONCAT(FORMAT(a.excedente,2), '%') AS excedente,FORMAT(t.total,2) as total , FORMAT((t.total*100)/a.monto,2) AS porcentaje_avance  , t.simbolo ,t.isr     ";
+    $query.= "FORMAT(a.tipocambio, 2) AS tipocambio, CONCAT(FORMAT(a.excedente,2), '%') AS excedente,FORMAT(t.total,2) as total, FORMAT((t.total*100)/a.monto, 2) AS porcentaje_avance, t.simbolo, t.isr, FORMAT(t.montoflat, 2) AS montoflat, ";
+    $query.= "s.simbolo AS monedapresup ";
     $query.= "FROM detpresupuesto a LEFT JOIN proveedor b ON b.id = a.idproveedor LEFT JOIN subtipogasto c ON c.id = a.idsubtipogasto ";
-    $query.= "LEFT JOIN ( SELECT v.idot,SUM(v.monto) AS total , v.simbolo AS simbolo, v.isr AS isr FROM ( ";
-    $query.= "SELECT a.iddetpresup AS idot, a.monto AS monto , c.simbolo  , 0.00 AS isr  FROM tranban a LEFT JOIN banco b ON b.id = a.idbanco LEFT JOIN moneda c ON c.id = b.idmoneda ";
-    $query.= "WHERE a.anulado = 0 ";
+    $query.= "LEFT JOIN ( SELECT v.idot,SUM(v.monto) AS total , v.simbolo AS simbolo, v.isr AS isr, v.montoflat FROM ( ";
+    $query.= "SELECT a.iddetpresup AS idot, IF(c.simbolo <> f.simbolo, ROUND(a.monto / d.tipocambio, 2), a.monto) AS monto, c.simbolo, 0.00 AS isr, a.monto AS montoflat ";
+    $query.= "FROM tranban a LEFT JOIN banco b ON b.id = a.idbanco LEFT JOIN moneda c ON c.id = b.idmoneda LEFT JOIN detpresupuesto d ON d.id = a.iddetpresup LEFT JOIN presupuesto e ON e.id = d.idpresupuesto LEFT JOIN moneda f ON f.id = e.idmoneda ";
+    $query.= "WHERE a.anulado = 0 AND a.iddetpresup > 0 ";
     $query.= "UNION ALL ";
-    $query.= "SELECT a.ordentrabajo AS idot, a.totfact AS monto , b.simbolo  , FORMAT(a.isr, 2) AS isr  ";
-    $query.= "FROM compra a LEFT JOIN moneda b ON b.id = a.idmoneda ) v GROUP BY v.idot ) t ON a.id = t.idot ";
+    $query.= "SELECT a.ordentrabajo AS idot, a.totfact AS monto , b.simbolo  , FORMAT(a.isr, 2) AS isr, a.totfact AS montoflat  ";
+    $query.= "FROM compra a LEFT JOIN moneda b ON b.id = a.idmoneda ) v GROUP BY v.idot ) t ON a.id = t.idot LEFT JOIN presupuesto r ON r.id = a.idpresupuesto LEFT JOIN moneda s ON s.id = r.idmoneda ";
     $query.= "WHERE a.origenprov = 1 AND a.idpresupuesto = $d->idpresupuesto ";
+    $query.= $idot > 0 ? "AND a.id = $idot " : '';
     $query.= "UNION ";
     $query.= "SELECT a.id AS idot, a.idpresupuesto, a.correlativo, a.idproveedor, b.nombre AS proveedor, a.idsubtipogasto, c.descripcion AS subtipogasto, IF(a.coniva = 1, 'Incluye I.V.A.', '') AS coniva, FORMAT(a.monto, 2) AS monto, ";
-    $query.= "FORMAT(a.tipocambio, 2), CONCAT(FORMAT(a.excedente,2), '%') AS excedente,FORMAT(t.total,2) as total , FORMAT((t.total*100)/a.monto,2) AS porcentaje_avance  , t.simbolo ,t.isr     ";
+    $query.= "FORMAT(a.tipocambio, 2) AS tipocambio, CONCAT(FORMAT(a.excedente,2), '%') AS excedente,FORMAT(t.total,2) as total, FORMAT((t.total*100)/a.monto,2) AS porcentaje_avance, t.simbolo, t.isr, FORMAT(t.montoflat, 2) AS montoflat, ";
+    $query.= "s.simbolo AS monedapresup ";
     $query.= "FROM detpresupuesto a LEFT JOIN beneficiario b ON b.id = a.idproveedor LEFT JOIN subtipogasto c ON c.id = a.idsubtipogasto ";
-    $query.= "LEFT JOIN ( SELECT v.idot,SUM(v.monto) AS total , v.simbolo AS simbolo, v.isr AS isr FROM ( ";
-    $query.= "SELECT a.iddetpresup AS idot, a.monto AS monto , c.simbolo  , 0.00 AS isr  FROM tranban a LEFT JOIN banco b ON b.id = a.idbanco LEFT JOIN moneda c ON c.id = b.idmoneda ";
-    $query.= "WHERE a.anulado = 0 ";
+    $query.= "LEFT JOIN ( SELECT v.idot,SUM(v.monto) AS total , v.simbolo AS simbolo, v.isr AS isr, v.montoflat FROM ( ";
+    $query.= "SELECT a.iddetpresup AS idot, IF(c.simbolo <> f.simbolo, ROUND(a.monto / d.tipocambio, 2), a.monto) AS monto , c.simbolo, 0.00 AS isr, a.monto AS montoflat ";
+    $query.= "FROM tranban a LEFT JOIN banco b ON b.id = a.idbanco LEFT JOIN moneda c ON c.id = b.idmoneda LEFT JOIN detpresupuesto d ON d.id = a.iddetpresup LEFT JOIN presupuesto e ON e.id = d.idpresupuesto LEFT JOIN moneda f ON f.id = e.idmoneda ";
+    $query.= "WHERE a.anulado = 0 AND a.iddetpresup > 0 ";
     $query.= "UNION ALL ";
-    $query.= "SELECT a.ordentrabajo AS idot, a.totfact AS monto , b.simbolo  , FORMAT(a.isr, 2) AS isr  ";
-    $query.= "FROM compra a LEFT JOIN moneda b ON b.id = a.idmoneda ) v GROUP BY v.idot ) t ON a.id = t.idot ";
+    $query.= "SELECT a.ordentrabajo AS idot, a.totfact AS monto , b.simbolo  , FORMAT(a.isr, 2) AS isr, a.totfact AS montoflat  ";
+    $query.= "FROM compra a LEFT JOIN moneda b ON b.id = a.idmoneda ) v GROUP BY v.idot ) t ON a.id = t.idot LEFT JOIN presupuesto r ON r.id = a.idpresupuesto LEFT JOIN moneda s ON s.id = r.idmoneda ";
     $query.= "WHERE a.origenprov = 2 AND a.idpresupuesto = $d->idpresupuesto ";
+    $query.= $idot > 0 ? "AND a.id = $idot " : '';
     $query.= "ORDER BY 3";
 
     $presupuesto->ots = $db->getQuery($query);
