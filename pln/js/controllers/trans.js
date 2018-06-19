@@ -259,4 +259,91 @@ angular.module('cpm')
 
         $scope.buscar({})
     }
+])
+.controller('transBono14Controller', ['$scope', '$http', 'nominaServicios', 'empresaSrvc', 
+    function($scope, $http, nominaServicios, empresaSrvc){
+        $scope.resultados = false;
+        $scope.nomina = [];
+        $scope.empresas  = [];
+        $scope.shingresos_uno = false;
+        $scope.shdescuentos = false;
+        $scope.primeraQuincena = false;
+        $scope.shingresos_dos = false;
+        $scope.edicion = true;
+        
+        $scope.nfecha = null
+        $scope.nempresa = null
+
+        $scope.buscar = function(datos) {
+            $("#btnBuscar").button('loading');
+            $scope.nomina = [];
+
+            $scope.primeraQuincena = datos.fch.getDate() === 15 ? true : false;
+
+            datos.fecha = datos.fch.getFullYear()+'-'+(datos.fch.getMonth()+1)+'-'+datos.fch.getDate();
+
+            $scope.nfecha = datos.fecha
+            $scope.nempresa = datos.empresa
+
+            nominaServicios.buscarBono14(datos).then(function(data){
+                if (data.exito == 1) {
+                    $scope.nomina = data.resultados;
+                } else {
+                    alert(data.mensaje);
+                }
+
+                $("#btnBuscar").button('reset');
+                
+                $scope.resultados = true;
+                $scope.showIngresos();
+            });
+        };
+
+        empresaSrvc.lstEmpresas().then(function(d){
+            $scope.empresas = d;
+        });
+
+        $scope.showIngresos = function() {
+            $scope.edicion = true;
+            $scope.shdescuentos = false;
+
+            if ($scope.primeraQuincena) {
+                $scope.shingresos_uno = true;
+                $scope.shingresos_dos = false;
+            } else {
+                $scope.shingresos_uno = false;
+                $scope.shingresos_dos = true;
+            }
+        }
+
+        $scope.showDescuentos = function() {
+            $scope.edicion = true;
+            $scope.shdescuentos = $scope.primeraQuincena === true ? false : true;
+            $scope.shingresos_uno = false;
+            $scope.shingresos_dos = false;
+        }
+
+        $scope.showTerminar = function() {
+            $scope.edicion = false;
+        }
+
+        $scope.actualizarNomina = function(n) {
+            nominaServicios.actualizarNomina(n).then(function(data){
+            });
+        }
+
+        $scope.terminarPlanilla = function() {
+            if (confirm('¿Desea continuar?')) {
+                if ($scope.fecha !== null) {
+                    var datos = {'fecha':$scope.nfecha}
+                    if ($scope.nempresa) { datos['empresa'] = $scope.nempresa }
+                    nominaServicios.terminarPlanilla(datos).then(function(res){
+                        alert(res.mensaje)
+                    })
+                } else {
+                    alert('Por favor seleccione una fecha y haga clic en buscar')
+                }
+            }
+        }
+    }
 ]);

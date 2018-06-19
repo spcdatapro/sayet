@@ -198,6 +198,13 @@ class Nomina extends Principal
 
 				$datos = [];
 
+				if (isset($args['bono14'])) {
+					$e->set_bonocatorce();
+				}
+
+				$datos['bonocatorce']     = $e->get_bonocatorce();
+				$datos['bonocatorcedias'] = $e->get_bonocatorce_dias();
+
 				# Pago cada quincena
 				if ($dia == 15) {
 					if ($e->emp->formapago == 1) {
@@ -277,6 +284,8 @@ class Nomina extends Principal
 				], 
 				[
 					"plnnomina.id",
+					"plnnomina.idempresa",
+					"b.idempresadebito",
 					"b.activo"
 				],
 				[
@@ -289,7 +298,7 @@ class Nomina extends Principal
 			);
 
 			foreach ($tmp as $row) {
-				if ($row['activo'] == 0) {
+				if (($row['activo'] == 0) || ($row["idempresa"] != $row["idempresadebito"])) {
 					$this->db->delete("plnnomina", ['id' => $row['id']]);
 				}
 			}
@@ -329,7 +338,14 @@ class Nomina extends Principal
 
 		$sql = <<<EOT
 SELECT 
-    a.*, b.nombre, b.apellidos, b.dpi, b.idempresaactual, c.nombre AS nomempresa, c.pigss
+    a.*, 
+    b.nombre, 
+    b.apellidos, 
+    b.dpi, 
+    b.idempresaactual, 
+    b.ingreso,
+    c.nombre AS nomempresa, 
+    c.pigss
 FROM
     plnnomina a
         JOIN
@@ -381,6 +397,7 @@ EOT;
 				'tvacaciones'      => 'Vacacioness:',
 				'vvacaciones'      => $row->vacaciones,
 				'vbono14'          => $row->bonocatorce,
+				'vbono14dias'      => $row->bonocatorcedias,
 				'taguinaldo'       => 'Aguinaldo:',
 				'vaguinaldo'       => $row->aguinaldo,
 				'tindemnizacion'   => 'Indemnizacion:',
@@ -411,7 +428,8 @@ EOT;
 				'vbonoanual'       => 0,
 				'vafiliacionigss'  => $emp->emp->igss,
 				'vbaja'            => ($emp->emp->baja === NULL ? '':formatoFecha($emp->emp->baja, 1)),
-				'vpigss'           => $row->pigss
+				'vpigss'           => $row->pigss,
+				'vfechaingreso'    => formatoFecha($row->ingreso, 1)
 			];
 		}
 
@@ -532,6 +550,28 @@ EOT;
 			'tp_irtra'                  => number_format($args['cp_irtra'], 2),
 			'tp_total'                  => number_format($args['cp_igss']+$args['cp_intecap']+$args['cp_irtra']+$args['ct_igss'], 2),
 			'r_igss_firma'				=> str_repeat("_", 50) . "\n(Firma del Patrono o su Representante Lega)"
+		];
+	}
+
+	public function get_cabecera_bono14($args = [])
+	{
+
+		$pasado = date('Y-m-t', strtotime('-1 year', strtotime($args['fal'])));
+		$fdel   = date('Y-m-d', strtotime('+1 days', strtotime($pasado)));
+
+		return [
+			'titulon'     => 'Módulo de Planillas',
+			'subtitulo'   => "Listado de Bono 14",
+			'mes'         => 'Período del '.formatoFecha($fdel, 1).' al '.formatoFecha($args['fal'], 1),
+			'tcodigot'    => "Código",
+			'tnombre'     => "Nombre del Empleado",
+			'tsueldo'     => "Sueldo Mensual",
+			'tingreso'    => "Fecha Ingreso",
+			'tdias'		  => "Días",
+			'tbono14'     => "Bono 14",
+			'tlineat'     => str_repeat("_", 160),
+			'tlineapiet'  => str_repeat("_", 160),
+			'tnopaginat'  => "Página No. "
 		];
 	}
 }

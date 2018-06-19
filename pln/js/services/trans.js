@@ -6,6 +6,9 @@ angular.module('cpm')
         buscar: function(obj){
             return comunFact.doGETJ(urlBase + '/buscar', obj);
         },
+        buscarBono14: function(obj){
+            return comunFact.doGETJ(urlBase + '/buscar_bono14', obj);
+        },
         getEmpleado: function(emp){
             return comunFact.doGET(urlBase + '/get_empleado/' + emp);
         },

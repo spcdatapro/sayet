@@ -16,6 +16,8 @@ class Empleado extends Principal
 	protected $nmes;
 	protected $nanio;
 	protected $mesesCalculo = 0;
+	protected $bonocatorce = 0;
+	protected $bonocatorcedias = 0;
 	
 	function __construct($id = '')
 	{
@@ -738,5 +740,40 @@ EOT;
 		$tmp['baja'] = empty($this->emp->baja) ? '' : formatoFecha($this->emp->baja, 1);
 
 		return $tmp;
+	}
+
+	public function set_bonocatorce()
+	{
+		if ($this->ndia == 15) {
+			$fecha = date('Y-m-t', strtotime('-1 months', strtotime($this->nfecha))); 
+		} else {
+			$fecha = $this->nfecha;
+		}
+
+		$pasado = date('Y-m-t', strtotime('-1 year', strtotime($fecha)));
+		$inicio = date('Y-m-d', strtotime('+1 days', strtotime($pasado)));
+
+		$uno     = new DateTime($inicio);
+		$ingreso = new DateTime($this->emp->ingreso);
+
+		if ($ingreso <= $uno) {
+			$this->bonocatorcedias = 365;
+			$this->bonocatorce     = $this->emp->sueldo;
+		} else {
+			$actual = new DateTime($fecha);
+			$interval = $ingreso->diff($actual);
+			$this->bonocatorcedias = $interval->format('%a');
+			$this->bonocatorce     = (($this->emp->sueldo/365)*$this->bonocatorcedias);
+		}
+	}
+
+	public function get_bonocatorce()
+	{
+		return $this->bonocatorce;
+	}
+
+	public function get_bonocatorce_dias()
+	{
+		return $this->bonocatorcedias;
 	}
 }
