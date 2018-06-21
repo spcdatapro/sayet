@@ -744,6 +744,8 @@ EOT;
 
 	public function set_bonocatorce()
 	{
+		$this->set_meses_calculo(6);
+
 		if ($this->ndia == 15) {
 			$fecha = date('Y-m-t', strtotime('-1 months', strtotime($this->nfecha))); 
 		} else {
@@ -758,12 +760,12 @@ EOT;
 
 		if ($ingreso <= $uno) {
 			$this->bonocatorcedias = 365;
-			$this->bonocatorce     = $this->emp->sueldo;
+			$this->bonocatorce     = $this->get_sueldo_promedio();
 		} else {
 			$actual = new DateTime($fecha);
 			$interval = $ingreso->diff($actual);
 			$this->bonocatorcedias = $interval->format('%a');
-			$this->bonocatorce     = (($this->emp->sueldo/365)*$this->bonocatorcedias);
+			$this->bonocatorce     = (($this->get_sueldo_promedio()/365)*$this->bonocatorcedias);
 		}
 	}
 
