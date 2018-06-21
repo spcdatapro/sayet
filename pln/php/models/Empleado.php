@@ -460,7 +460,7 @@ class Empleado extends Principal
 		return 0;
 	}
 
-	public function get_descprestamo()
+	public function get_descprestamo($args=[])
 	{
 		$prest = ['prestamo' => [], 'total' => 0];
 
@@ -493,8 +493,18 @@ class Empleado extends Principal
 					if ($ant && count($ant) > 0 && !isset($ant['scalar'])) {
 						continue;
 					} else {
-						$prest['prestamo'][] = $row;
-						$prest['total']     += $row['cuotamensual'];
+						$pr = new Prestamo($row['id']);
+						$saldo = $pr->get_saldo($args);
+						$cuota = (($pr->pre->cuotamensual < $saldo)?$pr->pre->cuotamensual:$saldo);
+						
+						$prest['prestamo'][] = [
+							'id'    => $pr->pre->id,
+							'cuota' => $cuota
+						];
+
+						#$prest['prestamo'][] =  $row;
+						$prest['total']     += $cuota;
+						#$prest['total']     += (($row['cuotamensual'] <= $saldo)?$row['cuotamensual']:$saldo);
 					}
 				}
 			}

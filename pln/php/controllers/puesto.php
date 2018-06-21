@@ -1,15 +1,24 @@
 <?php 
-
+/*
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+*/
+define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
+define('PLNPATH', BASEPATH . '/pln/php');
 
+require BASEPATH . "/php/vendor/autoload.php";
+require BASEPATH . "/php/ayuda.php";
+require PLNPATH . '/Principal.php';
+require PLNPATH . '/models/Puesto.php';
+require PLNPATH . '/models/General.php';
+/*
 require dirname(dirname(dirname(__DIR__))) . '/php/vendor/autoload.php';
 require dirname(dirname(dirname(__DIR__))) . '/php/ayuda.php';
 require dirname(__DIR__) . '/Principal.php';
 require dirname(__DIR__) . '/models/Puesto.php';
 require dirname(__DIR__) . '/models/General.php';
-
+*/
 $app = new \Slim\Slim();
 
 $app->get('/get_puesto/:id', function($id){

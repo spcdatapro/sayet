@@ -19,16 +19,100 @@ class Nomina extends Principal
 		];
 
 		if (elemento($args, 'empresa')) {
-			$datos['empresa'] = $args['empresa'];
+			$condiciones['idempresa'] = $args['empresa'];
 		}
 
 		if ($this->db->update("plnnomina", ['terminada' => 1], ['AND' => $condiciones])) {
+			$this->finalizar_prestamos($condiciones);
 			return TRUE;
 		} else {
 			if ($this->db->error()[0] == 0) {
 				$this->set_mensaje('Nada que actualizar.');
 			} else {
 				$this->set_mensaje('Error en la base de datos al actualizar: ' . $this->db->error()[2]);
+			}
+		}
+	}
+
+	public function finalizar_prestamos($args=[])
+	{
+		$condiciones = [
+			'fecha'     => $args['fecha'],
+			'terminada' => 1
+		];
+
+		if (elemento($args, 'empresa')) {
+			$condiciones['empresa'] = $args['empresa'];
+		}
+
+		$nominas = $this->db->select(
+			"plnnomina", 
+			['id', 'descprestamo'], 
+			['AND' => $condiciones]
+		);
+
+		if (count($nominas) > 0) {
+			foreach ($nominas as $row) {
+				$descprestamo = $this->db->select(
+					"plnpresnom", 
+					['id', 'idplnprestamo', 'monto'],
+					['idplnnomina' => $row['id']]
+				);
+
+				if (count($descprestamo) > 0) {
+					foreach ($descprestamo as $key => $value) {
+						$pre = new Prestamo($value['idplnprestamo']);
+						$pre->finalizar();
+					}
+				}
+			}
+		}
+	}
+
+	public function actualizar_saldo_prestamos($args=[])
+	{
+		$nomina = (object)$this->db->get(
+			"plnnomina", 
+			['id', 'descprestamo'], 
+			['id' => $args['idplnnomina']]
+		);
+
+		$descprestamo = $this->db->select(
+			"plnpresnom", 
+			['id', 'idplnprestamo', 'monto'],
+			['idplnnomina' => $args['idplnnomina']]
+		);
+
+		if (count($descprestamo) > 0) {
+			$monto = $nomina->descprestamo;
+			$descuento = totalCampo($descprestamo, 'monto');
+
+			if ($monto != $descuento) {
+				foreach ($descprestamo as $key => $value) {
+					$pr = new Prestamo($value['idplnprestamo']);
+					$saldo = $pr->get_saldo(['sin_idplnnomina' => $nomina->id]);
+					$cuota = $saldo < $pr->pre->cuotamensual ? $saldo : $pr->pre->cuotamensual;
+					
+					if ($cuota <= $monto) {
+						$nuevo = $cuota;
+						$monto -= $cuota;
+					} else {
+						$nuevo = $monto;
+						$monto = 0;
+					}
+
+					$this->db->update(
+						'plnpresnom', 
+						['monto' => $nuevo], 
+						["id" => $value['id']]
+					);
+
+					$pr->guardar(['saldo' => $pr->get_saldo()]);
+
+					if ($monto == 0) {
+						return;
+					}
+				}
 			}
 		}
 	}
@@ -98,6 +182,26 @@ class Nomina extends Principal
 		return $this->db->query($sql)->fetchAll();
 	}
 
+	public function get_saldo_prestamos($args=[])
+	{
+		$saldo = 0;
+
+		$descprestamo = $this->db->select(
+			"plnpresnom", 
+			['*'],
+			['idplnnomina' => $args['idplnnomina']]
+		);
+
+		if (count($descprestamo) > 0) {
+			foreach ($descprestamo as $key => $value) {
+				$pre = new Prestamo($value['idplnprestamo']);
+				$saldo += $pre->get_saldo(['sin_idplnnomina' => $args['idplnnomina']]);
+			}
+		}
+
+		return $saldo;
+	}
+
 	public function actualizar(Array $args)
 	{
 		if (elemento($args, 'id')) {
@@ -156,11 +260,13 @@ class Nomina extends Principal
 			}
 
 			if (isset($args["descprestamo"])) {
-				$datos["descprestamo"] = elemento($args, "descprestamo", 0);
+				$saldoPrestamos = $this->get_saldo_prestamos(['idplnnomina' => $args['id']]);
+				$datos["descprestamo"] = ((elemento($args, "descprestamo", 0) > $saldoPrestamos)?$saldoPrestamos:$args['descprestamo']);
 			}
 
 			if (!empty($datos)) {
 				if ($this->db->update("plnnomina", $datos, ['AND' => ["id" => $args['id'], 'terminada' => 0]])) {
+					$this->actualizar_saldo_prestamos(['idplnnomina' => $args['id']]);
 					return TRUE;
 				} else {
 					if ($this->db->error()[0] == 0) {
@@ -179,100 +285,123 @@ class Nomina extends Principal
 		return FALSE;
 	}
 
+	public function verificar_planilla_cerrada($args=[])
+	{
+		$condiciones = [
+			'fecha'     => $args['fecha'],
+			'terminada' => 1
+		];
+
+		if (elemento($args, 'empresa')) {
+			$condiciones["idempresa"] = $args['empresa'];
+		}
+
+		$planilla = $this->db->select(
+			"plnnomina", 
+			['id'],
+			['AND' => $condiciones]
+		);
+
+		if (count($planilla) > 0) {
+			return true;
+		}
+		return false;
+	}
+
 	public function generar(Array $args)
 	{
-		$fecha = $args['fecha'];
-		$anio  = date('Y', strtotime($fecha));
-		$mes   = get_meses(date('m', strtotime($fecha)));
-		$dia   = date('d', strtotime($fecha));
-		
-		$test  = $this->buscar($args);
+		if ($this->verificar_planilla_cerrada($args)) {
+			$this->set_mensaje('Esta planilla se encuentra terminada, no puedo editar datos y volver a generarla.');
+			return false;
+		} else {
+			$fecha = $args['fecha'];
+			$anio  = date('Y', strtotime($fecha));
+			$mes   = get_meses(date('m', strtotime($fecha)));
+			$dia   = date('d', strtotime($fecha));
+			
+			$test  = $this->buscar($args);
 
-		if (count($test) > 0) {
-			foreach ($test as $row) {
-				$e = new Empleado($row['idplnempleado']);
-				$e->set_fecha($fecha);
-				$e->set_sueldo();
-				$e->set_dias_trabajados();
+			if (count($test) > 0) {
+				foreach ($test as $row) {
+					$e = new Empleado($row['idplnempleado']);
+					$e->set_fecha($fecha);
+					$e->set_sueldo();
+					$e->set_dias_trabajados();
 
-				$datos = [];
+					$datos = [];
 
-				if (isset($args['bono14']) && $args['bono14'] != 'false') {
-					$e->set_bonocatorce();
-				}
-
-				$datos['bonocatorce']     = $e->get_bonocatorce();
-				$datos['bonocatorcedias'] = $e->get_bonocatorce_dias();
-
-				# Pago cada quincena
-				if ($dia == 15) {
-					if ($e->emp->formapago == 1) {
-						$datos['anticipo']  = $e->get_anticipo();
-						$datos['diastrabajados']  = 0;
+					if (isset($args['bono14']) && $args['bono14'] != 'false') {
+						$e->set_bonocatorce();
 					}
-				} else {
-					$datos['descanticipo']    = $e->get_descanticipo();
-					$datos['bonificacion']    = $e->get_bono_ley();
-					$datos['sueldoordinario'] = $e->get_sueldo();
-					$datos['diastrabajados']  = $e->get_dias_trabajados();
-					$datos['descisr']		  = $e->emp->descuentoisr;
-					$datos['sueldoextra'] 	  = $e->get_horas_extras_simples(['horas' => $row['horasmes']]);
-					$datos['descigss']        = $e->get_descingss(['sueldoextra' => $datos['sueldoextra']]);
-					
-					$prest = $e->get_descprestamo();
-					
-					$datos['descprestamo'] = $prest['total'];
 
-					foreach ($prest['prestamo'] as $prestamo) {
-						$tmp = (object)$this->db->get(
-							"plnpresnom", 
-							['*'], 
-							[
-								'AND' => [
-									'idplnprestamo' => $prestamo['id'], 
-									'idplnnomina'   => $row['id']
-								]
-							]
-						);
+					$datos['bonocatorce']     = $e->get_bonocatorce();
+					$datos['bonocatorcedias'] = $e->get_bonocatorce_dias();
 
-						if (isset($tmp->scalar)) {
-							$this->db->insert(
+					# Pago cada quincena
+					if ($dia == 15) {
+						if ($e->emp->formapago == 1) {
+							$datos['anticipo']  = $e->get_anticipo();
+							$datos['diastrabajados']  = 0;
+						}
+					} else {
+						$datos['descanticipo']    = $e->get_descanticipo();
+						$datos['bonificacion']    = $e->get_bono_ley();
+						$datos['sueldoordinario'] = $e->get_sueldo();
+						$datos['diastrabajados']  = $e->get_dias_trabajados();
+						$datos['descisr']		  = $e->emp->descuentoisr;
+						$datos['sueldoextra'] 	  = $e->get_horas_extras_simples(['horas' => $row['horasmes']]);
+						$datos['descigss']        = $e->get_descingss(['sueldoextra' => $datos['sueldoextra']]);
+						
+						$prest = $e->get_descprestamo(['sin_idplnnomina' => $row['id']]);
+						
+						$datos['descprestamo'] = $prest['total'];
+
+						foreach ($prest['prestamo'] as $prestamo) {
+							$tmp = (object)$this->db->get(
 								"plnpresnom", 
-								[
-									'idplnprestamo' => $prestamo['id'],
-									'idplnnomina'   => $row['id'],
-									'monto'         => $prestamo['cuotamensual']
-								]
-							);
-						} else {
-							$this->db->update(
-								"plnpresnom", 
-								['monto' => $prestamo['cuotamensual']],
+								['*'], 
 								[
 									'AND' => [
-										'id'        => $tmp->id,
-										'terminada' => 0
+										'idplnprestamo' => $prestamo['id'], 
+										'idplnnomina'   => $row['id']
 									]
 								]
 							);
+
+							if (isset($tmp->scalar)) {
+								$this->db->insert(
+									"plnpresnom", 
+									[
+										'idplnprestamo' => $prestamo['id'],
+										'idplnnomina'   => $row['id'],
+										'monto'         => $prestamo['cuota']
+									]
+								);
+							} else {
+								$this->db->update(
+									"plnpresnom", 
+									['monto' => $prestamo['cuota']],
+									['id' => $tmp->id]
+								);
+							}
 						}
 					}
+
+					$this->db->update("plnnomina", $datos, [
+						'AND' => [
+							"id"        => $row['id'], 
+							'terminada' => 0
+						]
+					]);
 				}
-
-				$this->db->update("plnnomina", $datos, [
-					'AND' => [
-						"id"        => $row['id'], 
-						'terminada' => 0
-					]
-				]);
+				
+				return TRUE;
+			} else {
+				$this->set_mensaje("Nada que generar, por favor verifique que tenga empleados activos.");
 			}
-			
-			return TRUE;
-		} else {
-			$this->set_mensaje("Nada que generar, por favor verifique que tenga empleados activos.");
-		}
 
-		return FALSE;
+			return FALSE;
+		}
 	}
 
 	public function limpiar_nomina($args=[])

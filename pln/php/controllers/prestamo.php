@@ -5,15 +5,14 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);*/
 
 define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
-define('PLNPATH', BASEPATH . '/pln');
+define('PLNPATH', BASEPATH . '/pln/php');
 
 require BASEPATH . "/php/vendor/autoload.php";
 require BASEPATH . "/php/ayuda.php";
 require BASEPATH . "/php/NumberToLetterConverter.class.php";
-
-require PLNPATH . '/php/Principal.php';
-require PLNPATH . '/php/models/Prestamo.php';
-require PLNPATH . '/php/models/General.php';
+require PLNPATH . '/Principal.php';
+require PLNPATH . '/models/Prestamo.php';
+require PLNPATH . '/models/General.php';
 
 $app = new \Slim\Slim();
 
@@ -125,6 +124,14 @@ $app->get('/imprimir/:prestamo', function($prestamo){
 	$pdf->Output("prestamo_{$pre->pre->id}.pdf", 'I');
 	die();
 
+});
+
+$app->get('/test/:prestamo', function($prestamo){
+	$pre = new Prestamo($prestamo);
+	#echo "<br>Saldo normal: " . $pre->get_saldo();
+	echo "<br>Saldo sin: " . $pre->get_saldo(['sin_idplnnomina' => 4065]);
+	echo "<br>Saldo anterior: " . $pre->get_saldo_anterior(['fecha' => '2018-06-30']);
+	$pre->finalizar();
 });
 
 $app->run();

@@ -1,12 +1,24 @@
 <?php 
-/*
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 set_time_limit(0);
-*/
 
+
+define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
+define('PLNPATH', BASEPATH . '/pln/php');
+
+require BASEPATH . "/php/vendor/autoload.php";
+require BASEPATH . "/php/ayuda.php";
+require PLNPATH . '/Principal.php';
+require PLNPATH . '/models/Prestamo.php';
+require PLNPATH . '/models/Empleado.php';
+require PLNPATH . '/models/Nomina.php';
+require PLNPATH . '/models/General.php';
+
+/*
 require dirname(dirname(dirname(__DIR__))) . '/php/vendor/autoload.php';
 require dirname(dirname(dirname(__DIR__))) . '/php/ayuda.php';
 require dirname(__DIR__) . '/Principal.php';
@@ -14,6 +26,7 @@ require dirname(__DIR__) . '/models/Prestamo.php';
 require dirname(__DIR__) . '/models/Empleado.php';
 require dirname(__DIR__) . '/models/Nomina.php';
 require dirname(__DIR__) . '/models/General.php';
+*/
 
 $app = new \Slim\Slim();
 
@@ -1021,7 +1034,7 @@ $app->get('/imprimir_sp', function(){
 						'v_descuentos_planillas' => $prestamo->get_descuentos_planilla(['fecha' => $_GET['fal']]),
 						'v_otros_abonos' => $prestamo->get_otro_abonos(['fecha' => $_GET['fal']]),
 						'v_total_descuentos' => $prestamo->get_total_descuentos(['fecha' => $_GET['fal']]),
-						'v_saldo_actual' => $prestamo->get_saldo(['fecha' => $_GET['fal']])
+						'v_saldo_actual' => $prestamo->get_saldo()
 					];
 
 					foreach ($tmpdatos as $campo => $valor) {

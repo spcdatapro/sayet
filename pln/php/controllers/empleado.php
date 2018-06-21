@@ -3,14 +3,23 @@
 /*ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);*/
-set_time_limit(0);
+#set_time_limit(0);
 
+define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
+define('PLNPATH', BASEPATH . '/pln/php');
+
+require BASEPATH . "/php/vendor/autoload.php";
+require BASEPATH . "/php/ayuda.php";
+require PLNPATH . '/Principal.php';
+require PLNPATH . '/models/Empleado.php';
+require PLNPATH . '/models/General.php';
+/*
 require dirname(dirname(dirname(__DIR__))) . '/php/vendor/autoload.php';
 require dirname(dirname(dirname(__DIR__))) . '/php/ayuda.php';
 require dirname(__DIR__) . '/Principal.php';
 require dirname(__DIR__) . '/models/Empleado.php';
 require dirname(__DIR__) . '/models/General.php';
-
+*/
 $app = new \Slim\Slim();
 
 $app->get('/get_empleado/:empleado', function($empleado){

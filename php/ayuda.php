@@ -180,3 +180,23 @@ if ( ! function_exists('formatoFecha')) {
 		return $date->format($formato);
 	}
 }
+
+if ( ! function_exists('totalCampo')) {
+	/**
+	 * Ayuda a sumar todos los valores de un índice determinado de un arreglo
+	 * @param  [array] $arreglo [arreglo de datos]
+	 * @param  [string || int] $indice   [indice a sumar]
+	 * @return [decimal]
+	 */
+	function totalCampo($arreglo, $indice) {
+		$total = 0;
+		foreach ($arreglo as $fila) {
+			foreach ($fila as $key => $value) {
+				if ($key == $indice) {
+					$total += $value;
+				}
+			}
+		}
+		return $total;
+	}
+}

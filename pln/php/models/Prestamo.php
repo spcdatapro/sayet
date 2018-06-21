@@ -64,11 +64,11 @@ class Prestamo extends Principal
 				$this->set_dato('finalizado', FALSE);
 			}
 
-			if (elemento($args, 'concepto', FALSE)) {
+			if (isset($args['concepto'])) {
 				$this->set_dato('concepto', $args['concepto']);
 			}
 
-			if (elemento($args, 'saldo', FALSE)) {
+			if (isset($args['saldo'])) {
 				$this->set_dato('saldo', $args['saldo']);
 			}
 		}
@@ -164,6 +164,7 @@ class Prestamo extends Principal
 			$lid = $this->db->insert('plnpresabono', $datos);
 
 			if ($lid) {
+				$this->guardar(['saldo' => $this->get_saldo()]);
 				return TRUE;
 			} else {
 				$this->set_mensaje('Error al guardar: ' . $this->db->error()[2]);
@@ -194,19 +195,17 @@ class Prestamo extends Principal
 		);
 	}
 
+	public function actualizar_saldo($args=[])
+	{
+		# code...
+	}
+
 	public function get_saldo($args = [])
 	{
 		if ($this->pre->finalizado == 1) {
 			return 0;
 		} else {
-			$abonos = $this->get_total_descuentos($args);
-			$saldo  = ($this->pre->monto - $abonos);
-
-			if ($saldo != $this->pre->saldo) {
-				$this->guardar(['saldo' => $saldo]);
-			}
-
-			return $saldo;
+			return ($this->pre->monto - $this->get_total_descuentos($args));
 		}
 	}
 
@@ -218,25 +217,29 @@ class Prestamo extends Principal
 	public function get_descuentos_planilla($args = [])
 	{
 		$abonos = 0;
+		$condiciones = ['plnpresnom.idplnprestamo' => $this->pre->id];
+
+		if (elemento($args, 'fecha')) {
+			$condiciones['b.fecha[=]'] = $args['fecha'];
+		}
+
+		if (isset($args['terminada'])) {
+			$condiciones['b.terminada[=]'] = $args['terminada'];
+		}
+
+		if (isset($args['sin_idplnnomina'])) {
+			$condiciones['plnpresnom.idplnnomina[!]'] = $args['sin_idplnnomina'];
+		}
 
 		$tmp = $this->db->select("plnpresnom", [
 				'[><]plnnomina(b)' => ['plnpresnom.idplnnomina' => 'id']
-			], 
-			[
-				"plnpresnom.monto"
 			],
-			[
-				'AND' => [
-					'plnpresnom.idplnprestamo' => $this->pre->id,
-					'b.fecha[=]' => $args['fecha']
-				]
-			]
+			["plnpresnom.monto"],
+			['AND' => $condiciones]
 		);
 
-		if ($tmp) {
-			foreach ($tmp as $row) {
-				$abonos += $row['monto'];
-			}
+		if (count($tmp) > 0) {
+			$abonos = totalCampo($tmp, 'monto');
 		}
 
 		return $abonos;
@@ -245,22 +248,20 @@ class Prestamo extends Principal
 	public function get_otro_abonos($args = [])
 	{
 		$abonos = 0;
+		$condiciones = ['idplnprestamo' => $this->pre->id];
+
+		if (elemento($args, 'fecha')) {
+			$condiciones['fecha[=]'] = $args['fecha'];
+		}
 
 		$tmpdir = $this->db->select(
 			'plnpresabono', 
 			['monto'],
-			[
-				'AND' => [
-					'idplnprestamo' => $this->pre->id,
-					'fecha[=]' => $args['fecha']
-				]
-			]
+			['AND' => $condiciones]
 		);
 
-		if ($tmpdir) {
-			foreach ($tmpdir as $row) {
-				$abonos += $row['monto'];
-			}
+		if (count($tmpdir) > 0) {
+			$abonos = totalCampo($tmpdir, 'monto');
 		}
 
 		return $abonos;
@@ -285,9 +286,7 @@ class Prestamo extends Principal
 		);
 
 		if ($tmp) {
-			foreach ($tmp as $row) {
-				$abonos += $row['monto'];
-			}
+			$abonos += totalCampo($tmp, 'monto');
 		}
 
 		$tmpdir = $this->db->select(
@@ -302,9 +301,7 @@ class Prestamo extends Principal
 		);
 
 		if ($tmpdir) {
-			foreach ($tmpdir as $row) {
-				$abonos += $row['monto'];
-			}
+			$abonos += totalCampo($tmpdir, 'monto');
 		}
 
 		return ($this->pre->monto - $abonos);
@@ -361,5 +358,43 @@ class Prestamo extends Principal
 			't_autorizado'      => 'Autorizado', 
 			't_nota'            => 'NOTA: Me comprometo a no solicitar otro préstamo hasta cancelar mi saldo.'
 		];
+	}
+
+	/**
+	 * Es necesario asegurarse que el archivo ayuda.php haya sido cargado 
+	 * desde donde se esté llamando la función.
+	 * Valida si no existen planillas pendientes de cierre relacionadas a este préstamo
+	 * En caso de no haber, verifica que todos los descuentos realizados y abonos directos
+	 * ingresados sumen el total del préstamo para dejarlo finalizado.
+	 * @return [void]
+	 */
+	public function finalizar()
+	{
+		if ($this->pre->finalizado == 0) {
+			$tmp = $this->db->select("plnpresnom", [
+					'[><]plnnomina(b)' => ['plnpresnom.idplnnomina' => 'id']
+				], 
+				["plnpresnom.monto"],
+				[
+					'AND' => [
+						'plnpresnom.idplnprestamo' => $this->pre->id,
+						'b.terminada' => 0
+					]
+				]
+			);
+
+			if (count($tmp) == 0) {
+				$descuentos = $this->get_descuentos_planilla();
+				$abonos     = $this->get_otro_abonos();
+				$total      = ($descuentos+$abonos);
+
+				if ($total == $this->pre->monto) {
+					$this->guardar([
+						'liquidacion' => date('Y-m-d'),
+						'saldo'       => 0
+					]);
+				}
+			}
+		}
 	}
 }
