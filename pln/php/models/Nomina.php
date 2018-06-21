@@ -108,10 +108,6 @@ class Nomina extends Principal
 					);
 
 					$pr->guardar(['saldo' => $pr->get_saldo()]);
-
-					if ($monto == 0) {
-						return;
-					}
 				}
 			}
 		}
