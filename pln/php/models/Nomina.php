@@ -181,7 +181,6 @@ class Nomina extends Principal
 
 	public function generar(Array $args)
 	{
-
 		$fecha = $args['fecha'];
 		$anio  = date('Y', strtotime($fecha));
 		$mes   = get_meses(date('m', strtotime($fecha)));
@@ -198,7 +197,7 @@ class Nomina extends Principal
 
 				$datos = [];
 
-				if (isset($args['bono14'])) {
+				if (isset($args['bono14']) && $args['bono14'] != 'false') {
 					$e->set_bonocatorce();
 				}
 
