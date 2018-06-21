@@ -22,6 +22,8 @@ $app->post('/factemitidas', function(){
 
     $info = new stdclass();
 
+    if(!isset($d->idproyecto)){ $d->idproyecto = 0; }
+
     $query = "SELECT nomempresa AS empresa, abreviatura AS abreviaempre, DATE_FORMAT('$d->fdelstr', '%d/%m/%Y') AS fdel, ";
     $query.= "DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS fal, 0.00 AS totfacturado, DATE_FORMAT(NOW(), '%d/%m/%Y') AS hoy, ";
     $query.= ((int)$d->tipo == 2 ? "'PAGADAS'" : ((int)$d->tipo == 3 ? "'NO PAGADAS'" : "''"))." AS tipo ";
@@ -46,19 +48,23 @@ $app->post('/factemitidas', function(){
     $query.= (int)$d->tipo == 2 ? "AND w.pagada = 1 " : ((int)$d->tipo == 3 ? "AND w.pagada = 0 " : '');
     $query.="GROUP BY x.idfactura";
     $query.= ") c ON a.id = c.idfactura LEFT JOIN cliente d ON d.id = a.idcliente ";
+    $query.= "LEFT JOIN (SELECT v.id AS idcontrato, v.idproyecto, u.nomproyecto AS proyecto FROM contrato v INNER JOIN proyecto u ON u.id = v.idproyecto) e ON a.idcontrato = e.idcontrato ";
     $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.idempresa = $d->idempresa AND LENGTH(a.numero) > 0 ";
     $query.= trim($d->cliente) != '' && (int)$d->idcliente > 0 ? "AND a.anulada = 0 AND (a.idcliente = $d->idcliente OR a.nombre LIKE '%$d->cliente%' OR a.nit LIKE '%$d->cliente%' OR d.nombre LIKE '%$d->cliente%' OR d.nombrecorto LIKE '%$d->cliente%') " : '';
     $query.= trim($d->cliente) != '' && (int)$d->idcliente == 0 ? "AND a.anulada = 0 AND (a.nombre LIKE '%$d->cliente%' OR a.nit LIKE '%$d->cliente%' OR d.nombre LIKE '%$d->cliente%' OR d.nombrecorto LIKE '%$d->cliente%') " : '';
     $query.= (int)$d->tipo == 2 ? "AND a.pagada = 1 " : ((int)$d->tipo == 3 ? "AND a.pagada = 0 " : '');
+    $query.= (int)$d->idproyecto > 0 ? "AND e.idproyecto = $d->idproyecto " : '';
     $query.= "ORDER BY a.numero";
     $info->facturas = $db->getQuery($query);
 
     $query = "SELECT FORMAT(SUM(a.subtotal), 2) AS total ";
     $query.= "FROM factura a INNER JOIN empresa b ON b.id = a.idempresa LEFT JOIN cliente d ON d.id = a.idcliente ";
+    $query.= "LEFT JOIN (SELECT v.id AS idcontrato, v.idproyecto, u.nomproyecto AS proyecto FROM contrato v INNER JOIN proyecto u ON u.id = v.idproyecto) e ON a.idcontrato = e.idcontrato ";
     $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.idempresa = $d->idempresa AND a.anulada = 0 AND LENGTH(a.numero) > 0 ";
     $query.= trim($d->cliente) != '' && (int)$d->idcliente > 0 ? "AND a.anulada = 0 AND (a.idcliente = $d->idcliente OR a.nombre LIKE '%$d->cliente%' OR a.nit LIKE '%$d->cliente%' OR d.nombre LIKE '%$d->cliente%' OR d.nombrecorto LIKE '%$d->cliente%') " : '';
     $query.= trim($d->cliente) != '' && (int)$d->idcliente == 0 ? "AND a.anulada = 0 AND (a.nombre LIKE '%$d->cliente%' OR a.nit LIKE '%$d->cliente%' OR d.nombre LIKE '%$d->cliente%' OR d.nombrecorto LIKE '%$d->cliente%') " : '';
 	$query.= (int)$d->tipo == 2 ? "AND a.pagada = 1 " : ((int)$d->tipo == 3 ? "AND a.pagada = 0 " : '');
+    $query.= (int)$d->idproyecto > 0 ? "AND e.idproyecto = $d->idproyecto " : '';
     $info->general->totfacturado = $db->getOneField($query);
 
     print json_encode($info);
@@ -70,6 +76,8 @@ $app->post('/factspend', function(){
     $db = new dbcpm();
 
     $info = new stdclass();
+
+    if(!isset($d->idproyecto)){ $d->idproyecto = 0; }
 
     $query = "SELECT nomempresa AS empresa, abreviatura AS abreviaempre, ";
     $query.= "DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS fal, 0.00 AS totpendiente, DATE_FORMAT(NOW(), '%d/%m/%Y') AS hoy ";
@@ -84,7 +92,9 @@ $app->post('/factspend', function(){
         INNER JOIN cliente d ON d.id = c.idcliente
         INNER JOIN tiposervicioventa e ON e.id = b.idtipoventa
         INNER JOIN moneda f ON f.id = b.idmoneda
-        WHERE a.fechacobro <= '$d->falstr' AND a.facturado = 0 AND a.anulado = 0 AND c.inactivo = 0 AND c.idempresa = $d->idempresa AND (a.monto - a.descuento) > 0
+        WHERE a.fechacobro <= '$d->falstr' AND a.facturado = 0 AND a.anulado = 0 AND c.inactivo = 0 AND c.idempresa = $d->idempresa AND (a.monto - a.descuento) > 0 ";
+    $query.= (int)$d->idproyecto > 0 ? "AND c.idproyecto = $d->idproyecto " : '';
+    $query.= "
         UNION ALL
         SELECT d.nombre AS cliente, d.nombrecorto AS abreviacliente, 'Agua' AS tipo,
         FORMAT(IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, (((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) * b.preciomcubsug), 0.00 ), 2) AS montoconiva,
@@ -94,8 +104,10 @@ $app->post('/factspend', function(){
         INNER JOIN proyecto g ON g.id = a.idproyecto INNER JOIN unidad h ON h.id = a.idunidad
         WHERE a.estatus IN(1, 2) AND b.pagacliente = 0 AND
         a.mes <= MONTH('$d->falstr') AND a.anio <= YEAR('$d->falstr') AND b.idempresa = $d->idempresa AND (c.inactivo = 0 OR (c.inactivo = 1 AND c.fechainactivo > '$d->falstr')) AND
-        IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, (((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) * b.preciomcubsug), 0.00 ) > 0
-        ORDER BY 1, 3";
+        IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, (((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) * b.preciomcubsug), 0.00 ) > 0 ";
+    $query.= (int)$d->idproyecto > 0 ? "AND c.idproyecto = $d->idproyecto " : '';
+    $query.= "ORDER BY 1, 3";
+    //print $query;
     $info->pendientes = $db->getQuery($query);
 
     $query = "SELECT FORMAT(SUM(montoconiva), 2)
@@ -107,7 +119,9 @@ $app->post('/factspend', function(){
         INNER JOIN cliente d ON d.id = c.idcliente
         INNER JOIN tiposervicioventa e ON e.id = b.idtipoventa
         INNER JOIN moneda f ON f.id = b.idmoneda
-        WHERE a.fechacobro <= '$d->falstr' AND a.facturado = 0 AND a.anulado = 0 AND c.inactivo = 0 AND c.idempresa = $d->idempresa AND (a.monto - a.descuento) > 0
+        WHERE a.fechacobro <= '$d->falstr' AND a.facturado = 0 AND a.anulado = 0 AND c.inactivo = 0 AND c.idempresa = $d->idempresa AND (a.monto - a.descuento) > 0 ";
+    $query.= (int)$d->idproyecto > 0 ? "AND c.idproyecto = $d->idproyecto " : '';
+    $query.= "
         UNION ALL
         SELECT
         IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, (((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) * b.preciomcubsug), 0.00 ) AS montoconiva
@@ -116,8 +130,9 @@ $app->post('/factspend', function(){
         INNER JOIN proyecto g ON g.id = a.idproyecto INNER JOIN unidad h ON h.id = a.idunidad
         WHERE a.estatus IN(1, 2) AND b.pagacliente = 0 AND
         a.mes <= MONTH('$d->falstr') AND a.anio <= YEAR('$d->falstr') AND b.idempresa = $d->idempresa AND (c.inactivo = 0 OR (c.inactivo = 1 AND c.fechainactivo > '$d->falstr')) AND
-        IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, (((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) * b.preciomcubsug), 0.00 ) > 0
-        ) a";
+        IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, (((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) * b.preciomcubsug), 0.00 ) > 0 ";
+    $query.= (int)$d->idproyecto > 0 ? "AND c.idproyecto = $d->idproyecto " : '';
+    $query.= ") a ";
 
     $info->generales->totpendiente = $db->getOneField($query);
 

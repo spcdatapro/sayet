@@ -13,7 +13,9 @@
                         <div class="form-group">
                             <label for="selEmpresa">Empresa:</label>
                             <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="params.idempresa" 
-                                ng-options="obj.id as obj.nomempresa for obj in empresas"></select>
+                                ng-options="obj.id as obj.nomempresa for obj in empresas"
+                                ng-change="loadProyectos(params.idempresa)">
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-3 col-sm-3">
@@ -63,6 +65,15 @@
                                 <option value="3">No pagadas</option>
                                 <option value="4">Pendientes de emitir</option>
                             </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="text-align: left">
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group">
+                            <label for="selProyecto">Proyecto:</label>
+                            <select name="selProyecto" id="selProyecto" class="form-control" ng-model="params.idproyecto"
+                                    ng-options="obj.id as obj.nomproyecto for obj in proyectos"></select>
                         </div>
                     </div>
                 </div>
