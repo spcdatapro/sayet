@@ -272,8 +272,8 @@ $app->post('/detalle', function() use($db){
         $query = "SELECT e.fecha AS fechaOrd, e.id AS idtranban, e.tipotrans, e.numero, DATE_FORMAT(e.fecha, '%d/%m/%Y') AS fecha, e.beneficiario, e.concepto, g.simbolo AS moneda, e.monto AS montotranban, ";
         $query.= "b.id AS idcompra, IF(h.id IS NULL, b.proveedor, h.nombre) AS proveedor, IF(h.id IS NULL, b.nit, h.nit) AS nit, b.serie, b.documento, i.simbolo AS monedafact, a.monto AS montofact, ";
         $query.= "IFNULL(CONCAT(k.idpresupuesto, '-', k.correlativo), '') AS ot, DATE_FORMAT(b.fechafactura, '%d/%m/%Y') AS fechafactura ";
-        $query.= "FROM compraproyecto a INNER JOIN compra b ON b.id = a.idcompra INNER JOIN cuentac c ON c.id = a.idcuentac INNER JOIN detpagocompra d ON b.id = d.idcompra INNER JOIN tranban e ON e.id = d.idtranban ";
-        $query.= "INNER JOIN banco f ON f.id = e.idbanco INNER JOIN moneda g ON g.id = f.idmoneda INNER JOIN moneda i ON i.id = b.idmoneda LEFT JOIN proveedor h ON h.id = b.idproveedor ";
+        $query.= "FROM compraproyecto a INNER JOIN compra b ON b.id = a.idcompra INNER JOIN cuentac c ON c.id = a.idcuentac LEFT JOIN detpagocompra d ON b.id = d.idcompra LEFT JOIN tranban e ON e.id = d.idtranban ";
+        $query.= "LEFT JOIN banco f ON f.id = e.idbanco LEFT JOIN moneda g ON g.id = f.idmoneda LEFT JOIN moneda i ON i.id = b.idmoneda LEFT JOIN proveedor h ON h.id = b.idproveedor ";
         $query.= "LEFT JOIN detpagopresup j ON j.id = e.iddetpagopresup LEFT JOIN detpresupuesto k ON k.id = j.iddetpresup ";
         $query.= "WHERE a.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND a.idcuentac = $concepto->idcuenta AND b.idreembolso = 0 ";
         $query.= "UNION ALL ";
