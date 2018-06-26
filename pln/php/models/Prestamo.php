@@ -202,11 +202,7 @@ class Prestamo extends Principal
 
 	public function get_saldo($args = [])
 	{
-		if ($this->pre->finalizado == 1) {
-			return 0;
-		} else {
-			return ($this->pre->monto - $this->get_total_descuentos($args));
-		}
+		return ($this->pre->monto - $this->get_total_descuentos($args));
 	}
 
 	public function get_total_descuentos($args = [])
@@ -221,6 +217,10 @@ class Prestamo extends Principal
 
 		if (elemento($args, 'fecha')) {
 			$condiciones['b.fecha[=]'] = $args['fecha'];
+		}
+
+		if (elemento($args, 'actual')) {
+			$condiciones['b.fecha[<=]'] = $args['actual'];
 		}
 
 		if (isset($args['terminada'])) {
@@ -252,6 +252,10 @@ class Prestamo extends Principal
 
 		if (elemento($args, 'fecha')) {
 			$condiciones['fecha[=]'] = $args['fecha'];
+		}
+
+		if (elemento($args, 'actual')) {
+			$condiciones['fecha[<=]'] = $args['actual'];
 		}
 
 		$tmpdir = $this->db->select(

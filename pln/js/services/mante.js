@@ -29,6 +29,9 @@ angular.module('cpm')
         },
         getEmpresas: function(){
             return comunFact.doGET(urlBase + '/get_empresas')
+        },
+        getBitacora: function(emp){
+            return comunFact.doGET(urlBase + '/get_bitacora/'+emp)
         }
     };
 }])

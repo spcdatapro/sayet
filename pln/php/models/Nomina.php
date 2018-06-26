@@ -149,6 +149,7 @@ class Nomina extends Principal
 				$datos = [
 					'idplnempleado' => $row['id'], 
 					'idempresa'     => $row['idempresadebito'], 
+					'idproyecto'    => $row['idproyecto'],
 					'fecha'         => $fecha
 				];
 
@@ -410,6 +411,7 @@ class Nomina extends Principal
 					"plnnomina.id",
 					"plnnomina.idempresa",
 					"b.idempresadebito",
+					"b.idproyecto",
 					"b.activo"
 				],
 				[
@@ -422,7 +424,7 @@ class Nomina extends Principal
 			);
 
 			foreach ($tmp as $row) {
-				if (($row['activo'] == 0) || ($row["idempresa"] != $row["idempresadebito"])) {
+				if (($row['activo'] == 0) || ($row["idempresa"] != $row["idempresadebito"]) || ($row["idproyecto"] != $row["idproyecto"])) {
 					$this->db->delete("plnnomina", ['id' => $row['id']]);
 				}
 			}

@@ -788,4 +788,22 @@ EOT;
 	{
 		return $this->bonocatorcedias;
 	}
+
+	public function get_bitacora($args=[])
+	{
+		$where = ['idplnempleado' => $this->emp->id];
+
+		return $this->db->select("plnbitacora", [
+				'[><]usuario(b)' => ['plnbitacora.usuario' => 'id']
+			], 
+			[
+				"plnbitacora.*",
+				"b.nombre"
+			],
+			[
+				'AND' => $where
+				
+			]
+		);
+	}
 }

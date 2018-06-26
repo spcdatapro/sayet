@@ -6,15 +6,24 @@ angular.module('cpm')
         empresaSrvc.lstEmpresas().then(function(d){
             $scope.empresas = d;
         });
+
+        
     }
 ])
-.controller('repReciboController', ['$scope', '$http', 'empresaSrvc', 
-    function($scope, $http, empresaSrvc){
-        $scope.empresas = [];
+.controller('repReciboController', ['$scope', '$http', 'empresaSrvc', 'empServicios',
+    function($scope, $http, empresaSrvc, empServicios){
+        $scope.empresas = []
+        $scope.empleados = []
 
         empresaSrvc.lstEmpresas().then(function(d){
-            $scope.empresas = d;
-        });
+            $scope.empresas = d
+            setTimeout(function() { $("#selectEmpresa").chosen({width:'100%'}) }, 3)
+        })
+
+        empServicios.buscar({sin_limite:1}).then(function(res){
+            $scope.empleados = res.resultados
+            setTimeout(function() { $("#selectEmpleado").chosen({width:'100%'}) }, 3)
+        })
     }
 ])
 .controller('repFiniquitoController', ['$scope', '$http', 'empresaSrvc', 'empServicios', 

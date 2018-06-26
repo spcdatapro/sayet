@@ -78,7 +78,7 @@ $app->get('/imprimir_recibo', function(){
 					if (!isset($conf->scalar) && $conf->visible == 1) {
 						$conf->psy = ($key%$cantidad == 0)?$conf->psy:($conf->psy+(($s[1]/$cantidad)*$cont));
 
-						if (is_numeric($valor) && !in_array($campo, ['vcodigo', 'vdiastrabajados'])) {
+						if (is_numeric($valor) && !in_array($campo, ['vcodigo', 'vdiastrabajados', 'vdpi'])) {
 							$valor = number_format($valor, 2);
 						} else {
 							$valor = $valor;
@@ -1034,7 +1034,7 @@ $app->get('/imprimir_sp', function(){
 						'v_descuentos_planillas' => $prestamo->get_descuentos_planilla(['fecha' => $_GET['fal']]),
 						'v_otros_abonos' => $prestamo->get_otro_abonos(['fecha' => $_GET['fal']]),
 						'v_total_descuentos' => $prestamo->get_total_descuentos(['fecha' => $_GET['fal']]),
-						'v_saldo_actual' => $prestamo->get_saldo()
+						'v_saldo_actual' => $prestamo->get_saldo(['actual' => $_GET['fal']])
 					];
 
 					foreach ($tmpdatos as $campo => $valor) {

@@ -15,6 +15,7 @@ angular.module('cpm')
         $scope.puestos   = [];
         $scope.archivotipo = [];
         $scope.empresasPlanilla = []
+        $scope.bitacora = []
 
 		$scope.mostrarForm = function() {
 			$scope.emp = {};
@@ -118,14 +119,19 @@ angular.module('cpm')
                 $scope.emp.fchbaj = $scope.formatoFechajs($scope.emp.baja);
              }
 
-             console.log($scope.emp);
-
-             $scope.formulario = true;
-             $scope.hay = true;
-             $scope.getArchivos();
+             $scope.formulario = true
+             $scope.hay = true
+             $scope.getArchivos()
+             $scope.getBitacora($scope.emp.id)
 
              goTop();
         };
+
+        $scope.getBitacora = function(emp) {
+            empServicios.getBitacora(emp).then(function(data){
+                $scope.bitacora = data
+            });
+        }
 
         $scope.agregarArchivo = function(arc) {
             if ($scope.emp.id) {

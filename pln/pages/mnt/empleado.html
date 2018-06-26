@@ -48,6 +48,9 @@
 		    <li role="presentation">
 		    	<a show-tab href="#archivos" aria-controls="archivos" role="tab" data-toggle="tab">Archivos</a>
 		    </li>
+		    <li role="presentation">
+		    	<a show-tab href="#bitacora" aria-controls="bitacora" role="tab" data-toggle="tab">Movimiento de Personal</a>
+		    </li>
 		  </ul>
 
 		  <!-- Tab panes -->
@@ -322,6 +325,34 @@
 				  </div>
 				  ...
 				</div>
+		    </div>
+		    <div role="tabpanel" class="tab-pane" id="bitacora">
+		    	<table class="table table-condensed table-hover">
+		    		<thead>
+		    			<tr>
+		    				<th>Registro</th>
+		    				<th>Descripción</th>
+		    				<th>Observaciones</th>
+		    				<th>Movimiento</th>
+		    				<th>Usuario</th>
+		    				<th></th>
+		    			</tr>
+		    		</thead>
+		    		<tbody>
+		    			<tr ng-repeat="b in bitacora">
+							<td>{{ b.fecha | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+							<td>{{ b.movdescripcion }}</td>
+							<td>{{ b.movobservaciones }}</td>
+							<td>{{ b.movfecha | date:'dd/MM/yyyy' }}</td>
+							<td>{{ b.nombre }}</td>
+							<td>
+								<a href="/sayet/pln/php/controllers/empleado.php/printbit/{{b.idplnempleado}}/{{ b.id }}" class="btn btn-default btn-sm" target="_blank">
+									<i class="glyphicon glyphicon-print"></i>
+								</a>
+							</td>
+						</tr>
+		    		</tbody>
+		    	</table>
 		    </div>
 		  </div>
 					

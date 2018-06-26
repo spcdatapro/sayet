@@ -28,6 +28,12 @@ $app->get('/get_empleado/:empleado', function($empleado){
     enviar_json(['emp' => $e->emp]);
 });
 
+$app->get('/get_bitacora/:empleado', function($empleado){
+    $e = new Empleado($empleado);
+
+    enviar_json($e->get_bitacora());
+});
+
 $app->get('/buscar', function(){
 	$b = new General();
 
@@ -353,6 +359,20 @@ $app->get('/descargar', function(){
 	}
 
 	$pdf->Output("reporte_empleados_" . time() . ".pdf", 'I');
+	die();
+});
+
+$app->get('/printbit/:empleado/:id', function($empleado,$id){
+    $e = new Empleado($empleado);
+    require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
+
+	$s = [215.9, 279.4]; # Carta mm
+
+	$pdf = new TCPDF('P', 'mm', $s);
+	$pdf->SetAutoPageBreak(TRUE, 0);
+    #enviar_json($e->get_bitacora());
+    $pdf->AddPage();
+    $pdf->Output("bitacora_" . time() . ".pdf", 'I');
 	die();
 });
 
