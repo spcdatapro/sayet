@@ -25,11 +25,56 @@ function parseFecha($fecha){
     return $partes[2].'-'.$partes[1].'-'.$partes[0];
 }
 
+function idc($db, $origen, $idorigen, $idcuenta, $debe, $haber, $conceptomayor, $anulado) {
+    $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado) VALUES(";
+    $query.= "$origen, $idorigen, $idcuenta, $debe, $haber, '$conceptomayor', 1, $anulado";
+    $query.= ")";
+    $db->doQuery($query);
+}
+
+function insertaPartidaDirecta($d, $insertadas, $montoClientesVarios, $montoIVA, $montoParqueo){
+    $db = new dbcpm();
+
+    $query = "SELECT GROUP_CONCAT(concepto SEPARATOR ', ') FROM (";
+    $query.= "SELECT CONCAT('Serie ', serie, ' de No. ', MIN(numero), ' a No. ', MAX(numero)) AS concepto FROM factura ";
+    $query.= "WHERE id IN($insertadas) GROUP BY serie) a";
+    $concepto = $db->getOneField($query);
+
+    $query = "INSERT INTO directa (idempresa, fecha, concepto, tipocierre) VALUES($d->idempresa, NOW(), 'Facturas de parqueo: $concepto', 0)";
+    $db->doQuery($query);
+    $lastid = $db->getLastId();
+
+    if((int)$lastid > 0){
+        $codctacliente = '1120199';
+        $query = "SELECT id FROM cuentac WHERE TRIM(codigo) = '$codctacliente' AND idempresa = $d->idempresa";
+        $ctacliente = (int)$db->getOneField($query);
+        if($ctacliente > 0){
+            idc($db, 4, $lastid, $ctacliente, $montoClientesVarios, 0.00, "Facturas de parqueo: $concepto", 0);
+        }
+
+        $query = "SELECT b.id FROM tiposervicioventa a INNER JOIN cuentac b ON TRIM(b.codigo) = TRIM(a.cuentac) WHERE a.id = 7 AND b.idempresa = $d->idempresa";
+        $ctadetalle = (int)$db->getOneField($query);
+        if($ctadetalle > 0){
+            idc($db, 4, $lastid, $ctadetalle, 0.00, $montoParqueo, "Facturas de parqueo: $concepto", 0);
+        }
+
+        $query = "SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 1";
+        $ctaivadebito = (int)$db->getOneField($query);
+        if($ctaivadebito > 0){
+            idc($db, 4, $lastid, $ctaivadebito, 0.00, $montoIVA, "Facturas de parqueo: $concepto", 0);
+        }
+    }
+}
+
 $app->post('/insertafacts', function() use($db){
     $d = json_decode(file_get_contents('php://input'));
     $n2l = new NumberToLetterConverter();
 
     $conteo = 0;
+    $montoClientesVarios = 0.00;
+    $montoIVA = 0.00;
+    $montoParqueo = 0.00;
+    $insertadas = '';
     foreach($d->facturas as $p){
 
         $query = "SELECT COUNT(id) FROM factura WHERE idempresa = $d->idempresa AND idproyecto = $d->idproyecto AND TRIM(serie) = '$p->serie' AND TRIM(numero) = '$p->numero' AND esparqueo = 1";
@@ -61,16 +106,27 @@ $app->post('/insertafacts', function() use($db){
 
             if((int)$lastid > 0){
                 $conteo++;
+                $montoClientesVarios += $totapagar;
+                $montoIVA += $iva;
+                $montoParqueo += $totsiniva;
+                if($insertadas != ''){ $insertadas .= ','; }
+                $insertadas.= $lastid;
                 $query = "INSERT INTO detfact(idfactura, cantidad, descripcion, preciounitario, preciotot, idtiposervicio, mes, anio, descuento, montoconiva, montoflatconiva) VALUES(";
                 $query.= "$lastid, 1, 'PARQUEO', $totapagar, $totapagar, 7, MONTH('$fechaFact'), YEAR('$fechaFact'), 0.00, $totapagar, $totapagar";
                 $query.= ")";
                 //print $query;
                 $db->doQuery($query);
+                /*
                 $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
                 $data = ['ids' => $lastid, 'idcontrato' => 0];
                 $db->CallJSReportAPI('POST', $url, json_encode($data));
+                */
             }
         }
+    }
+
+    if($montoClientesVarios > 0){
+        insertaPartidaDirecta($d, $insertadas, $montoClientesVarios, $montoIVA, $montoParqueo);
     }
 
     print json_encode(['Recibidas' => count($d->facturas), 'Insertadas' => $conteo]);
