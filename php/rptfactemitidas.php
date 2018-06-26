@@ -137,4 +137,50 @@ $app->post('/factspend', function(){
     print json_encode($info);
 });
 
+$app->post('/factsparqueo', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "SELECT DATE_FORMAT('$d->fdelstr', '%d/%m/%Y') AS fdel, DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS fal, 0.00 AS totfacturado, DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy";
+    $generales = $db->getQuery($query)[0];
+
+    $qGen = "SELECT a.idempresa, b.nomempresa AS empresa, a.idproyecto, c.nomproyecto AS proyecto, a.serie, MIN(a.numero) AS defactura, MAX(a.numero) AS afactura, SUM(a.subtotal) AS subtotal, b.ordensumario ";
+    $qGen.= "FROM factura a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN proyecto c ON c.id = a.idproyecto ";
+    $qGen.= "WHERE a.esparqueo = 1 AND a.fecha >= '$d->fdelstr' and a.fecha <= '$d->falstr' ";
+    $qGen.= $d->idempresa != '' ? "AND a.idempresa IN ($d->idempresa) " : '';
+    $qGen.= $d->idproyecto != '' ? "AND a.idproyecto IN ($d->idproyecto) " : '';
+    $qGen.= "GROUP BY a.idempresa, a.idproyecto, a.serie";
+
+    $query = "SELECT DISTINCT z.idempresa, z.empresa, 0.00 AS totempresa FROM ($qGen) z ORDER BY z.ordensumario";
+    $facturas = $db->getQuery($query);
+    $cntEmpresas = count($facturas);
+    $totfacturado = 0.00;
+    for($i = 0; $i < $cntEmpresas; $i++){
+        $empresa = $facturas[$i];
+        $query = "SELECT DISTINCT z.idproyecto, z.proyecto, 0.00 AS totproyecto FROM ($qGen) z WHERE z.idempresa = $empresa->idempresa ORDER BY z.proyecto";
+        $empresa->proyectos = $db->getQuery($query);
+        $cntProyectos = count($empresa->proyectos);
+        $totempresa = 0.00;
+        for($j = 0; $j < $cntProyectos; $j++){
+            $proyecto = $empresa->proyectos[$j];
+            $query = "SELECT z.serie, z.defactura, z.afactura, FORMAT(z.subtotal, 2) AS totfact FROM ($qGen) z WHERE z.idempresa = $empresa->idempresa AND z.idproyecto = $proyecto->idproyecto ORDER BY z.serie";
+            $proyecto->facturas = $db->getQuery($query);
+            if(count($proyecto->facturas) > 0){
+                $query = "SELECT SUM(z.subtotal) FROM ($qGen) z WHERE z.idempresa = $empresa->idempresa AND z.idproyecto = $proyecto->idproyecto";
+                $suma = (float)$db->getOneField($query);
+                $totempresa += $suma;
+                $proyecto->totproyecto = number_format($suma, 2);
+            }
+        }
+        $totfacturado += $totempresa;
+        $empresa->totempresa = number_format($totempresa, 2);
+    }
+
+    $generales->totfacturado = number_format($totfacturado, 2);
+
+    print json_encode(['generales' => $generales, 'facturas' => $facturas]);
+
+});
+
+
 $app->run();

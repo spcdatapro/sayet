@@ -2,8 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/js/controllers/rptfactsemitidasctrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/rptfactsemitidasctrl.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/rptfactsemitidas.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/rptfactsemitidas.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/js/controllers/rptfactsparqueoctrl.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/rptfactsparqueo.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cpmidx.html" beforeDir="false" afterPath="$PROJECT_DIR$/cpmidx.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/app.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/php/rptfactemitidas.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/rptfactemitidas.php" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
@@ -40,40 +44,50 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="rptfactsemitidas.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/rptfactsemitidas.html">
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="10" column="58" lean-forward="true" selection-start-line="10" selection-start-column="58" selection-end-line="10" selection-end-column="58" />
+            <state relative-caret-position="443">
+              <caret line="200" column="88" lean-forward="true" selection-start-line="200" selection-start-column="4" selection-end-line="200" selection-end-column="88" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="cpmidx.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cpmidx.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="416">
+              <caret line="207" column="88" selection-start-line="207" selection-start-column="88" selection-end-line="207" selection-end-column="88" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="782">
+              <caret line="46" column="99" selection-start-line="46" selection-start-column="99" selection-end-line="46" selection-end-column="99" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptfactsparqueo.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pages/rptfactsparqueo.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-258">
+              <caret column="38" lean-forward="true" selection-start-column="38" selection-end-column="60" />
               <folding>
-                <element signature="n#style#0;n#div#1;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#div#1;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" />
                 <element signature="n#style#0;n#div#2;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="rptfactsemitidasctrl.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/controllers/rptfactsemitidasctrl.js">
+      <file leaf-file-name="rptfactsparqueoctrl.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/js/controllers/rptfactsparqueoctrl.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="799">
-              <caret line="60" column="63" selection-start-line="60" selection-start-column="54" selection-end-line="60" selection-end-column="63" />
-              <folding>
-                <element signature="e#1237#1797#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rptfactemitidas.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/php/rptfactemitidas.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="21" lean-forward="true" selection-start-line="21" selection-end-line="21" />
-              <folding>
-                <element signature="e#194#709#1#PHP" />
-              </folding>
+            <state relative-caret-position="391">
+              <caret line="23" column="69" selection-start-line="23" selection-start-column="69" selection-end-line="23" selection-end-column="69" />
             </state>
           </provider>
         </entry>
@@ -90,14 +104,17 @@
       </list>
     </option>
   </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>apiurlparqueo</find>
+    </findStrings>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/php/tranbanc.php" />
-        <option value="$PROJECT_DIR$/js/services/tranbancsrvc.js" />
         <option value="$PROJECT_DIR$/php/planilla.php" />
         <option value="$PROJECT_DIR$/js/services/planillasrvc.js" />
         <option value="$PROJECT_DIR$/pages/genpagospln.html" />
@@ -108,9 +125,6 @@
         <option value="$PROJECT_DIR$/php/db.php" />
         <option value="$PROJECT_DIR$/js/controllers/genpagosplnctrl.js" />
         <option value="$PROJECT_DIR$/php/generaplnbi.php" />
-        <option value="$PROJECT_DIR$/js/app.js" />
-        <option value="$PROJECT_DIR$/cpmidx.html" />
-        <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/pages/rptcompagua.html" />
         <option value="$PROJECT_DIR$/php/serviciopropio.php" />
         <option value="$PROJECT_DIR$/js/services/serviciopropiosrvc.js" />
@@ -145,8 +159,13 @@
         <option value="$PROJECT_DIR$/pages/rptreccli.html" />
         <option value="$PROJECT_DIR$/js/controllers/rptrecclictrl.js" />
         <option value="$PROJECT_DIR$/js/controllers/rptfactsemitidasctrl.js" />
-        <option value="$PROJECT_DIR$/php/rptfactemitidas.php" />
         <option value="$PROJECT_DIR$/pages/rptfactsemitidas.html" />
+        <option value="$PROJECT_DIR$/php/rptfactemitidas.php" />
+        <option value="$PROJECT_DIR$/pages/rptfactsparqueo.html" />
+        <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/cpmidx.html" />
+        <option value="$PROJECT_DIR$/js/app.js" />
+        <option value="$PROJECT_DIR$/js/controllers/rptfactsparqueoctrl.js" />
       </list>
     </option>
   </component>
@@ -876,12 +895,12 @@
       <workItem from="1528931214601" duration="222000" />
       <workItem from="1529595763236" duration="2615000" />
       <workItem from="1529951079310" duration="5059000" />
-      <workItem from="1530022860142" duration="12120000" />
+      <workItem from="1530022860142" duration="16393000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2615580000" />
+    <option name="totallyTimeSpent" value="2619853000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="0" width="1936" height="1047" extended-state="0" />
@@ -947,44 +966,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/php/venta.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="190" column="38" selection-start-line="190" selection-start-column="38" selection-end-line="190" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/services/ventasrvc.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="4" column="23" selection-start-line="4" selection-start-column="23" selection-end-line="4" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/reembolsoctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="638" column="54" selection-start-line="638" selection-start-column="44" selection-end-line="638" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/services/reembolsosrvc.js">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/reembolso.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="325" column="31" selection-start-line="325" selection-start-column="31" selection-end-line="325" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptingegrproyctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="48" column="73" selection-start-line="48" selection-start-column="64" selection-end-line="48" selection-end-column="73" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pages/rptlibisr.html">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -1024,20 +1005,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state>
           <caret line="55" column="45" selection-start-line="55" selection-start-column="45" selection-end-line="55" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/tranfactura.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="355" column="51" selection-start-line="355" selection-start-column="51" selection-end-line="355" selection-end-column="51" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/tranfacturactrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="351" column="13" selection-start-line="351" selection-start-column="13" selection-end-line="351" selection-end-column="13" />
         </state>
       </provider>
     </entry>
@@ -1261,20 +1228,36 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptfactsemitidasctrl.js">
+    <entry file="file://$PROJECT_DIR$/pages/tranfactura.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="799">
-          <caret line="60" column="63" selection-start-line="60" selection-start-column="54" selection-end-line="60" selection-end-column="63" />
+        <state relative-caret-position="327">
+          <caret line="695" column="110" selection-start-line="695" selection-start-column="110" selection-end-line="695" selection-end-column="110" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/tranfacturactrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="72">
+          <caret line="537" column="36" lean-forward="true" selection-start-line="537" selection-start-column="36" selection-end-line="537" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptfactemitidas.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="82">
+          <caret line="142" lean-forward="true" selection-start-line="142" selection-end-line="142" />
           <folding>
-            <element signature="e#1237#1797#0" />
+            <element signature="e#194#709#1#PHP" />
+            <element signature="e#741#4771#1#PHP" />
+            <element signature="e#4800#8487#1#PHP" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pages/rptfactsemitidas.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="58" lean-forward="true" selection-start-line="10" selection-start-column="58" selection-end-line="10" selection-end-column="58" />
+        <state relative-caret-position="714">
+          <caret line="105" column="6" lean-forward="true" selection-start-line="5" selection-end-line="105" selection-end-column="6" />
           <folding>
             <element signature="n#style#0;n#div#1;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#div#1;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" />
@@ -1283,13 +1266,51 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptfactemitidas.php">
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptfactsemitidasctrl.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="21" lean-forward="true" selection-start-line="21" selection-end-line="21" />
+        <state relative-caret-position="762">
+          <caret line="67" column="5" lean-forward="true" selection-end-line="67" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptfactsparqueo.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-258">
+          <caret column="38" lean-forward="true" selection-start-column="38" selection-end-column="60" />
           <folding>
-            <element signature="e#194#709#1#PHP" />
+            <element signature="n#style#0;n#div#2;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/funcs.js">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="443">
+          <caret line="200" column="88" lean-forward="true" selection-start-line="200" selection-start-column="4" selection-end-line="200" selection-end-column="88" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cpmidx.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="416">
+          <caret line="207" column="88" selection-start-line="207" selection-start-column="88" selection-end-line="207" selection-end-column="88" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="782">
+          <caret line="46" column="99" selection-start-line="46" selection-start-column="99" selection-end-line="46" selection-end-column="99" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptfactsparqueoctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="23" column="69" selection-start-line="23" selection-start-column="69" selection-end-line="23" selection-end-column="69" />
         </state>
       </provider>
     </entry>

@@ -1,0 +1,64 @@
+<div class="container" ng-controller="rptFacturasParqueoCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">Reporte de facturas emitidas de parqueo</div>
+            <div class="panel-body" style="text-align: right">
+                <div class="row" style="text-align: left">
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="txtDel">Del:</label>
+                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.fdel" placeholder="Del"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="txtAl">Al:</label>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fal" placeholder="Al"/>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group">
+                            <label for="selEmpresa">Empresa:</label>
+                            <div class="input-group">
+                                <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="params.idempresa"
+                                        ng-options="obj.id as obj.nomempresa for obj in empresas"
+                                        ng-change="loadProyectos(params.idempresa)">
+                                </select>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button" ng-click="params.idempresa = undefined; proyectos = []; params.idproyecto = undefined;"
+                                            ng-disabled="params.idempresa === null || params.idempresa === undefined">
+                                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="text-align: left">
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group">
+                            <label for="selProyecto">Proyecto:</label>
+                            <div class="input-group">
+                                <select name="selProyecto" id="selProyecto" class="form-control" ng-model="params.idproyecto"
+                                        ng-options="obj.id as obj.nomproyecto for obj in proyectos"></select>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button" ng-click="params.idproyecto = undefined;" ng-disabled="params.idproyecto === null || params.idproyecto === undefined">
+                                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" ng-click="getFactsParqueo()">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 50em"></object>
+        </div>
+    </div>
+</div>
