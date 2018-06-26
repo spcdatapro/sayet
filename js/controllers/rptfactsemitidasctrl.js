@@ -11,6 +11,7 @@
 
         empresaSrvc.lstEmpresas().then(function(d){ $scope.empresas = d; });
 
+        /*
         authSrvc.getSession().then(function(usrLogged){
             if(parseInt(usrLogged.workingon) > 0){
                 empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function(d){
@@ -19,6 +20,7 @@
                 });
             }
         });
+        */
 
         $scope.loadProyectos = function(idempresa){
             proyectoSrvc.lstProyectosPorEmpresa(+idempresa).then(function(d){ $scope.proyectos = d; });
@@ -40,7 +42,7 @@
         };
 
         $scope.focusOut = function(item){
-            if(item == null || item == undefined || item.toString().trim() == ''){
+            if(item == null || item === undefined || item.toString().trim() === ''){
                 $scope.params.cliente = '';
                 $scope.params.idcliente = 0;
             }
@@ -51,11 +53,12 @@
             var reporte = 'BJW6LWoYb';
             $scope.params.fdelstr = moment($scope.params.fdel).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.fal).format('YYYY-MM-DD');
-            $scope.params.cliente = $scope.params.cliente != null && $scope.params.cliente != undefined ? $scope.params.cliente : '';
-            $scope.params.idcliente = $scope.params.idcliente != null && $scope.params.idcliente != undefined ? $scope.params.idcliente : 0;
-            $scope.params.tipo = $scope.params.tipo != null && $scope.params.tipo != undefined ? $scope.params.tipo : '1';
-            $scope.params.idproyecto = $scope.params.idproyecto != null && $scope.params.idproyecto != undefined ? $scope.params.idproyecto : 0;
-            if(+$scope.params.tipo == 4){ reporte = 'ByqyuVFnW'; }
+            $scope.params.idempresa = $scope.params.idempresa != null && $scope.params.idempresa !== undefined ? $scope.params.idempresa : '';
+            $scope.params.cliente = $scope.params.cliente != null && $scope.params.cliente !== undefined ? $scope.params.cliente : '';
+            $scope.params.idcliente = $scope.params.idcliente != null && $scope.params.idcliente !== undefined ? $scope.params.idcliente : 0;
+            $scope.params.tipo = $scope.params.tipo != null && $scope.params.tipo !== undefined ? $scope.params.tipo : '1';
+            $scope.params.idproyecto = $scope.params.idproyecto != null && $scope.params.idproyecto !== undefined ? $scope.params.idproyecto : 0;
+            if(+$scope.params.tipo === 4){ reporte = 'ByqyuVFnW'; }
             //console.log($scope.params); return;
             jsReportSrvc.getPDFReport(test ? '' : reporte, $scope.params).then(function(pdf){ $scope.content = pdf; });
         };       

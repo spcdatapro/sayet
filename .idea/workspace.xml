@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/js/controllers/rptrecclictrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/rptrecclictrl.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/rptreccli.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/rptreccli.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/php/rptreccli.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/rptreccli.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/controllers/rptfactsemitidasctrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/rptfactsemitidasctrl.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/rptfactsemitidas.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/rptfactsemitidas.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/php/rptfactemitidas.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/rptfactemitidas.php" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -40,31 +40,39 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="rptreccli.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/rptreccli.html">
+      <file leaf-file-name="rptfactsemitidas.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pages/rptfactsemitidas.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="575">
-              <caret line="74" column="136" selection-start-line="74" selection-start-column="123" selection-end-line="74" selection-end-column="136" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rptrecclictrl.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/js/controllers/rptrecclictrl.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="629">
-              <caret line="37" column="32" selection-start-line="37" selection-start-column="32" selection-end-line="37" selection-end-column="32" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rptreccli.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/php/rptreccli.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="1" column="30" lean-forward="true" selection-start-line="1" selection-start-column="30" selection-end-line="1" selection-end-column="30" />
+            <state relative-caret-position="170">
+              <caret line="10" column="58" lean-forward="true" selection-start-line="10" selection-start-column="58" selection-end-line="10" selection-end-column="58" />
               <folding>
-                <element signature="e#195#6504#1#PHP" />
+                <element signature="n#style#0;n#div#1;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#div#1;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" />
+                <element signature="n#style#0;n#div#2;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptfactsemitidasctrl.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/controllers/rptfactsemitidasctrl.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="799">
+              <caret line="60" column="63" selection-start-line="60" selection-start-column="54" selection-end-line="60" selection-end-column="63" />
+              <folding>
+                <element signature="e#1237#1797#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptfactemitidas.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/rptfactemitidas.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="204">
+              <caret line="21" lean-forward="true" selection-start-line="21" selection-end-line="21" />
+              <folding>
+                <element signature="e#194#709#1#PHP" />
               </folding>
             </state>
           </provider>
@@ -131,14 +139,14 @@
         <option value="$PROJECT_DIR$/pages/mntpresupuesto.html" />
         <option value="$PROJECT_DIR$/js/controllers/transegpresupctrl.js" />
         <option value="$PROJECT_DIR$/php/rptpresupuesto.php" />
-        <option value="$PROJECT_DIR$/js/controllers/rptfactsemitidasctrl.js" />
-        <option value="$PROJECT_DIR$/pages/rptfactsemitidas.html" />
-        <option value="$PROJECT_DIR$/php/rptfactemitidas.php" />
         <option value="$PROJECT_DIR$/pages/rptingegrproy.html" />
         <option value="$PROJECT_DIR$/php/rptingegrproy.php" />
         <option value="$PROJECT_DIR$/php/rptreccli.php" />
         <option value="$PROJECT_DIR$/pages/rptreccli.html" />
         <option value="$PROJECT_DIR$/js/controllers/rptrecclictrl.js" />
+        <option value="$PROJECT_DIR$/js/controllers/rptfactsemitidasctrl.js" />
+        <option value="$PROJECT_DIR$/php/rptfactemitidas.php" />
+        <option value="$PROJECT_DIR$/pages/rptfactsemitidas.html" />
       </list>
     </option>
   </component>
@@ -148,15 +156,11 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="MavenImportPreferences">
-    <option name="generalSettings">
-      <MavenGeneralSettings>
-        <option name="mavenHome" value="Bundled (Maven 3)" />
-      </MavenGeneralSettings>
-    </option>
-  </component>
   <component name="MavenProjectNavigator">
-    <treeState />
+    <treeState>
+      <expand />
+      <select />
+    </treeState>
   </component>
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths>
@@ -872,12 +876,12 @@
       <workItem from="1528931214601" duration="222000" />
       <workItem from="1529595763236" duration="2615000" />
       <workItem from="1529951079310" duration="5059000" />
-      <workItem from="1530022860142" duration="6177000" />
+      <workItem from="1530022860142" duration="12120000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2609637000" />
+    <option name="totallyTimeSpent" value="2615580000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="0" width="1936" height="1047" extended-state="0" />
@@ -1212,27 +1216,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pages/rptfactsemitidas.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1190">
-          <caret line="70" column="58" selection-start-line="70" selection-start-column="58" selection-end-line="70" selection-end-column="58" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptfactsemitidasctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1003">
-          <caret line="59" column="119" selection-start-line="59" selection-start-column="119" selection-end-line="59" selection-end-column="119" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptfactemitidas.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="287">
-          <caret line="110" column="46" lean-forward="true" selection-start-line="110" selection-start-column="46" selection-end-line="110" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/rptingegrproy.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="220">
@@ -1264,6 +1247,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptrecclictrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pages/rptreccli.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="575">
@@ -1271,10 +1261,35 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptrecclictrl.js">
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptfactsemitidasctrl.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="629">
-          <caret line="37" column="32" selection-start-line="37" selection-start-column="32" selection-end-line="37" selection-end-column="32" />
+        <state relative-caret-position="799">
+          <caret line="60" column="63" selection-start-line="60" selection-start-column="54" selection-end-line="60" selection-end-column="63" />
+          <folding>
+            <element signature="e#1237#1797#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptfactsemitidas.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="10" column="58" lean-forward="true" selection-start-line="10" selection-start-column="58" selection-end-line="10" selection-end-column="58" />
+          <folding>
+            <element signature="n#style#0;n#div#1;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#div#1;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" />
+            <element signature="n#style#0;n#div#2;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptfactemitidas.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="21" lean-forward="true" selection-start-line="21" selection-end-line="21" />
+          <folding>
+            <element signature="e#194#709#1#PHP" />
+          </folding>
         </state>
       </provider>
     </entry>
