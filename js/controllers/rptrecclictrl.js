@@ -6,7 +6,7 @@
 
         $scope.params = {
             fdel: moment().startOf('month').toDate(), fal:moment().endOf('month').toDate(), serie: undefined, numdel: undefined, numal: undefined, idempresa: undefined, lasEmpresas: undefined,
-            idmoneda: undefined
+            idmoneda: undefined, encorrelativo: 0
         };
 
         $scope.empresas = [];
@@ -32,8 +32,13 @@
             }else{ $scope.params.idempresa = ''; }
 
             //console.log($scope.params); return;
+            var rpttest = 'S1Kw5Q8Wf', rpt = 'S1Kw5Q8Wf';
+            if(+$scope.params.encorrelativo === 1){
+                rpttest = 'Sk_TXxlMQ';
+                rpt = 'B1spoxxfm';
+            }
 
-            jsReportSrvc.getPDFReport(test ? '' : 'S1Kw5Q8Wf', $scope.params).then(function(pdf){ $scope.content = pdf; });
+            jsReportSrvc.getPDFReport(test ? rpttest : rpt, $scope.params).then(function(pdf){ $scope.content = pdf; });
         };
 
     }]);

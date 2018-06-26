@@ -4,10 +4,10 @@ require_once 'db.php';
 
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
+$db = new dbcpm();
 
-$app->post('/recibos', function(){
+$app->post('/recibos', function() use($db){
     $d = json_decode(file_get_contents('php://input'));
-    $db = new dbcpm();
 
     $query = "SELECT DATE_FORMAT('$d->fdelstr', '%d/%m/%Y') AS del,  DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS al, DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy";
     $generales = $db->getQuery($query)[0];
@@ -94,5 +94,37 @@ $app->post('/recibos', function(){
     print json_encode([ 'generales' => $generales, 'recibos' => $monedas]);
 
 });
+
+$app->post('/correlativo', function() use($db){
+    $d = json_decode(file_get_contents('php://input'));
+
+    $query = "SELECT DATE_FORMAT('$d->fdelstr', '%d/%m/%Y') AS del,  DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS al, DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy";
+    $generales = $db->getQuery($query)[0];
+
+    $qGen = "SELECT a.idempresa, d.nomempresa AS empresa, a.id, IFNULL(CONCAT(a.serie, a.numero), a.id) AS norecibo, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, c.nombre AS cliente, a.usuariocrea, ";
+    $qGen.= "'Q' AS moneda, IFNULL(b.totrecibo, 0.00) AS totrecibo, a.serie, a.numero, d.ordensumario ";
+    $qGen.= "FROM recibocli a LEFT JOIN (SELECT idrecibocli, SUM(monto) AS totrecibo FROM detcobroventa GROUP BY idrecibocli) b ON a.id = b.idrecibocli ";
+    $qGen.= "LEFT JOIN cliente c ON c.id = a.idcliente LEFT JOIN empresa d ON d.id = a.idempresa ";
+    $qGen.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' ";
+    $qGen.= $d->idempresa != '' ? "AND a.idempresa IN($d->idempresa) " : '';
+    $qGen.= "ORDER BY d.ordensumario, a.serie, a.numero";
+
+    $query = "SELECT DISTINCT idempresa, empresa FROM ($qGen) z ORDER BY ordensumario";
+    $recibos = $db->getQuery($query);
+    $cntRecibos = count($recibos);
+    for($i = 0; $i < $cntRecibos; $i++){
+        $recibo = $recibos[$i];
+        $query = "SELECT norecibo, fecha, cliente, usuariocrea, moneda, FORMAT(totrecibo, 2) AS totrecibo FROM ($qGen) z WHERE idempresa = $recibo->idempresa ORDER BY serie, numero";
+        $recibo->recibos = $db->getQuery($query);
+        if(count($recibo->recibos) > 0){
+            $query = "SELECT FORMAT(SUM(totrecibo), 2) AS totrecibo FROM ($qGen) z WHERE idempresa = $recibo->idempresa";
+            $suma = $db->getOneField($query);
+            $recibo->recibos[] = ['norecibo' => '', 'fecha' => '', 'cliente' => '', 'usuariocrea' => 'TOTAL:', 'moneda' => 'Q', 'totrecibo' => $suma];
+        }
+    }
+
+    print json_encode(['generales' => $generales, 'recibos' => $recibos]);
+});
+
 
 $app->run();
