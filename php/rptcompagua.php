@@ -39,10 +39,12 @@ $app->post('/comparativo', function() use($db){
             $query.= "ORDER BY CAST(digits(z.unidad) AS UNSIGNED), z.unidad, z.numidentificacion";
             $proyecto->contadores = $db->getQuery($query);
             $cntContadores = count($proyecto->contadores);
+            $sumatoriaProyecto = [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, '', 0.00];
             for($k = 0; $k < $cntContadores; $k++){
                 $contador = $proyecto->contadores[$k];
                 $cantMeses = 12;
                 $sumProm = 0.00;
+                $factorPromedio = 0;
                 for($l = 1; $l <= 12; $l++){
                     $query = "SELECT MONTH(DATE_SUB('$d->anio-$d->mes-01', INTERVAL $cantMeses MONTH)) AS mes, YEAR(DATE_SUB('$d->anio-$d->mes-01', INTERVAL $cantMeses MONTH)) AS anio, ";
                     $query.= "CONCAT(UPPER(nombrecorto), SUBSTR('$d->anio', 3, 2)) AS messtr FROM mes WHERE id = MONTH(DATE_SUB('$d->anio-$d->mes-01', INTERVAL $cantMeses MONTH)) ";
@@ -53,14 +55,24 @@ $app->post('/comparativo', function() use($db){
                     $query.= "WHERE idserviciobasico = $contador->idserviciobasico AND mes = $mes AND anio = $anio";
                     $consumo = (float)$db->getOneField($query);
                     $consumoMes = $consumo >= 0 ? $consumo : 0;
-                    $sumProm += $consumoMes;
-                    //$contador->{'mes'.($l < 10 ? '0' : '').$l} = number_format($consumoMes, 2);
+
+                    $query = "SELECT IF(LecturaAnteriorAsNull($contador->idserviciobasico, $mes, $anio) IS NULL, 1, 0)";
+                    $noesnulo = (int)$db->getOneField($query) === 0;
+                    if($noesnulo){
+                        $factorPromedio++;
+                        $sumProm += $consumoMes;
+                    }
+
                     $query = "SELECT CONCAT(UPPER(nombrecorto), SUBSTR('$anio', 3, 2)) AS messtr FROM mes WHERE id = $mes";
                     $contador->consumos[] = ['mes' => $db->getOneField($query), 'consumo' => number_format($consumoMes, 2)];
+                    $sumatoriaProyecto[$l - 1] += $consumoMes;
                     $cantMeses--;
                 }
-                $contador->promedio = number_format(round($sumProm / 12, 2), 2);
+                $contador->promedio = number_format(round(($factorPromedio > 0 ? ($sumProm / $factorPromedio) : 0), 2), 2);
+                $sumatoriaProyecto[13] += (float)$contador->consumoactual;
             }
+            //array_map(function($num){return number_format($num,2);}, $array);
+            $proyecto->sumatoria = array_map(function($num){ return $num !== '' ? number_format($num, 2) : ''; }, $sumatoriaProyecto);
         }
     }
 

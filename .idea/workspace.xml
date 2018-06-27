@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/php/factsparqueo.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/factsparqueo.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/rptcompagua.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/rptcompagua.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/php/rptcompagua.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/rptcompagua.php" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -38,43 +40,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="factsparqueo.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/php/factsparqueo.php">
+      <file leaf-file-name="rptcompagua.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pages/rptcompagua.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="21" lean-forward="true" selection-start-line="21" selection-end-line="21" />
-              <folding>
-                <element signature="e#302#705#1#PHP" />
-                <element signature="n#parseFecha#0;n#!!top" />
-                <element signature="n#idc#0;n#!!top" />
-              </folding>
+            <state relative-caret-position="592">
+              <caret line="55" column="137" lean-forward="true" selection-start-line="55" selection-start-column="137" selection-end-line="55" selection-end-column="137" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="genpartidasventa.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/php/genpartidasventa.php">
+      <file leaf-file-name="rptcompagua.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/rptcompagua.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="269">
-              <caret line="265" column="28" lean-forward="true" selection-start-line="265" selection-start-column="28" selection-end-line="265" selection-end-column="28" />
-              <folding>
-                <element signature="e#659#5844#1#PHP" />
-                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-                <element signature="e#5868#10830#1#PHP" />
-                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-              </folding>
+            <state relative-caret-position="102">
+              <caret line="6" column="18" lean-forward="true" selection-start-line="6" selection-start-column="18" selection-end-line="6" selection-end-column="18" />
             </state>
           </provider>
         </entry>
@@ -111,7 +90,6 @@
         <option value="$PROJECT_DIR$/php/db.php" />
         <option value="$PROJECT_DIR$/js/controllers/genpagosplnctrl.js" />
         <option value="$PROJECT_DIR$/php/generaplnbi.php" />
-        <option value="$PROJECT_DIR$/pages/rptcompagua.html" />
         <option value="$PROJECT_DIR$/php/serviciopropio.php" />
         <option value="$PROJECT_DIR$/js/services/serviciopropiosrvc.js" />
         <option value="$PROJECT_DIR$/pages/lecturaservicio.html" />
@@ -128,7 +106,6 @@
         <option value="$PROJECT_DIR$/php/rptivaventa.php" />
         <option value="$PROJECT_DIR$/js/controllers/tranfacturactrl.js" />
         <option value="$PROJECT_DIR$/php/facturaagua.php" />
-        <option value="$PROJECT_DIR$/php/rptcompagua.php" />
         <option value="$PROJECT_DIR$/js/controllers/rptcompaguactrl.js" />
         <option value="$PROJECT_DIR$/php/genpartidasventa.php" />
         <option value="$PROJECT_DIR$/php/rptlibrocompras.php" />
@@ -153,6 +130,8 @@
         <option value="$PROJECT_DIR$/js/app.js" />
         <option value="$PROJECT_DIR$/js/controllers/rptfactsparqueoctrl.js" />
         <option value="$PROJECT_DIR$/php/factsparqueo.php" />
+        <option value="$PROJECT_DIR$/php/rptcompagua.php" />
+        <option value="$PROJECT_DIR$/pages/rptcompagua.html" />
       </list>
     </option>
   </component>
@@ -184,10 +163,10 @@
       <path value="$PROJECT_DIR$/php/vendor/slim/slim" />
     </include_path>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="-8" />
     <option name="width" value="1936" />
-    <option name="height" value="1047" />
+    <option name="height" value="1048" />
   </component>
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -197,7 +176,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
+      <pane id="Scope" />
+      <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -230,8 +210,7 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="AndroidView" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -882,15 +861,16 @@
       <workItem from="1528931214601" duration="222000" />
       <workItem from="1529595763236" duration="2615000" />
       <workItem from="1529951079310" duration="5059000" />
-      <workItem from="1530022860142" duration="20959000" />
+      <workItem from="1530022860142" duration="21603000" />
+      <workItem from="1530110850343" duration="7504000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2624419000" />
+    <option name="totallyTimeSpent" value="2632567000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="0" width="1936" height="1047" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
@@ -906,7 +886,7 @@
       <window_info anchor="bottom" x="229" y="406" width="1572" height="574" id="Terminal" order="10" type="WINDOWED" weight="1.0" />
       <window_info id="Capture Tool" order="3" />
       <window_info anchor="right" id="Designer" order="5" />
-      <window_info active="true" content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" visible="true" weight="0.1391258" />
+      <window_info content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" weight="0.14072494" />
       <window_info anchor="right" id="Database" order="6" weight="0.32889125" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.1546875" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.24946696" />
@@ -953,13 +933,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptlibroventasctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="54" column="188" selection-start-line="52" selection-start-column="12" selection-end-line="54" selection-end-column="188" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/rptventaisr.php">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -1005,24 +978,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptcompaguactrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="17" column="25" selection-start-line="17" selection-start-column="25" selection-end-line="17" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/facturaagua.php">
       <provider selected="true" editor-type-id="text-editor">
         <state>
           <caret line="232" selection-start-line="232" selection-end-line="232" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptcompagua.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="36" column="63" selection-start-line="36" selection-start-column="63" selection-end-line="36" selection-end-column="63" />
         </state>
       </provider>
     </entry>
@@ -1160,9 +1119,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="220">
           <caret line="252" column="35" lean-forward="true" selection-start-line="252" selection-start-column="35" selection-end-line="252" selection-end-column="35" />
-          <folding>
-            <element signature="e#196#10136#1#PHP" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1170,10 +1126,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="609">
           <caret line="187" column="109" selection-start-line="187" selection-start-column="109" selection-end-line="187" selection-end-column="109" />
-          <folding>
-            <element signature="e#3217#3225#0" expanded="true" />
-            <element signature="n#style#0;n#td#1;n#tr#3;n#table#0;n#div#0;n#small#1;n#div#0;n#!!top" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1181,9 +1133,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="17">
           <caret line="1" column="30" lean-forward="true" selection-start-line="1" selection-start-column="30" selection-end-line="1" selection-end-column="30" />
-          <folding>
-            <element signature="e#195#6504#1#PHP" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1219,23 +1168,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="82">
           <caret line="142" lean-forward="true" selection-start-line="142" selection-end-line="142" />
-          <folding>
-            <element signature="e#194#709#1#PHP" />
-            <element signature="e#741#4771#1#PHP" />
-            <element signature="e#4800#8487#1#PHP" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/rptfactsemitidas.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="714">
-          <caret line="105" column="6" lean-forward="true" selection-start-line="5" selection-end-line="105" selection-end-column="6" />
-          <folding>
-            <element signature="n#style#0;n#div#1;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#div#1;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" />
-            <element signature="n#style#0;n#div#2;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1260,9 +1192,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-258">
           <caret column="38" lean-forward="true" selection-start-column="38" selection-end-column="60" />
-          <folding>
-            <element signature="n#style#0;n#div#2;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1291,36 +1220,51 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="269">
           <caret line="265" column="28" lean-forward="true" selection-start-line="265" selection-start-column="28" selection-end-line="265" selection-end-column="28" />
-          <folding>
-            <element signature="e#659#5844#1#PHP" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-            <element signature="e#5868#10830#1#PHP" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/php/factsparqueo.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="21" lean-forward="true" selection-start-line="21" selection-end-line="21" />
+        <state relative-caret-position="34">
+          <caret line="2" column="26" selection-start-line="2" selection-start-column="26" selection-end-line="2" selection-end-column="26" />
           <folding>
             <element signature="e#302#705#1#PHP" />
             <element signature="n#parseFecha#0;n#!!top" />
             <element signature="n#idc#0;n#!!top" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptfactsemitidas.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="36" column="39" lean-forward="true" selection-start-line="31" selection-start-column="32" selection-end-line="36" selection-end-column="39" />
+          <folding>
+            <element signature="n#style#0;n#div#1;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#div#1;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" />
+            <element signature="n#style#0;n#div#2;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptcompaguactrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="17" column="25" selection-start-line="17" selection-start-column="25" selection-end-line="17" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptcompagua.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="592">
+          <caret line="55" column="137" lean-forward="true" selection-start-line="55" selection-start-column="137" selection-end-line="55" selection-end-column="137" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptcompagua.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="18" lean-forward="true" selection-start-line="6" selection-start-column="18" selection-end-line="6" selection-end-column="18" />
         </state>
       </provider>
     </entry>

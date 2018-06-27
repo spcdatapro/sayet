@@ -30,18 +30,34 @@
                 </div>
                 <div class="col-md-6">
                     <label for="selEmpresa">Empresa:</label>
-                    <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="params.empresas"
-                            ng-options="obj.id as obj.nomempresa for obj in empresas"
-                            ng-change="loadProyectos()">
-                    </select>
+                    <div class="input-group">
+                        <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="params.empresas"
+                                ng-options="obj.id as obj.nomempresa for obj in empresas"
+                                ng-change="loadProyectos()">
+                        </select>
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" type="button" ng-click="params.empresas = undefined; proyectos = []; params.proyectos = undefined;"
+                                    ng-disabled="params.empresas === null || params.empresas === undefined || params.empresas === ''">
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                            </button>
+                        </span>
+                    </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-6">
                     <label for="selProy">Proyecto:</label>
-                    <select name="selProy" id="selProy" class="form-control" ng-model="params.proyectos"
-                            ng-options="obj.id as obj.nomproyecto for obj in proyectos">
-                    </select>
+                    <div class="input-group">
+                        <select name="selProy" id="selProy" class="form-control" ng-model="params.proyectos"
+                                ng-options="obj.id as obj.nomproyecto for obj in proyectos">
+                        </select>
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" type="button" ng-click="params.proyectos = undefined;"
+                                    ng-disabled="params.proyectos === null || params.proyectos === undefined || params.proyectos === ''">
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                            </button>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
