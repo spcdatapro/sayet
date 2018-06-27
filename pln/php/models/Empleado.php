@@ -791,19 +791,56 @@ EOT;
 
 	public function get_bitacora($args=[])
 	{
-		$where = ['idplnempleado' => $this->emp->id];
+		$where = ['plnbitacora.idplnempleado' => $this->emp->id];
 
-		return $this->db->select("plnbitacora", [
+		if (elemento($args, 'id')) {
+			$where['plnbitacora.id'] = $args['id'];
+		}
+
+		$condiciones = ['AND' => $where];
+
+		if (elemento($args, 'uno')) {
+			$condiciones['LIMIT'] = 1;
+		}
+
+		$tmp = $this->db->select("plnbitacora", [
 				'[><]usuario(b)' => ['plnbitacora.usuario' => 'id']
 			], 
 			[
 				"plnbitacora.*",
 				"b.nombre"
 			],
-			[
-				'AND' => $where
-				
-			]
+			$condiciones
 		);
+
+		if (elemento($args, 'uno')) {
+			return (object)$tmp[0];
+		} else {
+			return $tmp;
+		}
+	}
+
+	public function get_datos_movimiento($args=[])
+	{
+		$bit = $this->get_bitacora(['id' => $args['id'], 'uno' => true]);
+		$emp = $this->get_empresa_debito();
+		$ant = json_decode($bit->antes);
+		$des = json_decode($bit->despues);
+
+		return [
+			'fecha'            => 'Guatemala, ' . date('d/m/Y H:i:s'),
+			'movfecha' 		   => formatoFecha($bit->movfecha, 1),
+			'empleado'         => $this->emp->nombre.' '.$this->emp->apellidos,
+			'empresa'          => $emp->nomempresa,
+			'movdescripcion'   => $bit->movdescripcion,
+			'ant_sueldo'       => number_format($ant->sueldo, 2),
+			'ant_bonificacion' => number_format($ant->bonificacionley, 2), 
+			'ant_total'        => number_format(($ant->sueldo+$ant->bonificacionley), 2), 
+			'des_sueldo'       => number_format($des->sueldo, 2), 
+			'des_bonificacion' => number_format($des->bonificacionley, 2), 
+			'des_total'        => number_format(($des->sueldo+$des->bonificacionley), 2), 
+			'movobservaciones' => $bit->movobservaciones,
+			'numero'           => $bit->id
+		];
 	}
 }

@@ -1,8 +1,8 @@
 <?php
 
-/*ini_set('display_errors', 1);
+ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);*/
+error_reporting(E_ALL);
 #set_time_limit(0);
 
 define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
@@ -363,15 +363,29 @@ $app->get('/descargar', function(){
 });
 
 $app->get('/printbit/:empleado/:id', function($empleado,$id){
-    $e = new Empleado($empleado);
-    require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
+	$gen = new General();
+    $emp = new Empleado($empleado);
+    $datos = $emp->get_datos_movimiento(['id' => $id]);
 
-	$s = [215.9, 279.4]; # Carta mm
+    require BASEPATH . '/libs/tcpdf/tcpdf.php';
+    require BASEPATH . '/php/fpdi.php';
 
-	$pdf = new TCPDF('P', 'mm', $s);
-	$pdf->SetAutoPageBreak(TRUE, 0);
-    #enviar_json($e->get_bitacora());
-    $pdf->AddPage();
+    $s = [215.9, 279.4]; # Carta mm
+    $pdf = new FPDI('Portrait','mm',$s);
+	$pdf->AddPage();
+	$pagecount = $pdf->setSourceFile(PLNPATH . '/files/movimiento.pdf');
+	$tppl = $pdf->importPage(1);
+	 
+	$pdf->useTemplate($tppl, 0, 0, 0, 0);
+
+	foreach ($datos as $campo => $valor) {
+		$conf = $gen->get_campo_impresion($campo, 10);
+
+		if (!isset($conf->scalar) && $conf->visible == 1) {
+			$pdf = generar_fimpresion($pdf, $valor, $conf);
+		}
+	}
+
     $pdf->Output("bitacora_" . time() . ".pdf", 'I');
 	die();
 });
