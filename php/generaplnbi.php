@@ -55,8 +55,9 @@ function genDetContDoc($db, $d, $idtranban, $concepto, $idctabanco, $mediopago, 
 
     $query = "SELECT b.idempresadebito AS deptodeb, a.fecha, SUM(a.anticipo) AS anticipo, SUM(a.sueldoordinario) AS suel_ord, SUM(a.sueldoextra) AS suel_ext, SUM(a.bonificacion) AS bonifica, ";
     $query.= "SUM(a.viaticos) AS viaticos, SUM(a.otrosingresos) AS otros_ingr, SUM(a.vacaciones) AS vacaciones, SUM(a.aguinaldo) AS aguinaldo, SUM(a.bonocatorce) AS bono_14, SUM(a.indemnizacion) AS indemniza, ";
-    $query.= "SUM(a.descigss) AS desc_igss, SUM(a.descisr) AS desc_isr, SUM(a.descanticipo) AS desc_anti, SUM(a.descprestamo) AS desc_prest, SUM(a.descotros) AS otros_desc, SUM(a.liquido) AS liquido ";
-    $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado ";
+    $query.= "SUM(a.descigss) AS desc_igss, SUM(a.descisr) AS desc_isr, SUM(a.descanticipo) AS desc_anti, SUM(a.descprestamo) AS desc_prest, SUM(a.descotros) AS otros_desc, SUM(a.liquido) AS liquido, ";
+    $query.= "ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * c.patronaligss), 2) AS cuotapatronaligss ";
+    $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnempresa c ON c.id = b.idempresaactual ";
     $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido > 0 ";
     $query.= $mediopago == 3 ? "AND b.cuentabanco IS NOT NULL AND LENGTH(TRIM(b.cuentabanco)) > 0 " : '';
     $query.= "AND b.mediopago = $mediopago AND a.idempresa = $d->idempresa ";
@@ -127,10 +128,9 @@ function genDetContDoc($db, $d, $idtranban, $concepto, $idctabanco, $mediopago, 
         }
 
         if((float)$suma->suel_ord != 0.00 || (float)$suma->suel_ext != 0.00 || (float)$suma->vacaciones != 0.00){
-            $cuotaPatronal = round(((float)$suma->suel_ord + (float)$suma->suel_ext + (float)$suma->vacaciones) * 0.1267, 2);
             $ctaCuotaPatronal = getCuentaConfig($d->idempresa, 23);
             if($ctaCuotaPatronal > 0){
-                insertaDetalleContable($origen, $idtranban, $ctaCuotaPatronal, $cuotaPatronal, 0.00, "PLANILLA $concepto", 1, 0);
+                insertaDetalleContable($origen, $idtranban, $ctaCuotaPatronal, $suma->cuotapatronaligss, 0.00, "PLANILLA $concepto", 1, 0);
             }
         }
 
@@ -157,10 +157,9 @@ function genDetContDoc($db, $d, $idtranban, $concepto, $idctabanco, $mediopago, 
         }
 
         if((float)$suma->suel_ord != 0.00 || (float)$suma->suel_ext != 0.00 || (float)$suma->vacaciones != 0.00){
-            $cuotaPatronal = round(((float)$suma->suel_ord + (float)$suma->suel_ext + (float)$suma->vacaciones) * 0.1267, 2);
             $ctaCuotaPatronal = getCuentaConfig($d->idempresa, 26);
             if($ctaCuotaPatronal > 0){
-                insertaDetalleContable($origen, $idtranban, $ctaCuotaPatronal, 0.00, $cuotaPatronal, "PLANILLA $concepto", 1, 0);
+                insertaDetalleContable($origen, $idtranban, $ctaCuotaPatronal, 0.00, $suma->cuotapatronaligss, "PLANILLA $concepto", 1, 0);
             }
         }
 
@@ -200,7 +199,7 @@ function generand($d, $db, $total, $generales){
         $query = "INSERT INTO tranban(";
         $query.= "idbanco, tipotrans, numero, esplanilla, fechaplanilla, fecha, monto, beneficiario, concepto, tipocambio, idempresa";
         $query.= ") VALUES (";
-        $query.= "$d->idbanco, 'B', $d->notadebito, 1, '$d->falstr', '$d->falstr', $total, 'PLANILLA EMPLEADOS', 'PLANILLA $generales->concepto', 1.00, $d->idempresa";
+        $query.= "$d->idbanco, 'B', $d->notadebito, 1, '$d->falstr', DATE(NOW()), $total, 'PLANILLA EMPLEADOS', 'PLANILLA $generales->concepto', 1.00, $d->idempresa";
         $query.= ")";
         $db->doQuery($query);
         $lastId = (int)$db->getLastId();
@@ -262,7 +261,7 @@ function generachq($d, $db, $empresa, $empleado){
         $query = "INSERT INTO tranban(";
         $query.= "idbanco, tipotrans, numero, esplanilla, fechaplanilla, fecha, monto, beneficiario, concepto, tipocambio, idempresa, idempleado";
         $query.= ") VALUES (";
-        $query.= "$empresa->idbanco, 'C', $empresa->correlativo, 1, '$d->falstr', '$d->falstr', $empleado->monto, '$empleado->nombre', 'PLANILLA $empleado->concepto', 1.00, $empresa->idempresa, $empleado->idempleado";
+        $query.= "$empresa->idbanco, 'C', $empresa->correlativo, 1, '$d->falstr', DATE(NOW()), $empleado->monto, '$empleado->nombre', 'PLANILLA $empleado->concepto', 1.00, $empresa->idempresa, $empleado->idempleado";
         $query.= ")";
         // print $query;
         $db->doQuery($query);

@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/rptcompagua.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/rptcompagua.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/php/rptcompagua.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/rptcompagua.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/php/generaplnbi.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/generaplnbi.php" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -40,20 +38,15 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="rptcompagua.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/rptcompagua.html">
+      <file leaf-file-name="generaplnbi.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/generaplnbi.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="592">
-              <caret line="55" column="137" lean-forward="true" selection-start-line="55" selection-start-column="137" selection-end-line="55" selection-end-column="137" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rptcompagua.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/php/rptcompagua.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="6" column="18" lean-forward="true" selection-start-line="6" selection-start-column="18" selection-end-line="6" selection-end-column="18" />
+            <state relative-caret-position="200">
+              <caret line="68" column="20" lean-forward="true" selection-start-line="68" selection-start-column="20" selection-end-line="68" selection-end-column="20" />
+              <folding>
+                <element signature="e#196#1385#1#PHP" />
+                <element signature="e#1446#2200#1#PHP" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -73,6 +66,8 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>apiurlparqueo</find>
+      <find>0.1267</find>
+      <find>cuotapatronaligss</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -89,7 +84,6 @@
         <option value="$PROJECT_DIR$/php/printchequeragyt.php" />
         <option value="$PROJECT_DIR$/php/db.php" />
         <option value="$PROJECT_DIR$/js/controllers/genpagosplnctrl.js" />
-        <option value="$PROJECT_DIR$/php/generaplnbi.php" />
         <option value="$PROJECT_DIR$/php/serviciopropio.php" />
         <option value="$PROJECT_DIR$/js/services/serviciopropiosrvc.js" />
         <option value="$PROJECT_DIR$/pages/lecturaservicio.html" />
@@ -132,6 +126,7 @@
         <option value="$PROJECT_DIR$/php/factsparqueo.php" />
         <option value="$PROJECT_DIR$/php/rptcompagua.php" />
         <option value="$PROJECT_DIR$/pages/rptcompagua.html" />
+        <option value="$PROJECT_DIR$/php/generaplnbi.php" />
       </list>
     </option>
   </component>
@@ -163,7 +158,7 @@
       <path value="$PROJECT_DIR$/php/vendor/slim/slim" />
     </include_path>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-8" />
     <option name="width" value="1936" />
     <option name="height" value="1048" />
@@ -862,12 +857,12 @@
       <workItem from="1529595763236" duration="2615000" />
       <workItem from="1529951079310" duration="5059000" />
       <workItem from="1530022860142" duration="21603000" />
-      <workItem from="1530110850343" duration="7504000" />
+      <workItem from="1530110850343" duration="11314000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2632567000" />
+    <option name="totallyTimeSpent" value="2636377000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1061,13 +1056,6 @@
     <entry file="file://$PROJECT_DIR$/pln/pages/mnt/empleado.html">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/php/generaplnbi.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret line="286" column="41" selection-start-line="286" selection-start-column="41" selection-end-line="286" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/services/tranbancsrvc.js">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -1254,6 +1242,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptcompagua.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="18" lean-forward="true" selection-start-line="6" selection-start-column="18" selection-end-line="6" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pages/rptcompagua.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="592">
@@ -1261,10 +1256,14 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptcompagua.php">
+    <entry file="file://$PROJECT_DIR$/php/generaplnbi.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="18" lean-forward="true" selection-start-line="6" selection-start-column="18" selection-end-line="6" selection-end-column="18" />
+        <state relative-caret-position="200">
+          <caret line="68" column="20" lean-forward="true" selection-start-line="68" selection-start-column="20" selection-end-line="68" selection-end-column="20" />
+          <folding>
+            <element signature="e#196#1385#1#PHP" />
+            <element signature="e#1446#2200#1#PHP" />
+          </folding>
         </state>
       </provider>
     </entry>
