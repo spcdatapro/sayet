@@ -55,6 +55,7 @@ $app->post('/factemitidas', function(){
     $qGen.= trim($d->cliente) != '' && (int)$d->idcliente == 0 ? "AND a.anulada = 0 AND (a.nombre LIKE '%$d->cliente%' OR a.nit LIKE '%$d->cliente%' OR d.nombre LIKE '%$d->cliente%' OR d.nombrecorto LIKE '%$d->cliente%') " : '';
     $qGen.= (int)$d->tipo == 2 ? "AND a.pagada = 1 " : ((int)$d->tipo == 3 ? "AND a.pagada = 0 " : '');
     $qGen.= (int)$d->idproyecto > 0 ? "AND e.idproyecto = $d->idproyecto " : '';
+    $qGen.= (int)$d->idtsventa > 0 ? "AND (SELECT COUNT(idfactura) FROM detfact WHERE idfactura = a.id AND idtiposervicio = $d->idtsventa) > 0 " : '';
     $qGen.= "ORDER BY a.numero";
 
     $query = "SELECT DISTINCT z.idempresa, z.empresa, 0.00 AS totfacturado FROM ($qGen) z ORDER BY z.ordensumario";
@@ -100,6 +101,7 @@ $app->post('/factspend', function(){
         WHERE a.fechacobro <= '$d->falstr' AND a.facturado = 0 AND a.anulado = 0 AND c.inactivo = 0 AND (a.monto - a.descuento) > 0 ";
     $qGen.= $d->idempresa != '' ? "AND c.idempresa IN($d->idempresa) " : '';
     $qGen.= (int)$d->idproyecto > 0 ? "AND c.idproyecto = $d->idproyecto " : '';
+    $qGen.= (int)$d->idtsventa > 0 ? "AND b.idtipoventa = $d->idtsventa " : '';
     $qGen.= "
         UNION ALL
         SELECT d.nombre AS cliente, d.nombrecorto AS abreviacliente, 'Agua' AS tipo,
@@ -113,6 +115,7 @@ $app->post('/factspend', function(){
         IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, (((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) * b.preciomcubsug), 0.00 ) > 0 ";
     $qGen.= $d->idempresa != '' ? "AND b.idempresa IN($d->idempresa) " : '';
     $qGen.= (int)$d->idproyecto > 0 ? "AND c.idproyecto = $d->idproyecto " : '';
+    $qGen.= !in_array((int)$d->idtsventa, [0, 4]) ? " AND 0 = 1 " : '';
     $qGen.= "ORDER BY 1, 3";
 
     $query = "SELECT DISTINCT z.idempresa, y.nomempresa AS empresa, 0.00 totpendiente FROM ($qGen) z INNER JOIN empresa y ON y.id = z.idempresa ORDER BY y.ordensumario";

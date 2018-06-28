@@ -91,6 +91,20 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group">
+                            <label for="selTipo">Tipo:</label>
+                            <div class="input-group">
+                                <select name="selTipo" id="selTipo" class="form-control" ng-model="params.idtsventa"
+                                        ng-options="obj.id as obj.desctiposervventa for obj in tsventa"></select>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button" ng-click="params.idtsventa = undefined;" ng-disabled="params.idtsventa === null || params.idtsventa === undefined || params.idtsventa === ''">
+                                        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <button type="button" class="btn btn-primary" ng-click="getFactsEmitidas()">
                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>

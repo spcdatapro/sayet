@@ -2,14 +2,17 @@
 
     var rptfactsemitidasctrl = angular.module('cpm.rptfactsemitidasctrl', []);
 
-    rptfactsemitidasctrl.controller('rptFacturasEmitidasCtrl', ['$scope', 'authSrvc', 'empresaSrvc', 'jsReportSrvc', 'proyectoSrvc', function($scope, authSrvc, empresaSrvc, jsReportSrvc, proyectoSrvc){
+    rptfactsemitidasctrl.controller('rptFacturasEmitidasCtrl', ['$scope', 'authSrvc', 'empresaSrvc', 'jsReportSrvc', 'proyectoSrvc', 'tipoServicioVentaSrvc', function($scope, authSrvc, empresaSrvc, jsReportSrvc, proyectoSrvc, tipoServicioVentaSrvc){
 
-        $scope.params = { idempresa: undefined, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), cliente: '', tipo: '1', idcliente: 0, idproyecto: undefined };
+        $scope.params = { idempresa: undefined, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), cliente: '', tipo: '1', idcliente: 0, idproyecto: undefined, idtsventa: undefined };
         $scope.empresas = [];
         $scope.content = '';
         $scope.proyectos = [];
+        $scope.tsventa = [];
 
         empresaSrvc.lstEmpresas().then(function(d){ $scope.empresas = d; });
+
+        tipoServicioVentaSrvc.lstTSVenta().then(function(d){ $scope.tsventa = d; });
 
         /*
         authSrvc.getSession().then(function(usrLogged){
@@ -58,6 +61,7 @@
             $scope.params.idcliente = $scope.params.idcliente != null && $scope.params.idcliente !== undefined ? $scope.params.idcliente : 0;
             $scope.params.tipo = $scope.params.tipo != null && $scope.params.tipo !== undefined ? $scope.params.tipo : '1';
             $scope.params.idproyecto = $scope.params.idproyecto != null && $scope.params.idproyecto !== undefined ? $scope.params.idproyecto : 0;
+            $scope.params.idtsventa = $scope.params.idtsventa != null && $scope.params.idtsventa !== undefined ? $scope.params.idtsventa : 0;
             if(+$scope.params.tipo === 4){ reporte = 'ByqyuVFnW'; }
             //console.log($scope.params); return;
             jsReportSrvc.getPDFReport(test ? '' : reporte, $scope.params).then(function(pdf){ $scope.content = pdf; });
