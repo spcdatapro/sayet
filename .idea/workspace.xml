@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/js/controllers/rptfactsemitidasctrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/rptfactsemitidasctrl.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/rptfactsemitidas.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/rptfactsemitidas.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/php/rptfactemitidas.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/rptfactemitidas.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/php/genpartidasventa.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/genpartidasventa.php" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -40,44 +39,30 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="rptfactsemitidas.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/rptfactsemitidas.html">
+      <file leaf-file-name="genpartidasventa.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/genpartidasventa.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="473">
-              <caret line="101" column="82" lean-forward="true" selection-start-line="101" selection-start-column="82" selection-end-line="101" selection-end-column="82" />
+            <state relative-caret-position="272">
+              <caret line="110" column="18" lean-forward="true" selection-start-line="110" selection-start-column="18" selection-end-line="110" selection-end-column="18" />
               <folding>
-                <element signature="n#style#0;n#div#1;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#div#1;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" />
-                <element signature="n#style#0;n#div#2;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rptfactsemitidasctrl.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/controllers/rptfactsemitidasctrl.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="578">
-              <caret line="63" column="141" lean-forward="true" selection-start-line="63" selection-start-column="141" selection-end-line="63" selection-end-column="141" />
-              <folding>
-                <element signature="e#666#1042#0" />
-                <element signature="e#1094#1209#0" />
-                <element signature="e#1259#1819#0" />
-                <element signature="e#1862#2061#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rptfactemitidas.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/php/rptfactemitidas.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="533">
-              <caret line="117" column="47" lean-forward="true" selection-start-line="117" selection-start-column="47" selection-end-line="117" selection-end-column="47" />
-              <folding>
-                <element signature="e#194#709#1#PHP" />
-                <element signature="e#741#4771#1#PHP" />
-                <element signature="e#8519#11061#1#PHP" />
+                <element signature="n#idc#0;n#!!top" />
+                <element signature="e#659#5844#1#PHP" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="e#10857#15994#1#PHP" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -133,7 +118,6 @@
         <option value="$PROJECT_DIR$/js/controllers/tranfacturactrl.js" />
         <option value="$PROJECT_DIR$/php/facturaagua.php" />
         <option value="$PROJECT_DIR$/js/controllers/rptcompaguactrl.js" />
-        <option value="$PROJECT_DIR$/php/genpartidasventa.php" />
         <option value="$PROJECT_DIR$/php/rptlibrocompras.php" />
         <option value="$PROJECT_DIR$/pages/rptlibcomp.html" />
         <option value="$PROJECT_DIR$/js/controllers/rptlibrocomprasctrl.js" />
@@ -159,6 +143,7 @@
         <option value="$PROJECT_DIR$/js/controllers/rptfactsemitidasctrl.js" />
         <option value="$PROJECT_DIR$/pages/rptfactsemitidas.html" />
         <option value="$PROJECT_DIR$/php/rptfactemitidas.php" />
+        <option value="$PROJECT_DIR$/php/genpartidasventa.php" />
       </list>
     </option>
   </component>
@@ -203,6 +188,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="Scope" />
       <pane id="AndroidView" />
       <pane id="ProjectPane">
@@ -215,35 +201,12 @@
             <path>
               <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
               <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-              <item name="controllers" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-              <item name="services" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="pages" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
               <item name="php" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -895,12 +858,14 @@
       <workItem from="1529595763236" duration="2615000" />
       <workItem from="1529951079310" duration="5059000" />
       <workItem from="1530022860142" duration="21603000" />
-      <workItem from="1530110850343" duration="13955000" />
+      <workItem from="1530110850343" duration="14554000" />
+      <workItem from="1530196643300" duration="5000" />
+      <workItem from="1530225118545" duration="50000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2639018000" />
+    <option name="totallyTimeSpent" value="2639672000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -914,8 +879,8 @@
       <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" weight="0.32900432" />
       <window_info anchor="right" id="Maven Projects" order="4" weight="0.32995737" />
       <window_info anchor="bottom" id="Database Changes" order="7" />
-      <window_info anchor="bottom" id="Version Control" order="8" weight="0.32896176" />
       <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Version Control" order="8" weight="0.32896176" />
       <window_info anchor="bottom" x="229" y="406" width="1572" height="574" id="Terminal" order="10" type="WINDOWED" weight="1.0" />
       <window_info id="Capture Tool" order="3" />
       <window_info anchor="right" id="Designer" order="5" />
@@ -925,8 +890,8 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.24946696" />
       <window_info id="UI Designer" order="3" />
       <window_info anchor="right" id="Theme Preview" order="4" />
-      <window_info id="Favorites" order="4" sideWeight="0.50428265" side_tool="true" weight="0.1881663" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39978564" />
+      <window_info id="Favorites" order="4" sideWeight="0.50428265" side_tool="true" weight="0.1881663" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="PHP-CGI Server" order="7" />
@@ -1221,22 +1186,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/php/genpartidasventa.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="269">
-          <caret line="265" column="28" lean-forward="true" selection-start-line="265" selection-start-column="28" selection-end-line="265" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/factsparqueo.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="34">
           <caret line="2" column="26" selection-start-line="2" selection-start-column="26" selection-end-line="2" selection-end-column="26" />
-          <folding>
-            <element signature="e#302#705#1#PHP" />
-            <element signature="n#parseFecha#0;n#!!top" />
-            <element signature="n#idc#0;n#!!top" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1265,17 +1218,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="234">
           <caret line="70" column="43" lean-forward="true" selection-start-line="70" selection-start-column="43" selection-end-line="70" selection-end-column="43" />
-          <folding>
-            <element signature="e#196#1385#1#PHP" />
-            <element signature="e#1446#2200#1#PHP" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pages/rptfactsemitidas.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="473">
-          <caret line="101" column="82" lean-forward="true" selection-start-line="101" selection-start-column="82" selection-end-line="101" selection-end-column="82" />
+        <state relative-caret-position="1105">
+          <caret line="101" column="82" selection-start-line="101" selection-start-column="82" selection-end-line="101" selection-end-column="82" />
           <folding>
             <element signature="n#style#0;n#div#1;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#div#1;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" />
@@ -1293,25 +1242,44 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/js/controllers/rptfactsemitidasctrl.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="578">
-          <caret line="63" column="141" lean-forward="true" selection-start-line="63" selection-start-column="141" selection-end-line="63" selection-end-column="141" />
-          <folding>
-            <element signature="e#666#1042#0" />
-            <element signature="e#1094#1209#0" />
-            <element signature="e#1259#1819#0" />
-            <element signature="e#1862#2061#0" />
-          </folding>
+        <state relative-caret-position="1071">
+          <caret line="63" column="141" selection-start-line="63" selection-start-column="141" selection-end-line="63" selection-end-column="141" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/php/rptfactemitidas.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="533">
-          <caret line="117" column="47" lean-forward="true" selection-start-line="117" selection-start-column="47" selection-end-line="117" selection-end-column="47" />
+          <caret line="117" column="47" selection-start-line="117" selection-start-column="47" selection-end-line="117" selection-end-column="47" />
           <folding>
             <element signature="e#194#709#1#PHP" />
-            <element signature="e#741#4771#1#PHP" />
-            <element signature="e#8519#11061#1#PHP" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/genpartidasventa.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="110" column="18" lean-forward="true" selection-start-line="110" selection-start-column="18" selection-end-line="110" selection-end-column="18" />
+          <folding>
+            <element signature="n#idc#0;n#!!top" />
+            <element signature="e#659#5844#1#PHP" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="e#10857#15994#1#PHP" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
