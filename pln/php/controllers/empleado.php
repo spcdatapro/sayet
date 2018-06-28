@@ -1,4 +1,5 @@
 <?php
+use \setasign\Fpdi;
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -368,15 +369,16 @@ $app->get('/printbit/:empleado/:id', function($empleado,$id){
     $datos = $emp->get_datos_movimiento(['id' => $id]);
 
     require BASEPATH . '/libs/tcpdf/tcpdf.php';
-    require BASEPATH . '/php/fpdi.php';
+    require_once(PLNPATH . '/libraries/fpdi/src/autoload.php');
 
-    $s = [215.9, 279.4]; # Carta mm
-    $pdf = new FPDI('Portrait','mm',$s);
+    $pdf = new Fpdi\TcpdfFpdi();
 	$pdf->AddPage();
-	$pagecount = $pdf->setSourceFile(PLNPATH . '/files/movimiento.pdf');
-	$tppl = $pdf->importPage(1);
-	 
-	$pdf->useTemplate($tppl, 0, 0, 0, 0);
+
+	$pdf->setSourceFile(PLNPATH . '/files/movimiento.pdf');
+	// import page 1
+	$tplIdx = $pdf->importPage(1);
+	$pdf->useImportedPage($tplIdx);
+
 
 	foreach ($datos as $campo => $valor) {
 		$conf = $gen->get_campo_impresion($campo, 10);

@@ -559,6 +559,7 @@ class Empleado extends Principal
 				WHERE idplnempleado = {$this->emp->id} 
 				AND day(fecha) <> 15
 				AND terminada = 1
+				AND esbonocatorce = 0 
 				ORDER BY fecha DESC
 				LIMIT {$this->mesesCalculo}";
 		
