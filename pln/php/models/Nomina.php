@@ -126,6 +126,8 @@ class Nomina extends Principal
 			$condicion["idempresadebito"] = $args['empresa'];
 		}
 
+			
+
 		$tmp = $this->db->select(
 			'plnempleado', 
 			['*'],
@@ -133,16 +135,22 @@ class Nomina extends Principal
 		);
 
 		foreach ($tmp as $row) {
+			$where = [
+				'idplnempleado' => $row['id'], 
+				'idempresa'     => $row['idempresadebito'], 
+				'fecha'         => $fecha
+			];
+
+			if (isset($args['bono14']) && $args['bono14'] != 'false') {
+				$where['esbonocatorce'] = 1;
+			} else {
+				$where['esbonocatorce'] = 0;
+			}
+
 			$ex = (object)$this->db->get(
 				'plnnomina', 
 				['*'], 
-				[
-					'AND' => [
-						'idplnempleado' => $row['id'], 
-						'idempresa'     => $row['idempresadebito'], 
-						'fecha'         => $fecha
-					]
-				]
+				['AND' => $where]
 			);
 
 			if (isset($ex->scalar)) {
@@ -293,6 +301,12 @@ class Nomina extends Principal
 			$condiciones["idempresa"] = $args['empresa'];
 		}
 
+		if (isset($args['bono14']) && $args['bono14'] != 'false') {
+			$condiciones['esbonocatorce'] = 1;
+		} else {
+			$condiciones['esbonocatorce'] = 0;
+		}
+
 		$planilla = $this->db->select(
 			"plnnomina", 
 			['id'],
@@ -329,57 +343,57 @@ class Nomina extends Principal
 
 					if (isset($args['bono14']) && $args['bono14'] != 'false') {
 						$e->set_bonocatorce();
-					}
-
-					$datos['bonocatorce']     = $e->get_bonocatorce();
-					$datos['bonocatorcedias'] = $e->get_bonocatorce_dias();
-
-					# Pago cada quincena
-					if ($dia == 15) {
-						if ($e->emp->formapago == 1) {
-							$datos['anticipo']  = $e->get_anticipo();
-							$datos['diastrabajados']  = 0;
-						}
+						$datos['bonocatorce']     = $e->get_bonocatorce();
+						$datos['bonocatorcedias'] = $e->get_bonocatorce_dias();
+						$datos['esbonocatorce']   = 1;
 					} else {
-						$datos['descanticipo']    = $e->get_descanticipo();
-						$datos['bonificacion']    = $e->get_bono_ley();
-						$datos['sueldoordinario'] = $e->get_sueldo();
-						$datos['diastrabajados']  = $e->get_dias_trabajados();
-						$datos['descisr']		  = $e->emp->descuentoisr;
-						$datos['sueldoextra'] 	  = $e->get_horas_extras_simples(['horas' => $row['horasmes']]);
-						$datos['descigss']        = $e->get_descingss(['sueldoextra' => $datos['sueldoextra']]);
-						
-						$prest = $e->get_descprestamo(['sin_idplnnomina' => $row['id']]);
-						
-						$datos['descprestamo'] = $prest['total'];
+						# Pago cada quincena
+						if ($dia == 15) {
+							if ($e->emp->formapago == 1) {
+								$datos['anticipo']  = $e->get_anticipo();
+								$datos['diastrabajados']  = 0;
+							}
+						} else {
+							$datos['descanticipo']    = $e->get_descanticipo();
+							$datos['bonificacion']    = $e->get_bono_ley();
+							$datos['sueldoordinario'] = $e->get_sueldo();
+							$datos['diastrabajados']  = $e->get_dias_trabajados();
+							$datos['descisr']		  = $e->emp->descuentoisr;
+							$datos['sueldoextra'] 	  = $e->get_horas_extras_simples(['horas' => $row['horasmes']]);
+							$datos['descigss']        = $e->get_descingss(['sueldoextra' => $datos['sueldoextra']]);
+							
+							$prest = $e->get_descprestamo(['sin_idplnnomina' => $row['id']]);
+							
+							$datos['descprestamo'] = $prest['total'];
 
-						foreach ($prest['prestamo'] as $prestamo) {
-							$tmp = (object)$this->db->get(
-								"plnpresnom", 
-								['*'], 
-								[
-									'AND' => [
-										'idplnprestamo' => $prestamo['id'], 
-										'idplnnomina'   => $row['id']
-									]
-								]
-							);
-
-							if (isset($tmp->scalar)) {
-								$this->db->insert(
+							foreach ($prest['prestamo'] as $prestamo) {
+								$tmp = (object)$this->db->get(
 									"plnpresnom", 
+									['*'], 
 									[
-										'idplnprestamo' => $prestamo['id'],
-										'idplnnomina'   => $row['id'],
-										'monto'         => $prestamo['cuota']
+										'AND' => [
+											'idplnprestamo' => $prestamo['id'], 
+											'idplnnomina'   => $row['id']
+										]
 									]
 								);
-							} else {
-								$this->db->update(
-									"plnpresnom", 
-									['monto' => $prestamo['cuota']],
-									['id' => $tmp->id]
-								);
+
+								if (isset($tmp->scalar)) {
+									$this->db->insert(
+										"plnpresnom", 
+										[
+											'idplnprestamo' => $prestamo['id'],
+											'idplnnomina'   => $row['id'],
+											'monto'         => $prestamo['cuota']
+										]
+									);
+								} else {
+									$this->db->update(
+										"plnpresnom", 
+										['monto' => $prestamo['cuota']],
+										['id' => $tmp->id]
+									);
+								}
 							}
 						}
 					}
@@ -404,6 +418,17 @@ class Nomina extends Principal
 	public function limpiar_nomina($args=[])
 	{
 		if (elemento($args, 'fecha')) {
+			$where = [
+				'plnnomina.fecha'     => $args['fecha'],
+				'plnnomina.terminada' => 0
+			];
+
+			if (isset($args['bono14']) && $args['bono14'] != 'false') {
+				$where['plnnomina.esbonocatorce'] = 1;
+			} else {
+				$where['plnnomina.esbonocatorce'] = 0;
+			}
+
 			$tmp = $this->db->select("plnnomina", [
 					'[><]plnempleado(b)' => ['plnnomina.idplnempleado' => 'id']
 				], 
@@ -414,13 +439,7 @@ class Nomina extends Principal
 					"b.idproyecto",
 					"b.activo"
 				],
-				[
-					'AND' => [
-						'plnnomina.fecha'     => $args['fecha'],
-						'plnnomina.terminada' => 0
-					]
-					
-				]
+				['AND' => $where]
 			);
 
 			foreach ($tmp as $row) {
@@ -546,7 +565,7 @@ EOT;
 				'vliquido'         => $row->liquido,
 				'recprestamo'      => 'rectangulo',
 				'tsaldoprestamo'   => 'Saldo de Préstamo', 
-				'vsaldoprestamo'   => $emp->get_saldo_prestamo(['fecha' => $args['fal']]),
+				'vsaldoprestamo'   => $emp->get_saldo_prestamo(['actual' => $args['fal']]),
 				'vdiastrabajados'  => $row->diastrabajados,
 				'lrecibi'          => str_repeat("_", 35) ,
 				'trecibi'          => 'Recibí Conforme',

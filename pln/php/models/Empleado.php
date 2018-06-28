@@ -180,7 +180,17 @@ class Empleado extends Principal
 				$dbita['movobservaciones'] = $args['movobservaciones'];
 			}
 
+			if (elemento($args, 'movgasolina')) {
+				$dbita['movgasolina'] = $args['movgasolina'];
+			}
 
+			if (elemento($args, 'movdepvehiculo')) {
+				$dbita['movdepvehiculo'] = $args['movdepvehiculo'];
+			}
+
+			if (elemento($args, 'movotros')) {
+				$dbita['movotros'] = $args['movotros'];
+			}
 
 			if ($this->emp) {
 				$dbita['antes'] = json_encode($this->emp);
@@ -559,6 +569,7 @@ class Empleado extends Principal
 				WHERE idplnempleado = {$this->emp->id} 
 				AND day(fecha) <> 15
 				AND terminada = 1
+				AND esbonocatorce = 0 
 				ORDER BY fecha DESC
 				LIMIT {$this->mesesCalculo}";
 		
@@ -839,6 +850,9 @@ EOT;
 			'des_sueldo'       => number_format($des->sueldo, 2), 
 			'des_bonificacion' => number_format($des->bonificacionley, 2), 
 			'des_total'        => number_format(($des->sueldo+$des->bonificacionley), 2), 
+			'movgasolina'      => number_format($bit->movgasolina, 2), 
+			'movdepvehiculo'   => number_format($bit->movdepvehiculo, 2), 
+			'movotros'         => number_format($bit->movotros, 2), 
 			'movobservaciones' => $bit->movobservaciones,
 			'numero'           => $bit->id
 		];
