@@ -18,7 +18,8 @@ $app->post('/rptctrlcc', function(){
     $query = "SELECT DISTINCT a.idempresa, TRIM(b.nomempresa) AS empresa, b.abreviatura AS abreviaempre ";
     $query.= "FROM reembolso a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN tiporeembolso c ON c.id = a.idtiporeembolso ";
     $query.= "LEFT JOIN beneficiario d ON d.id = a.idbeneficiario LEFT JOIN tranban e ON e.id = a.idtranban ";
-    $query.= "WHERE a.idtiporeembolso = 2 AND a.esrecprov = 0 AND a.idbeneficiario = $d->idbeneficiario ";
+    $query.= "WHERE a.esrecprov = 0 AND a.idbeneficiario = $d->idbeneficiario ";
+    $query.= (int)$d->solocc != 0 ? "AND a.idtiporeembolso = 2 " : '';
     $query.= $d->fdinistr != "" ? "AND a.finicio >= '$d->fdinistr' " : "";
     $query.= $d->fainistr != "" ? "AND a.finicio <= '$d->fainistr' " : "";
     $query.= $d->fdfinstr != "" ? "AND a.ffin >= '$d->fdfinstr' " : "";
@@ -39,7 +40,8 @@ $app->post('/rptctrlcc', function(){
         $query.= "FROM reembolso a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN tiporeembolso c ON c.id = a.idtiporeembolso ";
         $query.= "LEFT JOIN beneficiario d ON d.id = a.idbeneficiario ";
         $query.= "LEFT JOIN tranban e ON e.id = a.idtranban ";
-        $query.= "WHERE a.idtiporeembolso = 2 AND a.esrecprov = 0 AND a.idbeneficiario = $d->idbeneficiario AND a.idempresa = $caja->idempresa ";
+        $query.= "WHERE a.esrecprov = 0 AND a.idbeneficiario = $d->idbeneficiario AND a.idempresa = $caja->idempresa ";
+        $query.= (int)$d->solocc != 0 ? "AND a.idtiporeembolso = 2 " : '';
         $query.= $d->fdinistr != "" ? "AND a.finicio >= '$d->fdinistr' " : "";
         $query.= $d->fainistr != "" ? "AND a.finicio <= '$d->fainistr' " : "";
         $query.= $d->fdfinstr != "" ? "AND a.ffin >= '$d->fdfinstr' " : "";
@@ -53,7 +55,8 @@ $app->post('/rptctrlcc', function(){
             $query.= "FROM reembolso a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN tiporeembolso c ON c.id = a.idtiporeembolso ";
             $query.= "LEFT JOIN beneficiario d ON d.id = a.idbeneficiario ";
             $query.= "LEFT JOIN tranban e ON e.id = a.idtranban ";
-            $query.= "WHERE a.idtiporeembolso = 2 AND a.esrecprov = 0 AND a.idbeneficiario = $d->idbeneficiario AND a.idempresa = $caja->idempresa ";
+            $query.= "WHERE a.esrecprov = 0 AND a.idbeneficiario = $d->idbeneficiario AND a.idempresa = $caja->idempresa ";
+            $query.= (int)$d->solocc != 0 ? "AND a.idtiporeembolso = 2 " : '';
             $query.= $d->fdinistr != "" ? "AND a.finicio >= '$d->fdinistr' " : "";
             $query.= $d->fainistr != "" ? "AND a.finicio <= '$d->fainistr' " : "";
             $query.= $d->fdfinstr != "" ? "AND a.ffin >= '$d->fdfinstr' " : "";

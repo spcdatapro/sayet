@@ -1,7 +1,7 @@
 <div class="container" ng-controller="rptControlCajaChicaCtrl">
     <div class="row">
         <div class="panel panel-default">
-            <div class="panel-heading">Control de Caja Chica</div>
+            <div class="panel-heading">Control de Caja Chica / Reembolsos</div>
             <div class="panel-body" style="text-align: right">
                 <div class="row" style="text-align: left">
                     <div class="col-md-6">
@@ -18,7 +18,7 @@
                             <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="params.lstEmpresas" 
                             ng-options="obj.nomempresa for obj in empresas"></select>
                             -->
-                            <ui-select 
+                            <ui-select id="selEmpresa"
                                 multiple 
                                 ng-model="params.lstEmpresas" 
                                 title="Seleccione una o varias empresas..." 
@@ -42,26 +42,26 @@
                 <div class="row" style="text-align: left">
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="txtAl">Inicia del:</label>
-                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fdini" />
+                            <label for="txtIDel">Inicia del:</label>
+                            <input name="txtIDel" id="txtIDel" type="date" class="form-control" ng-model="params.fdini" />
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="txtAl">al:</label>
-                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.faini" />
+                            <label for="txtIAl">al:</label>
+                            <input name="txtIAl" id="txtIAl" type="date" class="form-control" ng-model="params.faini" />
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="txtAl">Termina del:</label>
-                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fdfin" />
+                            <label for="txtFDel">Termina del:</label>
+                            <input name="txtFDel" id="txtFDel" type="date" class="form-control" ng-model="params.fdfin" />
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="txtAl">al:</label>
-                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fafin" />
+                            <label for="txtFAl">al:</label>
+                            <input name="txtFAl" id="txtFAl" type="date" class="form-control" ng-model="params.fafin" />
                         </div>
                     </div>
                 </div>
@@ -75,6 +75,12 @@
                                 <option value="2">Cerradas</option>
                             </select>
                         </div>                        
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="chkSoloCC">Ver solo cajas chicas:</label>
+                            <input name="chkSoloCC" id="chkSoloCC" type="checkbox" class="form-control" ng-model="params.solocc" ng-true-value="1" ng-false-value="0"/>
+                        </div>
                     </div>
                 </div>
                 <button type="button" class="btn btn-primary btn-sm" ng-click="getData()" ng-disabled="params.idbeneficiario == null || params.idbeneficiario == undefined">
