@@ -334,7 +334,7 @@ $app->post('/gengface', function() use($app){
             $query.= "TRUNCATE(a.montoflatconiva, 2) AS montoconiva, ";
             $query.= "ROUND(a.montoflatconiva / 1.12, 2)  AS montosiniva, ";
             $query.= "ROUND(a.montoflatconiva - (a.montoflatconiva / 1.12), 2) AS iva, ";
-            $query.= "TRUNCATE(a.preciounitario, 2) AS montounitario, ";
+            $query.= "TRUNCATE(a.preciounitario + a.descuento, 2) AS montounitario, ";
 
             $query.= "a.idtiposervicio, ";
             $query.= "IF(b.esinsertada = 0, ";
@@ -353,7 +353,7 @@ $app->post('/gengface', function() use($app){
             $query.= "TRUNCATE(a.montoflatconiva, 2) AS montoconiva, ";
             $query.= "ROUND(a.montoflatconiva / 1.12, 2)  AS montosiniva, ";
             $query.= "ROUND(a.montoflatconiva - (a.montoflatconiva / 1.12), 2) AS iva, ";
-            $query.= "TRUNCATE(a.preciounitario, 2) AS montounitario, ";
+            $query.= "TRUNCATE(a.preciounitario + a.descuento, 2) AS montounitario, ";
 
             $query.= "a.idtiposervicio, a.descripcion, ";
 			$query.= "a.cantidad ";
