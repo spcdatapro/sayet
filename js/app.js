@@ -44,7 +44,7 @@
         'cpm.rptfactsemitidasctrl', 'cpm.rptarbolsrvcctrl', 'cpm.rptivaventactrl', 'cpm.dropdigitsfltr', 'cpm.rptrecclictrl',
         'cpm.formsretventactrl', 'cpm.rptretenedoresctrl', 'cpm.rptasistelibrosctrl', 'cpm.estatuspresupuestosrvc', 'cpm.rptdescuadresctrl',
         'cpm.rptdetcontventasctrl', 'cpm.rptintegractacontctrl', 'cpm.rptarchivobictrl', 'cpm.factsparqueosrvc', 'cpm.tpo',
-        'cpm.planillasrvc', 'cpm.genpagosplnctrl', 'cpm.rptcompaguactrl', 'cpm.rptfactsparqueoctrl'
+        'cpm.planillasrvc', 'cpm.genpagosplnctrl', 'cpm.rptcompaguactrl', 'cpm.rptfactsparqueoctrl', 'cpm.cierreanualsrvc', 'cpm.cierreanualctrl'
     ]);
 
     app.config(['$routeProvider', 'desktopNotificationProvider', function ($routeProvider, desktopNotificationProvider) {

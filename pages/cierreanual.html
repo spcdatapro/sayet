@@ -1,0 +1,20 @@
+<div class="container" ng-controller="cierreAnualCtrl">
+    <div class="panel panel-default">
+        <div class="panel-heading">Proceso de cierre anual</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="txtAnio">A&ntilde;o:</label>
+                        <input name="txtAnio" id="txtAnio" type="number" class="form-control" ng-model="params.anio"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <button type="button" class="btn btn-default" ng-click="generar()" ng-disabled="+params.anio <= 0 || !permiso.c || !permiso.m">
+                <span>Generar</span>
+            </button>
+        </div>
+    </div>
+</div>
