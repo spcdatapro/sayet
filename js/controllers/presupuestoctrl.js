@@ -2,7 +2,7 @@
 
     var presupuestoctrl = angular.module('cpm.presupuestoctrl', []);
 
-    presupuestoctrl.controller('presupuestoCtrl', ['$scope', 'presupuestoSrvc', '$confirm', 'proyectoSrvc', 'empresaSrvc', 'tipogastoSrvc', 'monedaSrvc', '$filter', 'authSrvc', 'proveedorSrvc', 'toaster', '$uibModal', 'desktopNotification', 'jsReportSrvc', '$window', 'tranBancSrvc', 'estatusPresupuestoSrvc', function($scope, presupuestoSrvc, $confirm, proyectoSrvc, empresaSrvc, tipogastoSrvc, monedaSrvc, $filter, authSrvc, proveedorSrvc, toaster, $uibModal, desktopNotification, jsReportSrvc, $window, tranBancSrvc, estatusPresupuestoSrvc){
+    presupuestoctrl.controller('presupuestoCtrl', ['$scope', 'presupuestoSrvc', '$confirm', 'proyectoSrvc', 'empresaSrvc', 'tipogastoSrvc', 'monedaSrvc', '$filter', 'authSrvc', 'proveedorSrvc', 'toaster', '$uibModal', 'desktopNotification', 'jsReportSrvc', '$window', 'tranBancSrvc', 'estatusPresupuestoSrvc', '$route', function($scope, presupuestoSrvc, $confirm, proyectoSrvc, empresaSrvc, tipogastoSrvc, monedaSrvc, $filter, authSrvc, proveedorSrvc, toaster, $uibModal, desktopNotification, jsReportSrvc, $window, tranBancSrvc, estatusPresupuestoSrvc, $route){
 
         //$scope.presupuesto = {fechasolicitud: moment().toDate(), idmoneda: '1', tipocambio: 1.00};
         $scope.presupuesto = {};
@@ -18,12 +18,13 @@
         $scope.subtiposgasto = [];
         $scope.sl = {presupuesto: true, ot: true};
         $scope.usrdata = {};
+        $scope.permiso = {};
         $scope.lbl = {presupuesto: '', ot: ''};
 
         $scope.grpBtnPresupuesto = {i: false, p:false, e: false, u: false, c: false, d: false, a: true};
         $scope.grpBtnOt = {i: false, p:false, e: false, u: false, c: false, d: false, a: true};
         $scope.showForm = {presupuesto: false, ot: false};
-        $scope.fltrot = { fdel: moment('2017-10-01').toDate(), fal: moment().endOf('month').toDate(), idestatuspresup: null };
+        $scope.fltrot = { fdel: moment('2017-10-01').toDate(), fal: moment().endOf('month').toDate(), idestatuspresup: null, idusuario: 0 };
         $scope.lstestatuspresup = [];
 
         proyectoSrvc.lstProyecto().then(function(d){ $scope.proyectos = d; });
@@ -33,7 +34,12 @@
         //proveedorSrvc.lstProveedores().then(function(d){ $scope.proveedores = d; });
         tranBancSrvc.lstBeneficiarios().then(function(d){ $scope.proveedores = d; });
 
-        authSrvc.getSession().then(function(usrLogged){ $scope.usrdata = usrLogged; });
+        authSrvc.getSession().then(function(usrLogged){
+            $scope.usrdata = usrLogged;
+            $scope.fltrot.idusuario = $scope.usrdata.uid;
+            authSrvc.gpr({idusuario: parseInt(usrLogged.uid), ruta:$route.current.params.name}).then(function(d){ $scope.permiso = d; });
+            $scope.getLstPresupuestos('1,2,3');
+        });
 
         estatusPresupuestoSrvc.lstEstatusPresupuesto().then(function(d){ $scope.lstestatuspresup = d; });
 
@@ -62,7 +68,7 @@
         $scope.getLstPresupuestos = function(idestatuspresup){
             $scope.fltrot.fdelstr = moment($scope.fltrot.fdel).format('YYYY-MM-DD');
             $scope.fltrot.falstr = moment($scope.fltrot.fal).format('YYYY-MM-DD');
-            $scope.fltrot.idestatuspresup = idestatuspresup != null && idestatuspresup != undefined ? idestatuspresup : '';
+            $scope.fltrot.idestatuspresup = idestatuspresup != null && idestatuspresup !== undefined ? idestatuspresup : '';
             presupuestoSrvc.lstPresupuestos($scope.fltrot).then(function(d){
                 $scope.lstpresupuestos = procDataPresup(d);
             });
@@ -238,7 +244,7 @@
             }, function(){ return 0; });
         };
 
-        $scope.getLstPresupuestos('1,2,3');
+        // $scope.getLstPresupuestos('1,2,3');
 
         function procDataOts(data){
             for(var i = 0; i < data.length; i++){
@@ -349,7 +355,8 @@
                 templateUrl: 'modalDetPagosOt.html',
                 controller: 'ModalDetPagosOtCtrl',
                 resolve:{
-                    ot: function(){ return obj; }
+                    ot: function(){ return obj; },
+                    permiso: function(){ return $scope.permiso; }
                 }
             });
             modalInstance.result.then(function(obj){
@@ -359,12 +366,13 @@
 
     }]);
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
-    presupuestoctrl.controller('ModalDetPagosOtCtrl', ['$scope', '$uibModalInstance', '$filter', 'toaster', '$confirm', 'presupuestoSrvc', 'ot', function($scope, $uibModalInstance, $filter, toaster, $confirm, presupuestoSrvc, ot){
+    presupuestoctrl.controller('ModalDetPagosOtCtrl', ['$scope', '$uibModalInstance', '$filter', 'toaster', '$confirm', 'presupuestoSrvc', 'ot', 'permiso', function($scope, $uibModalInstance, $filter, toaster, $confirm, presupuestoSrvc, ot, permiso){
         $scope.ot = ot;
         $scope.lstdetpagos = [];
         $scope.fpago = { iddetpresup: ot.id };
         $scope.sumporcentaje = 0.0000;
         $scope.sumvalor = 0.00;
+        $scope.permiso = permiso;
 
         function procDataDet(d){
             $scope.sumporcentaje = 0.0000;
@@ -423,7 +431,7 @@
         };
 
         $scope.addFormaPago = function(obj){
-            obj.notas = obj.notas != undefined && obj.notas != null ? obj.notas : '';
+            obj.notas = obj.notas !== undefined && obj.notas != null ? obj.notas : '';
             presupuestoSrvc.editRow(obj, 'cdp').then(function(){
                 $scope.loadData();
                 $scope.resetFPago();

@@ -5,10 +5,22 @@ require_once 'db.php';
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
 
+function proyectosPorUsuario($idusuario = 0){
+    $db = new dbcpm();
+    $proyectos = '';
+    if(!in_array((int)$idusuario, [0, 1])){
+        $query = "SELECT IFNULL(GROUP_CONCAT(idproyecto SEPARATOR ','), '') FROM usuarioproyecto WHERE idusuario = $idusuario";
+        $proyectos = $db->getOneField($query);
+    }
+    return $proyectos;
+}
+
 //API presupuestos
 $app->post('/lstpresupuestos', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    if(!isset($d->idusuario)){ $d->idusuario = 0; }
+    $proyectos = proyectosPorUsuario((int)$d->idusuario);
     $query = "SELECT a.id, a.fechasolicitud, a.idproyecto, b.nomproyecto AS proyecto, a.idempresa, c.nomempresa AS empresa, a.idtipogasto, d.desctipogast AS tipogasto, a.idmoneda, e.simbolo, ";
     $query.= "a.total, a.notas, a.idusuario, f.nombre AS usuario, a.idestatuspresupuesto, g.descestatuspresup AS estatus, a.fechacreacion, a.fhenvioaprobacion, a.fhaprobacion, ";
     $query.= "a.idusuarioaprueba, h.nombre AS aprobadopor, a.tipo, a.idproveedor, a.idsubtipogasto, a.coniva, a.monto, a.tipocambio, a.excedente, TRIM(c.abreviatura) AS abreviaempre, a.origenprov, i.proveedor, ";
@@ -19,6 +31,7 @@ $app->post('/lstpresupuestos', function(){
     $query.= "LEFT JOIN (SELECT x.idpresupuesto, GROUP_CONCAT(DISTINCT x.proveedor ORDER BY x.proveedor SEPARATOR ', ') AS proveedor FROM (SELECT z.idpresupuesto, y.nombre AS proveedor FROM detpresupuesto z INNER JOIN proveedor y ON y.id = z.idproveedor ";
     $query.= "WHERE z.origenprov = 1 UNION SELECT z.idpresupuesto, y.nombre AS proveedor FROM detpresupuesto z INNER JOIN beneficiario y ON y.id = z.idproveedor WHERE z.origenprov = 2) x GROUP BY x.idpresupuesto) i ON a.id = i.idpresupuesto ";
     $query.= "WHERE a.fechasolicitud >= '$d->fdelstr' AND a.fechasolicitud <= '$d->falstr' ";
+    $query.= trim($proyectos) != '' ? "AND a.idproyecto IN ($proyectos) " : '';
     $query.= $d->idestatuspresup != '' ? "AND a.idestatuspresupuesto IN($d->idestatuspresup) " : '';
     $query.= "ORDER BY a.id DESC";
     //print $query;
