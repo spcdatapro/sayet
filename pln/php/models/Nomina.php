@@ -118,15 +118,13 @@ class Nomina extends Principal
 		$fecha = $args['fecha'];
 		$dia   = date('d', strtotime($fecha));
 
-		$this->limpiar_nomina(['fecha' => $fecha]);
+		$this->limpiar_nomina($args);
 
 		$condicion = ['activo' => 1];
 
 		if (elemento($args, 'empresa')) {
 			$condicion["idempresadebito"] = $args['empresa'];
 		}
-
-			
 
 		$tmp = $this->db->select(
 			'plnempleado', 
@@ -160,6 +158,10 @@ class Nomina extends Principal
 					'idproyecto'    => $row['idproyecto'],
 					'fecha'         => $fecha
 				];
+
+				if (isset($args['bono14']) && $args['bono14'] != 'false') {
+					$datos['esbonocatorce'] = 1;
+				}
 
 				$this->db->insert('plnnomina', $datos);
 			}
