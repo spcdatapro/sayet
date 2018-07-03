@@ -305,30 +305,32 @@ $app->post('/gengface', function() use($app){
             //print $query;
             $periodicidad = (int)$db->getOneField($query);
             if($periodicidad > 1){
-                $query = "SELECT ";
+                $query = "SELECT a.cobro, ";
                 $query.= "IF(a.cobro = 1, MONTH(DATE_SUB(b.fecha, INTERVAL 1 MONTH)), MONTH(b.fecha)) AS mesini, ";
                 $query.= "IF(a.cobro = 1, MONTH(DATE_SUB(DATE_SUB(b.fecha, INTERVAL 1 MONTH), INTERVAL ".$meses[$periodicidad]." MONTH)), MONTH(DATE_ADD(b.fecha, INTERVAL ".$meses[$periodicidad]." MONTH))) AS mesfin, ";
-                $query.= "YEAR(b.fecha) AS anio ";
+
+                $query.= "IF(a.cobro = 1, YEAR(DATE_SUB(b.fecha, INTERVAL ".$meses[$periodicidad]." MONTH)), YEAR(b.fecha)) AS anioini, ";
+                $query.= "IF(a.cobro = 1, YEAR(DATE_SUB(DATE_SUB(b.fecha, INTERVAL 1 MONTH), INTERVAL ".$meses[$periodicidad]." MONTH)), YEAR(DATE_ADD(b.fecha, INTERVAL ".$meses[$periodicidad]." MONTH))) AS aniofin ";
                 $query.= "FROM contrato a INNER JOIN factura b ON a.id = b.idcontrato ";
                 $query.= "WHERE b.id = $factura->idfactura LIMIT 1";
-                //print $query;
                 $rango = $db->getQuery($query)[0];
 
-
-                //$query = "SELECT GROUP_CONCAT(nombre ORDER BY id SEPARATOR ', ') AS rangomeses FROM mes WHERE ";
-                //$periodo = $db->nombreMes((int)$rango->mesini).' a '.$db->nombreMes((int)$rango->mesfin);
-
-                if((int)$rango->mesini < (int)$rango->mesfin){
-                    $periodo = $db->nombreMes((int)$rango->mesini).' a '.$db->nombreMes((int)$rango->mesfin).' del año '.$rango->anio;
-                }else{
-                    $periodo = $db->nombreMes((int)$rango->mesini).' del año '.$rango->anio.' a '.$db->nombreMes((int)$rango->mesfin).' del año '.((int)$rango->anio + 1);
+                switch (true){
+                    case (int)$rango->anioini === (int)$rango->aniofin:
+                        if((int)$rango->mesini < (int)$rango->mesfin){
+                            $periodo = $db->nombreMes((int)$rango->mesini).' a '.$db->nombreMes((int)$rango->mesfin).' del año '.$rango->anioini;
+                        }else{
+                            $periodo = $db->nombreMes((int)$rango->mesfin).' a '.$db->nombreMes((int)$rango->mesini).' del año '.$rango->anioini;
+                        }
+                        break;
+                    case (int)$rango->anioini < (int)$rango->aniofin:
+                        $periodo = $db->nombreMes((int)$rango->mesini).' del año '.$rango->anioini.' a '.$db->nombreMes((int)$rango->mesfin).' del año '.$rango->aniofin;
+                        break;
+                    case (int)$rango->anioini > (int)$rango->aniofin:
+                        $periodo = $db->nombreMes((int)$rango->mesfin).' del año '.$rango->aniofin.' a '.$db->nombreMes((int)$rango->mesini).' del año '.$rango->anioini;
+                        break;
                 }
-
-
-                //print $query;
-                //print $periodo;
             }
-            //$periodo = '';
             $query = "SELECT DISTINCT ";
 
             $query.= "TRUNCATE(a.montoflatconiva, 2) AS montoconiva, ";
