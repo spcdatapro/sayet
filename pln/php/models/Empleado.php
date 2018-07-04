@@ -568,7 +568,6 @@ class Empleado extends Principal
 				FROM plnnomina
 				WHERE idplnempleado = {$this->emp->id} 
 				AND day(fecha) <> 15
-				AND terminada = 1
 				AND esbonocatorce = 0 
 				ORDER BY fecha DESC
 				LIMIT {$this->mesesCalculo}";
@@ -584,7 +583,8 @@ class Empleado extends Principal
 				$promedio += $row['total'];
 			}
 
-			return ($promedio/$this->mesesCalculo);
+			#return ($promedio/$this->mesesCalculo);
+			return ($promedio/count($tmp));
 		}
 	}
 

@@ -184,6 +184,12 @@ class Nomina extends Principal
 			$sql .= "AND a.idempresa = {$args['empresa']} ";
 		}
 
+		if (isset($args['bono14']) && $args['bono14'] != 'false') {
+			$sql .= "AND a.esbonocatorce = 1 ";
+		} else {
+			$sql .= "AND a.esbonocatorce = 0 ";
+		}
+
 		$sql .= "order by b.nombre ASC";
 
 		return $this->db->query($sql)->fetchAll();
@@ -345,10 +351,15 @@ class Nomina extends Principal
 
 					if (isset($args['bono14']) && $args['bono14'] != 'false') {
 						$e->set_bonocatorce();
+						$datos['sueldoordinario'] = $e->get_sueldo_promedio();
 						$datos['bonocatorce']     = $e->get_bonocatorce();
 						$datos['bonocatorcedias'] = $e->get_bonocatorce_dias();
 						$datos['esbonocatorce']   = 1;
 					} else {
+						$datos['bonocatorce']     = 0;
+						$datos['bonocatorcedias'] = 0;
+						$datos['esbonocatorce']   = 0;
+
 						# Pago cada quincena
 						if ($dia == 15) {
 							if ($e->emp->formapago == 1) {
@@ -437,16 +448,53 @@ class Nomina extends Principal
 				[
 					"plnnomina.id",
 					"plnnomina.idempresa",
+					"plnnomina.idplnempleado",
+					"plnnomina.esbonocatorce",
+					"plnnomina.fecha",
+					"plnnomina.idproyecto(proyecto)",
 					"b.idempresadebito",
 					"b.idproyecto",
 					"b.activo"
 				],
-				['AND' => $where]
+				[
+					'AND'   => $where,
+					'ORDER' => "plnnomina.idplnempleado ASC"
+				]
 			);
 
+			$anterior = null;
+
 			foreach ($tmp as $row) {
-				if (($row['activo'] == 0) || ($row["idempresa"] != $row["idempresadebito"]) || ($row["idproyecto"] != $row["idproyecto"])) {
+				$eliminar = false;
+
+				if (
+					($row['activo'] == 0) || 
+					($row["idempresa"] != $row["idempresadebito"]) || 
+					($row["idproyecto"] != $row["proyecto"])
+				) {
+					$eliminar = true;
+				}
+
+				if ($anterior !== null && $eliminar === false) {
+					if (
+						$anterior["idplnempleado"] === $row["idplnempleado"] && 
+						$anterior["esbonocatorce"] === $row["esbonocatorce"] 
+					) {
+						$eliminar = true;
+					}
+				}
+
+				if ($eliminar) {
+					$this->db->delete("plnpresnom", [
+						'AND' => [
+							'idplnnomina' => $row['id'],
+							'id[>]'       => 0
+						]
+					]);
+
 					$this->db->delete("plnnomina", ['id' => $row['id']]);
+				} else {
+					$anterior = $row;
 				}
 			}
 		}
@@ -481,6 +529,12 @@ class Nomina extends Principal
 
 		if ($args["fal"] == 15) {
 			$where .= "AND b.formapago = 1 ";
+		}
+
+		if (elemento($args, 'esbonocatorce')) {
+			$where .= "AND a.esbonocatorce = 1 ";
+		} else {
+			$where .= "AND a.esbonocatorce = 0 ";
 		}
 
 		$sql = <<<EOT

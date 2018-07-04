@@ -738,6 +738,8 @@ $app->get('/imprimir_bono14', function(){
 		$pdf = new TCPDF('P', 'mm', $s);
 		$pdf->SetAutoPageBreak(TRUE, 0);
 
+		$_GET['esbonocatorce'] = true;
+
 		$todos = $b->get_datos_recibo($_GET);
 
 		if (count($todos) > 0) {
