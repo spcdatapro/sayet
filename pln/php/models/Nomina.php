@@ -551,12 +551,13 @@ FROM
     plnnomina a
         JOIN
     plnempleado b ON b.id = a.idplnempleado
-        JOIN
+        LEFT JOIN
     plnempresa c ON c.id = b.idempresaactual
 	where b.activo = 1 and a.fecha between '{$args["fdel"]}' and '{$args["fal"]}' 
 	and a.devengado <> 0 
     {$where} order by c.nombre, b.nombre 
 EOT;
+
 		$res   = $this->db->query($sql)->fetchAll();
 		$datos = [];
 
