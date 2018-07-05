@@ -16,6 +16,12 @@
                             <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.al" placeholder="Al" ng-change="libromayor = []"/>
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="chkCierre">Ver partidas de cierre y apertura:</label>
+                            <input name="chkCierre" id="chkCierre" type="checkbox" class="form-control" ng-model="params.vercierre" ng-true-value="1" ng-false-value="0"/>
+                        </div>
+                    </div>
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="selFltr">Filtrar por:</label>

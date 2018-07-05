@@ -9,6 +9,7 @@ $app->response->headers->set('Content-Type', 'application/json');
 
 $app->post('/rptlibmay', function(){
     $d = json_decode(file_get_contents('php://input'));
+    if(!isset($d->vercierre)){ $d->vercierre = 0; }
     $db = new dbcpm();
     $db->doQuery("DELETE FROM rptlibromayor");
     $db->doQuery("ALTER TABLE rptlibromayor AUTO_INCREMENT = 1");
@@ -106,6 +107,7 @@ function getSelectHeader($cual, $d, $enrango){
             $query = "SELECT a.idcuenta, SUM(a.debe) AS debe, SUM(a.haber) AS haber, (SUM(a.debe) - SUM(a.haber)) AS anterior ";
             $query.= "FROM detallecontable a INNER JOIN directa b ON b.id = a.idorigen ";
             $query.= "WHERE a.origen = 4 AND a.activada = 1 AND a.anulado = 0 AND FILTROFECHA AND b.idempresa = ".$d->idempresa." ";
+            $query.= (int)$d->vercierre === 0 ? "AND b.tipocierre NOT IN(1, 2, 3, 4) " : '';
             $query.= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
             $query = str_replace("FILTROFECHA", (!$enrango ? "b.fecha < '".$d->fdelstr."'" : "b.fecha >= '".$d->fdelstr."' AND b.fecha <= '".$d->falstr."'"), $query);
             break;
@@ -213,6 +215,7 @@ function getSelectDetail($cual, $d, $idcuenta){
             $query.= "b.fecha, CONCAT('Directa ', LPAD(b.id, 5, '0'), ' ', b.concepto) AS referencia, a.conceptomayor, a.debe, a.haber, a.idorigen, a.origen, '' AS transaccion ";
             $query.= "FROM detallecontable a INNER JOIN directa b ON b.id = a.idorigen ";
             $query.= "WHERE a.origen = 4 AND a.activada = 1 AND a.anulado = 0 AND a.idcuenta = ".$idcuenta." AND b.fecha >= '".$d->fdelstr."' AND b.fecha <= '".$d->falstr."' AND b.idempresa = ".$d->idempresa." ";
+            $query.= (int)$d->vercierre === 0 ? "AND b.tipocierre NOT IN(1, 2, 3, 4) " : '';
             $query.= "UNION ALL ";
             //Reembolsos -> origen = 5
             $query.= "SELECT CONCAT('P', YEAR(b.fechaingreso), LPAD(MONTH(b.fechaingreso), 2, '0'), LPAD(DAY(b.fechaingreso), 2, '0'), LPAD(a.origen, 2, '0'), LPAD(a.idorigen, 7, '0')) AS poliza, ";

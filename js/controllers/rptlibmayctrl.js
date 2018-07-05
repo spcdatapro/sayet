@@ -5,7 +5,7 @@
     rptlibmayctrl.controller('rptLibroMayorCtrl', ['$scope', 'rptLibroMayorSrvc', 'empresaSrvc', 'authSrvc', 'jsReportSrvc', '$sce', 'cuentacSrvc', function($scope, rptLibroMayorSrvc, empresaSrvc, authSrvc, jsReportSrvc, $sce, cuentacSrvc){
 
         $scope.params = {
-            del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), idempresa: 0, codigo: undefined, constproc: 0, filtro: '1', codigoal: undefined, cuentasSel: undefined
+            del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), idempresa: 0, codigo: undefined, constproc: 0, filtro: '1', codigoal: undefined, cuentasSel: undefined, vercierre: 0
         };
         $scope.libromayor = [];
         $scope.content = '';
@@ -39,6 +39,7 @@
         $scope.getLibroMayor = function(){
             $scope.params.fdelstr = moment($scope.params.del).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.al).format('YYYY-MM-DD');
+            $scope.params.vercierre = $scope.params.vercierre != null && $scope.params.vercierre !== undefined ? $scope.params.vercierre : 0;
 
             if(+$scope.params.filtro == 1){
                 $scope.params.codigo = $scope.params.cuentasSel ? setCodigos($scope.params.cuentasSel) : '';
@@ -61,6 +62,7 @@
             //$scope.params.constproc = 0;
             $scope.params.fdelstr = moment($scope.params.del).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.al).format('YYYY-MM-DD');
+            $scope.params.vercierre = $scope.params.vercierre != null && $scope.params.vercierre !== undefined ? $scope.params.vercierre : 0;
 
             if(+$scope.params.filtro == 1){
                 $scope.params.codigo = $scope.params.cuentasSel ? setCodigos($scope.params.cuentasSel) : '';
