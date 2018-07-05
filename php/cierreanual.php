@@ -13,7 +13,7 @@ $app->get('/existe/:idempresa/:anio', function($idempresa, $anio){
 
 function generaPartida($d, $db, $cuentas, $tipocierre, $fcierre){
     $tipos = [1 => 'cierre de balances', 2 => 'cierre de gastos', 3 => 'cierre de ingresos', 4 => 'apertura del ejercicio contable'];
-    $query = "INSERT INTO directa (idempresa, fecha, tipocierre) VALUES($d->idempresa, '$d->falstr', $tipocierre)";
+    $query = "INSERT INTO directa (idempresa, fecha, tipocierre, concepto) VALUES($d->idempresa, '$d->falstr', $tipocierre, 'Partida de ".$tipos[$tipocierre].($tipocierre < 4 ? " al $fcierre" : "")."')";
     $db->doQuery($query);
     $idenc = $db->getLastId();
     foreach($cuentas as $cierre){
