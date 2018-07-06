@@ -661,8 +661,8 @@ class Empleado extends Principal
 		
 		$tmp = $this->db->query($sql)->fetchAll();
 
-		$inicio  = new DateTime($tmp[0]['ultimo']);
-		$fin = new DateTime($this->emp->baja);
+		$inicio   = new DateTime($tmp[0]['ultimo']);
+		$fin      = new DateTime($this->emp->baja);
 		$interval = $inicio->diff($fin);
 		
 		return ($interval->format('a')+1);
@@ -785,7 +785,7 @@ EOT;
 		} else {
 			$actual = new DateTime($fecha);
 			$interval = $ingreso->diff($actual);
-			$this->bonocatorcedias = $interval->format('%a');
+			$this->bonocatorcedias = ($interval->format('%a')+1);
 			$this->bonocatorce     = (($this->get_sueldo_promedio()/365)*$this->bonocatorcedias);
 		}
 	}
