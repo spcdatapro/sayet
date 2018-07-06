@@ -781,12 +781,12 @@ EOT;
 
 		if ($ingreso <= $uno) {
 			$this->bonocatorcedias = 365;
-			$this->bonocatorce     = $this->get_sueldo_promedio();
+			$this->bonocatorce     = $this->emp->sueldo;
 		} else {
 			$actual = new DateTime($fecha);
 			$interval = $ingreso->diff($actual);
 			$this->bonocatorcedias = ($interval->format('%a')+1);
-			$this->bonocatorce     = (($this->get_sueldo_promedio()/365)*$this->bonocatorcedias);
+			$this->bonocatorce     = (($this->emp->sueldo/365)*$this->bonocatorcedias);
 		}
 	}
 
