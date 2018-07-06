@@ -580,7 +580,7 @@ class Empleado extends Principal
 			$promedio = 0;
 
 			foreach ($tmp as $row) {
-				$promedio += $row['total'];
+				$promedio += $row['sueldoordinario'];
 			}
 
 			#return ($promedio/$this->mesesCalculo);
