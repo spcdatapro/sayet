@@ -351,7 +351,7 @@ class Nomina extends Principal
 
 					if (isset($args['bono14']) && $args['bono14'] != 'false') {
 						$e->set_bonocatorce();
-						$datos['sueldoordinario'] = $e->get_sueldo_promedio();
+						$datos['sueldoordinario'] = $e->emp->sueldo;
 						$datos['bonocatorce']     = $e->get_bonocatorce();
 						$datos['bonocatorcedias'] = $e->get_bonocatorce_dias();
 						$datos['esbonocatorce']   = 1;
