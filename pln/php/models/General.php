@@ -32,10 +32,28 @@ class General extends Principal
 		}
 
 		if (elemento($args, 'estatus')) {
-			if ($args['estatus'] == 1) {
-				$where['activo'] = 1;
-			} else if ($args['estatus'] == 2) {
-				$where['activo'] = 0;
+			if (elemento($args, 'fdel', false) || elemento($args, 'fal', false)) { 
+				if (elemento($args, 'fdel')) {
+					if ($args['estatus'] == 1) { # Fecha ingreso
+						$where['ingreso[>=]'] = $args['fdel'];
+					} elseif ($args['estatus'] == 2) { # Fecha baja
+						$where['baja[>=]'] = $args['fdel'];
+					}
+				}
+
+				if (elemento($args, 'fal')) {
+					if ($args['estatus'] == 1) { # Fecha ingreso
+						$where['ingreso[<=]'] = $args['fal'];
+					} elseif ($args['estatus'] == 2) { # Fecha baja
+						$where['baja[<=]'] = $args['fal'];
+					}
+				}
+			} else {
+				if ($args['estatus'] == 1) {
+					$where['activo'] = 1;
+				} else if ($args['estatus'] == 2) {
+					$where['activo'] = 0;
+				}
 			}
 		}
 

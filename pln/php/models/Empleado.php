@@ -757,8 +757,18 @@ EOT;
 		}
 		
 		$tmp['fecha_nacimiento'] = formatoFecha($this->emp->fechanacimiento, 1);
-		$tmp['ingreso'] = formatoFecha($this->emp->ingreso, 1);
-		$tmp['baja'] = empty($this->emp->baja) ? '' : formatoFecha($this->emp->baja, 1);
+		$tmp['sueldo_total']     = ($this->emp->sueldo+$this->emp->bonificacionley);
+		$tmp['ingreso']          = formatoFecha($this->emp->ingreso, 1);
+		$tmp['baja']             = empty($this->emp->baja) ? '' : formatoFecha($this->emp->baja, 1);
+
+		if ($this->emp->formapago == 1) {
+			$tmp['formapago'] = 'QUINCENAL';
+		} elseif ($this->emp->formapago == 2) {
+			$tmp['formapago'] = 'MENSUAL';
+		} else {
+			$tmp['formapago'] = 'S/C';
+		}
+		
 
 		return $tmp;
 	}
