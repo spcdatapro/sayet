@@ -139,11 +139,11 @@ class Nomina extends Principal
 				'fecha'         => $fecha
 			];
 
-			if (isset($args['bono14']) && $args['bono14'] != 'false') {
+			/*if (isset($args['bono14']) && $args['bono14'] != 'false') {
 				$where['esbonocatorce'] = 1;
 			} else {
 				$where['esbonocatorce'] = 0;
-			}
+			}*/
 
 			$ex = (object)$this->db->get(
 				'plnnomina', 
@@ -159,9 +159,9 @@ class Nomina extends Principal
 					'fecha'         => $fecha
 				];
 
-				if (isset($args['bono14']) && $args['bono14'] != 'false') {
+				/*if (isset($args['bono14']) && $args['bono14'] != 'false') {
 					$datos['esbonocatorce'] = 1;
-				}
+				}*/
 
 				$this->db->insert('plnnomina', $datos);
 			}
@@ -184,11 +184,11 @@ class Nomina extends Principal
 			$sql .= "AND a.idempresa = {$args['empresa']} ";
 		}
 
-		if (isset($args['bono14']) && $args['bono14'] != 'false') {
+		/*if (isset($args['bono14']) && $args['bono14'] != 'false') {
 			$sql .= "AND a.esbonocatorce = 1 ";
 		} else {
 			$sql .= "AND a.esbonocatorce = 0 ";
-		}
+		}*/
 
 		$sql .= "order by b.nombre ASC";
 
@@ -335,7 +335,7 @@ class Nomina extends Principal
 		} else {
 			$fecha = $args['fecha'];
 			$anio  = date('Y', strtotime($fecha));
-			$mes   = get_meses(date('m', strtotime($fecha)));
+			$mes   = date('m', strtotime($fecha));
 			$dia   = date('d', strtotime($fecha));
 			
 			$test  = $this->buscar($args);
@@ -349,9 +349,9 @@ class Nomina extends Principal
 
 					$datos = [];
 
-					if (isset($args['bono14']) && $args['bono14'] != 'false') {
+					# Solo deja calcular bono el 15 de la primera quincena
+					if (isset($args['bono14']) && $args['bono14'] != 'false' && $mes == 7 && $dia == 15) {
 						$e->set_bonocatorce();
-						$datos['sueldoordinario'] = $e->emp->sueldo;
 						$datos['bonocatorce']     = $e->get_bonocatorce();
 						$datos['bonocatorcedias'] = $e->get_bonocatorce_dias();
 						$datos['esbonocatorce']   = 1;
@@ -359,54 +359,61 @@ class Nomina extends Principal
 						$datos['bonocatorce']     = 0;
 						$datos['bonocatorcedias'] = 0;
 						$datos['esbonocatorce']   = 0;
+					}
 
-						# Pago cada quincena
-						if ($dia == 15) {
-							if ($e->emp->formapago == 1) {
-								$datos['anticipo']  = $e->get_anticipo();
-								$datos['diastrabajados']  = 0;
-							}
-						} else {
-							$datos['descanticipo']    = $e->get_descanticipo();
-							$datos['bonificacion']    = $e->get_bono_ley();
-							$datos['sueldoordinario'] = $e->get_sueldo();
-							$datos['diastrabajados']  = $e->get_dias_trabajados();
-							$datos['descisr']		  = $e->emp->descuentoisr;
-							$datos['sueldoextra'] 	  = $e->get_horas_extras_simples(['horas' => $row['horasmes']]);
-							$datos['descigss']        = $e->get_descingss(['sueldoextra' => $datos['sueldoextra']]);
-							
-							$prest = $e->get_descprestamo(['sin_idplnnomina' => $row['id']]);
-							
-							$datos['descprestamo'] = $prest['total'];
+					# Pago cada quincena
+					if ($dia == 15) {
+						if ($e->emp->formapago == 1) {
+							$datos['anticipo']  = $e->get_anticipo();
+						}
 
-							foreach ($prest['prestamo'] as $prestamo) {
-								$tmp = (object)$this->db->get(
+						$datos['diastrabajados']  = 0;
+						$datos['descanticipo']    = 0;
+						$datos['bonificacion']    = 0;
+						$datos['sueldoordinario'] = 0;
+						$datos['descisr']		  = 0;
+						$datos['sueldoextra'] 	  = 0;
+						$datos['descigss']        = 0;
+					} else {
+						$datos['descanticipo']    = $e->get_descanticipo();
+						$datos['bonificacion']    = $e->get_bono_ley();
+						$datos['sueldoordinario'] = $e->get_sueldo();
+						$datos['diastrabajados']  = $e->get_dias_trabajados();
+						$datos['descisr']		  = $e->emp->descuentoisr;
+						$datos['sueldoextra'] 	  = $e->get_horas_extras_simples(['horas' => $row['horasmes']]);
+						$datos['descigss']        = $e->get_descingss(['sueldoextra' => $datos['sueldoextra']]);
+						
+						$prest = $e->get_descprestamo(['sin_idplnnomina' => $row['id']]);
+						
+						$datos['descprestamo'] = $prest['total'];
+
+						foreach ($prest['prestamo'] as $prestamo) {
+							$tmp = (object)$this->db->get(
+								"plnpresnom", 
+								['*'], 
+								[
+									'AND' => [
+										'idplnprestamo' => $prestamo['id'], 
+										'idplnnomina'   => $row['id']
+									]
+								]
+							);
+
+							if (isset($tmp->scalar)) {
+								$this->db->insert(
 									"plnpresnom", 
-									['*'], 
 									[
-										'AND' => [
-											'idplnprestamo' => $prestamo['id'], 
-											'idplnnomina'   => $row['id']
-										]
+										'idplnprestamo' => $prestamo['id'],
+										'idplnnomina'   => $row['id'],
+										'monto'         => $prestamo['cuota']
 									]
 								);
-
-								if (isset($tmp->scalar)) {
-									$this->db->insert(
-										"plnpresnom", 
-										[
-											'idplnprestamo' => $prestamo['id'],
-											'idplnnomina'   => $row['id'],
-											'monto'         => $prestamo['cuota']
-										]
-									);
-								} else {
-									$this->db->update(
-										"plnpresnom", 
-										['monto' => $prestamo['cuota']],
-										['id' => $tmp->id]
-									);
-								}
+							} else {
+								$this->db->update(
+									"plnpresnom", 
+									['monto' => $prestamo['cuota']],
+									['id' => $tmp->id]
+								);
 							}
 						}
 					}
@@ -436,11 +443,11 @@ class Nomina extends Principal
 				'plnnomina.terminada' => 0
 			];
 
-			if (isset($args['bono14']) && $args['bono14'] != 'false') {
+			/*if (isset($args['bono14']) && $args['bono14'] != 'false') {
 				$where['plnnomina.esbonocatorce'] = 1;
 			} else {
 				$where['plnnomina.esbonocatorce'] = 0;
-			}
+			}*/
 
 			$tmp = $this->db->select("plnnomina", [
 					'[><]plnempleado(b)' => ['plnnomina.idplnempleado' => 'id']
@@ -476,10 +483,13 @@ class Nomina extends Principal
 				}
 
 				if ($anterior !== null && $eliminar === false) {
-					if (
+					/*if (
 						$anterior["idplnempleado"] === $row["idplnempleado"] && 
 						$anterior["esbonocatorce"] === $row["esbonocatorce"] 
 					) {
+						$eliminar = true;
+					}*/
+					if ($anterior["idplnempleado"] === $row["idplnempleado"]) {
 						$eliminar = true;
 					}
 				}
@@ -528,14 +538,14 @@ class Nomina extends Principal
 		}
 
 		if ($args["fal"] == 15) {
-			$where .= "AND b.formapago = 1 ";
+			$where .= "AND (b.formapago = 1 or a.bonocatorce<>0)";
 		}
 
-		if (elemento($args, 'esbonocatorce')) {
+		/*if (elemento($args, 'esbonocatorce')) {
 			$where .= "AND a.esbonocatorce = 1 ";
 		} else {
 			$where .= "AND a.esbonocatorce = 0 ";
-		}
+		}*/
 
 		$sql = <<<EOT
 SELECT 

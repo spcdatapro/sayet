@@ -409,27 +409,26 @@ $app->get('/altasbajas', function(){
 		foreach ($todos as $fila) {
 			$emp = new Empleado($fila['id']);
 
-			$idproyecto = empty($fila['idproyecto']) ? 0 : $fila['idproyecto'];
+			$idempresadebito = empty($fila['idempresadebito']) ? 0 : $fila['idempresadebito'];
 
-			if (isset($datos[$idproyecto])) {
-				$datos[$idproyecto]['empleados'][] = $emp->get_datos_impresion();
+			if (isset($datos[$idempresadebito])) {
+				$datos[$idempresadebito]['empleados'][] = $emp->get_datos_impresion();
 			} else {
-				
 
-				if ($idproyecto === 0) {
-					$nomproyecto = 'SIN PROYECTO';
+				if ($idempresadebito === 0) {
+					$nomempresa = 'SIN EMPRESA';
 				} else {
-					$pro = $emp->get_proyecto();
+					$empresa = $emp->get_empresa_debito();
 
-					if (isset($pro->scalar)) {
-						$nomproyecto = 'SIN CONFIGURAR';
+					if (isset($empresa->scalar)) {
+						$nomempresa = 'SIN CONFIGURAR';
 					} else {
-						$nomproyecto = $pro->nomproyecto;
+						$nomempresa = $empresa->nomempresa;
 					}
 				}
 
-				$datos[$idproyecto] = [
-					'nombre'    => $nomproyecto, 
+				$datos[$idempresadebito] = [
+					'nombre'    => $nomempresa, 
 					'empleados' => [$emp->get_datos_impresion()]
 				];
 			}
@@ -501,7 +500,7 @@ $app->get('/altasbajas', function(){
 		$espacio   = 0;
 		$registros = 0;
 
-		foreach ($datos as $key => $proyecto) {
+		foreach ($datos as $key => $empresa) {
 			if ($registros == $rpag) {
 				$espacio   = 0;
 				$registros = 0;
@@ -509,15 +508,15 @@ $app->get('/altasbajas', function(){
 				$pdf->setPage($pagina);
 			}
 
-			$confe      = $bus->get_campo_impresion('idproyecto', $tipoImpresion);
+			$confe      = $bus->get_campo_impresion('idempresadebito', $tipoImpresion);
 			$confe->psy = ($confe->psy+$espacio);
 			$espacio    += $confe->espacio;
-			$pdf        = generar_fimpresion($pdf, "{$key} {$proyecto['nombre']}", $confe);
+			$pdf        = generar_fimpresion($pdf, "{$key} {$empresa['nombre']}", $confe);
 
 			$registros++;
 
-			foreach ($proyecto['empleados'] as $empleado) {
-				unset($empleado['idproyecto']);
+			foreach ($empresa['empleados'] as $empleado) {
+				unset($empleado['idempresadebito']);
 
 				if ($registros == $rpag) {
 					$espacio   = 0;

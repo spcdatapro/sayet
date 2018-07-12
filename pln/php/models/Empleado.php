@@ -738,7 +738,7 @@ EOT;
 		$gen = new General();
 
 		return (object)$gen->get_empresa([
-			'empresa' => $this->emp->idempresadebito, 
+			'id'  => $this->emp->idempresadebito, 
 			'uno' => TRUE
 		]);
 	}
@@ -785,9 +785,13 @@ EOT;
 
 		$pasado = date('Y-m-t', strtotime('-1 year', strtotime($fecha)));
 		$inicio = date('Y-m-d', strtotime('+1 days', strtotime($pasado)));
+		$uno    = new DateTime($inicio);
 
-		$uno     = new DateTime($inicio);
-		$ingreso = new DateTime($this->emp->ingreso);
+		if (empty($this->emp->reingreso)) {
+			$ingreso = new DateTime($this->emp->ingreso);
+		} else {
+			$ingreso = new DateTime($this->emp->reingreso);
+		}
 
 		if ($ingreso <= $uno) {
 			$this->bonocatorcedias = 365;
