@@ -566,4 +566,32 @@ $app->get('/altasbajas', function(){
 	}
 });
 
+$app->get('/ficha/:empleado', function($empleado){
+	$gen = new General();
+    $emp = new Empleado($empleado);
+
+    require BASEPATH . '/libs/tcpdf/tcpdf.php';
+    require_once(PLNPATH . '/libraries/fpdi/src/autoload.php');
+
+    $pdf = new Fpdi\TcpdfFpdi();
+	$pdf->AddPage();
+
+	$pdf->setSourceFile(PLNPATH . '/files/ficha.pdf');
+	// import page 1
+	$tplIdx = $pdf->importPage(1);
+	$pdf->useImportedPage($tplIdx);
+
+
+	foreach ($emp->get_datos_impresion() as $campo => $valor) {
+		$conf = $gen->get_campo_impresion($campo, 12);
+
+		if (!isset($conf->scalar) && $conf->visible == 1) {
+			$pdf = generar_fimpresion($pdf, $valor, $conf);
+		}
+	}
+
+    $pdf->Output("bitacora_" . time() . ".pdf", 'I');
+	die();
+});
+
 $app->run();
