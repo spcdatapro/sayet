@@ -1,10 +1,11 @@
 <?php
 use \setasign\Fpdi;
 
-ini_set('display_errors', 1);
+/*ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-#set_time_limit(0);
+set_time_limit(0);
+*/
 
 define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
 define('PLNPATH', BASEPATH . '/pln/php');
@@ -14,13 +15,7 @@ require BASEPATH . "/php/ayuda.php";
 require PLNPATH . '/Principal.php';
 require PLNPATH . '/models/Empleado.php';
 require PLNPATH . '/models/General.php';
-/*
-require dirname(dirname(dirname(__DIR__))) . '/php/vendor/autoload.php';
-require dirname(dirname(dirname(__DIR__))) . '/php/ayuda.php';
-require dirname(__DIR__) . '/Principal.php';
-require dirname(__DIR__) . '/models/Empleado.php';
-require dirname(__DIR__) . '/models/General.php';
-*/
+
 $app = new \Slim\Slim();
 
 $app->get('/get_empleado/:empleado', function($empleado){
@@ -382,6 +377,213 @@ $app->get('/printbit/:empleado/:id', function($empleado,$id){
 
 	foreach ($datos as $campo => $valor) {
 		$conf = $gen->get_campo_impresion($campo, 10);
+
+		if (!isset($conf->scalar) && $conf->visible == 1) {
+			$pdf = generar_fimpresion($pdf, $valor, $conf);
+		}
+	}
+
+    $pdf->Output("bitacora_" . time() . ".pdf", 'I');
+	die();
+});
+
+$app->get('/altasbajas', function(){
+	$bus = new General();
+	$params = $_GET;
+	$params['sin_limite'] = TRUE;
+	$params['ordenar_proyecto'] = TRUE;
+
+	$todos = $bus->buscar_empleado($params);
+
+	if (count($todos) > 0) {
+		require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
+		$tipoImpresion = 11;
+
+		$s = [215.9, 279.4]; # Carta mm
+
+		$pdf = new TCPDF('P', 'mm', $s);
+		$pdf->SetAutoPageBreak(TRUE, 0);
+
+		$datos = [];
+
+		foreach ($todos as $fila) {
+			$emp = new Empleado($fila['id']);
+
+			$idempresadebito = empty($fila['idempresadebito']) ? 0 : $fila['idempresadebito'];
+
+			if (isset($datos[$idempresadebito])) {
+				$datos[$idempresadebito]['empleados'][] = $emp->get_datos_impresion();
+			} else {
+
+				if ($idempresadebito === 0) {
+					$nomempresa = 'SIN EMPRESA';
+				} else {
+					$empresa = $emp->get_empresa_debito();
+
+					if (isset($empresa->scalar)) {
+						$nomempresa = 'SIN CONFIGURAR';
+					} else {
+						$nomempresa = $empresa->nomempresa;
+					}
+				}
+
+				$datos[$idempresadebito] = [
+					'nombre'    => $nomempresa, 
+					'empleados' => [$emp->get_datos_impresion()]
+				];
+			}
+		}
+
+		$hojas    = 1;
+		$rpag     = 45; # Registros por página
+		$fecha    = date("d/m/Y H:i");
+		$colFecha = "Fecha";
+
+		switch ($_GET['estatus']) {
+			case 1:
+				$subtitulo = "Altas";
+				$colFecha  .= " de Ingreso";
+				break;
+			case 2:
+				$subtitulo = "Bajas";
+				$colFecha  .= " de Baja";
+				break;
+			case 3:
+				$subtitulo = "Todos";
+				break;
+			default:
+				$subtitulo = "N/A";
+				break;
+		}
+
+		$cabecera = [
+			'titulo'         => "Reporte de Empleados",
+			'subtitulo'      => $subtitulo,
+			'mes'            => "Del ".formatoFecha($_GET['fdel'],1)." al ".formatoFecha($_GET['fal'], 1),
+			'fimpresion'     => $fecha, # Fecha de impresión
+			'tcodigo'        => 'Código',
+			'tnombre'        => 'Nombre',
+			'taltabaja'      => $colFecha,
+			'tempresadebito' => 'Empresa Débito',
+			'tsueldo'        => 'Sueldo',
+			'tbonificacion'  => 'Bonificación Ley', 
+			'tsueldo_total'  => 'Total Q',
+			'tformapago'     => 'Pago',
+			'tlineat'		 => str_repeat("_", 160),
+			'tlineapiet'     => str_repeat("_", 160),
+			'tnopaginat'     => "Página No. "
+		];
+
+		$totalPaginas = ceil((count($todos)+count($datos))/$rpag);
+
+		for ($i=0; $i < $totalPaginas ; $i++) { 
+			$pdf->AddPage();
+
+			foreach ($cabecera as $campo => $valor) {
+				$conf = $bus->get_campo_impresion($campo, $tipoImpresion);
+
+				if (!isset($conf->scalar) && $conf->visible == 1) {
+					$pdf = generar_fimpresion($pdf, $valor, $conf);
+				}
+			}
+
+			$conf = $bus->get_campo_impresion("vnopagina", $tipoImpresion);
+			if (!isset($conf->scalar) && $conf->visible == 1) {
+				$pdf = generar_fimpresion($pdf, ($i+1), $conf);
+			}
+		}
+
+		$pagina = 1;
+
+		$pdf->setPage($pagina);
+
+		$espacio   = 0;
+		$registros = 0;
+
+		foreach ($datos as $key => $empresa) {
+			if ($registros == $rpag) {
+				$espacio   = 0;
+				$registros = 0;
+				$pagina++;
+				$pdf->setPage($pagina);
+			}
+
+			$confe      = $bus->get_campo_impresion('idempresadebito', $tipoImpresion);
+			$confe->psy = ($confe->psy+$espacio);
+			$espacio    += $confe->espacio;
+			$pdf        = generar_fimpresion($pdf, "{$key} {$empresa['nombre']}", $confe);
+
+			$registros++;
+
+			foreach ($empresa['empleados'] as $empleado) {
+				unset($empleado['idempresadebito']);
+
+				if ($registros == $rpag) {
+					$espacio   = 0;
+					$registros = 0;
+					$pagina++;
+					$pdf->setPage($pagina);
+				}
+
+				if ($_GET['estatus'] == 1) {
+					unset($empleado['baja']);
+				} elseif ($_GET['estatus'] == 2) {
+					unset($empleado['ingreso']);
+				}
+				
+
+				foreach ($empleado as $campo => $valor) {
+					$conf = $bus->get_campo_impresion($campo, $tipoImpresion);
+
+					if (!isset($conf->scalar) && $conf->visible == 1) {
+						$conf->psy = ($conf->psy+$espacio);
+
+						$numericos = [
+							'bonificacionley',
+							'sueldo_total',
+							'sueldo'
+						];
+
+						if (in_array($campo, $numericos)) {
+							$valor = number_format($valor, 2);
+						} else {
+							$valor = $valor;
+						}
+
+						$pdf = generar_fimpresion($pdf, $valor, $conf);
+					}
+				}
+
+				$espacio += $confe->espacio;
+				$registros++;
+			}
+		}
+
+		$pdf->Output("reporte_empleados_" . time() . ".pdf", 'I');
+		die();
+	} else {
+		die("No encontré empleados que coincidan.");
+	}
+});
+
+$app->get('/ficha/:empleado', function($empleado){
+	$gen = new General();
+    $emp = new Empleado($empleado);
+
+    require BASEPATH . '/libs/tcpdf/tcpdf.php';
+    require_once(PLNPATH . '/libraries/fpdi/src/autoload.php');
+
+    $pdf = new Fpdi\TcpdfFpdi();
+	$pdf->AddPage();
+
+	$pdf->setSourceFile(PLNPATH . '/files/ficha.pdf');
+	// import page 1
+	$tplIdx = $pdf->importPage(1);
+	$pdf->useImportedPage($tplIdx);
+
+
+	foreach ($emp->get_datos_impresion() as $campo => $valor) {
+		$conf = $gen->get_campo_impresion($campo, 12);
 
 		if (!isset($conf->scalar) && $conf->visible == 1) {
 			$pdf = generar_fimpresion($pdf, $valor, $conf);

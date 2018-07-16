@@ -48,6 +48,15 @@ class Empleado extends Principal
 		);
 	}
 
+	public function get_puesto()
+	{
+		return (object)$this->db->get(
+			'plnpuesto', 
+			['*'], 
+			['id[=]' => $this->emp->idplnpuesto]
+		);
+	}
+
 	public function guardar($args = [])
 	{
 		if (is_array($args) && !empty($args)) {
@@ -738,27 +747,40 @@ EOT;
 		$gen = new General();
 
 		return (object)$gen->get_empresa([
-			'empresa' => $this->emp->idempresadebito, 
+			'id'  => $this->emp->idempresadebito, 
 			'uno' => TRUE
 		]);
 	}
 
 	public function get_datos_impresion()
 	{
-		$debito = $this->get_empresa_debito();
-
 		$tmp = (array)$this->emp;
 		$tmp['nombre'] = $this->emp->nombre . ' ' . $this->emp->apellidos;
 		
-		if (isset($debito->scalar)) {
-			$tmp['empresa_debito'] = 'SIN EMPRESA';
-		} else {
-			$tmp['empresa_debito'] = $debito->nomempresa;
+		$debito = $this->get_empresa_debito();
+		$tmp['empresa_debito'] = isset($debito->scalar) ? 'SIN EMPRESA' : $debito->nomempresa;
+
+		$puesto = $this->get_puesto();
+		$tmp['puesto'] = isset($puesto->scalar) ? 'S/C' : $puesto->descripcion;
+
+		$bit = $this->get_bitacora(['uno' => true]);
+		if ($bit) {
+			$tmp['nota'] = $bit->movobservaciones;
 		}
 		
 		$tmp['fecha_nacimiento'] = formatoFecha($this->emp->fechanacimiento, 1);
-		$tmp['ingreso'] = formatoFecha($this->emp->ingreso, 1);
-		$tmp['baja'] = empty($this->emp->baja) ? '' : formatoFecha($this->emp->baja, 1);
+		$tmp['sueldo_total']     = ($this->emp->sueldo+$this->emp->bonificacionley);
+		$tmp['ingreso']          = formatoFecha($this->emp->ingreso, 1);
+		$tmp['baja']             = empty($this->emp->baja) ? '' : formatoFecha($this->emp->baja, 1);
+
+		if ($this->emp->formapago == 1) {
+			$tmp['formapago'] = 'QUINCENAL';
+		} elseif ($this->emp->formapago == 2) {
+			$tmp['formapago'] = 'MENSUAL';
+		} else {
+			$tmp['formapago'] = 'S/C';
+		}
+		
 
 		return $tmp;
 	}
@@ -775,9 +797,13 @@ EOT;
 
 		$pasado = date('Y-m-t', strtotime('-1 year', strtotime($fecha)));
 		$inicio = date('Y-m-d', strtotime('+1 days', strtotime($pasado)));
+		$uno    = new DateTime($inicio);
 
-		$uno     = new DateTime($inicio);
-		$ingreso = new DateTime($this->emp->ingreso);
+		if (empty($this->emp->reingreso)) {
+			$ingreso = new DateTime($this->emp->ingreso);
+		} else {
+			$ingreso = new DateTime($this->emp->reingreso);
+		}
 
 		if ($ingreso <= $uno) {
 			$this->bonocatorcedias = 365;
@@ -814,6 +840,8 @@ EOT;
 			$condiciones['LIMIT'] = 1;
 		}
 
+		$condiciones['ORDER'] = "plnbitacora.fecha DESC";
+
 		$tmp = $this->db->select("plnbitacora", [
 				'[><]usuario(b)' => ['plnbitacora.usuario' => 'id']
 			], 
@@ -824,10 +852,14 @@ EOT;
 			$condiciones
 		);
 
-		if (elemento($args, 'uno')) {
-			return (object)$tmp[0];
+		if (count($tmp) > 0) {
+			if (elemento($args, 'uno')) {
+				return (object)$tmp[0];
+			} else {
+				return $tmp;
+			}
 		} else {
-			return $tmp;
+			return FALSE;
 		}
 	}
 
