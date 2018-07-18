@@ -5,7 +5,7 @@
     activosrvc.factory('activoSrvc', ['comunFact', function(comunFact){
         var urlBase = 'php/activo.php';
 
-        var activoSrvc = {
+        return {
             lstActivo: function(){
                 return comunFact.doGET(urlBase + '/lstactivo');
             },
@@ -28,7 +28,6 @@
                 return comunFact.doGET(urlBase + '/lstproyact/' + idactivo);
             }
         };
-        return activoSrvc;
     }]);
 
 }());

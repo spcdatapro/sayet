@@ -242,7 +242,20 @@
                                     </div>
                                 </div>
                             </div>
-
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="chkDeBaja">De baja:</label>
+                                        <input name="chkDeBaja" id="chkDeBaja" type="checkbox" class="form-control" ng-model="elActivo.debaja" ng-true-value="1" ng-false-value="0" ng-disabled="slactivo"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="txtFechaBaja">Fecha de baja:</label>
+                                        <input name="txtFechaBaja" id="txtFechaBaja" type="date" class="form-control" ng-model="elActivo.fechabaja" ng-disabled="slactivo"/>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-md-12 col-xs-6">
                                     <div class="form-group" ng-class="{'has-error':frmActivo.txtObs.$invalid && !frmActivo.txtObs.$pristine}">

@@ -10,8 +10,8 @@ $app->post('/pagosiusi', function(){
     $db = new dbcpm();
 
     $query = "SELECT DISTINCT a.id AS idempresa, a.nomempresa AS empresa, 0.00 AS totiusiempre, 0.00 totapagarempre ";
-    $query.= "FROM empresa a INNER JOIN activo b ON a.id = b.idempresa ";
-    $query.= $d->idempresa != '' ? "WHERE a.id IN($d->idempresa) " : "";
+    $query.= "FROM empresa a INNER JOIN activo b ON a.id = b.idempresa WHERE b.debaja = 0 ";
+    $query.= $d->idempresa != '' ? "AND a.id IN($d->idempresa) " : "";
     $query.= "ORDER BY a.nomempresa";
     $activos = $db->getQuery($query);
 
@@ -20,7 +20,7 @@ $app->post('/pagosiusi', function(){
         $activo = $activos[$i];
         $query = "SELECT DISTINCT b.id AS iddepto, CONCAT(b.nomdepto, ' - ', b.nombre) AS departamento ";
         $query.= "FROM activo a INNER JOIN municipio b ON b.id = a.departamento ";
-        $query.= "WHERE a.idempresa = $activo->idempresa ";
+        $query.= "WHERE a.debaja = 0 AND a.idempresa = $activo->idempresa ";
         $query.= $d->depto != '' ? "AND b.id IN($d->depto) " : "";
         $query.= "ORDER BY 2";
         $activo->deptos = $db->getQuery($query);
@@ -32,7 +32,7 @@ $app->post('/pagosiusi', function(){
                 $query = "SELECT CONCAT(a.finca, '-', a.folio, '-', a.libro) AS finca, ";
                 $query.= "IF(a.horizontal = 0, '', 'Sí') AS eshorizontal, a.iusi, ROUND((a.iusi * (a.por_iusi / 1000)), 2) AS apagar, a.por_iusi, ROUND((a.iusi * (a.por_iusi / 1000)) / 4, 2) AS trimestral ";
                 $query.= "FROM activo a LEFT JOIN municipio b ON b.id = a.departamento LEFT JOIN empresa c ON c.id = a.idempresa ";
-                $query.= "WHERE a.idempresa = $activo->idempresa AND a.departamento = $depto->iddepto ";
+                $query.= "WHERE a.debaja = 0 AND a.idempresa = $activo->idempresa AND a.departamento = $depto->iddepto ";
                 //$query.= "ORDER BY digits(a.finca), digits(a.folio), digits(a.libro)";
                 $query.= "ORDER BY digits(a.finca)";
                 $depto->activos = $db->getQuery($query);

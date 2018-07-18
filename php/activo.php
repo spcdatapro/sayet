@@ -2,9 +2,8 @@
 require 'vendor/autoload.php';
 require_once 'db.php';
 
-header('Content-Type: application/json');
-
 $app = new \Slim\Slim();
+$app->response->headers->set('Content-Type', 'application/json');
 
 //API para activos
 $app->get('/lstactivo', function(){
@@ -17,7 +16,7 @@ $app->get('/lstactivo', function(){
     $query.= "concat(c.nomdepto,' - ',c.nombre) as nombre_depto, d.descripcion as nombre_tipo_activo, ";
     $query.= "if(a.horizontal = 1, 'SI', 'NO') as eshorizontal, a.zona, a.fhcreacion, a.creadopor, a.nomclienteajeno, ";
     $query.= "CONCAT(IF(b.propia = 1, b.nomempresa, CONCAT(b.nomempresa, ' (', a.nomclienteajeno,')')), ' - ', a.finca, '-', a.folio, '-', a.libro) AS ffl, ";
-    $query.= "a.multilotes, IF(a.multilotes = 1, 'SI', 'NO') AS esmultilotes, a.direcciondos, a.fechacompra ";
+    $query.= "a.multilotes, IF(a.multilotes = 1, 'SI', 'NO') AS esmultilotes, a.direcciondos, a.fechacompra, a.debaja, a.fechabaja ";
     $query.= "FROM activo a ";
     $query.= "LEFT JOIN empresa b ON a.idempresa=b.id ";
     $query.= "LEFT JOIN municipio c ON a.departamento = c.id ";
@@ -28,38 +27,39 @@ $app->get('/lstactivo', function(){
 
 $app->get('/getactivo/:idactivo', function($idactivo){
     $db = new dbcpm();
-    $conn = $db->getConn();
-    $data = $conn->select('activo',['id', 'idempresa', 'departamento', 'finca', 'folio', 'libro', 'horizontal', 'direccion_cat', 'direccion_mun', 'iusi',
-        'por_iusi', 'valor_registro', 'metros_registro', 'valor_dicabi', 'metros_dicabi', 'valor_muni', 'metros_muni',
-        'observaciones', 'tipo_activo', 'nombre_corto', 'nombre_largo', 'zona',
-        'actualizadopor', 'actualiza_info', 'fhcreacion', 'creadopor', 'nomclienteajeno', 'multilotes', 'direcciondos', 'fechacompra'],
-        ['id' => $idactivo, 'ORDER' => 'nombre_corto']);
-    print json_encode($data[0]);
+    $query = "SELECT id, idempresa, nomclienteajeno, departamento, finca, folio, libro, horizontal, direccion_cat, direccion_mun, direcciondos, iusi, por_iusi, valor_registro, metros_registro, ";
+    $query.= "valor_dicabi, metros_dicabi, valor_muni, metros_muni, solvencia_muni, actualizadopor, actualiza_info, observaciones, tipo_activo, nombre_corto, nombre_largo, zona, ";
+    $query.= "creadopor, fhcreacion, multilotes, fechacompra, debaja, fechabaja ";
+    $query.= "FROM activo ";
+    $query.= "WHERE id = $idactivo";
+    $activo = $db->getQuery($query);
+    print json_encode(count($activo) > 0 ? $activo[0]: []);
 });
 
 $app->post('/c', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $conn = $db->getConn();
     $d->fechacomprastr = $d->fechacomprastr == '' ? 'NULL' : "'$d->fechacomprastr'";
     $query = "INSERT INTO activo(idempresa,departamento, finca, folio, libro, horizontal, direccion_mun,";
     $query.= "iusi, por_iusi, valor_registro, metros_registro, valor_dicabi, metros_dicabi, valor_muni, metros_muni,";
-    $query.= "observaciones, tipo_activo, nombre_corto, nombre_largo, zona, fhcreacion, creadopor, nomclienteajeno, multilotes, direcciondos, fechacompra) ";
+    $query.= "observaciones, tipo_activo, nombre_corto, nombre_largo, zona, fhcreacion, creadopor, nomclienteajeno, ";
+    $query.= "multilotes, direcciondos, fechacompra";
+    $query.= ") ";
     $query.= "VALUES(".$d->idempresa.",".$d->departamento.", '".$d->finca."', '".$d->folio."', '".$d->libro."', ".$d->horizontal;
     $query.= ", '".$d->direccion_mun."', ".$d->iusi.", ".$d->por_iusi.", ".$d->valor_registro.", ";
     $query.= $d->metros_registro.", ".$d->valor_dicabi.", ".$d->metros_dicabi.", ".$d->valor_muni.", ".$d->metros_muni;
     $query.= ", '".$d->observaciones."', ".$d->tipo_activo.", '".$d->nombre_corto."', '".$d->nombre_largo."', ".$d->zona.", NOW(), '".$d->usuario."', ";
     $query.= "'".$d->nomclienteajeno."', ".$d->multilotes.", '".$d->direcciondos."', $d->fechacomprastr)";
-    $ins = $conn->query($query);
-    $lastid = $conn->query("SELECT LAST_INSERT_ID()")->fetchColumn(0);
+    $db->doQuery($query);
+    $lastid = $db->getLastId();
     print json_encode(['lastid' => $lastid]);
 });
 
 $app->post('/u', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $conn = $db->getConn();
     $d->fechacomprastr = $d->fechacomprastr == '' ? 'NULL' : "'$d->fechacomprastr'";
+    $d->fechabajastr = $d->fechabajastr == '' ? 'NULL' : "'$d->fechabajastr'";
     $query = "UPDATE activo SET idempresa = ".$d->idempresa.", departamento = ".$d->departamento.", ";
     $query.= " finca = '".$d->finca."', folio = '".$d->folio."', libro = '".$d->libro."', horizontal = ".$d->horizontal;
     $query.= ", direccion_mun ='".$d->direccion_mun."', iusi = ".$d->iusi.", por_iusi = ".$d->por_iusi.", valor_registro = ".$d->valor_registro;
@@ -67,18 +67,18 @@ $app->post('/u', function(){
     $query.= ", valor_muni = ".$d->valor_muni.", metros_muni = ".$d->metros_muni;
     $query.= ", observaciones = '".$d->observaciones."', tipo_activo = ".$d->tipo_activo.", nombre_corto = '".$d->nombre_corto;
     $query.= "', nombre_largo = '".$d->nombre_largo."', zona = ".$d->zona.", actualiza_info = NOW(), actualizadopor = '".$d->usuario."', ";
-    $query.= "nomclienteajeno = '".$d->nomclienteajeno."', multilotes = ".$d->multilotes.", direcciondos = '".$d->direcciondos."', fechacompra = $d->fechacomprastr ";
+    $query.= "nomclienteajeno = '".$d->nomclienteajeno."', multilotes = ".$d->multilotes.", direcciondos = '".$d->direcciondos."', fechacompra = $d->fechacomprastr, ";
+    $query.= "debaja = $d->debaja, fechabaja = $d->fechabajastr ";
     $query.= "WHERE id = ".$d->id;
-    $upd = $conn->query($query);
+    $db->doQuery($query);
     print json_encode(['lastid' => $d->id]);
 });
 
 $app->post('/d', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $conn = $db->getConn();
-    $query = "DELETE FROM activo WHERE id = ".$d->id;
-    $del = $conn->query($query);
+    $query = "DELETE FROM activo WHERE id = $d->id";
+    $db->doQuery($query);
 });
 
 $app->post('/rptactivos', function(){

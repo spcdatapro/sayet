@@ -29,29 +29,9 @@
 
         $scope.resetElActivo = function(){
             $scope.elActivo = {
-                id : 0,
-                idempresa : 0,
-                departamento : 0,
-                finca : '',
-                folio : '',
-                libro : '',
-                horizontal : 0,
-                direccion_cat : '',
-                direccion_mun : '',
-                iusi : parseFloat(0.0),
-                por_iusi : parseFloat(0.0),
-                valor_registro : parseFloat(0.0),
-                metros_registro : parseFloat(0.0),
-                valor_dicabi : parseFloat(0.0),
-                metros_dicabi : parseFloat(0.0),
-                valor_muni : parseFloat(0.0),
-                metros_muni : parseFloat(0.0),
-                observaciones : '',
-                tipo_activo : 0,
-                nombre_corto : '',
-                nombre_largo : '',
-                zona : 0,
-                nomclienteajeno: ''
+                id : 0, idempresa : 0, departamento : 0, finca : '', folio : '', libro : '', horizontal : 0, direccion_cat : '', direccion_mun : '', iusi : parseFloat(0.0), por_iusi : parseFloat(0.0), valor_registro : parseFloat(0.0),
+                metros_registro : parseFloat(0.0), valor_dicabi : parseFloat(0.0), metros_dicabi : parseFloat(0.0), valor_muni : parseFloat(0.0), metros_muni : parseFloat(0.0), observaciones : '', tipo_activo : 0, nombre_corto : '',
+                nombre_largo : '', zona : 0, nomclienteajeno: '', debaja: 0, fechabaja: undefined
             };
             $scope.lasBitacoras = [];
             $scope.laBitacora = {};
@@ -120,10 +100,12 @@
         $scope.getActivo = function(id){
             $scope.resetElActivo();
             activoSrvc.getActivo(id).then(function(d){
-                d.fhcreacion = d.fhcreacion != null && d.fhcreacion != undefined ? moment(d.fhcreacion).toDate() : d.fhcreacion;
-                d.actualiza_info = d.actualiza_info != null && d.actualiza_info != undefined ? moment(d.actualiza_info).toDate() : d.actualiza_info;
+                d.fhcreacion = d.fhcreacion != null && d.fhcreacion !== undefined ? moment(d.fhcreacion).toDate() : d.fhcreacion;
+                d.actualiza_info = d.actualiza_info != null && d.actualiza_info !== undefined ? moment(d.actualiza_info).toDate() : d.actualiza_info;
                 d.multilotes = parseInt(d.multilotes);
-                d.fechacompra = d.fechacompra != null && d.fechacompra != undefined ? moment(d.fechacompra).toDate() : undefined;
+                d.debaja = +d.debaja;
+                d.fechacompra = d.fechacompra != null && d.fechacompra !== undefined ? moment(d.fechacompra).toDate() : undefined;
+                d.fechabaja = d.fechabaja != null && d.fechabaja !== undefined ? moment(d.fechabaja).toDate() : undefined;
                 $scope.elActivo = d;
                 $scope.activostr = ' del activo ' + d.finca + '-' + d.folio + '-'+ d.libro;
                 empresaSrvc.getEmpresa(d.idempresa).then(function(resEmpresa){
@@ -208,9 +190,11 @@
             obj.departamento = $scope.elActivo.objDepartamento.id;
             obj.usuario = $scope.usrdata.usuario;
             obj.nomclienteajeno = obj.nomclienteajeno !== null && obj.nomclienteajeno !== undefined ? obj.nomclienteajeno : '';
-            obj.multilotes = obj.multilotes != null && obj.multilotes != undefined ? obj.multilotes : 0;
-            obj.direcciondos = obj.direcciondos != null && obj.direcciondos != undefined ? obj.direcciondos : '';
-            obj.fechacomprastr = obj.fechacompra != null && obj.fechacompra != undefined ? moment(obj.fechacompra).format('YYYY-MM-DD') : '';
+            obj.multilotes = obj.multilotes != null && obj.multilotes !== undefined ? obj.multilotes : 0;
+            obj.direcciondos = obj.direcciondos != null && obj.direcciondos !== undefined ? obj.direcciondos : '';
+            obj.fechacomprastr = obj.fechacompra != null && obj.fechacompra !== undefined ? moment(obj.fechacompra).format('YYYY-MM-DD') : '';
+            obj.debaja = obj.debaja != null && obj.debaja !== undefined ? obj.debaja : 0;
+            obj.fechabajastr = obj.fechabaja != null && obj.fechabaja !== undefined ? moment(obj.fechabaja).format('YYYY-MM-DD') : '';
             activoSrvc.editRow(obj, 'c').then(function(d){
                 $scope.getLstActivos();
                 $scope.resetElActivo();
@@ -224,9 +208,12 @@
             data.tipo_activo = $scope.elActivo.objTipoActivo.id;
             data.departamento = $scope.elActivo.objDepartamento.id;
             data.usuario = $scope.usrdata.usuario;
-            data.multilotes = data.multilotes != null && data.multilotes != undefined ? data.multilotes : 0;
-            data.direcciondos = data.direcciondos != null && data.direcciondos != undefined ? data.direcciondos : '';
-            data.fechacomprastr = data.fechacompra != null && data.fechacompra != undefined ? moment(data.fechacompra).format('YYYY-MM-DD') : '';
+            data.multilotes = data.multilotes != null && data.multilotes !== undefined ? data.multilotes : 0;
+            data.direcciondos = data.direcciondos != null && data.direcciondos !== undefined ? data.direcciondos : '';
+            data.fechacomprastr = data.fechacompra != null && data.fechacompra !== undefined ? moment(data.fechacompra).format('YYYY-MM-DD') : '';
+            data.debaja = data.debaja != null && data.debaja !== undefined ? data.debaja : 0;
+            data.fechabajastr = data.fechabaja != null && data.fechabaja !== undefined ? moment(data.fechabaja).format('YYYY-MM-DD') : '';
+            //console.log(data); //return;
             activoSrvc.editRow(data, 'u').then(function(d){
                 $scope.getLstActivos();
                 $scope.getActivo(parseInt(d.lastid));
