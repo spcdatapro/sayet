@@ -18,6 +18,13 @@ class Empleado extends Principal
 	protected $mesesCalculo = 0;
 	protected $bonocatorce = 0;
 	protected $bonocatorcedias = 0;
+	public $sueldoPromedio = 0;
+	
+	protected $finiquitoAguinaldo     = null;
+	protected $finiquitoBono          = null;
+	protected $finiquitoIndenmizacion = null;
+	protected $finiquitoVacaciones    = null;
+	protected $finiquitoSueldo        = null;
 	
 	function __construct($id = '')
 	{
@@ -573,6 +580,9 @@ class Empleado extends Principal
 					sueldoordinario,
 					sueldoextra,
 					fecha,
+					year(fecha) as anio,
+					month(fecha) as mes,
+					diastrabajados,
 					(sueldoordinario+sueldoextra) as total 
 				FROM plnnomina
 				WHERE idplnempleado = {$this->emp->id} 
@@ -597,112 +607,171 @@ class Empleado extends Principal
 		}
 	}
 
-	private function get_finiquito_indemnizacion_dias()
+	public function set_sueldo_promedio()
+	{
+		$this->sueldoPromedio = $this->get_sueldo_promedio();
+	}
+
+	public function set_finiquito_indemnizacion()
 	{
 		$ingreso  = new DateTime($this->emp->ingreso);
 		$baja     = new DateTime($this->emp->baja);
 		$interval = $ingreso->diff($baja);
+		$dias     = ($interval->format('%a')+1);
+		$monto    = ($dias*($this->sueldoPromedio/365));
 		
-		return ($interval->format('a')+1);
+		#return ($interval->format('%a')+1);
+		$this->finiquitoIndenmizacion = (object)[
+			'dias'   => $dias,
+			'inicio' => $this->emp->ingreso,
+			'monto'  => $monto
+		];
 	}
 
-	private function get_finiquito_indemnizacion_monto()
+	public function set_finiquito_vacaciones($args=[])
 	{
-		$dias = $this->get_finiquito_indemnizacion_dias();
-		$diasPromedio = ($this->get_sueldo_promedio()/30);
-
-		return ($dias*$diasPromedio);
-	}
-
-	public function get_finiquito_vacaciones_dias($args=[])
-	{
-		$inicio  = new DateTime($args['vacas_del']);
-		$fin = new DateTime($args['vacas_al']);
+		$inicio   = new DateTime($args['vacas_del']);
+		$fin      = new DateTime($args['vacas_al']);
 		$interval = $inicio->diff($fin);
+		$dias     = (($interval->format('%a')+1)/(365/15));
+		$monto    = ($dias*($this->sueldoPromedio/30));
 		
-		return ($interval->format('a')+1);
+		#return ($interval->format('%a')+1);
+		$this->finiquitoVacaciones = (object)[
+			'dias'   => $dias,
+			'inicio' => $this->emp->ingreso,
+			'monto'  => $monto
+		];
 	}
 
-	public function get_finiquito_vacaciones_monto($args = [])
-	{
-		$dias = $this->get_finiquito_vacaciones_dias($args);
-		$diasPromedio = ($this->get_sueldo_promedio()/30);
-
-		return ($dias*$diasPromedio);
-	}
-
-	public function get_finiquito_aguinaldo_dias()
+	public function set_finiquito_aguinaldo()
 	{
 		$sql = "SELECT DATE_FORMAT(fecha,'%Y-%m-01') as ultimo
 				FROM plnnomina
 				WHERE idplnempleado = {$this->emp->id} 
 				AND aguinaldo > 0
-				AND terminada = 1
 				ORDER BY fecha DESC
 				LIMIT 1";
 		
-		$tmp = $this->db->query($sql)->fetchAll();
-
-		$inicio  = new DateTime($tmp[0]['ultimo']);
-		$fin = new DateTime($this->emp->baja);
+		$tmp      = $this->db->query($sql)->fetchAll();
+		$fecha    = count($tmp)>0?$tmp[0]['ultimo']:$this->emp->ingreso;
+		$inicio   = new DateTime($fecha);
+		$fin      = new DateTime($this->emp->baja);
 		$interval = $inicio->diff($fin);
+		$dias     = ($interval->format('%a')+1);
+		$monto    = ($dias*($this->sueldoPromedio/365));
 		
-		return ($interval->format('a')+1);
+		#return ($interval->format('%a')+1);
+		$this->finiquitoAguinaldo = (object)[
+			'dias'   => $dias,
+			'inicio' => $fecha,
+			'monto'  => $monto
+		];
 	}
 
-	public function get_finiquito_aguinaldo_monto()
-	{
-		$dias = $this->get_finiquito_aguinaldo_dias();
-		$diasPromedio = ($this->get_sueldo_promedio()/30);
-
-		return ($dias*$diasPromedio);
-	}
-
-	public function get_finiquito_bono14_dias()
+	public function set_finiquito_bono14()
 	{
 		$sql = "SELECT DATE_FORMAT(fecha,'%Y-%m-01') as ultimo
 				FROM plnnomina
 				WHERE idplnempleado = {$this->emp->id} 
 				AND bonocatorce > 0
-				AND terminada = 1
 				ORDER BY fecha DESC
 				LIMIT 1";
 		
-		$tmp = $this->db->query($sql)->fetchAll();
-
-		$inicio   = new DateTime($tmp[0]['ultimo']);
+		$tmp      = $this->db->query($sql)->fetchAll();
+		$fecha    = count($tmp)>0?$tmp[0]['ultimo']:$this->emp->ingreso;
+		$inicio   = new DateTime($fecha);
 		$fin      = new DateTime($this->emp->baja);
 		$interval = $inicio->diff($fin);
+		$dias     = ($interval->format('%a')+1);
+		$monto    = ($dias*($this->sueldoPromedio/365));
 		
-		return ($interval->format('a')+1);
+		#return ($interval->format('%a')+1);
+		# Arreglo de datos para finiquito bono 14
+		$this->finiquitoBono = (object)[
+			'dias'   => $dias,
+			'inicio' => $fecha,
+			'monto'  => $monto
+		];
 	}
 
-
-	public function get_finiquito_bono14_monto()
+	public function set_finiquito_sueldo()
 	{
-		$dias = $this->get_finiquito_bono14_dias();
-		$diasPromedio = ($this->get_sueldo_promedio()/30);
+		$res = [
+			'sdiario' => ($this->emp->sueldo/365),
+			'bdiario' => ($this->emp->bonificacionley/365)
+		];
+		
+		$sql = "SELECT fecha, date_add(fecha, interval 1 day) as inicio
+				FROM plnnomina
+				WHERE idplnempleado = {$this->emp->id} 
+				AND day(fecha) <> 15
+				ORDER BY fecha DESC
+				LIMIT 1";
 
-		return ($dias*$diasPromedio);
+		$tmp    = $this->db->query($sql)->fetchAll();
+		$fecha  = new DateTime($tmp[0]['fecha']);
+		$inicio = new DateTime($tmp[0]['inicio']);
+		$fin    = new DateTime($this->emp->baja);
+
+		if ($fin > $fecha) {
+			$interval = $inicio->diff($fin);
+			$dias     = ($interval->format('%a')+1);
+			$monto    = ($dias*($this->sueldoPromedio/365));
+			
+			$res['dias']   = $dias;
+			$res['sueldo'] = ($dias*$res['sdiario']);
+			$res['bono']   = ($dias*$res['bdiario']);
+		} else {
+			$res['dias']   = 0;
+			$res['sueldo'] = 0;
+			$res['bono']   = 0;
+		}
+
+		$this->finiquitoSueldo = (object)$res;
 	}
 
+	public function get_anticipos_post_baja()
+	{
+		$sql = "SELECT 
+				    IFNULL(SUM(IFNULL(a.anticipo, 0)), 0) AS anticipos
+				FROM
+				    plnnomina a
+				        INNER JOIN
+				    plnempleado b ON b.id = a.idplnempleado AND a.fecha > b.baja
+				WHERE
+				    a.idplnempleado = {$this->emp->id} AND DAY(a.fecha) = 15";
+
+		$tmp = $this->db->query($sql)->fetchAll();
+
+		return $tmp[0]['anticipos'];
+	}
+
+	/**
+	 * Antes de llamar a esta función, por favor ejecute estas otras funciones internas en el orden a continuación
+	 * $this->set_meses_calculo(<meses_calculo>);
+	 * $this->set_sueldo_promedio();
+	 * $this->set_finiquito_indemnizacion();
+	 * $this->set_finiquito_vacaciones();
+	 * $this->set_finiquito_aguinaldo();
+	 * $this->set_finiquito_bono14();
+	 * @param  array  $args [description]
+	 * @return [type]       [description]
+	 */
 	public function get_datos_finiquito($args=[])
 	{
-
-		$lugar_fecha = "Guatemala, ".formatoFecha($args['fecha_egreso'],2)." de ".get_meses(formatoFecha($args['fecha_egreso'], 3))." de ".formatoFecha($args['fecha_egreso'],4);
-
-		$gen = new General();
-		$empresa = $gen->get_empresa(['empresa' => $this->emp->idempresadebito, 'uno' => TRUE]);
+		$lugarFecha = "Guatemala, ".formatoFecha($args['fecha_egreso'],2)." de ".get_meses(formatoFecha($args['fecha_egreso'], 3))." de ".formatoFecha($args['fecha_egreso'],4);
+		$empresa    = $this->get_empresa_debito();
 
 		$texto_motivo = <<<EOT
-Desde la presente fecha se dan por terminadas las relaciones de trabajo entre el señor(a) {$this->emp->nombre} {$this->emp->apellidos} y {$empresa['nomempresa']}.\n
+Desde la presente fecha se dan por terminadas las relaciones de trabajo entre el señor(a) {$this->emp->nombre} {$this->emp->apellidos} y {$empresa->nomempresa}.\n
 Por motivo: {$args['motivo']}.\n
 Recibe en esta misma fecha todas las prestaciones a que tiene derecho según el CÓDIGO DE TRABAJO VIGENTE, como se detalla a continuación:
 EOT;
 
-		return [
+		$tmp = [
 			'titulo'                   => 'Finiquito Laboral',
-			'lugar_fecha'              => $lugar_fecha,
+			'lugar_fecha'              => $lugarFecha,
 			'texto_motivo'             => $texto_motivo,
 			'linea_uno_resumen'        => str_repeat("_", 90),
 			'fecha_ingreso_etiqueta'   => 'Fecha de Ingreso:',
@@ -717,29 +786,69 @@ EOT;
 			'total_linea'              => str_repeat('_', 10),
 			'total'                    => number_format($this->emp->sueldo + $this->emp->bonificacionley, 2),
 			'sueldo_promedio_etiqueta' => "Sueldo Promedio:\nsobre {$args['meses_calculo']} meses",
-			'sueldo_promedio'          => number_format($this->get_sueldo_promedio(['meses' => $args['meses_calculo']]), 2),
+			'sueldo_promedio'          => number_format($this->sueldoPromedio, 2),
 			'linea_dos_resumen'        => str_repeat("_", 90),
 			'texto_prestaciones'       => 'Prestaciones',
 			'texto_no_dias'            => 'No. Días',
 			'texto_monto'              => 'Monto Q.',
-			'indem_texto'              => 'Indemnización por el tiempo comprendido del:',
-			'indem_fechas'             => ' al ',
-			'indem_dias'               => $this->get_finiquito_indemnizacion_dias(),
-			'indem_monto'              => $this->get_finiquito_indemnizacion_monto(['meses' => $args['meses_calculo']]),
-			'vacas_texto'              => 'Vacaciones por el tiempo comprendido del:',
-			'vacas_fechas'             => ' al ',
-			'vacas_dias'               => $this->get_finiquito_vacaciones_dias($args),
-			'vacas_monto'              => $this->get_finiquito_vacaciones_monto($args),
-			'aguin_texto'              => 'Aguinaldo por el tiempo comprendido del:',
-			'aguin_fechas'             => ' al ',
-			'aguin_dias'               => $this->get_finiquito_aguinaldo_dias(),
-			'aguin_monto'              => $this->get_finiquito_aguinaldo_monto(),
-			'bonoc_texto'              => 'Bono 14 por el tiempo comprendido del:',
-			'bonoc_fechas'             => ' al ',
-			'bonoc_dias'               => $this->get_finiquito_bono14_dias(),
-			'bonoc_monto'              => $this->get_finiquito_bono14_monto(),
-			'sabon_texto'              => 'Salario y bonificación de:'
+			'indem_texto'              => '1) Indemnización por el tiempo comprendido del:',
+			'indem_fechas'             => formatoFecha($this->emp->ingreso,1).' al '.formatoFecha($this->emp->baja,1),
+			'indem_dias'               => $this->finiquitoIndenmizacion->dias,
+			'indem_monto'              => number_format($this->finiquitoIndenmizacion->monto,2),
+			'vacas_texto'              => '2) Vacaciones por el tiempo comprendido del:',
+			'vacas_fechas'             => formatoFecha($args['vacas_del'],1).' al '.formatoFecha($args['vacas_al'],1),
+			'vacas_dias'               => number_format($this->finiquitoVacaciones->dias,2),
+			'vacas_monto'              => number_format($this->finiquitoVacaciones->monto,2),
+			'aguin_texto'              => '3) Aguinaldo por el tiempo comprendido del:',
+			'aguin_fechas'             => formatoFecha($this->finiquitoAguinaldo->inicio,1).' al '.formatoFecha($this->emp->baja,1),
+			'aguin_dias'               => $this->finiquitoAguinaldo->dias,
+			'aguin_monto'              => number_format($this->finiquitoAguinaldo->monto,2),
+			'bonoc_texto'              => '4) Bono 14 por el tiempo comprendido del:',
+			'bonoc_fechas'             => formatoFecha($this->finiquitoBono->inicio,1).' al '.formatoFecha($this->emp->baja,1),
+			'bonoc_dias'               => $this->finiquitoBono->dias,
+			'bonoc_monto'              => number_format($this->finiquitoBono->monto,2),
+			'sabon_texto'              => '5) Salario y bonificación de:',
+			'sabon_sdiario'            => "{$this->finiquitoSueldo->dias} días a razón de Q. ****".number_format($this->finiquitoSueldo->sdiario,2)." diarios:",
+			'sabon_sueldo'             => number_format($this->finiquitoSueldo->sueldo,2),
+			'sabon_bdiario'            => "{$this->finiquitoSueldo->dias} días a razón de Q. ****".number_format($this->finiquitoSueldo->bdiario,2)." diarios:",
+			'sabon_bono'               => number_format($this->finiquitoSueldo->bono,2),
+			'otros_texto'              => '6) Otros:',
+			'otros_monto'              => number_format(0,2),
+			'presta_linea'			   => str_repeat('_', 13),
+			'presta_texto'			   => 'Total de Prestaciones:'
 		];
+
+		$totalPrestaciones = (
+			$this->finiquitoIndenmizacion->monto+
+			$this->finiquitoVacaciones->monto+
+			$this->finiquitoAguinaldo->monto+
+			$this->finiquitoBono->monto+
+			$this->finiquitoSueldo->sueldo+
+			$this->finiquitoSueldo->bono
+		);
+
+		$saldoPrestamos    = $this->get_saldo_prestamo();
+		$anticiposPostBaja = $this->get_anticipos_post_baja();
+		$liquidoRecibir    = ($totalPrestaciones-($saldoPrestamos+$anticiposPostBaja));
+
+		$tmp['presta_monto']    = number_format($totalPrestaciones, 2);
+		$tmp['menos_texto']     = "Menos:";
+		$tmp['menos_ptexto']    = "Préstamos internos:";
+		$tmp['menos_prestamos'] = number_format($saldoPrestamos, 2);
+		$tmp['menos_atexto']    = "Anticipos a sueldos:";
+		$tmp['menos_anticipos'] = number_format($anticiposPostBaja,2);
+		$tmp['liquido_texto']   = "Líquido a recibir:";
+		$tmp["liquido_linea"]   = str_repeat("_", 13);
+		$tmp['liquido_monto']   = number_format($liquidoRecibir, 2);
+
+		$ltr = new NumberToLetterConverter();
+		$tmp['pie_linea']  = str_repeat('_', 90);
+		$tmp['pie_texto']  = "Por lo tanto el señor(a) {$this->emp->nombre} {$this->emp->apellidos}, da por recibida a su entera satisfacción la cantidad de ".$ltr->to_word(round($liquidoRecibir,2), 'GTQ').". ( Q. ".number_format($liquidoRecibir,2)." ), y extiende a {$empresa->nomempresa}, su más amplio FINIQUITO LABORAL, por no tener ningún reclamo pendiente.";
+		$tmp['pie_codigo'] = "Código: {$this->emp->id}";
+		$tmp['pie_firma']  = "(f.)".str_repeat("_", 40);
+
+
+		return $tmp;
 	}
 
 	public function get_empresa_debito()
