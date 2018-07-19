@@ -1,13 +1,18 @@
 angular.module('cpm')
-.controller('repPlanillaController', ['$scope', '$http', 'empresaSrvc', 
-    function($scope, $http, empresaSrvc){
-        $scope.empresas = [];
+.controller('repPlanillaController', ['$scope', '$http', 'empresaSrvc', 'empServicios',
+    function($scope, $http, empresaSrvc, empServicios){
+        $scope.empresas = []
+        $scope.empleados = []
 
         empresaSrvc.lstEmpresas().then(function(d){
             $scope.empresas = d;
-        });
+            setTimeout(function() { $("#selectEmpresa").chosen({width:'100%'}) }, 3)
+        })
 
-        
+        empServicios.buscar({sin_limite:1}).then(function(res){
+            $scope.empleados = res.resultados
+            setTimeout(function() { $("#selectEmpleado").chosen({width:'100%'}) }, 3)
+        })
     }
 ])
 .controller('repReciboController', ['$scope', '$http', 'empresaSrvc', 'empServicios',

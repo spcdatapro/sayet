@@ -186,7 +186,7 @@ $app->post('/finiquito', function(){
 		$emp->set_finiquito_vacaciones($_POST);
 		$emp->set_finiquito_aguinaldo();
 		$emp->set_finiquito_bono14();
-		$emp->set_finiquito_sueldo();
+		$emp->set_finiquito_sueldo($_POST);
 
 		foreach ($emp->get_datos_finiquito($_POST) as $campo => $valor) {
 			$conf = $gen->get_campo_impresion($campo, 7);

@@ -401,4 +401,29 @@ class Prestamo extends Principal
 			}
 		}
 	}
+
+	public function get_proyeccion($args = [])
+	{
+		$saldo  = $this->get_saldo_anterior(['fecha' => $args['fdel']]);
+		$cuotas = ceil(($saldo/$this->pre->cuotamensual));
+		$fdel   = new DateTime($args['fdel']);
+		$inicio = new DateTime($this->pre->iniciopago);
+		$fecha  = $fdel > $inicio ? $fdel : $inicio;
+		$datos  = [];
+
+		for ($i=1; $i<=$cuotas ; $i++) { 
+			$pago  = $saldo > $this->pre->cuotamensual ? $this->pre->cuotamensual : $saldo;
+			$saldo -= $pago;
+			$fecha->add(new DateInterval("P1M"));
+			
+			$datos[] = [
+				'v_nombre'			  => "Pago # {$i}",
+				'v_fecha'             => $fecha->format('d/m/Y'),
+				'v_descuento_mensual' => $pago,
+				'v_saldo_anterior'    => $saldo
+			];
+		}
+
+		return $datos;
+	}
 }

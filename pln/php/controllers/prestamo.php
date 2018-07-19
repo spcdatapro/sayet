@@ -130,11 +130,11 @@ $app->get('/imprimir/:prestamo', function($prestamo){
 $app->get('/proyeccion', function(){
 	$g = new General();
 
-	if (elemento($_GET, 'fal')) {
+	if (elemento($_GET, 'fdel')) {
 		$todos = $g->buscar_prestamo([
-			'fal'        => $_GET['fal'],
 			'orden'      => 'empleado',
 			'empresa'    => isset($_GET['empresa']) ? $_GET['empresa'] : NULL,
+			'empleado'   => isset($_GET['empleado']) ? $_GET['empleado'] : NULL,
 			'finalizado' => 0, 
 			'sinlimite'  => TRUE
 		]);
@@ -147,6 +147,7 @@ $app->get('/proyeccion', function(){
 
 			$pdf = new TCPDF('P', 'mm', $s);
 			$pdf->SetAutoPageBreak(TRUE, 0);
+			$pdf->AddPage();
 
 			$datos     = [];
 			$registros = 0;
@@ -167,7 +168,7 @@ $app->get('/proyeccion', function(){
 			$cabecera = [
 				'sp_titulo'              => 'Módulo de Planillas',
 				'sp_subtitulo'           => 'PROYECCIÓN DE PRÉSTAMOS',
-				'sp_fecha'               => "Del ".formatoFecha($_GET['fdel'], 1)." al: " . formatoFecha($_GET['fal'], 1),
+				'sp_fecha'               => "Del ".formatoFecha($_GET['fdel'], 1),
 				't_codigo'               => 'Código',
 				't_nombre'               => 'Nombre:',
 				't_vale'                 => 'Vale',
@@ -178,27 +179,8 @@ $app->get('/proyeccion', function(){
 				't_linea'                => str_repeat("_", 160)
 			];
 
-			$rpag = 32; # Registros por página
-			$totalPaginas = ceil(count($todos)/$rpag);
-
-			for ($i=0; $i < $totalPaginas ; $i++) { 
-				$pdf->AddPage();
-
-				foreach ($cabecera as $campo => $valor) {
-					$conf = $g->get_campo_impresion($campo, $tipoImpresion);
-
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$pdf = generar_fimpresion($pdf, $valor, $conf);
-					}
-				}
-			}
-
-			$pagina = 1;
-
-			$pdf->setPage($pagina);
-
+			$rpag    = 45; # Registros por página
 			$espacio = 0;
-			$totales = [];
 
 			foreach ($datos as $key => $empresa) {
 				$registros++;
@@ -206,8 +188,7 @@ $app->get('/proyeccion', function(){
 				if ($registros == $rpag) {
 					$espacio   = 0;
 					$registros = 0;
-					$pagina++;
-					$pdf->setPage($pagina);
+					$pdf->AddPage();
 				}
 				
 				$confe      = $g->get_campo_impresion('v_empresa', $tipoImpresion);
@@ -229,34 +210,17 @@ $app->get('/proyeccion', function(){
 						'v_fecha' => formatoFecha($prestamo->pre->iniciopago, 1),
 						'v_valor_prestamo' => $prestamo->pre->monto,
 						'v_descuento_mensual' => $prestamo->pre->cuotamensual,
-						'v_saldo_anterior' => $prestamo->get_saldo_anterior(['fecha' => $_GET['fal']])
+						'v_saldo_anterior' => $prestamo->get_saldo_anterior(['fecha' => $_GET['fdel']])
 					];
 
 					foreach ($tmpdatos as $campo => $valor) {
+					
 						$conf = $g->get_campo_impresion($campo, $tipoImpresion);
 
 						if (!isset($conf->scalar) && $conf->visible == 1) {
 							$conf->psy = ($conf->psy+$espacio);
 
 							$nonumerico = ['v_vale', 'v_codigo'];
-
-							/*if (is_numeric($valor) && !in_array($campo, $nonumerico)) {
-								if (isset($etotales[$campo])) {
-									$etotales[$campo] += $valor;
-								} else {
-									$etotales[$campo] = $valor;
-								}
-								
-								if (isset($totales[$pdf->getPage()][$campo])) {
-									$totales[$pdf->getPage()][$campo] += $valor;
-								} else {
-									if (isset($totales[$pdf->getPage()-1][$campo])) {
-										$totales[$pdf->getPage()][$campo] = $valor+$totales[$pdf->getPage()-1][$campo];
-									} else {
-										$totales[$pdf->getPage()][$campo] = $valor;
-									}
-								}
-							}*/
 
 							if (is_numeric($valor) && !in_array($campo, $nonumerico)) {
 								$valor = number_format($valor, 2);
@@ -273,9 +237,44 @@ $app->get('/proyeccion', function(){
 					if ($registros == $rpag) {
 						$espacio   = 0;
 						$registros = 0;
-						$pagina++;
-						$pdf->setPage($pagina);
+						$pdf->AddPage();
 					}
+
+					$proyeccion = $prestamo->get_proyeccion($_GET);
+
+					if (count($proyeccion) > 0) {
+						foreach ($proyeccion as $fila) {
+							$registros++;
+
+							foreach ($fila as $campo => $valor) {
+								$conf = $g->get_campo_impresion($campo, $tipoImpresion);
+
+								if (!isset($conf->scalar) && $conf->visible == 1) {
+									$conf->psy = ($conf->psy+$espacio);
+
+									$numericos = ['v_descuento_mensual', 'v_saldo_anterior'];
+
+									if (in_array($campo, $numericos)) {
+										$valor = number_format($valor, 2);
+									} else {
+										$valor = $valor;
+									}
+
+									$pdf = generar_fimpresion($pdf, $valor, $conf);
+								}			
+							}
+
+							$espacio += $confe->espacio;
+
+							if ($registros == $rpag) {
+								$espacio   = 0;
+								$registros = 0;
+								$pdf->AddPage();
+							}
+						}
+					}
+
+						
 				}
 
 				$registros++;
@@ -283,8 +282,7 @@ $app->get('/proyeccion', function(){
 				if ($registros == $rpag) {
 					$espacio   = 0;
 					$registros = 0;
-					$pagina++;
-					$pdf->setPage($pagina);
+					$pdf->AddPage();
 				}
 
 				$pdf->SetLineStyle(array(
@@ -295,25 +293,20 @@ $app->get('/proyeccion', function(){
 					'color' => array(0, 0, 0)
 				));
 
-				/*foreach ($etotales as $campo => $total) {
-					$conf = $g->get_campo_impresion($campo, $tipoImpresion);
-
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$conf->psy = ($conf->psy+$espacio);
-						$pdf       = generar_fimpresion($pdf, number_format($total, 2), $conf);
-
-						$pdf->Line($conf->psx, $conf->psy, ($conf->psx+$conf->ancho), $conf->psy);
-
-						$y = ($conf->psy+$conf->espacio);
-
-						$pdf->Line($conf->psx, $y, $conf->psx+$conf->ancho, $y);
-						$pdf->Line($conf->psx, $y+1, $conf->psx+$conf->ancho, $y+1);
-					}
-				}*/
-
 				$espacio += $confe->espacio;	
 			}
 
+			for ($i=1; $i <= $pdf->getNumPages(); $i++) { 
+				$pdf->setPage($i);
+
+				foreach ($cabecera as $campo => $valor) {
+					$conf = $g->get_campo_impresion($campo, $tipoImpresion);
+
+					if (!isset($conf->scalar) && $conf->visible == 1) {
+						$pdf = generar_fimpresion($pdf, $valor, $conf);
+					}
+				}
+			}
 
 			$pdf->Output("proyeccion_prestamos" . time() . ".pdf", 'I');
 			die();

@@ -695,14 +695,16 @@ class Empleado extends Principal
 		];
 	}
 
-	public function set_finiquito_sueldo()
+	public function set_finiquito_sueldo($args = [])
 	{
 		$res = [
 			'sdiario' => ($this->emp->sueldo/365),
 			'bdiario' => ($this->emp->bonificacionley/365)
 		];
+
+		$dias = elemento($args, 'dias_sueldo_pagar', 0);
 		
-		$sql = "SELECT fecha, date_add(fecha, interval 1 day) as inicio
+		/*$sql = "SELECT fecha, date_add(fecha, interval 1 day) as inicio
 				FROM plnnomina
 				WHERE idplnempleado = {$this->emp->id} 
 				AND day(fecha) <> 15
@@ -712,13 +714,9 @@ class Empleado extends Principal
 		$tmp    = $this->db->query($sql)->fetchAll();
 		$fecha  = new DateTime($tmp[0]['fecha']);
 		$inicio = new DateTime($tmp[0]['inicio']);
-		$fin    = new DateTime($this->emp->baja);
+		$fin    = new DateTime($this->emp->baja);*/
 
-		if ($fin > $fecha) {
-			$interval = $inicio->diff($fin);
-			$dias     = ($interval->format('%a')+1);
-			$monto    = ($dias*($this->sueldoPromedio/365));
-			
+		if ($dias > 0) {
 			$res['dias']   = $dias;
 			$res['sueldo'] = ($dias*$res['sdiario']);
 			$res['bono']   = ($dias*$res['bdiario']);

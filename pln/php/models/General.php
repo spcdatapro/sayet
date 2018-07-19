@@ -235,12 +235,20 @@ class General extends Principal
 			];
 		}
 
+		if (elemento($args, 'fdel')) {
+			$where['plnprestamo.iniciopago[>=]'] = $args['fdel'];
+		}
+
 		if (elemento($args, 'fal')) {
 			$where['plnprestamo.iniciopago[<=]'] = $args['fal'];
 		}
 
 		if (elemento($args, 'empresa')) {
 			$where['b.idempresadebito[=]'] = $args['empresa'];
+		}
+
+		if (elemento($args, 'empleado')) {
+			$where['plnprestamo.idplnempleado[=]'] = $args['empleado'];
 		}
 
 		if (isset($args['finalizado'])) {
