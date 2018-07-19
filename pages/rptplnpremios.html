@@ -1,0 +1,36 @@
+<div class="container" ng-controller="rptPlnPremiosCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">Premios por antigüedad en la empresa</div>
+            <div class="panel-body" style="text-align: right">
+                <div class="row" style="text-align: left">
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="txtDel">Del:</label>
+                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.del" placeholder="Del" ng-change="libromayor = []"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="txtAl">Al:</label>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.al" placeholder="Al" ng-change="libromayor = []"/>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" ng-click="getReporte()">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+                <!--
+                <button type="button" class="btn btn-primary" ng-click="getLibroDiarioXLSX()">
+                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                </button>
+                -->
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <object data="{{content}}" type="application/pdf" style="width: 100%; height: 100em"></object>
+        </div>
+    </div>
+</div>
