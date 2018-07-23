@@ -61,6 +61,8 @@ $app->post('/comparativo', function() use($db){
                     if($noesnulo){
                         $factorPromedio++;
                         $sumProm += $consumoMes;
+                    }else{
+                        $consumoMes = 0.00;
                     }
 
                     $query = "SELECT CONCAT(UPPER(nombrecorto), SUBSTR('$anio', 3, 2)) AS messtr FROM mes WHERE id = $mes";
