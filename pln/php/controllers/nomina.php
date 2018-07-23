@@ -937,6 +937,8 @@ $app->get('/imprimir_sp', function(){
 			'sinlimite'  => TRUE
 		]);
 
+		$mesAl = date('m', strtotime($_GET['fal']));
+
 		if (count($todos) > 0) {
 			require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
 
@@ -1023,16 +1025,17 @@ $app->get('/imprimir_sp', function(){
 					$registros++;
 
 					$emp = $prestamo->get_empleado();
+					$pmes = date('m', strtotime($prestamo->pre->iniciopago));
 
 					$tmpdatos = [
 						'v_codigo' => $emp->id,
 						'v_nombre' => "{$emp->nombre} {$emp->apellidos}",
 						'v_vale' => $prestamo->pre->id,
 						'v_fecha' => formatoFecha($prestamo->pre->iniciopago, 1),
-						'v_valor_prestamo' => $prestamo->pre->monto,
+						'v_valor_prestamo' => ($mesAl == $pmes ? 0 : $prestamo->pre->monto),
 						'v_descuento_mensual' => $prestamo->pre->cuotamensual,
 						'v_saldo_anterior' => $prestamo->get_saldo_anterior(['fecha' => $_GET['fal']]),
-						'v_nuevos_prestamos' => 0,
+						'v_nuevos_prestamos' => ($mesAl == $pmes ? $prestamo->pre->monto : 0),
 						'v_descuentos_planillas' => $prestamo->get_descuentos_planilla(['fecha' => $_GET['fal']]),
 						'v_otros_abonos' => $prestamo->get_otro_abonos(['fecha' => $_GET['fal']]),
 						'v_total_descuentos' => $prestamo->get_total_descuentos(['fecha' => $_GET['fal']]),
@@ -1140,7 +1143,7 @@ $app->post('/terminar_planilla', function(){
 
 		if ($b->terminar_planilla($_POST)) {
 			$res['exito'] = 1;
-			$res['mensaje'] = 'Planilla terminada con éxito.';
+			$res['mensaje'] = 'Planilla cerrada con éxito.';
 		} else {
 			$res['mensaje'] = $b->get_mensaje();
 		}

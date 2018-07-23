@@ -71,16 +71,22 @@ angular.module('cpm')
             });
         }
 
-        $scope.terminarPlanilla = function() {
+        $scope.formatoFecha = function(fecha) {
+            return fecha.getFullYear()+'-'+(fecha.getMonth()+1)+'-'+fecha.getDate()
+        }
+
+        $scope.terminarPlanilla = function(ter) {
             if (confirm('¿Desea continuar?')) {
-                if ($scope.fecha !== null) {
-                    var datos = {'fecha':$scope.nfecha}
-                    if ($scope.nempresa) { datos['empresa'] = $scope.nempresa }
-                    nominaServicios.terminarPlanilla(datos).then(function(res){
+                if (ter.fch && ter.empresa) {
+                    $("#btnCerrarPlanilla").button('loading')
+                    ter.fecha = $scope.formatoFecha(ter.fch)
+
+                    nominaServicios.terminarPlanilla(ter).then(function(res){
                         alert(res.mensaje)
+                        $("#btnCerrarPlanilla").button('reset')
                     })
                 } else {
-                    alert('Por favor seleccione una fecha y haga clic en buscar')
+                    alert('Por favor llene el formulario de cierre, todos los datos son obligatorios.')
                 }
             }
         }
