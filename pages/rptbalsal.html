@@ -4,22 +4,22 @@
             <div class="panel-heading">Balance de Saldos</div>
             <div class="panel-body" style="text-align: right">
                 <div class="row" style="text-align: left">
-                    <div class="col-md-3 col-sm-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label for="txtDel">Del:</label>
-                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.del" placeholder="Del"/>
+                            <input name="txtDel" id="txtDel" type="date" class="form-control input-sm" ng-model="params.del" placeholder="Del"/>
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label for="txtAl">Al:</label>
-                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.al" placeholder="Al"/>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control input-sm" ng-model="params.al" placeholder="Al"/>
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label for="selNivel">Al nivel:</label>
-                            <select name="selNivel" id="selNivel" class="form-control" ng-model="params.nivel">
+                            <select name="selNivel" id="selNivel" class="form-control input-sm" ng-model="params.nivel">
                                 <option value="1">1</option>
                                 <option value="3">2</option>
                                 <option value="5">3</option>
@@ -27,13 +27,26 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label for="chkSoloMov">Solo con movimiento:</label>
-                            <input name="chkSoloMov" id="chkSoloMov" type="checkbox" class="form-control" ng-model="params.solomov" ng-true-value="1" ng-false-value="0"/>
+                            <input name="chkSoloMov" id="chkSoloMov" type="checkbox" class="form-control input-sm" ng-model="params.solomov" ng-true-value="1" ng-false-value="0"/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="txtNoFolio">No. Folio:</label>
+                            <input name="txtNoFolio" id="txtNoFolio" type="number" class="form-control input-sm" ng-model="params.nofolio" placeholder="Folio que toca..."/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="chkNoHead">Sin encabezado:</label>
+                            <input name="chkNoHead" id="chkNoHead" type="checkbox" class="form-control input-sm" ng-model="params.noheader" ng-true-value="1" ng-false-value="0"/>
                         </div>
                     </div>
                 </div>
+                <!--<div class="row" style="text-align: left"></div>-->
                 <button type="button" class="btn btn-primary" ng-click="getBalSal()">
                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                 </button>

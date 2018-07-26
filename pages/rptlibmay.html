@@ -7,25 +7,25 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="txtDel">Del:</label>
-                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.del" placeholder="Del" ng-change="libromayor = []"/>
+                            <input name="txtDel" id="txtDel" type="date" class="form-control input-sm" ng-model="params.del" placeholder="Del" ng-change="libromayor = []"/>
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="txtAl">Al:</label>
-                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.al" placeholder="Al" ng-change="libromayor = []"/>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control input-sm" ng-model="params.al" placeholder="Al" ng-change="libromayor = []"/>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="chkCierre">Ver partidas de cierre y apertura:</label>
-                            <input name="chkCierre" id="chkCierre" type="checkbox" class="form-control" ng-model="params.vercierre" ng-true-value="1" ng-false-value="0"/>
+                            <input name="chkCierre" id="chkCierre" type="checkbox" class="form-control input-sm" ng-model="params.vercierre" ng-true-value="1" ng-false-value="0"/>
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="selFltr">Filtrar por:</label>
-                            <select name="selFltr" id="selFltr" class="form-control" ng-model="params.filtro" ng-change="resetParams()">
+                            <select name="selFltr" id="selFltr" class="form-control input-sm" ng-model="params.filtro" ng-change="resetParams()">
                                 <option value="1">Cuentas</option>
                                 <option value="2">Rango de cuentas</option>
                             </select>
@@ -108,8 +108,22 @@
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                            <label for="chkConstProc">Integraciones:</label>
-                            <input name="chkConstProc" id="chkConstProc" type="checkbox" class="form-control" ng-model="params.constproc" ng-true-value="1" ng-false-value="0"/>
+                            <label for="chkConstProc">Formato integraciones:</label>
+                            <input name="chkConstProc" id="chkConstProc" type="checkbox" class="form-control input-sm" ng-model="params.constproc" ng-true-value="1" ng-false-value="0"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="text-align: left">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="txtNoFolio">No. Folio:</label>
+                            <input name="txtNoFolio" id="txtNoFolio" type="number" class="form-control input-sm" ng-model="params.nofolio" placeholder="Folio que toca..."/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="chkNoHead">Sin encabezado:</label>
+                            <input name="chkNoHead" id="chkNoHead" type="checkbox" class="form-control input-sm" ng-model="params.noheader" ng-true-value="1" ng-false-value="0"/>
                         </div>
                     </div>
                 </div>

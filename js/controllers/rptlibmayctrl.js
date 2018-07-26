@@ -5,7 +5,8 @@
     rptlibmayctrl.controller('rptLibroMayorCtrl', ['$scope', 'rptLibroMayorSrvc', 'empresaSrvc', 'authSrvc', 'jsReportSrvc', '$sce', 'cuentacSrvc', function($scope, rptLibroMayorSrvc, empresaSrvc, authSrvc, jsReportSrvc, $sce, cuentacSrvc){
 
         $scope.params = {
-            del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), idempresa: 0, codigo: undefined, constproc: 0, filtro: '1', codigoal: undefined, cuentasSel: undefined, vercierre: 0
+            del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), idempresa: 0, codigo: undefined, constproc: 0, filtro: '1', codigoal: undefined,
+            cuentasSel: undefined, vercierre: 0, nofolio: undefined, noheader: 0
         };
         $scope.libromayor = [];
         $scope.content = '';
@@ -23,7 +24,7 @@
         function setCodigos(ctas){
             var lista = '';
             ctas.forEach(function(cta){
-                if(lista != ''){ lista += ','; }
+                if(lista !== ''){ lista += ','; }
                 lista += "'" + cta.trim() + "'";
             });
             return lista;
@@ -40,18 +41,20 @@
             $scope.params.fdelstr = moment($scope.params.del).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.al).format('YYYY-MM-DD');
             $scope.params.vercierre = $scope.params.vercierre != null && $scope.params.vercierre !== undefined ? $scope.params.vercierre : 0;
+            $scope.params.nofolio = $scope.params.nofolio != null && $scope.params.nofolio !== undefined ? $scope.params.nofolio : '';
+            $scope.params.noheader = $scope.params.noheader != null && $scope.params.noheader !== undefined ? $scope.params.noheader : 0;
 
-            if(+$scope.params.filtro == 1){
+            if(+$scope.params.filtro === 1){
                 $scope.params.codigo = $scope.params.cuentasSel ? setCodigos($scope.params.cuentasSel) : '';
                 $scope.params.codigoal = '';
             }else{
-                $scope.params.codigo = $scope.params.codigo != null && $scope.params.codigo != undefined ? ("'" + $scope.params.codigo.trim() + "'") : '';
-                $scope.params.codigoal = $scope.params.codigoal != null && $scope.params.codigoal != undefined ? ("'" + $scope.params.codigoal.trim() + "'") : '';
+                $scope.params.codigo = $scope.params.codigo != null && $scope.params.codigo !== undefined ? ("'" + $scope.params.codigo.trim() + "'") : '';
+                $scope.params.codigoal = $scope.params.codigoal != null && $scope.params.codigoal !== undefined ? ("'" + $scope.params.codigoal.trim() + "'") : '';
             }
 
             //console.log($scope.params); return;
 
-            if(+$scope.params.constproc == 0){
+            if(+$scope.params.constproc === 0){
                 jsReportSrvc.getPDFReport(test ? '' : 'ryzIcT87Z', $scope.params).then(function(pdf){ $scope.content = pdf; });
             }else{
                 jsReportSrvc.getPDFReport(test ? '' : 'rJsjLgzyG', $scope.params).then(function(pdf){ $scope.content = pdf; });
@@ -63,16 +66,18 @@
             $scope.params.fdelstr = moment($scope.params.del).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.al).format('YYYY-MM-DD');
             $scope.params.vercierre = $scope.params.vercierre != null && $scope.params.vercierre !== undefined ? $scope.params.vercierre : 0;
+            $scope.params.nofolio = $scope.params.nofolio != null && $scope.params.nofolio !== undefined ? $scope.params.nofolio : '';
+            $scope.params.noheader = $scope.params.noheader != null && $scope.params.noheader !== undefined ? $scope.params.noheader : 0;
 
-            if(+$scope.params.filtro == 1){
+            if(+$scope.params.filtro === 1){
                 $scope.params.codigo = $scope.params.cuentasSel ? setCodigos($scope.params.cuentasSel) : '';
                 $scope.params.codigoal = '';
             }else{
-                $scope.params.codigo = $scope.params.codigo != null && $scope.params.codigo != undefined ? ("'" + $scope.params.codigo.trim() + "'") : '';
-                $scope.params.codigoal = $scope.params.codigoal != null && $scope.params.codigoal != undefined ? ("'" + $scope.params.codigoal.trim() + "'") : '';
+                $scope.params.codigo = $scope.params.codigo != null && $scope.params.codigo !== undefined ? ("'" + $scope.params.codigo.trim() + "'") : '';
+                $scope.params.codigoal = $scope.params.codigoal != null && $scope.params.codigoal !== undefined ? ("'" + $scope.params.codigoal.trim() + "'") : '';
             }
 
-            if(+$scope.params.constproc == 0){
+            if(+$scope.params.constproc === 0){
                 jsReportSrvc.getReport(test ? 'S1OS4Lhdf' : 'HJwukPndf', $scope.params).then(function(result){
                     //var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
                     var file = new Blob([result.data], {type: 'application/vnd.ms-excel'});
