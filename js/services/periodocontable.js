@@ -5,7 +5,7 @@
     pcontsrvc.factory('periodoContableSrvc', ['comunFact', function(comunFact){
         var urlBase = 'php/periodocontable.php';
 
-        var periodoContableSrvc = {
+        return {
             lstPeriodosCont: function(){
                 return comunFact.doGET(urlBase + '/lstpcont');
             },
@@ -19,7 +19,6 @@
                 return comunFact.doPOST(urlBase + '/' + op, obj);
             }
         };
-        return periodoContableSrvc;
     }]);
 
 }());

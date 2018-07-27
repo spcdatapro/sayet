@@ -26,13 +26,22 @@
                     </div>
                 </div>
                 <div class="btn-group" role="group" aria-label="...">
-                    <button type="submit" class="btn btn-primary" ng-disabled="frmPCont.$invalid">
+                    <button type="submit" class="btn btn-primary" ng-disabled="frmPCont.$invalid" ng-hide="+elPeriodo.id > 0">
                         <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-disabled="frmPCont.$invalid" ng-show="+elPeriodo.id > 0" ng-click="updPeriodo(elPeriodo)">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-show="+elPeriodo.id > 0" ng-click="resetPeriodo()">
+                        <span class="glyphicon glyphicon-plus"></span>
                     </button>
                 </div>
             </form>
             <hr/>
-            <table class="table table-responsive table-hover">
+            <table class="table table-responsive table-hover table-condensed table-striped">
+                <caption>
+                    <input ng-model="searchPeriodo.$" class="form-control" placeholder="Buscar per&iacute;odo contable..." style="width: 100%"/>
+                </caption>
                 <thead>
                     <tr>
                         <th>Del</th>
@@ -42,31 +51,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="p in losPeriodos">
+                    <tr ng-repeat="p in losPeriodos | filter:searchPeriodo" ng-click="getPeriodo(p.id)">
+                        <td>{{p.del | date:'dd/MM/yyyy'}}</td>
+                        <td>{{p.al | date:'dd/MM/yyyy'}}</td>
+                        <td>{{p.abierto === 1 ? 'S&iacute;' : 'No'}}</td>
                         <td>
-                            <span editable-text="p.del" e-name="del" e-form="rowform" e-required
-                                  e-class="form-control" e-type="date">
-                                {{p.del | date:'dd/MM/yyyy'}}
-                            </span>
-                        </td>
-                        <td>
-                            <span editable-text="p.al" e-name="al" e-form="rowform" e-required
-                                  e-class="form-control" e-type="date">
-                                {{p.al | date:'dd/MM/yyyy'}}
-                            </span>
-                        </td>
-                        <td>
-                            <span editable-checkbox="p.abierto" e-name="abierto" e-form="rowform" e-title="Abrir período"
-                                  e-ng-true-value="1" e-ng-false-value="0">
-                                {{p.abierto === 1 ? 'S&iacute;' : 'No'}}
-                            </span>
-                        </td>
-                        <td style="white-space: nowrap">
-                            <edit-row-form
-                                    editing-row="p"
-                                    update-func="updPeriodo(fila, qid)"
-                                    delete-func="delPeriodo(qid)">
-                            </edit-row-form>
+                            <button type="button" class="btn btn-danger btn-sm" ng-click="delPeriodo(p)">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
                         </td>
                     </tr>
                 </tbody>
