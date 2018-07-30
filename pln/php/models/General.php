@@ -99,6 +99,33 @@ class General extends Principal
 		);
 	}
 
+	public function buscar_periodo(Array $args)
+	{
+		$condicion = [];
+		
+		if (elemento($args, 'inicio')) {
+			$condicion["inicio"] = $args['inicio'];
+		}
+
+		if (elemento($args, 'fin')) {
+			$condicion["fin"] = $args['fin'];
+		}
+
+		if (isset($args['cerrado'])) {
+			$condicion["cerrado"] = $args['cerrado'];
+		}
+
+		if (!elemento($args, 'sin_limite')) {
+			$condicion["LIMIT"] = [elemento($args, 'inicio', 0), get_limite()];
+		}
+
+		return $this->db->select(
+			'plnperiodo', 
+			['*'], 
+			$condicion
+		);
+	}
+
 	public function get_archivotipo($args = [])
 	{
 		return $this->db->select(
