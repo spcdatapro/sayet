@@ -84,7 +84,7 @@ $app->post('/rptanticli', function(){
             $querydet2 = " order by c.fecha
                         ) as a
                         left join(
-                            select orden,cliente,venta,fecha,documento,tipo,monto,codigo,tc_cambio from (
+                            select orden,cliente,venta,fecha,documento,tipo,monto,codigo,tc_cambio,idpago from (
 
                                 SELECT 2 as orden,a.idcliente as cliente,a.id as venta,c.fecha,d.numero as documento,'R' as tipo, (b.monto) as monto,
                                     'Q' as codigo,a.tipocambio as tc_cambio, b.id as idpago
