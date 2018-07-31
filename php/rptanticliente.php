@@ -66,7 +66,7 @@ $app->post('/rptanticli', function(){
                     inner join (
 
                         select a.orden,a.cliente,a.venta,a.fecha,a.factura,a.serie,
-                            a.concepto,if(isnull(b.idpago) and a.pagada=1,0000000000.00,(a.total-(ifnull(sum(b.monto),0)))) as monto,a.codigo,a.tc_cambio,a.fecpago,a.dias,a.empresa,a.idempresa,a.contrato,a.proyecto,a.nomproyecto,a.retisr,a.retiva
+                            a.concepto,if(isnull(c.idpago) and a.pagada=1,0000000000.00,(a.total-(ifnull(sum(b.monto),0)))) as monto,a.codigo,a.tc_cambio,a.fecpago,a.dias,a.empresa,a.idempresa,a.contrato,a.proyecto,a.nomproyecto,a.retisr,a.retiva
                         from (
                             SELECT 1 as orden,c.idcliente as cliente,c.id as venta,c.fecha,c.numero as factura,c.serie,c.conceptomayor as concepto,
                                 round(c.subtotal,2) as monto,e.simbolo as codigo,c.tipocambio as tc_cambio,
@@ -98,6 +98,18 @@ $app->post('/rptanticli', function(){
 
             $querydet3 = ") as b
                         ) as b on a.venta=b.venta
+                        left join(
+                            select orden,cliente,venta,fecha,documento,tipo,monto,codigo,tc_cambio,idpago from (
+
+                                SELECT 2 as orden,a.idcliente as cliente,a.id as venta,c.fecha,d.numero as documento,'R' as tipo, (b.monto) as monto,
+                                    'Q' as codigo,a.tipocambio as tc_cambio, b.id as idpago
+                                from sayet.factura a
+                                    inner join sayet.detcobroventa b on a.id=b.idfactura
+                                    inner join sayet.recibocli c on b.idrecibocli=c.id
+                                    left join sayet.tranban d on c.idtranban=d.id
+                                where c.anulado=0
+                                    and a.idmoneda = " . $dmon->idmoneda .") as c
+                        ) as c on a.venta=c.venta
                         group by a.venta
                         having monto <> 0
                         order by a.fecha,a.serie,a.factura
