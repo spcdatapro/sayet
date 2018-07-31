@@ -54,7 +54,7 @@ $app->post('/rptanticli', function(){
             $sqlord = ',b.fecha,b.serie,b.factura';
             //}
 
-            //(a.monto-ifnull(sum(b.monto),0))
+            // (a.monto-ifnull(sum(b.monto),0))
 
             $querydet1 = "SELECT a.nombre," . $sqlfields . "
                         round(sum(if(b.dias < 31, b.monto-b.retisr-b.retiva,0)),2) as a30,
