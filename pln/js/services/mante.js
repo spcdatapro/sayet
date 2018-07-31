@@ -52,4 +52,23 @@ angular.module('cpm')
             return comunFact.doGET(urlBase + '/lista');
         },
     };
+}])
+.factory('periodoServicios', ['comunFact', function(comunFact){
+    var urlBase = 'pln/php/controllers/periodo.php';
+
+    return {
+        buscar: function(obj){
+            return comunFact.doGETJ(urlBase + '/buscar', obj);
+        },
+        getPuesto: function(emp){
+            return comunFact.doGET(urlBase + '/get_periodo/' + emp);
+        },
+        guardar: function(datos){
+            return comunFact.doPOST(urlBase + '/guardar', datos);
+        }, 
+        lista: function(obj){
+            return comunFact.doGET(urlBase + '/lista');
+        },
+    };
 }]);
+

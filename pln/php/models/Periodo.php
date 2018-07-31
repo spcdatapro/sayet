@@ -53,24 +53,53 @@ class Periodo extends Principal
 		}
     }
 
+    public function hay_abierto()
+    {
+    	$condiciones = ['cerrado' => 0];
+
+    	if ($this->periodo !== null) {
+    		$condiciones['id[<>]'] = $this->periodo->id;
+    	}
+
+    	$tmp = $this->db->select(
+			$this->tabla, 
+			['id', 'inicio', 'fin', 'cerrado'], 
+			[
+				'AND' => $condiciones
+			]
+		);
+
+		return count($tmp);
+    }
+
     public function guardar($args = [])
 	{
-		if (is_array($args) && !empty($args)) {
-			if (elemento($args, 'descripcion')) {
-				$this->set_dato('descripcion', $args['descripcion']);
-			}
+		if (isset($args['inicio'])) {
+			$this->set_dato('inicio', $args['inicio']);
+		}
+
+		if (isset($args['fin'])) {
+			$this->set_dato('fin', $args['fin']);
+		}
+
+		if (isset($args['cerrado'])) {
+			$this->set_dato('cerrado', $args['cerrado']);
 		}
 
 		if (!empty($this->datos)) {
 			if ($this->periodo === null) {
-				$lid = $this->db->insert($this->tabla, $this->datos);
-
-				if ($lid) {
-					$this->cargar_periodo($lid);
-
-					return TRUE;
+				if ($this->verificar($args['inicio'], $args['fin'])) {
+					$this->set_mensaje('Este rango ya ha sido ingresado con anterioridad, por favor verifique.');
 				} else {
-					$this->set_mensaje('Error en la base de datos al guardar: ' . $this->db->error()[2]);
+					$lid = $this->db->insert($this->tabla, $this->datos);
+
+					if ($lid) {
+						$this->cargar_periodo($lid);
+
+						return TRUE;
+					} else {
+						$this->set_mensaje('Error en la base de datos al guardar: ' . $this->db->error()[2]);
+					}
 				}
 			} else {
 				if ($this->db->update($this->tabla, $this->datos, ["id" => $this->periodo->id])) {

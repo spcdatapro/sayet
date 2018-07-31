@@ -286,4 +286,107 @@ angular.module('cpm')
 
         $scope.buscar({});
     }
+])
+.controller('MntPeriodoController', ['$scope', '$http', 'periodoServicios',  
+    function($scope, $http, periodoServicios){
+        $scope.formulario  = false;
+        $scope.resultados  = false;
+        $scope.periodos    = [];
+        $scope.inicio      = 0;
+        $scope.datosbuscar = [];
+        $scope.buscarmas   = true;
+        $scope.hay         = false;
+        
+
+        $scope.mostrarForm = function() {
+            $scope.prd = {};
+            $scope.formulario = true;
+            $scope.hay = false;
+        };
+
+        $scope.guardar = function(prd){
+            prd.inicio = $scope.formatoFecha(prd.fecinicio)
+            prd.fin = $scope.formatoFecha(prd.fecfin)
+            
+            periodoServicios.guardar(prd).then(function(data){
+                alert(data.mensaje);
+                $scope.hay = true;
+                $scope.pst = {};
+                
+                if (data.up == 0) {
+                    $scope.periodos.push(data.puesto);
+                }
+            });
+        };
+
+        $scope.buscar = function(datos) {
+            $scope.formulario = false;
+
+            if (datos) {
+                $scope.datosbuscar = {'inicio':0};
+
+                if (datos.fecinicio) {
+                    $scope.datosbuscar.inicio = $scope.formatoFecha(datos.fecinicio)
+                }
+
+                if (datos.fecfin) {
+                    $scope.datosbuscar.fin = $scope.formatoFecha(datos.fecfin)
+                }
+
+                if (datos.cerrado == 1) {
+                    $scope.datosbuscar.cerrado = 1
+                }
+            } else {
+                $scope.datosbuscar = {'inicio':0};
+            }
+            
+            periodoServicios.buscar($scope.datosbuscar).then(function(data){
+                $scope.datosbuscar.inicio = data.cantidad;
+                $scope.periodos  = data.resultados;
+                $scope.resultados = true;
+
+                $scope.ocultarbtn(data.cantidad, data.maximo);
+            });
+        };
+
+        $scope.mas = function() {
+            periodoServicios.buscar($scope.datosbuscar).then(function(data){
+                $scope.datosbuscar.inicio += parseInt(data.cantidad);
+
+                $scope.periodos = $scope.periodos.concat(data.resultados);
+
+                $scope.ocultarbtn(data.cantidad, data.maximo);
+                $scope.$digest();
+            });
+        }
+
+        $scope.ocultarbtn = function(cantidad, maximo) {
+            if ( parseInt(cantidad) < parseInt(maximo) ) {
+                $scope.buscarmas = false
+            } else {
+                $scope.buscarmas = true
+            }
+        }
+
+        $scope.getPeriodo = function(index){
+             $scope.prd = $scope.periodos[index];
+             $scope.prd.fecinicio = $scope.formatoFechajs($scope.prd.inicio)
+             $scope.prd.fecfin = $scope.formatoFechajs($scope.prd.fin)
+             console.log($scope.prd)
+             $scope.formulario = true
+             $scope.hay = true
+             goTop()
+        };
+
+        $scope.formatoFecha = function(fecha) {
+            return fecha.getFullYear()+'-'+(fecha.getMonth()+1)+'-'+fecha.getDate();
+        };
+
+        $scope.formatoFechajs = function(fecha) {
+            var partes = fecha.split('-');
+            return new Date(partes[0], partes[1] - 1, partes[2]); 
+        };
+
+        $scope.buscar({});
+    }
 ]);

@@ -102,17 +102,22 @@ class General extends Principal
 	public function buscar_periodo(Array $args)
 	{
 		$condicion = [];
+		$where = [];
 		
 		if (elemento($args, 'inicio')) {
-			$condicion["inicio"] = $args['inicio'];
+			$where["inicio"] = $args['inicio'];
 		}
 
 		if (elemento($args, 'fin')) {
-			$condicion["fin"] = $args['fin'];
+			$where["fin"] = $args['fin'];
 		}
 
 		if (isset($args['cerrado'])) {
-			$condicion["cerrado"] = $args['cerrado'];
+			$where["cerrado"] = $args['cerrado'];
+		}
+
+		if (!empty($where)) {
+			$condicion['AND'] = $where;
 		}
 
 		if (!elemento($args, 'sin_limite')) {
