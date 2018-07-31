@@ -66,7 +66,7 @@ $app->post('/rptanticli', function(){
                     inner join (
 
                         select a.orden,a.cliente,a.venta,a.fecha,a.factura,a.serie,
-                            a.concepto,if(isnull(c.idpago) and a.pagada=1,0000000000.00,(a.total-(ifnull(sum(b.monto),0)))) as monto,a.codigo,a.tc_cambio,a.fecpago,a.dias,a.empresa,a.idempresa,a.contrato,a.proyecto,a.nomproyecto,a.retisr,a.retiva
+                            a.concepto,if(isnull(c.idpago) and a.pagada=1,0000000000.00,(a.monto-(ifnull(sum(b.monto),0)))) as monto,a.codigo,a.tc_cambio,a.fecpago,a.dias,a.empresa,a.idempresa,a.contrato,a.proyecto,a.nomproyecto,a.retisr,a.retiva
                         from (
                             SELECT 1 as orden,c.idcliente as cliente,c.id as venta,c.fecha,c.numero as factura,c.serie,c.conceptomayor as concepto,
                                 round(c.subtotal,2) as monto,e.simbolo as codigo,c.tipocambio as tc_cambio,
