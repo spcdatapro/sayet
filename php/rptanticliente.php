@@ -175,7 +175,7 @@ $app->post('/rptanticli', function(){
 
                     foreach ($ancl as $hac) {
 						
-						if(round($hac->total,2) <> 0){
+						if(round($hac->total,2) > 0){
                         
 							if ($hac->nombre != $ultnom) {
 								$idarray++;
@@ -218,7 +218,7 @@ $app->post('/rptanticli', function(){
 							$msumamas += $hac->amas;
 							$msumatotal += $hac->total;
 							
-							if((round($hac->a30,2) + round($hac->a60,2) + round($hac->a90,2) + round($hac->amas,2)) <> 0){
+							if((round($hac->a30,2) + round($hac->a60,2) + round($hac->a90,2) + round($hac->amas,2)) > 0){
 								array_push($det,
 									array(
 										'factura' => $hac->factura,
