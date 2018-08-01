@@ -9,7 +9,7 @@ class Empleado extends Principal
 	protected $tabla;
 	protected $sueldo      = 0;
 	protected $horasimple  = 1.5;
-	protected $horadoble   = 2;
+	protected $horasdoble  = 2;
 	protected $dtrabajados = 0;
 	protected $nfecha;
 	protected $ndia;
@@ -346,7 +346,7 @@ class Empleado extends Principal
 
 	public function set_sueldo()
 	{
-		$pro = $this->db->get(
+		/*$pro = $this->db->get(
 			'plnprosueldo', 
 			[get_meses($this->nmes)], 
 			[
@@ -361,12 +361,13 @@ class Empleado extends Principal
 			$this->sueldo = $this->emp->sueldo;
 		} else {
 			$this->sueldo = ($pro[get_meses($this->nmes)]>0)?$pro[get_meses($this->nmes)]:$this->emp->sueldo;
-		}
+		}*/
+		$this->sueldo = $this->emp->sueldo;
 	}
 
 	public function get_sueldo()
 	{
-		return $this->sueldo;
+		return $this->emp->sueldo;
 	}
 
 	public function get_gana_dia()
@@ -392,14 +393,13 @@ class Empleado extends Principal
 		return 0;
 	}
 
-	public function get_horas_extras_dobles()
+	public function get_horas_extras_dobles($args=[])
 	{
-		return $this->emp->cantidad_horas_dobles*$this->get_gana_hora()*$this->horadoble;
-	}
+		if (isset($args['horas'])) {
 
-	public function get_total_horas_extras()
-	{
-		return $this->get_horas_extras_simples() + $this->get_horas_extras_dobles();
+			return ($args['horas']*$this->get_gana_hora())*$this->horasdoble;
+		}
+		return 0;
 	}
 
 	public function set_dias_trabajados()
@@ -541,7 +541,7 @@ class Empleado extends Principal
 
 	public function get_descingss($args = [])
 	{
-		return round(($this->emp->porcentajeigss/100) * ($this->sueldo+$args['sueldoextra']), 2);
+		return round(($this->emp->porcentajeigss/100) * ($this->sueldo+elemento($args,'sueldoextra',0)), 2);
 	}
 
 	public function get_saldo_prestamo($args = [])

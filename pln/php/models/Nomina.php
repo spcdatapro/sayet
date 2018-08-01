@@ -139,12 +139,6 @@ class Nomina extends Principal
 				'fecha'         => $fecha
 			];
 
-			/*if (isset($args['bono14']) && $args['bono14'] != 'false') {
-				$where['esbonocatorce'] = 1;
-			} else {
-				$where['esbonocatorce'] = 0;
-			}*/
-
 			$ex = (object)$this->db->get(
 				'plnnomina', 
 				['*'], 
@@ -158,10 +152,6 @@ class Nomina extends Principal
 					'idproyecto'    => $row['idproyecto'],
 					'fecha'         => $fecha
 				];
-
-				/*if (isset($args['bono14']) && $args['bono14'] != 'false') {
-					$datos['esbonocatorce'] = 1;
-				}*/
 
 				$this->db->insert('plnnomina', $datos);
 			}
@@ -183,12 +173,6 @@ class Nomina extends Principal
 		if (elemento($args, 'empresa')) {
 			$sql .= "AND a.idempresa = {$args['empresa']} ";
 		}
-
-		/*if (isset($args['bono14']) && $args['bono14'] != 'false') {
-			$sql .= "AND a.esbonocatorce = 1 ";
-		} else {
-			$sql .= "AND a.esbonocatorce = 0 ";
-		}*/
 
 		$sql .= "order by b.nombre ASC";
 
@@ -215,9 +199,31 @@ class Nomina extends Principal
 		return $saldo;
 	}
 
+	public function get_registro($id)
+	{
+		$sql = "SELECT 
+				    a.*, 
+				    CONCAT(ifnull(b.nombre,''), ' ', ifnull(b.apellidos,'')) AS nempleado, 
+				    b.formapago, 
+				    b.bonificacionley, 
+				    b.porcentajeigss
+				FROM
+				    plnnomina a
+				        JOIN
+				    plnempleado b ON b.id = a.idplnempleado
+				WHERE a.id = {$id}";
+
+		return $this->db->query($sql)->fetchAll()[0];
+	}
+
 	public function actualizar(Array $args)
 	{
 		if (elemento($args, 'id')) {
+			$nom = (object)$this->get_registro($args['id']);
+
+			$mpld = new Empleado($nom->idplnempleado);
+			$mpld->set_sueldo();
+
 			$datos = [];
 
 			if (isset($args['viaticos'])) {
@@ -265,12 +271,18 @@ class Nomina extends Principal
 			}
 
 			if (isset($args["horasmes"])) {
-				$datos["horasmes"] = elemento($args, "horasmes", 0);
+				$datos["horasmes"]      = elemento($args, "horasmes", 0);
+				$datos["horasmesmonto"] = $mpld->get_horas_extras_simples(['horas' => $datos['horasmes']]);
 			}
 
-			if (isset($args["sueldoextra"])) {
-				$datos["sueldoextra"] = elemento($args, "sueldoextra", 0);
+			if (isset($args["hedcantidad"])) {
+				$datos["hedcantidad"] = elemento($args, "hedcantidad", 0);
+				$datos["hedmonto"]    = $mpld->get_horas_extras_dobles(['horas' => $datos['hedcantidad']]);
 			}
+
+			/*if (isset($args["sueldoextra"])) {
+				$datos["sueldoextra"] = elemento($args, "sueldoextra", 0);
+			}*/
 
 			if (isset($args["descprestamo"])) {
 				$saldoPrestamos = $this->get_saldo_prestamos(['idplnnomina' => $args['id']]);
@@ -280,7 +292,7 @@ class Nomina extends Principal
 			if (!empty($datos)) {
 				if ($this->db->update("plnnomina", $datos, ['AND' => ["id" => $args['id'], 'terminada' => 0]])) {
 					$this->actualizar_saldo_prestamos(['idplnnomina' => $args['id']]);
-					return TRUE;
+					return $this->get_registro($args['id']);
 				} else {
 					if ($this->db->error()[0] == 0) {
 						$this->set_mensaje('Nada que actualizar.');
@@ -330,7 +342,7 @@ class Nomina extends Principal
 	public function generar(Array $args)
 	{
 		if ($this->verificar_planilla_cerrada($args)) {
-			$this->set_mensaje('Esta planilla se encuentra terminada, no puedo editar datos y volver a generarla.');
+			$this->set_mensaje('Esta planilla se encuentra cerrada, no puedo editar datos y volver a generarla.');
 			return false;
 		} else {
 			$fecha = $args['fecha'];
@@ -347,7 +359,12 @@ class Nomina extends Principal
 					$e->set_sueldo();
 					$e->set_dias_trabajados();
 
-					$datos = [];
+					$datos = [
+						'horasmes'      => 0,
+						'horasmesmonto' => 0,
+						'hedcantidad'   => 0,
+						'hedmonto'      => 0
+					];
 
 					# Solo deja calcular bono el 15 de la primera quincena
 					if (isset($args['bono14']) && $args['bono14'] != 'false' && $mes == 7 && $dia == 15) {
@@ -380,8 +397,7 @@ class Nomina extends Principal
 						$datos['sueldoordinario'] = $e->get_sueldo();
 						$datos['diastrabajados']  = $e->get_dias_trabajados();
 						$datos['descisr']		  = $e->emp->descuentoisr;
-						$datos['sueldoextra'] 	  = $e->get_horas_extras_simples(['horas' => $row['horasmes']]);
-						$datos['descigss']        = $e->get_descingss(['sueldoextra' => $datos['sueldoextra']]);
+						$datos['descigss']        = $e->get_descingss();
 						
 						$prest = $e->get_descprestamo(['sin_idplnnomina' => $row['id']]);
 						

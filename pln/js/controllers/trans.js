@@ -66,8 +66,11 @@ angular.module('cpm')
             $scope.edicion = false;
         }
 
-        $scope.actualizarNomina = function(n) {
-            nominaServicios.actualizarNomina(n).then(function(data){
+        $scope.actualizarNomina = function(reg, indice) {
+            nominaServicios.actualizarNomina(reg).then(function(data){
+                if (data.registro) {
+                    $scope.nomina[indice] = data.registro
+                }
             });
         }
 

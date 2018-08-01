@@ -311,15 +311,18 @@ $app->get('/imprimir', function(){
 });
 
 $app->post('/actualizar', function(){
-	$n = new Nomina();
+	$nom = new Nomina();
 
 	$datos = ['exito' => 0];
+	$test  = $nom->actualizar($_POST);
 
-	if ($n->actualizar($_POST)) {
-		$datos['exito']   = 1;
-		$datos['mensaje'] = "Se guardó con éxito.";
+	if ($test) {
+		$datos['exito']    = 1;
+		$datos['mensaje']  = "Se guardó con éxito.";
+		$datos['registro'] = $test;
 	} else {
-		$datos['mensaje'] = $n->get_mensaje();
+		$datos['mensaje']  = $nom->get_mensaje();
+		$datos['registro'] = $nom->get_registro($_POST['id']);
 	}
 
 	enviar_json($datos);
