@@ -221,87 +221,92 @@ class Nomina extends Principal
 		if (elemento($args, 'id')) {
 			$nom = (object)$this->get_registro($args['id']);
 
-			$mpld = new Empleado($nom->idplnempleado);
-			$mpld->set_sueldo();
-
-			$datos = [];
-
-			if (isset($args['viaticos'])) {
-				$datos["viaticos"] = elemento($args, "viaticos", 0);
-			}
-
-			if (isset($args["aguinaldo"])) {
-				$datos["aguinaldo"] = elemento($args, "aguinaldo", 0);
-			}
-
-			if (isset($args["indemnizacion"])) {
-				$datos["indemnizacion"] = elemento($args, "indemnizacion", 0);
-			}
-
-			if (isset($args["bonocatorce"])) {
-				$datos["bonocatorce"] = elemento($args, "bonocatorce", 0);
-			}
-
-			if (isset($args["vacaciones"])) {
-				$datos["vacaciones"] = elemento($args, "vacaciones", 0);
-			}
-
-			if (isset($args["otrosingresos"])) {
-				$datos["otrosingresos"] = elemento($args, "otrosingresos", 0);
-			}
-
-			if (isset($args["descisr"])) {
-				$datos["descisr"] = elemento($args, "descisr", 0);
-			}
-
-			if (isset($args["descigss"])) {
-				$datos["descigss"] = elemento($args, "descigss", 0);
-			}
-
-			if (isset($args["descotros"])) {
-				$datos["descotros"] = elemento($args, "descotros", 0);
-			}
-
-			if (isset($args["sueldoordinario"])) {
-				$datos["sueldoordinario"] = elemento($args, "sueldoordinario", 0);
-			}
-
-			if (isset($args["anticipo"])) {
-				$datos["anticipo"] = elemento($args, "anticipo", 0);
-			}
-
-			if (isset($args["horasmes"])) {
-				$datos["horasmes"]      = elemento($args, "horasmes", 0);
-				$datos["horasmesmonto"] = $mpld->get_horas_extras_simples(['horas' => $datos['horasmes']]);
-			}
-
-			if (isset($args["hedcantidad"])) {
-				$datos["hedcantidad"] = elemento($args, "hedcantidad", 0);
-				$datos["hedmonto"]    = $mpld->get_horas_extras_dobles(['horas' => $datos['hedcantidad']]);
-			}
-
-			/*if (isset($args["sueldoextra"])) {
-				$datos["sueldoextra"] = elemento($args, "sueldoextra", 0);
-			}*/
-
-			if (isset($args["descprestamo"])) {
-				$saldoPrestamos = $this->get_saldo_prestamos(['idplnnomina' => $args['id']]);
-				$datos["descprestamo"] = ((elemento($args, "descprestamo", 0) > $saldoPrestamos)?$saldoPrestamos:$args['descprestamo']);
-			}
-
-			if (!empty($datos)) {
-				if ($this->db->update("plnnomina", $datos, ['AND' => ["id" => $args['id'], 'terminada' => 0]])) {
-					$this->actualizar_saldo_prestamos(['idplnnomina' => $args['id']]);
-					return $this->get_registro($args['id']);
-				} else {
-					if ($this->db->error()[0] == 0) {
-						$this->set_mensaje('Nada que actualizar.');
-					} else {
-						$this->set_mensaje('Error en la base de datos al actualizar: ' . $this->db->error()[2]);
-					}
-				}
+			if ($this->verificar_planilla_cerrada(['fecha' => $nom->fecha])) {
+				$this->set_mensaje('Esta planilla se encuentra cerrada, no puedo editar datos. Por favor verifique que tenga el período abierto.');
+				return false;
 			} else {
-				$this->set_mensaje("Nada que actualizar");
+				$mpld = new Empleado($nom->idplnempleado);
+				$mpld->set_sueldo();
+
+				$datos = [];
+
+				if (isset($args['viaticos'])) {
+					$datos["viaticos"] = elemento($args, "viaticos", 0);
+				}
+
+				if (isset($args["aguinaldo"])) {
+					$datos["aguinaldo"] = elemento($args, "aguinaldo", 0);
+				}
+
+				if (isset($args["indemnizacion"])) {
+					$datos["indemnizacion"] = elemento($args, "indemnizacion", 0);
+				}
+
+				if (isset($args["bonocatorce"])) {
+					$datos["bonocatorce"] = elemento($args, "bonocatorce", 0);
+				}
+
+				if (isset($args["vacaciones"])) {
+					$datos["vacaciones"] = elemento($args, "vacaciones", 0);
+				}
+
+				if (isset($args["otrosingresos"])) {
+					$datos["otrosingresos"] = elemento($args, "otrosingresos", 0);
+				}
+
+				if (isset($args["descisr"])) {
+					$datos["descisr"] = elemento($args, "descisr", 0);
+				}
+
+				if (isset($args["descigss"])) {
+					$datos["descigss"] = elemento($args, "descigss", 0);
+				}
+
+				if (isset($args["descotros"])) {
+					$datos["descotros"] = elemento($args, "descotros", 0);
+				}
+
+				if (isset($args["sueldoordinario"])) {
+					$datos["sueldoordinario"] = elemento($args, "sueldoordinario", 0);
+				}
+
+				if (isset($args["anticipo"])) {
+					$datos["anticipo"] = elemento($args, "anticipo", 0);
+				}
+
+				if (isset($args["horasmes"])) {
+					$datos["horasmes"]      = elemento($args, "horasmes", 0);
+					$datos["horasmesmonto"] = $mpld->get_horas_extras_simples(['horas' => $datos['horasmes']]);
+				}
+
+				if (isset($args["hedcantidad"])) {
+					$datos["hedcantidad"] = elemento($args, "hedcantidad", 0);
+					$datos["hedmonto"]    = $mpld->get_horas_extras_dobles(['horas' => $datos['hedcantidad']]);
+				}
+
+				/*if (isset($args["sueldoextra"])) {
+					$datos["sueldoextra"] = elemento($args, "sueldoextra", 0);
+				}*/
+
+				if (isset($args["descprestamo"])) {
+					$saldoPrestamos = $this->get_saldo_prestamos(['idplnnomina' => $args['id']]);
+					$datos["descprestamo"] = ((elemento($args, "descprestamo", 0) > $saldoPrestamos)?$saldoPrestamos:$args['descprestamo']);
+				}
+
+				if (!empty($datos)) {
+					if ($this->db->update("plnnomina", $datos, ['AND' => ["id" => $args['id'], 'terminada' => 0]])) {
+						$this->actualizar_saldo_prestamos(['idplnnomina' => $args['id']]);
+						return $this->get_registro($args['id']);
+					} else {
+						if ($this->db->error()[0] == 0) {
+							$this->set_mensaje('Nada que actualizar.');
+						} else {
+							$this->set_mensaje('Error en la base de datos al actualizar: ' . $this->db->error()[2]);
+						}
+					}
+				} else {
+					$this->set_mensaje("Nada que actualizar");
+				}
 			}
 		} else {
 			$this->set_mensaje("Faltan datos obligatorios.");
@@ -310,39 +315,32 @@ class Nomina extends Principal
 		return FALSE;
 	}
 
+	/**
+	 * Devuelve true si el período esté cerrado o no está creado
+	 * @param  array  $args [description]
+	 * @return [bool]       [description]
+	 */
 	public function verificar_planilla_cerrada($args=[])
 	{
-		$condiciones = [
-			'fecha'     => $args['fecha'],
-			'terminada' => 1
-		];
+		$periodo = $this->db->get("plnperiodo", ['*'], ['fin' => $args['fecha']]);
 
-		if (elemento($args, 'empresa')) {
-			$condiciones["idempresa"] = $args['empresa'];
-		}
-
-		if (isset($args['bono14']) && $args['bono14'] != 'false') {
-			$condiciones['esbonocatorce'] = 1;
+		if ($periodo) {
+			if (isset($periodo['scalar'])) {
+				return true;
+			} else if ($periodo['cerrado'] == 1) {
+				return true;
+			} else {
+				return false;
+			}
 		} else {
-			$condiciones['esbonocatorce'] = 0;
-		}
-
-		$planilla = $this->db->select(
-			"plnnomina", 
-			['id'],
-			['AND' => $condiciones]
-		);
-
-		if (count($planilla) > 0) {
 			return true;
 		}
-		return false;
 	}
 
 	public function generar(Array $args)
 	{
 		if ($this->verificar_planilla_cerrada($args)) {
-			$this->set_mensaje('Esta planilla se encuentra cerrada, no puedo editar datos y volver a generarla.');
+			$this->set_mensaje('Esta planilla se encuentra cerrada, no puedo editar datos. Por favor verifique que tenga el período abierto.');
 			return false;
 		} else {
 			$fecha = $args['fecha'];

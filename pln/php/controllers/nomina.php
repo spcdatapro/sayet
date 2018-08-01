@@ -39,8 +39,12 @@ $app->get('/buscar', function(){
 	$ultimo = date('t', strtotime($fecha));
 
 	if (in_array($dia, array(15, $ultimo))) {
-		$datos['resultados'] = $b->buscar($_GET);
-		$datos['exito']      = 1;
+		if ($b->verificar_planilla_cerrada(['fecha' => $_GET['fecha']])) {
+			$datos['mensaje'] = "Esta planilla se encuentra cerrada, no puedo editar datos. Por favor verifique que tenga el período abierto.";
+		} else {
+			$datos['resultados'] = $b->buscar($_GET);
+			$datos['exito']      = 1;
+		}
 	} else {
 		$datos['mensaje'] = "Fecha incorrecta, por favor verifique.";
 	}
