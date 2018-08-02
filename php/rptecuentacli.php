@@ -22,7 +22,11 @@ $app->post('/rptecuentacli', function(){
 		
         $db = new dbcpm();
 
-        $sqlh = "having saldo<>0";
+		if ($d->detalle == 1) {
+			$sqlh = "";
+		}else {
+			$sqlh = "having saldo<>0";
+		}
         $sqlwhr = "";
 		$sqlemp = "  and c.idempresa>0 ";
 		
@@ -172,7 +176,7 @@ $app->post('/rptecuentacli', function(){
 						if ($d->detalle == 1) {
 							$detfac = array();
 
-							$qdetpago = "SELECT a.idcliente as cliente,c.id as venta,c.fecha,if(d.numero is null,c.id,d.numero) as documento,if(d.tipotrans is null,'P',d.tipotrans) as tipotrans, round((b.monto*if(a.idmoneda=1,1,a.tipocambio)),2) as monto
+							$qdetpago = "SELECT a.idcliente as cliente,c.id as venta,c.fecha,if(d.numero is null,c.id,d.numero) as documento,if(d.tipotrans is null,'P',d.tipotrans) as tipotrans, round((b.monto*if(a.idmoneda=1,1,a.tipocambio)),2) as monto,concat(c.serie,c.numero) as recibo
 									from sayet.factura a
 										inner join sayet.detcobroventa b on a.id=b.idfactura
 										inner join sayet.recibocli c on b.idrecibocli=c.id
@@ -192,7 +196,8 @@ $app->post('/rptecuentacli', function(){
 										'venta' => $row->venta,
 										'tipotrans' => $row->tipotrans,
 										'documento' => $row->documento,
-										'fecha' => $row->fecha
+										'fecha' => $row->fecha,
+										'recibo' => $row->recibo
 									)
 								);
 							}
