@@ -81,7 +81,7 @@ $app->post('/rptecuentacli', function(){
                         select orden,cliente,venta,fecha,documento,tipo,monto,codigo,tc_cambio,idpago from (
 
                             SELECT 2 as orden,a.idcliente as cliente,a.id as venta,c.fecha,d.numero as documento,'R' as tipo, (b.monto) as monto,
-                                'Q' as codigo,a.tipocambio as tc_cambio, b.id as idpago
+                                'Q' as codigo,a.tipocambio as tc_cambio, b.id as idpago,b.idfox
                             from sayet.factura a
                                 inner join sayet.detcobroventa b on a.id=b.idfactura
                                 inner join sayet.recibocli c on b.idrecibocli=c.id
@@ -93,10 +93,10 @@ $app->post('/rptecuentacli', function(){
 			$querydet3 = ") as b
                     ) as b on a.venta=b.venta
 					left join(
-                        select orden,cliente,venta,fecha,documento,tipo,monto,codigo,tc_cambio,idpago from (
+                        select orden,cliente,venta,fecha,documento,tipo,monto,codigo,tc_cambio,if(idfox is null,idpago,null) as idpago, if(idfox is not null, idpago,null) as idpagohist from (
 
                             SELECT 2 as orden,a.idcliente as cliente,a.id as venta,c.fecha,d.numero as documento,'R' as tipo, (b.monto) as monto,
-                                'Q' as codigo,a.tipocambio as tc_cambio, b.id as idpago
+                                'Q' as codigo,a.tipocambio as tc_cambio, b.id as idpago, b.idfox
                             from sayet.factura a
                                 inner join sayet.detcobroventa b on a.id=b.idfactura
                                 inner join sayet.recibocli c on b.idrecibocli=c.id
