@@ -294,7 +294,7 @@ class Nomina extends Principal
 				}
 
 				if (!empty($datos)) {
-					if ($this->db->update("plnnomina", $datos, ['AND' => ["id" => $args['id'], 'terminada' => 0]])) {
+					if ($this->db->update("plnnomina", $datos, ["id" => $args['id']])) {
 						$this->actualizar_saldo_prestamos(['idplnnomina' => $args['id']]);
 						return $this->get_registro($args['id']);
 					} else {
@@ -365,15 +365,31 @@ class Nomina extends Principal
 					];
 
 					# Solo deja calcular bono el 15 de la primera quincena
-					if (isset($args['bono14']) && $args['bono14'] != 'false' && $mes == 7 && $dia == 15) {
+					if (isset($args['bono14']) && $args['bono14'] == 'true' && $mes == 7 && $dia == 15) {
 						$e->set_bonocatorce();
-						$datos['bonocatorce']     = $e->get_bonocatorce();
-						$datos['bonocatorcedias'] = $e->get_bonocatorce_dias();
-						$datos['esbonocatorce']   = 1;
+						
+						$datos['bonocatorce']            = $e->get_bonocatorce();
+						$datos['bonocatorcedias']        = $e->get_bonocatorce_dias();
+						$datos['esbonocatorce']          = 1;
+						$datos['sueldoordinarioreporte'] = $e->get_sueldo();
 					} else {
-						$datos['bonocatorce']     = 0;
-						$datos['bonocatorcedias'] = 0;
-						$datos['esbonocatorce']   = 0;
+						$datos['bonocatorce']            = 0;
+						$datos['bonocatorcedias']        = 0;
+						$datos['esbonocatorce']          = 0;
+						$datos['sueldoordinarioreporte'] = 0;
+					}
+
+					# Solo deja calcular bono el 15 de la primera quincena
+					if (isset($args['aguinaldo']) && $args['aguinaldo'] == 'true') {
+						$e->set_aguinaldo();
+						
+						$datos['aguinaldo']              = $e->aguinaldoMonto;
+						$datos['aguinaldodias']          = $e->aguinaldoDias;
+						$datos['sueldoordinarioreporte'] = $e->get_sueldo();
+					} else {
+						$datos['aguinaldo']              = 0;
+						$datos['aguinaldodias']          = 0;
+						$datos['sueldoordinarioreporte'] = 0;
 					}
 
 					# Pago cada quincena
@@ -552,10 +568,14 @@ class Nomina extends Principal
 		}
 
 		if ($args["fal"] == 15) {
-			$where .= "AND (b.formapago = 1 or a.bonocatorce<>0)";
+			$where .= "AND (b.formapago = 1 or a.bonocatorce<>0 or a.aguinaldo<>0) ";
 		}
 
-		/*if (elemento($args, 'esbonocatorce')) {
+		/*if (elemento($args, 'esaguinaldo', false)) {
+			$where .= "AND a.aguinaldo > 0 ";
+		}
+
+		if (elemento($args, 'esbonocatorce', false)) {
 			$where .= "AND a.esbonocatorce = 1 ";
 		} else {
 			$where .= "AND a.esbonocatorce = 0 ";
@@ -626,6 +646,7 @@ EOT;
 				'vbono14dias'      => $row->bonocatorcedias,
 				'taguinaldo'       => 'Aguinaldo:',
 				'vaguinaldo'       => $row->aguinaldo,
+				'vaguinaldodias'   => $row->aguinaldodias,
 				'tindemnizacion'   => 'Indemnizacion:',
 				'vindemnizacion'   => $row->indemnizacion,
 				'tigss'            => 'IGSS:',
@@ -655,7 +676,8 @@ EOT;
 				'vafiliacionigss'  => $emp->emp->igss,
 				'vbaja'            => ($emp->emp->baja === NULL ? '':formatoFecha($emp->emp->baja, 1)),
 				'vpigss'           => $row->pigss,
-				'vfechaingreso'    => formatoFecha($row->ingreso, 1)
+				'vfechaingreso'    => formatoFecha($row->ingreso, 1),
+				'vsueldoordinarioreporte' => $row->sueldoordinarioreporte
 			];
 		}
 
@@ -795,6 +817,28 @@ EOT;
 			'tingreso'    => "Fecha Ingreso",
 			'tdias'		  => "Días",
 			'tbono14'     => "Bono 14",
+			'tlineat'     => str_repeat("_", 160),
+			'tlineapiet'  => str_repeat("_", 160),
+			'tnopaginat'  => "Página No. "
+		];
+	}
+
+	public function get_cabecera_aguinaldo($args = [])
+	{
+		$anio   = formatoFecha($args['fal'], 4);
+		$pasado = ($anio-1);
+		$ultimo = date('t', strtotime("{$anio}-11-01"));
+
+		return [
+			'titulon'     => 'Módulo de Planillas',
+			'subtitulo'   => "Lista de Aguinaldo",
+			'mes'         => "Período del 01/12/{$pasado} al {$ultimo}/11/{$anio}",
+			'tcodigot'    => "Código",
+			'tnombre'     => "Nombre del Empleado",
+			'tsueldo'     => "Sueldo Mensual",
+			'tingreso'    => "Fecha Ingreso",
+			'tdias'		  => "Días",
+			'taguinaldot' => "Aguinaldo",
 			'tlineat'     => str_repeat("_", 160),
 			'tlineapiet'  => str_repeat("_", 160),
 			'tnopaginat'  => "Página No. "

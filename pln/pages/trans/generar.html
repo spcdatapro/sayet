@@ -11,11 +11,16 @@
 				  </div>
 				  <div class="form-group form-group-sm">
 				    <label for="inputFecha">Fecha</label>
-				    <input type="date" ng-model="gen.fch" class="form-control" placeholder="Fecha">
+				    <input type="date" ng-model="gen.fch" class="form-control" placeholder="Fecha" ng-blur="expression">
 				  </div>
-				  <div class="checkbox" title="Incluye generación de bono 14">
+				  <div class="checkbox" title="Incluye generación de bono 14, funciona únicamente el 15/07">
 				    <label>
 				      <input type="checkbox" ng-model="gen.bono14"> Bono 14
+				    </label>
+				  </div>
+				  <div class="checkbox" title="Incluye generación de aguinaldo, funciona únicamente el 15/12">
+				    <label>
+				      <input type="checkbox" ng-model="gen.aguinaldo"> Aguinaldo
 				    </label>
 				  </div>
 				  <button type="submit" class="btn btn-primary btn-block" id="btnBuscar" data-loading-text="Generando...">

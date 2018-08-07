@@ -25,6 +25,9 @@ class Empleado extends Principal
 	protected $finiquitoIndenmizacion = null;
 	protected $finiquitoVacaciones    = null;
 	protected $finiquitoSueldo        = null;
+
+	public $aguinaldoDias  = 0;
+	public $aguinaldoMonto = 0;
 	
 	function __construct($id = '')
 	{
@@ -894,32 +897,68 @@ EOT;
 
 	public function set_bonocatorce()
 	{
-		$this->set_meses_calculo(6);
+		if ($this->nmes == 7 && $this->ndia == 15) {
+			$this->set_meses_calculo(6);
 
-		if ($this->ndia == 15) {
-			$fecha = date('Y-m-t', strtotime('-1 months', strtotime($this->nfecha))); 
-		} else {
-			$fecha = $this->nfecha;
+			if ($this->ndia == 15) {
+				$fecha = date('Y-m-t', strtotime('-1 months', strtotime($this->nfecha))); 
+			} else {
+				$fecha = $this->nfecha;
+			}
+
+			$pasado = date('Y-m-t', strtotime('-1 year', strtotime($fecha)));
+			$inicio = date('Y-m-d', strtotime('+1 days', strtotime($pasado)));
+			$uno    = new DateTime($inicio);
+
+			if (empty($this->emp->reingreso)) {
+				$ingreso = new DateTime($this->emp->ingreso);
+			} else {
+				$ingreso = new DateTime($this->emp->reingreso);
+			}
+
+			if ($ingreso <= $uno) {
+				$this->bonocatorcedias = 365;
+				$this->bonocatorce     = $this->emp->sueldo;
+			} else {
+				$actual = new DateTime($fecha);
+				$interval = $ingreso->diff($actual);
+				$this->bonocatorcedias = ($interval->format('%a')+1);
+				$this->bonocatorce     = (($this->emp->sueldo/365)*$this->bonocatorcedias);
+			}
 		}
+	}
 
-		$pasado = date('Y-m-t', strtotime('-1 year', strtotime($fecha)));
-		$inicio = date('Y-m-d', strtotime('+1 days', strtotime($pasado)));
-		$uno    = new DateTime($inicio);
+	public function set_aguinaldo()
+	{
+		if ($this->nmes == 12 && $this->ndia == 15) {
+			$this->set_meses_calculo(6);
 
-		if (empty($this->emp->reingreso)) {
-			$ingreso = new DateTime($this->emp->ingreso);
-		} else {
-			$ingreso = new DateTime($this->emp->reingreso);
-		}
+			if ($this->ndia == 15) {
+				$fecha = date('Y-m-t', strtotime('-1 months', strtotime($this->nfecha))); 
+			} else {
+				$fecha = $this->nfecha;
+			}
 
-		if ($ingreso <= $uno) {
-			$this->bonocatorcedias = 365;
-			$this->bonocatorce     = $this->emp->sueldo;
-		} else {
-			$actual = new DateTime($fecha);
-			$interval = $ingreso->diff($actual);
-			$this->bonocatorcedias = ($interval->format('%a')+1);
-			$this->bonocatorce     = (($this->emp->sueldo/365)*$this->bonocatorcedias);
+			$pasado = date('Y-m-t', strtotime('-1 year', strtotime($fecha)));
+			$inicio = date('Y-m-d', strtotime('+1 days', strtotime($pasado)));
+			$uno    = new DateTime($inicio);
+
+			if (empty($this->emp->reingreso)) {
+				$ingreso = new DateTime($this->emp->ingreso);
+			} else {
+				$ingreso = new DateTime($this->emp->reingreso);
+			}
+
+			if ($ingreso <= $uno) {
+				$this->aguinaldoDias  = 365;
+				$this->aguinaldoMonto = $this->emp->sueldo;
+			} else {
+				$actual   = new DateTime($fecha);
+				$interval = $ingreso->diff($actual);
+				
+				$this->aguinaldoDias  = ($interval->format('%a')+1);
+				$this->aguinaldoMonto = (($this->emp->sueldo/365)*$this->aguinaldoDias);
+			}
 		}
 	}
 
