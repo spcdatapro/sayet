@@ -1,0 +1,56 @@
+<div class="container" ng-controller="plnPagoBoletoOrnatoCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Pago de Boleto de Ornato</div>
+        <div class="panel-body">
+            <form name="frmPagoBoleto" id="frmPagoBoleto" class="form-inline" novalidate>
+                <div class="form-group">
+                    <label for="txtAnio">A&ntilde;o:</label>
+                    <input name="txtAnio" id="txtAnio" type="number" class="form-control input-sm" ng-model="params.anio" placeholder="A&ntilde;o de pago" min="2000" ng-change="boletos = []" required/>
+                </div>
+                <div class="form-group">
+                    <label for="selEmpresa">Empresa:</label>
+                    <div class="input-group">
+                        <select name="selEmpresa" id="selEmpresa" class="form-control input-sm" ng-model="params.idempresa"
+                                ng-options="obj.id as obj.nombre for obj in empresas"></select>
+                        <span class="input-group-btn">
+                            <button class="btn btn-info btn-sm" type="button" ng-click="params.idempresa = undefined;" ng-disabled="params.idempresa == undefined || params.idempresa == null"
+                                    data-toggle="tooltip" data-placement="auto" title="Quitar filtro de empresa...">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-info btn-sm" ng-click="getBoletos()">
+                    <span class="glyphicon glyphicon-search"></span>
+                </button>
+                <button type="button" class="btn btn-info btn-sm" ng-click="printReporte()" ng-disabled="boletos.length <= 0">
+                    <span class="glyphicon glyphicon-print"></span>
+                </button>
+            </form>
+            <hr/>
+            <table class="table table-hover table-condensed table-striped">
+                <thead>
+                <tr>
+                    <th>Empresa</th>
+                    <th>Empleado</th>
+                    <th>Pagado</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="emp in boletos">
+                    <td>{{emp.empresaactual}}</td>
+                    <td>{{emp.nombre}}</td>
+                    <td style="white-space: nowrap">
+                        <button type="button" class="btn btn-warning btn-sm btn-block" ng-click="updPagado(emp.id, 1)" ng-show="+emp.pagado == 0">
+                            No pagado
+                        </button>
+                        <button type="button" class="btn btn-success btn-sm btn-block" ng-click="updPagado(emp.id, 0)" ng-show="+emp.pagado == 1">
+                            Pagado
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -20,6 +20,9 @@
             },
             editRow: function(obj, op){
                 return comunFact.doPOST(urlBase + '/' + op, obj);
+            },
+            lstEmpresasPlanilla: function(){
+                return comunFact.doGET(urlBase + '/lstplnempresas');
             }
         };
     }]);

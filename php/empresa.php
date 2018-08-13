@@ -105,5 +105,12 @@ $app->post('/dc', function(){
     $del = $conn->query($query);
 });
 
+//API Empresas de planilla
+$app->get('/lstplnempresas', function(){
+    $db = new dbcpm();
+    $query = "SELECT a.id, a.nombre, a.abreviatura, a.pigss, a.patronaligss, a.numeropat FROM plnempresa a ORDER BY a.nombre";
+    print $db->doSelectASJson($query);
+});
+
 
 $app->run();
