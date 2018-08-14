@@ -163,7 +163,7 @@ $app->get('/get_empresas', function(){
 
 $app->post('/finiquito', function(){
 	if (elemento($_POST, 'empleado', FALSE)) {
-		require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
+		require BASEPATH . '/libs/tcpdf/tcpdf.php';
 
 		# $_GET['fdel'] = formatoFecha($_GET['fal'], 4).'-'.formatoFecha($_GET['fal'], 3).'-16';
 

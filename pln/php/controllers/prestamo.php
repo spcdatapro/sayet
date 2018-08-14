@@ -318,6 +318,159 @@ $app->get('/proyeccion', function(){
 	}
 });
 
+# imprimir catálogo de préstamos
+$app->get('/catalogo', function(){
+	$g = new General();
+
+	if (elemento($_GET, 'fdel')) {
+		$todos = $g->buscar_prestamo([
+			'orden'      => 'empleado',
+			'empresa'    => isset($_GET['empresa']) ? $_GET['empresa'] : NULL,
+			'empleado'   => isset($_GET['empleado']) ? $_GET['empleado'] : NULL,
+			'sinlimite'  => TRUE
+		]);
+
+		if (count($todos) > 0) {
+			require BASEPATH . '/libs/tcpdf/tcpdf.php';
+			$tipoImpresion = 17;
+
+			$s = [215.9, 279.4]; # Carta mm
+
+			$pdf = new TCPDF('P', 'mm', $s);
+			$pdf->SetAutoPageBreak(TRUE, 0);
+			$pdf->AddPage();
+
+			$datos     = [];
+			$registros = 0;
+
+			foreach ($todos as $fila) {
+				if (isset($datos[$fila['idempresaactual']])) {
+					$datos[$fila['idempresaactual']]['prestamos'][] = new Prestamo($fila['id']);
+				} else {
+					$emp = $g->get_empresa(['id' => $fila['idempresaactual'], 'uno' => TRUE]);
+
+					$datos[$fila['idempresaactual']] = [
+						'nombre'    => $emp['nomempresa'], 
+						'prestamos' => [new Prestamo($fila['id'])]
+					];
+				}
+			}
+
+			$cabecera = [
+				'sp_titulo'              => 'Módulo de Planillas',
+				'sp_subtitulo'           => 'CATÁLOGO DE PRÉSTAMOS',
+				'sp_fecha'               => "Fecha de emisión: ".formatoFecha($_GET['fdel'], 1),
+				't_codigo'               => 'Código',
+				't_nombre'               => 'Nombre:',
+				't_vale'                 => 'Vale',
+				't_fecha'                => 'Inicio',
+				't_fechafin'             => 'Fin',
+				't_valor_prestamo'       => "Monto Q",
+				't_descuento_mensual'    => "Cuota\nMensual",
+				't_abono'				 => "Abono",
+				't_saldo_anterior'       => "Saldo",
+				't_linea'                => str_repeat("_", 160),
+				'fimpresion'			 => date('d/m/Y H:i')
+			];
+
+			$rpag    = 45; # Registros por página
+			$espacio = 0;
+
+			foreach ($datos as $key => $empresa) {
+				$registros++;
+
+				if ($registros == $rpag) {
+					$espacio   = 0;
+					$registros = 0;
+					$pdf->AddPage();
+				}
+				
+				$confe      = $g->get_campo_impresion('v_empresa', $tipoImpresion);
+				$confe->psy = ($confe->psy+$espacio);
+				$espacio    += $confe->espacio;
+				$pdf        = generar_fimpresion($pdf, "{$key} {$empresa['nombre']}", $confe);
+
+				$etotales = [];
+
+				foreach ($empresa['prestamos'] as $prestamo) {
+					$registros++;
+
+					$emp = $prestamo->get_empleado();
+					$saldoAnterior = $prestamo->get_saldo_anterior(['fecha' => $_GET['fdel']]);
+					$abono = $saldoAnterior > 0 ? ($prestamo->pre->cuotamensual > $saldoAnterior ? $saldoAnterior : $prestamo->pre->cuotamensual):0;
+
+					$tmpdatos = [
+						'v_codigo'            => $emp->id,
+						'v_nombre'            => "{$emp->nombre} {$emp->apellidos}",
+						'v_vale'              => $prestamo->pre->id,
+						'v_fecha'             => formatoFecha($prestamo->pre->iniciopago, 1),
+						'v_fechafin'          => empty($prestamo->pre->liquidacion) ? '':formatoFecha($prestamo->pre->liquidacion, 1),
+						'v_valor_prestamo'    => number_format($prestamo->pre->monto, 2),
+						'v_descuento_mensual' => number_format($prestamo->pre->cuotamensual, 2),
+						'v_abono'			  => number_format($abono, 2),
+						'v_saldo_anterior'    => number_format($prestamo->get_saldo() - $abono, 2)
+					];
+
+					foreach ($tmpdatos as $campo => $valor) {
+					
+						$conf = $g->get_campo_impresion($campo, $tipoImpresion);
+
+						if (!isset($conf->scalar) && $conf->visible == 1 && $conf->cabecera == 0) {
+							$conf->psy = ($conf->psy+$espacio);
+							$pdf = generar_fimpresion($pdf, $valor, $conf);
+						}
+					}
+
+					$espacio += $confe->espacio;
+
+					if ($registros == $rpag) {
+						$espacio   = 0;
+						$registros = 0;
+						$pdf->AddPage();
+					}
+				}
+
+				$registros++;
+
+				if ($registros == $rpag) {
+					$espacio   = 0;
+					$registros = 0;
+					$pdf->AddPage();
+				}
+
+				$pdf->SetLineStyle(array(
+					'width' => 0.2, 
+					'cap' => 'butt', 
+					'join' => 'miter', 
+					'dash' => 0, 
+					'color' => array(0, 0, 0)
+				));
+
+				$espacio += $confe->espacio;	
+			}
+
+			for ($i=1; $i <= $pdf->getNumPages(); $i++) { 
+				$pdf->setPage($i);
+
+				foreach ($cabecera as $campo => $valor) {
+					$conf = $g->get_campo_impresion($campo, $tipoImpresion);
+
+					if (!isset($conf->scalar) && $conf->visible == 1 && $conf->cabecera == 1) {
+						$pdf = generar_fimpresion($pdf, $valor, $conf);
+					}
+				}
+			}
+
+			$pdf->Output("catalogo_prestamos" . time() . ".pdf", 'I');
+			die();
+		} else {
+			echo "Nada que mostrar.";
+		}
+	} else {
+		echo "Faltan datos obligatorios.";
+	}
+});
+
 $app->get('/test/:prestamo', function($prestamo){
 	$pre = new Prestamo($prestamo);
 	#echo "<br>Saldo normal: " . $pre->get_saldo();
