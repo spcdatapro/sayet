@@ -57,18 +57,10 @@ $app->post('/detcontdocsbanc', function(){
         $cntDocsSop = count($doc->docsop);
         if($cntDocsSop > 0){
             //Suma de los documentos de soporte
-            $query = "SELECT IF(SUM(bien) <> 0, FORMAT(SUM(bien), 2), '') AS bien, IF(SUM(servicio) <> 0, FORMAT(SUM(servicio), 2), '') AS servicio, IF(SUM(otros) <> 0, FORMAT(SUM(otros), 2), '') AS otros, ";
-            $query.= "IF(SUM(iva) <> 0, FORMAT(SUM(iva), 2), '') AS iva, IF(SUM(totfact) <> 0, FORMAT(SUM(totfact), 2), '') AS totfact ";
-            $query.= "FROM(";
-            $query.= "SELECT IF(a.idtipocompra = 1, a.subtotal, 0.00) AS bien,IF(a.idtipocompra = 2, a.subtotal, 0.00) AS servicio, IF(a.idtipocompra NOT IN(1, 2), a.subtotal, 0.00) AS otros, a.iva, a.totfact ";
-            $query.= "FROM compra a INNER JOIN detpagocompra b ON a.id = b.idcompra INNER JOIN proveedor c ON c.id = a.idproveedor INNER JOIN tipofactura d ON d.id = a.idtipofactura ";
-            $query.= "WHERE b.idtranban = $doc->id ";
-            $query.= "UNION ";
-            $query.= "SELECT IF(a.idtipocompra = 1, a.subtotal, 0.00) AS bien,IF(a.idtipocompra = 2, a.subtotal, 0.00) AS servicio, IF(a.idtipocompra NOT IN(1, 2), a.subtotal, 0.00) AS otros, a.iva, a.totfact ";
-            $query.= "FROM compra a INNER JOIN doctotranban b ON a.id = b.iddocto INNER JOIN proveedor c ON c.id = a.idproveedor INNER JOIN tipofactura d ON d.id = a.idtipofactura ";
-            $query.= "WHERE b.idtranban = $doc->id";
-            $query.= ") e";
-            $suma = $db->getQuery($query)[0];
+            $qSuma = "SELECT IF(SUM(bien) <> 0, FORMAT(SUM(bien), 2), '') AS bien, IF(SUM(servicio) <> 0, FORMAT(SUM(servicio), 2), '') AS servicio, IF(SUM(otros) <> 0, FORMAT(SUM(otros), 2), '') AS otros, ";
+            $qSuma.= "IF(SUM(iva) <> 0, FORMAT(SUM(iva), 2), '') AS iva, IF(SUM(totfact) <> 0, FORMAT(SUM(totfact), 2), '') AS totfact ";
+            $qSuma.= "FROM($query) e";
+            $suma = $db->getQuery($qSuma)[0];
             $doc->docsop[] = ['id' => '','nit' => '', 'documento' => '', 'proveedor' => 'Totales de Facts.:', 'bien' => $suma->bien, 'servicio' => $suma->servicio, 'otros' => $suma->otros, 'iva' => $suma->iva, 'totfact' => $suma->totfact];
 
             //Detalle contable de documentos de soporte
