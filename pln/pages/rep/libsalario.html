@@ -1,0 +1,37 @@
+<div class="container-fluid" ng-controller="repReciboController">
+	<div class="row">
+		<div class="col-sm-offset-3 col-sm-6">
+			<div class="jumbotron" id="contenidoGenerar">
+				<h3>Libro de Salarios</h3>
+				<form action="/sayet/pln/php/controllers/empleado.php/librosalario" method="GET" class="form-horizontal" role="form" target="_blank">
+					<div class="form-group form-group-sm">
+						<label for="selectEmpleado" class="col-sm-2 control-label">Empleado:</label>
+						<div class="col-sm-10">
+							<select class="form-control" name="empleado" id="selectEmpleado" required="required">
+								<option value="">------</option>
+								<option ng-repeat="empleado in empleados" value="{{empleado.id}}">{{empleado.nombre}} {{empleado.apellidos}}</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="form-group form-group-sm">
+						<label for="inputDel" class="col-sm-2 control-label">Del:</label>
+						<div class="col-sm-4">
+							<input type="date" name="fdel" class="form-control" required="required">
+						</div>
+						<label for="inputAl" class="col-sm-2 control-label">Al:</label>
+						<div class="col-sm-4">
+							<input type="date" name="fal" class="form-control" required="required">
+						</div>
+					</div>
+				
+					<div class="form-group form-group-sm">
+						<div class="col-sm-10 col-sm-offset-2 text-right">
+							<button type="submit" class="btn btn-primary btn-sm">Aceptar</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1064,4 +1064,125 @@ EOT;
 			'numero'           => $bit->id
 		];
 	}
+
+	public function get_datos_libro_salarios($args=[])
+	{
+		$where = "";
+
+		if (elemento($args, 'empleado')) {
+			$where .= "AND a.idplnempleado in ({$args['empleado']}) ";
+		}
+
+		if (elemento($args, 'empresa')) {
+			$where .= "AND a.idempresa in ({$args['empresa']}) ";
+		}
+
+		$sql = <<<EOT
+SELECT 
+	concat(month(fecha),'/',year(fecha)) as mes,
+	a.idempresa,
+    b.nombre AS nomempresa, 
+    sum(ifnull(a.id,0)) as id,
+    sum(ifnull(a.idplnempleado,0)) as idplnempleado,
+    sum(ifnull(a.sueldoordinario,0)) as sueldoordinario,
+    sum(ifnull(a.sueldoextra,0)) as sueldoextra,
+    sum(ifnull(a.bonificacion,0)) as bonificacion,
+    sum(ifnull(a.otrosingresos,0)) as otrosingresos,
+    sum(ifnull(a.aguinaldo,0)) as aguinaldo,
+    sum(ifnull(a.vacaciones,0)) as vacaciones,
+    sum(ifnull(a.indemnizacion,0)) as indemnizacion,
+    sum(ifnull(a.bonocatorce,0)) as bonocatorce,
+    sum(ifnull(a.viaticos,0)) as viaticos,
+    sum(ifnull(a.descigss,0)) as descigss,
+    sum(ifnull(a.descanticipo,0)) as descanticipo,
+    sum(ifnull(a.descisr,0)) as descisr,
+    sum(ifnull(a.descprestamo,0)) as descprestamo,
+    sum(ifnull(a.descotros,0)) as descotros,
+    sum(ifnull(a.devengado,0)) as devengado,
+    sum(ifnull(a.deducido,0)) as deducido,
+    sum(ifnull(a.liquido,0)) as liquido,
+    sum(ifnull(a.horasmes,0)) as horasmes,
+    sum(ifnull(a.horasmesmonto,0)) as horasmesmonto,
+    sum(ifnull(a.horasdesc,0)) as horasdesc,
+    sum(ifnull(a.anticipo,0)) as anticipo,
+    sum(ifnull(a.diastrabajados,0)) as diastrabajados,
+    sum(ifnull(a.bonocatorcedias,0)) as bonocatorcedias,
+    sum(ifnull(a.hedcantidad,0)) as hedcantidad,
+    sum(ifnull(a.hedmonto,0)) as hedmonto,
+    sum(ifnull(a.sueldoordinarioreporte,0)) as sueldoordinarioreporte
+    from plnnomina a 
+    LEFT JOIN
+    plnempresa b ON b.id = a.idempresa
+where a.idplnempleado = {$this->emp->id} 
+and a.fecha between '{$args["fdel"]}' and '{$args["fal"]}' 
+    {$where} group by month(fecha)
+EOT;
+
+		$res   = $this->db->query($sql)->fetchAll();
+		$datos = [];
+
+		foreach ($res as $row) {
+			$row = (object)$row;
+
+			$datos[] = [
+				'vidempresa'       => $row->idempresa, 
+				'vempresa'         => $row->nomempresa, 
+				'tempresa'         => 'Empresa:',
+				'templeado'        => 'Fecha:',
+				'vempleado'        => $row->mes,
+				'tcodigo'          => 'Código:',
+				'vcodigo'          => $row->idplnempleado,
+				'tdevengados'      => 'DEVENGADOS',
+				'tdeducidos'       => 'DEDUCIDOS', 
+				'division'         => 'linea',
+				'tsueldoordinario' => 'Sueldo Ordinario:',
+				'vsueldoordinario' => $row->sueldoordinario,
+				'thorasextras'     => 'Horas Extras:',
+				'vhorasextras'     => $row->horasmes,
+				'tsueldoextra'     => 'Sueldo Extra:',
+				'vsueldoextra'     => $row->sueldoextra,
+				'vsueldototal'     => ($row->sueldoordinario+$row->sueldoextra),
+				'tbonificacion'    => 'Bonificación:',
+				'vbonificacion'    => $row->bonificacion,
+				'tviaticos'        => 'Viáticos:',
+				'vviaticos'        => $row->viaticos,
+				'totrosingresos'   => 'Otros:',
+				'votrosingresos'   => $row->otrosingresos,
+				'tanticipo'        => 'Anticipos:',
+				'vanticipo'        => $row->anticipo,
+				'tvacaciones'      => 'Vacacioness:',
+				'vvacaciones'      => $row->vacaciones,
+				'vbono14'          => $row->bonocatorce,
+				'vbono14dias'      => $row->bonocatorcedias,
+				'taguinaldo'       => 'Aguinaldo:',
+				'vaguinaldo'       => $row->aguinaldo,
+				#'vaguinaldodias'   => $row->aguinaldodias,
+				'tindemnizacion'   => 'Indemnizacion:',
+				'vindemnizacion'   => $row->indemnizacion,
+				'tigss'            => 'IGSS:',
+				'vigss'            => $row->descigss,
+				'tisr'             => 'ISR:',
+				'visr'             => $row->descisr,
+				'tdescanticipo'    => 'Anticipos:',
+				'vdescanticipo'    => $row->descanticipo,
+				'tprestamo'        => 'Préstamos:',
+				'vprestamo'        => $row->descprestamo,
+				'tdescotros'       => 'Otros:',
+				'vdescotros'       => $row->descotros,
+				'tdevengado'       => 'Total Devengado:',
+				'vdevengado'       => $row->devengado,
+				'tdeducido'        => 'Total Deducido:',
+				'vdeducido'        => $row->deducido,
+				'tliquido'         => 'Líquido a Recibir:',
+				'vliquido'         => $row->liquido,
+				'recprestamo'      => 'rectangulo',
+				'tsaldoprestamo'   => 'Saldo de Préstamo', 
+				'vsaldoprestamo'   => $this->get_saldo_prestamo(['actual' => $args['fal']]),
+				'vdiastrabajados'  => $row->diastrabajados,
+				'lrecibi'          => str_repeat("_", 35) ,
+			];
+		}
+
+		return $datos;
+	}
 }
