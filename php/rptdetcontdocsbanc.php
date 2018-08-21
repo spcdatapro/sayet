@@ -57,8 +57,9 @@ $app->post('/detcontdocsbanc', function(){
         $cntDocsSop = count($doc->docsop);
         if($cntDocsSop > 0){
             //Suma de los documentos de soporte
-            $qSuma = "SELECT IF(SUM(bien) <> 0, FORMAT(SUM(bien), 2), '') AS bien, IF(SUM(servicio) <> 0, FORMAT(SUM(servicio), 2), '') AS servicio, IF(SUM(otros) <> 0, FORMAT(SUM(otros), 2), '') AS otros, ";
-            $qSuma.= "IF(SUM(iva) <> 0, FORMAT(SUM(iva), 2), '') AS iva, IF(SUM(totfact) <> 0, FORMAT(SUM(totfact), 2), '') AS totfact ";
+            $qSuma = "SELECT IF(SUM(CAST(bien AS DECIMAL(20, 2))) <> 0, FORMAT(SUM(CAST(bien AS DECIMAL(20, 2))), 2), '') AS bien, IF(SUM(CAST(servicio AS DECIMAL(20, 2))) <> 0, FORMAT(SUM(CAST(servicio AS DECIMAL(20, 2))), 2), '') AS servicio, ";
+            $qSuma.= "IF(SUM(CAST(otros AS DECIMAL(20, 2))) <> 0, FORMAT(SUM(CAST(otros AS DECIMAL(20, 2))), 2), '') AS otros, ";
+            $qSuma.= "IF(SUM(CAST(iva AS DECIMAL(20, 2))) <> 0, FORMAT(SUM(CAST(iva AS DECIMAL(20, 2))), 2), '') AS iva, IF(SUM(CAST(totfact AS DECIMAL(20, 2))) <> 0, FORMAT(SUM(CAST(totfact AS DECIMAL(20, 2))), 2), '') AS totfact ";
             $qSuma.= "FROM($query) e";
             $suma = $db->getQuery($qSuma)[0];
             $doc->docsop[] = ['id' => '','nit' => '', 'documento' => '', 'proveedor' => 'Totales de Facts.:', 'bien' => $suma->bien, 'servicio' => $suma->servicio, 'otros' => $suma->otros, 'iva' => $suma->iva, 'totfact' => $suma->totfact];
