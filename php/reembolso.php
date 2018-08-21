@@ -201,6 +201,13 @@ function insertaDetalleContable($d, $db, $lastid){
         }
     }
 
+    $ctaliq = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 5");
+    if($ctaliq > 0){
+        $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
+        $query.= "2, ".$lastid.", ".$ctaliq.", 0.00, ".round((($d->totfact - $d->isr) * (float)$d->tipocambio), 2).", '".$d->conceptomayor."')";
+        $db->doQuery($query);
+    }
+
     //Agregado para la tasa municipal EEGSA. Solo va a funcionar con el nit 32644-5
     if(trim($d->nit) == '32644-5' && (float)$d->noafecto != 0){
         $ctaeegsa = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 12");
