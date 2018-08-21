@@ -43,13 +43,13 @@ $app->post('/detcontdocsbanc', function(){
         }
 
         //Documentos de soporte
-        $query = "SELECT a.id, c.nit, CONCAT(d.siglas, a.serie, a.documento) AS documento, c.nombre AS proveedor, IF(a.idtipocompra = 1, FORMAT(a.subtotal, 2), '') AS bien, IF(a.idtipocompra = 2, FORMAT(a.subtotal, 2), '') AS servicio, ";
-        $query.= "IF(a.idtipocompra NOT IN(1, 2), FORMAT(a.subtotal, 2), '') AS otros, FORMAT(a.iva, 2) AS iva, FORMAT(a.totfact, 2) AS totfact, DATE_FORMAT(a.fechafactura, '%d/%m/%Y') AS fecha ";
+        $query = "SELECT a.id, c.nit, CONCAT(d.siglas, a.serie, a.documento) AS documento, c.nombre AS proveedor, IF(a.idtipocompra = 1, a.subtotal, '') AS bien, IF(a.idtipocompra = 2, a.subtotal, '') AS servicio, ";
+        $query.= "IF(a.idtipocompra NOT IN(1, 2), a.subtotal, '') AS otros, a.iva AS iva, a.totfact AS totfact, DATE_FORMAT(a.fechafactura, '%d/%m/%Y') AS fecha ";
         $query.= "FROM compra a INNER JOIN detpagocompra b ON a.id = b.idcompra INNER JOIN proveedor c ON c.id = a.idproveedor INNER JOIN tipofactura d ON d.id = a.idtipofactura ";
         $query.= "WHERE b.idtranban = $doc->id ";
         $query.= "UNION ";
-        $query.= "SELECT a.id, c.nit, CONCAT(d.siglas, a.serie, a.documento) AS documento, c.nombre AS proveedor, IF(a.idtipocompra = 1, FORMAT(a.subtotal, 2), '') AS bien, IF(a.idtipocompra = 2, FORMAT(a.subtotal, 2), '') AS servicio, ";
-        $query.= "IF(a.idtipocompra NOT IN(1, 2), FORMAT(a.subtotal, 2), '') AS otros, FORMAT(a.iva, 2) AS iva, FORMAT(a.totfact, 2) AS totfact, DATE_FORMAT(a.fechafactura, '%d/%m/%Y') AS fecha ";
+        $query.= "SELECT a.id, c.nit, CONCAT(d.siglas, a.serie, a.documento) AS documento, c.nombre AS proveedor, IF(a.idtipocompra = 1, a.subtotal, '') AS bien, IF(a.idtipocompra = 2, a.subtotal, '') AS servicio, ";
+        $query.= "IF(a.idtipocompra NOT IN(1, 2), a.subtotal, '') AS otros, a.iva AS iva, a.totfact AS totfact, DATE_FORMAT(a.fechafactura, '%d/%m/%Y') AS fecha ";
         $query.= "FROM compra a INNER JOIN doctotranban b ON a.id = b.iddocto INNER JOIN proveedor c ON c.id = a.idproveedor INNER JOIN tipofactura d ON d.id = a.idtipofactura ";
         $query.= "WHERE b.idtipodoc = 1 AND b.idtranban = $doc->id ";
         $query.= "ORDER BY 2, 3, 4";
@@ -57,9 +57,8 @@ $app->post('/detcontdocsbanc', function(){
         $cntDocsSop = count($doc->docsop);
         if($cntDocsSop > 0){
             //Suma de los documentos de soporte
-            $qSuma = "SELECT IF(SUM(CAST(bien AS DECIMAL(20, 2))) <> 0, FORMAT(SUM(CAST(bien AS DECIMAL(20, 2))), 2), '') AS bien, IF(SUM(CAST(servicio AS DECIMAL(20, 2))) <> 0, FORMAT(SUM(CAST(servicio AS DECIMAL(20, 2))), 2), '') AS servicio, ";
-            $qSuma.= "IF(SUM(CAST(otros AS DECIMAL(20, 2))) <> 0, FORMAT(SUM(CAST(otros AS DECIMAL(20, 2))), 2), '') AS otros, ";
-            $qSuma.= "IF(SUM(CAST(iva AS DECIMAL(20, 2))) <> 0, FORMAT(SUM(CAST(iva AS DECIMAL(20, 2))), 2), '') AS iva, IF(SUM(CAST(totfact AS DECIMAL(20, 2))) <> 0, FORMAT(SUM(CAST(totfact AS DECIMAL(20, 2))), 2), '') AS totfact ";
+            $qSuma = "SELECT IF(SUM(bien) <> 0, FORMAT(SUM(bien), 2), '') AS bien, IF(SUM(servicio) <> 0, FORMAT(SUM(servicio), 2), '') AS servicio, IF(SUM(otros) <> 0, FORMAT(SUM(otros), 2), '') AS otros, ";
+            $qSuma.= "IF(SUM(iva) <> 0, FORMAT(SUM(iva), 2), '') AS iva, IF(SUM(totfact) <> 0, FORMAT(SUM(totfact), 2), '') AS totfact ";
             $qSuma.= "FROM($query) e";
             $suma = $db->getQuery($qSuma)[0];
             $doc->docsop[] = ['id' => '','nit' => '', 'documento' => '', 'proveedor' => 'Totales de Facts.:', 'bien' => $suma->bien, 'servicio' => $suma->servicio, 'otros' => $suma->otros, 'iva' => $suma->iva, 'totfact' => $suma->totfact];
@@ -67,7 +66,11 @@ $app->post('/detcontdocsbanc', function(){
             //Detalle contable de documentos de soporte
             for($j = 0; $j < $cntDocsSop; $j++){
                 $dsop = $doc->docsop[$j];
-                //var_dump($dsop);
+                $dsop->bien = $dsop->bien == '' ? '' : number_format((float)$dsop->bien, 2);
+                $dsop->servicio = $dsop->servicio == '' ? '' : number_format((float)$dsop->servicio, 2);
+                $dsop->otros = $dsop->otros == '' ? '' : number_format((float)$dsop->otros, 2);
+                $dsop->iva = $dsop->iva == '' ? '' : number_format((float)$dsop->iva, 2);
+                $dsop->totfact = $dsop->totfact == '' ? '' : number_format((float)$dsop->totfact, 2);
                 $query = "SELECT b.codigo, b.nombrecta AS cuenta, IF(a.debe <> 0, FORMAT(a.debe, 2), '') AS debe, IF(a.haber <> 0, FORMAT(a.haber, 2), '') AS haber ";
                 $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta ";
                 $query.= "WHERE a.origen = 2 AND a.idorigen = $dsop->id ";
