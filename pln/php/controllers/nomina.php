@@ -1014,7 +1014,7 @@ $app->get('/imprimir_sp', function(){
 						'v_fecha' => formatoFecha($prestamo->pre->iniciopago, 1),
 						'v_valor_prestamo' => ($mesAl == $pmes ? 0 : $prestamo->pre->monto),
 						'v_descuento_mensual' => $prestamo->pre->cuotamensual,
-						'v_saldo_anterior' => $prestamo->get_saldo_anterior(['fecha' => $_GET['fal']]),
+						'v_saldo_anterior' => ($mesAl == $pmes ? 0 : $prestamo->get_saldo_anterior(['fecha' => $_GET['fal']])),
 						'v_nuevos_prestamos' => ($mesAl == $pmes ? $prestamo->pre->monto : 0),
 						'v_descuentos_planillas' => $prestamo->get_descuentos_planilla(['fecha' => $_GET['fal']]),
 						'v_otros_abonos' => $prestamo->get_otro_abonos(['fecha' => $_GET['fal']]),
