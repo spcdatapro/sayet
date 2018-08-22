@@ -943,6 +943,7 @@ $app->get('/imprimir_sp', function(){
 
 			$pdf = new TCPDF('L', 'mm', $s);
 			$pdf->SetAutoPageBreak(TRUE, 0);
+			$pdf->AddPage();
 
 			$datos     = [];
 			$registros = 0;
@@ -979,24 +980,7 @@ $app->get('/imprimir_sp', function(){
 				't_linea'                => str_repeat("_", 250)
 			];
 
-			$rpag = 32; # Registros por página
-			$totalPaginas = ceil(count($todos)/$rpag);
-
-			for ($i=0; $i < $totalPaginas ; $i++) { 
-				$pdf->AddPage();
-
-				foreach ($cabecera as $campo => $valor) {
-					$conf = $g->get_campo_impresion($campo, 5);
-
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$pdf = generar_fimpresion($pdf, $valor, $conf);
-					}
-				}
-			}
-
-			$pagina = 1;
-
-			$pdf->setPage($pagina);
+			$rpag = 32; 
 
 			$espacio = 0;
 			$totales = [];
@@ -1007,8 +991,7 @@ $app->get('/imprimir_sp', function(){
 				if ($registros == $rpag) {
 					$espacio   = 0;
 					$registros = 0;
-					$pagina++;
-					$pdf->setPage($pagina);
+					$pdf->AddPage();
 				}
 				
 				$confe      = $g->get_campo_impresion('v_empresa', 5);
@@ -1080,8 +1063,7 @@ $app->get('/imprimir_sp', function(){
 					if ($registros == $rpag) {
 						$espacio   = 0;
 						$registros = 0;
-						$pagina++;
-						$pdf->setPage($pagina);
+						$pdf->AddPage();
 					}
 				}
 
@@ -1090,8 +1072,7 @@ $app->get('/imprimir_sp', function(){
 				if ($registros == $rpag) {
 					$espacio   = 0;
 					$registros = 0;
-					$pagina++;
-					$pdf->setPage($pagina);
+					$pdf->AddPage();
 				}
 
 				$pdf->SetLineStyle(array(
@@ -1121,6 +1102,17 @@ $app->get('/imprimir_sp', function(){
 				$espacio += $confe->espacio;	
 			}
 
+			for ($i=1; $i <= $pdf->getNumPages(); $i++) { 
+				$pdf->setPage($i);
+
+				foreach ($cabecera as $campo => $valor) {
+					$conf = $g->get_campo_impresion($campo, 5);
+
+					if (!isset($conf->scalar) && $conf->visible == 1) {
+						$pdf = generar_fimpresion($pdf, $valor, $conf);
+					}
+				}
+			}
 
 			$pdf->Output("planilla_sp_" . time() . ".pdf", 'I');
 			die();
