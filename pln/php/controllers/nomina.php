@@ -943,6 +943,7 @@ $app->get('/imprimir_sp', function(){
 
 			$pdf = new TCPDF('L', 'mm', $s);
 			$pdf->SetAutoPageBreak(TRUE, 0);
+			$pdf->AddPage();
 
 			$datos     = [];
 			$registros = 0;
@@ -979,24 +980,7 @@ $app->get('/imprimir_sp', function(){
 				't_linea'                => str_repeat("_", 250)
 			];
 
-			$rpag = 32; # Registros por página
-			$totalPaginas = ceil(count($todos)/$rpag);
-
-			for ($i=0; $i < $totalPaginas ; $i++) { 
-				$pdf->AddPage();
-
-				foreach ($cabecera as $campo => $valor) {
-					$conf = $g->get_campo_impresion($campo, 5);
-
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$pdf = generar_fimpresion($pdf, $valor, $conf);
-					}
-				}
-			}
-
-			$pagina = 1;
-
-			$pdf->setPage($pagina);
+			$rpag = 32; 
 
 			$espacio = 0;
 			$totales = [];
@@ -1007,8 +991,7 @@ $app->get('/imprimir_sp', function(){
 				if ($registros == $rpag) {
 					$espacio   = 0;
 					$registros = 0;
-					$pagina++;
-					$pdf->setPage($pagina);
+					$pdf->AddPage();
 				}
 				
 				$confe      = $g->get_campo_impresion('v_empresa', 5);
@@ -1031,7 +1014,7 @@ $app->get('/imprimir_sp', function(){
 						'v_fecha' => formatoFecha($prestamo->pre->iniciopago, 1),
 						'v_valor_prestamo' => ($mesAl == $pmes ? 0 : $prestamo->pre->monto),
 						'v_descuento_mensual' => $prestamo->pre->cuotamensual,
-						'v_saldo_anterior' => $prestamo->get_saldo_anterior(['fecha' => $_GET['fal']]),
+						'v_saldo_anterior' => ($mesAl == $pmes ? 0 : $prestamo->get_saldo_anterior(['fecha' => $_GET['fal']])),
 						'v_nuevos_prestamos' => ($mesAl == $pmes ? $prestamo->pre->monto : 0),
 						'v_descuentos_planillas' => $prestamo->get_descuentos_planilla(['fecha' => $_GET['fal']]),
 						'v_otros_abonos' => $prestamo->get_otro_abonos(['fecha' => $_GET['fal']]),
@@ -1080,8 +1063,7 @@ $app->get('/imprimir_sp', function(){
 					if ($registros == $rpag) {
 						$espacio   = 0;
 						$registros = 0;
-						$pagina++;
-						$pdf->setPage($pagina);
+						$pdf->AddPage();
 					}
 				}
 
@@ -1090,8 +1072,7 @@ $app->get('/imprimir_sp', function(){
 				if ($registros == $rpag) {
 					$espacio   = 0;
 					$registros = 0;
-					$pagina++;
-					$pdf->setPage($pagina);
+					$pdf->AddPage();
 				}
 
 				$pdf->SetLineStyle(array(
@@ -1121,6 +1102,17 @@ $app->get('/imprimir_sp', function(){
 				$espacio += $confe->espacio;	
 			}
 
+			for ($i=1; $i <= $pdf->getNumPages(); $i++) { 
+				$pdf->setPage($i);
+
+				foreach ($cabecera as $campo => $valor) {
+					$conf = $g->get_campo_impresion($campo, 5);
+
+					if (!isset($conf->scalar) && $conf->visible == 1) {
+						$pdf = generar_fimpresion($pdf, $valor, $conf);
+					}
+				}
+			}
 
 			$pdf->Output("planilla_sp_" . time() . ".pdf", 'I');
 			die();

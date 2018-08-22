@@ -172,6 +172,9 @@ if ( ! function_exists('formatoFecha')) {
 			case 4: # Devuelve año
 				$formato = 'Y';
 				break;
+			case 5: # Devuelve primer día del mes ingresado
+				$formato = 'Y-m-01';
+				break;
 			default:
 				$formato = "d/m/Y H:i";
 				break;
