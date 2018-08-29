@@ -813,8 +813,8 @@ EOT;
 			'sabon_sueldo'             => number_format($this->finiquitoSueldo->sueldo,2),
 			'sabon_bdiario'            => "{$this->finiquitoSueldo->dias} días a razón de Q. ****".number_format($this->finiquitoSueldo->bdiario,2)." diarios:",
 			'sabon_bono'               => number_format($this->finiquitoSueldo->bono,2),
-			'otros_texto'              => '6) Otros:',
-			'otros_monto'              => number_format(0,2),
+			'otros_texto'              => '6) Otros: ' . $args['otros_razon'],
+			'otros_monto'              => number_format(elemento($args, 'otros_monto', 0),2),
 			'presta_linea'             => str_repeat('_', 13),
 			'presta_texto'             => 'Total de Prestaciones:',
 			'tempresa'                 => 'Empresa:',
@@ -839,7 +839,6 @@ EOT;
 			'tbonocatorce'			   => 'Bono 14',
 			'tindemnizacion'           => 'Indemnizacion:',
 			'tanticiposueldos'         => 'Anticipo a Sueldos:',
-			'tdescotros'               => 'Otros:',
 			'tdevengado'               => 'Total Devengado:',
 			'tdeducido'                => 'Total Deducido:',
 			'tliquido'                 => 'Líquido a Recibir:',
@@ -853,7 +852,8 @@ EOT;
 			$this->finiquitoAguinaldo->monto+
 			$this->finiquitoBono->monto+
 			$this->finiquitoSueldo->sueldo+
-			$this->finiquitoSueldo->bono
+			$this->finiquitoSueldo->bono+
+			elemento($args, 'otros_monto', 0)
 		);
 
 		$saldoPrestamos    = $this->get_saldo_prestamo();
