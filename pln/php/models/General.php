@@ -285,12 +285,16 @@ class General extends Principal
 
 		if (isset($args['finalizado'])) {
 			if ($args['finalizado'] == 0) {
-				$where['OR'] = [
-					'finalizado[=]' => 0,
-					'AND' => [
-						'liquidacion[<>]' => array(formatoFecha($args['fal'], 5), $args['fal'])
-					]
-				];
+				if (elemento($args, 'fal')) {
+					$where['OR'] = [
+						'finalizado[=]' => 0,
+						'AND' => [
+							'liquidacion[<>]' => array(formatoFecha($args['fal'], 5), $args['fal'])
+						]
+					];
+				} else {
+					$where['finalizado[=]'] = $args['finalizado'];
+				}
 			} else {
 				$where['finalizado[=]'] = $args['finalizado'];
 			}
