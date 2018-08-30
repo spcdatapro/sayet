@@ -207,10 +207,10 @@ $app->get('/proyeccion', function(){
 						'v_codigo' => $emp->id,
 						'v_nombre' => "{$emp->nombre} {$emp->apellidos}",
 						'v_vale' => $prestamo->pre->id,
-						'v_fecha' => formatoFecha($prestamo->pre->iniciopago, 1),
+						'v_fecha' => formatoFecha($prestamo->pre->fecha, 1),
 						'v_valor_prestamo' => $prestamo->pre->monto,
 						'v_descuento_mensual' => $prestamo->pre->cuotamensual,
-						'v_saldo_anterior' => $prestamo->get_saldo_anterior(['fecha' => $_GET['fdel']])
+						'v_saldo_anterior' => $prestamo->pre->saldo
 					];
 
 					foreach ($tmpdatos as $campo => $valor) {

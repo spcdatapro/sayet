@@ -313,7 +313,7 @@ class Prestamo extends Principal
 
 	public function get_vencimiento()
 	{
-		$meses = ceil($this->pre->monto/$this->pre->cuotamensual);
+		$meses = ceil($this->pre->monto/$this->pre->cuotamensual)-1;
 		$sql   = "select DATE_ADD('{$this->pre->iniciopago}', INTERVAL {$meses} MONTH) as fecha";
 		$res   = $this->db->query($sql)->fetchAll();
 		
@@ -404,21 +404,53 @@ class Prestamo extends Principal
 
 	public function get_proyeccion($args = [])
 	{
-		$saldo  = $this->get_saldo_anterior(['fecha' => $args['fdel']]);
-		$cuotas = ceil(($saldo/$this->pre->cuotamensual));
-		$fdel   = new DateTime($args['fdel']);
-		$inicio = new DateTime($this->pre->iniciopago);
-		$fecha  = $fdel > $inicio ? $fdel : $inicio;
-		$datos  = [];
+		$saldo = $this->pre->saldo;
+		$datos = [];
+		$ipago = false;
 
-		for ($i=1; $i<=$cuotas ; $i++) { 
+		$sql = "select max(b.fecha) as fecha
+				from plnpresnom a
+				join plnnomina b on b.id = a.idplnnomina
+				where a.idplnprestamo = {$this->pre->id}
+				and a.monto > 0";
+
+		$fechaDescuento = $this->db->query($sql)->fetchAll();
+		
+		$sql2 = "select max(fecha) as fecha from plnpresabono where idplnprestamo = {$this->pre->id} and monto > 0";
+		$fechaAbono = $this->db->query($sql2)->fetchAll();
+
+		if (!empty($fechaDescuento[0]['fecha']) && !empty($fechaAbono[0]['fecha'])) {
+			$fechaUno = new DateTime($fechaDescuento[0]['fecha']);
+			$fechaDos = new DateTime($fechaAbono[0]['fecha']);
+			$fecha    = $fechaUno > $fechaDos ? $fechaDescuento[0]['fecha'] : $fechaAbono[0]['fecha'];
+		} elseif (!empty($fechaDescuento[0]['fecha'])) {
+			$fecha = $fechaDescuento[0]['fecha'];
+		} elseif (!empty($fechaAbono[0]['fecha'])) {
+			$fecha = $fechaAbono[0]['fecha'];
+		} else {
+			$fecha = $this->pre->iniciopago;
+			$ipago = true;
+		}
+
+		$numeroPago = 0;
+		
+		while ($saldo > 0) {
+			$numeroPago++;
+
 			$pago  = $saldo > $this->pre->cuotamensual ? $this->pre->cuotamensual : $saldo;
 			$saldo -= $pago;
-			$fecha->add(new DateInterval("P1M"));
-			
+
+			if ($ipago === false) {
+				$sql   = "select LAST_DAY(DATE_ADD('{$fecha}', INTERVAL 1 MONTH)) as fecha";
+				$res   = $this->db->query($sql)->fetchAll();
+				$fecha = $res[0]['fecha'];
+			} else {
+				$ipago = false;
+			}
+
 			$datos[] = [
-				'v_nombre'			  => "Pago # {$i}",
-				'v_fecha'             => $fecha->format('d/m/Y'),
+				'v_nombre'			  => "Pago # {$numeroPago}",
+				'v_fecha'             => formatoFecha($fecha, 1),
 				'v_descuento_mensual' => $pago,
 				'v_saldo_anterior'    => $saldo
 			];
