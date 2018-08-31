@@ -70,7 +70,7 @@ $app->post('/rptanticli', function(){
                         from (
                             SELECT 1 as orden,c.idcliente as cliente,c.id as venta,c.fecha,c.numero as factura,c.serie,c.conceptomayor as concepto,
                                 round(c.subtotal,2) as monto,e.simbolo as codigo,c.tipocambio as tc_cambio,
-                                if(c.fechapago is not null, c.fechapago,c.fecha) as fecpago,datediff('" . $d->falstr . "',if(c.fechapago is not null, c.fechapago,c.fecha)) as dias,
+                                if(c.fechapago is not null, c.fechapago,c.fecha) as fecpago,datediff('" . $d->falstr . "', c.fecha) as dias,
                                 c.retisr, a.id as contrato, b.id as proyecto, b.nomproyecto, d.nomempresa as empresa,c.idempresa,c.retiva,c.pagada,round(c.total,2) as total
                             from sayet.factura c
                                 inner join sayet.empresa d on c.idempresa=d.id
