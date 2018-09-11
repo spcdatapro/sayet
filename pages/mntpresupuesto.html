@@ -400,13 +400,21 @@
                                     <input name="chkIVA" id="chkIVA" type="checkbox" class="form-control" ng-model="ot.coniva" ng-true-value="1" ng-false-value="0" ng-disabled="sl.ot"/>
                                 </div>
                             </div>
+                            <div class="col-md-1 nopadding">
+                                <div class="form-group" ng-class="{'has-error':frmOT.selMonedaOT.$invalid && !frmOT.selMonedaOT.$pristine}">
+                                    <label for="selMonedaOT">Moneda:</label>
+                                    <select name="selMonedaOT" id="selMonedaOT" class="form-control" ng-model="ot.idmoneda"
+                                            ng-options="obj.id as obj.simbolo for obj in monedas" required ng-disabled="sl.ot">
+                                    </select>
+                                </div>
+                            </div>
                             <div class="col-md-2 nopadding">
                                 <div class="form-group" ng-class="{'has-error':frmOT.txtMonto.$invalid && !frmOT.txtMonto.$pristine}">
                                     <label for="txtMonto">Valor:</label>
                                     <input name="txtMonto" id="txtMonto" type="text" class="form-control" ng-model="ot.monto" fcsa-number="{maxDecimals:2}" required ng-disabled="sl.ot"/>
                                 </div>
                             </div>
-                            <div class="col-md-2 nopadding">
+                            <div class="col-md-1 nopadding">
                                 <div class="form-group" ng-class="{'has-error':frmOT.txtTC.$invalid && !frmOT.txtTC.$pristine}">
                                     <label for="txtTC">TC:</label>
                                     <input name="txtTC" id="txtTC" type="text" class="form-control" ng-model="ot.tipocambio" fcsa-number="{maxDecimals:4}" required ng-disabled="sl.ot"/>
@@ -446,7 +454,7 @@
                             <td>{{o.proveedor}}</td>
                             <td>{{o.subtipogasto}}</td>
                             <td>{{o.coniva == 1 ? 'Sí' : ''}}</td>
-                            <td style="text-align: right">{{o.monto | number:2}}</td>
+                            <td style="text-align: right">{{o.moneda}} {{o.monto | number:2}}</td>
                             <td style="text-align: right">{{o.tipocambio | number:4}}</td>
                             <td style="text-align: center">
                                 <button type="button" class="btn btn-sm btn-info" ng-click="verDetPagos(o)">
