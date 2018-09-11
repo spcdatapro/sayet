@@ -120,7 +120,7 @@ $app->post('/rptpresupuesto', function(){
 
     $presupuesto->ots = $db->getQuery($query);
 
-    if((int)$d->detalle == 1){
+    if((int)$d->detallado == 1){
         $cntOTs = count($presupuesto->ots);
         for($i = 0; $i < $cntOTs; $i++){
             $ot = $presupuesto->ots[$i];
