@@ -32,7 +32,7 @@
                                         <ui-select-match placeholder="Buscar proveedor..." allow-clear="false">
                                             <span ng-bind="$select.selected.nombre"></span>
                                         </ui-select-match>
-                                        <ui-select-choices repeat="item in losProvs | filter:$select.search">
+                                        <ui-select-choices refresh="fetch($select)" repeat="item in losProvs | filter:$select.search | limitTo:itemsLimit" scroll-detector="loadDataProvs()">
                                             <div ng-bind-html="item.nombre | highlight: $select.search"></div>
                                             <small>
                                                 <strong>N.I.T.:</strong>&nbsp;<span ng-bind-html="item.nit | highlight: $select.search" ></span>
