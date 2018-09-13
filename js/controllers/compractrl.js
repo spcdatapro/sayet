@@ -28,6 +28,7 @@
 		$scope.params = {idcompra: 0};
         $scope.lstproyectoscompra = [];
         $scope.proyectocompra = {};
+        $scope.itemsLimit = 10;
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
 
@@ -67,6 +68,12 @@
         });
 
         presupuestoSrvc.presupuestosAprobados().then(function(d){ $scope.ots = d; });
+
+        $scope.loadDataProvs = function(){
+            $scope.itemsLimit = $scope.itemsLimit + 10;
+        };
+
+        $scope.fetch = function($select){ };
 
         $scope.resetCompra = function(){
             $scope.laCompra = {
