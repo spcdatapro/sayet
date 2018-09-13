@@ -571,15 +571,11 @@ class Nomina extends Principal
 			$where .= "AND (b.formapago = 1 or a.bonocatorce<>0 or a.aguinaldo<>0) ";
 		}
 
-		/*if (elemento($args, 'esaguinaldo', false)) {
-			$where .= "AND a.aguinaldo > 0 ";
-		}
+		$orden = "c.nombre";
 
-		if (elemento($args, 'esbonocatorce', false)) {
-			$where .= "AND a.esbonocatorce = 1 ";
-		} else {
-			$where .= "AND a.esbonocatorce = 0 ";
-		}*/
+		if (isset($args['agrupar_por']) && $args['agrupar_por'] == 2) {
+			$orden = "d.nomproyecto";
+		}
 
 		$sql = <<<EOT
 SELECT 
@@ -589,17 +585,22 @@ SELECT
     b.dpi, 
     b.idempresaactual, 
     b.ingreso,
+    ifnull(d.id,0) as idproyecto,
     c.nombre AS nomempresa, 
-    c.pigss
+    c.pigss,
+    ifnull(d.nomproyecto,'Sin Configurar') as nomproyecto
 FROM
     plnnomina a
         JOIN
     plnempleado b ON b.id = a.idplnempleado
         LEFT JOIN
     plnempresa c ON c.id = b.idempresaactual
-	where b.activo = 1 and a.fecha between '{$args["fdel"]}' and '{$args["fal"]}' 
+    	LEFT JOIN 
+    proyecto d ON d.id = a.idproyecto
+	where b.activo = 1 
+	and a.fecha between '{$args["fdel"]}' and '{$args["fal"]}' 
 	and a.devengado <> 0 
-    {$where} order by c.nombre, b.nombre 
+    {$where} order by {$orden}, b.nombre 
 EOT;
 
 		$res   = $this->db->query($sql)->fetchAll();
@@ -610,10 +611,22 @@ EOT;
 			$dia = date('d', strtotime($row->fecha));
 			$emp = new Empleado($row->idplnempleado);
 
-			$datos[] = [
-				'vidempresa'       => $row->idempresaactual, 
-				'vempresa'         => $row->nomempresa, 
-				'tempresa'         => 'Empresa:',
+			# Agrupación por empresa débito por defecto
+			$demp = [
+				'vidempresa' => $row->idempresaactual, 
+				'vempresa'   => $row->nomempresa, 
+				'tempresa'   => 'Empresa:'
+			];
+
+			if (isset($args['agrupar_por'])) {
+				if ($args['agrupar_por'] == 2) { # Agrupación por proyecto
+					$demp['vidempresa'] = $row->idproyecto;
+					$demp['vempresa']   = $row->nomproyecto;
+					$demp['tempresa']   = 'Proyecto:';
+				}
+			}
+
+			$tmp = [
 				'titulo'           => 'RECIBO DE PAGO',
 				'rango'            => 'Planilla del '.formatoFecha($args['fdel'],1).' al '.formatoFecha($args['fal'], 1),
 				'templeado'        => 'Nombre:',
@@ -679,6 +692,8 @@ EOT;
 				'vfechaingreso'    => formatoFecha($row->ingreso, 1),
 				'vsueldoordinarioreporte' => $row->sueldoordinarioreporte
 			];
+
+			$datos[] = array_merge($demp, $tmp);
 		}
 
 		return $datos;

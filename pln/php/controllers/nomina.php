@@ -104,6 +104,7 @@ $app->get('/imprimir', function(){
 
 		$pdf = new TCPDF('L', 'mm', $s);
 		$pdf->SetAutoPageBreak(TRUE, 0);
+		$pdf->AddPage();
 
 		$todos = $b->get_datos_recibo($_GET);
 
@@ -124,7 +125,7 @@ $app->get('/imprimir', function(){
 			}
 
 			$hojas = 1;
-			$rpag = 32; # Registros por página
+			$rpag = 30; # Registros por página
 
 			$mes  = date('m', strtotime($_GET['fal']));
 			$anio = date('Y', strtotime($_GET['fal']));
@@ -135,23 +136,8 @@ $app->get('/imprimir', function(){
 				'mes'  => $mes, 
 				'anio' => $anio
 			]);
-			
-			for ($i=0; $i < ((count($todos)+(count($datos)*2))/$rpag) ; $i++) { 
-				$pdf->AddPage();
 
-				foreach ($cabecera as $campo => $valor) {
-					$conf = $g->get_campo_impresion($campo, 2);
-
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$pdf = generar_fimpresion($pdf, $valor, $conf);
-					}
-				}
-			}
-
-			$pagina = 1;
-
-			$pdf->setPage($pagina);
-
+			$pagina  = 1;
 			$espacio = 0;
 			$totales = [];
 
@@ -161,8 +147,7 @@ $app->get('/imprimir', function(){
 				if ($registros == $rpag) {
 					$espacio   = 0;
 					$registros = 0;
-					$pagina++;
-					$pdf->setPage($pagina);
+					$pdf->AddPage();
 				}
 				
 				$confe      = $g->get_campo_impresion('idempresa', 2);
@@ -211,15 +196,12 @@ $app->get('/imprimir', function(){
 						}
 					}
 
-					# $pdf = generar_fimpresion($pdf, $valor, $conf);
-
 					$espacio += $confe->espacio;
 
 					if ($registros == $rpag) {
 						$espacio   = 0;
 						$registros = 0;
-						$pagina++;
-						$pdf->setPage($pagina);
+						$pdf->AddPage();
 					}
 				}
 
@@ -228,8 +210,7 @@ $app->get('/imprimir', function(){
 				if ($registros == $rpag) {
 					$espacio   = 0;
 					$registros = 0;
-					$pagina++;
-					$pdf->setPage($pagina);
+					$pdf->AddPage();
 				}
 
 				$pdf->SetLineStyle(array(
@@ -291,6 +272,18 @@ $app->get('/imprimir', function(){
 				$conf = $g->get_campo_impresion("vnopagina", 2);
 				if (!isset($conf->scalar) && $conf->visible == 1) {
 					$pdf = generar_fimpresion($pdf, $key, $conf);
+				}
+			}
+
+			for ($i=1; $i <= $pdf->getNumPages(); $i++) { 
+				$pdf->setPage($i);
+
+				foreach ($cabecera as $campo => $valor) {
+					$conf = $g->get_campo_impresion($campo, 2);
+
+					if (!isset($conf->scalar) && $conf->visible == 1) {
+						$pdf = generar_fimpresion($pdf, $valor, $conf);
+					}
 				}
 			}
 
