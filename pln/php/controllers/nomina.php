@@ -169,27 +169,9 @@ $app->get('/imprimir', function(){
 							$sintotal = ['vdiastrabajados', 'vcodigo'];
 
 							if (is_numeric($valor) && !in_array($campo, $sintotal)) {
-								if (isset($etotales[$campo])) {
-									$etotales[$campo] += $valor;
-								} else {
-									$etotales[$campo] = $valor;
-								}
-								
-								if (isset($totales[$pdf->getPage()][$campo])) {
-									$totales[$pdf->getPage()][$campo] += $valor;
-								} else {
-									if (isset($totales[$pdf->getPage()-1][$campo])) {
-										$totales[$pdf->getPage()][$campo] = $valor+$totales[$pdf->getPage()-1][$campo];
-									} else {
-										$totales[$pdf->getPage()][$campo] = $valor;
-									}
-								}
-							}
-
-							if (is_numeric($valor) && !in_array($campo, $sintotal)) {
-								$valor = number_format($valor, 2);
-							} else {
-								$valor = $valor;
+								$etotales = totalesIndice($etotales, $campo, $valor);
+								$totales  = totalesPagina($totales, $pdf, $campo, $valor);
+								$valor    = number_format($valor, 2);
 							}
 
 							$pdf = generar_fimpresion($pdf, $valor, $conf);
@@ -221,21 +203,7 @@ $app->get('/imprimir', function(){
 					'color' => array(0, 0, 0)
 				));
 
-				foreach ($etotales as $campo => $total) {
-					$conf = $g->get_campo_impresion($campo, 2);
-
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$conf->psy = ($conf->psy+$espacio);
-						$pdf       = generar_fimpresion($pdf, number_format($total, 2), $conf);
-
-						$pdf->Line($conf->psx, $conf->psy, ($conf->psx+$conf->ancho), $conf->psy);
-
-						$y = ($conf->psy+$conf->espacio);
-
-						$pdf->Line($conf->psx, $y, $conf->psx+$conf->ancho, $y);
-						$pdf->Line($conf->psx, $y+1, $conf->psx+$conf->ancho, $y+1);
-					}
-				}
+				$pdf = imprimirTotalesEmpresa($pdf, $g, 2, $etotales, $espacio);
 
 				$espacio += $confe->espacio;	
 			}
@@ -250,42 +218,8 @@ $app->get('/imprimir', function(){
 				}
 			}
 
-			$pie  = $g->get_campo_impresion("vtotalespie", 2);
-
-			foreach ($totales as $key => $subtotales) {
-				$pdf->setPage($key);
-
-				foreach ($subtotales as $campo => $total) {
-					$conf = $g->get_campo_impresion($campo, 2);
-
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$conf->psy = $pie->psy;
-						$pdf       = generar_fimpresion($pdf, number_format($total, 2), $conf);
-
-						$y = ($conf->psy+$conf->espacio);
-
-						$pdf->Line($conf->psx, $y, $conf->psx+$conf->ancho, $y);
-						$pdf->Line($conf->psx, $y+1, $conf->psx+$conf->ancho, $y+1);
-					}
-				}
-
-				$conf = $g->get_campo_impresion("vnopagina", 2);
-				if (!isset($conf->scalar) && $conf->visible == 1) {
-					$pdf = generar_fimpresion($pdf, $key, $conf);
-				}
-			}
-
-			for ($i=1; $i <= $pdf->getNumPages(); $i++) { 
-				$pdf->setPage($i);
-
-				foreach ($cabecera as $campo => $valor) {
-					$conf = $g->get_campo_impresion($campo, 2);
-
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$pdf = generar_fimpresion($pdf, $valor, $conf);
-					}
-				}
-			}
+			$pdf = imprimirTotalesPagina($pdf, $g, 2, $totales);
+			$pdf = imprimirEncabezado($pdf, $g, 2, $cabecera);
 
 			$pdf->Output("nomina" . time() . ".pdf", 'I');
 			die();

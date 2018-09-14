@@ -203,3 +203,100 @@ if ( ! function_exists('totalCampo')) {
 		return $total;
 	}
 }
+
+if ( ! function_exists('totalesIndice')) {
+	function totalesIndice($etotales, $campo, $valor) {
+		if (isset($etotales[$campo])) {
+			$etotales[$campo] += $valor;
+		} else {
+			$etotales[$campo] = $valor;
+		}
+		return $etotales;
+	}
+}
+
+if ( ! function_exists('totalesPagina')) {
+	function totalesPagina($totales, $pdf, $campo, $valor) {
+		if (isset($totales[$pdf->getPage()][$campo])) {
+			$totales[$pdf->getPage()][$campo] += $valor;
+		} else {
+			if (isset($totales[$pdf->getPage()-1][$campo])) {
+				$totales[$pdf->getPage()][$campo] = $valor+$totales[$pdf->getPage()-1][$campo];
+			} else {
+				$totales[$pdf->getPage()][$campo] = $valor;
+			}
+		}
+		return $totales;
+	}
+}
+
+if ( ! function_exists('imprimirTotalesEmpresa')) {
+	function imprimirTotalesEmpresa($pdf, $bus, $tipoImpresion, $etotales, $espacio) {
+		foreach ($etotales as $campo => $total) {
+			$conf = $bus->get_campo_impresion($campo, $tipoImpresion);
+
+			if (!isset($conf->scalar) && $conf->visible == 1) {
+				$conf->psy = ($conf->psy+$espacio);
+				$pdf       = generar_fimpresion($pdf, number_format($total, 2), $conf);
+
+				$pdf->Line($conf->psx, $conf->psy, ($conf->psx+$conf->ancho), $conf->psy);
+
+				$y = ($conf->psy+$conf->espacio);
+
+				$pdf->Line($conf->psx, $y, $conf->psx+$conf->ancho, $y);
+				$pdf->Line($conf->psx, $y+1, $conf->psx+$conf->ancho, $y+1);
+			}
+		}
+
+		return $pdf;
+	}
+}
+
+if ( ! function_exists('imprimirTotalesPagina')) {
+	function imprimirTotalesPagina($pdf, $bus, $tipoImpresion, $totales) {
+		$pie  = $bus->get_campo_impresion("vtotalespie", $tipoImpresion);
+
+		foreach ($totales as $key => $subtotales) {
+			$pdf->setPage($key);
+
+			foreach ($subtotales as $campo => $total) {
+				$conf = $bus->get_campo_impresion($campo, $tipoImpresion);
+
+				if (!isset($conf->scalar) && $conf->visible == 1) {
+					$conf->psy = $pie->psy;
+					$pdf       = generar_fimpresion($pdf, number_format($total, 2), $conf);
+
+					$y = ($conf->psy+$conf->espacio);
+
+					$pdf->Line($conf->psx, $y, $conf->psx+$conf->ancho, $y);
+					$pdf->Line($conf->psx, $y+1, $conf->psx+$conf->ancho, $y+1);
+				}
+			}
+		}
+
+		return $pdf;
+	}
+}
+
+if ( ! function_exists('imprimirEncabezado')) {
+	function imprimirEncabezado($pdf, $bus, $tipoImpresion, $cabecera) {
+		for ($i=1; $i <= $pdf->getNumPages(); $i++) { 
+			$pdf->setPage($i);
+
+			foreach ($cabecera as $campo => $valor) {
+				$conf = $bus->get_campo_impresion($campo, $tipoImpresion);
+
+				if (!isset($conf->scalar) && $conf->visible == 1) {
+					$pdf = generar_fimpresion($pdf, $valor, $conf);
+				}
+			}
+
+			$conf = $bus->get_campo_impresion("vnopagina", $tipoImpresion);
+			if (!isset($conf->scalar) && $conf->visible == 1) {
+				$pdf = generar_fimpresion($pdf, ($i), $conf);
+			}
+		}
+
+		return $pdf;
+	}
+}

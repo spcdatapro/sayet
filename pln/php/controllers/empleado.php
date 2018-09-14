@@ -1,12 +1,6 @@
 <?php
 use \setasign\Fpdi;
 
-/*ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-set_time_limit(0);
-*/
-
 define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
 define('PLNPATH', BASEPATH . '/pln/php');
 
@@ -287,6 +281,7 @@ $app->get('/descargar', function(){
 
 	$pdf = new TCPDF('L', 'mm', $s);
 	$pdf->SetAutoPageBreak(TRUE, 0);
+	$pdf->AddPage();
 
 	$datos = [];
 
@@ -322,6 +317,7 @@ $app->get('/descargar', function(){
 	$hojas = 1;
 	$rpag = 32; # Registros por página
 	$fecha = date("d/m/Y H:i");
+	$tipoImpresion = 8;
 
 	switch ($_GET['estatus']) {
 		case 1:
@@ -357,59 +353,38 @@ $app->get('/descargar', function(){
 		'tnopaginat'     => "Página No. "
 	];
 
-	$totalPaginas = ceil((count($todos)+count($datos))/$rpag);
-
-	for ($i=0; $i < $totalPaginas ; $i++) { 
-		$pdf->AddPage();
-
-		foreach ($cabecera as $campo => $valor) {
-			$conf = $bus->get_campo_impresion($campo, 8);
-
-			if (!isset($conf->scalar) && $conf->visible == 1) {
-				$pdf = generar_fimpresion($pdf, $valor, $conf);
-			}
-		}
-
-		$conf = $bus->get_campo_impresion("vnopagina", 8);
-		if (!isset($conf->scalar) && $conf->visible == 1) {
-			$pdf = generar_fimpresion($pdf, ($i+1), $conf);
-		}
-	}
-
-	$pagina = 1;
-
-	$pdf->setPage($pagina);
-
 	$espacio   = 0;
 	$registros = 0;
+	$totales   = [];
 
 	foreach ($datos as $key => $proyecto) {
+		$registros++;
+
 		if ($registros == $rpag) {
 			$espacio   = 0;
 			$registros = 0;
-			$pagina++;
-			$pdf->setPage($pagina);
+			$pdf->AddPage();
 		}
 
-		$confe      = $bus->get_campo_impresion('idproyecto', 8);
+		$confe      = $bus->get_campo_impresion('idproyecto', $tipoImpresion);
 		$confe->psy = ($confe->psy+$espacio);
 		$espacio    += $confe->espacio;
 		$pdf        = generar_fimpresion($pdf, "{$key} {$proyecto['nombre']}", $confe);
 
-		$registros++;
+		$etotales = [];
 
 		foreach ($proyecto['empleados'] as $empleado) {
+			$registros++;
 			unset($empleado['idproyecto']);
 
 			if ($registros == $rpag) {
 				$espacio   = 0;
 				$registros = 0;
-				$pagina++;
-				$pdf->setPage($pagina);
+				$pdf->AddPage();
 			}
 
 			foreach ($empleado as $campo => $valor) {
-				$conf = $bus->get_campo_impresion($campo, 8);
+				$conf = $bus->get_campo_impresion($campo, $tipoImpresion);
 
 				if (!isset($conf->scalar) && $conf->visible == 1) {
 					$conf->psy = ($conf->psy+$espacio);
@@ -421,9 +396,9 @@ $app->get('/descargar', function(){
 					];
 
 					if (in_array($campo, $numericos)) {
-						$valor = number_format($valor, 2);
-					} else {
-						$valor = $valor;
+						$etotales = totalesIndice($etotales, $campo, $valor);
+						$totales  = totalesPagina($totales, $pdf, $campo, $valor);
+						$valor    = number_format($valor, 2);
 					}
 
 					$pdf = generar_fimpresion($pdf, $valor, $conf);
@@ -431,9 +406,37 @@ $app->get('/descargar', function(){
 			}
 
 			$espacio += $confe->espacio;
-			$registros++;
+
+			if ($registros == $rpag) {
+				$espacio   = 0;
+				$registros = 0;
+				$pdf->AddPage();
+			}
 		}
+
+		$registros++;
+
+		if ($registros == $rpag) {
+			$espacio   = 0;
+			$registros = 0;
+			$pdf->AddPage();
+		}
+
+		$pdf->SetLineStyle(array(
+			'width' => 0.2, 
+			'cap' => 'butt', 
+			'join' => 'miter', 
+			'dash' => 0, 
+			'color' => array(0, 0, 0)
+		));
+
+		$pdf = imprimirTotalesEmpresa($pdf, $bus, $tipoImpresion, $etotales, $espacio);
+
+		$espacio += $confe->espacio;
 	}
+
+	$pdf = imprimirTotalesPagina($pdf, $bus, $tipoImpresion, $totales);
+	$pdf = imprimirEncabezado($pdf, $bus, $tipoImpresion, $cabecera);
 
 	$pdf->Output("reporte_empleados_" . time() . ".pdf", 'I');
 	die();
