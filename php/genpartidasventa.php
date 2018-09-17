@@ -289,6 +289,11 @@ $app->post('/genpost', function(){
             }
         }
     }
+
+    $url = 'http://localhost/sayet/php/fixdescuadreventa.php/fix';
+    $dataa = ['idfactura' => $ids];
+    $db->CallJSReportAPI('POST', $url, json_encode($dataa));
+
     echo "<p><strong>Terminamos la regeneración...</strong></p></small></body></html>";
 });
 

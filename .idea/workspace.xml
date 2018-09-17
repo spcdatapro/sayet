@@ -2,12 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/php/fixdescuadreventa.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cpmidx.html" beforeDir="false" afterPath="$PROJECT_DIR$/cpmidx.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/controllers/compractrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/compractrl.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/tranfactcompra.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/tranfactcompra.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/php/genpartidasventa.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/genpartidasventa.php" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -43,47 +40,49 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/index.html">
+      <file leaf-file-name="facturaotros.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/php/facturaotros.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="383">
-              <caret line="286" column="82" lean-forward="true" selection-start-line="286" selection-start-column="82" selection-end-line="286" selection-end-column="82" />
+            <state relative-caret-position="170">
+              <caret line="178" column="60" lean-forward="true" selection-start-line="176" selection-start-column="4" selection-end-line="178" selection-end-column="60" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="cpmidx.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cpmidx.html">
+      <file leaf-file-name="fixdescuadreventa.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/php/fixdescuadreventa.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="451">
-              <caret line="308" column="82" lean-forward="true" selection-start-line="308" selection-start-column="4" selection-end-line="308" selection-end-column="82" />
+            <state relative-caret-position="346">
+              <caret line="24" column="16" lean-forward="true" selection-start-line="24" selection-start-column="16" selection-end-line="24" selection-end-column="16" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/app.js">
+      <file leaf-file-name="genpartidasventa.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/genpartidasventa.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="510">
-              <caret line="48" column="59" selection-start-line="48" selection-start-column="59" selection-end-line="48" selection-end-column="59" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="tranfactcompra.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/tranfactcompra.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
-              <caret line="34" column="83" selection-start-line="34" selection-start-column="83" selection-end-line="34" selection-end-column="83" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="compractrl.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/js/controllers/compractrl.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="66" column="38" lean-forward="true" selection-start-line="66" selection-start-column="38" selection-end-line="66" selection-end-column="38" />
+            <state relative-caret-position="686">
+              <caret line="294" column="60" lean-forward="true" selection-start-line="294" selection-start-column="60" selection-end-line="294" selection-end-column="60" />
+              <folding>
+                <element signature="n#idc#0;n#!!top" />
+                <element signature="e#659#5844#1#PHP" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="e#5868#10836#1#PHP" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -140,7 +139,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/js/controllers/rptctrlccctrl.js" />
         <option value="$PROJECT_DIR$/php/rptcontrolcajachica.php" />
         <option value="$PROJECT_DIR$/php/genfactsanuladas.php" />
         <option value="$PROJECT_DIR$/js/controllers/presupuestoctrl.js" />
@@ -180,7 +178,6 @@
         <option value="$PROJECT_DIR$/js/controllers/plnpagoboletoornatoctrl.js" />
         <option value="$PROJECT_DIR$/php/reembolso.php" />
         <option value="$PROJECT_DIR$/php/rptdetcontdocsbanc.php" />
-        <option value="$PROJECT_DIR$/php/genpartidasventa.php" />
         <option value="$PROJECT_DIR$/php/db.php" />
         <option value="$PROJECT_DIR$/pages/mntpresupuesto.html" />
         <option value="$PROJECT_DIR$/php/presupuesto.php" />
@@ -191,6 +188,8 @@
         <option value="$PROJECT_DIR$/js/app.js" />
         <option value="$PROJECT_DIR$/js/controllers/compractrl.js" />
         <option value="$PROJECT_DIR$/pages/tranfactcompra.html" />
+        <option value="$PROJECT_DIR$/php/genpartidasventa.php" />
+        <option value="$PROJECT_DIR$/php/fixdescuadreventa.php" />
       </list>
     </option>
   </component>
@@ -236,8 +235,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="AndroidView" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -253,18 +250,19 @@
             <path>
               <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
               <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-              <item name="controllers" type="462c0819:PsiDirectoryNode" />
+              <item name="pages" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
               <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="pages" type="462c0819:PsiDirectoryNode" />
+              <item name="php" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
+      <pane id="AndroidView" />
       <pane id="PackagesPane" />
     </panes>
   </component>
@@ -961,12 +959,13 @@
       <workItem from="1536703779044" duration="619000" />
       <workItem from="1536766684255" duration="398000" />
       <workItem from="1536770107168" duration="4000" />
-      <workItem from="1536776905225" duration="478000" />
+      <workItem from="1536776905225" duration="964000" />
+      <workItem from="1537197616827" duration="4535000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2746614000" />
+    <option name="totallyTimeSpent" value="2751635000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -980,19 +979,19 @@
       <window_info anchor="bottom" id="Event Log" order="12" side_tool="true" weight="0.32900432" />
       <window_info anchor="right" id="Maven Projects" order="7" weight="0.32995737" />
       <window_info anchor="bottom" id="Database Changes" order="7" />
-      <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" order="9" weight="0.32896176" />
+      <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" x="229" y="406" width="1572" height="574" id="Terminal" order="11" type="WINDOWED" weight="1.0" />
       <window_info id="Capture Tool" order="6" />
       <window_info anchor="right" id="Designer" order="6" />
-      <window_info content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" weight="0.16257995" />
+      <window_info active="true" content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" visible="true" weight="0.16257995" />
       <window_info anchor="right" id="Database" order="8" weight="0.32889125" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.1546875" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.24946696" />
       <window_info id="UI Designer" order="4" />
       <window_info anchor="right" id="Theme Preview" order="5" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.39978564" />
       <window_info id="Favorites" order="5" sideWeight="0.50428265" side_tool="true" weight="0.1881663" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39978564" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="PHP-CGI Server" order="8" />
@@ -1032,23 +1031,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/pln/pages/mnt/empleado.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
-          <caret line="394" column="43" lean-forward="true" selection-start-line="394" selection-start-column="43" selection-end-line="394" selection-end-column="43" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pln/js/controllers/mante.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="417">
-          <caret line="80" column="44" lean-forward="true" selection-start-line="80" selection-start-column="44" selection-end-line="80" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptfactsemitidasctrl.js">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/controllers/rptfichaproyctrl.js">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -1224,13 +1206,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/php/genpartidasventa.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="442">
-          <caret line="123" column="36" lean-forward="true" selection-start-line="123" selection-start-column="36" selection-end-line="123" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/db.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
@@ -1319,15 +1294,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="383">
-          <caret line="286" column="82" lean-forward="true" selection-start-line="286" selection-start-column="82" selection-end-line="286" selection-end-column="82" />
+        <state relative-caret-position="4862">
+          <caret line="286" column="82" selection-start-line="286" selection-start-column="82" selection-end-line="286" selection-end-column="82" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/cpmidx.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="451">
-          <caret line="308" column="82" lean-forward="true" selection-start-line="308" selection-start-column="4" selection-end-line="308" selection-end-column="82" />
+        <state relative-caret-position="5236">
+          <caret line="308" column="82" selection-start-line="308" selection-start-column="4" selection-end-line="308" selection-end-column="82" />
         </state>
       </provider>
     </entry>
@@ -1340,14 +1315,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/js/app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
+        <state relative-caret-position="816">
           <caret line="48" column="59" selection-start-line="48" selection-start-column="59" selection-end-line="48" selection-end-column="59" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pages/tranfactcompra.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
+        <state relative-caret-position="578">
           <caret line="34" column="83" selection-start-line="34" selection-start-column="83" selection-end-line="34" selection-end-column="83" />
         </state>
       </provider>
@@ -1355,7 +1330,55 @@
     <entry file="file://$PROJECT_DIR$/js/controllers/compractrl.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
-          <caret line="66" column="38" lean-forward="true" selection-start-line="66" selection-start-column="38" selection-end-line="66" selection-end-column="38" />
+          <caret line="66" column="38" selection-start-line="66" selection-start-column="38" selection-end-line="66" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptdescuadres.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="55" lean-forward="true" selection-start-line="9" selection-start-column="4" selection-end-line="9" selection-end-column="55" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/facturaotros.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="178" column="60" lean-forward="true" selection-start-line="176" selection-start-column="4" selection-end-line="178" selection-end-column="60" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/fixdescuadreventa.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="346">
+          <caret line="24" column="16" lean-forward="true" selection-start-line="24" selection-start-column="16" selection-end-line="24" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/genpartidasventa.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="686">
+          <caret line="294" column="60" lean-forward="true" selection-start-line="294" selection-start-column="60" selection-end-line="294" selection-end-column="60" />
+          <folding>
+            <element signature="n#idc#0;n#!!top" />
+            <element signature="e#659#5844#1#PHP" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="e#5868#10836#1#PHP" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
