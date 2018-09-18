@@ -363,6 +363,8 @@ $app->post('/uc', function(){
     $d->plazofalstr = $d->plazofalstr == '' ? "NULL" : "'$d->plazofalstr'";
     $d->fechainactivostr = ($d->fechainactivostr == '' || (int)$d->inactivo == 0) ? "NULL" : "'$d->fechainactivostr'";
 
+    $inactivoBeforeUpd = (int)$db->getOneField("SELECT inactivo FROM contrato WHERE id = $d->id");
+
     $query = "UPDATE contrato SET ";
     $query.= "nocontrato = '".$d->nocontrato."', abogado = '".$d->abogado."', inactivo = ".$d->inactivo.", fechainicia = '".$d->fechainiciastr."', fechavence = '".$d->fechavencestr."', ";
     $query.= "nuevarenta = ".$d->nuevarenta.", nuevomantenimiento = ".$d->nuevomantenimiento.", ";
@@ -374,6 +376,18 @@ $app->post('/uc', function(){
     $query.= "plazofdel = $d->plazofdelstr, plazofal = $d->plazofalstr, prescision = $d->prescision, fechainactivo = $d->fechainactivostr ";
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
+
+    $inactivoAfterUpd = (int)$db->getOneField("SELECT inactivo FROM contrato WHERE id = $d->id");
+    if($inactivoBeforeUpd == 0 && $inactivoAfterUpd == 1){
+        $query = "UPDATE contrato SET idunidadbck = idunidad, idunidad = '' WHERE id = $d->id";
+        $db->doQuery($query);
+    }
+
+    if($inactivoBeforeUpd == 1 && $inactivoAfterUpd == 0){
+        $query = "UPDATE contrato SET idunidad = idunidadbck, idunidadbck = '' WHERE id = $d->id";
+        $db->doQuery($query);
+    }
+
 });
 
 $app->post('/dc', function(){
