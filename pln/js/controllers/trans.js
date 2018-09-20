@@ -205,6 +205,7 @@ angular.module('cpm')
              $scope.pre.monto = parseFloat($scope.pre.monto)
              $scope.pre.cuotamensual = parseFloat($scope.pre.cuotamensual)
              $scope.verOmisiones($scope.pre.id)
+             $scope.verAbonos($scope.pre.id)
              $scope.formulario = true
              $scope.hay = true
              goTop()
