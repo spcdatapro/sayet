@@ -10,6 +10,7 @@ require BASEPATH . "/php/NumberToLetterConverter.class.php";
 require PLNPATH . '/Principal.php';
 require PLNPATH . '/models/Empleado.php';
 require PLNPATH . '/models/General.php';
+require PLNPATH . '/models/Prestamo.php';
 
 $app = new \Slim\Slim();
 
@@ -665,9 +666,10 @@ $app->get('/ficha/:empleado', function($empleado){
 	$tplIdx = $pdf->importPage(1);
 	$pdf->useImportedPage($tplIdx);
 
+	$tipoImpresion = 12;
 
 	foreach ($emp->get_datos_impresion() as $campo => $valor) {
-		$conf = $gen->get_campo_impresion($campo, 12);
+		$conf = $gen->get_campo_impresion($campo, $tipoImpresion);
 
 		if (!isset($conf->scalar) && $conf->visible == 1) {
 			$pdf = generar_fimpresion($pdf, $valor, $conf);

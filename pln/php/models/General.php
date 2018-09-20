@@ -305,8 +305,13 @@ class General extends Principal
 		}
 
 		if (isset($args['orden'])) {
-			if ($args['orden'] === 'empleado') {
-				$condicion["ORDER"] = "b.nombre ASC";
+			switch ($args['orden']) {
+				case 'empresa':
+					$condicion["ORDER"] = ["c.ordenreppres ASC", "b.nombre ASC"];
+					break;
+				default:
+					$condicion["ORDER"] = "b.nombre ASC";
+					break;
 			}
 		} else {
 			$condicion["ORDER"] = "plnprestamo.fecha DESC";
@@ -319,7 +324,8 @@ class General extends Principal
 		}
 		
 		return $this->db->select("plnprestamo", [
-				'[><]plnempleado(b)' => ['plnprestamo.idplnempleado' => 'id']
+				'[><]plnempleado(b)' => ['plnprestamo.idplnempleado' => 'id'],
+				'[>]plnempresa(c)' => ['b.idempresaactual' => 'id']
 			], 
 			[
 				"plnprestamo.id",

@@ -300,3 +300,24 @@ if ( ! function_exists('imprimirEncabezado')) {
 		return $pdf;
 	}
 }
+
+if ( ! function_exists('estadoCivil')) {
+	function estadoCivil($estado, $genero) {
+		$letra = $genero == 2 ? 'a':'o';
+
+		switch ($estado) {
+			case 1:
+				$nombre = "Solter{$letra}";
+				break;
+			case 2:
+				$nombre = "Casad{$letra}";
+				break;
+			
+			default:
+				$nombre = 'Sin Definir';
+				break;
+		}
+
+		return $nombre;
+	}
+}

@@ -182,6 +182,17 @@ class Empleado extends Principal
 				$this->set_dato('idproyecto', $args['idproyecto']);
 			}
 
+			if (isset($args['emenombre'])) {
+				$this->set_dato('emenombre', $args['emenombre']);
+			}
+
+			if (isset($args['emetelefono'])) {
+				$this->set_dato('emetelefono', $args['emetelefono']);
+			}
+
+			if (isset($args['emedireccion'])) {
+				$this->set_dato('emedireccion', $args['emedireccion']);
+			}
 		}
 
 		if (!empty($this->datos)) {
@@ -909,6 +920,7 @@ EOT;
 		
 		$tmp['fecha_nacimiento'] = formatoFecha($this->emp->fechanacimiento, 1);
 		$tmp['sueldo_total']     = ($this->emp->sueldo+$this->emp->bonificacionley);
+		$tmp['estadocivil']      = estadoCivil($this->emp->estadocivil, $this->emp->sexo);
 		$tmp['ingreso']          = formatoFecha($this->emp->ingreso, 1);
 		$tmp['baja']             = empty($this->emp->baja) ? '' : formatoFecha($this->emp->baja, 1);
 

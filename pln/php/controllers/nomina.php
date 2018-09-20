@@ -1,12 +1,5 @@
 <?php 
 
-/*ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);*/
-
-set_time_limit(0);
-
-
 define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
 define('PLNPATH', BASEPATH . '/pln/php');
 
@@ -206,6 +199,14 @@ $app->get('/imprimir', function(){
 				$pdf = imprimirTotalesEmpresa($pdf, $g, 2, $etotales, $espacio);
 
 				$espacio += $confe->espacio;	
+			}
+
+			# Para mostrar el resumen de cantidad de empleados
+			$espacio += 5;
+			$conf = $g->get_campo_impresion('resumen', 2);
+			if (!isset($conf->scalar) && $conf->visible == 1) {
+				$conf->psy = ($conf->psy+$espacio);
+				$pdf = generar_fimpresion($pdf, "Total de Empleados: " . count($todos), $conf);
 			}
 
 			$espacio += 20;
@@ -451,13 +452,17 @@ $app->get('/imprimir_isr', function(){
 		$_GET['fdel'] = formatoFecha($_GET['fal'], 4).'-'.formatoFecha($_GET['fal'], 3).'-16';
 
 		$s = [215.9, 279.4]; # Carta mm
+		$tipoImpresion = 4;
 
 		$pdf = new TCPDF('P', 'mm', $s);
 		$pdf->SetAutoPageBreak(TRUE, 0);
+		$pdf->AddPage();
 
 		$todos = $b->get_datos_recibo($_GET);
+		$afectos = 0;
+		$totalEmpleados = count($todos);
 
-		if (count($todos) > 0) {
+		if ($totalEmpleados > 0) {
 			$registros = 0;
 			$datos = [];
 
@@ -467,9 +472,13 @@ $app->get('/imprimir_isr', function(){
 				} else {
 					$datos[$fila['vidempresa']] = [
 						'nombre'    => $fila['vempresa'], 
-						'conf'      => $g->get_campo_impresion('vidempresa', 2), 
+						'conf'      => $g->get_campo_impresion('vidempresa', $tipoImpresion), 
 						'empleados' => [$fila]
 					];
+				}
+
+				if ($fila['visr'] > 0) {
+					$afectos++;
 				}
 			}
 
@@ -485,22 +494,6 @@ $app->get('/imprimir_isr', function(){
 				'mes'  => $mes, 
 				'anio' => $anio
 			]);
-			
-			for ($i=0; $i < ((count($todos)+(count($datos)*2))/$rpag) ; $i++) { 
-				$pdf->AddPage();
-
-				foreach ($cabecera as $campo => $valor) {
-					$conf = $g->get_campo_impresion($campo, 4);
-
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$pdf = generar_fimpresion($pdf, $valor, $conf);
-					}
-				}
-			}
-
-			$pagina = 1;
-
-			$pdf->setPage($pagina);
 
 			$espacio = 0;
 			$totales = [];
@@ -511,11 +504,10 @@ $app->get('/imprimir_isr', function(){
 				if ($registros == $rpag) {
 					$espacio   = 0;
 					$registros = 0;
-					$pagina++;
-					$pdf->setPage($pagina);
+					$pdf->AddPage();
 				}
 				
-				$confe      = $g->get_campo_impresion('idempresa', 4);
+				$confe      = $g->get_campo_impresion('idempresa', $tipoImpresion);
 				$confe->psy = ($confe->psy+$espacio);
 				$espacio    += $confe->espacio;
 				$pdf        = generar_fimpresion($pdf, "{$key} {$empresa['nombre']}", $confe);
@@ -526,7 +518,7 @@ $app->get('/imprimir_isr', function(){
 					$registros++;
 
 					foreach ($empleado as $campo => $valor) {
-						$conf = $g->get_campo_impresion($campo, 4);
+						$conf = $g->get_campo_impresion($campo, $tipoImpresion);
 
 						if (!isset($conf->scalar) && $conf->visible == 1) {
 							$conf->psy = ($conf->psy+$espacio);
@@ -534,42 +526,21 @@ $app->get('/imprimir_isr', function(){
 							$sintotal = ['vdiastrabajados', 'vcodigo'];
 
 							if (is_numeric($valor) && !in_array($campo, $sintotal)) {
-								if (isset($etotales[$campo])) {
-									$etotales[$campo] += $valor;
-								} else {
-									$etotales[$campo] = $valor;
-								}
-								
-								if (isset($totales[$pdf->getPage()][$campo])) {
-									$totales[$pdf->getPage()][$campo] += $valor;
-								} else {
-									if (isset($totales[$pdf->getPage()-1][$campo])) {
-										$totales[$pdf->getPage()][$campo] = $valor+$totales[$pdf->getPage()-1][$campo];
-									} else {
-										$totales[$pdf->getPage()][$campo] = $valor;
-									}
-								}
-							}
-
-							if (is_numeric($valor) && !in_array($campo, ['vcodigo', 'vdiastrabajados'])) {
-								$valor = number_format($valor, 2);
-							} else {
-								$valor = $valor;
+								$etotales = totalesIndice($etotales, $campo, $valor);
+								$totales  = totalesPagina($totales, $pdf, $campo, $valor);
+								$valor    = number_format($valor, 2);
 							}
 
 							$pdf = generar_fimpresion($pdf, $valor, $conf);
 						}
 					}
 
-					# $pdf = generar_fimpresion($pdf, $valor, $conf);
-
 					$espacio += $confe->espacio;
 
 					if ($registros == $rpag) {
 						$espacio   = 0;
 						$registros = 0;
-						$pagina++;
-						$pdf->setPage($pagina);
+						$pdf->AddPage();
 					}
 				}
 
@@ -578,8 +549,7 @@ $app->get('/imprimir_isr', function(){
 				if ($registros == $rpag) {
 					$espacio   = 0;
 					$registros = 0;
-					$pagina++;
-					$pdf->setPage($pagina);
+					$pdf->AddPage();
 				}
 
 				$pdf->SetLineStyle(array(
@@ -590,49 +560,21 @@ $app->get('/imprimir_isr', function(){
 					'color' => array(0, 0, 0)
 				));
 
-				foreach ($etotales as $campo => $total) {
-					$conf = $g->get_campo_impresion($campo, 4);
-
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$conf->psy = ($conf->psy+$espacio);
-						$pdf       = generar_fimpresion($pdf, number_format($total, 2), $conf);
-
-						$pdf->Line($conf->psx, $conf->psy, ($conf->psx+$conf->ancho), $conf->psy);
-
-						$y = ($conf->psy+$conf->espacio);
-
-						$pdf->Line($conf->psx, $y, $conf->psx+$conf->ancho, $y);
-						$pdf->Line($conf->psx, $y+1, $conf->psx+$conf->ancho, $y+1);
-					}
-				}
-
-				$espacio += $confe->espacio;	
+				$pdf = imprimirTotalesEmpresa($pdf, $g, $tipoImpresion, $etotales, $espacio);
+				$espacio += $confe->espacio;
 			}
 
-			$pie  = $g->get_campo_impresion("vtotalespie", 4);
-
-			foreach ($totales as $key => $subtotales) {
-				$pdf->setPage($key);
-
-				foreach ($subtotales as $campo => $total) {
-					$conf = $g->get_campo_impresion($campo, 4);
-
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$conf->psy = $pie->psy;
-						$pdf       = generar_fimpresion($pdf, number_format($total, 2), $conf);
-
-						$y = ($conf->psy+$conf->espacio);
-
-						$pdf->Line($conf->psx, $y, $conf->psx+$conf->ancho, $y);
-						$pdf->Line($conf->psx, $y+1, $conf->psx+$conf->ancho, $y+1);
-					}
-				}
-
-				$conf = $g->get_campo_impresion("vnopagina", 4);
-				if (!isset($conf->scalar) && $conf->visible == 1) {
-					$pdf = generar_fimpresion($pdf, $key, $conf);
-				}
+			# Para mostrar el resumen de cantidad de empleados
+			$espacio += 5;
+			$conf = $g->get_campo_impresion('resumen', $tipoImpresion);
+			if (!isset($conf->scalar) && $conf->visible == 1) {
+				$conf->psy = ($conf->psy+$espacio);
+				$texto = "Total de Empleados: {$totalEmpleados}, afectos = {$afectos}, no afectos = " . ($totalEmpleados-$afectos) . ".";
+				$pdf = generar_fimpresion($pdf, $texto, $conf);
 			}
+
+			$pdf = imprimirTotalesPagina($pdf, $g, $tipoImpresion, $totales);
+			$pdf = imprimirEncabezado($pdf, $g, $tipoImpresion, $cabecera);
 
 			$pdf->Output("nomina" . time() . ".pdf", 'I');
 			die();
@@ -855,7 +797,7 @@ $app->get('/imprimir_sp', function(){
 	if (elemento($_GET, 'fal')) {
 		$todos = $g->buscar_prestamo([
 			'fal'        => $_GET['fal'],
-			'orden'      => 'empleado',
+			'orden'      => 'empresa',
 			'empresa'    => isset($_GET['empresa']) ? $_GET['empresa'] : NULL,
 			'finalizado' => 0, 
 			'sinlimite'  => TRUE
