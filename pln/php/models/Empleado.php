@@ -708,8 +708,8 @@ class Empleado extends Principal
 	public function set_finiquito_sueldo($args = [])
 	{
 		$res = [
-			'sdiario' => ($this->emp->sueldo/365),
-			'bdiario' => ($this->emp->bonificacionley/365)
+			'sdiario' => ($this->emp->sueldo/30),
+			'bdiario' => ($this->emp->bonificacionley/30)
 		];
 
 		$dias = elemento($args, 'dias_sueldo_pagar', 0);
