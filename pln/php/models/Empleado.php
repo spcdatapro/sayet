@@ -632,9 +632,8 @@ class Empleado extends Principal
 		$baja     = new DateTime($this->emp->baja);
 		$interval = $ingreso->diff($baja);
 		$dias     = ($interval->format('%a')+1);
-		$monto    = ($dias*($this->sueldoPromedio/365));
+		$monto    = ($dias*((($this->sueldoPromedio/12)*14)/365));
 		
-		#return ($interval->format('%a')+1);
 		$this->finiquitoIndenmizacion = (object)[
 			'dias'   => $dias,
 			'inicio' => $this->emp->ingreso,
@@ -650,7 +649,6 @@ class Empleado extends Principal
 		$dias     = (($interval->format('%a')+1)/(365/15));
 		$monto    = ($dias*($this->sueldoPromedio/30));
 		
-		#return ($interval->format('%a')+1);
 		$this->finiquitoVacaciones = (object)[
 			'dias'   => $dias,
 			'inicio' => $this->emp->ingreso,
@@ -675,7 +673,6 @@ class Empleado extends Principal
 		$dias     = ($interval->format('%a')+1);
 		$monto    = ($dias*($this->sueldoPromedio/365));
 		
-		#return ($interval->format('%a')+1);
 		$this->finiquitoAguinaldo = (object)[
 			'dias'   => $dias,
 			'inicio' => $fecha,
@@ -700,7 +697,6 @@ class Empleado extends Principal
 		$dias     = ($interval->format('%a')+1);
 		$monto    = ($dias*($this->sueldoPromedio/365));
 		
-		#return ($interval->format('%a')+1);
 		# Arreglo de datos para finiquito bono 14
 		$this->finiquitoBono = (object)[
 			'dias'   => $dias,
@@ -717,18 +713,6 @@ class Empleado extends Principal
 		];
 
 		$dias = elemento($args, 'dias_sueldo_pagar', 0);
-		
-		/*$sql = "SELECT fecha, date_add(fecha, interval 1 day) as inicio
-				FROM plnnomina
-				WHERE idplnempleado = {$this->emp->id} 
-				AND day(fecha) <> 15
-				ORDER BY fecha DESC
-				LIMIT 1";
-
-		$tmp    = $this->db->query($sql)->fetchAll();
-		$fecha  = new DateTime($tmp[0]['fecha']);
-		$inicio = new DateTime($tmp[0]['inicio']);
-		$fin    = new DateTime($this->emp->baja);*/
 
 		if ($dias > 0) {
 			$res['dias']   = $dias;
