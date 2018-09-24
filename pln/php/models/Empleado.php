@@ -838,7 +838,9 @@ EOT;
 			'tdeducido'                => 'Total Deducido:',
 			'tliquido'                 => 'Líquido a Recibir:',
 			'lrecibi'                  => str_repeat("_", 35) ,
-			'trecibi'                  => 'Recibí Conforme'
+			'trecibi'                  => 'Recibí Conforme',
+			'otrosdesc_razon'          => $args['otrosdesc_razon'],
+			'otrosdesc_monto'          => number_format(elemento($args, 'otrosdesc_monto', 0),2)
 		];
 
 		$totalPrestaciones = (
@@ -853,7 +855,8 @@ EOT;
 
 		$saldoPrestamos    = $this->get_saldo_prestamo();
 		$anticiposPostBaja = $this->get_anticipos_post_baja();
-		$liquidoRecibir    = ($totalPrestaciones-($saldoPrestamos+$anticiposPostBaja));
+		$valorDeducido     = ($saldoPrestamos+$anticiposPostBaja+elemento($args, 'otrosdesc_monto', 0));
+		$liquidoRecibir    = ($totalPrestaciones-$valorDeducido);
 
 		$tmp['presta_monto']    = number_format($totalPrestaciones, 2);
 		$tmp['menos_texto']     = "Menos:";
@@ -864,14 +867,13 @@ EOT;
 		$tmp['liquido_texto']   = "Líquido a recibir:";
 		$tmp["liquido_linea"]   = str_repeat("_", 13);
 		$tmp['liquido_monto']   = number_format($liquidoRecibir, 2);
-		$tmp['vdeducido']       = number_format($saldoPrestamos+$anticiposPostBaja,2);
+		$tmp['vdeducido']       = number_format($valorDeducido,2);
 
 		$ltr = new NumberToLetterConverter();
 		$tmp['pie_linea']  = str_repeat('_', 90);
 		$tmp['pie_texto']  = "Por lo tanto el señor(a) {$this->emp->nombre} {$this->emp->apellidos}, da por recibida a su entera satisfacción la cantidad de ".$ltr->to_word(round($liquidoRecibir,2), 'GTQ').". ( Q. ".number_format($liquidoRecibir,2)." ), y extiende a {$empresa->nomempresa}, su más amplio FINIQUITO LABORAL, por no tener ningún reclamo pendiente.";
 		$tmp['pie_codigo'] = "Código: {$this->emp->id}";
 		$tmp['pie_firma']  = "(f.)".str_repeat("_", 40);
-
 
 		return $tmp;
 	}
