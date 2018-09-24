@@ -108,7 +108,7 @@ $app->get('/generar', function(){
 $app->get('/regen', function(){
     $db = new dbcpm();
     $origen = 3;
-    $ids = "6623, 6624";
+    $ids = "6857";
     echo "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body><small><h3>Regeneración de facturas específicas</h3><h2>$ids</h2>";
 
     $query = "DELETE FROM detallecontable WHERE origen = $origen AND idorigen IN($ids)";
@@ -193,6 +193,13 @@ $app->get('/regen', function(){
             }
         }
     }
+
+    //Habilitar esto solo cuando es una factura...
+    $url = 'http://localhost/sayet/php/fixdescuadreventa.php/fix';
+    $dataa = ['idfactura' => $ids];
+    $db->CallJSReportAPI('POST', $url, json_encode($dataa));
+    //Habilitar lo anterior solo cuando es una factura...
+
     echo "<p><strong>Terminamos la regeneración...</strong></p></small></body></html>";
 });
 
