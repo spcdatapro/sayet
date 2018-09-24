@@ -42,8 +42,8 @@
       <file leaf-file-name="genpartidasventa.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/php/genpartidasventa.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="805">
-              <caret line="198" column="30" selection-start-line="198" selection-start-column="30" selection-end-line="198" selection-end-column="30" />
+            <state relative-caret-position="131">
+              <caret line="110" column="18" lean-forward="true" selection-start-line="110" selection-start-column="18" selection-end-line="110" selection-end-column="18" />
               <folding>
                 <element signature="n#idc#0;n#!!top" />
                 <element signature="e#659#5844#1#PHP" />
@@ -57,7 +57,6 @@
                 <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-                <element signature="e#10863#16166#1#PHP" />
                 <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
@@ -204,8 +203,8 @@
     </include_path>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-10" />
-    <option name="y" value="-8" />
+    <option name="x" value="-65" />
+    <option name="y" value="-13" />
     <option name="width" value="1932" />
     <option name="height" value="1039" />
   </component>
@@ -217,9 +216,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
       <pane id="AndroidView" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -934,12 +933,13 @@
       <workItem from="1536776905225" duration="964000" />
       <workItem from="1537197616827" duration="5144000" />
       <workItem from="1537283667000" duration="2290000" />
-      <workItem from="1537813067582" duration="129000" />
+      <workItem from="1537813067582" duration="351000" />
+      <workItem from="1537822518224" duration="40000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2754663000" />
+    <option name="totallyTimeSpent" value="2754925000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -958,7 +958,7 @@
       <window_info anchor="bottom" x="229" y="406" width="1572" height="574" id="Terminal" order="11" type="WINDOWED" weight="1.0" />
       <window_info id="Capture Tool" order="6" />
       <window_info anchor="right" id="Designer" order="6" />
-      <window_info active="true" content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" visible="true" weight="0.16577825" />
+      <window_info active="true" content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" visible="true" weight="0.1673774" />
       <window_info anchor="right" id="Database" order="8" weight="0.32889125" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.1546875" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.24946696" />
@@ -1331,8 +1331,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/php/genpartidasventa.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="805">
-          <caret line="198" column="30" selection-start-line="198" selection-start-column="30" selection-end-line="198" selection-end-column="30" />
+        <state relative-caret-position="131">
+          <caret line="110" column="18" lean-forward="true" selection-start-line="110" selection-start-column="18" selection-end-line="110" selection-end-column="18" />
           <folding>
             <element signature="n#idc#0;n#!!top" />
             <element signature="e#659#5844#1#PHP" />
@@ -1346,7 +1346,6 @@
             <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
-            <element signature="e#10863#16166#1#PHP" />
             <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
