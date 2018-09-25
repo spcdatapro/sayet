@@ -30,6 +30,7 @@ $app->post('/cierre', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
     $d->falstr = $d->anio.'-12-31';
+    $fechaApertura = (string)((int)$d->anio + 1).'-01-01';
     $generadas = '';
     //Cálculo de saldos al final del período
     $db->doQuery("DELETE FROM calccierre");
@@ -78,7 +79,9 @@ $app->post('/cierre', function(){
         $sumaPasCap += ((float)$pc->saldo * ((int)$pc->tipo == 4 ? -1 : 1));
     }
 
-    $cuadradora = $db->getQuery("SELECT id AS idcuentac, codigo, nombrecta, DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS fcierre FROM cuentac WHERE id = (SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 27)")[0];
+    $query = "SELECT id AS idcuentac, codigo, nombrecta, DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS fcierre, DATE_FORMAT('$fechaApertura', '%d/%m/%Y') AS fapertura ";
+    $query.= "FROM cuentac WHERE id = (SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 27)";
+    $cuadradora = $db->getQuery($query)[0];
 
     //Se agregega la cuenta cuadradora con monto en el DEBE = SUMATORIA DE CUENTAS DE ACTIVO - (SUMATORIA DE CUENTAS DE PASIVO + SUMATORIA DE CUENTAS DE CAPITAL)
     $cierre->balances[] = ['idcuentac' => $cuadradora->idcuentac, 'codigo' => $cuadradora->codigo, 'nombrecta' => $cuadradora->nombrecta, 'debe' => round($sumaActivo - $sumaPasCap, 2), 'haber' => 0.00];
@@ -144,7 +147,9 @@ $app->post('/cierre', function(){
     //Se agregega la cuenta cuadradora con monto en el HABER = VALOR ABSOLUTO(SUMATORIA DE CUENTAS DE ACTIVO - (SUMATORIA DE CUENTAS DE PASIVO + SUMATORIA DE CUENTAS DE CAPITAL))
     $cierre->apertura[] = ['idcuentac' => $cuadradora->idcuentac, 'codigo' => $cuadradora->codigo, 'nombrecta' => $cuadradora->nombrecta, 'debe' => 0.00, 'haber' => round(abs($sumaActivo - $sumaPasCap), 2)];
 
-    $generadas.= ', '.generaPartida($d, $db, $cierre->apertura, 4, $cuadradora->fcierre);
+    //Se agregó este cambio para que la fecha de la partida de reapertura sea del primero de enero del siguiente año
+    $d->falstr = $fechaApertura;
+    $generadas.= ', '.generaPartida($d, $db, $cierre->apertura, 4, $cuadradora->fapertura);
 
     //print json_encode($cierre);
     print json_encode(['generadas' => $generadas]);
