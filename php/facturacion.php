@@ -220,25 +220,29 @@ $app->post('/genfact', function(){
         $query.= "$p->retisr, $p->ivaaretener, $p->descuento, '$p->nit', '$p->facturara', '$p->direccion', $p->montocargoconiva, $p->montocargoflat";
         $query.= ")";
         //print $query.'<br/><br/>';
+        $lastid = 0;
         if((float)$p->montoconiva != 0){
             $db->doQuery($query);
-        }        
-        $lastid = $db->getLastId();
-        foreach($p->detalle as $det) {
-            if($det->facturar == 1){
+            $lastid = $db->getLastId();
+        }
 
-                $query = "INSERT INTO detfact(idfactura, cantidad, descripcion, preciounitario, preciotot, idtiposervicio, mes, anio, descuento, montoconiva, montoflatconiva) VALUES(";
-                $query.= "$lastid, 1, '".($det->tipo.' de '.$det->nommes.' '.$det->anio)."', $det->montoconiva, $det->montoconiva, $det->idtiposervicio, $det->mes, $det->anio, $det->descuento, $det->montoconiva, $det->montoflatconiva";
-                $query.= ")";
-                //print $query;
-                if((float)$det->montoconiva != 0){
+        if((int)$lastid > 0){
+            foreach($p->detalle as $det) {
+                if($det->facturar == 1){
+
+                    $query = "INSERT INTO detfact(idfactura, cantidad, descripcion, preciounitario, preciotot, idtiposervicio, mes, anio, descuento, montoconiva, montoflatconiva) VALUES(";
+                    $query.= "$lastid, 1, '".($det->tipo.' de '.$det->nommes.' '.$det->anio)."', $det->montoconiva, $det->montoconiva, $det->idtiposervicio, $det->mes, $det->anio, $det->descuento, $det->montoconiva, $det->montoflatconiva";
+                    $query.= ")";
+                    //print $query;
+                    if((float)$det->montoconiva != 0){
+                        $db->doQuery($query);
+                    }
+                    $query = "UPDATE cargo SET facturado = 1, idfactura = $lastid WHERE id = $det->id";
                     $db->doQuery($query);
                 }
-                $query = "UPDATE cargo SET facturado = 1, idfactura = $lastid WHERE id = $det->id";
-                $db->doQuery($query);
             }
-        }
-        if((int)$lastid > 0){
+
+
             $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
             $data = ['ids' => $lastid, 'idcontrato' => 1];
             $db->CallJSReportAPI('POST', $url, json_encode($data));
