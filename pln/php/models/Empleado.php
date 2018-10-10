@@ -67,6 +67,39 @@ class Empleado extends Principal
 		);
 	}
 
+	/**
+	 * Ejecutar antes de hacer la actualización
+	 * para revisar diferencias entre datos
+	 */
+	private function revisarMostrarBitacora($args=[])
+	{
+		if ($this->emp->sueldo != $args['sueldo']) {
+			return 1;
+		}
+
+		if ($this->emp->bonificacionley != $args['bonificacionley']) {
+			return 1;
+		}
+
+		if ($this->emp->idempresadebito != $args['idempresadebito']) {
+			return 1;
+		}
+
+		if ($this->emp->idempresaactual != $args['idempresaactual']) {
+			return 1;
+		}
+
+		if ($this->emp->ingreso != $args['ingreso']) {
+			return 1;
+		}
+
+		if ($this->emp->reingreso != $args['reingreso']) {
+			return 1;
+		}
+
+		return 0;
+	}
+
 	public function guardar($args = [])
 	{
 		if (is_array($args) && !empty($args)) {
@@ -195,46 +228,55 @@ class Empleado extends Principal
 			}
 		}
 
+		$dbita = [];
+
+		if (elemento($args, 'movfecha')) {
+			$dbita['movfecha'] = $args['movfecha'];
+		}
+
+		if (elemento($args, 'movdescripcion')) {
+			$dbita['movdescripcion'] = $args['movdescripcion'];
+		}
+
+		if (elemento($args, 'movobservaciones')) {
+			$dbita['movobservaciones'] = $args['movobservaciones'];
+		}
+
+		if (elemento($args, 'movgasolina')) {
+			$dbita['movgasolina'] = $args['movgasolina'];
+		}
+
+		if (elemento($args, 'movdepvehiculo')) {
+			$dbita['movdepvehiculo'] = $args['movdepvehiculo'];
+		}
+
+		if (elemento($args, 'movotros')) {
+			$dbita['movotros'] = $args['movotros'];
+		}
+
 		if (!empty($this->datos)) {
-			$dbita = [];
-
-			if (elemento($args, 'movfecha')) {
-				$dbita['movfecha'] = $args['movfecha'];
-			}
-
-			if (elemento($args, 'movdescripcion')) {
-				$dbita['movdescripcion'] = $args['movdescripcion'];
-			}
-
-			if (elemento($args, 'movobservaciones')) {
-				$dbita['movobservaciones'] = $args['movobservaciones'];
-			}
-
-			if (elemento($args, 'movgasolina')) {
-				$dbita['movgasolina'] = $args['movgasolina'];
-			}
-
-			if (elemento($args, 'movdepvehiculo')) {
-				$dbita['movdepvehiculo'] = $args['movdepvehiculo'];
-			}
-
-			if (elemento($args, 'movotros')) {
-				$dbita['movotros'] = $args['movotros'];
-			}
-
 			if ($this->emp) {
-				$dbita['antes'] = json_encode($this->emp);
+				$dbita['antes']   = json_encode($this->emp);
+				$dbita['mostrar'] = $this->revisarMostrarBitacora($this->datos);
 
 				if ($this->db->update($this->tabla, $this->datos, ["id [=]" => $this->emp->id])) {
 					$this->cargar_empleado($this->emp->id);
 					
 					$dbita['despues'] = json_encode($this->emp);
-					$this->guardar_bitacora($dbita);
 
+					$this->guardar_bitacora($dbita);
+					
 					return TRUE;
 				} else {
 					if ($this->db->error()[0] == 0) {
-						$this->set_mensaje('Nada que actualizar.');
+						if (empty($dbita)) {
+							$this->set_mensaje('Nada que actualizar.');
+						} else {
+							$dbita['despues'] = $dbita['antes'];
+							$dbita['mostrar'] = 1;
+							$this->guardar_bitacora($dbita);
+							return TRUE;
+						}
 					} else {
 						$this->set_mensaje('Error en la base de datos al actualizar: ' . $this->db->error()[2]);
 					}
@@ -246,6 +288,8 @@ class Empleado extends Principal
 					$this->cargar_empleado($lid);
 
 					$dbita['despues'] = json_encode($this->emp);
+					$dbita['mostrar'] = 1;
+
 					$this->guardar_bitacora($dbita);
 
 					return TRUE;
@@ -1007,6 +1051,10 @@ EOT;
 			$where['plnbitacora.id'] = $args['id'];
 		}
 
+		if (isset($args['mostrar'])) {
+			$where['plnbitacora.mostrar'] = $args['mostrar'];
+		}
+
 		$condiciones = ['AND' => $where];
 
 		if (elemento($args, 'uno')) {
@@ -1040,27 +1088,43 @@ EOT;
 	{
 		$bit = $this->get_bitacora(['id' => $args['id'], 'uno' => true]);
 		$emp = $this->get_empresa_debito();
-		$ant = json_decode($bit->antes);
-		$des = json_decode($bit->despues);
 
-		return [
+		$tmp = [
 			'fecha'            => 'Guatemala, ' . date('d/m/Y H:i:s'),
 			'movfecha' 		   => formatoFecha($bit->movfecha, 1),
 			'empleado'         => $this->emp->nombre.' '.$this->emp->apellidos,
 			'empresa'          => $emp->nomempresa,
 			'movdescripcion'   => $bit->movdescripcion,
-			'ant_sueldo'       => number_format($ant->sueldo, 2),
-			'ant_bonificacion' => number_format($ant->bonificacionley, 2), 
-			'ant_total'        => number_format(($ant->sueldo+$ant->bonificacionley), 2), 
-			'des_sueldo'       => number_format($des->sueldo, 2), 
-			'des_bonificacion' => number_format($des->bonificacionley, 2), 
-			'des_total'        => number_format(($des->sueldo+$des->bonificacionley), 2), 
 			'movgasolina'      => number_format($bit->movgasolina, 2), 
 			'movdepvehiculo'   => number_format($bit->movdepvehiculo, 2), 
 			'movotros'         => number_format($bit->movotros, 2), 
 			'movobservaciones' => $bit->movobservaciones,
 			'numero'           => $bit->id
 		];
+
+		if (!empty($bit->antes)) {
+			$ant = json_decode($bit->antes);
+			$tmp['ant_sueldo']       = number_format($ant->sueldo, 2);
+			$tmp['ant_bonificacion'] = number_format($ant->bonificacionley, 2);
+			$tmp['ant_total']        = number_format(($ant->sueldo+$ant->bonificacionley), 2);
+		} else {
+			$tmp['ant_sueldo']       = 0;
+			$tmp['ant_bonificacion'] = 0;
+			$tmp['ant_total']        = 0;
+		}
+
+		if (!empty($bit->despues)) {
+			$des = json_decode($bit->despues);
+			$tmp['des_sueldo']       = number_format($des->sueldo, 2);
+			$tmp['des_bonificacion'] = number_format($des->bonificacionley, 2);
+			$tmp['des_total']        = number_format(($des->sueldo+$des->bonificacionley), 2);
+		} else {
+			$tmp['des_sueldo']       = 0;
+			$tmp['des_bonificacion'] = 0;
+			$tmp['des_total']        = 0;
+		}
+
+		return $tmp;
 	}
 
 	public function get_datos_libro_salarios($args=[])

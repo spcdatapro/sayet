@@ -23,7 +23,7 @@ $app->get('/get_empleado/:empleado', function($empleado){
 $app->get('/get_bitacora/:empleado', function($empleado){
     $e = new Empleado($empleado);
 
-    enviar_json($e->get_bitacora());
+    enviar_json($e->get_bitacora(['mostrar' => 1]));
 });
 
 $app->get('/buscar', function(){
@@ -52,7 +52,7 @@ $app->post('/guardar', function(){
 
 	if ($e->guardar($datos)) {
 		$data['exito']   = 1;
-		$data['mensaje'] = 'Se ha guardado con èxito.';
+		$data['mensaje'] = 'Se ha guardado con éxito.';
 		$data['emp']     = $e->emp;
 	} else {
 		$data['mensaje'] = $e->get_mensaje();

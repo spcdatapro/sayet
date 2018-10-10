@@ -404,35 +404,43 @@ class Prestamo extends Principal
 
 	public function get_proyeccion($args = [])
 	{
-		$saldo = $this->pre->saldo;
-		$datos = [];
-		$ipago = false;
+		$saldo      = $this->pre->saldo;
+		$datos      = [];
+		$ipago      = false;
+		$numeroPago = 0;
 
-		$sql = "select max(b.fecha) as fecha
+		$sql = "select max(b.fecha) as fecha, count(*) as cantidad
 				from plnpresnom a
 				join plnnomina b on b.id = a.idplnnomina
 				where a.idplnprestamo = {$this->pre->id}
-				and a.monto > 0";
+				and a.monto > 0 
+				group by a.idplnprestamo";
 
 		$fechaDescuento = $this->db->query($sql)->fetchAll();
 		
-		$sql2 = "select max(fecha) as fecha from plnpresabono where idplnprestamo = {$this->pre->id} and monto > 0";
+		$sql2 = "select max(fecha) as fecha, count(*) as cantidad
+				 from plnpresabono 
+				 where idplnprestamo = {$this->pre->id} 
+				 and monto > 0
+				 group by idplnprestamo";
+
 		$fechaAbono = $this->db->query($sql2)->fetchAll();
 
 		if (!empty($fechaDescuento[0]['fecha']) && !empty($fechaAbono[0]['fecha'])) {
-			$fechaUno = new DateTime($fechaDescuento[0]['fecha']);
-			$fechaDos = new DateTime($fechaAbono[0]['fecha']);
-			$fecha    = $fechaUno > $fechaDos ? $fechaDescuento[0]['fecha'] : $fechaAbono[0]['fecha'];
+			$fechaUno   = new DateTime($fechaDescuento[0]['fecha']);
+			$fechaDos   = new DateTime($fechaAbono[0]['fecha']);
+			$fecha      = $fechaUno > $fechaDos ? $fechaDescuento[0]['fecha'] : $fechaAbono[0]['fecha'];
+			$numeroPago = $fechaDescuento[0]['cantidad'] + $fechaAbono[0]['cantidad'];
 		} elseif (!empty($fechaDescuento[0]['fecha'])) {
-			$fecha = $fechaDescuento[0]['fecha'];
+			$fecha      = $fechaDescuento[0]['fecha'];
+			$numeroPago = $fechaDescuento[0]['cantidad'];
 		} elseif (!empty($fechaAbono[0]['fecha'])) {
-			$fecha = $fechaAbono[0]['fecha'];
+			$fecha      = $fechaAbono[0]['fecha'];
+			$numeroPago = $fechaAbono[0]['cantidad'];
 		} else {
 			$fecha = $this->pre->iniciopago;
 			$ipago = true;
 		}
-
-		$numeroPago = 0;
 		
 		while ($saldo > 0) {
 			$numeroPago++;
