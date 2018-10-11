@@ -1,6 +1,8 @@
 <style>
     .tipo{ font-size: 9pt !important; }
     .bld{ font-weight: bold; }
+    .presAprobado{ background-color: #C9F1C9; }
+    .presPendiente{ background-color: #F7C5AA; }
 </style>
 <div class="container" ng-controller="presupuestoCtrl">
     <ul class="nav nav-tabs">
@@ -68,7 +70,8 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="p in lstpresupuestos | filter:buscador" ng-click="getPresupuesto(p.id)" ng-class="{'bld': +p.tipo!= 1}">
+                        <tr ng-repeat="p in lstpresupuestos | filter:buscador" ng-click="getPresupuesto(p.id)"
+                            ng-class="{'bld': +p.tipo!= 1, 'presPendiente': +p.idestatuspresupuesto == 2, 'presAprobado': +p.idestatuspresupuesto == 3}">
                             <td style="white-space: nowrap">{{p.tipostr}}-{{p.id}}</td>
                             <td>{{p.fechasolicitud | date:'dd/MM/yyyy'}}</td>
                             <td>{{p.proyecto | shortenStr:20}}</td>
@@ -89,15 +92,21 @@
                                             data-toggle="tooltip" data-placement="auto" title="Enviar presupuesto a aprobación...">
                                         <span class="glyphicon glyphicon-share-alt"></span>
                                     </button>
+                                    <!--
                                     <button type="button" class="btn btn-warning btn-sm tipo" ng-show="+p.idestatuspresupuesto == 2 && permiso.m" data-toggle="tooltip" data-placement="auto" title="En espera de aprobación">
                                         <span class="glyphicon glyphicon-hourglass"></span>
                                     </button>
+                                    -->
+                                    <!--
                                     <button type="button" class="btn btn-success btn-sm tipo" ng-show="+p.idestatuspresupuesto == 3 && permiso.m" data-toggle="tooltip" data-placement="auto" title="Presupuesto aprobado">
                                         <span class="glyphicon glyphicon-ok"></span>
                                     </button>
+                                    -->
+                                    <!--
                                     <button type="button" class="btn btn-default btn-sm tipo" ng-show="+p.idestatuspresupuesto == 4 && permiso.m" data-toggle="tooltip" data-placement="auto" title="Presupuesto denegado">
                                         <span class="glyphicon glyphicon-remove"></span>
                                     </button>
+                                    -->
                                     <button type="button" class="btn btn-warning btn-sm tipo" ng-click="terminaPresupuesto(p)" ng-show="+p.idestatuspresupuesto == 3 && permiso.m" data-toggle="tooltip" data-placement="auto" title="Terminar presupuesto">
                                         <span class="glyphicon glyphicon-folder-close"></span>
                                     </button>
@@ -308,6 +317,10 @@
                                       nf="nuevoPresupuesto()" cf="cancelEditPresup()" ef="startEditPresup()" pf="imprimirPresup()"
                                       ng-hide="(+presupuesto.idestatuspresupuesto == 6 || +presupuesto.idestatuspresupuesto == 5) || !permiso.m">
                         </form-buttons>
+                        <button type="button" class="btn btn-primary" ng-click="aumentaExcedente(presupuesto)" ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1"
+                                data-toggle="tooltip" data-placement="auto" title="Cambiar porcentaje de excedente...">
+                            <span class="glyphicon glyphicon-arrow-up"></span>
+                        </button>
                         <button type="button" class="btn btn-warning" ng-click="terminaPresupuesto(presupuesto)" ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m" data-toggle="tooltip" data-placement="auto" title="Terminar presupuesto">
                             <span class="glyphicon glyphicon-folder-close"></span>
                         </button>
@@ -460,6 +473,10 @@
                                 <button type="button" class="btn btn-sm btn-info" ng-click="verDetPagos(o)">
                                     <i class="fa fa-money fa-lg" aria-hidden="true"></i>
                                 </button>
+                                <button type="button" class="btn btn-sm btn-primary" ng-click="aumentaExcedente(o, true)" ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo !== 1"
+                                        data-toggle="tooltip" data-placement="auto" title="Cambiar porcentaje de excedente...">
+                                    <span class="glyphicon glyphicon-arrow-up"></span>
+                                </button>
                             </td>
                         </tr>
                         </tbody>
@@ -556,6 +573,26 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-warning" type="button" ng-click="ok()" ng-disabled="params.idrazonanula == undefined || params.idrazonanula == null">Anular</button>
+            <button class="btn btn-info" type="button" ng-click="cancel()">Cancelar</button>
+        </div>
+    </script>
+    <script type="text/ng-template" id="modalAumentaExcedente.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Cambio de porcentaje de excedente de Presupuesto</h3>
+            <h4>Presupuesto No. {{!esot ? (presupuesto.id) : (presupuesto.idpresupuesto + '-' + presupuesto.correlativo)}}</h4>
+        </div>
+        <div class="modal-body" style="height: 200px; overflow-y: auto">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="txtNuevoMonto">Porcentaje de excedente:</label>
+                        <input id="txtNuevoMonto" name="txtNuevoMonto" type="number" class="form-control" ng-model="params.monto" step="0.01" required/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-warning" type="button" ng-click="ok()" ng-disabled="params.monto == undefined || params.monto == null">Cambiar</button>
             <button class="btn btn-info" type="button" ng-click="cancel()">Cancelar</button>
         </div>
     </script>

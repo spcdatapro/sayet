@@ -310,6 +310,30 @@ $app->get('/avanceot/:idot', function($idot){
     print $db->doSelectASJson($query);
 });
 
+$app->post('/masexcede', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    if((int)$d->esot === 0){
+        $oldExcedente = $db->getOneField("SELECT excedente FROM presupuesto WHERE id = $d->id");
+        $query = "UPDATE presupuesto SET excedente = $d->monto WHERE id = $d->id";
+        $db->doQuery($query);
+        $query = "UPDATE detpresupuesto SET excedente = $d->monto WHERE idpresupuesto = $d->id";
+        $db->doQuery($query);
+        $cambio = "Cambio de porcentaje de excedente a presupuesto No. $d->id. De $oldExcedente a $d->monto.";
+        $tabla = 'presupuesto';
+    } else{
+        $oldData = $db->getQuery("SELECT idpresupuesto, correlativo, excedente FROM detpresupuesto WHERE id = $d->id")[0];
+        $query = "UPDATE detpresupuesto SET excedente = $d->monto WHERE id = $d->id";
+        $db->doQuery($query);
+        $cambio = "Cambio de porcentaje de excedente a presupuesto No. $oldData->idpresupuesto-$oldData->correlativo. De $oldData->excedente a $d->monto.";
+        $tabla = 'detpresupuesto';
+    }
+
+    $query = "INSERT INTO auditoria(idusuario, tabla, cambio, fecha, tipo) VALUES($d->idusuarioaumentaexcedente, '$tabla', '$cambio', NOW(), 'U')";
+    $db->doQuery($query);
+});
+
 //API notas de OT
 $app->get('/lstnotas/:iddetpresup', function($iddetpresup){
     $db = new dbcpm();

@@ -261,7 +261,7 @@
         };
 
         $scope.addFormaPago = function(obj){
-            obj.notas = obj.notas != undefined && obj.notas != null ? obj.notas : '';
+            obj.notas = obj.notas !== undefined && obj.notas !== null ? obj.notas : '';
             presupuestoSrvc.editRow(obj, 'cdp').then(function(){
                 $scope.loadData();
                 $scope.resetFPago();

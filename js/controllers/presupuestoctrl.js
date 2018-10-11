@@ -362,7 +362,29 @@
             modalInstance.result.then(function(obj){
                 //console.log(obj);
             }, function(){ return 0; });
-        }
+        };
+
+        $scope.aumentaExcedente = function(obj, esot){
+            var modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: 'modalAumentaExcedente.html',
+                controller: 'ModalAumentaExcedenteCtrl',
+                resolve:{
+                    presupuesto: function(){ return obj; },
+                    usr: function(){ return $scope.usrdata; },
+                    esot: function(){ return !!esot; }
+                }
+            });
+            modalInstance.result.then(function(obj){
+                $scope.getLstPresupuestos('1,2,3');
+                if(!obj.esot){
+                    $scope.getPresupuesto(obj.id, true);
+                }else{
+                    $scope.getLstOts(obj.idpresupuesto);
+                    $scope.getOt(obj.id);
+                }
+            }, function(){ return 0; });
+        };
 
     }]);
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -461,6 +483,22 @@
             },
                 function(){ $scope.cancel();}
             );
+        };
+
+        $scope.cancel = function () { $uibModalInstance.dismiss('cancel'); };
+
+    }]);
+
+    //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    presupuestoctrl.controller('ModalAumentaExcedenteCtrl', ['$scope', '$uibModalInstance', '$filter', 'toaster', '$confirm', 'presupuestoSrvc', 'presupuesto', 'usr', 'esot', function($scope, $uibModalInstance, $filter, toaster, $confirm, presupuestoSrvc, presupuesto, usr, esot){
+        $scope.presupuesto = presupuesto;
+        $scope.usr = usr;
+        $scope.esot = esot;
+        $scope.params = { id: $scope.presupuesto.id, idusuarioaumentaexcedente: $scope.usr.uid, monto: parseFloat($scope.presupuesto.excedente), esot: esot ? 1 : 0 };
+
+        $scope.ok = function () {
+            //console.log($scope.params);
+            presupuestoSrvc.editRow($scope.params, 'masexcede').then(function(){ $uibModalInstance.close({ id: $scope.params.id, esot: $scope.esot, idpresupuesto: $scope.presupuesto.idpresupuesto || null });});
         };
 
         $scope.cancel = function () { $uibModalInstance.dismiss('cancel'); };
