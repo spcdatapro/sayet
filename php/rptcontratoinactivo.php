@@ -21,6 +21,27 @@ $app->post('/continact', function(){
     print json_encode($data);
 });
 
+function getSaldoCliente($data){
+    $db = new dbcpm();
+
+    $url = 'http://localhost/sayet/php/rptecuentacli.php/rptecuentacli';
+    $data = ["clistr" => $data['idcliente'], "detalle" => 0, "falstr" => $data['falstr'], "idempresa" => $data['idempresa']];
+    $saldoCliente = json_decode($db->CallJSReportAPI('POST', $url, json_encode($data)));
+    if(is_array($saldoCliente)){
+        if(count($saldoCliente) > 0){
+            $saldo = $saldoCliente[0];
+            if(isset($saldo->saldo)){
+                return number_format($saldo->saldo, 2);
+            } else {
+                return '0.00';
+            }
+        } else {
+            return '0.00';
+        }
+    }
+    return '0.00';
+}
+
 $app->post('/contrato', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
@@ -30,6 +51,7 @@ $app->post('/contrato', function(){
     $query = "SELECT DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS fecha";
     $info->generales = $db->getQuery($query)[0];
 
+    /*
     $query = "SELECT e.nomempresa AS empresa, d.nombre AS cliente, d.nombrecorto AS abreviacliente, b.nomproyecto AS ubicacion, UnidadesPorContrato(a.id) AS unidades, a.nocontrato, a.abogado, DATE_FORMAT(a.fechainicia, '%d/%m/%Y') AS inicia,
     DATE_FORMAT(a.fechavence, '%d/%m/%Y') AS vence, DATE_FORMAT(a.fechainactivo, '%d/%m/%Y') AS inactivodesde,
     (SELECT CONCAT(MONTH(MAX(fechacobro)), '/', YEAR(MAX(fechacobro))) FROM cargo WHERE facturado = 1 AND anulado = 0 AND idcontrato = $d->idcontrato) AS ultimocobro,
@@ -42,7 +64,27 @@ $app->post('/contrato', function(){
     LEFT JOIN cliente d ON d.id = a.idcliente
     LEFT JOIN empresa e ON e.id = a.idempresa
     WHERE a.id = $d->idcontrato";
+    */
+
+    $query = "SELECT e.nomempresa AS empresa, d.nombre AS cliente, d.nombrecorto AS abreviacliente, b.nomproyecto AS ubicacion, UnidadesPorContrato(a.id) AS unidades, a.nocontrato, a.abogado, DATE_FORMAT(a.fechainicia, '%d/%m/%Y') AS inicia,
+    DATE_FORMAT(a.fechavence, '%d/%m/%Y') AS vence, DATE_FORMAT(a.fechainactivo, '%d/%m/%Y') AS inactivodesde,
+    (SELECT CONCAT(MONTH(MAX(fechacobro)), '/', YEAR(MAX(fechacobro))) FROM cargo WHERE facturado = 1 AND anulado = 0 AND idcontrato = $d->idcontrato) AS ultimocobro,
+    c.simbolo AS monedadep, FORMAT(a.deposito, 2) AS deposito, a.reciboprov AS recibo, 0.00 AS saldo, a.observaciones, a.idcliente, a.idempresa, DATE_FORMAT(NOW(), '%Y-%m-%d') AS falstr
+    FROM contrato a
+    LEFT JOIN proyecto b ON b.id = a.idproyecto
+    LEFT JOIN moneda c ON c.id = a.idmonedadep
+    LEFT JOIN cliente d ON d.id = a.idcliente
+    LEFT JOIN empresa e ON e.id = a.idempresa
+    WHERE a.id = $d->idcontrato";
     $info->contrato = $db->getQuery($query)[0];
+
+    $saldoCliente = getSaldoCliente([
+        'idcliente' => $info->contrato->idcliente,
+        'falstr' => $info->contrato->falstr,
+        'idempresa' => $info->contrato->idempresa
+    ]);
+
+    $info->contrato->saldo = $saldoCliente;
 
     print json_encode($info);
 });
