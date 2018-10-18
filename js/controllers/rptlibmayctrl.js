@@ -6,7 +6,7 @@
 
         $scope.params = {
             del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), idempresa: 0, codigo: undefined, constproc: 0, filtro: '1', codigoal: undefined,
-            cuentasSel: undefined, vercierre: 0, nofolio: undefined, noheader: 0
+            cuentasSel: undefined, vercierre: 1, nofolio: undefined, noheader: 0
         };
         $scope.libromayor = [];
         $scope.content = '';

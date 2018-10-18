@@ -27,6 +27,12 @@
                             </select>
                         </div>
                     </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="chkCierre">Ver partidas de cierre y apertura:</label>
+                            <input name="chkCierre" id="chkCierre" type="checkbox" class="form-control" ng-model="params.vercierre" ng-true-value="1" ng-false-value="0"/>
+                        </div>
+                    </div>
                 </div>
                 <button type="button" class="btn btn-primary" ng-click="getBalGen()">
                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>

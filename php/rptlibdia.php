@@ -39,6 +39,7 @@ $app->post('/rptlibdia', function(){
     $query.= "CONCAT('Directa No.', LPAD(b.id, 5, '0')) AS referencia, '' AS concepto, b.id, 4 AS origen ";
     $query.= "FROM directa b ";
     $query.= "WHERE b.fecha >= '".$d->fdelstr."' AND b.fecha <= '".$d->falstr."' AND b.idempresa = ".$d->idempresa." ";
+    $query.= (int)$d->vercierre === 0 ? "AND b.tipocierre NOT IN(1, 2, 3, 4) " : '';
     //#Reembolsos -> origen = 5
     $query.= "UNION ALL ";
     /*

@@ -4,7 +4,7 @@
 
     rptlibdiactrl.controller('rptLibroDiarioCtrl', ['$scope', 'empresaSrvc', 'authSrvc', 'jsReportSrvc', '$sce', function($scope, empresaSrvc, authSrvc, jsReportSrvc, $sce){
 
-        $scope.params = {del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), idempresa: 0};
+        $scope.params = {del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), idempresa: 0, vercierre: 1};
         $scope.empresa = {};
 
         authSrvc.getSession().then(function(usrLogged){

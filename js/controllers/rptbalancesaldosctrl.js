@@ -5,7 +5,7 @@
     rptbalsalctrl.controller('rptBalanceSaldosCtrl', ['$scope', 'rptBalanceSaldosSrvc', 'empresaSrvc', 'authSrvc', 'jsReportSrvc', '$sce', function($scope, rptBalanceSaldosSrvc, empresaSrvc, authSrvc, jsReportSrvc, $sce){
 
         $scope.params = {
-            del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), idempresa: 0, solomov: 1, nivel: '7', nofolio: undefined, noheader: 0
+            del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), idempresa: 0, solomov: 1, nivel: '7', nofolio: undefined, noheader: 0, vercierre: 1
         };
         $scope.balanceSaldos = [];
         $scope.content = undefined;

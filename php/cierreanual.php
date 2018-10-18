@@ -12,7 +12,7 @@ $app->get('/existe/:idempresa/:anio', function($idempresa, $anio){
 });
 
 function generaPartida($d, $db, $cuentas, $tipocierre, $fcierre){
-    $tipos = [1 => 'cierre de balances', 2 => 'cierre de gastos', 3 => 'cierre de ingresos', 4 => 'apertura del ejercicio contable'];
+    $tipos = [1 => 'cierre de balances', 2 => 'cierre de gastos', 3 => 'cierre de ingresos', 4 => 'reapertura del ejercicio contable'];
     $query = "INSERT INTO directa (idempresa, fecha, tipocierre, concepto) VALUES($d->idempresa, '$d->falstr', $tipocierre, 'Partida de ".$tipos[$tipocierre].($tipocierre < 4 ? " al $fcierre" : "")."')";
     $db->doQuery($query);
     $idenc = $db->getLastId();
@@ -74,9 +74,9 @@ $app->post('/cierre', function(){
     for($i = 0; $i < $cntPasCap; $i++){
         $pc = $pascap[$i];
         $cierre->balances[] = ['idcuentac' => $pc->idcuentac, 'codigo' => $pc->codigo, 'nombrecta' => $pc->nombrecta,
-            'debe' => round((float)$pc->saldo * ((int)$pc->tipo == 4 ? -1 : 1), 2),
+            'debe' => round((float)$pc->saldo * (in_array((int)$pc->tipo, [4, 5]) ? -1 : 1), 2),
             'haber' => 0.00];
-        $sumaPasCap += ((float)$pc->saldo * ((int)$pc->tipo == 4 ? -1 : 1));
+        $sumaPasCap += ((float)$pc->saldo * (in_array((int)$pc->tipo, [4, 5]) ? -1 : 1));
     }
 
     $query = "SELECT id AS idcuentac, codigo, nombrecta, DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS fcierre, DATE_FORMAT('$fechaApertura', '%d/%m/%Y') AS fapertura ";
@@ -140,8 +140,8 @@ $app->post('/cierre', function(){
     $sumaPasCap = 0.00;
     for($i = 0; $i < $cntPasCap; $i++){
         $pc = $pascap[$i];
-        $cierre->apertura[] = ['idcuentac' => $pc->idcuentac, 'codigo' => $pc->codigo, 'nombrecta' => $pc->nombrecta, 'debe' => 0.00, 'haber' => round((float)$pc->saldo * ((int)$pc->tipo == 4 ? -1 : 1), 2)];
-        $sumaPasCap += ((float)$pc->saldo * ((int)$pc->tipo == 4 ? -1 : 1));
+        $cierre->apertura[] = ['idcuentac' => $pc->idcuentac, 'codigo' => $pc->codigo, 'nombrecta' => $pc->nombrecta, 'debe' => 0.00, 'haber' => round((float)$pc->saldo * (in_array((int)$pc->tipo, [4, 5]) ? -1 : 1), 2)];
+        $sumaPasCap += ((float)$pc->saldo * (in_array((int)$pc->tipo, [4, 5]) ? -1 : 1));
     }
 
     //Se agregega la cuenta cuadradora con monto en el HABER = VALOR ABSOLUTO(SUMATORIA DE CUENTAS DE ACTIVO - (SUMATORIA DE CUENTAS DE PASIVO + SUMATORIA DE CUENTAS DE CAPITAL))
