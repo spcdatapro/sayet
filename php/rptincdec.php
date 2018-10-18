@@ -83,7 +83,7 @@ function incdec($d, $inc){
         $tipos = $db->getQuery($query);
         foreach($tipos as $tipo){
             $query = "SELECT a.idcontrato, d.idempresa, f.nomempresa AS empresa, d.idproyecto, g.nomproyecto AS proyecto, e.nombre AS cliente, e.nombrecorto AS abreviatura, ";
-            $query.= "b.idtipoventa, c.desctiposervventa AS servicio, UnidadesPorContrato(d.id) AS locales, d.fechainicia, d.fechavence, a.fechacobro, h.simbolo, a.monto, ";
+            $query.= "b.idtipoventa, c.desctiposervventa AS servicio, UnidadesPorContrato(d.id) AS locales, d.fechainicia, d.fechavence, a.fechacobro, h.simbolo, (a.monto - a.descuento) AS monto, ";
             $query.= "i.descripcion AS incremento ";
             $query.= "FROM cargo a INNER JOIN detfactcontrato b ON b.id = a.iddetcont INNER JOIN tiposervicioventa c ON c.id = b.idtipoventa INNER JOIN contrato d ON d.id = a.idcontrato ";
             $query.= "INNER JOIN cliente e ON e.id = d.idcliente INNER JOIN empresa f ON f.id = d.idempresa INNER JOIN proyecto g ON g.id = d.idproyecto INNER JOIN moneda h ON h.id = b.idmoneda ";
