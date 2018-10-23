@@ -26,7 +26,7 @@ $app->get('/srchcli/:idempresa/:qstra+', function($idempresa, $qstra){
 
     $query.= "SELECT DISTINCT a.idcliente, a.facturara, a.nit, a.retisr, a.retiva, a.direccion ";
     $query.= "FROM detclientefact a INNER JOIN cliente b ON b.id = a.idcliente INNER JOIN contrato c ON b.id = c.idcliente ";
-    $query.= "WHERE c.idempresa = $idempresa AND a.fal IS NULL AND a.facturara LIKE '%$qstr%' ";
+    $query.= "WHERE c.idempresa = $idempresa AND a.fal IS NULL AND (a.facturara LIKE '%$qstr%' OR b.nombrecorto LIKE '%$qstr%') ";
 
     $query.= "UNION ALL ";
 
