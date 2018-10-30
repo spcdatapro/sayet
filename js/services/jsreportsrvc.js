@@ -13,7 +13,7 @@
                 return $http.post(url, props, {responseType: 'arraybuffer'}).success(function(response){return response});
             },
             getPDFReport: function(shortid, obj){
-                props = { 'template':{'shortid': shortid}, 'data': obj, 'phantom': {'resourceTimeout': 3600000} };
+                props = { 'template':{'shortid': shortid}, 'data': obj };
                 return $http.post(url, props, {responseType: 'arraybuffer'}).then(function(response){
                     var file = new Blob([response.data], {type: 'application/pdf'});
                     var fileURL = URL.createObjectURL(file);
