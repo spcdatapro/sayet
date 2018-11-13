@@ -70,8 +70,8 @@
       <file leaf-file-name="presupuesto.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/php/presupuesto.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="21" column="51" lean-forward="true" selection-start-line="21" selection-start-column="51" selection-end-line="21" selection-end-column="51" />
+            <state relative-caret-position="17">
+              <caret line="1" column="18" lean-forward="true" selection-start-line="1" selection-start-column="18" selection-end-line="1" selection-end-column="18" />
             </state>
           </provider>
         </entry>
@@ -1020,12 +1020,12 @@
       <workItem from="1541023592956" duration="1142000" />
       <workItem from="1541634936454" duration="18000" />
       <workItem from="1542033836875" duration="13507000" />
-      <workItem from="1542122633125" duration="15557000" />
+      <workItem from="1542122633125" duration="16614000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2828975000" />
+    <option name="totallyTimeSpent" value="2830032000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1044,7 +1044,7 @@
       <window_info anchor="bottom" x="206" y="338" width="1572" height="574" id="Terminal" order="11" type="WINDOWED" weight="1.0" />
       <window_info id="Capture Tool" order="6" />
       <window_info anchor="right" id="Designer" order="6" />
-      <window_info content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" weight="0.17377399" />
+      <window_info active="true" content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" visible="true" weight="0.17377399" />
       <window_info anchor="right" id="Database" order="7" weight="0.32889125" />
       <window_info anchor="right" id="SciView" order="9" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.1546875" />
@@ -1330,13 +1330,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptlibmay.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" selection-start-line="5" selection-end-line="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pages/rptagua.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="527">
@@ -1447,10 +1440,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptlibmay.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="33" lean-forward="true" selection-start-line="1" selection-end-line="2" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/php/presupuesto.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="21" column="51" lean-forward="true" selection-start-line="21" selection-start-column="51" selection-end-line="21" selection-end-column="51" />
+        <state relative-caret-position="17">
+          <caret line="1" column="18" lean-forward="true" selection-start-line="1" selection-start-column="18" selection-end-line="1" selection-end-column="18" />
         </state>
       </provider>
     </entry>
