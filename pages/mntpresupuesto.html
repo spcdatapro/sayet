@@ -70,6 +70,16 @@
                         </tr>
                         </thead>
                         <tbody>
+                        <tr ng-show="loadingPresupuestos">
+                            <td colspan="9">
+                                <div style="width: 100%; height: 50px;">
+                                    <span style="font-family: Arial; font-weight: bold; font-size: 16pt;">
+                                        Cargando informaci&oacute;n. Por favor espere...
+                                        <img src="img/generando.gif" alt="Cargando informaci&oacute;n..." width="25" height="25"/>
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
                         <tr ng-repeat="p in lstpresupuestos | filter:buscador" ng-click="getPresupuesto(p.id)"
                             ng-class="{'bld': +p.tipo!= 1, 'presPendiente': +p.idestatuspresupuesto == 2, 'presAprobado': +p.idestatuspresupuesto == 3}">
                             <td style="white-space: nowrap">{{p.tipostr}}-{{p.id}}</td>
@@ -472,6 +482,9 @@
                             <td style="text-align: center">
                                 <button type="button" class="btn btn-sm btn-info" ng-click="verDetPagos(o)">
                                     <i class="fa fa-money fa-lg" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-info" ng-click="printOt(o.id)">
+                                    <i class="fa fa-print fa-lg" aria-hidden="true"></i>
                                 </button>
                                 <button type="button" class="btn btn-sm btn-primary" ng-click="aumentaExcedente(o, true)" ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo !== 1"
                                         data-toggle="tooltip" data-placement="auto" title="Cambiar porcentaje de excedente...">

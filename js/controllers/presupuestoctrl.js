@@ -26,6 +26,7 @@
         $scope.showForm = {presupuesto: false, ot: false};
         $scope.fltrot = { fdel: moment('2017-10-01').toDate(), fal: moment().endOf('month').toDate(), idestatuspresup: null, idusuario: 0 };
         $scope.lstestatuspresup = [];
+        $scope.loadingPresupuestos = false;
 
         proyectoSrvc.lstProyecto().then(function(d){ $scope.proyectos = d; });
         empresaSrvc.lstEmpresas().then(function(d){ $scope.empresas = d; });
@@ -62,6 +63,7 @@
                 data[i].fhaprobacion = moment(data[i].fhaprobacion).isValid() ? moment(data[i].fhaprobacion).toDate() : null;
                 data[i].origenprov = parseInt(data[i].origenprov);
             }
+            $scope.loadingPresupuestos = false;
             return data;
         }
 
@@ -69,6 +71,7 @@
             $scope.fltrot.fdelstr = moment($scope.fltrot.fdel).format('YYYY-MM-DD');
             $scope.fltrot.falstr = moment($scope.fltrot.fal).format('YYYY-MM-DD');
             $scope.fltrot.idestatuspresup = idestatuspresup != null && idestatuspresup !== undefined ? idestatuspresup : '';
+            $scope.loadingPresupuestos = true;
             presupuestoSrvc.lstPresupuestos($scope.fltrot).then(function(d){
                 $scope.lstpresupuestos = procDataPresup(d);
             });
@@ -150,6 +153,11 @@
             var test = false;
             jsReportSrvc.getPDFReport(test ? 'r1UD2qMnZ' : 'r1cGFmmhZ', {idpresupuesto: idpresupuesto, detallado: adetalle}).then(function(pdf){ $window.open(pdf); });
 
+        };
+
+        $scope.printOt = function(idot){
+            var test = false;
+            jsReportSrvc.getPDFReport(test ? 'BJdOgyV2W' : 'S1eAuyN2b', {idot: idot}).then(function(pdf){ $window.open(pdf); });
         };
 
         $scope.nuevoPresupuesto = function(){

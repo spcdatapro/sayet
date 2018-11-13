@@ -66,7 +66,8 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group" ng-show="laTran.objTipotrans.abreviatura === 'C' || laTran.tipotrans === 'C'">
+                        <div class="form-group"
+                             ng-show="laTran.objTipotrans.abreviatura === 'C' || laTran.tipotrans === 'C' || laTran.objTipotrans.abreviatura === 'R' || laTran.tipotrans === 'R'">
                             <label>Orden de trabajo:</label>
                             <ui-select ng-model="laTran.iddetpagopresup"
                                        title="Seleccione una orden de trabajo..."
@@ -76,7 +77,7 @@
                                 <ui-select-match placeholder="Buscar orden de trabajo..." allow-clear="true">
                                     <span ng-bind="($select.selected.ot + ' - Pago #' + $select.selected.nopago)"></span>
                                 </ui-select-match>
-                                <ui-select-choices ui-disable-choice="+item.pagado == 1" repeat="item.iddetpagopresup as item in ots | filter:$select.search">
+                                <ui-select-choices ui-disable-choice="+item.pagado == 1 && (laTran.objTipotrans.abreviatura === 'C' || laTran.tipotrans === 'C')" repeat="item.iddetpagopresup as item in ots | filter:$select.search">
                                     <div ng-bind-html="(item.ot + ' - Pago #' + item.nopago ) | highlight: $select.search"></div>
                                     <small>
                                         <span ng-show="+item.pagado == 1" style="color: red">PAGADO</span><br ng-show="+item.pagado == 1"/>
