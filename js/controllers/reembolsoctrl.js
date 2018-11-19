@@ -694,6 +694,17 @@
             modalInstance.result.then(function(){ return 0; }, function(){ return 0; });
         };
 
+        $scope.printSinCtaDeLiquidacion = function(){
+            var modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: 'modalPrintSinLiquida.html',
+                controller: 'ModalPrintSinLiquidaCtrl',
+                windowClass: 'app-modal-window'
+            });
+
+            modalInstance.result.then(function(){ return 0; }, function(){ return 0; });
+        };
+
         $scope.comprasColDef = [
             {
                 columnHeaderDisplayName: 'No.',
@@ -870,6 +881,23 @@
             $scope.params.fdelstr = moment($scope.params.fdel).isValid() ? moment($scope.params.fdel).format('YYYY-MM-DD') : '';
             $scope.params.falstr = moment($scope.params.fal).isValid() ? moment($scope.params.fal).format('YYYY-MM-DD') : '';
             jsReportSrvc.getPDFReport(test ? 'rkiDet5SW' : 'HyrzNi9rZ', $scope.params).then(function(pdf){ $scope.content = pdf; });
+        };
+
+        $scope.genReporte();
+
+    }]);
+    //------------------------------------------------------------------------------------------------------------------------------------------------//
+    reembolsoctrl.controller('ModalPrintSinLiquidaCtrl', ['$scope', '$uibModalInstance', 'jsReportSrvc', function($scope, $uibModalInstance, jsReportSrvc){
+        $scope.params = {fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate()};
+
+        $scope.ok = function () { $uibModalInstance.close(); };
+        $scope.cancel = function () { $uibModalInstance.dismiss('cancel'); };
+
+        var test = false;
+        $scope.genReporte = function(){
+            $scope.params.fdelstr = moment($scope.params.fdel).isValid() ? moment($scope.params.fdel).format('YYYY-MM-DD') : '';
+            $scope.params.falstr = moment($scope.params.fal).isValid() ? moment($scope.params.fal).format('YYYY-MM-DD') : '';
+            jsReportSrvc.getPDFReport(test ? 'S1cKUhgAm' : 'S1cKUhgAm', $scope.params).then(function(pdf){ $scope.content = pdf; });
         };
 
         $scope.genReporte();
