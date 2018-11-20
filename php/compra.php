@@ -176,6 +176,10 @@ function insertaDetalleContable($d, $idorigen){
             $db->doQuery($query);
         }
     }
+
+    $url = 'http://localhost/sayet/php/fixdescuadrecompra.php/fix';
+    $dataa = ['idfactura' => $idorigen];
+    $db->CallJSReportAPI('POST', $url, json_encode($dataa));
 };
 
 function generaDetalleProyecto($db, $lastid){
