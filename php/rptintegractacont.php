@@ -17,17 +17,7 @@ $app->post('/integra', function()use($db){
     $url = 'http://localhost/sayet/php/rptlibmay.php/rptlibmay';
     //$dataa = ['idfactura' => $ids];
     $dataa = [
-        "idempresa" => $d->idempresa,
-        "codigo" => "'$cta'",
-        "constproc"=>0,
-        "filtro"=>"1",
-        "codigoal"=>"",
-        "cuentasSel"=>[$cta],
-        "vercierre"=>1,
-        "nofolio"=>"",
-        "noheader"=>0,
-        "fdelstr"=>$d->fdelstr,
-        "falstr"=>$d->falstr
+        "idempresa" => $d->idempresa, "codigo" => "'$cta'", "constproc"=>0, "filtro"=>"1", "codigoal"=>"", "cuentasSel"=>[$cta], "vercierre"=>1, "nofolio"=>"", "noheader"=>0, "fdelstr"=>$d->fdelstr, "falstr"=>$d->falstr
     ];
     $db->CallJSReportAPI('POST', $url, json_encode($dataa));
 
@@ -41,26 +31,39 @@ $app->post('/integra', function()use($db){
     $generales = $db->getQuery($query)[0];
 
     //Transacciones bancarias
-    $query = "SELECT a.id, c.idtranban, a.idbanco, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, CONCAT(d.siglas, ' ',a.tipotrans, a.numero) AS transaccion, b.debe, b.haber, ";
-    $query.= "GROUP_CONCAT(c.idcompra SEPARATOR ', ') AS compras, ";
-    $query.= "COUNT(c.idcompra) AS conteofacturas, a.beneficiario ";
+    $query = "SELECT a.fecha AS fechaOrd, a.id, c.idtranban, a.idbanco, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, CONCAT(d.siglas, ' ',a.tipotrans, a.numero) AS transaccion, b.debe, b.haber, ";
+    $query.= "GROUP_CONCAT(c.idcompra SEPARATOR ', ') AS compras, COUNT(c.idcompra) AS conteofacturas, a.beneficiario, 1 AS dedonde ";
     $query.= "FROM tranban a INNER JOIN detallecontable b ON a.id = b.idorigen LEFT JOIN detpagocompra c ON a.id = c.idtranban LEFT JOIN banco d ON d.id = a.idbanco ";
     $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND b.origen = 1 AND b.idcuenta = $d->idcuenta AND (c.esrecprov = 0 OR c.esrecprov IS NULL) ";
+    //Quitar los cheques que estén atados a alguna otra transacción bancaria y quitar las transacciones bancarias a tadas a cheques
+    $query.= "AND a.iddocliquida = 0 AND a.id NOT IN (SELECT iddocliquida FROM tranban WHERE idbanco = a.idbanco AND iddocliquida > 0) ";
     $query.= "GROUP BY a.id ";
-    $query.= "ORDER BY a.fecha ";
+    $query.= "UNION ALL ";
+    $query.= "SELECT a.fecha AS fechaOrd, a.id, c.id AS idtranban, a.idbanco, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, CONCAT(d.siglas, ' ',a.tipotrans, a.numero) AS transaccion, b.debe, b.haber, ";
+    $query.= "GROUP_CONCAT(c.id SEPARATOR ', ') AS compras, COUNT(c.id) AS conteofacturas, a.beneficiario, 2 AS dedonde ";
+    $query.= "FROM tranban a INNER JOIN detallecontable b ON a.id = b.idorigen INNER JOIN tranban c ON c.id = a.iddocliquida INNER JOIN banco d ON d.id = a.idbanco ";
+    $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.iddocliquida > 0 AND b.origen = 1 AND b.idcuenta = $d->idcuenta ";
+    $query.= "GROUP BY a.id ";
+    $query.= "ORDER BY 1";
     $cheques = $db->getQuery($query);
     $cntCheques = count($cheques);
     $descuadres = [];
     for($i = 0; $i < $cntCheques; $i++){
         $cheque = $cheques[$i];
-        if((int)$cheque->conteofacturas > 0){
-            $query = "SELECT GROUP_CONCAT(CONCAT(a.serie, '-', a.documento) SEPARATOR ', ') AS facturas, SUM(b.debe) AS totdebe, SUM(b.haber) AS tothaber, 0 AS reembolso ";
-            $query.= "FROM compra a INNER JOIN detallecontable b ON a.id = b.idorigen ";
-            $query.= "WHERE a.id IN($cheque->compras) AND b.origen = 2 AND b.idcuenta = $d->idcuenta";
-        }else{
-            $query = "SELECT GROUP_CONCAT(CONCAT(a.serie, '', a.documento) SEPARATOR ', ') AS facturas, SUM(c.debe) AS totdebe, SUM(c.haber) AS tothaber, b.id AS reembolso ";
-            $query.= "FROM compra a INNER JOIN reembolso b ON b.id = a.idreembolso INNER JOIN detallecontable c ON a.id = c.idorigen ";
-            $query.= "WHERE b.idtranban = $cheque->id AND b.esrecprov = 0 AND c.origen = 2 AND c.idcuenta = $d->idcuenta";
+        if((int)$cheque->dedonde === 1){
+            if((int)$cheque->conteofacturas > 0){
+                $query = "SELECT GROUP_CONCAT(CONCAT(a.serie, '-', a.documento) SEPARATOR ', ') AS facturas, SUM(b.debe) AS totdebe, SUM(b.haber) AS tothaber, 0 AS reembolso ";
+                $query.= "FROM compra a INNER JOIN detallecontable b ON a.id = b.idorigen ";
+                $query.= "WHERE a.id IN($cheque->compras) AND b.origen = 2 AND b.idcuenta = $d->idcuenta";
+            }else{
+                $query = "SELECT GROUP_CONCAT(CONCAT(a.serie, '', a.documento) SEPARATOR ', ') AS facturas, SUM(c.debe) AS totdebe, SUM(c.haber) AS tothaber, b.id AS reembolso ";
+                $query.= "FROM compra a INNER JOIN reembolso b ON b.id = a.idreembolso INNER JOIN detallecontable c ON a.id = c.idorigen ";
+                $query.= "WHERE b.idtranban = $cheque->id AND b.esrecprov = 0 AND c.origen = 2 AND c.idcuenta = $d->idcuenta";
+            }
+        } else {
+            $query = "SELECT GROUP_CONCAT(CONCAT(a.tipotrans, a.numero) SEPARATOR ', ') AS facturas, SUM(b.debe) AS totdebe, SUM(b.haber) AS tothaber, 0 AS reembolso ";
+            $query.= "FROM tranban a INNER JOIN detallecontable b ON a.id = b.idorigen ";
+            $query.= "WHERE a.id IN($cheque->compras) AND b.origen = 1 AND b.idcuenta = $d->idcuenta";
         }
         //print $query;
         $documentos = $db->getQuery($query);

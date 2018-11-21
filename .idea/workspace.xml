@@ -39,12 +39,12 @@
     <favorites_list name="cpm" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+    <leaf>
       <file leaf-file-name="rptintegractacont.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/php/rptintegractacont.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="1" column="18" lean-forward="true" selection-start-line="1" selection-start-column="18" selection-end-line="1" selection-end-column="18" />
+            <state relative-caret-position="271">
+              <caret line="77" column="60" lean-forward="true" selection-start-line="77" selection-start-column="60" selection-end-line="77" selection-end-column="60" />
             </state>
           </provider>
         </entry>
@@ -206,6 +206,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -222,9 +223,8 @@
           <select />
         </subPane>
       </pane>
-      <pane id="AndroidView" />
       <pane id="Scope" />
-      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -948,12 +948,13 @@
       <workItem from="1542303239427" duration="832000" />
       <workItem from="1542637645642" duration="10930000" />
       <workItem from="1542727347387" duration="12605000" />
-      <workItem from="1542773453593" duration="115000" />
+      <workItem from="1542773453593" duration="174000" />
+      <workItem from="1542814168161" duration="3407000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2855588000" />
+    <option name="totallyTimeSpent" value="2859054000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -972,7 +973,7 @@
       <window_info anchor="bottom" x="206" y="338" width="1572" height="574" id="Terminal" order="11" type="WINDOWED" weight="1.0" />
       <window_info id="Capture Tool" order="6" />
       <window_info anchor="right" id="Designer" order="6" />
-      <window_info active="true" content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" visible="true" weight="0.17537314" />
+      <window_info content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" weight="0.17697228" />
       <window_info anchor="right" id="Database" order="7" weight="0.32889125" />
       <window_info anchor="right" id="SciView" order="9" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.1546875" />
@@ -1324,18 +1325,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="17">
           <caret line="182" column="66" selection-start-line="182" selection-start-column="66" selection-end-line="182" selection-end-column="66" />
-          <folding>
-            <element signature="e#436#444#0" expanded="true" />
-            <element signature="e#840#848#0" expanded="true" />
-            <element signature="e#1078#1086#0" expanded="true" />
-            <element signature="e#2235#2243#0" expanded="true" />
-            <element signature="e#3595#3603#0" expanded="true" />
-            <element signature="e#4186#4194#0" expanded="true" />
-            <element signature="e#13494#13502#0" expanded="true" />
-            <element signature="e#24542#24550#0" expanded="true" />
-            <element signature="e#33901#33909#0" expanded="true" />
-            <element signature="e#41248#41256#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1362,8 +1351,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/php/rptintegractacont.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" column="18" lean-forward="true" selection-start-line="1" selection-start-column="18" selection-end-line="1" selection-end-column="18" />
+        <state relative-caret-position="271">
+          <caret line="77" column="60" lean-forward="true" selection-start-line="77" selection-start-column="60" selection-end-line="77" selection-end-column="60" />
         </state>
       </provider>
     </entry>
