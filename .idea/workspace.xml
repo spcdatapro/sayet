@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/php/rptintegractacont.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/rptintegractacont.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/controllers/tranbancctrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/tranbancctrl.js" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -39,12 +39,21 @@
     <favorites_list name="cpm" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="rptintegractacont.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/php/rptintegractacont.php">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="tranbancctrl.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/js/controllers/tranbancctrl.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="271">
-              <caret line="77" column="60" lean-forward="true" selection-start-line="77" selection-start-column="60" selection-end-line="77" selection-end-column="60" />
+            <state relative-caret-position="281">
+              <caret line="307" column="28" selection-start-line="307" selection-start-column="16" selection-end-line="307" selection-end-column="28" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="tranbanc.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/php/tranbanc.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="425">
+              <caret line="42" column="155" lean-forward="true" selection-start-line="42" selection-start-column="143" selection-end-line="42" selection-end-column="155" />
             </state>
           </provider>
         </entry>
@@ -63,7 +72,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>MntEmpleadoController</find>
       <find>$scope.empleados</find>
       <find>frmLectura</find>
       <find>cd</find>
@@ -93,6 +101,7 @@
       <find>:</find>
       <find>idempresa</find>
       <find>$scope.lasTran</find>
+      <find>iddocliquida</find>
     </findStrings>
     <replaceStrings>
       <replace>$d-&gt;falstr</replace>
@@ -157,10 +166,10 @@
         <option value="$PROJECT_DIR$/pages/tranreembolso.html" />
         <option value="$PROJECT_DIR$/php/fixdescuadrecompra.php" />
         <option value="$PROJECT_DIR$/php/compra.php" />
-        <option value="$PROJECT_DIR$/js/controllers/tranbancctrl.js" />
         <option value="$PROJECT_DIR$/php/tranbanc.php" />
         <option value="$PROJECT_DIR$/pages/tranbanc.html" />
         <option value="$PROJECT_DIR$/php/rptintegractacont.php" />
+        <option value="$PROJECT_DIR$/js/controllers/tranbancctrl.js" />
       </list>
     </option>
   </component>
@@ -206,7 +215,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="AndroidView" />
       <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -217,14 +228,23 @@
             <path>
               <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
               <item name="sayet" type="462c0819:PsiDirectoryNode" />
+              <item name="js" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sayet" type="462c0819:PsiDirectoryNode" />
+              <item name="js" type="462c0819:PsiDirectoryNode" />
+              <item name="controllers" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sayet" type="462c0819:PsiDirectoryNode" />
               <item name="php" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -949,12 +969,13 @@
       <workItem from="1542637645642" duration="10930000" />
       <workItem from="1542727347387" duration="12605000" />
       <workItem from="1542773453593" duration="174000" />
-      <workItem from="1542814168161" duration="3407000" />
+      <workItem from="1542814168161" duration="3802000" />
+      <workItem from="1542836148849" duration="733000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2859054000" />
+    <option name="totallyTimeSpent" value="2860182000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -973,7 +994,7 @@
       <window_info anchor="bottom" x="206" y="338" width="1572" height="574" id="Terminal" order="11" type="WINDOWED" weight="1.0" />
       <window_info id="Capture Tool" order="6" />
       <window_info anchor="right" id="Designer" order="6" />
-      <window_info content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" weight="0.17697228" />
+      <window_info content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" weight="0.17857143" />
       <window_info anchor="right" id="Database" order="7" weight="0.32889125" />
       <window_info anchor="right" id="SciView" order="9" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.1546875" />
@@ -1328,20 +1349,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/tranbancctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="144" column="55" selection-start-line="144" selection-start-column="55" selection-end-line="144" selection-end-column="55" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/tranbanc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="21" column="34" selection-start-line="21" selection-start-column="34" selection-end-line="21" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/rptlibmay.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="34">
@@ -1351,8 +1358,22 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/php/rptintegractacont.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="271">
-          <caret line="77" column="60" lean-forward="true" selection-start-line="77" selection-start-column="60" selection-end-line="77" selection-end-column="60" />
+        <state relative-caret-position="1734">
+          <caret line="102" column="5" selection-start-line="102" selection-start-column="5" selection-end-line="102" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/tranbanc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="42" column="155" lean-forward="true" selection-start-line="42" selection-start-column="143" selection-end-line="42" selection-end-column="155" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/tranbancctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="281">
+          <caret line="307" column="28" selection-start-line="307" selection-start-column="16" selection-end-line="307" selection-end-column="28" />
         </state>
       </provider>
     </entry>

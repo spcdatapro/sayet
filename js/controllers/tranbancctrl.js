@@ -305,7 +305,7 @@
             obj.iddetpresup = obj.iddetpresup != null && obj.iddetpresup !== undefined ? obj.iddetpresup : 0;
             obj.iddetpagopresup = obj.iddetpagopresup != null && obj.iddetpagopresup !== undefined ? obj.iddetpagopresup : 0;
             obj.idproyecto = obj.idproyecto != null && obj.idproyecto !== undefined ? obj.idproyecto : 0;
-            obj.iddocliquida = obj.iddocliquida != null && obj.iddocliquida !== undefined ? obj.iddocliquida : '';
+            obj.iddocliquida = obj.iddocliquida != null && obj.iddocliquida !== undefined ? obj.iddocliquida : 0;
             //console.log(obj); return;
             tranBancSrvc.editRow(obj, 'c').then(function(d){
                 $scope.getLstTran();
@@ -467,7 +467,7 @@
             data.iddetpresup = data.iddetpresup != null && data.iddetpresup !== undefined ? data.iddetpresup : 0;
             data.iddetpagopresup = data.iddetpagopresup != null && data.iddetpagopresup !== undefined ? data.iddetpagopresup : 0;
             data.idproyecto = data.idproyecto != null && data.idproyecto !== undefined ? data.idproyecto : 0;
-            data.iddocliquida = data.iddocliquida != null && data.iddocliquida !== undefined ? data.iddocliquida : '';
+            data.iddocliquida = data.iddocliquida != null && data.iddocliquida !== undefined ? data.iddocliquida : 0;
             tranBancSrvc.editRow(data, 'u').then(function(){
                 $scope.laTran = {
                     objBanco: data.objBanco,
