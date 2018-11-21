@@ -177,6 +177,25 @@
                         </div>
                     </div>
                 </div>
+                <div class="row" ng-show="laTran.objTipotrans.abreviatura === 'C' || laTran.tipotrans === 'C'">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Nota de cr&eacute;dito:</label>
+                            <ui-select ng-model="laTran.iddocliquida"
+                                       title="Seleccione una nota de cr&eacute;dito..."
+                                       theme="bootstrap"
+                                       autofocus="false">
+                                <ui-select-match placeholder="Buscar nota de cr&eacute;dito..." allow-clear="true">
+                                    <span ng-bind="($select.selected.tipotrans + ' ' + $select.selected.numero)"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="item.id as item in lstndc | filter:$select.search" group-by="'grupo'">
+                                    <div ng-bind-html="(item.tipotrans + ' ' + item.numero) | highlight: $select.search"></div>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                </div>
                 <div class="row" ng-show="laTran.anulado === 1">
                     <div class="col-md-12">
                         <div class="well well-sm">

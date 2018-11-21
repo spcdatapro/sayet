@@ -33,6 +33,7 @@
         $scope.selected = {};
         //$scope.tipotrans = [{value: 'C', text: 'C'}, {value: 'D', text: 'D'}, {value: 'B', text: 'B'}, {value: 'R', text: 'R'}];
         $scope.tipotrans = [];
+        $scope.lstndc = [];
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true);
         $scope.dtOptionsDetCont = DTOptionsBuilder.newOptions().withBootstrap()
             .withBootstrapOptions({
@@ -116,22 +117,33 @@
             });
         };
 
+        function prepareTranBan(d){
+            for(var i = 0; i < d.length; i++){
+                d[i].fecha = moment(d[i].fecha).toDate();
+                d[i].numero = parseInt(d[i].numero);
+                d[i].monto = parseFloat(d[i].monto);
+                d[i].operado = parseInt(d[i].operado);
+                d[i].anticipo = parseInt(d[i].anticipo);
+                d[i].iddocliquida = parseInt(d[i].iddocliquida);
+            }
+            return d;
+        }
+
         $scope.getLstTran = function(){
-            if($scope.laTran.objBanco != null && $scope.laTran.objBanco != undefined){
+            if($scope.laTran.objBanco != null && $scope.laTran.objBanco !== undefined){
                 $scope.laTran.tipocambio = parseFloat($scope.laTran.objBanco.tipocambio).toFixed($scope.dectc);
                 $scope.cleanInfo();
                 $scope.fltrtran.idbanco = $scope.laTran.objBanco.id;
                 $scope.fltrtran.fdelstr = moment($scope.fltrtran.fdel).format('YYYY-MM-DD');
                 $scope.fltrtran.falstr = moment($scope.fltrtran.fal).format('YYYY-MM-DD');
+                $scope.fltrtran.tipotrans = '';
                 tranBancSrvc.lstTranFiltr($scope.fltrtran).then(function(d){
-                    $scope.lasTran = d;
-                    for(var i = 0; i < $scope.lasTran.length; i++){
-                        $scope.lasTran[i].fecha = moment($scope.lasTran[i].fecha).toDate();
-                        $scope.lasTran[i].numero = parseInt($scope.lasTran[i].numero);
-                        $scope.lasTran[i].monto = parseFloat($scope.lasTran[i].monto);
-                        $scope.lasTran[i].operado = parseInt($scope.lasTran[i].operado);
-                        $scope.lasTran[i].anticipo = parseInt($scope.lasTran[i].anticipo);
-                    }
+                    $scope.lasTran = prepareTranBan(d);
+                    $scope.fltrtran.tipotrans = 'R';
+                    tranBancSrvc.lstTranFiltr($scope.fltrtran).then(function(dr){
+                        $scope.lstndc = prepareTranBan(dr);
+                        $scope.fltrtran.tipotrans = '';
+                    });
                 });
             }
         };
@@ -150,6 +162,7 @@
             $scope.laTran.concepto = undefined;
             $scope.laTran.iddetpagopresup = undefined;
             $scope.laTran.idproyecto = undefined;
+            $scope.laTran.iddocliquida = undefined;
         };
 
         $scope.resetLaTran = function(){
@@ -163,9 +176,11 @@
                 esnegociable: 0,
                 iddetpresup: undefined,
                 iddetpagopresup: undefined,
-                idproyecto: undefined
+                idproyecto: undefined,
+                iddocliquida: undefined
             };
             $scope.lasTran = [];
+            $scope.lstndc = [];
             $scope.losDocsSoporte = [];
             $scope.elDocSop = {fechadoc: moment().toDate(), fechaliquida: null};
             $scope.losDetCont = [];
@@ -282,14 +297,15 @@
             obj.idbanco = obj.objBanco.id;
             obj.fechastr = moment(obj.fecha).format('YYYY-MM-DD');
             obj.tipotrans = obj.objTipotrans.abreviatura;
-            obj.anticipo = obj.anticipo != null && obj.anticipo != undefined ? obj.anticipo : 0;
-            obj.esnegociable = obj.esnegociable != null && obj.esnegociable != undefined ? obj.esnegociable : 0;
-            obj.esnegociable = obj.tipotrans.toUpperCase() == 'C' ? obj.esnegociable : 0;
-            obj.idbeneficiario = (parseInt(obj.anticipo) === 0) ? 0 : (obj.objBeneficiario != null && obj.objBeneficiario != undefined ? obj.objBeneficiario.id : 0);
-            obj.origenbene = (parseInt(obj.anticipo) === 0) ? 0 : (obj.objBeneficiario != null && obj.objBeneficiario != undefined ? obj.objBeneficiario.dedonde : 0);
-            obj.iddetpresup = obj.iddetpresup != null && obj.iddetpresup != undefined ? obj.iddetpresup : 0;
-            obj.iddetpagopresup = obj.iddetpagopresup != null && obj.iddetpagopresup != undefined ? obj.iddetpagopresup : 0;
-            obj.idproyecto = obj.idproyecto != null && obj.idproyecto != undefined ? obj.idproyecto : 0;
+            obj.anticipo = obj.anticipo != null && obj.anticipo !== undefined ? obj.anticipo : 0;
+            obj.esnegociable = obj.esnegociable != null && obj.esnegociable !== undefined ? obj.esnegociable : 0;
+            obj.esnegociable = obj.tipotrans.toUpperCase() === 'C' ? obj.esnegociable : 0;
+            obj.idbeneficiario = (parseInt(obj.anticipo) === 0) ? 0 : (obj.objBeneficiario != null && obj.objBeneficiario !== undefined ? obj.objBeneficiario.id : 0);
+            obj.origenbene = (parseInt(obj.anticipo) === 0) ? 0 : (obj.objBeneficiario != null && obj.objBeneficiario !== undefined ? obj.objBeneficiario.dedonde : 0);
+            obj.iddetpresup = obj.iddetpresup != null && obj.iddetpresup !== undefined ? obj.iddetpresup : 0;
+            obj.iddetpagopresup = obj.iddetpagopresup != null && obj.iddetpagopresup !== undefined ? obj.iddetpagopresup : 0;
+            obj.idproyecto = obj.idproyecto != null && obj.idproyecto !== undefined ? obj.idproyecto : 0;
+            obj.iddocliquida = obj.iddocliquida != null && obj.iddocliquida !== undefined ? obj.iddocliquida : '';
             //console.log(obj); return;
             tranBancSrvc.editRow(obj, 'c').then(function(d){
                 $scope.getLstTran();
@@ -314,7 +330,8 @@
                 data[i].tipocambio = parseFloat(parseFloat(data[i].tipocambio).toFixed($scope.dectc));
                 data[i].impreso = parseInt(data[i].impreso);
                 data[i].fechaliquida = moment(data[i].fechaliquida).isValid() ? moment(data[i].fechaliquida).toDate() : null;
-                data[i].iddetpagopresup = +data[i].iddetpagopresup == 0 ? undefined : data[i].iddetpagopresup;
+                data[i].iddetpagopresup = +data[i].iddetpagopresup === 0 ? undefined : data[i].iddetpagopresup;
+                data[i].iddocliquida = +data[i].iddocliquida === 0 ? undefined : data[i].iddocliquida;
             }
             return data;
         }
@@ -442,14 +459,15 @@
             data.idbanco = data.objBanco.id;
             data.fechastr = moment(data.fecha).format('YYYY-MM-DD');
             data.tipotrans = data.objTipotrans.abreviatura;
-            data.anticipo = data.anticipo != null && data.anticipo != undefined ? data.anticipo : 0;
-            data.esnegociable = data.esnegociable != null && data.esnegociable != undefined ? data.esnegociable : 0;
-            data.esnegociable = data.tipotrans.toUpperCase() == 'C' ? data.esnegociable : 0;
-            data.idbeneficiario = (parseInt(data.anticipo) === 0) ? 0 : (data.objBeneficiario != null && data.objBeneficiario != undefined ? data.objBeneficiario.id : 0);
-            data.origenbene = (parseInt(data.anticipo) === 0) ? 0 : (data.objBeneficiario != null && data.objBeneficiario != undefined ? data.objBeneficiario.dedonde : 0);
-            data.iddetpresup = data.iddetpresup != null && data.iddetpresup != undefined ? data.iddetpresup : 0;
-            data.iddetpagopresup = data.iddetpagopresup != null && data.iddetpagopresup != undefined ? data.iddetpagopresup : 0;
-            data.idproyecto = data.idproyecto != null && data.idproyecto != undefined ? data.idproyecto : 0;
+            data.anticipo = data.anticipo != null && data.anticipo !== undefined ? data.anticipo : 0;
+            data.esnegociable = data.esnegociable != null && data.esnegociable !== undefined ? data.esnegociable : 0;
+            data.esnegociable = data.tipotrans.toUpperCase() === 'C' ? data.esnegociable : 0;
+            data.idbeneficiario = (parseInt(data.anticipo) === 0) ? 0 : (data.objBeneficiario != null && data.objBeneficiario !== undefined ? data.objBeneficiario.id : 0);
+            data.origenbene = (parseInt(data.anticipo) === 0) ? 0 : (data.objBeneficiario != null && data.objBeneficiario !== undefined ? data.objBeneficiario.dedonde : 0);
+            data.iddetpresup = data.iddetpresup != null && data.iddetpresup !== undefined ? data.iddetpresup : 0;
+            data.iddetpagopresup = data.iddetpagopresup != null && data.iddetpagopresup !== undefined ? data.iddetpagopresup : 0;
+            data.idproyecto = data.idproyecto != null && data.idproyecto !== undefined ? data.idproyecto : 0;
+            data.iddocliquida = data.iddocliquida != null && data.iddocliquida !== undefined ? data.iddocliquida : '';
             tranBancSrvc.editRow(data, 'u').then(function(){
                 $scope.laTran = {
                     objBanco: data.objBanco,

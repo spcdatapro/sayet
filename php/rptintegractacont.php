@@ -10,7 +10,30 @@ $db = new dbcpm();
 $app->post('/integra', function()use($db){
     $d = json_decode(file_get_contents('php://input'));
 
-    $query = "SELECT a.nomempresa AS empresa, DATE_FORMAT('$d->fdelstr', '%d/%m/%Y') AS del, DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS al, b.codigo, b.nombrecta ";
+    $cta = $db->getOneField("SELECT codigo FROM cuentac WHERE id = $d->idcuenta");
+
+    $url = 'http://localhost/sayet/php/rptlibmay.php/rptlibmay';
+    //$dataa = ['idfactura' => $ids];
+    $dataa = [
+        "idempresa" => $d->idempresa,
+        "codigo" => "'$cta'",
+        "constproc"=>0,
+        "filtro"=>"1",
+        "codigoal"=>"",
+        "cuentasSel"=>[$cta],
+        "vercierre"=>1,
+        "nofolio"=>"",
+        "noheader"=>0,
+        "fdelstr"=>$d->fdelstr,
+        "falstr"=>$d->falstr
+    ];
+    $db->CallJSReportAPI('POST', $url, json_encode($dataa));
+
+    $query = "SELECT anterior, debe, haber, actual FROM rptlibromayor WHERE idcuentac = $d->idcuenta";
+    $movs = $db->getQuery($query)[0];
+
+    $query = "SELECT a.nomempresa AS empresa, DATE_FORMAT('$d->fdelstr', '%d/%m/%Y') AS del, DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS al, b.codigo, b.nombrecta, ";
+    $query.= "FORMAT($movs->anterior, 2) AS anterior, FORMAT($movs->debe, 2) AS debe, FORMAT($movs->haber, 2) AS haber, FORMAT($movs->actual, 2) AS actual ";
     $query.= "FROM empresa a INNER JOIN cuentac b ON a.id = b.idempresa WHERE b.id = $d->idcuenta";
     //print $query;
     $generales = $db->getQuery($query)[0];
