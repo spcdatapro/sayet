@@ -27,12 +27,22 @@
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn btn-primary btn-sm" ng-disabled="+params.idproyecto <= 0" ng-click="getRptFichaProy()">
-                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp;Ficha
-            </button>
-            <button type="button" class="btn btn-primary btn-sm" ng-disabled="+params.idproyecto <= 0" ng-click="getRptOcupaProy()">
-                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp;Ocupaci&oacute;n
-            </button>
+            <div class="btn-group" role="group" aria-label="...">
+                <button type="button" class="btn btn-primary btn-sm" ng-disabled="+params.idproyecto <= 0" ng-click="getRptFichaProy()">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp;Ficha
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" ng-disabled="+params.idproyecto <= 0" ng-click="getRptFichaProyExcel()">
+                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;Ficha
+                </button>
+            </div>
+            <div class="btn-group" role="group" aria-label="...">
+                <button type="button" class="btn btn-primary btn-sm" ng-disabled="+params.idproyecto <= 0" ng-click="getRptOcupaProy()">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp;Ocupaci&oacute;n
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" ng-disabled="+params.idproyecto <= 0" ng-click="getRptOcupaProyExcel()">
+                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;Ocupaci&oacute;n
+                </button>
+            </div>
             <button type="button" class="btn btn-primary btn-sm" ng-click="resetParams()">
                 <i class="fa fa-refresh" aria-hidden="true"></i>
             </button>
