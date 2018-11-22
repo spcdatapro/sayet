@@ -27,12 +27,17 @@
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn btn-primary btn-sm" ng-disabled="+params.idcliente <= 0" ng-click="getRptFichaCliente()">
-                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-            </button>
-            <button type="button" class="btn btn-primary btn-sm" ng-click="resetParams()">
-                <i class="fa fa-refresh" aria-hidden="true"></i>
-            </button>
+            <div class="btn-group" role="group" aria-label="...">
+                <button type="button" class="btn btn-primary btn-sm" ng-disabled="+params.idcliente <= 0" ng-click="getRptFichaCliente()">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" ng-disabled="+params.idcliente <= 0" ng-click="getRptFichaClienteExcel()">
+                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="resetParams()">
+                    <i class="fa fa-refresh" aria-hidden="true"></i>
+                </button>
+            </div>
         </div>
     </div>
     <div class="row">

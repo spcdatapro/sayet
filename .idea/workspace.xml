@@ -3,7 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/controllers/tranbancctrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/tranbancctrl.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/controllers/rptfichaclientectrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/rptfichaclientectrl.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/rptfichacliente.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/rptfichacliente.html" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -40,20 +41,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="tranbancctrl.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/js/controllers/tranbancctrl.js">
+      <file leaf-file-name="rptfichacliente.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/pages/rptfichacliente.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="281">
-              <caret line="307" column="28" selection-start-line="307" selection-start-column="16" selection-end-line="307" selection-end-column="28" />
+            <state relative-caret-position="646">
+              <caret line="38" column="25" selection-start-line="38" selection-start-column="25" selection-end-line="38" selection-end-column="25" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="tranbanc.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/php/tranbanc.php">
+      <file leaf-file-name="rptfichaclientectrl.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/controllers/rptfichaclientectrl.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="425">
-              <caret line="42" column="155" lean-forward="true" selection-start-line="42" selection-start-column="143" selection-end-line="42" selection-end-column="155" />
+            <state relative-caret-position="289">
+              <caret line="17" column="66" selection-start-line="17" selection-start-column="66" selection-end-line="17" selection-end-column="66" />
             </state>
           </provider>
         </entry>
@@ -119,7 +120,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/pages/tranfactcompra.html" />
         <option value="$PROJECT_DIR$/php/fixdescuadreventa.php" />
         <option value="$PROJECT_DIR$/php/cliente.php" />
         <option value="$PROJECT_DIR$/php/facturacion.php" />
@@ -143,7 +143,6 @@
         <option value="$PROJECT_DIR$/pages/rptactivos.html" />
         <option value="$PROJECT_DIR$/pages/rptlstproy.html" />
         <option value="$PROJECT_DIR$/pages/rptdetcontrato.html" />
-        <option value="$PROJECT_DIR$/pages/rptfichacliente.html" />
         <option value="$PROJECT_DIR$/pages/rptfichaproy.html" />
         <option value="$PROJECT_DIR$/pages/rptincdec.html" />
         <option value="$PROJECT_DIR$/pages/rptlstactivos.html" />
@@ -170,6 +169,8 @@
         <option value="$PROJECT_DIR$/pages/tranbanc.html" />
         <option value="$PROJECT_DIR$/php/rptintegractacont.php" />
         <option value="$PROJECT_DIR$/js/controllers/tranbancctrl.js" />
+        <option value="$PROJECT_DIR$/js/controllers/rptfichaclientectrl.js" />
+        <option value="$PROJECT_DIR$/pages/rptfichacliente.html" />
       </list>
     </option>
   </component>
@@ -201,7 +202,7 @@
       <path value="$PROJECT_DIR$/php/vendor/slim/slim" />
     </include_path>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="54" />
     <option name="y" value="-8" />
     <option name="width" value="1936" />
@@ -216,8 +217,6 @@
     </navigator>
     <panes>
       <pane id="AndroidView" />
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -234,7 +233,12 @@
               <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
               <item name="sayet" type="462c0819:PsiDirectoryNode" />
               <item name="js" type="462c0819:PsiDirectoryNode" />
-              <item name="controllers" type="462c0819:PsiDirectoryNode" />
+              <item name="filters" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sayet" type="462c0819:PsiDirectoryNode" />
+              <item name="pages" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
@@ -245,6 +249,8 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -970,15 +976,16 @@
       <workItem from="1542727347387" duration="12605000" />
       <workItem from="1542773453593" duration="174000" />
       <workItem from="1542814168161" duration="3802000" />
-      <workItem from="1542836148849" duration="733000" />
+      <workItem from="1542836148849" duration="1334000" />
+      <workItem from="1542895776082" duration="2285000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2860182000" />
+    <option name="totallyTimeSpent" value="2863068000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
@@ -994,7 +1001,7 @@
       <window_info anchor="bottom" x="206" y="338" width="1572" height="574" id="Terminal" order="11" type="WINDOWED" weight="1.0" />
       <window_info id="Capture Tool" order="6" />
       <window_info anchor="right" id="Designer" order="6" />
-      <window_info content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" weight="0.17857143" />
+      <window_info active="true" content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" visible="true" weight="0.17857143" />
       <window_info anchor="right" id="Database" order="7" weight="0.32889125" />
       <window_info anchor="right" id="SciView" order="9" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.1546875" />
@@ -1042,34 +1049,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/pages/rptpagoiusi.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="51" selection-start-line="3" selection-start-column="51" selection-end-line="3" selection-end-column="51" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/rptdocsvence.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="64" selection-start-line="3" selection-start-column="64" selection-end-line="3" selection-end-column="64" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/rptvencimientos.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="58" selection-start-line="2" selection-start-column="58" selection-end-line="2" selection-end-column="58" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptincdec.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="23">
-          <caret line="71" column="26" lean-forward="true" selection-start-line="71" selection-start-column="26" selection-end-line="71" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/controllers/rptincdecctrl.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="272">
@@ -1140,20 +1119,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptlibmayctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="969">
-          <caret line="57" column="64" selection-start-line="57" selection-start-column="55" selection-end-line="57" selection-end-column="64" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/rptlibmay.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="12" column="42" selection-start-line="12" selection-start-column="42" selection-end-line="12" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/services/jsreportsrvc.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="408">
@@ -1219,13 +1184,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1105">
           <caret line="65" column="38" selection-start-line="65" selection-start-column="19" selection-end-line="65" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/mntpresupuesto.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1173">
-          <caret line="69" column="29" selection-start-line="69" selection-start-column="29" selection-end-line="69" selection-end-column="29" />
         </state>
       </provider>
     </entry>
@@ -1363,17 +1321,61 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/php/tranbanc.php">
+    <entry file="file://$PROJECT_DIR$/js/controllers/tranbancctrl.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="425">
-          <caret line="42" column="155" lean-forward="true" selection-start-line="42" selection-start-column="143" selection-end-line="42" selection-end-column="155" />
+          <caret line="322" column="60" lean-forward="true" selection-start-line="322" selection-start-column="60" selection-end-line="322" selection-end-column="60" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/tranbancctrl.js">
+    <entry file="file://$PROJECT_DIR$/php/tranbanc.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="281">
-          <caret line="307" column="28" selection-start-line="307" selection-start-column="16" selection-end-line="307" selection-end-column="28" />
+        <state relative-caret-position="425">
+          <caret line="42" column="155" selection-start-line="42" selection-start-column="143" selection-end-line="42" selection-end-column="155" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptlibmay.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="618">
+          <caret line="134" column="25" lean-forward="true" selection-start-line="132" selection-start-column="16" selection-end-line="134" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptlibmayctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="573">
+          <caret line="85" column="19" lean-forward="true" selection-start-line="80" selection-start-column="16" selection-end-line="85" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/filters/pad.js">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptfichacliente.php">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptfichaclientectrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="17" column="66" selection-start-line="17" selection-start-column="66" selection-end-line="17" selection-end-column="66" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/mntpresupuesto.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="318">
+          <caret line="37" column="84" lean-forward="true" selection-start-line="37" selection-start-column="32" selection-end-line="37" selection-end-column="84" />
+          <folding>
+            <element signature="n#style#0;n#div#1;n#form#0;n#caption#0;n#table#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptfichacliente.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="646">
+          <caret line="38" column="25" selection-start-line="38" selection-start-column="25" selection-end-line="38" selection-end-column="25" />
         </state>
       </provider>
     </entry>
