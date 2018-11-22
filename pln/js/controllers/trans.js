@@ -115,6 +115,33 @@ angular.module('cpm')
         });
     }
 ])
+.controller('generarVacacionesController', ['$scope', '$http', 'nominaServicios', 'empresaSrvc', 'empServicios', 
+    function($scope, $http, nominaServicios, empresaSrvc, empServicios){
+        $scope.empresas = []
+        $scope.empleados = []
+
+        $scope.generar = function(n) {
+            $("#btnBuscar").button('loading')
+
+            n.fecha = n.fch.getFullYear()+'-'+(n.fch.getMonth()+1)+'-'+n.fch.getDate()
+            
+            nominaServicios.generarVacaciones(n).then(function(data){
+                alert(data.mensaje)
+                $("#btnBuscar").button('reset')
+            })
+        }
+
+        empresaSrvc.lstEmpresas().then(function(d){
+            $scope.empresas = d
+            setTimeout(function() { $("#selectEmpresa").chosen({width:'100%'}) }, 3)
+        })
+
+        empServicios.buscar({sin_limite:1}).then(function(res){
+            $scope.empleados = res.resultados
+            setTimeout(function() { $("#selectEmpleado").chosen({width:'100%'}) }, 3)
+        })
+    }
+])
 .controller('transPrestamoController', ['$scope', '$http', 'preServicios', 'empServicios',  
     function($scope, $http, preServicios, empServicios){
         $scope.formulario  = false

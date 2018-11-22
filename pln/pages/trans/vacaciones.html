@@ -1,0 +1,35 @@
+<div class="container-fluid" ng-controller="generarVacacionesController">
+	<div class="row">
+		<div class="col-sm-offset-3 col-sm-6">
+			<div class="jumbotron" id="contenidoGenerar">
+				<h3 class="text-center">Generar Vacaciones</h3>
+
+				<form ng-submit="generar(gen)">
+				  <div class="form-group form-group-sm">
+				    <label for="selectEmpresa">Empresa:</label>
+				    <select class="form-control" ng-model="gen.empresa" id="selectEmpresa">
+				    	<option ng-repeat="option in empresas" value="{{option.id}}">{{option.nomempresa}}</option>
+				    </select>
+				  </div>
+
+				  <div class="form-group form-group-sm">
+				  	<label for="selectEmpleado">Empleado:</label>
+			  		<select class="form-control" ng-model="gen.idplnempleado" id="selectEmpleado">
+			  			<option value="">------</option>
+			  			<option ng-repeat="empleado in empleados" value="{{empleado.id}}">{{empleado.nombre}} {{empleado.apellidos}}</option>
+			  		</select>
+				  </div>
+
+				  <div class="form-group form-group-sm">
+				    <label for="inputFecha">Anio:</label>
+				    <input type="number" ng-model="gen.anio" class="form-control" placeholder="Año">
+				  </div>
+
+				  <button type="submit" class="btn btn-primary btn-block" id="btnBuscar" data-loading-text="Generando...">
+				  	<i class="glyphicon glyphicon-cog"></i> Generar
+				  </button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

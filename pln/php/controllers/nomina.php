@@ -3,6 +3,8 @@
 define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
 define('PLNPATH', BASEPATH . '/pln/php');
 
+set_time_limit(0);
+
 require BASEPATH . "/php/vendor/autoload.php";
 require BASEPATH . "/php/ayuda.php";
 require PLNPATH . '/Principal.php';

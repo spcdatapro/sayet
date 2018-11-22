@@ -18,6 +18,9 @@ angular.module('cpm')
         generar: function(datos) {
             return comunFact.doPOSTFiles(urlBase + '/generar', datos);
         },
+        generarVacaciones: function(datos) {
+            return comunFact.doPOSTFiles(urlBase + '/generar_vacaciones', datos);
+        },
         getArchivos: function(emp) {
             return comunFact.doGET(urlBase + '/get_archivos/' + emp);
         }, 
@@ -32,6 +35,18 @@ angular.module('cpm')
         },
         terminarPlanilla: function(obj) {
             return comunFact.doPOSTFiles(urlBase + '/terminar_planilla', obj)
+        }
+    };
+}])
+.factory('nominaServicios', ['comunFact', function(comunFact){
+    var urlBase = 'pln/php/controllers/vacaciones.php';
+
+    return {
+        buscar: function(obj){
+            return comunFact.doGETJ(urlBase + '/buscar', obj);
+        },
+        generar: function(datos) {
+            return comunFact.doPOSTFiles(urlBase + '/generar', datos);
         }
     };
 }])
