@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/controllers/rptfichaclientectrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/rptfichaclientectrl.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/rptfichacliente.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/rptfichacliente.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/controllers/rptfichaproyctrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/rptfichaproyctrl.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/rptfichaproy.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/rptfichaproy.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/php/rptfichaproy.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/rptfichaproy.php" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -41,20 +41,37 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="rptfichacliente.html" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/pages/rptfichacliente.html">
+      <file leaf-file-name="rptfichaproy.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pages/rptfichaproy.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="646">
-              <caret line="38" column="25" selection-start-line="38" selection-start-column="25" selection-end-line="38" selection-end-column="25" />
+            <state relative-caret-position="697">
+              <caret line="41" column="137" selection-start-line="41" selection-start-column="117" selection-end-line="41" selection-end-column="137" />
+              <folding>
+                <element signature="e#2506#2514#0" expanded="true" />
+                <element signature="e#2770#2778#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="rptfichaclientectrl.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/controllers/rptfichaclientectrl.js">
+      <file leaf-file-name="rptfichaproyctrl.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/js/controllers/rptfichaproyctrl.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="17" column="66" selection-start-line="17" selection-start-column="66" selection-end-line="17" selection-end-column="66" />
+            <state relative-caret-position="204">
+              <caret line="12" column="132" lean-forward="true" selection-start-line="12" selection-start-column="132" selection-end-line="12" selection-end-column="132" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptfichaproy.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/php/rptfichaproy.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="94">
+              <caret line="159" column="36" lean-forward="true" selection-start-line="159" selection-start-column="36" selection-end-line="159" selection-end-column="36" />
+              <folding>
+                <element signature="e#188#4181#1#PHP" />
+                <element signature="e#4208#8616#1#PHP" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -73,7 +90,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>$scope.empleados</find>
       <find>frmLectura</find>
       <find>cd</find>
       <find>addCompra</find>
@@ -103,6 +119,7 @@
       <find>idempresa</find>
       <find>$scope.lasTran</find>
       <find>iddocliquida</find>
+      <find>plazofal</find>
     </findStrings>
     <replaceStrings>
       <replace>$d-&gt;falstr</replace>
@@ -120,8 +137,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/php/fixdescuadreventa.php" />
-        <option value="$PROJECT_DIR$/php/cliente.php" />
         <option value="$PROJECT_DIR$/php/facturacion.php" />
         <option value="$PROJECT_DIR$/js/controllers/transegpresupctrl.js" />
         <option value="$PROJECT_DIR$/php/cierreanual.php" />
@@ -143,7 +158,6 @@
         <option value="$PROJECT_DIR$/pages/rptactivos.html" />
         <option value="$PROJECT_DIR$/pages/rptlstproy.html" />
         <option value="$PROJECT_DIR$/pages/rptdetcontrato.html" />
-        <option value="$PROJECT_DIR$/pages/rptfichaproy.html" />
         <option value="$PROJECT_DIR$/pages/rptincdec.html" />
         <option value="$PROJECT_DIR$/pages/rptlstactivos.html" />
         <option value="$PROJECT_DIR$/pages/rptpagoiusi.html" />
@@ -171,6 +185,9 @@
         <option value="$PROJECT_DIR$/js/controllers/tranbancctrl.js" />
         <option value="$PROJECT_DIR$/js/controllers/rptfichaclientectrl.js" />
         <option value="$PROJECT_DIR$/pages/rptfichacliente.html" />
+        <option value="$PROJECT_DIR$/pages/rptfichaproy.html" />
+        <option value="$PROJECT_DIR$/js/controllers/rptfichaproyctrl.js" />
+        <option value="$PROJECT_DIR$/php/rptfichaproy.php" />
       </list>
     </option>
   </component>
@@ -233,7 +250,7 @@
               <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
               <item name="sayet" type="462c0819:PsiDirectoryNode" />
               <item name="js" type="462c0819:PsiDirectoryNode" />
-              <item name="filters" type="462c0819:PsiDirectoryNode" />
+              <item name="controllers" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
@@ -977,12 +994,12 @@
       <workItem from="1542773453593" duration="174000" />
       <workItem from="1542814168161" duration="3802000" />
       <workItem from="1542836148849" duration="1334000" />
-      <workItem from="1542895776082" duration="2285000" />
+      <workItem from="1542895776082" duration="5135000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2863068000" />
+    <option name="totallyTimeSpent" value="2865918000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
@@ -1001,7 +1018,7 @@
       <window_info anchor="bottom" x="206" y="338" width="1572" height="574" id="Terminal" order="11" type="WINDOWED" weight="1.0" />
       <window_info id="Capture Tool" order="6" />
       <window_info anchor="right" id="Designer" order="6" />
-      <window_info active="true" content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" visible="true" weight="0.17857143" />
+      <window_info content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" weight="0.17857143" />
       <window_info anchor="right" id="Database" order="7" weight="0.32889125" />
       <window_info anchor="right" id="SciView" order="9" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.1546875" />
@@ -1049,27 +1066,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptincdecctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" column="69" selection-start-line="16" selection-start-column="60" selection-end-line="16" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/rptincdec.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="69" selection-start-line="2" selection-start-column="69" selection-end-line="2" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/db.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="85" column="66" lean-forward="true" selection-start-line="85" selection-start-column="66" selection-end-line="85" selection-end-column="66" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/rptecuentacli.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="952">
@@ -1355,13 +1351,6 @@
     <entry file="file://$PROJECT_DIR$/php/rptfichacliente.php">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptfichaclientectrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="17" column="66" selection-start-line="17" selection-start-column="66" selection-end-line="17" selection-end-column="66" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pages/mntpresupuesto.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="318">
@@ -1374,8 +1363,44 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pages/rptfichacliente.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="646">
-          <caret line="38" column="25" selection-start-line="38" selection-start-column="25" selection-end-line="38" selection-end-column="25" />
+        <state relative-caret-position="595">
+          <caret line="35" column="25" lean-forward="true" selection-start-line="33" selection-start-column="16" selection-end-line="35" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptfichaclientectrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="20" column="15" lean-forward="true" selection-start-line="17" selection-start-column="12" selection-end-line="20" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptfichaproy.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="697">
+          <caret line="41" column="137" selection-start-line="41" selection-start-column="117" selection-end-line="41" selection-end-column="137" />
+          <folding>
+            <element signature="e#2506#2514#0" expanded="true" />
+            <element signature="e#2770#2778#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptfichaproy.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="94">
+          <caret line="159" column="36" lean-forward="true" selection-start-line="159" selection-start-column="36" selection-end-line="159" selection-end-column="36" />
+          <folding>
+            <element signature="e#188#4181#1#PHP" />
+            <element signature="e#4208#8616#1#PHP" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptfichaproyctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" column="132" lean-forward="true" selection-start-line="12" selection-start-column="132" selection-end-line="12" selection-end-column="132" />
         </state>
       </provider>
     </entry>

@@ -174,7 +174,7 @@ $app->post('/ocupacion', function(){
             INNER JOIN tipolocal b ON b.id = a.idtipolocal
             LEFT JOIN (
                 SELECT DISTINCT z.id AS idunidad, y.id AS idcontrato, y.idcliente, x.nombre AS cliente, y.idmonedadep, w.simbolo AS monedadep, FORMAT(y.deposito, 2) AS deposito,
-                DATE_FORMAT(y.plazofdel, '%d/%m/%Y') AS plazofdel, DATE_FORMAT(y.plazofal, '%d/%m/%Y') plazofal, 1 AS ocupado
+                DATE_FORMAT(y.fechainicia, '%d/%m/%Y') AS plazofdel, DATE_FORMAT(y.fechavence, '%d/%m/%Y') plazofal, 1 AS ocupado
                 FROM unidad z, contrato y, cliente x, moneda w
                 WHERE FIND_IN_SET(z.id, y.idunidad) AND x.id = y.idcliente AND w.id = y.idmonedadep AND z.idproyecto = $d->idproyecto AND y.inactivo = 0
             ) c ON a.id = c.idunidad
