@@ -73,27 +73,27 @@ class Empleado extends Principal
 	 */
 	private function revisarMostrarBitacora($args=[])
 	{
-		if ($this->emp->sueldo != $args['sueldo']) {
+		if ($this->emp->sueldo != elemento($args, "sueldo")) {
 			return 1;
 		}
 
-		if ($this->emp->bonificacionley != $args['bonificacionley']) {
+		if ($this->emp->bonificacionley != elemento($args, 'bonificacionley')) {
 			return 1;
 		}
 
-		if ($this->emp->idempresadebito != $args['idempresadebito']) {
+		if ($this->emp->idempresadebito != elemento($args, 'idempresadebito')) {
 			return 1;
 		}
 
-		if ($this->emp->idempresaactual != $args['idempresaactual']) {
+		if ($this->emp->idempresaactual != elemento($args, 'idempresaactual')) {
 			return 1;
 		}
 
-		if ($this->emp->ingreso != $args['ingreso']) {
+		if ($this->emp->ingreso != elemento($args, 'ingreso')) {
 			return 1;
 		}
 
-		if ($this->emp->reingreso != $args['reingreso']) {
+		if ($this->emp->reingreso != elemento($args, 'reingreso')) {
 			return 1;
 		}
 
@@ -225,6 +225,22 @@ class Empleado extends Principal
 
 			if (isset($args['emedireccion'])) {
 				$this->set_dato('emedireccion', $args['emedireccion']);
+			}
+
+			if (isset($args['vacasultimas'])) {
+				$this->set_dato('vacasultimas', $args['vacasultimas']);
+			}
+
+			if (isset($args['vacasgozar'])) {
+				$this->set_dato('vacasgozar', $args['vacasgozar']);
+			}
+
+			if (isset($args['vacasdias'])) {
+				$this->set_dato('vacasdias', $args['vacasdias']);
+			}
+
+			if (isset($args['vacasusados'])) {
+				$this->set_dato('vacasusados', $args['vacasusados']);
 			}
 		}
 

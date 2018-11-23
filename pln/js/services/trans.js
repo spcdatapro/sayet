@@ -38,7 +38,7 @@ angular.module('cpm')
         }
     };
 }])
-.factory('nominaServicios', ['comunFact', function(comunFact){
+.factory('vacasServicios', ['comunFact', function(comunFact){
     var urlBase = 'pln/php/controllers/vacaciones.php';
 
     return {

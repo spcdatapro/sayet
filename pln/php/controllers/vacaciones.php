@@ -7,33 +7,38 @@ define('PLNPATH', BASEPATH . '/pln/php');
 require BASEPATH . "/php/vendor/autoload.php";
 require BASEPATH . "/php/ayuda.php";
 require PLNPATH . '/Principal.php';
-require PLNPATH . '/models/Prestamo.php';
-require PLNPATH . '/models/Empleado.php';
-require PLNPATH . '/models/Nomina.php';
 require PLNPATH . '/models/General.php';
+require PLNPATH . '/models/Empleado.php';
+require PLNPATH . '/models/Vacaciones.php';
 
 $app = new \Slim\Slim();
 
 $app->post('/generar', function(){
-	$n = new Nomina();
+	$res  = ['exito' => 0];
 
-	$datos  = ['exito' => 0];
-	$fecha  = $_POST['fecha'];
-	$dia    = date('d', strtotime($fecha));
-	$ultimo = date('t', strtotime($fecha));
+	if (elemento($_POST, 'anio')) {
+		$bus = new General();
+		
+		$datos = ["estatus" => 1];
 
-	if (in_array($dia, array(15, $ultimo))) {
-		if ($n->generar($_POST)) {
-			$datos['exito']   = 1;
-			$datos['mensaje'] = "Nómina generada con éxito.";
-		} else {
-			$datos['mensaje'] = $n->get_mensaje();
+		if (elemento($_POST, "empleado")) {
+			$datos["empleado"] = $_POST["empleado"];
 		}
+
+		$empleados = $bus->buscar_empleado($datos);
+		
+		foreach ($empleados as $key => $value) {
+			$vcn = new Vacaciones();
+			$vcn->cargar_empleado($value["id"]);
+			$vcn->setDiasVacaciones($_POST);
+		}
+
+		$res["mensaje"] = "Datos generados con éxito.";
 	} else {
-		$datos['mensaje'] = "Fecha incorrecta, por favor verifique.";
+		$res["mensaje"] = "Por favor ingrese año de cálculo.";
 	}
 	
-	enviar_json($datos);
+	enviar_json($res);
 });
 
 $app->get('/imprimir', function(){

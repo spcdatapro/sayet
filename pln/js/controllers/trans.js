@@ -115,17 +115,21 @@ angular.module('cpm')
         });
     }
 ])
-.controller('generarVacacionesController', ['$scope', '$http', 'nominaServicios', 'empresaSrvc', 'empServicios', 
-    function($scope, $http, nominaServicios, empresaSrvc, empServicios){
+.controller('generarVacacionesController', ['$scope', '$http', 'vacasServicios', 'empresaSrvc', 'empServicios', 
+    function($scope, $http, vacasServicios, empresaSrvc, empServicios){
         $scope.empresas = []
         $scope.empleados = []
 
         $scope.generar = function(n) {
             $("#btnBuscar").button('loading')
 
-            n.fecha = n.fch.getFullYear()+'-'+(n.fch.getMonth()+1)+'-'+n.fch.getDate()
+            if (n.ultimas) {
+                n.vacasultimas = n.ultimas.getFullYear()+'-'+(n.ultimas.getMonth()+1)+'-'+n.ultimas.getDate()
+            }
+
+            n.vacasgozar = n.gozar.getFullYear()+'-'+(n.gozar.getMonth()+1)+'-'+n.gozar.getDate();
             
-            nominaServicios.generarVacaciones(n).then(function(data){
+            vacasServicios.generar(n).then(function(data){
                 alert(data.mensaje)
                 $("#btnBuscar").button('reset')
             })

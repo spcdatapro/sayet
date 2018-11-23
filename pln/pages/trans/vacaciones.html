@@ -6,13 +6,6 @@
 
 				<form ng-submit="generar(gen)">
 				  <div class="form-group form-group-sm">
-				    <label for="selectEmpresa">Empresa:</label>
-				    <select class="form-control" ng-model="gen.empresa" id="selectEmpresa">
-				    	<option ng-repeat="option in empresas" value="{{option.id}}">{{option.nomempresa}}</option>
-				    </select>
-				  </div>
-
-				  <div class="form-group form-group-sm">
 				  	<label for="selectEmpleado">Empleado:</label>
 			  		<select class="form-control" ng-model="gen.idplnempleado" id="selectEmpleado">
 			  			<option value="">------</option>
@@ -22,7 +15,17 @@
 
 				  <div class="form-group form-group-sm">
 				    <label for="inputFecha">Anio:</label>
-				    <input type="number" ng-model="gen.anio" class="form-control" placeholder="Año">
+				    <input type="number" ng-model="gen.anio" class="form-control" placeholder="Año" required>
+					</div>
+					
+					<div class="form-group form-group-sm">
+				    <label for="inputFecha">Últimas vacaciones finalizaron el:</label>
+				    <input type="date" ng-model="gen.ultimas" class="form-control" placeholder="Año">
+					</div>
+					
+					<div class="form-group form-group-sm">
+				    <label for="inputFecha">Gozar a partir del:</label>
+				    <input type="date" ng-model="gen.gozar" class="form-control" placeholder="Año" required>
 				  </div>
 
 				  <button type="submit" class="btn btn-primary btn-block" id="btnBuscar" data-loading-text="Generando...">

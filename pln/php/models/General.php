@@ -31,6 +31,10 @@ class General extends Principal
 			$where['idempresadebito'] = $args['debito'];
 		}
 
+		if (elemento($args, 'empleado')) {
+			$where['id'] = $args['empleado'];
+		}
+
 		if (elemento($args, 'estatus')) {
 			if (elemento($args, 'fdel', false) || elemento($args, 'fal', false)) { 
 				if (elemento($args, 'fdel')) {
