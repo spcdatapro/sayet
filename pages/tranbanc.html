@@ -204,13 +204,13 @@
                     </div>
                 </div>
                 <div class="btn-group" role="group" aria-label="...">
-                    <button type="submit" class="btn btn-primary" ng-disabled="frmTranBan.$invalid" ng-hide="editando">
+                    <button type="submit" class="btn btn-primary" ng-disabled="frmTranBan.$invalid || periodoCerrado" ng-hide="editando">
                         <span class="glyphicon glyphicon-floppy-save"></span>
                     </button>
-                    <button type="button" class="btn btn-primary" ng-disabled="frmTranBan.$invalid || laTran.anulado === 1" ng-show="editando" ng-click="updTran(laTran, laTran.id)">
+                    <button type="button" class="btn btn-primary" ng-disabled="frmTranBan.$invalid || laTran.anulado === 1 || periodoCerrado" ng-show="editando" ng-click="updTran(laTran, laTran.id)">
                         <span class="glyphicon glyphicon-floppy-save"></span>
                     </button>
-                    <button type="button" class="btn btn-warning" ng-disabled="frmTranBan.$invalid || laTran.anulado === 1" ng-show="editando && laTran.tipotrans === 'C'" ng-click="anular(laTran)">
+                    <button type="button" class="btn btn-warning" ng-disabled="frmTranBan.$invalid || laTran.anulado === 1 || periodoCerrado" ng-show="editando && laTran.tipotrans === 'C'" ng-click="anular(laTran)">
                         <span class="glyphicon glyphicon-ban-circle"></span>
                     </button>
                     <!--
@@ -220,13 +220,13 @@
                     </a>
                     -->
                     <button id="btnGCPrint" type="button" class="btn btn-primary" ng-show="editando && laTran.tipotrans === 'C'"
-                            ng-disabled="frmTranBan.$invalid || laTran.anulado === 1" ng-click="gcprint(laTran)">
+                            ng-disabled="frmTranBan.$invalid || laTran.anulado === 1 || periodoCerrado" ng-click="gcprint(laTran)">
                         <span class="glyphicon glyphicon-print"></span>&nbsp;Cheque
                     </button>
                     <button type="button" class="btn btn-primary" ng-click="modalPRINT(losBancos)" ng-hide="editando">
                         <span class="glyphicon glyphicon-print"></span> &nbsp;Cheques continuos
                     </button>
-                    <button type="button" class="btn btn-danger" ng-show="editando" ng-disabled="laTran.anulado === 1" ng-click="delTran(laTran)">
+                    <button type="button" class="btn btn-danger" ng-show="editando" ng-disabled="laTran.anulado === 1 || periodoCerrado" ng-click="delTran(laTran)">
                         <span class="glyphicon glyphicon-trash"></span>
                     </button>
                     <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printVersion()">
@@ -340,7 +340,7 @@
                             </div>
                         </div>
                         <div class="btn-group" role="group" aria-label="...">
-                            <button type="submit" class="btn btn-success" ng-disabled="frmDocSop.$invalid || laTran.anulado === 1">
+                            <button type="submit" class="btn btn-success" ng-disabled="frmDocSop.$invalid || laTran.anulado === 1 || periodoCerrado">
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                             </button>
                         </div>
@@ -383,10 +383,10 @@
                         <td ng-show="showme" style="text-align: right"><input type="text" name="editmonto" id="editmonto" value="{{lds.monto | number:2}}" ></td>
 
                         <td>
-                            <button type="button" class="btn btn-primary btn-sm" ng-click="editDetRecCli(lds)">
+                            <button type="button" class="btn btn-primary btn-sm" ng-click="editDetRecCli(lds)" ng-disabled="periodoCerrado">
                                 <span class="glyphicon glyphicon-edit"></span>
                             </button>
-                            <button type="button" class="btn btn-danger btn-sm" ng-click="delDetRecCli(lds)">
+                            <button type="button" class="btn btn-danger btn-sm" ng-click="delDetRecCli(lds)" ng-disabled="periodoCerrado">
                                 <span class="glyphicon glyphicon-trash"></span></button>
                         </td>
                     </script>
@@ -525,7 +525,7 @@
                                     </div>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
-                                    <button type="submit" class="btn btn-info" ng-disabled="frmDetCont.$invalid || laTran.anulado === 1">
+                                    <button type="submit" class="btn btn-info" ng-disabled="frmDetCont.$invalid || laTran.anulado === 1 || periodoCerrado">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
                                 </div>
@@ -571,10 +571,10 @@
                                 <td>{{dc.conceptomayor}}</td>
                                 <td style="white-space: nowrap">
                                     <div class="btn-group" role="group" aria-label="...">
-                                        <button type="button" class="btn btn-info btn-sm" ng-click="updDetCont(dc)" ng-hide="dc.id == 0" data-toggle="tooltip" data-placement="auto" title="Modificar este detalle contable...">
+                                        <button type="button" class="btn btn-info btn-sm" ng-click="updDetCont(dc)" ng-hide="dc.id == 0" data-toggle="tooltip" data-placement="auto" title="Modificar este detalle contable..." ng-disabled="periodoCerrado">
                                             <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                                         </button>
-                                        <button type="button" class="btn btn-danger btn-sm" ng-click="delDetCont(dc)" ng-hide="dc.id == 0" data-toggle="tooltip" data-placement="auto" title="Eliminar este detalle contable...">
+                                        <button type="button" class="btn btn-danger btn-sm" ng-click="delDetCont(dc)" ng-hide="dc.id == 0" data-toggle="tooltip" data-placement="auto" title="Eliminar este detalle contable..." ng-disabled="periodoCerrado">
                                             <span class="glyphicon glyphicon-trash"></span>
                                         </button>
                                     </div>
@@ -612,10 +612,10 @@
                                 <td>{{dc.conceptomayor}}</td>
                                 <td style="white-space: nowrap">
                                     <div class="btn-group" role="group" aria-label="...">
-                                        <button type="button" class="btn btn-info btn-sm" ng-click="updDetCont(dc)" ng-hide="dc.id == 0" data-toggle="tooltip" data-placement="auto" title="Modificar este detalle contable...">
+                                        <button type="button" class="btn btn-info btn-sm" ng-click="updDetCont(dc)" ng-hide="dc.id == 0" data-toggle="tooltip" data-placement="auto" title="Modificar este detalle contable..." ng-disabled="periodoCerrado">
                                             <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                                         </button>
-                                        <button type="button" class="btn btn-danger btn-sm" ng-click="delDetCont(dc)" ng-hide="dc.id == 0" data-toggle="tooltip" data-placement="auto" title="Eliminar este detalle contable...">
+                                        <button type="button" class="btn btn-danger btn-sm" ng-click="delDetCont(dc)" ng-hide="dc.id == 0" data-toggle="tooltip" data-placement="auto" title="Eliminar este detalle contable..." ng-disabled="periodoCerrado">
                                             <span class="glyphicon glyphicon-trash"></span>
                                         </button>
                                     </div>

@@ -193,19 +193,19 @@
                     </div>
 
                         <div class="btn-group" role="group" aria-label="...">
-                            <button type="submit" class="btn btn-primary" ng-disabled="frmVenta.$invalid" ng-hide="venta.id > 0">
+                            <button type="submit" class="btn btn-primary" ng-disabled="frmVenta.$invalid || periodoCerrado" ng-hide="venta.id > 0">
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                             </button>
-                            <button type="button" class="btn btn-primary" ng-disabled="frmVenta.$invalid || venta.anulada === 1" ng-show="venta.id > 0" ng-click="updVenta(venta)">
+                            <button type="button" class="btn btn-primary" ng-disabled="frmVenta.$invalid || venta.anulada === 1 || periodoCerrado" ng-show="venta.id > 0" ng-click="updVenta(venta)">
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                             </button>
-                            <button type="button" class="btn btn-warning" ng-disabled="venta.anulada === 1" ng-show="venta.id > 0" ng-click="anular(venta)">
+                            <button type="button" class="btn btn-warning" ng-disabled="venta.anulada === 1 || periodoCerrado" ng-show="venta.id > 0" ng-click="anular(venta)">
                                 <span class="glyphicon glyphicon-ban-circle"></span>
                             </button>
                             <button type="button" class="btn btn-primary" ng-show="venta.id > 0" ng-click="printVersion()">
                                 <span class="glyphicon glyphicon-print"></span>
                             </button>
-                            <button type="button" class="btn btn-danger" ng-disabled="frmVenta.$invalid || venta.anulada === 1" ng-show="venta.id > 0" ng-click="delVenta(venta)">
+                            <button type="button" class="btn btn-danger" ng-disabled="frmVenta.$invalid || venta.anulada === 1 || periodoCerrado" ng-show="venta.id > 0" ng-click="delVenta(venta)">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </button>
                             <button type="button" class="btn btn-primary" ng-disabled="frmVenta.$invalid" ng-show="venta.id > 0" ng-click="resetVenta()">
@@ -322,7 +322,7 @@
                             </div>
                         </div>
                         <div class="btn-group" role="group" aria-label="...">
-                            <button type="submit" class="btn btn-info" ng-disabled="frmDetCont.$invalid">
+                            <button type="submit" class="btn btn-info" ng-disabled="frmDetCont.$invalid || periodoCerrado">
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                             </button>
                         </div>
@@ -346,10 +346,10 @@
                             <td>{{dc.conceptomayor}}</td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="...">
-                                    <button type="button" class="btn btn-info btn-sm" ng-click="updDetCont(dc)" ng-hide="dc.id == 0" data-toggle="tooltip" data-placement="auto" title="Modificar este detalle contable...">
+                                    <button type="button" class="btn btn-info btn-sm" ng-click="updDetCont(dc)" ng-disabled="periodoCerrado" ng-hide="dc.id == 0" data-toggle="tooltip" data-placement="auto" title="Modificar este detalle contable...">
                                         <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                                     </button>
-                                    <button type="button" class="btn btn-danger btn-sm" ng-click="delDetCont(dc)" ng-hide="dc.id == 0">
+                                    <button type="button" class="btn btn-danger btn-sm" ng-click="delDetCont(dc)" ng-disabled="periodoCerrado" ng-hide="dc.id == 0">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </button>
                                 </div>

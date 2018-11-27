@@ -30,7 +30,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label for="txtFechaTran">Fecha de transacci&oacute;n bancaria:</label>
-                        <input name="txtFechaTran" id="txtFechaTran" type="date" ng-model="fechatran" class="form-control" required/>
+                        <input name="txtFechaTran" id="txtFechaTran" type="date" ng-model="fechatran" class="form-control" required ng-change="chkFechaEnPeriodo(fechatran)"/>
                     </div>
                 </div>
             </div>
@@ -38,7 +38,7 @@
                 <div class="col-md-12">
                     <div class="form-group">
                         <button name="btnGenerar" id="btnGenerar" type="button" class="btn btn-primary" ng-click="generaCheques()"
-                                ng-disabled="objBanco.id === null || objBanco.id === undefined" ng-hide="esperando">Generar</button>
+                                ng-disabled="objBanco.id === null || objBanco.id === undefined || periodoCerrado" ng-hide="esperando">Generar</button>
                         <img name="imgLoading" id="imgLoading" src="img/loading.gif" alt="Generando cheques..."
                              ng-show="esperando" style="width: 4em; height: 2.5em"/>
                     </div>

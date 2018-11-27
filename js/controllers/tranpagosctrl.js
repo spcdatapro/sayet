@@ -2,7 +2,7 @@
 
     var tranpagosctrl = angular.module('cpm.tranpagosctrl', ['cpm.tranbacsrvc']);
 
-    tranpagosctrl.controller('tranPagosCtrl', ['$scope', 'tranPagosSrvc', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'toaster', function($scope, tranPagosSrvc, authSrvc, bancoSrvc, empresaSrvc, DTOptionsBuilder, toaster){
+    tranpagosctrl.controller('tranPagosCtrl', ['$scope', 'tranPagosSrvc', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'toaster', 'periodoContableSrvc', function($scope, tranPagosSrvc, authSrvc, bancoSrvc, empresaSrvc, DTOptionsBuilder, toaster, periodoContableSrvc){
 
         $scope.objEmpresa = {};
         $scope.losPagos = [];
@@ -13,6 +13,7 @@
         $scope.esperando = false;
         $scope.qpagos = [];
         $scope.totales = {cantfacts: 0, monto: 0.00};
+        $scope.periodoCerrado = false;
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('ordering', false).withOption('paging', false);
 
@@ -51,6 +52,30 @@
             }
             return data;
         }
+
+        $scope.$watch('fechatran', function(newValue, oldValue){
+            if(newValue != null && newValue !== undefined){
+                $scope.chkFechaEnPeriodo(newValue);
+            }
+        });
+
+        $scope.chkFechaEnPeriodo = function(qFecha){
+            if(angular.isDate(qFecha)){
+                if(qFecha.getFullYear() >= 2000){
+                    periodoContableSrvc.validaFecha(moment(qFecha).format('YYYY-MM-DD')).then(function(d){
+                        var fechaValida = parseInt(d.valida) === 1;
+                        if(!fechaValida){
+                            $scope.periodoCerrado = true;
+                            //$scope.fechatran = null;
+                            toaster.pop({ type: 'error', title: 'Fecha de transacción inválida.',
+                                body: 'No está dentro de ningún período contable abierto.', timeout: 7000 });
+                        } else {
+                            $scope.periodoCerrado = false;
+                        }
+                    });
+                }
+            }
+        };
 
         $scope.getPagos = function(idempresa, bco){
             var fmoneda = 1;
