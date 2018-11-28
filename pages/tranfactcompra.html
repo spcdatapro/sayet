@@ -84,7 +84,7 @@
                                 <div class="form-group required" ng-class="{'has-error':frmCompra.txtFechaIng.$invalid && !frmCompra.txtFechaIng.$pristine}">
                                     <label for="txtFechaIng" class="control-label">Fecha de ingreso:</label>
                                     <input name="txtFechaIng" id="txtFechaIng" type="date" class="form-control"
-                                           ng-model="laCompra.fechaingreso" ng-change="chkFecha(laCompra.fechaingreso, 1); setMesIva(laCompra.fechaingreso);" required />
+                                           ng-model="laCompra.fechaingreso" ng-change="chkFecha(laCompra.fechaingreso, 1); setMesIva(laCompra.fechaingreso); chkFechaEnPeriodo(laCompra.fechaingreso);" required />
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -310,16 +310,16 @@
                             </div>
                         </div>
                         <div class="btn-group" role="group" aria-label="...">
-                            <button type="submit" class="btn btn-primary" ng-disabled="frmCompra.$invalid" ng-hide="editando">
+                            <button type="submit" class="btn btn-primary" ng-disabled="frmCompra.$invalid || periodoCerrado" ng-hide="editando">
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                             </button>
-                            <button type="button" class="btn btn-primary" ng-disabled="false" ng-show="editando" ng-click="updCompra(laCompra)">
+                            <button type="button" class="btn btn-primary" ng-disabled="frmCompra.$invalid || periodoCerrado" ng-show="editando" ng-click="updCompra(laCompra)">
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                             </button>
                             <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printVersion(laCompra)">
                                 <span class="glyphicon glyphicon-print"></span>
                             </button>
-                            <button type="button" class="btn btn-danger" ng-disabled="yaPagada" ng-show="editando" ng-click="delCompra(laCompra)">
+                            <button type="button" class="btn btn-danger" ng-disabled="yaPagada || periodoCerrado" ng-show="editando" ng-click="delCompra(laCompra)">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </button>
                             <button type="button" class="btn btn-primary" ng-disabled="frmCompra.$invalid" ng-show="editando" ng-click="resetCompra()">
@@ -433,13 +433,13 @@
                             </div>
                         </div>
                         <div class="btn-group" role="group" aria-label="...">
-                            <button type="submit" class="btn btn-info" ng-disabled="frmCompProy.$invalid" ng-hide="+proyectocompra.id > 0">
+                            <button type="submit" class="btn btn-info" ng-disabled="frmCompProy.$invalid || periodoCerrado" ng-hide="+proyectocompra.id > 0">
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                             </button>
-                            <button type="button" class="btn btn-info" ng-disabled="frmCompProy.$invalid" ng-show="+proyectocompra.id > 0" ng-click="updProyectoCompra(proyectocompra)">
+                            <button type="button" class="btn btn-info" ng-disabled="frmCompProy.$invalid || periodoCerrado" ng-show="+proyectocompra.id > 0" ng-click="updProyectoCompra(proyectocompra)">
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                             </button>
-                            <button type="button" class="btn btn-danger" ng-show="+proyectocompra.id > 0" ng-click="delProyectoCompra(proyectocompra)">
+                            <button type="button" class="btn btn-danger" ng-disabled="periodoCerrado" ng-show="+proyectocompra.id > 0" ng-click="delProyectoCompra(proyectocompra)">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </button>
                             <button type="button" class="btn btn-info" ng-show="+proyectocompra.id > 0" ng-click="resetProyectoCompra()">
@@ -522,7 +522,7 @@
                                     </div>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
-                                    <button type="submit" class="btn btn-info" ng-disabled="frmDetCont.$invalid">
+                                    <button type="submit" class="btn btn-info" ng-disabled="frmDetCont.$invalid || periodoCerrado">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
                                 </div>
@@ -574,10 +574,10 @@
                                 <td>{{dc.conceptomayor}}</td>
                                 <td style="white-space: nowrap">
                                     <div class="btn-group" role="group" aria-label="...">
-                                        <button type="button" class="btn btn-info btn-sm" ng-click="updDetCont(dc)" ng-hide="dc.id == 0" data-toggle="tooltip" data-placement="auto" title="Modificar este detalle contable...">
+                                        <button type="button" class="btn btn-info btn-sm" ng-click="updDetCont(dc)" ng-hide="dc.id == 0" data-toggle="tooltip" data-placement="auto" title="Modificar este detalle contable..." ng-disabled="periodoCerrado">
                                             <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                                         </button>
-                                        <button type="button" class="btn btn-danger btn-sm" ng-click="delDetCont(dc)" ng-hide="dc.id == 0" data-toggle="tooltip" data-placement="auto" title="Eliminar este detalle contable...">
+                                        <button type="button" class="btn btn-danger btn-sm" ng-click="delDetCont(dc)" ng-hide="dc.id == 0" data-toggle="tooltip" data-placement="auto" title="Eliminar este detalle contable..." ng-disabled="periodoCerrado">
                                             <span class="glyphicon glyphicon-trash"></span>
                                         </button>
                                     </div>

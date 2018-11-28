@@ -2,7 +2,7 @@
 
     var reembolsoctrl = angular.module('cpm.reembolsoctrl', []);
 
-    reembolsoctrl.controller('reembolsoCtrl', ['$scope', 'reembolsoSrvc', 'monedaSrvc', 'authSrvc', 'empresaSrvc', '$route', '$confirm', 'tipoReembolsoSrvc', 'DTOptionsBuilder', '$filter', 'tipoFacturaSrvc', 'tipoCompraSrvc', 'detContSrvc', 'cuentacSrvc', 'toaster', '$uibModal', 'tipoMovTranBanSrvc', 'bancoSrvc', 'beneficiarioSrvc', 'tipoCombustibleSrvc', 'proveedorSrvc', 'localStorageSrvc', '$location', 'proyectoSrvc', 'tipogastoSrvc', function($scope, reembolsoSrvc, monedaSrvc, authSrvc, empresaSrvc, $route, $confirm, tipoReembolsoSrvc, DTOptionsBuilder, $filter, tipoFacturaSrvc, tipoCompraSrvc, detContSrvc, cuentacSrvc, toaster, $uibModal, tipoMovTranBanSrvc, bancoSrvc, beneficiarioSrvc, tipoCombustibleSrvc,proveedorSrvc, localStorageSrvc, $location, proyectoSrvc, tipogastoSrvc){
+    reembolsoctrl.controller('reembolsoCtrl', ['$scope', 'reembolsoSrvc', 'monedaSrvc', 'authSrvc', 'empresaSrvc', '$route', '$confirm', 'tipoReembolsoSrvc', 'DTOptionsBuilder', '$filter', 'tipoFacturaSrvc', 'tipoCompraSrvc', 'detContSrvc', 'cuentacSrvc', 'toaster', '$uibModal', 'tipoMovTranBanSrvc', 'bancoSrvc', 'beneficiarioSrvc', 'tipoCombustibleSrvc', 'proveedorSrvc', 'localStorageSrvc', '$location', 'proyectoSrvc', 'tipogastoSrvc', 'periodoContableSrvc', function($scope, reembolsoSrvc, monedaSrvc, authSrvc, empresaSrvc, $route, $confirm, tipoReembolsoSrvc, DTOptionsBuilder, $filter, tipoFacturaSrvc, tipoCompraSrvc, detContSrvc, cuentacSrvc, toaster, $uibModal, tipoMovTranBanSrvc, bancoSrvc, beneficiarioSrvc, tipoCombustibleSrvc,proveedorSrvc, localStorageSrvc, $location, proyectoSrvc, tipogastoSrvc, periodoContableSrvc){
 
         $scope.monedas = [];
         $scope.dectc = 2;
@@ -32,6 +32,7 @@
         $scope.uid = 0;
         $scope.proyectos = [];
         $scope.subtiposgasto = [];
+        $scope.periodoCerrado = false;
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap()
             .withBootstrapOptions({
@@ -163,6 +164,7 @@
             $scope.resetCompra();
             $scope.detcontreem = [];
             $scope.tranban = [];
+            $scope.periodoCerrado = false;
             goTop();
         };
 
@@ -198,6 +200,7 @@
             //console.log($scope.compra);
             $scope.comprastr = '';
             $scope.$broadcast('angucomplete-alt:clearInput', 'txtNit');
+            $scope.periodoCerrado = false;
             goTop();
         };
 
@@ -475,6 +478,30 @@
                     break;
             }
         }
+
+        $scope.$watch('compra.fechaingreso', function(newValue, oldValue){
+            if(newValue != null && newValue !== undefined){
+                $scope.chkFechaEnPeriodo(newValue);
+            }
+        });
+
+        $scope.chkFechaEnPeriodo = function(qFecha){
+            if(angular.isDate(qFecha)){
+                if(qFecha.getFullYear() >= 2000){
+                    periodoContableSrvc.validaFecha(moment(qFecha).format('YYYY-MM-DD')).then(function(d){
+                        var fechaValida = parseInt(d.valida) === 1;
+                        if(!fechaValida){
+                            $scope.periodoCerrado = true;
+                            // $scope.compra.fechaingreso = null;
+                            toaster.pop({ type: 'error', title: 'Fecha de ingreso es inválida.',
+                                body: 'No está dentro de ningún período contable abierto.', timeout: 7000 });
+                        } else {
+                            $scope.periodoCerrado = false;
+                        }
+                    });
+                }
+            }
+        };
 
         $scope.addCompra = function(obj){
             obj.idreembolso = parseInt($scope.reembolso.id);

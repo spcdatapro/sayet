@@ -2,7 +2,7 @@
 
     var facturacionctrl = angular.module('cpm.facturacionctrl', []);
 
-    facturacionctrl.controller('facturacionCtrl', ['$scope', 'facturacionSrvc', 'facturacionAguaSrvc', 'facturaOtrosSrvc', 'authSrvc', 'empresaSrvc', 'tipoServicioVentaSrvc', '$filter', 'tipoCambioSrvc', 'jsReportSrvc', '$window', '$uibModal', 'toaster', 'clienteSrvc', 'tipoFacturaSrvc', 'tipoCompraSrvc', '$confirm', 'proyectoSrvc', 'factsParqueoSrvc', function($scope, facturacionSrvc, facturacionAguaSrvc, facturaOtrosSrvc, authSrvc, empresaSrvc, tipoServicioVentaSrvc, $filter, tipoCambioSrvc, jsReportSrvc, $window, $uibModal, toaster, clienteSrvc, tipoFacturaSrvc, tipoCompraSrvc, $confirm, proyectoSrvc, factsParqueoSrvc){
+    facturacionctrl.controller('facturacionCtrl', ['$scope', 'facturacionSrvc', 'facturacionAguaSrvc', 'facturaOtrosSrvc', 'authSrvc', 'empresaSrvc', 'tipoServicioVentaSrvc', '$filter', 'tipoCambioSrvc', 'jsReportSrvc', '$window', '$uibModal', 'toaster', 'clienteSrvc', 'tipoFacturaSrvc', 'tipoCompraSrvc', '$confirm', 'proyectoSrvc', 'factsParqueoSrvc', 'periodoContableSrvc', function($scope, facturacionSrvc, facturacionAguaSrvc, facturaOtrosSrvc, authSrvc, empresaSrvc, tipoServicioVentaSrvc, $filter, tipoCambioSrvc, jsReportSrvc, $window, $uibModal, toaster, clienteSrvc, tipoFacturaSrvc, tipoCompraSrvc, $confirm, proyectoSrvc, factsParqueoSrvc, periodoContableSrvc){
 
         $scope.params = { idempresa: '0', fvence: moment().endOf('month').toDate(), ffactura: moment().toDate(), idtipo: '0', tc: 1.00, objTipo: undefined, params:'', pedientes: [] };
         $scope.paramsh2o = { idempresa: '0', fvence: moment().endOf('month').toDate(), ffactura: moment().toDate(), tc: 1.00 };
@@ -18,6 +18,7 @@
         $scope.allnone = 1;
         $scope.suma = { cantidad: 0, totmonto: 0.00 };
         $scope.paramsParqueo = {idempresa: undefined, idproyecto: undefined, fdel: moment().toDate(), fal: moment().toDate(), tc: 1.00};
+        $scope.periodoCerrado = false;
 
         authSrvc.getSession().then(function(usrLogged){
             empresaSrvc.lstEmpresas().then(function(d){
@@ -46,6 +47,42 @@
         });
 
         $scope.$on('epups', function(ngRepeatFinishedEvent){ enablePopOvers(); });
+
+        $scope.$watch('params.ffactura', function(newValue, oldValue){
+            if(newValue != null && newValue !== undefined){
+                $scope.chkFechaEnPeriodo(newValue, 1);
+            }
+        });
+
+        $scope.$watch('paramsh2o.ffactura', function(newValue, oldValue){
+            if(newValue != null && newValue !== undefined){
+                $scope.chkFechaEnPeriodo(newValue, 2);
+            }
+        });
+
+        $scope.$watch('factura.fecha', function(newValue, oldValue){
+            if(newValue != null && newValue !== undefined){
+                $scope.chkFechaEnPeriodo(newValue, 1);
+            }
+        });
+
+        $scope.chkFechaEnPeriodo = function(qFecha, cual){
+            if(angular.isDate(qFecha)){
+                if(qFecha.getFullYear() >= 2000){
+                    periodoContableSrvc.validaFecha(moment(qFecha).format('YYYY-MM-DD')).then(function(d){
+                        var fechaValida = parseInt(d.valida) === 1;
+                        if(!fechaValida){
+                            $scope.periodoCerrado = true;
+                            var qFactura = +cual !== 2 ? '' : ' de agua';
+                            toaster.pop({ type: 'error', title: 'Fecha de factura' + qFactura + ' es inválida.',
+                                body: 'No está dentro de ningún período contable abierto.', timeout: 7000 });
+                        } else {
+                            $scope.periodoCerrado = false;
+                        }
+                    });
+                }
+            }
+        };
 
         function procesaPendientes(d){
             for(var i = 0; i < d.length; i++){
@@ -398,6 +435,7 @@
                 idtipofactura: (+$scope.factura.idtipofactura > 0 ? $scope.factura.idtipofactura : undefined)
             };
             $scope.factura.idempresa = $scope.empredefault;
+            $scope.periodoCerrado = false;
             $scope.$broadcast('angucomplete-alt:clearInput', 'txtCliente');
         };
 
@@ -423,7 +461,10 @@
             });
         };
 
-        $scope.resetDetalleFactura = function(){ $scope.detfact = { cantidad: 1, mes: moment($scope.factura.fecha).month + 1, anio: moment($scope.factura.fecha).year(), descripcion: '', descuento: 0.00 }; };
+        $scope.resetDetalleFactura = function(){
+            $scope.detfact = { cantidad: 1, mes: moment($scope.factura.fecha).month + 1, anio: moment($scope.factura.fecha).year(), descripcion: '', descuento: 0.00 };
+            $scope.periodoCerrado = false;
+        };
 
         $scope.loadDetalleFactura = function(idfactura){
             facturaOtrosSrvc.lstDetFactura(idfactura).then(function(d){

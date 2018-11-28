@@ -2,7 +2,7 @@
 
     var ventactrl = angular.module('cpm.ventactrl', []);
 
-    ventactrl.controller('ventaCtrl', ['$scope', '$filter', 'ventaSrvc', 'authSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'clienteSrvc', 'tipoCompraSrvc', 'toaster', 'cuentacSrvc', 'detContSrvc', '$uibModal', '$confirm', 'monedaSrvc', 'tipoFacturaSrvc', 'razonAnulacionSrvc', function($scope, $filter, ventaSrvc, authSrvc, empresaSrvc, DTOptionsBuilder, clienteSrvc, tipoCompraSrvc, toaster, cuentacSrvc, detContSrvc, $uibModal, $confirm, monedaSrvc, tipoFacturaSrvc, razonAnulacionSrvc){
+    ventactrl.controller('ventaCtrl', ['$scope', '$filter', 'ventaSrvc', 'authSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'clienteSrvc', 'tipoCompraSrvc', 'toaster', 'cuentacSrvc', 'detContSrvc', '$uibModal', '$confirm', 'monedaSrvc', 'tipoFacturaSrvc', 'razonAnulacionSrvc', 'periodoContableSrvc', function($scope, $filter, ventaSrvc, authSrvc, empresaSrvc, DTOptionsBuilder, clienteSrvc, tipoCompraSrvc, toaster, cuentacSrvc, detContSrvc, $uibModal, $confirm, monedaSrvc, tipoFacturaSrvc, razonAnulacionSrvc, periodoContableSrvc){
 
         $scope.idempresa = 0;
         $scope.ventas = [];
@@ -20,6 +20,7 @@
         $scope.ventastr = '';
         $scope.razonesanula = [];
         $scope.params = {idempresa: undefined, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), fdelstr: '', falstr: ''};
+        $scope.periodoCerrado = false;
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
 
@@ -53,6 +54,30 @@
         razonAnulacionSrvc.lstRazones().then(function(d){$scope.razonesanula = d; });
 
         $scope.getContratosByCliente = function(idcliente){ clienteSrvc.lstContratos(idcliente).then(function(d){ $scope.contratos = d; }) };
+
+        $scope.$watch('venta.fecha', function(newValue, oldValue){
+            if(newValue != null && newValue !== undefined){
+                $scope.chkFechaEnPeriodo(newValue);
+            }
+        });
+
+        $scope.chkFechaEnPeriodo = function(qFecha){
+            if(angular.isDate(qFecha)){
+                if(qFecha.getFullYear() >= 2000){
+                    periodoContableSrvc.validaFecha(moment(qFecha).format('YYYY-MM-DD')).then(function(d){
+                        var fechaValida = parseInt(d.valida) === 1;
+                        if(!fechaValida){
+                            $scope.periodoCerrado = true;
+                            //$scope.laCompra.fechaingreso = null;
+                            toaster.pop({ type: 'error', title: 'Fecha de factura es inválida.',
+                                body: 'No está dentro de ningún período contable abierto.', timeout: 7000 });
+                        } else {
+                            $scope.periodoCerrado = false;
+                        }
+                    });
+                }
+            }
+        };
 
         $scope.calcular = function(){
             var geniva = true;
@@ -99,6 +124,7 @@
             $scope.ventastr = '';
             $scope.losDetCont = [];
             $scope.elDetCont = {debe: 0.0, haber: 0.0};
+            $scope.periodoCerrado = false;
         };
 
         function procDataVenta(d){

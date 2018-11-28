@@ -2,9 +2,22 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/js/controllers/rptfichaproyctrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/rptfichaproyctrl.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/rptfichaproy.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/rptfichaproy.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/php/rptfichaproy.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/rptfichaproy.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/controllers/compractrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/compractrl.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/controllers/reembolsoctrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/reembolsoctrl.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/controllers/tranbancctrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/tranbancctrl.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/controllers/trandirectactrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/trandirectactrl.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/controllers/tranfacturactrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/tranfacturactrl.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/controllers/tranpagosctrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/tranpagosctrl.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/controllers/ventactrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/ventactrl.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/adtbllite/reemdetcont.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/adtbllite/reemdetcont.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/tranbanc.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/tranbanc.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/trandirectas.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/trandirectas.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/tranfactcompra.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/tranfactcompra.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/tranfactura.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/tranfactura.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/tranpagos.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/tranpagos.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/tranreembolso.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/tranreembolso.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/tranventa.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/tranventa.html" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -41,37 +54,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="rptfichaproy.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/rptfichaproy.html">
+      <file leaf-file-name="tranbancctrl.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/js/controllers/tranbancctrl.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="697">
-              <caret line="41" column="137" selection-start-line="41" selection-start-column="117" selection-end-line="41" selection-end-column="137" />
-              <folding>
-                <element signature="e#2506#2514#0" expanded="true" />
-                <element signature="e#2770#2778#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rptfichaproyctrl.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/js/controllers/rptfichaproyctrl.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="12" column="132" lean-forward="true" selection-start-line="12" selection-start-column="132" selection-end-line="12" selection-end-column="132" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rptfichaproy.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/php/rptfichaproy.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="94">
-              <caret line="159" column="36" lean-forward="true" selection-start-line="159" selection-start-column="36" selection-end-line="159" selection-end-column="36" />
-              <folding>
-                <element signature="e#188#4181#1#PHP" />
-                <element signature="e#4208#8616#1#PHP" />
-              </folding>
+            <state relative-caret-position="332">
+              <caret line="219" column="65" lean-forward="true" selection-start-line="219" selection-start-column="65" selection-end-line="219" selection-end-column="65" />
             </state>
           </provider>
         </entry>
@@ -90,9 +77,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>frmLectura</find>
-      <find>cd</find>
-      <find>addCompra</find>
       <find>$scope.getLstOts</find>
       <find>addPresupuesto</find>
       <find>qGenPres</find>
@@ -120,6 +104,9 @@
       <find>$scope.lasTran</find>
       <find>iddocliquida</find>
       <find>plazofal</find>
+      <find>chkFecha</find>
+      <find>reset</find>
+      <find>EnPeriodo</find>
     </findStrings>
     <replaceStrings>
       <replace>$d-&gt;falstr</replace>
@@ -137,17 +124,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/php/facturacion.php" />
-        <option value="$PROJECT_DIR$/js/controllers/transegpresupctrl.js" />
-        <option value="$PROJECT_DIR$/php/cierreanual.php" />
-        <option value="$PROJECT_DIR$/js/controllers/rptlibmayctrl.js" />
-        <option value="$PROJECT_DIR$/pages/rptbalsal.html" />
-        <option value="$PROJECT_DIR$/js/controllers/rptbalancesaldosctrl.js" />
-        <option value="$PROJECT_DIR$/php/rptbalancesaldos.php" />
-        <option value="$PROJECT_DIR$/pages/rptbalgen.html" />
-        <option value="$PROJECT_DIR$/js/controllers/rptbalancegeneralctrl.js" />
-        <option value="$PROJECT_DIR$/php/rptbalancegeneral.php" />
-        <option value="$PROJECT_DIR$/pages/rptestres.html" />
         <option value="$PROJECT_DIR$/js/controllers/rptestadoresultadosctrl.js" />
         <option value="$PROJECT_DIR$/php/rptestadoresultados.php" />
         <option value="$PROJECT_DIR$/pages/rptlibdia.html" />
@@ -175,19 +151,30 @@
         <option value="$PROJECT_DIR$/php/presupuesto.php" />
         <option value="$PROJECT_DIR$/php/genpartidasventa.php" />
         <option value="$PROJECT_DIR$/php/rptreemsinctaliq.php" />
-        <option value="$PROJECT_DIR$/js/controllers/reembolsoctrl.js" />
-        <option value="$PROJECT_DIR$/pages/tranreembolso.html" />
         <option value="$PROJECT_DIR$/php/fixdescuadrecompra.php" />
         <option value="$PROJECT_DIR$/php/compra.php" />
         <option value="$PROJECT_DIR$/php/tranbanc.php" />
-        <option value="$PROJECT_DIR$/pages/tranbanc.html" />
         <option value="$PROJECT_DIR$/php/rptintegractacont.php" />
-        <option value="$PROJECT_DIR$/js/controllers/tranbancctrl.js" />
         <option value="$PROJECT_DIR$/js/controllers/rptfichaclientectrl.js" />
         <option value="$PROJECT_DIR$/pages/rptfichacliente.html" />
         <option value="$PROJECT_DIR$/pages/rptfichaproy.html" />
         <option value="$PROJECT_DIR$/js/controllers/rptfichaproyctrl.js" />
         <option value="$PROJECT_DIR$/php/rptfichaproy.php" />
+        <option value="$PROJECT_DIR$/pages/tranbanc.html" />
+        <option value="$PROJECT_DIR$/pages/tranfactcompra.html" />
+        <option value="$PROJECT_DIR$/pages/tranpagos.html" />
+        <option value="$PROJECT_DIR$/pages/tranreembolso.html" />
+        <option value="$PROJECT_DIR$/pages/adtbllite/reemdetcont.html" />
+        <option value="$PROJECT_DIR$/pages/trandirectas.html" />
+        <option value="$PROJECT_DIR$/pages/tranfactura.html" />
+        <option value="$PROJECT_DIR$/js/controllers/tranfacturactrl.js" />
+        <option value="$PROJECT_DIR$/js/controllers/compractrl.js" />
+        <option value="$PROJECT_DIR$/js/controllers/ventactrl.js" />
+        <option value="$PROJECT_DIR$/pages/tranventa.html" />
+        <option value="$PROJECT_DIR$/js/controllers/reembolsoctrl.js" />
+        <option value="$PROJECT_DIR$/js/controllers/trandirectactrl.js" />
+        <option value="$PROJECT_DIR$/js/controllers/tranpagosctrl.js" />
+        <option value="$PROJECT_DIR$/js/controllers/tranbancctrl.js" />
       </list>
     </option>
   </component>
@@ -219,7 +206,7 @@
       <path value="$PROJECT_DIR$/php/vendor/slim/slim" />
     </include_path>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="54" />
     <option name="y" value="-8" />
     <option name="width" value="1936" />
@@ -233,7 +220,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="AndroidView" />
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -260,14 +248,19 @@
             <path>
               <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
               <item name="sayet" type="462c0819:PsiDirectoryNode" />
+              <item name="pages" type="462c0819:PsiDirectoryNode" />
+              <item name="adtbllite" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sayet" type="462c0819:PsiDirectoryNode" />
               <item name="php" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -994,15 +987,17 @@
       <workItem from="1542773453593" duration="174000" />
       <workItem from="1542814168161" duration="3802000" />
       <workItem from="1542836148849" duration="1334000" />
-      <workItem from="1542895776082" duration="5135000" />
+      <workItem from="1542895776082" duration="5425000" />
+      <workItem from="1543269315961" duration="7370000" />
+      <workItem from="1543337712684" duration="5999000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2865918000" />
+    <option name="totallyTimeSpent" value="2879577000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
@@ -1018,7 +1013,7 @@
       <window_info anchor="bottom" x="206" y="338" width="1572" height="574" id="Terminal" order="11" type="WINDOWED" weight="1.0" />
       <window_info id="Capture Tool" order="6" />
       <window_info anchor="right" id="Designer" order="6" />
-      <window_info content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" weight="0.17857143" />
+      <window_info active="true" content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" visible="true" weight="0.17857143" />
       <window_info anchor="right" id="Database" order="7" weight="0.32889125" />
       <window_info anchor="right" id="SciView" order="9" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.1546875" />
@@ -1066,88 +1061,12 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/php/rptecuentacli.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="952">
-          <caret line="101" column="82" lean-forward="true" selection-start-line="101" selection-start-column="82" selection-end-line="101" selection-end-column="82" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptcontratoinactivo.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="295">
-          <caret line="50" column="71" lean-forward="true" selection-start-line="50" selection-start-column="71" selection-end-line="50" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/tranfacturactrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3553">
-          <caret line="209" column="34" selection-start-line="209" selection-start-column="34" selection-end-line="209" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/tranfactura.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-896">
-          <caret line="25" column="64" selection-start-line="25" selection-start-column="64" selection-end-line="25" selection-end-column="64" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/facturaotros.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="25" lean-forward="true" selection-start-line="25" selection-end-line="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/cierreanual.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="109" column="133" selection-start-line="109" selection-start-column="133" selection-end-line="109" selection-end-column="133" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/mntcliente.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="417">
-          <caret line="706" column="46" selection-start-line="706" selection-start-column="46" selection-end-line="706" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/services/jsreportsrvc.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="24" column="99" selection-start-line="24" selection-start-column="99" selection-end-line="24" selection-end-column="99" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/rptagua.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="527">
-          <caret line="31" column="21" selection-start-line="31" selection-start-column="21" selection-end-line="31" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptaguactrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="23" column="69" selection-start-line="23" selection-start-column="60" selection-end-line="23" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/facturaagua.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="839">
           <caret line="249" column="106" selection-start-line="249" selection-start-column="106" selection-end-line="249" selection-end-column="106" />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/tranventa.html">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/ventactrl.js">
-      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/js/services/ventasrvc.js">
       <provider selected="true" editor-type-id="text-editor" />
@@ -1237,20 +1156,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/reembolsoctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="704" column="57" selection-start-line="704" selection-start-column="57" selection-end-line="704" selection-end-column="57" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/tranreembolso.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="720" column="14" selection-start-line="720" selection-start-column="14" selection-end-line="720" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/fixdescuadreventa.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="771">
@@ -1296,13 +1201,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pages/tranbanc.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="182" column="66" selection-start-line="182" selection-start-column="66" selection-end-line="182" selection-end-column="66" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/rptlibmay.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="34">
@@ -1314,13 +1212,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1734">
           <caret line="102" column="5" selection-start-line="102" selection-start-column="5" selection-end-line="102" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/tranbancctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
-          <caret line="322" column="60" lean-forward="true" selection-start-line="322" selection-start-column="60" selection-end-line="322" selection-end-column="60" />
         </state>
       </provider>
     </entry>
@@ -1355,9 +1246,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="318">
           <caret line="37" column="84" lean-forward="true" selection-start-line="37" selection-start-column="32" selection-end-line="37" selection-end-column="84" />
-          <folding>
-            <element signature="n#style#0;n#div#1;n#form#0;n#caption#0;n#table#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1375,32 +1263,137 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pages/rptfichaproy.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="697">
-          <caret line="41" column="137" selection-start-line="41" selection-start-column="117" selection-end-line="41" selection-end-column="137" />
-          <folding>
-            <element signature="e#2506#2514#0" expanded="true" />
-            <element signature="e#2770#2778#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/rptfichaproy.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="94">
-          <caret line="159" column="36" lean-forward="true" selection-start-line="159" selection-start-column="36" selection-end-line="159" selection-end-column="36" />
-          <folding>
-            <element signature="e#188#4181#1#PHP" />
-            <element signature="e#4208#8616#1#PHP" />
-          </folding>
+        <state relative-caret-position="187">
+          <caret line="159" column="36" selection-start-line="159" selection-start-column="36" selection-end-line="159" selection-end-column="36" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/controllers/rptfichaproyctrl.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="12" column="132" lean-forward="true" selection-start-line="12" selection-start-column="132" selection-end-line="12" selection-end-column="132" />
+        <state relative-caret-position="238">
+          <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptfichaproy.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="533">
+          <caret line="41" column="137" selection-start-line="41" selection-start-column="117" selection-end-line="41" selection-end-column="137" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/tranbanc.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="617" column="253" selection-start-line="617" selection-start-column="253" selection-end-line="617" selection-end-column="253" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/periodocontable.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-62" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/tranpagos.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="544">
+          <caret line="32" column="174" selection-start-line="32" selection-start-column="174" selection-end-line="32" selection-end-column="174" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/adtbllite/reemdetcont.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="35" column="6" lean-forward="true" selection-start-line="35" selection-start-column="6" selection-end-line="35" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/tranreembolso.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-68">
+          <caret line="425" column="115" selection-start-line="425" selection-start-column="115" selection-end-line="425" selection-end-column="115" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/trandirectas.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="134" column="68" selection-start-line="134" selection-start-column="68" selection-end-line="134" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/tranfactura.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1751">
+          <caret line="557" column="128" selection-start-line="557" selection-start-column="128" selection-end-line="557" selection-end-column="128" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/tranventa.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="351" column="141" selection-start-line="351" selection-start-column="141" selection-end-line="351" selection-end-column="141" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/reembolsoctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="281">
+          <caret line="492" column="41" lean-forward="true" selection-start-line="492" selection-start-column="41" selection-end-line="492" selection-end-column="41" />
+          <folding>
+            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/tranfacturactrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="57" column="59" lean-forward="true" selection-start-line="57" selection-start-column="59" selection-end-line="57" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/trandirectactrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="468">
+          <caret line="64" column="30" selection-start-line="64" selection-start-column="30" selection-end-line="64" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/ventactrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="281">
+          <caret line="59" column="40" selection-start-line="59" selection-start-column="31" selection-end-line="59" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/tranpagosctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="400">
+          <caret line="68" column="30" selection-start-line="68" selection-start-column="30" selection-end-line="68" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/compractrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="110" column="42" lean-forward="true" selection-start-line="110" selection-start-column="42" selection-end-line="110" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/tranfactcompra.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="416" column="58" lean-forward="true" selection-start-line="416" selection-start-column="58" selection-end-line="416" selection-end-column="58" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/tranbancctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="332">
+          <caret line="219" column="65" lean-forward="true" selection-start-line="219" selection-start-column="65" selection-end-line="219" selection-end-column="65" />
         </state>
       </provider>
     </entry>

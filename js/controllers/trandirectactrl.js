@@ -2,7 +2,7 @@
 
     var trandirectactrl = angular.module('cpm.trandirectactrl', []);
 
-    trandirectactrl.controller('tranDirectaCtrl', ['$scope', 'directaSrvc', 'authSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'toaster', '$confirm', 'cuentacSrvc', 'detContSrvc', '$window', 'jsReportSrvc', '$uibModal', function($scope, directaSrvc, authSrvc, empresaSrvc, DTOptionsBuilder, toaster, $confirm, cuentacSrvc, detContSrvc, $window, jsReportSrvc, $uibModal){
+    trandirectactrl.controller('tranDirectaCtrl', ['$scope', 'directaSrvc', 'authSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'toaster', '$confirm', 'cuentacSrvc', 'detContSrvc', '$window', 'jsReportSrvc', '$uibModal', 'periodoContableSrvc', function($scope, directaSrvc, authSrvc, empresaSrvc, DTOptionsBuilder, toaster, $confirm, cuentacSrvc, detContSrvc, $window, jsReportSrvc, $uibModal, periodoContableSrvc){
 
         $scope.objEmpresa = {};
         $scope.laDirecta = {};
@@ -13,6 +13,7 @@
         $scope.lasCtasMov = [];
         $scope.origen = 4;
         $scope.directastr = '';
+        $scope.periodoCerrado = false;
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
 
@@ -45,6 +46,31 @@
             $scope.laDirecta = { idempresa: parseInt($scope.objEmpresa.id), fecha: new Date(), concepto: null };
             $scope.editando = false;
             $scope.directastr = '';
+            $scope.periodoCerrado = false;
+        };
+
+        $scope.$watch('laDirecta.fecha', function(newValue, oldValue){
+            if(newValue != null && newValue !== undefined){
+                $scope.chkFechaEnPeriodo(newValue);
+            }
+        });
+
+        $scope.chkFechaEnPeriodo = function(qFecha){
+            if(angular.isDate(qFecha)){
+                if(qFecha.getFullYear() >= 2000){
+                    periodoContableSrvc.validaFecha(moment(qFecha).format('YYYY-MM-DD')).then(function(d){
+                        var fechaValida = parseInt(d.valida) === 1;
+                        if(!fechaValida){
+                            $scope.periodoCerrado = true;
+                            //$scope.laDirecta.fecha = null;
+                            toaster.pop({ type: 'error', title: 'Fecha es inválida.',
+                                body: 'No está dentro de ningún período contable abierto.', timeout: 7000 });
+                        } else {
+                            $scope.periodoCerrado = false;
+                        }
+                    });
+                }
+            }
         };
 
         $scope.getDetCont = function(iddirecta){

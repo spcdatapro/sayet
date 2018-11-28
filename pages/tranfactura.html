@@ -89,7 +89,7 @@
                             <button type="button" class="btn btn-info" ng-click="printPreliminar()">
                                 <span>Proyecci&oacute;n</span>
                             </button>
-                            <button type="button" class="btn btn-info" ng-click="getPendientes()">
+                            <button type="button" class="btn btn-info" ng-click="getPendientes()" ng-disabled="periodoCerrado">
                                 <span class="glyphicon glyphicon-search"></span>
                             </button>
                         </div>
@@ -168,7 +168,7 @@
                     <div class="row">
                         <div class="col-md-10"></div>
                         <div class="col-md-1">
-                            <button type="button" class="btn btn-info" ng-show="pendientes.length > 0" ng-click="factSelected()">Facturar</button>
+                            <button type="button" class="btn btn-info" ng-show="pendientes.length > 0" ng-disabled="periodoCerrado" ng-click="factSelected()">Facturar</button>
                         </div>
                     </div>
                 </div>
@@ -218,7 +218,7 @@
                     </div>
                     <div class="row check-element animate-show" ng-show="showparamsh2o">
                         <div class="col-md-12 nopadding" style="text-align: right">
-                            <button type="button" class="btn btn-info" ng-click="getPendientesH2O()">
+                            <button type="button" class="btn btn-info" ng-click="getPendientesH2O()" ng-disabled="periodoCerrado">
                                 <span class="glyphicon glyphicon-search"></span>
                             </button>
                             <button type="button" class="btn btn-info" ng-click="printPreliminarAgua()">
@@ -268,7 +268,7 @@
                     <div class="row">
                         <div class="col-md-10"></div>
                         <div class="col-md-1">
-                            <button type="button" class="btn btn-info" ng-show="pendientesh2o.length > 0" ng-click="factSelectedH2O()">Facturar</button>
+                            <button type="button" class="btn btn-info" ng-show="pendientesh2o.length > 0" ng-click="factSelectedH2O()" ng-disabled="periodoCerrado">Facturar</button>
                         </div>
                     </div>
                 </div>
@@ -549,13 +549,13 @@
                                     </div>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
-                                    <button type="submit" class="btn btn-primary" ng-disabled="frmFact.$invalid" ng-hide="factura.id > 0">
+                                    <button type="submit" class="btn btn-primary" ng-disabled="frmFact.$invalid || periodoCerrado" ng-hide="factura.id > 0">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
-                                    <button type="button" class="btn btn-primary" ng-disabled="frmFact.$invalid" ng-show="factura.id > 0" ng-click="updFactura(factura)">
+                                    <button type="button" class="btn btn-primary" ng-disabled="frmFact.$invalid || periodoCerrado" ng-show="factura.id > 0" ng-click="updFactura(factura)">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
-                                    <button type="button" class="btn btn-danger" ng-disabled="frmFact.$invalid" ng-show="factura.id > 0" ng-click="delFactura(factura)">
+                                    <button type="button" class="btn btn-danger" ng-disabled="frmFact.$invalid || periodoCerrado" ng-show="factura.id > 0" ng-click="delFactura(factura)">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </button>
                                     <button type="button" class="btn btn-primary" ng-show="factura.id > 0" ng-click="resetFactura()">

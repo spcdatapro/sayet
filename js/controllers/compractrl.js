@@ -2,7 +2,7 @@
 
     var compractrl = angular.module('cpm.compractrl', ['cpm.comprasrvc']);
 
-    compractrl.controller('compraCtrl', ['$scope', '$filter', 'compraSrvc', 'authSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'proveedorSrvc', 'tipoCompraSrvc', 'toaster', 'cuentacSrvc', 'detContSrvc', '$uibModal', '$confirm', 'monedaSrvc', 'tipoFacturaSrvc', 'tipoCombustibleSrvc', 'presupuestoSrvc', 'proyectoSrvc', 'jsReportSrvc', '$sce', '$window', function($scope, $filter, compraSrvc, authSrvc, empresaSrvc, DTOptionsBuilder, proveedorSrvc, tipoCompraSrvc, toaster, cuentacSrvc, detContSrvc, $uibModal, $confirm, monedaSrvc, tipoFacturaSrvc, tipoCombustibleSrvc, presupuestoSrvc, proyectoSrvc, jsReportSrvc, sce, $window){
+    compractrl.controller('compraCtrl', ['$scope', '$filter', 'compraSrvc', 'authSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'proveedorSrvc', 'tipoCompraSrvc', 'toaster', 'cuentacSrvc', 'detContSrvc', '$uibModal', '$confirm', 'monedaSrvc', 'tipoFacturaSrvc', 'tipoCombustibleSrvc', 'presupuestoSrvc', 'proyectoSrvc', 'jsReportSrvc', '$sce', '$window', 'periodoContableSrvc', function($scope, $filter, compraSrvc, authSrvc, empresaSrvc, DTOptionsBuilder, proveedorSrvc, tipoCompraSrvc, toaster, cuentacSrvc, detContSrvc, $uibModal, $confirm, monedaSrvc, tipoFacturaSrvc, tipoCombustibleSrvc, presupuestoSrvc, proyectoSrvc, jsReportSrvc, sce, $window, periodoContableSrvc){
 
         $scope.lasEmpresas = [];
         $scope.lasCompras = [];
@@ -29,6 +29,7 @@
         $scope.lstproyectoscompra = [];
         $scope.proyectocompra = {};
         $scope.itemsLimit = 10;
+        $scope.periodoCerrado = false;
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
 
@@ -91,6 +92,7 @@
                 $scope.laCompra.objMoneda = m[0];
                 $scope.laCompra.tipocambio = parseFloat(m[0].tipocambio).toFixed($scope.dectc);
             });
+            $scope.periodoCerrado = false;
             goTop();
         };
 
@@ -111,6 +113,30 @@
                 $scope.laCompra.mesiva = (moment(fing).month() + 1);
             }else{
                 $scope.laCompra.mesiva = undefined;
+            }
+        };
+
+        $scope.$watch('laCompra.fechaingreso', function(newValue, oldValue){
+            if(newValue != null && newValue !== undefined){
+                $scope.chkFechaEnPeriodo(newValue);
+            }
+        });
+
+        $scope.chkFechaEnPeriodo = function(qFecha){
+            if(angular.isDate(qFecha)){
+                if(qFecha.getFullYear() >= 2000){
+                    periodoContableSrvc.validaFecha(moment(qFecha).format('YYYY-MM-DD')).then(function(d){
+                        var fechaValida = parseInt(d.valida) === 1;
+                        if(!fechaValida){
+                            $scope.periodoCerrado = true;
+                            //$scope.laCompra.fechaingreso = null;
+                            toaster.pop({ type: 'error', title: 'Fecha de ingreso es inválida.',
+                                body: 'No está dentro de ningún período contable abierto.', timeout: 7000 });
+                        } else {
+                            $scope.periodoCerrado = false;
+                        }
+                    });
+                }
             }
         };
 
@@ -472,6 +498,7 @@
             $scope.proyectocompra = {
                 id: 0, idcompra: $scope.laCompra.id, idproyecto: undefined, idcuentac: undefined, monto: null
             }
+            $scope.periodoCerrado = false;
         };
 
         $scope.getProyectoCompra = function(idproycompra){

@@ -51,6 +51,8 @@
             .withOption('fnRowCallback', rowCallback);
 
         $scope.dtOptionsDetContLiquidacion = $scope.dtOptionsDetCont;
+        $scope.periodoCerrado = false;
+
 
         //Infinite Scroll Magic
         $scope.infiniteScroll = {};
@@ -187,6 +189,7 @@
             $scope.elDetCont = {debe: 0.0, haber: 0.0};
             $scope.strTran = '';
             $scope.editando = false;
+            $scope.periodoCerrado = false;
         };
 
         $scope.getNumCheque = function(){
@@ -213,12 +216,14 @@
                             var tipo = '';
                             switch(deDonde){
                                 case 't' :
-                                    $scope.laTran.fecha = null;
+                                    $scope.periodoCerrado = true;
+                                    //$scope.laTran.fecha = null;
                                     cualFecha = 'de la transacción';
                                     tipo = 'error';
                                     break;
                                 case 'd' :
-                                    $scope.elDocSop.fechadoc = null;
+                                    //$scope.periodoCerrado = true;
+                                    //$scope.elDocSop.fechadoc = null;
                                     cualFecha = 'del documento de soporte';
                                     tipo = 'warning';
                                     break;
@@ -227,6 +232,8 @@
                                 body: 'No está dentro de ningún período contable abierto.', timeout: 7000 });
 
 
+                        } else {
+                            $scope.periodoCerrado = false;
                         }
                     });
                 }
@@ -647,6 +654,7 @@
 
         $scope.reset = function (obj) {
             $scope.selected = {};
+            $scope.periodoCerrado = false;
             tranBancSrvc.lstDocsSoporte(parseInt($scope.laTran.id)).then(function(det){
                 $scope.losDocsSoporte = procDataDocs(det);
             });
