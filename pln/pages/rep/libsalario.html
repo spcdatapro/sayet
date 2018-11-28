@@ -7,7 +7,7 @@
 					<div class="form-group form-group-sm">
 						<label for="selectEmpleado" class="col-sm-2 control-label">Empleado:</label>
 						<div class="col-sm-10">
-							<select class="form-control" name="empleado" id="selectEmpleado" required="required">
+							<select class="form-control" name="empleado" id="selectEmpleado">
 								<option value="">------</option>
 								<option ng-repeat="empleado in empleados" value="{{empleado.id}}">{{empleado.nombre}} {{empleado.apellidos}}</option>
 							</select>

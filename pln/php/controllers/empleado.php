@@ -681,222 +681,153 @@ $app->get('/ficha/:empleado', function($empleado){
 });
 
 $app->get('/librosalario', function(){
-	require PLNPATH . '/models/Nomina.php';
-	require PLNPATH . '/models/Prestamo.php';
+	if (elemento($_GET, "empleado", false)) {
+		require_once PLNPATH . '/models/Nomina.php';
 
-	$e = new Empleado($_GET['empleado']);
-	$b = new Nomina();
-	$g = new General();
+		$e = new Empleado($_GET['empleado']);
+		$b = new Nomina();
+		$g = new General();
 
-	if (elemento($_GET, 'fdel') && elemento($_GET, 'fal')) {
-		require BASEPATH . '/libs/tcpdf/tcpdf.php';
-		
-		$s = [215.9, 330.2]; # Oficio mm
-
-		$pdf = new TCPDF('L', 'mm', $s);
-		$pdf->SetAutoPageBreak(TRUE, 0);
-		$tipoImpresion = 18;
-
-		$todos = $e->get_datos_libro_salarios($_GET);
-
-		if (count($todos) > 0) {
-			$registros = 0;
-			$datos = [];
-
-			foreach ($todos as $fila) {
-				if (isset($datos[$fila['vidempresa']])) {
-					$datos[$fila['vidempresa']]['empleados'][] = $fila;
-				} else {
-					$datos[$fila['vidempresa']] = [
-						'nombre'    => $fila['vempresa'], 
-						'conf'      => $g->get_campo_impresion('vidempresa', $tipoImpresion), 
-						'empleados' => [$fila]
-					];
-				}
-			}
-
-			$hojas = 1;
-			$rpag = 32; # Registros por página
-
-			$mes  = date('m', strtotime($_GET['fal']));
-			$anio = date('Y', strtotime($_GET['fal']));
-			$dia  = date('d', strtotime($_GET['fal']));
-
-			$cabecera = $b->get_cabecera([
-				'dia'  => $dia, 
-				'mes'  => $mes, 
-				'anio' => $anio
-			]);
-
-			$cabecera['subtitulo'] = 'Libro de Salarios';
-			$cabecera['mes']       = 'Del '.formatoFecha($_GET['fdel'],1).' al '.formatoFecha($_GET['fal'], 1);
+		if (elemento($_GET, 'fdel') && elemento($_GET, 'fal')) {
+			require_once BASEPATH . '/libs/tcpdf/tcpdf.php';
 			
-			for ($i=0; $i < ((count($todos)+(count($datos)*$tipoImpresion))/$rpag) ; $i++) { 
-				$pdf->AddPage();
+			$s = [215.9, 330.2]; # Oficio mm
 
-				foreach ($cabecera as $campo => $valor) {
+			$pdf = new TCPDF('L', 'mm', $s);
+			$pdf->SetAutoPageBreak(TRUE, 0);
+			$pdf->AddPage();
+			$tipoImpresion = 18;
+
+			$todos = $e->get_datos_libro_salarios($_GET);
+
+			if (count($todos) > 0) {
+				$registros = 0;
+				$datos = [];
+
+				foreach ($todos as $fila) {
+					if (isset($datos[$fila['vidempresa']])) {
+						$datos[$fila['vidempresa']]['empleados'][] = $fila;
+					} else {
+						$datos[$fila['vidempresa']] = [
+							'nombre'    => $fila['vempresa'], 
+							'conf'      => $g->get_campo_impresion('vidempresa', $tipoImpresion), 
+							'empleados' => [$fila]
+						];
+					}
+				}
+
+				$hojas = 1;
+				$rpag = 32; # Registros por página
+
+				$mes  = date('m', strtotime($_GET['fal']));
+				$anio = date('Y', strtotime($_GET['fal']));
+				$dia  = date('d', strtotime($_GET['fal']));
+
+				$cabecera = $b->get_cabecera([
+					'dia'  => $dia, 
+					'mes'  => $mes, 
+					'anio' => $anio
+				]);
+
+				$cabecera['subtitulo'] = 'Libro de Salarios';
+				$cabecera['mes']       = 'Del '.formatoFecha($_GET['fdel'],1).' al '.formatoFecha($_GET['fal'], 1);
+
+				$espacio = 0;
+				$totales = [];
+
+				foreach ($datos as $key => $empresa) {
+					$registros++;
+
+					if ($registros == $rpag) {
+						$espacio   = 0;
+						$registros = 0;
+						$pdf->AddPage();
+					}
+					
+					$confe      = $g->get_campo_impresion('idempresa', $tipoImpresion);
+					$confe->psy = ($confe->psy+$espacio);
+					$espacio    += $confe->espacio;
+					$pdf        = generar_fimpresion($pdf, "{$key} {$empresa['nombre']}", $confe);
+
+					$etotales = [];
+
+					foreach ($empresa['empleados'] as $empleado) {
+						$registros++;
+
+						foreach ($empleado as $campo => $valor) {
+							$conf = $g->get_campo_impresion($campo, $tipoImpresion);
+
+							if (!isset($conf->scalar) && $conf->visible == 1) {
+								$conf->psy = ($conf->psy+$espacio);
+
+								$sintotal = ['vdiastrabajados', 'vcodigo'];
+
+								if (is_numeric($valor) && !in_array($campo, $sintotal)) {
+									$etotales = totalesIndice($etotales, $campo, $valor);
+									$totales  = totalesPagina($totales, $pdf, $campo, $valor);
+									$valor    = number_format($valor, 2);
+								}
+
+								$pdf = generar_fimpresion($pdf, $valor, $conf);
+							}
+						}
+
+						$espacio += $confe->espacio;
+
+						if ($registros == $rpag) {
+							$espacio   = 0;
+							$registros = 0;
+							$pdf->AddPage();
+						}
+					}
+
+					$registros++;
+
+					if ($registros == $rpag) {
+						$espacio   = 0;
+						$registros = 0;
+						$pdf->AddPage();
+					}
+
+					$pdf->SetLineStyle(array(
+						'width' => 0.2, 
+						'cap' => 'butt', 
+						'join' => 'miter', 
+						'dash' => 0, 
+						'color' => array(0, 0, 0)
+					));
+
+					$pdf = imprimirTotalesEmpresa($pdf, $g, 2, $etotales, $espacio);
+
+					$espacio += $confe->espacio;	
+				}
+
+				$espacio += 20;
+
+				foreach ($b->get_firmas() as $campo => $valor) {
 					$conf = $g->get_campo_impresion($campo, $tipoImpresion);
 
 					if (!isset($conf->scalar) && $conf->visible == 1) {
 						$pdf = generar_fimpresion($pdf, $valor, $conf);
 					}
 				}
-			}
-
-			$pagina = 1;
-
-			$pdf->setPage($pagina);
-
-			$espacio = 0;
-			$totales = [];
-
-			foreach ($datos as $key => $empresa) {
-				$registros++;
-
-				if ($registros == $rpag) {
-					$espacio   = 0;
-					$registros = 0;
-					$pagina++;
-					$pdf->setPage($pagina);
-				}
 				
-				$confe      = $g->get_campo_impresion('idempresa', $tipoImpresion);
-				$confe->psy = ($confe->psy+$espacio);
-				$espacio    += $confe->espacio;
-				$pdf        = generar_fimpresion($pdf, "{$key} {$empresa['nombre']}", $confe);
+				$pdf = imprimirTotalesPagina($pdf, $g, 2, $totales);
+				$pdf = imprimirEncabezado($pdf, $g, 2, $cabecera);
 
-				$etotales = [];
-
-				foreach ($empresa['empleados'] as $empleado) {
-					$registros++;
-
-					foreach ($empleado as $campo => $valor) {
-						$conf = $g->get_campo_impresion($campo, $tipoImpresion);
-
-						if (!isset($conf->scalar) && $conf->visible == 1) {
-							$conf->psy = ($conf->psy+$espacio);
-
-							$sintotal = ['vdiastrabajados', 'vcodigo'];
-
-							if (is_numeric($valor) && !in_array($campo, $sintotal)) {
-								if (isset($etotales[$campo])) {
-									$etotales[$campo] += $valor;
-								} else {
-									$etotales[$campo] = $valor;
-								}
-								
-								if (isset($totales[$pdf->getPage()][$campo])) {
-									$totales[$pdf->getPage()][$campo] += $valor;
-								} else {
-									if (isset($totales[$pdf->getPage()-1][$campo])) {
-										$totales[$pdf->getPage()][$campo] = $valor+$totales[$pdf->getPage()-1][$campo];
-									} else {
-										$totales[$pdf->getPage()][$campo] = $valor;
-									}
-								}
-							}
-
-							if (is_numeric($valor) && !in_array($campo, $sintotal)) {
-								$valor = number_format($valor, 2);
-							} else {
-								$valor = $valor;
-							}
-
-							$pdf = generar_fimpresion($pdf, $valor, $conf);
-						}
-					}
-
-					# $pdf = generar_fimpresion($pdf, $valor, $conf);
-
-					$espacio += $confe->espacio;
-
-					if ($registros == $rpag) {
-						$espacio   = 0;
-						$registros = 0;
-						$pagina++;
-						$pdf->setPage($pagina);
-					}
-				}
-
-				$registros++;
-
-				if ($registros == $rpag) {
-					$espacio   = 0;
-					$registros = 0;
-					$pagina++;
-					$pdf->setPage($pagina);
-				}
-
-				$pdf->SetLineStyle(array(
-					'width' => 0.2, 
-					'cap' => 'butt', 
-					'join' => 'miter', 
-					'dash' => 0, 
-					'color' => array(0, 0, 0)
-				));
-
-				foreach ($etotales as $campo => $total) {
-					$conf = $g->get_campo_impresion($campo, $tipoImpresion);
-
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$conf->psy = ($conf->psy+$espacio);
-						$pdf       = generar_fimpresion($pdf, number_format($total, 2), $conf);
-
-						$pdf->Line($conf->psx, $conf->psy, ($conf->psx+$conf->ancho), $conf->psy);
-
-						$y = ($conf->psy+$conf->espacio);
-
-						$pdf->Line($conf->psx, $y, $conf->psx+$conf->ancho, $y);
-						$pdf->Line($conf->psx, $y+1, $conf->psx+$conf->ancho, $y+1);
-					}
-				}
-
-				$espacio += $confe->espacio;	
+				$pdf->Output("libroSalario" . time() . ".pdf", 'I');
+				die();
+			} else {
+				die("Nada que mostrar.");
 			}
-
-			$espacio += 20;
-
-			foreach ($b->get_firmas() as $campo => $valor) {
-				$conf = $g->get_campo_impresion($campo, $tipoImpresion);
-
-				if (!isset($conf->scalar) && $conf->visible == 1) {
-					$pdf = generar_fimpresion($pdf, $valor, $conf);
-				}
-			}
-
-			$pie  = $g->get_campo_impresion("vtotalespie", $tipoImpresion);
-
-			foreach ($totales as $key => $subtotales) {
-				$pdf->setPage($key);
-
-				foreach ($subtotales as $campo => $total) {
-					$conf = $g->get_campo_impresion($campo, $tipoImpresion);
-
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$conf->psy = $pie->psy;
-						$pdf       = generar_fimpresion($pdf, number_format($total, 2), $conf);
-
-						$y = ($conf->psy+$conf->espacio);
-
-						$pdf->Line($conf->psx, $y, $conf->psx+$conf->ancho, $y);
-						$pdf->Line($conf->psx, $y+1, $conf->psx+$conf->ancho, $y+1);
-					}
-				}
-
-				$conf = $g->get_campo_impresion("vnopagina", $tipoImpresion);
-				if (!isset($conf->scalar) && $conf->visible == 1) {
-					$pdf = generar_fimpresion($pdf, $key, $conf);
-				}
-			}
-
-			$pdf->Output("nomina" . time() . ".pdf", 'I');
-			die();
 		} else {
-			echo "Nada que mostrar";
+			die("Faltan datos obligatorios.");
 		}
 	} else {
-		echo "Faltan datos obligatorios";
+		die("Debe seleccionar un empleado.");
 	}
+	
+	
 });
 
 $app->run();
