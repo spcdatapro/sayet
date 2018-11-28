@@ -691,7 +691,7 @@ class Empleado extends Principal
 		$ingreso  = new DateTime($this->emp->ingreso);
 		$baja     = new DateTime($this->emp->baja);
 		$interval = $ingreso->diff($baja);
-		$dias     = ($interval->format('%a'));
+		$dias     = ($interval->format('%a')+1);
 		$monto    = ($dias*((($this->sueldoPromedio/12)*14)/365));
 		
 		$this->finiquitoIndenmizacion = (object)[
