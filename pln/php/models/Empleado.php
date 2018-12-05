@@ -1263,4 +1263,41 @@ EOT;
 
 		return $datos;
 	}
+
+	/** El arreglo <args> es lo que se guarda en plnextradetalle */
+	public function guardar_extra($anio, $args=[])
+	{
+		$tmp = $this->db->get(
+			'plnextra', 
+			['*'], 
+			['anio' => $anio]
+		);
+
+		if ($tmp === false) {
+			$idExtra = $this->db->insert("plnextra", [
+				'anio' => $anio,
+				'idusuario' => $_SESSION['uid']
+			]);
+		} else {
+			$idExtra = $tmp['id'];
+		}
+
+		$test = $this->db->get(
+			'plnextradetalle', 
+			['*'], 
+			[
+				'idplnextra' => $idExtra,
+				'idplnempleado' => $this->emp->id
+			]
+		);
+
+		if ($test === false) {
+			$args['idplnextra'] = $idExtra;
+			$args['idplnempleado'] = $this->emp->id;
+
+			$this->db->insert("plnextradetalle", $args);
+		} else {
+			$this->db->update("plnextradetalle", $args, ["id" => $test['id']]);
+		}
+	}
 }

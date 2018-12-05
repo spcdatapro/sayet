@@ -58,8 +58,7 @@ class Vacaciones extends Empleado
     }
 
     public function setDiasVacaciones($args=[])
-    {
-        
+    {        
         if (empty($this->emp->reingreso)) {
             $ingreso = new DateTime($this->emp->ingreso);
         } else {
@@ -86,7 +85,7 @@ class Vacaciones extends Empleado
         } else {
             $vacasdias = 21;
 
-            if (isset($args["vacasultimas"])) {
+            if (elemento($args, "vacasultimas")) {
                 $dusados["fdel"] = $args["vacasultimas"];
             } else {
                 $dusados["anio"] = $args["anio"];
@@ -107,7 +106,7 @@ class Vacaciones extends Empleado
             "vacasgozar" => $args["vacasgozar"]
         ];
 
-        if (isset($args["vacasultimas"])) {
+        if (elemento($args, "vacasultimas")) {
             $datos["vacasultimas"] = $args["vacasultimas"];
         }
 

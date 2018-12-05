@@ -244,4 +244,9 @@ $app->get('/imprimir', function(){
 	}
 });
 
+$app->get('/test', function(){
+	$emp = new Empleado(142);
+	$emp->guardar_extra($_GET);
+});
+
 $app->run();
