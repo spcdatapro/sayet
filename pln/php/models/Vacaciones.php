@@ -110,28 +110,36 @@ class Vacaciones extends Empleado
 
     public function getDatosVacas($anio)
     {
-        return $this->db->get("plnextradetalle", 
-            [
-                '[><]plnextra(b)' => ['plnextradetalle.idplnextra' => 'id']
-            ], 
-            [
-                "plnextradetalle.id",
-                "plnextradetalle.vacasusados",
-                "plnextradetalle.vacasdias",
-                "plnextradetalle.vacasgozar",
-                "plnextradetalle.vacasultimas",
-                "plnextradetalle.vacasingreso",
-                "concat(b.anio,'-01-01') as inicio",
-                "concat(b.anio,'-12-31') as fin",
-                "DATE_ADD(plnextradetalle.vacasgozar, INTERVAL 20 DAY) as fingoce",
-                "DATE_ADD(plnextradetalle.vacasgozar, INTERVAL 21 DAY) as presentar"
-            ],
-            [
-                "AND" => [
-                    "plnextradetalle.idplnempleado" => $this->emp->id,
-                    "b.anio" => $anio
-                ]
-            ]
-        );
+        $sql = <<<EOT
+            SELECT 
+                a.id,
+                a.vacasusados,
+                a.vacasdias,
+                a.vacasgozar,
+                a.vacasultimas,
+                a.vacasingreso,
+                CONCAT(b.anio, '-01-01') AS inicio,
+                CONCAT(b.anio, '-12-31') AS fin,
+                DATE_ADD(a.vacasgozar, INTERVAL 20 DAY) AS fingoce,
+                DATE_ADD(a.vacasgozar, INTERVAL 21 DAY) AS presentar
+            FROM
+                plnextradetalle a
+                    INNER JOIN
+                plnextra AS b ON a.idplnextra = b.id
+            WHERE
+                a.idplnempleado = {$this->emp->id}
+                    AND b.anio = {$anio}
+            LIMIT 1
+EOT;
+
+        $tmp = $this->db
+                    ->query($sql)
+                    ->fetchAll(PDO::FETCH_ASSOC);
+
+        if (isset($tmp[ 0 ])) {
+            return $tmp[0];
+        }
+
+        return false;
     }
 }

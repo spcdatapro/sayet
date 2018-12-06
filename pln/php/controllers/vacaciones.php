@@ -255,6 +255,13 @@ $app->get('/imprimir_', function(){
 $app->get('/imprimir', function(){
 	if (elemento($_GET, "anio")) {
 		if (isset($_GET["carta"])) {
+			require BASEPATH . '/libs/tcpdf/tcpdf.php';
+			$s = [215.9, 279.4]; # Carta mm
+
+			$pdf = new TCPDF('P', 'mm', $s);
+			$pdf->SetAutoPageBreak(TRUE, 0);
+			$pdf->SetFont('times', '', 12);
+
 			$bus = new General();
 		
 			$datos = [
@@ -273,14 +280,20 @@ $app->get('/imprimir', function(){
 			$empleados = $bus->buscar_empleado($datos);
 			
 			foreach ($empleados as $key => $value) {
+				$pdf->AddPage();
+
 				$vcn = new Vacaciones();
 				$vcn->cargar_empleado($value["id"]);
+				$emp = $vcn->get_empresa_debito();
 				$vac = $vcn->getDatosVacas($_GET["anio"]);
-
-					echo "<pre>";
-					print_r($vac);
-					echo "</pre>";
+				$vac['empresa'] = $emp->nomempresa;
+				$vac['empleado'] = "{$vcn->emp->nombre} {$vcn->emp->apellidos}";
+				
+				$pdf->MultiCell(0, 5, getCartaVacaciones($vac), 0, 'L', 0, 0, '', '', true);
 			}
+			
+			$pdf->Output("carta_vacaciones_" . time() . ".pdf", 'I');
+			die();
 		} else {
 			die("Nada que mostrar.");
 		}

@@ -321,3 +321,43 @@ if ( ! function_exists('estadoCivil')) {
 		return $nombre;
 	}
 }
+
+if ( ! function_exists('getCartaVacaciones')) {
+	function getCartaVacaciones($args=[])
+	{
+		$fecha = date('d/m/Y');
+		$inicio = formatoFecha($args["inicio"], 1);
+		$fin = formatoFecha($args["fin"], 1);
+		$vacasgozar = formatoFecha($args["vacasgozar"], 1);
+		$fingoce = formatoFecha($args["fingoce"], 1);
+		$presentar = formatoFecha($args["presentar"], 1);
+		
+		$carta = <<<EOT
+\n\n\n
+Guatemala {$fecha}
+\n
+Señores {$args['empresa']}
+Presente
+
+\tHago constar que de conformidad con el artículo No. 130 del código de trabajo, desde esta fecha he principiado a gozar de mi período de vacaciones por el término de 15 días.
+
+\nVacaciones que me corresponden por el úlitmo año de trabajo en su establecimiento comercial comprendido del {$inicio} al {$fin}.
+
+\nA gozar del {$vacasgozar} al {$fingoce}.
+	debiendo presentarme a mis labores el día {$presentar}.
+
+\nAsí mismo hago constar que el importe del sueldo correspondiente a dichas vacaciones me ha sido cubierto por anticipado; y que firmo la presente de conformidad con el artículo No. 137 del código de trabajo.
+\n
+Atentamente,
+\n\n
+_________________________________
+{$args['empleado']}
+\n\n\n
+Autorizado por:
+\n\n
+_________________________________
+
+EOT;
+		return $carta;
+	}
+}
