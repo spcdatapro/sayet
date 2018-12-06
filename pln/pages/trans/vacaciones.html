@@ -5,6 +5,14 @@
 				<h3 class="text-center">Generar Vacaciones</h3>
 
 				<form ng-submit="generar(gen)">
+					<div class="form-group form-group-sm">
+						<label for="selectEmpresa">Empresa:</label>
+						<select class="form-control" name="empresa" ng-model="emp.empresa" id="selectEmpresa">
+							<option value="">------</option>
+							<option ng-repeat="empresa in empresas" value="{{empresa.id}}">{{empresa.nomempresa}}</option>
+						</select>
+					</div>
+
 				  <div class="form-group form-group-sm">
 				  	<label for="selectEmpleado">Empleado:</label>
 			  		<select class="form-control" ng-model="gen.idplnempleado" id="selectEmpleado">

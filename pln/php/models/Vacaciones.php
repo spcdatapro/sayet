@@ -68,7 +68,6 @@ class Vacaciones extends Empleado
         $dusados = ["pagadas" => 0, "anulado" => 0];
 
         if ($ingreso->format('Y') == $args["anio"]) {
-            $ingreso  = new DateTime($ingreso);
             $finAnio  = new DateTime($args["anio"]."-12-31");
             $interval = $ingreso->diff($finAnio);
             $dias     = ($interval->format('%a')+1);
@@ -100,46 +99,39 @@ class Vacaciones extends Empleado
             $vacasusados += $value["dias"];
         }
 
-        $datos = [
+        $this->guardar_extra($args["anio"], [
+            "vacasingreso" => $ingreso->format('Y-m-d'),
+            "vacasultimas" => elemento($args, "vacasultimas"),
             "vacasusados" => $vacasusados,
-            "vacasdias" => $vacasdias-$vacasusados,
-            "vacasgozar" => $args["vacasgozar"]
-        ];
-
-        if (elemento($args, "vacasultimas")) {
-            $datos["vacasultimas"] = $args["vacasultimas"];
-        }
-
-        $this->guardar($datos);
+            "vacasgozar" => $args["vacasgozar"],
+            "vacasdias" => ($vacasdias-$vacasusados)
+        ]);
     }
 
-    /*public function diasPagar($args=[])
+    public function getDatosVacas($anio)
     {
-        if (empty($this->emp->reingreso)) {
-            $ingreso = new DateTime($this->emp->ingreso);
-        } else {
-            $ingreso = new DateTime($this->emp->reingreso);
-        }
-
-        $finAnio = new DateTime($args["anio"]."-12-31");
-
-        $dias = 0;
-
-        $usados = $this->get_vacaciones([
-            "anio" => $args["anio"],
-            "pagadas" => 0,
-            "anulado" => 0
-        ]);
-
-        foreach ($usados as $key => $value) {
-            $dias += $value["dias"];
-        }
-
-        if ($ingreso->format("Y") == $args["anio"]) {
-            # code...
-        } else {
-            # code...
-        }
-        
-    }*/
+        return $this->db->get("plnextradetalle", 
+            [
+                '[><]plnextra(b)' => ['plnextradetalle.idplnextra' => 'id']
+            ], 
+            [
+                "plnextradetalle.id",
+                "plnextradetalle.vacasusados",
+                "plnextradetalle.vacasdias",
+                "plnextradetalle.vacasgozar",
+                "plnextradetalle.vacasultimas",
+                "plnextradetalle.vacasingreso",
+                "concat(b.anio,'-01-01') as inicio",
+                "concat(b.anio,'-12-31') as fin",
+                "DATE_ADD(plnextradetalle.vacasgozar, INTERVAL 20 DAY) as fingoce",
+                "DATE_ADD(plnextradetalle.vacasgozar, INTERVAL 21 DAY) as presentar"
+            ],
+            [
+                "AND" => [
+                    "plnextradetalle.idplnempleado" => $this->emp->id,
+                    "b.anio" => $anio
+                ]
+            ]
+        );
+    }
 }

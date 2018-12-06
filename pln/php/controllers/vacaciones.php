@@ -19,10 +19,17 @@ $app->post('/generar', function(){
 	if (elemento($_POST, 'anio')) {
 		$bus = new General();
 		
-		$datos = ["estatus" => 1];
+		$datos = [
+			"estatus" => 1,
+			"sin_limite" => true
+		];
 
 		if (elemento($_POST, "empleado")) {
 			$datos["empleado"] = $_POST["empleado"];
+		}
+
+		if (elemento($_POST, "empresa")) {
+			$datos["actual"] = $_POST["empresa"];
 		}
 
 		$empleados = $bus->buscar_empleado($datos);
@@ -33,6 +40,7 @@ $app->post('/generar', function(){
 			$vcn->setDiasVacaciones($_POST);
 		}
 
+		$res["exito"] = 1;
 		$res["mensaje"] = "Datos generados con éxito.";
 	} else {
 		$res["mensaje"] = "Por favor ingrese año de cálculo.";
@@ -41,7 +49,7 @@ $app->post('/generar', function(){
 	enviar_json($res);
 });
 
-$app->get('/imprimir', function(){
+$app->get('/imprimir_', function(){
 	$b = new Nomina();
 	$g = new General();
 
@@ -244,9 +252,41 @@ $app->get('/imprimir', function(){
 	}
 });
 
-$app->get('/test', function(){
-	$emp = new Empleado(142);
-	$emp->guardar_extra($_GET);
+$app->get('/imprimir', function(){
+	if (elemento($_GET, "anio")) {
+		if (isset($_GET["carta"])) {
+			$bus = new General();
+		
+			$datos = [
+				"estatus" => 1,
+				"sin_limite" => true
+			];
+
+			if (elemento($_GET, "empleado")) {
+				$datos["empleado"] = $_GET["empleado"];
+			}
+
+			if (elemento($_GET, "empresa")) {
+				$datos["actual"] = $_GET["empresa"];
+			}
+
+			$empleados = $bus->buscar_empleado($datos);
+			
+			foreach ($empleados as $key => $value) {
+				$vcn = new Vacaciones();
+				$vcn->cargar_empleado($value["id"]);
+				$vac = $vcn->getDatosVacas($_GET["anio"]);
+
+					echo "<pre>";
+					print_r($vac);
+					echo "</pre>";
+			}
+		} else {
+			die("Nada que mostrar.");
+		}
+	} else {
+		die("Es necesario que ingrese año.");
+	}
 });
 
 $app->run();

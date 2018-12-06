@@ -127,6 +127,10 @@ angular.module('cpm')
                 n.vacasultimas = n.ultimas.getFullYear()+'-'+(n.ultimas.getMonth()+1)+'-'+n.ultimas.getDate()
             }
 
+            if (n.gozar) {
+                n.vacasgozar = n.gozar.getFullYear()+'-'+(n.gozar.getMonth()+1)+'-'+n.gozar.getDate()
+            }
+
             n.vacasgozar = n.gozar.getFullYear()+'-'+(n.gozar.getMonth()+1)+'-'+n.gozar.getDate();
             
             vacasServicios.generar(n).then(function(data){
