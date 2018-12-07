@@ -1,3 +1,4 @@
+
 <?php
 set_time_limit(0);
 ini_set('memory_limit', '1536M');
@@ -8,7 +9,7 @@ $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
 
 $app->post('/rptlibmay', function(){
-    $d = json_decode(file_get_contents('php://input'));
+    $d = empty($_POST) ? json_decode(file_get_contents('php://input')) : ((object)$_POST);
     if(!isset($d->vercierre)){ $d->vercierre = 0; }
     $db = new dbcpm();
     $db->doQuery("DELETE FROM rptlibromayor");
