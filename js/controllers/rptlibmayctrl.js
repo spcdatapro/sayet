@@ -115,7 +115,7 @@
             var url = '/sayet/php/rptlibmay.php/rptlibmay'
 
             $.post(url, $scope.params, function(data){
-                var tab_text='<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"><html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8"/><title></title><meta name="generator" content="Gacela C807"/><style type="text/css">body,div,table,thead,tbody,tfoot,tr,th,td,p { font-family:"Liberation Sans"; font-size:x-small }</style></head><body><table>';
+                var tab_text='<table>'
                 tab_text = tab_text+"<tr><td>Código</td><td colspan='2'>Cuenta</td><td>Anterior</td><td>Debe</td><td>Haber</td><td>Saldo</td></tr>"
                 tab_text = tab_text+"<tr><td>Fecha</td><td>Referencia</td><td colspan='5'>Transacción</td></tr>";
                 
@@ -142,13 +142,12 @@
                 tab_text = tab_text+'</table>'
 
                 var a = document.createElement('a')
+                document.body.appendChild(a)
                 a.href = 'data:application/vnd.oasis.opendocument.spreadsheet,' + encodeURIComponent(tab_text)
                 a.download = 'DMG.xls'
                 a.click()
 
                 $('#btnDMGExcel').button('reset')
-
-                return false
             })
         }
 
