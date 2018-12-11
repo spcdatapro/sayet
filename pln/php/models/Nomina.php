@@ -380,7 +380,7 @@ class Nomina extends Principal
 					}
 
 					# Solo deja calcular bono el 15 de la primera quincena
-					if (isset($args['aguinaldo']) && $args['aguinaldo'] == 'true') {
+					if (isset($args['aguinaldo']) && $args['aguinaldo'] == 'true' && $mes == 12 && $dia == 15) {
 						$e->set_aguinaldo();
 						
 						$datos['aguinaldo']              = $e->aguinaldoMonto;
@@ -390,6 +390,34 @@ class Nomina extends Principal
 						$datos['aguinaldo']              = 0;
 						$datos['aguinaldodias']          = 0;
 						$datos['sueldoordinarioreporte'] = 0;
+					}
+
+					# Solo deja calcular vacaciones la segunda quince de diciembre
+					if (isset($args['vacaciones']) && $args['vacaciones'] == 'true' && $mes == 12 && $dia == 31) {
+						$vcn = new Vacaciones();
+						$vcn->cargar_empleado($row['idplnempleado']);
+
+						$dvacas = $vcn->getDatosVacas($anio);
+
+						if ($dvacas) {
+							$montoVacas = (($e->get_sueldo()/365)*$dvacas["vacasdias"]);
+							$montoVacasDesc = (($e->get_sueldo()/365)*$dvacas["vacasusados"]);
+
+							$datos["vacasdias"] = $dvacas["vacasdias"];
+							$datos["descvacas"] = $montoVacasDesc;
+							$datos["vacaciones"] = $montoVacas;
+							$datos["descvacasdias"] = $dvacas["vacasusados"];
+						} else {
+							$datos["vacasdias"] = 0;
+							$datos["descvacas"] = 0;
+							$datos["vacaciones"] = 0;
+							$datos["descvacasdias"] = 0;
+						}
+					} else {
+						$datos["vacasdias"] = 0;
+						$datos["descvacas"] = 0;
+						$datos["vacaciones"] = 0;
+						$datos["descvacasdias"] = 0;
 					}
 
 					# Pago cada quincena
@@ -690,7 +718,12 @@ EOT;
 				'vbaja'            => ($emp->emp->baja === NULL ? '':formatoFecha($emp->emp->baja, 1)),
 				'vpigss'           => $row->pigss,
 				'vfechaingreso'    => formatoFecha($row->ingreso, 1),
-				'vsueldoordinarioreporte' => $row->sueldoordinarioreporte
+				'vsueldoordinarioreporte' => $row->sueldoordinarioreporte,
+				'vacasdias' => $row->vacasdias,
+				'descvacas' => $row->descvacas,
+				'descvacasdias' => $row->descvacasdias,
+				'vacaciones' => $row->vacaciones,
+				'vacastotal' => ($row->vacaciones-$row->descvacas)
 			];
 
 			$datos[] = array_merge($demp, $tmp);

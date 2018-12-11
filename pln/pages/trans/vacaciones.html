@@ -24,17 +24,22 @@
 				  <div class="form-group form-group-sm">
 				    <label for="inputFecha">Anio:</label>
 				    <input type="number" ng-model="gen.anio" class="form-control" placeholder="Año" required>
-					</div>
+				  </div>
 					
 					<div class="form-group form-group-sm">
 				    <label for="inputFecha">Últimas vacaciones finalizaron el:</label>
 				    <input type="date" ng-model="gen.ultimas" class="form-control" placeholder="Año">
 					</div>
 					
-					<div class="form-group form-group-sm">
+				  <div class="form-group form-group-sm">
 				    <label for="inputFecha">Gozar a partir del:</label>
 				    <input type="date" ng-model="gen.gozar" class="form-control" placeholder="Año" required>
 				  </div>
+
+				  <div class="form-group form-group-sm">
+				    <label for="inputVacasusados">Días Utilizados:</label>
+				    <input type="number" ng-model="gen.vacasusados" class="form-control" value="0" required>
+					</div>
 
 				  <button type="submit" class="btn btn-primary btn-block" id="btnBuscar" data-loading-text="Generando...">
 				  	<i class="glyphicon glyphicon-cog"></i> Generar
