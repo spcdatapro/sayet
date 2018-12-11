@@ -102,6 +102,7 @@ class Vacaciones extends Empleado
         $this->guardar_extra($args["anio"], [
             "vacasingreso" => $ingreso->format('Y-m-d'),
             "vacasultimas" => elemento($args, "vacasultimas"),
+            "vacasusados" => $args["vacasusados"],
             "vacasusados" => $vacasusados,
             "vacasgozar" => $args["vacasgozar"],
             "vacasdias" => ($vacasdias-$vacasusados)
