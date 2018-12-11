@@ -369,10 +369,10 @@ angular.module('cpm')
         }
 
         $scope.getPeriodo = function(index){
-             $scope.prd = $scope.periodos[index];
+             $scope.prd = $scope.periodos[index]
              $scope.prd.fecinicio = $scope.formatoFechajs($scope.prd.inicio)
              $scope.prd.fecfin = $scope.formatoFechajs($scope.prd.fin)
-             console.log($scope.prd)
+             $scope.prd.cerrado = parseInt($scope.prd.cerrado)
              $scope.formulario = true
              $scope.hay = true
              goTop()
