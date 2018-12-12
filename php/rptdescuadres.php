@@ -33,7 +33,7 @@ $app->post('/rptdescuadres', function(){
     $query.= "UNION ALL ";
     $query.= "SELECT CONCAT('P', YEAR(b.fecha), LPAD(MONTH(b.fecha), 2, '0'), LPAD(DAY(b.fecha), 2, '0'), LPAD(3, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fecha, ";
     $query.= "CONCAT('Venta', ' ', b.serie, '-', b.numero) AS referencia, b.conceptomayor AS concepto, b.id, 3 AS origen ";
-    $query.= "FROM factura b INNER JOIN cliente d ON d.id = b.idcliente ";
+    $query.= "FROM factura b LEFT JOIN cliente d ON d.id = b.idcliente ";
     $query.= "LEFT JOIN (SELECT origen, idorigen, SUM(debe) AS totdebe, SUM(haber) AS tothaber FROM detallecontable WHERE origen = 3 GROUP BY origen, idorigen HAVING totdebe <> tothaber) z ON z.idorigen = b.id ";
     $query.= "WHERE b.fecha >= '".$d->fdelstr."' AND b.fecha <= '".$d->falstr."' AND b.idempresa = ".$d->idempresa." AND (z.idorigen = NULL OR z.totdebe <> z.tothaber) ";
     $query.= "AND b.idcontrato = 0 ";
