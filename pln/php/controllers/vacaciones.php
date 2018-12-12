@@ -3,6 +3,7 @@
 define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
 define('PLNPATH', BASEPATH . '/pln/php');
 
+set_time_limit(0);
 
 require BASEPATH . "/php/vendor/autoload.php";
 require BASEPATH . "/php/ayuda.php";
@@ -26,8 +27,8 @@ $app->post('/generar', function(){
 			"sin_limite" => true
 		];
 
-		if (elemento($_POST, "empleado")) {
-			$datos["empleado"] = $_POST["empleado"];
+		if (elemento($_POST, "idplnempleado")) {
+			$datos["empleado"] = $_POST["idplnempleado"];
 		}
 
 		if (elemento($_POST, "empresa")) {
@@ -94,22 +95,16 @@ $app->get('/imprimir', function(){
 			$pdf->Output("carta_vacaciones_" . time() . ".pdf", 'I');
 			die();
 		} else {
-			$b = new Nomina();
 			$g = new General();
 
-			$anio = $_GET["anio"];
-
 			require BASEPATH . '/libs/tcpdf/tcpdf.php';
-			$_GET['fdel'] = "{$anio}-12-16";
-			$_GET['fal'] = "{$anio}-12-31";
-
 			$s = [215.9, 330.2]; # Oficio mm
 
 			$pdf = new TCPDF('L', 'mm', $s);
 			$pdf->SetAutoPageBreak(TRUE, 0);
 			$pdf->AddPage();
 
-			$todos = $b->get_datos_recibo($_GET);
+			$todos = $g->getDatosVacas($_GET);
 
 			$tipoImpresion = 19;
 
@@ -118,18 +113,19 @@ $app->get('/imprimir', function(){
 				$datos = [];
 
 				foreach ($todos as $fila) {
-					if (isset($datos[$fila['vidempresa']])) {
-						$datos[$fila['vidempresa']]['empleados'][] = $fila;
+					if (isset($datos[$fila['idproyecto']])) {
+						$datos[$fila['idproyecto']]['empleados'][] = $fila;
 					} else {
-						$datos[$fila['vidempresa']] = [
-							'nombre'    => $fila['vempresa'], 
-							'conf'      => $g->get_campo_impresion('vidempresa', $tipoImpresion), 
+						$datos[$fila['idproyecto']] = [
+							'nombre'    => $fila['nomproyecto'], 
+							'conf'      => $g->get_campo_impresion('idproyecto', $tipoImpresion), 
 							'empleados' => [$fila]
 						];
 					}
 				}
 
 				$rpag = 45; # Registros por página
+				$anio = $_GET["anio"];
 
 				$cabecera = [
 					'titulon'     => 'Módulo de Planillas',
@@ -177,7 +173,7 @@ $app->get('/imprimir', function(){
 							if (!isset($conf->scalar) && $conf->visible == 1) {
 								$conf->psy = ($conf->psy+$espacio);
 
-								$sintotal = ['vcodigo', 'vaguinaldodias'];
+								$sintotal = ['idplnempleado'];
 
 								if (is_numeric($valor) && !in_array($campo, $sintotal)) {
 									$etotales = totalesIndice($etotales, $campo, $valor);

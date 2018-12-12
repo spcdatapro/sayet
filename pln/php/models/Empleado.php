@@ -1286,8 +1286,10 @@ EOT;
 			'plnextradetalle', 
 			['*'], 
 			[
-				'idplnextra' => $idExtra,
-				'idplnempleado' => $this->emp->id
+				"AND" => [
+					'idplnextra' => $idExtra,
+					'idplnempleado' => $this->emp->id
+				]
 			]
 		);
 
