@@ -10,8 +10,9 @@ $app->post('/rptestres', function(){
     $d = json_decode(file_get_contents('php://input'));
     //$d = new forTest(); $d->fdelstr = ''; $d->falstr = '2016-12-31'; $d->idempresa = 1;
     $db = new dbcpm();
-    $db->doQuery("DELETE FROM rptestadoresultados");
-    $db->doQuery("ALTER TABLE rptestadoresultados AUTO_INCREMENT = 1");
+    $tblname = $db->crearTablasReportesConta('er');
+    $db->doQuery("DELETE FROM $tblname");
+    $db->doQuery("ALTER TABLE $tblname AUTO_INCREMENT = 1");
     $inggas = [1, 0]; //1 = ingresos; 0 = gastos
     //$origenes = ['tranban' => 1, 'compra' => 2, 'venta' => 3, 'directa' => 4, 'reembolso' => 5, 'contrato' => 6, 'recprov' => 7, 'reccli' => 8, 'liquidadoc' => 9, 'ncdclientes' => 10, 'ncdproveedores' => 11];
     $origenes = ['tranban' => 1, 'compra' => 2, 'venta' => 3, 'directa' => 4, 'reembolso' => 5, 'recprov' => 7, 'reccli' => 8, 'liquidadoc' => 9, 'ncdclientes' => 10, 'ncdproveedores' => 11];
@@ -20,57 +21,58 @@ $app->post('/rptestres', function(){
         foreach($ctasing as $ing){
             $inicianCon = preg_split('/\D/', $ing->empiezancon, NULL, PREG_SPLIT_NO_EMPTY);
             foreach($inicianCon as $ini){
-                $query = "INSERT INTO rptestadoresultados(idcuenta, codigo, nombrecta, tipocuenta, ingresos) ";
+                $query = "INSERT INTO $tblname(idcuenta, codigo, nombrecta, tipocuenta, ingresos) ";
                 $query.= "SELECT id, codigo, nombrecta, tipocuenta, ".$ig." FROM cuentac WHERE idempresa = ".$d->idempresa." AND codigo LIKE '".$ini."%' ORDER BY codigo";
                 $db->doQuery($query);
                 foreach($origenes as $k => $v){
-                    $query = "UPDATE rptestadoresultados a INNER JOIN (".getSelect($v, $d, ((int)$d->acumulado == 1), $ini).") b ON a.idcuenta = b.idcuenta SET a.saldo = a.saldo + b.anterior";
+                    $query = "UPDATE $tblname a INNER JOIN (".getSelect($v, $d, ((int)$d->acumulado == 1), $ini).") b ON a.idcuenta = b.idcuenta SET a.saldo = a.saldo + b.anterior";
                     $db->doQuery($query);
                 }
-                $query = "INSERT INTO rptestadoresultados(idcuenta, codigo, nombrecta, tipocuenta, ingresos, saldo, parasuma) ";
+                $query = "INSERT INTO $tblname(idcuenta, codigo, nombrecta, tipocuenta, ingresos, saldo, parasuma) ";
                 $query.= "SELECT 0, '', 'Subtotal de cuentas de ".($ig == 1 ? "ingreso" : "gasto")." que inician con ".$ini." --->', 1, ".$ig.", SUM(saldo), 1 ";
-                $query.= "FROM rptestadoresultados WHERE ingresos = ".$ig." AND tipocuenta = 0 AND LENGTH(codigo) <= 7 AND codigo LIKE '$ini%'";
+                $query.= "FROM $tblname WHERE ingresos = ".$ig." AND tipocuenta = 0 AND LENGTH(codigo) <= 7 AND codigo LIKE '$ini%'";
                 $db->doQuery($query);
             }
         }
-        $query = "INSERT INTO rptestadoresultados(idcuenta, codigo, nombrecta, tipocuenta, ingresos, saldo, estotal) ";
+        $query = "INSERT INTO $tblname(idcuenta, codigo, nombrecta, tipocuenta, ingresos, saldo, estotal) ";
         $query.= "SELECT 0, '99999', 'Total de ".($ig == 1 ? "ingresos" : "gastos")."', 1, ".$ig.", SUM(saldo), 1 ";
-        $query.= "FROM rptestadoresultados WHERE ingresos = ".$ig." AND parasuma = 1";
+        $query.= "FROM $tblname WHERE ingresos = ".$ig." AND parasuma = 1";
         $db->doQuery($query);
     }
 
     $query = "SELECT ABS(a.ingresos) - ABS(b.gastos) AS estado ";
-    $query.= "FROM (SELECT idcuenta, saldo AS ingresos FROM rptestadoresultados WHERE estotal = 1 AND ingresos = 1) a ";
-    $query.= "INNER JOIN (SELECT idcuenta, saldo AS gastos FROM rptestadoresultados WHERE estotal = 1 AND ingresos = 0) b ON a.idcuenta = b.idcuenta";
+    $query.= "FROM (SELECT idcuenta, saldo AS ingresos FROM $tblname WHERE estotal = 1 AND ingresos = 1) a ";
+    $query.= "INNER JOIN (SELECT idcuenta, saldo AS gastos FROM $tblname WHERE estotal = 1 AND ingresos = 0) b ON a.idcuenta = b.idcuenta";
     $estado = round((float)$db->getOneField($query), 2);
-    $query = "INSERT INTO rptestadoresultados(idcuenta, codigo, nombrecta, saldo, tipocuenta) VALUES(";
+    $query = "INSERT INTO $tblname(idcuenta, codigo, nombrecta, saldo, tipocuenta) VALUES(";
     $query.= "0, '99999', '".($estado >= 0 ? "Ganancia" : "Perdida")." del ejercicio', ".$estado.", 1";
     $query.= ")";
     $db->doQuery($query);
 
     //Calculo de datos para cuentas de totales
     //$tamnivdet = [4 => 6, 2 => 6, 1 => 6];
-    $query = "SELECT DISTINCT LENGTH(codigo) AS tamnivel FROM rptestadoresultados WHERE tipocuenta = 1 AND LENGTH(codigo) > 0 ORDER BY 1 DESC";
+    $query = "SELECT DISTINCT LENGTH(codigo) AS tamnivel FROM $tblname WHERE tipocuenta = 1 AND LENGTH(codigo) > 0 ORDER BY 1 DESC";
     $tamniveles = $db->getQuery($query);
     foreach($tamniveles as $t){
-        $query = "SELECT id, idcuenta, codigo FROM rptestadoresultados WHERE tipocuenta = 1 AND LENGTH(codigo) = ".$t->tamnivel." ORDER BY codigo";
+        $query = "SELECT id, idcuenta, codigo FROM $tblname WHERE tipocuenta = 1 AND LENGTH(codigo) = ".$t->tamnivel." ORDER BY codigo";
         $niveles = $db->getQuery($query);
         foreach($niveles as $n){
             $query = "SELECT SUM(saldo) AS saldo ";
-            $query.= "FROM rptestadoresultados ";
+            $query.= "FROM $tblname ";
             $query.= "WHERE tipocuenta = 0 AND LENGTH(codigo) <= 7 AND codigo LIKE '".$n->codigo."%'";
             $sumas = $db->getQuery($query)[0];
-            $query = "UPDATE rptestadoresultados SET saldo = ".$sumas->saldo." WHERE tipocuenta = 1 AND id = ".$n->id." AND idcuenta = ".$n->idcuenta;
+            $query = "UPDATE $tblname SET saldo = ".$sumas->saldo." WHERE tipocuenta = 1 AND id = ".$n->id." AND idcuenta = ".$n->idcuenta;
             $db->doQuery($query);
         }
     }
 
     $query = "SELECT id, idcuenta, codigo, nombrecta, tipocuenta, ingresos, parasuma, estotal, saldo ";
-    $query.= "FROM rptestadoresultados ";
+    $query.= "FROM $tblname ";
     $query.= "WHERE saldo <> 0.00 AND nombrecta NOT LIKE 'Subtotal de cuentas de%' AND LENGTH(codigo) <= $d->nivel";
 
     $empresa = $db->getQuery("SELECT nomempresa, abreviatura FROM empresa WHERE id = $d->idempresa")[0];
     print json_encode(['empresa' => $empresa, 'datos'=> $db->getQuery($query)]);
+    $db->eliminarTablasRepConta($tblname);
 });
 
 function getSelect($cual, $d, $enrango, $ini){

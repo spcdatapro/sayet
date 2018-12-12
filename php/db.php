@@ -118,6 +118,110 @@ class dbcpm{
         return $result;
     }
 
+    public function gen_uid($l=5){
+        $str = "";
+        for($x = 0; $x < $l; $x++){
+            $str.= substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyz"), 0, 1);
+        }
+        return $str;
+    }
+
+    public function crearTablasReportesConta($cual = ''){
+        $crud = '';
+        $tblname = '';
+        switch($cual){
+            case 'dm' :
+                $tblname = 'rdm'.$this->gen_uid();
+                $crud = "
+                    CREATE TABLE $tblname (
+                      id int(10) unsigned NOT NULL AUTO_INCREMENT,
+                      idcuentac int(11) NOT NULL DEFAULT '0',
+                      codigo varchar(10) NOT NULL,
+                      nombrecta varchar(75) NOT NULL,
+                      tipocuenta bit(1) NOT NULL DEFAULT b'0',
+                      anterior decimal(20,2) NOT NULL DEFAULT '0.00',
+                      debe decimal(20,2) NOT NULL DEFAULT '0.00',
+                      haber decimal(20,2) NOT NULL DEFAULT '0.00',
+                      actual decimal(20,2) NOT NULL DEFAULT '0.00',
+                      PRIMARY KEY (id),
+                      KEY CodigoASC (codigo) USING BTREE,
+                      KEY TipoCuentaASC (tipocuenta) USING BTREE
+                    ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
+                break;
+            case 'bs' :
+                $tblname = 'rbs'.$this->gen_uid();
+                $crud = "
+                    CREATE TABLE $tblname (
+                      id int(10) unsigned NOT NULL AUTO_INCREMENT,
+                      idcuentac int(11) NOT NULL DEFAULT '0',
+                      codigo varchar(10) NOT NULL,
+                      nombrecta varchar(75) NOT NULL,
+                      tipocuenta bit(1) NOT NULL DEFAULT b'0',
+                      anterior decimal(20,2) NOT NULL DEFAULT '0.00',
+                      debe decimal(20,2) NOT NULL DEFAULT '0.00',
+                      haber decimal(20,2) NOT NULL DEFAULT '0.00',
+                      actual decimal(20,2) NOT NULL DEFAULT '0.00',
+                      PRIMARY KEY (id),
+                      KEY CodigoASC (codigo) USING BTREE,
+                      KEY TipoCuentaASC (tipocuenta) USING BTREE
+                    ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
+                break;
+            case 'bg' :
+                $tblname = 'rbg'.$this->gen_uid();
+                $crud = "
+                    CREATE TABLE $tblname (
+                      id int(10) unsigned NOT NULL AUTO_INCREMENT,
+                      idcuenta int(10) unsigned NOT NULL,
+                      codigo varchar(10) NOT NULL,
+                      nombrecta varchar(75) NOT NULL,
+                      tipocuenta bit(1) NOT NULL DEFAULT b'0',
+                      actpascap int(10) unsigned NOT NULL DEFAULT '0',
+                      parasuma bit(1) NOT NULL DEFAULT b'0',
+                      estotal bit(1) NOT NULL DEFAULT b'0',
+                      saldo decimal(20,2) NOT NULL DEFAULT '0.00',
+                      PRIMARY KEY (id)
+                    ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
+                break;
+            case 'er' :
+                $tblname = 'rer'.$this->gen_uid();
+                $crud = "
+                    CREATE TABLE $tblname (
+                      id int(10) unsigned NOT NULL AUTO_INCREMENT,
+                      idcuenta int(10) unsigned NOT NULL,
+                      codigo varchar(10) NOT NULL,
+                      nombrecta varchar(75) NOT NULL,
+                      tipocuenta bit(1) NOT NULL DEFAULT b'0',
+                      ingresos bit(1) NOT NULL DEFAULT b'0',
+                      parasuma bit(1) NOT NULL DEFAULT b'0',
+                      estotal bit(1) NOT NULL DEFAULT b'0',
+                      saldo decimal(20,2) NOT NULL DEFAULT '0.00',
+                      s_ene decimal(20,2) NOT NULL DEFAULT '0.00',
+                      s_feb decimal(20,2) NOT NULL DEFAULT '0.00',
+                      s_mar decimal(20,2) NOT NULL DEFAULT '0.00',
+                      s_abr decimal(20,2) NOT NULL DEFAULT '0.00',
+                      s_may decimal(20,2) NOT NULL DEFAULT '0.00',
+                      s_jun decimal(20,2) NOT NULL DEFAULT '0.00',
+                      s_jul decimal(20,2) NOT NULL DEFAULT '0.00',
+                      s_ago decimal(20,2) NOT NULL DEFAULT '0.00',
+                      s_sep decimal(20,2) NOT NULL DEFAULT '0.00',
+                      s_oct decimal(20,2) NOT NULL DEFAULT '0.00',
+                      s_nov decimal(20,2) NOT NULL DEFAULT '0.00',
+                      s_dic decimal(20,2) NOT NULL DEFAULT '0.00',
+                      PRIMARY KEY (id)
+                    ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
+                break;
+        }
+        $this->doQuery($crud);
+        return $tblname;
+    }
+
+    public function eliminarTablasRepConta($tblname = ''){
+        if($tblname !== ''){
+            $crud = "DROP TABLE IF EXISTS $tblname";
+            $this->doQuery($crud);
+        }
+    }
+
     public function initSession($userdata){
         if (!isset($_SESSION)) {
             session_start();
