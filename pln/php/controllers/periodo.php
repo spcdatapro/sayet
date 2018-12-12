@@ -56,7 +56,7 @@ $app->post('/guardar', function(){
 					$prd->cargar_periodo($datos['id']);
 				}
 
-				if (elemento($datos, 'cerrado', 0) && $prd->hay_abierto()) {
+				if (elemento($datos, 'cerrado', 0) == 0 && $prd->hay_abierto()) {
 					$data['mensaje'] = 'No puede tener más de un período abierto.';
 				} else {
 					if ($prd->guardar($datos)) {
