@@ -65,6 +65,7 @@ class Vacaciones extends Empleado
             $ingreso = new DateTime($this->emp->reingreso);
         }
 
+        $diasAnio = 366;
         $dusados = ["pagadas" => 0, "anulado" => 0];
 
         if ($ingreso->format('Y') == $args["anio"]) {
@@ -72,13 +73,13 @@ class Vacaciones extends Empleado
             $interval = $ingreso->diff($finAnio);
             $dias     = ($interval->format('%a')+1);
 
-            if ($dias > 366) {
-                $diasLaborados = 366;
+            if ($dias > $diasAnio) {
+                $diasLaborados = $diasAnio;
             } else {
                 $diasLaborados = $dias;
             }
 
-            $vacasdias = (($diasLaborados*21)/366);
+            $vacasdias = (($diasLaborados*21)/$diasAnio);
             
             $dusados["anio"] = $args["anio"];
         } else {
@@ -91,56 +92,29 @@ class Vacaciones extends Empleado
             }
         }
 
-        $vacasusados = 0;
-
-        $usados = $this->get_vacaciones($dusados);
-
-        foreach ($usados as $key => $value) {
-            $vacasusados += $value["dias"];
-        }
+        $sueldoDia = ($this->emp->sueldo/21);
+        $vacasTotal = ($sueldoDia * $vacasdias);
+        $vacasDescuento = ($sueldoDia * $args["vacasusados"]);
 
         $this->guardar_extra($args["anio"], [
             "vacasingreso" => $ingreso->format('Y-m-d'),
             "vacasultimas" => elemento($args, "vacasultimas"),
             "vacasusados" => $args["vacasusados"],
-            "vacasusados" => $vacasusados,
             "vacasgozar" => $args["vacasgozar"],
-            "vacasdias" => ($vacasdias-$vacasusados)
+            "vacasdias" => $vacasdias,
+            "vacastotal" => $vacasTotal,
+            "vacasdescuento" => $vacasDescuento,
+            "vacasliquido" => ($vacasTotal-$vacasDescuento)
         ]);
     }
 
     public function getDatosVacas($anio)
     {
-        $sql = <<<EOT
-            SELECT 
-                a.id,
-                a.vacasusados,
-                a.vacasdias,
-                a.vacasgozar,
-                a.vacasultimas,
-                a.vacasingreso,
-                CONCAT(b.anio, '-01-01') AS inicio,
-                CONCAT(b.anio, '-12-31') AS fin,
-                DATE_ADD(a.vacasgozar, INTERVAL 20 DAY) AS fingoce,
-                DATE_ADD(a.vacasgozar, INTERVAL 21 DAY) AS presentar
-            FROM
-                plnextradetalle a
-                    INNER JOIN
-                plnextra AS b ON a.idplnextra = b.id
-            WHERE
-                a.idplnempleado = {$this->emp->id}
-                    AND b.anio = {$anio}
-            LIMIT 1
-EOT;
-
-        $tmp = $this->db
-                    ->query($sql)
-                    ->fetchAll(PDO::FETCH_ASSOC);
-
-        if (isset($tmp[ 0 ])) {
-            return $tmp[0];
-        }
-
-        return false;
+        $tmp = new General();
+        
+        return $tmp->getDatosVacas([
+            "uno" => true,
+            "idplnempleado" => $this->emp->id
+        ]);
     }
 }

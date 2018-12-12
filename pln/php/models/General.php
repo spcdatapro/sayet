@@ -349,4 +349,78 @@ class General extends Principal
 			$condicion
 		);
 	}
+
+	public function getDatosVacas($args=[])
+    {
+    	$condiciones = "";
+
+    	if (elemento($args, "idplnempleado")) {
+    		$condiciones .= " AND a.idplnempleado = " . $args["idplnempleado"];
+    	}
+
+    	if (elemento($args, "empleado")) {
+    		$condiciones .= " AND a.idplnempleado = " . $args["empleado"];
+    	}
+
+    	if (elemento($args, "empresa")) {
+    		$condiciones .= " AND c.idempresadebito = " . $args["empresa"];
+    	}
+
+    	if (elemento($args, "actual")) {
+    		$condiciones .= " AND c.idempresaactual = " . $args["empresa"];
+    	}
+
+    	if (isset($args["activo"])) {
+    		$condiciones .= " AND c.activo = " . $args["activo"];
+    	}
+
+    	if (isset($args["uno"])) {
+    		$condiciones .= " LIMIT 1";
+    	}
+
+        $sql = <<<EOT
+            SELECT 
+                a.id,
+                a.vacasusados,
+                a.vacasdias,
+                a.vacasgozar,
+                a.vacasultimas,
+                a.vacasingreso,
+                a.vacastotal,
+                a.vacasdescuento,
+                a.vacasliquido,
+                a.idplnempleado,
+                concat(c.nombre, ' ', ifnull(c.apellidos,'')) as nombre,
+                c.idproyecto,
+                CONCAT(b.anio, '-01-01') AS inicio,
+                CONCAT(b.anio, '-12-31') AS fin,
+                DATE_ADD(a.vacasgozar, INTERVAL 20 DAY) AS fingoce,
+                DATE_ADD(a.vacasgozar, INTERVAL 21 DAY) AS presentar,
+                ifnull(d.nomproyecto,'Sin Configurar') as nomproyecto
+            FROM
+                plnextradetalle a
+                    INNER JOIN
+                plnextra AS b ON a.idplnextra = b.id
+                	INNER JOIN 
+                plnempleado c on c.id = a.idplnempleado
+                	LEFT JOIN 
+    			proyecto d ON d.id = c.idproyecto
+            WHERE b.anio = {$args['anio']} 
+            {$condiciones}
+EOT;
+
+        $tmp = $this->db
+                    ->query($sql)
+                    ->fetchAll(PDO::FETCH_ASSOC);
+
+        if (count($tmp) > 0) {
+        	if (isset($args["uno"])) {
+        		return $tmp[0];
+        	} else {
+        		return $tmp;
+        	}
+        }
+
+        return false;
+    }
 }
