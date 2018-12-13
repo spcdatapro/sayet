@@ -10,39 +10,40 @@ $app->post('/rptbalsal', function(){
     $d = json_decode(file_get_contents('php://input'));
     try{
         $db = new dbcpm();
-        $db->doQuery("DELETE FROM rptbalancesaldos");
-        $db->doQuery("ALTER TABLE rptbalancesaldos AUTO_INCREMENT = 1");
-        $db->doQuery("INSERT INTO rptbalancesaldos(idcuentac, codigo, nombrecta, tipocuenta) SELECT id, codigo, nombrecta, tipocuenta FROM cuentac WHERE idempresa = $d->idempresa ORDER BY codigo");
+        $tblname = $db->crearTablasReportesConta('bs');
+        //$db->doQuery("DELETE FROM $tblname");
+        //$db->doQuery("ALTER TABLE $tblname AUTO_INCREMENT = 1");
+        $db->doQuery("INSERT INTO $tblname(idcuentac, codigo, nombrecta, tipocuenta) SELECT id, codigo, nombrecta, tipocuenta FROM cuentac WHERE idempresa = $d->idempresa ORDER BY codigo");
         //$origenes = ['tranban' => 1, 'compra' => 2, 'venta' => 3, 'directa' => 4, 'reembolso' => 5, 'contrato' => 6, 'recprov' => 7, 'reccli' => 8, 'liquidadoc' => 9, 'ncdclientes' => 10, 'ncdproveedores' => 11];
         $origenes = ['tranban' => 1, 'compra' => 2, 'venta' => 3, 'directa' => 4, 'reembolso' => 5, 'recprov' => 7, 'reccli' => 8, 'liquidadoc' => 9, 'ncdclientes' => 10, 'ncdproveedores' => 11];
         foreach($origenes as $k => $v){
-            $query = "UPDATE rptbalancesaldos a INNER JOIN (".getSelect($v, $d, false).") b ON a.idcuentac = b.idcuenta SET a.anterior = a.anterior + b.anterior";
+            $query = "UPDATE $tblname a INNER JOIN (".getSelect($v, $d, false).") b ON a.idcuentac = b.idcuenta SET a.anterior = a.anterior + b.anterior";
             $db->doQuery($query);
-            $query = "UPDATE rptbalancesaldos a INNER JOIN (".getSelect($v, $d, true).") b ON a.idcuentac = b.idcuenta SET a.debe = a.debe + b.debe, a.haber = a.haber + b.haber";
+            $query = "UPDATE $tblname a INNER JOIN (".getSelect($v, $d, true).") b ON a.idcuentac = b.idcuenta SET a.debe = a.debe + b.debe, a.haber = a.haber + b.haber";
             $db->doQuery($query);
             //if($v == 3){ exit(); }
         }
-        $db->doQuery("UPDATE rptbalancesaldos SET actual = anterior + debe - haber");
+        $db->doQuery("UPDATE $tblname SET actual = anterior + debe - haber");
 
         //Calculo de datos para cuentas de totales
         //$tamnivdet = [4 => 6, 2 => 6, 1 => 6];
-        $query = "SELECT DISTINCT LENGTH(codigo) AS tamnivel FROM rptbalancesaldos WHERE tipocuenta = 1 ORDER BY 1 DESC";
+        $query = "SELECT DISTINCT LENGTH(codigo) AS tamnivel FROM $tblname WHERE tipocuenta = 1 ORDER BY 1 DESC";
         //echo $query."<br/><br/>";
         $tamniveles = $db->getQuery($query);
         foreach($tamniveles as $t){
             //echo "Tamaño del nivel = ".$t->tamnivel."<br/><br/>";
-            $query = "SELECT id, idcuentac, codigo FROM rptbalancesaldos WHERE tipocuenta = 1 AND LENGTH(codigo) = ".$t->tamnivel." ORDER BY codigo";
+            $query = "SELECT id, idcuentac, codigo FROM $tblname WHERE tipocuenta = 1 AND LENGTH(codigo) = ".$t->tamnivel." ORDER BY codigo";
             //echo $query."<br/><br/>";
             $niveles = $db->getQuery($query);
             foreach($niveles as $n){
                 //echo "LENGTH(codigo) = ".$tamnivdet[(int)$t->tamnivel]."<br/><br/>";
                 //echo "Codigo = ".$n->codigo."<br/><br/>";
                 $query = "SELECT SUM(anterior) AS anterior, SUM(debe) AS debe, SUM(haber) AS haber, SUM(actual) AS actual ";
-                $query.= "FROM rptbalancesaldos ";
+                $query.= "FROM $tblname ";
                 $query.= "WHERE tipocuenta = 0 AND LENGTH(codigo) <= 7 AND codigo LIKE '".$n->codigo."%'";
                 //echo $query."<br/><br/>";
                 $sumas = $db->getQuery($query)[0];
-                $query = "UPDATE rptbalancesaldos SET anterior = ".$sumas->anterior.", debe = ".$sumas->debe.", haber = ".$sumas->haber.", actual = ".$sumas->actual." ";
+                $query = "UPDATE $tblname SET anterior = ".$sumas->anterior.", debe = ".$sumas->debe.", haber = ".$sumas->haber.", actual = ".$sumas->actual." ";
                 $query.= "WHERE tipocuenta = 1 AND id = ".$n->id." AND idcuentac = ".$n->idcuentac;
                 //echo $query."<br/><br/>";
                 $db->doQuery($query);
@@ -50,7 +51,7 @@ $app->post('/rptbalsal', function(){
         }
 
         $query = "SELECT id, idcuentac, codigo, nombrecta, tipocuenta, anterior, debe, haber, actual ";
-        $query.= "FROM rptbalancesaldos ";
+        $query.= "FROM $tblname ";
         $query.= "WHERE LENGTH(codigo) <= $d->nivel ";
         $query.= (int)$d->solomov == 1 ? "AND (anterior <> 0 OR debe <> 0 OR haber <> 0 OR actual <> 0) " : "";
         $query.= "ORDER BY codigo";
@@ -58,6 +59,7 @@ $app->post('/rptbalsal', function(){
         //print $db->doSelectASJson($query);
         $empresa = $db->getQuery("SELECT nomempresa, abreviatura FROM empresa WHERE id = $d->idempresa")[0];
         print json_encode(['empresa' => $empresa, 'datos'=> $db->getQuery($query)]);
+        $db->eliminarTablasRepConta($tblname);
 
     }catch(Exception $e){
         $error = "Mensaje: ".$e->getMessage()." -- Linea: ".$e->getLine()." -- Objeto: ".json_encode($d);
