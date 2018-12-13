@@ -119,6 +119,7 @@ angular.module('cpm')
     function($scope, $http, vacasServicios, empresaSrvc, empServicios){
         $scope.empresas = []
         $scope.empleados = []
+        $scope.empvacas = []
 
         $scope.generar = function(n) {
             $("#btnBuscar").button('loading')
@@ -130,12 +131,24 @@ angular.module('cpm')
             if (n.gozar) {
                 n.vacasgozar = n.gozar.getFullYear()+'-'+(n.gozar.getMonth()+1)+'-'+n.gozar.getDate()
             }
-
-            n.vacasgozar = n.gozar.getFullYear()+'-'+(n.gozar.getMonth()+1)+'-'+n.gozar.getDate();
             
             vacasServicios.generar(n).then(function(data){
-                alert(data.mensaje)
+                $scope.empvacas = data.empleados
                 $("#btnBuscar").button('reset')
+            })
+        }
+
+        $scope.actualizarVacas = function(v, i) {
+            if (v.vacasultimas && typeof v.vacasultimas !== 'string') {
+                v.vacasultimas = v.vacasultimas.getFullYear()+'-'+(v.vacasultimas.getMonth()+1)+'-'+v.vacasultimas.getDate()
+            }
+
+            if (v.vacasgozar && typeof v.vacasgozar !== 'string') {
+                v.vacasgozar = v.vacasgozar.getFullYear()+'-'+(v.vacasgozar.getMonth()+1)+'-'+v.vacasgozar.getDate()
+            }
+
+            vacasServicios.actualizar(v).then(function(data){
+                $scope.empvacas[i]  = data
             })
         }
 

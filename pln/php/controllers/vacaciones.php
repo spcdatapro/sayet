@@ -21,35 +21,58 @@ $app->post('/generar', function(){
 
 	if (elemento($_POST, 'anio')) {
 		$bus = new General();
-		
-		$datos = [
-			"estatus" => 1,
-			"sin_limite" => true
-		];
 
-		if (elemento($_POST, "idplnempleado")) {
-			$datos["empleado"] = $_POST["idplnempleado"];
-		}
+		if ($_POST["accion"] == 1) {
+			$datos = [
+				"estatus" => 1,
+				"sin_limite" => true
+			];
 
-		if (elemento($_POST, "empresa")) {
-			$datos["actual"] = $_POST["empresa"];
-		}
+			if (elemento($_POST, "idplnempleado")) {
+				$datos["empleado"] = $_POST["idplnempleado"];
+			}
 
-		$empleados = $bus->buscar_empleado($datos);
-		
-		foreach ($empleados as $key => $value) {
-			$vcn = new Vacaciones();
-			$vcn->cargar_empleado($value["id"]);
-			$vcn->setDiasVacaciones($_POST);
+			if (elemento($_POST, "empresa")) {
+				$datos["actual"] = $_POST["empresa"];
+			}
+
+			$empleados = $bus->buscar_empleado($datos);
+			
+			foreach ($empleados as $key => $value) {
+				$vcn = new Vacaciones();
+				$vcn->cargar_empleado($value["id"]);
+				$vcn->setDiasVacaciones($_POST);
+			}
 		}
 
 		$res["exito"] = 1;
 		$res["mensaje"] = "Datos generados con éxito.";
+		$res["empleados"] = $bus->getDatosVacas($_POST);
 	} else {
 		$res["mensaje"] = "Por favor ingrese año de cálculo.";
 	}
 	
 	enviar_json($res);
+});
+
+$app->post('/actualizar', function(){
+	$bus = new General();
+	$vcn = new Vacaciones();
+	$vcn->cargar_empleado($_POST["idplnempleado"]);
+	$vcn->guardar_extra([
+		"id" => $_POST["id"],
+		"datos" => [
+			"vacasdescuento" => $_POST["vacasdescuento"],
+			"vacasdias" => $_POST["vacasdias"],
+			"vacasgozar" => elemento($_POST, "vacasgozar"),
+			"vacasliquido" => ($_POST["vacastotal"]-$_POST["vacasdescuento"]),
+			"vacastotal" => $_POST["vacastotal"],
+			"vacasultimas" => elemento($_POST, "vacasultimas"),
+			"vacasusados" => $_POST["vacasusados"]
+		]
+	]);
+	
+	enviar_json($bus->getDatosVacas(["id" => $_POST["id"], "uno" => true]));
 });
 
 $app->get('/imprimir', function(){
@@ -124,7 +147,7 @@ $app->get('/imprimir', function(){
 					}
 				}
 
-				$rpag = 45; # Registros por página
+				$rpag = 30; # Registros por página
 				$anio = $_GET["anio"];
 
 				$cabecera = [
@@ -137,10 +160,11 @@ $app->get('/imprimir', function(){
 					'tingreso'    => "Fecha Ingreso",
 					'tvacaciones' => "Vacaciones",
 					'tdescvacas'  => "Descuento",
+					'tvacasdias'  => "Días",
 					'tdescvacasdias' => "Días Desc",
 					'tvacastotal' => "Líquido a Recibir",
-					'tlineat'     => str_repeat("_", 160),
-					'tlineapiet'  => str_repeat("_", 160),
+					'tlineat'     => str_repeat("_", 250),
+					'tlineapiet'  => str_repeat("_", 250),
 					'tnopaginat'  => "Página No. "
 					
 				];
@@ -212,7 +236,7 @@ $app->get('/imprimir', function(){
 
 					$pdf = imprimirTotalesEmpresa($pdf, $g, $tipoImpresion, $etotales, $espacio);
 
-					$espacio += $confe->espacio;	
+					$espacio += $confe->espacio;
 				}
 	
 				$pdf = imprimirTotalesPagina($pdf, $g, $tipoImpresion, $totales);

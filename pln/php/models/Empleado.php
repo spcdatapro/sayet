@@ -1274,41 +1274,55 @@ EOT;
 	}
 
 	/** El arreglo <args> es lo que se guarda en plnextradetalle */
-	public function guardar_extra($anio, $args=[])
+	public function guardar_extra($args=[])
 	{
-		$tmp = $this->db->get(
-			'plnextra', 
-			['*'], 
-			['anio' => $anio]
-		);
-
-		if ($tmp === false) {
-			$idExtra = $this->db->insert("plnextra", [
-				'anio' => $anio,
-				'idusuario' => $_SESSION['uid']
-			]);
+		if (elemento($args, "id", FALSE)) {
+			$idDetalle = $args["id"];
 		} else {
-			$idExtra = $tmp['id'];
+			$anio = $args["anio"];
+
+			$tmp = $this->db->get(
+				'plnextra', 
+				['*'], 
+				['anio' => $anio]
+			);
+
+			if ($tmp === false) {
+				$idExtra = $this->db->insert("plnextra", [
+					'anio' => $anio,
+					'idusuario' => $_SESSION['uid']
+				]);
+			} else {
+				$idExtra = $tmp['id'];
+			}
+
+			$test = $this->db->get(
+				'plnextradetalle', 
+				['*'], 
+				[
+					"AND" => [
+						'idplnextra' => $idExtra,
+						'idplnempleado' => $this->emp->id
+					]
+				]
+			);
+
+			if ($test === false) {
+				$args["datos"]['idplnextra'] = $idExtra;
+				$args["datos"]['idplnempleado'] = $this->emp->id;
+
+				$this->db->insert("plnextradetalle", $args["datos"]);
+				
+				return TRUE;
+			} else {
+				$idDetalle = $test['id'];
+			}
 		}
 
-		$test = $this->db->get(
-			'plnextradetalle', 
-			['*'], 
-			[
-				"AND" => [
-					'idplnextra' => $idExtra,
-					'idplnempleado' => $this->emp->id
-				]
-			]
-		);
-
-		if ($test === false) {
-			$args['idplnextra'] = $idExtra;
-			$args['idplnempleado'] = $this->emp->id;
-
-			$this->db->insert("plnextradetalle", $args);
-		} else {
-			$this->db->update("plnextradetalle", $args, ["id" => $test['id']]);
+		if (isset($idDetalle)) {
+			$this->db->update("plnextradetalle", $args["datos"], ["id" => $idDetalle]);
+			
+			return TRUE;
 		}
 	}
 }

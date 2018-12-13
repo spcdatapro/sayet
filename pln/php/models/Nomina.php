@@ -400,12 +400,9 @@ class Nomina extends Principal
 						$dvacas = $vcn->getDatosVacas($anio);
 
 						if ($dvacas) {
-							$montoVacas = (($e->get_sueldo()/365)*$dvacas["vacasdias"]);
-							$montoVacasDesc = (($e->get_sueldo()/365)*$dvacas["vacasusados"]);
-
 							$datos["vacasdias"] = $dvacas["vacasdias"];
-							$datos["descvacas"] = $montoVacasDesc;
-							$datos["vacaciones"] = $montoVacas;
+							$datos["descvacas"] = $dvacas["vacasdescuento"];
+							$datos["vacaciones"] = $dvacas["vacasliquido"];
 							$datos["descvacasdias"] = $dvacas["vacasusados"];
 						} else {
 							$datos["vacasdias"] = 0;

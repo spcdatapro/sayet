@@ -47,7 +47,10 @@ angular.module('cpm')
         },
         generar: function(datos) {
             return comunFact.doPOSTFiles(urlBase + '/generar', datos);
-        }
+        },
+        actualizar: function(datos){
+            return comunFact.doPOSTFiles(urlBase + '/actualizar', datos);
+        },
     };
 }])
 .factory('pstServicios', ['comunFact', function(comunFact){

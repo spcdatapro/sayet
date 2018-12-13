@@ -1,51 +1,115 @@
+<style>
+		#tablaVacaciones > tbody > tr > td {
+			padding: 0px;
+		}
+	
+		td > input {
+			width: 100%;
+		}
+	
+		#tablaVacaciones {
+			font-size: 0.8em;
+		}
+</style>
+
 <div class="container-fluid" ng-controller="generarVacacionesController">
 	<div class="row">
-		<div class="col-sm-offset-3 col-sm-6">
-			<div class="jumbotron" id="contenidoGenerar">
-				<h3 class="text-center">Generar Vacaciones</h3>
-
-				<form ng-submit="generar(gen)">
-					<div class="form-group form-group-sm">
-						<label for="selectEmpresa">Empresa:</label>
-						<select class="form-control" name="empresa" ng-model="emp.empresa" id="selectEmpresa">
-							<option value="">------</option>
-							<option ng-repeat="empresa in empresas" value="{{empresa.id}}">{{empresa.nomempresa}}</option>
-						</select>
-					</div>
-
-				  <div class="form-group form-group-sm">
-				  	<label for="selectEmpleado">Empleado:</label>
-			  		<select class="form-control" ng-model="gen.idplnempleado" id="selectEmpleado">
-			  			<option value="">------</option>
-			  			<option ng-repeat="empleado in empleados" value="{{empleado.id}}">{{empleado.nombre}} {{empleado.apellidos}}</option>
-			  		</select>
-				  </div>
-
-				  <div class="form-group form-group-sm">
-				    <label for="inputFecha">Anio:</label>
-				    <input type="number" ng-model="gen.anio" class="form-control" placeholder="Año" required>
-				  </div>
-					
-					<div class="form-group form-group-sm">
-				    <label for="inputFecha">Últimas vacaciones finalizaron el:</label>
-				    <input type="date" ng-model="gen.ultimas" class="form-control" placeholder="Año">
-					</div>
-					
-				  <div class="form-group form-group-sm">
-				    <label for="inputFecha">Gozar a partir del:</label>
-				    <input type="date" ng-model="gen.gozar" class="form-control" placeholder="Año" required>
-				  </div>
-
-				  <div class="form-group form-group-sm">
-				    <label for="inputVacasusados">Días Utilizados:</label>
-				    <input type="number" ng-model="gen.vacasusados" class="form-control" value="0" required>
-					</div>
-
-				  <button type="submit" class="btn btn-primary btn-block" id="btnBuscar" data-loading-text="Generando...">
-				  	<i class="glyphicon glyphicon-cog"></i> Generar
-				  </button>
-				</form>
+		<div class="col-sm-12">
+			
+			<div class="panel panel-default">
+				<div class="panel-body">
+					 
+					 <form ng-submit="generar(gen)" method="POST" class="form-horizontal" role="form">
+							<div class="form-group form-group-sm">
+								<label for="selectEmpresa" class="col-sm-2 control-label">Empresa:</label>
+								<div class="col-sm-4">
+									<select ng-model="gen.empresa" id="selectEmpresa" class="form-control">
+											<option value="">------</option>
+											<option ng-repeat="empresa in empresas" value="{{empresa.id}}">{{empresa.nomempresa}}</option>
+									</select>
+								</div>
+								<label for="selectEmpleado" class="col-sm-2 control-label">Empleado:</label>
+								<div class="col-sm-4">
+									<select ng-model="gen.idplnempleado" id="selectEmpleado" class="form-control">
+											<option value="">------</option>
+			  							<option ng-repeat="empleado in empleados" value="{{empleado.id}}">{{empleado.nombre}} {{empleado.apellidos}}</option>
+									</select>
+								</div>
+							</div>
+							
+							<div class="form-group form-group-sm">
+								<label for="inputAnio" class="col-sm-2 control-label">Año:</label>
+								<div class="col-sm-4">
+									<input type="number" ng-model="gen.anio" id="inputAnio" class="form-control" required="required">
+								</div>
+								<label for="inputUltimasVacaciones" class="col-sm-2 control-label">Últimas Vacaciones:</label>
+								<div class="col-sm-4">
+									<input type="date" ng-model="gen.ultimas" id="inputUltimasVacaciones" class="form-control">
+								</div>
+							</div>
+							
+							<div class="form-group form-group-sm">
+								<label for="inputGozar" class="col-sm-2 control-label">Gozar:</label>
+								<div class="col-sm-4">
+									<input type="date" ng-model="gen.gozar" id="inputGozar" class="form-control">
+								</div>
+								<div class="col-sm-offset-2 col-sm-2">
+									<label class="radio-inline">
+										<input type="radio" ng-model="gen.accion" ng-value="1" id="inlineRadio1" ng-required="!gen.accion"> Generar
+									</label>
+									<label class="radio-inline">
+										<input type="radio" ng-model="gen.accion" ng-value="2" id="inlineRadio1" ng-required="!gen.accion"> Preparar
+									</label>
+								</div>
+								<div class="col-sm-2 text-right">
+									<button type="submit" class="btn btn-primary btn-sm" id="btnBuscar" data-loading-text="Generando...">
+											<i class="glyphicon glyphicon-cog"></i> Aceptar
+										</button>
+								</div>
+							</div>
+					 </form>
+				</div>
 			</div>
+			<hr>
+			
+			<div class="panel panel-default">
+				<!-- Default panel contents -->
+				<div class="panel-heading">Datos Generandos</div>
+					<!-- Table -->
+					<table class="table table-condensed" id="tablaVacaciones">
+						<thead>
+							<tr>
+								<th>Código</th>
+								<th style="width: 300px;">Nombre</th>
+								<th style="width: 75px;">Ingreso</th>
+								<th style="width: 75px;" class="text-right">Sueldo</th>
+								<th>Últimas</th>
+								<th>Gozar</th>
+								<th>Días</th>
+								<th>Total</th>
+								<th>Días Descuento</th>
+								<th>Descuento</th>
+								<th style="width: 75px;" class="text-right">Líquido</th>
+							</tr>
+						</thead>
+						<tbody ng-cloak>
+								<tr ng-repeat="(indice, valor) in empvacas">
+									<td>{{valor.idplnempleado}}</td>
+									<td>{{valor.nombre}}</td>
+									<td>{{valor.vacasingreso | date:'dd/MM/yyyy' }}</td>
+									<td class="text-right" style="padding-right:5px;">{{valor.sueldo | number }}</td>
+									<td><input type="date" ng-value="valor.vacasultimas" ng-model="valor.vacasultimas" ng-blur="actualizarVacas(valor, indice, this)"></td>
+									<td><input type="date" ng-value="valor.vacasgozar" ng-model="valor.vacasgozar" ng-blur="actualizarVacas(valor, indice, this)"></td>
+									<td><input type="number" ng-model="valor.vacasdias" string-to-number ng-blur="actualizarVacas(valor, indice, this)"></td>
+									<td><input type="number" step="0.01" ng-model="valor.vacastotal" string-to-number ng-blur="actualizarVacas(valor, indice, this)"></td>
+									<td><input type="number" ng-model="valor.vacasusados" string-to-number ng-blur="actualizarVacas(valor, indice, this)"></td>
+									<td><input type="number" step="0.01" ng-model="valor.vacasdescuento" string-to-number ng-blur="actualizarVacas(valor, indice, this)"></td>
+									<td class="text-right" style="padding-right:5px;">{{ valor.vacasliquido | number }}</td>
+								</tr>
+						</tbody>
+					</table>
+			</div>
+			
 		</div>
 	</div>
 </div>

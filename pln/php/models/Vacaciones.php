@@ -94,17 +94,22 @@ class Vacaciones extends Empleado
 
         $sueldoDia = ($this->emp->sueldo/21);
         $vacasTotal = ($sueldoDia * $vacasdias);
-        $vacasDescuento = ($sueldoDia * $args["vacasusados"]);
 
-        $this->guardar_extra($args["anio"], [
+        $datosExtra = [
             "vacasingreso" => $ingreso->format('Y-m-d'),
-            "vacasultimas" => elemento($args, "vacasultimas"),
-            "vacasusados" => $args["vacasusados"],
-            "vacasgozar" => $args["vacasgozar"],
             "vacasdias" => $vacasdias,
             "vacastotal" => $vacasTotal,
-            "vacasdescuento" => $vacasDescuento,
-            "vacasliquido" => ($vacasTotal-$vacasDescuento)
+            "vacasliquido" => $vacasTotal
+        ];
+
+        if ($args["accion"] == 1) {
+            $datosExtra["vacasultimas"] = elemento($args, "vacasultimas");
+            $datosExtra["vacasgozar"] = elemento($args, "vacasgozar");
+        }
+
+        $this->guardar_extra([
+            "anio" => $args["anio"],
+            "datos" => $datosExtra
         ]);
     }
 

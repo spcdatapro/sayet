@@ -352,7 +352,13 @@ class General extends Principal
 
 	public function getDatosVacas($args=[])
     {
-    	$condiciones = "";
+		$condiciones = "";
+		
+		if (elemento($args, "id")) {
+    		$condiciones .= " AND a.id = " . $args["id"];
+    	} else {
+			$condiciones .= " AND b.anio = " . $args['anio'];
+		}
 
     	if (elemento($args, "idplnempleado")) {
     		$condiciones .= " AND a.idplnempleado = " . $args["idplnempleado"];
@@ -363,11 +369,15 @@ class General extends Principal
     	}
 
     	if (elemento($args, "empresa")) {
+    		$condiciones .= " AND c.idempresaactual = " . $args["empresa"];
+		}
+		
+		if (elemento($args, "empresa_debito")) {
     		$condiciones .= " AND c.idempresadebito = " . $args["empresa"];
     	}
 
     	if (elemento($args, "actual")) {
-    		$condiciones .= " AND c.idempresaactual = " . $args["empresa"];
+    		$condiciones .= " AND c.idempresaactual = " . $args["actual"];
     	}
 
     	if (isset($args["activo"])) {
@@ -385,13 +395,15 @@ class General extends Principal
                 a.vacasdias,
                 a.vacasgozar,
                 a.vacasultimas,
-                a.vacasingreso,
+				a.vacasingreso,
+				DATE_FORMAT(a.vacasingreso, '%d/%m/%Y') as vacasingresof,
                 a.vacastotal,
                 a.vacasdescuento,
                 a.vacasliquido,
                 a.idplnempleado,
                 concat(c.nombre, ' ', ifnull(c.apellidos,'')) as nombre,
-                c.idproyecto,
+				c.idproyecto,
+				c.sueldo,
                 CONCAT(b.anio, '-01-01') AS inicio,
                 CONCAT(b.anio, '-12-31') AS fin,
                 DATE_ADD(a.vacasgozar, INTERVAL 20 DAY) AS fingoce,
@@ -405,7 +417,7 @@ class General extends Principal
                 plnempleado c on c.id = a.idplnempleado
                 	LEFT JOIN 
     			proyecto d ON d.id = c.idproyecto
-            WHERE b.anio = {$args['anio']} 
+            WHERE a.id > 0 
             {$condiciones}
 EOT;
 
