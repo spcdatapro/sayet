@@ -205,10 +205,16 @@ $app->post('/finiquito', function(){
 				'dos_empleado'   => $emp->emp->nombre.' '.$emp->emp->apellidos,
 				'dos_empresa'    => $empresa->nomempresa,
 				'dos_linea1'     => str_repeat('_', 90),
-				'dos_tspromedio' => "Sueldo Promedio sobre {$_POST['meses_calculo']} meses:",
 				'dos_spromedio'  => number_format($emp->sueldoPromedio, 2),
 				'dos_linea2'     => str_repeat('_', 90)
 			];
+
+			if ($_POST['meses_calculo'] == 'ficha') {
+				$dos["dos_tspromedio"] = "Sueldo Base:";
+			} else {
+				$dos["dos_tspromedio"] = "Sueldo Promedio sobre {$_POST['meses_calculo']} meses:";
+			}
+			
 
 			foreach ($dos as $campo => $valor) {
 				$conf = $gen->get_campo_impresion($campo, $tipoImpresion);
@@ -220,29 +226,34 @@ $app->post('/finiquito', function(){
 
 			$totales = [];
 			$espacio = 0;
+			$sueldoDetalle = $emp->get_sueldo_promedio(['detallado' => true]);
 
-			foreach ($emp->get_sueldo_promedio(['detallado' => true]) as $row) {
-				foreach ($row as $campo => $valor) {
-					if (in_array($campo, ['sueldoordinario', 'mes', 'diastrabajados', 'anio'])) {
-						$conf = $gen->get_campo_impresion("dos_{$campo}", $tipoImpresion);
+			if ($sueldoDetalle) {
+				foreach ($sueldoDetalle as $row) {
+					foreach ($row as $campo => $valor) {
+						if (in_array($campo, ['sueldoordinario', 'mes', 'diastrabajados', 'anio'])) {
+							$conf = $gen->get_campo_impresion("dos_{$campo}", $tipoImpresion);
 
-						if (!isset($conf->scalar) && $conf->visible == 1) {
-							if ($campo == 'sueldoordinario') {
-								if (isset($totales["dos_{$campo}"])) {
-									$totales["dos_{$campo}"] += $valor;
-								} else {
-									$totales["dos_{$campo}"] = $valor;
+							if (!isset($conf->scalar) && $conf->visible == 1) {
+								if ($campo == 'sueldoordinario') {
+									if (isset($totales["dos_{$campo}"])) {
+										$totales["dos_{$campo}"] += $valor;
+									} else {
+										$totales["dos_{$campo}"] = $valor;
+									}
 								}
-							}
 
-							$conf->psy += $espacio;
-							$valor = $campo == 'mes' ? ucfirst(get_meses($valor)) : ($campo=='sueldoordinario'?number_format($valor,2):$valor);
-							$pdf = generar_fimpresion($pdf, $valor, $conf);
+								$conf->psy += $espacio;
+								$valor = $campo == 'mes' ? ucfirst(get_meses($valor)) : ($campo=='sueldoordinario'?number_format($valor,2):$valor);
+								$pdf = generar_fimpresion($pdf, $valor, $conf);
+							}
 						}
 					}
+					$espacio += 5;
 				}
-				$espacio += 5;
 			}
+
+				
 
 			$conf = $gen->get_campo_impresion('dos_linea3', $tipoImpresion);
 

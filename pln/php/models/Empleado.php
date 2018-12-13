@@ -650,34 +650,37 @@ class Empleado extends Principal
 
 	public function get_sueldo_promedio($args = [])
 	{
-		$sql = "SELECT 
-					sueldoordinario,
-					sueldoextra,
-					fecha,
-					year(fecha) as anio,
-					month(fecha) as mes,
-					diastrabajados,
-					(sueldoordinario+sueldoextra) as total 
-				FROM plnnomina
-				WHERE idplnempleado = {$this->emp->id} 
-				AND day(fecha) <> 15
-				AND esbonocatorce = 0 
-				ORDER BY fecha DESC
-				LIMIT {$this->mesesCalculo}";
-		
-		$tmp = $this->db->query($sql)->fetchAll();
-
-		if (isset($args['detallado'])) {
-			return $tmp;
+		if ($this->mesesCalculo == 'ficha') {
+			return isset($args['detallado']) ? false : $this->emp->sueldo;
 		} else {
-			$promedio = 0;
+			$sql = "SELECT 
+						sueldoordinario,
+						sueldoextra,
+						fecha,
+						year(fecha) as anio,
+						month(fecha) as mes,
+						diastrabajados,
+						(sueldoordinario+sueldoextra) as total 
+					FROM plnnomina
+					WHERE idplnempleado = {$this->emp->id} 
+					AND day(fecha) <> 15
+					AND esbonocatorce = 0 
+					ORDER BY fecha DESC
+					LIMIT {$this->mesesCalculo}";
+			
+			$tmp = $this->db->query($sql)->fetchAll();
 
-			foreach ($tmp as $row) {
-				$promedio += $row['sueldoordinario'];
+			if (isset($args['detallado'])) {
+				return $tmp;
+			} else {
+				$promedio = 0;
+
+				foreach ($tmp as $row) {
+					$promedio += $row['sueldoordinario'];
+				}
+
+				return ($promedio/count($tmp));
 			}
-
-			#return ($promedio/$this->mesesCalculo);
-			return ($promedio/count($tmp));
 		}
 	}
 
@@ -841,7 +844,6 @@ EOT;
 			'total_etiqueta'           => 'Total:',
 			'total_linea'              => str_repeat('_', 10),
 			'total'                    => number_format($this->emp->sueldo + $this->emp->bonificacionley, 2),
-			'sueldo_promedio_etiqueta' => "Sueldo Promedio:\nsobre {$args['meses_calculo']} meses",
 			'sueldo_promedio'          => number_format($this->sueldoPromedio, 2),
 			'linea_dos_resumen'        => str_repeat("_", 90),
 			'texto_prestaciones'       => 'Prestaciones',
@@ -902,6 +904,13 @@ EOT;
 			'otrosdesc_razon'          => $args['otrosdesc_razon'],
 			'otrosdesc_monto'          => number_format(elemento($args, 'otrosdesc_monto', 0),2)
 		];
+
+		if ($args['meses_calculo'] == 'ficha') {
+			$tmp["sueldo_promedio_etiqueta"] = "Sueldo Base:";
+		} else {
+			$tmp["sueldo_promedio_etiqueta"] = "Sueldo Promedio:\nsobre {$args['meses_calculo']} meses";
+		}
+		
 
 		$totalPrestaciones = (
 			$this->finiquitoIndenmizacion->monto+
