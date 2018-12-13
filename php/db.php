@@ -210,6 +210,24 @@ class dbcpm{
                       PRIMARY KEY (id)
                     ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
                 break;
+            case 'cp':
+                $tblname = 'rcp'.$this->gen_uid();
+                $crud = "
+                    CREATE TABLE $tblname (
+                      id int(10) unsigned NOT NULL AUTO_INCREMENT,
+                      idcuentac int(11) NOT NULL DEFAULT '0',
+                      codigo varchar(10) NOT NULL,
+                      nombrecta varchar(75) NOT NULL,
+                      tipocuenta bit(1) NOT NULL DEFAULT b'0',
+                      anterior decimal(20,2) NOT NULL DEFAULT '0.00',
+                      debe decimal(20,2) NOT NULL DEFAULT '0.00',
+                      haber decimal(20,2) NOT NULL DEFAULT '0.00',
+                      actual decimal(20,2) NOT NULL DEFAULT '0.00',
+                      PRIMARY KEY (id),
+                      KEY CodigoASC (codigo) USING BTREE,
+                      KEY TipoCuentaASC (tipocuenta) USING BTREE
+                    ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8";
+                break;
         }
         $this->doQuery($crud);
         return $tblname;

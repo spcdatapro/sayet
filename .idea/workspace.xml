@@ -4,10 +4,7 @@
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/php/db.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/db.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/php/rptbalancegeneral.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/rptbalancegeneral.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/php/rptbalancesaldos.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/rptbalancesaldos.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/php/rptestadoresultados.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/rptestadoresultados.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/php/rptlibmay.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/rptlibmay.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/php/rptconstproc.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/rptconstproc.php" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -47,14 +44,32 @@
       <file leaf-file-name="db.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/php/db.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="422">
-              <caret line="184" column="23" selection-start-line="184" selection-start-column="23" selection-end-line="184" selection-end-column="23" />
+            <state relative-caret-position="178">
+              <caret line="213" column="19" lean-forward="true" selection-start-line="213" selection-start-column="19" selection-end-line="213" selection-end-column="19" />
               <folding>
-                <element signature="e#4789#5723#0#PHP" />
-                <element signature="e#5765#5800#0#PHP" />
-                <element signature="e#5862#5931#0#PHP" />
-                <element signature="e#5961#6012#0#PHP" />
+                <element signature="e#4789#5751#0#PHP" />
+                <element signature="e#5764#6726#0#PHP" />
+                <element signature="e#6739#7561#0#PHP" />
+                <element signature="e#7574#9190#0#PHP" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptlibmay.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pages/rptlibmay.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1904">
+              <caret line="112" column="30" lean-forward="true" selection-start-line="112" selection-start-column="30" selection-end-line="112" selection-end-column="30" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptlibmayctrl.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/controllers/rptlibmayctrl.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="289">
+              <caret line="59" column="64" selection-start-line="59" selection-start-column="55" selection-end-line="59" selection-end-column="64" />
             </state>
           </provider>
         </entry>
@@ -63,34 +78,20 @@
         <entry file="file://$PROJECT_DIR$/php/rptlibmay.php">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1139">
-              <caret line="76" column="42" selection-start-line="76" selection-start-column="42" selection-end-line="76" selection-end-column="42" />
+              <caret line="76" column="42" lean-forward="true" selection-start-line="76" selection-start-column="4" selection-end-line="76" selection-end-column="42" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="rptbalancesaldos.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/php/rptbalancesaldos.php">
+      <file leaf-file-name="rptconstproc.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/rptconstproc.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="68">
-              <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="4" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rptbalancegeneral.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/php/rptbalancegeneral.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="259">
-              <caret line="66" column="42" lean-forward="true" selection-start-line="66" selection-start-column="42" selection-end-line="66" selection-end-column="42" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rptestadoresultados.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/php/rptestadoresultados.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="74" column="42" selection-start-line="74" selection-start-column="42" selection-end-line="74" selection-end-column="42" />
+            <state relative-caret-position="221">
+              <caret line="37" column="55" lean-forward="true" selection-start-line="37" selection-start-column="55" selection-end-line="37" selection-end-column="55" />
+              <folding>
+                <element signature="n#getSelectDetail#0;n#!!top" />
+                <element signature="n#getDetalle#0;n#!!top" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -109,7 +110,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>excedente</find>
       <find>$scope.getLstPresupuestos</find>
       <find>aumentar</find>
       <find>divContrato</find>
@@ -118,7 +118,7 @@
       <find>avanceot</find>
       <find>montoavance</find>
       <find>isr</find>
-      <find />
+      <find>imprimir or</find>
       <find>tranban</find>
       <find>printOt</find>
       <find>monto</find>
@@ -139,12 +139,13 @@
       <find>rptestadoresultados</find>
       <find>rptbalancesaldos</find>
       <find>rptbalancegeneral</find>
+      <find>rptconstproc</find>
     </findStrings>
     <replaceStrings>
       <replace>$d-&gt;falstr</replace>
       <replace>frmPagoBoleto</replace>
       <replace>queryPresupuesto</replace>
-      <replace />
+      <replace>(IFNULL(montoavance, 0.00) + isr)</replace>
       <replace>=&gt;</replace>
       <replace>=&gt;d</replace>
       <replace>d</replace>
@@ -157,7 +158,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/pages/rptauditoria.html" />
         <option value="$PROJECT_DIR$/pages/rptactivos.html" />
         <option value="$PROJECT_DIR$/pages/rptlstproy.html" />
         <option value="$PROJECT_DIR$/pages/rptdetcontrato.html" />
@@ -203,11 +203,12 @@
         <option value="$PROJECT_DIR$/js/controllers/tranpagosctrl.js" />
         <option value="$PROJECT_DIR$/js/controllers/tranbancctrl.js" />
         <option value="$PROJECT_DIR$/php/rptdescuadres.php" />
-        <option value="$PROJECT_DIR$/php/db.php" />
         <option value="$PROJECT_DIR$/php/rptbalancesaldos.php" />
         <option value="$PROJECT_DIR$/php/rptbalancegeneral.php" />
         <option value="$PROJECT_DIR$/php/rptestadoresultados.php" />
+        <option value="$PROJECT_DIR$/php/db.php" />
         <option value="$PROJECT_DIR$/php/rptlibmay.php" />
+        <option value="$PROJECT_DIR$/php/rptconstproc.php" />
       </list>
     </option>
   </component>
@@ -239,7 +240,7 @@
       <path value="$PROJECT_DIR$/php/vendor/slim/slim" />
     </include_path>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="54" />
     <option name="y" value="-8" />
     <option name="width" value="1936" />
@@ -253,7 +254,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="AndroidView" />
       <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -286,8 +289,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="AndroidView" />
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -1019,12 +1020,13 @@
       <workItem from="1543337712684" duration="9525000" />
       <workItem from="1544297545601" duration="246000" />
       <workItem from="1544618956047" duration="6392000" />
-      <workItem from="1544636133117" duration="7695000" />
+      <workItem from="1544636133117" duration="8730000" />
+      <workItem from="1544719874489" duration="4100000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2897436000" />
+    <option name="totallyTimeSpent" value="2902571000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1091,13 +1093,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/php/rptreccli.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="9" column="55" lean-forward="true" selection-start-line="9" selection-start-column="4" selection-end-line="9" selection-end-column="55" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/rptvencimientos.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1490" />
@@ -1180,13 +1175,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="425">
           <caret line="42" column="155" selection-start-line="42" selection-start-column="143" selection-end-line="42" selection-end-column="155" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/rptlibmay.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="618">
-          <caret line="134" column="25" lean-forward="true" selection-start-line="132" selection-start-column="16" selection-end-line="134" selection-end-column="25" />
         </state>
       </provider>
     </entry>
@@ -1386,51 +1374,69 @@
     <entry file="file://$PROJECT_DIR$/php/rptlibdia.php">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptlibmayctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="482">
-          <caret line="138" column="21" selection-start-line="138" selection-start-column="21" selection-end-line="138" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/db.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="422">
-          <caret line="184" column="23" selection-start-line="184" selection-start-column="23" selection-end-line="184" selection-end-column="23" />
-          <folding>
-            <element signature="e#4789#5723#0#PHP" />
-            <element signature="e#5765#5800#0#PHP" />
-            <element signature="e#5862#5931#0#PHP" />
-            <element signature="e#5961#6012#0#PHP" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/rptestadoresultados.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
+        <state relative-caret-position="1258">
           <caret line="74" column="42" selection-start-line="74" selection-start-column="42" selection-end-line="74" selection-end-column="42" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/php/rptbalancegeneral.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="259">
-          <caret line="66" column="42" lean-forward="true" selection-start-line="66" selection-start-column="42" selection-end-line="66" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptlibmay.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1139">
-          <caret line="76" column="42" selection-start-line="76" selection-start-column="42" selection-end-line="76" selection-end-column="42" />
+        <state relative-caret-position="1122">
+          <caret line="66" column="42" selection-start-line="66" selection-start-column="42" selection-end-line="66" selection-end-column="42" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/php/rptbalancesaldos.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
-          <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="4" />
+          <caret line="4" selection-start-line="4" selection-end-line="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptlibmay.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1904">
+          <caret line="112" column="30" lean-forward="true" selection-start-line="112" selection-start-column="30" selection-end-line="112" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptlibmayctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="59" column="64" selection-start-line="59" selection-start-column="55" selection-end-line="59" selection-end-column="64" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/db.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="178">
+          <caret line="213" column="19" lean-forward="true" selection-start-line="213" selection-start-column="19" selection-end-line="213" selection-end-column="19" />
+          <folding>
+            <element signature="e#4789#5751#0#PHP" />
+            <element signature="e#5764#6726#0#PHP" />
+            <element signature="e#6739#7561#0#PHP" />
+            <element signature="e#7574#9190#0#PHP" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptlibmay.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1139">
+          <caret line="76" column="42" lean-forward="true" selection-start-line="76" selection-start-column="4" selection-end-line="76" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptconstproc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="37" column="55" lean-forward="true" selection-start-line="37" selection-start-column="55" selection-end-line="37" selection-end-column="55" />
+          <folding>
+            <element signature="n#getSelectDetail#0;n#!!top" />
+            <element signature="n#getDetalle#0;n#!!top" />
+          </folding>
         </state>
       </provider>
     </entry>

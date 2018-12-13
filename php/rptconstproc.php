@@ -10,37 +10,38 @@ $app->response->headers->set('Content-Type', 'application/json');
 $app->post('/rptconstproc', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $db->doQuery("DELETE FROM rptconstproc");
-    $db->doQuery("ALTER TABLE rptconstproc AUTO_INCREMENT = 1");
-    $db->doQuery("INSERT INTO rptconstproc(idcuentac, codigo, nombrecta, tipocuenta) SELECT id, codigo, nombrecta, tipocuenta FROM cuentac WHERE idempresa = $d->idempresa ORDER BY codigo");    
+    $tblname = $db->crearTablasReportesConta('cp');
+    //$db->doQuery("DELETE FROM $tblname");
+    //$db->doQuery("ALTER TABLE $tblname AUTO_INCREMENT = 1");
+    $db->doQuery("INSERT INTO $tblname(idcuentac, codigo, nombrecta, tipocuenta) SELECT id, codigo, nombrecta, tipocuenta FROM cuentac WHERE idempresa = $d->idempresa ORDER BY codigo");
     $origenes = ['tranban' => 1, 'compra' => 2, 'venta' => 3, 'directa' => 4, 'reembolso' => 5, 'recprov' => 7, 'reccli' => 8, 'liquidadoc' => 9, 'ncdclientes' => 10, 'ncdproveedores' => 11];
     foreach($origenes as $k => $v){
-        $query = "UPDATE rptconstproc a INNER JOIN (".getSelectHeader($v, $d, false).") b ON a.idcuentac = b.idcuenta SET a.anterior = a.anterior + b.anterior";
+        $query = "UPDATE $tblname a INNER JOIN (".getSelectHeader($v, $d, false).") b ON a.idcuentac = b.idcuenta SET a.anterior = a.anterior + b.anterior";
         $db->doQuery($query);
-        $query = "UPDATE rptconstproc a INNER JOIN (".getSelectHeader($v, $d, true).") b ON a.idcuentac = b.idcuenta SET a.debe = a.debe + b.debe, a.haber = a.haber + b.haber";
+        $query = "UPDATE $tblname a INNER JOIN (".getSelectHeader($v, $d, true).") b ON a.idcuentac = b.idcuenta SET a.debe = a.debe + b.debe, a.haber = a.haber + b.haber";
         $db->doQuery($query);
     }
-    $db->doQuery("UPDATE rptconstproc SET actual = anterior + debe - haber");
+    $db->doQuery("UPDATE $tblname SET actual = anterior + debe - haber");
 
     //Calculo de datos para cuentas de totales
     //$tamnivdet = [4 => 7, 2 => 7, 1 => 7];
-    $query = "SELECT DISTINCT LENGTH(codigo) AS tamnivel FROM rptconstproc WHERE tipocuenta = 1 ORDER BY 1 DESC";
+    $query = "SELECT DISTINCT LENGTH(codigo) AS tamnivel FROM $tblname WHERE tipocuenta = 1 ORDER BY 1 DESC";
     //echo $query."<br/><br/>";
     $tamniveles = $db->getQuery($query);
     foreach($tamniveles as $t){
         //echo "Tamaño del nivel = ".$t->tamnivel."<br/><br/>";
-        $query = "SELECT id, idcuentac, codigo FROM rptconstproc WHERE tipocuenta = 1 AND LENGTH(codigo) = ".$t->tamnivel." ORDER BY codigo";
+        $query = "SELECT id, idcuentac, codigo FROM $tblname WHERE tipocuenta = 1 AND LENGTH(codigo) = ".$t->tamnivel." ORDER BY codigo";
         //echo $query."<br/><br/>";
         $niveles = $db->getQuery($query);
         foreach($niveles as $n){
             //echo "LENGTH(codigo) = ".$tamnivdet[(int)$t->tamnivel]."<br/><br/>";
             //echo "Codigo = ".$n->codigo."<br/><br/>";
             $query = "SELECT SUM(anterior) AS anterior, SUM(debe) AS debe, SUM(haber) AS haber, SUM(actual) AS actual ";
-            $query.= "FROM rptconstproc ";
+            $query.= "FROM $tblname ";
             $query.= "WHERE tipocuenta = 0 AND LENGTH(codigo) <= 7 AND codigo LIKE '".$n->codigo."%'";
             //echo $query."<br/><br/>";
             $sumas = $db->getQuery($query)[0];
-            $query = "UPDATE rptconstproc SET anterior = ".$sumas->anterior.", debe = ".$sumas->debe.", haber = ".$sumas->haber.", actual = ".$sumas->actual." ";
+            $query = "UPDATE $tblname SET anterior = ".$sumas->anterior.", debe = ".$sumas->debe.", haber = ".$sumas->haber.", actual = ".$sumas->actual." ";
             $query.= "WHERE tipocuenta = 1 AND id = ".$n->id." AND idcuentac = ".$n->idcuentac;
             //echo $query."<br/><br/>";
             $db->doQuery($query);
@@ -48,7 +49,7 @@ $app->post('/rptconstproc', function(){
     }
 
     $query = "SELECT id, idcuentac, codigo, nombrecta, tipocuenta, anterior, debe, haber, actual ";
-    $query.= "FROM rptlibromayor ";
+    $query.= "FROM $tblname ";
     $query.= "WHERE (anterior <> 0 OR debe <> 0 OR haber <> 0 OR actual <> 0) ";
 
     if((int)$d->filtro == 1){
@@ -68,8 +69,9 @@ $app->post('/rptconstproc', function(){
         $lm[$i]->dlm = $db->getQuery(getSelectDetail(1, $d, $lm[$i]->idcuentac));
         getDetalle($db, $lm[$i]->dlm);
     }
-    //print $db->doSelectASJson("SELECT id, idcuentac, codigo, nombrecta, tipocuenta, anterior, debe, haber, actual FROM rptconstproc ORDER BY codigo");
+    //print $db->doSelectASJson("SELECT id, idcuentac, codigo, nombrecta, tipocuenta, anterior, debe, haber, actual FROM $tblname ORDER BY codigo");
     $empresa = $db->getQuery("SELECT nomempresa, abreviatura FROM empresa WHERE id = $d->idempresa")[0];
+    $db->eliminarTablasRepConta($tblname);
     print json_encode(['empresa'=>$empresa, 'datos'=>$lm]);
 });
 
