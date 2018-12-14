@@ -92,14 +92,10 @@ class Vacaciones extends Empleado
             }
         }
 
-        $sueldoDia = ($this->emp->sueldo/21);
-        $vacasTotal = ($sueldoDia * $vacasdias);
-
         $datosExtra = [
+            "vacassueldo" => $this->emp->sueldo,
             "vacasingreso" => $ingreso->format('Y-m-d'),
-            "vacasdias" => $vacasdias,
-            "vacastotal" => $vacasTotal,
-            "vacasliquido" => $vacasTotal
+            "vacasdias" => $vacasdias
         ];
 
         if ($args["accion"] == 1) {
@@ -119,7 +115,41 @@ class Vacaciones extends Empleado
         
         return $tmp->getDatosVacas([
             "uno" => true,
+            "anio" => $anio,
             "idplnempleado" => $this->emp->id
         ]);
+    }
+
+    public function getImpresionVacas($args = [])
+    {
+        $vac = $this->getDatosVacas($args["anio"]);
+
+        if ($vac) {
+            $emp = $this->get_empresa_debito();
+
+            $fecha = date('d/m/Y');
+            $inicio = formatoFecha($vac["inicio"], 1);
+            $fin = formatoFecha($vac["fin"], 1);
+            $vacasgozar = formatoFecha($vac["vacasgozar"], 1);
+            $fingoce = formatoFecha($vac["fingoce"], 1);
+            $presentar = formatoFecha($vac["presentar"], 1);
+            
+            return [
+                "uno" => "Guatemala {$fecha}",
+                "dos" => "Señores {$emp->nomempresa}\nPresente",
+                "tres" => "Hago constar que de conformidad con el artículo No. 130 del código de trabajo, desde esta fecha he principiado a gozar de mi período de vacaciones por el término de 15 días.",
+                "cuatro" => "Vacaciones que me corresponden por el úlitmo año de trabajo en su establecimiento comercial comprendido del {$inicio} al {$fin}.",
+                "cinco" => "A gozar del {$vacasgozar} al {$fingoce}.",
+                "seis" => "debiendo presentarme a mis labores el día {$presentar}.",
+                "siete" => "Así mismo hago constar que el importe del sueldo correspondiente a dichas vacaciones me ha sido cubierto por anticipado; y que firmo la presente de conformidad con el artículo No. 137 del código de trabajo.",
+                "ocho" => "Atentamente,",
+                "nueve" => str_repeat("_", 45),
+                "diez" => "{$this->emp->nombre} {$this->emp->apellidos}",
+                "once" => "Autorizado por:",
+                "doce" => str_repeat("_", 45)
+            ];
+        } else {
+            return false;
+        }
     }
 }

@@ -364,10 +364,6 @@ class General extends Principal
     		$condiciones .= " AND a.idplnempleado = " . $args["idplnempleado"];
     	}
 
-    	if (elemento($args, "empleado")) {
-    		$condiciones .= " AND a.idplnempleado = " . $args["empleado"];
-    	}
-
     	if (elemento($args, "empresa")) {
     		$condiciones .= " AND c.idempresaactual = " . $args["empresa"];
 		}
@@ -382,7 +378,9 @@ class General extends Principal
 
     	if (isset($args["activo"])) {
     		$condiciones .= " AND c.activo = " . $args["activo"];
-    	}
+		}
+		
+		$condiciones .= " ORDER BY d.ordenreppres, c.nombre ";
 
     	if (isset($args["uno"])) {
     		$condiciones .= " LIMIT 1";
@@ -402,23 +400,24 @@ class General extends Principal
                 a.vacasliquido,
                 a.idplnempleado,
                 concat(c.nombre, ' ', ifnull(c.apellidos,'')) as nombre,
-				c.idproyecto,
+				c.idempresaactual,
 				c.sueldo,
                 CONCAT(b.anio, '-01-01') AS inicio,
                 CONCAT(b.anio, '-12-31') AS fin,
                 DATE_ADD(a.vacasgozar, INTERVAL 20 DAY) AS fingoce,
                 DATE_ADD(a.vacasgozar, INTERVAL 21 DAY) AS presentar,
-                ifnull(d.nomproyecto,'Sin Configurar') as nomproyecto
+                d.nombre as empresaactual
             FROM
                 plnextradetalle a
                     INNER JOIN
                 plnextra AS b ON a.idplnextra = b.id
                 	INNER JOIN 
                 plnempleado c on c.id = a.idplnempleado
-                	LEFT JOIN 
-    			proyecto d ON d.id = c.idproyecto
+                	INNER JOIN 
+    			plnempresa d ON d.id = c.idempresaactual
             WHERE a.id > 0 
-            {$condiciones}
+			{$condiciones} 
+			
 EOT;
 
         $tmp = $this->db

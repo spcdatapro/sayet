@@ -5,6 +5,10 @@ define('PLNPATH', BASEPATH . '/pln/php');
 
 set_time_limit(0);
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require BASEPATH . "/php/vendor/autoload.php";
 require BASEPATH . "/php/ayuda.php";
 require PLNPATH . '/Principal.php';
@@ -84,6 +88,8 @@ $app->get('/imprimir', function(){
 			$pdf = new TCPDF('P', 'mm', $s);
 			$pdf->SetAutoPageBreak(TRUE, 0);
 			$pdf->SetFont('times', '', 12);
+			
+			$tipoImpresion = 20;
 
 			$bus = new General();
 		
@@ -92,8 +98,8 @@ $app->get('/imprimir', function(){
 				"sin_limite" => true
 			];
 
-			if (elemento($_GET, "empleado")) {
-				$datos["empleado"] = $_GET["empleado"];
+			if (elemento($_GET, "idplnempleado")) {
+				$datos["empleado"] = $_GET["idplnempleado"];
 			}
 
 			if (elemento($_GET, "empresa")) {
@@ -107,12 +113,20 @@ $app->get('/imprimir', function(){
 
 				$vcn = new Vacaciones();
 				$vcn->cargar_empleado($value["id"]);
-				$emp = $vcn->get_empresa_debito();
-				$vac = $vcn->getDatosVacas($_GET["anio"]);
-				$vac['empresa'] = $emp->nomempresa;
-				$vac['empleado'] = "{$vcn->emp->nombre} {$vcn->emp->apellidos}";
+
+				$impresion = $vcn->getImpresionVacas($_GET);
 				
-				$pdf->MultiCell(0, 5, getCartaVacaciones($vac), 0, 'L', 0, 0, '', '', true);
+				if ($impresion) {
+					foreach ($impresion as $campo => $valor) {
+						$conf = $bus->get_campo_impresion($campo, $tipoImpresion);
+
+						if (!isset($conf->scalar) && $conf->visible == 1) {
+							$pdf = generar_fimpresion($pdf, $valor, $conf);
+						}
+					}
+				} else {
+					$pdf->MultiCell(0, 5, "No encontré datos generados para este año.", 0, 'L', 0, 0, '', '', true);
+				}
 			}
 			
 			$pdf->Output("carta_vacaciones_" . time() . ".pdf", 'I');
@@ -136,12 +150,12 @@ $app->get('/imprimir', function(){
 				$datos = [];
 
 				foreach ($todos as $fila) {
-					if (isset($datos[$fila['idproyecto']])) {
-						$datos[$fila['idproyecto']]['empleados'][] = $fila;
+					if (isset($datos[$fila['idempresaactual']])) {
+						$datos[$fila['idempresaactual']]['empleados'][] = $fila;
 					} else {
-						$datos[$fila['idproyecto']] = [
-							'nombre'    => $fila['nomproyecto'], 
-							'conf'      => $g->get_campo_impresion('idproyecto', $tipoImpresion), 
+						$datos[$fila['idempresaactual']] = [
+							'nombre'    => $fila['empresaactual'], 
+							'conf'      => $g->get_campo_impresion('idempresaactual', $tipoImpresion), 
 							'empleados' => [$fila]
 						];
 					}

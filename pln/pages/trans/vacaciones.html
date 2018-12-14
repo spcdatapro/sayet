@@ -86,9 +86,9 @@
 								<th>Últimas</th>
 								<th>Gozar</th>
 								<th>Días</th>
-								<th>Total</th>
 								<th>Días Descuento</th>
-								<th>Descuento</th>
+								<th class="text-right">Total</th>
+								<th class="text-right">Descuento</th>
 								<th style="width: 75px;" class="text-right">Líquido</th>
 							</tr>
 						</thead>
@@ -101,9 +101,9 @@
 									<td><input type="date" ng-value="valor.vacasultimas" ng-model="valor.vacasultimas" ng-blur="actualizarVacas(valor, indice, this)"></td>
 									<td><input type="date" ng-value="valor.vacasgozar" ng-model="valor.vacasgozar" ng-blur="actualizarVacas(valor, indice, this)"></td>
 									<td><input type="number" ng-model="valor.vacasdias" string-to-number ng-blur="actualizarVacas(valor, indice, this)"></td>
-									<td><input type="number" step="0.01" ng-model="valor.vacastotal" string-to-number ng-blur="actualizarVacas(valor, indice, this)"></td>
 									<td><input type="number" ng-model="valor.vacasusados" string-to-number ng-blur="actualizarVacas(valor, indice, this)"></td>
-									<td><input type="number" step="0.01" ng-model="valor.vacasdescuento" string-to-number ng-blur="actualizarVacas(valor, indice, this)"></td>
+									<td class="text-right" style="padding-right:5px;">{{valor.vacastotal | number }}</td>
+									<td class="text-right" style="padding-right:5px;">{{valor.vacasdescuento | number }}</td>
 									<td class="text-right" style="padding-right:5px;">{{ valor.vacasliquido | number }}</td>
 								</tr>
 						</tbody>
