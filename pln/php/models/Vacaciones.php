@@ -65,7 +65,7 @@ class Vacaciones extends Empleado
             $ingreso = new DateTime($this->emp->reingreso);
         }
 
-        $diasAnio = 366;
+        $diasAnio = 365;
         $dusados = ["pagadas" => 0, "anulado" => 0];
 
         if ($ingreso->format('Y') == $args["anio"]) {
