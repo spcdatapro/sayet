@@ -229,10 +229,10 @@ $app->post('/generand', function() use($db){
     $query = "SELECT z.tipo, z.cuenta, @row := @row + 1 AS contador, z.nombre, z.monto, z.cuentacontable ";
     $query.= "FROM (";
     $query.= "SELECT 3 AS tipo, TRIM(b.cuentabanco) AS cuenta, TRIM(CONCAT(TRIM(b.nombre), ' ', IFNULL(TRIM(b.apellidos), ''))) AS nombre, a.liquido AS monto, b.cuentapersonal AS cuentacontable ";
-    $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto ";
+    $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto LEFT JOIN plnempresa d ON d.id = b.idempresaactual ";
     $query.= "WHERE a.idempresa = $d->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido <> 0 AND b.cuentabanco IS NOT NULL ";
     $query.= "AND b.mediopago = 3 ";
-    $query.= "ORDER BY c.descripcion, b.nombre, b.apellidos, a.fecha";
+    $query.= "ORDER BY d.ordenreppres, b.nombre, b.apellidos";
     $query.= ") z, (SELECT @row:= 0) r";
     //print $query;
     $empleados = $db->getQuery($query);
@@ -290,10 +290,10 @@ $app->post('/generachq', function() use($db){
         $query.= "SELECT 3 AS tipo, TRIM(b.cuentabanco) AS cuenta, TRIM(CONCAT(TRIM(b.nombre), ' ', IFNULL(TRIM(b.apellidos), ''))) AS nombre, a.liquido AS monto, b.cuentapersonal AS cuentacontable, b.id AS idempleado, ";
         $query.= "CONCAT('DEL ', LPAD(DAY('$d->fdelstr'), 2, ' '), ' DE ', (SELECT nombre FROM mes WHERE id = MONTH('$d->fdelstr')), ' AL ', ";
         $query.= "LPAD(DAY('$d->falstr'), 2, ' '), ' DE ', (SELECT nombre FROM mes WHERE id = MONTH('$d->falstr')), ' DEL ', YEAR('$d->falstr')) AS concepto ";
-        $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto ";
+        $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto LEFT JOIN plnempresa d ON d.id = b.idempresaactual ";
         $query.= "WHERE a.idempresa = $empresa->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido <> 0 ";
         $query.= "AND b.mediopago = 1 ";
-        $query.= "ORDER BY c.descripcion, b.nombre, b.apellidos, a.fecha";
+        $query.= "ORDER BY d.ordenreppres, b.nombre, b.apellidos";
         $query.= ") z, (SELECT @row:= 0) r";
         //print $query;
         $empleados = $db->getQuery($query);
