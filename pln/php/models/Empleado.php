@@ -709,8 +709,14 @@ class Empleado extends Principal
 		$inicio   = new DateTime($args['vacas_del']);
 		$fin      = new DateTime($args['vacas_al']);
 		$interval = $inicio->diff($fin);
-		$dias     = (($interval->format('%a')+1)/(365/15));
-		$monto    = ($dias*($this->sueldoPromedio/30));
+
+		if (isset($args["sin_vacaciones"])) {
+			$dias  = 0;
+			$monto = 0;
+		} else {
+			$dias  = (($interval->format('%a')+1)/(365/15));
+			$monto = ($dias*($this->sueldoPromedio/30));
+		}	
 		
 		$this->finiquitoVacaciones = (object)[
 			'dias'   => $dias,
