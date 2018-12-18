@@ -10,6 +10,7 @@ require BASEPATH . "/php/ayuda.php";
 require PLNPATH . '/Principal.php';
 require PLNPATH . '/models/Prestamo.php';
 require PLNPATH . '/models/Empleado.php';
+require PLNPATH . '/models/Vacaciones.php';
 require PLNPATH . '/models/Nomina.php';
 require PLNPATH . '/models/General.php';
 
