@@ -30,7 +30,10 @@ $app->get('/contratotoprint/:idcontrato/:del/:al/:idtiposervicio', function($idc
 
     $query = "SELECT DISTINCT a.idtipoventa, b.desctiposervventa AS tiposervicio ";
     $query.= "FROM detfactcontrato a INNER JOIN tiposervicioventa b ON b.id = a.idtipoventa ";
+    $query.= "INNER JOIN cargo c ON a.id = c.iddetcont ";
     $query.= "WHERE a.idcontrato = $idcontrato ".((int)$idtiposervicio > 0 ? "AND b.id = $idtiposervicio " : "");
+    $query.= $del != "0" ? "AND c.fechacobro >= '$del' " : "" ;
+    $query.= $al != "0" ? "AND c.fechacobro <= '$al' " : "" ;
     $query.= "ORDER BY b.desctiposervventa";
     $servcont = $db->getQuery($query);
 
