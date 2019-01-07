@@ -2,8 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/js/controllers/rptplncatemplevalctrl.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/rptplncatempleval.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/php/rptplnempleval.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/php/rptdetallecontrato.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/rptdetallecontrato.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cpmidx.html" beforeDir="false" afterPath="$PROJECT_DIR$/cpmidx.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/app.js" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -40,29 +45,60 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="mntcliente.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/mntcliente.html">
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="458">
-              <caret line="774" column="117" selection-start-line="774" selection-start-column="104" selection-end-line="774" selection-end-column="117" />
+            <state relative-caret-position="476">
+              <caret line="205" column="4" selection-start-line="205" selection-start-column="4" selection-end-line="205" selection-end-column="4" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="clientectrl.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/controllers/clientectrl.js">
+      <file leaf-file-name="cpmidx.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cpmidx.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="390">
-              <caret line="1094" column="69" selection-start-line="1094" selection-start-column="60" selection-end-line="1094" selection-end-column="69" />
+            <state relative-caret-position="442">
+              <caret line="212" column="90" lean-forward="true" selection-start-line="212" selection-start-column="4" selection-end-line="212" selection-end-column="90" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="rptdetallecontrato.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/php/rptdetallecontrato.php">
+      <file leaf-file-name="app.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="612">
-              <caret line="36" column="44" lean-forward="true" selection-start-line="36" selection-start-column="44" selection-end-line="36" selection-end-column="44" />
+            <state relative-caret-position="510">
+              <caret line="48" column="88" selection-start-line="48" selection-start-column="88" selection-end-line="48" selection-end-column="88" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptplncatempleval.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/pages/rptplncatempleval.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="153">
+              <caret line="9" column="158" selection-start-line="9" selection-start-column="158" selection-end-line="9" selection-end-column="158" />
+              <folding>
+                <element signature="e#168#176#0" expanded="true" />
+                <element signature="e#488#496#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptplncatemplevalctrl.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/controllers/rptplncatemplevalctrl.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="34">
+              <caret line="2" column="74" selection-start-line="2" selection-start-column="47" selection-end-line="2" selection-end-column="74" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rptplnempleval.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/php/rptplnempleval.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="187">
+              <caret line="11" column="61" selection-start-line="11" selection-start-column="61" selection-end-line="11" selection-end-column="61" />
             </state>
           </provider>
         </entry>
@@ -81,10 +117,9 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>avanceot</find>
       <find>montoavance</find>
       <find>isr</find>
-      <find>imprimir or</find>
+      <find />
       <find>tranban</find>
       <find>printOt</find>
       <find>monto</find>
@@ -111,16 +146,18 @@
       <find>/actualizar</find>
       <find>divContDatFact</find>
       <find>ModalPrintContratoCtrl</find>
+      <find>@minimo</find>
     </findStrings>
     <replaceStrings>
       <replace>$d-&gt;falstr</replace>
       <replace>frmPagoBoleto</replace>
       <replace>queryPresupuesto</replace>
-      <replace>(IFNULL(montoavance, 0.00) + isr)</replace>
+      <replace />
       <replace>=&gt;</replace>
       <replace>=&gt;d</replace>
       <replace>d</replace>
       <replace>$tblname</replace>
+      <replace>$d-&gt;minimo</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -129,12 +166,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/pages/rptdetcontrato.html" />
-        <option value="$PROJECT_DIR$/pages/rptincdec.html" />
-        <option value="$PROJECT_DIR$/pages/rptlstactivos.html" />
-        <option value="$PROJECT_DIR$/pages/rptpagoiusi.html" />
-        <option value="$PROJECT_DIR$/pages/rptdocsvence.html" />
-        <option value="$PROJECT_DIR$/pages/rptvencimientos.html" />
         <option value="$PROJECT_DIR$/php/rptincdec.php" />
         <option value="$PROJECT_DIR$/php/rptcontratoinactivo.php" />
         <option value="$PROJECT_DIR$/php/facturaotros.php" />
@@ -180,6 +211,12 @@
         <option value="$PROJECT_DIR$/php/genpartidasventa.php" />
         <option value="$PROJECT_DIR$/php/generaplnbi.php" />
         <option value="$PROJECT_DIR$/php/rptdetallecontrato.php" />
+        <option value="$PROJECT_DIR$/php/rptplnempleval.php" />
+        <option value="$PROJECT_DIR$/js/controllers/rptplncatemplevalctrl.js" />
+        <option value="$PROJECT_DIR$/js/app.js" />
+        <option value="$PROJECT_DIR$/cpmidx.html" />
+        <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/pages/rptplncatempleval.html" />
       </list>
     </option>
   </component>
@@ -211,7 +248,7 @@
       <path value="$PROJECT_DIR$/php/vendor/slim/slim" />
     </include_path>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="54" />
     <option name="y" value="-8" />
     <option name="width" value="1936" />
@@ -225,7 +262,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
@@ -259,7 +296,7 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -998,12 +1035,13 @@
       <workItem from="1545936242981" duration="894000" />
       <workItem from="1546062445394" duration="17000" />
       <workItem from="1546266664726" duration="593000" />
-      <workItem from="1546640730802" duration="614000" />
+      <workItem from="1546640730802" duration="1303000" />
+      <workItem from="1546899516704" duration="2784000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2912439000" />
+    <option name="totallyTimeSpent" value="2915912000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1022,7 +1060,7 @@
       <window_info anchor="bottom" x="206" y="338" width="1572" height="574" id="Terminal" order="11" type="WINDOWED" weight="1.0" />
       <window_info id="Capture Tool" order="6" />
       <window_info anchor="right" id="Designer" order="6" />
-      <window_info content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" weight="0.1609375" />
+      <window_info active="true" content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" visible="true" weight="0.13489583" />
       <window_info anchor="right" id="Database" order="7" weight="0.32889125" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.1546875" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.24946696" />
@@ -1040,38 +1078,6 @@
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Application Servers" order="10" />
     </layout>
-    <layout-to-restore>
-      <window_info anchor="bottom" id="Application Servers" order="10" />
-      <window_info anchor="right" id="Designer" order="6" />
-      <window_info anchor="right" id="Palette" order="3" />
-      <window_info id="Image Layers" order="3" />
-      <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.24946696" />
-      <window_info id="UI Designer" order="4" />
-      <window_info id="Favorites" order="5" sideWeight="0.50428265" side_tool="true" weight="0.1881663" />
-      <window_info anchor="bottom" x="206" y="338" width="1572" height="574" id="Terminal" order="11" type="WINDOWED" weight="1.0" />
-      <window_info id="Capture Tool" order="6" />
-      <window_info anchor="right" id="Capture Analysis" order="4" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="bottom" id="Event Log" order="12" side_tool="true" weight="0.32900432" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="bottom" id="PHP-CGI Server" order="8" />
-      <window_info anchor="bottom" id="Database Changes" order="7" />
-      <window_info anchor="bottom" id="Version Control" order="9" weight="0.32896176" />
-      <window_info anchor="right" id="Maven Projects" order="8" weight="0.32995737" />
-      <window_info active="true" content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" visible="true" weight="0.18176973" />
-      <window_info anchor="right" id="SciView" order="9" />
-      <window_info anchor="right" id="Database" order="7" weight="0.32889125" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info id="Palette&#9;" order="2" />
-      <window_info anchor="right" id="Theme Preview" order="5" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.1546875" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32827735" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.39978564" />
-    </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
@@ -1102,67 +1108,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptfichaproyctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/rptfichaproy.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="533">
-          <caret line="41" column="137" selection-start-line="41" selection-start-column="117" selection-end-line="41" selection-end-column="137" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/tranbanc.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="617" column="253" selection-start-line="617" selection-start-column="253" selection-end-line="617" selection-end-column="253" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/periodocontable.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-62" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/tranpagos.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="544">
-          <caret line="32" column="174" selection-start-line="32" selection-start-column="174" selection-end-line="32" selection-end-column="174" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/adtbllite/reemdetcont.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="35" column="6" lean-forward="true" selection-start-line="35" selection-start-column="6" selection-end-line="35" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/tranreembolso.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-68">
-          <caret line="425" column="115" selection-start-line="425" selection-start-column="115" selection-end-line="425" selection-end-column="115" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/trandirectas.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="134" column="68" selection-start-line="134" selection-start-column="68" selection-end-line="134" selection-end-column="68" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/tranfactura.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1751">
-          <caret line="557" column="128" selection-start-line="557" selection-start-column="128" selection-end-line="557" selection-end-column="128" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pages/tranventa.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="459">
@@ -1428,24 +1373,91 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pages/mntcliente.html">
+    <entry file="file://$PROJECT_DIR$/php/rptdetallecontrato.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="458">
-          <caret line="774" column="117" selection-start-line="774" selection-start-column="104" selection-end-line="774" selection-end-column="117" />
+        <state relative-caret-position="85">
+          <caret line="5" column="65" selection-start-line="5" selection-start-column="65" selection-end-line="5" selection-end-column="65" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/controllers/clientectrl.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
+        <state relative-caret-position="338">
           <caret line="1094" column="69" selection-start-line="1094" selection-start-column="60" selection-end-line="1094" selection-end-column="69" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptdetallecontrato.php">
+    <entry file="file://$PROJECT_DIR$/pages/mntcliente.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="612">
-          <caret line="36" column="44" lean-forward="true" selection-start-line="36" selection-start-column="44" selection-end-line="36" selection-end-column="44" />
+        <state relative-caret-position="17">
+          <caret line="774" column="117" selection-start-line="774" selection-start-column="104" selection-end-line="774" selection-end-column="117" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptplnhistosueldo.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="794">
+          <caret line="47" column="12" lean-forward="true" selection-start-line="1" selection-end-line="47" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptplnpremiosctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptplnpremios.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret selection-end-line="35" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptplnempleval.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" column="61" selection-start-line="11" selection-start-column="61" selection-end-line="11" selection-end-column="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptplncatemplevalctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="74" selection-start-line="2" selection-start-column="47" selection-end-line="2" selection-end-column="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/app.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="48" column="88" selection-start-line="48" selection-start-column="88" selection-end-line="48" selection-end-column="88" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cpmidx.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="442">
+          <caret line="212" column="90" lean-forward="true" selection-start-line="212" selection-start-column="4" selection-end-line="212" selection-end-column="90" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="476">
+          <caret line="205" column="4" selection-start-line="205" selection-start-column="4" selection-end-line="205" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptplncatempleval.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="158" selection-start-line="9" selection-start-column="158" selection-end-line="9" selection-end-column="158" />
+          <folding>
+            <element signature="e#168#176#0" expanded="true" />
+            <element signature="e#488#496#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
