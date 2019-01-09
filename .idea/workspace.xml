@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/php/rptdetallecontrato.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/rptdetallecontrato.php" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
@@ -44,7 +43,7 @@
         <entry file="file://$PROJECT_DIR$/php/rptdetallecontrato.php">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="573">
-              <caret line="45" column="68" selection-start-line="45" selection-start-column="68" selection-end-line="45" selection-end-column="68" />
+              <caret line="45" column="59" selection-start-line="45" selection-start-column="59" selection-end-line="45" selection-end-column="59" />
             </state>
           </provider>
         </entry>
@@ -64,7 +63,7 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>isr</find>
-      <find />
+      <find>imprimir or</find>
       <find>tranban</find>
       <find>printOt</find>
       <find>monto</find>
@@ -98,7 +97,7 @@
       <replace>$d-&gt;falstr</replace>
       <replace>frmPagoBoleto</replace>
       <replace>queryPresupuesto</replace>
-      <replace />
+      <replace>(IFNULL(montoavance, 0.00) + isr)</replace>
       <replace>=&gt;</replace>
       <replace>=&gt;d</replace>
       <replace>d</replace>
@@ -194,7 +193,7 @@
       <path value="$PROJECT_DIR$/php/vendor/slim/slim" />
     </include_path>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="54" />
     <option name="y" value="-8" />
     <option name="width" value="1936" />
@@ -984,12 +983,12 @@
       <workItem from="1546640730802" duration="1303000" />
       <workItem from="1546899516704" duration="4581000" />
       <workItem from="1546983564789" duration="38000" />
-      <workItem from="1547048910670" duration="131000" />
+      <workItem from="1547048910670" duration="331000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2917878000" />
+    <option name="totallyTimeSpent" value="2918078000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1395,7 +1394,7 @@
     <entry file="file://$PROJECT_DIR$/php/rptdetallecontrato.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="573">
-          <caret line="45" column="68" selection-start-line="45" selection-start-column="68" selection-end-line="45" selection-end-column="68" />
+          <caret line="45" column="59" selection-start-line="45" selection-start-column="59" selection-end-line="45" selection-end-column="59" />
         </state>
       </provider>
     </entry>

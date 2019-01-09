@@ -43,7 +43,7 @@ $app->get('/contratotoprint/:idcontrato/:del/:al/:idtiposervicio', function($idc
         $query = "SELECT a.id, a.idcontrato, a.iddetcont, c.id AS idtiposervicio, c.desctiposervventa AS tiposervicio, a.fechacobro, d.simbolo, a.monto, (a.descuento * -1) AS descuento, ";
         $query.= "(a.monto - a.descuento) AS subtotal, ROUND((a.monto - a.descuento) * 0.12, 2) AS iva, (a.monto - a.descuento) + ROUND((a.monto - a.descuento) * 0.12, 2) AS grantotal ";
         $query.= "FROM cargo a INNER JOIN detfactcontrato b ON b.id = a.iddetcont INNER JOIN tiposervicioventa c ON c.id = b.idtipoventa INNER JOIN moneda d ON d.id = b.idmoneda ";
-        $query.= "WHERE a.idcontrato = $idcontrato AND c.anulado = 0 AND c.id = $sv->idtipoventa ";
+        $query.= "WHERE a.idcontrato = $idcontrato AND a.anulado = 0 AND c.id = $sv->idtipoventa ";
         $query.= $del != "0" ? "AND a.fechacobro >= '$del' " : "" ;
         $query.= $al != "0" ? "AND a.fechacobro <= '$al' " : "" ;
         $query.= "ORDER BY a.fechacobro";
