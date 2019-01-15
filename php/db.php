@@ -11,6 +11,9 @@ class dbcpm{
 
     private $dbConn;
 
+    public $_formatoFecha = '%d/%m/%Y';
+    public $_formatoFechaHora = '%d/%m/%Y %H:%i:%s';
+
     public function getDbHost() { return $this->dbHost; }
     public function getDbUser() { return $this->dbUser; }
     public function getDbPass() { return $this->dbPass; }
