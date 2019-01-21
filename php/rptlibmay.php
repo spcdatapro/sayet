@@ -4,6 +4,7 @@ set_time_limit(0);
 ini_set('memory_limit', '1536M');
 require 'vendor/autoload.php';
 require_once 'db.php';
+require_once  'conta.php';
 
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
@@ -270,5 +271,43 @@ function getSelectDetail($cual, $d, $idcuenta){
     //print $query;
     return $query;
 }
+
+
+$app->post('/libromayor', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    if(!isset($d->vercierre)){ $d->vercierre = 0; }
+    $db = new dbcpm();
+    $conta = new contabilidad($d->fdelstr, $d->falstr, $d->idempresa, (int)$d->vercierre);
+    $queryRawData = $conta->getDatosEnCrudo();
+
+    $query = "SELECT j.id, j.codigo, j.nombrecta, j.tipocuenta, 0.00 AS anterior, k.debe AS debe, k.haber AS haber, 0.00 AS actual
+                FROM cuentac j
+                LEFT JOIN (
+                    SELECT idcuentac, SUM(debe) AS debe, SUM(haber) AS haber
+                    FROM ($queryRawData) w
+                    WHERE idcuentac IS NOT NULL
+                    GROUP BY idcuentac
+                ) k ON j.id = k.idcuentac
+                WHERE j.idempresa = $d->idempresa
+                ORDER BY j.codigo";
+
+    $cuentas = $db->getQuery($query);
+    $cntCuentas = count($cuentas);
+    for($i = 0; $i < $cntCuentas; $i++){
+        $cuenta = $cuentas[$i];
+        if((int)$cuenta->tipocuenta === 1){
+            $query = "SELECT SUM(debe) AS debe, SUM(haber) AS haber ";
+            $query.= "FROM ($queryRawData) w ";
+            $query.= "WHERE codigo LIKE '$cuenta->codigo%'";
+            $sumas = $db->getQuery($query);
+            if(count($sumas) > 0){
+                $cuenta->debe = $sumas[0]->debe;
+                $cuenta->haber = $sumas[0]->haber;
+            }
+        }
+    }
+
+    print json_encode($cuentas);
+});
 
 $app->run();
