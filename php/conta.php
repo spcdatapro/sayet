@@ -32,7 +32,7 @@ class contabilidad{
     }
 
     private function detalleContable($origen, $idorigen = 0){
-        $query = "SELECT z.origen, z.idorigen, y.codigo, y.nombrecta, z.debe, z.haber ";
+        $query = "SELECT z.origen, z.idorigen, y.id AS idcuentac, y.codigo, y.nombrecta, z.debe, z.haber ";
         $query.= "FROM detallecontable z INNER JOIN cuentac y ON y.id = z.idcuenta ";
         $query.= "WHERE z.origen = ".($origen != 5 ? ($origen." AND z.activada = 1") : 2)." ";
         $query.= $idorigen > 0 ? "AND z.idorigen = $idorigen " : '';
@@ -44,7 +44,7 @@ class contabilidad{
         //#Transacciones bancarias -> origen = 1
         $query = "SELECT CONCAT('P', YEAR(b.fecha), LPAD(MONTH(b.fecha), 2, '0'), LPAD(DAY(b.fecha), 2, '0'), LPAD(1, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fecha, ";
         $query.= "CONCAT(d.descripcion, ' ', b.numero, ' ', c.nombre) AS referencia, b.concepto, b.id, 1 AS origen, ";
-        $query.= "x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber ";
+        $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber ";
         $query.= "FROM tranban b INNER JOIN banco c ON c.id = b.idbanco INNER JOIN tipomovtranban d ON d.abreviatura = b.tipotrans ";
         $query.= "LEFT JOIN(".$this->detalleContable(1).") x ON b.id = x.idorigen ";
         $query.= "WHERE b.fecha >= '$this->_fdel' AND b.fecha <= '$this->_fal' AND c.idempresa = $this->_idempresa ";
@@ -53,7 +53,7 @@ class contabilidad{
         $query.= "UNION ALL ";
         $query.= "SELECT CONCAT('P', YEAR(b.fechaingreso), LPAD(MONTH(b.fechaingreso), 2, '0'), LPAD(DAY(b.fechaingreso), 2, '0'), LPAD(2, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fechaingreso AS fecha, ";
         $query.= "CONCAT('Compra', ' ', b.serie, '-', b.documento, ' ') AS referencia, b.conceptomayor AS concepto, b.id, 2 AS origen, ";
-        $query.= "x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber ";
+        $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber ";
         $query.= "FROM compra b ";
         $query.= "LEFT JOIN(".$this->detalleContable(2).") x ON b.id = x.idorigen ";
         $query.= "WHERE b.idreembolso = 0 AND b.fechaingreso >= '$this->_fdel' AND b.fechaingreso <= '$this->_fal' AND b.idempresa = $this->_idempresa ";
@@ -62,7 +62,7 @@ class contabilidad{
         $query.= "UNION ALL ";
         $query.= "SELECT CONCAT('P', YEAR(b.fecha), LPAD(MONTH(b.fecha), 2, '0'), LPAD(DAY(b.fecha), 2, '0'), LPAD(3, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fecha, ";
         $query.= "CONCAT('Venta', ' ', b.serie, '-', b.numero) AS referencia, b.conceptomayor AS concepto, b.id, 3 AS origen, ";
-        $query.= "x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber ";
+        $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber ";
         $query.= "FROM factura b ";
         $query.= "LEFT JOIN(".$this->detalleContable(3).") x ON b.id = x.idorigen ";
         $query.= "WHERE b.fecha >= '$this->_fdel' AND b.fecha <= '$this->_fal' AND b.anulada = 0 AND b.idempresa = $this->_idempresa ";
@@ -71,7 +71,7 @@ class contabilidad{
         $query.= "UNION ALL ";
         $query.= "SELECT CONCAT('P', YEAR(b.fecha), LPAD(MONTH(b.fecha), 2, '0'), LPAD(DAY(b.fecha), 2, '0'), LPAD(4, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fecha, ";
         $query.= "CONCAT('Directa No.', LPAD(b.id, 5, '0')) AS referencia, '' AS concepto, b.id, 4 AS origen, ";
-        $query.= "x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber ";
+        $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber ";
         $query.= "FROM directa b ";
         $query.= "LEFT JOIN(".$this->detalleContable(4).") x ON b.id = x.idorigen ";
         $query.= "WHERE b.fecha >= '$this->_fdel' AND b.fecha <= '$this->_fal' AND b.idempresa = $this->_idempresa ";
@@ -81,7 +81,7 @@ class contabilidad{
         $query.= "UNION ALL ";
         $query.= "SELECT CONCAT('P', YEAR(b.fechaingreso), LPAD(MONTH(b.fechaingreso), 2, '0'), LPAD(DAY(b.fechaingreso), 2, '0'), LPAD(5, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fechaingreso AS fecha, ";
         $query.= "CONCAT('Compra', ' ', b.serie, '-', b.documento, ' ') AS referencia, b.conceptomayor AS concepto, b.id, 5 AS origen, ";
-        $query.= "x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber ";
+        $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber ";
         $query.= "FROM compra b ";
         $query.= "LEFT JOIN(".$this->detalleContable(5).") x ON b.id = x.idorigen ";
         $query.= "WHERE b.idreembolso > 0 AND b.fechaingreso >= '$this->_fdel' AND b.fechaingreso <= '$this->_fal' AND b.idempresa = $this->_idempresa ";
@@ -89,6 +89,14 @@ class contabilidad{
         //$query.= "ORDER BY fecha, poliza, debe DESC, nombrecta";
 
         $this->_datosEnCrudo = $query;
+    }
+
+    public function getCatalogoCuentas(){
+        $query = "SELECT id AS idcuentac, idempresa, codigo, nombrecta, tipocuenta, 0.00 AS anterior, 0.00 AS debe, 0.00 AS haber, 0.00 AS actual ";
+        $query.= "FROM cuentac WHERE idempresa = $this->_idempresa ";
+        $query.= "ORDER BY codigo";
+
+        return $query;
     }
 
     public function getDatosEnCrudo(){
