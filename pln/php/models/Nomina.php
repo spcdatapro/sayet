@@ -808,6 +808,7 @@ EOT;
 			't_sueldo_extraordinario' => 'Sueldo Extraordinario',
 			't_sueldo_total'          => 'Sueldo Total',
 			't_igss'                  => 'IGSS',
+			't_vacaciones'			  => 'Vacaciones',
 			'tlineat'				  => str_repeat("_", 160)
 		];
 	}
