@@ -32,7 +32,8 @@ $app->post('/premios', function(){
         $cntEmpresas = count($premio->empresas);
         for($j = 0; $j < $cntEmpresas; $j++){
             $empresa = $premio->empresas[$j];
-            $query = "SELECT LPAD(z.codigo, 3, '0') AS codigo, z.nombres, z.puesto, z.ingreso, z.anioslaborados, z.meses, z.sueldo, z.bonif, z.sueldocompleto, z.sueldocompleto * z.idpremio AS sueldopremio, IF(z.esefectivo = 0, NULL, 1) AS esefectivo ";
+            $query = "SELECT LPAD(z.codigo, 3, '0') AS codigo, z.nombres, z.puesto, z.ingreso, z.anioslaborados, z.meses, ";
+            $query.= "FORMAT(z.sueldo, 2) AS sueldo, FORMAT(z.bonif, 2) AS bonif, FORMAT(z.sueldocompleto, 2) AS sueldocompleto, FORMAT(z.sueldocompleto * z.idpremio, 2) AS sueldopremio, IF(z.esefectivo = 0, NULL, 1) AS esefectivo ";
             $query.= "FROM ($qGen) z ";
             $query.= "WHERE z.idpremio = $premio->idpremio AND z.idempresa = $empresa->idempresa ";
             $query.= "ORDER BY z.codigo, z.anioslaborados, z.meses DESC";

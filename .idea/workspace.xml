@@ -42,8 +42,8 @@
       <file leaf-file-name="rptplnpremios.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/php/rptplnpremios.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="612">
-              <caret line="36" column="99" lean-forward="true" selection-start-line="36" selection-start-column="99" selection-end-line="36" selection-end-column="99" />
+            <state relative-caret-position="601">
+              <caret line="36" column="39" lean-forward="true" selection-start-line="36" selection-start-column="39" selection-end-line="36" selection-end-column="39" />
             </state>
           </provider>
         </entry>
@@ -62,7 +62,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>lstpresupuestos</find>
       <find>printpendi</find>
       <find>modalPrintPendientes.html</find>
       <find>:</find>
@@ -92,6 +91,7 @@
       <find>datosEnCrudo</find>
       <find>transaccion</find>
       <find>ordensumario</find>
+      <find>empresa</find>
     </findStrings>
     <replaceStrings>
       <replace>$d-&gt;falstr</replace>
@@ -1000,12 +1000,12 @@
       <workItem from="1547851613260" duration="871000" />
       <workItem from="1548109687109" duration="1160000" />
       <workItem from="1548173077954" duration="14627000" />
-      <workItem from="1548258707090" duration="10254000" />
+      <workItem from="1548258707090" duration="11169000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2980479000" />
+    <option name="totallyTimeSpent" value="2981394000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1419,8 +1419,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/php/rptplnpremios.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="612">
-          <caret line="36" column="99" lean-forward="true" selection-start-line="36" selection-start-column="99" selection-end-line="36" selection-end-column="99" />
+        <state relative-caret-position="601">
+          <caret line="36" column="39" lean-forward="true" selection-start-line="36" selection-start-column="39" selection-end-line="36" selection-end-column="39" />
         </state>
       </provider>
     </entry>
