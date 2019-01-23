@@ -2,9 +2,8 @@
 require 'vendor/autoload.php';
 require_once 'db.php';
 
-header('Content-Type: application/json');
-
 $app = new \Slim\Slim();
+$app->response->headers->set('Content-Type', 'application/json');
 
 //API para tipo de cambio diario
 function obj2array($obj) {

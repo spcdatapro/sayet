@@ -6,29 +6,32 @@ class contabilidad{
     private $_fal = '';
     private $_idempresa = '';
     private $_vercierre = '';
+    private $_codigo = null;
+    private $_codigoal = null;
     private $_datosEnCrudo = '';
+    private $_datosEnCrudoAnterior = '';
     private $_decimales = 2;
     private $_formatoFechaConta = '%d/%m/%Y';
     private $_formatoFechaHoraConta = '%d/%m/%Y %H:%i:%s';
 
-    function __construct($fdel = null, $fal = null, $idempresa = '1', $vercierre = 1, $decimales = 2, $formatoFecha = '%d/%m/%Y', $formatoFechaHora = '%d/%m/%Y %H:%i:%s'){
+    function __construct($fdel = null, $fal = null, $idempresa = '1', $vercierre = 1, $codigo = null, $codigoal = null, $decimales = 2, $formatoFecha = '%d/%m/%Y', $formatoFechaHora = '%d/%m/%Y %H:%i:%s'){
 
-        if(!$fdel){
-            $fdel = date('Y').'-'.date('m').'-01';
-        }
-
-        if(!$fal){
-            $fal = date('Y').'-'.date('m').'-'.date('t', strtotime($fdel));
-        }
+        if(!$fdel){ $fdel = date('Y').'-'.date('m').'-01'; }
+        if(!$fal){ $fal = date('Y').'-'.date('m').'-'.date('t', strtotime($fdel)); }
+        if($codigo && strlen(trim($codigo)) == 0){ $codigo = null; }
+        if($codigoal && strlen(trim($codigoal)) == 0){ $codigoal = null; }
 
         $this->_fdel = $fdel;
         $this->_fal = $fal;
         $this->_idempresa = $idempresa;
         $this->_vercierre = $vercierre;
+        $this->_codigo = $codigo;
+        $this->_codigoal = $codigoal;
         $this->_decimales = $decimales;
         $this->_formatoFechaConta = $formatoFecha;
         $this->_formatoFechaHoraConta = $formatoFechaHora;
         $this->datosEnCrudo();
+        $this->datosEnCrudo(true);
     }
 
     private function detalleContable($origen, $idorigen = 0){
@@ -40,55 +43,81 @@ class contabilidad{
         return $query;
     }
 
-    private function datosEnCrudo(){
+    private function datosEnCrudo($anterior = false){
         //#Transacciones bancarias -> origen = 1
         $query = "SELECT CONCAT('P', YEAR(b.fecha), LPAD(MONTH(b.fecha), 2, '0'), LPAD(DAY(b.fecha), 2, '0'), LPAD(1, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fecha, ";
         $query.= "CONCAT(d.descripcion, ' ', b.numero, ' ', c.nombre) AS referencia, b.concepto, b.id, 1 AS origen, ";
-        $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber ";
+        $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber, CONCAT(d.abreviatura, b.numero) AS transaccion ";
         $query.= "FROM tranban b INNER JOIN banco c ON c.id = b.idbanco INNER JOIN tipomovtranban d ON d.abreviatura = b.tipotrans ";
         $query.= "LEFT JOIN(".$this->detalleContable(1).") x ON b.id = x.idorigen ";
-        $query.= "WHERE b.fecha >= '$this->_fdel' AND b.fecha <= '$this->_fal' AND c.idempresa = $this->_idempresa ";
+        $query.= "WHERE ";
+        $query.= !$anterior ? "b.fecha >= '$this->_fdel' AND b.fecha <= '$this->_fal' " : "b.fecha < '$this->_fdel' ";
+        $query.= $this->_codigo && !$this->_codigoal ? "AND TRIM(x.codigo) IN ($this->_codigo) " : '';
+        $query.= $this->_codigo && $this->_codigoal ? "AND TRIM(x.codigo) >= $this->_codigo AND TRIM(x.codigo) <= $this->_codigoal " : '';
+        $query.= "AND c.idempresa = $this->_idempresa ";
 
         //#Compras -> origen = 2
         $query.= "UNION ALL ";
         $query.= "SELECT CONCAT('P', YEAR(b.fechaingreso), LPAD(MONTH(b.fechaingreso), 2, '0'), LPAD(DAY(b.fechaingreso), 2, '0'), LPAD(2, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fechaingreso AS fecha, ";
         $query.= "CONCAT('Compra', ' ', b.serie, '-', b.documento, ' ') AS referencia, b.conceptomayor AS concepto, b.id, 2 AS origen, ";
-        $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber ";
+        $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber, r.tranban AS transaccion ";
         $query.= "FROM compra b ";
         $query.= "LEFT JOIN(".$this->detalleContable(2).") x ON b.id = x.idorigen ";
-        $query.= "WHERE b.idreembolso = 0 AND b.fechaingreso >= '$this->_fdel' AND b.fechaingreso <= '$this->_fal' AND b.idempresa = $this->_idempresa ";
+        $query.= "LEFT JOIN(SELECT z.idcompra, GROUP_CONCAT(CONCAT(y.tipotrans, y.numero) SEPARATOR ', ') AS tranban FROM detpagocompra z INNER JOIN tranban y ON y.id = z.idtranban GROUP BY z.idcompra) r ON b.id = r.idcompra ";
+        $query.= "WHERE b.idreembolso = 0 AND ";
+        $query.= !$anterior ? "b.fechaingreso >= '$this->_fdel' AND b.fechaingreso <= '$this->_fal' " : "b.fechaingreso < '$this->_fdel' ";
+        $query.= $this->_codigo && !$this->_codigoal ? "AND TRIM(x.codigo) IN ($this->_codigo) " : '';
+        $query.= $this->_codigo && $this->_codigoal ? "AND TRIM(x.codigo) >= $this->_codigo AND TRIM(x.codigo) <= $this->_codigoal " : '';
+        $query.= "AND b.idempresa = $this->_idempresa ";
 
         //#Ventas -> origen = 3
         $query.= "UNION ALL ";
         $query.= "SELECT CONCAT('P', YEAR(b.fecha), LPAD(MONTH(b.fecha), 2, '0'), LPAD(DAY(b.fecha), 2, '0'), LPAD(3, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fecha, ";
         $query.= "CONCAT('Venta', ' ', b.serie, '-', b.numero) AS referencia, b.conceptomayor AS concepto, b.id, 3 AS origen, ";
-        $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber ";
+        $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber, r.tranban AS transaccion ";
         $query.= "FROM factura b ";
         $query.= "LEFT JOIN(".$this->detalleContable(3).") x ON b.id = x.idorigen ";
-        $query.= "WHERE b.fecha >= '$this->_fdel' AND b.fecha <= '$this->_fal' AND b.anulada = 0 AND b.idempresa = $this->_idempresa ";
+        $query.= "LEFT JOIN (";
+        $query.= "SELECT z.idfactura, GROUP_CONCAT(CONCAT(x.tipotrans, x.numero) SEPARATOR ', ') AS tranban FROM detcobroventa z INNER JOIN recibocli y ON y.id = z.idrecibocli INNER JOIN tranban x ON x.id = y.idtranban GROUP BY z.idfactura";
+        $query.= ") r ON b.id = r.idfactura ";
+        $query.= "WHERE ";
+        $query.= !$anterior ? "b.fecha >= '$this->_fdel' AND b.fecha <= '$this->_fal' " : "b.fecha < '$this->_fdel' ";
+        $query.= $this->_codigo && !$this->_codigoal ? "AND TRIM(x.codigo) IN ($this->_codigo) " : '';
+        $query.= $this->_codigo && $this->_codigoal ? "AND TRIM(x.codigo) >= $this->_codigo AND TRIM(x.codigo) <= $this->_codigoal " : '';
+        $query.= "AND b.anulada = 0 AND b.idempresa = $this->_idempresa ";
 
         //#Directas -> origen = 4
         $query.= "UNION ALL ";
         $query.= "SELECT CONCAT('P', YEAR(b.fecha), LPAD(MONTH(b.fecha), 2, '0'), LPAD(DAY(b.fecha), 2, '0'), LPAD(4, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fecha, ";
         $query.= "CONCAT('Directa No.', LPAD(b.id, 5, '0')) AS referencia, '' AS concepto, b.id, 4 AS origen, ";
-        $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber ";
+        $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber, '' AS transaccion ";
         $query.= "FROM directa b ";
         $query.= "LEFT JOIN(".$this->detalleContable(4).") x ON b.id = x.idorigen ";
-        $query.= "WHERE b.fecha >= '$this->_fdel' AND b.fecha <= '$this->_fal' AND b.idempresa = $this->_idempresa ";
+        $query.= "WHERE ";
+        $query.= !$anterior ? "b.fecha >= '$this->_fdel' AND b.fecha <= '$this->_fal' " : "b.fecha < '$this->_fdel' ";
+        $query.= "AND b.idempresa = $this->_idempresa ";
         $query.= (int)$this->_vercierre === 0 ? "AND b.tipocierre NOT IN(1, 2, 3, 4) " : '';
+        $query.= $this->_codigo && !$this->_codigoal ? "AND TRIM(x.codigo) IN ($this->_codigo) " : '';
+        $query.= $this->_codigo && $this->_codigoal ? "AND TRIM(x.codigo) >= $this->_codigo AND TRIM(x.codigo) <= $this->_codigoal " : '';
 
         //#Reembolsos -> origen = 5
         $query.= "UNION ALL ";
         $query.= "SELECT CONCAT('P', YEAR(b.fechaingreso), LPAD(MONTH(b.fechaingreso), 2, '0'), LPAD(DAY(b.fechaingreso), 2, '0'), LPAD(5, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fechaingreso AS fecha, ";
         $query.= "CONCAT('Compra', ' ', b.serie, '-', b.documento, ' ') AS referencia, b.conceptomayor AS concepto, b.id, 5 AS origen, ";
-        $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber ";
-        $query.= "FROM compra b ";
+        $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber, CONCAT(d.tipotrans, d.numero) AS transaccion ";
+        $query.= "FROM compra b INNER JOIN reembolso c ON c.id = b.idreembolso LEFT JOIN tranban d ON d.id = c.idtranban ";
         $query.= "LEFT JOIN(".$this->detalleContable(5).") x ON b.id = x.idorigen ";
-        $query.= "WHERE b.idreembolso > 0 AND b.fechaingreso >= '$this->_fdel' AND b.fechaingreso <= '$this->_fal' AND b.idempresa = $this->_idempresa ";
+        $query.= "WHERE b.idreembolso > 0 AND ";
+        $query.= !$anterior ? "b.fechaingreso >= '$this->_fdel' AND b.fechaingreso <= '$this->_fal' " : "b.fechaingreso < '$this->_fdel' ";
+        $query.= "AND b.idempresa = $this->_idempresa ";
+        $query.= $this->_codigo && !$this->_codigoal ? "AND TRIM(x.codigo) IN ($this->_codigo) " : '';
+        $query.= $this->_codigo && $this->_codigoal ? "AND TRIM(x.codigo) >= $this->_codigo AND TRIM(x.codigo) <= $this->_codigoal " : '';
 
-        //$query.= "ORDER BY fecha, poliza, debe DESC, nombrecta";
-
-        $this->_datosEnCrudo = $query;
+        if(!$anterior){
+            $this->_datosEnCrudo = $query;
+        }else{
+            $this->_datosEnCrudoAnterior = $query;
+        }
     }
 
     public function getCatalogoCuentas(){
@@ -101,6 +130,10 @@ class contabilidad{
 
     public function getDatosEnCrudo(){
         return $this->_datosEnCrudo;
+    }
+
+    public function getDatosEnCrudoAnterior(){
+        return $this->_datosEnCrudoAnterior;
     }
 
     public function getPolizas(){

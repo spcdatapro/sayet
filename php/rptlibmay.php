@@ -277,10 +277,16 @@ $app->post('/libromayor', function(){
     $d = json_decode(file_get_contents('php://input'));
     if(!isset($d->vercierre)){ $d->vercierre = 0; }
     $db = new dbcpm();
-    $conta = new contabilidad($d->fdelstr, $d->falstr, $d->idempresa, (int)$d->vercierre);
-    $queryRawData = $conta->getDatosEnCrudo();
 
-    $query = "SELECT j.id, j.codigo, j.nombrecta, j.tipocuenta, 0.00 AS anterior, k.debe AS debe, k.haber AS haber, 0.00 AS actual
+    if($d->codigo && strlen(trim($d->codigo)) == 0){ $d->codigo = null; }
+    if($d->codigoal && strlen(trim($d->codigoal)) == 0){ $d->codigoal = null; }
+    $conta = new contabilidad($d->fdelstr, $d->falstr, $d->idempresa, (int)$d->vercierre, $d->codigo, $d->codigoal);
+    $queryRawData = $conta->getDatosEnCrudo();
+    $queryRawDataAnterior = $conta->getDatosEnCrudoAnterior();
+
+    $query = "SELECT j.id, j.codigo, j.nombrecta, j.tipocuenta, 
+                IFNULL(l.anterior, 0.00) AS anterior, IFNULL(l.anteriorstr, 0.00) AS anteriorstr, IFNULL(k.debe, 0.00) AS debe, FORMAT(IFNULL(k.debe, 0.00), 2) AS debestr, IFNULL(k.haber, 0.00) AS haber, FORMAT(IFNULL(k.haber, 0.00), 2) AS haberstr, 
+                (IFNULL(l.anterior, 0.00) + IFNULL(k.debe, 0.00) - IFNULL(k.haber, 0.00)) AS actual, FORMAT((IFNULL(l.anterior, 0.00) + IFNULL(k.debe, 0.00) - IFNULL(k.haber, 0.00)), 2) AS actualstr, 1 AS mostrar
                 FROM cuentac j
                 LEFT JOIN (
                     SELECT idcuentac, SUM(debe) AS debe, SUM(haber) AS haber
@@ -288,26 +294,62 @@ $app->post('/libromayor', function(){
                     WHERE idcuentac IS NOT NULL
                     GROUP BY idcuentac
                 ) k ON j.id = k.idcuentac
-                WHERE j.idempresa = $d->idempresa
-                ORDER BY j.codigo";
+                LEFT JOIN(
+                    SELECT idcuentac, (SUM(debe) - SUM(haber)) AS anterior, FORMAT((SUM(debe) - SUM(haber)), 2) AS anteriorstr
+                    FROM ($queryRawDataAnterior) w
+                    WHERE idcuentac IS NOT NULL 
+                    GROUP BY idcuentac
+                ) l ON j.id = l.idcuentac
+                WHERE j.idempresa = $d->idempresa ";
+    $query.= $d->codigo && !$d->codigoal ? "AND TRIM(j.codigo) IN ($d->codigo) " : '';
+    $query.= $d->codigo && $d->codigoal ? "AND TRIM(j.codigo) >= $d->codigo AND TRIM(j.codigo) <= $d->codigoal " : '';
+    $query.= "ORDER BY j.codigo";
 
     $cuentas = $db->getQuery($query);
     $cntCuentas = count($cuentas);
     for($i = 0; $i < $cntCuentas; $i++){
         $cuenta = $cuentas[$i];
         if((int)$cuenta->tipocuenta === 1){
-            $query = "SELECT SUM(debe) AS debe, SUM(haber) AS haber ";
+            $query = "SELECT SUM(debe) AS debe, FORMAT(SUM(debe), 2) AS debestr, SUM(haber) AS haber, FORMAT(SUM(haber), 2) AS haberstr ";
             $query.= "FROM ($queryRawData) w ";
             $query.= "WHERE codigo LIKE '$cuenta->codigo%'";
             $sumas = $db->getQuery($query);
             if(count($sumas) > 0){
                 $cuenta->debe = $sumas[0]->debe;
+                $cuenta->debestr = $sumas[0]->debestr;
                 $cuenta->haber = $sumas[0]->haber;
+                $cuenta->haberstr = $sumas[0]->haberstr;
             }
+
+            $query = "SELECT (SUM(w.debe) - SUM(w.haber)) AS anterior, FORMAT(SUM(w.debe) - SUM(w.haber), 2) AS anteriorstr ";
+            $query.= "FROM ($queryRawDataAnterior) w ";
+            $query.= "WHERE w.codigo LIKE '$cuenta->codigo%'";
+            $anterior = $db->getQuery($query);
+            if(count($anterior) > 0){
+                $cuenta->anterior = $anterior[0]->anterior;
+                $cuenta->anteriorstr = $anterior[0]->anteriorstr;
+                $cuenta->actual = (float)$anterior[0]->anterior + (float)$sumas[0]->debe - (float)$sumas[0]->haber;
+                $cuenta->actualstr = number_format($cuenta->actual, 2);
+            }
+        }else{
+            $query = "SELECT poliza, fecha, DATE_FORMAT(fecha, '$db->_formatoFecha') AS fechastr, referencia, transaccion, ";
+            $query.= "'' AS anterior, debe, FORMAT(debe, 2) AS debestr, haber, FORMAT(haber, 2) AS haberstr, '' AS actual ";
+            $query.= "FROM ($queryRawData) w ";
+            $query.= "WHERE idcuentac = $cuenta->id ";
+            $query.= "ORDER BY fecha, poliza";
+            $cuenta->dlm = $db->getQuery($query);
+        }
+
+        if((float)$cuenta->anterior === 0.00 && (float)$cuenta->debe === 0.00 && (float)$cuenta->haber === 0.00 && (float)$cuenta->actual === 0.00){
+            $cuenta->mostrar = false;
         }
     }
 
-    print json_encode($cuentas);
+    $query = "SELECT nomempresa, abreviatura, DATE_FORMAT('$d->fdelstr', '$db->_formatoFecha') AS del, DATE_FORMAT('$d->falstr', '$db->_formatoFecha') AS al, DATE_FORMAT(NOW(), '$db->_formatoFechaHora') AS hoy ";
+    $query.= "FROM empresa ";
+    $query.= "WHERE id = $d->idempresa";
+    $empresa = $db->getQuery($query)[0];
+    print json_encode(['parametros' => $d, 'empresa' => $empresa, 'lm' => $cuentas, 'rawant' => $queryRawDataAnterior, 'raw' => $queryRawData]);
 });
 
 $app->run();
