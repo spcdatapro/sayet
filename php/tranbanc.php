@@ -76,6 +76,16 @@ function insertaDetalleContable($d, $idorigen){
     };
 };
 
+function updateGastosOT($iddetpresup){
+    $db = new dbcpm();
+
+    $idot = $db->getOneField("SELECT idpresupuesto FROM detpresupuesto WHERE id = $iddetpresup");
+    if((int)$idot > 0){
+        $query = "UPDATE presupuesto SET gastado = (IFNULL(montoGastadoPresupuesto(id), 0) + IFNULL(getMontoISROT(id, 1), 0)) WHERE id >= $idot";
+        $db->doQuery($query);
+    }
+}
+
 $app->post('/c', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
@@ -95,6 +105,7 @@ $app->post('/c', function(){
         if((int)$d->iddetpresup > 0 && (int)$d->iddetpagopresup > 0){
             $query = "UPDATE detpagopresup SET pagado = 1, origen = 1, idorigen = $lastid WHERE id = $d->iddetpagopresup";
             $db->doQuery($query);
+            updateGastosOT($d->iddetpresup);
         }
     }elseif(in_array($d->tipotrans, $tentrada)){
         $ctabco = (int)$db->getOneField("SELECT idcuentac FROM banco WHERE id = ".$d->idbanco);
@@ -130,6 +141,7 @@ $app->post('/u', function(){
         if((int)$d->iddetpresup > 0 && (int)$d->iddetpagopresup > 0){
             $query = "UPDATE detpagopresup SET pagado = 1, origen = 1, idorigen = $d->id WHERE id = $d->iddetpagopresup";
             $db->doQuery($query);
+            updateGastosOT($d->iddetpresup);
         }
     }
     /*
@@ -148,13 +160,20 @@ $app->post('/d', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $tran = $db->getQuery("SELECT tipotrans, numero, idbanco FROM tranban WHERE id = $d->id")[0];
+    $tran = $db->getQuery("SELECT tipotrans, numero, idbanco, iddetpresup, iddetpagopresup FROM tranban WHERE id = $d->id")[0];
     if(trim($tran->tipotrans) == 'C'){ $db->doQuery("UPDATE banco SET correlativo = $tran->numero WHERE id = $tran->idbanco"); }
+
 	$db->doQuery("UPDATE reembolso SET idtranban = 0 WHERE idtranban = $d->id AND esrecprov = 0");
     $db->doQuery("DELETE FROM doctotranban WHERE idtranban = $d->id");
     $db->doQuery("DELETE FROM detpagocompra WHERE idtranban = $d->id");
     $db->doQuery("DELETE FROM detallecontable WHERE origen = 1 AND idorigen = $d->id");
     $db->doQuery("DELETE FROM tranban WHERE id = $d->id");
+
+    if((int)$tran->iddetpresup > 0 && (int)$tran->iddetpagopresup > 0){
+        $query = "UPDATE detpagopresup SET pagado = 0, origen = 1, idorigen = 0 WHERE id = $tran->iddetpagopresup AND origen = 1 AND idorigen = $d->id";
+        $db->doQuery($query);
+        updateGastosOT($tran->iddetpresup);
+    }
 });
 
 $app->get('/aconciliar/:idbanco/:afecha/:qver', function($idbanco, $afecha, $qver){
@@ -205,7 +224,14 @@ $app->post('/anula', function(){
     $db->doQuery("UPDATE tranban SET idrazonanulacion = ".$d->idrazonanulacion.", anulado = 1, fechaanula = '".$d->fechaanulastr."' WHERE id = ".$d->id);
     $db->doQuery("UPDATE detallecontable SET anulado = 1 WHERE origen = 1 AND idorigen = ".$d->id);
 	$db->doQuery("DELETE FROM detpagocompra WHERE idtranban = ".$d->id);
-	$db->doQuery("UPDATE reembolso SET idtranban = 0 WHERE idtranban = ".$d->id);    
+	$db->doQuery("UPDATE reembolso SET idtranban = 0 WHERE idtranban = ".$d->id);
+
+    $tran = $db->getQuery("SELECT iddetpresup, iddetpagopresup FROM tranban WHERE id = $d->id")[0];
+    if((int)$tran->iddetpresup > 0 && (int)$tran->iddetpagopresup > 0){
+        $query = "UPDATE detpagopresup SET pagado = 0, origen = 1, idorigen = 0 WHERE id = $tran->iddetpagopresup AND origen = 1 AND idorigen = $d->id";
+        $db->doQuery($query);
+        updateGastosOT($tran->iddetpresup);
+    }
 });
 
 $app->get('/lstbeneficiarios', function(){
