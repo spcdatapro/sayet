@@ -993,7 +993,6 @@ EOT;
 		$tmp['estadocivil']      = estadoCivil($this->emp->estadocivil, $this->emp->sexo);
 		$tmp['ingreso']          = formatoFecha($this->emp->ingreso, 1);
 		$tmp['baja']             = empty($this->emp->baja) ? '' : formatoFecha($this->emp->baja, 1);
-		$tmp['cuentabanco']      = empty($this->emp->cuentabanco) ? '' : $this->emp->cuentabanco;
 
 		if ($this->emp->formapago == 1) {
 			$tmp['formapago'] = 'QUINCENAL';
