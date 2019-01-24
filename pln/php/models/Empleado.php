@@ -322,10 +322,19 @@ class Empleado extends Principal
 
 	public function guardar_bitacora($args=[])
 	{
-		$args['usuario']       = $_SESSION['uid'];
-		$args['idplnempleado'] = $this->emp->id;
+		$tabla = "plnbitacora";
 
-		$this->db->insert("plnbitacora", $args);
+		if (elemento($args, "id")) {
+			$this->db->update($tabla, $args, ["AND" => [
+				"id" => $args["id"],
+				"idplnempleado" => $this->emp->id
+			]]);
+		} else {
+			$args['usuario']       = $_SESSION['uid'];
+			$args['idplnempleado'] = $this->emp->id;
+
+			$this->db->insert($tabla, $args);
+		}
 	}
 
 	public function agregar_archivo($args = [], $fl = [])
@@ -1122,7 +1131,7 @@ EOT;
 
 		$tmp = [
 			'fecha'            => 'Guatemala, ' . date('d/m/Y H:i:s'),
-			'movfecha' 		   => formatoFecha($bit->movfecha, 1),
+			'movfecha' 		   => (empty($bit->movfecha) ? "" : formatoFecha($bit->movfecha, 1)),
 			'empleado'         => $this->emp->nombre.' '.$this->emp->apellidos,
 			'empresa'          => $emp->nomempresa,
 			'movdescripcion'   => $bit->movdescripcion,

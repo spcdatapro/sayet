@@ -375,6 +375,7 @@
 		    				<th>Movimiento</th>
 		    				<th>Usuario</th>
 		    				<th></th>
+		    				<th></th>
 		    			</tr>
 		    		</thead>
 		    		<tbody>
@@ -388,6 +389,11 @@
 								<a href="/sayet/pln/php/controllers/empleado.php/printbit/{{b.idplnempleado}}/{{ b.id }}" class="btn btn-default btn-sm" target="_blank">
 									<i class="glyphicon glyphicon-print"></i>
 								</a>
+							</td>
+							<td>
+								<button class="btn btn-xs btn-primary" ng-click="editarMovimiento('{{b.idplnempleado}}', '{{b.id}}')">
+									<i class="glyphicon glyphicon-edit"></i>
+								</button>
 							</td>
 						</tr>
 		    		</tbody>
