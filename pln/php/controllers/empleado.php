@@ -62,6 +62,19 @@ $app->post('/guardar', function(){
     enviar_json($data);
 });
 
+$app->post('/guardar_bitacora', function(){
+	$datos = (array)json_decode(file_get_contents('php://input'), TRUE);
+	$data = ['exito' => 0];
+	$data["up"] = isset($datos["id"]) ? 1 : 0;
+
+	$emp = new Empleado($datos["idplnempleado"]);
+	$emp->guardar_bitacora($datos);
+
+	$data["mensaje"] = "Actualizado.";
+
+	enviar_json($data);
+});
+
 $app->post('/agregar_archivo/:id', function($id){
 	$data = ['exito' => 0];
 	

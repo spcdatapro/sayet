@@ -32,6 +32,9 @@ angular.module('cpm')
         },
         getBitacora: function(emp){
             return comunFact.doGET(urlBase + '/get_bitacora/'+emp)
+        },
+        guardarBitacora: function(bita) {
+            return comunFact.doPOST(urlBase + '/guardar_bitacora')
         }
     };
 }])

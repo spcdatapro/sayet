@@ -125,7 +125,38 @@ angular.module('cpm')
              $scope.getBitacora($scope.emp.id)
 
              goTop();
-        };
+        }
+
+        $scope.editarMovimiento = function(index) {
+            $scope.bita = $scope.bitacora[index]
+
+            $scope.bita.movgasolina = parseFloat($scope.bita.movgasolina)
+            $scope.bita.movdepvehiculo = parseFloat($scope.bita.movdepvehiculo)
+            $scope.bita.movotros = parseFloat($scope.bita.movotros)
+
+            if ($scope.bita.movfecha) {
+                $scope.bita.fecha = $scope.formatoFechajs($scope.bita.movfecha)
+            }
+        }
+
+        $scope.guardarMovimiento = function(datos) {
+            if (!datos.idplnempleado) {
+                datos.idplnempleado = $scope.emp.id
+            }
+
+            if (datos.fecha) {
+                datos.movfecha = formatoFecha(datos.fecha)
+            }
+
+            empServicios.guardarBitacora(datos).then(function(res){
+                alert(res.mensaje);
+                $scope.bita = {};
+
+                if (res.up == 0) {
+                    $scope.empleados.bitacora(res.bita);
+                }
+            });
+        }
 
         $scope.getBitacora = function(emp) {
             empServicios.getBitacora(emp).then(function(data){
