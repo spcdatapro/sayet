@@ -238,6 +238,10 @@ class Nomina extends Principal
 					$datos["aguinaldo"] = elemento($args, "aguinaldo", 0);
 				}
 
+				if (isset($args["bonificacion"])) {
+					$datos["bonificacion"] = elemento($args, "bonificacion", 0);
+				}
+
 				if (isset($args["indemnizacion"])) {
 					$datos["indemnizacion"] = elemento($args, "indemnizacion", 0);
 				}
@@ -357,12 +361,15 @@ class Nomina extends Principal
 					$e->set_sueldo();
 					$e->set_dias_trabajados();
 
+					$datos = [];
+
+					/*
 					$datos = [
 						'horasmes'      => 0,
 						'horasmesmonto' => 0,
 						'hedcantidad'   => 0,
 						'hedmonto'      => 0
-					];
+					];*/
 
 					# Solo deja calcular bono el 15 de la primera quincena
 					if (isset($args['bono14']) && $args['bono14'] == 'true' && $mes == 7 && $dia == 15) {

@@ -494,7 +494,7 @@ class Empleado extends Principal
 
 		if ($ianio == $this->nanio && $imes == $this->nmes) {
 			if ($this->ndia > $idia) {
-				$this->dtrabajados = ($this->ndia-$idia);
+				$this->dtrabajados = ($this->ndia-$idia)+1;
 			}
 		} else {
 			if ($this->nanio >= $ianio) {

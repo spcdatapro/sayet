@@ -1,16 +1,15 @@
 <style>
-	td {
-		padding-left: 0px;
-		padding-right: 0px;
-	}
-
-	td > input {
-		width: 85px;
-	}
-
-	#tablaNomina {
-		font-size: 0.8em;
-	}
+		#tablaNomina > tbody > tr > td {
+			padding: 0px;
+		}
+	
+		td > input {
+			width: 100%;
+		}
+	
+		#tablaNomina {
+			font-size: 0.8em;
+		}
 </style>
 
 <div class="container-fluid" ng-controller="transNominaController">
@@ -66,6 +65,7 @@
 							
 							<th class="text-right" ng-show="shingresos_dos" title="Sueldo Ordinario">S. Ordinario</th>
 							<th class="text-right" ng-show="shingresos_dos" title="Sueldo Extra">S. Extra</th>
+							<th class="text-right" ng-show="shingresos_dos" title="Bonificación Ley">Bono. Ley</th>
 							<th class="text-right" ng-show="shingresos_dos">Viáticos</th>
 							<th class="text-right" ng-show="shingresos_dos">Aguinaldo</th>
 							<th class="text-right" ng-show="shingresos_dos">Indemnización</th>
@@ -91,6 +91,9 @@
 
 							<td class="text-right" ng-show="shingresos_dos"><input type="number" step="0.01" ng-model="valor.sueldoordinario" string-to-number ng-blur="actualizarNomina(valor, indice)"></td>
 							<td class="text-right" ng-show="shingresos_dos"><input type="number" step="0.01" ng-model="valor.sueldoextra" string-to-number ng-blur="actualizarNomina(valor, indice)"></td>
+
+							<td class="text-right" ng-show="shingresos_dos"><input type="number" step="0.01" ng-model="valor.bonificacion" string-to-number ng-blur="actualizarNomina(valor, indice)"></td>
+
 							<td class="text-right" ng-show="shingresos_dos"><input type="number" step="0.01" ng-model="valor.viaticos" string-to-number ng-blur="actualizarNomina(valor, indice)"></td>
 							<td class="text-right" ng-show="shingresos_dos"><input type="number" step="0.01" ng-model="valor.aguinaldo" string-to-number ng-blur="actualizarNomina(valor, indice)"></td>
 							<td class="text-right" ng-show="shingresos_dos"><input type="number" step="0.01" ng-model="valor.indemnizacion" string-to-number ng-blur="actualizarNomina(valor, indice)"></td>
