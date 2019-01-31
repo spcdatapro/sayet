@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/pln/php/models/Empleado.php" beforeDir="false" afterPath="$PROJECT_DIR$/pln/php/models/Empleado.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/php/conta.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/conta.php" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -34,34 +35,35 @@
     <expand />
     <select />
   </component>
+  <component name="DockManager">
+    <window id="1">
+      <content type="file-editors">
+        <state>
+          <leaf>
+            <file leaf-file-name="rptlibmay.php" pinned="false" current-in-tab="true">
+              <entry file="file://$PROJECT_DIR$/php/rptlibmay.php">
+                <provider selected="true" editor-type-id="text-editor">
+                  <state relative-caret-position="68">
+                    <caret line="187" column="97" lean-forward="true" selection-start-line="187" selection-start-column="97" selection-end-line="187" selection-end-column="97" />
+                  </state>
+                </provider>
+              </entry>
+            </file>
+          </leaf>
+        </state>
+      </content>
+    </window>
+  </component>
   <component name="FavoritesManager">
     <favorites_list name="cpm" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="empleado.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pln/php/controllers/empleado.php">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="conta.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/conta.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="411">
-              <caret line="681" column="29" selection-start-line="681" selection-start-column="29" selection-end-line="681" selection-end-column="29" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Empleado.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/pln/php/models/Empleado.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="291">
-              <caret line="974" column="20" selection-start-line="974" selection-start-column="20" selection-end-line="974" selection-end-column="20" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="empleado.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pln/pages/mnt/empleado.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="281">
-              <caret line="233" column="101" selection-start-line="233" selection-start-column="89" selection-end-line="233" selection-end-column="101" />
+            <state relative-caret-position="1309">
+              <caret line="92" column="55" lean-forward="true" selection-start-line="92" selection-start-column="55" selection-end-line="92" selection-end-column="55" />
             </state>
           </provider>
         </entry>
@@ -174,7 +176,6 @@
         <option value="$PROJECT_DIR$/php/rptlibdia.php" />
         <option value="$PROJECT_DIR$/php/rptalquileres.php" />
         <option value="$PROJECT_DIR$/php/tipocambio.php" />
-        <option value="$PROJECT_DIR$/php/conta.php" />
         <option value="$PROJECT_DIR$/php/rptlibmay.php" />
         <option value="$PROJECT_DIR$/pages/rptlibmay.html" />
         <option value="$PROJECT_DIR$/php/rptbalancesaldos.php" />
@@ -183,6 +184,7 @@
         <option value="$PROJECT_DIR$/php/presupuesto.php" />
         <option value="$PROJECT_DIR$/php/tranbanc.php" />
         <option value="$PROJECT_DIR$/pln/php/models/Empleado.php" />
+        <option value="$PROJECT_DIR$/php/conta.php" />
       </list>
     </option>
   </component>
@@ -228,6 +230,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="AndroidView" />
+      <pane id="PackagesPane" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -239,74 +243,12 @@
             <path>
               <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
               <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-              <item name="controllers" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-              <item name="services" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="pages" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
               <item name="php" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="pln" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="pln" type="462c0819:PsiDirectoryNode" />
-              <item name="pages" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="pln" type="462c0819:PsiDirectoryNode" />
-              <item name="pages" type="462c0819:PsiDirectoryNode" />
-              <item name="mnt" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="pln" type="462c0819:PsiDirectoryNode" />
-              <item name="php" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="pln" type="462c0819:PsiDirectoryNode" />
-              <item name="php" type="462c0819:PsiDirectoryNode" />
-              <item name="controllers" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="pln" type="462c0819:PsiDirectoryNode" />
-              <item name="php" type="462c0819:PsiDirectoryNode" />
-              <item name="files" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="AndroidView" />
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -1059,12 +1001,15 @@
       <workItem from="1548109687109" duration="1160000" />
       <workItem from="1548173077954" duration="14627000" />
       <workItem from="1548258707090" duration="12368000" />
-      <workItem from="1548349416324" duration="4201000" />
+      <workItem from="1548349416324" duration="4857000" />
+      <workItem from="1548379777108" duration="642000" />
+      <workItem from="1548719803974" duration="538000" />
+      <workItem from="1548973917745" duration="3038000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2986794000" />
+    <option name="totallyTimeSpent" value="2991668000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1083,7 +1028,7 @@
       <window_info anchor="bottom" x="206" y="338" width="1572" height="574" id="Terminal" order="11" type="WINDOWED" weight="1.0" />
       <window_info id="Capture Tool" order="6" />
       <window_info anchor="right" id="Designer" order="6" />
-      <window_info active="true" content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" visible="true" weight="0.1444563" />
+      <window_info content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" weight="0.14925373" />
       <window_info anchor="right" id="Database" order="7" weight="0.32889125" />
       <window_info anchor="right" id="SciView" order="9" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.1546875" />
@@ -1371,20 +1316,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptlibmay.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="26" lean-forward="true" selection-start-line="6" selection-end-line="6" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/conta.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="13" column="45" lean-forward="true" selection-start-line="13" selection-start-column="45" selection-end-line="13" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/rptlibdia.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="85">
@@ -1403,9 +1334,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1927">
           <caret line="233" column="5" selection-start-line="233" selection-start-column="5" selection-end-line="233" selection-end-column="5" />
-          <folding>
-            <element signature="e#9771#10636#1#PHP" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1413,9 +1341,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
           <caret line="17" column="1" lean-forward="true" selection-start-line="17" selection-start-column="1" selection-end-line="17" selection-end-column="1" />
-          <folding>
-            <element signature="n#proyectosPorUsuario#0;n#!!top" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1432,6 +1357,13 @@
     <entry file="file://$PROJECT_DIR$/pages/mntpresupuesto.html">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/pln/php/models/General.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="247" column="20" selection-start-line="247" selection-start-column="20" selection-end-line="247" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pln/pages/mnt/empleado.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="281">
@@ -1439,10 +1371,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pln/php/models/General.php">
+    <entry file="file://$PROJECT_DIR$/pln/php/models/Empleado.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="247" column="20" selection-start-line="247" selection-start-column="20" selection-end-line="247" selection-end-column="20" />
+        <state relative-caret-position="257">
+          <caret line="972" column="5" lean-forward="true" selection-start-line="972" selection-start-column="5" selection-end-line="972" selection-end-column="5" />
         </state>
       </provider>
     </entry>
@@ -1453,10 +1385,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pln/php/models/Empleado.php">
+    <entry file="file://$PROJECT_DIR$/php/rptlibmay.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="291">
-          <caret line="974" column="20" selection-start-line="974" selection-start-column="20" selection-end-line="974" selection-end-column="20" />
+        <state relative-caret-position="68">
+          <caret line="187" column="97" lean-forward="true" selection-start-line="187" selection-start-column="97" selection-end-line="187" selection-end-column="97" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/conta.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1309">
+          <caret line="92" column="55" lean-forward="true" selection-start-line="92" selection-start-column="55" selection-end-line="92" selection-end-column="55" />
         </state>
       </provider>
     </entry>

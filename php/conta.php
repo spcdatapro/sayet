@@ -46,7 +46,7 @@ class contabilidad{
     private function datosEnCrudo($anterior = false){
         //#Transacciones bancarias -> origen = 1
         $query = "SELECT CONCAT('P', YEAR(b.fecha), LPAD(MONTH(b.fecha), 2, '0'), LPAD(DAY(b.fecha), 2, '0'), LPAD(1, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fecha, ";
-        $query.= "CONCAT(d.descripcion, ' ', b.numero, ' ', c.nombre) AS referencia, b.concepto, b.id, 1 AS origen, ";
+        $query.= "CONCAT(d.descripcion, ' ', b.numero, ' ', b.beneficiario) AS referencia, b.concepto, b.id, 1 AS origen, ";
         $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber, CONCAT(d.abreviatura, b.numero) AS transaccion ";
         $query.= "FROM tranban b INNER JOIN banco c ON c.id = b.idbanco INNER JOIN tipomovtranban d ON d.abreviatura = b.tipotrans ";
         $query.= "LEFT JOIN(".$this->detalleContable(1).") x ON b.id = x.idorigen ";
@@ -59,11 +59,12 @@ class contabilidad{
         //#Compras -> origen = 2
         $query.= "UNION ALL ";
         $query.= "SELECT CONCAT('P', YEAR(b.fechaingreso), LPAD(MONTH(b.fechaingreso), 2, '0'), LPAD(DAY(b.fechaingreso), 2, '0'), LPAD(2, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fechaingreso AS fecha, ";
-        $query.= "CONCAT('Compra', ' ', b.serie, '-', b.documento, ' ') AS referencia, b.conceptomayor AS concepto, b.id, 2 AS origen, ";
+        $query.= "CONCAT('Compra', ' ', b.serie, '-', b.documento, ' ', IFNULL(s.nombre, '')) AS referencia, b.conceptomayor AS concepto, b.id, 2 AS origen, ";
         $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber, r.tranban AS transaccion ";
         $query.= "FROM compra b ";
         $query.= "LEFT JOIN(".$this->detalleContable(2).") x ON b.id = x.idorigen ";
         $query.= "LEFT JOIN(SELECT z.idcompra, GROUP_CONCAT(CONCAT(y.tipotrans, y.numero) SEPARATOR ', ') AS tranban FROM detpagocompra z INNER JOIN tranban y ON y.id = z.idtranban GROUP BY z.idcompra) r ON b.id = r.idcompra ";
+        $query.= "LEFT JOIN proveedor s ON s.id = b.idproveedor ";
         $query.= "WHERE b.idreembolso = 0 AND ";
         $query.= !$anterior ? "b.fechaingreso >= '$this->_fdel' AND b.fechaingreso <= '$this->_fal' " : "b.fechaingreso < '$this->_fdel' ";
         $query.= $this->_codigo && !$this->_codigoal ? "AND TRIM(x.codigo) IN ($this->_codigo) " : '';
@@ -73,7 +74,7 @@ class contabilidad{
         //#Ventas -> origen = 3
         $query.= "UNION ALL ";
         $query.= "SELECT CONCAT('P', YEAR(b.fecha), LPAD(MONTH(b.fecha), 2, '0'), LPAD(DAY(b.fecha), 2, '0'), LPAD(3, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fecha, ";
-        $query.= "CONCAT('Venta', ' ', b.serie, '-', b.numero) AS referencia, b.conceptomayor AS concepto, b.id, 3 AS origen, ";
+        $query.= "CONCAT('Venta', ' ', b.serie, '-', b.numero, ' ', b.nombre) AS referencia, b.conceptomayor AS concepto, b.id, 3 AS origen, ";
         $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber, r.tranban AS transaccion ";
         $query.= "FROM factura b ";
         $query.= "LEFT JOIN(".$this->detalleContable(3).") x ON b.id = x.idorigen ";
@@ -103,7 +104,7 @@ class contabilidad{
         //#Reembolsos -> origen = 5
         $query.= "UNION ALL ";
         $query.= "SELECT CONCAT('P', YEAR(b.fechaingreso), LPAD(MONTH(b.fechaingreso), 2, '0'), LPAD(DAY(b.fechaingreso), 2, '0'), LPAD(5, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fechaingreso AS fecha, ";
-        $query.= "CONCAT('Compra', ' ', b.serie, '-', b.documento, ' ') AS referencia, b.conceptomayor AS concepto, b.id, 5 AS origen, ";
+        $query.= "CONCAT('Compra', ' ', b.serie, '-', b.documento, ' ', IFNULL(b.proveedor, '')) AS referencia, b.conceptomayor AS concepto, b.id, 5 AS origen, ";
         $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber, CONCAT(d.tipotrans, d.numero) AS transaccion ";
         $query.= "FROM compra b INNER JOIN reembolso c ON c.id = b.idreembolso LEFT JOIN tranban d ON d.id = c.idtranban ";
         $query.= "LEFT JOIN(".$this->detalleContable(5).") x ON b.id = x.idorigen ";
