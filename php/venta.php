@@ -191,6 +191,35 @@ $app->get('/clientes', function(){
     print $db->doSelectASJson($query);
 });
 
+$app->post('/modmontos', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "SELECT CONCAT(a.serie, '-', a.numero) AS factura, b.simbolo AS moneda, FORMAT(a.iva, 2) AS iva, FORMAT(a.total, 2) AS total, FORMAT(a.retisr, 2) AS retisr, FORMAT(a.retiva, 2) AS retiva, ";
+    $query.= "IF(a.idcontrato > 0, 1, 0) AS concontrato ";
+    $query.= "FROM factura a INNER JOIN moneda b ON b.id = a.idmoneda ";
+    $query.= "WHERE a.id = $d->id";
+    $old = $db->getQuery($query)[0];
+
+    $query = "UPDATE factura SET total = $d->total, retisr = $d->retisr, retiva = $d->retiva WHERE id = $d->id";
+    $db->doQuery($query);
+
+    $cambio = "Modificación a la venta $old->factura de los montos: TOTAL A COBRAR = $old->moneda $old->total, ";
+    $cambio.= "RETENCIÓN ISR = $old->moneda $old->retisr, RETENCIÓN DE IVA = $old->moneda $old->retiva a los montos: ";
+    $cambio.= "TOTAL A COBRAR = $old->moneda ".number_format((float)$d->total, 2).", ";
+    $cambio.= "RETENCIÓN ISR = $old->moneda ".number_format((float)$d->retisr, 2).", RETENCIÓN DE IVA = $old->moneda ".number_format((float)$d->retiva, 2);
+    $cambio.= " y la regeneración del detalle contable.";
+
+    $query = "INSERT INTO auditoria (idusuario, tabla, cambio, fecha, tipo) VALUES(";
+    $query.= "$d->idusuario, 'factura', '$cambio', NOW(), 'U'";
+    $query.= ")";
+    $db->doQuery($query);
+
+    $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
+    $data = ['ids' => $d->id, 'idcontrato' => $old->concontrato];
+    $db->CallJSReportAPI('POST', $url, json_encode($data));
+});
+
 //API para detalle de ventas
 $app->get('/lstdetfact/:idfactura', function($idfactura){
     $db = new dbcpm();

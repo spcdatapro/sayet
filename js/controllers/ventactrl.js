@@ -21,10 +21,12 @@
         $scope.razonesanula = [];
         $scope.params = {idempresa: undefined, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), fdelstr: '', falstr: ''};
         $scope.periodoCerrado = false;
+        $scope.usrdata = {};
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
 
         authSrvc.getSession().then(function(usrLogged){
+            $scope.usrdata = usrLogged;
             $scope.idempresa = parseInt(usrLogged.workingon);
             $scope.params.idempresa = $scope.idempresa;
             if($scope.idempresa > 0){
@@ -145,6 +147,8 @@
                 d[i].subtotal = parseFloat(parseFloat(d[i].subtotal).toFixed(2));
                 d[i].iva = parseFloat(parseFloat(d[i].iva).toFixed(2));
                 d[i].tipocambio = parseFloat(parseFloat(d[i].tipocambio).toFixed($scope.dectc));
+                d[i].retiva = parseFloat(parseFloat(d[i].retiva).toFixed(2));
+                d[i].retisr = parseFloat(parseFloat(d[i].retisr).toFixed(2));
                 //inicio modificacion de error formilariosr  17/11/2017
                 d[i].fecpagoformisr = moment(d[i].fecpagoformisr).isValid() ? moment(d[i].fecpagoformisr).toDate() : null;
                 //fin modificacion 17/11/2017
@@ -192,6 +196,22 @@
                 $scope.getVenta(parseInt(idventa));
             }, function(){ return 0; });
         };
+
+        $scope.modalModificaMontos = function(){
+            var modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: 'modalModMontos.html',
+                controller: 'ModalModMontos',
+                resolve:{
+                    venta: function(){ return $scope.venta; },
+                    uid: function(){ return $scope.usrdata.uid; }
+                }
+            });
+            modalInstance.result.then(function(idventa){
+                $scope.getVenta(parseInt(idventa));
+            }, function(){ return 0; });
+        };
+
         $scope.getVenta = function(idventa){
             ventaSrvc.getVenta(idventa).then(function(d){
                 $scope.venta = procDataVenta(d)[0];
@@ -424,5 +444,21 @@
         };
 
     }]);
+    //------------------------------------------------------------------------------------------------------------------------------------------------//
+    ventactrl.controller('ModalModMontos', ['$scope', '$uibModalInstance', 'venta', 'ventaSrvc', 'uid', function($scope, $uibModalInstance, venta, ventaSrvc, uid){
+        $scope.venta = venta;
+
+        $scope.ok = function () {
+            $scope.venta.idusuario = uid;
+            console.log($scope.venta);
+            ventaSrvc.editRow($scope.venta, 'modmontos').then(function(){ $uibModalInstance.close($scope.venta.id); });
+        };
+
+        $scope.cancel = function () {
+            $uibModalInstance.dismiss('cancel');
+        };
+
+    }]);
+
 
 }());

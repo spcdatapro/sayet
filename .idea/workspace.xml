@@ -3,7 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/php/conta.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/conta.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/controllers/ventactrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/ventactrl.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/tranventa.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/tranventa.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/php/genpartidasventa.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/genpartidasventa.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/php/venta.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/venta.php" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -35,35 +38,87 @@
     <expand />
     <select />
   </component>
-  <component name="DockManager">
-    <window id="1">
-      <content type="file-editors">
-        <state>
-          <leaf>
-            <file leaf-file-name="rptlibmay.php" pinned="false" current-in-tab="true">
-              <entry file="file://$PROJECT_DIR$/php/rptlibmay.php">
-                <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="68">
-                    <caret line="187" column="97" lean-forward="true" selection-start-line="187" selection-start-column="97" selection-end-line="187" selection-end-column="97" />
-                  </state>
-                </provider>
-              </entry>
-            </file>
-          </leaf>
-        </state>
-      </content>
-    </window>
-  </component>
   <component name="FavoritesManager">
     <favorites_list name="cpm" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="conta.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/php/conta.php">
+      <file leaf-file-name="tranventa.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/pages/tranventa.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1309">
-              <caret line="92" column="55" lean-forward="true" selection-start-line="92" selection-start-column="55" selection-end-line="92" selection-end-column="55" />
+            <state relative-caret-position="408">
+              <caret line="207" column="123" lean-forward="true" selection-start-line="207" selection-start-column="123" selection-end-line="207" selection-end-column="123" />
+              <folding>
+                <element signature="n#script#0;n#!!top" />
+                <element signature="n#script#1;n#!!top" />
+                <element signature="n#script#2;n#!!top" />
+                <element signature="n#script#3;n#!!top" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ventactrl.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/controllers/ventactrl.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="349">
+              <caret line="199" column="34" lean-forward="true" selection-start-line="199" selection-start-column="15" selection-end-line="199" selection-end-column="34" />
+              <folding>
+                <element signature="e#2142#2311#0" />
+                <element signature="e#2371#2542#0" />
+                <element signature="e#2918#3055#0" />
+                <element signature="e#3110#3934#0" />
+                <element signature="e#3973#5031#0" />
+                <element signature="e#5157#5936#0" />
+                <element signature="e#6156#6774#0" />
+                <element signature="e#6810#8252#0" />
+                <element signature="e#8303#8667#0" />
+                <element signature="e#8733#9229#0" />
+                <element signature="e#9295#9791#0" />
+                <element signature="e#9836#10961#0" />
+                <element signature="e#10995#11719#0" />
+                <element signature="e#11760#12027#0" />
+                <element signature="e#12069#12295#0" />
+                <element signature="e#12337#12646#0" />
+                <element signature="e#12686#13477#0" />
+                <element signature="e#13514#14012#0" />
+                <element signature="e#14067#14227#0" />
+                <element signature="e#14521#15186#0" />
+                <element signature="e#15230#15805#0" />
+                <element signature="e#15849#16137#0" />
+                <element signature="e#16534#17952#0" />
+                <element signature="e#18455#19807#0" />
+                <element signature="e#20264#20786#0" />
+                <element signature="e#21180#22076#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="venta.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/php/venta.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="499">
+              <caret line="208" column="87" lean-forward="true" selection-start-line="208" selection-start-column="87" selection-end-line="208" selection-end-column="87" />
+              <folding>
+                <element signature="e#256#2227#1#PHP" />
+                <element signature="e#2256#4551#1#PHP" />
+                <element signature="e#4587#6799#1#PHP" />
+                <element signature="n#insertaDetalleContable#0;n#!!top" />
+                <element signature="e#7679#8864#1#PHP" />
+                <element signature="e#8906#9627#1#PHP" />
+                <element signature="e#9669#10432#1#PHP" />
+                <element signature="e#10452#11769#1#PHP" />
+                <element signature="e#11790#12098#1#PHP" />
+                <element signature="e#12123#12885#1#PHP" />
+                <element signature="e#12912#13107#1#PHP" />
+                <element signature="e#14563#14883#1#PHP" />
+                <element signature="e#14923#15181#1#PHP" />
+                <element signature="e#15203#15601#1#PHP" />
+                <element signature="e#15623#16012#1#PHP" />
+                <element signature="e#16034#16186#1#PHP" />
+                <element signature="e#16301#17351#1#PHP" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -82,8 +137,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>$scope.lasTran</find>
-      <find>iddocliquida</find>
       <find>plazofal</find>
       <find>chkFecha</find>
       <find>reset</find>
@@ -112,6 +165,8 @@
       <find>$d-&gt;iddetpresup</find>
       <find>getLstPresupuestos</find>
       <find>cuenta banco</find>
+      <find>retiva</find>
+      <find>$scope.usrdata</find>
     </findStrings>
     <replaceStrings>
       <replace>$d-&gt;falstr</replace>
@@ -134,7 +189,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/pages/mntpresupuesto.html" />
         <option value="$PROJECT_DIR$/php/rptreemsinctaliq.php" />
         <option value="$PROJECT_DIR$/php/fixdescuadrecompra.php" />
         <option value="$PROJECT_DIR$/php/compra.php" />
@@ -153,8 +207,6 @@
         <option value="$PROJECT_DIR$/pages/tranfactura.html" />
         <option value="$PROJECT_DIR$/js/controllers/tranfacturactrl.js" />
         <option value="$PROJECT_DIR$/js/controllers/compractrl.js" />
-        <option value="$PROJECT_DIR$/js/controllers/ventactrl.js" />
-        <option value="$PROJECT_DIR$/pages/tranventa.html" />
         <option value="$PROJECT_DIR$/js/controllers/reembolsoctrl.js" />
         <option value="$PROJECT_DIR$/js/controllers/trandirectactrl.js" />
         <option value="$PROJECT_DIR$/js/controllers/tranpagosctrl.js" />
@@ -163,7 +215,6 @@
         <option value="$PROJECT_DIR$/php/rptbalancegeneral.php" />
         <option value="$PROJECT_DIR$/php/rptestadoresultados.php" />
         <option value="$PROJECT_DIR$/php/rptconstproc.php" />
-        <option value="$PROJECT_DIR$/php/genpartidasventa.php" />
         <option value="$PROJECT_DIR$/php/generaplnbi.php" />
         <option value="$PROJECT_DIR$/php/rptplnempleval.php" />
         <option value="$PROJECT_DIR$/js/controllers/rptplncatemplevalctrl.js" />
@@ -185,6 +236,10 @@
         <option value="$PROJECT_DIR$/php/tranbanc.php" />
         <option value="$PROJECT_DIR$/pln/php/models/Empleado.php" />
         <option value="$PROJECT_DIR$/php/conta.php" />
+        <option value="$PROJECT_DIR$/js/controllers/ventactrl.js" />
+        <option value="$PROJECT_DIR$/php/genpartidasventa.php" />
+        <option value="$PROJECT_DIR$/php/venta.php" />
+        <option value="$PROJECT_DIR$/pages/tranventa.html" />
       </list>
     </option>
   </component>
@@ -230,9 +285,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="AndroidView" />
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -243,12 +295,37 @@
             <path>
               <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
               <item name="sayet" type="462c0819:PsiDirectoryNode" />
+              <item name="js" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sayet" type="462c0819:PsiDirectoryNode" />
+              <item name="js" type="462c0819:PsiDirectoryNode" />
+              <item name="controllers" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sayet" type="462c0819:PsiDirectoryNode" />
+              <item name="js" type="462c0819:PsiDirectoryNode" />
+              <item name="services" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sayet" type="462c0819:PsiDirectoryNode" />
+              <item name="pages" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sayet" type="462c0819:PsiDirectoryNode" />
               <item name="php" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -1004,12 +1081,13 @@
       <workItem from="1548349416324" duration="4857000" />
       <workItem from="1548379777108" duration="642000" />
       <workItem from="1548719803974" duration="538000" />
-      <workItem from="1548973917745" duration="3038000" />
+      <workItem from="1548973917745" duration="3181000" />
+      <workItem from="1549299615284" duration="8080000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="2991668000" />
+    <option name="totallyTimeSpent" value="2999891000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1076,62 +1154,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/pln/php/models/Vacaciones.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="767">
-          <caret line="115" column="31" selection-start-line="115" selection-start-column="31" selection-end-line="115" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pln/pages/trans/vacaciones.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="14" column="71" selection-start-line="14" selection-start-column="44" selection-end-line="14" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pln/js/controllers/trans.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="117" column="78" selection-start-line="117" selection-start-column="64" selection-end-line="117" selection-end-column="78" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pln/js/services/trans.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="264">
-          <caret line="51" column="63" selection-start-line="51" selection-start-column="52" selection-end-line="51" selection-end-column="63" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/vendor/catfan/medoo/medoo.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="727" column="24" lean-forward="true" selection-start-line="727" selection-start-column="24" selection-end-line="727" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pln/php/controllers/vacaciones.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="69" column="19" selection-start-line="69" selection-start-column="19" selection-end-line="69" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pln/pages/rep/vacaciones.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="493">
-          <caret line="29" column="30" lean-forward="true" selection-start-line="29" selection-start-column="30" selection-end-line="29" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/genpartidasventa.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/plnpagoboletoornato.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-436" />
@@ -1159,13 +1181,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pages/genpagospln.html">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/clientectrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="338">
-          <caret line="1094" column="69" selection-start-line="1094" selection-start-column="60" selection-end-line="1094" selection-end-column="69" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pages/mntcliente.html">
       <provider selected="true" editor-type-id="text-editor">
@@ -1354,9 +1369,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pages/mntpresupuesto.html">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/pln/php/models/General.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="289">
@@ -1394,8 +1406,140 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/php/conta.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1309">
-          <caret line="92" column="55" lean-forward="true" selection-start-line="92" selection-start-column="55" selection-end-line="92" selection-end-column="55" />
+        <state relative-caret-position="839">
+          <caret line="92" column="55" selection-start-line="92" selection-start-column="55" selection-end-line="92" selection-end-column="55" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/fixdescuadreventa.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-130" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/facturacion.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="247" column="67" lean-forward="true" selection-start-line="245" selection-start-column="12" selection-end-line="247" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/services/ventasrvc.js">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/compractrl.js">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/clientectrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1505">
+          <caret line="630" column="56" lean-forward="true" selection-start-line="630" selection-start-column="56" selection-end-line="630" selection-end-column="56" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/genpartidasventa.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="121" column="41" lean-forward="true" selection-start-line="121" selection-start-column="41" selection-end-line="121" selection-end-column="41" />
+          <folding>
+            <element signature="e#659#5844#1#PHP" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="e#11132#16435#1#PHP" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#span#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/ventactrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="349">
+          <caret line="199" column="34" lean-forward="true" selection-start-line="199" selection-start-column="15" selection-end-line="199" selection-end-column="34" />
+          <folding>
+            <element signature="e#2142#2311#0" />
+            <element signature="e#2371#2542#0" />
+            <element signature="e#2918#3055#0" />
+            <element signature="e#3110#3934#0" />
+            <element signature="e#3973#5031#0" />
+            <element signature="e#5157#5936#0" />
+            <element signature="e#6156#6774#0" />
+            <element signature="e#6810#8252#0" />
+            <element signature="e#8303#8667#0" />
+            <element signature="e#8733#9229#0" />
+            <element signature="e#9295#9791#0" />
+            <element signature="e#9836#10961#0" />
+            <element signature="e#10995#11719#0" />
+            <element signature="e#11760#12027#0" />
+            <element signature="e#12069#12295#0" />
+            <element signature="e#12337#12646#0" />
+            <element signature="e#12686#13477#0" />
+            <element signature="e#13514#14012#0" />
+            <element signature="e#14067#14227#0" />
+            <element signature="e#14521#15186#0" />
+            <element signature="e#15230#15805#0" />
+            <element signature="e#15849#16137#0" />
+            <element signature="e#16534#17952#0" />
+            <element signature="e#18455#19807#0" />
+            <element signature="e#20264#20786#0" />
+            <element signature="e#21180#22076#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/venta.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="499">
+          <caret line="208" column="87" lean-forward="true" selection-start-line="208" selection-start-column="87" selection-end-line="208" selection-end-column="87" />
+          <folding>
+            <element signature="e#256#2227#1#PHP" />
+            <element signature="e#2256#4551#1#PHP" />
+            <element signature="e#4587#6799#1#PHP" />
+            <element signature="n#insertaDetalleContable#0;n#!!top" />
+            <element signature="e#7679#8864#1#PHP" />
+            <element signature="e#8906#9627#1#PHP" />
+            <element signature="e#9669#10432#1#PHP" />
+            <element signature="e#10452#11769#1#PHP" />
+            <element signature="e#11790#12098#1#PHP" />
+            <element signature="e#12123#12885#1#PHP" />
+            <element signature="e#12912#13107#1#PHP" />
+            <element signature="e#14563#14883#1#PHP" />
+            <element signature="e#14923#15181#1#PHP" />
+            <element signature="e#15203#15601#1#PHP" />
+            <element signature="e#15623#16012#1#PHP" />
+            <element signature="e#16034#16186#1#PHP" />
+            <element signature="e#16301#17351#1#PHP" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/mntpresupuesto.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="493">
+          <caret line="119" column="251" selection-start-line="119" selection-start-column="179" selection-end-line="119" selection-end-column="251" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/tranventa.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="207" column="123" lean-forward="true" selection-start-line="207" selection-start-column="123" selection-end-line="207" selection-end-column="123" />
+          <folding>
+            <element signature="n#script#0;n#!!top" />
+            <element signature="n#script#1;n#!!top" />
+            <element signature="n#script#2;n#!!top" />
+            <element signature="n#script#3;n#!!top" />
+          </folding>
         </state>
       </provider>
     </entry>
