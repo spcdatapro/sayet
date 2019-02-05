@@ -321,8 +321,8 @@ $app->post('/detalle', function() use($db){
     }else{
         $query = "SELECT b.idproyecto, SUM(a.descigss) AS descigss, SUM(a.descisr) AS descisr, ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * 0.1267), 2) AS cuotapatronal, SUM(a.descanticipo + a.liquido) AS liquido, ";
         $query.= "DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.fecha AS fechaOrd, ";
-        //$query.= "(SUM(a.descigss) + SUM(a.descisr) + ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * 0.1267), 2) + SUM(a.descanticipo + a.liquido)) AS totplanilla, SUM(a.devengado) AS devengado ";
-        $query.= "(SUM(a.descigss) + SUM(a.descisr) + ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * 0.1267), 2) + SUM(a.devengado)) AS totplanilla, SUM(a.devengado) AS devengado ";
+        $query.= "(SUM(a.descigss) + SUM(a.descisr) + ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * 0.1267), 2) + SUM(a.descanticipo + a.liquido)) AS totplanilla, SUM(a.devengado) AS devengado ";
+        //$query.= "(SUM(a.descigss) + SUM(a.descisr) + ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * 0.1267), 2) + SUM(a.devengado)) AS totplanilla, SUM(a.devengado) AS devengado ";
         $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado ";
         $query.= "WHERE a.esbonocatorce <> 1 AND a.fecha > '$d->anio-$d->mes-15' AND MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio AND b.idproyecto = $d->idproyecto";
         $datosPlanilla = $db->getQuery($query);
