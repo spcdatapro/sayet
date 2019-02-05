@@ -347,7 +347,7 @@ $app->post('/detalle', function() use($db){
                 [
                     'fechaOrd'=> $pln->fechaOrd, 'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => $pln->fecha, 'beneficiario' => '',
                     'concepto' => 'Devengado', 'moneda' => '', 'montotranban' => '', 'idcompra' => '', 'proveedor' => '', 'nit' => '',
-                    'serie' => '', 'documento' => '', 'monedafact' => '', 'montofact' => (float)$pln->devengado, 'ot' => '', 'fechafactura' => ''
+                    'serie' => '', 'documento' => '', 'monedafact' => '', 'montofact' => (float)$pln->liquido, 'ot' => '', 'fechafactura' => ''
                 ],
                 [
                     'fechaOrd'=> '', 'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => '', 'beneficiario' => '',

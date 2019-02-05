@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/php/rptingegrproy.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/rptingegrproy.php" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
@@ -43,8 +42,8 @@
       <file leaf-file-name="rptingegrproy.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/php/rptingegrproy.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="324" column="197" lean-forward="true" selection-start-line="324" selection-start-column="197" selection-end-line="324" selection-end-column="197" />
+            <state relative-caret-position="578">
+              <caret line="349" column="143" lean-forward="true" selection-start-line="349" selection-start-column="143" selection-end-line="349" selection-end-column="143" />
               <folding>
                 <element signature="e#196#10161#1#PHP" />
               </folding>
@@ -1008,12 +1007,12 @@
       <workItem from="1548719803974" duration="538000" />
       <workItem from="1548973917745" duration="3181000" />
       <workItem from="1549299615284" duration="8760000" />
-      <workItem from="1549380038624" duration="3182000" />
+      <workItem from="1549380038624" duration="3718000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3003753000" />
+    <option name="totallyTimeSpent" value="3004289000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1390,8 +1389,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/php/rptingegrproy.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="324" column="197" lean-forward="true" selection-start-line="324" selection-start-column="197" selection-end-line="324" selection-end-column="197" />
+        <state relative-caret-position="578">
+          <caret line="349" column="143" lean-forward="true" selection-start-line="349" selection-start-column="143" selection-end-line="349" selection-end-column="143" />
           <folding>
             <element signature="e#196#10161#1#PHP" />
           </folding>
