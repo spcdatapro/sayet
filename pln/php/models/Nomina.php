@@ -629,8 +629,7 @@ FROM
     plnempresa c ON c.id = b.idempresaactual
     	LEFT JOIN 
     proyecto d ON d.id = a.idproyecto
-	where b.activo = 1 
-	and a.fecha between '{$args["fdel"]}' and '{$args["fal"]}' 
+	where a.fecha between '{$args["fdel"]}' and '{$args["fal"]}' 
 	and a.devengado <> 0 
     {$where} order by {$orden}, b.nombre 
 EOT;
