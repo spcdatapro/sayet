@@ -42,8 +42,8 @@
       <file leaf-file-name="genfactsanuladas.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/php/genfactsanuladas.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="17" column="40" lean-forward="true" selection-start-line="17" selection-start-column="40" selection-end-line="17" selection-end-column="40" />
+            <state relative-caret-position="527">
+              <caret line="31" column="35" lean-forward="true" selection-start-line="31" selection-start-column="35" selection-end-line="31" selection-end-column="35" />
             </state>
           </provider>
         </entry>
@@ -988,12 +988,12 @@
       <workItem from="1549299615284" duration="8760000" />
       <workItem from="1549380038624" duration="7250000" />
       <workItem from="1549468290064" duration="1224000" />
-      <workItem from="1549556626921" duration="799000" />
+      <workItem from="1549556626921" duration="1077000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3009844000" />
+    <option name="totallyTimeSpent" value="3010122000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1381,8 +1381,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/php/genfactsanuladas.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="17" column="40" lean-forward="true" selection-start-line="17" selection-start-column="40" selection-end-line="17" selection-end-column="40" />
+        <state relative-caret-position="527">
+          <caret line="31" column="35" lean-forward="true" selection-start-line="31" selection-start-column="35" selection-end-line="31" selection-end-column="35" />
         </state>
       </provider>
     </entry>
