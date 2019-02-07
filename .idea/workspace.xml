@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/php/genfactsanuladas.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/genfactsanuladas.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/php/rptdetcontdocsbanc.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/rptdetcontdocsbanc.php" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -39,11 +39,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="genfactsanuladas.php" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/php/genfactsanuladas.php">
+      <file leaf-file-name="rptdetcontdocsbanc.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/rptdetcontdocsbanc.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="527">
-              <caret line="31" column="35" lean-forward="true" selection-start-line="31" selection-start-column="35" selection-end-line="31" selection-end-column="35" />
+            <state relative-caret-position="255">
+              <caret line="21" column="74" lean-forward="true" selection-start-line="21" selection-start-column="74" selection-end-line="21" selection-end-column="74" />
             </state>
           </provider>
         </entry>
@@ -114,7 +114,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/php/compra.php" />
         <option value="$PROJECT_DIR$/php/rptintegractacont.php" />
         <option value="$PROJECT_DIR$/js/controllers/rptfichaclientectrl.js" />
         <option value="$PROJECT_DIR$/pages/rptfichacliente.html" />
@@ -165,6 +164,7 @@
         <option value="$PROJECT_DIR$/pages/tranventa.html" />
         <option value="$PROJECT_DIR$/php/rptingegrproy.php" />
         <option value="$PROJECT_DIR$/php/genfactsanuladas.php" />
+        <option value="$PROJECT_DIR$/php/rptdetcontdocsbanc.php" />
       </list>
     </option>
   </component>
@@ -197,7 +197,7 @@
     </include_path>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="1912" />
+    <option name="x" value="-8" />
     <option name="y" value="-8" />
     <option name="width" value="1936" />
     <option name="height" value="1056" />
@@ -988,15 +988,15 @@
       <workItem from="1549299615284" duration="8760000" />
       <workItem from="1549380038624" duration="7250000" />
       <workItem from="1549468290064" duration="1224000" />
-      <workItem from="1549556626921" duration="1077000" />
+      <workItem from="1549556626921" duration="2580000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3010122000" />
+    <option name="totallyTimeSpent" value="3011625000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
@@ -1012,7 +1012,7 @@
       <window_info anchor="bottom" x="206" y="338" width="1572" height="574" id="Terminal" order="11" type="WINDOWED" weight="1.0" />
       <window_info id="Capture Tool" order="6" />
       <window_info anchor="right" id="Designer" order="6" />
-      <window_info active="true" content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" visible="true" weight="0.15245202" />
+      <window_info content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" weight="0.15245202" />
       <window_info anchor="right" id="Database" order="7" weight="0.32889125" />
       <window_info anchor="right" id="SciView" order="9" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.1546875" />
@@ -1060,20 +1060,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/js/controllers/rptplnpremiosctrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret selection-end-line="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pages/rptplnpremios.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret selection-end-line="35" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/app.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="816">
@@ -1381,8 +1367,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/php/genfactsanuladas.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="527">
-          <caret line="31" column="35" lean-forward="true" selection-start-line="31" selection-start-column="35" selection-end-line="31" selection-end-column="35" />
+        <state relative-caret-position="136">
+          <caret line="8" column="42" lean-forward="true" selection-start-line="8" selection-start-column="42" selection-end-line="8" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptpresupuesto.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="414">
+          <caret line="237" column="40" lean-forward="true" selection-start-line="237" selection-start-column="40" selection-end-line="237" selection-end-column="40" />
+          <folding>
+            <element signature="n#getQueryOTs#0;n#!!top" />
+            <element signature="n#queryDocsOt#0;n#!!top" />
+            <element signature="e#9068#12558#1#PHP" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/rptdetcontdocsbanc.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="21" column="74" lean-forward="true" selection-start-line="21" selection-start-column="74" selection-end-line="21" selection-end-column="74" />
         </state>
       </provider>
     </entry>

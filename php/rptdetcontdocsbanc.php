@@ -19,9 +19,10 @@ $app->post('/detcontdocsbanc', function(){
     //Documentos
     $query = "SELECT a.id, a.idbanco, a.tipotrans, a.numero AS documento, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.beneficiario, FORMAT(a.monto, 2) AS monto, a.concepto ";
     $query.= "FROM tranban a ";
+    $query.= "LEFT JOIN tipomovtranban b ON b.abreviatura = a.tipotrans ";
     $query.= "WHERE a.idbanco = $d->idbanco AND a.fecha >= '$d->fdelstr' AND fecha <= '$d->falstr' ";
     $query.= $d->abreviatura != '' ? "AND a.tipotrans = '$d->abreviatura' " : "";
-    $query.= "ORDER BY a.fecha, a.tipotrans, a.numero";
+    $query.= "ORDER BY b.ordenalt, a.fecha, a.tipotrans, a.numero";
     $documentos->docs = $db->getQuery($query);
     $cntDocs = count($documentos->docs);
 
