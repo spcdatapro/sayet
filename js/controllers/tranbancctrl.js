@@ -402,7 +402,7 @@
         $scope.getDataTran = function(idtran){
             $scope.editando = true;
             $scope.liquidacion = [];
-            presupuestoSrvc.lstPagosOt().then(function(d){ $scope.ots = d; });
+            presupuestoSrvc.lstPagosOt($scope.laEmpresa.id).then(function(d){ $scope.ots = d; });
             tranBancSrvc.getTransaccion(parseInt(idtran)).then(function(d){
                 $scope.laTran = processData(d)[0];
                 //console.log($scope.laTran);
