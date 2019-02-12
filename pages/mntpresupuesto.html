@@ -98,6 +98,9 @@
                                     <button type="button" class="btn btn-default btn-sm tipo" ng-click="printPrespuesto(p.id, 1)" data-toggle="tooltip" data-placement="auto" title="Imprimir con avances">
                                         Det.
                                     </button>
+                                    <button type="button" class="btn btn-primary btn-sm tipo" ng-click="printOt(p.idot)" data-toggle="tooltip" data-placement="auto" title="Imprimir detalle" ng-show="+p.tipo === 1">
+                                        <span class="glyphicon glyphicon-print"></span>
+                                    </button>
                                     <button type="button" class="btn btn-info btn-sm tipo" ng-click="enviar(p)" ng-show="+p.idestatuspresupuesto == 1"
                                             data-toggle="tooltip" data-placement="auto" title="Enviar presupuesto a aprobación...">
                                         <span class="glyphicon glyphicon-share-alt"></span>
