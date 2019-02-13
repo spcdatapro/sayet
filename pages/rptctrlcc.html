@@ -82,6 +82,12 @@
                             <input name="chkSoloCC" id="chkSoloCC" type="checkbox" class="form-control" ng-model="params.solocc" ng-true-value="1" ng-false-value="0"/>
                         </div>
                     </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label for="txtNumReem">No. de Reembolso/CC:</label>
+                            <input name="txtNumReem" id="txtNumReem" type="text" class="form-control" ng-model="params.idreembolso" placeholder="Puede ser una lista separada por coma (,)"/>
+                        </div>
+                    </div>
                 </div>
                 <button type="button" class="btn btn-primary btn-sm" ng-click="getData()" ng-disabled="params.idbeneficiario == null || params.idbeneficiario == undefined">
                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>

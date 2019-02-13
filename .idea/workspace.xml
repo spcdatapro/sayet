@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/pages/mntpresupuesto.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/mntpresupuesto.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/php/presupuesto.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/presupuesto.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/controllers/rptctrlccctrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/rptctrlccctrl.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/rptctrlcc.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/rptctrlcc.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/php/rptcontrolcajachica.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/rptcontrolcajachica.php" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -40,41 +41,32 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="mntpresupuesto.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/mntpresupuesto.html">
+      <file leaf-file-name="rptctrlcc.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/pages/rptctrlcc.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="100" column="109" selection-start-line="100" selection-start-column="109" selection-end-line="100" selection-end-column="109" />
+            <state relative-caret-position="306">
+              <caret line="18" column="85" lean-forward="true" selection-start-line="18" selection-start-column="85" selection-end-line="18" selection-end-column="85" />
               <folding>
-                <element signature="n#style#0;n#td#8;n#tr#1;n#tbody#0;n#table#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#2;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="presupuestoctrl.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/js/controllers/presupuestoctrl.js">
+      <file leaf-file-name="rptctrlccctrl.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/controllers/rptctrlccctrl.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="179">
-              <caret line="157" column="40" lean-forward="true" selection-start-line="157" selection-start-column="40" selection-end-line="157" selection-end-column="40" />
+            <state relative-caret-position="391">
+              <caret line="23" column="150" lean-forward="true" selection-start-line="23" selection-start-column="150" selection-end-line="23" selection-end-column="150" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="presupuestosrvc.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/services/presupuestosrvc.js">
+      <file leaf-file-name="rptcontrolcajachica.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/php/rptcontrolcajachica.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="9" column="67" selection-start-line="9" selection-start-column="52" selection-end-line="9" selection-end-column="67" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="presupuesto.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/php/presupuesto.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="281">
-              <caret line="27" column="65" selection-start-line="27" selection-start-column="61" selection-end-line="27" selection-end-column="65" />
+            <state relative-caret-position="344">
+              <caret line="50" column="84" lean-forward="true" selection-start-line="50" selection-start-column="84" selection-end-line="50" selection-end-column="84" />
             </state>
           </provider>
         </entry>
@@ -93,7 +85,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>rptbalancegeneral</find>
       <find>rptconstproc</find>
       <find>generarVacacionesController</find>
       <find>vacasServicios</find>
@@ -123,6 +114,7 @@
       <find>tipo</find>
       <find>printOt</find>
       <find>divDetPresup</find>
+      <find>AND a.id = $d-&gt;idreembolso</find>
     </findStrings>
     <replaceStrings>
       <replace>$d-&gt;falstr</replace>
@@ -137,6 +129,7 @@
       <replace>$this-&gt;_idempresa</replace>
       <replace>formatoFechaConta</replace>
       <replace>a.gastado</replace>
+      <replace>AND a.id IN($d-&gt;idreembolso)</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -145,9 +138,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/js/controllers/rptfichaclientectrl.js" />
-        <option value="$PROJECT_DIR$/pages/rptfichacliente.html" />
-        <option value="$PROJECT_DIR$/pages/rptfichaproy.html" />
         <option value="$PROJECT_DIR$/js/controllers/rptfichaproyctrl.js" />
         <option value="$PROJECT_DIR$/php/rptfichaproy.php" />
         <option value="$PROJECT_DIR$/pages/tranbanc.html" />
@@ -196,6 +186,9 @@
         <option value="$PROJECT_DIR$/js/controllers/tranbancctrl.js" />
         <option value="$PROJECT_DIR$/php/presupuesto.php" />
         <option value="$PROJECT_DIR$/pages/mntpresupuesto.html" />
+        <option value="$PROJECT_DIR$/js/controllers/rptctrlccctrl.js" />
+        <option value="$PROJECT_DIR$/php/rptcontrolcajachica.php" />
+        <option value="$PROJECT_DIR$/pages/rptctrlcc.html" />
       </list>
     </option>
   </component>
@@ -1043,12 +1036,12 @@
       <workItem from="1549468290064" duration="1224000" />
       <workItem from="1549556626921" duration="2748000" />
       <workItem from="1549898381169" duration="2364000" />
-      <workItem from="1550004662894" duration="3946000" />
+      <workItem from="1550004662894" duration="8709000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3018103000" />
+    <option name="totallyTimeSpent" value="3022866000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1067,7 +1060,7 @@
       <window_info anchor="bottom" x="206" y="338" width="1572" height="574" id="Terminal" order="11" type="WINDOWED" weight="1.0" />
       <window_info id="Capture Tool" order="6" />
       <window_info anchor="right" id="Designer" order="6" />
-      <window_info content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" weight="0.15405117" />
+      <window_info active="true" content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" visible="true" weight="0.15405117" />
       <window_info anchor="right" id="Database" order="7" weight="0.32889125" />
       <window_info anchor="right" id="SciView" order="9" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.1546875" />
@@ -1115,19 +1108,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/php/rptdetallecontrato.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="335">
-          <caret line="31" column="94" lean-forward="true" selection-start-line="31" selection-start-column="94" selection-end-line="31" selection-end-column="94" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptactivos.php">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/rptantiproveedor.php">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/rptcompagua.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
@@ -1434,6 +1414,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/presupuestoctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="179">
+          <caret line="157" column="40" lean-forward="true" selection-start-line="157" selection-start-column="40" selection-end-line="157" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pages/mntpresupuesto.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
@@ -1444,10 +1431,27 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/presupuestoctrl.js">
+    <entry file="file://$PROJECT_DIR$/php/rptcontrolcajachica.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="179">
-          <caret line="157" column="40" lean-forward="true" selection-start-line="157" selection-start-column="40" selection-end-line="157" selection-end-column="40" />
+        <state relative-caret-position="344">
+          <caret line="50" column="84" lean-forward="true" selection-start-line="50" selection-start-column="84" selection-end-line="50" selection-end-column="84" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/rptctrlccctrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="23" column="150" lean-forward="true" selection-start-line="23" selection-start-column="150" selection-end-line="23" selection-end-column="150" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/rptctrlcc.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="18" column="85" lean-forward="true" selection-start-line="18" selection-start-column="85" selection-end-line="18" selection-end-column="85" />
+          <folding>
+            <element signature="n#style#0;n#div#2;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

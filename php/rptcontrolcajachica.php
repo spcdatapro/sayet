@@ -26,6 +26,7 @@ $app->post('/rptctrlcc', function(){
     $query.= $d->fafinstr != "" ? "AND a.ffin >= '$d->fafinstr' " : "";
     $query.= $d->empresas != "" ? "AND a.idempresa IN($d->empresas) " : "";
     $query.= (int)$d->estatus > 0 ? "AND a.estatus = $d->estatus " : "";
+    $query.= trim($d->idreembolso) != '' ? "AND a.id IN($d->idreembolso) " : "";
 	$query.= "ORDER BY b.ordensumario";
     $cajas->cajas = $db->getQuery($query);
     $cntCajas = count($cajas->cajas);
@@ -47,6 +48,7 @@ $app->post('/rptctrlcc', function(){
         $query.= $d->fdfinstr != "" ? "AND a.ffin >= '$d->fdfinstr' " : "";
         $query.= $d->fafinstr != "" ? "AND a.ffin >= '$d->fafinstr' " : "";
         $query.= (int)$d->estatus > 0 ? "AND a.estatus = $d->estatus " : "";
+        $query.= trim($d->idreembolso) != '' ? "AND a.id IN($d->idreembolso) " : "";
         $caja->detalles = $db->getQuery($query);        
         $cntDetalles = count($caja->detalles);
 
@@ -62,6 +64,7 @@ $app->post('/rptctrlcc', function(){
             $query.= $d->fdfinstr != "" ? "AND a.ffin >= '$d->fdfinstr' " : "";
             $query.= $d->fafinstr != "" ? "AND a.ffin >= '$d->fafinstr' " : "";
             $query.= (int)$d->estatus > 0 ? "AND a.estatus = $d->estatus " : "";
+            $query.= trim($d->idreembolso) != '' ? "AND a.id IN($d->idreembolso) " : "";
             //$totAsignado += (float)$db->getOneField($query);
         }
 
