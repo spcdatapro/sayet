@@ -86,11 +86,11 @@
                             <td>{{p.fechasolicitud | date:'dd/MM/yyyy'}}</td>
                             <td>{{p.proyecto | shortenStr:17}}</td>
                             <td>{{p.abreviaempre}}</td>
-                            <td>{{p.tipogasto}}</td>
+                            <td>{{p.tipogasto | shortenStr:10}}</td>
                             <td><p style="white-space: normal">{{p.proveedor | shortenStr:22}}</p></td>
-                            <td style="text-align: right">{{p.simbolo}}&nbsp;{{p.total | number:2}}</td>
-                            <td style="text-align: right">{{p.gastado ? ('Q ' + (p.gastado | number:2)) : ''}}</td>
-                            <td style="white-space: nowrap">
+                            <td style="text-align: right; width: 10% !important;">{{p.simbolo}}&nbsp;{{p.total | number:2}}</td>
+                            <td style="text-align: right; width: 10% !important;">{{p.gastado ? ('Q ' + (p.gastado | number:2)) : ''}}</td>
+                            <td style="white-space: nowrap !important;">
                                 <div class="btn-group" role="group" aria-label="..." style="white-space: nowrap !important;">
                                     <button type="button" class="btn btn-info btn-sm tipo" ng-click="printPrespuesto(p.id, 0)" data-toggle="tooltip" data-placement="auto" title="Imprimir sin avances">
                                         R.
