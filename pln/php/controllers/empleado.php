@@ -68,9 +68,21 @@ $app->post('/guardar_bitacora', function(){
 	$data["up"] = isset($datos["id"]) ? 1 : 0;
 
 	$emp = new Empleado($datos["idplnempleado"]);
+
+	unset($datos["fechatmp"]);
+	unset($datos["idplnempleado"]);
+
+	if ($data["up"] == 1) {
+		unset($datos["fecha"]);
+		unset($datos["nombre"]);
+		unset($datos["mostrar"]);
+	} else {
+		$datos["mostrar"] = 1;
+	}
+
 	$emp->guardar_bitacora($datos);
 
-	$data["mensaje"] = "Actualizado.";
+	$data["mensaje"] = "Guardado.";
 
 	enviar_json($data);
 });

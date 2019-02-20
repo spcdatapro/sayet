@@ -135,7 +135,9 @@ angular.module('cpm')
             $scope.bita.movotros = parseFloat($scope.bita.movotros)
 
             if ($scope.bita.movfecha) {
-                $scope.bita.fecha = $scope.formatoFechajs($scope.bita.movfecha)
+                $scope.bita.fechatmp = $scope.formatoFechajs($scope.bita.movfecha)
+            } else {
+                $scope.bita.fechatmp = null
             }
         }
 
@@ -144,16 +146,15 @@ angular.module('cpm')
                 datos.idplnempleado = $scope.emp.id
             }
 
-            if (datos.fecha) {
-                datos.movfecha = formatoFecha(datos.fecha)
+            if (datos.fechatmp) {
+                datos.movfecha = $scope.formatoFecha(datos.fechatmp)
             }
 
             empServicios.guardarBitacora(datos).then(function(res){
-                alert(res.mensaje);
                 $scope.bita = {};
 
                 if (res.up == 0) {
-                    $scope.empleados.bitacora(res.bita);
+                    $scope.getBitacora($scope.emp.id);
                 }
             });
         }

@@ -333,7 +333,7 @@ class Empleado extends Principal
 			$args['usuario']       = $_SESSION['uid'];
 			$args['idplnempleado'] = $this->emp->id;
 
-			$this->db->insert($tabla, $args);
+			$lid = $this->db->insert($tabla, $args);
 		}
 	}
 
@@ -1107,7 +1107,14 @@ EOT;
 				'[><]usuario(b)' => ['plnbitacora.usuario' => 'id']
 			], 
 			[
-				"plnbitacora.*",
+				"plnbitacora.id",
+				"plnbitacora.fecha",
+				"plnbitacora.movgasolina",
+				"plnbitacora.movfecha",
+				"plnbitacora.movdepvehiculo",
+				"plnbitacora.movobservaciones",
+				"plnbitacora.movotros",
+				"plnbitacora.movdescripcion",
 				"b.nombre"
 			],
 			$condiciones
