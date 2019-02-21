@@ -37,8 +37,8 @@ $app->post('/rptpago', function() use($db){
     $qGen = "SELECT LPAD(a.id, 3, '0') AS codigoempleado, a.idempresadebito, c.nomempresa AS empresadebito, a.idempresaactual, d.nombre AS empresaactual, ";
     $qGen.= "TRIM(CONCAT(IFNULL(TRIM(a.nombre), ''), ' ',IFNULL(TRIM(a.apellidos), ''))) AS nombre, a.sueldo, a.bonificacionley, (a.sueldo + a.bonificacionley) AS total, ";
     $qGen.= "(SELECT monto FROM boletoornato WHERE (a.sueldo + a.bonificacionley) >= rangode AND (a.sueldo + a.bonificacionley) <= rangoa) AS boleto, IF(b.pagado = 1, 'P', 'No P') AS pagado ";
-    $qGen.= "FROM plnempleado a LEFT JOIN plnpagoboletoornato b ON a.id = b.idplnempleado LEFT JOIN empresa c ON c.id = a.idempresadebito LEFT JOIN plnempresa d ON d.id = a.idempresaactual ";
-    $qGen.= "WHERE a.id IN(SELECT idplnempleado FROM plnnomina) AND (b.periodo = $d->anio OR b.periodo IS NULL) ";
+    $qGen.= "FROM plnempleado a INNER JOIN plnpagoboletoornato b ON a.id = b.idplnempleado LEFT JOIN empresa c ON c.id = a.idempresadebito LEFT JOIN plnempresa d ON d.id = a.idempresaactual ";
+    $qGen.= "WHERE b.periodo = $d->anio ";
     $qGen.= (int)$d->idempresa > 0 ? "AND a.idempresaactual = $d->idempresa " : "";
     $qGen.= "ORDER BY 5, 6";
 
