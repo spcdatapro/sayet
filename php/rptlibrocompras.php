@@ -8,6 +8,10 @@ $app->response->headers->set('Content-Type', 'application/json');
 $app->post('/rptlibcomp', function(){
 	
 	$d = json_decode(file_get_contents('php://input'));
+
+	if (empty($d)) {
+		$d = (object)$_POST;
+	}
 	
 	//var_dump($d);
 	//echo $d;

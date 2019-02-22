@@ -38,19 +38,57 @@
             $scope.totiva = {combustible: 0.0, bien: 0.0, servicio: 0.0, importaciones: 0.0};
         };
 
-        $scope.getLibComp = function(){
+        $scope.getLibComp = function(tipo){
 			$scope.params.del = moment($scope.params.del).isValid() ? moment($scope.params.del).format('YYYY-MM-DD') : '';
             $scope.params.al = moment($scope.params.al).isValid() ? moment($scope.params.al).format('YYYY-MM-DD') : '';
             $scope.params.creditofiscal = $scope.params.creditofiscal != null && $scope.params.creditofiscal != undefined ? $scope.params.creditofiscal : 0;
             $scope.params.montoactivo = $scope.params.montoactivo != null && $scope.params.montoactivo != undefined ? $scope.params.montoactivo : 0.00;
             $scope.params.refactivo = $scope.params.refactivo != null && $scope.params.refactivo != undefined ? $scope.params.refactivo : '';
-					
-            jsReportSrvc.librocompras($scope.params).then(function (result) {
+
+            if (tipo == 1) {
+                $('#btnLibroComprasExcel').button('loading')
+                
+                var url = '/sayet/php/rptlibrocompras.php/rptlibcomp'
+
+                $.post(url, $scope.params, function(data){
+                    var tab_text='<table>'
+                    tab_text = tab_text+"<tr><td>No.</td><td>Fecha</td><td>No.NIT Proveedor</td><td>Nombre Proveedor</td><td>Documento/Factura</td><td>Bienes</td><td>Servicios</td><td>Exento</td><td>Iva</td><td>TOTAL</td></tr>"
+
+                    data.lbcompra.forEach(function(e){
+                        tab_text = tab_text+'<tr><td>'+e.nolinea+'</td>'
+                        tab_text = tab_text+'<td>'+e.fechafactura+'</td>'
+                        tab_text = tab_text+'<td>'+e.nit+'</td>'
+                        tab_text = tab_text+'<td>'+e.proveedor+'</td>'
+                        tab_text = tab_text+'<td>'+e.serie+' '+e.documento+'</td>'
+                        tab_text = tab_text+'<td>'+e.bien+'</td>'
+                        tab_text = tab_text+'<td>'+e.servicio+'</td>'
+                        tab_text = tab_text+'<td>'+e.exento+'</td>'
+                        tab_text = tab_text+'<td>'+e.iva+'</td>'
+                        tab_text = tab_text+'<td>'+e.totfact+'</td></tr>'
+                    })
+
+                    tab_text = tab_text+'</table>'
+
+                    var a = document.createElement('a')
+                    document.body.appendChild(a)
+                    a.href = 'data:application/vnd.oasis.opendocument.spreadsheet,' + encodeURIComponent(tab_text)
+                    a.download = 'libroCompras.xls'
+                    a.click()
+
+                    $('#btnLibroComprasExcel').button('reset')
+                })
+            } else {
+                jsReportSrvc.librocompras($scope.params).then(function (result) {
                     var file = new Blob([result.data], {type: 'application/pdf'});
                     var fileURL = URL.createObjectURL(file);
                     $scope.content = $sce.trustAsResourceUrl(fileURL);
                 });
+            }
         };
+
+        $scope.getLibCompXLS = function() {
+
+        }
 
         $scope.rptIntegraGastosActivo = function(){
             var test = false;
