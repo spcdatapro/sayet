@@ -706,9 +706,9 @@ class Empleado extends Principal
 	public function set_finiquito_indemnizacion()
 	{
 		if (empty($this->emp->reingreso)) {
-			$ingreso = new DateTime($this->emp->reingreso);
-		} else {
 			$ingreso = new DateTime($this->emp->ingreso);
+		} else {
+			$ingreso = new DateTime($this->emp->reingreso);
 		}
 		
 		$baja     = new DateTime($this->emp->baja);
