@@ -487,7 +487,12 @@ class Empleado extends Principal
 
 	public function set_dias_trabajados()
 	{
-		$istr  = strtotime($this->emp->ingreso);
+		if (empty($this->emp->reingreso)) {
+			$istr = strtotime($this->emp->ingreso);
+		} else {
+			$istr = strtotime($this->emp->reingreso);
+		}
+		
 		$idia  = date('d', $istr);
 		$imes  = date('m', $istr);
 		$ianio = date('Y', $istr);
@@ -700,7 +705,12 @@ class Empleado extends Principal
 
 	public function set_finiquito_indemnizacion()
 	{
-		$ingreso  = new DateTime($this->emp->ingreso);
+		if (empty($this->emp->reingreso)) {
+			$ingreso = new DateTime($this->emp->reingreso);
+		} else {
+			$ingreso = new DateTime($this->emp->ingreso);
+		}
+		
 		$baja     = new DateTime($this->emp->baja);
 		$interval = $ingreso->diff($baja);
 		$dias     = ($interval->format('%a')+1);
@@ -1116,6 +1126,8 @@ EOT;
 				"plnbitacora.movobservaciones",
 				"plnbitacora.movotros",
 				"plnbitacora.movdescripcion",
+				"plnbitacora.antes",
+				"plnbitacora.despues",
 				"b.nombre"
 			],
 			$condiciones
