@@ -1108,6 +1108,7 @@ EOT;
 			], 
 			[
 				"plnbitacora.id",
+				"plnbitacora.idplnempleado",
 				"plnbitacora.fecha",
 				"plnbitacora.movgasolina",
 				"plnbitacora.movfecha",
