@@ -853,13 +853,15 @@ Por motivo: {$args['motivo']}.\n
 Recibe en esta misma fecha todas las prestaciones a que tiene derecho según el CÓDIGO DE TRABAJO VIGENTE, como se detalla a continuación:
 EOT;
 
+		$fechaIngreso = formatoFecha((empty($this->emp->reingreso)?$this->emp->ingreso:$this->emp->reingreso),1);
+
 		$tmp = [
 			'titulo'                   => 'Finiquito Laboral',
 			'lugar_fecha'              => $lugarFecha,
 			'texto_motivo'             => $texto_motivo,
 			'linea_uno_resumen'        => str_repeat("_", 90),
 			'fecha_ingreso_etiqueta'   => 'Fecha de Ingreso:',
-			'fecha_ingreso'            => formatoFecha($this->emp->ingreso,1),
+			'fecha_ingreso'            => $fechaIngreso,
 			'fecha_egreso_etiqueta'    => 'Fecha de Egreso:',
 			'fecha_egreso'             => formatoFecha($args['fecha_egreso'],1),
 			'sueldo_etiqueta'          => 'Sueldo Mensual:',
@@ -875,7 +877,7 @@ EOT;
 			'texto_no_dias'            => 'No. Días',
 			'texto_monto'              => 'Monto Q.',
 			'indem_texto'              => '1) Indemnización por el tiempo comprendido del:',
-			'indem_fechas'             => formatoFecha($this->emp->ingreso,1).' al '.formatoFecha($this->emp->baja,1),
+			'indem_fechas'             => $fechaIngreso.' al '.formatoFecha($this->emp->baja,1),
 			'indem_dias'               => $this->finiquitoIndenmizacion->dias,
 			'indem_monto'              => number_format($this->finiquitoIndenmizacion->monto,2),
 			'vacas_texto'              => '2) Vacaciones por el tiempo comprendido del:',
