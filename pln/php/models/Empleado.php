@@ -487,12 +487,7 @@ class Empleado extends Principal
 
 	public function set_dias_trabajados()
 	{
-		if (empty($this->emp->reingreso)) {
-			$istr = strtotime($this->emp->ingreso);
-		} else {
-			$istr = strtotime($this->emp->reingreso);
-		}
-		
+		$istr  = strtotime($this->getFechaIngreso());
 		$idia  = date('d', $istr);
 		$imes  = date('m', $istr);
 		$ianio = date('Y', $istr);
@@ -703,43 +698,53 @@ class Empleado extends Principal
 		$this->sueldoPromedio = $this->get_sueldo_promedio();
 	}
 
-	public function set_finiquito_indemnizacion()
+	public function getFechaIngreso()
 	{
 		if (empty($this->emp->reingreso)) {
-			$ingreso = new DateTime($this->emp->ingreso);
+			return $this->emp->ingreso;
 		} else {
-			$ingreso = new DateTime($this->emp->reingreso);
+			return $this->emp->reingreso;
 		}
-		
-		$baja     = new DateTime($this->emp->baja);
-		$interval = $ingreso->diff($baja);
-		$dias     = ($interval->format('%a')+1);
-		$monto    = ($dias*((($this->sueldoPromedio/12)*14)/365));
-		
+	}
+
+	public function set_finiquito_indemnizacion($args = [])
+	{
+		$ingreso = new DateTime($this->getFechaIngreso());
+
+		if (isset($args["sin_indemnizacion"])) {
+			$dias = 0;
+			$monto = 0;
+		} else {
+			$baja     = new DateTime($this->emp->baja);
+			$interval = $ingreso->diff($baja);
+			$dias     = ($interval->format('%a')+1);
+			$monto    = ($dias*((($this->sueldoPromedio/12)*14)/365));
+		}
+
 		$this->finiquitoIndenmizacion = (object)[
 			'dias'   => $dias,
-			'inicio' => $this->emp->ingreso,
+			'inicio' => $this->getFechaIngreso(),
 			'monto'  => $monto
 		];
 	}
 
 	public function set_finiquito_vacaciones($args=[])
 	{
-		$inicio   = new DateTime($args['vacas_del']);
-		$fin      = new DateTime($args['vacas_al']);
-		$interval = $inicio->diff($fin);
-
 		if (isset($args["sin_vacaciones"])) {
 			$dias  = 0;
 			$monto = 0;
 		} else {
+			$inicio   = new DateTime($args['vacas_del']);
+			$fin      = new DateTime($args['vacas_al']);
+			$interval = $inicio->diff($fin);
+
 			$dias  = (($interval->format('%a')+1)/(365/15));
 			$monto = ($dias*($this->sueldoPromedio/30));
 		}	
 		
 		$this->finiquitoVacaciones = (object)[
 			'dias'   => $dias,
-			'inicio' => $this->emp->ingreso,
+			'inicio' => $this->getFechaIngreso(),
 			'monto'  => $monto
 		];
 	}
@@ -754,7 +759,7 @@ class Empleado extends Principal
 				LIMIT 1";
 		
 		$tmp      = $this->db->query($sql)->fetchAll();
-		$fecha    = count($tmp)>0?$tmp[0]['ultimo']:$this->emp->ingreso;
+		$fecha    = count($tmp)>0?$tmp[0]['ultimo']:$this->getFechaIngreso();
 		$inicio   = new DateTime($fecha);
 		$fin      = new DateTime($this->emp->baja);
 		$interval = $inicio->diff($fin);
@@ -778,7 +783,7 @@ class Empleado extends Principal
 				LIMIT 1";
 		
 		$tmp      = $this->db->query($sql)->fetchAll();
-		$fecha    = count($tmp)>0?$tmp[0]['ultimo']:$this->emp->ingreso;
+		$fecha    = count($tmp)>0?$tmp[0]['ultimo']:$this->getFechaIngreso();
 		$inicio   = new DateTime($fecha);
 		$fin      = new DateTime($this->emp->baja);
 		$interval = $inicio->diff($fin);
@@ -853,7 +858,7 @@ Por motivo: {$args['motivo']}.\n
 Recibe en esta misma fecha todas las prestaciones a que tiene derecho según el CÓDIGO DE TRABAJO VIGENTE, como se detalla a continuación:
 EOT;
 
-		$fechaIngreso = formatoFecha((empty($this->emp->reingreso)?$this->emp->ingreso:$this->emp->reingreso),1);
+		$fechaIngreso = formatoFecha($this->getFechaIngreso(),1);
 
 		$tmp = [
 			'titulo'                   => 'Finiquito Laboral',
@@ -1003,7 +1008,7 @@ EOT;
 		$tmp['fecha_nacimiento'] = formatoFecha($this->emp->fechanacimiento, 1);
 		$tmp['sueldo_total']     = ($this->emp->sueldo+$this->emp->bonificacionley);
 		$tmp['estadocivil']      = estadoCivil($this->emp->estadocivil, $this->emp->sexo);
-		$tmp['ingreso']          = formatoFecha($this->emp->ingreso, 1);
+		$tmp['ingreso']          = formatoFecha($this->getFechaIngreso(), 1);
 		$tmp['baja']             = empty($this->emp->baja) ? '' : formatoFecha($this->emp->baja, 1);
 
 		if ($this->emp->formapago == 1) {
@@ -1032,12 +1037,7 @@ EOT;
 			$pasado = date('Y-m-t', strtotime('-1 year', strtotime($fecha)));
 			$inicio = date('Y-m-d', strtotime('+1 days', strtotime($pasado)));
 			$uno    = new DateTime($inicio);
-
-			if (empty($this->emp->reingreso)) {
-				$ingreso = new DateTime($this->emp->ingreso);
-			} else {
-				$ingreso = new DateTime($this->emp->reingreso);
-			}
+			$ingreso = new DateTime($this->getFechaIngreso());
 
 			if ($ingreso <= $uno) {
 				$this->bonocatorcedias = 365;
@@ -1065,12 +1065,7 @@ EOT;
 			$pasado = date('Y-m-t', strtotime('-1 year', strtotime($fecha)));
 			$inicio = date('Y-m-d', strtotime('+1 days', strtotime($pasado)));
 			$uno    = new DateTime($inicio);
-
-			if (empty($this->emp->reingreso)) {
-				$ingreso = new DateTime($this->emp->ingreso);
-			} else {
-				$ingreso = new DateTime($this->emp->reingreso);
-			}
+			$ingreso = new DateTime($this->getFechaIngreso());
 
 			if ($ingreso <= $uno) {
 				$this->aguinaldoDias  = 365;

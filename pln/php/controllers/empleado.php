@@ -204,7 +204,7 @@ $app->post('/finiquito', function(){
 
 		$emp->set_meses_calculo($_POST['meses_calculo']);
 		$emp->set_sueldo_promedio();
-		$emp->set_finiquito_indemnizacion();
+		$emp->set_finiquito_indemnizacion($_POST);
 		$emp->set_finiquito_vacaciones($_POST);
 		$emp->set_finiquito_aguinaldo();
 		$emp->set_finiquito_bono14();
