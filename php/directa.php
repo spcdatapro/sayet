@@ -38,6 +38,7 @@ $app->post('/u', function(){
 $app->post('/d', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    $db->doQuery("DELETE FROM detallecontable WHERE origen = 4 AND idorigen = $d->id");
     $db->doQuery("DELETE FROM directa WHERE id = $d->id");
 });
 
