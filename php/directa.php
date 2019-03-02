@@ -6,9 +6,16 @@ $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
 
 //API para partidas directas
-$app->get('/lstdirectas/:idempresa', function($idempresa){
+$app->post('/lstdirectas', function(){
+    $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $query = "SELECT id, idempresa, fecha, concepto FROM directa WHERE idempresa = $idempresa ORDER BY fecha, id";
+    $query = "SELECT id, idempresa, fecha, concepto ";
+    $query.= "FROM directa ";
+    $query.= "WHERE idempresa = $d->idempresa ";
+    $query.= $d->fdelstr != '' ? "AND fecha >= '$d->fdelstr' " : "" ;
+    $query.= $d->falstr != '' ? "AND fecha <= '$d->falstr' " : "" ;
+    $query.= "ORDER BY fecha, id";
+    //print $query;
     print $db->doSelectASJson($query);
 });
 

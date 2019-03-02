@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/controllers/trandirectactrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/trandirectactrl.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/js/services/trandirectasrvc.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/services/trandirectasrvc.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pages/trandirectas.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/trandirectas.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/php/directa.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/directa.php" afterDir="false" />
     </list>
@@ -44,8 +45,26 @@
       <file leaf-file-name="trandirectas.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pages/trandirectas.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="340">
-              <caret line="68" column="144" lean-forward="true" selection-start-line="68" selection-start-column="144" selection-end-line="68" selection-end-column="144" />
+            <state relative-caret-position="295">
+              <caret line="70" column="86" selection-start-line="70" selection-start-column="86" selection-end-line="70" selection-end-column="86" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="trandirectactrl.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/controllers/trandirectactrl.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="374">
+              <caret line="25" column="71" selection-start-line="25" selection-start-column="58" selection-end-line="25" selection-end-column="71" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="trandirectasrvc.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/js/services/trandirectasrvc.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="153">
+              <caret line="9" column="68" lean-forward="true" selection-start-line="9" selection-start-column="68" selection-end-line="9" selection-end-column="68" />
             </state>
           </provider>
         </entry>
@@ -53,8 +72,8 @@
       <file leaf-file-name="directa.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/php/directa.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="340">
-              <caret line="41" column="58" lean-forward="true" selection-start-line="41" selection-start-column="58" selection-end-line="41" selection-end-column="58" />
+            <state relative-caret-position="289">
+              <caret line="17" column="6" selection-start-line="17" selection-start-column="6" selection-end-line="17" selection-end-column="6" />
             </state>
           </provider>
         </entry>
@@ -128,13 +147,11 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/pages/tranreembolso.html" />
         <option value="$PROJECT_DIR$/pages/adtbllite/reemdetcont.html" />
         <option value="$PROJECT_DIR$/pages/tranfactura.html" />
         <option value="$PROJECT_DIR$/js/controllers/tranfacturactrl.js" />
         <option value="$PROJECT_DIR$/js/controllers/compractrl.js" />
         <option value="$PROJECT_DIR$/js/controllers/reembolsoctrl.js" />
-        <option value="$PROJECT_DIR$/js/controllers/trandirectactrl.js" />
         <option value="$PROJECT_DIR$/js/controllers/tranpagosctrl.js" />
         <option value="$PROJECT_DIR$/php/rptdescuadres.php" />
         <option value="$PROJECT_DIR$/php/rptbalancegeneral.php" />
@@ -177,6 +194,8 @@
         <option value="$PROJECT_DIR$/php/rptplnpremios.php" />
         <option value="$PROJECT_DIR$/php/fixincosistencias.php" />
         <option value="$PROJECT_DIR$/php/fixinconsistencias.php" />
+        <option value="$PROJECT_DIR$/js/services/trandirectasrvc.js" />
+        <option value="$PROJECT_DIR$/js/controllers/trandirectactrl.js" />
         <option value="$PROJECT_DIR$/php/directa.php" />
         <option value="$PROJECT_DIR$/pages/trandirectas.html" />
       </list>
@@ -230,6 +249,23 @@
             <path>
               <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
               <item name="sayet" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sayet" type="462c0819:PsiDirectoryNode" />
+              <item name="js" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sayet" type="462c0819:PsiDirectoryNode" />
+              <item name="js" type="462c0819:PsiDirectoryNode" />
+              <item name="controllers" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
+              <item name="sayet" type="462c0819:PsiDirectoryNode" />
+              <item name="js" type="462c0819:PsiDirectoryNode" />
+              <item name="services" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
@@ -1018,12 +1054,12 @@
       <workItem from="1550840623394" duration="2643000" />
       <workItem from="1550879845577" duration="2251000" />
       <workItem from="1551313709704" duration="2470000" />
-      <workItem from="1551495660333" duration="159000" />
+      <workItem from="1551495660333" duration="2111000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3033788000" />
+    <option name="totallyTimeSpent" value="3035740000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1090,33 +1126,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/pln/php/models/Empleado.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="257">
-          <caret line="972" column="5" lean-forward="true" selection-start-line="972" selection-start-column="5" selection-end-line="972" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pln/php/controllers/empleado.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="411">
-          <caret line="681" column="29" selection-start-line="681" selection-start-column="29" selection-end-line="681" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/facturacion.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="247" column="67" lean-forward="true" selection-start-line="245" selection-start-column="12" selection-end-line="247" selection-end-column="67" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/services/ventasrvc.js">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/compractrl.js">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/genpartidasventa.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="306">
@@ -1221,13 +1230,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
           <caret line="21" column="74" selection-start-line="21" selection-start-column="74" selection-end-line="21" selection-end-column="74" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/compra.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1335">
-          <caret line="417" column="4" lean-forward="true" selection-start-line="417" selection-start-column="4" selection-end-line="417" selection-end-column="4" />
         </state>
       </provider>
     </entry>
@@ -1422,17 +1424,55 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/js/services/comprasrvc.js">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/compra.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="42" column="76" selection-start-line="41" selection-start-column="4" selection-end-line="42" selection-end-column="76" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/compractrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="291" column="71" lean-forward="true" selection-start-line="289" selection-start-column="12" selection-end-line="291" selection-end-column="71" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/services/trandirectasrvc.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="68" lean-forward="true" selection-start-line="9" selection-start-column="68" selection-end-line="9" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/trandirectactrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="25" column="71" selection-start-line="25" selection-start-column="58" selection-end-line="25" selection-end-column="71" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/tranfactcompra.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="332" column="88" lean-forward="true" selection-start-line="332" selection-start-column="38" selection-end-line="332" selection-end-column="88" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/php/directa.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="41" column="58" lean-forward="true" selection-start-line="41" selection-start-column="58" selection-end-line="41" selection-end-column="58" />
+        <state relative-caret-position="289">
+          <caret line="17" column="6" selection-start-line="17" selection-start-column="6" selection-end-line="17" selection-end-column="6" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pages/trandirectas.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="68" column="144" lean-forward="true" selection-start-line="68" selection-start-column="144" selection-end-line="68" selection-end-column="144" />
+        <state relative-caret-position="295">
+          <caret line="70" column="86" selection-start-line="70" selection-start-column="86" selection-end-line="70" selection-end-column="86" />
         </state>
       </provider>
     </entry>

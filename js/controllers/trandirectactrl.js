@@ -14,6 +14,7 @@
         $scope.origen = 4;
         $scope.directastr = '';
         $scope.periodoCerrado = false;
+        $scope.fltrdirecta = {fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate()};
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
 
@@ -37,7 +38,10 @@
         }
         
         $scope.getLstDirectas = function(idempresa){
-            directaSrvc.lstDirectas(idempresa).then(function(d){
+            $scope.fltrdirecta.fdelstr = moment($scope.fltrdirecta.fdel).format('YYYY-MM-DD');
+            $scope.fltrdirecta.falstr = moment($scope.fltrdirecta.fal).format('YYYY-MM-DD');
+            $scope.fltrdirecta.idempresa = +idempresa;
+            directaSrvc.lstDirectas($scope.fltrdirecta).then(function(d){
                 $scope.lasDirectas = procDataDirectas(d);
             });
         };

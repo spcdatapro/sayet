@@ -47,29 +47,48 @@
                             <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printDirecta()">
                                 <span class="glyphicon glyphicon-print"></span>
                             </button>
+                            <button type="button" class="btn btn-danger" ng-disabled="frmDirecta.$invlaid || periodoCerrado" ng-show="editando" ng-click="delDirecta(laDirecta.id)">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
                             <button type="button" class="btn btn-primary" ng-disabled="frmDirecta.$invalid" ng-show="editando" ng-click="resetDirecta()">
                                 <span class="glyphicon glyphicon-plus"></span>
                             </button>
                         </div>
                     </form>
                     <hr/>
-                    <table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover">
+                    <table class="table table-responsive table-hover table-condensed">
+                        <caption>
+                            <form class="form-inline">
+                                <label for="srchTxtDel">Del:</label>
+                                <input name="srchTxtDel" id="srchTxtDel" type="date" class="form-control input-sm" ng-model="fltrdirecta.fdel"/>
+                                <label for="srchTxtAl">al:</label>
+                                <div class="input-group">
+                                    <input name="srchTxtAl" id="srchTxtAl" type="date" class="form-control input-sm" ng-model="fltrdirecta.fal"/>
+                                    <span class="input-group-btn">
+                                    <button type="button" class="btn btn-primary btn-sm" ng-click="getLstDirectas(objEmpresa.id)"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                </span>
+                                </div>
+                                <input name="srchTxt" id="srchTxt" type="text" class="form-control input-sm" style="width: 50em" ng-model="lookFor.$" placeholder="Fecha, correlativo, concepto..."/>
+                            </form>
+                        </caption>
                         <thead>
                             <th>Fecha</th>
                             <th>Correlativo</th>
                             <th>Concepto</th>
-                            <th>&nbsp;</th>
+                            <!--<th>&nbsp;</th>-->
                         </thead>
                         <tbody>
-                            <tr ng-repeat="directa in lasDirectas" ng-click="getPartidaDirecta(directa.id)">
+                            <tr ng-repeat="directa in lasDirectas | filter:lookFor" ng-click="getPartidaDirecta(directa.id)">
                                 <td>{{directa.fecha | date:'dd/MM/yyyy'}}</td>
                                 <td>{{directa.id}}</td>
                                 <td>{{directa.concepto | shortenStr:75}}</td>
+                                <!--
                                 <th>
                                     <button type="button" class="btn btn-danger" ng-click="delDirecta(directa.id)" ng-disabled="periodoCerrado">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </button>
                                 </th>
+                                -->
                             </tr>
                         </tbody>
                     </table>

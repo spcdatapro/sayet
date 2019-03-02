@@ -6,8 +6,8 @@
         var urlBase = 'php/directa.php';
 
         return {
-            lstDirectas: function(idempresa){
-                return comunFact.doGET(urlBase + '/lstdirectas/' + idempresa);
+            lstDirectas: function(obj){
+                return comunFact.doPOST(urlBase + '/lstdirectas', obj);
             },
             getDirecta: function(iddirecta){
                 return comunFact.doGET(urlBase + '/getdirecta/' + iddirecta);
