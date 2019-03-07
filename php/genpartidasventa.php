@@ -108,7 +108,7 @@ $app->get('/generar', function(){
 $app->get('/regen', function(){
     $db = new dbcpm();
     $origen = 3;
-    $ids = "7791";
+    $ids = "8215, 8216";
     echo "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body><small><h3>Regeneración de facturas específicas</h3><h2>$ids</h2>";
 
     $query = "DELETE FROM detallecontable WHERE origen = $origen AND idorigen IN($ids)";
@@ -168,7 +168,8 @@ $app->get('/regen', function(){
             }
 
             //Cuentas de detalle de factura
-            $query = "SELECT a.id, a.idtiposervicio, a.descripcion, ROUND((a.preciotot - IF($factura->esinsertada = 0, 0, a.descuento)) / 1.12, 2) AS monto ";
+            //$query = "SELECT a.id, a.idtiposervicio, a.descripcion, ROUND((a.preciotot - IF($factura->esinsertada = 0, 0, a.descuento)) / 1.12, 2) AS monto ";
+            $query = "SELECT a.id, a.idtiposervicio, a.descripcion, ROUND(a.preciotot / 1.12, 2) AS monto ";
             $query.= "FROM detfact a ";
             $query.= "WHERE idfactura = $factura->id";
             $detfact = $db->getQuery($query);
@@ -271,7 +272,7 @@ $app->post('/genpost', function(){
             }
 
             //Cuentas de detalle de factura
-            $query = "SELECT a.id, a.idtiposervicio, a.descripcion, ROUND((a.preciotot - IF($factura->esinsertada = 0, 0, a.descuento)) / 1.12, 2) AS monto ";
+            $query = "SELECT a.id, a.idtiposervicio, a.descripcion, ROUND(a.preciotot / 1.12, 2) AS monto ";
             $query.= "FROM detfact a ";
             $query.= "WHERE idfactura = $factura->id";
             $detfact = $db->getQuery($query);
