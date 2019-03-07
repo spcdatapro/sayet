@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/js/controllers/trandirectactrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/trandirectactrl.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/services/trandirectasrvc.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/services/trandirectasrvc.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/trandirectas.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/trandirectas.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/php/directa.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/directa.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -45,7 +42,7 @@
       <file leaf-file-name="trandirectas.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pages/trandirectas.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="295">
+            <state relative-caret-position="17">
               <caret line="70" column="86" selection-start-line="70" selection-start-column="86" selection-end-line="70" selection-end-column="86" />
             </state>
           </provider>
@@ -54,7 +51,7 @@
       <file leaf-file-name="trandirectactrl.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/controllers/trandirectactrl.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="374">
+            <state relative-caret-position="425">
               <caret line="25" column="71" selection-start-line="25" selection-start-column="58" selection-end-line="25" selection-end-column="71" />
             </state>
           </provider>
@@ -64,7 +61,7 @@
         <entry file="file://$PROJECT_DIR$/js/services/trandirectasrvc.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="153">
-              <caret line="9" column="68" lean-forward="true" selection-start-line="9" selection-start-column="68" selection-end-line="9" selection-end-column="68" />
+              <caret line="9" column="68" selection-start-line="9" selection-start-column="68" selection-end-line="9" selection-end-column="68" />
             </state>
           </provider>
         </entry>
@@ -242,49 +239,7 @@
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes>
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-              <item name="controllers" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-              <item name="services" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="pages" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="php" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="Scope" />
-      <pane id="AndroidView" />
-      <pane id="PackagesPane" />
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
@@ -1054,12 +1009,13 @@
       <workItem from="1550840623394" duration="2643000" />
       <workItem from="1550879845577" duration="2251000" />
       <workItem from="1551313709704" duration="2470000" />
-      <workItem from="1551495660333" duration="2111000" />
+      <workItem from="1551495660333" duration="2710000" />
+      <workItem from="1551744084584" duration="5000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3035740000" />
+    <option name="totallyTimeSpent" value="3036344000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1401,12 +1357,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="138">
           <caret line="9" column="30" lean-forward="true" selection-start-line="9" selection-start-column="30" selection-end-line="9" selection-end-column="30" />
-          <folding>
-            <element signature="n#__construct#0;n#contabilidad#0;n#!!top" />
-            <element signature="n#getPolizas#0;n#contabilidad#0;n#!!top" />
-            <element signature="n#getDetallePoliza#0;n#contabilidad#0;n#!!top" />
-            <element signature="n#getSumasDebeHaber#0;n#contabilidad#0;n#!!top" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1444,13 +1394,13 @@
     <entry file="file://$PROJECT_DIR$/js/services/trandirectasrvc.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
-          <caret line="9" column="68" lean-forward="true" selection-start-line="9" selection-start-column="68" selection-end-line="9" selection-end-column="68" />
+          <caret line="9" column="68" selection-start-line="9" selection-start-column="68" selection-end-line="9" selection-end-column="68" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/controllers/trandirectactrl.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
+        <state relative-caret-position="425">
           <caret line="25" column="71" selection-start-line="25" selection-start-column="58" selection-end-line="25" selection-end-column="71" />
         </state>
       </provider>
@@ -1471,7 +1421,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pages/trandirectas.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="295">
+        <state relative-caret-position="17">
           <caret line="70" column="86" selection-start-line="70" selection-start-column="86" selection-end-line="70" selection-end-column="86" />
         </state>
       </provider>
