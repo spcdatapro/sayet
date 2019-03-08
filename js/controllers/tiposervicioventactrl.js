@@ -16,9 +16,18 @@
             });
         };
 
-        $scope.updTipo = function(obj, idtipo){
-            obj.id = idtipo;
-            tipoServicioVentaSrvc.editRow(obj, 'u').then(function(){ $scope.getLstTipos(); });
+        $scope.getTipo = function(idtipo){
+            tipoServicioVentaSrvc.getTSVenta(+idtipo).then(function(d){
+                $scope.tipo = d[0];
+            });
+        };
+
+        $scope.updTipo = function(obj){
+            tipoServicioVentaSrvc.editRow(obj, 'u').then(function(){ $scope.getLstTipos(); $scope.resetTipo(); });
+        };
+
+        $scope.resetTipo = function(){
+            $scope.tipo = { id: undefined, desctiposervventa: undefined, cuentac: undefined };
         };
 
         $scope.delTipo = function(idtipo){
@@ -28,7 +37,7 @@
                 ok: 'Sí',
                 cancel: 'No'})
                 .then(function() {
-                    tipoServicioVentaSrvc.editRow({id: idtipo}, 'd').then(function(){ $scope.getLstTipos(); });
+                    tipoServicioVentaSrvc.editRow({id: idtipo}, 'd').then(function(){ $scope.getLstTipos(); $scope.resetTipo(); });
                 });
         };
 
