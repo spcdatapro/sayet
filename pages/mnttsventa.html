@@ -3,14 +3,34 @@
         <div class="panel-heading">Tipos de servicio de venta</div>
         <div class="panel-body">
             <form name="frmSrvc" id="frmSrvc" ng-submit="frmSrvc.$valid && addTipo(tipo)" novalidate>
-                <div class="form-group" ng-class="{'has-error':frmSrvc.txtDesc.$invalid && !frmSrvc.txtDesc.$pristine}">
-                    <label for="txtDesc">Descripci&oacute;n:</label>
-                    <input name="txtDesc" id="txtDesc" type="text" class="form-control" ng-model="tipo.desctiposervventa" placeholder="Descripci&oacute;n del tipo de servicio"
-                           maxlength="50" required />
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group required" ng-class="{'has-error':frmSrvc.txtDesc.$invalid && !frmSrvc.txtDesc.$pristine}">
+                            <label for="txtDesc" class="control-label">Descripci&oacute;n:</label>
+                            <input name="txtDesc" id="txtDesc" type="text" class="form-control" ng-model="tipo.desctiposervventa" placeholder="Descripci&oacute;n del tipo de servicio"
+                                   maxlength="50" required />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group required" ng-class="{'has-error':frmSrvc.txtCuentaCont.$invalid && !frmSrvc.txtCuentaCont.$pristine}">
+                            <label for="txtCuentaCont" class="control-label">Cuenta contable:</label>
+                            <input name="txtCuentaCont" id="txtCuentaCont" type="text" class="form-control" ng-model="tipo.cuentac" placeholder="Cuenta contable"
+                                   maxlength="10" required />
+                        </div>
+                    </div>
                 </div>
                 <div class="btn-group" role="group" aria-label="...">
-                    <button type="submit" class="btn btn-primary" ng-disabled="frmSrvc.$invalid">
+                    <button type="submit" class="btn btn-primary" ng-disabled="frmSrvc.$invalid" ng-hide="+tipo.id > 0">
                         <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-disabled="frmSrvc.$invalid" ng-show="+tipo.id > 0" ng-click="updTipo(tipo)">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                    <button type="button" class="btn btn-danger" ng-click="delTipo(tipo.id)" ng-show="+tipo.id > 0">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-show="+tipo.id > 0" ng-click="resetTipo()">
+                        <span class="glyphicon glyphicon-plus"></span>
                     </button>
                 </div>
             </form>
@@ -19,24 +39,13 @@
                 <thead>
                 <tr>
                     <th>Descripci&oacute;n</th>
-                    <th>&nbsp;</th>
+                    <th>Cuenta contable</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="t in tipos">
-                    <td>
-                        <span editable-text="t.desctiposervventa" e-name="desctiposervventa" e-form="rowform" e-required
-                              e-class="form-control" e-type="text" e-maxlength="50">
-                                {{t.desctiposervventa}}
-                        </span>
-                    </td>
-                    <td style="white-space: nowrap">
-                        <edit-row-form
-                                editing-row="t"
-                                update-func="updTipo(fila, qid)"
-                                delete-func="delTipo(qid)">
-                        </edit-row-form>
-                    </td>
+                <tr ng-repeat="t in tipos" ng-click="getTipo(t.id)">
+                    <td>{{t.desctiposervventa}}</td>
+                    <td>{{t.cuentac}}</td>
                 </tr>
                 </tbody>
             </table>
