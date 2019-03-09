@@ -29,7 +29,7 @@ try {
 	$server = new SOAPServer(
 		NULL,
 		array(
-			'uri' => 'http://localhost/server.php'
+			'uri' => 'http://localhost/jk/php/ws/server.php'
 		)
 	);
 
