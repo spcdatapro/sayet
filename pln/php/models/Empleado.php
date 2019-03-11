@@ -313,7 +313,16 @@ class Empleado extends Principal
 				}
 			}
 		} else {
-			$this->set_mensaje('No hay datos que guardar o actualizar.');
+			if (!empty($dbita)) {
+				$dbita['antes']   = json_encode($this->emp);
+				$dbita['despues'] = json_encode($this->emp);
+
+				$this->guardar_bitacora($dbita);
+
+				$this->set_mensaje("Movimiento de personal grabado.");
+			} else {
+				$this->set_mensaje('No hay datos que guardar o actualizar.');
+			}
 		}
 
 		return FALSE;

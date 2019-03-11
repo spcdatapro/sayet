@@ -56,6 +56,8 @@ angular.module('cpm')
                 if (data.up == 0) {
                     $scope.empleados.push(data.emp);
                 }
+
+                $scope.getBitacora($scope.emp.id);
 			});
         };
 
@@ -153,9 +155,7 @@ angular.module('cpm')
             empServicios.guardarBitacora(datos).then(function(res){
                 $scope.bita = {};
 
-                if (res.up == 0) {
-                    $scope.getBitacora($scope.emp.id);
-                }
+                $scope.getBitacora($scope.emp.id);
             });
         }
 

@@ -75,9 +75,6 @@ $app->post('/guardar_bitacora', function(){
 	if ($data["up"] == 1) {
 		unset($datos["fecha"]);
 		unset($datos["nombre"]);
-		unset($datos["mostrar"]);
-	} else {
-		$datos["mostrar"] = 1;
 	}
 
 	$emp->guardar_bitacora($datos);
