@@ -79,10 +79,11 @@ function insertaDetalleContable($d, $idorigen){
 function updateGastosOT($iddetpresup){
     $db = new dbcpm();
 
-    $idot = $db->getOneField("SELECT idpresupuesto FROM detpresupuesto WHERE id = $iddetpresup");
+    //$idot = $db->getOneField("SELECT idpresupuesto FROM detpresupuesto WHERE id = $iddetpresup");
+    $idot = 0;
     if((int)$idot > 0){
         $query = "UPDATE presupuesto SET gastado = (IFNULL(montoGastadoPresupuesto(id), 0) + IFNULL(getMontoISROT(id, 1), 0)) WHERE id >= $idot";
-        $db->doQuery($query);
+        //$db->doQuery($query);
     }
 }
 

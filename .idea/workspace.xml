@@ -3,9 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/controllers/tiposervicioventactrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/tiposervicioventactrl.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/mnttsventa.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/mnttsventa.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/php/tiposervicioventa.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/tiposervicioventa.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/php/tranbanc.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/tranbanc.php" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -42,29 +40,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="mnttsventa.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pages/mnttsventa.html">
+      <file leaf-file-name="tranbanc.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/tranbanc.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="15" column="76" selection-start-line="15" selection-start-column="76" selection-end-line="15" selection-end-column="76" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="tiposervicioventactrl.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/js/controllers/tiposervicioventactrl.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="34">
-              <caret line="2" column="25" lean-forward="true" selection-start-line="2" selection-start-column="25" selection-end-line="2" selection-end-column="25" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="tiposervicioventa.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/php/tiposervicioventa.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="85">
-              <caret line="5" column="65" lean-forward="true" selection-start-line="5" selection-start-column="65" selection-end-line="5" selection-end-column="65" />
+            <state relative-caret-position="272">
+              <caret line="85" column="10" selection-start-line="85" selection-start-column="10" selection-end-line="85" selection-end-column="10" />
             </state>
           </provider>
         </entry>
@@ -161,7 +141,6 @@
         <option value="$PROJECT_DIR$/pages/rptlibmay.html" />
         <option value="$PROJECT_DIR$/php/rptbalancesaldos.php" />
         <option value="$PROJECT_DIR$/pages/rptbalsal.html" />
-        <option value="$PROJECT_DIR$/php/tranbanc.php" />
         <option value="$PROJECT_DIR$/pln/php/models/Empleado.php" />
         <option value="$PROJECT_DIR$/php/conta.php" />
         <option value="$PROJECT_DIR$/js/controllers/ventactrl.js" />
@@ -189,6 +168,7 @@
         <option value="$PROJECT_DIR$/php/tiposervicioventa.php" />
         <option value="$PROJECT_DIR$/js/controllers/tiposervicioventactrl.js" />
         <option value="$PROJECT_DIR$/pages/mnttsventa.html" />
+        <option value="$PROJECT_DIR$/php/tranbanc.php" />
       </list>
     </option>
   </component>
@@ -234,6 +214,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="AndroidView" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -272,8 +254,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="AndroidView" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -1048,12 +1028,13 @@
       <workItem from="1551495660333" duration="2710000" />
       <workItem from="1551744084584" duration="5000" />
       <workItem from="1551922916479" duration="701000" />
-      <workItem from="1552080946311" duration="1621000" />
+      <workItem from="1552080946311" duration="4155000" />
+      <workItem from="1552312336030" duration="57000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3038666000" />
+    <option name="totallyTimeSpent" value="3041257000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1072,7 +1053,7 @@
       <window_info anchor="bottom" x="206" y="338" width="1572" height="574" id="Terminal" order="11" type="WINDOWED" weight="1.0" />
       <window_info id="Capture Tool" order="6" />
       <window_info anchor="right" id="Designer" order="6" />
-      <window_info active="true" content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" visible="true" weight="0.15884861" />
+      <window_info active="true" content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" visible="true" weight="0.16044776" />
       <window_info anchor="right" id="Database" order="7" weight="0.32889125" />
       <window_info anchor="right" id="SciView" order="9" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.1546875" />
@@ -1252,13 +1233,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/php/tranbanc.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="230" column="37" lean-forward="true" selection-start-line="230" selection-start-column="37" selection-end-line="230" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/php/rptincdec.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="612">
@@ -1423,17 +1397,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
           <caret line="274" column="108" selection-start-line="274" selection-start-column="108" selection-end-line="274" selection-end-column="108" />
-          <folding>
-            <element signature="n#idc#0;n#!!top" />
-            <element signature="e#659#5844#1#PHP" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/php/tiposervicioventa.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="65" lean-forward="true" selection-start-line="5" selection-start-column="65" selection-end-line="5" selection-end-column="65" />
         </state>
       </provider>
     </entry>
@@ -1451,6 +1414,23 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/js/services/tiposervicioventasrvc.js">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/php/tiposervicioventa.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="65" lean-forward="true" selection-start-line="5" selection-start-column="65" selection-end-line="5" selection-end-column="65" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/tiposervicioventactrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="25" lean-forward="true" selection-start-line="2" selection-start-column="25" selection-end-line="2" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pages/mnttsventa.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
@@ -1458,13 +1438,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/services/tiposervicioventasrvc.js">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/tiposervicioventactrl.js">
+    <entry file="file://$PROJECT_DIR$/php/tranbanc.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="25" lean-forward="true" selection-start-line="2" selection-start-column="25" selection-end-line="2" selection-end-column="25" />
+        <state relative-caret-position="272">
+          <caret line="85" column="10" selection-start-line="85" selection-start-column="10" selection-end-line="85" selection-end-column="10" />
         </state>
       </provider>
     </entry>
