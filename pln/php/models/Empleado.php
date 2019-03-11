@@ -248,6 +248,7 @@ class Empleado extends Principal
 
 		if (elemento($args, 'movfecha')) {
 			$dbita['movfecha'] = $args['movfecha'];
+			$dbita['mostrar']  = 1;
 		}
 
 		if (elemento($args, 'movdescripcion')) {
@@ -273,7 +274,7 @@ class Empleado extends Principal
 		if (!empty($this->datos)) {
 			if ($this->emp) {
 				$dbita['antes']   = json_encode($this->emp);
-				$dbita['mostrar'] = $this->revisarMostrarBitacora($this->datos);
+				# $dbita['mostrar'] = $this->revisarMostrarBitacora($this->datos);
 
 				if ($this->db->update($this->tabla, $this->datos, ["id [=]" => $this->emp->id])) {
 					$this->cargar_empleado($this->emp->id);
@@ -289,7 +290,6 @@ class Empleado extends Principal
 							$this->set_mensaje('Nada que actualizar.');
 						} else {
 							$dbita['despues'] = $dbita['antes'];
-							$dbita['mostrar'] = 1;
 							$this->guardar_bitacora($dbita);
 							return TRUE;
 						}
@@ -304,7 +304,6 @@ class Empleado extends Principal
 					$this->cargar_empleado($lid);
 
 					$dbita['despues'] = json_encode($this->emp);
-					$dbita['mostrar'] = 1;
 
 					$this->guardar_bitacora($dbita);
 
@@ -580,7 +579,6 @@ class Empleado extends Principal
 				[
 					'AND' => [
 						'idplnempleado[=]' => $this->emp->id,
-						"finalizado[=]" => 0,
 						"iniciopago[<=]" => $this->nfecha
 					]
 				]
@@ -604,16 +602,17 @@ class Empleado extends Principal
 					} else {
 						$pr = new Prestamo($row['id']);
 						$saldo = $pr->get_saldo($args);
-						$cuota = (($pr->pre->cuotamensual < $saldo)?$pr->pre->cuotamensual:$saldo);
-						
-						$prest['prestamo'][] = [
-							'id'    => $pr->pre->id,
-							'cuota' => $cuota
-						];
 
-						#$prest['prestamo'][] =  $row;
-						$prest['total']     += $cuota;
-						#$prest['total']     += (($row['cuotamensual'] <= $saldo)?$row['cuotamensual']:$saldo);
+						if ($saldo > 0) {
+							$cuota = (($pr->pre->cuotamensual < $saldo)?$pr->pre->cuotamensual:$saldo);
+							
+							$prest['prestamo'][] = [
+								'id'    => $pr->pre->id,
+								'cuota' => $cuota
+							];
+
+							$prest['total'] += $cuota;
+						}
 					}
 				}
 			}
@@ -955,7 +954,7 @@ EOT;
 		);
 
 		$saldoPrestamos    = $this->get_saldo_prestamo();
-		$anticiposPostBaja = $this->get_anticipos_post_baja();
+		$anticiposPostBaja = 0; /* $this->get_anticipos_post_baja() */
 		$valorDeducido     = ($saldoPrestamos+$anticiposPostBaja+elemento($args, 'otrosdesc_monto', 0));
 		$liquidoRecibir    = ($totalPrestaciones-$valorDeducido);
 
