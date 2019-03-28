@@ -76,6 +76,8 @@
 							<th class="text-right" ng-show="shingresos_dos" title="Horas Extras Dobles">Horas Dobles</th>
 							
 							<!-- th class="text-right" ng-show="shingresos_dos" title="Días Tabajados">Días</th -->
+							
+							<th class="text-right" ng-show="shdescuentos">Desc. IGSS</th>
 							<th class="text-right" ng-show="shdescuentos">Préstamo</th>
 							<th class="text-right" ng-show="shdescuentos" title="Retención de ISR">ISR</th>
 							<th class="text-right" ng-show="shdescuentos" title="Otros Descuentos">Otros</th>
@@ -105,6 +107,7 @@
 
 							
 							<!-- td class="text-right" ng-show="shingresos_dos"><input type="number" step="0.01"></td -->
+							<td class="text-right" ng-show="shdescuentos"><input type="number" step="0.01" ng-model="valor.descigss" string-to-number ng-blur="actualizarNomina(valor, indice)"></td>
 							<td class="text-right" ng-show="shdescuentos"><input type="number" step="0.01" ng-model="valor.descprestamo" string-to-number ng-blur="actualizarNomina(valor, indice)"></td>
 							<td class="text-right" ng-show="shdescuentos"><input type="number" step="0.01" ng-model="valor.descisr" string-to-number ng-blur="actualizarNomina(valor, indice)"></td>
 							<td class="text-right" ng-show="shdescuentos"><input type="number" step="0.01" ng-model="valor.descotros" string-to-number ng-blur="actualizarNomina(valor, indice)"></td>
