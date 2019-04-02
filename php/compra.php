@@ -2,7 +2,9 @@
 require 'vendor/autoload.php';
 require_once 'db.php';
 
-$app = new \Slim\Slim();
+$plantillas = $_SERVER["DOCUMENT_ROOT"] . "/sayet/pages";
+
+$app = new \Slim\Slim(array('templates.path' => $plantillas));
 $app->response->headers->set('Content-Type', 'application/json');
 
 //API para compras
@@ -410,44 +412,37 @@ $app->post('/rptcompisr', function(){
     print json_encode($info);
 });
 
-$app->post('/rptcompra', function(){
-	
-	$d = json_decode(file_get_contents('php://input'));
-	
-	$acompra = array();
-	
+function getCompraDetalle($compra)
+{
     $db = new dbcpm();
     $query = "SELECT a.id, a.idempresa, d.nomempresa, a.idproveedor, b.nombre AS nomproveedor, a.serie, a.documento, a.fechaingreso, ";
     $query.= "a.mesiva, a.fechafactura, a.idtipocompra, c.desctipocompra, a.conceptomayor, a.creditofiscal, a.extraordinario, a.fechapago, ";
     $query.= "a.ordentrabajo, a.totfact, a.noafecto, a.subtotal, a.iva, a.idmoneda, a.tipocambio, f.simbolo AS moneda, ";
     $query.= "a.idtipofactura, g.desctipofact AS tipofactura, a.isr, a.idtipocombustible, h.descripcion AS tipocombustible, a.galones, a.idp, ";
-    $query.= "a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, g.siglas, a.idproyecto ";
+    $query.= "a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, g.siglas, a.idproyecto, i.nomproyecto ";
     $query.= "FROM compra a INNER JOIN proveedor b ON b.id = a.idproveedor INNER JOIN tipocompra c ON c.id = a.idtipocompra ";
     $query.= "INNER JOIN empresa d ON d.id = a.idempresa LEFT JOIN moneda f ON f.id = a.idmoneda LEFT JOIN tipofactura g ON g.id = a.idtipofactura ";
     $query.= "LEFT JOIN tipocombustible h ON h.id = a.idtipocombustible ";
-    $query.= "WHERE a.id = ".$d->idcompra;
-	
-	$infocompra = $db->getQuery($query);
-	
-	$query = "SELECT a.id, a.origen, a.idorigen, a.idcuenta, CONCAT('(', b.codigo, ') ', b.nombrecta) AS desccuentacont, ";
+    $query.= "LEFT JOIN proyecto i ON i.id = a.idproyecto ";
+    $query.= "WHERE a.id = {$compra}";
+    
+    $infocompra = $db->getQuery($query);
+    
+    $query = "SELECT a.id, a.origen, a.idorigen, a.idcuenta, CONCAT('(', b.codigo, ') ', b.nombrecta) AS desccuentacont, ";
     $query.= "a.debe, a.haber, a.conceptomayor ";
     $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta ";
-    $query.= "WHERE a.origen = 2 AND a.idorigen = ".$d->idcompra." ";
+    $query.= "WHERE a.origen = 2 AND a.idorigen = {$compra} ";
     $query.= "ORDER BY a.debe DESC, a.haber, b.codigo";
     $res1 = $db->getQuery($query);
+    
+    return [ "compra" => $infocompra, "detalle" => $res1];
+}
 
-    /*$query = "SELECT 0 AS id, origen, idorigen, IF(SUM(debe) = SUM(haber), 0, -1) AS idcuenta, 'Total de partida' AS desccuentacont, ";
-    $query.= "SUM(debe) AS debe, SUM(haber) AS haber, IF(SUM(debe) = SUM(haber), 'Partida cuadrada', 'Partida descuadrada') AS conceptomayor ";
-    $query.= "FROM detallecontable ";
-    $query.= "WHERE origen = 2 AND idorigen = ".$d->idcompra." ";
-    $query.= "GROUP BY origen, idorigen";
-    $res2 = $db->getQuery($query);*/
-
-    //if(count($res1) > 0){ array_push($res1, $res2[0]); }
+$app->post('/rptcompra', function(){
 	
-	$acompra = [ "compra" => $infocompra, "detalle" => $res1];
+	$d = json_decode(file_get_contents('php://input'));
 	
-    print json_encode($acompra);
+    print json_encode(getCompraDetalle($d->idcompra));
 });
 
 //API para detalle de proyectos que son afectados en las compras
@@ -521,6 +516,13 @@ $app->get('/fillproycomp', function(){
         }
     }
     print json_encode(['mensaje' => 'Proceso terminado...']);
+});
+
+$app->get('/comprobante/:id', function($id) use ($app) {
+    require_once 'ayuda.php';
+
+    $app->response->headers->set('Content-Type', 'text/html');
+    $app->render("compra/comprobante.php", getCompraDetalle($id));
 });
 
 $app->run();

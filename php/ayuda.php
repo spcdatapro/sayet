@@ -321,3 +321,22 @@ if ( ! function_exists('estadoCivil')) {
 		return $nombre;
 	}
 }
+
+
+if( ! function_exists('suma_field')){
+	function suma_field($datos, $campo, $args = array()){
+		$suma_campo = 0;
+
+		foreach ($datos as $row) {
+			if (empty($args)) {
+				$suma_campo += (is_array($row) ? $row[$campo] : $row->$campo);
+			} else {
+				if ($tmp->$columna == $valor) {
+					$suma_campo += (is_array($row) ? $row[$campo] : $row->$campo);
+				}
+			}
+		}
+		
+		return $suma_campo;
+	}
+}
