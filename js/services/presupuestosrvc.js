@@ -45,6 +45,12 @@
             setNotificado: function(idusr){
                 return comunFact.doGET(urlBase + '/setnotificado/' + idusr);
             },
+            lstAmpliaciones: function(iddetpresup){
+                return comunFact.doGET(urlBase + '/ampliapresup/' + iddetpresup);
+            },
+            getAmpliacion: function(idamplia){
+                return comunFact.doGET(urlBase + '/getampliapresup/' + idamplia);
+            },
             editRow: function(obj, op){
                 return comunFact.doPOST(urlBase + '/' + op, obj);
             }

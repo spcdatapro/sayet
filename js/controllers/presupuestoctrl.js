@@ -329,6 +329,7 @@
 
         $scope.setOrigenProvOt = function(item, model){
             $scope.ot.origenprov = +item.dedonde;
+            $scope.ot.retieneisr = +item.retieneisr;
         };
 
         $scope.addOt = function(obj){
@@ -362,6 +363,21 @@
                 animation: true,
                 templateUrl: 'modalDetPagosOt.html',
                 controller: 'ModalDetPagosOtCtrl',
+                resolve:{
+                    ot: function(){ return obj; },
+                    permiso: function(){ return $scope.permiso; }
+                }
+            });
+            modalInstance.result.then(function(obj){
+                //console.log(obj);
+            }, function(){ return 0; });
+        };
+
+        $scope.ampliar = function(obj){
+            var modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: 'modalAmpliarOt.html',
+                controller: 'ModalAmpliarOtCtrl',
                 resolve:{
                     ot: function(){ return obj; },
                     permiso: function(){ return $scope.permiso; }
@@ -424,7 +440,10 @@
         }
 
         $scope.loadData = function(){
-            presupuestoSrvc.lstDetPagoOt($scope.ot.id).then(function(d){ $scope.lstdetpagos = procDataDet(d); });
+            presupuestoSrvc.lstDetPagoOt($scope.ot.id).then(function(d){
+                $scope.lstdetpagos = procDataDet(d);
+                // $scope.calculaISR(); // Se quita temporalmente este cambio 04/04/2019
+            });
         };
 
         //$scope.ok = function () { $uibModalInstance.close(); };
@@ -435,21 +454,28 @@
 
         $scope.loadData();
 
+        $scope.calculaISR = function(){
+            presupuestoSrvc.editRow({idot: $scope.ot.id, monto: $scope.fpago.monto}, 'calcisr').then(function(d){
+                $scope.fpago.isr = d.isr;
+            });
+        };
+
         $scope.calcValor = function(){
             var tmpVal = parseFloat(parseFloat($scope.fpago.porcentaje * parseFloat($scope.ot.monto) / 100.0000).toFixed(2));
             if( ($scope.sumvalor + tmpVal) <= parseFloat($scope.ot.monto) ){
                 $scope.fpago.monto = tmpVal;
+                // $scope.calculaISR(); // Se quita temporalmente este cambio 04/04/2019
             }else{
                 toaster.pop('error', 'Error en el monto', 'La suma de las formas de pago no puede exceder al total de la OT', 'timeout:1500');
                 $scope.loadData();
             }
-
         };
 
         $scope.calcPorcentaje = function(){
             var tmpPor = parseFloat(parseFloat(parseFloat($scope.fpago.monto) * 100.0000 / parseFloat($scope.ot.monto)).toFixed(4));
             if(($scope.sumporcentaje + tmpPor) <= 100){
                 $scope.fpago.porcentaje = tmpPor;
+                // $scope.calculaISR(); // Se quita temporalmente este cambio 04/04/2019
             }else{
                 toaster.pop('error', 'Error en el porcentaje', 'La suma porcentual no puede ser mayor a 100.00%', 'timeout:1500');
                 $scope.loadData();
@@ -461,6 +487,7 @@
         };
 
         $scope.addFormaPago = function(obj){
+            obj.isr = 0.00;
             obj.notas = obj.notas !== undefined && obj.notas != null ? obj.notas : '';
             presupuestoSrvc.editRow(obj, 'cdp').then(function(){
                 $scope.loadData();
@@ -512,5 +539,61 @@
         $scope.cancel = function () { $uibModalInstance.dismiss('cancel'); };
 
     }]);
+
+    //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    presupuestoctrl.controller('ModalAmpliarOtCtrl', ['$scope', '$uibModalInstance', '$filter', 'toaster', '$confirm', 'presupuestoSrvc', 'ot', 'permiso', function($scope, $uibModalInstance, $filter, toaster, $confirm, presupuestoSrvc, ot, permiso){
+        $scope.ot = ot;
+        $scope.lstampliaciones = [];
+        $scope.amplia = { idpresupuesto: ot.idpresupuesto, iddetpresupuesto: ot.id };
+        $scope.permiso = permiso;
+        $scope.sumaAmpliaciones = 0.00;
+
+        function procDataDet(d){
+            $scope.sumaAmpliaciones = 0.00;
+            for(var i = 0; i < d.length; i++){
+                //id, idpresupuesto, iddetpresupuesto, correlativoamplia, monto, notas
+                d[i].id = +d[i].id;
+                d[i].idpresupuesto = +d[i].idpresupuesto;
+                d[i].iddetpresupuesto = +d[i].iddetpresupuesto;
+                d[i].correlativoamplia = +d[i].correlativoamplia;
+                d[i].monto = parseFloat(d[i].monto);
+                $scope.sumaAmpliaciones += d[i].monto;
+            }
+            return d;
+        }
+
+        $scope.loadData = function(){
+            presupuestoSrvc.lstAmpliaciones($scope.ot.id).then(function(d){
+                $scope.lstampliaciones = procDataDet(d);
+            });
+        };
+
+        $scope.cancel = function () {
+            $uibModalInstance.dismiss('cancel');
+        };
+
+        $scope.resetAmpliacion = function(){
+            $scope.amplia = { idpresupuesto: ot.idpresupuesto, iddetpresupuesto: ot.id };
+        };
+
+        $scope.addAmpliacion = function(obj){
+            obj.notas = obj.notas !== undefined && obj.notas != null ? obj.notas : '';
+            presupuestoSrvc.editRow(obj, 'cap').then(function(){
+                $scope.loadData();
+                $scope.resetAmpliacion();
+            });
+        };
+
+        $scope.delAmpliacion = function(obj){
+            $confirm({text: '¿Esta seguro(a) de eliminar la ampliación No. ' + obj.correlativoamplia + '?', title: 'Eliminar ampliación', ok: 'Sí', cancel: 'No'}).then(function() {
+                presupuestoSrvc.editRow({idamplia: obj.id}, 'dap').then(function(){ $scope.loadData(); $scope.resetAmpliacion(); });
+            });
+        };
+
+        $scope.loadData();
+        console.log(ot);
+
+    }]);
+
 
 }());

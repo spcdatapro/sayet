@@ -483,11 +483,14 @@
                             <td style="text-align: right">{{o.moneda}} {{o.monto | number:2}}</td>
                             <td style="text-align: right">{{o.tipocambio | number:4}}</td>
                             <td style="text-align: center">
-                                <button type="button" class="btn btn-sm btn-info" ng-click="verDetPagos(o)">
+                                <button type="button" class="btn btn-sm btn-info" ng-click="verDetPagos(o)" data-toggle="tooltip" data-placement="auto" title="Ver detalle de pagos...">
                                     <i class="fa fa-money fa-lg" aria-hidden="true"></i>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-info" ng-click="printOt(o.id)">
+                                <button type="button" class="btn btn-sm btn-info" ng-click="printOt(o.id)" data-toggle="tooltip" data-placement="auto" title="Imprimir...">
                                     <i class="fa fa-print fa-lg" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-info" ng-click="ampliar(o)" data-toggle="tooltip" data-placement="auto" title="Ampliar presupuesto...">
+                                    <i class="fas fa-plane-departure"></i>
                                 </button>
                                 <button type="button" class="btn btn-sm btn-primary" ng-click="aumentaExcedente(o, true)" ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo !== 1"
                                         data-toggle="tooltip" data-placement="auto" title="Cambiar porcentaje de excedente...">
@@ -526,7 +529,18 @@
                             <input name="txtMontoDetP" id="txtMontoDetP" type="number" class="form-control input-sm" ng-model="fpago.monto" step="0.01" min="0.01" ng-blur="calcPorcentaje()" required/>
                         </div>
                     </div>
-                    <div class="col-md-6 nopadding">
+                    <!-- Se quita este cambio temporalmente hasta que se resuelva como se puede hacer 04/04/2019 -->
+                    <!--
+                    <div class="col-md-3 nopadding">
+                        <div class="form-group">
+                            <label for="txtMontoDetPISR">I.S.R.:</label>
+                            <input name="txtMontoDetPISR" id="txtMontoDetPISR" type="number" class="form-control input-sm" ng-model="fpago.isr" step="0.01" min="0" ng-disabled="true" required/>
+                        </div>
+                    </div>
+                    -->
+                </div>
+                <div class="row">
+                    <div class="col-md-12 nopadding">
                         <div class="form-group">
                             <label for="txtNotas">Notas:</label>
                             <textarea name="txtNotas" id="txtNotas" class="form-control input-sm" rows="1" maxlength="1000" ng-model="fpago.notas" placeholder="Notas para el pago..." style="width: 100%"></textarea>
@@ -546,6 +560,7 @@
                     <th style="text-align: right">No.</th>
                     <th style="text-align: right">%</th>
                     <th style="text-align: right">Monto</th>
+                    <!--<th style="text-align: right">I.S.R.</th>-->
                     <th>&nbsp;</th>
                 </tr>
                 </thead>
@@ -554,6 +569,7 @@
                     <td style="text-align: right">{{det.nopago}}</td>
                     <td style="text-align: right">{{det.porcentaje | number:4}}</td>
                     <td style="text-align: right">{{det.monto | number:2}}</td>
+                    <!--<td style="text-align: right">{{det.isr | number:2}}</td>-->
                     <td>
                         <button type="button" class="btn btn-danger btn-sm" ng-click="delFormaPago(det)" ng-show="permiso.e">
                             <span class="glyphicon glyphicon-trash"></span>
@@ -612,4 +628,75 @@
             <button class="btn btn-info" type="button" ng-click="cancel()">Cancelar</button>
         </div>
     </script>
+
+    <script type="text/ng-template" id="modalAmpliarOt.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Ampliaciones de OT No. {{ot.idpresupuesto}}-{{ot.correlativo}}</h3>
+            <h4>
+                Proveedor/beneficiario: {{ot.proveedor}}<br/>
+                Sub-tipo de gasto: {{ot.subtipogasto}}<br/>
+                Total de presupuesto: {{ot.moneda}}&nbsp;{{ot.total | number:2}}<br/>
+                Monto de OT: {{ot.moneda}}&nbsp;{{ot.monto | number:2}}
+            </h4>
+        </div>
+        <div class="modal-body" style="height: 500px; overflow-y: auto">
+            <form name="frmAmpliacion" id="frmAmpliacion" ng-submit="frmAmpliacion.$valid && addAmpliacion(amplia)" novalidate>
+                <div class="row">
+                    <div class="col-md-3 nopadding">
+                        <div class="form-group">
+                            <label for="txtMontoAmpliacion">Monto:</label>
+                            <input name="txtMontoAmpliacion" id="txtMontoAmpliacion" type="number" class="form-control input-sm" ng-model="amplia.monto" step="0.01" min="0.01" required/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 nopadding">
+                        <div class="form-group">
+                            <label for="txtNotasAmpliacion">Notas:</label>
+                            <textarea name="txtNotasAmpliacion" id="txtNotasAmpliacion" class="form-control input-sm" rows="1" maxlength="1000" ng-model="amplia.notas" placeholder="Notas..." style="width: 100%"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="submit" class="btn btn-info" ng-disabled="frmAmpliacion.$invalid" ng-show="permiso.m">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                </div>
+            </form>
+            <hr ng-show="sumporcentaje < 100"/>
+            <table class="table table-hover table-condensed">
+                <thead>
+                <tr>
+                    <th style="text-align: right">No.</th>
+                    <th style="text-align: right">Monto</th>
+                    <th>Notas</th>
+                    <th>&nbsp;</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="det in lstampliaciones">
+                    <td style="text-align: right">{{det.correlativoamplia}}</td>
+                    <td style="text-align: right">{{det.monto | number:2}}</td>
+                    <td><p>{{det.notas}}</p></td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm" ng-click="delAmpliacion(det)" ng-show="permiso.e">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                    </td>
+                </tr>
+                <tr ng-show="lstampliaciones.length > 0">
+                    <th style="text-align: right">Total:</th>
+                    <th style="text-align: right">{{sumaAmpliaciones | number:2}}</th>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <!--<button class="btn btn-info" type="button" ng-click="ok()">Aceptar</button>-->
+            <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
+        </div>
+    </script>
+
 </div>
