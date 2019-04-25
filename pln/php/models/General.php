@@ -248,13 +248,25 @@ class General extends Principal
 	public function get_campo_impresion($campo, $tipo)
 	{
 		return (object)$this->db->get(
-			"plnimpresion", 
+			"fimpresion", 
 			['*'], 
 			[
 				'AND' => [
 					'campo' => $campo, 
 					'tipo'  => $tipo
 				]
+			]
+		);
+	}
+
+	public function get_impresion($tipo)
+	{
+		return $this->db->select(
+			"fimpresion", 
+			["*"], 
+			[
+				"tipo" => $tipo,
+				"ORDER" => ["psy ASC", "psx ASC"]
 			]
 		);
 	}

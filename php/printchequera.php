@@ -1,7 +1,15 @@
 <?php
+
+define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
+define('PLNPATH', BASEPATH . '/pln/php');
+
 require_once 'fpdf.php';
 require_once 'db.php';
 require_once 'NumberToLetterConverter.class.php';
+
+require BASEPATH . "/php/ayuda.php";
+require PLNPATH . '/Principal.php';
+require PLNPATH . '/models/General.php';
 
 class PDF extends FPDF{
     // Tabla simple
@@ -80,7 +88,7 @@ function getConceptoExtra($db, $idtranban, $idproyecto, $iddetpagopresup){
 $meses = [1 => 'enero', 2 => 'febrero', 3 => 'marzo', 4 => 'abril', 5 => 'mayo', 6 => 'junio', 7 => 'julio', 8 => 'agosto', 9 => 'septiembre', 10 => 'octubre', 11 => 'noviembre', 12 => 'diciembre'];
 $db = new dbcpm();
 $numCheque = (int)$_GET['c'];
-$query = "SELECT a.id, a.numero, a.fecha, DAY(a.fecha) AS dia, MONTH(a.fecha) AS mes, YEAR(a.fecha) AS anio, FORMAT(a.monto, 2) AS montostr, a.monto, a.beneficiario, a.concepto, a.esnegociable, ";
+$query = "SELECT a.id, a.numero, a.fecha, DAY(a.fecha) AS dia, MONTH(a.fecha) AS mes, YEAR(a.fecha) AS anio, FORMAT(a.monto, 2) AS montostr, a.monto, a.beneficiario, a.concepto, a.esnegociable, b.idfimpresiontipo, ";
 $query.= "CONCAT(b.nombre, ' / ', c.nommoneda, ' / ', b.nocuenta, ' / Cheque No. ', a.numero) AS banco, d.nomempresa AS empresa, a.idproyecto, a.iddetpagopresup ";
 $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN moneda c ON c.id = b.idmoneda INNER JOIN empresa d ON d.id = b.idempresa ";
 $query.= "WHERE a.id = ".$numCheque;
@@ -91,9 +99,9 @@ $n2l = new NumberToLetterConverter();
 
 $query = "SELECT b.codigo, ";
 $query.= "IF(LENGTH(b.nombrecta) > 20, CONCAT(SUBSTR(b.nombrecta, 1, 17), '...'), b.nombrecta) AS nombrecta, ";
-$query.= "a.debe, a.haber FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta WHERE a.origen = 1 AND a.idorigen = ".$numCheque." ORDER BY a.debe DESC";
+$query.= "a.debe, FORMAT(a.debe, 2) as debestr, a.haber, FORMAT(a.haber, 2) as haberstr FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta WHERE a.origen = 1 AND a.idorigen = ".$numCheque." ORDER BY a.debe DESC";
 $detcont = $db->getQueryAsArray($query);
-$query = "SELECT '' AS codigo, 'TOTALES' AS nombrecta, SUM(a.debe) AS debe, SUM(a.haber) AS haber FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta WHERE a.origen = 1 AND a.idorigen = ".$numCheque;
+$query = "SELECT '' AS codigo, 'TOTALES' AS nombrecta, SUM(a.debe) AS debe, FORMAT(SUM(a.debe),2) AS debestr, SUM(a.haber) AS haber, FORMAT(SUM(a.haber), 2) AS haberstr FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta WHERE a.origen = 1 AND a.idorigen = ".$numCheque;
 $totdet = $db->getQueryAsArray($query);
 array_push($detcont, $totdet[0]);
 //var_dump($detcont);
@@ -101,6 +109,69 @@ array_push($detcont, $totdet[0]);
 //Comentado el 07/02/2017 para que puedan hacer las pruebas de ajustes de impresión. Al terminar las pruebas de ajuste DEBE habilitarse de nuevo.
 $query = "UPDATE tranban SET impreso = 1 WHERE id = ".$numCheque;
 $db->doQuery($query);
+
+if (isset($_GET["ver"])) {
+    $cheque->monto_letra = $n2l->to_word_int($cheque->monto);
+    $cheque->esnegociabletxt = $cheque->esnegociable == 0 ? 'NO NEGOCIABLE':'';
+    $cheque->mes_nombre = $meses[(int)$cheque->mes];
+
+    header('Content-Description: File Transfer');
+    header("Content-Type: text/plain");
+    header("Content-Disposition: attachment; filename=Cheque_{$cheque->id}.rstch"); 
+    header('Content-Transfer-Encoding: binary');
+
+    $gen = new General();
+
+    $imp = $gen->get_impresion($cheque->idfimpresiontipo);
+    $coordenadas = [];
+
+    foreach ($imp as $row) {
+        if ($row["visible"] == 1) {
+            if (strpos($row["campo"], "{{det_") === false) {
+                $campo = $row["campo"];
+
+                foreach ((array)$cheque as $key => $value) {
+                    $campo = str_replace("{{".$key."}}", $value, $campo);
+                }
+
+                if (!isset($coordenadas[$row["psy"]][$row["psx"]])) {
+                    $coordenadas[$row["psy"]][$row["psx"]] = [];
+                }
+
+                $coordenadas[$row["psy"]][$row["psx"]][] = $row["alineacion"]."|".$row["ancho"]."|".$campo;
+            } else {
+                foreach ($detcont as $ncta => $detalle) {
+                    $campo = $row["campo"];
+                    $psy = ($row["psy"] + ($row["espacio"] * $ncta));
+
+                    foreach ($detalle as $key => $value) {
+                        $campo = str_replace("{{".getCampoContable($key)."}}", $value, $campo);
+                    }
+
+                    if (!isset($coordenadas[$psy][$row["psx"]])) {
+                        $coordenadas[$psy][$row["psx"]] = [];
+                    }
+
+                    $coordenadas[$psy][$row["psx"]][] = $row["alineacion"]."|".$row["ancho"]."|".$campo;
+                }
+            }
+        }
+    }
+
+    ksort($coordenadas);
+
+    foreach ($coordenadas as $psy => $detalle) {
+        ksort($detalle);
+
+        foreach ($detalle as $psx => $datos) {
+            foreach ($datos as $txt) {
+                echo $psx."|".$psy."|".$txt."\n";
+            }
+        }
+    }
+
+    die("FINCHEQUE\n");
+}
 
 
 //Creación del PDF
