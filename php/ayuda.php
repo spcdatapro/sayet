@@ -340,3 +340,21 @@ if( ! function_exists('suma_field')){
 		return $suma_campo;
 	}
 }
+
+if ( ! function_exists('getCampoContable')) {
+	function getCampoContable($posicion)
+	{
+		switch ($posicion) {
+            case 0:
+                return "det_cuenta";
+            case 1:
+                return "det_concepto";
+            case 3:
+                return "det_debe";
+            case 5:
+                return "det_haber";
+            default:
+                return "";
+        }
+	}
+}
