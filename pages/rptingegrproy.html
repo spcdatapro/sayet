@@ -30,10 +30,10 @@
                         <select name="selProyecto" id="selProyecto" class="form-control input-sm" ng-model="params.idproyecto" ng-options="obj.id as obj.nomproyecto for obj in proyectos"></select>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <div class="form-group required">
-                        <label for="txtMes" class="control-label">Mes:</label>
-                        <select name="txtMes" id="txtMes" class="form-control input-sm" ng-model="params.mes">
+                        <label for="selDeMes" class="control-label">De:</label>
+                        <select name="selDeMes" id="selDeMes" class="form-control input-sm" ng-model="params.dmes">
                             <option value="1">Enero</option>
                             <option value="2">Febrero</option>
                             <option value="3">Marzo</option>
@@ -49,7 +49,26 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
+                    <div class="form-group required">
+                        <label for="txtMes" class="control-label">A:</label>
+                        <select name="txtMes" id="txtMes" class="form-control input-sm" ng-model="params.ames">
+                            <option value="1">Enero</option>
+                            <option value="2">Febrero</option>
+                            <option value="3">Marzo</option>
+                            <option value="4">Abril</option>
+                            <option value="5">Mayo</option>
+                            <option value="6">Junio</option>
+                            <option value="7">Julio</option>
+                            <option value="8">Agosto</option>
+                            <option value="9">Septiembre</option>
+                            <option value="10">Octubre</option>
+                            <option value="11">Noviembre</option>
+                            <option value="12">Diciembre</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
                     <div class="form-group required">
                         <label for="txtAnio" class="control-label">A&ntilde;o:</label>
                         <input name="txtAnio" id="txtAnio" type="number" class="form-control input-sm" min="2010" ng-model="params.anio"/>
@@ -76,27 +95,28 @@
     </div>
     <hr/>
     <!-- Inicia formato de resumen -->
-    <small ng-show="datos != null && datos != undefined">
+    <small ng-show="rangeData.length > 0">
+        <div class="repHeader">
+            <h3>{{rangeData[0].nomproyecto}} - {{rangeData[0].referencia}}</h3>
+            <h4>{{rangeData[0].empresa}} ({{rangeData[0].abreviaempresa}})</h4>
+            <h5>{{rangeData[0].anio}}</h5>
+        </div>
         <div class="table-responsive">
-            <table class="table table-condensed table-hover table-stripped" style="font-family: Arial !important;">
+            <table class="table table-condensed table-hover table-stripped" style="font-family: Arial !important;" ng-repeat="rango in rangeData">
                 <caption>
-                    <div class="repHeader">
-                        <h3>{{datos.proyecto.nomproyecto}} - {{datos.proyecto.referencia}}</h3>
-                        <h4>{{datos.proyecto.empresa}} ({{datos.proyecto.abreviaempresa}})</h4>
-                        <h5>{{datos.proyecto.mes}} {{datos.proyecto.anio}}</h5>
-                    </div>
+                    <h4 style="font-weight: bolder">{{rango.datos.proyecto.mes}}</h4>
                 </caption>
                 <tr>
                     <th colspan="2" class="tituloIngEgr">INGRESOS</th>
                 </tr>
-                <tr ng-repeat="ing in datos.ingresos" ng-class="{'total brdfin': $last }">
+                <tr ng-repeat="ing in rango.datos.ingresos" ng-class="{'total brdfin': $last }">
                     <td class="tab">{{ing.concepto | uppercase}}</td>
                     <td class="num">{{ing.monto | number:2}}</td>
                 </tr>
                 <tr>
                     <th colspan="2" class="tituloIngEgr">EGRESOS</th>
                 </tr>
-                <tr ng-repeat="egr in datos.egresos" ng-class="{'total brdfin': $last }">
+                <tr ng-repeat="egr in rango.datos.egresos" ng-class="{'total brdfin': $last }">
                     <td class="tab">{{egr.concepto | uppercase}}</td>
                     <td class="num">{{egr.monto | number:2}}</td>
                 </tr>
@@ -108,20 +128,21 @@
     </small>
     <!-- Finaliza formato de resumen -->
     <!-- Inicia formato de detalle -->
-    <small ng-show="datosdet != null && datosdet != undefined">
+    <small ng-show="rangeDataDetalle.length > 0">
+        <div class="repHeader">
+            <h3>{{rangeDataDetalle[0].nomproyecto}} - {{rangeDataDetalle[0].referencia}}</h3>
+            <h4>{{rangeDataDetalle[0].empresa}} ({{rangeDataDetalle[0].abreviaempresa}})</h4>
+            <h5>{{rangeDataDetalle[0].mes}} {{rangeDataDetalle[0].anio}}</h5>
+        </div>
         <div class="table-responsive">
-            <table class="table table-condensed table-hover table-stripped" style="font-family: Arial !important; border-collapse: collapse !important;">
+            <table class="table table-condensed table-hover table-stripped" style="font-family: Arial !important; border-collapse: collapse !important;" ng-repeat="rango in rangeDataDetalle">
                 <caption>
-                    <div class="repHeader">
-                        <h3>{{datosdet.proyecto.nomproyecto}} - {{datosdet.proyecto.referencia}}</h3>
-                        <h4>{{datosdet.proyecto.empresa}} ({{datosdet.proyecto.abreviaempresa}})</h4>
-                        <h5>{{datosdet.proyecto.mes}} {{datosdet.proyecto.anio}}</h5>
-                    </div>
+                    <h4 style="font-weight: bolder">{{rango.datos.proyecto.mes}}</h4>
                 </caption>
                 <tr>
                     <th colspan="3" class="tituloIngEgr">INGRESOS</th>
                 </tr>
-                <tr ng-repeat="ing in datosdet.ingresos" ng-class="{'total brdfin': $last }">
+                <tr ng-repeat="ing in rango.datos.ingresos" ng-class="{'total brdfin': $last }">
                     <td class="tab bld subrayado" style="width:15% !important;">{{ing.concepto | uppercase}}</td>
                     <td style="width:70% !important; vertical-align: top !important;">
                         <table class="smtxt" style="width: 100%; border-collapse: collapse !important;" ng-hide="$last">
@@ -152,7 +173,7 @@
                 <tr>
                     <th colspan="3" class="tituloIngEgr">EGRESOS</th>
                 </tr>
-                <tr ng-repeat="egr in datosdet.egresos" ng-class="{'total brdfin': $last }">
+                <tr ng-repeat="egr in rango.datos.egresos" ng-class="{'total brdfin': $last }">
                     <td class="tab bld subrayado" style="width:15% !important;">{{egr.concepto | uppercase}}</td>
                     <td style="width:70% !important; vertical-align: top !important;">
                         <table class="smtxt" style="width: 100%; border-collapse: collapse !important;" ng-hide="$last">
