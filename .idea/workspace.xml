@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/controllers/rptingegrproyctrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/rptingegrproyctrl.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pages/rptingegrproy.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/rptingegrproy.html" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
@@ -44,8 +42,8 @@
       <file leaf-file-name="rptingegrproy.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pages/rptingegrproy.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="669">
-              <caret line="139" column="51" selection-start-line="139" selection-start-column="51" selection-end-line="139" selection-end-column="51" />
+            <state relative-caret-position="380">
+              <caret line="134" column="49" lean-forward="true" selection-start-line="134" selection-start-column="49" selection-end-line="134" selection-end-column="49" />
               <folding>
                 <element signature="n#div#0;n#div#0;n#!!top" />
                 <element signature="n#style#0;n#table#0;n#div#0;n#small#0;n#div#0;n#!!top" expanded="true" />
@@ -59,7 +57,7 @@
       <file leaf-file-name="rptingegrproyctrl.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/controllers/rptingegrproyctrl.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="383">
+            <state relative-caret-position="544">
               <caret line="68" column="30" lean-forward="true" selection-start-line="68" selection-start-column="30" selection-end-line="68" selection-end-column="30" />
               <folding>
                 <element signature="e#732#1092#0" />
@@ -67,29 +65,6 @@
                 <element signature="e#1504#1759#0" />
                 <element signature="e#2106#2367#0" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rptingegrproysrvc.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/services/rptingegrproysrvc.js">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file leaf-file-name="rptingegrproy.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/php/rptingegrproy.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-442">
-              <caret line="10" column="55" lean-forward="true" selection-start-line="10" selection-start-column="55" selection-end-line="10" selection-end-column="55" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rptsumarioctrl.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/controllers/rptsumarioctrl.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="162">
-              <caret line="38" column="87" lean-forward="true" selection-start-line="38" selection-start-column="87" selection-end-line="38" selection-end-column="87" />
             </state>
           </provider>
         </entry>
@@ -1078,12 +1053,12 @@
       <workItem from="1554765583914" duration="604000" />
       <workItem from="1554777419573" duration="15000" />
       <workItem from="1556051260078" duration="610000" />
-      <workItem from="1556296890987" duration="5896000" />
+      <workItem from="1556296890987" duration="6337000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3064035000" />
+    <option name="totallyTimeSpent" value="3064476000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1453,6 +1428,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/compractrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="122" column="11" lean-forward="true" selection-start-line="118" selection-start-column="8" selection-end-line="122" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/php/rptingegrproy.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-442">
@@ -1462,15 +1444,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/js/controllers/rptsumarioctrl.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
+        <state relative-caret-position="176">
           <caret line="38" column="87" lean-forward="true" selection-start-line="38" selection-start-column="87" selection-end-line="38" selection-end-column="87" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/compractrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="122" column="11" lean-forward="true" selection-start-line="118" selection-start-column="8" selection-end-line="122" selection-end-column="11" />
         </state>
       </provider>
     </entry>
@@ -1479,7 +1454,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/js/controllers/rptingegrproyctrl.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="383">
+        <state relative-caret-position="544">
           <caret line="68" column="30" lean-forward="true" selection-start-line="68" selection-start-column="30" selection-end-line="68" selection-end-column="30" />
           <folding>
             <element signature="e#732#1092#0" />
@@ -1492,8 +1467,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pages/rptingegrproy.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="669">
-          <caret line="139" column="51" selection-start-line="139" selection-start-column="51" selection-end-line="139" selection-end-column="51" />
+        <state relative-caret-position="380">
+          <caret line="134" column="49" lean-forward="true" selection-start-line="134" selection-start-column="49" selection-end-line="134" selection-end-column="49" />
           <folding>
             <element signature="n#div#0;n#div#0;n#!!top" />
             <element signature="n#style#0;n#table#0;n#div#0;n#small#0;n#div#0;n#!!top" expanded="true" />
