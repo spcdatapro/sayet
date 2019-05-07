@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/pages/rptingegrproy.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/rptingegrproy.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -38,33 +38,12 @@
     <favorites_list name="cpm" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="rptingegrproy.html" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/pages/rptingegrproy.html">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="tranfactcompra.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/pages/tranfactcompra.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="380">
-              <caret line="134" column="49" lean-forward="true" selection-start-line="134" selection-start-column="49" selection-end-line="134" selection-end-column="49" />
-              <folding>
-                <element signature="n#div#0;n#div#0;n#!!top" />
-                <element signature="n#style#0;n#table#0;n#div#0;n#small#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#h4#0;n#caption#0;n#table#0;n#div#1;n#small#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#h4#0;n#caption#0;n#table#0;n#div#1;n#small#1;n#div#0;n#!!top" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="rptingegrproyctrl.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/controllers/rptingegrproyctrl.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="544">
-              <caret line="68" column="30" lean-forward="true" selection-start-line="68" selection-start-column="30" selection-end-line="68" selection-end-column="30" />
-              <folding>
-                <element signature="e#732#1092#0" />
-                <element signature="e#1290#1456#0" />
-                <element signature="e#1504#1759#0" />
-                <element signature="e#2106#2367#0" />
-              </folding>
+            <state relative-caret-position="459">
+              <caret line="363" column="76" selection-start-line="363" selection-start-column="59" selection-end-line="363" selection-end-column="76" />
             </state>
           </provider>
         </entry>
@@ -221,8 +200,8 @@
     </include_path>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-220" />
-    <option name="y" value="-21" />
+    <option name="x" value="15" />
+    <option name="y" value="-8" />
     <option name="width" value="1936" />
     <option name="height" value="1056" />
   </component>
@@ -233,44 +212,7 @@
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes>
-      <pane id="PackagesPane" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-              <item name="controllers" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-              <item name="services" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="php" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="Scope" />
-      <pane id="AndroidView" />
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
@@ -1053,12 +995,14 @@
       <workItem from="1554765583914" duration="604000" />
       <workItem from="1554777419573" duration="15000" />
       <workItem from="1556051260078" duration="610000" />
-      <workItem from="1556296890987" duration="6337000" />
+      <workItem from="1556296890987" duration="6473000" />
+      <workItem from="1556836061817" duration="759000" />
+      <workItem from="1556926571451" duration="5000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3064476000" />
+    <option name="totallyTimeSpent" value="3065376000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1072,20 +1016,20 @@
       <window_info anchor="bottom" id="Event Log" order="12" side_tool="true" weight="0.32900432" />
       <window_info anchor="right" id="Maven Projects" order="8" weight="0.32995737" />
       <window_info anchor="bottom" id="Database Changes" order="7" />
-      <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" order="9" weight="0.32896176" />
+      <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" x="206" y="338" width="1572" height="574" id="Terminal" order="11" type="WINDOWED" weight="1.0" />
       <window_info id="Capture Tool" order="6" />
       <window_info anchor="right" id="Designer" order="6" />
-      <window_info active="true" content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" visible="true" weight="0.17004265" />
+      <window_info content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" weight="0.1716418" />
       <window_info anchor="right" id="Database" order="7" weight="0.32889125" />
       <window_info anchor="right" id="SciView" order="9" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.1546875" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.24946696" />
       <window_info id="UI Designer" order="4" />
       <window_info anchor="right" id="Theme Preview" order="5" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.39978564" />
       <window_info id="Favorites" order="5" sideWeight="0.50428265" side_tool="true" weight="0.1881663" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39978564" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32827735" />
@@ -1327,13 +1271,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pages/tranfactcompra.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="69" column="79" selection-start-line="69" selection-start-column="58" selection-end-line="69" selection-end-column="79" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/services/tiposervicioventasrvc.js">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -1454,14 +1391,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/js/controllers/rptingegrproyctrl.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="544">
+        <state relative-caret-position="918">
           <caret line="68" column="30" lean-forward="true" selection-start-line="68" selection-start-column="30" selection-end-line="68" selection-end-column="30" />
-          <folding>
-            <element signature="e#732#1092#0" />
-            <element signature="e#1290#1456#0" />
-            <element signature="e#1504#1759#0" />
-            <element signature="e#2106#2367#0" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1469,12 +1400,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="380">
           <caret line="134" column="49" lean-forward="true" selection-start-line="134" selection-start-column="49" selection-end-line="134" selection-end-column="49" />
-          <folding>
-            <element signature="n#div#0;n#div#0;n#!!top" />
-            <element signature="n#style#0;n#table#0;n#div#0;n#small#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#h4#0;n#caption#0;n#table#0;n#div#1;n#small#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#h4#0;n#caption#0;n#table#0;n#div#1;n#small#1;n#div#0;n#!!top" expanded="true" />
-          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pages/tranfactcompra.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="363" column="76" selection-start-line="363" selection-start-column="59" selection-end-line="363" selection-end-column="76" />
         </state>
       </provider>
     </entry>
