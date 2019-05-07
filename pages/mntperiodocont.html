@@ -39,8 +39,31 @@
             </form>
             <hr/>
             <table class="table table-responsive table-hover table-condensed table-striped">
-                <caption>
-                    <input ng-model="searchPeriodo.$" class="form-control" placeholder="Buscar per&iacute;odo contable..." style="width: 100%"/>
+                <caption style="">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="chkVerCerrados">Ver cerrados:</label>
+                                <input name="chkVerCerrados" id="chkVerCerrados" type="checkbox" class="form-control input-sm" ng-model="params.vercerrados" ng-true-value="1" ng-false-value="0"/>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="txtAnio">Año:</label>
+                                <div class="input-group">
+                                    <input name="txtAnio" id="txtAnio" type="number" class="form-control input-sm" ng-model="params.anio">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-primary btn-sm" ng-click="getLstPeriodos()">Buscar</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <input ng-model="searchPeriodo.$" class="form-control input-sm" placeholder="Buscar per&iacute;odo contable..." style="width: 100%;"/>
+                        </div>
+                    </div>
                 </caption>
                 <thead>
                     <tr>

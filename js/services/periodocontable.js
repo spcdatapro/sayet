@@ -6,8 +6,8 @@
         var urlBase = 'php/periodocontable.php';
 
         return {
-            lstPeriodosCont: function(){
-                return comunFact.doGET(urlBase + '/lstpcont');
+            lstPeriodosCont: function(vercerrados, anio){
+                return comunFact.doGET(urlBase + '/lstpcont/' + vercerrados + (+anio > 0 ? ('/' + anio) : '' ) );
             },
             getPeriodoCont: function(idpcont){
                 return comunFact.doGET(urlBase + '/getpcont/' + idpcont);
