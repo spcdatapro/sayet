@@ -95,7 +95,12 @@
     </div>
     <hr/>
     <!-- Inicia formato de resumen -->
-    <small ng-show="rangeData.length > 0">
+    <div class="btn-group" role="group" aria-label="..." ng-show="rangeData.length > 0">
+        <button type="button" class="btn btn-default btn-sm" ng-click="getExcel('tblResumen')">
+            <i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;Excel
+        </button>
+    </div>
+    <small id="tblResumen" ng-show="rangeData.length > 0">
         <div class="repHeader">
             <h3>{{rangeData[0].nomproyecto}} - {{rangeData[0].referencia}}</h3>
             <h4>{{rangeData[0].empresa}} ({{rangeData[0].abreviaempresa}})</h4>
@@ -128,7 +133,12 @@
     </small>
     <!-- Finaliza formato de resumen -->
     <!-- Inicia formato de detalle -->
-    <small ng-show="rangeDataDetalle.length > 0">
+    <div class="btn-group" role="group" aria-label="..." ng-show="rangeDataDetalle.length > 0">
+        <button type="button" class="btn btn-default btn-sm" ng-click="getExcel('tblDetalle')">
+            <i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;Excel
+        </button>
+    </div>
+    <small id="tblDetalle" ng-show="rangeDataDetalle.length > 0">
         <div class="repHeader">
             <h3>{{rangeDataDetalle[0].nomproyecto}} - {{rangeDataDetalle[0].referencia}}</h3>
             <h4>{{rangeDataDetalle[0].empresa}} ({{rangeDataDetalle[0].abreviaempresa}})</h4>

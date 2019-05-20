@@ -91,7 +91,18 @@
                     $window.open(pdf);
                 });
             };
-    
+
+            $scope.getExcel = function(toExport){
+                var fileType = "application/vnd.ms-excel; charset=UTF-8";
+                var fileName = "IngEgProyecto_" + moment().format('YYYYMMDDHHmmss') + ".xls";
+                var info = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><meta http-equiv="content-type" content="application/vnd.ms-excel; charset=UTF-8">';
+                info = info + '<head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>' + fileName + '</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>';
+                info = info + '<body>' + document.getElementById(toExport).innerHTML + '</body>';
+                info = info + '</html>';
+
+                var blob = new Blob([info], { encoding:"UTF-8", type: fileType });
+                saveAs(blob, fileName);
+            };
         }]);
     
     }());
