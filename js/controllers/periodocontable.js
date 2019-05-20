@@ -4,6 +4,8 @@
 
     periodocontctrl.controller('periodoContableCtrl', ['$scope', 'periodoContableSrvc', 'toaster', '$confirm', function($scope, periodoContableSrvc, toaster, $confirm){
 
+        $scope.params = {anio: moment().year(), vercerrados: 0};
+
         $scope.elPeriodo = {
             del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), abierto: 0
         };
@@ -23,7 +25,9 @@
         };
 
         $scope.getLstPeriodos = function(){
-            periodoContableSrvc.lstPeriodosCont().then(function(d){
+            $scope.params.vercerrados = $scope.params.vercerrados !== null && $scope.params.vercerrados !== undefined ? $scope.params.vercerrados : 0;
+            $scope.params.anio = $scope.params.anio !== null && $scope.params.anio !== undefined ? $scope.params.anio : null;
+            periodoContableSrvc.lstPeriodosCont($scope.params.vercerrados, $scope.params.anio).then(function(d){
                 $scope.losPeriodos = procData(d);
             });
         };

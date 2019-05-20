@@ -6,9 +6,14 @@ $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
 
 //API para períodos contables
-$app->get('/lstpcont', function(){
+$app->get('/lstpcont(/:vercerrados(/:anio))', function($vercerrados = 0, $anio = null){
     $db = new dbcpm();
-    $query = "SELECT id, del, al, abierto, DATE_FORMAT(del, '%d/%m/%Y') AS delstr, DATE_FORMAT(al, '%d/%m/%Y') AS alstr FROM periodocontable ORDER BY abierto DESC, del DESC, al";
+    if(!$anio){ $anio = date("Y"); }
+    $query = "SELECT id, del, al, abierto, DATE_FORMAT(del, '%d/%m/%Y') AS delstr, DATE_FORMAT(al, '%d/%m/%Y') AS alstr ";
+    $query.= "FROM periodocontable WHERE 1 = 1 ";
+    $query.= (int)$anio > 0 ? "AND YEAR(del) = $anio AND YEAR(al) = $anio " : '';
+    $query.= (int)$vercerrados === 0 ? "AND abierto = 1 " : '';
+    $query.= "ORDER BY abierto DESC, del DESC, al";
     print $db->doSelectASJson($query);
 });
 

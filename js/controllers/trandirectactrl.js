@@ -140,6 +140,17 @@
             obj.debe = parseFloat(obj.debe);
             obj.haber = parseFloat(obj.haber);
             obj.idcuenta = parseInt(obj.objCuenta[0].id);
+
+            if(obj.conceptomayor){
+                if(obj.conceptomayor.toString().trim() !== ''){
+
+                } else {
+                    obj.conceptomayor = $scope.laDirecta.concepto;
+                }
+            } else {
+                obj.conceptomayor = $scope.laDirecta.concepto;
+            }
+
             detContSrvc.editRow(obj, 'c').then(function(){
                 detContSrvc.lstDetalleCont($scope.origen, parseInt($scope.laDirecta.id)).then(function(detc){
                     $scope.losDetCont = procDataDet(detc);
