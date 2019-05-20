@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/js/controllers/trandirectactrl.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/controllers/trandirectactrl.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pages/trandirectas.html" beforeDir="false" afterPath="$PROJECT_DIR$/pages/trandirectas.html" afterDir="false" />
-    </list>
+    <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="" />
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -52,8 +49,8 @@
       <file leaf-file-name="trandirectactrl.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/controllers/trandirectactrl.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="136" column="42" lean-forward="true" selection-start-line="136" selection-start-column="42" selection-end-line="136" selection-end-column="42" />
+            <state relative-caret-position="255">
+              <caret line="141" column="57" lean-forward="true" selection-start-line="141" selection-start-column="57" selection-end-line="141" selection-end-column="57" />
             </state>
           </provider>
         </entry>
@@ -1065,12 +1062,12 @@
       <workItem from="1553639984220" duration="622000" />
       <workItem from="1553703302333" duration="1839000" />
       <workItem from="1554415503396" duration="7661000" />
-      <workItem from="1557243248400" duration="3274000" />
+      <workItem from="1557243248400" duration="4050000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3059870000" />
+    <option name="totallyTimeSpent" value="3060646000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -1502,8 +1499,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/js/controllers/trandirectactrl.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="136" column="42" lean-forward="true" selection-start-line="136" selection-start-column="42" selection-end-line="136" selection-end-column="42" />
+        <state relative-caret-position="255">
+          <caret line="141" column="57" lean-forward="true" selection-start-line="141" selection-start-column="57" selection-end-line="141" selection-end-column="57" />
         </state>
       </provider>
     </entry>
