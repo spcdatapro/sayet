@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/php/presupuesto.php" beforeDir="false" afterPath="$PROJECT_DIR$/php/presupuesto.php" afterDir="false" />
-    </list>
+    <list default="true" id="9a5f2214-dc49-4fec-8939-ad25c31273d6" name="Default" comment="" />
     <ignored path="cpm.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -202,8 +200,8 @@
       <path value="$PROJECT_DIR$/php/vendor/slim/slim" />
     </include_path>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="1912" />
+  <component name="ProjectFrameBounds" extendedState="7">
+    <option name="x" value="-8" />
     <option name="y" value="-8" />
     <option name="width" value="1936" />
     <option name="height" value="1056" />
@@ -1016,15 +1014,15 @@
       <workItem from="1553703302333" duration="1839000" />
       <workItem from="1554415503396" duration="7661000" />
       <workItem from="1557243248400" duration="4050000" />
-      <workItem from="1558468597955" duration="91000" />
+      <workItem from="1558468597955" duration="690000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3060737000" />
+    <option name="totallyTimeSpent" value="3061336000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info anchor="right" id="Palette" order="3" />
