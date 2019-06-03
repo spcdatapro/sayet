@@ -158,6 +158,53 @@
                                 </div>
                             </div>
                         </div>
+                        <!--<div class="row"></div>-->
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.txtTotal.$invalid && !frmCompra.txtTotal.$pristine}">
+                                    <label for="txtTotal" class="control-label">Total:</label>
+                                    <input name="txtTotal" id="txtTotal" type="text" class="form-control" ng-model="laCompra.totfact"
+                                           placeholder="Total de factura" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="calcular()" required/>
+                                </div>
+                            </div>
+                            <!-- IDP -->
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtIDP.$invalid && !frmCompra.txtIDP.$pristine}">
+                                    <label for="txtIDP">I.D.P.:</label>
+                                    <input name="txtIDP" id="txtIDP" type="text" class="form-control" ng-model="laCompra.idp"
+                                           placeholder="I.D.P." fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true"/>
+                                </div>
+                            </div>
+                            <!-- Fin de IDP -->
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtNoAfecto.$invalid && !frmCompra.txtNoAfecto.$pristine}">
+                                    <label for="txtNoAfecto">No afecto:</label>
+                                    <input name="txtNoAfecto" id="txtNoAfecto" type="text" class="form-control" ng-model="laCompra.noafecto"
+                                           placeholder="No afecto a impuesto" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="calcular()" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtSubtot.$invalid && !frmCompra.txtSubtot.$pristine}">
+                                    <label for="txtSubtot">Subtotal:</label>
+                                    <input name="txtSubtot" id="txtSubtot" type="text" class="form-control" ng-model="laCompra.subtotal"
+                                           placeholder="Subtotal" fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true"/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtIVA.$invalid && !frmCompra.txtIVA.$pristine}">
+                                    <label for="txtIVA">I.V.A.:</label>
+                                    <input name="txtIVA" id="txtIVA" type="text" class="form-control" ng-model="laCompra.iva"
+                                           placeholder="I.V.A." fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true"/>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtISR.$invalid && !frmCompra.txtISR.$pristine}">
+                                    <label for="txtISR">I.S.R.:</label>
+                                    <input name="txtISR" id="txtISR" type="text" class="form-control" ng-model="laCompra.isr"
+                                           placeholder="I.S.R." fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true"/>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-2">
                                 <div class="form-group" ng-class="{'has-error':frmCompra.chkCredFiscal.$invalid && !frmCompra.chkCredFiscal.$pristine}">
@@ -219,53 +266,6 @@
                                 </div>
                             </div>
                             -->
-                        </div>
-                        <!--<div class="row"></div>-->
-                        <div class="row">
-                            <div class="col-md-2">
-                                <div class="form-group required" ng-class="{'has-error':frmCompra.txtTotal.$invalid && !frmCompra.txtTotal.$pristine}">
-                                    <label for="txtTotal" class="control-label">Total:</label>
-                                    <input name="txtTotal" id="txtTotal" type="text" class="form-control" ng-model="laCompra.totfact"
-                                           placeholder="Total de factura" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="calcular()" required/>
-                                </div>
-                            </div>
-                            <!-- IDP -->
-                            <div class="col-md-2">
-                                <div class="form-group" ng-class="{'has-error':frmCompra.txtIDP.$invalid && !frmCompra.txtIDP.$pristine}">
-                                    <label for="txtIDP">I.D.P.:</label>
-                                    <input name="txtIDP" id="txtIDP" type="text" class="form-control" ng-model="laCompra.idp"
-                                           placeholder="I.D.P." fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true"/>
-                                </div>
-                            </div>
-                            <!-- Fin de IDP -->
-                            <div class="col-md-2">
-                                <div class="form-group" ng-class="{'has-error':frmCompra.txtNoAfecto.$invalid && !frmCompra.txtNoAfecto.$pristine}">
-                                    <label for="txtNoAfecto">No afecto:</label>
-                                    <input name="txtNoAfecto" id="txtNoAfecto" type="text" class="form-control" ng-model="laCompra.noafecto"
-                                           placeholder="No afecto a impuesto" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="calcular()" required/>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group" ng-class="{'has-error':frmCompra.txtSubtot.$invalid && !frmCompra.txtSubtot.$pristine}">
-                                    <label for="txtSubtot">Subtotal:</label>
-                                    <input name="txtSubtot" id="txtSubtot" type="text" class="form-control" ng-model="laCompra.subtotal"
-                                           placeholder="Subtotal" fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true"/>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group" ng-class="{'has-error':frmCompra.txtIVA.$invalid && !frmCompra.txtIVA.$pristine}">
-                                    <label for="txtIVA">I.V.A.:</label>
-                                    <input name="txtIVA" id="txtIVA" type="text" class="form-control" ng-model="laCompra.iva"
-                                           placeholder="I.V.A." fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true"/>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group" ng-class="{'has-error':frmCompra.txtISR.$invalid && !frmCompra.txtISR.$pristine}">
-                                    <label for="txtISR">I.S.R.:</label>
-                                    <input name="txtISR" id="txtISR" type="text" class="form-control" ng-model="laCompra.isr"
-                                           placeholder="I.S.R." fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true"/>
-                                </div>
-                            </div>
                         </div>
                         <div class="row" ng-show="yaPagada">
                             <div class="col-md-6 col-md-offset-3" style="background-color: #DCF8C6">
