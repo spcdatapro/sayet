@@ -441,6 +441,9 @@ $app->post('/cdp', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
     $d->notas = $d->notas == '' ? "NULL" : "'$d->notas'";
+
+    if(!isset($d->isr)){ $d->isr = 0.00; }
+
     $nopago = $db->getOneField("SELECT IF(MAX(nopago) IS NULL, 1, MAX(nopago) + 1) FROM detpagopresup WHERE iddetpresup = $d->iddetpresup");
     $query = "INSERT INTO detpagopresup(iddetpresup, nopago, porcentaje, monto, notas, isr) VALUES($d->iddetpresup, $nopago, $d->porcentaje, $d->monto, $d->notas, $d->isr)";
     $db->doQuery($query);
@@ -449,6 +452,9 @@ $app->post('/cdp', function(){
 $app->post('/udp', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    
+    if(!isset($d->isr)){ $d->isr = 0.00; }
+
     $d->notas = $d->notas == '' ? "NULL" : "'$d->notas'";
     $query = "UPDATE detpagopresup SET porcentaje = $d->porcentaje, monto = $d->monto, notas = $d->notas, $d->isr WHERE id = $d->id";
     $db->doQuery($query);

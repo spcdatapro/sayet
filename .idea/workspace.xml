@@ -44,6 +44,7 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
 <<<<<<< HEAD
+<<<<<<< HEAD
       <file leaf-file-name="tranfactcompra.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pages/tranfactcompra.html">
           <provider selected="true" editor-type-id="text-editor">
@@ -52,38 +53,15 @@
 =======
       <file leaf-file-name="trandirectas.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pages/trandirectas.html">
+=======
+      <file leaf-file-name="presupuesto.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/php/presupuesto.php">
+>>>>>>> prod
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2074">
-              <caret line="140" column="79" selection-start-line="140" selection-start-column="66" selection-end-line="140" selection-end-column="79" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="trandirectactrl.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/js/controllers/trandirectactrl.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="141" column="57" lean-forward="true" selection-start-line="141" selection-start-column="57" selection-end-line="141" selection-end-column="57" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="trandirectasrvc.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/js/services/trandirectasrvc.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="9" column="68" selection-start-line="9" selection-start-column="68" selection-end-line="9" selection-end-column="68" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="directa.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/php/directa.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="737">
-              <caret line="52" selection-start-line="52" selection-end-line="52" />
+            <state relative-caret-position="485">
+              <caret line="454" column="4" lean-forward="true" selection-start-line="454" selection-start-column="4" selection-end-line="454" selection-end-column="4" />
               <folding>
-                <element signature="e#1889#3910#1#PHP" />
+                <element signature="n#proyectosPorUsuario#0;n#!!top" />
               </folding>
 >>>>>>> prod
             </state>
@@ -204,7 +182,6 @@
         <option value="$PROJECT_DIR$/pages/mnttsventa.html" />
         <option value="$PROJECT_DIR$/php/tranbanc.php" />
         <option value="$PROJECT_DIR$/cpmidx.html" />
-        <option value="$PROJECT_DIR$/php/presupuesto.php" />
         <option value="$PROJECT_DIR$/js/services/presupuestosrvc.js" />
         <option value="$PROJECT_DIR$/pages/mntpresupuesto.html" />
         <option value="$PROJECT_DIR$/js/controllers/presupuestoctrl.js" />
@@ -219,6 +196,10 @@
         <option value="$PROJECT_DIR$/js/controllers/periodocontable.js" />
         <option value="$PROJECT_DIR$/pages/trandirectas.html" />
         <option value="$PROJECT_DIR$/js/controllers/trandirectactrl.js" />
+<<<<<<< HEAD
+>>>>>>> prod
+=======
+        <option value="$PROJECT_DIR$/php/presupuesto.php" />
 >>>>>>> prod
       </list>
     </option>
@@ -251,8 +232,13 @@
       <path value="$PROJECT_DIR$/php/vendor/slim/slim" />
     </include_path>
   </component>
+<<<<<<< HEAD
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="15" />
+=======
+  <component name="ProjectFrameBounds" extendedState="7">
+    <option name="x" value="-8" />
+>>>>>>> prod
     <option name="y" value="-8" />
     <option name="width" value="1936" />
     <option name="height" value="1056" />
@@ -268,7 +254,6 @@
     <panes />
 =======
     <panes>
-      <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -279,34 +264,13 @@
             <path>
               <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
               <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-              <item name="controllers" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="js" type="462c0819:PsiDirectoryNode" />
-              <item name="services" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
-              <item name="pages" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="cpm" type="b2602c69:ProjectViewProjectNode" />
-              <item name="sayet" type="462c0819:PsiDirectoryNode" />
               <item name="php" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="AndroidView" />
       <pane id="PackagesPane" />
       <pane id="Scope" />
     </panes>
@@ -1100,15 +1064,23 @@
 =======
       <workItem from="1554415503396" duration="7661000" />
       <workItem from="1557243248400" duration="4050000" />
+<<<<<<< HEAD
+>>>>>>> prod
+=======
+      <workItem from="1558468597955" duration="690000" />
 >>>>>>> prod
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
 <<<<<<< HEAD
+<<<<<<< HEAD
     <option name="totallyTimeSpent" value="3065376000" />
 =======
     <option name="totallyTimeSpent" value="3060646000" />
+>>>>>>> prod
+=======
+    <option name="totallyTimeSpent" value="3061336000" />
 >>>>>>> prod
   </component>
   <component name="ToolWindowManager">
@@ -1128,7 +1100,11 @@
       <window_info anchor="bottom" x="206" y="338" width="1572" height="574" id="Terminal" order="11" type="WINDOWED" weight="1.0" />
       <window_info id="Capture Tool" order="6" />
       <window_info anchor="right" id="Designer" order="6" />
+<<<<<<< HEAD
       <window_info content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" weight="0.1716418" />
+=======
+      <window_info active="true" content_ui="combo" x="826" y="54" width="268" height="938" id="Project" order="0" sideWeight="0.49571735" visible="true" weight="0.16364606" />
+>>>>>>> prod
       <window_info anchor="right" id="Database" order="7" weight="0.32889125" />
       <window_info anchor="right" id="SciView" order="9" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.1546875" />
@@ -1565,23 +1541,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/php/presupuesto.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="366">
-          <caret line="516" column="22" selection-start-line="516" selection-start-column="22" selection-end-line="516" selection-end-column="22" />
-          <folding>
-            <element signature="n#proyectosPorUsuario#0;n#!!top" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pages/mntperiodocont.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="340">
           <caret line="50" column="52" lean-forward="true" selection-start-line="50" selection-start-column="52" selection-end-line="50" selection-end-column="52" />
+<<<<<<< HEAD
           <folding>
             <element signature="n#style#0;n#input#0;n#div#0;n#div#1;n#caption#0;n#table#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
           </folding>
+>>>>>>> prod
+=======
 >>>>>>> prod
         </state>
       </provider>
@@ -1607,6 +1576,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/pages/trandirectas.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2380">
+          <caret line="140" column="79" selection-start-line="140" selection-start-column="66" selection-end-line="140" selection-end-column="79" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/controllers/trandirectactrl.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="141" column="57" selection-start-line="141" selection-start-column="57" selection-end-line="141" selection-end-column="57" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/js/services/trandirectasrvc.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
@@ -1624,17 +1607,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pages/trandirectas.html">
+    <entry file="file://$PROJECT_DIR$/php/presupuesto.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2074">
-          <caret line="140" column="79" selection-start-line="140" selection-start-column="66" selection-end-line="140" selection-end-column="79" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/controllers/trandirectactrl.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="141" column="57" lean-forward="true" selection-start-line="141" selection-start-column="57" selection-end-line="141" selection-end-column="57" />
+        <state relative-caret-position="485">
+          <caret line="454" column="4" lean-forward="true" selection-start-line="454" selection-start-column="4" selection-end-line="454" selection-end-column="4" />
+          <folding>
+            <element signature="n#proyectosPorUsuario#0;n#!!top" />
+          </folding>
         </state>
       </provider>
     </entry>
