@@ -312,6 +312,60 @@
                                            ng-disabled="!(compra.objTipoFactura != null && compra.objTipoFactura != undefined)" required/>
                                 </div>
                             </div>
+                            <div class="col-md-5">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.selProy.$invalid && !frmCompra.selProy.$pristine}">
+                                    <label class="control-label">Proyecto:</label>
+                                    <ui-select ng-model="compra.idproyecto"
+                                               title="Seleccione un proyecto..."
+                                               theme="bootstrap"
+                                               autofocus="false"
+                                               ng-required="true">
+                                        <ui-select-match placeholder="Buscar proyecto..." allow-clear="false">
+                                            <span ng-bind="$select.selected.nomproyecto"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="item.id as item in proyectos | filter:$select.search">
+                                            <div ng-bind-html="item.nomproyecto | highlight: $select.search"></div>
+                                            <small>
+                                                <strong>Referencia:</strong>&nbsp;<span ng-bind-html="item.referencia | highlight: $select.search" ></span>
+                                            </small>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.selIdSubTipoGast.$invalid && !frmCompra.selIdSubTipoGast.$pristine}">
+                                    <label for="selIdSubTipoGast" class="control-label">Sub-tipo de gasto:</label>
+                                    <ui-select id="selIdSubTipoGast"
+                                               name="selIdSubTipoGast"
+                                               ng-model="compra.idsubtipogasto"
+                                               title="Seleccione un sub-tipo de gasto..."
+                                               theme="bootstrap"
+                                               autofocus="false"
+                                               ng-required="true">
+                                        <ui-select-match placeholder="Buscar sub-tipo de gasto..." allow-clear="false">
+                                            <span ng-bind="$select.selected.descripcion"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="item.id as item in subtiposgasto | filter:$select.search">
+                                            <div ng-bind-html="item.descripcion | highlight: $select.search"></div>
+                                            <small>
+                                                <strong>Tipo de gasto:</strong>&nbsp;<span ng-bind-html="item.tipogasto | highlight: $select.search" ></span>
+                                            </small>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtConcMay.$invalid && !frmCompra.txtConcMay.$pristine}">
+                                    <label for="txtConcMay">Concepto para el mayor:</label>
+                                    <input name="txtConcMay" id="txtConcMay" type="text" class="form-control input-sm" ng-model="compra.conceptomayor" maxlength="500" required/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="col-md-2">
                                 <div class="form-group" ng-class="{'has-error':frmCompra.txtIDP.$invalid && !frmCompra.txtIDP.$pristine}">
                                     <label for="txtIDP">I.D.P.:</label>
@@ -353,60 +407,6 @@
                                     <label for="txtISR">I.S.R.:</label>
                                     <input name="txtISR" id="txtISR" type="text" class="form-control input-sm" ng-model="compra.isr"
                                            fcsa-number="{ min:0, maxDecimals:2 }" ng-disabled="true" required/>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group required" ng-class="{'has-error':frmCompra.selProy.$invalid && !frmCompra.selProy.$pristine}">
-                                    <label class="control-label">Proyecto:</label>
-                                    <ui-select ng-model="compra.idproyecto"
-                                               title="Seleccione un proyecto..."
-                                               theme="bootstrap"
-                                               autofocus="false"
-                                               ng-required="true">
-                                        <ui-select-match placeholder="Buscar proyecto..." allow-clear="false">
-                                            <span ng-bind="$select.selected.nomproyecto"></span>
-                                        </ui-select-match>
-                                        <ui-select-choices repeat="item.id as item in proyectos | filter:$select.search">
-                                            <div ng-bind-html="item.nomproyecto | highlight: $select.search"></div>
-                                            <small>
-                                                <strong>Referencia:</strong>&nbsp;<span ng-bind-html="item.referencia | highlight: $select.search" ></span>
-                                            </small>
-                                        </ui-select-choices>
-                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
-                                    </ui-select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group required" ng-class="{'has-error':frmCompra.selIdSubTipoGast.$invalid && !frmCompra.selIdSubTipoGast.$pristine}">
-                                    <label for="selIdSubTipoGast" class="control-label">Sub-tipo de gasto:</label>
-                                    <ui-select id="selIdSubTipoGast"
-                                               name="selIdSubTipoGast"
-                                               ng-model="compra.idsubtipogasto"
-                                               title="Seleccione un sub-tipo de gasto..."
-                                               theme="bootstrap"
-                                               autofocus="false"
-                                               ng-required="true">
-                                        <ui-select-match placeholder="Buscar sub-tipo de gasto..." allow-clear="false">
-                                            <span ng-bind="$select.selected.descripcion"></span>
-                                        </ui-select-match>
-                                        <ui-select-choices repeat="item.id as item in subtiposgasto | filter:$select.search">
-                                            <div ng-bind-html="item.descripcion | highlight: $select.search"></div>
-                                            <small>
-                                                <strong>Tipo de gasto:</strong>&nbsp;<span ng-bind-html="item.tipogasto | highlight: $select.search" ></span>
-                                            </small>
-                                        </ui-select-choices>
-                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
-                                    </ui-select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group" ng-class="{'has-error':frmCompra.txtConcMay.$invalid && !frmCompra.txtConcMay.$pristine}">
-                                    <label for="txtConcMay">Concepto para el mayor:</label>
-                                    <input name="txtConcMay" id="txtConcMay" type="text" class="form-control input-sm" ng-model="compra.conceptomayor" maxlength="500" required/>
                                 </div>
                             </div>
                         </div>
