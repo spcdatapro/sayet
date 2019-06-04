@@ -528,6 +528,19 @@
             });
         };
 
+        $scope.bindCheque = () => {
+            const modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: 'modalBindChq.html',
+                controller: 'ModalBindChq',
+                resolve:{
+                    compra: () => $scope.laCompra
+                }
+            });
+
+            modalInstance.result.then(() => $scope.getCompra($scope.laCompra.id), () => {});
+        };
+
         $scope.zeroDebe = function(valor){ $scope.elDetCont.debe = parseFloat(valor) > 0 ? 0.0 : $scope.elDetCont.debe; };
         $scope.zeroHaber = function(valor){ $scope.elDetCont.haber = parseFloat(valor) > 0 ? 0.0 : $scope.elDetCont.haber; };
 
@@ -645,6 +658,37 @@
                 detContSrvc.editRow(obj, 'u').then(function(){ $scope.ok(); });
             });
         };
+
+    }]);
+    //------------------------------------------------------------------------------------------------------------------------------------------------//
+    compractrl.controller('ModalBindChq', ['$scope', '$uibModalInstance', 'compra', 'compraSrvc', function($scope, $uibModalInstance, compra, compraSrvc){
+        $scope.compra = compra;
+        $scope.lstCheques = [];
+        $scope.chqbind = {
+            idtranban: undefined,
+            idtipodoc: 1,
+            documento: $scope.compra.documento,
+            fechadoc: moment($scope.compra.fechafactura).format('YYYY-MM-DD'),
+            monto: $scope.compra.totfact - $scope.compra.isr,
+            serie: $scope.compra.serie,
+            iddocto: +$scope.compra.id,
+            fechaliquidastr: moment().format('YYYY-MM-DD')
+        };
+
+        $scope.loadCheques = () => compraSrvc.getChequesProveedor({
+            idproveedor: $scope.compra.idproveedor, idempresa: $scope.compra.idempresa, idmoneda: $scope.compra.idmoneda, idcompra: $scope.compra.id
+        }).then((data) => $scope.lstCheques = data);
+
+        $scope.ok = function () {
+            // console.log('TRANBAN:', $scope.chqbind);
+            compraSrvc.editRow($scope.chqbind, 'addtotranban').then(() => $uibModalInstance.close($scope.compra.id));
+        };
+
+        $scope.cancel = function () {
+            $uibModalInstance.dismiss('cancel');
+        };
+
+        $scope.loadCheques();
 
     }]);
 

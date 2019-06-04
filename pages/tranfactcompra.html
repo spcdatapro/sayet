@@ -242,30 +242,6 @@
                                            type="text" min="1" fcsa-number="{ min:1, maxDecimals:dectc }" required/>
                                 </div>
                             </div>
-                            <!--
-                            <div class="col-md-5">
-                                <div class="form-group" ng-class="{'has-error':frmCompra.txtOT.$invalid && !frmCompra.txtOT.$pristine}">
-                                    <label>Orden de trabajo:</label>
-                                    <ui-select ng-model="laCompra.ordentrabajo"
-                                               title="Seleccione una orden de trabajo..."
-                                               theme="bootstrap"
-                                               autofocus="false">
-                                        <ui-select-match placeholder="Buscar orden de trabajo..." allow-clear="true">
-                                            <span ng-bind="$select.selected.ot"></span>
-                                        </ui-select-match>
-                                        <ui-select-choices repeat="item.id as item in ots | filter:$select.search">
-                                            <div ng-bind-html="item.ot | highlight: $select.search"></div>
-                                            <small>
-                                                <strong>Proveedor:</strong>&nbsp;<span ng-bind-html="item.proveedor | highlight: $select.search" ></span><br/>
-                                                <strong>Empresa:</strong>&nbsp;<span ng-bind-html="item.empresa | highlight: $select.search" ></span><br/>
-                                                <strong>Monto:</strong>&nbsp;<span ng-bind-html="item.moneda | highlight: $select.search" ></span>&nbsp;<span ng-bind-html="item.monto | highlight: $select.search" ></span>
-                                            </small>
-                                        </ui-select-choices>
-                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
-                                    </ui-select>
-                                </div>
-                            </div>
-                            -->
                         </div>
                         <div class="row" ng-show="yaPagada">
                             <div class="col-md-6 col-md-offset-3" style="background-color: #DCF8C6">
@@ -324,6 +300,9 @@
                             </button>
                             <button type="button" class="btn btn-primary" ng-disabled="frmCompra.$invalid" ng-show="editando" ng-click="resetCompra()">
                                 <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-show="+laCompra.id > 0" ng-click="bindCheque()">
+                                <span class="glyphicon glyphicon-list"></span>
                             </button>
                             <a href="/sayet/php/compra.php/comprobante/{{laCompra.id}}" target="_blank" class="btn btn-default">
                                 <span class="glyphicon glyphicon-print"></span> Comprobante
@@ -743,4 +722,51 @@
             <button class="btn btn-primary" type="button" ng-click="cancel()"><i class="fa fa-ban" aria-hidden="true"></i></button>
         </div>
     </script>
+    <!--Template de la modal //Este usa el controlador ModalInstanceCtrl-->
+    <script type="text/ng-template" id="modalBindChq.html">
+        <div class="modal-header">
+            <h3 class="modal-title">¿A qu&eacute; cheque desea atar la factura?</h3>
+            <h4>Factura: {{compra.serie}}-{{compra.documento}}</h4>
+        </div>
+        <div class="modal-body">
+            <form id="frmBindChq" novalidate>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="selChq">Cheque:</label>
+                            <ui-select id="selChq" ng-model="chqbind.idtranban"
+                                       title="Seleccione un cheque..."
+                                       theme="bootstrap"
+                                       autofocus="true"
+                                       ng-required="true">
+                                <ui-select-match placeholder="Buscar proveedor..." allow-clear="false">
+                                    <span ng-bind="$select.selected.tipotrans + $select.selected.numero"></span>
+                                </ui-select-match>
+                                <ui-select-choices refresh="fetch($select)" repeat="item.idtran as item in lstCheques | filter:$select.search">
+                                    <div ng-bind-html="(item.tipotrans + item.numero) | highlight: $select.search"></div>
+                                    <small>
+                                        <strong>Banco:</strong>&nbsp;<span ng-bind-html="item.siglas | highlight: $select.search" ></span><br/>
+                                        <strong>Fecha:</strong>&nbsp;<span ng-bind-html="item.fecha | highlight: $select.search" ></span><br/>
+                                        <strong>Monto:</strong>&nbsp;<span ng-bind-html="(item.moneda + ' ' + item.monto) | highlight: $select.search" ></span>
+                                    </small>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="txtMontoBind">Monto:</label>
+                            <input id="txtMontoBind" name="txtMontoBind" type="number" class="form-control" ng-model="chqbind.monto"/>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">Aceptar</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
+        </div>
+    </script>
+    <!--Fin de Template de la modal-->
 </div>
