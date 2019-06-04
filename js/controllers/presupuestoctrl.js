@@ -415,7 +415,7 @@
     presupuestoctrl.controller('ModalDetPagosOtCtrl', ['$scope', '$uibModalInstance', '$filter', 'toaster', '$confirm', 'presupuestoSrvc', 'ot', 'permiso', function($scope, $uibModalInstance, $filter, toaster, $confirm, presupuestoSrvc, ot, permiso){
         $scope.ot = ot;
         $scope.lstdetpagos = [];
-        $scope.fpago = { iddetpresup: ot.id };
+        $scope.fpago = { iddetpresup: ot.id, isr: 0.00, quitarisr: 0 };
         $scope.sumporcentaje = 0.0000;
         $scope.sumvalor = 0.00;
         $scope.permiso = permiso;
@@ -487,7 +487,8 @@
         };
 
         $scope.addFormaPago = function(obj){
-            obj.isr = 0.00;
+            obj.isr = obj.isr !== undefined && obj.isr != null ? obj.isr : 0;
+            obj.quitarisr = obj.quitarisr !== undefined && obj.quitarisr != null ? obj.quitarisr : 0;
             obj.notas = obj.notas !== undefined && obj.notas != null ? obj.notas : '';
             presupuestoSrvc.editRow(obj, 'cdp').then(function(){
                 $scope.loadData();

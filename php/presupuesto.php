@@ -385,13 +385,13 @@ $app->post('/dnp', function(){
 //API detalle de pago de OT
 $app->get('/lstdetpago/:iddetpresup', function($iddetpresup){
     $db = new dbcpm();
-    $query = "SELECT a.id, a.iddetpresup, a.nopago, a.porcentaje, a.monto, a.notas, a.pagado, a.origen, a.idorigen, a.isr FROM detpagopresup a WHERE a.iddetpresup = $iddetpresup ORDER BY a.nopago";
+    $query = "SELECT a.id, a.iddetpresup, a.nopago, a.porcentaje, a.monto, a.notas, a.pagado, a.origen, a.idorigen, a.isr, a.quitarisr FROM detpagopresup a WHERE a.iddetpresup = $iddetpresup ORDER BY a.nopago";
     print $db->doSelectASJson($query);
 });
 
 $app->get('/getdetpago/:iddetpago', function($iddetpago){
     $db = new dbcpm();
-    $query = "SELECT a.id, a.iddetpresup, a.nopago, a.porcentaje, a.monto, a.notas, a.pagado, a.origen, a.idorigen, a.isr FROM detpagopresup a WHERE a.id = $iddetpago";
+    $query = "SELECT a.id, a.iddetpresup, a.nopago, a.porcentaje, a.monto, a.notas, a.pagado, a.origen, a.idorigen, a.isr, a.quitarisr FROM detpagopresup a WHERE a.id = $iddetpago";
     print $db->doSelectASJson($query);
 });
 
@@ -400,7 +400,7 @@ $app->get('/lstpagos/:idempresa', function($idempresa){
     $query = "SELECT a.idpresupuesto, a.id, b.idproyecto, c.nomproyecto AS proyecto, b.fhaprobacion, a.idproveedor, e.nombre AS proveedor, b.idmoneda, d.simbolo AS moneda, a.monto, ";
     $query.= "b.fechasolicitud, f.nomempresa AS empresa, g.desctipogast AS tipogasto, h.descripcion AS subtipogasto, IF(a.coniva = 1, 'I.V.A. incluido', 'I.V.A. NO incluido') AS coniva, a.correlativo, ";
     $query.= "CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, b.idempresa, i.nopago, i.porcentaje, i.monto AS valor, i.notas, i.id AS iddetpagopresup, i.pagado, ";
-    $query.= "IF(i.pagado = 0, NULL, 'Pagado') AS estatuspagado, b.total, a.tipocambio, a.origenprov, i.isr ";
+    $query.= "IF(i.pagado = 0, NULL, 'Pagado') AS estatuspagado, b.total, a.tipocambio, a.origenprov, i.isr, i.quitarisr ";
     $query.= "FROM detpresupuesto a INNER JOIN presupuesto b ON b.id = a.idpresupuesto INNER JOIN proyecto c ON c.id = b.idproyecto INNER JOIN moneda d ON d.id = b.idmoneda ";
     $query.= "INNER JOIN proveedor e ON e.id = a.idproveedor INNER JOIN empresa f ON f.id = b.idempresa INNER JOIN tipogasto g ON g.id = b.idtipogasto ";
     $query.= "INNER JOIN subtipogasto h ON h.id = a.idsubtipogasto LEFT JOIN detpagopresup i ON a.id = i.iddetpresup ";
@@ -410,7 +410,7 @@ $app->get('/lstpagos/:idempresa', function($idempresa){
     $query.= "SELECT a.idpresupuesto, a.id, b.idproyecto, c.nomproyecto AS proyecto, b.fhaprobacion, a.idproveedor, e.nombre AS proveedor, b.idmoneda, d.simbolo AS moneda, a.monto, ";
     $query.= "b.fechasolicitud, f.nomempresa AS empresa, g.desctipogast AS tipogasto, h.descripcion AS subtipogasto, IF(a.coniva = 1, 'I.V.A. incluido', 'I.V.A. NO incluido') AS coniva, a.correlativo, ";
     $query.= "CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, b.idempresa, i.nopago, i.porcentaje, i.monto AS valor, i.notas, i.id AS iddetpagopresup, i.pagado, ";
-    $query.= "IF(i.pagado = 0, NULL, 'Pagado') AS estatuspagado, b.total, a.tipocambio, a.origenprov, i.isr ";
+    $query.= "IF(i.pagado = 0, NULL, 'Pagado') AS estatuspagado, b.total, a.tipocambio, a.origenprov, i.isr, i.quitarisr ";
     $query.= "FROM detpresupuesto a INNER JOIN presupuesto b ON b.id = a.idpresupuesto INNER JOIN proyecto c ON c.id = b.idproyecto INNER JOIN moneda d ON d.id = b.idmoneda ";
     $query.= "INNER JOIN beneficiario e ON e.id = a.idproveedor INNER JOIN empresa f ON f.id = b.idempresa INNER JOIN tipogasto g ON g.id = b.idtipogasto ";
     $query.= "INNER JOIN subtipogasto h ON h.id = a.idsubtipogasto LEFT JOIN detpagopresup i ON a.id = i.iddetpresup ";
@@ -423,13 +423,13 @@ $app->get('/lstpagos/:idempresa', function($idempresa){
 $app->get('/notificaciones', function(){
     $db = new dbcpm();
     $query = "SELECT c.id AS idpresupuesto, b.id AS iddetpresupuesto, b.correlativo, a.nopago, b.idproveedor, d.nombre AS proveedor, c.idempresa, f.abreviatura AS empresa, e.simbolo, a.monto, ";
-    $query.= "CONCAT('OT: ', c.id, '-', b.correlativo, ', Pago #', a.nopago, ', ', d.nombre, ', ', f.abreviatura, ', ', e.simbolo, ' ', a.monto) AS notificacion, b.origenprov, a.isr ";
+    $query.= "CONCAT('OT: ', c.id, '-', b.correlativo, ', Pago #', a.nopago, ', ', d.nombre, ', ', f.abreviatura, ', ', e.simbolo, ' ', a.monto) AS notificacion, b.origenprov, a.isr, a.quitarisr ";
     $query.= "FROM detpagopresup a INNER JOIN detpresupuesto b ON b.id = a.iddetpresup INNER JOIN presupuesto c ON c.id = b.idpresupuesto INNER JOIN proveedor d ON d.id = b.idproveedor ";
     $query.= "INNER JOIN moneda e ON e.id = c.idmoneda INNER JOIN empresa f ON f.id = c.idempresa ";
     $query.= "WHERE a.notificado = 0 AND a.pagado = 0 AND b.origenprov = 1 AND c.idestatuspresupuesto = 3 ";
     $query.= "UNION ";
     $query.= "SELECT c.id AS idpresupuesto, b.id AS iddetpresupuesto, b.correlativo, a.nopago, b.idproveedor, d.nombre AS proveedor, c.idempresa, f.abreviatura AS empresa, e.simbolo, a.monto, ";
-    $query.= "CONCAT('OT: ', c.id, '-', b.correlativo, ', Pago #', a.nopago, ', ', d.nombre, ', ', f.abreviatura, ', ', e.simbolo, ' ', a.monto) AS notificacion, b.origenprov, a.isr ";
+    $query.= "CONCAT('OT: ', c.id, '-', b.correlativo, ', Pago #', a.nopago, ', ', d.nombre, ', ', f.abreviatura, ', ', e.simbolo, ' ', a.monto) AS notificacion, b.origenprov, a.isr, a.quitarisr ";
     $query.= "FROM detpagopresup a INNER JOIN detpresupuesto b ON b.id = a.iddetpresup INNER JOIN presupuesto c ON c.id = b.idpresupuesto INNER JOIN beneficiario d ON d.id = b.idproveedor ";
     $query.= "INNER JOIN moneda e ON e.id = c.idmoneda INNER JOIN empresa f ON f.id = c.idempresa ";
     $query.= "WHERE a.notificado = 0 AND a.pagado = 0 AND b.origenprov = 2 AND c.idestatuspresupuesto = 3 ";
@@ -443,9 +443,10 @@ $app->post('/cdp', function(){
     $d->notas = $d->notas == '' ? "NULL" : "'$d->notas'";
 
     if(!isset($d->isr)){ $d->isr = 0.00; }
+    if(!isset($d->quitarisr)){ $d->quitarisr = 0; }
 
     $nopago = $db->getOneField("SELECT IF(MAX(nopago) IS NULL, 1, MAX(nopago) + 1) FROM detpagopresup WHERE iddetpresup = $d->iddetpresup");
-    $query = "INSERT INTO detpagopresup(iddetpresup, nopago, porcentaje, monto, notas, isr) VALUES($d->iddetpresup, $nopago, $d->porcentaje, $d->monto, $d->notas, $d->isr)";
+    $query = "INSERT INTO detpagopresup(iddetpresup, nopago, porcentaje, monto, notas, isr, quitarisr) VALUES($d->iddetpresup, $nopago, $d->porcentaje, $d->monto, $d->notas, $d->isr, $d->quitarisr)";
     $db->doQuery($query);
 });
 
@@ -454,9 +455,10 @@ $app->post('/udp', function(){
     $db = new dbcpm();
     
     if(!isset($d->isr)){ $d->isr = 0.00; }
+    if(!isset($d->quitarisr)){ $d->quitarisr = 0; }
 
     $d->notas = $d->notas == '' ? "NULL" : "'$d->notas'";
-    $query = "UPDATE detpagopresup SET porcentaje = $d->porcentaje, monto = $d->monto, notas = $d->notas, $d->isr WHERE id = $d->id";
+    $query = "UPDATE detpagopresup SET porcentaje = $d->porcentaje, monto = $d->monto, notas = $d->notas, isr = $d->isr, quitarisr = $d->quitarisr WHERE id = $d->id";
     $db->doQuery($query);
 });
 

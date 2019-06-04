@@ -529,15 +529,18 @@
                             <input name="txtMontoDetP" id="txtMontoDetP" type="number" class="form-control input-sm" ng-model="fpago.monto" step="0.01" min="0.01" ng-blur="calcPorcentaje()" required/>
                         </div>
                     </div>
-                    <!-- Se quita este cambio temporalmente hasta que se resuelva como se puede hacer 04/04/2019 -->
-                    <!--
                     <div class="col-md-3 nopadding">
                         <div class="form-group">
-                            <label for="txtMontoDetPISR">I.S.R.:</label>
-                            <input name="txtMontoDetPISR" id="txtMontoDetPISR" type="number" class="form-control input-sm" ng-model="fpago.isr" step="0.01" min="0" ng-disabled="true" required/>
+                            <label for="chkQuitarISR">Quitar I.S.R.:</label>
+                            <input name="chkQuitarISR" id="chkQuitarISR" type="checkbox" class="form-control input-sm" ng-model="fpago.quitarisr" ng-true-value="1" ng-false-value="0"/>
                         </div>
                     </div>
-                    -->
+                    <div class="col-md-3 nopadding">
+                        <div class="form-group">
+                            <label for="txtMontoDetISR">Monto calc. I.S.R.:</label>
+                            <input name="txtMontoDetISR" id="txtMontoDetISR" type="number" class="form-control input-sm" ng-model="fpago.isr" min="0.01" step="0.01" ng-disabled="fpago.quitarisr == 0" ng-required="fpago.quitarisr == 1"/>
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12 nopadding">
@@ -560,7 +563,7 @@
                     <th style="text-align: right">No.</th>
                     <th style="text-align: right">%</th>
                     <th style="text-align: right">Monto</th>
-                    <!--<th style="text-align: right">I.S.R.</th>-->
+                    <th style="text-align: right">Quitar I.S.R.</th>
                     <th>&nbsp;</th>
                 </tr>
                 </thead>
@@ -569,7 +572,7 @@
                     <td style="text-align: right">{{det.nopago}}</td>
                     <td style="text-align: right">{{det.porcentaje | number:4}}</td>
                     <td style="text-align: right">{{det.monto | number:2}}</td>
-                    <!--<td style="text-align: right">{{det.isr | number:2}}</td>-->
+                    <td style="text-align: right">{{+det.quitarisr == 0 ? 'No' : 'Sí'}}</td>
                     <td>
                         <button type="button" class="btn btn-danger btn-sm" ng-click="delFormaPago(det)" ng-show="permiso.e">
                             <span class="glyphicon glyphicon-trash"></span>
