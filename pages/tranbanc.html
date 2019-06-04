@@ -377,6 +377,14 @@
                         -->
                         <tr ng-repeat="lds in losDocsSoporte" ng-include="getTemplate(lds)"></tr>
                         <!--<tr ng-repeat="lds in losDocsSoporte" ng-include="'display'"></tr>-->
+                        <tr ng-show="sumaDocsSoporte != 0">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <th>Total:</th>
+                            <th ng-hide="showme" class="num">{{sumaDocsSoporte | number:2}}</th>
+                            <th ng-show="showme" class="num">{{sumaDocsSoporte | number:2}}</th>
+                        </tr>
                         </tbody>
                     </table>
                     <script type="text/ng-template" id="display">

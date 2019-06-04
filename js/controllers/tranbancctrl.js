@@ -14,6 +14,7 @@
         $scope.fltrtran = { fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), idbanco: '0' };
         $scope.losDocsSoporte = [];
         $scope.elDocSop = {fechadoc: moment().toDate(), fechaliquida: null};
+        $scope.sumaDocsSoporte = 0.00;
         $scope.losTiposDocTB = [];
         $scope.origen = 1;
         $scope.losDetCont = [];
@@ -257,7 +258,8 @@
             $scope.elDocSop.fechadoc = moment(ds.fechafactura).toDate();
             $scope.elDocSop.serie = ds.serie;
             $scope.elDocSop.documento = ds.documento;
-            $scope.elDocSop.monto = parseFloat(ds.totfact);
+            //$scope.elDocSop.monto = parseFloat(ds.totfact);
+            $scope.elDocSop.monto = parseFloat(ds.saldo);
 
             if(parseFloat($scope.laTran.monto) != parseFloat($scope.elDocSop.monto)){
                 toaster.pop({
@@ -399,6 +401,19 @@
 
         function formatoNumero(numero, decimales){ return $filter('number')(numero, decimales); }
 
+        function getSumaDocumentosSoporte(idtran) {
+            tranBancSrvc.getSumDocsSop(+idtran).then((suma) => $scope.sumaDocsSoporte = parseFloat(suma.totmonto));
+        }
+
+        getLstDocsSoporte = (idtran) => {
+            tranBancSrvc.lstDocsSoporte(+idtran).then((det) => {
+                $scope.losDocsSoporte = procDataDocs(det);
+                $scope.compraspendientes = [];
+                $scope.elDocSop = {fechadoc: moment().toDate(), fechaliquida: null};
+                getSumaDocumentosSoporte(idtran);
+            });
+        }
+
         $scope.getDataTran = function(idtran){
             $scope.editando = true;
             $scope.liquidacion = [];
@@ -425,11 +440,16 @@
                     tipoDocSopTBSrvc.lstTiposDocTB(parseInt(res[0].id)).then(function(d){ $scope.losTiposDocTB = d; });
                 });
 
+                getLstDocsSoporte(idtran);
+
+                /*
                 tranBancSrvc.lstDocsSoporte(parseInt(idtran)).then(function(det){
                     $scope.losDocsSoporte = procDataDocs(det);
                     $scope.compraspendientes = [];
                     $scope.elDocSop = {fechadoc: moment().toDate(), fechaliquida: null};
+                    getSumaDocumentosSoporte(idtran);
                 });
+                */
 
                 cuentacSrvc.getByTipo($scope.laEmpresa.id, 0).then(function(ctas){
                     $scope.lasCuentasMov = ctas;
@@ -540,23 +560,17 @@
             obj.idempresa = $scope.laEmpresa.id;
             obj.fechaliquidastr = moment(obj.fechaliquida).isValid() ? moment(obj.fechaliquida).format('YYYY-MM-DD') : '';
 
-            tranBancSrvc.getSumDocsSop(parseInt($scope.laTran.id)).then(function(suma){
-                suma.totmonto = suma.totmonto != null && suma.totmonto != undefined ? suma.totmonto : 0.0;
-                var totMonto = parseFloat(suma.totmonto) + parseFloat(obj.monto);
-                //if(totMonto <= parseFloat($scope.laTran.monto)){
-                    tranBancSrvc.editRow(obj, 'cd').then(function(){
-                        tranBancSrvc.lstDocsSoporte(parseInt($scope.laTran.id)).then(function(det){
-                            $scope.losDocsSoporte = procDataDocs(det);
-                        });
-                        $scope.elDocSop = {fechadoc: moment().toDate(), fechaliquida: null};
-                        $scope.getDetCont(obj.idtranban);
-                        $scope.getLiquidacion(obj.idtranban);
-                    });
-                //}else{
-                    //toaster.pop({ type: 'error', title: 'Error en el monto.',
-                        //body: 'La suma de los montos de los documentos de soporte no puede ser mayor al monto de la transacción.', timeout: 7000 });
-                    //$scope.elDocSop.monto = null;
-                //};
+            tranBancSrvc.editRow(obj, 'cd').then(function(){
+                getLstDocsSoporte($scope.laTran.id);
+                /*
+                tranBancSrvc.lstDocsSoporte(parseInt($scope.laTran.id)).then(function(det){
+                    $scope.losDocsSoporte = procDataDocs(det);
+                    getSumaDocumentosSoporte($scope.laTran.id);
+                });
+                $scope.elDocSop = {fechadoc: moment().toDate(), fechaliquida: null};
+                */
+                $scope.getDetCont(obj.idtranban);
+                $scope.getLiquidacion(obj.idtranban);
             });
         };
 
@@ -624,9 +638,12 @@
             $confirm({text: '¿Seguro(a) de actualizar monto aplicado de este documento?', title: 'Modificación', ok: 'Sí', cancel: 'No'}).then(function() {
 
                 tranBancSrvc.editRow({idtipodoc:obj.idtipodoc, documento:obj.documento, fechadocstr:obj.fechadoc, serie:obj.serie, iddocto:obj.iddocto, id: obj.id, monto: obj.monto}, 'ud').then(function(){
+                    getLstDocsSoporte($scope.laTran.id);
+                    /*
                     tranBancSrvc.lstDocsSoporte(parseInt($scope.laTran.id)).then(function(det){
                         $scope.losDocsSoporte = procDataDocs(det);
                     });
+                    */
                 });
                 $scope.reset(obj);
             });
@@ -635,9 +652,12 @@
         $scope.delDetRecCli = function(obj){
             $confirm({text: '¿Seguro(a) de eliminar este documento? (Esto dejará como pendiente el documento)', title: 'Eliminar documento rebajado', ok: 'Sí', cancel: 'No'}).then(function() {
                 tranBancSrvc.editRow({id: obj.id, iddocto: obj.iddocto}, 'dd').then(function(){
+                    getLstDocsSoporte($scope.laTran.id);
+                    /*
                     tranBancSrvc.lstDocsSoporte(parseInt($scope.laTran.id)).then(function(det){
                         $scope.losDocsSoporte = procDataDocs(det);
                     });
+                    */
                 });
             });
         };
@@ -655,9 +675,12 @@
         $scope.reset = function (obj) {
             $scope.selected = {};
             $scope.periodoCerrado = false;
+            getLstDocsSoporte($scope.laTran.id);
+            /*
             tranBancSrvc.lstDocsSoporte(parseInt($scope.laTran.id)).then(function(det){
                 $scope.losDocsSoporte = procDataDocs(det);
             });
+            */
         };
 
     }]);

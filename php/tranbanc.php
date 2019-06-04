@@ -264,7 +264,7 @@ $app->get('/reem/:idbene', function($idbene){
     $query = "SELECT a.id, ";
     $query.= "CONCAT(b.desctiporeembolso,' - No. ',LPAD(a.id, 5, '0'), ' - ', DATE_FORMAT(a.finicio, '%d/%m/%Y'),  ' - ', c.nombre, ' - Q ', ";
     $query.= "IF(ISNULL(d.totreembolso), 0.00, d.totreembolso)) AS cadena, a.finicio AS fechafactura, 'REE' AS serie, a.id AS documento, ";
-    $query.= "IF(ISNULL(d.totreembolso), 0.00, d.totreembolso) AS totfact ";
+    $query.= "IF(ISNULL(d.totreembolso), 0.00, d.totreembolso) AS totfact, IF(ISNULL(d.totreembolso), 0.00, d.totreembolso) AS saldo ";
     $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso INNER JOIN beneficiario c ON c.id = a.idbeneficiario LEFT JOIN (";
     $query.= "SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) d ON a.id = d.idreembolso ";
     $query.= "WHERE a.idtranban = 0 AND a.idbeneficiario = ".$idbene." ";
