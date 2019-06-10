@@ -1,0 +1,71 @@
+<div class="container-fluid" ng-controller="tranGenChqOtsCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Generaci&oacute;n de pagos de OTs</div>
+        <div class="panel-body">
+            <table class="table table-condensed table-hover">
+                <thead>
+                <tr>
+                    <th>Empresa</th>
+                    <th>Banco por defecto</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Fecha de transacci&oacute;n:</td>
+                    <td>
+                        <input type="date" class="form-control input-sm" ng-model="fechatran" ng-change="chkFechaEnPeriodo(fechatran)"/>
+                    </td>
+                </tr>
+                <tr ng-repeat="emp in empresas">
+                    <td>{{emp.empresa}}</td>
+                    <td>
+                        <select name="selBancoDef_{{$index}}" id="selBancoDef_{{$index}}" class="form-control input-sm" style="width: 100%;" ng-model="defaultData.idbanco" ng-change="setBanco(emp.idempresa, defaultData.idbanco)"
+                                ng-options="obj.id as obj.bancomonedacorrela for obj in losBancos | filter:{idempresa:emp.idempresa}">
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: right">
+                        <button type="button" class="btn btn-primary" ng-click="generaCheques()" ng-disabled="periodoCerrado">Generar</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <hr/>
+    <div class="table-responsive">
+        <table class="table table-condensed table-hover">
+            <thead>
+            <tr>
+                <th>Empresa</th>
+                <th>Proyecto</th>
+                <th>Proveedor</th>
+                <th>OT/#Pago</th>
+                <th>Monto</th>
+                <th>Quitar ISR</th>
+                <th>Banco</th>
+                <th>Generar</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="pago in losPagos | filter:search">
+                <td>{{pago.abreviaempresa}}</td>
+                <td>{{pago.proyecto}}</td>
+                <td>{{pago.proveedor}}</td>
+                <td>{{pago.ot}}/{{pago.nopago}}</td>
+                <td>{{pago.moneda}} {{pago.monto | number:2}}</td>
+                <td>{{+pago.quitarisr == 1 ? 'Sí' : 'No'}}</td>
+                <td style="width: 17%;">
+                    <select name="selBanco_{{$index}}" id="selBanco_{{$index}}" class="form-control input-sm" style="width: 100%;" ng-model="pago.idbanco"
+                            ng-options="obj.id as obj.bancomonedacorrela for obj in losBancos | filter:{idempresa:pago.idempresa}">
+                    </select>
+                </td>
+                <td style="width: 5%; text-align: center;">
+                    <input type="checkbox" ng-model="pago.generar" style="width: 15px; height: 15px;" ng-true-value="1" ng-false-value="0"/>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -420,6 +420,64 @@ $app->get('/lstpagos/:idempresa', function($idempresa){
     print $db->doSelectASJson($query);
 });
 
+$app->get('/pagospend', function(){
+    $db = new dbcpm();
+
+    $query = "SELECT f.ordensumario, a.idpresupuesto, a.id, b.idproyecto, c.nomproyecto AS proyecto, b.fhaprobacion, a.idproveedor, e.nombre AS proveedor, b.idmoneda, d.simbolo AS moneda, a.monto, ";
+    $query.= "b.fechasolicitud, f.nomempresa AS empresa, g.desctipogast AS tipogasto, h.descripcion AS subtipogasto, IF(a.coniva = 1, 'I.V.A. incluido', 'I.V.A. NO incluido') AS coniva, a.correlativo, ";
+    $query.= "CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, b.idempresa, i.nopago, i.porcentaje, i.monto AS valor, i.notas, i.id AS iddetpagopresup, i.pagado, ";
+    $query.= "IF(i.pagado = 0, NULL, 'Pagado') AS estatuspagado, b.total, a.tipocambio, a.origenprov, i.isr, i.quitarisr, 1 AS generar, NULL AS idbanco, f.abreviatura AS abreviaempresa ";
+    $query.= "FROM detpresupuesto a INNER JOIN presupuesto b ON b.id = a.idpresupuesto INNER JOIN proyecto c ON c.id = b.idproyecto INNER JOIN moneda d ON d.id = b.idmoneda ";
+    $query.= "INNER JOIN proveedor e ON e.id = a.idproveedor INNER JOIN empresa f ON f.id = b.idempresa INNER JOIN tipogasto g ON g.id = b.idtipogasto ";
+    $query.= "INNER JOIN subtipogasto h ON h.id = a.idsubtipogasto LEFT JOIN detpagopresup i ON a.id = i.iddetpresup ";
+    $query.= "WHERE a.origenprov = 1 AND b.idestatuspresupuesto IN(3, 5) AND i.pagado = 0 ";
+    $query.= "UNION ";
+    $query.= "SELECT f.ordensumario, a.idpresupuesto, a.id, b.idproyecto, c.nomproyecto AS proyecto, b.fhaprobacion, a.idproveedor, e.nombre AS proveedor, b.idmoneda, d.simbolo AS moneda, a.monto, ";
+    $query.= "b.fechasolicitud, f.nomempresa AS empresa, g.desctipogast AS tipogasto, h.descripcion AS subtipogasto, IF(a.coniva = 1, 'I.V.A. incluido', 'I.V.A. NO incluido') AS coniva, a.correlativo, ";
+    $query.= "CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, b.idempresa, i.nopago, i.porcentaje, i.monto AS valor, i.notas, i.id AS iddetpagopresup, i.pagado, ";
+    $query.= "IF(i.pagado = 0, NULL, 'Pagado') AS estatuspagado, b.total, a.tipocambio, a.origenprov, i.isr, i.quitarisr, 1 AS generar, NULL AS idbanco, f.abreviatura AS abreviaempresa ";
+    $query.= "FROM detpresupuesto a INNER JOIN presupuesto b ON b.id = a.idpresupuesto INNER JOIN proyecto c ON c.id = b.idproyecto INNER JOIN moneda d ON d.id = b.idmoneda ";
+    $query.= "INNER JOIN beneficiario e ON e.id = a.idproveedor INNER JOIN empresa f ON f.id = b.idempresa INNER JOIN tipogasto g ON g.id = b.idtipogasto ";
+    $query.= "INNER JOIN subtipogasto h ON h.id = a.idsubtipogasto LEFT JOIN detpagopresup i ON a.id = i.iddetpresup ";
+    $query.= "WHERE a.origenprov = 2 AND b.idestatuspresupuesto IN(3, 5) AND i.pagado = 0 ";
+    $query.= "ORDER BY 1, 5, 8, 18, 20";
+
+    $queryEmpresas = "SELECT DISTINCT z.idempresa, z.empresa FROM ($query) z ORDER BY z.ordensumario";
+
+    print json_encode(['empresas' => $db->getQuery($queryEmpresas), 'pagos' => $db->getQuery($query)]);
+});
+
+$app->post('/genpagos', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $seGeneraron = true;
+
+    $cntPagos = count($d->pagos);
+    for($i = 0; $i < $cntPagos; $i++){
+        $pago = $d->pagos[$i];
+
+        $getCorrela = "SELECT correlativo FROM banco WHERE id = $pago->idbanco";
+        $query = "SELECT a.monto, a.notas, a.isr, a.quitarisr, b.idproveedor, c.chequesa AS beneficiario, b.origenprov ";
+        $query.= "FROM detpagopresup a INNER JOIN detpresupuesto b ON b.id = a.iddetpresup INNER JOIN proveedor c ON c.id = b.idproveedor WHERE a.id = 1 AND b.origenprov = 1 UNION ";
+        $query.= "SELECT a.monto, a.notas, a.isr, a.quitarisr, b.idproveedor, c.nombre AS beneficiario, b.origenprov ";
+        $query.= "FROM detpagopresup a INNER JOIN detpresupuesto b ON b.id = a.iddetpresup INNER JOIN beneficiario c ON c.id = b.idproveedor WHERE a.id = 1 AND b.origenprov = 2";
+        $detspago = $db->getQuery($query);
+        if(count($detspago) > 0){
+            $detpago = $detspago[0];
+            //Hay que hacer la modificacion para que haga el insert segun la moneda del banco versus la moneda de la OT. 10/06/2019.
+            $query = "INSERT INTO tranban(idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, origenbene, idbeneficiario) ";
+            $query.= "VALUES($pago->idbanco, 'C', '$d->fecha', $detpago->monto, '$detpago->beneficiario', ";
+            $query.= "'$detpago->notas', ($getCorrela), $detpago->origenprov, $detpago->idproveedor)";
+            $db->doQuery($query);
+            $lastid = $db->getLastId();
+            if((int)$lastid > 0) {
+                $db->doQuery("UPDATE banco SET correlativo = correlativo + 1 WHERE id = $pago->idbanco");
+            }
+        }
+    }
+    print json_encode(['segeneraron' => $seGeneraron]);
+});
+
 $app->get('/notificaciones', function(){
     $db = new dbcpm();
     $query = "SELECT c.id AS idpresupuesto, b.id AS iddetpresupuesto, b.correlativo, a.nopago, b.idproveedor, d.nombre AS proveedor, c.idempresa, f.abreviatura AS empresa, e.simbolo, a.monto, ";

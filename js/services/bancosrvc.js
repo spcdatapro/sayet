@@ -1,16 +1,16 @@
 (function(){
 
-    var bancosrvc = angular.module('cpm.bancosrvc', ['cpm.comunsrvc']);
+    const bancosrvc = angular.module('cpm.bancosrvc', ['cpm.comunsrvc']);
 
     bancosrvc.factory('bancoSrvc', ['comunFact', function(comunFact){
-        var urlBase = 'php/banco.php';
+        const urlBase = 'php/banco.php';
 
         return {
             lstBancos: function(idempresa){
                 return comunFact.doGET(urlBase + '/lstbcos/' + idempresa);
             },
             lstBancosActivos: function(idempresa){
-                return comunFact.doGET(urlBase + '/lstbcosactivos/' + idempresa);
+                return comunFact.doGET(urlBase + '/lstbcosactivos' + (idempresa ? `/${idempresa}` : ''));
             },
             lstBancosFltr: function(idempresa){
                 return comunFact.doGET(urlBase + '/lstbcosfltr/' + idempresa);

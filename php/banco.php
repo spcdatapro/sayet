@@ -19,8 +19,9 @@ $app->get('/lstbcos/:idempresa', function($idempresa){
     print $db->doSelectASJson($query);
 });
 
-$app->get('/lstbcosactivos/:idempresa', function($idempresa){
+$app->get('/lstbcosactivos(/:idempresa)', function($idempresa = 0){
     $db = new dbcpm();
+    /*
     $query = "SELECT a.id, b.id AS idcuentac, CONCAT('(', b.codigo, ') ', b.nombrecta) AS nombrecta, ";
     $query.= "a.nombre, a.nocuenta, a.siglas, a.nomcuenta, a.idmoneda, CONCAT(c.nommoneda,' (',c.simbolo,')') AS descmoneda, ";
     $query.= "CONCAT(a.nombre, ' (', c.simbolo,')') AS bancomoneda, a.correlativo, c.tipocambio, CONCAT(a.nombre, ' (', c.simbolo,') (Sigue el No. ', a.correlativo,')') AS bancomonedacorrela, ";
@@ -30,6 +31,17 @@ $app->get('/lstbcosactivos/:idempresa', function($idempresa){
     $query.= "LEFT JOIN tipoimpresioncheque d ON d.id = a.idtipoimpresion ";
     $query.= "WHERE a.idempresa = $idempresa AND a.debaja = 0 ";
     $query.= "ORDER BY a.nombre";
+    */
+
+    $query = "SELECT a.id, e.id AS idempresa, e.nomempresa AS empresa, e.abreviatura AS abreviaempresa, b.id AS idcuentac, CONCAT('(', b.codigo, ') ', b.nombrecta) AS nombrecta, ";
+    $query.= "a.nombre, a.nocuenta, a.siglas, a.nomcuenta, a.idmoneda, CONCAT(c.nommoneda,' (',c.simbolo,')') AS descmoneda, ";
+    $query.= "CONCAT(a.nombre, ' (', c.simbolo,')') AS bancomoneda, a.correlativo, c.tipocambio, CONCAT(a.nombre, ' (', c.simbolo,') (Sigue el No. ', a.correlativo,')') AS bancomonedacorrela, ";
+    $query.= "a.idtipoimpresion, d.descripcion AS tipoimpresion, d.formato, c.eslocal AS monedalocal, a.debaja ";
+    $query.= "FROM banco a INNER JOIN cuentac b ON b.id = a.idcuentac INNER JOIN moneda c ON c.id = a.idmoneda LEFT JOIN tipoimpresioncheque d ON d.id = a.idtipoimpresion LEFT JOIN empresa e ON e.id = a.idempresa ";
+    $query.= "WHERE 1 = 1 AND a.debaja = 0 ";
+    $query.= (int)$idempresa > 0 ? "AND a.idempresa = $idempresa" : '';
+    $query.= "ORDER BY e.ordensumario, a.nombre";
+
     print $db->doSelectASJson($query);
 });
 
