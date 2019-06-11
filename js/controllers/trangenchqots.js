@@ -13,6 +13,7 @@
         $scope.periodoCerrado = false;
         $scope.fechatran = moment().toDate();
         $scope.empresas = [];
+        $scope.generarTodos = 1;
 
         authSrvc.getSession().then(function(usrLogged){
             if(parseInt(usrLogged.workingon) > 0){
@@ -67,6 +68,7 @@
         };
 
         $scope.setBanco = (idempresa, idbanco) => $scope.losPagos.map((p) => p.idbanco = +p.idempresa === +idempresa ? idbanco : p.idbanco);
+        $scope.setGenerar = () => $scope.losPagos.map((p) => p.generar = $scope.generarTodos);
 
         $scope.generaCheques = () => {
             let pago;
@@ -88,7 +90,7 @@
                         toaster.pop({
                             type: 'success',
                             title: 'Generación de pagos de OTs',
-                            body: 'Los cheques se generaron correctamente.',
+                            body: `Se generaron los cheques No. ${d.cheques}`,
                             timeout: 3000
                         });
                     }else{
@@ -100,6 +102,8 @@
                         });
                     }
                     $scope.qpagos = [];
+                    $scope.getPagos();
+                    $scope.loadBancos();
                 });
             }
         };

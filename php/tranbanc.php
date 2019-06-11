@@ -76,6 +76,11 @@ function insertaDetalleContable($d, $idorigen){
     };
 };
 
+$app->post('/doinsdetcont', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    insertaDetalleContable($d->obj, $d->lastid);
+});
+
 function updateGastosOT($iddetpresup){
     $db = new dbcpm();
 

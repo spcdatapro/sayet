@@ -45,7 +45,11 @@
                 <th>Monto</th>
                 <th>Quitar ISR</th>
                 <th>Banco</th>
-                <th>Generar</th>
+                <th>
+                    <div class="checkbox">
+                        <label class="checkbox-inline"><input type="checkbox" ng-model="generarTodos" ng-true-value="1" ng-false-value="0" ng-change="setGenerar()"><strong>Generar</strong></label>
+                    </div>
+                </th>
             </tr>
             </thead>
             <tbody>
@@ -54,7 +58,7 @@
                 <td>{{pago.proyecto}}</td>
                 <td>{{pago.proveedor}}</td>
                 <td>{{pago.ot}}/{{pago.nopago}}</td>
-                <td>{{pago.moneda}} {{pago.monto | number:2}}</td>
+                <td>{{pago.moneda}} {{pago.valor | number:2}}</td>
                 <td>{{+pago.quitarisr == 1 ? 'Sí' : 'No'}}</td>
                 <td style="width: 17%;">
                     <select name="selBanco_{{$index}}" id="selBanco_{{$index}}" class="form-control input-sm" style="width: 100%;" ng-model="pago.idbanco"

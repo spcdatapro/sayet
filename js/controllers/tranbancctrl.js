@@ -429,7 +429,7 @@
                 $scope.strTran += tmp.tipotrans + '-' + tmp.numero + coma;
                 $scope.strTran += moment(tmp.fecha).format('DD/MM/YYYY') + coma + tmp.moneda + ' ' + formatoNumero(tmp.monto, 2) + coma + tmp.beneficiario;
 
-                if($scope.laTran.anticipo === 1){
+                if($scope.laTran.anticipo === 1 || +$scope.laTran.idbeneficiario > 0){
                     //$scope.laTran.objBeneficiario = [getByIdOrigen($scope.beneficiarios, $scope.laTran.idbeneficiario, $scope.laTran.origenbene)];
                     var tmpObjBene = $filter('filter')($scope.beneficiarios, {id: $scope.laTran.idbeneficiario, dedonde: $scope.laTran.origenbene}, true);
                     $scope.laTran.objBeneficiario = tmpObjBene.length > 0 ? tmpObjBene[0] : undefined ;

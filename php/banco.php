@@ -39,7 +39,7 @@ $app->get('/lstbcosactivos(/:idempresa)', function($idempresa = 0){
     $query.= "a.idtipoimpresion, d.descripcion AS tipoimpresion, d.formato, c.eslocal AS monedalocal, a.debaja ";
     $query.= "FROM banco a INNER JOIN cuentac b ON b.id = a.idcuentac INNER JOIN moneda c ON c.id = a.idmoneda LEFT JOIN tipoimpresioncheque d ON d.id = a.idtipoimpresion LEFT JOIN empresa e ON e.id = a.idempresa ";
     $query.= "WHERE 1 = 1 AND a.debaja = 0 ";
-    $query.= (int)$idempresa > 0 ? "AND a.idempresa = $idempresa" : '';
+    $query.= (int)$idempresa > 0 ? "AND a.idempresa = $idempresa " : '';
     $query.= "ORDER BY e.ordensumario, a.nombre";
 
     print $db->doSelectASJson($query);

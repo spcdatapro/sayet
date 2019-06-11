@@ -1,6 +1,7 @@
 <?php
 set_time_limit(0);
 ini_set('memory_limit', '1536M');
+
 require 'vendor/autoload.php';
 require_once 'db.php';
 
@@ -450,32 +451,81 @@ $app->get('/pagospend', function(){
 $app->post('/genpagos', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $seGeneraron = true;
 
     $cntPagos = count($d->pagos);
+    $obj = new stdClass();
+    $chqGenerados = '';
     for($i = 0; $i < $cntPagos; $i++){
         $pago = $d->pagos[$i];
 
         $getCorrela = "SELECT correlativo FROM banco WHERE id = $pago->idbanco";
-        $query = "SELECT a.monto, a.notas, a.isr, a.quitarisr, b.idproveedor, c.chequesa AS beneficiario, b.origenprov ";
-        $query.= "FROM detpagopresup a INNER JOIN detpresupuesto b ON b.id = a.iddetpresup INNER JOIN proveedor c ON c.id = b.idproveedor WHERE a.id = 1 AND b.origenprov = 1 UNION ";
-        $query.= "SELECT a.monto, a.notas, a.isr, a.quitarisr, b.idproveedor, c.nombre AS beneficiario, b.origenprov ";
-        $query.= "FROM detpagopresup a INNER JOIN detpresupuesto b ON b.id = a.iddetpresup INNER JOIN beneficiario c ON c.id = b.idproveedor WHERE a.id = 1 AND b.origenprov = 2";
+
+        $query = "SELECT a.idmoneda, b.eslocal FROM banco a INNER JOIN moneda b ON b.id = a.idmoneda WHERE a.id = $pago->idbanco";
+        $datosMonedaBanco = $db->getQuery($query)[0];
+
+        $query = "SELECT b.idmoneda, b.tipocambio, c.eslocal FROM detpagopresup a INNER JOIN detpresupuesto b ON b.id = a.iddetpresup INNER JOIN moneda c ON c.id = b.idmoneda WHERE a.id = $pago->idpago";
+        $datosMonedaOt = $db->getQuery($query)[0];
+
+        $seMultiplica = true;
+        $noConvertir = true;
+
+        if((int)$datosMonedaOt->idmoneda !== (int)$datosMonedaBanco->idmoneda){
+            $noConvertir = false;
+            if((int)$datosMonedaOt->eslocal == 1 && (int)$datosMonedaBanco->eslocal == 0){
+                $seMultiplica = false;
+            }
+        }        
+
+        $query = "SELECT a.monto, a.notas, a.isr, a.quitarisr, b.idproveedor, c.chequesa AS beneficiario, b.origenprov, b.id AS iddetpresup ";
+        $query.= "FROM detpagopresup a INNER JOIN detpresupuesto b ON b.id = a.iddetpresup INNER JOIN proveedor c ON c.id = b.idproveedor WHERE a.id = $pago->idpago AND b.origenprov = 1 UNION ";
+        $query.= "SELECT a.monto, a.notas, a.isr, a.quitarisr, b.idproveedor, c.nombre AS beneficiario, b.origenprov, b.id AS iddetpresup ";
+        $query.= "FROM detpagopresup a INNER JOIN detpresupuesto b ON b.id = a.iddetpresup INNER JOIN beneficiario c ON c.id = b.idproveedor WHERE a.id = $pago->idpago AND b.origenprov = 2";
         $detspago = $db->getQuery($query);
         if(count($detspago) > 0){
             $detpago = $detspago[0];
-            //Hay que hacer la modificacion para que haga el insert segun la moneda del banco versus la moneda de la OT. 10/06/2019.
-            $query = "INSERT INTO tranban(idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, origenbene, idbeneficiario) ";
-            $query.= "VALUES($pago->idbanco, 'C', '$d->fecha', $detpago->monto, '$detpago->beneficiario', ";
-            $query.= "'$detpago->notas', ($getCorrela), $detpago->origenprov, $detpago->idproveedor)";
+            $isrAQuitar = 0.00;
+            if((int)$detpago->quitarisr == 1 && (float)$detpago->isr > 0) {
+                $isrAQuitar = $db->calculaISR((float)$detpago->isr);
+            }
+
+            $monto = 0.00;
+            if($noConvertir){
+                $monto = $detpago->monto - $isrAQuitar;
+            }else{
+                if($seMultiplica){
+                    $monto = round((float)$detpago->monto * (float)$datosMonedaOt->tipocambio, 2) - $isrAQuitar;
+                }else{
+                    $monto = round(((float)$detpago->monto / (float)$datosMonedaOt->tipocambio) - ($isrAQuitar / (float)$datosMonedaOt->tipocambio), 2);
+                }
+            }
+            $query = "INSERT INTO tranban(";
+            $query.= "idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, origenbene, idbeneficiario, tipocambio, iddetpresup, iddetpagopresup, anticipo";
+            $query.= ") VALUES(";
+            $query.= "$pago->idbanco, 'C', '$d->fecha', $monto, '$detpago->beneficiario', ";
+            $query.= "'$detpago->notas', ($getCorrela), $detpago->origenprov, $detpago->idproveedor, $datosMonedaOt->tipocambio, $detpago->iddetpresup, $pago->idpago, 1";
+            $query.= ")";
             $db->doQuery($query);
             $lastid = $db->getLastId();
             if((int)$lastid > 0) {
                 $db->doQuery("UPDATE banco SET correlativo = correlativo + 1 WHERE id = $pago->idbanco");
+
+                $obj->tipocambio = $datosMonedaOt->tipocambio;
+                $obj->idbanco = $pago->idbanco;
+                $obj->origenbene = $detpago->origenprov;
+                $obj->monto = $monto;
+                $obj->concepto = $detpago->notas;
+                $url = 'http://localhost/sayet/php/tranbanc.php/doinsdetcont';
+                $data = ['obj' => $obj, 'lastid' => $lastid];
+                $db->CallJSReportAPI('POST', $url, json_encode($data));
+                
+                $query = "UPDATE detpagopresup SET pagado = 1, origen = 1, idorigen = $lastid WHERE id = $pago->idpago";
+                $db->doQuery($query);
+                if($chqGenerados !== ''){ $chqGenerados .= ', '; }
+                $chqGenerados.= $db->getOneField("SELECT numero FROM tranban WHERE id = $lastid");
             }
         }
     }
-    print json_encode(['segeneraron' => $seGeneraron]);
+    print json_encode(['segeneraron' => $chqGenerados !== '', 'cheques' => $chqGenerados]);
 });
 
 $app->get('/notificaciones', function(){
