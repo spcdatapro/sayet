@@ -490,7 +490,7 @@ $app->post('/genpagos', function(){
 
             $monto = 0.00;
             if($noConvertir){
-                $monto = $detpago->monto - $isrAQuitar;
+                $monto = $detpago->monto - ((int)$datosMonedaOt->eslocal == 1 ? $isrAQuitar : round($isrAQuitar / (float)$datosMonedaOt->tipocambio, 2));
             }else{
                 if($seMultiplica){
                     $monto = round((float)$detpago->monto * (float)$datosMonedaOt->tipocambio, 2) - $isrAQuitar;
