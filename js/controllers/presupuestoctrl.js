@@ -480,7 +480,7 @@
 
         $scope.calcValor = function(){
             var tmpVal = parseFloat(parseFloat($scope.fpago.porcentaje * parseFloat($scope.ot.monto) / 100.0000).toFixed(2));
-            if( ($scope.sumvalor + tmpVal) <= parseFloat($scope.ot.monto) ){
+            if( ($scope.sumvalor + tmpVal) <= $scope.valorexcede){
                 $scope.fpago.monto = tmpVal;
                 // $scope.calculaISR(); // Se quita temporalmente este cambio 04/04/2019
             }else{
@@ -491,7 +491,7 @@
 
         $scope.calcPorcentaje = function(){
             var tmpPor = parseFloat(parseFloat(parseFloat($scope.fpago.monto) * 100.0000 / parseFloat($scope.ot.monto)).toFixed(4));
-            if(($scope.sumporcentaje + tmpPor) <= 100){
+            if(($scope.sumporcentaje + tmpPor) <= $scope.porexcede){
                 $scope.fpago.porcentaje = tmpPor;
                 // $scope.calculaISR(); // Se quita temporalmente este cambio 04/04/2019
             }else{
