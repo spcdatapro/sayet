@@ -62,6 +62,7 @@
                 data[i].fhenvioaprobacion = moment(data[i].fhenvioaprobacion).isValid() ? moment(data[i].fhenvioaprobacion).toDate() : null;
                 data[i].fhaprobacion = moment(data[i].fhaprobacion).isValid() ? moment(data[i].fhaprobacion).toDate() : null;
                 data[i].origenprov = parseInt(data[i].origenprov);
+                data[i].coniva = +data[i].coniva;
             }
             $scope.loadingPresupuestos = false;
             return data;
@@ -78,7 +79,7 @@
         };
 
         $scope.resetPresupuesto = function(){
-            $scope.presupuesto = {fechasolicitud: moment().toDate(), idmoneda: '1', tipocambio: 1.00};
+            $scope.presupuesto = {fechasolicitud: moment().toDate(), idmoneda: '1', tipocambio: 1.00, coniva: 1};
             $scope.ot = {};
             $scope.lstot = [];
             $scope.srchproy = '';
@@ -155,9 +156,13 @@
 
         };
 
-        $scope.printOt = function(idot){
+        $scope.printOt = async function(idot, esPresupuesto){
+            let qOt = {};
+            if(esPresupuesto){
+                qOt = await presupuestoSrvc.lstOts(idot);
+            }
             var test = false;
-            jsReportSrvc.getPDFReport(test ? 'BJdOgyV2W' : 'S1eAuyN2b', {idot: idot}).then(function(pdf){ $window.open(pdf); });
+            jsReportSrvc.getPDFReport(test ? 'BJdOgyV2W' : 'S1eAuyN2b', {idot: esPresupuesto ? +qOt[0].id : idot}).then(function(pdf){ $window.open(pdf); });
         };
 
         $scope.nuevoPresupuesto = function(){
@@ -358,13 +363,19 @@
             });
         };
 
-        $scope.verDetPagos = function(obj){
+        $scope.verDetPagos = async function(obj, esPresupuesto){
+            let qOt = {};
+            if(esPresupuesto){
+                qOt = await presupuestoSrvc.lstOts(+obj.id);
+                qOt = procDataOts(qOt)[0];
+                //console.log(qOt);
+            }            
             var modalInstance = $uibModal.open({
                 animation: true,
                 templateUrl: 'modalDetPagosOt.html',
                 controller: 'ModalDetPagosOtCtrl',
                 resolve:{
-                    ot: function(){ return obj; },
+                    ot: function(){ return esPresupuesto ? qOt : obj; },
                     permiso: function(){ return $scope.permiso; }
                 }
             });
@@ -419,6 +430,7 @@
         $scope.sumporcentaje = 0.0000;
         $scope.sumvalor = 0.00;
         $scope.permiso = permiso;
+        $scope.porexcede = parseFloat(parseFloat(100.00 + parseFloat($scope.ot.excedente)).toFixed(2));
 
         function procDataDet(d){
             $scope.sumporcentaje = 0.0000;
@@ -483,7 +495,7 @@
         };
 
         $scope.resetFPago = function(){
-            $scope.fpago = { iddetpresup: ot.id }
+            $scope.fpago = { iddetpresup: ot.id, quitarisr: 0, isr: 0.00 }
         };
 
         $scope.addFormaPago = function(obj){

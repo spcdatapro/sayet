@@ -257,10 +257,12 @@
         };
 
         $scope.resetFPago = function(){
-            $scope.fpago = { iddetpresup: ot.id }
+            $scope.fpago = { iddetpresup: ot.id, quitarisr: 0, isr: 0.00 }
         };
 
         $scope.addFormaPago = function(obj){
+            obj.isr = obj.isr !== undefined && obj.isr != null ? obj.isr : 0;
+            obj.quitarisr = obj.quitarisr !== undefined && obj.quitarisr != null ? obj.quitarisr : 0;
             obj.notas = obj.notas !== undefined && obj.notas !== null ? obj.notas : '';
             presupuestoSrvc.editRow(obj, 'cdp').then(function(){
                 $scope.loadData();

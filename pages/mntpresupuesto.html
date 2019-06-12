@@ -330,6 +330,14 @@
                                       nf="nuevoPresupuesto()" cf="cancelEditPresup()" ef="startEditPresup()" pf="imprimirPresup()"
                                       ng-hide="(+presupuesto.idestatuspresupuesto == 6 || +presupuesto.idestatuspresupuesto == 5) || !permiso.m">
                         </form-buttons>
+                        <button type="button" class="btn btn-info" ng-click="verDetPagos(presupuesto, true)" ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1" 
+                            data-toggle="tooltip" data-placement="auto" title="Ver detalle de pagos...">
+                            <i class="fa fa-money fa-lg" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="btn btn-info" ng-click="printOt(presupuesto.id, true)" ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1" 
+                            data-toggle="tooltip" data-placement="auto" title="Imprimir...">
+                            <i class="fa fa-print fa-lg" aria-hidden="true"></i>
+                        </button>
                         <button type="button" class="btn btn-primary" ng-click="aumentaExcedente(presupuesto)" ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1"
                                 data-toggle="tooltip" data-placement="auto" title="Cambiar porcentaje de excedente...">
                             <span class="glyphicon glyphicon-arrow-up"></span>
@@ -515,7 +523,7 @@
             </h4>
         </div>
         <div class="modal-body" style="height: 300px; overflow-y: auto">
-            <form name="frmDetPago" id="frmDetPago" ng-submit="frmDetPago.$valid && addFormaPago(fpago)" ng-show="sumporcentaje < 100" novalidate>
+            <form name="frmDetPago" id="frmDetPago" ng-submit="frmDetPago.$valid && addFormaPago(fpago)" ng-show="sumporcentaje < porexcede" novalidate>
                 <div class="row">
                     <div class="col-md-3 nopadding">
                         <div class="form-group">
