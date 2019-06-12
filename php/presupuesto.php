@@ -431,7 +431,7 @@ $app->get('/pagospend', function(){
     $query.= "FROM detpresupuesto a INNER JOIN presupuesto b ON b.id = a.idpresupuesto INNER JOIN proyecto c ON c.id = b.idproyecto INNER JOIN moneda d ON d.id = b.idmoneda ";
     $query.= "INNER JOIN proveedor e ON e.id = a.idproveedor INNER JOIN empresa f ON f.id = b.idempresa INNER JOIN tipogasto g ON g.id = b.idtipogasto ";
     $query.= "INNER JOIN subtipogasto h ON h.id = a.idsubtipogasto LEFT JOIN detpagopresup i ON a.id = i.iddetpresup ";
-    $query.= "WHERE a.origenprov = 1 AND b.idestatuspresupuesto IN(3, 5) AND i.pagado = 0 ";
+    $query.= "WHERE a.origenprov = 1 AND b.idestatuspresupuesto IN(3) AND i.pagado = 0 ";
     $query.= "UNION ";
     $query.= "SELECT f.ordensumario, a.idpresupuesto, a.id, b.idproyecto, c.nomproyecto AS proyecto, b.fhaprobacion, a.idproveedor, e.nombre AS proveedor, b.idmoneda, d.simbolo AS moneda, a.monto, ";
     $query.= "b.fechasolicitud, f.nomempresa AS empresa, g.desctipogast AS tipogasto, h.descripcion AS subtipogasto, IF(a.coniva = 1, 'I.V.A. incluido', 'I.V.A. NO incluido') AS coniva, a.correlativo, ";
@@ -440,7 +440,7 @@ $app->get('/pagospend', function(){
     $query.= "FROM detpresupuesto a INNER JOIN presupuesto b ON b.id = a.idpresupuesto INNER JOIN proyecto c ON c.id = b.idproyecto INNER JOIN moneda d ON d.id = b.idmoneda ";
     $query.= "INNER JOIN beneficiario e ON e.id = a.idproveedor INNER JOIN empresa f ON f.id = b.idempresa INNER JOIN tipogasto g ON g.id = b.idtipogasto ";
     $query.= "INNER JOIN subtipogasto h ON h.id = a.idsubtipogasto LEFT JOIN detpagopresup i ON a.id = i.iddetpresup ";
-    $query.= "WHERE a.origenprov = 2 AND b.idestatuspresupuesto IN(3, 5) AND i.pagado = 0 ";
+    $query.= "WHERE a.origenprov = 2 AND b.idestatuspresupuesto IN(3) AND i.pagado = 0 ";
     $query.= "ORDER BY 1, 5, 8, 18, 20";
 
     $queryEmpresas = "SELECT DISTINCT z.idempresa, z.empresa FROM ($query) z ORDER BY z.ordensumario";
