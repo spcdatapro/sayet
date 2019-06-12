@@ -515,8 +515,8 @@ $app->post('/genpagos', function(){
                 $obj->origenbene = $detpago->origenprov;
                 $obj->monto = $monto;
                 $obj->concepto = $detpago->notas;
-                //$url = 'http://localhost/sayet/php/tranbanc.php/doinsdetcont';
-                $url = 'http://localhost/sytdev/php/tranbanc.php/doinsdetcont';
+                $url = 'http://localhost/sayet/php/tranbanc.php/doinsdetcont';
+                //$url = 'http://localhost/sytdev/php/tranbanc.php/doinsdetcont';
                 $data = ['obj' => $obj, 'lastid' => $lastid];
                 $db->CallJSReportAPI('POST', $url, json_encode($data));
                 
