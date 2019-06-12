@@ -483,9 +483,10 @@ $app->post('/genpagos', function(){
         $detspago = $db->getQuery($query);
         if(count($detspago) > 0){
             $detpago = $detspago[0];
+
             $isrAQuitar = 0.00;
             if((int)$detpago->quitarisr == 1 && (float)$detpago->isr > 0) {
-                $isrAQuitar = $db->calculaISR((float)$detpago->isr);
+                $isrAQuitar = $db->calculaISR($db->calculaMontoBase($detpago->isr));
             }
 
             $monto = 0.00;
@@ -514,7 +515,8 @@ $app->post('/genpagos', function(){
                 $obj->origenbene = $detpago->origenprov;
                 $obj->monto = $monto;
                 $obj->concepto = $detpago->notas;
-                $url = 'http://localhost/sayet/php/tranbanc.php/doinsdetcont';
+                //$url = 'http://localhost/sayet/php/tranbanc.php/doinsdetcont';
+                $url = 'http://localhost/sytdev/php/tranbanc.php/doinsdetcont';
                 $data = ['obj' => $obj, 'lastid' => $lastid];
                 $db->CallJSReportAPI('POST', $url, json_encode($data));
                 

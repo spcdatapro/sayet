@@ -77,6 +77,10 @@ class dbcpm{
         return 0.00;
     }
 
+    public function calculaMontoBase($montoConIva){ return round((float)$montoConIva / 1.12, 2); }
+
+    public function calculaIVA($montoConIva){ return round((float)$montoConIva - $this->calculaMontoBase($montoConIva), 2); }
+
     public function nombreMes($numero = 1, $abreviatura = false, $mayuscula = false){
         $nombres = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         $abreviaturas = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
