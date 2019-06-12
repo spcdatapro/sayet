@@ -407,7 +407,7 @@
                 resolve:{
                     presupuesto: function(){ return obj; },
                     usr: function(){ return $scope.usrdata; },
-                    esot: function(){ return !!esot; }
+                    esot: function(){ return esot ? true : false; }
                 }
             });
             modalInstance.result.then(function(obj){
@@ -430,6 +430,7 @@
         $scope.sumporcentaje = 0.0000;
         $scope.sumvalor = 0.00;
         $scope.permiso = permiso;
+        $scope.valorexcede = parseFloat(parseFloat(parseFloat($scope.ot.monto) * ( 1 + parseFloat($scope.ot.excedente) / 100)).toFixed(2));
         $scope.porexcede = parseFloat(parseFloat(100.00 + parseFloat($scope.ot.excedente)).toFixed(2));
 
         function procDataDet(d){
@@ -445,8 +446,13 @@
                 $scope.sumvalor += d[i].monto;
             }
 
-            $scope.fpago.porcentaje = d.length > 0 ? (100 - $scope.sumporcentaje) : 100;
-            $scope.fpago.monto = parseFloat(parseFloat($scope.fpago.porcentaje * parseFloat($scope.ot.monto) / 100.0000).toFixed(2));
+            if($scope.sumporcentaje <= 100){
+                $scope.fpago.porcentaje = d.length > 0 ? (100 - $scope.sumporcentaje) : 100;
+                $scope.fpago.monto = parseFloat(parseFloat($scope.fpago.porcentaje * parseFloat($scope.ot.monto) / 100.0000).toFixed(2));
+            }else{
+                $scope.fpago.porcentaje = d.length > 0 ? ($scope.porexcede - $scope.sumporcentaje) : $scope.porexcede;
+                $scope.fpago.monto = parseFloat(parseFloat($scope.fpago.porcentaje * parseFloat($scope.valorexcede) / $scope.porexcede).toFixed(2));
+            }
 
             return d;
         }
