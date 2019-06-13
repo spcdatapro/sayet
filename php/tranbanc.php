@@ -128,11 +128,11 @@ $app->post('/u', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
     $query = "UPDATE tranban SET tipotrans = '".$d->tipotrans."', ";
-    $query.= "fecha = '".$d->fechastr."', monto = ".$d->monto.", beneficiario = '".$d->beneficiario."', concepto = '".$d->concepto."', ";
-    $query.= "operado = ".$d->operado.", numero = ".$d->numero.", anticipo = ".$d->anticipo.", idbeneficiario = ".$d->idbeneficiario.", ";
-    $query.= "origenbene = ".$d->origenbene.", tipocambio = ".$d->tipocambio.", esnegociable = $d->esnegociable, iddetpresup = $d->iddetpresup, ";
+    $query.= "fecha = '$d->fechastr', monto = $d->monto, beneficiario = '$d->beneficiario', concepto = '$d->concepto', ";
+    $query.= "operado = $d->operado, numero = $d->numero, anticipo = $d->anticipo, idbeneficiario = $d->idbeneficiario, ";
+    $query.= "origenbene = $d->origenbene, tipocambio = $d->tipocambio, esnegociable = $d->esnegociable, iddetpresup = $d->iddetpresup, ";
     $query.= "iddetpagopresup = $d->iddetpagopresup, idproyecto = $d->idproyecto, iddocliquida = $d->iddocliquida ";
-    $query.= "WHERE id = ".$d->id;
+    $query.= "WHERE id = $d->id";
     $db->doQuery($query);
 
     //$query = "DELETE FROM detallecontable WHERE origen = 1 AND idorigen = $d->id";
@@ -160,6 +160,17 @@ $app->post('/u', function(){
         };
     }
     */
+    if((int)$d->iddocliquida > 0){
+        $query = "UPDATE tranban SET iddetpresup = $d->iddetpresup, iddetpagopresup = $d->iddetpagopresup WHERE id = $d->iddocliquida";
+        $db->doQuery($query);
+    }
+
+    if(strrpos(strtoupper($d->beneficiario), 'ANULA') !== FALSE || strrpos(strtoupper($d->concepto), 'ANULA') !== FALSE){
+        if((int)$d->iddetpresup > 0 && (int)$d->iddetpagopresup > 0){
+            $query = "UPDATE detpagopresup SET pagado = 0, origen = 1, idorigen = 0 WHERE id = $d->iddetpagopresup AND origen = 1 AND idorigen = $d->id";
+            $db->doQuery($query);
+        }
+    }
 });
 
 $app->post('/d', function(){
