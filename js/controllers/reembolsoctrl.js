@@ -395,11 +395,16 @@
 
         $scope.nitSelected = function(item){
             if(item != null && item != undefined){
+                console.log('TIPO = ', typeof item.originalObject);
                 switch(typeof item.originalObject){
                     case 'string':
                         $scope.compra.nit = item.originalObject;
-                        $scope.compra.proveedor = undefined;
-                        $scope.ctasGastoProv = [];
+                        if(!$scope.compra.proveedor){
+                            $scope.compra.proveedor = undefined;
+                        }
+                        if(!$scope.ctasGastoProv){
+                            $scope.ctasGastoProv = [];
+                        }
                         break;
                     case 'object':
                         $scope.compra.nit = item.originalObject.nit;
