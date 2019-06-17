@@ -6,7 +6,7 @@
 
         $scope.params = {
             mes: (moment().month() + 1).toString(), anio: moment().year(), idempresa: 0, del: '', al: '', orden:1, creditofiscal: 1,
-            montoactivo: 0.00, refactivo: '' 
+            montoactivo: 0.00, refactivo: '', nofolio: undefined 
         };
         $scope.librocompras = [];
         $scope.meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
@@ -44,6 +44,7 @@
             $scope.params.creditofiscal = $scope.params.creditofiscal != null && $scope.params.creditofiscal != undefined ? $scope.params.creditofiscal : 0;
             $scope.params.montoactivo = $scope.params.montoactivo != null && $scope.params.montoactivo != undefined ? $scope.params.montoactivo : 0.00;
             $scope.params.refactivo = $scope.params.refactivo != null && $scope.params.refactivo != undefined ? $scope.params.refactivo : '';
+            $scope.params.nofolio = $scope.params.nofolio != null && $scope.params.nofolio !== undefined ? $scope.params.nofolio : '';
 
             if (tipo == 1) {
                 $('#btnLibroComprasExcel').button('loading')

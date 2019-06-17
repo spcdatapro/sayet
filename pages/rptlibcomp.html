@@ -79,12 +79,18 @@
                             </select>
                         </div>
                     </div>
-				</div>
-                <button type="button" class="btn btn-primary btn-sm" ng-click="getLibComp(1)" id="btnLibroComprasExcel">
-                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
-                </button>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="txtNoFolio">No. Folio:</label>
+                            <input name="txtNoFolio" id="txtNoFolio" type="number" class="form-control" ng-model="params.nofolio" placeholder="Folio que toca..."/>
+                        </div>
+                    </div>
+				</div>                
                 <button type="button" class="btn btn-primary btn-sm" ng-click="getLibComp(0)">
 					<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="getLibComp(1)" id="btnLibroComprasExcel">
+                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
                 </button>
             </div>
         </div>
