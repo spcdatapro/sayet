@@ -6,7 +6,7 @@
 
         $scope.params = {
             mes: (moment().month() + 1).toString(), anio: moment().year(), idempresa: 0, sinret: 0, resumen: 0, parqueo: 0.00, retenido: 0.00, alfa:0, cliente: undefined,
-            fdel: undefined, fal: undefined
+            fdel: undefined, fal: undefined, nofolio: undefined
         };
         $scope.libroventas = [];
         $scope.meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
@@ -31,6 +31,7 @@
 
         $scope.getLibVenta = function(){
             $scope.params.alfa = $scope.params.alfa != null && $scope.params.alfa != undefined ? $scope.params.alfa : 0;
+            $scope.params.nofolio = $scope.params.nofolio != null && $scope.params.nofolio !== undefined ? $scope.params.nofolio : '';
 			jsReportSrvc.libroventas($scope.params).then(function (result) {
                     var file = new Blob([result.data], {type: 'application/pdf'});
                     var fileURL = URL.createObjectURL(file);
@@ -41,6 +42,7 @@
         var test = false;
         $scope.getLibroVentasExcel = function(){
             $scope.params.alfa = $scope.params.alfa != null && $scope.params.alfa != undefined ? $scope.params.alfa : 0;
+            $scope.params.nofolio = $scope.params.nofolio != null && $scope.params.nofolio !== undefined ? $scope.params.nofolio : '';
             jsReportSrvc.getReport(test ? 'SyJpY4JFz' : 'Hk5Y04yKz', $scope.params).then(function (result) {
                 var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
                 var nombre = $scope.meses[$scope.params.mes - 1] + '_' + $scope.params.anio;

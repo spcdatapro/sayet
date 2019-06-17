@@ -4,7 +4,7 @@
             <div class="panel-heading">Libro de ventas</div>
             <div class="panel-body" style="text-align: right">
                 <div class="row" style="text-align: left">
-                    <div class="col-md-4 col-sm-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="selMes">Mes:</label>
                             <select name="selMes" id="selMes" class="form-control" ng-model="params.mes" ng-change="resetData()">
@@ -23,16 +23,22 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-4 col-sm-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="txtAnio">A&ntilde;o:</label>
                             <input name="txtAnio" id="txtAnio" type="number" class="form-control" ng-model="params.anio" placeholder="A&ntilde;o" ng-change="resetData()"/>
                         </div>
                     </div>
-                    <div class="col-md-4 col-sm-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="chkAlfa">&Oacute;rden alfab&eacute;tico:</label>
                             <input name="chkAlfa" id="chkAlfa" type="checkbox" class="form-control" ng-model="params.alfa" ng-true-value="1" ng-false-value="0"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="txtNoFolio">No. Folio:</label>
+                            <input name="txtNoFolio" id="txtNoFolio" type="number" class="form-control" ng-model="params.nofolio" placeholder="Folio que toca..."/>
                         </div>
                     </div>
                 </div>
