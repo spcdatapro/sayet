@@ -24,6 +24,7 @@
             lstReembolsos: function(idbene){
                 return comunFact.doGET(urlBase + '/reem/' + idbene);
             },
+            getInfoToPrint: (idtran) => comunFact.doGET(`${urlBase}/prntinfochq/${idtran}`),
             editRow: function(obj, op){
                 return comunFact.doPOST(urlBase + '/' + op, obj);
             },

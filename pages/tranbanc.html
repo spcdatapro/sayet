@@ -229,6 +229,10 @@
                         <span class="glyphicon glyphicon-print"></span>&nbsp;Cheque TEST
                     </a>
 
+                    <button type="button" class="btn btn-default" ng-click="printCheque(+laTran.id)" ng-show="editando && laTran.tipotrans === 'C'">
+                        <span class="glyphicon glyphicon-print"></span> Cheque
+                    </button>
+
                     <button type="button" class="btn btn-primary" ng-click="modalPRINT(losBancos)" ng-hide="editando">
                         <span class="glyphicon glyphicon-print"></span> &nbsp;Cheques continuos
                     </button>

@@ -1,6 +1,7 @@
 <?php
 require 'vendor/autoload.php';
 require_once 'db.php';
+require_once 'NumberToLetterConverter.class.php';
 
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
@@ -228,6 +229,28 @@ $app->post('/udoc', function(){
     $db->doQuery("UPDATE tranban SET impreso = 1 WHERE numero >= $d->ndel AND numero <= $d->nal AND idbanco = $d->idbanco AND tipotrans= 'C'" );
 });
 //Fin de para impresion de cheques continuos
+
+$app->get('/prntinfochq/:idtran', function($idtran){
+    $db = new dbcpm();
+    $n2l = new NumberToLetterConverter();
+
+    /*
+    $query = "SELECT a.id, a.numero, a.fecha, DAY(a.fecha) AS dia, MONTH(a.fecha) AS mes, YEAR(a.fecha) AS anio, FORMAT(a.monto, 2) AS montostr, a.monto, a.beneficiario, ";
+    $query.= "IF(LENGTH(a.concepto) < 70, a.concepto, CONCAT(SUBSTR(a.concepto, 1, 73), '...')) AS concepto, a.esnegociable, CONCAT('Cheque No. ', a.numero, ' / ', d.abreviatura) AS banco, ";
+    $query.= "d.nomempresa AS empresa, a.idproyecto, a.iddetpagopresup ";
+    $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN moneda c ON c.id = b.idmoneda INNER JOIN empresa d ON d.id = b.idempresa ";
+    $query.= "WHERE a.id = $idtran";
+    */
+
+    $query = "SELECT a.numero, DAY(a.fecha) AS dia, MONTH(a.fecha) AS mes, YEAR(a.fecha) AS anio, FORMAT(a.monto, 2) AS monto, a.monto AS numMonto, a.beneficiario, '' AS montoEnLetras, ";
+    $query.= "b.siglas AS banco, d.abreviatura AS empresa ";
+    $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN moneda c ON c.id = b.idmoneda INNER JOIN empresa d ON d.id = b.idempresa ";
+    $query.= "WHERE a.id = $idtran";
+    $cheque = $db->getQuery($query)[0];
+    $cheque->montoEnLetras = $n2l->to_word_int($cheque->numMonto);
+
+    print json_encode($cheque);
+});
 
 $app->post('/o', function(){
     $d = json_decode(file_get_contents('php://input'));
