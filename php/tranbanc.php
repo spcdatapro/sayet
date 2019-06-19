@@ -242,9 +242,10 @@ $app->get('/prntinfochq/:idtran', function($idtran){
     $query.= "WHERE a.id = $idtran";
     */
 
-    $query = "SELECT a.numero, DAY(a.fecha) AS dia, MONTH(a.fecha) AS mes, YEAR(a.fecha) AS anio, FORMAT(a.monto, 2) AS monto, a.monto AS numMonto, a.beneficiario, '' AS montoEnLetras, ";
-    $query.= "b.siglas AS banco, d.abreviatura AS empresa ";
+    $query = "SELECT a.numero, DAY(a.fecha) AS dia, (SELECT LOWER(nombre) FROM mes WHERE id = MONTH(a.fecha)) AS mes, YEAR(a.fecha) AS anio, FORMAT(a.monto, 2) AS monto, ";
+    $query.= "a.monto AS numMonto, a.beneficiario, '' AS montoEnLetras, b.siglas AS banco, d.abreviatura AS empresa, e.formato, e.impresora ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN moneda c ON c.id = b.idmoneda INNER JOIN empresa d ON d.id = b.idempresa ";
+    $query.= "LEFT JOIN tipoimpresioncheque e ON e.id = b.idtipoimpresion ";
     $query.= "WHERE a.id = $idtran";
     $cheque = $db->getQuery($query)[0];
     $cheque->montoEnLetras = $n2l->to_word_int($cheque->numMonto);
