@@ -230,25 +230,45 @@ $app->post('/udoc', function(){
 });
 //Fin de para impresion de cheques continuos
 
+function getConceptoExtra($db, $iddetpagopresup){
+    $conceptoext = '';
+    $laot = '';
+    if((int)$iddetpagopresup > 0){
+        $laot = $db->getOneField("SELECT CONCAT(b.idpresupuesto, '-', b.correlativo) FROM detpagopresup a INNER JOIN detpresupuesto b ON b.id = a.iddetpresup WHERE a.id = $iddetpagopresup");
+    }
+
+    if($conceptoext != ''){ $conceptoext.= ' - '; }
+    $conceptoext.= $laot != '' ? ('OT: '.$laot) : '';
+
+    return $conceptoext;
+}
+
 $app->get('/prntinfochq/:idtran', function($idtran){
     $db = new dbcpm();
     $n2l = new NumberToLetterConverter();
 
-    /*
-    $query = "SELECT a.id, a.numero, a.fecha, DAY(a.fecha) AS dia, MONTH(a.fecha) AS mes, YEAR(a.fecha) AS anio, FORMAT(a.monto, 2) AS montostr, a.monto, a.beneficiario, ";
-    $query.= "IF(LENGTH(a.concepto) < 70, a.concepto, CONCAT(SUBSTR(a.concepto, 1, 73), '...')) AS concepto, a.esnegociable, CONCAT('Cheque No. ', a.numero, ' / ', d.abreviatura) AS banco, ";
-    $query.= "d.nomempresa AS empresa, a.idproyecto, a.iddetpagopresup ";
-    $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN moneda c ON c.id = b.idmoneda INNER JOIN empresa d ON d.id = b.idempresa ";
-    $query.= "WHERE a.id = $idtran";
-    */
-
     $query = "SELECT a.numero, DAY(a.fecha) AS dia, (SELECT LOWER(nombre) FROM mes WHERE id = MONTH(a.fecha)) AS mes, YEAR(a.fecha) AS anio, FORMAT(a.monto, 2) AS monto, ";
-    $query.= "a.monto AS numMonto, a.beneficiario, '' AS montoEnLetras, b.siglas AS banco, d.abreviatura AS empresa, e.formato, e.impresora ";
+    $query.= "a.monto AS numMonto, a.beneficiario, '' AS montoEnLetras, b.siglas AS banco, d.abreviatura AS empresa, e.formato, e.impresora, a.concepto, '' AS conceptoadicional, ";
+    $query.= "a.iddetpagopresup, a.esnegociable ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN moneda c ON c.id = b.idmoneda INNER JOIN empresa d ON d.id = b.idempresa ";
     $query.= "LEFT JOIN tipoimpresioncheque e ON e.id = b.idtipoimpresion ";
     $query.= "WHERE a.id = $idtran";
     $cheque = $db->getQuery($query)[0];
     $cheque->montoEnLetras = $n2l->to_word_int($cheque->numMonto);
+    $cheque->conceptoadicional = getConceptoExtra($db, $cheque->iddetpagopresup);
+
+    $query = "SELECT b.codigo, b.nombrecta AS cuenta, ";
+    $query.= "IF(a.debe <> 0, FORMAT(a.debe, 2), '') AS debe, ";
+    $query.= "IF(a.haber <> 0, FORMAT(a.haber, 2), '') AS haber ";
+    $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta WHERE a.origen = 1 AND a.idorigen = ".$idtran." ORDER BY a.debe DESC";
+    $detcont = $db->getQuery($query);
+
+    $query = "SELECT '' AS codigo, 'TOTALES' AS cuenta, FORMAT(SUM(a.debe), 2) AS debe, FORMAT(SUM(a.haber), 2) AS haber ";
+    $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta WHERE a.origen = 1 AND a.idorigen = ".$idtran;
+    $totdet = $db->getQuery($query)[0];
+    array_push($detcont, $totdet);
+
+    $cheque->detallecontable = $detcont;
 
     print json_encode($cheque);
 });
