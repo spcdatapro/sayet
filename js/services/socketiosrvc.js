@@ -3,7 +3,7 @@
     var socketiosrvc = angular.module('cpm.socketiosrvc', []);
 
     socketiosrvc.factory('socketIOSrvc', ['$rootScope', ($rootScope) => {
-		const urlSocketServer = 'http://localhost:3520';
+		const urlSocketServer = `${window.location.origin}:3520`;
 		
 		const socket = io.connect(urlSocketServer);
 		return {
