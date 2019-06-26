@@ -120,7 +120,8 @@ $app->post('/ul', function(){
     $db = new dbcpm();
     $d->fechacortestr = $d->fechacortestr == '' ? "NULL" : "'$d->fechacortestr'";
     $d->lectura = $d->lectura == '' ? "NULL" : $d->lectura;
-    $query = "UPDATE lecturaservicio SET lectura = $d->lectura, fechaingreso = NOW(), fechacorte = $d->fechacortestr WHERE id = $d->id";
+    if(!isset($d->descuento)){ $d->descuento = 0.00; }
+    $query = "UPDATE lecturaservicio SET lectura = $d->lectura, fechaingreso = NOW(), fechacorte = $d->fechacortestr, descuento = $d->descuento WHERE id = $d->id";
     $db->doQuery($query);
 });
 

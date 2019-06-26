@@ -25,17 +25,16 @@ $app->post('/pendientes', function(){
     $query.= "f.desctiposervventa AS tipo, 0.00 AS totapagar, 0 AS numfact, '' AS seriefact, ";
     $query.= "IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, 0, 1) AS facturar, c.id AS idcontrato, ";
     $query.= "d.id AS idcliente, UPPER(f.desctiposervventa) AS tipo, UPPER(g.nomproyecto) AS proyecto, h.nombre AS unidad, ";
-    //$query.= "(SELECT nombre FROM mes WHERE id = MONTH('$d->fvencestr')) AS nommes, ";
 	$query.= "(SELECT nombre FROM mes WHERE id = a.mes) AS nommes, ";
 	$query.= "b.idtiposervicio, ";
-    $query.= "DATE_FORMAT(FechaLecturaAnterior(a.idserviciobasico, a.mes, a.anio), '%d/%m/%Y') AS fechaanterior, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechaactual ";
+    $query.= "DATE_FORMAT(FechaLecturaAnterior(a.idserviciobasico, a.mes, a.anio), '%d/%m/%Y') AS fechaanterior, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechaactual, ";
+    $query.= "a.descuento, a.fechacorte ";
     $query.= "FROM lecturaservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico INNER JOIN contrato c ON c.id = (SELECT b.id FROM contrato b WHERE FIND_IN_SET(a.idunidad, b.idunidad) LIMIT 1) ";
     $query.= "INNER JOIN cliente d ON d.id = c.idcliente INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio ";
     $query.= "INNER JOIN proyecto g ON g.id = a.idproyecto INNER JOIN unidad h ON h.id = a.idunidad ";
     $query.= "WHERE a.estatus = 2 AND b.pagacliente = 0 AND ";
     $query.= "a.mes <= MONTH('$d->fvencestr') AND a.anio <= YEAR('$d->fvencestr') AND b.idempresa = $d->idempresa AND ";
     $query.= "(c.inactivo = 0 OR (c.inactivo = 1 AND c.fechainactivo > '$d->fvencestr'))";
-    //$query.= "ORDER BY d.nombre, 21, a.anio, a.mes"; //Columna 21 es "facturar a"
     $query.= "ORDER BY g.nomproyecto, CAST(digits(h.nombre) AS UNSIGNED), h.nombre";
     $factagua = $db->getQuery($query);
 
@@ -45,6 +44,7 @@ $app->post('/pendientes', function(){
     $cntFA = count($factagua);
     for($i = 0; $i < $cntFA; $i++){
         $fagua = $factagua[$i];
+
         $fagua->iva = (float)$fagua->montoconiva - (float)$fagua->montosiniva;
         $fagua->retisr = (int)$fagua->retenerisr > 0 ? $db->calculaISR((float)$fagua->montosiniva) : 0.00;
         $fagua->retiva = (int)$fagua->reteneriva > 0 ? $db->calculaRetIVA((float)$fagua->montosiniva, ((int)$fagua->idtipocliente == 1 ? true : false), $fagua->montoconiva, ((int)$fagua->idtipocliente == 2 ? true : false), $fagua->iva) : 0.00;
@@ -162,7 +162,7 @@ $app->post('/genfact', function(){
             $query.= "$params->idempresa, $p->tipofact, $p->idcontrato, $p->idcliente, $p->seriefact, $p->numfact, ";
             $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '$descripcion', $p->iva, ";
             $query.= "$p->totapagar, 0.00, $p->montoconiva, '".$n2l->to_word($p->totapagar, 'GTQ')."', 1, $params->tc, ";
-            $query.= "$p->retisr, $p->retiva, 0.00, '$p->nit', '$p->facturara', '$p->direccion', $p->montoconiva, $p->montoconiva";
+            $query.= "$p->retisr, $p->retiva, $p->descuento, '$p->nit', '$p->facturara', '$p->direccion', $p->montoconiva, $p->montoconiva";
             $query.= ")";
             //echo $query.'<br/>';
 
@@ -174,7 +174,7 @@ $app->post('/genfact', function(){
                 $query = "INSERT INTO detfact(";
                 $query.= "idfactura, cantidad, descripcion, preciounitario, preciotot, idtiposervicio, mes, anio, descuento, montoconiva, montoflatconiva";
                 $query.= ") VALUES(";
-                $query.= "$lastid, 1, '$descripcion', $p->montoconiva, $p->montoconiva, $p->idtiposervicio, $p->mes, $p->anio, 0.00, $p->montoconiva, $p->montoconiva";
+                $query.= "$lastid, 1, '$descripcion', $p->montoconiva, $p->montoconiva, $p->idtiposervicio, $p->mes, $p->anio, $p->descuento, $p->montoconiva, $p->montoconiva";
                 $query.= ")";
                 $db->doQuery($query);
                 $query = "UPDATE lecturaservicio SET estatus = 3, facturado = 1, idfactura = $lastid WHERE id = $p->id";

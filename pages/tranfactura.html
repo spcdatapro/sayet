@@ -240,6 +240,7 @@
                             <th class="num">Base</th>
                             <th class="num">A facturar (m<sup>3</sup>)</th>
                             <th class="num">A facturar (Q)</th>
+                            <th class="num">Descuento c/IVA (Q)</th>
                             <th style="text-align: center">Facturar</th>
                             <!--<th>&nbsp;</th>-->
                         </tr>
@@ -256,6 +257,7 @@
                             <td class="num">{{p.mcubsug | number:2}}</td>
                             <td class="num">{{p.consumoafacturar | number:2}}</td>
                             <td class="num">{{p.montoconiva | number:2}}</td>
+                            <td class="num">{{p.descuento | number:2}}</td>
                             <td style="text-align: center">
                                 <input name="chkFactAgua_{{p.id}}" id="chkFactAgua_{{p.id}}" type="checkbox" ng-model="p.facturar" ng-true-value="'1'" ng-false-value="'0'" ng-disabled="!(+p.consumoafacturar > 0)"/>
                             </td>
