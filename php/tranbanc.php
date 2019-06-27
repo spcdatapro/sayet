@@ -243,8 +243,8 @@ function getConceptoExtra($db, $iddetpagopresup){
     return $conceptoext;
 }
 
-$app->get('/prntinfochq/:idtran', function($idtran){
-    $db = new dbcpm();
+
+function getInfoCheque($db, $idtran) {
     $n2l = new NumberToLetterConverter();
 
     $query = "SELECT a.numero, DAY(a.fecha) AS dia, (SELECT LOWER(nombre) FROM mes WHERE id = MONTH(a.fecha)) AS mes, YEAR(a.fecha) AS anio, FORMAT(a.monto, 2) AS monto, ";
@@ -270,7 +270,25 @@ $app->get('/prntinfochq/:idtran', function($idtran){
 
     $cheque->detallecontable = $detcont;
 
-    print json_encode($cheque);
+    return $cheque;
+}
+
+$app->get('/prntinfochq/:idtran', function($idtran){
+    $db = new dbcpm();
+    $cheques[] = getInfoCheque($db, $idtran);
+    print json_encode($cheques);
+});
+
+$app->get('/prntchqcont/:idbanco/:del/:al', function($idbanco, $del, $al){
+    $db = new dbcpm();
+    $cheques = [];
+    $query = "SELECT id FROM tranban WHERE tipotrans = 'C' AND idbanco = $idbanco and numero >= $del and numero <= $al ORDER BY numero";
+    $idstran = $db->getQuery($query);
+    $cntIdsTran = count($idstran);
+    for($i = 0; $i < $cntIdsTran; $i++){
+        $cheques[] = getInfoCheque($db, $idstran[$i]->id);
+    }
+    print json_encode($cheques);
 });
 
 $app->post('/o', function(){
