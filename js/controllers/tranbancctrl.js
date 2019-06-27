@@ -489,7 +489,7 @@
                     objs.push({
                         tipo: 'C',
                         descripcionTipo: 'cheque',
-                        datos: chq[i]                       
+                        datos: chqs[i]                       
                     });
                 }
                 socketIOSrvc.emit('sayet:print', JSON.stringify(objs));
