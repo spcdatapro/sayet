@@ -25,6 +25,7 @@
                 return comunFact.doGET(urlBase + '/reem/' + idbene);
             },
             getInfoToPrint: (idtran) => comunFact.doGET(`${urlBase}/prntinfochq/${idtran}`),
+            getBatchInfoToPrint: (idbanco, del, al) => comunFact.doGET(`${urlBase}/prntchqcont/${idbanco}/${del}/${al}`),
             editRow: function(obj, op){
                 return comunFact.doPOST(urlBase + '/' + op, obj);
             },
