@@ -483,13 +483,16 @@
         };
 
         $scope.printCheque = (idtran) => {
-            tranBancSrvc.getInfoToPrint(idtran).then((chq) => {
-                const obj = {
-                    tipo: 'C',
-                    descripcionTipo: 'cheque',
-                    datos: chq
+            tranBancSrvc.getInfoToPrint(idtran).then((chqs) => {
+                let objs = [];
+                for(let i = 0; i < chqs.length; i++){
+                    objs.push({
+                        tipo: 'C',
+                        descripcionTipo: 'cheque',
+                        datos: chq[i]                       
+                    });
                 }
-                socketIOSrvc.emit('sayet:print', JSON.stringify(obj));
+                socketIOSrvc.emit('sayet:print', JSON.stringify(objs));
             });
         };
 
