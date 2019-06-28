@@ -243,19 +243,35 @@ function getConceptoExtra($db, $iddetpagopresup){
     return $conceptoext;
 }
 
+function getFieldInfo($db, $formato, $field){
+    $query = "SELECT formato, campo, superior, izquierda, ancho, alto, tamletra AS tamanioletra, tipoletra, ajustelinea AS ajustedelinea, NULL AS valor ";
+    $query.= "FROM etiqueta ";
+    $query.= "WHERE formato = '$formato' AND campo = '$field'";
+    $info = $db->getQuery($query);
+    if(count($info) > 0){
+        $info = $info[0];
+    } else {
+        $info = null;
+    }
+    return $info;
+}
 
-function getInfoCheque($db, $idtran) {
+function getInfoCheque($db, $idtran, $idusr) {
     $n2l = new NumberToLetterConverter();
 
-    $query = "SELECT a.numero, DAY(a.fecha) AS dia, (SELECT LOWER(nombre) FROM mes WHERE id = MONTH(a.fecha)) AS mes, YEAR(a.fecha) AS anio, FORMAT(a.monto, 2) AS monto, ";
-    $query.= "a.monto AS numMonto, a.beneficiario, '' AS montoEnLetras, b.siglas AS banco, d.abreviatura AS empresa, e.formato, e.impresora, a.concepto, '' AS conceptoadicional, ";
-    $query.= "a.iddetpagopresup, a.esnegociable, e.pagewidth, e.pageheight ";
+    $query = "SELECT CONCAT(a.numero, '/', b.siglas) AS numero, CONCAT('Guatemala, ', DAY(a.fecha), ' de ', (SELECT LOWER(nombre) FROM mes WHERE id = MONTH(a.fecha)), ' de ', YEAR(a.fecha)) AS fecha, ";
+    $query.= "FORMAT(a.monto, 2) AS monto, a.monto AS numMonto, a.beneficiario, '' AS montoEnLetras, b.siglas AS banco, d.abreviatura AS empresa, e.formato, e.impresora, a.concepto, ";
+    $query.= "a.iddetpagopresup, a.esnegociable, e.pagewidth, e.pageheight, (SELECT UPPER(TRIM(iniciales)) FROM usuario WHERE id = $idusr) AS hechopor ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN moneda c ON c.id = b.idmoneda INNER JOIN empresa d ON d.id = b.idempresa ";
     $query.= "LEFT JOIN tipoimpresioncheque e ON e.id = b.idtipoimpresion ";
     $query.= "WHERE a.id = $idtran";
     $cheque = $db->getQuery($query)[0];
     $cheque->montoEnLetras = $n2l->to_word_int($cheque->numMonto);
-    $cheque->conceptoadicional = getConceptoExtra($db, $cheque->iddetpagopresup);
+    $cheque->concepto.= '. '.getConceptoExtra($db, $cheque->iddetpagopresup);
+    $cheque->concepto = trim($cheque->concepto);
+
+    $campos = [];
+    foreach($cheque as $key => $value){ $campos[] = $key; }
 
     $query = "SELECT b.codigo, b.nombrecta AS cuenta, ";
     $query.= "IF(a.debe <> 0, FORMAT(a.debe, 2), '') AS debe, ";
@@ -263,30 +279,62 @@ function getInfoCheque($db, $idtran) {
     $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta WHERE a.origen = 1 AND a.idorigen = ".$idtran." ORDER BY a.debe DESC";
     $detcont = $db->getQuery($query);
 
+    $camposdetcont = [];
+    if(count($detcont) > 0){
+        foreach($detcont[0] as $key => $value){ $camposdetcont[] = $key; }
+    }
+
+    //print json_encode(['header' => $campos, 'detail' => $camposdetcont]);
+
     $query = "SELECT '' AS codigo, 'TOTALES' AS cuenta, FORMAT(SUM(a.debe), 2) AS debe, FORMAT(SUM(a.haber), 2) AS haber ";
     $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta WHERE a.origen = 1 AND a.idorigen = ".$idtran;
     $totdet = $db->getQuery($query)[0];
     array_push($detcont, $totdet);
 
-    $cheque->detallecontable = $detcont;
+    $cheque->detallecontable = $detcont;    
+
+    $cntCampos = count($campos);
+    for($i = 0; $i < $cntCampos; $i++){
+        $campo = $campos[$i];
+        $info = getFieldInfo($db, $cheque->formato, $campo);
+        if($info){
+            $info->valor = $cheque->{$campo};
+            $cheque->{$campo} = $info;
+        }        
+    }
+
+    $cntCamposDetCont = count($camposdetcont);
+    $cntDetCont = count($cheque->detallecontable);
+    for($i = 0; $i < $cntDetCont; $i++){
+        $ld = $cheque->detallecontable[$i];
+        for($j = 0; $j < $cntCamposDetCont; $j++){
+            $campo = $camposdetcont[$j];
+            $info = getFieldInfo($db, $cheque->formato, $campo);
+            if($info){
+                $info->valor = $ld->{$campo};
+                $ld->{$campo} = $info;
+            }
+        }
+    }
+
 
     return $cheque;
 }
 
-$app->get('/prntinfochq/:idtran', function($idtran){
+$app->get('/prntinfochq/:idtran/:idusr', function($idtran, $idusr){
     $db = new dbcpm();
-    $cheques[] = getInfoCheque($db, $idtran);
+    $cheques[] = getInfoCheque($db, $idtran, $idusr);
     print json_encode($cheques);
 });
 
-$app->get('/prntchqcont/:idbanco/:del/:al', function($idbanco, $del, $al){
+$app->get('/prntchqcont/:idbanco/:del/:al/:idusr', function($idbanco, $del, $al, $idusr){
     $db = new dbcpm();
     $cheques = [];
     $query = "SELECT id FROM tranban WHERE tipotrans = 'C' AND idbanco = $idbanco and numero >= $del and numero <= $al ORDER BY numero";
     $idstran = $db->getQuery($query);
     $cntIdsTran = count($idstran);
     for($i = 0; $i < $cntIdsTran; $i++){
-        $cheques[] = getInfoCheque($db, $idstran[$i]->id);
+        $cheques[] = getInfoCheque($db, $idstran[$i]->id, $idusr);
     }
     print json_encode($cheques);
 });

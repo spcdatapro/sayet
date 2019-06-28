@@ -483,7 +483,7 @@
         };
 
         $scope.printCheque = (idtran) => {
-            tranBancSrvc.getInfoToPrint(idtran).then((chqs) => {
+            tranBancSrvc.getInfoToPrint(idtran, $scope.uid).then((chqs) => {
                 let objs = [];
                 for(let i = 0; i < chqs.length; i++){
                     objs.push({
@@ -749,7 +749,7 @@
             $scope.venta.nal = $scope.venta.nal != null && $scope.venta.nal != undefined ? $scope.venta.nal : '';
             $scope.venta.idbanco = $scope.losBancos.id.id!= null && $scope.losBancos.id.id!= undefined ? $scope.losBancos.id.id: '';
 
-            tranBancSrvc.getBatchInfoToPrint($scope.venta.idbanco, $scope.venta.ndel, $scope.venta.nal).then((chqs) => {
+            tranBancSrvc.getBatchInfoToPrint($scope.venta.idbanco, $scope.venta.ndel, $scope.venta.nal, userid).then((chqs) => {
                 let objs = [];
                 for(let i = 0; i < chqs.length; i++){
                     objs.push({
