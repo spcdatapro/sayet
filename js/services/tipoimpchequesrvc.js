@@ -1,14 +1,14 @@
 (function(){
 
-    var tipoimpchequesrvc = angular.module('cpm.tipoimpchequesrvc', ['cpm.comunsrvc']);
+    const tipoimpchequesrvc = angular.module('cpm.tipoimpchequesrvc', ['cpm.comunsrvc']);
 
-    tipoimpchequesrvc.factory('tipoImpresionChequeSrvc', ['comunFact', function(comunFact){
-        var urlBase = 'php/tipoimpcheque.php';
+    tipoimpchequesrvc.factory('tipoImpresionChequeSrvc', ['comunFact', (comunFact) => {
+        const urlBase = 'php/tipoimpcheque.php';
 
         return {
-            lstTiposImpresionCheque: function(){
-                return comunFact.doGET(urlBase + '/lsttiposimp');
-            }
+            lstTiposImpresionCheque: () => comunFact.doGET(`${urlBase}/lsttiposimp`),
+            lstCampos: (formato) => comunFact.doGET(`${urlBase}/lstcampos/${formato}`),
+            editRow: (obj, op) => comunFact.doPOST(`${urlBase}/${op}`, obj)
         };
     }]);
 
