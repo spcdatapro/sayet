@@ -1,0 +1,95 @@
+<div class="container" ng-controller="tipoImpChqCtrl">
+	<div class="panel panel-primary">
+		<div class="panel-heading">Configuraci&oacute;n de formatos de cheque</div>
+		<div class="panel-body">
+			<form name="frmTipo" id="frmTipo" ng-submit="frmTipo.$valid && updTipo(tipochq)" novalidate>
+				<div class="row">
+					<div class="col-md-3">
+						<div class="form-group">
+							<label for="selFormato">Formato</label>
+							<select name="selFormato" id="selFormato" class="form-control input-sm" ng-model="tipochq" 
+								ng-options="obj as obj.descripcion for obj in lsttiposchq" ng-change="loadCampos()">
+							</select>
+						</div>
+					</div>
+					<div class="col-md-5">
+						<div class="form-group">
+							<label for="txtImpresora">Impresora</label>
+							<input name="txtImpresora" id="txtImpresora" type="text" class="form-control input-sm" ng-model="tipochq.impresora" required/>
+						</div>
+					</div>
+					<div class="col-md-2">
+						<div class="form-group">
+							<label for="txtAnchoPag">Ancho de p&aacute;gina (cm)</label>
+							<input name="txtAnchoPag" id="txtAnchoPag" type="number" class="form-control input-sm" ng-model="tipochq.pagewidth" required/>
+						</div>
+					</div>
+					<div class="col-md-2">
+						<div class="form-group">
+							<label for="txtAltoPag">Alto de p&aacute;gina (cm)</label>
+							<div class="input-group">
+								<input name="txtAltoPag" id="txtAltoPag" type="number" class="form-control input-sm" ng-model="tipochq.pageheight" required/>
+								<span class="input-group-btn">
+									<button type="submit" class="btn btn-primary btn-sm" ng-disabled="frmTipo.$invalid">
+										<span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
+									</button>									
+								</span>
+							</div>							
+						</div>
+					</div>
+				</div>
+			</form>
+			<hr ng-show="lstcampos.length > 0"/>
+			<table class="table table-hover table-condensed" ng-show="lstcampos.length > 0">
+				<thead>
+					<tr>
+						<th>Campo</th>
+						<th class="num">Del borde sup. (cm)</th>
+						<th class="num">Del borde izq. (cm)</th>
+						<th class="num">Ancho (cm)</th>
+						<th class="num">Alto (cm)</th>
+						<th class="num">Tam. letra (pt)</th>
+						<th>Tipo letra</th>
+						<th style="text-align: center;">Ajustar l&iacute;nea</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="cmp in lstcampos">
+						<td>{{cmp.nombre}}</td>
+						<td>
+							<input name="txtSuperior_{{$index}}" id="txtSuperior_{{$index}}" type="number" class="form-control input-sm num" ng-model="cmp.superior"/>
+						</td>
+						<td>
+							<input name="txtIzquierda_{{$index}}" id="txtIzquierda_{{$index}}" type="number" class="form-control input-sm num" ng-model="cmp.izquierda"/>
+						</td>
+						<td>									
+							<input name="txtAncho_{{$index}}" id="txtAncho_{{$index}}" type="number" class="form-control input-sm num" ng-model="cmp.ancho"/>
+						</td>
+						<td>
+							<input name="txtAlto_{{$index}}" id="txtAlto_{{$index}}" type="number" class="form-control input-sm num" ng-model="cmp.alto"/>
+						</td>
+						<td>
+							<input name="txtTamLetra_{{$index}}" id="txtTamLetra_{{$index}}" type="number" class="form-control input-sm num" ng-model="cmp.tamletra"/>
+						</td>
+						<td>
+							<select name="selTipoLetra_{{$index}}" id="selTipoLetra_{{$index}}" class="form-control input-sm" ng-model="cmp.tipoletra">
+								<option value="Arial">Arial</option>
+								<option value="Courier New">Courier New</option>
+								<option value="Times New Roman">Times New Roman</option>
+							</select>
+						</td>
+						<td style="text-align: center;">
+							<input name="chkAjusteLinea_{{$index}}" id="chkAjusteLinea_{{$index}}" type="checkbox" class="form-control input-sm" ng-model="cmp.ajustelinea" ng-true-value="1" ng-false-value="0"/>
+						</td>
+						<td style="text-align: center;">
+							<button type="button" class="btn btn-primary btn-sm" ng-click="updCampo(cmp)">
+								<span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
+							</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
