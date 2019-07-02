@@ -2,7 +2,7 @@
 
     var facturacionctrl = angular.module('cpm.facturacionctrl', []);
 
-    facturacionctrl.controller('facturacionCtrl', ['$scope', 'facturacionSrvc', 'facturacionAguaSrvc', 'facturaOtrosSrvc', 'authSrvc', 'empresaSrvc', 'tipoServicioVentaSrvc', '$filter', 'tipoCambioSrvc', 'jsReportSrvc', '$window', '$uibModal', 'toaster', 'clienteSrvc', 'tipoFacturaSrvc', 'tipoCompraSrvc', '$confirm', 'proyectoSrvc', 'factsParqueoSrvc', 'periodoContableSrvc', function($scope, facturacionSrvc, facturacionAguaSrvc, facturaOtrosSrvc, authSrvc, empresaSrvc, tipoServicioVentaSrvc, $filter, tipoCambioSrvc, jsReportSrvc, $window, $uibModal, toaster, clienteSrvc, tipoFacturaSrvc, tipoCompraSrvc, $confirm, proyectoSrvc, factsParqueoSrvc, periodoContableSrvc){
+    facturacionctrl.controller('facturacionCtrl', ['$scope', 'facturacionSrvc', 'facturacionAguaSrvc', 'facturaOtrosSrvc', 'authSrvc', 'empresaSrvc', 'tipoServicioVentaSrvc', '$filter', 'tipoCambioSrvc', 'jsReportSrvc', '$window', '$uibModal', 'toaster', 'clienteSrvc', 'tipoFacturaSrvc', 'tipoCompraSrvc', '$confirm', 'proyectoSrvc', 'factsParqueoSrvc', 'periodoContableSrvc', 'socketIOSrvc', function($scope, facturacionSrvc, facturacionAguaSrvc, facturaOtrosSrvc, authSrvc, empresaSrvc, tipoServicioVentaSrvc, $filter, tipoCambioSrvc, jsReportSrvc, $window, $uibModal, toaster, clienteSrvc, tipoFacturaSrvc, tipoCompraSrvc, $confirm, proyectoSrvc, factsParqueoSrvc, periodoContableSrvc, socketIOSrvc){
 
         $scope.params = { idempresa: '0', fvence: moment().endOf('month').toDate(), ffactura: moment().toDate(), idtipo: '0', tc: 1.00, objTipo: undefined, params:'', pedientes: [] };
         $scope.paramsh2o = { idempresa: '0', fvence: moment().endOf('month').toDate(), ffactura: moment().toDate(), tc: 1.00 };
@@ -538,12 +538,25 @@
                     if(lstids != ''){ lstids += ','; }
                     lstids += $scope.lstimpfact[i].id;
                 }
-            }              
+            }
+            facturacionSrvc.printFacturas({idfacturas: lstids}).then((d) => {
+                let objs = [];
+                for(let i = 0; i < d.length; i++){
+                    objs.push({
+                        tipo: 'F',
+                        descripcionTipo: 'factura',
+                        datos: d[i]
+                    });
+                }
+                socketIOSrvc.emit('sayet:printFactura', JSON.stringify(objs));
+            });
+            /*
             var gadget = new cloudprint.Gadget();
             var url = window.location.origin + "/sayet/php/" + $scope.paramsimp.formato + ".php?idfacturas=" + lstids;
             console.log(url);
             gadget.setPrintDocument("url", "Facturas", url);
             gadget.openPrintDialog();
+            */
         };
 
         $scope.loadFacturas(0, 1);

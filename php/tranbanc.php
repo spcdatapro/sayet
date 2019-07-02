@@ -243,6 +243,7 @@ function getConceptoExtra($db, $iddetpagopresup){
     return $conceptoext;
 }
 
+/*
 function getFieldInfo($db, $formato, $field){
     $query = "SELECT formato, campo, superior, izquierda, ancho, alto, tamletra AS tamanioletra, tipoletra, ajustelinea AS ajustedelinea, NULL AS valor ";
     $query.= "FROM etiqueta ";
@@ -255,6 +256,7 @@ function getFieldInfo($db, $formato, $field){
     }
     return $info;
 }
+*/
 
 function getInfoCheque($db, $idtran, $idusr) {
     $n2l = new NumberToLetterConverter();
@@ -284,8 +286,6 @@ function getInfoCheque($db, $idtran, $idusr) {
         foreach($detcont[0] as $key => $value){ $camposdetcont[] = $key; }
     }
 
-    //print json_encode(['header' => $campos, 'detail' => $camposdetcont]);
-
     $query = "SELECT '' AS codigo, 'TOTALES' AS cuenta, FORMAT(SUM(a.debe), 2) AS debe, FORMAT(SUM(a.haber), 2) AS haber ";
     $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta WHERE a.origen = 1 AND a.idorigen = ".$idtran;
     $totdet = $db->getQuery($query)[0];
@@ -296,7 +296,7 @@ function getInfoCheque($db, $idtran, $idusr) {
     $cntCampos = count($campos);
     for($i = 0; $i < $cntCampos; $i++){
         $campo = $campos[$i];
-        $info = getFieldInfo($db, $cheque->formato, $campo);
+        $info = $db->getFieldInfo($cheque->formato, $campo);
         if($info){
             $info->valor = $cheque->{$campo};
             $cheque->{$campo} = $info;
@@ -309,7 +309,7 @@ function getInfoCheque($db, $idtran, $idusr) {
         $ld = $cheque->detallecontable[$i];
         for($j = 0; $j < $cntCamposDetCont; $j++){
             $campo = $camposdetcont[$j];
-            $info = getFieldInfo($db, $cheque->formato, $campo);
+            $info = $db->getFieldInfo($cheque->formato, $campo);
             if($info){
                 $info->valor = $ld->{$campo};
                 $ld->{$campo} = $info;

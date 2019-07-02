@@ -90,6 +90,19 @@ class dbcpm{
         return !$mayuscula ? $abreviaturas[$numero - 1] : strtoupper($abreviaturas[$numero - 1]);
     }
 
+    public function getFieldInfo($formato, $field){
+        $query = "SELECT formato, campo, superior, izquierda, ancho, alto, tamletra AS tamanioletra, tipoletra, ajustelinea AS ajustedelinea, alineacion, NULL AS valor ";
+        $query.= "FROM etiqueta ";
+        $query.= "WHERE formato = '$formato' AND campo = '$field'";
+        $info = $this->getQuery($query);
+        if(count($info) > 0){
+            $info = $info[0];
+        } else {
+            $info = null;
+        }
+        return $info;
+    }
+
     public function CallJSReportAPI($method, $url, $data = false){
         $curl = curl_init();
 

@@ -455,4 +455,100 @@ $app->post('/lstimpfact', function(){
 
 });
 
+$app->post('/prntfact', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $n2l = new NumberToLetterConverter();
+
+    $query = "SELECT a.id, TRIM(a.nombre) AS nombre, TRIM(a.nit) AS nit, IF(a.direccion = NULL, 'CIUDAD', TRIM(a.direccion)) AS direccion, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, ";
+    $query.= "CONCAT(TRIM(a.serie), ' ', TRIM(a.numero)) AS numero, FORMAT(a.total, 2) AS pagoneto, FORMAT(a.retiva, 2) AS retiva, FORMAT(a.retisr, 2) AS retisr, ";
+    $query.= "CONCAT('TC: ', FORMAT(a.tipocambio, 5)) AS tipocambio, ";
+    $query.= "CONCAT('$ ', FORMAT(ROUND(a.subtotal / a.tipocambio, 2), 2)) AS pagonetodol, '' AS montoenletras, FORMAT(a.subtotal, 2) AS monto, TRUNCATE(a.subtotal, 2) AS total, ";
+    $query.= "(SELECT nombrecorto FROM cliente WHERE id = a.idcliente) AS nombrecorto, FORMAT(a.subtotal, 2) AS totalresumen, ";
+    $query.= "'Pago Neto:' AS lblpagoneto, 'Retención IVA:' AS lblretiva, 'Retención ISR:' AS lblretisr, 'Total:' AS lbltotal, c.impresora, c.pagewidth, c.pageheight, c.formato ";
+    $query.= "FROM factura a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN tipoimpresioncheque c ON c.formato = b.formatofactura ";
+    $query.= "WHERE a.id IN($d->idfacturas) ORDER BY 7";
+    $facturas = $db->getQuery($query);
+
+    $cntFacturas = count($facturas);    
+    $campos = [];
+    $camposdetcont = [];
+
+    /*
+    if($cntFacturas > 0){
+        //foreach($facturas[0] as $key => $value){ $campos[] = $key; }
+        if(count($facturas[0]->detallefactura) > 0){
+            foreach($facturas[0]->detallefactura[0] as $key => $value){ $camposdetcont[] = $key; }
+        }
+    }
+    */
+    
+
+    for($i = 0; $i < $cntFacturas; $i++){
+        $factura = $facturas[$i];
+
+        $campos = [];
+        foreach($factura as $key => $value){ $campos[] = $key; }
+
+        $factura->montoenletras = $n2l->to_word_int($factura->total);
+        $query = "SELECT FORMAT(a.montoflatconiva, 2) AS montoconiva, ";
+        $query.= "IF(b.esinsertada = 0, ";
+        $query.= "IF(a.idtiposervicio <> 4, ";
+        $query.= "CONCAT(CONVERT(UPPER(TRIM(e.desctiposervventa)), CHAR CHARACTER SET latin1), ' DE ', CONVERT(TRIM(d.nomproyecto), CHAR CHARACTER SET latin1), ' ', ";
+        $query.= "CONVERT(TRIM(UnidadesPorContrato(c.id)), CHAR CHARACTER SET latin1), ', Mes de ', f.nombre, ";
+        $query.= "' del ".iconv("UTF-8", "Windows-1252", utf8_encode('año'))." ', FORMAT(a.anio, 0)), TRIM(a.descripcion)), ";
+        $query.= "TRIM(a.descripcion)) AS descripcion ";
+        $query.= "FROM detfact a INNER JOIN factura b ON b.id = a.idfactura INNER JOIN contrato c ON c.id = b.idcontrato INNER JOIN proyecto d ON d.id = c.idproyecto ";
+        $query.= "INNER JOIN tiposervicioventa e ON e.id = a.idtiposervicio INNER JOIN mes f ON f.id = a.mes ";
+        $query.= "WHERE a.idfactura = $factura->id ";
+        $query.= "UNION ";
+        $query.= "SELECT FORMAT(a.montoflatconiva, 2) AS montoconiva, a.descripcion ";
+        $query.= "FROM detfact a INNER JOIN factura b ON b.id = a.idfactura INNER JOIN tiposervicioventa e ON e.id = a.idtiposervicio INNER JOIN mes f ON f.id = a.mes ";
+        $query.= "WHERE b.idcliente = 0 AND a.idfactura = $factura->id";
+        $factura->detallefactura = $db->getQuery($query);
+
+        $query = "SELECT FORMAT(a.totdescuento, 2) AS totdescconiva FROM factura a WHERE a.id = $factura->id";
+        $descuento = $db->getQuery($query);
+
+        if(count($descuento) > 0){
+            if((float)$descuento[0]->totdescconiva != 0){
+                $factura->detallefactura[] = [
+                    'montoconiva' => $descuento[0]->totdescconiva,
+                    'descripcion' => 'Descuento'
+                ];
+            }        
+        }
+
+
+        $cntCampos = count($campos);
+        for($j = 0; $j < $cntCampos; $j++){
+            $campo = $campos[$j];
+            $info = $db->getFieldInfo($factura->formato, $campo);
+            if($info){
+                $info->valor = $factura->{$campo};
+                $factura->{$campo} = $info;
+            }        
+        }
+
+        $camposdetfact = [];
+        foreach($factura->detallefactura[0] as $key => $value){ $camposdetfact[] = $key; }
+        $cntCamposDetFact = count($camposdetfact);
+        $cntDetFact = count($factura->detallefactura);
+        for($j = 0; $j < $cntDetFact; $j++){
+            $ld = $factura->detallefactura[$j];
+            for($k = 0; $k < $cntCamposDetFact; $k++){
+                $campo = $camposdetfact[$k];
+                $info = $db->getFieldInfo($factura->formato, $campo);
+                if($info){
+                    $info->valor = $ld->{$campo};
+                    $ld->{$campo} = $info;
+                }
+            }
+        }
+
+    }
+
+    print json_encode($facturas);
+});
+
 $app->run();
