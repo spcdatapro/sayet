@@ -616,6 +616,7 @@ SELECT
     b.apellidos, 
     b.dpi, 
     b.idempresaactual, 
+    b.reingreso,
     b.ingreso,
     ifnull(d.id,0) as idproyecto,
     c.nombre AS nomempresa, 
