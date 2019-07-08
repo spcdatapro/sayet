@@ -616,6 +616,7 @@ SELECT
     b.apellidos, 
     b.dpi, 
     b.idempresaactual, 
+    b.reingreso,
     b.ingreso,
     ifnull(d.id,0) as idproyecto,
     c.nombre AS nomempresa, 
@@ -720,7 +721,7 @@ EOT;
 				'vafiliacionigss'  => $emp->emp->igss,
 				'vbaja'            => ($emp->emp->baja === NULL ? '':formatoFecha($emp->emp->baja, 1)),
 				'vpigss'           => $row->pigss,
-				'vfechaingreso'    => formatoFecha($row->ingreso, 1),
+				'vfechaingreso'    => formatoFecha((empty($row->reingreso) ? $row->ingreso : $row->reingreso), 1),
 				'vsueldoordinarioreporte' => $row->sueldoordinarioreporte,
 				'vacasdias' => $row->vacasdias,
 				'descvacas' => $row->descvacas,
@@ -855,14 +856,14 @@ EOT;
 
 	public function get_cabecera_bono14($args = [])
 	{
-
-		$pasado = date('Y-m-t', strtotime('-1 year', strtotime($args['fal'])));
-		$fdel   = date('Y-m-d', strtotime('+1 days', strtotime($pasado)));
+		$tmp  = explode("-", $args["fal"]);
+		$fdel = ($tmp[0]-1).'-'.$tmp[1].'-01'; 
+		$fal  = date('Y-m-t', strtotime($tmp[0].'-'.($tmp[1]-1).'-01'));
 
 		return [
 			'titulon'     => 'Módulo de Planillas',
 			'subtitulo'   => "Listado de Bono 14",
-			'mes'         => 'Período del '.formatoFecha($fdel, 1).' al '.formatoFecha($args['fal'], 1),
+			'mes'         => 'Período del '.formatoFecha($fdel, 1).' al '.formatoFecha($fal, 1),
 			'tcodigot'    => "Código",
 			'tnombre'     => "Nombre del Empleado",
 			'tsueldo'     => "Sueldo Mensual",
