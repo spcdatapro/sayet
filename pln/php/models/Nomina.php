@@ -720,7 +720,7 @@ EOT;
 				'vafiliacionigss'  => $emp->emp->igss,
 				'vbaja'            => ($emp->emp->baja === NULL ? '':formatoFecha($emp->emp->baja, 1)),
 				'vpigss'           => $row->pigss,
-				'vfechaingreso'    => formatoFecha($row->ingreso, 1),
+				'vfechaingreso'    => formatoFecha((empty($row->reingreso) ? $row->ingreso : $row->reingreso), 1),
 				'vsueldoordinarioreporte' => $row->sueldoordinarioreporte,
 				'vacasdias' => $row->vacasdias,
 				'descvacas' => $row->descvacas,
