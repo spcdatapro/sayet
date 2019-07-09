@@ -2,7 +2,7 @@
 
     const tipoimpchqctrl = angular.module('cpm.tipoimpchqctrl', []);
 
-    tipoimpchqctrl.controller('tipoImpChqCtrl', ['$scope', 'tipoImpresionChequeSrvc', '$confirm', ($scope, tipoImpresionChequeSrvc, $confirm) => {
+    tipoimpchqctrl.controller('tipoImpChqCtrl', ['$scope', 'tipoImpresionChequeSrvc', '$confirm', 'toaster', ($scope, tipoImpresionChequeSrvc, $confirm, toaster) => {
 
         $scope.tipochq = {};
 		$scope.lsttiposchq = [];
