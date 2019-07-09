@@ -37,8 +37,14 @@
 		};
 		$scope.loadCampos = () => tipoImpresionChequeSrvc.lstCampos($scope.tipochq.formato).then((d) => $scope.lstcampos = prepareDataCampos(d));
 
-		$scope.updTipo = (obj) => tipoImpresionChequeSrvc.editRow(obj, 'u').then(() => $scope.loadTipos());
-		$scope.updCampo = (obj) => tipoImpresionChequeSrvc.editRow(obj, 'ud').then(() => $scope.loadCampos());
+		$scope.updTipo = (obj) => tipoImpresionChequeSrvc.editRow(obj, 'u').then(() => {
+            toaster.pop({ type: 'success', title: 'Formatos de impresión.', body: 'Datos de formato actualizados con éxito.', timeout: 1500 });
+		    $scope.loadTipos();
+		});
+		$scope.updCampo = (obj) => tipoImpresionChequeSrvc.editRow(obj, 'ud').then(() => {
+            toaster.pop({ type: 'success', title: 'Formatos de impresión.', body: 'Datos de etiqueta actualizados con éxito.', timeout: 1500 });
+		    $scope.loadCampos();
+		});
 
         $scope.loadTipos();
 

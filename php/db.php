@@ -91,7 +91,7 @@ class dbcpm{
     }
 
     public function getFieldInfo($formato, $field){
-        $query = "SELECT formato, campo, superior, izquierda, ancho, alto, tamletra AS tamanioletra, tipoletra, ajustelinea AS ajustedelinea, alineacion, NULL AS valor ";
+        $query = "SELECT formato, campo, superior, izquierda, ancho, alto, tamletra AS tamanioletra, tipoletra, ajustelinea AS ajustedelinea, alineacion, estilodeletra, NULL AS valor ";
         $query.= "FROM etiqueta ";
         $query.= "WHERE formato = '$formato' AND campo = '$field'";
         $info = $this->getQuery($query);
