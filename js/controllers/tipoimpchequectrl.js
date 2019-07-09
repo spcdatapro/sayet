@@ -14,7 +14,7 @@
 				t.pageheight = parseFloat(t.pageheight);
 			});
 			return d;
-		}
+		};
 
 		$scope.loadTipos = () => tipoImpresionChequeSrvc.lstTiposImpresionCheque().then((d) => {
 			$scope.lsttiposchq = prepareData(d);
@@ -31,9 +31,10 @@
 				c.alto = parseFloat(c.alto);
 				c.tamletra = parseFloat(c.tamletra);
 				c.ajustelinea = +c.ajustelinea;
+				c.estilodeletra = +c.estilodeletra;
 			});
 			return d;
-		}
+		};
 		$scope.loadCampos = () => tipoImpresionChequeSrvc.lstCampos($scope.tipochq.formato).then((d) => $scope.lstcampos = prepareDataCampos(d));
 
 		$scope.updTipo = (obj) => tipoImpresionChequeSrvc.editRow(obj, 'u').then(() => $scope.loadTipos());

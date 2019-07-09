@@ -1,6 +1,6 @@
 <div class="container" ng-controller="tipoImpChqCtrl">
 	<div class="panel panel-primary">
-		<div class="panel-heading">Configuraci&oacute;n de formatos de cheque</div>
+		<div class="panel-heading">Configuraci&oacute;n de formatos de impresi&oacute;n</div>
 		<div class="panel-body">
 			<form name="frmTipo" id="frmTipo" ng-submit="frmTipo.$valid && updTipo(tipochq)" novalidate>
 				<div class="row">
@@ -51,6 +51,7 @@
 						<th class="num">Tam. letra (pt)</th>
 						<th>Tipo letra</th>
 						<th style="text-align: center;">Ajustar l&iacute;nea</th>
+						<th style="text-align: center;">Negrita</th>
 						<th></th>
 					</tr>
 				</thead>
@@ -82,6 +83,9 @@
 						<td style="text-align: center;">
 							<input name="chkAjusteLinea_{{$index}}" id="chkAjusteLinea_{{$index}}" type="checkbox" class="form-control input-sm" ng-model="cmp.ajustelinea" ng-true-value="1" ng-false-value="0"/>
 						</td>
+                        <td style="text-align: center;">
+                            <input name="chkNegrita_{{$index}}" id="chkNegrita_{{$index}}" type="checkbox" class="form-control input-sm" ng-model="cmp.estilodeletra" ng-true-value="1" ng-false-value="0"/>
+                        </td>
 						<td style="text-align: center;">
 							<button type="button" class="btn btn-primary btn-sm" ng-click="updCampo(cmp)">
 								<span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>

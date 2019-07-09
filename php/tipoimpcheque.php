@@ -23,7 +23,7 @@ $app->post('/u', function(){
 //API para campos de cheques
 $app->get('/lstcampos/:formato', function($formato){
     $db = new dbcpm();
-    $query = "SELECT id, formato, nombre, campo, superior, izquierda, ancho, alto, tamletra, tipoletra, ajustelinea ";
+    $query = "SELECT id, formato, nombre, campo, superior, izquierda, ancho, alto, tamletra, tipoletra, ajustelinea, estilodeletra ";
     $query.= "FROM etiqueta ";
     $query.= "WHERE formato = '$formato' ";
     $query.= "ORDER BY campo";
@@ -34,7 +34,7 @@ $app->post('/ud', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $query = "UPDATE etiqueta SET superior = $d->superior, izquierda = $d->izquierda, ancho = $d->ancho, alto = $d->alto, tamletra = $d->tamletra, tipoletra = '$d->tipoletra', ajustelinea = $d->ajustelinea ";
+    $query = "UPDATE etiqueta SET superior = $d->superior, izquierda = $d->izquierda, ancho = $d->ancho, alto = $d->alto, tamletra = $d->tamletra, tipoletra = '$d->tipoletra', ajustelinea = $d->ajustelinea, estilodeletra = $d->estilodeletra ";
     $query.= "WHERE id = $d->id";
     $db->doQuery($query);
 });
