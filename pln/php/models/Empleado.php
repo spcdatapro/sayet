@@ -437,22 +437,6 @@ class Empleado extends Principal
 
 	public function set_sueldo()
 	{
-		/*$pro = $this->db->get(
-			'plnprosueldo', 
-			[get_meses($this->nmes)], 
-			[
-				'AND' => [
-					'idplnempleado' => $this->emp->id, 
-					'anio'          => $this->nanio
-				]
-			]
-		);
-
-		if (isset($pro['scalar'])) {
-			$this->sueldo = $this->emp->sueldo;
-		} else {
-			$this->sueldo = ($pro[get_meses($this->nmes)]>0)?$pro[get_meses($this->nmes)]:$this->emp->sueldo;
-		}*/
 		$this->sueldo = $this->emp->sueldo;
 	}
 
