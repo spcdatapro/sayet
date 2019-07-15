@@ -13,6 +13,14 @@ function queryTipoEmpresa($personal, $idmoneda = '1'){
     return $query;
 }
 
+function queryTipoEmpresaDos($grupo, $idmoneda = '1'){
+    $query = "SELECT a.id, CONCAT(a.siglas, ' / ', a.nocuenta) AS empresa, c.simbolo AS moneda, c.eslocal ";
+    $query.= "FROM banco a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN moneda c ON c.id = a.idmoneda ";
+    $query.= "WHERE a.debaja = 0 AND a.gruposumario = $grupo AND b.propia = 1 AND c.id = $idmoneda ";
+    $query.= "ORDER BY a.ordensumario";
+    return $query;
+}
+
 function getSaldoAnterior($idbanco, $fecha, $eslocal){
     //$factor = $eslocal ? "1" : "a.tipocambio";
 	$factor = "1";
@@ -82,6 +90,25 @@ function sumaTodo($comercial, $personal){
     ];
 }
 
+function sumaTodoDos($grupos){
+    $granTotal = [
+        "id"=> "0", "empresa"=> "GRAN TOTAL:", "moneda"=> "Q", "eslocal"=> "1", "saldoanterior" => 0.00, "depositos" => 0.00, "girados" => 0.00, "anulados" => 0.00, "credito" => 0.00, "debito" => 0.00, "saldoactual" => 0.00
+    ];
+    $cnt = count($grupos);
+    for($i = 0; $i < $cnt; $i++){
+        //$idx = count($grupos[$i]) - 1;
+        $subtot = $grupos[$i][count($grupos[$i]) - 1];
+        $granTotal["saldoanterior"] += $subtot["saldoanterior"];
+        $granTotal["depositos"] += $subtot["depositos"];
+        $granTotal["girados"] += $subtot["girados"];
+        $granTotal["anulados"] += $subtot["anulados"];
+        $granTotal["credito"] += $subtot["credito"];
+        $granTotal["debito"] += $subtot["debito"];
+        $granTotal["saldoactual"] += $subtot["saldoactual"];
+    }
+    return $granTotal;
+}
+
 function removeZeros($arr){
     //var_dump($arr);
     $cntArr = count($arr) - 1;
@@ -92,7 +119,19 @@ function removeZeros($arr){
     return $arr;
 }
 
-$app->post('/sumario', function(){
+function removeZerosDos($arr){
+    $cntArr = count($arr) - 1;
+    $temp = [];
+    for($i = 0; $i < $cntArr; $i++){
+        if($arr[$i]->saldoanterior != 0 || $arr[$i]->saldoactual != 0){
+            $temp[] = $arr[$i];
+        }
+    }
+    $temp[] = $arr[$cntArr];
+    return $temp;
+}
+
+$app->post('/sumarioold', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
@@ -111,6 +150,35 @@ $app->post('/sumario', function(){
 
     print json_encode($sumario);
 
+});
+
+$app->post('/sumario', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $sumario = new stdClass();
+    $sumario->moneda = $db->getOneField("SELECT CONCAT(nommoneda, ' (', simbolo, ')') FROM moneda WHERE id = $d->idmoneda");
+
+    $query = "SELECT DISTINCT gruposumario FROM banco WHERE gruposumario > 0 ORDER BY gruposumario";
+    $grupos = $db->getQuery($query);
+    $cntGrupos = count($grupos);
+    if($cntGrupos > 0){
+        for($i = 0; $i < $cntGrupos; $i++){
+            $grupo = $grupos[$i]->gruposumario;
+            $sumario->grupos[] = generaData($d, $db,$db->getQuery(queryTipoEmpresaDos($grupo, $d->idmoneda)));
+        }
+
+        $sumario->grantotal = sumaTodoDos($sumario->grupos);
+
+        $cntGrps = count($sumario->grupos);
+        if((int)$d->solomov == 1 && $cntGrps > 0){
+            for($i = 0; $i < $cntGrps; $i++){
+                $sumario->grupos[$i] = removeZerosDos($sumario->grupos[$i]);
+            }
+        }
+    }
+
+    print json_encode($sumario);
 });
 
 $app->run();
