@@ -361,15 +361,25 @@ class Nomina extends Principal
 					$e->set_sueldo();
 					$e->set_dias_trabajados();
 
-					$datos = [];
-
-					/*
 					$datos = [
-						'horasmes'      => 0,
-						'horasmesmonto' => 0,
-						'hedcantidad'   => 0,
-						'hedmonto'      => 0
-					];*/
+						"sueldoordinarioreporte" => $e->get_sueldo(),
+						"bonocatorce"            => 0,
+						"bonocatorcedias"        => 0,
+						"esbonocatorce"          => 0,
+						"aguinaldo"              => 0,
+						"aguinaldodias"          => 0,
+						"diastrabajados"         => 0,
+						"descanticipo"           => 0,
+						"bonificacion"           => 0,
+						"sueldoordinario"        => 0,
+						"descisr"                => 0,
+						"sueldoextra"            => 0,
+						"descigss"               => 0,
+						"vacasdias"              => 0,
+						"descvacas"              => 0,
+						"vacaciones"             => 0,
+						"descvacasdias"          => 0
+					];
 
 					# Solo deja calcular bono el 15 de la primera quincena
 					if (isset($args['bono14']) && $args['bono14'] == 'true' && $mes == 7 && $dia == 15) {
@@ -378,12 +388,6 @@ class Nomina extends Principal
 						$datos['bonocatorce']            = $e->get_bonocatorce();
 						$datos['bonocatorcedias']        = $e->get_bonocatorce_dias();
 						$datos['esbonocatorce']          = 1;
-						$datos['sueldoordinarioreporte'] = $e->get_sueldo();
-					} else {
-						$datos['bonocatorce']            = 0;
-						$datos['bonocatorcedias']        = 0;
-						$datos['esbonocatorce']          = 0;
-						$datos['sueldoordinarioreporte'] = 0;
 					}
 
 					# Solo deja calcular bono el 15 de la primera quincena
@@ -392,11 +396,6 @@ class Nomina extends Principal
 						
 						$datos['aguinaldo']              = $e->aguinaldoMonto;
 						$datos['aguinaldodias']          = $e->aguinaldoDias;
-						$datos['sueldoordinarioreporte'] = $e->get_sueldo();
-					} else {
-						$datos['aguinaldo']              = 0;
-						$datos['aguinaldodias']          = 0;
-						$datos['sueldoordinarioreporte'] = 0;
 					}
 
 					# Solo deja calcular vacaciones la segunda quince de diciembre
@@ -411,17 +410,8 @@ class Nomina extends Principal
 							$datos["descvacas"] = $dvacas["vacasdescuento"];
 							$datos["vacaciones"] = $dvacas["vacasliquido"];
 							$datos["descvacasdias"] = $dvacas["vacasusados"];
-						} else {
-							$datos["vacasdias"] = 0;
-							$datos["descvacas"] = 0;
-							$datos["vacaciones"] = 0;
-							$datos["descvacasdias"] = 0;
+
 						}
-					} else {
-						$datos["vacasdias"] = 0;
-						$datos["descvacas"] = 0;
-						$datos["vacaciones"] = 0;
-						$datos["descvacasdias"] = 0;
 					}
 
 					# Pago cada quincena
@@ -429,14 +419,6 @@ class Nomina extends Principal
 						if ($e->emp->formapago == 1) {
 							$datos['anticipo']  = $e->get_anticipo();
 						}
-
-						$datos['diastrabajados']  = 0;
-						$datos['descanticipo']    = 0;
-						$datos['bonificacion']    = 0;
-						$datos['sueldoordinario'] = 0;
-						$datos['descisr']		  = 0;
-						$datos['sueldoextra'] 	  = 0;
-						$datos['descigss']        = 0;
 					} else {
 						$datos['descanticipo']    = $e->get_descanticipo();
 						$datos['bonificacion']    = $e->get_bono_ley();
@@ -603,7 +585,7 @@ class Nomina extends Principal
 			$where .= "AND (b.formapago = 1 or a.bonocatorce<>0 or a.aguinaldo<>0) ";
 		}
 
-		$orden = "c.nombre";
+		$orden = "c.ordenreppres";
 
 		if (isset($args['agrupar_por']) && $args['agrupar_por'] == 2) {
 			$orden = "d.nomproyecto";

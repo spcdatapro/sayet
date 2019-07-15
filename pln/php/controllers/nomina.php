@@ -610,6 +610,7 @@ $app->get('/imprimir_bono14', function(){
 		$_GET['esbonocatorce'] = true;
 
 		$todos = $b->get_datos_recibo($_GET);
+		$tipoImpresion = 9;
 
 		if (count($todos) > 0) {
 			$registros = 0;
@@ -621,7 +622,7 @@ $app->get('/imprimir_bono14', function(){
 				} else {
 					$datos[$fila['vidempresa']] = [
 						'nombre'    => $fila['vempresa'], 
-						'conf'      => $g->get_campo_impresion('vidempresa', 9), 
+						'conf'      => $g->get_campo_impresion('vidempresa', $tipoImpresion), 
 						'empleados' => [$fila]
 					];
 				}
@@ -640,7 +641,7 @@ $app->get('/imprimir_bono14', function(){
 				$pdf->AddPage();
 
 				foreach ($cabecera as $campo => $valor) {
-					$conf = $g->get_campo_impresion($campo, 9);
+					$conf = $g->get_campo_impresion($campo, $tipoImpresion);
 
 					if (!isset($conf->scalar) && $conf->visible == 1) {
 						$pdf = generar_fimpresion($pdf, $valor, $conf);
@@ -665,7 +666,7 @@ $app->get('/imprimir_bono14', function(){
 					$pdf->setPage($pagina);
 				}
 				
-				$confe      = $g->get_campo_impresion('idempresa', 9);
+				$confe      = $g->get_campo_impresion('idempresa', $tipoImpresion);
 				$confe->psy = ($confe->psy+$espacio);
 				$espacio    += $confe->espacio;
 				$pdf        = generar_fimpresion($pdf, "{$key} {$empresa['nombre']}", $confe);
@@ -676,7 +677,7 @@ $app->get('/imprimir_bono14', function(){
 					$registros++;
 
 					foreach ($empleado as $campo => $valor) {
-						$conf = $g->get_campo_impresion($campo, 9);
+						$conf = $g->get_campo_impresion($campo, $tipoImpresion);
 
 						if (!isset($conf->scalar) && $conf->visible == 1) {
 							$conf->psy = ($conf->psy+$espacio);
@@ -740,7 +741,7 @@ $app->get('/imprimir_bono14', function(){
 				));
 
 				foreach ($etotales as $campo => $total) {
-					$conf = $g->get_campo_impresion($campo, 9);
+					$conf = $g->get_campo_impresion($campo, $tipoImpresion);
 
 					if (!isset($conf->scalar) && $conf->visible == 1) {
 						$conf->psy = ($conf->psy+$espacio);
@@ -758,13 +759,13 @@ $app->get('/imprimir_bono14', function(){
 				$espacio += $confe->espacio;	
 			}
 
-			$pie  = $g->get_campo_impresion("vtotalespie", 9);
+			$pie  = $g->get_campo_impresion("vtotalespie", $tipoImpresion);
 
 			foreach ($totales as $key => $subtotales) {
 				$pdf->setPage($key);
 
 				foreach ($subtotales as $campo => $total) {
-					$conf = $g->get_campo_impresion($campo, 9);
+					$conf = $g->get_campo_impresion($campo, $tipoImpresion);
 
 					if (!isset($conf->scalar) && $conf->visible == 1) {
 						$conf->psy = $pie->psy;
@@ -777,7 +778,7 @@ $app->get('/imprimir_bono14', function(){
 					}
 				}
 
-				$conf = $g->get_campo_impresion("vnopagina", 9);
+				$conf = $g->get_campo_impresion("vnopagina", $tipoImpresion);
 				if (!isset($conf->scalar) && $conf->visible == 1) {
 					$pdf = generar_fimpresion($pdf, $key, $conf);
 				}
