@@ -38,7 +38,8 @@
 				id: lectura.id,
 				lectura: lectura.lectura,
 				fechacortestr: lectura.fechacorte,
-				descuento: lectura.descuento
+				descuento: lectura.descuento,
+				conceptoadicional: lectura.conceptoadicional
 			};
 			//console.log(obj); return;
 			servicioPropioSrvc.editRow(obj, 'ul').then(() => {

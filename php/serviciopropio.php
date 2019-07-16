@@ -121,7 +121,13 @@ $app->post('/ul', function(){
     $d->fechacortestr = $d->fechacortestr == '' ? "NULL" : "'$d->fechacortestr'";
     $d->lectura = $d->lectura == '' ? "NULL" : $d->lectura;
     if(!isset($d->descuento)){ $d->descuento = 0.00; }
-    $query = "UPDATE lecturaservicio SET lectura = $d->lectura, fechaingreso = NOW(), fechacorte = $d->fechacortestr, descuento = $d->descuento WHERE id = $d->id";
+    $conceptoAdicional = 'NULL';
+    if(isset($d->conceptoadicional)){
+        if(trim($d->conceptoadicional) !== ''){
+            $conceptoAdicional = "'".trim($d->conceptoadicional)."'";
+        }
+    }
+    $query = "UPDATE lecturaservicio SET lectura = $d->lectura, fechaingreso = NOW(), fechacorte = $d->fechacortestr, descuento = $d->descuento, conceptoadicional = $conceptoAdicional WHERE id = $d->id";
     $db->doQuery($query);
 });
 

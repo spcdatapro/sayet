@@ -28,7 +28,7 @@ $app->post('/pendientes', function(){
 	$query.= "(SELECT nombre FROM mes WHERE id = a.mes) AS nommes, ";
 	$query.= "b.idtiposervicio, ";
     $query.= "DATE_FORMAT(FechaLecturaAnterior(a.idserviciobasico, a.mes, a.anio), '%d/%m/%Y') AS fechaanterior, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechaactual, ";
-    $query.= "a.descuento, a.fechacorte ";
+    $query.= "a.descuento, a.fechacorte, a.conceptoadicional ";
     $query.= "FROM lecturaservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico INNER JOIN contrato c ON c.id = (SELECT b.id FROM contrato b WHERE FIND_IN_SET(a.idunidad, b.idunidad) LIMIT 1) ";
     $query.= "INNER JOIN cliente d ON d.id = c.idcliente INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio ";
     $query.= "INNER JOIN proyecto g ON g.id = a.idproyecto INNER JOIN unidad h ON h.id = a.idunidad ";
@@ -171,10 +171,16 @@ $app->post('/genfact', function(){
 
             if((int)$lastid > 0){
                 //Inserta detalle de factura
+                $conceptoAdicional = 'NULL';
+                if(isset($p->conceptoadicional)){
+                    if(trim($p->conceptoadicional) !== ''){
+                        $conceptoAdicional = "'".trim($p->conceptoadicional)."'";
+                    }
+                }
                 $query = "INSERT INTO detfact(";
-                $query.= "idfactura, cantidad, descripcion, preciounitario, preciotot, idtiposervicio, mes, anio, descuento, montoconiva, montoflatconiva";
+                $query.= "idfactura, cantidad, descripcion, preciounitario, preciotot, idtiposervicio, mes, anio, descuento, montoconiva, montoflatconiva, conceptoadicional";
                 $query.= ") VALUES(";
-                $query.= "$lastid, 1, '$descripcion', $p->montoconiva, $p->montoconiva, $p->idtiposervicio, $p->mes, $p->anio, $p->descuento, $p->montoconiva, $p->montoconiva";
+                $query.= "$lastid, 1, '$descripcion', $p->montoconiva, $p->montoconiva, $p->idtiposervicio, $p->mes, $p->anio, $p->descuento, $p->montoconiva, $p->montoconiva, $conceptoAdicional";
                 $query.= ")";
                 $db->doQuery($query);
                 $query = "UPDATE lecturaservicio SET estatus = 3, facturado = 1, idfactura = $lastid WHERE id = $p->id";

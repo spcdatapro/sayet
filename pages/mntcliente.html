@@ -2,6 +2,7 @@
     td{padding: 0; margin: 0; border-collapse: collapse}
     .borderless td, .borderless th { border: none !important; padding: 0.1em !important; }
     .app-modal-window .modal-dialog { width: 1000px; }
+    .app-modal-window-cargos .modal-dialog { width: 800px; }
 </style>
 <div class="container" ng-controller="clienteCtrl">
     <ul class="nav nav-tabs">
@@ -998,13 +999,14 @@
     <div class="modal-header">
         <h4 class="modal-title">Cargos del per&iacute;odo</h4>
     </div>
-    <div class="modal-body" style="height: 35em; overflow-y: scroll">
+    <div class="modal-body" style="height: 600px; overflow-y: scroll">
         <table class="table table-hover table-condensed">
             <thead>
             <tr>
                 <th>Cobro</th>
                 <th style="text-align: right">Monto</th>
                 <th style="text-align: right">Descuento</th>
+                <th>Concepto adicional</th>
                 <th style="text-align: center">Facturado</th>
             </tr>
             </thead>
@@ -1012,10 +1014,14 @@
             <tr ng-repeat="c in cargos">
                 <td>{{c.fechacobro | date:'dd/MM/yyyy'}}</td>
                 <td style="text-align: right">{{c.monto | number:2}}</td>
-                <td style="text-align: right; width: 10em">
-                    <div class="input-group">
-                        <input name="txtDesc_{{c.id}}" id="txtDesc_{{c.id}}" class="form-control input-sm" style="text-align: right" type="text"
-                               ng-model="c.descuento" ng-disabled="sldesc[c.id - restar]" fcsa-number="{ maxDecimals:2 }" />
+                <td style="text-align: right; width: 7%;">
+                    <input name="txtDesc_{{c.id}}" id="txtDesc_{{c.id}}" class="form-control input-sm" style="text-align: right" type="text"
+                           ng-model="c.descuento" ng-disabled="sldesc[c.id - restar]" fcsa-number="{ maxDecimals:2 }" />
+                </td>
+                <td style="vertical-align: top">
+                    <div class="input-group" style="vertical-align: top !important;">
+                        <textarea name="txtConcAd_{{c.id}}" id="txtConcAd_{{c.id}}" class="form-control input-sm" ng-model="c.conceptoadicional" ng-disabled="sldesc[c.id - restar]"
+                                  rows="2" maxlength="300" placeholder="Concepto adicional que saldrá en el detalle de la factura."></textarea>
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-info btn-secondary btn-sm" ng-click="habilitar(c.id)" ng-show="sldesc[c.id - restar]" ng-disabled="+c.facturado == 1">
                                 <span class="glyphicon glyphicon-edit"></span>
