@@ -21,14 +21,14 @@ $app->get('/getmoneda/:idmoneda', function($idmoneda){
 $app->post('/c', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $query = "INSERT INTO moneda(nommoneda, simbolo, tipocambio) VALUES('$d->nommoneda', '$d->simbolo', $d->tipocambio)";
+    $query = "INSERT INTO moneda(nommoneda, simbolo) VALUES('$d->nommoneda', '$d->simbolo')";
     $db->doQuery($query);
 });
 
 $app->post('/u', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $query = "UPDATE moneda SET nommoneda = '$d->nommoneda' , simbolo = '$d->simbolo', tipocambio = $d->tipocambio WHERE id = $d->id";
+    $query = "UPDATE moneda SET nommoneda = '$d->nommoneda' , simbolo = '$d->simbolo' WHERE id = $d->id";
     $db->doQuery($query);
 });
 

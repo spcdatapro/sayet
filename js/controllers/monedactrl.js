@@ -1,38 +1,26 @@
 (function(){
 
-    var monedactrl = angular.module('cpm.monedactrl', ['cpm.monedasrvc']);
+    const monedactrl = angular.module('cpm.monedactrl', ['cpm.monedasrvc']);
 
-    monedactrl.controller('monedaCtrl', ['$scope', 'monedaSrvc', function($scope, monedaSrvc){
-        //$scope.tituloPagina = 'CPM';
+    monedactrl.controller('monedaCtrl', ['$scope', 'monedaSrvc', ($scope, monedaSrvc) => {
 
-        $scope.laMoneda = {};
+        $scope.laMoneda = {nommoneda: undefined, simbolo: undefined};
         $scope.lasMonedas = [];
 
-        $scope.getLstMonedas = function(){
-            monedaSrvc.lstMonedas().then(function(d){
-                $scope.lasMonedas = d;
+        $scope.getLstMonedas = () => monedaSrvc.lstMonedas().then((d) => $scope.lasMonedas = d);
+
+        $scope.getMoneda = (idmoneda) => monedaSrvc.getMoneda(+idmoneda).then((d) => $scope.laMoneda = d[0]);
+
+        $scope.resetMoneda = () => $scope.laMoneda = {nommoneda: undefined, simbolo: undefined};
+
+        $scope.addMoneda = (obj) => {
+            monedaSrvc.editRow(obj, 'c').then(() => {
+                $scope.getLstMonedas();
+                $scope.resetMoneda();
             });
         };
 
-        $scope.addMoneda = function(obj){
-            monedaSrvc.editRow(obj, 'c').then(function(){
-                $scope.getLstMonedas();
-                $scope.laMoneda = {};
-            });
-        };
-
-        $scope.updMoneda = function(data, id){
-            data.id = id;
-            monedaSrvc.editRow(data, 'u').then(function(){
-                $scope.getLstMonedas();
-            });
-        };
-
-        $scope.delMoneda = function(id){
-            monedaSrvc.editRow({id:id}, 'd').then(function(){
-                $scope.getLstMonedas();
-            });
-        };
+        $scope.updMoneda = (data) => monedaSrvc.editRow(data, 'u').then(() => $scope.getLstMonedas());
 
         $scope.getLstMonedas();
     }]);
