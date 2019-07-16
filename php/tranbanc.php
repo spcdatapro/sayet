@@ -263,7 +263,7 @@ function getInfoCheque($db, $idtran, $idusr) {
 
     $query = "SELECT CONCAT(a.numero, '/', b.siglas) AS numero, CONCAT('Guatemala, ', DAY(a.fecha), ' de ', (SELECT LOWER(nombre) FROM mes WHERE id = MONTH(a.fecha)), ' de ', YEAR(a.fecha)) AS fecha, ";
     $query.= "FORMAT(a.monto, 2) AS monto, a.monto AS numMonto, a.beneficiario, '' AS montoEnLetras, b.siglas AS banco, d.abreviatura AS empresa, e.formato, e.impresora, a.concepto, ";
-    $query.= "a.iddetpagopresup, a.esnegociable, e.pagewidth, e.pageheight, (SELECT UPPER(TRIM(iniciales)) FROM usuario WHERE id = $idusr) AS hechopor ";
+    $query.= "a.iddetpagopresup, a.esnegociable, e.pagewidth, e.pageheight, e.papel, (SELECT UPPER(TRIM(iniciales)) FROM usuario WHERE id = $idusr) AS hechopor ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN moneda c ON c.id = b.idmoneda INNER JOIN empresa d ON d.id = b.idempresa ";
     $query.= "LEFT JOIN tipoimpresioncheque e ON e.id = b.idtipoimpresion ";
     $query.= "WHERE a.id = $idtran";

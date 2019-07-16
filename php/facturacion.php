@@ -475,7 +475,7 @@ $app->post('/prntfact', function(){
     $query.= "CONCAT('TC: ', FORMAT(a.tipocambio, 5)) AS tipocambio, ";
     $query.= "CONCAT('$ ', FORMAT(ROUND(a.subtotal / a.tipocambio, 2), 2)) AS pagonetodol, '' AS montoenletras, FORMAT(a.subtotal, 2) AS monto, TRUNCATE(a.subtotal, 2) AS total, ";
     $query.= "(SELECT nombrecorto FROM cliente WHERE id = a.idcliente) AS nombrecorto, FORMAT(a.subtotal, 2) AS totalresumen, ";
-    $query.= "'Pago Neto:' AS lblpagoneto, 'Retención IVA:' AS lblretiva, 'Retención ISR:' AS lblretisr, 'Total:' AS lbltotal, c.impresora, c.pagewidth, c.pageheight, c.formato ";
+    $query.= "'Pago Neto:' AS lblpagoneto, 'Retención IVA:' AS lblretiva, 'Retención ISR:' AS lblretisr, 'Total:' AS lbltotal, c.impresora, c.pagewidth, c.pageheight, c.formato, c.papel ";
     $query.= "FROM factura a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN tipoimpresioncheque c ON c.formato = b.formatofactura ";
     $query.= "WHERE a.id IN($d->idfacturas) ORDER BY 7";
     $facturas = $db->getQuery($query);

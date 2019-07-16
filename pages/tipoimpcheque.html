@@ -4,7 +4,7 @@
 		<div class="panel-body">
 			<form name="frmTipo" id="frmTipo" ng-submit="frmTipo.$valid && updTipo(tipochq)" novalidate>
 				<div class="row">
-					<div class="col-md-3">
+					<div class="col-md-2">
 						<div class="form-group">
 							<label for="selFormato">Formato</label>
 							<select name="selFormato" id="selFormato" class="form-control input-sm" ng-model="tipochq" 
@@ -12,21 +12,27 @@
 							</select>
 						</div>
 					</div>
-					<div class="col-md-5">
+					<div class="col-md-3">
 						<div class="form-group">
 							<label for="txtImpresora">Impresora</label>
 							<input name="txtImpresora" id="txtImpresora" type="text" class="form-control input-sm" ng-model="tipochq.impresora" required/>
 						</div>
 					</div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="txtTamPapel">Tama&ntilde;o de papel:</label>
+                            <input name="txtTamPapel" id="txtTamPapel" type="text" class="form-control input-sm" ng-model="tipochq.papel" required/>
+                        </div>
+                    </div>
 					<div class="col-md-2">
 						<div class="form-group">
-							<label for="txtAnchoPag">Ancho de p&aacute;gina (cm)</label>
+							<label for="txtAnchoPag">Ancho (cm)</label>
 							<input name="txtAnchoPag" id="txtAnchoPag" type="number" class="form-control input-sm" ng-model="tipochq.pagewidth" required/>
 						</div>
 					</div>
 					<div class="col-md-2">
 						<div class="form-group">
-							<label for="txtAltoPag">Alto de p&aacute;gina (cm)</label>
+							<label for="txtAltoPag">Alto (cm)</label>
 							<div class="input-group">
 								<input name="txtAltoPag" id="txtAltoPag" type="number" class="form-control input-sm" ng-model="tipochq.pageheight" required/>
 								<span class="input-group-btn">

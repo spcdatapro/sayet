@@ -8,15 +8,14 @@ $app->response->headers->set('Content-Type', 'application/json');
 //API para tipos de impresión de cheques
 $app->get('/lsttiposimp', function(){
     $db = new dbcpm();
-    $query = "SELECT id, descripcion, formato, impresora, pagewidth, pageheight FROM tipoimpresioncheque ORDER BY descripcion";
+    $query = "SELECT id, descripcion, formato, impresora, pagewidth, pageheight, papel FROM tipoimpresioncheque ORDER BY descripcion";
     print $db->doSelectASJson($query);
 });
 
 $app->post('/u', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-
-    $query = "UPDATE tipoimpresioncheque SET impresora = '$d->impresora', pagewidth = $d->pagewidth, pageheight = $d->pageheight WHERE id = $d->id";
+    $query = "UPDATE tipoimpresioncheque SET impresora = '$d->impresora', pagewidth = $d->pagewidth, pageheight = $d->pageheight, papel = '$d->papel' WHERE id = $d->id";
     $db->doQuery($query);
 });
 
