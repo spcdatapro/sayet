@@ -159,7 +159,7 @@ $app->post('/sumario', function(){
     $sumario = new stdClass();
     $sumario->moneda = $db->getOneField("SELECT CONCAT(nommoneda, ' (', simbolo, ')') FROM moneda WHERE id = $d->idmoneda");
 
-    $query = "SELECT DISTINCT gruposumario FROM banco WHERE gruposumario > 0 ORDER BY gruposumario";
+    $query = "SELECT DISTINCT gruposumario FROM banco WHERE gruposumario > 0 AND idmoneda = $d->idmoneda ORDER BY gruposumario";
     $grupos = $db->getQuery($query);
     $cntGrupos = count($grupos);
     if($cntGrupos > 0){
