@@ -21,7 +21,7 @@ $app->post('/pendientes', function(){
     $query.= "0.00 AS iva, ";
 
     $query.= "0.00 AS retisr, RetISR(d.id, b.idtiposervicio) as retenerisr, 0.00 AS retiva, RetIVA(d.id, b.idtiposervicio) AS reteneriva, c.idtipocliente, d.nombre, d.nombrecorto, ";
-    $query.= "FacturarA(d.id, b.idtiposervicio) AS facturara, NitFacturarA(d.id, b.idtiposervicio) AS nit, DirFacturarA(d.id, b.idtiposervicio) AS direccion, ";
+    $query.= "FacturarA(d.id, b.idtiposervicio) AS facturara, NitFacturarA(d.id, b.idtiposervicio) AS nit, DirFacturarA(d.id, b.idtiposervicio) AS direccion, PorcentajeRetIVA(d.id, b.idtiposervicio) AS porcentajeretiva, ";
     $query.= "f.desctiposervventa AS tipo, 0.00 AS totapagar, 0 AS numfact, '' AS seriefact, ";
     $query.= "IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, 0, 1) AS facturar, c.id AS idcontrato, ";
     $query.= "d.id AS idcliente, UPPER(f.desctiposervventa) AS tipo, UPPER(g.nomproyecto) AS proyecto, h.nombre AS unidad, ";
@@ -47,7 +47,7 @@ $app->post('/pendientes', function(){
 
         $fagua->iva = (float)$fagua->montoconiva - (float)$fagua->montosiniva;
         $fagua->retisr = (int)$fagua->retenerisr > 0 ? $db->calculaISR((float)$fagua->montosiniva) : 0.00;
-        $fagua->retiva = (int)$fagua->reteneriva > 0 ? $db->calculaRetIVA((float)$fagua->montosiniva, ((int)$fagua->idtipocliente == 1 ? true : false), $fagua->montoconiva, ((int)$fagua->idtipocliente == 2 ? true : false), $fagua->iva) : 0.00;
+        $fagua->retiva = (int)$fagua->reteneriva > 0 ? $db->calculaRetIVA((float)$fagua->montosiniva, ((int)$fagua->idtipocliente == 1 ? true : false), $fagua->montoconiva, ((int)$fagua->idtipocliente == 2 ? true : false), $fagua->iva, (float)$fagua->porcentajeretiva) : 0.00;
         $fagua->totapagar = (float)$fagua->montoconiva - ($fagua->retisr + $fagua->retiva);
 
         if((int)$empresa->congface == 0){
@@ -79,7 +79,7 @@ $app->post('/proyeccion', function(){
     $query.= "IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, 0, 1) AS facturar, c.id AS idcontrato, ";
     $query.= "d.id AS idcliente, UPPER(f.desctiposervventa) AS tipo, UPPER(g.nomproyecto) AS proyecto, h.nombre AS unidad, ";
     $query.= "(SELECT nombre FROM mes WHERE id = MONTH('$d->fvencestr')) AS nommes, b.idtiposervicio, ";
-    $query.= "DATE_FORMAT(FechaLecturaAnterior(a.idserviciobasico, a.mes, a.anio), '%d/%m/%Y') AS fechaanterior, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechaactual ";
+    $query.= "DATE_FORMAT(FechaLecturaAnterior(a.idserviciobasico, a.mes, a.anio), '%d/%m/%Y') AS fechaanterior, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechaactual, PorcentajeRetIVA(d.id, b.idtiposervicio) AS porcentajeretiva ";
     $query.= "FROM lecturaservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico INNER JOIN contrato c ON c.id = (SELECT b.id FROM contrato b WHERE FIND_IN_SET(a.idunidad, b.idunidad) LIMIT 1) ";
     $query.= "INNER JOIN cliente d ON d.id = c.idcliente INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio ";
     $query.= "INNER JOIN proyecto g ON g.id = a.idproyecto INNER JOIN unidad h ON h.id = a.idunidad ";
@@ -99,7 +99,7 @@ $app->post('/proyeccion', function(){
     for($i = 0; $i < $cntFA; $i++){
         $fagua = $factagua[$i];
         $fagua->retisr = round((int)$d->retisr > 0 ? $db->calculaISR((float)$fagua->montosiniva) : 0.00, 2);
-        $fagua->ivaaretener = round((int)$fagua->retiva > 0 ? $db->calculaRetIVA((float)$fagua->montosiniva, ((int)$fagua->idtipocliente == 1 ? true : false), $fagua->montoconiva, ((int)$fagua->idtipocliente == 2 ? true : false)) : 0.00, 2);
+        $fagua->ivaaretener = round((int)$fagua->retiva > 0 ? $db->calculaRetIVA((float)$fagua->montosiniva, ((int)$fagua->idtipocliente == 1 ? true : false), $fagua->montoconiva, ((int)$fagua->idtipocliente == 2 ? true : false), (float)$fagua->porcentajeretiva) : 0.00, 2);
         $fagua->totapagar = round((float)$fagua->montoconiva - ($fagua->retisr + $fagua->ivaaretener), 2);
 
         if((int)$empresa->congface == 0){

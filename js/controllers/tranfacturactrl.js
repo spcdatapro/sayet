@@ -287,7 +287,7 @@
 
         $scope.factura = {
             id: 0, fechaingreso: moment().toDate(), fecha: moment().toDate(), idtipoventa: '2', idmoneda: 1, tipocambio: null, conceptomayor: undefined, idempresa: $scope.empredefault,
-            anioafecta: null, mesafecta: null, retenerisr: 0, reteneriva: 0, idproyecto: undefined, idcontrato: undefined, direccion: undefined
+            anioafecta: null, mesafecta: null, retenerisr: 0, reteneriva: 0, idproyecto: undefined, idcontrato: undefined, direccion: undefined, porretiva: 0.00
         };
         $scope.contratos = [];
         $scope.tiposfactura = [];
@@ -345,6 +345,7 @@
                         $scope.factura.reteneriva = 0;
                         $scope.factura.retenerisr = 0;
                         $scope.factura.direccion = undefined;
+                        $scope.factura.porretiva = 0.00;
                         $scope.contratos = [];
                         break;
                     case 'object':
@@ -355,6 +356,7 @@
                             $scope.factura.retenerisr = +item.originalObject.retisr;
                             $scope.factura.reteneriva = +item.originalObject.retiva;
                             $scope.factura.direccion = item.originalObject.direccion;
+                            $scope.factura.porretiva = parseFloat(item.originalObject.porretiva);
                             clienteSrvc.lstContratosEmpresa(+item.originalObject.idcliente, +$scope.factura.idempresa).then(function(d){
                                 $scope.contratos = d;
                             });
@@ -363,6 +365,7 @@
                             $scope.factura.reteneriva = 0;
                             $scope.factura.retenerisr = 0;
                             $scope.factura.direccion = undefined;
+                            $scope.factura.porretiva = 0.00;
                             $scope.contratos = [];
                         }
                         break;
@@ -386,6 +389,7 @@
                 d[i].reteneriva = parseInt(d[i].reteneriva);
                 d[i].anioafecta = parseInt(d[i].anioafecta);
                 d[i].idproyecto = +d[i].idproyecto > 0 ? d[i].idproyecto : undefined;
+                d[i].porretiva = parseFloat(d[i].porretiva);
             }
             return d;
         }
@@ -432,7 +436,7 @@
             $scope.factura = {
                 id: 0, fechaingreso: moment().toDate(), fecha: moment().toDate(), idtipoventa: '2', idmoneda: 1, tipocambio: null, conceptomayor: undefined,
                 idempresa: undefined, anioafecta: null, mesafecta: null, retenerisr: 0, reteneriva: 0, direccion: undefined, idproyecto: undefined,
-                idtipofactura: (+$scope.factura.idtipofactura > 0 ? $scope.factura.idtipofactura : undefined)
+                idtipofactura: (+$scope.factura.idtipofactura > 0 ? $scope.factura.idtipofactura : undefined), porretiva: 0.00
             };
             $scope.factura.idempresa = $scope.empredefault;
             $scope.periodoCerrado = false;
