@@ -15,8 +15,8 @@ function getQueryPresupuesto($idpresupuesto){
     $queryPresupuesto.= "WHERE z.iddetpresup IN(SELECT id FROM detpresupuesto WHERE idpresupuesto = a.id) AND z.anulado = 0 AND UPPER(z.concepto) NOT LIKE '%ANULADO%') AS montoavance, ";
     $queryPresupuesto.= "IFNULL(getMontoISROT(a.id, 1), 0.00) AS isrpresupuesto, ";
     $queryPresupuesto.= "a.notas, e.iniciales AS usrcrea, a.fechacreacion, f.iniciales AS usraprueba, a.fhaprobacion, g.iniciales AS usrmodifica, a.fechamodificacion, IF(a.tipo = 1, 'SIMPLE', 'MULTIPLE') AS tipo ";
-    $queryPresupuesto.= "FROM presupuesto a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN proyecto c ON c.id = a.idproyecto INNER JOIN tipogasto d ON d.id = a.idtipogasto INNER JOIN usuario e ON e.id = a.idusuario ";
-    $queryPresupuesto.= "INNER JOIN usuario f ON f.id = a.idusuarioaprueba INNER JOIN usuario g ON g.id = a.lastuser ";
+    $queryPresupuesto.= "FROM presupuesto a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN proyecto c ON c.id = a.idproyecto INNER JOIN tipogasto d ON d.id = a.idtipogasto LEFT JOIN usuario e ON e.id = a.idusuario ";
+    $queryPresupuesto.= "LEFT JOIN usuario f ON f.id = a.idusuarioaprueba LEFT JOIN usuario g ON g.id = a.lastuser ";
     $queryPresupuesto.= "WHERE a.id = $idpresupuesto";
     return $queryPresupuesto;
 }
@@ -127,6 +127,7 @@ $app->post('/rptpresupuesto', function(){
     $generales = $db->getQuery($query)[0];
 
     $qGenPres = getQueryPresupuesto($d->idpresupuesto);
+    //print $qGenPres;
 
     $query = "SELECT id, tipo, DATE_FORMAT(fechasolicitud, '%d/%m/%Y') AS fechasolicitud, empresa, proyecto, tipogasto, moneda, FORMAT(totalpresupuesto, 2) AS totalpresupuesto, ";
     $query.= "FORMAT(totalpagosprogramados, 2) AS totalpagosprogramados, FORMAT(IFNULL(montoavance, 0.00) + isrpresupuesto, 2) AS montoavance, notas, usrcrea, DATE_FORMAT(fechacreacion, '%d/%m/%Y') AS fechacreacion, ";
@@ -228,11 +229,11 @@ $app->post('/rptot', function(){
     //Avance de la OT
     $suma = new stdClass();
     $ot->avance = getDocumentosOT($db, $d->idot);
+    $suma->monto = 0.00;
+    $suma->totfact = 0.00;
+    $suma->isr = 0.00;
     $cntDocs = count($ot->avance);
     if($cntDocs > 0){
-        $suma->monto = 0.00;
-        $suma->totfact = 0.00;
-        $suma->isr = 0.00;
         for($j = 0; $j < $cntDocs; $j++){
             $doc = $ot->avance[$j];
             $suma->monto += $doc->monto;
