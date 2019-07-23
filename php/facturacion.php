@@ -29,7 +29,7 @@ $app->post('/pendientes', function(){
     $query = "SELECT a.idcontrato, a.idcliente, a.cliente, a.idtipocliente, a.facturara, GROUP_CONCAT(DISTINCT a.tipo ORDER BY a.tipo SEPARATOR ', ') AS tipo, SUM(a.montosiniva) AS montosiniva, ";
     $query.= "SUM(a.montoconiva) AS montoconiva, 0.00 AS retisr, a.retiva, 0.00 AS ivaaretener, 0.00 AS totapagar, a.proyecto, a.unidades, 1 AS facturar, '$d->params' AS paramstr, 0 AS numfact, ";
     $query.= "'' AS serirefact, SUM(a.descuento) AS descuento, a.retenerisr, clientecorto, GROUP_CONCAT(DISTINCT a.idtipoventa SEPARATOR ',') AS idtipoventa, a.nit, a.direccion, ";
-    $query.= "SUM(a.montocargoconiva) AS montocargoconiva, SUM(a.montocargoflat) AS montocargoflat, ROUND(SUM(a.montoconiva) - (SUM(a.montoconiva) / 1.12), 2) AS iva ";
+    $query.= "SUM(a.montocargoconiva) AS montocargoconiva, SUM(a.montocargoflat) AS montocargoflat, ROUND(SUM(a.montoconiva) - (SUM(a.montoconiva) / 1.12), 2) AS iva, porcentajeretiva ";
     $query.= "FROM(";
 
     $query.= "SELECT c.id as idcontrato, c.idcliente, d.nombre AS cliente, FacturarA(c.idcliente, b.idtipoventa) AS facturara, CONCAT(e.desctiposervventa, ' ', DATE_FORMAT(a.fechacobro, '%m/%Y')) AS tipo, ";
@@ -183,7 +183,7 @@ $app->post('/recalcular', function(){
     $r = new stdClass();
     //$r->retisr = (int)$d->retenerisr > 0 ? $db->calculaISR((float)$d->montosiniva - (float)$d->descuento) : 0.00;
     $r->retisr = (int)$d->retenerisr > 0 ? $db->calculaISR((float)$d->montosiniva) : 0.00;
-    $r->ivaaretener = (int)$d->retiva > 0 ? $db->calculaRetIVA((float)$d->montosiniva, ((int)$d->idtipocliente == 1 ? true : false), (float)$d->montoconiva, ((int)$d->idtipocliente == 2 ? true : false), $d->iva, (float)$r->porcentajeretiva) : 0.00;
+    $r->ivaaretener = (int)$d->retiva > 0 ? $db->calculaRetIVA((float)$d->montosiniva, ((int)$d->idtipocliente == 1 ? true : false), (float)$d->montoconiva, ((int)$d->idtipocliente == 2 ? true : false), $d->iva, (float)$d->porcentajeretiva) : 0.00;
     $r->totapagar = (float)$d->montoconiva - ($r->retisr + $r->ivaaretener);
 
     print json_encode($r);

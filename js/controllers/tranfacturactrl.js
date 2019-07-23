@@ -662,7 +662,8 @@
             obj.tipo = tipo;
 
             var param = {
-                idempresa: idempresa, retisr: 0.00, montosiniva: obj.montosiniva, montoconiva: obj.montoconiva, retiva: obj.retiva, idtipocliente: obj.idtipocliente, retenerisr: obj.retenerisr, descuento: obj.descuento, iva: obj.iva
+                idempresa: idempresa, retisr: 0.00, montosiniva: obj.montosiniva, montoconiva: obj.montoconiva, retiva: obj.retiva, idtipocliente: obj.idtipocliente, retenerisr: obj.retenerisr, descuento: obj.descuento, iva: obj.iva,
+                porcentajeretiva: obj.porcentajeretiva
             };
             facturacionSrvc.recalcular(param).then(function(d){
                 //console.log(d);
