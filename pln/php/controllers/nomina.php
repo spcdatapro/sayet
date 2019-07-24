@@ -808,6 +808,7 @@ $app->get('/imprimir_sp', function(){
 		]);
 
 		$mesAl = date('m', strtotime($_GET['fal']));
+		
 		$anioAl = date('m', strtotime($_GET['fal']));
 
 		if (count($todos) > 0) {
