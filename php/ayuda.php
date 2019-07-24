@@ -264,6 +264,7 @@ if ( ! function_exists('imprimirTotalesPagina')) {
 
 				if (!isset($conf->scalar) && $conf->visible == 1) {
 					$conf->psy = $pie->psy;
+					$conf->estilo = $pie->estilo;
 					$pdf       = generar_fimpresion($pdf, number_format($total, 2), $conf);
 
 					$y = ($conf->psy+$conf->espacio);

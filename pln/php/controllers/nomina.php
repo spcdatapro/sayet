@@ -963,6 +963,7 @@ $app->get('/imprimir_sp', function(){
 
 					if (!isset($conf->scalar) && $conf->visible == 1) {
 						$conf->psy = ($conf->psy+$espacio);
+						$conf->estilo = "B";
 						$pdf       = generar_fimpresion($pdf, number_format($total, 2), $conf);
 
 						$pdf->Line($conf->psx, $conf->psy, ($conf->psx+$conf->ancho), $conf->psy);
