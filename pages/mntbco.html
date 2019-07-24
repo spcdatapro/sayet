@@ -71,7 +71,7 @@
                                    placeholder="Correlativo del cheque que toca" min="1" required/>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="form-group" ng-class="{'has-error':frmBco.selTipoImp.$invalid && !frmBco.selTipoImp.$pristine}">
                             <label for="selTipoImp">Formato de cheque:</label>
                             <select name="selTipoImp" id="selTipoImp" class="form-control" ng-model="elBco.idtipoimpresion"
@@ -80,6 +80,20 @@
                         </div>
                     </div>
                     <div class="col-md-3">
+                        <div class="form-group" ng-class="{'has-error':frmBco.txtCorrela.$invalid && !frmBco.txtCorrela.$pristine}">
+                            <label for="txtGrpSum">Grupo en Sumario:</label>
+                            <input name="txtGrpSum" id="txtGrpSum" type="number" class="form-control" ng-model="elBco.gruposumario"
+                                   placeholder="Grupo en sumario" min="0" required/>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group" ng-class="{'has-error':frmBco.txtCorrela.$invalid && !frmBco.txtCorrela.$pristine}">
+                            <label for="txtOrdSuma">Orden en sumario:</label>
+                            <input name="txtOrdSuma" id="txtOrdSuma" type="number" class="form-control" ng-model="elBco.ordensumario"
+                                   placeholder="Orden en sumario" min="0" required/>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
                         <div class="form-group" ng-class="{'has-error':frmBco.chkBaja.$invalid && !frmBco.chkBaja.$pristine}">
                             <label for="chkBaja">De baja:</label>
                             <input name="chkBaja" id="chkBaja" type="checkbox" class="form-control" ng-model="elBco.debaja" ng-true-value="1" ng-false-value="0"/>
@@ -104,6 +118,11 @@
             <hr/>
             <table class="table table-responsive table-hover">
                 <thead>
+                    <tr>
+                        <th colspan="5"></th>
+                        <th colspan="2">Sumario</th>
+                        <th></th>
+                    </tr>
                     <tr>
                         <th>Cuenta contable</th>
                         <th>Nombre</th>

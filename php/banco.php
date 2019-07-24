@@ -11,7 +11,7 @@ $app->get('/lstbcos/:idempresa', function($idempresa){
     $query = "SELECT a.id, b.id AS idcuentac, CONCAT('(', b.codigo, ') ', b.nombrecta) AS nombrecta, ";
     $query.= "a.nombre, a.nocuenta, a.siglas, a.nomcuenta, a.idmoneda, CONCAT(c.nommoneda,' (',c.simbolo,')') AS descmoneda, ";
     $query.= "CONCAT(a.nombre, ' (', c.simbolo,')') AS bancomoneda, a.correlativo, c.tipocambio, CONCAT(a.nombre, ' (', c.simbolo,') (Sigue el No. ', a.correlativo,')') AS bancomonedacorrela, ";
-    $query.= "a.idtipoimpresion, d.descripcion AS tipoimpresion, d.formato, c.eslocal AS monedalocal, a.debaja ";
+    $query.= "a.idtipoimpresion, d.descripcion AS tipoimpresion, d.formato, c.eslocal AS monedalocal, a.debaja, a.gruposumario, a.ordensumario ";
     $query.= "FROM banco a INNER JOIN cuentac b ON b.id = a.idcuentac ";
     $query.= "INNER JOIN moneda c ON c.id = a.idmoneda ";
     $query.= "LEFT JOIN tipoimpresioncheque d ON d.id = a.idtipoimpresion ";
@@ -21,22 +21,10 @@ $app->get('/lstbcos/:idempresa', function($idempresa){
 
 $app->get('/lstbcosactivos(/:idempresa)', function($idempresa = 0){
     $db = new dbcpm();
-    /*
-    $query = "SELECT a.id, b.id AS idcuentac, CONCAT('(', b.codigo, ') ', b.nombrecta) AS nombrecta, ";
-    $query.= "a.nombre, a.nocuenta, a.siglas, a.nomcuenta, a.idmoneda, CONCAT(c.nommoneda,' (',c.simbolo,')') AS descmoneda, ";
-    $query.= "CONCAT(a.nombre, ' (', c.simbolo,')') AS bancomoneda, a.correlativo, c.tipocambio, CONCAT(a.nombre, ' (', c.simbolo,') (Sigue el No. ', a.correlativo,')') AS bancomonedacorrela, ";
-    $query.= "a.idtipoimpresion, d.descripcion AS tipoimpresion, d.formato, c.eslocal AS monedalocal, a.debaja ";
-    $query.= "FROM banco a INNER JOIN cuentac b ON b.id = a.idcuentac ";
-    $query.= "INNER JOIN moneda c ON c.id = a.idmoneda ";
-    $query.= "LEFT JOIN tipoimpresioncheque d ON d.id = a.idtipoimpresion ";
-    $query.= "WHERE a.idempresa = $idempresa AND a.debaja = 0 ";
-    $query.= "ORDER BY a.nombre";
-    */
-
     $query = "SELECT a.id, e.id AS idempresa, e.nomempresa AS empresa, e.abreviatura AS abreviaempresa, b.id AS idcuentac, CONCAT('(', b.codigo, ') ', b.nombrecta) AS nombrecta, ";
     $query.= "a.nombre, a.nocuenta, a.siglas, a.nomcuenta, a.idmoneda, CONCAT(c.nommoneda,' (',c.simbolo,')') AS descmoneda, ";
     $query.= "CONCAT(a.nombre, ' (', c.simbolo,')') AS bancomoneda, a.correlativo, c.tipocambio, CONCAT(a.nombre, ' (', c.simbolo,') (Sigue el No. ', a.correlativo,')') AS bancomonedacorrela, ";
-    $query.= "a.idtipoimpresion, d.descripcion AS tipoimpresion, d.formato, c.eslocal AS monedalocal, a.debaja ";
+    $query.= "a.idtipoimpresion, d.descripcion AS tipoimpresion, d.formato, c.eslocal AS monedalocal, a.debaja, a.gruposumario, a.ordensumario ";
     $query.= "FROM banco a INNER JOIN cuentac b ON b.id = a.idcuentac INNER JOIN moneda c ON c.id = a.idmoneda LEFT JOIN tipoimpresioncheque d ON d.id = a.idtipoimpresion LEFT JOIN empresa e ON e.id = a.idempresa ";
     $query.= "WHERE 1 = 1 AND a.debaja = 0 ";
     $query.= (int)$idempresa > 0 ? "AND a.idempresa = $idempresa " : '';
@@ -61,7 +49,7 @@ $app->get('/getbco/:idbco', function($idbco){
     $query = "SELECT a.id AS idbanco, b.id AS idcuentac, b.nombrecta, a.nombre, a.nocuenta, a.siglas, a.nomcuenta, a.idempresa, ";
     $query.= "a.idmoneda, CONCAT(c.nommoneda,' (',c.simbolo,')') AS descmoneda, ";
     $query.= "CONCAT(a.nombre, ' (', c.simbolo,')') AS bancomoneda, a.correlativo, c.tipocambio, ";
-    $query.= "a.idtipoimpresion, d.descripcion AS tipoimpresion, d.formato, c.eslocal AS monedalocal, a.debaja ";
+    $query.= "a.idtipoimpresion, d.descripcion AS tipoimpresion, d.formato, c.eslocal AS monedalocal, a.debaja, a.gruposumario, a.ordensumario ";
     $query.= "FROM banco a INNER JOIN cuentac b ON b.id = a.idcuentac ";
     $query.= "INNER JOIN moneda c ON c.id = a.idmoneda ";
     $query.= "LEFT JOIN tipoimpresioncheque d ON d.id = a.idtipoimpresion ";
@@ -85,18 +73,22 @@ $app->get('/chkexists/:idbco/:ttrans/:num', function($idbco, $ttrans, $num){
 
 $app->post('/c', function(){
     $d = json_decode(file_get_contents('php://input'));
+    if(!isset($d->gruposumario)){ $d->gruposumario = 0; }
+    if(!isset($d->ordensumario)){ $d->ordensumario = 0; }
     $db = new dbcpm();
-    $query = "INSERT INTO banco(idempresa, idcuentac, nombre, nocuenta, siglas, nomcuenta, idmoneda, correlativo, idtipoimpresion) ";
-    $query.= "VALUES($d->idempresa, $d->idcuentac, '$d->nombre', '$d->nocuenta', '$d->siglas', '$d->nomcuenta', $d->idmoneda, $d->correlativo, $d->idtipoimpresion)";
+    $query = "INSERT INTO banco(idempresa, idcuentac, nombre, nocuenta, siglas, nomcuenta, idmoneda, correlativo, idtipoimpresion, gruposumario, ordensumario) ";
+    $query.= "VALUES($d->idempresa, $d->idcuentac, '$d->nombre', '$d->nocuenta', '$d->siglas', '$d->nomcuenta', $d->idmoneda, $d->correlativo, $d->idtipoimpresion, $d->gruposumario, $d->ordensumario)";
     $db->doQuery($query);
 });
 
 $app->post('/u', function(){
     $d = json_decode(file_get_contents('php://input'));
+    if(!isset($d->gruposumario)){ $d->gruposumario = 0; }
+    if(!isset($d->ordensumario)){ $d->ordensumario = 0; }
     $db = new dbcpm();
     $query = "UPDATE banco SET idempresa = $d->idempresa, idcuentac = $d->idcuentac, ";
     $query.= "nombre = '$d->nombre', siglas = '$d->siglas', nomcuenta = '$d->nomcuenta', idmoneda = $d->idmoneda, correlativo = $d->correlativo, idtipoimpresion = $d->idtipoimpresion, ";
-    $query.= "debaja = $d->debaja ";
+    $query.= "debaja = $d->debaja, gruposumario = $d->gruposumario, ordensumario = $d->ordensumario ";
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
 });
@@ -120,7 +112,7 @@ $app->get('/ctassumario/:idmoneda/:fdelstr/:falstr', function($idmoneda, $fdelst
     $query = "SELECT a.id, CONCAT(a.siglas, ' / ', a.nocuenta) AS empresa, c.simbolo AS moneda, c.eslocal ";
     $query.= "FROM banco a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN moneda c ON c.id = a.idmoneda ";
     $query.= "WHERE a.debaja = 0 AND b.propia = 1 AND c.id = $idmoneda ";
-    $query.= "ORDER BY a.ordensumario";
+    $query.= "ORDER BY a.gruposumario, a.ordensumario";
     $cuentas = $db->getQuery($query);
     $cntCuentas = count($cuentas);
     for($i = 0; $i < $cntCuentas; $i++){

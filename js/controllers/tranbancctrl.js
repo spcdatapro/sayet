@@ -2,7 +2,7 @@
 
     var tranbancctrl = angular.module('cpm.tranbancctrl', ['cpm.tranbacsrvc']);
 
-    tranbancctrl.controller('tranBancCtrl', ['$scope', 'tranBancSrvc', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'tipoDocSopTBSrvc', 'tipoMovTranBanSrvc', 'periodoContableSrvc', 'toaster', 'detContSrvc', 'cuentacSrvc', '$confirm', '$filter', '$uibModal', 'razonAnulacionSrvc', 'presupuestoSrvc', 'jsReportSrvc', '$window', 'localStorageSrvc', 'proyectoSrvc', function($scope, tranBancSrvc, authSrvc, bancoSrvc, empresaSrvc, DTOptionsBuilder, tipoDocSopTBSrvc, tipoMovTranBanSrvc, periodoContableSrvc, toaster, detContSrvc, cuentacSrvc, $confirm, $filter, $uibModal, razonAnulacionSrvc, presupuestoSrvc, jsReportSrvc, $window, localStorageSrvc, proyectoSrvc){
+    tranbancctrl.controller('tranBancCtrl', ['$scope', 'tranBancSrvc', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'tipoDocSopTBSrvc', 'tipoMovTranBanSrvc', 'periodoContableSrvc', 'toaster', 'detContSrvc', 'cuentacSrvc', '$confirm', '$filter', '$uibModal', 'razonAnulacionSrvc', 'presupuestoSrvc', 'jsReportSrvc', '$window', 'localStorageSrvc', 'proyectoSrvc', 'socketIOSrvc', function($scope, tranBancSrvc, authSrvc, bancoSrvc, empresaSrvc, DTOptionsBuilder, tipoDocSopTBSrvc, tipoMovTranBanSrvc, periodoContableSrvc, toaster, detContSrvc, cuentacSrvc, $confirm, $filter, $uibModal, razonAnulacionSrvc, presupuestoSrvc, jsReportSrvc, $window, localStorageSrvc, proyectoSrvc, socketIOSrvc){
 
         $scope.laTran = {fecha: new Date(), concepto: '', anticipo: 0, idbeneficiario: 0, tipocambio: parseFloat('1.00').toFixed($scope.dectc), esnegociable: 0};
         $scope.laEmpresa = {};
@@ -482,6 +482,20 @@
             });
         };
 
+        $scope.printCheque = (idtran) => {
+            tranBancSrvc.getInfoToPrint(idtran, $scope.uid).then((chqs) => {
+                let objs = [];
+                for(let i = 0; i < chqs.length; i++){
+                    objs.push({
+                        tipo: 'C',
+                        descripcionTipo: 'cheque',
+                        datos: chqs[i]                       
+                    });
+                }
+                socketIOSrvc.emit('sayet:print', JSON.stringify(objs));
+            });
+        };
+
         $scope.updTran = function(data, id){
             data.idbanco = data.objBanco.id;
             data.fechastr = moment(data.fecha).format('YYYY-MM-DD');
@@ -725,35 +739,27 @@
 
     //Controlador de formulario de impresion cheques continuos
     //------------------------------------------------------------------------------------------------------------------------------------------------//
-    tranbancctrl.controller('ModalPrin', ['$scope', '$uibModalInstance', 'venta' , 'userid' , 'objbancos',  'tranBancSrvc', function($scope, $uibModalInstance, venta, userid, objbancos,  tranBancSrvc){
+    tranbancctrl.controller('ModalPrin', ['$scope', '$uibModalInstance', 'venta' , 'userid' , 'objbancos',  'tranBancSrvc', 'socketIOSrvc', function($scope, $uibModalInstance, venta, userid, objbancos,  tranBancSrvc, socketIOSrvc){
         $scope.venta = venta;
         $scope.losBancos = objbancos;
         $scope.correlativos=[];
-
-        /*console.log('idusuario',userid);
-         console.log('bancos:',$scope.losBancos);*/
 
         $scope.ok = function () {
             $scope.venta.ndel = $scope.venta.ndel != null && $scope.venta.ndel != undefined ? $scope.venta.ndel : '';
             $scope.venta.nal = $scope.venta.nal != null && $scope.venta.nal != undefined ? $scope.venta.nal : '';
             $scope.venta.idbanco = $scope.losBancos.id.id!= null && $scope.losBancos.id.id!= undefined ? $scope.losBancos.id.id: '';
-            //$scope.venta.idempresa= idempresa;
-            tranBancSrvc.lstCorrelativos($scope.venta.ndel,$scope.venta.nal,$scope.venta.idbanco ).then(function(d)
-            {
-                $scope.correlativos = d;
-                $uibModalInstance.close();
-                //console.log('datos recibidos',d);
-                tranBancSrvc.editRow($scope.venta, 'udoc').then(function(){});
+
+            tranBancSrvc.getBatchInfoToPrint($scope.venta.idbanco, $scope.venta.ndel, $scope.venta.nal, userid).then((chqs) => {
+                let objs = [];
+                for(let i = 0; i < chqs.length; i++){
+                    objs.push({
+                        tipo: 'C',
+                        descripcionTipo: 'cheque',
+                        datos: chqs[i]                       
+                    });
+                }
+                socketIOSrvc.emit('sayet:print', JSON.stringify(objs));
             });
-            /*console.log('datos del banco',$scope.losBancos.id.id);
-             console.log('datos enviados',$scope.venta);*/
-            $scope.formularioid = true;
-
-            //var url = window.location.origin + "/sayet/php/" + $scope.losBancos.id.formato + "continuo.php?idbanco=" + $scope.venta.idbanco + "&uid=" + userid + "&c_del=" + $scope.venta.ndel + "&c_al=" + $scope.venta.nal;
-			var url = window.location.origin + "/sayet/php/printcheckcontinuo.php?idbanco=" + $scope.venta.idbanco + "&uid=" + userid + "&c_del=" + $scope.venta.ndel + "&c_al=" + $scope.venta.nal;
-            //console.log(url);
-            window.open(url);
-
         };
         $scope.cancel = function () {
             $uibModalInstance.dismiss('cancel');

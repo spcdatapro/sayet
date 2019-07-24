@@ -219,16 +219,24 @@
                         <span class="glyphicon glyphicon-print">&nbsp;Cheque</span>
                     </a>
                     -->
+                    <!--
                     <button id="btnGCPrint" type="button" class="btn btn-primary" ng-show="editando && laTran.tipotrans === 'C'"
                             ng-disabled="frmTranBan.$invalid || laTran.anulado === 1 || periodoCerrado" ng-click="gcprint(laTran)">
                         <span class="glyphicon glyphicon-print"></span>&nbsp;Cheque
                     </button>
+                    -->
+                    <!--
 
                     <a class="btn btn-default" href="/sayet/php/printchequera.php?c={{laTran.id}}&ver=1" ng-show="editando && laTran.tipotrans === 'C'"
                             ng-disabled="frmTranBan.$invalid || laTran.anulado === 1 || periodoCerrado">
                         <span class="glyphicon glyphicon-print"></span>&nbsp;Cheque TEST
                     </a>
-
+                    -->
+                    
+                    <button type="button" class="btn btn-default" ng-click="printCheque(+laTran.id)" ng-show="editando && laTran.tipotrans === 'C'">
+                        <span class="glyphicon glyphicon-print"></span> Cheque
+                    </button>
+                    
                     <button type="button" class="btn btn-primary" ng-click="modalPRINT(losBancos)" ng-hide="editando">
                         <span class="glyphicon glyphicon-print"></span> &nbsp;Cheques continuos
                     </button>

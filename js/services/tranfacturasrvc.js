@@ -20,7 +20,8 @@
             },
             lstImpresionFacturas: function(obj){
                 return comunFact.doPOST(urlBase + '/lstimpfact', obj);
-            }
+            },
+            printFacturas: (obj) => comunFact.doPOST(`${urlBase}/prntfact`, obj)
         };
     }]);
 

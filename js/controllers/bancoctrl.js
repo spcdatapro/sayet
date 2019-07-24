@@ -5,7 +5,7 @@
     bancoctrl.controller('bancoCtrl', ['$scope', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'cuentacSrvc', '$confirm', 'monedaSrvc', '$route', '$filter', 'tipoImpresionChequeSrvc', function($scope, authSrvc, bancoSrvc, empresaSrvc, cuentacSrvc, $confirm, monedaSrvc, $route, $filter, tipoImpresionChequeSrvc){
         //$scope.tituloPagina = 'CPM';
 
-        $scope.elBco = {correlativo: 1};
+        $scope.elBco = {correlativo: 1, gruposumario: 0, ordensumario: 0};
         $scope.lasEmpresas = [];
         $scope.losBancos = [];
         $scope.lasCuentas = [];
@@ -43,6 +43,8 @@
                 data[i].idmoneda = parseInt(data[i].idmoneda);
                 data[i].correlativo = parseInt(data[i].correlativo);
                 data[i].debaja = parseInt(data[i].debaja);
+                data[i].gruposumario = parseInt(data[i].gruposumario);
+                data[i].ordensumario = parseInt(data[i].ordensumario);
             }
             return data;
         }
@@ -50,7 +52,7 @@
         $scope.resetBanco = function(){
             $scope.elBco = {
                 objEmpresa: $scope.elBco.objEmpresa, idempresa: $scope.elBco.objEmpresa.id, objCuentaC: null, objMoneda: null, idcuentac: 0, nombre: '',
-                nocuenta: '', siglas: '', nomcuenta: '', correlativo: 1, debaja: 0
+                nocuenta: '', siglas: '', nomcuenta: '', correlativo: 1, debaja: 0, gruposumario: 0, ordensumario: 0
             };
         };
 

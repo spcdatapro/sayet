@@ -120,7 +120,14 @@ $app->post('/ul', function(){
     $db = new dbcpm();
     $d->fechacortestr = $d->fechacortestr == '' ? "NULL" : "'$d->fechacortestr'";
     $d->lectura = $d->lectura == '' ? "NULL" : $d->lectura;
-    $query = "UPDATE lecturaservicio SET lectura = $d->lectura, fechaingreso = NOW(), fechacorte = $d->fechacortestr WHERE id = $d->id";
+    if(!isset($d->descuento)){ $d->descuento = 0.00; }
+    $conceptoAdicional = 'NULL';
+    if(isset($d->conceptoadicional)){
+        if(trim($d->conceptoadicional) !== ''){
+            $conceptoAdicional = "'".trim($d->conceptoadicional)."'";
+        }
+    }
+    $query = "UPDATE lecturaservicio SET lectura = $d->lectura, fechaingreso = NOW(), fechacorte = $d->fechacortestr, descuento = $d->descuento, conceptoadicional = $conceptoAdicional WHERE id = $d->id";
     $db->doQuery($query);
 });
 

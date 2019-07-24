@@ -1,0 +1,77 @@
+<div class="container" ng-controller="tranLecturasAguaCtrl">
+	<div class="panel panel-primary">
+		<div class="panel-heading">Lecturas de contadores de agua</div>
+		<div class="panel-body">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="selEmpresa">Empresa:</label>
+						<select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="params.idempresa"
+                                ng-options="obj.id as obj.nomempresa for obj in empresas">
+                        </select>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="form-group">
+						<label for="txtFechaVence">Fecha de vencimiento:</label>
+						<div class="input-group">
+							<input name="txtFechaVence" id="txtFechaVence" type="date" class="form-control" ng-model="params.fechavence"/>
+							<span class="input-group-btn">
+								<button type="button" class="btn btn-primary" ng-click="loadPendientes()">
+									<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+								</button>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<hr ng-show="lecturas.length > 0"/>
+            <small ng-show="lecturas.length > 0">
+                <table class="table table-hover table-condensed">
+                    <caption>
+                        <input name="srchTxt" id="srchTxt" type="text" class="form-control input-sm" style="width: 100%" ng-model="lookFor.$" placeholder="Buscar..."/>
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th>Proyecto</th>
+                            <th>Unidad</th>
+                            <th>Cliente</th>
+                            <th>Contador</th>
+                            <th class="num">Lectura</th>
+                            <th class="num">A facturar (m<sup>3</sup>)</th>
+                            <th class="num">A facturar (Q)</th>
+                            <th class="num">Desc. c/IVA (Q)</th>
+                            <th>Concepto adicional</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="lectura in lecturas | filter:lookFor">
+                            <td>{{lectura.proyecto}}</td>
+                            <td>{{lectura.unidad}}</td>
+                            <td>{{lectura.nombrecorto}}</td>
+                            <td>{{lectura.numidentificacion}}</td>
+                            <td style="width: 115px;">
+                                <input name="txtLectura_{{$index}}" id="txtLectura_{{$index}}" type="number" class="form-control input-sm num" ng-model="lectura.lectura"/>
+                            </td>
+                            <td class="num">{{lectura.consumoafacturar}}</td>
+                            <td class="num">{{lectura.montoconiva | number:2}}</td>
+                            <td style="width: 105px;">
+                                <input name="txtDescuento_{{$index}}" id="txtDescuento_{{$index}}" type="number" class="form-control input-sm num" ng-model="lectura.descuento"/>
+                            </td>
+                            <td>
+                                <textarea name="txtConcAd_{{$index}}" id="txtConcAd_{{$index}}" class="form-control input-sm" ng-model="lectura.conceptoadicional" placeholder="Concepto adicional que saldrá en el detalle de la factura"
+                                          rows="2" maxlength="300"></textarea>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-sm" ng-click="recalcular(lectura)">
+                                    <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </small>
+		</div>
+	</div>
+</div>

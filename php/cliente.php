@@ -504,14 +504,20 @@ $app->post('/gencobros', function(){
 
 $app->get('/getcargos/:iddetcont', function($iddetcont){
     $db = new dbcpm();
-    $query = "SELECT a.id, a.iddetcont, a.fechacobro, a.monto, a.descuento, a.facturado FROM cargo a WHERE a.iddetcont = ".$iddetcont." ORDER BY a.fechacobro";
+    $query = "SELECT a.id, a.iddetcont, a.fechacobro, a.monto, a.descuento, a.facturado, a.conceptoadicional FROM cargo a WHERE a.iddetcont = ".$iddetcont." ORDER BY a.fechacobro";
     print $db->doSelectASJson($query);
 });
 
 $app->post('/udesccargo', function(){
     $d = json_decode(file_get_contents('php://input'));
+    $conceptoAdicional = 'NULL';
+    if(isset($d->conceptoadicional)){
+        if(trim($d->conceptoadicional) !== ''){
+            $conceptoAdicional = "'".trim($d->conceptoadicional)."'";
+        }
+    }
     $db = new dbcpm();
-    $query = "UPDATE cargo SET descuento = ".$d->descuento." WHERE id = ".$d->id;
+    $query = "UPDATE cargo SET descuento = ".$d->descuento.", conceptoadicional = $conceptoAdicional WHERE id = ".$d->id;
     $db->doQuery($query);
 });
 

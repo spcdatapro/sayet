@@ -84,7 +84,7 @@ $app->post('/pendientes', function(){
 
         $query.= "ROUND((a.descuento * IF(h.eslocal = 0, $d->tc, 1)) * 1.12, 2) AS descuento, ";
 
-        $query.= "a.monto AS montocargoflat ";
+        $query.= "a.monto AS montocargoflat, a.conceptoadicional ";
 
         $query.= "FROM cargo a INNER JOIN detfactcontrato b ON b.id = a.iddetcont INNER JOIN contrato c ON c.id = b.idcontrato INNER JOIN cliente d ON d.id = c.idcliente ";
         $query.= "INNER JOIN tiposervicioventa e ON e.id = b.idtipoventa INNER JOIN detclientefact f ON d.id = f.idcliente INNER JOIN tipocliente g ON g.id = c.idtipocliente ";
@@ -175,8 +175,14 @@ $app->post('/recalcular', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
+     /* Esta es la forma correcta que funciona.
+     $r->retisr = (int)$r->retenerisr > 0 ? $db->calculaISR((float)$r->montosiniva) : 0.00;
+     $r->ivaaretener = (int)$r->retiva > 0 ? $db->calculaRetIVA((float)$r->montosiniva, ((int)$r->idtipocliente == 1 ? true : false), (float)$r->montoconiva, ((int)$r->idtipocliente == 2 ? true : false), (float)$r->iva) : 0.00;
+     $r->totapagar = (float)$r->montoconiva - ($r->retisr + $r->ivaaretener);
+     */
     $r = new stdClass();
-    $r->retisr = (int)$d->retenerisr > 0 ? $db->calculaISR((float)$d->montosiniva - (float)$d->descuento) : 0.00;
+    //$r->retisr = (int)$d->retenerisr > 0 ? $db->calculaISR((float)$d->montosiniva - (float)$d->descuento) : 0.00;
+    $r->retisr = (int)$d->retenerisr > 0 ? $db->calculaISR((float)$d->montosiniva) : 0.00;
     $r->ivaaretener = (int)$d->retiva > 0 ? $db->calculaRetIVA((float)$d->montosiniva, ((int)$d->idtipocliente == 1 ? true : false), (float)$d->montoconiva, ((int)$d->idtipocliente == 2 ? true : false), $d->iva) : 0.00;
     $r->totapagar = (float)$d->montoconiva - ($r->retisr + $r->ivaaretener);
 
@@ -229,9 +235,16 @@ $app->post('/genfact', function(){
         if((int)$lastid > 0){
             foreach($p->detalle as $det) {
                 if($det->facturar == 1){
+                    $conceptoAdicional = 'NULL';
+                    if(isset($det->conceptoadicional)){
+                        if(trim($det->conceptoadicional) !== ''){
+                            $conceptoAdicional = "'".trim($det->conceptoadicional)."'";
+                        }
+                    }
 
-                    $query = "INSERT INTO detfact(idfactura, cantidad, descripcion, preciounitario, preciotot, idtiposervicio, mes, anio, descuento, montoconiva, montoflatconiva) VALUES(";
-                    $query.= "$lastid, 1, '".($det->tipo.' de '.$det->nommes.' '.$det->anio)."', $det->montoconiva, $det->montoconiva, $det->idtiposervicio, $det->mes, $det->anio, $det->descuento, $det->montoconiva, $det->montoflatconiva";
+                    $query = "INSERT INTO detfact(idfactura, cantidad, descripcion, preciounitario, preciotot, idtiposervicio, mes, anio, descuento, montoconiva, montoflatconiva, conceptoadicional) VALUES(";
+                    $query.= "$lastid, 1, '".($det->tipo.' de '.$det->nommes.' '.$det->anio)."', $det->montoconiva, $det->montoconiva, $det->idtiposervicio, $det->mes, $det->anio, $det->descuento, $det->montoconiva, $det->montoflatconiva,";
+                    $query.= "$conceptoAdicional";
                     $query.= ")";
                     //print $query;
                     if((float)$det->montoconiva != 0){
@@ -343,12 +356,15 @@ $app->post('/gengface', function() use($app){
             $query.= "TRUNCATE(a.preciounitario + a.descuento, 2) AS montounitario, ";
 
             $query.= "a.idtiposervicio, ";
+
+            $query.= "TRIM(CONCAT(";
             $query.= "IF(b.esinsertada = 0, ";
             $query.= "IF(a.idtiposervicio <> 4, ";
             $query.= "CONCAT(UPPER(TRIM(e.desctiposervventa)), ', ', TRIM(d.nomproyecto), ', ', ";
             $query.= "TRIM(UnidadesPorContrato(c.id)), ', Mes de ', ".($periodo == '' ? "f.nombre, ' del año ', a.anio" : ("'".$periodo."'"))."), ";
             $query.= "TRIM(a.descripcion)), ";
-            $query.= "TRIM(a.descripcion)) AS descripcion, ";
+            $query.= "TRIM(a.descripcion)), ' ', IFNULL(a.conceptoadicional, '')))  AS descripcion, ";
+
 			$query.= "a.cantidad ";
             $query.= "FROM detfact a INNER JOIN factura b ON b.id = a.idfactura LEFT JOIN contrato c ON c.id = b.idcontrato LEFT JOIN proyecto d ON d.id = c.idproyecto ";
             $query.= "LEFT JOIN tiposervicioventa e ON e.id = a.idtiposervicio LEFT JOIN mes f ON f.id = a.mes ";
@@ -361,7 +377,7 @@ $app->post('/gengface', function() use($app){
             $query.= "ROUND(a.montoflatconiva - (a.montoflatconiva / 1.12), 2) AS iva, ";
             $query.= "TRUNCATE(a.preciounitario + a.descuento, 2) AS montounitario, ";
 
-            $query.= "a.idtiposervicio, a.descripcion, ";
+            $query.= "a.idtiposervicio, TRIM(CONCAT(a.descripcion, ' ', IFNULL(a.conceptoadicional, ''))) AS descripcion, ";
 			$query.= "a.cantidad ";
             $query.= "FROM detfact a INNER JOIN factura b ON b.id = a.idfactura INNER JOIN tiposervicioventa e ON e.id = a.idtiposervicio INNER JOIN mes f ON f.id = a.mes ";
             $query.= "WHERE b.idcliente = 0 AND a.idfactura = $factura->idfactura ";
@@ -453,6 +469,92 @@ $app->post('/lstimpfact', function(){
 
     print $db->doSelectASJson($query);
 
+});
+
+$app->post('/prntfact', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $n2l = new NumberToLetterConverter();
+
+    $query = "SELECT a.id, TRIM(a.nombre) AS nombre, TRIM(a.nit) AS nit, IF(a.direccion = NULL, 'CIUDAD', TRIM(a.direccion)) AS direccion, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, ";
+    $query.= "CONCAT(TRIM(a.serie), ' ', TRIM(a.numero)) AS numero, FORMAT(a.total, 2) AS pagoneto, FORMAT(a.retiva, 2) AS retiva, FORMAT(a.retisr, 2) AS retisr, ";
+    $query.= "CONCAT('TC: ', FORMAT(a.tipocambio, 5)) AS tipocambio, ";
+    $query.= "CONCAT('$ ', FORMAT(ROUND(a.subtotal / a.tipocambio, 2), 2)) AS pagonetodol, '' AS montoenletras, FORMAT(a.subtotal, 2) AS monto, TRUNCATE(a.subtotal, 2) AS total, ";
+    $query.= "(SELECT nombrecorto FROM cliente WHERE id = a.idcliente) AS nombrecorto, FORMAT(a.subtotal, 2) AS totalresumen, ";
+    $query.= "'Pago Neto:' AS lblpagoneto, 'Retención IVA:' AS lblretiva, 'Retención ISR:' AS lblretisr, 'Total:' AS lbltotal, c.impresora, c.pagewidth, c.pageheight, c.formato, c.papel ";
+    $query.= "FROM factura a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN tipoimpresioncheque c ON c.formato = b.formatofactura ";
+    $query.= "WHERE a.id IN($d->idfacturas) ORDER BY 7";
+    $facturas = $db->getQuery($query);
+
+    $cntFacturas = count($facturas);
+    for($i = 0; $i < $cntFacturas; $i++){
+        $factura = $facturas[$i];
+
+        $campos = [];
+        foreach($factura as $key => $value){ $campos[] = $key; }
+
+        $factura->montoenletras = $n2l->to_word_int($factura->total);
+        $query = "SELECT FORMAT(a.montoflatconiva, 2) AS montoconiva, ";
+
+        $query.= "TRIM(CONCAT(";
+        $query.= "IF(b.esinsertada = 0, ";
+        $query.= "IF(a.idtiposervicio <> 4, ";
+        $query.= "CONCAT(CONVERT(UPPER(TRIM(e.desctiposervventa)), CHAR CHARACTER SET latin1), ' DE ', CONVERT(TRIM(d.nomproyecto), CHAR CHARACTER SET latin1), ' ', ";
+        $query.= "CONVERT(TRIM(UnidadesPorContrato(c.id)), CHAR CHARACTER SET latin1), ', Mes de ', f.nombre, ";
+        $query.= "' del ".iconv("UTF-8", "Windows-1252", utf8_encode('año'))." ', FORMAT(a.anio, 0)), TRIM(a.descripcion)), ";
+        $query.= "TRIM(a.descripcion)), ' ', IFNULL(a.conceptoadicional, '')))  AS descripcion ";
+
+        $query.= "FROM detfact a INNER JOIN factura b ON b.id = a.idfactura INNER JOIN contrato c ON c.id = b.idcontrato INNER JOIN proyecto d ON d.id = c.idproyecto ";
+        $query.= "INNER JOIN tiposervicioventa e ON e.id = a.idtiposervicio INNER JOIN mes f ON f.id = a.mes ";
+        $query.= "WHERE a.idfactura = $factura->id ";
+        $query.= "UNION ";
+        $query.= "SELECT FORMAT(a.montoflatconiva, 2) AS montoconiva, TRIM(CONCAT(a.descripcion, ' ', IFNULL(a.conceptoadicional, ''))) AS descripcion ";
+        $query.= "FROM detfact a INNER JOIN factura b ON b.id = a.idfactura INNER JOIN tiposervicioventa e ON e.id = a.idtiposervicio INNER JOIN mes f ON f.id = a.mes ";
+        $query.= "WHERE b.idcliente = 0 AND a.idfactura = $factura->id";
+        $factura->detallefactura = $db->getQuery($query);
+
+        $query = "SELECT FORMAT(a.totdescuento, 2) AS totdescconiva FROM factura a WHERE a.id = $factura->id";
+        $descuento = $db->getQuery($query);
+
+        if(count($descuento) > 0){
+            if((float)$descuento[0]->totdescconiva != 0){
+                $factura->detallefactura[] = [
+                    'montoconiva' => $descuento[0]->totdescconiva,
+                    'descripcion' => 'Descuento'
+                ];
+            }        
+        }
+
+
+        $cntCampos = count($campos);
+        for($j = 0; $j < $cntCampos; $j++){
+            $campo = $campos[$j];
+            $info = $db->getFieldInfo($factura->formato, $campo);
+            if($info){
+                $info->valor = $factura->{$campo};
+                $factura->{$campo} = $info;
+            }        
+        }
+
+        $camposdetfact = [];
+        foreach($factura->detallefactura[0] as $key => $value){ $camposdetfact[] = $key; }
+        $cntCamposDetFact = count($camposdetfact);
+        $cntDetFact = count($factura->detallefactura);
+        for($j = 0; $j < $cntDetFact; $j++){
+            $ld = $factura->detallefactura[$j];
+            for($k = 0; $k < $cntCamposDetFact; $k++){
+                $campo = $camposdetfact[$k];
+                $info = $db->getFieldInfo($factura->formato, $campo);
+                if($info){
+                    $info->valor = $ld->{$campo};
+                    $ld->{$campo} = $info;
+                }
+            }
+        }
+
+    }
+
+    print json_encode($facturas);
 });
 
 $app->run();

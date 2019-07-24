@@ -12,8 +12,14 @@
                     <input name="txtSimbolo" id="txtSimbolo" type="text" class="form-control" ng-model="laMoneda.simbolo" placeholder="S&iacute;mbolo" maxlength="3" required />
                 </div>
                 <div class="btn-group" role="group" aria-label="...">
-                    <button type="submit" class="btn btn-primary" ng-disabled="frmMoneda.$invalid">
+                    <button type="submit" class="btn btn-primary" ng-disabled="frmMoneda.$invalid" ng-hide="+laMoneda.id > 0 ">
                         <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-disabled="frmMoneda.$invalid" ng-show="+laMoneda.id > 0 " ng-click="updMoneda(laMoneda)">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-disabled="frmMoneda.$invalid" ng-show="+laMoneda.id > 0 " ng-click="resetMoneda()">
+                        <span class="glyphicon glyphicon-plus"></span>
                     </button>
                 </div>
             </form>
@@ -23,30 +29,12 @@
                     <tr>
                         <th>Nombre</th>
                         <th>S&iacute;mbolo</th>
-                        <th>&nbsp;</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="m in lasMonedas">
-                        <td>
-                            <span editable-text="m.nommoneda" e-name="nommoneda" e-form="rowform" e-required
-                                  e-class="form-control" e-type="text" e-maxlength="50">
-                                {{m.nommoneda}}
-                            </span>
-                        </td>
-                        <td>
-                            <span editable-text="m.simbolo" e-name="simbolo" e-form="rowform" e-required
-                                  e-class="form-control" e-type="text" e-maxlength="3">
-                                {{m.simbolo}}
-                            </span>
-                        </td>
-                        <td style="white-space: nowrap">
-                            <edit-row-form
-                                    editing-row="m"
-                                    update-func="updMoneda(fila, qid)"
-                                    delete-func="delMoneda(qid)">
-                            </edit-row-form>
-                        </td>
+                    <tr ng-repeat="m in lasMonedas" ng-click="getMoneda(m.id)">
+                        <td>{{m.nommoneda}}</td>
+                        <td>{{m.simbolo}}</td>
                     </tr>
                 </tbody>
             </table>

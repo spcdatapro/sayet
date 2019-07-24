@@ -874,6 +874,7 @@
                         animation: true,
                         templateUrl: 'modalCargos.html',
                         controller: 'ModalCargosCtrl',
+                        windowClass: 'app-modal-window-cargos',
                         resolve:{
                             cargos: function(){return $scope.cargos;}
                         }
