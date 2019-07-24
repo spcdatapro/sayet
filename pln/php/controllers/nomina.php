@@ -809,6 +809,7 @@ $app->get('/imprimir_sp', function(){
 
 		$mesAl = date('m', strtotime($_GET['fal']));
 		$anioAl = date('m', strtotime($_GET['fal']));
+		$tipoImpresion = 5;
 
 		if (count($todos) > 0) {
 			require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
@@ -898,7 +899,7 @@ $app->get('/imprimir_sp', function(){
 					];
 
 					foreach ($tmpdatos as $campo => $valor) {
-						$conf = $g->get_campo_impresion($campo, 5);
+						$conf = $g->get_campo_impresion($campo, $tipoImpresion);
 
 						if (!isset($conf->scalar) && $conf->visible == 1) {
 							$conf->psy = ($conf->psy+$espacio);
@@ -958,39 +959,13 @@ $app->get('/imprimir_sp', function(){
 					'color' => array(0, 0, 0)
 				));
 
-				foreach ($etotales as $campo => $total) {
-					$conf = $g->get_campo_impresion($campo, 5);
-
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$conf->psy = ($conf->psy+$espacio);
-						$conf->estilo = "B";
-						$pdf       = generar_fimpresion($pdf, number_format($total, 2), $conf);
-
-						$pdf->Line($conf->psx, $conf->psy, ($conf->psx+$conf->ancho), $conf->psy);
-
-						$y = ($conf->psy+$conf->espacio);
-
-						$pdf->Line($conf->psx, $y, $conf->psx+$conf->ancho, $y);
-						$pdf->Line($conf->psx, $y+1, $conf->psx+$conf->ancho, $y+1);
-					}
-				}
+				$pdf = imprimirTotalesEmpresa($pdf, $g, $tipoImpresion, $etotales, $espacio);
 
 				$espacio += $confe->espacio;	
 			}
 
-			for ($i=1; $i <= $pdf->getNumPages(); $i++) { 
-				$pdf->setPage($i);
-
-				foreach ($cabecera as $campo => $valor) {
-					$conf = $g->get_campo_impresion($campo, 5);
-
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$pdf = generar_fimpresion($pdf, $valor, $conf);
-					}
-				}
-			}
-
-			$pdf = imprimirTotalesPagina($pdf, $g, 5, $totales);
+			$pdf = imprimirTotalesPagina($pdf, $g, $tipoImpresion, $totales);
+			$pdf = imprimirEncabezado($pdf, $g, $tipoImpresion, $cabecera);
 
 			$pdf->Output("planilla_sp_" . time() . ".pdf", 'I');
 			die();
