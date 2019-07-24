@@ -808,7 +808,6 @@ $app->get('/imprimir_sp', function(){
 		]);
 
 		$mesAl = date('m', strtotime($_GET['fal']));
-		
 		$anioAl = date('m', strtotime($_GET['fal']));
 
 		if (count($todos) > 0) {
@@ -989,6 +988,8 @@ $app->get('/imprimir_sp', function(){
 					}
 				}
 			}
+
+			$pdf = imprimirTotalesPagina($pdf, $g, 5, $totales);
 
 			$pdf->Output("planilla_sp_" . time() . ".pdf", 'I');
 			die();
