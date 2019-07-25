@@ -807,7 +807,9 @@ $app->get('/imprimir_sp', function(){
 			'sinlimite'  => TRUE
 		]);
 
-		$mesAl = date('m', strtotime($_GET['fal']));
+		$mesAl = (int)date('m', strtotime($_GET['fal']));
+		$anioAl = (int)date('Y', strtotime($_GET['fal']));
+		$tipoImpresion = 5;
 
 		if (count($todos) > 0) {
 			require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
@@ -878,17 +880,18 @@ $app->get('/imprimir_sp', function(){
 					$registros++;
 
 					$emp = $prestamo->get_empleado();
-					$pmes = date('m', strtotime($prestamo->pre->iniciopago));
+					$pmes = (int)date('m', strtotime($prestamo->pre->iniciopago));
+					$panio = (int)date('Y', strtotime($prestamo->pre->iniciopago));
 
 					$tmpdatos = [
 						'v_codigo' => $emp->id,
 						'v_nombre' => "{$emp->nombre} {$emp->apellidos}",
 						'v_vale' => $prestamo->pre->id,
 						'v_fecha' => formatoFecha($prestamo->pre->iniciopago, 1),
-						'v_valor_prestamo' => ($mesAl == $pmes ? 0 : $prestamo->pre->monto),
+						'v_valor_prestamo' => (($mesAl == $pmes && $panio == $anioAl) ? 0 : $prestamo->pre->monto),
 						'v_descuento_mensual' => $prestamo->pre->cuotamensual,
-						'v_saldo_anterior' => ($mesAl == $pmes ? 0 : $prestamo->get_saldo_anterior(['fecha' => $_GET['fal']])),
-						'v_nuevos_prestamos' => ($mesAl == $pmes ? $prestamo->pre->monto : 0),
+						'v_saldo_anterior' => (($mesAl == $pmes && $panio == $anioAl) ? 0 : $prestamo->get_saldo_anterior(['fecha' => $_GET['fal']])),
+						'v_nuevos_prestamos' => (($mesAl == $pmes && $panio == $anioAl) ? $prestamo->pre->monto : 0),
 						'v_descuentos_planillas' => $prestamo->get_descuentos_planilla(['fecha' => $_GET['fal']]),
 						'v_otros_abonos' => $prestamo->get_otro_abonos(['fecha' => $_GET['fal']]),
 						'v_total_descuentos' => $prestamo->get_total_descuentos(['fecha' => $_GET['fal']]),
@@ -896,7 +899,7 @@ $app->get('/imprimir_sp', function(){
 					];
 
 					foreach ($tmpdatos as $campo => $valor) {
-						$conf = $g->get_campo_impresion($campo, 5);
+						$conf = $g->get_campo_impresion($campo, $tipoImpresion);
 
 						if (!isset($conf->scalar) && $conf->visible == 1) {
 							$conf->psy = ($conf->psy+$espacio);
@@ -956,36 +959,13 @@ $app->get('/imprimir_sp', function(){
 					'color' => array(0, 0, 0)
 				));
 
-				foreach ($etotales as $campo => $total) {
-					$conf = $g->get_campo_impresion($campo, 5);
-
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$conf->psy = ($conf->psy+$espacio);
-						$pdf       = generar_fimpresion($pdf, number_format($total, 2), $conf);
-
-						$pdf->Line($conf->psx, $conf->psy, ($conf->psx+$conf->ancho), $conf->psy);
-
-						$y = ($conf->psy+$conf->espacio);
-
-						$pdf->Line($conf->psx, $y, $conf->psx+$conf->ancho, $y);
-						$pdf->Line($conf->psx, $y+1, $conf->psx+$conf->ancho, $y+1);
-					}
-				}
+				$pdf = imprimirTotalesEmpresa($pdf, $g, $tipoImpresion, $etotales, $espacio);
 
 				$espacio += $confe->espacio;	
 			}
 
-			for ($i=1; $i <= $pdf->getNumPages(); $i++) { 
-				$pdf->setPage($i);
-
-				foreach ($cabecera as $campo => $valor) {
-					$conf = $g->get_campo_impresion($campo, 5);
-
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$pdf = generar_fimpresion($pdf, $valor, $conf);
-					}
-				}
-			}
+			$pdf = imprimirTotalesPagina($pdf, $g, $tipoImpresion, $totales);
+			$pdf = imprimirEncabezado($pdf, $g, $tipoImpresion, $cabecera);
 
 			$pdf->Output("planilla_sp_" . time() . ".pdf", 'I');
 			die();

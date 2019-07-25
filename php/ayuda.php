@@ -232,11 +232,14 @@ if ( ! function_exists('totalesPagina')) {
 
 if ( ! function_exists('imprimirTotalesEmpresa')) {
 	function imprimirTotalesEmpresa($pdf, $bus, $tipoImpresion, $etotales, $espacio) {
+		$pie  = $bus->get_campo_impresion("vtotalespie", $tipoImpresion);
+
 		foreach ($etotales as $campo => $total) {
 			$conf = $bus->get_campo_impresion($campo, $tipoImpresion);
 
 			if (!isset($conf->scalar) && $conf->visible == 1) {
 				$conf->psy = ($conf->psy+$espacio);
+				$conf->estilo = $pie->estilo;
 				$pdf       = generar_fimpresion($pdf, number_format($total, 2), $conf);
 
 				$pdf->Line($conf->psx, $conf->psy, ($conf->psx+$conf->ancho), $conf->psy);
@@ -264,6 +267,7 @@ if ( ! function_exists('imprimirTotalesPagina')) {
 
 				if (!isset($conf->scalar) && $conf->visible == 1) {
 					$conf->psy = $pie->psy;
+					$conf->estilo = $pie->estilo;
 					$pdf       = generar_fimpresion($pdf, number_format($total, 2), $conf);
 
 					$y = ($conf->psy+$conf->espacio);
