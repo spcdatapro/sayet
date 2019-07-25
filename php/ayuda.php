@@ -284,7 +284,8 @@ if ( ! function_exists('imprimirTotalesPagina')) {
 
 if ( ! function_exists('imprimirEncabezado')) {
 	function imprimirEncabezado($pdf, $bus, $tipoImpresion, $cabecera) {
-		for ($i=1; $i <= $pdf->getNumPages(); $i++) { 
+		$cantidadPaginas = $pdf->getNumPages();
+		for ($i=1; $i <= $cantidadPaginas; $i++) { 
 			$pdf->setPage($i);
 
 			foreach ($cabecera as $campo => $valor) {
@@ -297,7 +298,7 @@ if ( ! function_exists('imprimirEncabezado')) {
 
 			$conf = $bus->get_campo_impresion("vnopagina", $tipoImpresion);
 			if (!isset($conf->scalar) && $conf->visible == 1) {
-				$pdf = generar_fimpresion($pdf, ($i), $conf);
+				$pdf = generar_fimpresion($pdf, "{$i}/{$cantidadPaginas}", $conf);
 			}
 		}
 

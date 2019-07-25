@@ -852,7 +852,9 @@ $app->get('/imprimir_sp', function(){
 				't_otros_abonos'         => "Otros\nAbonos",
 				't_total_descuentos'     => "Total\nDescuentos",
 				't_saldo_actual'         => "Saldo\nActual",
-				't_linea'                => str_repeat("_", 250)
+				't_linea'                => str_repeat("_", 250),
+				'tlineapiet'             => str_repeat("_", 250),
+				'tnopaginat'             => "Página No. ",
 			];
 
 			$rpag = 32; 
