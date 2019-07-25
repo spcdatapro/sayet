@@ -1,9 +1,9 @@
 (function(){
 
-    var presupuestosrvc = angular.module('cpm.presupuestosrvc', ['cpm.comunsrvc']);
+    const presupuestosrvc = angular.module('cpm.presupuestosrvc', ['cpm.comunsrvc']);
 
     presupuestosrvc.factory('presupuestoSrvc', ['comunFact', function(comunFact){
-        var urlBase = 'php/presupuesto.php';
+        const urlBase = 'php/presupuesto.php';
 
         return {
             lstPresupuestos: function(obj){

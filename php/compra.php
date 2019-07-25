@@ -450,16 +450,16 @@ function getCompraDetalle($compra)
     $query.= "LEFT JOIN proyecto i ON i.id = a.idproyecto ";
     $query.= "WHERE a.id = {$compra}";
     
-    $infocompra = $db->getQuery($query);
+    $infocompra = $db->getQuery($query)[0];
     
     $query = "SELECT a.id, a.origen, a.idorigen, a.idcuenta, CONCAT('(', b.codigo, ') ', b.nombrecta) AS desccuentacont, ";
     $query.= "a.debe, a.haber, a.conceptomayor ";
     $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta ";
     $query.= "WHERE a.origen = 2 AND a.idorigen = {$compra} ";
     $query.= "ORDER BY a.debe DESC, a.haber, b.codigo";
-    $res1 = $db->getQuery($query);
+    $infocompra->detalle = $db->getQuery($query);
     
-    return [ "compra" => $infocompra, "detalle" => $res1];
+    return ["compra" => $infocompra];
 }
 
 $app->post('/rptcompra', function(){

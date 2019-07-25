@@ -61,16 +61,17 @@ class dbcpm{
         return $isr;
     }
 
-    public function calculaRetIVA($base, $esgubernamental, $monto, $esmaquila = false, $iva = 0){
+    public function calculaRetIVA($base, $esgubernamental, $monto, $esmaquila = false, $iva = 0, $porcentaje = 0.00){
         if($iva == 0){ $iva = $monto - $base; }
+        $factor = abs((float)$porcentaje) > 0 ? (abs((float)$porcentaje) / 100.00) : 0.00;
         if($base > 2500.00){
             if($esgubernamental && $base > 30000.00){
-                return round($iva * 0.25, 2);
+                return round($iva * ($factor > 0 ? $factor : 0.25), 2);
             }else{
                 if(!$esmaquila){
-                    return round($iva * 0.15, 2);
+                    return round($iva * ($factor > 0 ? $factor : 0.15), 2);
                 }else{
-                    return round($iva * 0.65, 2);
+                    return round($iva * ($factor > 0 ? $factor : 0.65), 2);
                 }                
             }
         }

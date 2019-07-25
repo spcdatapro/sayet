@@ -1,32 +1,18 @@
 (function(){
 
-    var activosrvc = angular.module('cpm.activosrvc', ['cpm.comunsrvc']);
+    const activosrvc = angular.module('cpm.activosrvc', ['cpm.comunsrvc']);
 
-    activosrvc.factory('activoSrvc', ['comunFact', function(comunFact){
-        var urlBase = 'php/activo.php';
+    activosrvc.factory('activoSrvc', ['comunFact', (comunFact) => {
+        const urlBase = 'php/activo.php';
 
         return {
-            lstActivo: function(){
-                return comunFact.doGET(urlBase + '/lstactivo');
-            },
-            getActivo: function(idactivo){
-                return comunFact.doGET(urlBase + '/getactivo/' + idactivo);
-            },
-            editRow: function(obj, op){
-                return comunFact.doPOST(urlBase + '/' + op, obj);
-            },
-            rptActivos: function(obj){
-                return comunFact.doPOST(urlBase + '/rptactivos', obj);
-            },
-            rptPagosIusi: function(obj){
-                return comunFact.doPOST(urlBase + '/rptpagosiusi', obj);
-            },
-            lstBitacora: function(idactivo){
-                return comunFact.doGET(urlBase + '/lstbitacora/' + idactivo);
-            },
-            lstProyectosActivo: function(idactivo){
-                return comunFact.doGET(urlBase + '/lstproyact/' + idactivo);
-            }
+            lstActivo: () => comunFact.doGET(`${urlBase}/lstactivo`),
+            getActivo: (idactivo) => comunFact.doGET(`${urlBase}/getactivo/${idactivo}`),
+            editRow: (obj, op) => comunFact.doPOST(`${urlBase}/${op}`, obj),
+            rptActivos: (obj) => comunFact.doPOST(`${urlBase}/rptactivos`, obj),
+            rptPagosIusi: (obj) => comunFact.doPOST(`${urlBase}/rptpagosiusi`, obj),
+            lstBitacora: (idactivo) => comunFact.doGET(`${urlBase}/lstbitacora/${idactivo}`),
+            lstProyectosActivo: (idactivo) => comunFact.doGET(`${urlBase}/lstproyact/${idactivo}`)
         };
     }]);
 

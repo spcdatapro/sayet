@@ -1,33 +1,28 @@
 (function(){
 
-    var tranaprobpresupctrl = angular.module('cpm.tranaprobpresupctrl', []);
+    const tranaprobpresupctrl = angular.module('cpm.tranaprobpresupctrl', []);
 
-    tranaprobpresupctrl.controller('tranAprobPresupuestoCtrl', ['$scope', 'presupuestoSrvc', '$confirm', '$filter', 'authSrvc', 'DTOptionsBuilder', '$uibModal', 'toaster', function($scope, presupuestoSrvc, $confirm, $filter, authSrvc, DTOptionsBuilder, $uibModal, toaster){
+    tranaprobpresupctrl.controller('tranAprobPresupuestoCtrl', ['$scope', 'presupuestoSrvc', '$confirm', '$filter', 'authSrvc', 'DTOptionsBuilder', '$uibModal', 'toaster', ($scope, presupuestoSrvc, $confirm, $filter, authSrvc, DTOptionsBuilder, $uibModal, toaster) => {
 
         $scope.presupuestos = [];
         $scope.usrdata = {};
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withBootstrap().withOption('paging', false).withOption('order', false);
 
-        authSrvc.getSession().then(function(usrLogged){ $scope.usrdata = usrLogged; });
+        authSrvc.getSession().then((usrLogged) => $scope.usrdata = usrLogged);
 
-        function procData(data){
-            for(var i = 0; i < data.length; i++){
-                data[i].id = parseInt(data[i].id);
-                data[i].aprobada = parseInt(data[i].aprobada);
-            }
-            return data;
-        }
-
-        $scope.getPendientes = function(){
-            presupuestoSrvc.presupuestosPendientes().then(function(d){
-                $scope.presupuestos = procData(d);
+        procData = (data) => {
+            data.map((d) => {
+                d.id = +d.id;
+                d.aprobada = +d.aprobada;
             });
+            return data;
         };
 
+        $scope.getPendientes = () => presupuestoSrvc.presupuestosPendientes().then((d) => { $scope.presupuestos = procData(d); });
+
         $scope.verDetPresup = function(obj){
-            //console.log(obj);
-            var modalInstance = $uibModal.open({
+            const modalInstance = $uibModal.open({
                 animation: true,
                 templateUrl: 'modalDetallePresupuesto.html',
                 controller: 'ModalDetPresupCtrl',
@@ -42,14 +37,13 @@
             }, function(){ return 0; });
         };
 
-        $scope.aprobar = function(obj){
-            //console.log(obj);
-            if(+obj.aprobada == 1){
-                $confirm({text: '¿Esta seguro(a) de aprobar el presupuesto No. ' + obj.id +'?', title: 'Aprobar presupuesto', ok: 'Sí', cancel: 'No'}).then(function() {
+        $scope.aprobar = (obj) => {
+            if(+obj.aprobada === 1){
+                $confirm({text: '¿Esta seguro(a) de aprobar el presupuesto No. ' + obj.numero +'?', title: 'Aprobar presupuesto', ok: 'Sí', cancel: 'No'}).then(function() {
                     obj.idusuario = $scope.usrdata.uid;
                     presupuestoSrvc.editRow(obj, 'ap').then(function(){
                         $scope.getPendientes();
-                        toaster.pop('info', 'Presupuesto aprobado', 'Se aprobó el presupuesto No. ' + obj.id, 'timeout:1500');
+                        toaster.pop('info', 'Presupuesto aprobado', 'Se aprobó el presupuesto No. ' + obj.numero, 'timeout:1500');
                     });
                 }, function(){
                     obj.aprobada = 0;
@@ -57,14 +51,13 @@
             }
         };
 
-        $scope.denegar = function(obj){
-            //console.log(obj);
-            if(+obj.denegada == 1){
-                $confirm({text: '¿Esta seguro(a) de denegar el presupuesto No. ' + obj.id +'?', title: 'Denegar presupuesto', ok: 'Sí', cancel: 'No'}).then(function() {
+        $scope.denegar = (obj) => {
+            if(+obj.denegada === 1){
+                $confirm({text: '¿Esta seguro(a) de denegar el presupuesto No. ' + obj.numero +'?', title: 'Denegar presupuesto', ok: 'Sí', cancel: 'No'}).then(function() {
                     obj.idusuario = $scope.usrdata.uid;
                     presupuestoSrvc.editRow(obj, 'np').then(function(){
                         $scope.getPendientes();
-                        toaster.pop('info', 'Presupuesto denegado', 'Se denegó el presupuesto No. ' + obj.id, 'timeout:1500');
+                        toaster.pop('info', 'Presupuesto denegado', 'Se denegó el presupuesto No. ' + obj.numero, 'timeout:1500');
                     });
                 }, function(){
                     obj.denegada = 0;
@@ -78,29 +71,24 @@
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     tranaprobpresupctrl.controller('ModalDetPresupCtrl', ['$scope', '$uibModalInstance', 'toaster', 'presupuesto', 'presupuestoSrvc', '$uibModal', function($scope, $uibModalInstance, toaster, presupuesto, presupuestoSrvc, $uibModal){
         $scope.presupuesto = presupuesto;
-        $scope.lstot = [];
+        $scope.lstdetpagos = [];
 
-        presupuestoSrvc.lstOts($scope.presupuesto.id).then(function(d){ $scope.lstot = d; });
-        //console.log($scope.presupuesto);
-
-        //$scope.ok = function () { $uibModalInstance.close($scope.fcierre); };
-
-        $scope.cancel = function () { $uibModalInstance.dismiss('cancel'); };
-
-        $scope.verDetPagos = function(obj){
-            var modalInstance = $uibModal.open({
-                animation: true,
-                templateUrl: 'modalDetPagosOt.html',
-                controller: 'ModalDetPagosOtCtrlAprob',
-                resolve:{
-                    ot: function(){ return obj; }
-                }
+        procDataDet = (data) => {
+            data.map((d) => {
+                d.id = parseInt(d.id);
+                d.iddetpresup = parseInt(d.iddetpresup);
+                d.nopago = parseInt(d.nopago);
+                d.porcentaje = parseFloat(parseFloat(d.porcentaje).toFixed(4));
+                d.monto = parseFloat(parseFloat(d.monto).toFixed(2));
             });
-            modalInstance.result.then(function(obj){
-                //console.log(obj);
-            }, function(){ return 0; });
-        }
+            return data;
+        };
 
+        $scope.loadData = () => presupuestoSrvc.lstDetPagoOt($scope.presupuesto.idot).then((d) => $scope.lstdetpagos = procDataDet(d));
+
+        $scope.cancel = () =>$uibModalInstance.dismiss('cancel');
+
+        $scope.loadData();
     }]);
 
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//

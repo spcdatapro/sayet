@@ -464,16 +464,23 @@
                                             <input name="txtTipC" id="txtTipC" type="number" class="form-control" ng-model="factura.tipocambio" min="1.00" placeholder="Tipo de cambio..." step="0.01" required/>
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-1">
                                         <div class="form-group">
-                                            <label for="chkRetenerISR">Retener I.S.R.:</label>
+                                            <label for="chkRetenerISR">Ret. ISR:</label>
                                             <input name="chkRetenerISR" id="chkRetenerISR" type="checkbox" class="form-control" ng-model="factura.retenerisr" ng-true-value="1" ng-false-value="0"/>
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-1">
                                         <div class="form-group">
-                                            <label for="chkRetenerIVA">Retener I.V.A.</label>
-                                            <input name="chkRetenerIVA" id="chkRetenerIVA" type="checkbox" class="form-control" ng-model="factura.reteneriva" ng-true-value="1" ng-false-value="0"/>
+                                            <label for="chkRetenerIVA">Ret. IVA</label>
+                                            <input name="chkRetenerIVA" id="chkRetenerIVA" type="checkbox" class="form-control" ng-model="factura.reteneriva"
+                                                   ng-true-value="1" ng-false-value="0" ng-change="factura.porretiva = +factura.reteneriva == 0 ? 0.00 : factura.porretiva;"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group" ng-class="{'has-error':frmFact.txtPorRetIva.$invalid && !frmFact.txtPorRetIva.$pristine, 'required': +factura.reteneriva == 1}">
+                                            <label for="txtPorRetIva" class="control-label">% Ret. I.V.A.:</label>
+                                            <input name="txtPorRetIva" id="txtPorRetIva" type="number" class="form-control" ng-model="factura.porretiva" min="0" placeholder="Tipo de cambio..." step="0.01" ng-required="+factura.reteneriva == 1"/>
                                         </div>
                                     </div>
                                     <div class="col-md-2">

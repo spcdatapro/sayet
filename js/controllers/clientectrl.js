@@ -169,7 +169,7 @@
         };
 
         $scope.resetDetFact = function(){
-            $scope.detfact = { idcliente: $scope.cliente.id != null && $scope.cliente.id != undefined ? $scope.cliente.id : 0, facturara: '', direccion: '', nit: '', fdel: '', fal: '', retiva: 0, retisr: 0 };
+            $scope.detfact = { idcliente: $scope.cliente.id != null && $scope.cliente.id != undefined ? $scope.cliente.id : 0, facturara: '', direccion: '', nit: '', fdel: '', fal: '', retiva: 0, retisr: 0, porretiva: 0.00 };
             $scope.grpBtnDataFact = {i: false, u: false, d: false, a: true, e: false, c: false};
         };
 
@@ -221,6 +221,7 @@
                 d[i].fal = moment(d[i].fal).isValid() ? moment(d[i].fal).toDate() : null;
                 d[i].retisr = parseInt(d[i].retisr);
                 d[i].retiva = parseInt(d[i].retiva);
+                d[i].porretiva = parseFloat(d[i].porretiva);
             }
             return d;
         }

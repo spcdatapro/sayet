@@ -22,15 +22,15 @@ $app->get('/srchcli/:idempresa/:qstra+', function($idempresa, $qstra){
 
     $query.= "'<small>',nit, '<br/>', IFNULL(direccion, ''),'</small>'";
 
-    $query.= ") AS infocliente FROM (";
+    $query.= ") AS infocliente, porretiva FROM (";
 
-    $query.= "SELECT DISTINCT a.idcliente, a.facturara, a.nit, a.retisr, a.retiva, a.direccion ";
+    $query.= "SELECT DISTINCT a.idcliente, a.facturara, a.nit, a.retisr, a.retiva, a.direccion, a.porretiva ";
     $query.= "FROM detclientefact a INNER JOIN cliente b ON b.id = a.idcliente INNER JOIN contrato c ON b.id = c.idcliente ";
     $query.= "WHERE c.idempresa = $idempresa AND a.fal IS NULL AND (a.facturara LIKE '%$qstr%' OR b.nombrecorto LIKE '%$qstr%') ";
 
     $query.= "UNION ALL ";
 
-    $query.= "SELECT DISTINCT 0 AS idcliente, nombre AS facturara, nit, retenerisr AS retisr, reteneriva AS retiva, direccion ";
+    $query.= "SELECT DISTINCT 0 AS idcliente, nombre AS facturara, nit, retenerisr AS retisr, reteneriva AS retiva, direccion, porretiva ";
     $query.= "FROM factura ";
     $query.= "WHERE fecha >= '2017-09-01' AND idempresa = $idempresa AND nombre LIKE '%$qstr%' AND (idcontrato = 0 OR idcontrato IS NULL) ";
     //$query.= "AND TRIM(nit) NOT IN(SELECT TRIM(nit) FROM detclientefact WHERE fal IS NULL AND facturara LIKE '%$qstr%') ";
@@ -46,7 +46,7 @@ $app->get('/lstfacturas/:idempresa/:cuales', function($idempresa, $cuales){
     $query = "SELECT DISTINCT a.id, a.fecha, a.serie, a.numero, a.idcontrato, a.idcliente, IF(a.nombre IS NULL OR TRIM(a.nombre) = '', b.facturara, a.nombre) AS cliente, ";
     $query.= "IF(a.nit IS NULL OR TRIM(a.nit) = '', b.nit, a.nit) AS nit, IF(a.idcontrato IS NULL, '', UnidadesPorContrato(a.idcontrato)) AS unidad, a.total, d.nomempresa AS empresa, ";
     $query.= "a.iva, a.total, a.noafecto, a.subtotal, a.retisr, a.retiva, a.totdescuento, a.tipocambio, a.reteneriva, a.retenerisr, a.mesafecta, a.anioafecta, a.direccion, d.abreviatura AS abreviaempre, ";
-    $query.= "a.idproyecto, e.nomproyecto AS proyecto ";
+    $query.= "a.idproyecto, e.nomproyecto AS proyecto, a.porretiva ";
     $query.= "FROM factura a LEFT JOIN detclientefact b ON b.idcliente = a.idcliente LEFT JOIN contrato c ON c.id = a.idcontrato LEFT JOIN empresa d ON d.id = a.idempresa ";
     $query.= "LEFT JOIN proyecto e ON e.id = a.idproyecto ";
     $query.= "WHERE a.esinsertada = 1 AND b.fal IS NULL AND a.anulada = 0 ";
@@ -59,7 +59,7 @@ $app->get('/lstfacturas/:idempresa/:cuales', function($idempresa, $cuales){
 $app->get('/getfactura/:idfactura', function($idfactura){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idcliente, a.nit, a.nombre, a.idcontrato, a.serie, a.numero, a.fechaingreso, a.fecha, a.idtipoventa, a.conceptomayor, a.idempresa, a.idtipofactura, ";
-    $query.= "a.iva, a.total, a.noafecto, a.subtotal, a.retisr, a.retiva, a.totdescuento, a.tipocambio, a.reteneriva, a.retenerisr, a.mesafecta, a.anioafecta, a.direccion, a.idproyecto ";
+    $query.= "a.iva, a.total, a.noafecto, a.subtotal, a.retisr, a.retiva, a.totdescuento, a.tipocambio, a.reteneriva, a.retenerisr, a.mesafecta, a.anioafecta, a.direccion, a.idproyecto, a.porretiva ";
     $query.= "FROM factura a ";
     $query.= "WHERE a.id = $idfactura";
     print $db->doSelectASJson($query);
@@ -68,13 +68,13 @@ $app->get('/getfactura/:idfactura', function($idfactura){
 $app->post('/c', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-
+    if(!isset($d->porretiva)){ $d->porretiva = 0.00; }
     $query = "INSERT INTO factura(";
     $query.= "idempresa, idtipofactura, idcontrato, idcliente, nit, nombre, serie, numero, fechaingreso, mesiva, fecha, idtipoventa, conceptomayor, idmoneda, tipocambio, esinsertada,";
-    $query.= "reteneriva, retenerisr, mesafecta, anioafecta, direccion, idproyecto) VALUES(";
+    $query.= "reteneriva, retenerisr, mesafecta, anioafecta, direccion, idproyecto, porretiva) VALUES(";
     $query.= "$d->idempresa, $d->idtipofactura, $d->idcontrato, $d->idcliente, ".($d->nit == '' ? "NULL" : "'".$d->nit."'").", ".($d->nombre == '' ? "NULL" : "'".$d->nombre."'").", ";
     $query.= ($d->serie == '' ? "NULL" : "'".$d->serie."'").", ".($d->numero == '' ? "NULL" : "'".$d->numero."'").", '$d->fechaingresostr', $d->mesiva, '$d->fechastr', $d->idtipoventa, ";
-    $query.= "NULL, 1, $d->tipocambio, 1, $d->reteneriva, $d->retenerisr, $d->mesafecta, $d->anioafecta, '$d->direccion', $d->idproyecto";
+    $query.= "NULL, 1, $d->tipocambio, 1, $d->reteneriva, $d->retenerisr, $d->mesafecta, $d->anioafecta, '$d->direccion', $d->idproyecto, $d->porretiva";
     $query.= ")";
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
@@ -83,12 +83,12 @@ $app->post('/c', function(){
 $app->post('/u', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-
+    if(!isset($d->porretiva)){ $d->porretiva = 0.00; }
     $query = "UPDATE factura SET ";
     $query.= "idempresa = $d->idempresa, idtipofactura = $d->idtipofactura, idcontrato = $d->idcontrato, idcliente = $d->idcliente, nit = ".($d->nit == '' ? "NULL" : "'".$d->nit."'").", ";
     $query.= "nombre = ".($d->nombre == '' ? "NULL" : "'".$d->nombre."'").", serie = ".($d->serie == '' ? "NULL" : "'".$d->serie."'").", numero = ".($d->numero == '' ? "NULL" : "'".$d->numero."'").", ";
     $query.= "fechaingreso = '$d->fechaingresostr', mesiva = $d->mesiva, fecha = '$d->fechastr', idtipoventa = $d->idtipoventa, tipocambio = $d->tipocambio, ";
-    $query.= "reteneriva = $d->reteneriva, retenerisr = $d->retenerisr, mesafecta = $d->mesafecta, anioafecta = $d->anioafecta, direccion = '$d->direccion', idproyecto = $d->idproyecto ";
+    $query.= "reteneriva = $d->reteneriva, retenerisr = $d->retenerisr, mesafecta = $d->mesafecta, anioafecta = $d->anioafecta, direccion = '$d->direccion', idproyecto = $d->idproyecto, porretiva = $d->porretiva ";
     $query.= "WHERE id = $d->id";
     //print $query;
     $db->doQuery($query);
@@ -138,7 +138,7 @@ function recalc($d){
     $r = new stdClass();
     //$d->retisr = $db->getOneField("SELECT retisr FROM empresa WHERE id = $d->idempresa");
     $r->retisr = (int)$d->retenerisr > 0 ? $db->calculaISR((float)$d->montosiniva) : 0.00;
-    $r->retiva = (int)$d->reteneriva > 0 ? $db->calculaRetIVA((float)$d->montosiniva, ((int)$d->idtipocliente == 1 ? true : false), $d->montoconiva, ((int)$d->idtipocliente == 2 ? true : false), $d->iva) : 0.00;
+    $r->retiva = (int)$d->reteneriva > 0 ? $db->calculaRetIVA((float)$d->montosiniva, ((int)$d->idtipocliente == 1 ? true : false), $d->montoconiva, ((int)$d->idtipocliente == 2 ? true : false), $d->iva, $d->porretiva) : 0.00;
     $r->totapagar = (float)$d->montoconiva - ($r->retisr + $r->retiva);
 
     return $r;
@@ -156,6 +156,7 @@ function updateDatosFactura($d){
     $data->idtipocliente = (int)$db->getOneField("SELECT idtipocliente FROM contrato WHERE id = (SELECT idcontrato FROM factura WHERE id = $d->idfactura)");
     $data->reteneriva = (int)$db->getOneField("SELECT reteneriva FROM factura WHERE id = $d->idfactura");
     $data->retenerisr = (int)$db->getOneField("SELECT retenerisr FROM factura WHERE id = $d->idfactura");
+    $data->porretiva = (float)$db->getOneField("SELECT porretiva FROM factura WHERE id = $d->idfactura");
     $data->iva = round($data->montoconiva - $data->montosiniva, 2);
     $data->montocargoiva = (float)$db->getOneField("SELECT SUM(montoconiva) FROM detfact WHERE idfactura = $d->idfactura");
     $tc = (float)$db->getOneField("SELECT tipocambio FROM factura WHERE id = $d->idfactura");

@@ -207,46 +207,76 @@
             });
         };
 
-        $scope.enviar = function(obj){
-            $confirm({text: '¿Esta seguro(a) de enviar el presupuesto No. ' + obj.id +' para aprobación?', title: 'Envio de presupuesto', ok: 'Sí', cancel: 'No'}).then(function() {
+        $scope.enviar = (obj, idpresupuesto, correlativo) => {
+            let numpresup = obj.id;
+            obj.esot = 0;
+            if(idpresupuesto && correlativo){
+                numpresup = `${idpresupuesto}-${correlativo}`;
+                obj.esot = 1;
+            }
+            $confirm({text: `¿Esta seguro(a) de enviar el presupuesto No. ${numpresup} para aprobación?`, title: 'Envio de presupuesto', ok: 'Sí', cancel: 'No'}).then(() => {
                 obj.idusuario = $scope.usrdata.uid;
-                presupuestoSrvc.editRow(obj, '/ep').then(function(){
+                presupuestoSrvc.editRow(obj, '/ep').then(() => {
                     $scope.getLstPresupuestos('1,2,3');
-                    toaster.pop('info', 'Envio de presupuesto', 'Presupuesto No. ' + obj.id + ' enviado a aprobación...', 'timeout:1500');
+                    if(obj.esot === 1){
+                        $scope.getLstOts(idpresupuesto);
+                    }
+                    toaster.pop('info', 'Envio de presupuesto', `Presupuesto No. ${numpresup} enviado a aprobación...`, 'timeout:1500');
                 });
+
             });
         };
 
-        $scope.terminaPresupuesto = function(obj){
-            $confirm({text: '¿Esta seguro(a) de terminar el presupuesto No. ' + obj.id +'? Si lo termina, ya no podrá modificarlo a menos que lo reaperturen.', title: 'Terminar presupuesto', ok: 'Sí', cancel: 'No'}).then(function() {
+        $scope.terminaPresupuesto = (obj, idpresupuesto, correlativo) => {
+            let numpresup = obj.id;
+            obj.esot = 0;
+            if(idpresupuesto && correlativo){
+                numpresup = `${idpresupuesto}-${correlativo}`;
+                obj.esot = 1;
+            }
+            $confirm({text: `¿Esta seguro(a) de terminar el presupuesto No. ${numpresup}? Si lo termina, ya no podrá modificarlo a menos que lo reaperturen.`, title: 'Terminar presupuesto', ok: 'Sí', cancel: 'No'}).then(function() {
                 obj.idusuario = $scope.usrdata.uid;
                 presupuestoSrvc.editRow(obj, '/tp').then(function(){
                     $scope.getLstPresupuestos('1,2,3');
                     $scope.getPresupuesto(obj.id, true);
-                    toaster.pop('info', 'Terminar presupuesto', 'Presupuesto No. ' + obj.id + ' terminado...', 'timeout:1500');
+                    if(obj.esot === 1){
+                        $scope.getLstOts(idpresupuesto);
+                    }
+                    toaster.pop('info', 'Terminar presupuesto', `Presupuesto No. ${numpresup} terminado...`, 'timeout:1500');
                 });
             });
         };
 
-        $scope.reabrirPresupuesto = function(obj){
-            $confirm({text: '¿Esta seguro(a) de abrir nuevamente el presupuesto No. ' + obj.id +'?', title: 'Re-abrir presupuesto', ok: 'Sí', cancel: 'No'}).then(function() {
+        $scope.reabrirPresupuesto = (obj, idpresupuesto, correlativo) => {
+            let numpresup = obj.id;
+            obj.esot = 0;
+            if(idpresupuesto && correlativo){
+                numpresup = `${idpresupuesto}-${correlativo}`;
+                obj.esot = 1;
+            }
+            $confirm({text: `¿Esta seguro(a) de abrir nuevamente el presupuesto No. ${numpresup}?`, title: 'Re-abrir presupuesto', ok: 'Sí', cancel: 'No'}).then(function() {
                 obj.idusuario = $scope.usrdata.uid;
                 presupuestoSrvc.editRow(obj, '/rp').then(function(){
                     $scope.getLstPresupuestos('1,2,3');
                     $scope.getPresupuesto(obj.id, true);
-                    toaster.pop('info', 'Re-abrir presupuesto', 'Presupuesto No. ' + obj.id + ' reaperturado...', 'timeout:1500');
+                    if(obj.esot === 1){
+                        $scope.getLstOts(idpresupuesto);
+                    }
+                    toaster.pop('info', 'Re-abrir presupuesto', `Presupuesto No. ${numpresup} reaperturado...`, 'timeout:1500');
                 });
             });
         };
 
-        $scope.anulaPresupuesto = function(obj){
+        $scope.anulaPresupuesto = function(obj, idpresupuesto, correlativo){
             var modalInstance = $uibModal.open({
                 animation: true,
                 templateUrl: 'modalAnulaPresupuesto.html',
                 controller: 'ModalAnulaPresupuesto',
                 resolve:{
                     presupuesto: function(){ return obj; },
-                    usr: function(){ return $scope.usrdata; }
+                    usr: function(){ return $scope.usrdata; },
+                    idpresupuesto: idpresupuesto,
+                    correlativo: correlativo
                 }
             });
             modalInstance.result.then(function(){
@@ -523,16 +553,23 @@
     }]);
 
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
-    presupuestoctrl.controller('ModalAnulaPresupuesto', ['$scope', '$uibModalInstance', '$filter', 'toaster', '$confirm', 'presupuestoSrvc', 'razonAnulacionSrvc', 'presupuesto', 'usr', function($scope, $uibModalInstance, $filter, toaster, $confirm, presupuestoSrvc, razonAnulacionSrvc, presupuesto, usr){
+    presupuestoctrl.controller('ModalAnulaPresupuesto', ['$scope', '$uibModalInstance', '$filter', 'toaster', '$confirm', 'presupuestoSrvc', 'razonAnulacionSrvc', 'presupuesto', 'usr', 'idpresupuesto', 'correlativo', function ($scope, $uibModalInstance, $filter, toaster, $confirm, presupuestoSrvc, razonAnulacionSrvc, presupuesto, usr, idpresupuesto, correlativo) {
         $scope.presupuesto = presupuesto;
         $scope.razones = [];
         $scope.usr = usr;
-        $scope.params = { id: $scope.presupuesto.id, idusuarioanula: $scope.usr.uid, idrazonanula: undefined };
+        $scope.params = { id: $scope.presupuesto.id, idusuarioanula: $scope.usr.uid, idrazonanula: undefined, esot: 0 };
+
+        $scope.numpresup = $scope.presupuesto.id;
+        $scope.params.esot = 0;
+        if(idpresupuesto && correlativo){
+            $scope.numpresup = `${idpresupuesto}-${correlativo}`;
+            $scope.params.esot = 1;
+        }
 
         razonAnulacionSrvc.lstRazones().then(function(d){ $scope.razones = d; });
 
         $scope.ok = function () {
-            $confirm({text: '¿Esta seguro(a) de anular la OT No. ' + presupuesto.id + '?', title: 'Anular OT', ok: 'Sí', cancel: 'No'}).then(function() {
+            $confirm({text: `¿Esta seguro(a) de anular la OT No. ${$scope.numpresup}?`, title: 'Anular OT', ok: 'Sí', cancel: 'No'}).then(function() {
                 presupuestoSrvc.editRow($scope.params, 'anulapres').then(function(){ $uibModalInstance.close();});
             },
                 function(){ $scope.cancel();}
