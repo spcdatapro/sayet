@@ -807,8 +807,8 @@ $app->get('/imprimir_sp', function(){
 			'sinlimite'  => TRUE
 		]);
 
-		$mesAl = date('m', strtotime($_GET['fal']));
-		$anioAl = date('m', strtotime($_GET['fal']));
+		$mesAl = (int)date('m', strtotime($_GET['fal']));
+		$anioAl = (int)date('m', strtotime($_GET['fal']));
 		$tipoImpresion = 5;
 
 		if (count($todos) > 0) {
@@ -880,8 +880,8 @@ $app->get('/imprimir_sp', function(){
 					$registros++;
 
 					$emp = $prestamo->get_empleado();
-					$pmes = date('m', strtotime($prestamo->pre->iniciopago));
-					$panio = date('Y', strtotime($prestamo->pre->iniciopago));
+					$pmes = (int)date('m', strtotime($prestamo->pre->iniciopago));
+					$panio = (int)date('Y', strtotime($prestamo->pre->iniciopago));
 
 					$tmpdatos = [
 						'v_codigo' => $emp->id,
