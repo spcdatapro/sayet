@@ -808,7 +808,7 @@ $app->get('/imprimir_sp', function(){
 		]);
 
 		$mesAl = (int)date('m', strtotime($_GET['fal']));
-		$anioAl = (int)date('m', strtotime($_GET['fal']));
+		$anioAl = (int)date('Y', strtotime($_GET['fal']));
 		$tipoImpresion = 5;
 
 		if (count($todos) > 0) {
