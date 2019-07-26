@@ -765,6 +765,10 @@ $app->get('/librosalario', function(){
 				$cabecera['subtitulo'] = 'Libro de Salarios';
 				$cabecera['mes']       = 'Del '.formatoFecha($_GET['fdel'],1).' al '.formatoFecha($_GET['fal'], 1);
 
+				if (isset($_GET["empleado"]) && !empty($_GET["empleado"])) {
+					$cabecera['nombre_empleado'] = "{$e->emp->nombre} {$e->emp->apellidos}";
+				}
+
 				$espacio = 0;
 				$totales = [];
 
