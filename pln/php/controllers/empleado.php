@@ -834,7 +834,7 @@ $app->get('/librosalario', function(){
 						'color' => array(0, 0, 0)
 					));
 
-					$pdf = imprimirTotalesEmpresa($pdf, $g, 2, $etotales, $espacio);
+					$pdf = imprimirTotalesEmpresa($pdf, $g, $tipoImpresion, $etotales, $espacio);
 
 					$espacio += $confe->espacio;	
 				}
@@ -849,8 +849,8 @@ $app->get('/librosalario', function(){
 					}
 				}
 				
-				$pdf = imprimirTotalesPagina($pdf, $g, 2, $totales);
-				$pdf = imprimirEncabezado($pdf, $g, 2, $cabecera);
+				$pdf = imprimirTotalesPagina($pdf, $g, $tipoImpresion, $totales);
+				$pdf = imprimirEncabezado($pdf, $g, $tipoImpresion, $cabecera);
 
 				$pdf->Output("libroSalario" . time() . ".pdf", 'I');
 				die();
