@@ -16,7 +16,10 @@ $app->post('/pendientes', function(){
     $query.= "(a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) as consumo, ";
     $query.= "IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, ((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug), 0.00) AS consumoafacturar, ";
 
-    $query.= "ROUND(IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, (((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) * b.preciomcubsug) / 1.12, 0.00 ), 2) AS montosiniva, ";
+    $query.= "ROUND(IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, ";
+    $query.= "(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) * b.preciomcubsug) / 1.12 - (IF(a.descuento > 0, a.descuento / 1.12, 0.00))";
+    $query.= ", 0.00 ), 2) AS montosiniva, ";
+
     $query.= "ROUND(IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, (((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) * b.preciomcubsug), 0.00 ), 2) AS montoconiva, ";
     $query.= "0.00 AS iva, ";
 
@@ -32,8 +35,9 @@ $app->post('/pendientes', function(){
     $query.= "FROM lecturaservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico INNER JOIN contrato c ON c.id = (SELECT b.id FROM contrato b WHERE FIND_IN_SET(a.idunidad, b.idunidad) LIMIT 1) ";
     $query.= "INNER JOIN cliente d ON d.id = c.idcliente INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio ";
     $query.= "INNER JOIN proyecto g ON g.id = a.idproyecto INNER JOIN unidad h ON h.id = a.idunidad ";
-    $query.= "WHERE a.estatus = 2 AND b.pagacliente = 0 AND ";
-    $query.= "a.mes <= MONTH('$d->fvencestr') AND a.anio <= YEAR('$d->fvencestr') AND b.idempresa = $d->idempresa AND ";
+    $query.= "WHERE a.estatus = 2 ";
+    $query.= "AND b.pagacliente = 0 ";
+    $query.= "AND a.mes <= MONTH('$d->fvencestr') AND a.anio <= YEAR('$d->fvencestr') AND b.idempresa = $d->idempresa AND ";
     $query.= "(c.inactivo = 0 OR (c.inactivo = 1 AND c.fechainactivo > '$d->fvencestr'))";
     $query.= "ORDER BY g.nomproyecto, CAST(digits(h.nombre) AS UNSIGNED), h.nombre";
     $factagua = $db->getQuery($query);
@@ -45,10 +49,10 @@ $app->post('/pendientes', function(){
     for($i = 0; $i < $cntFA; $i++){
         $fagua = $factagua[$i];
 
-        $fagua->iva = (float)$fagua->montoconiva - (float)$fagua->montosiniva;
+        $fagua->iva = ((float)$fagua->montoconiva - (float)$fagua->descuento) - (float)$fagua->montosiniva;
         $fagua->retisr = (int)$fagua->retenerisr > 0 ? $db->calculaISR((float)$fagua->montosiniva) : 0.00;
-        $fagua->retiva = (int)$fagua->reteneriva > 0 ? $db->calculaRetIVA((float)$fagua->montosiniva, ((int)$fagua->idtipocliente == 1 ? true : false), $fagua->montoconiva, ((int)$fagua->idtipocliente == 2 ? true : false), $fagua->iva, (float)$fagua->porcentajeretiva) : 0.00;
-        $fagua->totapagar = (float)$fagua->montoconiva - ($fagua->retisr + $fagua->retiva);
+        $fagua->retiva = (int)$fagua->reteneriva > 0 ? $db->calculaRetIVA((float)$fagua->montosiniva, ((int)$fagua->idtipocliente == 1 ? true : false), ((float)$fagua->montoconiva - (float)$fagua->descuento), ((int)$fagua->idtipocliente == 2 ? true : false), $fagua->iva, (float)$fagua->porcentajeretiva) : 0.00;
+        $fagua->totapagar = ((float)$fagua->montoconiva - (float)$fagua->descuento) - ($fagua->retisr + $fagua->retiva);
 
         if((int)$empresa->congface == 0){
             $fagua->seriefact = $empresa->seriefact;
@@ -73,7 +77,9 @@ $app->post('/proyeccion', function(){
     $query = "SELECT a.id, a.idserviciobasico, a.idproyecto, a.idunidad, a.mes, a.anio, a.lectura, b.numidentificacion, b.preciomcubsug, b.mcubsug, LecturaAnterior(a.idserviciobasico, a.mes, a.anio) AS ultimalecturafact, ";
     $query.= "(a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) as consumo, ";
     $query.= "IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, ((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug), 0.00) AS consumoafacturar, ";
-    $query.= "ROUND(IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, (((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) * b.preciomcubsug) / 1.12, 0.00 ), 2) AS montosiniva, ";
+    $query.= "ROUND(IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, ";
+    $query.= "(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) * b.preciomcubsug) / 1.12 - (IF(a.descuento > 0, a.descuento / 1.12, 0.00))";
+    $query.= ", 0.00 ), 2) AS montosiniva, ";
     $query.= "ROUND(IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, (((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) * b.preciomcubsug), 0.00 ), 2) AS montoconiva, ";
     $query.= "0.00 as retisr, c.retiva, c.idtipocliente, d.nombre, d.nombrecorto, FacturarA(d.id, b.idtiposervicio) AS facturara, f.desctiposervventa AS tipo, 0.00 AS totapagar, 0 AS numfact, '' AS seriefact, ";
     $query.= "IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, 0, 1) AS facturar, c.id AS idcontrato, ";
@@ -153,6 +159,7 @@ $app->post('/genfact', function(){
             }
 
             $descripcion = $p->tipo.' DE '.$p->proyecto.' '.$p->unidad.', Contador: '.$p->numidentificacion.', Consumo(m3): '.$p->consumoafacturar.' Mes de '.$p->nommes.' '.$p->anio;
+            $qiva = ((float)$p->montoconiva - (float)$p->descuento) - (((float)$p->montoconiva - (float)$p->descuento) / 1.12);
             $query = "INSERT INTO factura(";
             $query.= "idempresa, idtipofactura, idcontrato, idcliente, serie, numero, ";
             $query.= "fechaingreso, mesiva, fecha, idtipoventa, conceptomayor, iva, ";
@@ -161,7 +168,7 @@ $app->post('/genfact', function(){
             $query.= ") VALUES (";
             $query.= "$params->idempresa, $p->tipofact, $p->idcontrato, $p->idcliente, $p->seriefact, $p->numfact, ";
             $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '$descripcion', $p->iva, ";
-            $query.= "$p->totapagar, 0.00, $p->montoconiva, '".$n2l->to_word($p->totapagar, 'GTQ')."', 1, $params->tc, ";
+            $query.= "$p->totapagar, 0.00, ".((float)$p->montoconiva - (float)$p->descuento).", '".$n2l->to_word($p->totapagar, 'GTQ')."', 1, $params->tc, ";
             $query.= "$p->retisr, $p->retiva, $p->descuento, '$p->nit', '$p->facturara', '$p->direccion', $p->montoconiva, $p->montoconiva";
             $query.= ")";
             //echo $query.'<br/>';
@@ -180,7 +187,9 @@ $app->post('/genfact', function(){
                 $query = "INSERT INTO detfact(";
                 $query.= "idfactura, cantidad, descripcion, preciounitario, preciotot, idtiposervicio, mes, anio, descuento, montoconiva, montoflatconiva, conceptoadicional";
                 $query.= ") VALUES(";
-                $query.= "$lastid, 1, '$descripcion', $p->montoconiva, $p->montoconiva, $p->idtiposervicio, $p->mes, $p->anio, $p->descuento, $p->montoconiva, $p->montoconiva, $conceptoAdicional";
+                //$query.= "$lastid, 1, '$descripcion', $p->montoconiva, $p->montoconiva, $p->idtiposervicio, $p->mes, $p->anio, $p->descuento, $p->montoconiva, $p->montoconiva, $conceptoAdicional";
+                $query.= "$lastid, 1, '$descripcion', ".((float)$p->montoconiva - (float)$p->descuento).", ".((float)$p->montoconiva - (float)$p->descuento).", $p->idtiposervicio, $p->mes, $p->anio, $p->descuento, ";
+                $query.= ((float)$p->montoconiva - (float)$p->descuento).", $p->montoconiva, $conceptoAdicional";
                 $query.= ")";
                 $db->doQuery($query);
                 $query = "UPDATE lecturaservicio SET estatus = 3, facturado = 1, idfactura = $lastid WHERE id = $p->id";
