@@ -458,7 +458,7 @@ function getCompraDetalle($compra)
     $query.= "WHERE a.origen = 2 AND a.idorigen = {$compra} ";
     $query.= "ORDER BY a.debe DESC, a.haber, b.codigo";
     $infocompra->detalle = $db->getQuery($query);
-    
+
     return ["compra" => $infocompra];
 }
 
