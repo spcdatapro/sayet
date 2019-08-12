@@ -341,9 +341,8 @@ $app->post('/antiguedad', function(){
         WHERE a.fecha <= '$d->falstr' AND (a.anulada = 0 OR (a.anulada = 1 AND a.fechaanula > '$d->falstr')) AND ROUND(a.total, 2) - IFNULL(g.montopagado, 0.00) <> 0 AND IF(ISNULL(g.idfactura) AND a.pagada = 1, 1 = 0, 1 = 1) ";
     $qFacts.= (int)$d->idempresa > 0 ? "AND a.idempresa = $d->idempresa " : '';
     $qFacts.= (int)$d->idproyecto > 0 ? "AND a.idproyecto = $d->idproyecto " : '';
-    //$qFacts.= "ORDER BY b.ordensumario, 5, 7, a.fecha, a.serie, a.numero";
 
-    $query = "SELECT DISTINCT j.idempresa, j.empresa, j.abreviaempresa FROM ($qFacts) j ORDER BY j.ordensumario";
+    $query = "SELECT DISTINCT j.idempresa, j.empresa, j.abreviaempresa, 0.00 AS r030, 0.00 AS r3160, 0.00 AS r6190, 0.00 AS r90 FROM ($qFacts) j ORDER BY j.ordensumario";
     $antiguedades = $db->getQuery($query);
     $cntAntiguedades = count($antiguedades);
     for($i = 0; $i < $cntAntiguedades; $i++){
@@ -354,28 +353,60 @@ $app->post('/antiguedad', function(){
         for($j = 0; $j < $cntProyectos; $j++){
             $proyecto = $antiguedad->proyectos[$j];
             $andProyecto = "AND j.proyecto = ".(!is_null($proyecto->proyecto) ? "'".$proyecto->proyecto."'" : 'NULL');
-            $query = "SELECT DISTINCT j.cliente FROM ($qFacts) j WHERE j.idempresa = $antiguedad->idempresa $andProyecto ORDER BY j.cliente";
+            $query = "SELECT DISTINCT j.cliente, 0.00 AS r030, 0.00 AS r3160, 0.00 AS r6190, 0.00 AS r90 FROM ($qFacts) j WHERE j.idempresa = $antiguedad->idempresa $andProyecto ORDER BY j.cliente";
             $proyecto->clientes = $db->getQuery($query);
             $cntClientes = count($proyecto->clientes);
             for($k = 0; $k < $cntClientes; $k++){
                 $cliente = $proyecto->clientes[$k];
+                $andCliente = "AND j.cliente = ".(!is_null($cliente) ? "'".$cliente->cliente."'" : 'NULL');
                 //Comprobar si el saldo del cliente es diferente de cero
-                $query = "SELECT SUM(j.saldo) FROM ($qFacts) j WHERE j.idempresa = $antiguedad->idempresa $andProyecto AND j.cliente = '$cliente->cliente'";
+                $query = "SELECT SUM(j.saldo) FROM ($qFacts) j WHERE j.idempresa = $antiguedad->idempresa $andProyecto $andCliente";
                 $cliente->saldo = (float)$db->getOneField($query);
                 $tieneSaldo = $cliente->saldo != 0;
                 if($tieneSaldo){
-                    //b.dias between 31 and 60
+                    $cliente->saldo = number_format($cliente->saldo, 2);
                     $query = "SELECT j.serie, j.numero, DATE_FORMAT(j.fecha, '%d/%m/%Y') AS fecha, ";
-                    $query.= "IF(j.dias < 31, j.saldo, 0.00) AS r030, ";
-                    $query.= "IF(j.dias BETWEEN 31 AND 60, j.saldo, 0.00) AS r3160, ";
-                    $query.= "IF(j.dias BETWEEN 61 AND 90, j.saldo, 0.00) AS r6190, ";
-                    $query.= "IF(j.dias > 90, j.saldo, 0.00) AS r90 ";
+                    $query.= "IF(j.dias < 31, FORMAT(j.saldo, 2), 0.00) AS r030, ";
+                    $query.= "IF(j.dias BETWEEN 31 AND 60, FORMAT(j.saldo, 2), 0.00) AS r3160, ";
+                    $query.= "IF(j.dias BETWEEN 61 AND 90, FORMAT(j.saldo, 2), 0.00) AS r6190, ";
+                    $query.= "IF(j.dias > 90, FORMAT(j.saldo, 2), 0.00) AS r90 ";
                     $query.= "FROM ($qFacts) j ";
-                    $query.= "WHERE j.idempresa = $antiguedad->idempresa $andProyecto AND j.cliente = '$cliente->cliente' ";
+                    $query.= "WHERE j.idempresa = $antiguedad->idempresa $andProyecto $andCliente ";
                     $query.= "ORDER BY j.fecha, j.numero";
                     $cliente->facturas = $db->getQuery($query);
+
+                    $query = "SELECT '' AS serie, '' AS numero, 'Totales:' AS fecha, ";
+                    $query.= "FORMAT(SUM(IF(j.dias < 31, j.saldo, 0.00)), 2) AS r030, ";
+                    $query.= "FORMAT(SUM(IF(j.dias BETWEEN 31 AND 60, j.saldo, 0.00)), 2) AS r3160, ";
+                    $query.= "FORMAT(SUM(IF(j.dias BETWEEN 61 AND 90, j.saldo, 0.00)), 2) AS r6190, ";
+                    $query.= "FORMAT(SUM(IF(j.dias > 90, j.saldo, 0.00)), 2) AS r90 ";
+                    $query.= "FROM ($qFacts) j ";
+                    $query.= "WHERE j.idempresa = $antiguedad->idempresa $andProyecto $andCliente ";
+                    $sumasCliente = $db->getQuery($query)[0];
+
+                    $cliente->r030 = $sumasCliente->r030;
+                    $cliente->r3160 = $sumasCliente->r3160;
+                    $cliente->r6190 = $sumasCliente->r6190;
+                    $cliente->r90 = $sumasCliente->r90;
+                } else {
+                    $cliente->saldo = null;
                 }
             }
+        }
+
+        if($cntAntiguedades > 0){
+            $query = "SELECT FORMAT(SUM(IF(j.dias < 31, j.saldo, 0.00)), 2) AS r030, ";
+            $query.= "FORMAT(SUM(IF(j.dias BETWEEN 31 AND 60, j.saldo, 0.00)), 2) AS r3160, ";
+            $query.= "FORMAT(SUM(IF(j.dias BETWEEN 61 AND 90, j.saldo, 0.00)), 2) AS r6190, ";
+            $query.= "FORMAT(SUM(IF(j.dias > 90, j.saldo, 0.00)), 2) AS r90 ";
+            $query.= "FROM ($qFacts) j ";
+            $query.= "WHERE j.idempresa = $antiguedad->idempresa ";
+            $sumas = $db->getQuery($query)[0];
+
+            $antiguedad->r030 = $sumas->r030;
+            $antiguedad->r3160 = $sumas->r3160;
+            $antiguedad->r6190 = $sumas->r6190;
+            $antiguedad->r90 = $sumas->r90;
         }
     }
 
