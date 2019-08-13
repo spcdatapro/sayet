@@ -1,53 +1,59 @@
 (function(){
 
-    var rptanticlictrl = angular.module('cpm.rptanticlictrl', []);
+    const rptanticlictrl = angular.module('cpm.rptanticlictrl', []);
 
-    rptanticlictrl.controller('rptAntiClientesCtrl', ['$scope', 'rptAntiClientesSrvc', 'authSrvc', 'jsReportSrvc', '$sce','clienteSrvc','empresaSrvc', function($scope, rptAntiClientesSrvc, authSrvc, jsReportSrvc, $sce, clienteSrvc, empresaSrvc){
+    rptanticlictrl.controller('rptAntiClientesCtrl', ['$scope',  'authSrvc', 'jsReportSrvc', '$sce','clienteSrvc','empresaSrvc', 'proyectoSrvc', ($scope, authSrvc, jsReportSrvc, $sce, clienteSrvc, empresaSrvc, proyectoSrvc) => {
 
-        $scope.params = {del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), idempresa: 0,detalle: 0, cliente: {id: 0}};
-        $scope.anticliente = [];
+        $scope.params = {
+            al: moment().toDate(), idempresa: undefined, idproyecto: undefined, detallada: 1, orderalfa: 1, cliente: undefined
+        };
         $scope.content = undefined;
-        $scope.clientes = [];
+        //$scope.clientes = [];
         $scope.empresas = [];
-        $scope.objEmpresa = [];
+        $scope.proyectos = [];
 
         empresaSrvc.lstEmpresas().then(function(d){ $scope.empresas = d; });
 
-        clienteSrvc.lstCliente().then(function(d){
-            $scope.clientes = d;
-        });
+        //clienteSrvc.lstCliente().then((d) => $scope.clientes = d);
 
-        authSrvc.getSession().then(function(usrLogged){
-            if(parseInt(usrLogged.workingon) > 0){
-                //authSrvc.gpr({idusuario: parseInt(usrLogged.uid), ruta:$route.current.params.name}).then(function(d){ $scope.permiso = d; });
-                $scope.params.idempresa = parseInt(usrLogged.workingon);
-            }
-        });
+        $scope.loadProyectos = (idempresa) => proyectoSrvc.lstProyectosPorEmpresa(+idempresa).then((d) => $scope.proyectos = d);
 
-        $scope.resetData = function(){
-            $scope.anticliente = [];
+        $scope.resetParams = () => {
+            $scope.params = {
+                al: moment().toDate(), idempresa: undefined, idproyecto: undefined, detallada: 1, orderalfa: 1, cliente: undefined
+            };
+            $scope.$broadcast('angucomplete-alt:clearInput', 'txtCliente');
         };
 
-        $scope.getAntiCli = function(){
+        $scope.clienteSelected = (item) => {
+            if(item != null && item != undefined){
+                switch(typeof item.originalObject){
+                    case 'string':
+                        $scope.params.cliente = item.originalObject;
+                        break;
+                    case 'object':
+                        $scope.params.cliente = item.originalObject.nombre;
+                        break;
+                }
+            }
+        };
+
+        setParams = () => {
             $scope.params.falstr = moment($scope.params.al).format('YYYY-MM-DD');
-            $scope.params.clistr = $scope.params.cliente.id;
-            $scope.params.idempresa = $scope.objEmpresa[0] != null && $scope.objEmpresa[0] != undefined ? $scope.objEmpresa[0].id : 0;
-
-            if($scope.params.detalle == 1){
-                jsReportSrvc.antiClientesDet($scope.params).then(function (result) {
-                    var file = new Blob([result.data], {type: 'application/pdf'});
-                    var fileURL = URL.createObjectURL(file);
-                    $scope.content = $sce.trustAsResourceUrl(fileURL);
-                });
-            }else {
-                jsReportSrvc.antiClientes($scope.params).then(function (result) {
-                    var file = new Blob([result.data], {type: 'application/pdf'});
-                    var fileURL = URL.createObjectURL(file);
-                    $scope.content = $sce.trustAsResourceUrl(fileURL);
-                });
-            }
+            $scope.params.idempresa = $scope.params.idempresa != null && $scope.params.idempresa !== undefined ? $scope.params.idempresa : 0;
+            $scope.params.idproyecto = $scope.params.idproyecto != null && $scope.params.idproyecto !== undefined ? $scope.params.idproyecto : 0;
+            $scope.params.detallada = $scope.params.detallada != null && $scope.params.detallada !== undefined ? +$scope.params.detallada : 0;
+            $scope.params.orderalfa = $scope.params.orderalfa != null && $scope.params.orderalfa !== undefined ? +$scope.params.orderalfa : 0;
+            $scope.params.cliente = $scope.params.cliente != null && $scope.params.cliente !== undefined ? $scope.params.cliente : '';
         };
 
+        const test = false;
+        $scope.getAntiCli = () => {
+            setParams();
+            jsReportSrvc.getPDFReport(test ? 'rJfbwLe4B' : 'rJfbwLe4B', $scope.params).then((pdf) => $scope.content = pdf);
+        };
+
+        /*
         $scope.getAntiCliXLSX = function(){
             $scope.params.falstr = moment($scope.params.al).format('YYYY-MM-DD');
             $scope.params.clistr = $scope.params.cliente.id;
@@ -64,11 +70,7 @@
                 });
             }
         };
-
-        $scope.printVersion = function(){
-            PrintElem('#toPrint', 'Antiguedad de CLientes');
-        };
-
+        */
     }]);
 
 }());
