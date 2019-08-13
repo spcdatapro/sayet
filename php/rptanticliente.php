@@ -5,6 +5,10 @@ require_once 'db.php';
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
 
+$app->notFound(function () use ($app) {
+    print json_encode([]);
+});
+
 $app->post('/rptanticli', function(){
     //echo file_get_contents('php://input');
 
@@ -313,13 +317,43 @@ $app->post('/rptanticli', function(){
     }
 });
 
+$app->get('/listaclientes/:qstra+', function($qstra){
+    $db = new dbcpm();
+    $qstr = $qstra[0];
+
+    $query = "
+        SELECT nombre FROM (
+            SELECT TRIM(nombre) AS nombre FROM cliente            
+            UNION
+            SELECT TRIM(nombre) AS nombre FROM factura
+        ) a
+        WHERE a.nombre IS NOT NULL AND a.nombre LIKE '%$qstr%'
+        ORDER BY a.nombre";
+
+    print json_encode(['results' => $db->getQuery($query)]);
+});
+
 $app->post('/antiguedad', function(){
     $d = json_decode(file_get_contents('php://input'));
     if(!isset($d->falstr)) { $d->falstr = date('Y-m-d'); }
     if(!isset($d->idempresa)) { $d->idempresa = 0; }
     if(!isset($d->idproyecto)) { $d->idproyecto = 0; }
+    if(!isset($d->detallada)){ $d->detallada = 0; }
+    if(!isset($d->orderalfa)){ $d->orderalfa = 1; }
+    if(!isset($d->cliente)){ $d->cliente = ''; }
 
     $db = new dbcpm();
+
+    $query = "SELECT DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS al, DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy, 'Antigüedad de Saldos de Cliente' AS titulo, NULL AS esdetallado";
+    $generales = $db->getQuery($query)[0];
+
+    if((int)$d->detallada == 1){
+        $generales->titulo.= " Detallada";
+        $generales->esdetallado = 1;
+    }
+
+    $cliente = '';
+    if(trim($d->cliente) != ''){ $cliente = str_replace(' ', '%', trim($d->cliente)); }
 
     $qFacts = "
         SELECT a.idempresa, b.nomempresa AS empresa, b.abreviatura AS abreviaempresa, a.idproyecto, IF(a.idproyecto = 0, TRIM(d.nomproyecto), TRIM(e.nomproyecto)) AS proyecto, a.idcliente, IF(a.idcliente = 0, TRIM(a.nombre), TRIM(f.nombre)) AS cliente,
@@ -340,9 +374,12 @@ $app->post('/antiguedad', function(){
         ) g ON a.id = g.idfactura
         WHERE a.fecha <= '$d->falstr' AND (a.anulada = 0 OR (a.anulada = 1 AND a.fechaanula > '$d->falstr')) AND ROUND(a.total, 2) - IFNULL(g.montopagado, 0.00) <> 0 AND IF(ISNULL(g.idfactura) AND a.pagada = 1, 1 = 0, 1 = 1) ";
     $qFacts.= (int)$d->idempresa > 0 ? "AND a.idempresa = $d->idempresa " : '';
-    $qFacts.= (int)$d->idproyecto > 0 ? "AND a.idproyecto = $d->idproyecto " : '';
+    $qFacts.= (int)$d->idproyecto > 0 ? "AND IF(a.idproyecto = 0, d.id = $d->idproyecto, a.idproyecto = $d->idproyecto) " : '';
+    $qFacts.= $cliente != '' ? "AND IF(a.idcliente = 0, a.nombre LIKE '%$cliente%', f.nombre LIKE '%$cliente%') " : '';
+    //print $qFacts;
 
-    $query = "SELECT DISTINCT j.idempresa, j.empresa, j.abreviaempresa, 0.00 AS r030, 0.00 AS r3160, 0.00 AS r6190, 0.00 AS r90 FROM ($qFacts) j ORDER BY j.ordensumario";
+    $query = "SELECT DISTINCT j.idempresa, j.empresa, j.abreviaempresa, 0.00 AS r030, 0.00 AS r3160, 0.00 AS r6190, 0.00 AS r90, 0.00 AS saldo FROM ($qFacts) j ";
+    $query.= "ORDER BY IF( $d->orderalfa = 1, j.empresa, j.ordensumario)";
     $antiguedades = $db->getQuery($query);
     $cntAntiguedades = count($antiguedades);
     for($i = 0; $i < $cntAntiguedades; $i++){
@@ -365,15 +402,19 @@ $app->post('/antiguedad', function(){
                 $tieneSaldo = $cliente->saldo != 0;
                 if($tieneSaldo){
                     $cliente->saldo = number_format($cliente->saldo, 2);
-                    $query = "SELECT j.serie, j.numero, DATE_FORMAT(j.fecha, '%d/%m/%Y') AS fecha, ";
-                    $query.= "IF(j.dias < 31, FORMAT(j.saldo, 2), 0.00) AS r030, ";
-                    $query.= "IF(j.dias BETWEEN 31 AND 60, FORMAT(j.saldo, 2), 0.00) AS r3160, ";
-                    $query.= "IF(j.dias BETWEEN 61 AND 90, FORMAT(j.saldo, 2), 0.00) AS r6190, ";
-                    $query.= "IF(j.dias > 90, FORMAT(j.saldo, 2), 0.00) AS r90 ";
-                    $query.= "FROM ($qFacts) j ";
-                    $query.= "WHERE j.idempresa = $antiguedad->idempresa $andProyecto $andCliente ";
-                    $query.= "ORDER BY j.fecha, j.numero";
-                    $cliente->facturas = $db->getQuery($query);
+                    if((int)$d->detallada == 1){
+                        $query = "SELECT j.serie, j.numero, DATE_FORMAT(j.fecha, '%d/%m/%Y') AS fecha, ";
+                        $query.= "IF(j.dias < 31, FORMAT(j.saldo, 2), 0.00) AS r030, ";
+                        $query.= "IF(j.dias BETWEEN 31 AND 60, FORMAT(j.saldo, 2), 0.00) AS r3160, ";
+                        $query.= "IF(j.dias BETWEEN 61 AND 90, FORMAT(j.saldo, 2), 0.00) AS r6190, ";
+                        $query.= "IF(j.dias > 90, FORMAT(j.saldo, 2), 0.00) AS r90 ";
+                        $query.= "FROM ($qFacts) j ";
+                        $query.= "WHERE j.idempresa = $antiguedad->idempresa $andProyecto $andCliente ";
+                        $query.= "ORDER BY j.fecha, j.numero";
+                        $cliente->facturas = $db->getQuery($query);
+                    } else {
+                        $cliente->facturas = [];
+                    }
 
                     $query = "SELECT '' AS serie, '' AS numero, 'Totales:' AS fecha, ";
                     $query.= "FORMAT(SUM(IF(j.dias < 31, j.saldo, 0.00)), 2) AS r030, ";
@@ -398,7 +439,8 @@ $app->post('/antiguedad', function(){
             $query = "SELECT FORMAT(SUM(IF(j.dias < 31, j.saldo, 0.00)), 2) AS r030, ";
             $query.= "FORMAT(SUM(IF(j.dias BETWEEN 31 AND 60, j.saldo, 0.00)), 2) AS r3160, ";
             $query.= "FORMAT(SUM(IF(j.dias BETWEEN 61 AND 90, j.saldo, 0.00)), 2) AS r6190, ";
-            $query.= "FORMAT(SUM(IF(j.dias > 90, j.saldo, 0.00)), 2) AS r90 ";
+            $query.= "FORMAT(SUM(IF(j.dias > 90, j.saldo, 0.00)), 2) AS r90, ";
+            $query.= "FORMAT(SUM(j.saldo), 2) AS saldo ";
             $query.= "FROM ($qFacts) j ";
             $query.= "WHERE j.idempresa = $antiguedad->idempresa ";
             $sumas = $db->getQuery($query)[0];
@@ -407,10 +449,11 @@ $app->post('/antiguedad', function(){
             $antiguedad->r3160 = $sumas->r3160;
             $antiguedad->r6190 = $sumas->r6190;
             $antiguedad->r90 = $sumas->r90;
+            $antiguedad->saldo = $sumas->saldo;
         }
     }
 
-    print json_encode($antiguedades);
+    print json_encode(['generales' => $generales, 'antiguedad' => $antiguedades]);
 });
 
 $app->run();
