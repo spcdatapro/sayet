@@ -53,24 +53,15 @@
             jsReportSrvc.getPDFReport(test ? 'rJfbwLe4B' : 'rJfbwLe4B', $scope.params).then((pdf) => $scope.content = pdf);
         };
 
-        /*
-        $scope.getAntiCliXLSX = function(){
-            $scope.params.falstr = moment($scope.params.al).format('YYYY-MM-DD');
-            $scope.params.clistr = $scope.params.cliente.id;
-
-            if($scope.params.detalle == 1){
-                jsReportSrvc.antiClientesDetXlsx($scope.params).then(function (result) {
-                    var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-                    saveAs(file, 'AntiClientes.xlsx');
-                });
-            }else {
-                jsReportSrvc.antiClientesXlsx($scope.params).then(function (result) {
-                    var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-                    saveAs(file, 'AntiClientes.xlsx');
-                });
-            }
+        $scope.getAntiCliXLSX = () => {
+            setParams();
+            jsReportSrvc.getReport(test ? 'ryQhx5gNr': 'ryQhx5gNr', $scope.params).then((result) => {
+                const file = new Blob([result.data], {type: 'application/vnd.ms-excel'});
+                const nombre = `ASC_${moment($scope.params.al).format('DDMMYYYY')}_${moment().format('DDMMYYYYHHmmss')}`;
+                saveAs(file, `${nombre}.xlsx`);
+            });
         };
-        */
+
     }]);
 
 }());
