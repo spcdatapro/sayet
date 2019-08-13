@@ -456,6 +456,9 @@
                     </form>
                     <hr/>
                     <table class="table table-hover table-condensed">
+                        <caption>
+                            <input name="srchTxt" id="srchTxt" type="text" class="form-control input-sm" style="width: 100%" ng-model="lookFor.$" placeholder="Buscar..."/>
+                        </caption>
                         <thead>
                         <tr>
                             <th style="text-align: right">No.</th>
@@ -468,7 +471,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="o in lstot" ng-click="getOt(o.id)" ng-class="{'presPendiente': +o.idestatuspresupuesto == 2, 'presAprobado': +o.idestatuspresupuesto == 3}">
+                        <tr ng-repeat="o in lstot | filter:lookFor" ng-click="getOt(o.id)" ng-class="{'presPendiente': +o.idestatuspresupuesto == 2, 'presAprobado': +o.idestatuspresupuesto == 3}">
                             <td style="text-align: right">{{o.idpresupuesto}}-{{o.correlativo}}</td>
                             <td>{{o.proveedor}}</td>
                             <td>{{o.subtipogasto}}</td>
