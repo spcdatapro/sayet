@@ -100,7 +100,8 @@ function queryDocsOt($filtro, $todos = true, $esIdTranBan = true){
 
 function getDocumentosOT($db, $idot){
     $query = "SELECT a.fecha AS fechaOrd, a.id, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, b.siglas, a.tipotrans, a.numero, a.beneficiario, IF(a.tipocambio = 1, '', FORMAT(a.tipocambio, 4)) AS tipocambio, ";
-    $query.= "'Q' AS moneda, IF(c.eslocal = 1, a.monto, a.monto * a.tipocambio) * IF(a.tipotrans = 'C', 1, -1) AS monto, NULL AS documento, NULL AS totfact, NULL AS isr, a.concepto ";
+    $query.= "'Q' AS moneda, IF(c.eslocal = 1, a.monto, a.monto * a.tipocambio) * IF(a.tipotrans = 'C', 1, -1) AS monto, NULL AS documento, NULL AS totfact, NULL AS isr, a.concepto, ";
+    $query.= "IF(a.concepto LIKE '%anulad%' OR a.beneficiario LIKE '%anulad%', 1, NULL) AS anulado ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN moneda c ON c.id = b.idmoneda ";
     $query.= "WHERE a.tipotrans IN('C', 'R') AND a.iddetpresup = $idot ";
     $query.= "ORDER BY 1";
@@ -159,7 +160,7 @@ $app->post('/rptpresupuesto', function(){
                 $suma->isr = 0.00;
                 for($j = 0; $j < $cntDocs; $j++){
                     $doc = $ot->documentos[$j];
-                    $suma->monto += $doc->monto;
+                    $suma->monto += ((int)$doc->anulado == 0 ? $doc->monto : 0);
                     $suma->totfact += $doc->totfact;
                     $suma->isr += $doc->isr;
                     $doc->monto = number_format($doc->monto, 2);
@@ -191,7 +192,7 @@ $app->post('/rptot', function(){
     $query.= "FORMAT(pagosprogramados, 2) AS pagosprogramados, FORMAT((IFNULL(montoavance, 0.00) + isr), 2) AS montoavance, notas, ";
     $query.= "IF(monto > pagosprogramados, monto, pagosprogramados) AS montoreal, ";
     $query.= "IF(monto > pagosprogramados, (IFNULL(montoavance, 0.00) + isr) * 100 / monto, (IFNULL(montoavance, 0.00) + isr) * 100 / pagosprogramados) AS poravance, ";
-    $query.= "tipogasto, empresa, fechasolicitud, proyecto, idpresupuesto ";
+    $query.= "tipogasto, empresa, fechasolicitud, proyecto, idpresupuesto, FORMAT(monto, 2) AS montooriginal ";
     $query.= "FROM($qGenOTs) l ORDER BY correlativo";
     //print $query;
     $ot = $db->getQuery($query)[0];
@@ -236,7 +237,7 @@ $app->post('/rptot', function(){
     if($cntDocs > 0){
         for($j = 0; $j < $cntDocs; $j++){
             $doc = $ot->avance[$j];
-            $suma->monto += $doc->monto;
+            $suma->monto += ((int)$doc->anulado == 0 ? $doc->monto : 0);
             $suma->totfact += $doc->totfact;
             $suma->isr += $doc->isr;
             $doc->monto = number_format($doc->monto, 2);
