@@ -103,8 +103,9 @@ function queryDocsOt($filtro, $todos = true, $esIdTranBan = true){
 function getDocumentosOT($db, $idot){
     $query = "SELECT a.fecha AS fechaOrd, a.id, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, b.siglas, a.tipotrans, a.numero, a.beneficiario, IF(a.tipocambio = 1, '', FORMAT(a.tipocambio, 4)) AS tipocambio, ";
     $query.= "'Q' AS moneda, IF(c.eslocal = 1, a.monto, a.monto * a.tipocambio) * IF(a.tipotrans = 'C', 1, -1) AS monto, NULL AS documento, NULL AS totfact, NULL AS isr, a.concepto, ";
-    $query.= "IF(a.concepto LIKE '%anulad%' OR a.beneficiario LIKE '%anulad%', 1, NULL) AS anulado ";
-    $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN moneda c ON c.id = b.idmoneda ";
+    $query.= "IF(a.concepto LIKE '%anulad%' OR a.beneficiario LIKE '%anulad%', 1, NULL) AS anulado, a.iddetpagopresup, d.nopago, f.simbolo AS monedapago, d.monto AS montopago ";
+    $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN moneda c ON c.id = b.idmoneda INNER JOIN detpagopresup d ON d.id = a.iddetpagopresup INNER JOIN detpresupuesto e ON e.id = d.iddetpresup ";
+    $query.= "INNER JOIN moneda f ON f.id = e.idmoneda ";
     $query.= "WHERE a.tipotrans IN('C', 'R') AND a.iddetpresup = $idot ";
     $query.= "ORDER BY 1";
     $documentos = $db->getQuery($query);
@@ -200,12 +201,16 @@ $app->post('/rptot', function(){
     $ot = $db->getQuery($query)[0];
 
     //Formas de pago
+    /*
     $sumafp = new stdClass();
     $query = "SELECT a.id, a.iddetpresup, a.nopago, a.porcentaje, a.monto, a.notas, IF(a.pagado = 1, 'PAGADO', '') AS pagado ";
     $query.= "FROM detpagopresup a ";
     $query.= "WHERE a.iddetpresup = $d->idot ";
     $query.= "ORDER BY a.nopago";
-    $ot->formaspago = $db->getQuery($query);
+    */
+    //$ot->formaspago = $db->getQuery($query);
+    $ot->formaspago = []; //Esto lo hago para que ya no hale las formas de pago en el reporte. Dejo el resto por si cambian de opinion y lo agregamos de nuevo.
+    /*
     $cntfp = count($ot->formaspago);
     if($cntfp > 0){
         $sumafp->porcentaje = 0.0000;
@@ -221,13 +226,17 @@ $app->post('/rptot', function(){
             'id' => '', 'iddetpresup' => '', 'nopago' => '', 'porcentaje' => number_format($sumafp->porcentaje, 4).'%', 'monto' => number_format($sumafp->monto, 2), 'notas' => '', 'pagado' => ''
         ];
     }
+    */
 
     //Notas de la OT
+    /*
     $query = "SELECT a.id, a.iddetpresupuesto, DATE_FORMAT(a.fechahora, '%d/%m/%Y %H:%m:%s') AS fechahora, a.nota, a.usuario, b.iniciales, DATE_FORMAT(a.fhcreacion, '%d/%m/%Y %H:%m:%s') AS creadael ";
     $query.= "FROM notapresupuesto a LEFT JOIN usuario b ON b.id = a.usuario ";
     $query.= "WHERE a.iddetpresupuesto = $d->idot ";
     $query.= "ORDER BY a.fechahora DESC";
     $ot->notas = $db->getQuery($query);
+    */
+    $ot->notas = [];
 
     //Avance de la OT
     $suma = new stdClass();
@@ -249,7 +258,7 @@ $app->post('/rptot', function(){
         $ot->avance[] = [
             'id' => '', 'fecha' => '', 'siglas' => '', 'tipotrans' => '', 'numero' => '', 'beneficiario' => 'Totales:', 'tipocambio' => '',
             'moneda' => 'Q', 'monto' => number_format($suma->monto, 2), 'documento' => '', 'totfact' => number_format($suma->totfact, 2),
-            'isr' => $suma->isr != 0 ? number_format($suma->isr, 2) : ''
+            'isr' => $suma->isr != 0 ? number_format($suma->isr, 2) : '', 'anulado' => '', 'iddetpagopresup' => '', 'nopago' => '', 'monedapago' => '', 'montopago' => ''
         ];
     }
 
