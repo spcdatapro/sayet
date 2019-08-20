@@ -18,9 +18,7 @@
             getOt: function(idot){
                 return comunFact.doGET(urlBase + '/getot/' + idot);
             },
-            presupuestosPendientes: function(){
-                return comunFact.doGET(urlBase + '/lstpresupuestospend');
-            },
+            presupuestosPendientes: (idusr) => comunFact.doGET(`${urlBase}/lstpresupuestospend` + (!idusr ? '' : `/${idusr}`)),
             presupuestosAprobados: function(obj){
                 return comunFact.doPOST(urlBase + '/lstpresaprob', obj);
             },
@@ -54,9 +52,8 @@
             getAmpliacion: function(idamplia){
                 return comunFact.doGET(urlBase + '/getampliapresup/' + idamplia);
             },
-            editRow: function(obj, op){
-                return comunFact.doPOST(urlBase + '/' + op, obj);
-            }
+            editRow: (obj, op) => comunFact.doPOST(urlBase + '/' + op, obj),
+            usrApruebanOts: (id) => comunFact.doGET(`${urlBase}/usraprob` + (!id ? '' : `/${id}`))
         };
     }]);
 
