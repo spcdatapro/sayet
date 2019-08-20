@@ -144,7 +144,7 @@ $app->get('/lstdetreccli/:idrecibo', function($idrecibo){
     $query.= "UNION ";
     $query.= "SELECT 1 AS oby, '' AS id, '' AS idfactura, '' AS idrecibocli, '' AS siglas, '' AS serie, 'Total' AS numero, '' AS fecha, '' AS simbolo, '' AS total, SUM(a.monto), '' AS interes ";
     $query.= "FROM detcobroventa a INNER JOIN factura b ON b.id = a.idfactura INNER JOIN moneda c ON c.id = b.idmoneda INNER JOIN tipofactura d ON d.id = b.idtipofactura ";
-    $query.= "WHERE a.idrecibocli = 6313 ";
+    $query.= "WHERE a.idrecibocli = $idrecibo ";
     $query.= "ORDER BY 1, fecha";
     print $db->doSelectASJson($query);
 });
