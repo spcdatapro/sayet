@@ -9,7 +9,10 @@
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withBootstrap().withOption('paging', false).withOption('order', false);
 
-        authSrvc.getSession().then((usrLogged) => $scope.usrdata = usrLogged);
+        authSrvc.getSession().then((usrLogged) => {
+            $scope.usrdata = usrLogged;
+            $scope.getPendientes();
+        });
 
         procData = (data) => {
             data.map((d) => {
@@ -19,7 +22,7 @@
             return data;
         };
 
-        $scope.getPendientes = () => presupuestoSrvc.presupuestosPendientes().then((d) => { $scope.presupuestos = procData(d); });
+        $scope.getPendientes = () => presupuestoSrvc.presupuestosPendientes($scope.usrdata.uid).then((d) => { $scope.presupuestos = procData(d); });
 
         $scope.verDetPresup = function(obj){
             const modalInstance = $uibModal.open({
@@ -64,9 +67,6 @@
                 });
             }
         };
-
-        $scope.getPendientes();
-
     }]);
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     tranaprobpresupctrl.controller('ModalDetPresupCtrl', ['$scope', '$uibModalInstance', 'toaster', 'presupuesto', 'presupuestoSrvc', '$uibModal', function($scope, $uibModalInstance, toaster, presupuesto, presupuestoSrvc, $uibModal){

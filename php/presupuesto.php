@@ -43,33 +43,13 @@ $app->post('/lstpresupuestos', function(){
     print $db->doSelectASJson($query);
 });
 
-$app->get('/lstpresupuestospend', function(){
+$app->get('/lstpresupuestospend(/:idusr)', function($idusr = 0){
     $db = new dbcpm();
-    /*
-    $query = "SELECT a.id, f.nombre AS usuario, a.fechasolicitud, b.nomproyecto AS proyecto, c.nomempresa AS empresa, g.proveedor, ";
-    $query.= "CONCAT(e.simbolo, ' ', a.total) AS monto, 0 AS aprobada, h.desctipogast AS tipogasto, CONCAT(e.nommoneda, ' (', e.simbolo, ')') AS moneda, e.simbolo, a.total, 0 as denegada, TRIM(c.abreviatura) AS abreviaempre, ";
-    $query.= "TRIM(a.notas) AS notas, a.origenprov ";
-    $query.= "FROM presupuesto a INNER JOIN proyecto b ON b.id = a.idproyecto INNER JOIN empresa c ON c.id = a.idempresa INNER JOIN moneda e ON e.id = a.idmoneda ";
-    $query.= "INNER JOIN usuario f ON f.id = a.idusuario INNER JOIN (";
+    $limiteot = 0.00;
 
-    $query.= "SELECT z.idpresupuesto, GROUP_CONCAT(DISTINCT z.proveedor ORDER BY z.proveedor SEPARATOR ', ') AS proveedor FROM (";
-    $query.= "SELECT a.idpresupuesto, GROUP_CONCAT(DISTINCT b.nombre ORDER BY b.nombre SEPARATOR ', ') AS proveedor ";
-    $query.= "FROM detpresupuesto a INNER JOIN proveedor b ON b.id = a.idproveedor ";
-    $query.= "WHERE a.origenprov = 1 ";
-    $query.= "GROUP BY a.idpresupuesto ";
-    $query.= "UNION ";
-    $query.= "SELECT a.idpresupuesto, GROUP_CONCAT(DISTINCT b.nombre ORDER BY b.nombre SEPARATOR ', ') AS proveedor ";
-    $query.= "FROM detpresupuesto a INNER JOIN beneficiario b ON b.id = a.idproveedor ";
-    $query.= "WHERE a.origenprov = 2 ";
-    $query.= "GROUP BY a.idpresupuesto";
-    $query.=") z ";
-    $query.= "GROUP BY z.idpresupuesto";
-
-    $query.= ") g ON a.id = g.idpresupuesto ";
-    $query.= "INNER JOIN tipogasto h ON h.id = a.idtipogasto ";
-    $query.= "WHERE a.idestatuspresupuesto = 2 ";
-    $query.= "ORDER BY a.id";
-    */
+    if((int)$idusr > 0){
+        $limiteot = (float)$db->getOneField("SELECT limiteot FROM usuario WHERE id = $idusr");
+    }
 
     $query = "
         SELECT b.fechasolicitud AS fechaOrd, a.idpresupuesto AS id, a.correlativo, a.id AS idot, CONCAT(a.idpresupuesto, '-', a.correlativo) AS numero, DATE_FORMAT(b.fechasolicitud, '%d/%m/%Y') AS fechasolicitud, 
@@ -84,7 +64,9 @@ $app->get('/lstpresupuestospend', function(){
         INNER JOIN subtipogasto g ON g.id = a.idsubtipogasto
         INNER JOIN tipogasto h ON h.id = g.idtipogasto
         INNER JOIN usuario i ON i.id = b.idusuario
-        WHERE a.idestatuspresupuesto = 2 AND a.origenprov = 1
+        WHERE a.idestatuspresupuesto = 2 AND a.origenprov = 1 ";
+    $query.= $limiteot > 0 ? "AND (a.monto * a.tipocambio) <= $limiteot " : '';
+    $query.= "
         UNION
         SELECT b.fechasolicitud AS fechaOrd, a.idpresupuesto AS id, a.correlativo, a.id AS idot, CONCAT(a.idpresupuesto, '-', a.correlativo) AS numero, DATE_FORMAT(b.fechasolicitud, '%d/%m/%Y') AS fechasolicitud, 
         c.abreviatura AS empresa, d.referencia AS proyecto, e.nombre AS proveedor, f.simbolo AS moneda, a.monto, a.tipocambio, CONCAT(g.descripcion, ' - ', h.desctipogast) AS gasto, a.notas, 0 AS aprobada, 0 AS denegada, i.iniciales AS usuario,
@@ -98,11 +80,28 @@ $app->get('/lstpresupuestospend', function(){
         INNER JOIN subtipogasto g ON g.id = a.idsubtipogasto
         INNER JOIN tipogasto h ON h.id = g.idtipogasto
         INNER JOIN usuario i ON i.id = b.idusuario
-        WHERE a.idestatuspresupuesto = 2 AND a.origenprov = 2
-        ORDER BY 1, 2, 3
-        ";
+        WHERE a.idestatuspresupuesto = 2 AND a.origenprov = 2 ";
+    $query.= $limiteot > 0 ? "AND (a.monto * a.tipocambio) <= $limiteot " : '';
+    $query.= "ORDER BY 1, 2, 3";
     print $db->doSelectASJson(trim($query));
 });
+
+//Configuración de montos de OTs que los usuarios pueden autorizar
+$app->get('/usraprob(/:id)', function($id = 0){
+    $db = new dbcpm();
+
+    $query = "SELECT id, nombre, limiteot FROM usuario WHERE id IN(SELECT idusuario FROM permiso WHERE accesar = 1 ".((int)$id == 0 ? '' : "AND idusuario = $id")." AND iditemmenu = (SELECT id FROM itemmenu WHERE TRIM(url) = 'tranaprobpresup')) ORDER BY nombre";
+    print $db->doSelectASJson($query);
+});
+
+$app->post('/usrmonto', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "UPDATE usuario SET limiteot = $d->limiteot WHERE id = $d->id";
+    $db->doQuery($query);
+});
+//Fin de Configuración de montos de OTs que los usuarios pueden autorizar
 
 $app->post('/lstpresaprob', function(){
     $d = json_decode(file_get_contents('php://input'));
