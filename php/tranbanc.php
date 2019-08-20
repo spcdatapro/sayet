@@ -703,6 +703,16 @@ $app->get('/imprimir/:idtran', function($idtran){
     //print $query;
     $tran = $db->getQuery($query);
 
+    $query = "
+        SELECT 0 AS oby, serie, documento, DATE_FORMAT(fechadoc, '%d/%m/%Y') AS fechadoc, FORMAT(monto, 2) AS monto FROM doctotranban 
+        WHERE idtranban = $idtran
+        UNION
+        SELECT 1 AS oby, '' AS serie, '' AS documento, 'Total:' AS fechadoc, FORMAT(SUM(monto), 2) AS monto
+        FROM doctotranban 
+        WHERE idtranban = $idtran
+        ORDER BY 1, fechadoc";
+    $tran[0]->docsop = $db->getQuery($query);
+
     $query = "SELECT b.codigo, b.nombrecta, FORMAT(a.debe, 2) AS debe, FORMAT(a.haber, 2) AS haber, 0 AS estotal ";
     $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta ";
     $query.= "WHERE a.activada = 1 AND a.anulado = 0 AND a.origen = 1 AND a.idorigen = $idtran ";
