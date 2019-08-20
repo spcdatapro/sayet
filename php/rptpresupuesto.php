@@ -187,7 +187,7 @@ $app->post('/rptot', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $query = "SELECT DATE_FORMAT(NOW(), '%d/%m/%Y') AS fecha";
+    $query = "SELECT DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS fecha";
     $generales = $db->getQuery($query)[0];
 
     $qGenOTs = getQueryOTs($d->idot, false);
