@@ -1,14 +1,15 @@
 (function(){
 
-    var reembolsosrvc = angular.module('cpm.reembolsosrvc', ['cpm.comunsrvc']);
+    const reembolsosrvc = angular.module('cpm.reembolsosrvc', ['cpm.comunsrvc']);
 
     reembolsosrvc.factory('reembolsoSrvc', ['comunFact', function(comunFact){
-        var urlBase = 'php/reembolso.php';
+        const urlBase = 'php/reembolso.php';
 
         return {
             lstReembolsos: function(idempresa){
                 return comunFact.doGET(urlBase + '/lstreembolsos/' + idempresa);
             },
+            lstReembolsosPost: (obj) => comunFact.doPOST(`${urlBase}/lstreembolsos`, obj),
             getReembolso: function(idreembolso){
                 return comunFact.doGET(urlBase + '/getreembolso/' + idreembolso);
             },

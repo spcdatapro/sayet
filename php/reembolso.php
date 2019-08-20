@@ -17,6 +17,25 @@ $app->get('/lstreembolsos/:idemp', function($idemp){
     print $db->doSelectASJson($query);
 });
 
+$app->post('/lstreembolsos', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    if(!isset($d->idemp)){ $d->idemp = 4; }
+    if(!isset($d->estatus)){ $d->estatus = 1; }
+    if(!isset($d->tipo)){ $d->tipo = 0; }
+
+    $query = "SELECT a.id, a.idempresa, a.idtiporeembolso, b.desctiporeembolso AS tipo, a.finicio, a.ffin, a.beneficiario, ";
+    $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto ";
+    $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso ";
+    $query.= "LEFT JOIN (SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) c ON a.id = c.idreembolso ";
+    $query.= "WHERE a.idempresa = $d->idemp ";
+    $query.= (int)$d->estatus > 0 ? "AND a.estatus = $d->estatus " : '';
+    $query.= (int)$d->tipo > 0 ? "AND a.idtiporeembolso = $d->tipo " : '';
+    $query.= "ORDER BY a.estatus, a.finicio, b.desctiporeembolso";
+    print $db->doSelectASJson($query);
+});
+
 $app->get('/getreembolso/:idreembolso', function($idreembolso){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idempresa, a.idtiporeembolso, b.desctiporeembolso AS tipo, a.finicio, a.ffin, a.beneficiario, ";
