@@ -107,7 +107,7 @@ function getDocumentosOT($db, $idot){
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN moneda c ON c.id = b.idmoneda INNER JOIN detpagopresup d ON d.id = a.iddetpagopresup INNER JOIN detpresupuesto e ON e.id = d.iddetpresup ";
     $query.= "INNER JOIN moneda f ON f.id = e.idmoneda ";
     $query.= "WHERE a.tipotrans IN('C', 'R') AND a.iddetpresup = $idot ";
-    $query.= "ORDER BY 1";
+    $query.= "ORDER BY 1, a.numero";
     $documentos = $db->getQuery($query);
     $cntDocs = count($documentos);
     for($i = 0; $i < $cntDocs; $i++){
