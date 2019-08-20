@@ -1,3 +1,6 @@
+<style>
+    .bld{ font-weight: bold; }
+</style>
 <div class="container" ng-controller="reciboClientesCtrl">
     <ul class="nav nav-tabs">
         <li class="active">
@@ -252,19 +255,21 @@
 
         <!-- //Rony 2017-11-16 Editar monto abono -->
         <script type="text/ng-template" id="display">
-        <td>{{tr.siglas}}&nbsp;{{tr.serie}}&nbsp;{{tr.numero}}&nbsp;{{tr.fecha | date:'dd/MM/yyyy'}}&nbsp;{{tr.simbolo}}&nbsp;{{tr.total | number:2}}</td>
+            <td ng-class="{'num': +tr.oby == 1, 'bld': +tr.oby == 1}">
+                {{tr.siglas}}&nbsp;{{tr.serie}}&nbsp;{{tr.numero}}&nbsp;{{tr.fecha | date:'dd/MM/yyyy'}}&nbsp;{{tr.simbolo}}&nbsp;<span ng-show="+tr.oby == 0">{{tr.total | number:2}}</span>
+            </td>
 
-        <td ng-hide="showme" style="text-align: right">{{tr.monto | number:2}} </td>
+        <td ng-hide="showme" style="text-align: right" ng-class="{'bld': +tr.oby == 1}">{{tr.monto | number:2}} </td>
         <td ng-show="showme" style="text-align: right"><input type="text" name="editmonto" id="editmonto" value="{{tr.monto | number:2}}" ></td>
 
         <td ng-hide="showme" style="text-align: right">{{tr.interes | number:2}}</td>
         <td ng-show="showme" style="text-align: right"><input type="text" name="editmonto" id="editmonto" value="{{tr.interes | number:2}}" ></td>
 
         <td>
-            <button type="button" class="btn btn-primary btn-sm" ng-click="editDetRecCli(tr)">
+            <button type="button" class="btn btn-primary btn-sm" ng-click="editDetRecCli(tr)" ng-show="+tr.oby == 0">
                 <span class="glyphicon glyphicon-edit"></span>
             </button>
-            <button type="button" class="btn btn-danger btn-sm" ng-click="delDetRecCli(tr)" ng-disabled="!permiso.e">
+            <button type="button" class="btn btn-danger btn-sm" ng-click="delDetRecCli(tr)" ng-disabled="!permiso.e" ng-show="+tr.oby == 0">
                 <span class="glyphicon glyphicon-trash"></span>
             </button>                                 
         </td>
@@ -272,9 +277,11 @@
         
         <!-- //Rony 2017-11-16 Editar monto abono -->
         <script type="text/ng-template" id="edit">
-            <td>{{tr.siglas}}&nbsp;{{tr.serie}}&nbsp;{{tr.numero}}&nbsp;{{tr.fecha | date:'dd/MM/yyyy'}}&nbsp;{{tr.simbolo}}&nbsp;{{tr.total | number:2}}</td>
+            <td ng-class="{'num': +tr.oby == 1, 'bld': +tr.oby == 1}">
+                {{tr.siglas}}&nbsp;{{tr.serie}}&nbsp;{{tr.numero}}&nbsp;{{tr.fecha | date:'dd/MM/yyyy'}}&nbsp;{{tr.simbolo}}&nbsp;<span ng-show="+tr.oby == 0">{{tr.total | number:2}}</span>
+            </td>
 
-            <td><input class="form-control" 
+            <td ng-class="{'bld': +tr.oby == 1}"><input class="form-control"
                         type="text" 
                         fcsa-number="{ maxDecimals:2 } " 
                         ng-model="tr.monto" required/>
@@ -286,10 +293,10 @@
             </td>
 
             <td>
-             <button type="button" class="btn btn-success btn-sm" ng-click="updateDetRecCli(tr)">
+             <button type="button" class="btn btn-success btn-sm" ng-click="updateDetRecCli(tr)" ng-show="+tr.oby == 0">
                 <span class="glyphicon glyphicon-check"></span>
              </button>
-             <button type="button" class="btn btn-danger btn-sm" ng-click="reset(tr)">
+             <button type="button" class="btn btn-danger btn-sm" ng-click="reset(tr)" ng-show="+tr.oby == 0">
                 <span class="glyphicon glyphicon-share">
              </button>
             </td>                                
