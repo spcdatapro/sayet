@@ -6,7 +6,7 @@
 
         $scope.objEmpresa = {};
         $scope.losBancos = [];
-        $scope.params = { idempresa: 0, fDel: moment().startOf('month').toDate(), fAl: moment().endOf('month').toDate(), idbanco: 0, fdelstr: '', falstr:'', tipo: undefined };
+        $scope.params = { idempresa: 0, fDel: moment().startOf('month').toDate(), fAl: moment().endOf('month').toDate(), idbanco: 0, fdelstr: '', falstr:'', tipo: undefined, beneficiario: undefined };
         $scope.objBanco = undefined;
         $scope.content = null;
         $scope.tipos = [];
@@ -30,7 +30,8 @@
             $scope.params.idbanco = $scope.objBanco.id;
             $scope.params.fdelstr = moment($scope.params.fDel).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.fAl).format('YYYY-MM-DD');
-            $scope.params.tipo = $scope.params.tipo != null && $scope.params.tipo != undefined ? $scope.params.tipo : '';
+            $scope.params.tipo = $scope.params.tipo != null && $scope.params.tipo !== undefined ? $scope.params.tipo : '';
+            $scope.params.beneficiario = $scope.params.beneficiario != null && $scope.params.beneficiario !== undefined ? $scope.params.beneficiario : '';
             jsReportSrvc.getPDFReport(test ? 'SyuL_N5bZ' : 'BJEkzB5W-', $scope.params).then(function(pdf){ $scope.content = pdf; });
         };
 
@@ -38,11 +39,12 @@
             $scope.params.idbanco = $scope.objBanco.id;
             $scope.params.fdelstr = moment($scope.params.fDel).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.fAl).format('YYYY-MM-DD');
-            $scope.params.tipo = $scope.params.tipo != null && $scope.params.tipo != undefined ? $scope.params.tipo : '';
+            $scope.params.tipo = $scope.params.tipo != null && $scope.params.tipo !== undefined ? $scope.params.tipo : '';
+            $scope.params.beneficiario = $scope.params.beneficiario != null && $scope.params.beneficiario !== undefined ? $scope.params.beneficiario : '';
 
             jsReportSrvc.getReport(test ? 'ryLu2BlYf' : 'Skggz8xYM', $scope.params).then(function(result){
                 var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-                var nombre = $scope.objBanco.siglas.replace('/', '-') + '_' + ($scope.params.tipo != '' ? ($scope.params.tipo + '_') : '') + moment($scope.params.fDel).format('DDMMYYYY') + '_' + moment($scope.params.fAl).format('DDMMYYYY');
+                var nombre = $scope.objBanco.siglas.replace('/', '-') + '_' + ($scope.params.tipo !== '' ? ($scope.params.tipo + '_') : '') + moment($scope.params.fDel).format('DDMMYYYY') + '_' + moment($scope.params.fAl).format('DDMMYYYY');
                 saveAs(file, 'CD_' + nombre + '.xlsx');
             });
         };

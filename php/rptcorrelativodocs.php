@@ -24,6 +24,7 @@ $app->post('/correlativo', function(){
     $query.= "FROM tranban a INNER JOIN tipomovtranban b ON b.abreviatura = a.tipotrans ";
     $query.= "WHERE a.idbanco = $d->idbanco AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' ";
     $query.= $d->tipo != '' ? "AND a.tipotrans = '$d->tipo' " : '';
+    $query.= $d->beneficiario != '' ? "AND a.beneficiario LIKE '%$d->beneficiario%' " : '';
     $query.= "ORDER BY a.fecha, a.numero";
     $correlativo->docs = $db->getQuery($query);
 
@@ -32,6 +33,7 @@ $app->post('/correlativo', function(){
     $query.= "FROM tranban a INNER JOIN tipomovtranban b ON b.abreviatura = a.tipotrans ";
     $query.= "WHERE a.idbanco = $d->idbanco AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' ";
     $query.= $d->tipo != '' ? "AND a.tipotrans = '$d->tipo' " : '';
+    $query.= $d->beneficiario != '' ? "AND a.beneficiario LIKE '%$d->beneficiario%' " : '';
     $correlativo->sumas = $db->getQuery($query)[0];
 
     print json_encode($correlativo);

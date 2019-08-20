@@ -29,12 +29,22 @@
                         </div>
                     </div>
                 </div>
-                <button type="button" class="btn btn-primary" ng-click="getCorrelativosCheques()" ng-disabled="objBanco == null || objBanco == undefined">
-                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                </button>
-                <button type="button" class="btn btn-primary" ng-click="getCorrelativosChequesExcel()" ng-disabled="objBanco == null || objBanco == undefined">
-                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
-                </button>
+                <div class="row" style="text-align: left">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="txtBene">Beneficiario:</label>
+                            <input name="txtBene" id="txtBene" type="text" class="form-control input-sm" ng-model="params.beneficiario" placeholder="Beneficiario"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="button" class="btn btn-primary btn-sm" ng-click="getCorrelativosCheques()" ng-disabled="objBanco == null || objBanco == undefined">
+                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn btn-primary btn-sm" ng-click="getCorrelativosChequesExcel()" ng-disabled="objBanco == null || objBanco == undefined">
+                        <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
