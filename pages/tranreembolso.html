@@ -165,8 +165,32 @@
                         </div>
                     </form>
                     <hr/>
-                    <table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover table-condensed">
-                        <caption>Lista de reembolsos</caption>
+                    <table class="table table-responsive table-hover table-condensed">
+                        <caption>
+                            <div class="row">
+                                <div class="col-md-3 text-center">
+                                    <div class="btn-group" role="group" aria-label="...">
+                                        <button type="button" class="btn btn-default btn-sm" ng-click="params.estatus = 1; getLstReembolsos();">
+                                            Abiertos
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-sm" ng-click="params.estatus = 2; getLstReembolsos();">
+                                            Cerrados
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-sm" ng-click="params.estatus = 0; getLstReembolsos();">
+                                            Todos
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <select name="selTipoRSrch" id="selTipoRSrch" class="form-control input-sm" ng-model="params.tipo"
+                                            ng-options="obj.id as obj.desctiporeembolso for obj in tiposreembolsosrch" ng-change="getLstReembolsos();">
+                                    </select>
+                                </div>
+                                <div class="col-md-7">
+                                    <input name="srchTxt" id="srchTxt" type="text" class="form-control input-sm" ng-model="lookFor.$" placeholder="Buscar..."/>
+                                </div>
+                            </div>
+                        </caption>
                         <thead>
                         <tr>
                             <th style="text-align: right">No.</th>
@@ -178,7 +202,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="r in reembolsos" ng-click="getReembolso(r.id)">
+                        <tr ng-repeat="r in reembolsos | filter:lookFor" ng-click="getReembolso(r.id)">
                             <td style="text-align: right">{{r.id | padNumber:5}}</td>
                             <td>{{r.tipo}}</td>
                             <td>{{r.finicio | date:'dd/MM/yyyy'}}</td>

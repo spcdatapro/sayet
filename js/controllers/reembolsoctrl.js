@@ -10,6 +10,7 @@
         $scope.reembolsos = [];
         $scope.reembolso = {};
         $scope.tiposreembolso = [];
+        $scope.tiposreembolsosrch = [{id: "0", desctiporeembolso: "Todos"}];
         $scope.compras = [];
         $scope.compra = {};
         $scope.tiposfactura = [];
@@ -33,6 +34,9 @@
         $scope.proyectos = [];
         $scope.subtiposgasto = [];
         $scope.periodoCerrado = false;
+        $scope.params = {
+            idemp: undefined, estatus: 1, tipo: undefined
+        };
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap()
             .withBootstrapOptions({
@@ -62,6 +66,7 @@
 
         authSrvc.getSession().then(function(usrLogged){
             if(parseInt(usrLogged.workingon) > 0){
+                $scope.params.idemp = +usrLogged.workingon;
                 $scope.uid = +usrLogged.uid;
                 authSrvc.gpr({idusuario: parseInt(usrLogged.uid), ruta:$route.current.params.name}).then(function(d){
                     $scope.permiso = d;
@@ -80,7 +85,11 @@
             }
         });
 
-        tipoReembolsoSrvc.lstTiposReembolso().then(function(d){ $scope.tiposreembolso = d; });
+        tipoReembolsoSrvc.lstTiposReembolso().then(function(d){
+            $scope.tiposreembolso = d;
+            $scope.tiposreembolsosrch = $scope.tiposreembolsosrch.concat(d);
+
+        });
 
         tipoFacturaSrvc.lstTiposFactura().then(function(d){
             for(var i = 0; i < d.length; i++){
@@ -205,9 +214,8 @@
         };
 
         $scope.getLstReembolsos = function(){
-            reembolsoSrvc.lstReembolsos($scope.reembolso.idempresa).then(function(d){
-                $scope.reembolsos = procDataReemb(d);
-            });
+            /*reembolsoSrvc.lstReembolsos($scope.reembolso.idempresa).then(function(d){$scope.reembolsos = procDataReemb(d);});*/
+            reembolsoSrvc.lstReembolsosPost($scope.params).then((d) => $scope.reembolsos = procDataReemb(d));
         };
 
         $scope.getDetReem = function(idreem){
