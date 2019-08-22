@@ -258,8 +258,10 @@ if ( ! function_exists('imprimirTotalesEmpresa')) {
 if ( ! function_exists('imprimirTotalesPagina')) {
 	function imprimirTotalesPagina($pdf, $bus, $tipoImpresion, $totales) {
 		$pie  = $bus->get_campo_impresion("vtotalespie", $tipoImpresion);
+		$ultima = 0;
 
 		foreach ($totales as $key => $subtotales) {
+			$ultima = $key;
 			$pdf->setPage($key);
 
 			foreach ($subtotales as $campo => $total) {
@@ -274,6 +276,29 @@ if ( ! function_exists('imprimirTotalesPagina')) {
 
 					$pdf->Line($conf->psx, $y, $conf->psx+$conf->ancho, $y);
 					$pdf->Line($conf->psx, $y+1, $conf->psx+$conf->ancho, $y+1);
+				}
+			}
+		}
+
+		$cantidadPaginas = $pdf->getNumPages();
+
+		if ($ultima < $cantidadPaginas) {
+			for ($i=($ultima+1); $i <= $cantidadPaginas; $i++) { 
+				$pdf->setPage($i);
+				
+				foreach ($totales[$ultima] as $campo => $total) {
+					$conf = $bus->get_campo_impresion($campo, $tipoImpresion);
+
+					if (!isset($conf->scalar) && $conf->visible == 1) {
+						$conf->psy = $pie->psy;
+						$conf->estilo = $pie->estilo;
+						$pdf       = generar_fimpresion($pdf, number_format($total, 2), $conf);
+
+						$y = ($conf->psy+$conf->espacio);
+
+						$pdf->Line($conf->psx, $y, $conf->psx+$conf->ancho, $y);
+						$pdf->Line($conf->psx, $y+1, $conf->psx+$conf->ancho, $y+1);
+					}
 				}
 			}
 		}
