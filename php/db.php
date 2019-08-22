@@ -2,9 +2,9 @@
 require_once 'vendor/catfan/medoo/medoo.php';
 class dbcpm{
 
-    private $dbHost = '104.197.209.57';
-    private $dbUser = 'lmtzina';
-    private $dbPass = 'LM_Tz1n@';
+    private $dbHost = 'localhost';
+    private $dbUser = 'root';
+    private $dbPass = 'PoChoco2016';
     //private $dbPass = 'Solon_06';
     private $dbSchema = 'sayet';
     //private $dbSchema = 'sayetprod';
