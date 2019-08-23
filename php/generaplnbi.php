@@ -255,7 +255,9 @@ $app->post('/generand', function() use($db){
 });
 
 function generachq($d, $db, $empresa, $empleado){
-    $query = "SELECT COUNT(*) FROM tranban WHERE idbanco = $empresa->idbanco AND tipotrans = 'C' AND esplanilla = 1 AND fechaplanilla = '$d->falstr' AND idempleado = $empleado->idempleado";
+    $query = "SELECT COUNT(*) FROM tranban ";
+    $query.= "WHERE idbanco = $empresa->idbanco AND tipotrans = 'C' AND esplanilla = 1 AND fechaplanilla = '$d->falstr' AND idempleado = $empleado->idempleado ";
+    $query.= "AND anulado = 0 AND beneficiario NOT LIKE '%anula%' AND concepto NOT LIKE '%anula%'";
     $existe = (int)$db->getOneField($query) > 0;
     if(!$existe){
         $query = "INSERT INTO tranban(";
