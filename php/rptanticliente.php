@@ -408,10 +408,10 @@ $app->post('/antiguedad', function(){
                     }
                     if((int)$d->detallada == 1){
                         $query = "SELECT j.serie, j.numero, DATE_FORMAT(j.fecha, '%d/%m/%Y') AS fecha, ";
-                        $query.= "IF(j.dias < 31, FORMAT(j.saldo, 2), 0.00) AS r030, ";
-                        $query.= "IF(j.dias BETWEEN 31 AND 60, FORMAT(j.saldo, 2), 0.00) AS r3160, ";
-                        $query.= "IF(j.dias BETWEEN 61 AND 90, FORMAT(j.saldo, 2), 0.00) AS r6190, ";
-                        $query.= "IF(j.dias > 90, FORMAT(j.saldo, 2), 0.00) AS r90 ";
+                        $query.= "IF(j.dias < 31, IF(j.saldo >= 0, FORMAT(j.saldo, 2), CONCAT('(', FORMAT(ABS(j.saldo), 2),')')), 0.00) AS r030, ";
+                        $query.= "IF(j.dias BETWEEN 31 AND 60, IF(j.saldo >= 0, FORMAT(j.saldo, 2), CONCAT('(', FORMAT(ABS(j.saldo), 2),')')), 0.00) AS r3160, ";
+                        $query.= "IF(j.dias BETWEEN 61 AND 90, IF(j.saldo >= 0, FORMAT(j.saldo, 2), CONCAT('(', FORMAT(ABS(j.saldo), 2),')')), 0.00) AS r6190, ";
+                        $query.= "IF(j.dias > 90, IF(j.saldo >= 0, FORMAT(j.saldo, 2), CONCAT('(', FORMAT(ABS(j.saldo), 2),')')), 0.00) AS r90 ";
                         $query.= "FROM ($qFacts) j ";
                         $query.= "WHERE j.idempresa = $antiguedad->idempresa $andProyecto $andCliente ";
                         $query.= "ORDER BY j.fecha, j.numero";
@@ -421,10 +421,10 @@ $app->post('/antiguedad', function(){
                     }
 
                     $query = "SELECT '' AS serie, '' AS numero, 'Totales:' AS fecha, ";
-                    $query.= "FORMAT(SUM(IF(j.dias < 31, j.saldo, 0.00)), 2) AS r030, ";
-                    $query.= "FORMAT(SUM(IF(j.dias BETWEEN 31 AND 60, j.saldo, 0.00)), 2) AS r3160, ";
-                    $query.= "FORMAT(SUM(IF(j.dias BETWEEN 61 AND 90, j.saldo, 0.00)), 2) AS r6190, ";
-                    $query.= "FORMAT(SUM(IF(j.dias > 90, j.saldo, 0.00)), 2) AS r90 ";
+                    $query.= "IF(SUM(IF(j.dias < 31, j.saldo, 0.00)) >= 0, FORMAT(SUM(IF(j.dias < 31, j.saldo, 0.00)), 2), CONCAT('(', FORMAT(ABS(SUM(IF(j.dias < 31, j.saldo, 0.00))), 2), ')')) AS r030, ";
+                    $query.= "IF(SUM(IF(j.dias BETWEEN 31 AND 60, j.saldo, 0.00)) >= 0, FORMAT(SUM(IF(j.dias BETWEEN 31 AND 60, j.saldo, 0.00)), 2), CONCAT('(', FORMAT(ABS(SUM(IF(j.dias BETWEEN 31 AND 60, j.saldo, 0.00))), 2), ')')) AS r3160, ";
+                    $query.= "IF(SUM(IF(j.dias BETWEEN 61 AND 90, j.saldo, 0.00)) >=0, FORMAT(SUM(IF(j.dias BETWEEN 61 AND 90, j.saldo, 0.00)), 2), CONCAT('(', FORMAT(ABS(SUM(IF(j.dias BETWEEN 61 AND 90, j.saldo, 0.00))), 2), ')')) AS r6190, ";
+                    $query.= "IF(SUM(IF(j.dias > 90, j.saldo, 0.00)) >= 0, FORMAT(SUM(IF(j.dias > 90, j.saldo, 0.00)), 2), CONCAT('(', FORMAT(ABS(SUM(IF(j.dias > 90, j.saldo, 0.00))), 2), ')')) AS r90 ";
                     $query.= "FROM ($qFacts) j ";
                     $query.= "WHERE j.idempresa = $antiguedad->idempresa $andProyecto $andCliente ";
                     $sumasCliente = $db->getQuery($query)[0];
@@ -440,11 +440,11 @@ $app->post('/antiguedad', function(){
         }
 
         if($cntAntiguedades > 0){
-            $query = "SELECT FORMAT(SUM(IF(j.dias < 31, j.saldo, 0.00)), 2) AS r030, ";
-            $query.= "FORMAT(SUM(IF(j.dias BETWEEN 31 AND 60, j.saldo, 0.00)), 2) AS r3160, ";
-            $query.= "FORMAT(SUM(IF(j.dias BETWEEN 61 AND 90, j.saldo, 0.00)), 2) AS r6190, ";
-            $query.= "FORMAT(SUM(IF(j.dias > 90, j.saldo, 0.00)), 2) AS r90, ";
-            $query.= "FORMAT(SUM(j.saldo), 2) AS saldo ";
+            $query = "SELECT IF(SUM(IF(j.dias < 31, j.saldo, 0.00)) >= 0, FORMAT(SUM(IF(j.dias < 31, j.saldo, 0.00)), 2), CONCAT('(', FORMAT(ABS(SUM(IF(j.dias < 31, j.saldo, 0.00))), 2), ')')) AS r030, ";
+            $query.= "IF(SUM(IF(j.dias BETWEEN 31 AND 60, j.saldo, 0.00)) >= 0, FORMAT(SUM(IF(j.dias BETWEEN 31 AND 60, j.saldo, 0.00)), 2), CONCAT('(', FORMAT(ABS(SUM(IF(j.dias BETWEEN 31 AND 60, j.saldo, 0.00))), 2), ')')) AS r3160, ";
+            $query.= "IF(SUM(IF(j.dias BETWEEN 61 AND 90, j.saldo, 0.00)) >= 0, FORMAT(SUM(IF(j.dias BETWEEN 61 AND 90, j.saldo, 0.00)), 2), CONCAT('(', FORMAT(ABS(SUM(IF(j.dias BETWEEN 61 AND 90, j.saldo, 0.00))), 2), ')')) AS r6190, ";
+            $query.= "IF(SUM(IF(j.dias > 90, j.saldo, 0.00)) >= 0, FORMAT(SUM(IF(j.dias > 90, j.saldo, 0.00)), 2), CONCAT('(', FORMAT(ABS(SUM(IF(j.dias > 90, j.saldo, 0.00))), 2), ')')) AS r90, ";
+            $query.= "IF(SUM(j.saldo) >= 0, FORMAT(SUM(j.saldo), 2), CONCAT('(', FORMAT(ABS(SUM(j.saldo)), 2), ')') ) AS saldo ";
             $query.= "FROM ($qFacts) j ";
             $query.= "WHERE j.idempresa = $antiguedad->idempresa ";
             $sumas = $db->getQuery($query)[0];
