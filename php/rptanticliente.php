@@ -401,7 +401,11 @@ $app->post('/antiguedad', function(){
                 $cliente->saldo = (float)$db->getOneField($query);
                 $tieneSaldo = $cliente->saldo != 0;
                 if($tieneSaldo){
-                    $cliente->saldo = number_format($cliente->saldo, 2);
+                    if($cliente->saldo >= 0){
+                        $cliente->saldo = number_format($cliente->saldo, 2);
+                    } else {
+                        $cliente->saldo = '('.number_format(abs($cliente->saldo), 2).')';
+                    }
                     if((int)$d->detallada == 1){
                         $query = "SELECT j.serie, j.numero, DATE_FORMAT(j.fecha, '%d/%m/%Y') AS fecha, ";
                         $query.= "IF(j.dias < 31, FORMAT(j.saldo, 2), 0.00) AS r030, ";
