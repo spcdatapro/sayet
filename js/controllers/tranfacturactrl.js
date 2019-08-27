@@ -327,11 +327,15 @@
         };
 
         $scope.setProyecto = function(item, model){
-            $scope.proyectos.forEach(function(proy){
-                if(+item.idproyecto == +proy.id){
-                    $scope.factura.idproyecto = item.idproyecto;
-                }
-            });
+            if(item) {
+                $scope.proyectos.forEach(function (proy) {
+                    if (+item.idproyecto == +proy.id) {
+                        $scope.factura.idproyecto = item.idproyecto;
+                    }
+                });
+            } else {
+                $scope.factura.idproyecto = undefined;
+            }
         };
 
         $scope.clienteSelected = function(item){

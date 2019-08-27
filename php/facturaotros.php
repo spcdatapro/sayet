@@ -18,25 +18,16 @@ $app->get('/srchcli/:idempresa/:qstra+', function($idempresa, $qstra){
     $db = new dbcpm();
     $qstr = $qstra[0];
     $query = "SELECT DISTINCT idcliente, facturara, nit, retisr, retiva, direccion, ";
-    $query.= "CONCAT(";
-
-    $query.= "'<small>',nit, '<br/>', IFNULL(direccion, ''),'</small>'";
-
-    $query.= ") AS infocliente, porretiva FROM (";
-
-    $query.= "SELECT DISTINCT a.idcliente, a.facturara, a.nit, a.retisr, a.retiva, a.direccion, a.porretiva ";
+    $query.= "CONCAT('<small>',nit, '<br/>', IFNULL(direccion, ''),'</small>') AS infocliente, porretiva, origen FROM (";
+    $query.= "SELECT DISTINCT a.idcliente, a.facturara, a.nit, a.retisr, a.retiva, a.direccion, a.porretiva, 1 AS origen  ";
     $query.= "FROM detclientefact a INNER JOIN cliente b ON b.id = a.idcliente INNER JOIN contrato c ON b.id = c.idcliente ";
     $query.= "WHERE c.idempresa = $idempresa AND a.fal IS NULL AND (a.facturara LIKE '%$qstr%' OR b.nombrecorto LIKE '%$qstr%') ";
-
-    $query.= "UNION ALL ";
-
-    $query.= "SELECT DISTINCT 0 AS idcliente, nombre AS facturara, nit, retenerisr AS retisr, reteneriva AS retiva, direccion, porretiva ";
+    $query.= "UNION ";
+    $query.= "SELECT DISTINCT 0 AS idcliente, nombre AS facturara, nit, retenerisr AS retisr, reteneriva AS retiva, direccion, porretiva, 2 AS origen  ";
     $query.= "FROM factura ";
-    $query.= "WHERE fecha >= '2017-09-01' AND idempresa = $idempresa AND nombre LIKE '%$qstr%' AND (idcontrato = 0 OR idcontrato IS NULL) ";
-    //$query.= "AND TRIM(nit) NOT IN(SELECT TRIM(nit) FROM detclientefact WHERE fal IS NULL AND facturara LIKE '%$qstr%') ";
-    $query.= "ORDER BY 2";
-
-    $query.= ") a";
+    $query.= "WHERE fecha >= '2017-09-01' AND idempresa = $idempresa AND nombre LIKE '%$qstr%' AND (idcontrato = 0 OR idcontrato IS NULL)";
+    $query.= ") a ";
+    $query.= "ORDER BY origen, facturara";
     //print $query;
     print json_encode(['results' => $db->getQuery($query)]);
 });

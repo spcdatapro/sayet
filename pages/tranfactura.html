@@ -364,8 +364,8 @@
                                             <input name="txtNit" id="txtNit" type="text" class="form-control" ng-model="factura.nit" maxlength="25" required/>
                                         </div>
                                     </div>
-                                    <div class="col-md-4" ng-show="contratos.length > 0">
-                                        <div class="form-group">
+                                    <div class="col-md-4">
+                                        <div class="form-group" ng-show="contratos.length > 0">
                                             <label>Contrato (si aplica):</label>
                                             <ui-select ng-model="factura.idcontrato"
                                                        title="Seleccione un contrato si aplica.."
@@ -386,6 +386,9 @@
                                                     No hay resultados...
                                                 </ui-select-no-choice>
                                             </ui-select>
+                                        </div>
+                                        <div class="alert alert-warning" role="alert" ng-show="contratos.length <= 0 || (contratos.length > 0 && (factura.idcontrato == null || factura.idcontrato == undefined))">
+                                            <span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>&nbsp;La factura se va a generar <strong>sin contrato</strong>.
                                         </div>
                                     </div>
                                 </div>
