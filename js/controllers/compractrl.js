@@ -99,6 +99,7 @@
                 $scope.laCompra.tipocambio = parseFloat(m[0].tipocambio).toFixed($scope.dectc);
             });
             $scope.periodoCerrado = false;
+            $scope.unidades = [];
             goTop();
         };
 
@@ -337,6 +338,7 @@
                 tipoCompraSrvc.getTipoCompra($scope.laCompra.idtipocompra).then(function(tc){ $scope.laCompra.objTipoCompra = tc[0]; });
                 $scope.editando = true;
                 cuentacSrvc.getByTipo($scope.laCompra.idempresa, 0).then(function(d){ $scope.lasCtasMov = d; });
+                $scope.loadUnidadesProyecto($scope.laCompra.idproyecto);
                 $scope.getDetCont(idcomp);
                 $scope.loadProyectosCompra(idcomp);
                 $scope.resetProyectoCompra();
