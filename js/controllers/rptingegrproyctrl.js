@@ -6,11 +6,12 @@
     
             $scope.params = {
                 mes: (moment().month() + 1).toString(), anio: moment().year(), idempresa: undefined, idproyecto: undefined, dmes: (moment().month() + 1).toString(),
-                ames: (moment().month() + 1).toString()
+                ames: (moment().month() + 1).toString(), idunidad: undefined
             };
             //$scope.datos = undefined;
             $scope.empresas = [];
             $scope.proyectos = [];
+            $scope.unidades = [];
             $scope.datosdet = undefined;
             $scope.rangeData = [];
             $scope.rangeDataDetalle = [];
@@ -28,6 +29,8 @@
             });
 
             $scope.loadProyectos = function(idempresa){ proyectoSrvc.lstProyectosPorEmpresa(+idempresa).then(function(d){ $scope.proyectos = d; }); };
+
+            $scope.loadUnidadesProyecto = (idproyecto) => proyectoSrvc.lstUnidadesProyecto(+idproyecto).then((d) => $scope.unidades = d);
 
             $scope.getResumen = async function(){
                 $scope.rangeData = [];

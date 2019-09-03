@@ -18,57 +18,66 @@
         <div class="panel-heading">Reporte de Ingresos/Gastos por Proyecto</div>
         <div class="panel-body">
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-4 nopadding">
                     <div class="form-group required">
                         <label for="selEmpresa" class="control-label">Empresa:</label>
                         <select name="selEmpresa" id="selEmpresa" class="form-control input-sm" ng-model="params.idempresa" ng-options="obj.id as obj.nomempresa for obj in empresas" ng-change="loadProyectos(params.idempresa)"></select>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3 nopadding">
                     <div class="form-group required">
                         <label for="selProyecto" class="control-label">Proyecto:</label>
-                        <select name="selProyecto" id="selProyecto" class="form-control input-sm" ng-model="params.idproyecto" ng-options="obj.id as obj.nomproyecto for obj in proyectos"></select>
+                        <select name="selProyecto" id="selProyecto" class="form-control input-sm" ng-model="params.idproyecto"
+                                ng-options="obj.id as obj.nomproyecto for obj in proyectos" ng-change="loadUnidadesProyecto(params.idproyecto)"></select>
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-2 nopadding">
+                    <div class="form-group">
+                        <label for="selUnidad" class="control-label">Unidad:</label>
+                        <select name="selUnidad" id="selUnidad" class="form-control input-sm" ng-model="params.idunidad"
+                                ng-options="obj.id as obj.nombre for obj in unidades">
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-1 nopadding">
                     <div class="form-group required">
                         <label for="selDeMes" class="control-label">De:</label>
                         <select name="selDeMes" id="selDeMes" class="form-control input-sm" ng-model="params.dmes">
-                            <option value="1">Enero</option>
-                            <option value="2">Febrero</option>
-                            <option value="3">Marzo</option>
-                            <option value="4">Abril</option>
-                            <option value="5">Mayo</option>
-                            <option value="6">Junio</option>
-                            <option value="7">Julio</option>
-                            <option value="8">Agosto</option>
-                            <option value="9">Septiembre</option>
-                            <option value="10">Octubre</option>
-                            <option value="11">Noviembre</option>
-                            <option value="12">Diciembre</option>
+                            <option value="1">Ene</option>
+                            <option value="2">Feb</option>
+                            <option value="3">Mar</option>
+                            <option value="4">Abr</option>
+                            <option value="5">May</option>
+                            <option value="6">Jun</option>
+                            <option value="7">Jul</option>
+                            <option value="8">Ago</option>
+                            <option value="9">Sep</option>
+                            <option value="10">Oct</option>
+                            <option value="11">Nov</option>
+                            <option value="12">Dic</option>
                         </select>
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-1 nopadding">
                     <div class="form-group required">
                         <label for="txtMes" class="control-label">A:</label>
                         <select name="txtMes" id="txtMes" class="form-control input-sm" ng-model="params.ames">
-                            <option value="1">Enero</option>
-                            <option value="2">Febrero</option>
-                            <option value="3">Marzo</option>
-                            <option value="4">Abril</option>
-                            <option value="5">Mayo</option>
-                            <option value="6">Junio</option>
-                            <option value="7">Julio</option>
-                            <option value="8">Agosto</option>
-                            <option value="9">Septiembre</option>
-                            <option value="10">Octubre</option>
-                            <option value="11">Noviembre</option>
-                            <option value="12">Diciembre</option>
+                            <option value="1">Ene</option>
+                            <option value="2">Feb</option>
+                            <option value="3">Mar</option>
+                            <option value="4">Abr</option>
+                            <option value="5">May</option>
+                            <option value="6">Jun</option>
+                            <option value="7">Jul</option>
+                            <option value="8">Ago</option>
+                            <option value="9">Sep</option>
+                            <option value="10">Oct</option>
+                            <option value="11">Nov</option>
+                            <option value="12">Dic</option>
                         </select>
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-1 nopadding">
                     <div class="form-group required">
                         <label for="txtAnio" class="control-label">A&ntilde;o:</label>
                         <input name="txtAnio" id="txtAnio" type="number" class="form-control input-sm" min="2010" ng-model="params.anio"/>

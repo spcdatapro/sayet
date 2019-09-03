@@ -9,6 +9,7 @@ $db = new dbcpm();
 
 $app->post('/resumen', function() use($db){
     $d = json_decode(file_get_contents('php://input'));
+    if(!isset($d->idunidad)){ $d->idunidad = 0; }
 
     $datos = new stdClass();
 
@@ -46,6 +47,7 @@ $app->post('/resumen', function() use($db){
         $query.= "FROM detallecontable a INNER JOIN compra b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta INNER JOIN detpagocompra d ON b.id = d.idcompra ";
         $query.= "WHERE a.origen = 2 AND (c.codigo LIKE '5%' OR TRIM(c.codigo) = '1120299') AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio ";
         $query.= "AND b.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa ";
+        $query.= (int)$d->idunidad == 0 ? '' : "AND b.idunidad = $d->idunidad ";
         $query.= "ORDER BY 2";
         $conceptos = $db->getQuery($query);
         $cntConceptos = count($conceptos);
@@ -54,7 +56,8 @@ $app->post('/resumen', function() use($db){
             $query = "SELECT SUM(a.debe) ";
             $query.= "FROM detallecontable a INNER JOIN compra b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta INNER JOIN detpagocompra d ON b.id = d.idcompra ";
             $query.= "WHERE a.origen = 2 AND (c.codigo LIKE '5%' OR TRIM(c.codigo) = '1120299') AND b.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa AND ";
-            $query.= "MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND a.idcuenta = ".$conceptos[$i]->idcuenta;
+            $query.= "MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND a.idcuenta = ".$conceptos[$i]->idcuenta." ";
+            $query.= (int)$d->idunidad == 0 ? '' : "AND b.idunidad = $d->idunidad ";
             $montoEgreso = $db->getOneField($query);
             $datos->egresos[] = ['concepto' => $conceptos[$i]->concepto, 'monto' => $montoEgreso];
             $totEgresos += (float)$montoEgreso;
@@ -95,15 +98,18 @@ $app->post('/resumen', function() use($db){
                 FROM compraproyecto a
                 INNER JOIN compra b ON b.id = a.idcompra
                 INNER JOIN cuentac c ON c.id = a.idcuentac
-                WHERE b.idproyecto = $d->idproyecto AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND b.idempresa = $d->idempresa AND b.idreembolso = 0 AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%' OR TRIM(c.codigo) = '1120299')
-                UNION
-                SELECT DISTINCT a.idcuenta, c.nombrecta AS concepto
+                WHERE b.idproyecto = $d->idproyecto AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND b.idempresa = $d->idempresa AND 
+                b.idreembolso = 0 AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%' OR TRIM(c.codigo) = '1120299') ";
+        $query.= (int)$d->idunidad == 0 ? '' : "AND a.idunidad = $d->idunidad ";
+        $query.= "UNION ";
+        $query.= "SELECT DISTINCT a.idcuenta, c.nombrecta AS concepto
                 FROM detallecontable a
                 INNER JOIN compra b ON b.id = a.idorigen
                 INNER JOIN cuentac c ON c.id = a.idcuenta
                 WHERE a.origen = 2 AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%' OR TRIM(c.codigo) = '1120299') AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND
-                b.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa AND idreembolso > 0
-                ORDER BY 2";
+                b.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa AND idreembolso > 0 ";
+        $query.= (int)$d->idunidad == 0 ? '' : "AND b.idunidad = $d->idunidad ";
+        $query.= "ORDER BY 2";
         $conceptos = $db->getQuery($query);
         $cntConceptos = count($conceptos);
         $totEgresos = 0.00;
@@ -115,14 +121,17 @@ $app->post('/resumen', function() use($db){
                     FROM compraproyecto a
                     INNER JOIN compra b ON b.id = a.idcompra
                     INNER JOIN cuentac c ON c.id = a.idcuentac
-                    WHERE b.idproyecto = $d->idproyecto AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND b.idempresa = $d->idempresa AND b.idreembolso = 0 AND a.idcuentac = $concepto->idcuenta
-                    UNION
-                    SELECT a.idcuenta, a.debe AS monto
+                    WHERE b.idproyecto = $d->idproyecto AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND b.idempresa = $d->idempresa AND 
+                    b.idreembolso = 0 AND a.idcuentac = $concepto->idcuenta ";
+            $query.= (int)$d->idunidad == 0 ? '' : "AND a.idunidad = $d->idunidad ";
+            $query.= "UNION ";
+            $query.= "SELECT a.idcuenta, a.debe AS monto
                     FROM detallecontable a
                     INNER JOIN compra b ON b.id = a.idorigen
                     INNER JOIN cuentac c ON c.id = a.idcuenta
                     WHERE a.origen = 2 AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%' OR TRIM(c.codigo) = '1120299') AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND
-                    b.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa AND idreembolso > 0 AND a.idcuenta = $concepto->idcuenta";
+                    b.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa AND idreembolso > 0 AND a.idcuenta = $concepto->idcuenta ";
+            $query.= (int)$d->idunidad == 0 ? '' : "AND b.idunidad = $d->idunidad ";
             $query.= ") z";
             $montoEgreso = $db->getOneField($query);
             $datos->egresos[] = ['concepto' => $conceptos[$i]->concepto, 'monto' => $montoEgreso];
@@ -164,6 +173,7 @@ $app->post('/resumen', function() use($db){
 
 $app->post('/detalle', function() use($db){
     $d = json_decode(file_get_contents('php://input'));
+    if(!isset($d->idunidad)){ $d->idunidad = 0; }
 
     $datos = new stdClass();
 
@@ -237,15 +247,18 @@ $app->post('/detalle', function() use($db){
                 FROM compraproyecto a
                 INNER JOIN compra b ON b.id = a.idcompra
                 INNER JOIN cuentac c ON c.id = a.idcuentac
-                WHERE a.idproyecto = $d->idproyecto AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND b.idempresa = $d->idempresa AND b.idreembolso = 0 AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%' OR TRIM(c.codigo) = '1120299')
-                UNION
-                SELECT DISTINCT a.idcuenta, c.nombrecta AS concepto
+                WHERE a.idproyecto = $d->idproyecto AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND b.idempresa = $d->idempresa AND 
+                b.idreembolso = 0 AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%' OR TRIM(c.codigo) = '1120299') ";
+    $query.= (int)$d->idunidad == 0 ? '' : "AND a.idunidad = $d->idunidad ";
+    $query.= "UNION ";
+    $query.= "SELECT DISTINCT a.idcuenta, c.nombrecta AS concepto
                 FROM detallecontable a
                 INNER JOIN compra b ON b.id = a.idorigen
                 INNER JOIN cuentac c ON c.id = a.idcuenta
                 WHERE a.origen = 2 AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%' OR TRIM(c.codigo) = '1120299') AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND
-                b.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa AND idreembolso > 0
-                ORDER BY 2";
+                b.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa AND idreembolso > 0 ";
+    $query.= (int)$d->idunidad == 0 ? '' : "AND b.idunidad = $d->idunidad ";
+    $query.= "ORDER BY 2";
     $conceptos = $db->getQuery($query);
     $cntConceptos = count($conceptos);
     $totEgresos = 0.00;
@@ -257,14 +270,17 @@ $app->post('/detalle', function() use($db){
                     FROM compraproyecto a
                     INNER JOIN compra b ON b.id = a.idcompra
                     INNER JOIN cuentac c ON c.id = a.idcuentac
-                    WHERE a.idproyecto = $d->idproyecto AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND b.idempresa = $d->idempresa AND b.idreembolso = 0 AND a.idcuentac = $concepto->idcuenta AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%' OR TRIM(c.codigo) = '1120299')
-                    UNION ALL
-                    SELECT a.idcuenta, a.debe AS monto
+                    WHERE a.idproyecto = $d->idproyecto AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND b.idempresa = $d->idempresa AND 
+                    b.idreembolso = 0 AND a.idcuentac = $concepto->idcuenta AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%' OR TRIM(c.codigo) = '1120299') ";
+        $query.= (int)$d->idunidad == 0 ? '' : "AND a.idunidad = $d->idunidad ";
+        $query.= "UNION ALL ";
+        $query.= "SELECT a.idcuenta, a.debe AS monto
                     FROM detallecontable a
                     INNER JOIN compra b ON b.id = a.idorigen
                     INNER JOIN cuentac c ON c.id = a.idcuenta
                     WHERE a.origen = 2 AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%' OR TRIM(c.codigo) = '1120299') AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND
-                    b.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa AND idreembolso > 0 AND a.idcuenta = $concepto->idcuenta";
+                    b.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa AND idreembolso > 0 AND a.idcuenta = $concepto->idcuenta ";
+        $query.= (int)$d->idunidad == 0 ? '' : "AND b.idunidad = $d->idunidad ";
         $query.= ") z";
         //print $query;
         $montoEgreso = $db->getOneField($query);
@@ -276,6 +292,7 @@ $app->post('/detalle', function() use($db){
         $query.= "LEFT JOIN banco f ON f.id = e.idbanco LEFT JOIN moneda g ON g.id = f.idmoneda LEFT JOIN moneda i ON i.id = b.idmoneda LEFT JOIN proveedor h ON h.id = b.idproveedor ";
         $query.= "LEFT JOIN detpagopresup j ON j.id = e.iddetpagopresup LEFT JOIN detpresupuesto k ON k.id = j.iddetpresup ";
         $query.= "WHERE a.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND a.idcuentac = $concepto->idcuenta AND b.idreembolso = 0 ";
+        $query.= (int)$d->idunidad == 0 ? '' : "AND a.idunidad = $d->idunidad ";
         $query.= "UNION ALL ";
         $query.= "SELECT e.fecha AS fechaOrd, e.id AS idtranban, e.tipotrans, e.numero, DATE_FORMAT(e.fecha, '%d/%m/%Y') AS fecha, e.beneficiario, e.concepto, g.simbolo AS moneda, e.monto AS montotranban, ";
         $query.= "b.id AS idcompra, IF(h.id IS NULL, b.proveedor, h.nombre) AS proveedor, IF(h.id IS NULL, b.nit, h.nit) AS nit, b.serie, b.documento, i.simbolo AS monedafact, a.debe AS montofact, ";
@@ -284,6 +301,7 @@ $app->post('/detalle', function() use($db){
         $query.= "LEFT JOIN banco f ON f.id = e.idbanco LEFT JOIN moneda g ON g.id = f.idmoneda LEFT JOIN moneda i ON i.id = b.idmoneda LEFT JOIN proveedor h ON h.id = b.idproveedor ";
         $query.= "LEFT JOIN detpagopresup j ON j.id = e.iddetpagopresup LEFT JOIN detpresupuesto k ON k.id = j.iddetpresup ";
         $query.= "WHERE a.origen = 2 AND b.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND a.idcuenta = $concepto->idcuenta AND b.idreembolso > 0 ";
+        $query.= (int)$d->idunidad == 0 ? '' : "AND b.idunidad = $d->idunidad ";
         $query.= "ORDER BY 1, 6";
         //print $query;
         $detegr = $db->getQuery($query);
