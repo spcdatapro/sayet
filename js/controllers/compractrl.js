@@ -25,6 +25,7 @@
         $scope.facturastr = '';
         $scope.fltrcomp = {fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate()};
         $scope.proyectos = [];
+        $scope.unidades = [];
 		$scope.params = {idcompra: 0};
         $scope.lstproyectoscompra = [];
         $scope.proyectocompra = {};
@@ -74,13 +75,18 @@
             $scope.itemsLimit = $scope.itemsLimit + 10;
         };
 
+
         $scope.fetch = function($select){ };
+
+        $scope.loadUnidadesProyecto = (idproyecto) => proyectoSrvc.lstUnidadesProyecto(+idproyecto).then((d) => $scope.unidades = d);
+
+        $scope.proyectoSelected = (item) => $scope.loadUnidadesProyecto(item.id);
 
         $scope.resetCompra = function(){
             $scope.laCompra = {
                 fechaingreso: new Date(), mesiva: hoy.getMonth() + 1, fechafactura: new Date(), creditofiscal: 0, extraordinario: 0, noafecto: 0.0,
                 objEmpresa: $scope.laCompra.objEmpresa, objMoneda: {}, tipocambio: 1, isr: 0.00, galones: 0.00, idp: 0.00, objTipoCombustible: {},
-                totfact: 0.00, subtotal: 0.00, iva: 0.00, ordentrabajo: undefined, idproyecto: undefined
+                totfact: 0.00, subtotal: 0.00, iva: 0.00, ordentrabajo: undefined, idproyecto: undefined, idunidad: undefined
             };
             $scope.search = "";
             $scope.facturastr = '';
@@ -93,6 +99,7 @@
                 $scope.laCompra.tipocambio = parseFloat(m[0].tipocambio).toFixed($scope.dectc);
             });
             $scope.periodoCerrado = false;
+            $scope.unidades = [];
             goTop();
         };
 
@@ -331,6 +338,7 @@
                 tipoCompraSrvc.getTipoCompra($scope.laCompra.idtipocompra).then(function(tc){ $scope.laCompra.objTipoCompra = tc[0]; });
                 $scope.editando = true;
                 cuentacSrvc.getByTipo($scope.laCompra.idempresa, 0).then(function(d){ $scope.lasCtasMov = d; });
+                $scope.loadUnidadesProyecto($scope.laCompra.idproyecto);
                 $scope.getDetCont(idcomp);
                 $scope.loadProyectosCompra(idcomp);
                 $scope.resetProyectoCompra();
@@ -415,6 +423,7 @@
             obj.idmoneda = parseInt(obj.objMoneda.id);
             obj.idtipofactura = parseInt(obj.objTipoFactura.id);
             obj.idtipocombustible = obj.objTipoCombustible != null && obj.objTipoCombustible != undefined ? (obj.objTipoCombustible.id != null && obj.objTipoCombustible.id != undefined ? obj.objTipoCombustible.id : 0) : 0;
+            obj.idunidad = obj.idunidad != null && obj.idunidad !== undefined ? +obj.idunidad : 0;
             //obj.idtipocombustible = 0;
             //obj.idproyecto = 0;
 
@@ -454,6 +463,7 @@
                 obj.idmoneda = parseInt(obj.objMoneda.id);
                 obj.idtipofactura = parseInt(obj.objTipoFactura.id);
                 obj.idtipocombustible = obj.objTipoCombustible != null && obj.objTipoCombustible != undefined ? (obj.objTipoCombustible.id != null && obj.objTipoCombustible.id != undefined ? obj.objTipoCombustible.id : 0) : 0;
+                obj.idunidad = obj.idunidad != null && obj.idunidad !== undefined ? +obj.idunidad : 0;
                 //obj.idtipocombustible = 0;
                 //obj.idproyecto = 0;
 

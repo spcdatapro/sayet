@@ -32,6 +32,7 @@
         $scope.infocompras = {cantidad: 0, sumtotfact: 0.00}
         $scope.uid = 0;
         $scope.proyectos = [];
+        $scope.unidades = [];
         $scope.subtiposgasto = [];
         $scope.periodoCerrado = false;
         $scope.params = {
@@ -102,6 +103,10 @@
         tipoCompraSrvc.lstTiposCompra().then(function(d){ $scope.tiposcompra = d; });
 
         beneficiarioSrvc.lstBeneficiarios().then(function(d){ $scope.beneficiarios = d; });
+
+        $scope.loadUnidadesProyecto = (idproyecto) => proyectoSrvc.lstUnidadesProyecto(+idproyecto).then((d) => $scope.unidades = d);
+
+        $scope.proyectoSelected = (item) => $scope.loadUnidadesProyecto(item.id);
 
         tipoCombustibleSrvc.lstTiposCombustible().then(function(d){
             for(var i = 0; i < d.length; i++){
@@ -204,12 +209,14 @@
                 idp: 0.00,
                 revisada: 0,
                 idproyecto: undefined,
+                idunidad: undefined,
                 idsubtipogasto: $scope.reembolso ? ($scope.reembolso.objTipoReembolso && +$scope.reembolso.objTipoReembolso.id == 1 ? $scope.reembolso.idsubtipogasto : undefined) : undefined
             };
             //console.log($scope.compra);
             $scope.comprastr = '';
             $scope.$broadcast('angucomplete-alt:clearInput', 'txtNit');
             $scope.periodoCerrado = false;
+            $scope.unidades = [];
             goTop();
         };
 
@@ -403,7 +410,7 @@
 
         $scope.nitSelected = function(item){
             if(item != null && item != undefined){
-                console.log('TIPO = ', typeof item.originalObject);
+                //console.log('TIPO = ', typeof item.originalObject);
                 switch(typeof item.originalObject){
                     case 'string':
                         $scope.compra.nit = item.originalObject;
@@ -447,6 +454,7 @@
                 $scope.$broadcast('angucomplete-alt:changeInput', 'txtNit', {nit: $scope.compra.nit, proveedor: $scope.compra.proveedor});
                 $scope.comprastr = $scope.compra.proveedor + ', ' + $scope.compra.serie + ' '
                     + $scope.compra.documento + ', ' + $scope.compra.simbolo + ' ' + $scope.compra.totfact;
+                $scope.loadUnidadesProyecto($scope.compra.idproyecto);
                 if(!subir){ goTop(); }
             });
         };

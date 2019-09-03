@@ -129,14 +129,15 @@
                         </div>
                         <!-- Fin de cuando el tipo de compra es combustible -->
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 <div class="form-group required" ng-class="{'has-error':frmCompra.selProy.$invalid && !frmCompra.selProy.$pristine}">
                                     <label class="control-label">Proyecto:</label>
                                     <ui-select ng-model="laCompra.idproyecto"
                                                title="Seleccione un proyecto..."
                                                theme="bootstrap"
                                                autofocus="false"
-                                               ng-required="true">
+                                               ng-required="true"
+                                               on-select="proyectoSelected($item)">
                                         <ui-select-match placeholder="Buscar proyecto..." allow-clear="false">
                                             <span ng-bind="$select.selected.nomproyecto"></span>
                                         </ui-select-match>
@@ -150,7 +151,15 @@
                                     </ui-select>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.selUnidad.$invalid && !frmCompra.selUnidad.$pristine}">
+                                    <label for="selUnidad" class="control-label">Unidad (si aplica):</label>
+                                    <select name="selUnidad" id="selUnidad" class="form-control" ng-model="laCompra.idunidad"
+                                            ng-options="obj.id as obj.nombre for obj in unidades">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
                                 <div class="form-group required" ng-class="{'has-error':frmCompra.txtConceptoMayor.$invalid && !frmCompra.txtConceptoMayor.$pristine}">
                                     <label for="txtConceptoLibroMayor" class="control-label">Concepto para el libro mayor:</label>
                                     <textarea name="txtConceptoLibroMayor" id="txtConceptoLibroMayor" class="form-control"
@@ -374,7 +383,8 @@
                                                title="Seleccione un proyecto..."
                                                theme="bootstrap"
                                                autofocus="false"
-                                               ng-required="true">
+                                               ng-required="true"
+                                               on-select="proyectoSelected($item)">
                                         <ui-select-match placeholder="Buscar proyecto..." allow-clear="false">
                                             <span ng-bind="$select.selected.nomproyecto"></span>
                                         </ui-select-match>
@@ -388,7 +398,15 @@
                                     </ui-select>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="selUnidadComp" class="control-label">Unidad (si aplica):</label>
+                                    <select name="selUnidadComp" id="selUnidadComp" class="form-control" ng-model="proyectocompra.idunidad"
+                                            ng-options="obj.id as obj.nombre for obj in unidades">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
                                 <div class="form-group" ng-class="{'has-error':frmCompProy.selCtaDet.$invalid && !frmCompProy.selCtaDet.$pristine}">
                                     <label>Cuenta contable:</label>
                                     <ui-select ng-model="proyectocompra.idcuentac"
@@ -409,7 +427,7 @@
                                     </ui-select>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                                 <div class="form-group" ng-class="{'has-error':frmCompProy.txtMontoDet.$invalid && !frmCompProy.txtMontoDet.$pristine}">
                                     <label for="txtMontoDet">Monto sin I.V.A.:</label>
                                     <input name="txtMontoDet" id="txtMontoDet" type="text" class="form-control" ng-model="proyectocompra.monto" placeholder="Monto" fcsa-number="{ min:0, maxDecimals: 2 }" required />
@@ -436,6 +454,7 @@
                         <thead>
                         <tr>
                             <th>Proyecto</th>
+                            <th>Unidad</th>
                             <th>Cuenta contable</th>
                             <th class="num">Monto sin I.V.A.</th>
                         </tr>
@@ -443,6 +462,7 @@
                         <tbody>
                         <tr ng-repeat="cp in lstproyectoscompra" ng-click="getProyectoCompra(cp.id)">
                             <td>{{cp.nomproyecto}}</td>
+                            <td>{{cp.unidad}}</td>
                             <td>({{cp.codigo}}) {{cp.nombrecta}}</td>
                             <td class="num">{{cp.monto | number:2}}</td>
                         </tr>

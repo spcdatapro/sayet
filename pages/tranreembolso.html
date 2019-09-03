@@ -336,14 +336,15 @@
                                            ng-disabled="!(compra.objTipoFactura != null && compra.objTipoFactura != undefined)" required/>
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                            <div class="col-md-4">
                                 <div class="form-group required" ng-class="{'has-error':frmCompra.selProy.$invalid && !frmCompra.selProy.$pristine}">
                                     <label class="control-label">Proyecto:</label>
                                     <ui-select ng-model="compra.idproyecto"
                                                title="Seleccione un proyecto..."
                                                theme="bootstrap"
                                                autofocus="false"
-                                               ng-required="true">
+                                               ng-required="true"
+                                               on-select="proyectoSelected($item)">
                                         <ui-select-match placeholder="Buscar proyecto..." allow-clear="false">
                                             <span ng-bind="$select.selected.nomproyecto"></span>
                                         </ui-select-match>
@@ -357,7 +358,15 @@
                                     </ui-select>
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                            <div class="col-md-2">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.selUnidad.$invalid && !frmCompra.selUnidad.$pristine}">
+                                    <label for="selUnidad" class="control-label">Unidad (si aplica):</label>
+                                    <select name="selUnidad" id="selUnidad" class="form-control" ng-model="compra.idunidad"
+                                            ng-options="obj.id as obj.nombre for obj in unidades">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
                                 <div class="form-group required" ng-class="{'has-error':frmCompra.selIdSubTipoGast.$invalid && !frmCompra.selIdSubTipoGast.$pristine}">
                                     <label for="selIdSubTipoGast" class="control-label">Sub-tipo de gasto:</label>
                                     <ui-select id="selIdSubTipoGast"
