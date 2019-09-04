@@ -437,6 +437,7 @@ $app->get('/gettxt/:idempresa/:fdelstr/:falstr/:nombre', function($idempresa, $f
     //print json_encode($data);
 
     $respuesta = $db->CallJSReportAPI('POST', $url, json_encode($data));
+    $respuesta = str_replace('&amp;', '&', $respuesta);
     print iconv('UTF-8','Windows-1252', $respuesta);
 });
 
