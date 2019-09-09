@@ -6,6 +6,7 @@
 
         $scope.params = { fdel: moment().toDate(), fal: moment().toDate(), idmoneda: '1', orden: '1' };
         $scope.monedas = [];
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         monedaSrvc.lstMonedas().then(function(d){ $scope.monedas = d; });
 

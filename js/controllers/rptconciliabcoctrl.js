@@ -7,7 +7,7 @@
         $scope.params = {idbanco: undefined, del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), saldobco: 0.00, objBanco: {}};
         $scope.bancos = [];
         $scope.conciliacion = {};
-        $scope.content = null;
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         authSrvc.getSession().then(function(usrLogged){
             if(parseInt(usrLogged.workingon) > 0){

@@ -9,7 +9,7 @@
         $scope.monedas = [];
         $scope.content = '';
         $scope.estaGenerando = false;
-        $scope.content = 'http://104.197.209.57/sayet/blank.html';
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         monedaSrvc.lstMonedas().then(function(d){ $scope.monedas = d; });
 
