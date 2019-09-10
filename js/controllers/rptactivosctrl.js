@@ -17,6 +17,7 @@
         $scope.empresastr = '';
         $scope.municipiostr = '';
         $scope.tipostr = '';
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         empresaSrvc.lstEmpresas().then(function(d){ $scope.lasEmpresas = d; });
         tipoactivoSrvc.lstTipoActivo().then(function (d) { $scope.losTipoActivo = d; });

@@ -7,6 +7,7 @@
         $scope.empresas = [];
         $scope.tipos = [];
         $scope.params = {idempresa: undefined, idtipo: undefined, verbaja: 0};
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         empresaSrvc.lstEmpresas().then(function(d){ $scope.empresas = d; });
         tipoServicioVentaSrvc.lstTSVenta().then(function(d){ $scope.tipos = d; });

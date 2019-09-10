@@ -5,6 +5,7 @@
     rptvencimientosctrl.controller('rptVencimientosCtrl', ['$scope', 'empresaSrvc', 'proyectoSrvc', 'jsReportSrvc', function($scope, empresaSrvc, proyectoSrvc, jsReportSrvc){
 
         $scope.params = {fdel: moment().startOf('month').toDate() , fal: moment().endOf('month').toDate()};
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
         //$scope.empresas = [];
         //$scope.proyectos = [];
         //empresaSrvc.lstEmpresas().then(function(d){ $scope.lasEmpresas = d; $scope.lasEmpresas.push({ id: '', nomempresa: 'Todas las empresas' }); });
