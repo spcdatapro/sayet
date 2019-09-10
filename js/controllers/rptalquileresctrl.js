@@ -5,7 +5,7 @@
     rptalquileresctrl.controller('rptAlquileresCtrl', ['$scope', 'empresaSrvc', 'proyectoSrvc', 'jsReportSrvc', 'authSrvc', 'tipoServicioVentaSrvc', function($scope, empresaSrvc, proyectoSrvc, jsReportSrvc, authSrvc, tipoServicioVentaSrvc){
 
         $scope.params = {fdel: moment().startOf('month').toDate() , fal: moment().endOf('month').toDate(), usuario: '', porlocal: 0, sinproy: 0};
-        $scope.content = undefined;
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
         $scope.empresas = [];
         $scope.proyectos = [];
         $scope.tipos = [];

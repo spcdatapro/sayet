@@ -6,6 +6,7 @@
 
         $scope.params = { mes: (moment().month() + 1).toString(), anio: moment().year(), cliente: undefined, fdel: undefined, fal: undefined };
         $scope.clientes = [];
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         ventaSrvc.lstClientes().then(function(d){ $scope.clientes = d; });
 

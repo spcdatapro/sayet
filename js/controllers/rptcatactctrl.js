@@ -8,6 +8,7 @@
         $scope.empresas = [];
         $scope.tipos = [];
         $scope.deptos = [];
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         empresaSrvc.lstEmpresas().then(function(d){ $scope.empresas = d; });
         tipoactivoSrvc.lstTipoActivo().then(function(d){ $scope.tipos = d; });

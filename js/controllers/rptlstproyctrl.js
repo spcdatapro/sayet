@@ -11,6 +11,7 @@
         $scope.tipo = [];
         $scope.proyectos = [];
         $scope.proyecto = [];
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         empresaSrvc.lstEmpresas().then(function(d){ $scope.lasEmpresas = d; $scope.lasEmpresas.push({ id: '', nomempresa: 'Todas las empresas' }); });
         tipoProyectoSrvc.lstTipoProyecto().then(function(d){ $scope.lsttipos = d; $scope.lsttipos.push({ id: '', descripcion: 'Todos los tipos' });});

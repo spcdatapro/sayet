@@ -64,8 +64,8 @@ class dbcpm{
     public function calculaRetIVA($base, $esgubernamental, $monto, $esmaquila = false, $iva = 0, $porcentaje = 0.00){
         if($iva == 0){ $iva = $monto - $base; }
         $factor = abs((float)$porcentaje) > 0 ? (abs((float)$porcentaje) / 100.00) : 0.00;
-        if($base > 2500.00){
-            if($esgubernamental && $base > 30000.00){
+        if($monto > 2500.00){
+            if($esgubernamental && $monto > 30000.00){
                 return round($iva * ($factor > 0 ? $factor : 0.25), 2);
             }else{
                 if(!$esmaquila){

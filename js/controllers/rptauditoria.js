@@ -6,6 +6,7 @@
 
         $scope.bitacoras = [];
         $scope.params = {usuario: "", tabla: "", tipo: "", fdelstr: "", falstr: "", descripcion: "", fdel: moment().startOf('month').toDate(), fal:moment().endOf('month').toDate()};
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         var test = false;
 
