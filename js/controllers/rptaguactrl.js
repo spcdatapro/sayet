@@ -5,7 +5,7 @@
     rptaguactrl.controller('rptAguaCtrl', ['$scope', 'empresaSrvc', 'jsReportSrvc', 'proyectoSrvc', function($scope, empresaSrvc, jsReportSrvc, proyectoSrvc){
 
         $scope.params = {fvence: moment().toDate(), idempresa: undefined, idproyecto: undefined};
-        $scope.content = undefined;
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
         $scope.empresas = [];
         $scope.proyectos = [];
 

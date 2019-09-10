@@ -6,6 +6,7 @@
 
         $scope.params = { idcliente: undefined };
         $scope.clientes = [];
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         clienteSrvc.lstCliente().then(function(d){ $scope.clientes = d; });
 

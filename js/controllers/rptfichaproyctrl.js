@@ -7,6 +7,7 @@
         $scope.params = {idproyecto: undefined};
         $scope.proyectos = [];
         proyectoSrvc.lstProyecto().then(function(d){ $scope.proyectos = d; });
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         var test = false;
         $scope.getRptFichaProy = function(){
