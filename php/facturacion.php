@@ -273,6 +273,7 @@ $app->post('/genfact', function(){
 
 $app->post('/gengface', function() use($app){
     $d = json_decode(file_get_contents('php://input'));
+    if(!isset($d->listafact)){ $d->listafact = ''; }
     $db = new dbcpm();
 
     $query = "SELECT CONCAT(LPAD(YEAR(a.fecha), 4, ' '), LPAD(MONTH(a.fecha), 4, ' '), LPAD(DAY(a.fecha), 4, ' ')) AS fecha, 'FACE' AS tipodoc, ";
@@ -286,11 +287,12 @@ $app->post('/gengface', function() use($app){
     $query.= "CONCAT('Q ', FORMAT(a.total, 2)) AS pagoneto, ";
     $query.= "CONCAT('Q ', FORMAT(a.retiva, 2)) AS retiva, ";
     $query.= "CONCAT('Q ', FORMAT(a.retisr, 2)) AS isr, ";
-    $query.= "CONCAT('Q ', FORMAT(a.subtotal, 2)) AS monto ";
+    $query.= "CONCAT('Q ', FORMAT(a.subtotal, 2)) AS monto, a.id AS idfactura, 1 AS descargar, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fechastr ";
 
     $query.= "FROM factura a INNER JOIN cliente b ON b.id = a.idcliente ";
     $query.= "WHERE a.idempresa = $d->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.anulada = 0 AND (ISNULL(a.firmaelectronica) OR TRIM(a.firmaelectronica) = '') ";
     $query.= "AND a.id > 3680 ";
+    $query.=  $d->listafact != '' ? "AND a.id IN($d->listafact) " : '';
     $query.= "UNION ";
     $query.= "SELECT CONCAT(LPAD(YEAR(a.fecha), 4, ' '), LPAD(MONTH(a.fecha), 4, ' '), LPAD(DAY(a.fecha), 4, ' ')) AS fecha, 'FACE' AS tipodoc, a.nit, '1' AS codmoneda, a.id AS idfactura, 'S' AS tipoventa, ";
     $query.= "a.nombre, '' AS direccion, '' AS nombrecorto, ";
@@ -301,11 +303,12 @@ $app->post('/gengface', function() use($app){
     $query.= "CONCAT('Q ', FORMAT(a.total, 2)) AS pagoneto, ";
     $query.= "CONCAT('Q ', FORMAT(a.retiva, 2)) AS retiva, ";
     $query.= "CONCAT('Q ', FORMAT(a.retisr, 2)) AS isr, ";
-    $query.= "CONCAT('Q ', FORMAT(a.subtotal, 2)) AS monto ";
+    $query.= "CONCAT('Q ', FORMAT(a.subtotal, 2)) AS monto, a.id AS idfactura, 1 AS descargar, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fechastr ";
 
     $query.= "FROM factura a ";
     $query.= "WHERE a.idempresa = $d->idempresa AND a.idcliente = 0 AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.anulada = 0 AND (ISNULL(a.firmaelectronica) OR TRIM(a.firmaelectronica) = '') ";
     $query.= "AND a.id > 3680 ";
+    $query.=  $d->listafact != '' ? "AND a.id IN($d->listafact) " : '';
     //print $query;
     $facturas = $db->getQuery($query);
     $cntFact = count($facturas);
@@ -425,7 +428,7 @@ $app->post('/gengface', function() use($app){
 
 });
 
-$app->get('/gettxt/:idempresa/:fdelstr/:falstr/:nombre', function($idempresa, $fdelstr, $falstr, $nombre) use($app){
+$app->get('/gettxt/:idempresa/:fdelstr/:falstr/:nombre(/:listafact)', function($idempresa, $fdelstr, $falstr, $nombre, $listafact = '') use($app){
     $db = new dbcpm();
     $app->response->headers->clear();
     $app->response->headers->set('Content-Type', 'text/plain;charset=windows-1252');
@@ -433,7 +436,7 @@ $app->get('/gettxt/:idempresa/:fdelstr/:falstr/:nombre', function($idempresa, $f
 
     //$url = 'http://104.197.209.57:5489/api/report';
     $url = 'http://localhost:5489/api/report';
-    $data = ['template' => ['shortid' => 'SJ2xzSzKx'], 'data' => ['idempresa' => "$idempresa", 'fdelstr' => "$fdelstr", 'falstr' => "$falstr"]];
+    $data = ['template' => ['shortid' => 'SJ2xzSzKx'], 'data' => ['idempresa' => "$idempresa", 'fdelstr' => "$fdelstr", 'falstr' => "$falstr", 'listafact' => $listafact]];
     //print json_encode($data);
 
     $respuesta = $db->CallJSReportAPI('POST', $url, json_encode($data));
