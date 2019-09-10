@@ -9,6 +9,7 @@
         $scope.params = {
             idbeneficiario:undefined, fdini: undefined, faini: undefined, fdfin: undefined, fafin:undefined, empresas:'', estatus:'0', lstEmpresas: undefined, solocc: 1, idrembolso: undefined
         };
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         beneficiarioSrvc.lstBeneficiarios().then(function(d){ $scope.beneficiarios = d; });
         empresaSrvc.lstEmpresas().then(function(d){ $scope.empresas = d; });

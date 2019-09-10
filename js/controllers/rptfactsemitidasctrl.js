@@ -6,7 +6,7 @@
 
         $scope.params = { idempresa: undefined, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), cliente: '', tipo: '1', idcliente: 0, idproyecto: undefined, idtsventa: undefined };
         $scope.empresas = [];
-        $scope.content = '';
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
         $scope.proyectos = [];
         $scope.tsventa = [];
 

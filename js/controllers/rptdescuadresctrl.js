@@ -5,6 +5,7 @@
     rptdescuadresctrl.controller('rptDescuadresCtrl', ['$scope', 'empresaSrvc', 'authSrvc', 'jsReportSrvc', function($scope, empresaSrvc, authSrvc, jsReportSrvc){
 
         $scope.params = {del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), idempresa: 0};
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         authSrvc.getSession().then(function(usrLogged){
             if(parseInt(usrLogged.workingon) > 0){

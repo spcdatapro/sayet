@@ -8,7 +8,7 @@
         $scope.losBancos = [];
         $scope.params = { idempresa: 0, fDel: moment().startOf('month').toDate(), fAl: moment().endOf('month').toDate(), idbanco: 0, fdelstr: '', falstr:'', resumen: 0 };
         $scope.objBanco = [];
-        $scope.content = 'http://104.197.209.57/sayet/blank.html';
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         authSrvc.getSession().then(function(usrLogged){
             if(parseInt(usrLogged.workingon) > 0){

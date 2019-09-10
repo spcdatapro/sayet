@@ -12,7 +12,7 @@
         $scope.objBanco = undefined;
         $scope.objTipotrans = {};
         $scope.data = [];
-        $scope.content = 'http://104.197.209.57/sayet/blank.html';
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         authSrvc.getSession().then(function(usrLogged){
             if(parseInt(usrLogged.workingon) > 0){

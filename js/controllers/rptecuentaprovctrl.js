@@ -6,7 +6,7 @@
 
         $scope.params = {del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), idempresa: 0,detalle: 0, prov: {id:0}};
         $scope.ecuentaproveedor = [];
-        $scope.content = undefined;
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
         $scope.losProvs = [];
 
         $scope.getLstProveedores = function(){

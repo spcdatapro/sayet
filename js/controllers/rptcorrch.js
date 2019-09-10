@@ -8,7 +8,7 @@
         $scope.losBancos = [];
         $scope.params = { idempresa: 0, fDel: moment().startOf('month').toDate(), fAl: moment().endOf('month').toDate(), idbanco: 0, fdelstr: '', falstr:'', tipo: undefined, beneficiario: undefined };
         $scope.objBanco = undefined;
-        $scope.content = null;
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
         $scope.tipos = [];
 
         tipoMovTranBanSrvc.lstTiposMovTB().then(function(d){ $scope.tipos = d; });

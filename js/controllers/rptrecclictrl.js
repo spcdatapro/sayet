@@ -11,6 +11,7 @@
 
         $scope.empresas = [];
         $scope.monedas = [];
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         empresaSrvc.lstEmpresas().then(function(d){ $scope.empresas = d; });
         monedaSrvc.lstMonedas().then(function(d){ $scope.monedas = d; });
