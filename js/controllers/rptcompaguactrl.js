@@ -1,4 +1,4 @@
-f(function(){
+(function(){
 
     var rptcompaguactrl = angular.module('cpm.rptcompaguactrl', []);
 
