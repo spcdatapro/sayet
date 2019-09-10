@@ -12,7 +12,7 @@
         $scope.meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         $scope.totiva = {combustible: 0.0, bien: 0.0, servicio: 0.0, importaciones: 0.0};
         $scope.empresa = { nomempresa: '', nit: '' };
-		$scope.content = undefined;
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         $scope.getGastosActivo = function(){
             rptLibroComprasSrvc.getGastosActivo($scope.params.idempresa, $scope.params.mes, $scope.params.anio).then(function(d){
