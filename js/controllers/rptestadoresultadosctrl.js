@@ -7,6 +7,7 @@
         $scope.params = {del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), idempresa: 0, acumulado: 0, nivel: '7', resAn: moment().year(), vercierre: 1};
         $scope.estadoresultados = [];
         $scope.empresa = {};
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         authSrvc.getSession().then(function(usrLogged){
             if(parseInt(usrLogged.workingon) > 0){

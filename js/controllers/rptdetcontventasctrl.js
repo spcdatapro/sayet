@@ -5,7 +5,7 @@
     rptdetcontventasctrl.controller('rptDetContVentas', ['$scope', 'authSrvc', 'empresaSrvc', 'jsReportSrvc', function($scope, authSrvc, empresaSrvc, jsReportSrvc){
 
         $scope.params = { idempresa: undefined, del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate() };
-        $scope.content = null;
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
         $scope.empresas = [];
         $scope.objEmpresa = {};
 

@@ -8,6 +8,7 @@
         $scope.empresas = [];
         $scope.cuentas = [];
         empresaSrvc.lstEmpresas().then(function(d){ $scope.empresas = d; });
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         authSrvc.getSession().then(function(usrLogged){
             if(parseInt(usrLogged.workingon) > 0){

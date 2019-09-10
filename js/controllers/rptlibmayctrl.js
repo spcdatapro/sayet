@@ -9,7 +9,7 @@
             cuentasSel: undefined, vercierre: 1, nofolio: undefined, noheader: 0
         };
         $scope.libromayor = [];
-        $scope.content = '';
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
         $scope.cuentas = [];
         $scope.empresa = {};
 
