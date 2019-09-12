@@ -680,7 +680,11 @@ class Empleado extends Principal
 					$promedio += $row['sueldoordinario'];
 				}
 
-				return ($promedio/count($tmp));
+				if (count($tmp) > 0) {
+					return ($promedio/count($tmp));
+				} else {
+					return 0;
+				}
 			}
 		}
 	}
