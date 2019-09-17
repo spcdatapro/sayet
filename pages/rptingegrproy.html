@@ -104,12 +104,15 @@
     </div>
     <hr/>
     <!-- Inicia formato de resumen -->
-    <div class="btn-group" role="group" aria-label="..." ng-show="rangeData.length > 0">
+    <div class="btn-group" role="group" aria-label="..." ng-show="rangeData.length > 0 && !verColumnar">
         <button type="button" class="btn btn-default btn-sm" ng-click="getExcel('tblResumen')">
             <i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;Excel
         </button>
+        <button type="button" class="btn btn-default btn-sm" ng-click="formatColumnar(); verColumnar = true;">
+            Ver en columnas
+        </button>
     </div>
-    <small id="tblResumen" ng-show="rangeData.length > 0">
+    <small id="tblResumen" ng-show="rangeData.length > 0 && !verColumnar">
         <div class="repHeader">
             <h3>{{rangeData[0].nomproyecto}} - {{rangeData[0].referencia}}</h3>
             <h4>{{rangeData[0].empresa}} ({{rangeData[0].abreviaempresa}})</h4>
@@ -142,12 +145,15 @@
     </small>
     <!-- Finaliza formato de resumen -->
     <!-- Inicia formato de detalle -->
-    <div class="btn-group" role="group" aria-label="..." ng-show="rangeDataDetalle.length > 0">
+    <div class="btn-group" role="group" aria-label="..." ng-show="rangeDataDetalle.length > 0 && !verColumnar">
         <button type="button" class="btn btn-default btn-sm" ng-click="getExcel('tblDetalle')">
             <i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;Excel
         </button>
+        <button type="button" class="btn btn-default btn-sm" ng-click="formatColumnar(); verColumnar = true;">
+            Ver en columnas
+        </button>
     </div>
-    <small id="tblDetalle" ng-show="rangeDataDetalle.length > 0">
+    <small id="tblDetalle" ng-show="rangeDataDetalle.length > 0 && !verColumnar">
         <div class="repHeader">
             <h3>{{rangeDataDetalle[0].nomproyecto}} - {{rangeDataDetalle[0].referencia}}</h3>
             <h4>{{rangeDataDetalle[0].empresa}} ({{rangeDataDetalle[0].abreviaempresa}})</h4>
@@ -234,4 +240,36 @@
         </div>
     </small>
     <!-- Finaliza formato de detalle -->
+    <!-- Inicia formato columnar -->
+    <div class="btn-group" role="group" aria-label="..." ng-show="(rangeDataDetalle.length > 0 || rangeData.length > 0) && verColumnar">
+        <button type="button" class="btn btn-default btn-sm" ng-click="getExcel('tblColumnar')">
+            <i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;Excel
+        </button>
+        <button type="button" class="btn btn-default btn-sm" ng-click="verColumnar = false;">
+            Ver en filas
+        </button>
+    </div>
+    <hr ng-show="verColumnar"/>
+    <small id="tblColumnar" ng-show="verColumnar">
+        <div class="repHeader">
+            <h3>{{columnar.nomproyecto}} - {{columnar.referencia}}</h3>
+            <h4>{{columnar.empresa}} ({{columnar.abreviaempresa}})</h4>
+            <h5>{{columnar.anio}}</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-condensed table-hover table-stripped" style="font-family: Arial !important;">
+                <tr ng-repeat="r in columnar.datos track by $index">
+                    <td ng-repeat="c in r track by $index"
+                        ng-class="{
+                        'num': ($index > 0 || c.toLowerCase().indexOf('total de') > -1),
+                        'bld': ($parent.$index == 0 || $last || c.toLowerCase().indexOf('ingresos') > -1 || c.toLowerCase().indexOf('egresos') > -1)
+                        }"
+                    >
+                        {{c}}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </small>
+    <!-- Finaliza formato columnar -->
 </div>
