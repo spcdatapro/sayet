@@ -1,11 +1,12 @@
 (function(){
 
-    var gfacectrl = angular.module('cpm.gfacectrl', []);
+    const gfacectrl = angular.module('cpm.gfacectrl', []);
 
     gfacectrl.controller('gfaceCtrl', ['$scope', 'empresaSrvc', 'jsReportSrvc', 'authSrvc', '$filter', '$confirm', 'facturacionSrvc', '$window', 'toaster', function($scope, empresaSrvc, jsReportSrvc, authSrvc, $filter, $confirm, facturacionSrvc, $window, toaster){
 
         $scope.params = {idempresa: undefined, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate()};
         $scope.empresas = [];
+        $scope.pendientes = [];
 
         authSrvc.getSession().then(function(usrLogged){
             empresaSrvc.lstEmpresas().then(function(d){
@@ -14,15 +15,35 @@
             });
         });
 
+        $scope.getPend = () => {
+            $scope.params.fdelstr = moment($scope.params.fdel).format('YYYY-MM-DD');
+            $scope.params.falstr = moment($scope.params.fal).format('YYYY-MM-DD');
+            facturacionSrvc.factsPendGface($scope.params).then((d) => {
+                //console.log(d);
+                d.map((i) => i.descargar = +i.descargar);
+                $scope.pendientes = d;
+            });
+        };
 
-        var test = false;
+        let checkListado = () => {
+            let aDescargar = [];
+            $scope.pendientes.forEach((i) => {
+                if(+i.descargar === 1){
+                    aDescargar.push(i.idfactura);
+                }
+            });
+            return aDescargar.join(',');
+        };
+
+        const test = false;
         $scope.getGFACE = function(){
             $scope.params.fdelstr = moment($scope.params.fdel).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.fal).format('YYYY-MM-DD');
-            var abreviatura = $filter('getById')($scope.empresas, $scope.params.idempresa).abreviatura, nombre = '';
+            $scope.params.listafact = checkListado();
+            let abreviatura = $filter('getById')($scope.empresas, $scope.params.idempresa).abreviatura, nombre = '';
             abreviatura = abreviatura != null && abreviatura != undefined ? abreviatura : '';
             nombre = abreviatura + '-GFACE' + moment().format('DDMMYYYYhhmmss');
-            var qstr = $scope.params.idempresa + '/' + $scope.params.fdelstr + '/' + $scope.params.falstr + '/' + nombre;
+            const qstr = $scope.params.idempresa + '/' + $scope.params.fdelstr + '/' + $scope.params.falstr + '/' + nombre + '/' + $scope.params.listafact;
             $window.open('php/facturacion.php/gettxt/' + qstr);            
         };
 

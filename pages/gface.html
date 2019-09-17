@@ -36,10 +36,50 @@
                                 </div>
                             </div>
                         </div>
+                        <button type="button" class="btn btn-primary" ng-disabled="frmGetGFace.$invalid" ng-click="getPend()">
+                            <span class="glyphicon glyphicon-eye-open"></span>
+                        </button>
+                        <!--
                         <button type="button" class="btn btn-primary" ng-disabled="frmGetGFace.$invalid" ng-click="getGFACE()">
                             <span class="glyphicon glyphicon-download"></span>
                         </button>
+                        -->
                     </form>
+                    <hr/>
+                    <table class="table table-condensed table-hover">
+                        <caption>
+                            <input name="srchTxt" id="srchTxt" type="text" class="form-control input-sm" style="width: 100%" ng-model="lookFor.$" placeholder="Buscar..."/>
+                        </caption>
+                        <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>N.I.T.</th>
+                            <th>Cliente</th>
+                            <th class="num">Monto</th>
+                            <th style="text-align: center">Descargar</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="p in pendientes | filter:lookFor">
+                            <td>{{p.fechastr}}</td>
+                            <td>{{p.nit}}</td>
+                            <td>{{p.nombre | shortenStr:40}}</td>
+                            <td class="num">{{p.monto}}</td>
+                            <td style="text-align: center">
+                                <input type="checkbox" ng-model="p.descargar" ng-true-value="1" ng-false-value="0"/>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td colspan="5" class="num">
+                                <button type="button" class="btn btn-primary" ng-disabled="frmGetGFace.$invalid" ng-click="getGFACE()">
+                                    <span class="glyphicon glyphicon-download"></span>
+                                </button>
+                            </td>
+                        </tr>
+                        </tfoot>
+                    </table>
                 </div>
             </div>
         </div>

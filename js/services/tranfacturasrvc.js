@@ -21,7 +21,8 @@
             lstImpresionFacturas: function(obj){
                 return comunFact.doPOST(urlBase + '/lstimpfact', obj);
             },
-            printFacturas: (obj) => comunFact.doPOST(`${urlBase}/prntfact`, obj)
+            printFacturas: (obj) => comunFact.doPOST(`${urlBase}/prntfact`, obj),
+            factsPendGface: (obj) => comunFact.doPOST(`${urlBase}/gengface`, obj)
         };
     }]);
 
