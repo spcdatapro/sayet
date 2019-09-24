@@ -195,7 +195,7 @@ $app->post('/rptot', function(){
     $query.= "FORMAT(pagosprogramados, 2) AS pagosprogramados, FORMAT((IFNULL(montoavance, 0.00) + isr), 2) AS montoavance, notas AS concepto, ";
     $query.= "IF(monto > pagosprogramados, monto, pagosprogramados) AS montoreal, ";
     $query.= "IF(monto > pagosprogramados, (IFNULL(montoavance, 0.00) + isr) * 100 / monto, (IFNULL(montoavance, 0.00) + isr) * 100 / pagosprogramados) AS poravance, ";
-    $query.= "tipogasto, empresa, fechasolicitud, proyecto, idpresupuesto, FORMAT(monto, 2) AS montooriginal ";
+    $query.= "tipogasto, empresa, fechasolicitud, proyecto, idpresupuesto, FORMAT(monto, 2) AS montooriginal, 0.00 AS sumaavance ";
     $query.= "FROM($qGenOTs) l ORDER BY correlativo";
     //print $query;
     $ot = $db->getQuery($query)[0];
@@ -264,6 +264,7 @@ $app->post('/rptot', function(){
 
     $ot->poravance = number_format(($suma->monto + $suma->isr) * 100 / $ot->montoreal, 2).'%';
     $ot->montoreal = number_format((float)$ot->montoreal, 2);
+    $ot->sumaavance = number_format($suma->monto + $suma->isr, 2);
 
     print json_encode(['generales' => $generales, 'ot' => $ot]);
 
