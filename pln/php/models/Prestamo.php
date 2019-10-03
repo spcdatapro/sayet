@@ -152,10 +152,13 @@ class Prestamo extends Principal
 
 	public function guardar_abono($args = [])
 	{
-		if ($this->get_saldo() >= $args['monto']) {
+		$saldo = round($this->get_saldo(), 2);
+		$monto = round($args['monto'], 2);
+		
+		if ($saldo >= $monto) {
 			$datos = [
 				'fecha' => $args['fecha'],
-				'monto' => $args['monto'],
+				'monto' => $monto,
 				'concepto' => $args['concepto'],
 				'idusuario' => $_SESSION['uid'],
 				'idplnprestamo' => $this->pre->id
@@ -170,7 +173,7 @@ class Prestamo extends Principal
 				$this->set_mensaje('Error al guardar: ' . $this->db->error()[2]);
 			}
 		} else {
-			$this->set_mensaje('El saldo es inferior al monto ingresado. Por favor verifique e intente nuevamente.');
+			$this->set_mensaje("El saldo es inferior al monto ingresado. Por favor verifique e intente nuevamente. Saldo: {$saldo}, monto ingresado: {$monto}");
 		}
 
 		return FALSE;
