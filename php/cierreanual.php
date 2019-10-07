@@ -7,7 +7,7 @@ $app->response->headers->set('Content-Type', 'application/json');
 
 $app->get('/existe/:idempresa/:anio', function($idempresa, $anio){
     $db = new dbcpm();
-    $cont = (int)$db->getOneField("SELECT COUNT(id) FROM directa WHERE idempresa = $idempresa AND YEAR(fecha) = $anio AND tipocierre > 0 AND tipocierre <= 4");
+    $cont = (int)$db->getOneField("SELECT COUNT(id) FROM directa WHERE idempresa = $idempresa AND YEAR(fecha) = $anio AND tipocierre > 0 AND tipocierre < 4");
     print json_encode(['existe' => ($cont > 0 ? 1 : 0)]);
 });
 
