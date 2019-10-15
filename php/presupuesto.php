@@ -163,7 +163,14 @@ function creaDetallePresupuesto($d){
     $query.= "$d->idpresupuesto, $correlativo, $d->idproveedor, $d->idsubtipogasto, $d->coniva, $d->monto, $d->tipocambio, $excedente, '$d->notas', $d->origenprov, $d->idmoneda";
     $query.= ")";
     $db->doQuery($query);
+    $lastid = $db->getLastId();
     updTotPresupuesto($d->idpresupuesto);
+    $obj = new stdClass();
+    $obj->origen = 2;
+    $obj->idpresupuesto = $lastid;
+    $obj->evento = 'C';
+    $obj->idusuario = $d->idusuario;
+    insertaBitacoraPresupuesto($db, $obj);
 }
 
 $app->post('/c', function(){
@@ -185,6 +192,13 @@ $app->post('/c', function(){
         creaDetallePresupuesto($d);
     }
 
+    $obj = new stdClass();
+    $obj->origen = 1;
+    $obj->idpresupuesto = $lastid;
+    $obj->evento = 'C';
+    $obj->idusuario = $d->idusuario;
+    insertaBitacoraPresupuesto($db, $obj);
+
     print json_encode(['lastid' => $lastid]);
 });
 
@@ -195,6 +209,13 @@ function actualizaDetallePresupuesto($d){
     $query.= "WHERE idpresupuesto = ".$d->id;
     $db->doQuery($query);
     updTotPresupuesto($d->idpresupuesto);
+    $idot = $db->getOneField("SELECT id FROM detpresupuesto WHERE idpresupuesto = $d->id LIMIT 1");
+    $obj = new stdClass();
+    $obj->origen = 2;
+    $obj->idpresupuesto = $idot;
+    $obj->evento = 'U';
+    $obj->idusuario = $d->idusuario;
+    insertaBitacoraPresupuesto($db, $obj);
 }
 
 $app->post('/u', function(){
@@ -207,6 +228,13 @@ $app->post('/u', function(){
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
 
+    $obj = new stdClass();
+    $obj->origen = 1;
+    $obj->idpresupuesto = $d->id;
+    $obj->evento = 'U';
+    $obj->idusuario = $d->idusuario;
+    insertaBitacoraPresupuesto($db, $obj);
+
     if((int)$d->tipo == 1){
         $d->idpresupuesto = $d->id;
         actualizaDetallePresupuesto($d);
@@ -216,6 +244,7 @@ $app->post('/u', function(){
 $app->post('/d', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    $db->doQuery("DELETE FROM bitacorapresupuesto WHERE origen = 1 AND idpresupuesto = $d->id");
     $db->doQuery("DELETE FROM detpresupuesto WHERE idpresupuesto = $d->id");
     $db->doQuery("DELETE FROM presupuesto WHERE id = $d->id");
 });
@@ -225,14 +254,25 @@ $app->post('/ep', function(){
     if(!isset($d->esot)){ $d->esot = 0; }
     $db = new dbcpm();
     $idot = $d->id;
+    $obj = new stdClass();
     if($d->esot == 0){
         $query = "UPDATE presupuesto SET fhenvioaprobacion = NOW(), idestatuspresupuesto = 2, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE id = $d->id";
         $db->doQuery($query);
         $query = "SELECT id FROM detpresupuesto WHERE idpresupuesto = $d->id LIMIT 1";
         $idot = $db->getOneField($query);
+        $obj->origen = 1;
+        $obj->idpresupuesto = $d->id;
+        $obj->evento = 'U';
+        $obj->idusuario = $d->idusuario;
+        insertaBitacoraPresupuesto($db, $obj);
     }
     $query = "UPDATE detpresupuesto SET fhenvioaprobacion = NOW(), idestatuspresupuesto = 2, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE id = $idot";
     $db->doQuery($query);
+    $obj->origen = 2;
+    $obj->idpresupuesto = $idot;
+    $obj->evento = 'U';
+    $obj->idusuario = $d->idusuario;
+    insertaBitacoraPresupuesto($db, $obj);
 });
 
 $app->post('/ap', function(){
@@ -240,9 +280,20 @@ $app->post('/ap', function(){
     $db = new dbcpm();
     $query = "UPDATE detpresupuesto SET idestatuspresupuesto = 3, fhaprobacion = NOW(), idusuarioaprueba = $d->idusuario, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE id = $d->idot";
     $db->getQuery($query);
+    $obj = new stdClass();
+    $obj->origen = 2;
+    $obj->idpresupuesto = $d->idot;
+    $obj->evento = 'A';
+    $obj->idusuario = $d->idusuario;
+    insertaBitacoraPresupuesto($db, $obj);
     if((int)$d->tipo == 1){
         $query = "UPDATE presupuesto SET idestatuspresupuesto = 3, fhaprobacion = NOW(), idusuarioaprueba = $d->idusuario, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE id = $d->id";
         $db->getQuery($query);
+        $obj->origen = 1;
+        $obj->idpresupuesto = $d->id;
+        $obj->evento = 'A';
+        $obj->idusuario = $d->idusuario;
+        insertaBitacoraPresupuesto($db, $obj);
     }
 });
 
@@ -251,9 +302,20 @@ $app->post('/np', function(){
     $db = new dbcpm();
     $query = "UPDATE detpresupuesto SET idestatuspresupuesto = 4, fhaprobacion = NOW(), idusuarioaprueba = $d->idusuario, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE id = $d->idot";
     $db->getQuery($query);
+    $obj = new stdClass();
+    $obj->origen = 2;
+    $obj->idpresupuesto = $d->idot;
+    $obj->evento = 'N';
+    $obj->idusuario = $d->idusuario;
+    insertaBitacoraPresupuesto($db, $obj);
     if((int)$d->tipo == 1){
         $query = "UPDATE presupuesto SET idestatuspresupuesto = 4, fhaprobacion = NOW(), idusuarioaprueba = $d->idusuario, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE id = $d->id";
         $db->getQuery($query);
+        $obj->origen = 1;
+        $obj->idpresupuesto = $d->id;
+        $obj->evento = 'N';
+        $obj->idusuario = $d->idusuario;
+        insertaBitacoraPresupuesto($db, $obj);
     }
 });
 
@@ -262,14 +324,25 @@ $app->post('/tp', function(){
     if(!isset($d->esot)){ $d->esot = 0; }
     $db = new dbcpm();
     $idot = $d->id;
+    $obj = new stdClass();
     if($d->esot == 0){
         $query = "UPDATE presupuesto SET idestatuspresupuesto = 5, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE id = $d->id";
         $db->getQuery($query);
         $query = "SELECT id FROM detpresupuesto WHERE idpresupuesto = $d->id LIMIT 1";
         $idot = $db->getOneField($query);
+        $obj->origen = 1;
+        $obj->idpresupuesto = $d->id;
+        $obj->evento = 'T';
+        $obj->idusuario = $d->idusuario;
+        insertaBitacoraPresupuesto($db, $obj);
     }
     $query = "UPDATE detpresupuesto SET idestatuspresupuesto = 5, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE id = $idot";
     $db->getQuery($query);
+    $obj->origen = 2;
+    $obj->idpresupuesto = $idot;
+    $obj->evento = 'T';
+    $obj->idusuario = $d->idusuario;
+    insertaBitacoraPresupuesto($db, $obj);
 });
 
 $app->post('/rp', function(){
@@ -277,14 +350,25 @@ $app->post('/rp', function(){
     if(!isset($d->esot)){ $d->esot = 0; }
     $db = new dbcpm();
     $idot = $d->id;
+    $obj = new stdClass();
     if($d->esot == 0){
         $query = "UPDATE presupuesto SET idestatuspresupuesto = 3, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE id = $d->id";
         $db->getQuery($query);
         $query = "SELECT id FROM detpresupuesto WHERE idpresupuesto = $d->id LIMIT 1";
         $idot = $db->getOneField($query);
+        $obj->origen = 1;
+        $obj->idpresupuesto = $d->id;
+        $obj->evento = 'R';
+        $obj->idusuario = $d->idusuario;
+        insertaBitacoraPresupuesto($db, $obj);
     }
     $query = "UPDATE detpresupuesto SET idestatuspresupuesto = 3, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE id = $idot";
     $db->getQuery($query);
+    $obj->origen = 2;
+    $obj->idpresupuesto = $idot;
+    $obj->evento = 'R';
+    $obj->idusuario = $d->idusuario;
+    insertaBitacoraPresupuesto($db, $obj);
 });
 
 $app->post('/anulapres', function(){
@@ -292,14 +376,25 @@ $app->post('/anulapres', function(){
     if(!isset($d->esot)){ $d->esot = 0; }
     $db = new dbcpm();
     $idot = $d->id;
+    $obj = new stdClass();
     if($d->esot == 0){
         $query = "UPDATE presupuesto SET idestatuspresupuesto = 6, fhanulacion = NOW(), idusuarioanula = $d->idusuarioanula, idrazonanula = $d->idrazonanula WHERE id = $d->id";
         $db->getQuery($query);
         $query = "SELECT id FROM detpresupuesto WHERE idpresupuesto = $d->id LIMIT 1";
         $idot = $db->getOneField($query);
+        $obj->origen = 1;
+        $obj->idpresupuesto = $d->id;
+        $obj->evento = 'V';
+        $obj->idusuario = $d->idusuario;
+        insertaBitacoraPresupuesto($db, $obj);
     }
     $query = "UPDATE detpresupuesto SET idestatuspresupuesto = 6, fhanulacion = NOW(), idusuarioanula = $d->idusuarioanula, idrazonanula = $d->idrazonanula WHERE id = $idot";
     $db->getQuery($query);
+    $obj->origen = 2;
+    $obj->idpresupuesto = $idot;
+    $obj->evento = 'V';
+    $obj->idusuario = $d->idusuario;
+    insertaBitacoraPresupuesto($db, $obj);
 });
 
 //API detalle de presupuestos (OTs)
@@ -349,8 +444,15 @@ $app->post('/cd', function(){
     $query.= "$d->idpresupuesto, $correlativo, $d->idproveedor, $d->idsubtipogasto, $d->coniva, $d->monto, $d->tipocambio, $excedente, '$d->notas', $d->origenprov, $d->idmoneda";
     $query.= ")";
     $db->doQuery($query);
+    $lastid = $db->getLastId();
     updTotPresupuesto($d->idpresupuesto);
-    print json_encode(['lastid' => $db->getLastId()]);
+    $obj = new stdClass();
+    $obj->origen = 2;
+    $obj->idpresupuesto = $lastid;
+    $obj->evento = 'C';
+    $obj->idusuario = $d->idusuario;
+    insertaBitacoraPresupuesto($db, $obj);
+    print json_encode(['lastid' => $lastid]);
 });
 
 
@@ -363,6 +465,12 @@ $app->post('/ud', function(){
     $query.= "WHERE id = $d->id";
     $db->doQuery($query);
     updTotPresupuesto($d->idpresupuesto);
+    $obj = new stdClass();
+    $obj->origen = 2;
+    $obj->idpresupuesto = $d->id;
+    $obj->evento = 'U';
+    $obj->idusuario = $d->idusuario;
+    insertaBitacoraPresupuesto($db, $obj);
 });
 
 $app->post('/dd', function(){
@@ -732,6 +840,30 @@ $app->post('/dap', function(){
 
     $query = "DELETE FROM ampliapresupuesto WHERE id = $d->idamplia";
     $db->doQuery($query);
+});
+
+//Bitacora de presupuestos
+
+$app->get('/gbp/:origen/:idpresupuesto', function($origen, $idpresupuesto){
+    $db = new dbcpm();
+    $query = "SELECT b.descripcion AS evento, DATE_FORMAT(a.fechahora, '%d/%m/%Y %H:%i:%s') AS fechahora, c.iniciales ";
+    $query.= "FROM bitacorapresupuesto a INNER JOIN eventobitapresup b ON a.evento = b.abreviatura INNER JOIN usuario c ON c.id = a.idusuario ";
+    $query.= "WHERE origen = $origen AND idpresupuesto = $idpresupuesto ";
+    $query.= "ORDER BY a.fechahora";
+    print $db->doSelectASJson($query);
+});
+
+function insertaBitacoraPresupuesto($db, $d){
+    $query = "INSERT INTO bitacorapresupuesto(origen, idpresupuesto, evento, idusuario) VALUES(";
+    $query.= "$d->origen, $d->idpresupuesto, '$d->evento', $d->idusuario";
+    $query.= ")";
+    $db->doQuery($query);
+}
+
+$app->post('/ibp', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    insertaBitacoraPresupuesto($db, $d);
 });
 
 $app->run();

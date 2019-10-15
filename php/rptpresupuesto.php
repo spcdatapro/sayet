@@ -151,6 +151,13 @@ $app->post('/rptpresupuesto', function(){
 
     $presupuesto->ots = $db->getQuery($query);
 
+    $query = "SELECT b.descripcion AS evento, DATE_FORMAT(a.fechahora, '%d/%m/%Y %H:%i:%s') AS fechahora, c.iniciales ";
+    $query.= "FROM bitacorapresupuesto a INNER JOIN eventobitapresup b ON a.evento = b.abreviatura INNER JOIN usuario c ON c.id = a.idusuario ";
+    $query.= "WHERE origen = 1 AND idpresupuesto = $d->idpresupuesto ";
+    $query.= "ORDER BY a.fechahora";
+
+    $presupuesto->eventos = $db->getQuery($query);
+
     if((int)$d->detallado == 1){
         $cntOTs = count($presupuesto->ots);
         for($i = 0; $i < $cntOTs; $i++){
