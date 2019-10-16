@@ -450,7 +450,7 @@ $app->post('/cd', function(){
     $obj->origen = 2;
     $obj->idpresupuesto = $lastid;
     $obj->evento = 'C';
-    $obj->idusuario = $d->idusuario;
+    $obj->idusuario = 0;
     insertaBitacoraPresupuesto($db, $obj);
     print json_encode(['lastid' => $lastid]);
 });
@@ -469,7 +469,7 @@ $app->post('/ud', function(){
     $obj->origen = 2;
     $obj->idpresupuesto = $d->id;
     $obj->evento = 'U';
-    $obj->idusuario = $d->idusuario;
+    $obj->idusuario = 0;
     insertaBitacoraPresupuesto($db, $obj);
 });
 
