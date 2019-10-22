@@ -435,6 +435,7 @@ $app->get('/getot/:idot', function($idot){
 
 $app->post('/cd', function(){
     $d = json_decode(file_get_contents('php://input'));
+    if(!isset($d->idusuario)){ $d->idusuario = 0; }
     $db = new dbcpm();
     $correlativo = (int)$db->getOneField("SELECT IF(ISNULL(MAX(correlativo)), 1, MAX(correlativo) + 1) AS correlativo FROM detpresupuesto WHERE idpresupuesto = $d->idpresupuesto");
     $excedente = round((float)$db->getOneField("SELECT excedente FROM confpresupuestos WHERE id = 1"), 2);
@@ -450,7 +451,7 @@ $app->post('/cd', function(){
     $obj->origen = 2;
     $obj->idpresupuesto = $lastid;
     $obj->evento = 'C';
-    $obj->idusuario = 0;
+    $obj->idusuario = $d->idusuario;
     insertaBitacoraPresupuesto($db, $obj);
     print json_encode(['lastid' => $lastid]);
 });
@@ -458,6 +459,7 @@ $app->post('/cd', function(){
 
 $app->post('/ud', function(){
     $d = json_decode(file_get_contents('php://input'));
+    if(!isset($d->idusuario)){ $d->idusuario = 0; }
     $db = new dbcpm();
     $query = "UPDATE detpresupuesto SET ";
     $query.= "idproveedor = $d->idproveedor, idsubtipogasto = $d->idsubtipogasto, coniva = $d->coniva, monto = $d->monto, tipocambio = $d->tipocambio, notas = '$d->notas', origenprov = $d->origenprov, ";
@@ -469,7 +471,7 @@ $app->post('/ud', function(){
     $obj->origen = 2;
     $obj->idpresupuesto = $d->id;
     $obj->evento = 'U';
-    $obj->idusuario = 0;
+    $obj->idusuario = $d->idusuario;
     insertaBitacoraPresupuesto($db, $obj);
 });
 

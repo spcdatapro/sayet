@@ -359,6 +359,7 @@
 
         function setDataOt(obj){
             obj.idpresupuesto = $scope.presupuesto.id;
+            obj.idusuario = $scope.usrdata.uid;
             return obj;
         }
 
