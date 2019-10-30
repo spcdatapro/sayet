@@ -530,20 +530,21 @@ $app->post('/pagoextra', function(){
                 $cliente = $proyecto->clientes[$k];
                 $andCliente = "AND j.cliente = ".(!is_null($cliente) ? "'".$cliente->cliente."'" : 'NULL');
                 $query = "SELECT j.serie, j.numero, DATE_FORMAT(j.fecha, '%d/%m/%Y') AS fecha, ";
-                $query.= "CONCAT('(', FORMAT(ABS(j.saldo), 2),')')) AS saldo ";
+                $query.= "CONCAT('(', FORMAT(ABS(j.saldo), 2),')') AS saldo ";
                 $query.= "FROM ($qFacts) j ";
                 $query.= "WHERE j.idempresa = $antiguedad->idempresa $andProyecto $andCliente ";
                 $query.= "ORDER BY j.fecha, j.numero";
+                //print $query;
                 $cliente->facturas = $db->getQuery($query);
-
-                $query = "SELECT '' AS serie, '' AS numero, 'Totales:' AS fecha, ";
-                $query.= "CONCAT('(', FORMAT(ABS(SUM(j.saldo)), 2), ')') AS saldo ";
-                $query.= "FROM ($qFacts) j ";
-                $query.= "WHERE j.idempresa = $antiguedad->idempresa $andProyecto $andCliente ";
-                $sumasCliente = $db->getQuery($query)[0];
+                if(count($cliente->facturas) > 0){
+                    $query = "SELECT '' AS serie, '' AS numero, 'Total:' AS fecha, ";
+                    $query.= "CONCAT('(', FORMAT(ABS(SUM(j.saldo)), 2), ')') AS saldo ";
+                    $query.= "FROM ($qFacts) j ";
+                    $query.= "WHERE j.idempresa = $antiguedad->idempresa $andProyecto $andCliente ";
+                    $cliente->facturas[] = $db->getQuery($query)[0];
+                }
             }
         }
-
         /*
         if($cntAntiguedades > 0){
             $query = "SELECT IF(SUM(IF(j.dias < 31, j.saldo, 0.00)) >= 0, FORMAT(SUM(IF(j.dias < 31, j.saldo, 0.00)), 2), CONCAT('(', FORMAT(ABS(SUM(IF(j.dias < 31, j.saldo, 0.00))), 2), ')')) AS r030, ";
@@ -562,11 +563,7 @@ $app->post('/pagoextra', function(){
             $antiguedad->saldo = $sumas->saldo;
         }*/
     }
-
-    $facturas = $db->getQuery($qFacts);
-
-    print json_encode(['generales' => $generales, 'facturas' => $facturas]);
-
+    print json_encode(['generales' => $generales, 'facturas' => $antiguedades]);
 });
 
 $app->run();
