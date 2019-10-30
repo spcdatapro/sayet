@@ -5,7 +5,7 @@
     rptanticlictrl.controller('rptAntiClientesCtrl', ['$scope',  'authSrvc', 'jsReportSrvc', '$sce','clienteSrvc','empresaSrvc', 'proyectoSrvc', ($scope, authSrvc, jsReportSrvc, $sce, clienteSrvc, empresaSrvc, proyectoSrvc) => {
 
         $scope.params = {
-            al: moment().toDate(), idempresa: undefined, idproyecto: undefined, detallada: 1, orderalfa: 1, cliente: undefined
+            al: moment().toDate(), idempresa: undefined, idproyecto: undefined, detallada: 1, orderalfa: 1, cliente: undefined, pagoextra: 0
         };
         $scope.content = `${window.location.origin}/sayet/blank.html`;
         //$scope.clientes = [];
@@ -20,7 +20,7 @@
 
         $scope.resetParams = () => {
             $scope.params = {
-                al: moment().toDate(), idempresa: undefined, idproyecto: undefined, detallada: 1, orderalfa: 1, cliente: undefined
+                al: moment().toDate(), idempresa: undefined, idproyecto: undefined, detallada: 1, orderalfa: 1, cliente: undefined, pagoextra: 0
             };
             $scope.$broadcast('angucomplete-alt:clearInput', 'txtCliente');
         };
@@ -45,12 +45,14 @@
             $scope.params.detallada = $scope.params.detallada != null && $scope.params.detallada !== undefined ? +$scope.params.detallada : 0;
             $scope.params.orderalfa = $scope.params.orderalfa != null && $scope.params.orderalfa !== undefined ? +$scope.params.orderalfa : 0;
             $scope.params.cliente = $scope.params.cliente != null && $scope.params.cliente !== undefined ? $scope.params.cliente : '';
+            $scope.params.pagoextra = $scope.params.pagoextra != null && $scope.params.pagoextra !== undefined ? +$scope.params.pagoextra : 0;
         };
 
         const test = false;
         $scope.getAntiCli = () => {
             setParams();
-            jsReportSrvc.getPDFReport(test ? 'rJfbwLe4B' : 'rJfbwLe4B', $scope.params).then((pdf) => $scope.content = pdf);
+            const idRpt = $scope.params.pagoextra === 0 ? (test ? 'rJfbwLe4B' : 'rJfbwLe4B') : (test ? 'B1UScXIcS' : 'B1UScXIcS');
+            jsReportSrvc.getPDFReport(idRpt, $scope.params).then((pdf) => $scope.content = pdf);
         };
 
         $scope.getAntiCliXLSX = () => {
