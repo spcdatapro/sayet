@@ -2,7 +2,7 @@
 
     var reciboclictrl = angular.module('cpm.reciboclictrl', []);
 
-    reciboclictrl.controller('reciboClientesCtrl',  ['$scope' , 'reciboClientesSrvc' , 'authSrvc' , '$route' , '$confirm' , '$filter'  , 'DTOptionsBuilder' , 'detContSrvc' , 'cuentacSrvc' , 'clienteSrvc', function($scope , reciboClientesSrvc , authSrvc , $route , $confirm , $filter , DTOptionsBuilder , detContSrvc , cuentacSrvc , clienteSrvc){
+    reciboclictrl.controller('reciboClientesCtrl',  ['$scope' , 'reciboClientesSrvc' , 'authSrvc' , '$route' , '$confirm' , '$filter'  , 'DTOptionsBuilder' , 'detContSrvc' , 'cuentacSrvc' , 'clienteSrvc', '$location', function($scope , reciboClientesSrvc , authSrvc , $route , $confirm , $filter , DTOptionsBuilder , detContSrvc , cuentacSrvc , clienteSrvc, $location){
 
         $scope.reccli = {idempresa: 0};
         $scope.reciboscli = [];
@@ -15,7 +15,10 @@
         $scope.lstdetcont = [];
         $scope.elDetCont = {};
         //Inicio modificacion
-        $scope.fltrre = {idempresa:0, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), recibostr:'', clientestr:'', ban_numerostr: '', ban_cuentastr:'', serie:''};
+        $scope.fltrre = {
+            idempresa:0, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), recibostr:'', clientestr:'', ban_numerostr: '',
+            ban_cuentastr:'', serie:'', tipo: 1
+        };
         //Fin modificacion
         $scope.origen = 8;
         $scope.cuentas = [];
@@ -24,7 +27,10 @@
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
         $scope.selected = {}; //Rony 2017-11-16 Editar monto abono
 
+        //console.log(`TIPO = `, $location.search());
+
         authSrvc.getSession().then(function(usrLogged){
+            $scope.setTipoRecibo();
             $scope.usr = usrLogged;
             if(parseInt(usrLogged.workingon) > 0){
                 authSrvc.gpr({idusuario: parseInt(usrLogged.uid), ruta:$route.current.params.name}).then(function(d){ $scope.permiso = d; });
@@ -37,6 +43,16 @@
                 $scope.loadTranBan($scope.reccli.idempresa);
             }
         });
+
+        $scope.setTipoRecibo = () => {
+            $scope.fltrre.tipo = 1;
+            const urlParams = $location.search();
+            if(urlParams){
+                if(urlParams.tipo){
+                    $scope.fltrre.tipo = +urlParams.tipo;
+                }
+            }
+        };
 
         clienteSrvc.lstCliente().then(function(d){
             d.push({
@@ -55,7 +71,7 @@
                 idtranban: 0,
                 idcliente: 0,
                 objTranBan: [],
-                objCliente: [],
+                objCliente: undefined,
                 espropio: 0,
                 serie: undefined,
                 numero: undefined,
@@ -113,6 +129,9 @@
             $scope.fltrre.clientestr = $scope.fltrre.clientestr != null && $scope.fltrre.clientestr != undefined ? $scope.fltrre.clientestr : '';
             $scope.fltrre.ban_numerostr = $scope.fltrre.ban_numerostr != null && $scope.fltrre.ban_numerostr != undefined ? $scope.fltrre.ban_numerostr : '';
             $scope.fltrre.ban_cuentastr = $scope.fltrre.ban_cuentastr != null && $scope.fltrre.ban_cuentastr != undefined ? $scope.fltrre.ban_cuentastr : '';
+
+            //console.clear(); console.log('FILTROS = ', $scope.fltrre);
+
             reciboClientesSrvc.lstRecibosClientes($scope.fltrre).then(function(d){
                 $scope.reciboscli = procDataRecs(d);
             });
@@ -143,7 +162,7 @@
         $scope.getRecCli = function(idreccli){
             reciboClientesSrvc.getReciboCliente(idreccli).then(function(d){
                 $scope.reccli = procDataRecs(d)[0];
-                $scope.reccli.objCliente = [$filter('getById')($scope.clientes, $scope.reccli.idcliente)];
+                $scope.reccli.objCliente = $filter('getById')($scope.clientes, $scope.reccli.idcliente);
                 $scope.reccli.objTranBan = [$filter('getById')($scope.tranban, $scope.reccli.idtranban)];
                 $scope.resetDetRecCli();
                 $scope.loadDetRecCli(idreccli);
@@ -155,11 +174,16 @@
         };
 
         function setRecCliData(obj){
+            //console.log(obj);
+
             obj.fechastr = moment(obj.fecha).format('YYYY-MM-DD');
-            obj.idcliente = obj.objCliente[0].id;
+            //obj.idcliente = obj.objCliente[0].id;
+            obj.idcliente = obj.objCliente.id;
             obj.espropio = obj.espropio != null && obj.espropio != undefined ? obj.espropio : 0;
             obj.idtranban = obj.objTranBan[0] != null && obj.objTranBan[0] != undefined ? obj.objTranBan[0].id : 0;
             obj.usuariocrea = $scope.usr.usuario;
+            obj.tipo = +$scope.fltrre.tipo;
+
             return obj;
         }
 
