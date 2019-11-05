@@ -11,13 +11,14 @@ $app->response->headers->set('Content-Type', 'application/json');
 //Inicio modificacion
 $app->post('/lstreciboscli', function(){ 
     $d = json_decode(file_get_contents('php://input'));
+    if(!isset($d->tipo)){ $d->tipo = 1; }
 
     $db = new dbcpm();
     $query = "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, c.tipotrans, c.numero AS notranban, e.nombre, ";
     $query.= "f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea ";
     $query.= "FROM recibocli a INNER JOIN cliente b ON b.id = a.idcliente LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion ";
     $query.= "LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda ";
-    $query.= "WHERE a.idempresa = " . $d->idempresa . " ";
+    $query.= "WHERE a.idempresa = $d->idempresa AND a.tipo = $d->tipo ";
     $query.= $d->fdelstr != '' ? "AND a.fecha >= '$d->fdelstr' " : "" ;
     $query.= $d->falstr != '' ? "AND a.fecha <= '$d->falstr' " : "" ;
     $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : "" ;
@@ -30,7 +31,7 @@ $app->post('/lstreciboscli', function(){
     $query.= "f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea ";
     $query.= "FROM recibocli a LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion ";
     $query.= "LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda ";
-    $query.= "WHERE a.idempresa = " . $d->idempresa . " ";
+    $query.= "WHERE a.idempresa = $d->idempresa AND a.tipo = $d->tipo AND (a.idcliente = 0 OR a.idcliente IS NULL) ";
     $query.= $d->fdelstr != '' ? "AND a.fecha >= '$d->fdelstr' " : "" ;
     $query.= $d->falstr != '' ? "AND a.fecha <= '$d->falstr' " : "" ;
     $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : "" ;
@@ -59,9 +60,10 @@ $app->get('/getrecibocli/:idrecibo', function($idrecibo){
 
 $app->post('/c', function(){
     $d = json_decode(file_get_contents('php://input'));
+    if(!isset($d->tipo)){ $d->tipo = 1; }
     $db = new dbcpm();
-    $query = "INSERT INTO recibocli(idempresa, fecha, fechacrea, idcliente, espropio, idtranban, serie, numero, usuariocrea) VALUES(";
-    $query.= "$d->idempresa,'$d->fechastr', NOW(), $d->idcliente, $d->espropio, $d->idtranban, '$d->serie', $d->numero, '$d->usuariocrea'";
+    $query = "INSERT INTO recibocli(idempresa, fecha, fechacrea, idcliente, espropio, idtranban, serie, numero, usuariocrea, tipo) VALUES(";
+    $query.= "$d->idempresa,'$d->fechastr', NOW(), $d->idcliente, $d->espropio, $d->idtranban, '$d->serie', $d->numero, '$d->usuariocrea', $d->tipo";
     $query.= ")";
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
@@ -69,6 +71,7 @@ $app->post('/c', function(){
 
 $app->post('/u', function(){
     $d = json_decode(file_get_contents('php://input'));
+    if(!isset($d->tipo)){ $d->tipo = 1; }
     $db = new dbcpm();
     $query = "UPDATE recibocli SET ";
     $query.= "fecha = '$d->fechastr', idcliente = $d->idcliente, espropio = $d->espropio, idtranban = $d->idtranban, serie = '$d->serie', numero = $d->numero, usuariocrea = '$d->usuariocrea' ";
