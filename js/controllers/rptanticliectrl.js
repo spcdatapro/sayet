@@ -5,7 +5,7 @@
     rptanticlictrl.controller('rptAntiClientesCtrl', ['$scope',  'authSrvc', 'jsReportSrvc', '$sce','clienteSrvc','empresaSrvc', 'proyectoSrvc', ($scope, authSrvc, jsReportSrvc, $sce, clienteSrvc, empresaSrvc, proyectoSrvc) => {
 
         $scope.params = {
-            al: moment().toDate(), idempresa: undefined, idproyecto: undefined, detallada: 1, orderalfa: 1, cliente: undefined, pagoextra: 0
+            al: moment().toDate(), idempresa: undefined, idproyecto: undefined, detallada: 1, orderalfa: 1, cliente: undefined, pagoextra: 0, vernegativos: 1
         };
         $scope.content = `${window.location.origin}/sayet/blank.html`;
         //$scope.clientes = [];
@@ -46,6 +46,7 @@
             $scope.params.orderalfa = $scope.params.orderalfa != null && $scope.params.orderalfa !== undefined ? +$scope.params.orderalfa : 0;
             $scope.params.cliente = $scope.params.cliente != null && $scope.params.cliente !== undefined ? $scope.params.cliente : '';
             $scope.params.pagoextra = $scope.params.pagoextra != null && $scope.params.pagoextra !== undefined ? +$scope.params.pagoextra : 0;
+            $scope.params.vernegativos = $scope.params.vernegativos != null && $scope.params.vernegativos !== undefined ? +$scope.params.vernegativos : 0;
         };
 
         const test = false;
