@@ -20,7 +20,7 @@
 
         $scope.resetParams = () => {
             $scope.params = {
-                al: moment().toDate(), idempresa: undefined, idproyecto: undefined, detallada: 1, orderalfa: 1, cliente: undefined, pagoextra: 0
+                al: moment().toDate(), idempresa: undefined, idproyecto: undefined, detallada: 1, orderalfa: 1, cliente: undefined, pagoextra: 0, vernegativos: 1
             };
             $scope.$broadcast('angucomplete-alt:clearInput', 'txtCliente');
         };
