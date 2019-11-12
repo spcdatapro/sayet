@@ -53,7 +53,7 @@ $app->post('/actinact', function(){
     $query.= "CONCAT(c.nomdepto,' - ',c.nombre) AS nombre_depto, d.descripcion as nombre_tipo_activo, ";
     $query.= "IF(a.horizontal = 1, 'SI', 'NO') AS eshorizontal, a.zona, a.fhcreacion, a.creadopor, a.nomclienteajeno, ";
     $query.= "CONCAT(IF(b.propia = 1, b.nomempresa, CONCAT(b.nomempresa, ' (', a.nomclienteajeno,')')), ' - ', a.finca, '-', a.folio, '-', a.libro) AS ffl, ";
-    $query.= "a.multilotes, IF(a.multilotes = 1, 'SI', 'NO') AS esmultilotes, a.direcciondos, a.fechacompra ";
+    $query.= "a.multilotes, IF(a.multilotes = 1, 'SI', 'NO') AS esmultilotes, a.direcciondos, a.fechacompra, DATE_FORMAT(a.fechabaja, '%d/%m/%Y') AS fechabaja ";
     $query.= "FROM activo a ";
     $query.= "LEFT JOIN empresa b ON a.idempresa=b.id ";
     $query.= "LEFT JOIN municipio c ON a.departamento = c.id ";
