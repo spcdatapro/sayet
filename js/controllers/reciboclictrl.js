@@ -75,7 +75,8 @@
                 espropio: 0,
                 serie: undefined,
                 numero: undefined,
-                usuariocrea: ''
+                usuariocrea: '',
+                concepto: undefined
             };
             goTop();
         };
@@ -183,6 +184,7 @@
             obj.idtranban = obj.objTranBan[0] != null && obj.objTranBan[0] != undefined ? obj.objTranBan[0].id : 0;
             obj.usuariocrea = $scope.usr.usuario;
             obj.tipo = +$scope.fltrre.tipo;
+            obj.concepto = obj.concepto != null && obj.concepto != undefined ? obj.concepto : '';
 
             return obj;
         }

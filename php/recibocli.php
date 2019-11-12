@@ -15,7 +15,7 @@ $app->post('/lstreciboscli', function(){
 
     $db = new dbcpm();
     $query = "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, c.tipotrans, c.numero AS notranban, e.nombre, ";
-    $query.= "f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea ";
+    $query.= "f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto ";
     $query.= "FROM recibocli a INNER JOIN cliente b ON b.id = a.idcliente LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion ";
     $query.= "LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda ";
     $query.= "WHERE a.idempresa = $d->idempresa AND a.tipo = $d->tipo ";
@@ -28,7 +28,7 @@ $app->post('/lstreciboscli', function(){
     $query.= $d->ban_cuentastr != '' ? "AND e.nombre LIKE '%$d->ban_cuentastr%' " : "" ;
     $query.= " UNION ALL ";
     $query.= "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, 'Facturas contado (Clientes varios)' AS cliente, c.tipotrans, c.numero AS notranban, e.nombre, ";
-    $query.= "f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea ";
+    $query.= "f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto ";
     $query.= "FROM recibocli a LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion ";
     $query.= "LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda ";
     $query.= "WHERE a.idempresa = $d->idempresa AND a.tipo = $d->tipo AND (a.idcliente = 0 OR a.idcliente IS NULL) ";
@@ -45,25 +45,35 @@ $app->post('/lstreciboscli', function(){
 $app->get('/getrecibocli/:idrecibo', function($idrecibo){
     $db = new dbcpm();
     $query = "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, c.tipotrans, c.numero AS notranban, e.nombre, ";
-    $query.= "f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea ";
+    $query.= "f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto ";
     $query.= "FROM recibocli a INNER JOIN cliente b ON b.id = a.idcliente LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion ";
     $query.= "LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda ";
     $query.= "WHERE a.id = $idrecibo";
     $query.= " UNION ALL ";
     $query.= "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, 'Facturas contado (Clientes varios)' AS cliente, c.tipotrans, c.numero AS notranban, e.nombre, ";
-    $query.= "f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea ";
+    $query.= "f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto ";
     $query.= "FROM recibocli a LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion ";
     $query.= "LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda ";
     $query.= "WHERE a.id = $idrecibo";
     print $db->doSelectASJson($query);
 });
 
+function getCorrelativoInterno($db){
+
+}
+
 $app->post('/c', function(){
     $d = json_decode(file_get_contents('php://input'));
-    if(!isset($d->tipo)){ $d->tipo = 1; }
     $db = new dbcpm();
-    $query = "INSERT INTO recibocli(idempresa, fecha, fechacrea, idcliente, espropio, idtranban, serie, numero, usuariocrea, tipo) VALUES(";
-    $query.= "$d->idempresa,'$d->fechastr', NOW(), $d->idcliente, $d->espropio, $d->idtranban, '$d->serie', $d->numero, '$d->usuariocrea', $d->tipo";
+    if(!isset($d->tipo)){ $d->tipo = 1; }
+    if(!isset($d->concepto)){ $d->conceto = ''; }
+    if((int)$d->tipo == 2){
+        $d->serie = 'I';
+        $d->numero = (int)$db->getOneField('SELECT IFNULL(MAX(numero), 0) + 1 FROM recibocli WHERE tipo = 2');
+    }
+
+    $query = "INSERT INTO recibocli(idempresa, fecha, fechacrea, idcliente, espropio, idtranban, serie, numero, usuariocrea, tipo, concepto) VALUES(";
+    $query.= "$d->idempresa,'$d->fechastr', NOW(), $d->idcliente, $d->espropio, $d->idtranban, '$d->serie', $d->numero, '$d->usuariocrea', $d->tipo, $d->concepto";
     $query.= ")";
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
@@ -72,9 +82,12 @@ $app->post('/c', function(){
 $app->post('/u', function(){
     $d = json_decode(file_get_contents('php://input'));
     if(!isset($d->tipo)){ $d->tipo = 1; }
+    if(!isset($d->concepto)){ $d->conceto = ''; }
     $db = new dbcpm();
     $query = "UPDATE recibocli SET ";
-    $query.= "fecha = '$d->fechastr', idcliente = $d->idcliente, espropio = $d->espropio, idtranban = $d->idtranban, serie = '$d->serie', numero = $d->numero, usuariocrea = '$d->usuariocrea' ";
+    $query.= "fecha = '$d->fechastr', idcliente = $d->idcliente, espropio = $d->espropio, idtranban = $d->idtranban, ";
+    $query.= (int)$d->tipo == 1 ? "serie = '$d->serie', numero = $d->numero " : "concepto = '$d->concepto', ";
+    $query.= "usuariocrea = '$d->usuariocrea' ";
     $query.= "WHERE id = $d->id";
     $db->doQuery($query);
 });

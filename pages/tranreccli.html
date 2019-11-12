@@ -4,7 +4,7 @@
 <div class="container" ng-controller="reciboClientesCtrl">
     <ul class="nav nav-tabs">
         <li class="active">
-            <a show-tab href="#divFrmRecCli" data-toggle="tab">RECIBOS {{+fltrre.tipo == 1 ? 'A CLIENTES' : 'PROVISIONALES'}}</a>
+            <a show-tab href="#divFrmRecCli" data-toggle="tab">RECIBOS {{+fltrre.tipo == 1 ? 'A CLIENTES' : 'INTERNOS'}}</a>
         </li>
         <li ng-show="reccli.id > 0">
             <a show-tab href="#divDocs" data-toggle="tab">DOCUMENTOS A REBAJAR</a>
@@ -16,11 +16,11 @@
     <div class="tab-content">
         <div id="divFrmRecCli" class="tab-pane fade in active">
             <div class="panel panel-primary">
-                <div class="panel-heading">Recibos {{+fltrre.tipo == 1 ? 'a clientes' : 'provisionales'}}</div>
+                <div class="panel-heading">Recibos {{+fltrre.tipo == 1 ? 'a clientes' : 'internos'}}</div>
                 <div class="panel-body">
                     <form name="frmRecCli" id="frmRecCli" ng-submit="frmRecCli.$valid && addRecCli(reccli)" novalidate>
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-3" ng-show="+fltrre.tipo == 1">
                                 <div class="form-group">
                                     <label for="lblNoRec">Correlativo:</label>
                                     <span name="lblNoRec" id="lblNoRec" class="form-control">{{ reccli.id != null && reccli.id != undefined ? (reccli.id | padNumber:5) : ''}}</span>
@@ -29,13 +29,13 @@
                             <div class="col-md-2">
                                 <div class="form-group" ng-class="{'has-error':frmRecCli.txtSerie.$invalid && !frmRecCli.txtSerie.$pristine}">
                                     <label for="txtSerie">Serie:</label>
-                                    <input name="txtSerie" id="txtSerie" type="text" maxlength="5" class="form-control" ng-model="reccli.serie" required />
+                                    <input name="txtSerie" id="txtSerie" type="text" maxlength="5" class="form-control" ng-model="reccli.serie" ng-required="+fltrre.tipo == 1" ng-disabled="+fltrre.tipo == 2" />
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group" ng-class="{'has-error':frmRecCli.txtNumero.$invalid && !frmRecCli.txtNumero.$pristine}">
                                     <label for="txtNumero">N&uacute;mero:</label>
-                                    <input name="txtNumero" id="txtNumero" type="number" class="form-control" ng-model="reccli.numero" required />
+                                    <input name="txtNumero" id="txtNumero" type="number" class="form-control" ng-model="reccli.numero" ng-required="+fltrre.tipo == 1" ng-disabled="+fltrre.tipo == 2" />
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -112,6 +112,14 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row" ng-show="+fltrre.tipo == 2">
+                            <div class="col-md-9">
+                                <div class="form-group">
+                                    <label for="selTranBan">Concepto:</label>
+                                    <textarea class="form-control" ng-model="reccli.concepto" placeholder="Concepto del recibo interno..." rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-12 text-right">
                                 <span class="bld">Fecha/hora creaci&oacute;n: {{reccli.fechacrea | date:'dd/MM/yyyy HH:mm:ss'}}</span><br/>
@@ -172,17 +180,22 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <label for="srchTxtcli">Cliente:</label>
-                                        <input name="srchTxtcli" id="srchTxtcli" type="text" class="form-control input-sm" ng-model="fltrre.clientestr"/>
+                                        <div class="input-group">
+                                            <input name="srchTxtcli" id="srchTxtcli" type="text" class="form-control input-sm" ng-model="fltrre.clientestr"/>
+                                            <span class="input-group-btn" ng-show="+fltrre.tipo == 2">
+                                                <button type="button" class="btn btn-primary btn-sm" ng-click="getLstRecibosCli()"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4" ng-show="+fltrre.tipo == 1">
                                         <label for="srchTxtNumb">No. de Transacci&oacute;n:</label>
                                         <input name="srchTxtNumb" id="srchTxtNumb" type="text" class="form-control input-sm" ng-model="fltrre.ban_numerostr"/>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4" ng-show="+fltrre.tipo == 1">
                                         <label for="srchTxtNomb">Nombre del Banco:</label>
                                         <div class="input-group">
                                             <input name="srchTxtNomb" id="srchTxtNomb" type="text" class="form-control input-sm" ng-model="fltrre.ban_cuentastr"/>
-                                        <span class="input-group-btn">
+                                            <span class="input-group-btn">
                                             <button type="button" class="btn btn-primary btn-sm" ng-click="getLstRecibosCli()"><i class="fa fa-search" aria-hidden="true"></i></button>
                                         </span>
                                         </div>
@@ -194,7 +207,7 @@
                         <thead>
                         <tr>
                             <th>N&uacute;mero</th>
-                            <th>Correlativo</th>
+                            <th ng-show="+fltrre.tipo == 1">Correlativo</th>
                             <th>Fecha</th>
                             <th>Cliente</th>
                             <th ng-show="+fltrre.tipo == 1">Dep&oacute;sito/Nota de cr&eacute;dito</th>
@@ -204,7 +217,7 @@
                         <tbody>
                         <tr ng-repeat="rec in reciboscli" ng-click="getRecCli(rec.id)">
                             <td>{{rec.serie || ''}}{{rec.numero || ''}}</td>
-                            <td>{{rec.id | padNumber:5}}</td>
+                            <td ng-show="+fltrre.tipo == 1">{{rec.id | padNumber:5}}</td>
                             <td>{{rec.fecha | date:'dd/MM/yyyy'}}</td>
                             <td>{{rec.cliente}}</td>
                             <td ng-show="+fltrre.tipo == 1">{{rec.tipotrans}} {{rec.notranban}} {{rec.nombre}} {{rec.simbolo}} {{rec.monto | number:2}}</td>
