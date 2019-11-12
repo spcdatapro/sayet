@@ -73,7 +73,7 @@ $app->post('/c', function(){
     }
 
     $query = "INSERT INTO recibocli(idempresa, fecha, fechacrea, idcliente, espropio, idtranban, serie, numero, usuariocrea, tipo, concepto) VALUES(";
-    $query.= "$d->idempresa,'$d->fechastr', NOW(), $d->idcliente, $d->espropio, $d->idtranban, '$d->serie', $d->numero, '$d->usuariocrea', $d->tipo, $d->concepto";
+    $query.= "$d->idempresa,'$d->fechastr', NOW(), $d->idcliente, $d->espropio, $d->idtranban, '$d->serie', $d->numero, '$d->usuariocrea', $d->tipo, '$d->concepto'";
     $query.= ")";
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
