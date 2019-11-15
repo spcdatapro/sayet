@@ -81,13 +81,13 @@ function vencimientos($d, $inc){
         $contrato->cargos = [];
         $query = "SELECT DISTINCT b.idtipoventa, c.desctiposervventa AS servicio ";
         $query.= "FROM cargo a INNER JOIN detfactcontrato b ON b.id = a.iddetcont INNER JOIN tiposervicioventa c ON c.id = b.idtipoventa ";
-        $query.= "WHERE a.idcontrato = $contrato->idcontrato AND a.fechacobro <= '$d->falstr' AND a.anulado = 0 AND a.facturado = 0 ";
+        $query.= "WHERE a.idcontrato = $contrato->idcontrato AND a.fechacobro <= '$d->falstr' AND a.anulado = 0 ";
         $query.= "ORDER BY c.desctiposervventa";
         $tipos = $db->getQuery($query);
         foreach($tipos as $tipo){
             $query = "SELECT a.fechacobro, c.simbolo, a.monto ";
             $query.= "FROM cargo a INNER JOIN detfactcontrato b ON b.id = a.iddetcont INNER JOIN moneda c ON c.id = b.idmoneda ";
-            $query.= "WHERE a.idcontrato = $contrato->idcontrato AND a.fechacobro <= '$d->falstr' AND b.idtipoventa = $tipo->idtipoventa AND a.anulado = 0 AND a.facturado = 0 ";
+            $query.= "WHERE a.idcontrato = $contrato->idcontrato AND a.fechacobro <= '$d->falstr' AND b.idtipoventa = $tipo->idtipoventa AND a.anulado = 0 ";
             $query.= "ORDER BY a.fechacobro DESC";
             $cargos = $db->getQuery($query);
             $cnt = count($cargos);
