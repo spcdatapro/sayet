@@ -1,6 +1,7 @@
 <?php
 require 'vendor/autoload.php';
 require_once 'db.php';
+require_once 'NumberToLetterConverter.class.php';
 
 //header('Content-Type: application/json');
 
@@ -232,6 +233,26 @@ $app->post('/dd', function(){
     if($haypendiente){
         $query = "UPDATE factura SET pagada = 0, fechapago = NULL WHERE id = $d->idfactura";
         $db->doQuery($query);
+    }
+});
+
+$app->post('/prntrecint', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $n2l = new NumberToLetterConverter();
+    $db = new dbcpm();
+    $query = "SELECT a.serie, a.numero, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, b.nombre AS cliente, b.nombrecorto AS abreviacliente, ";
+    $query .= "a.concepto, a.usuariocrea AS hechopor, (SELECT FORMAT(IFNULL(SUM(monto), 0.00), 2) FROM detcobroventa WHERE idrecibocli = a.id) AS monto, ";
+    $query .= "(SELECT IFNULL(SUM(monto), 0.00) FROM detcobroventa WHERE idrecibocli = a.id) AS total, NULL as montoletras ";
+    $query .= "FROM recibocli a INNER JOIN cliente b ON b.id = a.idcliente ";
+    $query .= "WHERE a.id = $d->id";
+
+    $recibo = $db->getQuery($query);
+
+    if (count($recibo) > 0) {
+        $recibo[0]->montoletras = $n2l->to_word($recibo[0]->total, 'GTQ');
+        print json_encode(['recibo' => $recibo[0]]);
+    } else {
+        print json_encode(['recibo' => null]);
     }
 });
 
