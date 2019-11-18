@@ -133,6 +133,9 @@
                             <button type="button" class="btn btn-primary" ng-disabled="frmRecCli.$invalid || !permiso.m" ng-show="reccli.id > 0" ng-click="updRecCli(reccli)">
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                             </button>
+                            <button type="button" class="btn btn-primary" ng-show="+reccli.id > 0" ng-click="print(reccli.id)">
+                                <span class="glyphicon glyphicon-print"></span>
+                            </button>
                             <!--
                             <button type="button" class="btn btn-warning" ng-disabled="frmRecCli.$invalid || laTran.anulado === 1" ng-show="editando && laTran.tipotrans === 'C'" ng-click="anular(laTran)">
                                 <span class="glyphicon glyphicon-ban-circle"></span>

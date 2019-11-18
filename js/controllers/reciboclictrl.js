@@ -2,7 +2,7 @@
 
     var reciboclictrl = angular.module('cpm.reciboclictrl', []);
 
-    reciboclictrl.controller('reciboClientesCtrl',  ['$scope' , 'reciboClientesSrvc' , 'authSrvc' , '$route' , '$confirm' , '$filter'  , 'DTOptionsBuilder' , 'detContSrvc' , 'cuentacSrvc' , 'clienteSrvc', '$location', function($scope , reciboClientesSrvc , authSrvc , $route , $confirm , $filter , DTOptionsBuilder , detContSrvc , cuentacSrvc , clienteSrvc, $location){
+    reciboclictrl.controller('reciboClientesCtrl',  ['$scope' , 'reciboClientesSrvc' , 'authSrvc' , '$route' , '$confirm' , '$filter'  , 'DTOptionsBuilder' , 'detContSrvc' , 'cuentacSrvc' , 'clienteSrvc', '$location', 'jsReportSrvc', '$window', function($scope , reciboClientesSrvc , authSrvc , $route , $confirm , $filter , DTOptionsBuilder , detContSrvc , cuentacSrvc , clienteSrvc, $location, jsReportSrvc, $window){
 
         $scope.reccli = {idempresa: 0};
         $scope.reciboscli = [];
@@ -172,6 +172,10 @@
                 $scope.loadDetCont(idreccli);
                 goTop();
             });
+        };
+
+        $scope.print = (idrecibo) => {
+            jsReportSrvc.getPDFReport('SyCpWvxhr', {id: +idrecibo}).then(function(pdf){ $window.open(pdf); });
         };
 
         function setRecCliData(obj){
