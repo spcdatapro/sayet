@@ -291,7 +291,7 @@ $app->post('/gengface', function() use($app){
 
     $query.= "FROM factura a INNER JOIN cliente b ON b.id = a.idcliente ";
     $query.= "WHERE a.idempresa = $d->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.anulada = 0 AND (ISNULL(a.firmaelectronica) OR TRIM(a.firmaelectronica) = '') ";
-    $query.= "AND a.id > 3680 ";
+    $query.= "AND a.id > 3680 AND a.total <> 0 ";
     $query.=  $d->listafact != '' ? "AND a.id IN($d->listafact) " : '';
     $query.= "UNION ";
     $query.= "SELECT CONCAT(LPAD(YEAR(a.fecha), 4, ' '), LPAD(MONTH(a.fecha), 4, ' '), LPAD(DAY(a.fecha), 4, ' ')) AS fecha, 'FACE' AS tipodoc, a.nit, '1' AS codmoneda, a.id AS idfactura, 'S' AS tipoventa, ";
@@ -307,7 +307,7 @@ $app->post('/gengface', function() use($app){
 
     $query.= "FROM factura a ";
     $query.= "WHERE a.idempresa = $d->idempresa AND a.idcliente = 0 AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.anulada = 0 AND (ISNULL(a.firmaelectronica) OR TRIM(a.firmaelectronica) = '') ";
-    $query.= "AND a.id > 3680 ";
+    $query.= "AND a.id > 3680 AND a.total <> 0 ";
     $query.=  $d->listafact != '' ? "AND a.id IN($d->listafact) " : '';
     //print $query;
     $facturas = $db->getQuery($query);
