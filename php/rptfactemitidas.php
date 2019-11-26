@@ -105,14 +105,14 @@ $app->post('/factspend', function(){
     $qGen.= "
         UNION ALL
         SELECT d.nombre AS cliente, d.nombrecorto AS abreviacliente, 'Agua' AS tipo,
-        IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, (((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) * b.preciomcubsug), 0.00) AS montoconiva,
+        IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, (((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) * b.preciomcubsug) - IFNULL(a.descuento, 0.00), 0.00) AS montoconiva,
         DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechacobro, b.idempresa 
         FROM lecturaservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico INNER JOIN contrato c ON c.id = (SELECT b.id FROM contrato b WHERE FIND_IN_SET(a.idunidad, b.idunidad) LIMIT 1)
         INNER JOIN cliente d ON d.id = c.idcliente INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio
         INNER JOIN proyecto g ON g.id = a.idproyecto INNER JOIN unidad h ON h.id = a.idunidad
         WHERE a.estatus IN(1, 2) AND b.pagacliente = 0 AND
         a.mes <= MONTH('$d->falstr') AND a.anio <= YEAR('$d->falstr') AND (c.inactivo = 0 OR (c.inactivo = 1 AND c.fechainactivo > '$d->falstr')) AND
-        IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, (((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) * b.preciomcubsug), 0.00 ) > 0 ";
+        IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, (((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) * b.preciomcubsug) - IFNULL(a.descuento, 0.00), 0.00 ) > 0 ";
     $qGen.= $d->idempresa != '' ? "AND b.idempresa IN($d->idempresa) " : '';
     $qGen.= (int)$d->idproyecto > 0 ? "AND c.idproyecto = $d->idproyecto " : '';
     $qGen.= !in_array((int)$d->idtsventa, [0, 4]) ? " AND 0 = 1 " : '';
