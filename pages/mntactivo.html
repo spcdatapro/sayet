@@ -327,6 +327,9 @@
                                         ng-click="updActivo(elActivo, elActivo.id)" ng-show="grpBtnActivo.u">
                                     <span class="glyphicon glyphicon-floppy-save"></span>
                                 </button>
+                                <button type="button" class="btn btn-primary" ng-click="prntInactivo(elActivo.id)" ng-show="+elActivo.id > 0 && +elActivo.debaja == 1">
+                                    <span class="glyphicon glyphicon-print"></span>&nbsp;Inactivo
+                                </button>
                                 <button type="button" class="btn btn-warning" ng-click="btnCA()" ng-show="grpBtnActivo.c">
                                     <span class="glyphicon glyphicon-remove-circle"></span>
                                 </button>
