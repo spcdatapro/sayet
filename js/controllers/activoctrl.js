@@ -2,7 +2,7 @@
 
     var activoctrl = angular.module('cpm.activoctrl', ['cpm.activosrvc']);
 
-    activoctrl.controller('activoCtrl', ['$scope', '$rootScope', 'activoSrvc', 'empresaSrvc','tipoactivoSrvc','activoAdjuntoSrvc','tipoAdjuntoSrvc','Upload','DTOptionsBuilder','municipioSrvc', 'authSrvc', '$confirm', '$route', '$location', 'localStorageSrvc', '$filter', 'jsReportSrvc', function($scope, $rootScope, activoSrvc, empresaSrvc, tipoactivoSrvc,activoAdjuntoSrvc,tipoAdjuntoSrvc,Upload,DTOptionsBuilder,municipioSrvc, authSrvc, $confirm, $route, $location, localStorageSrvc, $filter, jsReportSrvc){
+    activoctrl.controller('activoCtrl', ['$scope', '$rootScope', 'activoSrvc', 'empresaSrvc','tipoactivoSrvc','activoAdjuntoSrvc','tipoAdjuntoSrvc','Upload','DTOptionsBuilder','municipioSrvc', 'authSrvc', '$confirm', '$route', '$location', 'localStorageSrvc', '$filter', 'jsReportSrvc', '$window', function($scope, $rootScope, activoSrvc, empresaSrvc, tipoactivoSrvc,activoAdjuntoSrvc,tipoAdjuntoSrvc,Upload,DTOptionsBuilder,municipioSrvc, authSrvc, $confirm, $route, $location, localStorageSrvc, $filter, jsReportSrvc, $window){
 
         $scope.elActivo = {nomclienteajeno: ''};
         $scope.lasEmpresas = [];
