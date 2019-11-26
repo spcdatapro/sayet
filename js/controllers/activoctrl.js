@@ -2,7 +2,7 @@
 
     var activoctrl = angular.module('cpm.activoctrl', ['cpm.activosrvc']);
 
-    activoctrl.controller('activoCtrl', ['$scope', '$rootScope', 'activoSrvc', 'empresaSrvc','tipoactivoSrvc','activoAdjuntoSrvc','tipoAdjuntoSrvc','Upload','DTOptionsBuilder','municipioSrvc', 'authSrvc', '$confirm', '$route', '$location', 'localStorageSrvc', '$filter', function($scope, $rootScope, activoSrvc, empresaSrvc, tipoactivoSrvc,activoAdjuntoSrvc,tipoAdjuntoSrvc,Upload,DTOptionsBuilder,municipioSrvc, authSrvc, $confirm, $route, $location, localStorageSrvc, $filter){
+    activoctrl.controller('activoCtrl', ['$scope', '$rootScope', 'activoSrvc', 'empresaSrvc','tipoactivoSrvc','activoAdjuntoSrvc','tipoAdjuntoSrvc','Upload','DTOptionsBuilder','municipioSrvc', 'authSrvc', '$confirm', '$route', '$location', 'localStorageSrvc', '$filter', 'jsReportSrvc', function($scope, $rootScope, activoSrvc, empresaSrvc, tipoactivoSrvc,activoAdjuntoSrvc,tipoAdjuntoSrvc,Upload,DTOptionsBuilder,municipioSrvc, authSrvc, $confirm, $route, $location, localStorageSrvc, $filter, jsReportSrvc){
 
         $scope.elActivo = {nomclienteajeno: ''};
         $scope.lasEmpresas = [];
@@ -137,6 +137,11 @@
                 $scope.showForm.activo = true;
                 goTop();
             });
+        };
+
+        $scope.prntInactivo = (idactivo) => {
+            var test = false;
+            jsReportSrvc.getPDFReport(test ? 'ByOBWPwsr' : 'ByOBWPwsr', {id: +idactivo}).then(function(pdf){ $window.open(pdf); });
         };
 
         $scope.setClienteRequerido = function(espropia){
