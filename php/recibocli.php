@@ -148,9 +148,8 @@ $app->get('/docspend/:idempresa/:idcliente(/:tipo)', function($idempresa, $idcli
     $query.= "FROM factura a INNER JOIN moneda b ON b.id = a.idmoneda INNER JOIN tipofactura c ON c.id = a.idtipofactura ";
     $query.= "LEFT JOIN (SELECT a.idfactura, SUM(a.monto) AS cobrado FROM detcobroventa a INNER JOIN recibocli b ON b.id = a.idrecibocli WHERE b.anulado = 0 GROUP BY a.idfactura) d ON a.id = d.idfactura ";
     $query.= "WHERE a.anulada = 0 AND a.idempresa = $idempresa ";
-    $query.= (int)$tipo == 1 ? 
-        " AND a.pagada = 0 AND (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) > 0 " : 
-        " AND (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) <> 0 ";
+    //$query.= (int)$tipo == 1 ? "AND a.pagada = 0 AND (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) > 0 " : "AND (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) <> 0 ";
+    $query.= "AND a.pagada = 0 AND (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) > 0 ";
     $query.= "AND a.idcliente = $idcliente ";
     $query.= "ORDER BY a.fecha";
     print $db->doSelectASJson($query);
