@@ -19,6 +19,16 @@
                 <div class="panel-heading">Recibos {{+fltrre.tipo == 1 ? 'a clientes' : 'internos'}}</div>
                 <div class="panel-body">
                     <form name="frmRecCli" id="frmRecCli" ng-submit="frmRecCli.$valid && addRecCli(reccli)" novalidate>
+                        <div class="row" ng-show="+fltrre.tipo == 2">
+                            <div class="col-md-9">
+                                <div class="form-group">
+                                    <label for="selEmpresa">Empresa</label>
+                                    <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="reccli.idempresa"
+                                            ng-options="obj.id as obj.nomempresa for obj in empresas" ng-disabled="true">
+                                    </select>                                    
+                                </div>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-3" ng-show="+fltrre.tipo == 1">
                                 <div class="form-group">

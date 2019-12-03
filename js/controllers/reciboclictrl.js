@@ -2,7 +2,7 @@
 
     var reciboclictrl = angular.module('cpm.reciboclictrl', []);
 
-    reciboclictrl.controller('reciboClientesCtrl',  ['$scope' , 'reciboClientesSrvc' , 'authSrvc' , '$route' , '$confirm' , '$filter'  , 'DTOptionsBuilder' , 'detContSrvc' , 'cuentacSrvc' , 'clienteSrvc', '$location', 'jsReportSrvc', '$window', function($scope , reciboClientesSrvc , authSrvc , $route , $confirm , $filter , DTOptionsBuilder , detContSrvc , cuentacSrvc , clienteSrvc, $location, jsReportSrvc, $window){
+    reciboclictrl.controller('reciboClientesCtrl',  ['$scope' , 'reciboClientesSrvc' , 'authSrvc' , '$route' , '$confirm' , '$filter'  , 'DTOptionsBuilder' , 'detContSrvc' , 'cuentacSrvc' , 'clienteSrvc', '$location', 'jsReportSrvc', '$window', 'empresaSrvc', function($scope , reciboClientesSrvc , authSrvc , $route , $confirm , $filter , DTOptionsBuilder , detContSrvc , cuentacSrvc , clienteSrvc, $location, jsReportSrvc, $window, empresaSrvc){
 
         $scope.reccli = {idempresa: 0};
         $scope.reciboscli = [];
@@ -23,6 +23,7 @@
         $scope.origen = 8;
         $scope.cuentas = [];
         $scope.usr = {};
+        $scope.empresas = [];
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
         $scope.selected = {}; //Rony 2017-11-16 Editar monto abono
@@ -34,6 +35,7 @@
             $scope.usr = usrLogged;
             if(parseInt(usrLogged.workingon) > 0){
                 authSrvc.gpr({idusuario: parseInt(usrLogged.uid), ruta:$route.current.params.name}).then(function(d){ $scope.permiso = d; });
+                $scope.loadEmpresas();
                 $scope.reccli.idempresa = parseInt(usrLogged.workingon);
                 //Inicio modificacion
                 //$scope.getLstRecibosCli($scope.reccli.idempresa);
@@ -42,6 +44,11 @@
                 $scope.resetRecCli();
                 $scope.loadTranBan($scope.reccli.idempresa);
             }
+        });
+
+        $scope.loadEmpresas = () => empresaSrvc.lstEmpresas().then((res) => {
+            res.forEach((e) => e.id = +e.id);
+            $scope.empresas = res;
         });
 
         $scope.setTipoRecibo = () => {
@@ -243,7 +250,7 @@
         };
 
         $scope.loadDocsPend = function(idempresa, idcliente){
-            reciboClientesSrvc.lstDocsPend(idempresa, idcliente).then(function(d){
+            reciboClientesSrvc.lstDocsPend(idempresa, idcliente, $scope.fltrre.tipo).then(function(d){
                 for(var i = 0; i < d.length; i++){
                     d[i].id = parseInt(d[i].id);
                     d[i].fecha = moment(d[i].fecha).toDate();
