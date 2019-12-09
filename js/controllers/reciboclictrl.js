@@ -89,7 +89,7 @@
         };
 
         $scope.loadTranBan = function(idempresa){
-            reciboClientesSrvc.lstTranBan(idempresa).then(function(d){
+            reciboClientesSrvc.lstTranBan(idempresa, $scope.fltrre.tipo).then(function(d){
                 for(var i = 0; i< d.length; i++){
                     d[i].id = parseInt(d[i].id);
                     d[i].fecha = moment(d[i].fecha).toDate();

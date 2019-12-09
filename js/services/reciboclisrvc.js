@@ -13,8 +13,8 @@
             getReciboCliente: function(idreccli){
                 return comunFact.doGET(urlBase + '/getrecibocli/' + idreccli);
             },
-            lstTranBan: function(idempresa){
-                return comunFact.doGET(urlBase + '/lsttranban/' + idempresa);
+            lstTranBan: function(idempresa, tipo){
+                return comunFact.doGET(`${urlBase}/lsttranban/${idempresa}/${tipo}`);
             },
             lstDetRecCli: function(idreccli){
                 return comunFact.doGET(urlBase + '/lstdetreccli/' + idreccli);
