@@ -9,7 +9,7 @@ $app->response->headers->set('Content-Type', 'application/json');
 $app->post('/lstdirectas', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $query = "SELECT id, idempresa, fecha, concepto ";
+    $query = "SELECT id, idempresa, fecha, concepto, idproyecto ";
     $query.= "FROM directa ";
     $query.= "WHERE idempresa = $d->idempresa ";
     $query.= $d->fdelstr != '' ? "AND fecha >= '$d->fdelstr' " : "" ;
@@ -21,15 +21,16 @@ $app->post('/lstdirectas', function(){
 
 $app->get('/getdirecta/:iddirecta', function($iddirecta){
     $db = new dbcpm();
-    $query = "SELECT id, idempresa, fecha, concepto FROM directa WHERE id = $iddirecta";
+    $query = "SELECT id, idempresa, fecha, concepto, idproyecto FROM directa WHERE id = $iddirecta";
     print $db->doSelectASJson($query);
 });
 
 $app->post('/c', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    if(!isset($d->idproyecto)) { $d->idproyecto = 0; };
     $concepto = $d->concepto == '' ? "NULL" : "'$d->concepto'";
-    $query = "INSERT INTO directa(idempresa, fecha, concepto) VALUES($d->idempresa,'$d->fechastr', $concepto)";
+    $query = "INSERT INTO directa(idempresa, fecha, concepto, idproyecto) VALUES($d->idempresa,'$d->fechastr', $concepto, $d->idproyecto)";
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
 });
@@ -37,8 +38,9 @@ $app->post('/c', function(){
 $app->post('/u', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    if(!isset($d->idproyecto)) { $d->idproyecto = 0; };
     $concepto = $d->concepto == '' ? "NULL" : "'$d->concepto'";
-    $query = "UPDATE directa SET fecha = '$d->fechastr', concepto = $concepto WHERE id = $d->id";
+    $query = "UPDATE directa SET fecha = '$d->fechastr', concepto = $concepto, idproyecto = $d->idproyecto WHERE id = $d->id";
     $db->doQuery($query);
 });
 
@@ -56,8 +58,8 @@ $app->get('/print/:iddirecta', function($iddirecta) {
     $query = "SELECT DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS fecha";
     $generales = $db->getQuery($query)[0];
 
-    $query = "SELECT a.id, a.idempresa, b.nomempresa, b.abreviatura, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.concepto ";
-    $query.= "FROM directa a INNER JOIN empresa b ON b.id = a.idempresa ";
+    $query = "SELECT a.id, a.idempresa, b.nomempresa, b.abreviatura, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.concepto, c.nomproyecto AS proyecto ";
+    $query.= "FROM directa a INNER JOIN empresa b ON b.id = a.idempresa LEFT JOIN proyecto c ON c.id = a.idproyecto ";
     $query.= "WHERE a.id = $iddirecta";
     $pd = $db->getQuery($query);
     $directa = new  stdClass();

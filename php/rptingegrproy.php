@@ -382,6 +382,14 @@ $app->post('/detalle', function() use($db){
     }
     //Fin de Egresos de planilla
 
+    //Inicia depreciaciones
+    $datos->egresos[] = [
+        'concepto' => 'DEPRECIACIONES',
+        'monto' => (float)0.0,
+        'detalle' => []
+    ];
+    //Finaliza depreciaciones
+
     usort($datos->egresos, function($a, $b){
         if((float)$a['monto'] === (float)$b['monto']){
             return 0;
