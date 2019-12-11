@@ -2,7 +2,7 @@
 
     var trandirectactrl = angular.module('cpm.trandirectactrl', []);
 
-    trandirectactrl.controller('tranDirectaCtrl', ['$scope', 'directaSrvc', 'authSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'toaster', '$confirm', 'cuentacSrvc', 'detContSrvc', '$window', 'jsReportSrvc', '$uibModal', 'periodoContableSrvc', function($scope, directaSrvc, authSrvc, empresaSrvc, DTOptionsBuilder, toaster, $confirm, cuentacSrvc, detContSrvc, $window, jsReportSrvc, $uibModal, periodoContableSrvc){
+    trandirectactrl.controller('tranDirectaCtrl', ['$scope', 'directaSrvc', 'authSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'toaster', '$confirm', 'cuentacSrvc', 'detContSrvc', '$window', 'jsReportSrvc', '$uibModal', 'periodoContableSrvc', 'proyectoSrvc', function($scope, directaSrvc, authSrvc, empresaSrvc, DTOptionsBuilder, toaster, $confirm, cuentacSrvc, detContSrvc, $window, jsReportSrvc, $uibModal, periodoContableSrvc, proyectoSrvc){
 
         $scope.objEmpresa = {};
         $scope.laDirecta = {};
@@ -15,6 +15,7 @@
         $scope.directastr = '';
         $scope.periodoCerrado = false;
         $scope.fltrdirecta = {fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate()};
+        $scope.proyectos = [];
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
 
@@ -23,10 +24,13 @@
                 empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function(d){
                     $scope.objEmpresa = d[0];
                     $scope.laDirecta = {idempresa: parseInt($scope.objEmpresa.id), fecha: new Date()};
+                    $scope.loadProyectos();
                     $scope.getLstDirectas(parseInt($scope.objEmpresa.id));
                 });
             }
         });
+
+        $scope.loadProyectos = () => proyectoSrvc.lstProyectosPorEmpresa($scope.laDirecta.idempresa).then((res) => $scope.proyectos = res );
 
         function procDataDirectas(data){
             for(var i = 0; i < data.length; i++){
@@ -97,6 +101,7 @@
         $scope.addDirecta = function(obj){
             obj.fechastr = moment(obj.fecha).format('YYYY-MM-DD');
             obj.concepto = obj.concepto != null && obj.concepto != undefined ? obj.concepto : '';
+            obj.idproyecto = obj.idproyecto != null && obj.idproyecto != undefined ? obj.idproyecto : 0;
             directaSrvc.editRow(obj, 'c').then(function(d){
                 $scope.getLstDirectas($scope.objEmpresa.id);
                 $scope.getPartidaDirecta(parseInt(d.lastid));
@@ -106,6 +111,7 @@
         $scope.updDirecta = function(obj){
             obj.fechastr = moment(obj.fecha).format('YYYY-MM-DD');
             obj.concepto = obj.concepto != null && obj.concepto != undefined ? obj.concepto : '';
+            obj.idproyecto = obj.idproyecto != null && obj.idproyecto != undefined ? obj.idproyecto : 0;
             directaSrvc.editRow(obj, 'u').then(function(d){
                 $scope.getLstDirectas($scope.objEmpresa.id);
                 $scope.getPartidaDirecta(obj.id);

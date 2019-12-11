@@ -68,9 +68,9 @@ $app->post('/c', function(){
     $db = new dbcpm();
     if(!isset($d->tipo)){ $d->tipo = 1; }
     if(!isset($d->concepto)){ $d->conceto = ''; }
-    if((int)$d->tipo == 2){
-        $d->serie = 'I';
-        $d->numero = (int)$db->getOneField('SELECT IFNULL(MAX(numero), 0) + 1 FROM recibocli WHERE tipo = 2');
+    if((int)$d->tipo > 1){
+        $d->serie = (int)$d->tipo == 2 ? 'I' : 'D';
+        $d->numero = (int)$db->getOneField("SELECT IFNULL(MAX(numero), 0) + 1 FROM recibocli WHERE tipo = $d->tipo");
     }
 
     $query = "INSERT INTO recibocli(idempresa, fecha, fechacrea, idcliente, espropio, idtranban, serie, numero, usuariocrea, tipo, concepto) VALUES(";
@@ -127,17 +127,17 @@ $app->post('/anula', function(){
     $db->doQuery($query);
 });
 
-$app->get('/lsttranban/:idempresa', function($idempresa){
+$app->get('/lsttranban/:idempresa(/:tipo)', function($idempresa, $tipo = 1){
     $db = new dbcpm();
     $query = "SELECT a.id, a.fecha, b.nombre, a.tipotrans, a.numero, c.simbolo, a.monto ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN moneda c ON c.id = b.idmoneda ";
-    $query.= "WHERE a.tipotrans IN('D', 'R') AND b.idempresa = $idempresa ";
+    $query.= "WHERE a.tipotrans IN ".((int)$tipo == 3 ? "('C', 'B')" : "('D', 'R')" )." AND b.idempresa = $idempresa ";
     $query.= "ORDER BY a.fecha, b.nombre, a.tipotrans, a.numero";
     //echo $query;
     print $db->doSelectASJson($query);
 });
 
-$app->get('/docspend/:idempresa/:idcliente', function($idempresa, $idcliente){
+$app->get('/docspend/:idempresa/:idcliente(/:tipo)', function($idempresa, $idcliente, $tipo = 1){
     $db = new dbcpm();
     $query = "SELECT a.id, c.siglas, a.serie, a.numero, a.fecha, b.simbolo, a.total, IF(ISNULL(d.cobrado), 0.00, d.cobrado) AS cobrado, ";
     $query.= "(a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) AS saldo, ";
@@ -147,7 +147,10 @@ $app->get('/docspend/:idempresa/:idcliente', function($idempresa, $idcliente){
 
     $query.= "FROM factura a INNER JOIN moneda b ON b.id = a.idmoneda INNER JOIN tipofactura c ON c.id = a.idtipofactura ";
     $query.= "LEFT JOIN (SELECT a.idfactura, SUM(a.monto) AS cobrado FROM detcobroventa a INNER JOIN recibocli b ON b.id = a.idrecibocli WHERE b.anulado = 0 GROUP BY a.idfactura) d ON a.id = d.idfactura ";
-    $query.= "WHERE a.anulada = 0 AND a.idempresa = $idempresa AND a.pagada = 0 AND (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) > 0 AND a.idcliente = $idcliente ";
+    $query.= "WHERE a.anulada = 0 AND a.idempresa = $idempresa ";
+    $query.= (int)$tipo < 3 ? "AND a.pagada = 0 AND (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) > 0 " : "AND (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) < 0 ";
+    //$query.= "AND a.pagada = 0 AND (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) > 0 ";
+    $query.= "AND a.idcliente = $idcliente ";
     $query.= "ORDER BY a.fecha";
     print $db->doSelectASJson($query);
 });
