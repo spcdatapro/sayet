@@ -162,6 +162,19 @@ $app->post('/resumen', function() use($db){
             }
         }
         //Fin de Egresos de planilla
+        //Inicia depreciaciones
+        $depre = $db->getQuery(getQueryDepreciaciones($d->idempresa, $d->idproyecto, $d->mes, $d->anio));
+        $cntDepre = count($depre);
+        $totDepre = 0.00;
+        if($cntDepre > 0) {
+            $totDepre = (float)$depre[0]->debe;      
+        }
+        $datos->egresos[] = [
+            'concepto' => 'DEPRECIACIONES',
+            'monto' => $totDepre,
+        ];
+        $totEgresos += $totDepre;
+        //Finaliza depreciaciones
 
         $datos->egresos[] = ['concepto' => 'TOTAL DE EGRESOS', 'monto' => $totEgresos];
 
@@ -383,11 +396,33 @@ $app->post('/detalle', function() use($db){
     //Fin de Egresos de planilla
 
     //Inicia depreciaciones
+    $depre = $db->getQuery(getQueryDepreciaciones($d->idempresa, $d->idproyecto, $d->mes, $d->anio));
+    $cntDepre = count($depre);
+    //print "DEPRE = $cntDepre";
+    $detDepre = $db->getQuery(getQueryDepreciaciones($d->idempresa, $d->idproyecto, $d->mes, $d->anio, false));
+    $cntDetDepre = count($detDepre);
+    //var_dump($detDepre);
+    $detalle = [];
+    $totDepre = 0.00;
+    if($cntDepre > 0) {
+        $totDepre = (float)$depre[0]->debe;
+        if($totDepre > 0) {
+            for($i = 0; $i < $cntDetDepre; $i++){
+                $det = $detDepre[$i];
+                $detalle[] = [
+                    'fechaOrd'=> $det->fechaOrd, 'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => $det->fecha, 'beneficiario' => '',
+                    'concepto' => $det->cuenta, 'moneda' => '', 'montotranban' => '', 'idcompra' => '', 'proveedor' => '', 'nit' => '',
+                    'serie' => '', 'documento' => '', 'monedafact' => '', 'montofact' => (float)$det->debe, 'ot' => '', 'fechafactura' => ''
+                ];
+            }
+        }        
+    }
     $datos->egresos[] = [
         'concepto' => 'DEPRECIACIONES',
-        'monto' => (float)0.0,
-        'detalle' => []
+        'monto' => $totDepre,
+        'detalle' => $detalle
     ];
+    $totEgresos += $totDepre;
     //Finaliza depreciaciones
 
     usort($datos->egresos, function($a, $b){
@@ -404,5 +439,14 @@ $app->post('/detalle', function() use($db){
     print json_encode($datos);
 
 });
+
+function getQueryDepreciaciones($idempresa, $idproyecto, $mes, $anio, $sinDetalle = true) {
+    $query = "SELECT c.nombrecta AS cuenta, SUM(b.debe) AS debe, a.fecha AS fechaOrd, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha ";
+    $query.= "FROM directa a INNER JOIN detallecontable b ON a.id = b.idorigen INNER JOIN cuentac c ON c.id = b.idcuenta ";
+    $query.= "WHERE a.idempresa = $idempresa AND MONTH(a.fecha) = $mes AND YEAR(a.fecha) = $anio AND a.idproyecto = $idproyecto AND b.origen = 4 AND c.codigo like '51206%' ";
+    $query.= $sinDetalle ? '' : 'GROUP BY c.id';
+    //print $query;
+    return $query;
+}
 
 $app->run();
