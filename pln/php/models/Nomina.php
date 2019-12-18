@@ -705,11 +705,13 @@ EOT;
 				'vpigss'           => $row->pigss,
 				'vfechaingreso'    => formatoFecha((empty($row->reingreso) ? $row->ingreso : $row->reingreso), 1),
 				'vsueldoordinarioreporte' => $row->sueldoordinarioreporte,
-				'vacasdias' => $row->vacasdias,
-				'descvacas' => $row->descvacas,
+				'vacasdias'     => $row->vacasdias,
+				'descvacas'     => $row->descvacas,
 				'descvacasdias' => $row->descvacasdias,
-				'vacaciones' => $row->vacaciones,
-				'vacastotal' => ($row->vacaciones-$row->descvacas)
+				'vacaciones'    => $row->vacaciones,
+				'vacastotal'    => ($row->vacaciones - $row->descvacas),
+				'igss_sueldo_extra' => ($row->sueldoextra + $row->vacaciones),
+				'igss_sueldo_total' => ($row->sueldoordinario + $row->sueldoextra + $row->vacaciones)
 			];
 
 			$datos[] = array_merge($demp, $tmp);
