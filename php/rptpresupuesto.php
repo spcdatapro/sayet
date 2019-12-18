@@ -269,7 +269,7 @@ $app->post('/rptot', function(){
         ];
     }
 
-    $ot->poravance = number_format(($suma->monto + $suma->isr) * 100 / $ot->montoreal, 2).'%';
+    $ot->poravance = number_format(($suma->monto + $suma->isr) * 100 / $ot->monto, 2).'%';
     $ot->montoreal = number_format((float)$ot->montoreal, 2);
     $ot->sumaavance = number_format($suma->monto + $suma->isr, 2);
 
