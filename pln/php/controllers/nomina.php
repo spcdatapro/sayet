@@ -340,7 +340,7 @@ $app->get('/imprimir_igss', function(){
 			foreach ($todos as $empleado) {
 				$registros++;
 				$espaciotmp = 0;
-				$totalIgss += ($empleado['vsueldototal'] * (float)$empleado['vpigss']);
+				$totalIgss += $empleado['vigss'];
 				#echo "<tr><td>" . $empleado['vsueldototal'] . "</td><td>" . (float)$empleado['vpigss'] . "</td></tr>";
 
 				foreach ($empleado as $campo => $valor) {
@@ -419,8 +419,8 @@ $app->get('/imprimir_igss', function(){
 			$dresumen = [
 				#'cp_igss'    => ($totales['vsueldototal'] * 0.1067),
 				'cp_igss'    => $totalIgss,
-				'cp_intecap' => ($totales['vsueldototal'] * 0.01),
-				'cp_irtra'   => ($totales['vsueldototal'] * 0.01),
+				'cp_intecap' => ($totales['igss_sueldo_total'] * 0.01),
+				'cp_irtra'   => ($totales['igss_sueldo_total'] * 0.01),
 				'ct_igss'    => $totales['vigss'],
 				'ct_total'   => $totales['vigss']
 			];
