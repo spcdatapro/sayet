@@ -130,9 +130,9 @@ class Vacaciones extends Empleado
             $fecha = date('d/m/Y');
             $inicio = formatoFecha($vac["inicio"], 1);
             $fin = formatoFecha($vac["fin"], 1);
-            $vacasgozar = formatoFecha($vac["vacasgozar"], 1);
-            $fingoce = formatoFecha($vac["fingoce"], 1);
-            $presentar = formatoFecha($vac["presentar"], 1);
+            $vacasgozar = "01/12/" . $args["anio"];
+            $fingoce = "21/12/" . $args["anio"];
+            $presentar = "22/12/" . $args["anio"];
             
             return [
                 "uno" => "Guatemala {$fecha}",
