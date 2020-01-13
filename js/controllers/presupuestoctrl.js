@@ -388,9 +388,9 @@
             });
         };
 
-        $scope.delOt = function(obj){
-            $confirm({text: '¿Esta seguro(a) de eliminar la OT No. ' + obj.idpresupuesto + '-' + obj.correlativo +'?', title: 'Eliminar OT', ok: 'Sí', cancel: 'No'}).then(function() {
-                presupuestoSrvc.editRow({id: obj.id}, 'dd').then(function(){ $scope.getLstOts($scope.presupuesto.id); $scope.resetOt(); });
+        $scope.delOt = (obj) => {
+            $confirm({text: '¿Esta seguro(a) de eliminar la OT No. ' + obj.idpresupuesto + '-' + obj.correlativo +'?', title: 'Eliminar OT', ok: 'Sí', cancel: 'No'}).then(() => {
+                presupuestoSrvc.editRow({id: obj.id}, 'dd').then(() => { $scope.getLstOts($scope.presupuesto.id); $scope.resetOt(); });
             });
         };
 
