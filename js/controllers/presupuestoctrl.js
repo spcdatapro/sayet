@@ -394,7 +394,7 @@
             });
         };
 
-        $scope.verDetPagos = async function(obj, esPresupuesto){
+        $scope.verDetPagos = async (obj, esPresupuesto) => {
             let qOt = {};
             if(esPresupuesto){
                 qOt = await presupuestoSrvc.lstOts(+obj.id);
@@ -406,13 +406,11 @@
                 templateUrl: 'modalDetPagosOt.html',
                 controller: 'ModalDetPagosOtCtrl',
                 resolve:{
-                    ot: function(){ return esPresupuesto ? qOt : obj; },
-                    permiso: function(){ return $scope.permiso; }
+                    ot: () => (esPresupuesto ? qOt : obj),
+                    permiso: () => $scope.permiso
                 }
             });
-            modalInstance.result.then(function(obj){
-                //console.log(obj);
-            }, function(){ return 0; });
+            modalInstance.result.then((obj) => { }, () => { });
         };
 
         $scope.ampliar = function(obj){
