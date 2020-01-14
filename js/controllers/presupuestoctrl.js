@@ -388,13 +388,13 @@
             });
         };
 
-        $scope.delOt = function(obj){
-            $confirm({text: '¿Esta seguro(a) de eliminar la OT No. ' + obj.idpresupuesto + '-' + obj.correlativo +'?', title: 'Eliminar OT', ok: 'Sí', cancel: 'No'}).then(function() {
-                presupuestoSrvc.editRow({id: obj.id}, 'dd').then(function(){ $scope.getLstOts($scope.presupuesto.id); $scope.resetOt(); });
+        $scope.delOt = (obj) => {
+            $confirm({text: '¿Esta seguro(a) de eliminar la OT No. ' + obj.idpresupuesto + '-' + obj.correlativo +'?', title: 'Eliminar OT', ok: 'Sí', cancel: 'No'}).then(() => {
+                presupuestoSrvc.editRow({id: obj.id}, 'dd').then(() => { $scope.getLstOts($scope.presupuesto.id); $scope.resetOt(); });
             });
         };
 
-        $scope.verDetPagos = async function(obj, esPresupuesto){
+        $scope.verDetPagos = async (obj, esPresupuesto) => {
             let qOt = {};
             if(esPresupuesto){
                 qOt = await presupuestoSrvc.lstOts(+obj.id);
@@ -406,13 +406,11 @@
                 templateUrl: 'modalDetPagosOt.html',
                 controller: 'ModalDetPagosOtCtrl',
                 resolve:{
-                    ot: function(){ return esPresupuesto ? qOt : obj; },
-                    permiso: function(){ return $scope.permiso; }
+                    ot: () => (esPresupuesto ? qOt : obj),
+                    permiso: () => $scope.permiso
                 }
             });
-            modalInstance.result.then(function(obj){
-                //console.log(obj);
-            }, function(){ return 0; });
+            modalInstance.result.then((obj) => { }, () => { });
         };
 
         $scope.ampliar = function(obj){
@@ -454,7 +452,7 @@
 
     }]);
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
-    presupuestoctrl.controller('ModalDetPagosOtCtrl', ['$scope', '$uibModalInstance', '$filter', 'toaster', '$confirm', 'presupuestoSrvc', 'ot', 'permiso', function($scope, $uibModalInstance, $filter, toaster, $confirm, presupuestoSrvc, ot, permiso){
+    presupuestoctrl.controller('ModalDetPagosOtCtrl', ['$scope', '$uibModalInstance', '$filter', 'toaster', '$confirm', 'presupuestoSrvc', 'ot', 'permiso', 'monedaSrvc', function($scope, $uibModalInstance, $filter, toaster, $confirm, presupuestoSrvc, ot, permiso, monedaSrvc){
         $scope.ot = ot;
         $scope.lstdetpagos = [];
         $scope.fpago = { iddetpresup: ot.id, isr: 0.00, quitarisr: 0 };
@@ -463,6 +461,9 @@
         $scope.permiso = permiso;
         $scope.valorexcede = parseFloat(parseFloat(parseFloat($scope.ot.monto) * ( 1 + parseFloat($scope.ot.excedente) / 100)).toFixed(2));
         $scope.porexcede = parseFloat(parseFloat(100.00 + parseFloat($scope.ot.excedente)).toFixed(2));
+        $scope.monedas = [];
+
+        monedaSrvc.lstMonedas().then(function(d){ $scope.monedas = d; });
 
         function procDataDet(d){
             $scope.sumporcentaje = 0.0000;
@@ -474,6 +475,7 @@
                 d[i].porcentaje = parseFloat(parseFloat(d[i].porcentaje).toFixed(4));
                 $scope.sumporcentaje += d[i].porcentaje;
                 d[i].monto = parseFloat(parseFloat(d[i].monto).toFixed(2));
+                d[i].isr = parseFloat(parseFloat(d[i].isr).toFixed(2));
                 $scope.sumvalor += d[i].monto;
             }
 
@@ -488,18 +490,11 @@
             return d;
         }
 
-        $scope.loadData = function(){
-            presupuestoSrvc.lstDetPagoOt($scope.ot.id).then(function(d){
-                $scope.lstdetpagos = procDataDet(d);
-                // $scope.calculaISR(); // Se quita temporalmente este cambio 04/04/2019
-            });
-        };
+        $scope.loadData = () => presupuestoSrvc.lstDetPagoOt($scope.ot.id).then((d) => $scope.lstdetpagos = procDataDet(d));
 
         //$scope.ok = function () { $uibModalInstance.close(); };
 
-        $scope.cancel = function () {
-            $uibModalInstance.dismiss('cancel');
-        };
+        $scope.cancel =  () => $uibModalInstance.dismiss('cancel');
 
         $scope.loadData();
 
@@ -535,6 +530,10 @@
             $scope.fpago = { iddetpresup: ot.id, quitarisr: 0, isr: 0.00 }
         };
 
+        $scope.getFormaPago = (obj) => {
+            presupuestoSrvc.getDetPagoOt(obj.id).then((d) => $scope.fpago = procDataDet(d)[0]);
+        }
+
         $scope.addFormaPago = function(obj){
             obj.isr = obj.isr !== undefined && obj.isr != null ? obj.isr : 0;
             obj.quitarisr = obj.quitarisr !== undefined && obj.quitarisr != null ? obj.quitarisr : 0;
@@ -543,6 +542,16 @@
                 $scope.loadData();
                 $scope.resetFPago();
             });
+        };
+
+        $scope.updFormaPago = (obj) =>{
+            obj.isr = obj.isr !== undefined && obj.isr != null ? obj.isr : 0;
+            obj.quitarisr = obj.quitarisr !== undefined && obj.quitarisr != null ? obj.quitarisr : 0;
+            obj.notas = obj.notas !== undefined && obj.notas != null ? obj.notas : '';
+            presupuestoSrvc.editRow(obj, 'udp').then(function(){
+                $scope.loadData();
+                $scope.resetFPago();
+            });            
         };
 
         $scope.delFormaPago = function(obj){

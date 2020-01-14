@@ -569,13 +569,17 @@ $app->post('/dnp', function(){
 //API detalle de pago de OT
 $app->get('/lstdetpago/:iddetpresup', function($iddetpresup){
     $db = new dbcpm();
-    $query = "SELECT a.id, a.iddetpresup, a.nopago, a.porcentaje, a.monto, a.notas, a.pagado, a.origen, a.idorigen, a.isr, a.quitarisr FROM detpagopresup a WHERE a.iddetpresup = $iddetpresup ORDER BY a.nopago";
+    $query = "SELECT a.id, a.iddetpresup, a.nopago, a.porcentaje, a.monto, a.notas, a.pagado, a.origen, a.idorigen, a.isr, a.quitarisr, a.idmoneda, b.simbolo AS moneda ";
+    $query.= "FROM detpagopresup a LEFT JOIN moneda b ON b.id = a.idmoneda ";
+    $query.= "WHERE a.iddetpresup = $iddetpresup ";
+    $query.= "ORDER BY a.nopago";
     print $db->doSelectASJson($query);
 });
 
 $app->get('/getdetpago/:iddetpago', function($iddetpago){
     $db = new dbcpm();
-    $query = "SELECT a.id, a.iddetpresup, a.nopago, a.porcentaje, a.monto, a.notas, a.pagado, a.origen, a.idorigen, a.isr, a.quitarisr FROM detpagopresup a WHERE a.id = $iddetpago";
+    $query = "SELECT a.id, a.iddetpresup, a.nopago, a.porcentaje, a.monto, a.notas, a.pagado, a.origen, a.idorigen, a.isr, a.quitarisr, a.idmoneda ";
+    $query.= "FROM detpagopresup a WHERE a.id = $iddetpago";
     print $db->doSelectASJson($query);
 });
 
@@ -737,9 +741,14 @@ $app->post('/cdp', function(){
 
     if(!isset($d->isr)){ $d->isr = 0.00; }
     if(!isset($d->quitarisr)){ $d->quitarisr = 0; }
+    if(!isset($d->idmoneda)){ $d->idmoneda = 1; }
 
     $nopago = $db->getOneField("SELECT IF(MAX(nopago) IS NULL, 1, MAX(nopago) + 1) FROM detpagopresup WHERE iddetpresup = $d->iddetpresup");
-    $query = "INSERT INTO detpagopresup(iddetpresup, nopago, porcentaje, monto, notas, isr, quitarisr) VALUES($d->iddetpresup, $nopago, $d->porcentaje, $d->monto, $d->notas, $d->isr, $d->quitarisr)";
+    $query = "INSERT INTO detpagopresup(";
+    $query.= "iddetpresup, nopago, porcentaje, monto, notas, isr, quitarisr, idmoneda";
+    $query.= ") VALUES(";
+    $query.= "$d->iddetpresup, $nopago, $d->porcentaje, $d->monto, $d->notas, $d->isr, $d->quitarisr, $d->idmoneda";
+    $query.= ")";
     $db->doQuery($query);
 });
 
@@ -749,9 +758,12 @@ $app->post('/udp', function(){
     
     if(!isset($d->isr)){ $d->isr = 0.00; }
     if(!isset($d->quitarisr)){ $d->quitarisr = 0; }
+    if(!isset($d->idmoneda)){ $d->idmoneda = 1; }
 
     $d->notas = $d->notas == '' ? "NULL" : "'$d->notas'";
-    $query = "UPDATE detpagopresup SET porcentaje = $d->porcentaje, monto = $d->monto, notas = $d->notas, isr = $d->isr, quitarisr = $d->quitarisr WHERE id = $d->id";
+    $query = "UPDATE detpagopresup SET ";
+    $query.= "porcentaje = $d->porcentaje, monto = $d->monto, notas = $d->notas, isr = $d->isr, quitarisr = $d->quitarisr, idmoneda = $d->idmoneda ";
+    $query.= "WHERE id = $d->id";
     $db->doQuery($query);
 });
 
