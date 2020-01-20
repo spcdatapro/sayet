@@ -2,8 +2,6 @@
 require 'vendor/autoload.php';
 require_once 'db.php';
 
-header('Content-Type: application/json');
-
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
 
@@ -11,7 +9,8 @@ $app->post('/rptecuentacli', function(){
 
 	//echo "entro a la app";
 
-    $d = json_decode(file_get_contents('php://input'));
+	$d = json_decode(file_get_contents('php://input'));
+	if(!isset($d->idcontrato)){ $d->idcontrato = 0; }
 
     //$d = $d->data;
 
@@ -73,7 +72,8 @@ $app->post('/rptecuentacli', function(){
                             left join sayet.proyecto b on b.id=a.idproyecto
                         where c.anulada=0  
                             and c.fecha<='" . $d->falstr . "'
-                            and c.idmoneda = " . $dmon->idmoneda ;
+							and c.idmoneda = " . $dmon->idmoneda ;
+			$querydet1.= (int)$d->idcontrato == 0 ? '' : " AND c.idcontrato = $d->idcontrato AND a.id = $d->idcontrato ";
             
 			$querydet2 = " order by c.fecha
                     ) as a
@@ -88,7 +88,8 @@ $app->post('/rptecuentacli', function(){
                                 left join sayet.tranban d on c.idtranban=d.id
                             where c.anulado=0 
                                 and c.fecha<='" . $d->falstr . "'
-                                and a.idmoneda = " . $dmon->idmoneda;
+								and a.idmoneda = " . $dmon->idmoneda;
+			$querydet2.= (int)$d->idcontrato == 0 ? '' : " AND a.idcontrato = $d->idcontrato ";
 
 			$querydet3 = ") as b
                     ) as b on a.venta=b.venta
@@ -102,8 +103,9 @@ $app->post('/rptecuentacli', function(){
                                 inner join sayet.recibocli c on b.idrecibocli=c.id
                                 left join sayet.tranban d on c.idtranban=d.id
                             where c.anulado=0
-                                and a.idmoneda = " . $dmon->idmoneda ."
-						) as b
+								and a.idmoneda = " . $dmon->idmoneda;
+			$querydet3.= (int)$d->idcontrato == 0 ? '' : " AND a.idcontrato = $d->idcontrato ";
+			$querydet3.= ") as b
 						group by venta
 					) as c on a.venta=c.venta
                     group by a.venta order by a.venta
@@ -183,6 +185,7 @@ $app->post('/rptecuentacli', function(){
 										left join sayet.tranban d on c.idtranban=d.id
 									where c.anulado=0 
 										and c.fecha<='" . $d->falstr . "' and a.id=" . $hac->venta . " and a.idmoneda = " . $dmon->idmoneda . "";
+							$qdetpago.= (int)$d->idcontrato == 0 ? '' : " AND a.idcontrato = $d->idcontrato ";
 
 							$qdfac = $db->getQuery($qdetpago);
 							//echo $qdetpago;
