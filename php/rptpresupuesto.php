@@ -33,7 +33,8 @@ function getQueryOTs($id, $espresupuesto = true){
          WHERE y.id = a.id) AS pagosprogramados,
         (SELECT SUM(IF(x.eslocal = 1, z.monto, z.monto * z.tipocambio) * IF(z.tipotrans = 'C', 1, -1)) FROM tranban z INNER JOIN banco y ON y.id = z.idbanco INNER JOIN moneda x ON x.id = y.idmoneda 
         WHERE z.iddetpresup = a.id AND z.anulado = 0 AND UPPER(z.concepto) NOT LIKE '%ANULAD%'
-        ) AS montoavance, a.notas, IFNULL(getMontoISROT(a.id, 0), 0.00) AS isr, e.desctipogast AS tipogasto, g.nomempresa AS empresa, DATE_FORMAT(f.fechasolicitud, '%d/%m/%Y') AS fechasolicitud, h.nomproyecto AS proyecto, a.idpresupuesto
+        ) AS montoavance, a.notas, IFNULL(getMontoISROT(a.id, 0), 0.00) AS isr, e.desctipogast AS tipogasto, g.nomempresa AS empresa, DATE_FORMAT(f.fechasolicitud, '%d/%m/%Y') AS fechasolicitud, h.nomproyecto AS proyecto, a.idpresupuesto,
+        a.monto AS montoot, d.simbolo AS monedaot, IF(d.eslocal = 1, NULL, 1) imprimemontoot
         FROM detpresupuesto a 
         INNER JOIN proveedor b ON b.id = a.idproveedor
         INNER JOIN subtipogasto c ON c.id = a.idsubtipogasto
@@ -55,7 +56,8 @@ function getQueryOTs($id, $espresupuesto = true){
          WHERE y.id = a.id) AS pagosprogramados,
         (SELECT SUM(IF(x.eslocal = 1, z.monto, z.monto * z.tipocambio) * IF(z.tipotrans = 'C', 1, -1)) FROM tranban z INNER JOIN banco y ON y.id = z.idbanco INNER JOIN moneda x ON x.id = y.idmoneda 
         WHERE z.iddetpresup = a.id AND z.anulado = 0 AND UPPER(z.concepto) NOT LIKE '%ANULAD%'
-        ) AS montoavance, a.notas, IFNULL(getMontoISROT(a.id, 0), 0.00) AS isr, e.desctipogast AS tipogasto, g.nomempresa AS empresa, DATE_FORMAT(f.fechasolicitud, '%d/%m/%Y') AS fechasolicitud, h.nomproyecto AS proyecto, a.idpresupuesto
+        ) AS montoavance, a.notas, IFNULL(getMontoISROT(a.id, 0), 0.00) AS isr, e.desctipogast AS tipogasto, g.nomempresa AS empresa, DATE_FORMAT(f.fechasolicitud, '%d/%m/%Y') AS fechasolicitud, h.nomproyecto AS proyecto, a.idpresupuesto,
+        a.monto AS montoot, d.simbolo AS monedaot, IF(d.eslocal = 1, NULL, 1) imprimemontoot
         FROM detpresupuesto a 
         INNER JOIN beneficiario b ON b.id = a.idproveedor
         INNER JOIN subtipogasto c ON c.id = a.idsubtipogasto
@@ -70,17 +72,22 @@ function getQueryOTs($id, $espresupuesto = true){
 }
 
 function queryDocsOt($filtro, $todos = true, $esIdTranBan = true){
-    $query = "SELECT ".($todos ? "idtranban, GROUP_CONCAT(DISTINCT documento SEPARATOR ', ') AS documento, SUM(totfact) AS totfact, " : "");
+    $query = "SELECT ".($todos ? "idtranban, GROUP_CONCAT(DISTINCT documento SEPARATOR ', ') AS documento, SUM(totfact) AS totfact, monedafactura, " : "");
+    // 14/01/2020: se quita la conversión a Quetzales.
     $query.= "SUM(isr) AS isr
             FROM(
-            SELECT z.idtranban, GROUP_CONCAT(CONCAT(y.serie, y.documento) SEPARATOR ', ') AS documento, SUM(IF(x.eslocal = 1, y.totfact, y.totfact * y.tipocambio)) AS totfact, SUM(IF(x.eslocal = 1, y.isr, y.isr * y.tipocambio)) AS isr
+            SELECT z.idtranban, GROUP_CONCAT(CONCAT(y.serie, y.documento) SEPARATOR ', ') AS documento, 
+            SUM(y.totfact) AS totfact, 
+            SUM(y.isr) AS isr, x.simbolo AS monedafactura
             FROM detpagocompra z
             INNER JOIN compra y ON y.id = z.idcompra
             INNER JOIN moneda x ON x.id = y.idmoneda
             INNER JOIN tranban w ON w.id = z.idtranban
             WHERE ".($esIdTranBan ? "z.idtranban = $filtro " : "w.iddetpresup = $filtro ")." 
             UNION
-            SELECT z.idtranban, GROUP_CONCAT(CONCAT(y.serie, y.documento) SEPARATOR ', ') AS documento, SUM(IF(x.eslocal = 1, y.totfact, y.totfact * y.tipocambio)) AS totfact, SUM(IF(x.eslocal = 1, y.isr, y.isr * y.tipocambio)) AS isr 
+            SELECT z.idtranban, GROUP_CONCAT(CONCAT(y.serie, y.documento) SEPARATOR ', ') AS documento, 
+            SUM(y.totfact) AS totfact, 
+            SUM(y.isr) AS isr, x.simbolo AS monedafactura 
             FROM doctotranban z
             INNER JOIN compra y ON y.id = z.iddocto
             INNER JOIN moneda x ON x.id = y.idmoneda
@@ -88,8 +95,9 @@ function queryDocsOt($filtro, $todos = true, $esIdTranBan = true){
             WHERE ".($esIdTranBan ? "z.idtranban = $filtro " : "w.iddetpresup = $filtro ")." AND z.idtipodoc = 1 AND 
             z.iddocto NOT IN(SELECT idcompra FROM detpagocompra WHERE idtranban IN(".($esIdTranBan ? $filtro : "SELECT id FROM tranban WHERE iddetpresup = $filtro")."))
             UNION
-            SELECT z.idtranban, GROUP_CONCAT(DISTINCT CONCAT(IF(y.idtiporeembolso = 1, 'REE', 'CC'), y.id) SEPARATOR ', ') AS documento, SUM(IF(w.eslocal = 1, x.totfact, x.totfact * x.tipocambio)) AS totfact, 
-            SUM(IF(w.eslocal = 1, x.isr, x.isr * x.tipocambio)) AS isr
+            SELECT z.idtranban, GROUP_CONCAT(DISTINCT CONCAT(IF(y.idtiporeembolso = 1, 'REE', 'CC'), y.id) SEPARATOR ', ') AS documento, 
+            SUM(x.totfact) AS totfact, 
+            SUM(x.isr) AS isr, w.simbolo AS monedafactura
             FROM doctotranban z
             INNER JOIN reembolso y ON y.id = z.iddocto
             INNER JOIN compra x ON y.id = x.idreembolso
@@ -102,10 +110,10 @@ function queryDocsOt($filtro, $todos = true, $esIdTranBan = true){
 }
 
 function getDocumentosOT($db, $idot){
-    $query = "SELECT a.fecha AS fechaOrd, a.id, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, b.siglas, a.tipotrans, a.numero, a.beneficiario, IF(a.tipocambio = 1, '', FORMAT(a.tipocambio, 4)) AS tipocambio, ";
+    $query = "SELECT a.fecha AS fechaOrd, a.id, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, b.siglas, a.tipotrans, a.numero, a.beneficiario, IF(a.tipocambio = 1, '', FORMAT(a.tipocambio, 2)) AS tipocambio, ";
     $query.= "'Q' AS moneda, IF(c.eslocal = 1, a.monto, a.monto * a.tipocambio) * IF(a.tipotrans = 'C', 1, -1) AS monto, NULL AS documento, NULL AS totfact, NULL AS isr, a.concepto, ";
     $query.= "IF(a.concepto LIKE '%anulad%' OR a.beneficiario LIKE '%anulad%', 1, NULL) AS anulado, a.iddetpagopresup, d.nopago, f.simbolo AS monedapagodetpresup, ";
-    $query.= "FORMAT(d.monto, 2) AS montopago, IFNULL(g.simbolo, c.simbolo) AS monedapago ";
+    $query.= "FORMAT(d.monto, 2) AS montopago, IFNULL(g.simbolo, c.simbolo) AS monedapago, NULL AS monedafactura ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN moneda c ON c.id = b.idmoneda INNER JOIN detpagopresup d ON d.id = a.iddetpagopresup INNER JOIN detpresupuesto e ON e.id = d.iddetpresup ";
     $query.= "INNER JOIN moneda f ON f.id = e.idmoneda LEFT JOIN moneda g ON g.id = d.idmoneda ";
     $query.= "WHERE a.tipotrans IN('C', 'R') AND a.iddetpresup = $idot ";
@@ -119,6 +127,7 @@ function getDocumentosOT($db, $idot){
             $doc->documento = $datos[0]->documento;
             $doc->totfact = $datos[0]->totfact;
             $doc->isr = $datos[0]->isr;
+            $doc->monedafactura = $datos[0]->monedafactura;
         }
     }
     return $documentos;
@@ -205,47 +214,13 @@ $app->post('/rptot', function(){
     $query.= "FORMAT(pagosprogramados, 2) AS pagosprogramados, FORMAT((IFNULL(montoavance, 0.00) + isr), 2) AS montoavance, notas AS concepto, ";
     $query.= "IF(monto > pagosprogramados, monto, pagosprogramados) AS montoreal, ";
     $query.= "IF(monto > pagosprogramados, (IFNULL(montoavance, 0.00) + isr) * 100 / monto, (IFNULL(montoavance, 0.00) + isr) * 100 / pagosprogramados) AS poravance, ";
-    $query.= "tipogasto, empresa, fechasolicitud, proyecto, idpresupuesto, FORMAT(monto, 2) AS montooriginal, 0.00 AS sumaavance ";
+    $query.= "tipogasto, empresa, fechasolicitud, proyecto, idpresupuesto, FORMAT(monto, 2) AS montooriginal, 0.00 AS sumaavance, ";
+    $query.= "montoot, monedaot, imprimemontoot ";
     $query.= "FROM($qGenOTs) l ORDER BY correlativo";
     //print $query;
     $ot = $db->getQuery($query)[0];
 
-    //Formas de pago
-    /*
-    $sumafp = new stdClass();
-    $query = "SELECT a.id, a.iddetpresup, a.nopago, a.porcentaje, a.monto, a.notas, IF(a.pagado = 1, 'PAGADO', '') AS pagado ";
-    $query.= "FROM detpagopresup a ";
-    $query.= "WHERE a.iddetpresup = $d->idot ";
-    $query.= "ORDER BY a.nopago";
-    */
-    //$ot->formaspago = $db->getQuery($query);
-    $ot->formaspago = []; //Esto lo hago para que ya no hale las formas de pago en el reporte. Dejo el resto por si cambian de opinion y lo agregamos de nuevo.
-    /*
-    $cntfp = count($ot->formaspago);
-    if($cntfp > 0){
-        $sumafp->porcentaje = 0.0000;
-        $sumafp->monto = 0.00;
-        for($i = 0; $i < $cntfp; $i++){
-            $fp = $ot->formaspago[$i];
-            $sumafp->porcentaje += (float)$fp->porcentaje;
-            $sumafp->monto += (float)$fp->monto;
-            $fp->porcentaje = number_format((float)$fp->porcentaje, 4).'%';
-            $fp->monto = number_format((float)$fp->monto, 2);
-        }
-        $ot->formaspago[] = [
-            'id' => '', 'iddetpresup' => '', 'nopago' => '', 'porcentaje' => number_format($sumafp->porcentaje, 4).'%', 'monto' => number_format($sumafp->monto, 2), 'notas' => '', 'pagado' => ''
-        ];
-    }
-    */
-
-    //Notas de la OT
-    /*
-    $query = "SELECT a.id, a.iddetpresupuesto, DATE_FORMAT(a.fechahora, '%d/%m/%Y %H:%m:%s') AS fechahora, a.nota, a.usuario, b.iniciales, DATE_FORMAT(a.fhcreacion, '%d/%m/%Y %H:%m:%s') AS creadael ";
-    $query.= "FROM notapresupuesto a LEFT JOIN usuario b ON b.id = a.usuario ";
-    $query.= "WHERE a.iddetpresupuesto = $d->idot ";
-    $query.= "ORDER BY a.fechahora DESC";
-    $ot->notas = $db->getQuery($query);
-    */
+    $ot->formaspago = []; //Esto lo hago para que ya no hale las formas de pago en el reporte.
     $ot->notas = [];
 
     //Avance de la OT
