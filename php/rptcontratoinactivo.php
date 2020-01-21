@@ -55,7 +55,7 @@ $app->post('/contrato', function(){
     DATE_FORMAT(a.fechavence, '%d/%m/%Y') AS vence, DATE_FORMAT(a.fechainactivo, '%d/%m/%Y') AS inactivodesde,
     (SELECT CONCAT(MONTH(MAX(fechacobro)), '/', YEAR(MAX(fechacobro))) FROM cargo WHERE facturado = 1 AND anulado = 0 AND idcontrato = $d->idcontrato) AS ultimocobro,
     c.simbolo AS monedadep, FORMAT(a.deposito, 2) AS deposito, a.reciboprov AS recibo, 0.00 AS saldo, a.observaciones, a.idcliente, a.idempresa, DATE_FORMAT(NOW(), '%Y-%m-%d') AS falstr,
-    (SELECT GROUP_CONCAT(DISTINCT UPPER(y.desctiposervventa) ORDER BY y.desctiposervventa SEPARATOR ', ') FROM detfactcontrato z INNER JOIN tiposervicioventa y ON y.id = z.idtipoventa WHERE idcontrato = $d->idcontrato) AS servicios,
+    (SELECT GROUP_CONCAT(DISTINCT y.desctiposervventa ORDER BY y.desctiposervventa SEPARATOR ', ') FROM detfactcontrato z INNER JOIN tiposervicioventa y ON y.id = z.idtipoventa WHERE idcontrato = $d->idcontrato) AS servicios,
     0.00 saldocontrato, a.id AS idcontrato
     FROM contrato a
     LEFT JOIN proyecto b ON b.id = a.idproyecto
