@@ -77,10 +77,18 @@ $app->post('/contrato', function(){
         'falstr' => $info->contrato->falstr,
         'idempresa' => $info->contrato->idempresa,
         'idcontrato' => $info->contrato->idcontrato
-    ]);
+    ]);    
 
     $info->contrato->saldo = $saldoCliente;
     $info->contrato->saldocontrato = $saldoClienteContrato;
+
+    $query = "SELECT b.desctiposervventa AS servicio, FORMAT(a.montoflatconiva, 2) AS monto 
+    FROM detfact a
+    INNER JOIN tiposervicioventa b ON b.id = a.idtiposervicio
+    WHERE idfactura = (SELECT z.idfactura FROM cargo z WHERE z.facturado = 1 AND z.anulado = 0 AND z.idcontrato = $d->idcontrato ORDER BY z.fechacobro DESC LIMIT 1)
+    ORDER BY 1";
+
+    $info->contrato->ultimoscobros = $db->getQuery($query);
 
     print json_encode($info);
 });
