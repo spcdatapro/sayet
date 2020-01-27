@@ -77,7 +77,7 @@ $app->get('/fixprovs', function() {
     $db = new dbcpm();
     
     $fixedCompras = '';
-    $query = 'SELECT id, nit FROM compra WHERE idreembolso > 0 AND idproveedor = 0';
+    $query = "SELECT id, nit FROM compra WHERE idreembolso > 0 AND idproveedor = 0 AND TRIM(nit) <> 'CF'";
     $compras = $db->getQuery($query);
     $cntCompras = count($compras);
     for($i = 0; $i < $cntCompras; $i++) {
