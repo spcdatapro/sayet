@@ -73,4 +73,26 @@ $app->get('/fix', function(){
     print json_encode('Proceso terminado con éxito...');
 });
 
+$app->get('/fixprovs', function() {
+    $db = new dbcpm();
+    
+    $fixedCompras = '';
+    $query = 'SELECT id, nit FROM compra WHERE idreembolso > 0 AND idproveedor = 0';
+    $compras = $db->getQuery($query);
+    $cntCompras = count($compras);
+    for($i = 0; $i < $cntCompras; $i++) {
+        $compra = $compras[$i];
+        $query = "SELECT id FROM proveedor WHERE nit = '$compra->nit'";
+        $idproveedor = (int)$db->getOneField($query);
+        if($idproveedor > 0) {
+            $query = "UPDATE compra SET idproveedor = $idproveedor WHERE id = $compra->id";
+            //$db->doQuery($query);
+            if($fixedCompras !== '') {
+                $fixedCompras .= ', ';
+            }
+            $fixedCompras .= $compra->id;
+        }
+    }
+});
+
 $app->run();
