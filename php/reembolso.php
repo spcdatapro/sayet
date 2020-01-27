@@ -245,6 +245,11 @@ $app->post('/calcisr', function(){
     print json_encode(['isr' => $db->calculaISR((float)$d->subtotal, 1.00)]);
 });
 
+function updateIdProveedor($db, $idcompra) {
+    $query = "UPDATE compra a INNER JOIN proveedor b ON b.nit = a.nit SET a.idproveedor = b.id WHERE a.id = $idcompra";
+    $db->doQuery($query);
+}
+
 $app->post('/cd', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
@@ -269,6 +274,7 @@ $app->post('/cd', function(){
     $lastid = $db->getLastId();
 
     insertaDetalleContable($d, $db, $lastid);
+    updateIdProveedor($db, $lastid);
 
     print json_encode(['lastid' => $lastid]);
 });
@@ -290,6 +296,7 @@ $app->post('/ud', function(){
     $query = "DELETE FROM detallecontable WHERE origen = 2 AND idorigen = $d->id AND activada = 0";
     $db->doQuery($query);
     insertaDetalleContable($d, $db, $d->id);
+    updateIdProveedor($db, $d->id);
 
     print json_encode(['lastid' => $d->id]);
 });
