@@ -93,6 +93,8 @@ $app->get('/fixprovs', function() {
             $fixedCompras .= $compra->id;
         }
     }
+
+    print json_encode(['fixed' => $fixedCompras]);
 });
 
 $app->run();
