@@ -246,7 +246,7 @@ $app->post('/calcisr', function(){
 });
 
 function updateIdProveedor($db, $idcompra) {
-    $query = "UPDATE compra a INNER JOIN proveedor b ON b.nit = a.nit SET a.idproveedor = b.id WHERE a.id = $idcompra";
+    $query = "UPDATE compra a INNER JOIN proveedor b ON b.nit = a.nit SET a.idproveedor = b.id WHERE a.id = $idcompra AND TRIM(a.nit) <> 'CF'";
     $db->doQuery($query);
 }
 
