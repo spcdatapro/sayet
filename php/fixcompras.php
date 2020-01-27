@@ -86,7 +86,7 @@ $app->get('/fixprovs', function() {
         $idproveedor = (int)$db->getOneField($query);
         if($idproveedor > 0) {
             $query = "UPDATE compra SET idproveedor = $idproveedor WHERE id = $compra->id";
-            //$db->doQuery($query);
+            $db->doQuery($query);
             if($fixedCompras !== '') {
                 $fixedCompras .= ', ';
             }
