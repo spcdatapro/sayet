@@ -6,7 +6,7 @@
         $scope.presupuesto = {};
         $scope.lstpresupuestos = [];
         $scope.ot = {};
-        $scope.lstot = [];
+        //$scope.lstot = [];
 
         $scope.proyectos = [];
         $scope.empresas = [];
@@ -25,6 +25,8 @@
         $scope.fltrot = { fdel: moment('2017-10-01').toDate(), fal: moment().endOf('month').toDate(), idestatuspresup: null, idusuario: 0 };
         $scope.lstestatuspresup = [];
         $scope.loadingPresupuestos = false;
+        $scope.lstdetpagos = [];
+        $scope.fpago = {};
 
         proyectoSrvc.lstProyecto().then((d) => $scope.proyectos = d);
         empresaSrvc.lstEmpresas().then((d) => $scope.empresas = d);
@@ -55,6 +57,8 @@
 
         $scope.setEmpresa = (item) => $scope.presupuesto.empresa = item.idempresa;
 
+        $scope.setOrigenProv = (item) => $scope.presupuesto.origenprov = +item.dedonde;
+
         $scope.resetPresupuesto = () => {
             $scope.presupuesto = { tipo: '1', fechasolicitud: moment().toDate(), idmoneda: '1', tipocambio: 1.00, coniva: 1 };
             $scope.ot = {};
@@ -66,7 +70,7 @@
         };
 
         procDataPresup = (data) => {
-            const tmpData = data.map(d => {                
+            const tmpData = data.map(d => {
                 d.id = parseInt(d.id);
                 d.idusuario = parseInt(d.idusuario);
                 d.idestatuspresupuesto = parseInt(d.idestatuspresupuesto);
@@ -87,13 +91,13 @@
 
         $scope.getPresupuesto = (idpresupuesto) => {
             $scope.ot = {};
-            $scope.lstot = [];
+            //$scope.lstot = [];
             presupuestoSrvc.getPresupuesto(idpresupuesto).then((d) => {
                 $scope.presupuesto = procDataPresup(d)[0];
                 $scope.presupuesto.proyecto = $scope.presupuesto.idproyecto;
                 $scope.presupuesto.empresa = $scope.presupuesto.idempresa;
                 $scope.loadSubtTiposGasto($scope.presupuesto.idtipogasto);
-                // $scope.getLstOts(idpresupuesto);
+                $scope.getLstOts(idpresupuesto);
                 $scope.lbl.presupuesto = 'No. ' + $scope.presupuesto.id + ' - ' + ($filter('getById')($scope.proyectos, $scope.presupuesto.idproyecto)).nomproyecto + ' - ';
                 $scope.lbl.presupuesto += ($filter('getById')($scope.empresas, $scope.presupuesto.idempresa)).nomempresa + ' - ';
                 $scope.lbl.presupuesto += ($filter('getById')($scope.tiposgasto, $scope.presupuesto.idtipogasto)).desctipogast + ' - ';
@@ -119,7 +123,7 @@
             obj.monto = !!obj.monto ? obj.monto : 0.00;
             obj.tipocambio = !!obj.tipocambio ? obj.tipocambio : 1.0000;
             return obj;
-        }        
+        }
 
         $scope.addPresupuesto = (obj) => {
             obj = setPresupuesto(obj);
@@ -173,6 +177,88 @@
         };
 
         $scope.imprimirPresup = () => { };
+
+        procDataOts = (data) => {
+            // console.log('Antes', data);
+            const tmpData = data.map(d => {                
+                d.id = parseInt(d.id);
+                d.idpresupuesto = parseInt(d.idpresupuesto);
+                d.correlativo = parseInt(d.correlativo);
+                d.coniva = parseInt(d.coniva);
+                d.monto = parseFloat(parseFloat(d.monto).toFixed(2));
+                d.tipocambio = parseFloat(parseFloat(d.tipocambio).toFixed(4));
+                d.excedente = parseFloat(parseFloat(d.excedente).toFixed(2));
+                d.origenprov = parseInt(d.origenprov);
+                return d;
+            });
+            // console.log('Después', tmpData);
+            return tmpData;
+        }
+
+        $scope.getLstOts = (idpresupuesto) => presupuestoSrvc.lstOts(idpresupuesto)
+            .then(d => $scope.ot = procDataOts(d)[0])
+            .then(() => $scope.resetFPago())
+            .then(() => $scope.loadFormasPago());
+
+        $scope.resetFPago = () => $scope.fpago = { iddetpresup: $scope.ot.id, quitarisr: 0, isr: 0.00 };
+
+        procDataDet = (d) => {
+            $scope.sumporcentaje = 0.0000;
+            $scope.sumvalor = 0.00;
+            for (var i = 0; i < d.length; i++) {
+                d[i].id = parseInt(d[i].id);
+                d[i].iddetpresup = parseInt(d[i].iddetpresup);
+                d[i].nopago = parseInt(d[i].nopago);
+                d[i].porcentaje = parseFloat(parseFloat(d[i].porcentaje).toFixed(4));
+                $scope.sumporcentaje += d[i].porcentaje;
+                d[i].monto = parseFloat(parseFloat(d[i].monto).toFixed(2));
+                d[i].isr = parseFloat(parseFloat(d[i].isr).toFixed(2));
+                $scope.sumvalor += d[i].monto;
+            }
+
+            if ($scope.sumporcentaje <= 100) {
+                $scope.fpago.porcentaje = d.length > 0 ? (100 - $scope.sumporcentaje) : 100;
+                $scope.fpago.monto = parseFloat(parseFloat($scope.fpago.porcentaje * parseFloat($scope.ot.monto) / 100.0000).toFixed(2));
+            } else {
+                $scope.fpago.porcentaje = d.length > 0 ? ($scope.porexcede - $scope.sumporcentaje) : $scope.porexcede;
+                $scope.fpago.monto = parseFloat(parseFloat($scope.fpago.porcentaje * parseFloat($scope.valorexcede) / $scope.porexcede).toFixed(2));
+            }
+
+            return d;
+        }
+
+        $scope.loadFormasPago = () => presupuestoSrvc.lstDetPagoOt($scope.ot.id).then((d) => $scope.lstdetpagos = procDataDet(d));
+
+        $scope.getFormaPago = (obj) => presupuestoSrvc.getDetPagoOt(obj.id).then((d) => $scope.fpago = procDataDet(d)[0]);
+
+        prepFormaPago = (obj) => {
+            obj.isr = !!obj.isr ? obj.isr : 0;
+            obj.quitarisr = !!obj.quitarisr ? obj.quitarisr : 0;
+            obj.notas = !!obj.notas ? obj.notas : '';
+            return obj;
+        }
+        
+        $scope.addFormaPago = (obj) => {
+            obj = prepFormaPago(obj);
+            presupuestoSrvc.editRow(obj, 'cdp').then(() => {
+                $scope.loadFormasPago();
+                $scope.resetFPago();
+            });
+        };
+
+        $scope.updFormaPago = (obj) => {
+            obj = prepFormaPago(obj);
+            presupuestoSrvc.editRow(obj, 'udp').then(() => {
+                $scope.loadFormasPago();
+                $scope.resetFPago();
+            });
+        };
+
+        $scope.delFormaPago = (obj) => {
+            $confirm({ text: '¿Esta seguro(a) de eliminar la forma de pago No. ' + obj.nopago + '?', title: 'Eliminar forma de pago', ok: 'Sí', cancel: 'No' }).then(() => {
+                presupuestoSrvc.editRow({ id: obj.id }, 'ddp').then(() => { $scope.loadFormasPago(); $scope.resetFPago(); });
+            });
+        };
 
     }]);
 }());
