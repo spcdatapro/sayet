@@ -37,7 +37,7 @@ $app->post('/lstpresupuestos', function(){
     $query.= "WHERE a.fechasolicitud >= '$d->fdelstr' AND a.fechasolicitud <= '$d->falstr' ";
     $query.= trim($proyectos) != '' ? "AND a.idproyecto IN ($proyectos) " : '';
     //$query.= $d->idestatuspresup != '' ? "AND (a.idestatuspresupuesto IN($d->idestatuspresup) OR (SELECT COUNT(idestatuspresupuesto) FROM detpresupuesto WHERE idpresupuesto = a.id AND idestatuspresupuesto IN($d->idestatuspresup)) > 0) " : '';
-    $query.= $d->idestatuspresup != '' ? "AND (IF(a.tipo = 1, a.idestatuspresupuesto IN($d->idestatuspresup), (SELECT COUNT(idestatuspresupuesto) FROM detpresupuesto WHERE idpresupuesto = a.id AND idestatuspresupuesto IN($d->idestatuspresup)) > 0)) " : '';
+    $query.= $d->idestatuspresup != '' ? "AND (IF(a.tipo = 1, a.idestatuspresupuesto IN($d->idestatuspresup), (SELECT COUNT(idestatuspresupuesto) FROM detpresupuesto WHERE idpresupuesto = a.id AND idestatuspresupuesto IN($d->idestatuspresup)) >= 0)) " : '';
     $query.= "ORDER BY a.id DESC";
     //print $query;
     print $db->doSelectASJson($query);

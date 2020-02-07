@@ -274,7 +274,7 @@
             });
         };
 
-        var test = true;
+        var test = false;
 
         $scope.printProyecto = function(idproyecto){
             $scope.params.idproyecto = idproyecto;
