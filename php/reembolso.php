@@ -9,7 +9,7 @@ $app->response->headers->set('Content-Type', 'application/json');
 $app->get('/lstreembolsos/:idemp', function($idemp){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idempresa, a.idtiporeembolso, b.desctiporeembolso AS tipo, a.finicio, a.ffin, a.beneficiario, ";
-    $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto ";
+    $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto, a.idcuentaliq ";
     $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso ";
     $query.= "LEFT JOIN (SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) c ON a.id = c.idreembolso ";
     $query.= "WHERE a.idempresa = ".$idemp." ";
@@ -26,7 +26,7 @@ $app->post('/lstreembolsos', function(){
     if(!isset($d->tipo)){ $d->tipo = 0; }
 
     $query = "SELECT a.id, a.idempresa, a.idtiporeembolso, b.desctiporeembolso AS tipo, a.finicio, a.ffin, a.beneficiario, ";
-    $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto ";
+    $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto, a.idcuentaliq ";
     $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso ";
     $query.= "LEFT JOIN (SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) c ON a.id = c.idreembolso ";
     $query.= "WHERE a.idempresa = $d->idemp ";
@@ -39,7 +39,7 @@ $app->post('/lstreembolsos', function(){
 $app->get('/getreembolso/:idreembolso', function($idreembolso){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idempresa, a.idtiporeembolso, b.desctiporeembolso AS tipo, a.finicio, a.ffin, a.beneficiario, ";
-    $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto ";
+    $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto, a.idcuentaliq ";
     $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso ";
     $query.= "LEFT JOIN (SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) c ON a.id = c.idreembolso ";
     $query.= "WHERE a.id = ".$idreembolso;
@@ -65,9 +65,9 @@ $app->post('/c', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
     $fftmp = $d->ffinstr == '' ? 'NULL' : "'".$d->ffinstr."'";
-    $query = "INSERT INTO reembolso(idempresa, finicio, ffin, beneficiario, idbeneficiario, tblbeneficiario, estatus, idtiporeembolso, fondoasignado, idsubtipogasto) VALUES(";
+    $query = "INSERT INTO reembolso(idempresa, finicio, ffin, beneficiario, idbeneficiario, tblbeneficiario, estatus, idtiporeembolso, fondoasignado, idsubtipogasto, idcuentaliq) VALUES(";
     $query.= $d->idempresa.", '".$d->finiciostr."', ".$fftmp.", '".$d->beneficiario."', ".$d->idbeneficiario.", ";
-    $query.= "'".$d->tblbeneficiario."', 1, ".$d->idtiporeembolso.", $d->fondoasignado, $d->idsubtipogasto";
+    $query.= "'".$d->tblbeneficiario."', 1, ".$d->idtiporeembolso.", $d->fondoasignado, $d->idsubtipogasto, $d->idcuentaliq";
     $query.=")";
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
@@ -79,7 +79,7 @@ $app->post('/u', function(){
     $fftmp = $d->ffinstr == '' ? 'NULL' : "'".$d->ffinstr."'";
     $query = "UPDATE reembolso SET finicio = '".$d->finiciostr."', ffin = ".$fftmp.", beneficiario = '".$d->beneficiario."', ";
     $query.= "idbeneficiario = ".$d->idbeneficiario.", tblbeneficiario = '".$d->tblbeneficiario."', idtiporeembolso = ".$d->idtiporeembolso.", ";
-    $query.= "fondoasignado = $d->fondoasignado, idsubtipogasto = $d->idsubtipogasto ";
+    $query.= "fondoasignado = $d->fondoasignado, idsubtipogasto = $d->idsubtipogasto, idcuentaliq = $d->idcuentaliq ";
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
 });
@@ -214,16 +214,19 @@ function insertaDetalleContable($d, $db, $lastid){
     if($d->isr > 0){
         $ctaisrretenido = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 8");
         if($ctaisrretenido > 0){
-            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
-            $query.= "2, ".$lastid.", ".$ctaisrretenido.", 0.00, ".round(($d->isr * (float)$d->tipocambio), 2).", '".$d->conceptomayor."')";
+            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada) VALUES(";
+            $query.= "2, ".$lastid.", ".$ctaisrretenido.", 0.00, ".round(($d->isr * (float)$d->tipocambio), 2).", '".$d->conceptomayor."', 0)";
             $db->doQuery($query);
         }
     }
 
-    $ctaliq = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 5");
+    $ctaliq = (int)$db->getOneField("SELECT idcuentaliq FROM reembolso WHERE id = $d->idreembolso");
+    if($ctaliq == 0){
+        $ctaliq = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 5");
+    }    
     if($ctaliq > 0){
-        $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
-        $query.= "2, ".$lastid.", ".$ctaliq.", 0.00, ".round((($d->totfact - $d->isr) * (float)$d->tipocambio), 2).", '".$d->conceptomayor."')";
+        $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada) VALUES(";
+        $query.= "2, ".$lastid.", ".$ctaliq.", 0.00, ".round((($d->totfact - $d->isr) * (float)$d->tipocambio), 2).", '".$d->conceptomayor."', 0)";
         $db->doQuery($query);
     }
 
@@ -231,8 +234,8 @@ function insertaDetalleContable($d, $db, $lastid){
     if(trim($d->nit) == '32644-5' && (float)$d->noafecto != 0){
         $ctaeegsa = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 12");
         if($ctaeegsa > 0){
-            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
-            $query.= "2, ".$lastid.", ".$ctaeegsa.", ".round(((float)$d->noafecto * (float)$d->tipocambio), 2).", 0.00, '".$d->conceptomayor."')";
+            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada) VALUES(";
+            $query.= "2, ".$lastid.", ".$ctaeegsa.", ".round(((float)$d->noafecto * (float)$d->tipocambio), 2).", 0.00, '".$d->conceptomayor."', 0)";
             $db->doQuery($query);
         }
     }
@@ -293,7 +296,8 @@ $app->post('/ud', function(){
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
 
-    $query = "DELETE FROM detallecontable WHERE origen = 2 AND idorigen = $d->id AND activada = 0";
+    //$query = "DELETE FROM detallecontable WHERE origen = 2 AND idorigen = $d->id AND activada = 0";
+    $query = "DELETE FROM detallecontable WHERE origen = 2 AND idorigen = $d->id";
     $db->doQuery($query);
     insertaDetalleContable($d, $db, $d->id);
     updateIdProveedor($db, $d->id);

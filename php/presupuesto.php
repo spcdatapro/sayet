@@ -23,6 +23,7 @@ $app->post('/lstpresupuestos', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
     if(!isset($d->idusuario)){ $d->idusuario = 0; }
+    if(!isset($d->tipo)){ $d->tipo = 0; }
     $proyectos = proyectosPorUsuario((int)$d->idusuario);
     $query = "SELECT a.id, a.fechasolicitud, a.idproyecto, b.nomproyecto AS proyecto, a.idempresa, c.nomempresa AS empresa, a.idtipogasto, d.desctipogast AS tipogasto, a.idmoneda, e.simbolo, ";
     $query.= "a.total, a.notas, a.idusuario, f.nombre AS usuario, a.idestatuspresupuesto, g.descestatuspresup AS estatus, a.fechacreacion, a.fhenvioaprobacion, a.fhaprobacion, ";
@@ -35,6 +36,7 @@ $app->post('/lstpresupuestos', function(){
     $query.= "LEFT JOIN (SELECT x.idpresupuesto, GROUP_CONCAT(DISTINCT x.proveedor ORDER BY x.proveedor SEPARATOR ', ') AS proveedor FROM (SELECT z.idpresupuesto, y.nombre AS proveedor FROM detpresupuesto z INNER JOIN proveedor y ON y.id = z.idproveedor ";
     $query.= "WHERE z.origenprov = 1 UNION SELECT z.idpresupuesto, y.nombre AS proveedor FROM detpresupuesto z INNER JOIN beneficiario y ON y.id = z.idproveedor WHERE z.origenprov = 2) x GROUP BY x.idpresupuesto) i ON a.id = i.idpresupuesto ";
     $query.= "WHERE a.fechasolicitud >= '$d->fdelstr' AND a.fechasolicitud <= '$d->falstr' ";
+    $query.= (int)$d->tipo > 0 ? "AND a.tipo = $d->tipo " : '';
     $query.= trim($proyectos) != '' ? "AND a.idproyecto IN ($proyectos) " : '';
     //$query.= $d->idestatuspresup != '' ? "AND (a.idestatuspresupuesto IN($d->idestatuspresup) OR (SELECT COUNT(idestatuspresupuesto) FROM detpresupuesto WHERE idpresupuesto = a.id AND idestatuspresupuesto IN($d->idestatuspresup)) > 0) " : '';
     $query.= $d->idestatuspresup != '' ? "AND (IF(a.tipo = 1, a.idestatuspresupuesto IN($d->idestatuspresup), (SELECT COUNT(idestatuspresupuesto) FROM detpresupuesto WHERE idpresupuesto = a.id AND idestatuspresupuesto IN($d->idestatuspresup)) >= 0)) " : '';

@@ -80,7 +80,8 @@
                             $scope.resetReembolso();
                             $scope.resetCompra();
                             $scope.getLstReembolsos();
-                        });                        
+                        }); 
+                        cuentacSrvc.getByTipo($scope.reembolso.idempresa, 0).then(function(d){ $scope.cuentasc = d; });                       
                     });
                 });
             }
@@ -172,7 +173,8 @@
                 tblbeneficiario: '',
                 estatus: 1,
                 fondoasignado: undefined,
-                idsubtipogasto: undefined
+                idsubtipogasto: undefined,
+                idcuentaliq: undefined
             };
             $scope.reemstr = '';
             $scope.resetCompra();
@@ -228,7 +230,7 @@
         $scope.getDetReem = function(idreem){
             reembolsoSrvc.lstCompras(idreem).then(function(d){
                 $scope.compras = procDataCompras(d);
-                cuentacSrvc.getByTipo($scope.reembolso.idempresa, 0).then(function(d){ $scope.cuentasc = d; });
+                //cuentacSrvc.getByTipo($scope.reembolso.idempresa, 0).then(function(d){ $scope.cuentasc = d; });
 
                 $scope.infocompras.cantidad = $scope.compras.length;
                 $scope.infocompras.sumtotfact = 0.00;
@@ -275,6 +277,7 @@
             obj.idtiporeembolso = obj.objTipoReembolso.id;
             obj.fondoasignado = obj.fondoasignado != null && obj.fondoasignado != undefined && +obj.idtiporeembolso == 2 ? obj.fondoasignado : 0.00;
             obj.idsubtipogasto = obj.idsubtipogasto != null && obj.idsubtipogasto != undefined && +obj.idtiporeembolso == 1 ? obj.idsubtipogasto : 0;
+            obj.idcuentaliq = !!obj.idcuentaliq ? obj.idcuentaliq : 0;
             reembolsoSrvc.editRow(obj, 'c').then(function(d){
                 $scope.getLstReembolsos();
                 $scope.getReembolso(parseInt(d.lastid));
@@ -289,6 +292,7 @@
             obj.idtiporeembolso = obj.objTipoReembolso.id;
             obj.fondoasignado = obj.fondoasignado != null && obj.fondoasignado != undefined && +obj.idtiporeembolso == 2 ? obj.fondoasignado : 0.00;
             obj.idsubtipogasto = obj.idsubtipogasto != null && obj.idsubtipogasto != undefined && +obj.idtiporeembolso == 1 ? obj.idsubtipogasto : 0;
+            obj.idcuentaliq = !!obj.idcuentaliq ? obj.idcuentaliq : 0;
             reembolsoSrvc.editRow(obj, 'u').then(function(){
                 $scope.getLstReembolsos();
             });
