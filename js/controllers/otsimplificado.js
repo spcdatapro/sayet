@@ -70,7 +70,7 @@
         $scope.setOrigenProv = (item) => $scope.presupuesto.origenprov = +item.dedonde;
 
         $scope.resetPresupuesto = () => {
-            $scope.presupuesto = { tipo: '1', fechasolicitud: moment().toDate(), idmoneda: '1', tipocambio: 1.00, coniva: 1 };
+            $scope.presupuesto = { tipo: '1', fechasolicitud: moment().toDate(), idmoneda: '1', tipocambio: 1.00, coniva: 1, tipodocumento: 1 };
             $scope.ot = {};
             $scope.lstot = [];
             $scope.srchproy = '';
@@ -132,6 +132,7 @@
             obj.coniva = !!obj.coniva ? obj.coniva : 1;
             obj.monto = !!obj.monto ? obj.monto : 0.00;
             obj.tipocambio = !!obj.tipocambio ? obj.tipocambio : 1.0000;
+            obj.tipodocumento = !!obj.tipodocumento ? obj.tipodocumento : 1;
             return obj;
         }
 
