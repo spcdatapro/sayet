@@ -8,7 +8,7 @@ $app->response->headers->set('Content-Type', 'application/json');
 
 function fixValor($totfact, $totdh, $codigocta, $idfactura, $campo){
     $db = new dbcpm();
-    $diferencia = $totfact - $totdh;
+    $diferencia = round($totfact - $totdh, 2);
 
     $orFilt = '';
     foreach($codigocta as $cod){
@@ -16,10 +16,12 @@ function fixValor($totfact, $totdh, $codigocta, $idfactura, $campo){
         $orFilt.= "b.codigo LIKE '$cod%'";
     }
 
-    $query = "SELECT a.id FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta WHERE a.origen = 2 AND a.idorigen = $idfactura AND ($orFilt)  LIMIT 1";
+    $query = "SELECT a.id FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta WHERE a.origen = 2 AND a.idorigen = $idfactura AND ($orFilt) LIMIT 1";
     $iddetcont = (int)$db->getOneField($query);
+    //print $query;
     if($iddetcont > 0){
         $query = "UPDATE detallecontable SET $campo = $campo + $diferencia WHERE id = $iddetcont";
+        //print $query;
         $db->doQuery($query);
     }
 }
@@ -36,7 +38,8 @@ $app->post('/fix', function(){
 
     $query = "SELECT a.idorigen, TRUNCATE(b.totfact, 2) AS totfact, SUM(a.debe) AS totdebe, SUM(a.haber) AS tothaber ";
     $query.= "FROM detallecontable a INNER JOIN compra b ON b.id = a.idorigen ";
-    $query.= "WHERE a.origen = 2 AND b.idreembolso = 0 ";
+    $query.= "WHERE a.origen = 2 ";
+    //$query.= "AND b.idreembolso = 0 "; //Se comentó esto para que funcione con reembolsos
     $query.= $desde == '' ? '' : "AND b.fechaingreso >= '$desde' ";
     $query.= $idfactura > 0 ? "AND a.idorigen = $idfactura " : '';
     $query.= "GROUP BY a.idorigen ";
