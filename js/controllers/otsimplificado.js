@@ -6,7 +6,10 @@
         $scope.presupuesto = {};
         $scope.lstpresupuestos = [];
         $scope.ot = {};
-        //$scope.lstot = [];
+        $scope.lstots = [];
+        $scope.params = {
+            fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), tipo: 1, idusuario: 0
+        };
 
         $scope.proyectos = [];
         $scope.empresas = [];
@@ -22,7 +25,6 @@
         $scope.grpBtnPresupuesto = { i: false, p: false, e: false, u: false, c: false, d: false, a: true };
         $scope.grpBtnOt = { i: false, p: false, e: false, u: false, c: false, d: false, a: true };
         $scope.showForm = { presupuesto: false, ot: false };
-        $scope.fltrot = { fdel: moment('2017-10-01').toDate(), fal: moment().endOf('month').toDate(), idestatuspresup: null, idusuario: 0 };
         $scope.lstestatuspresup = [];
         $scope.loadingPresupuestos = false;
         $scope.lstdetpagos = [];
@@ -36,8 +38,9 @@
 
         authSrvc.getSession().then((usrLogged) => {
             $scope.usrdata = usrLogged;
-            $scope.fltrot.idusuario = $scope.usrdata.uid;
+            $scope.params.idusuario = $scope.usrdata.uid;
             authSrvc.gpr({ idusuario: parseInt(usrLogged.uid), ruta: $route.current.params.name }).then((d) => $scope.permiso = d);
+            $scope.loadOts('1,2,3');
         });
 
         $scope.loadSubtTiposGasto = (idtipogasto) => tipogastoSrvc.lstSubTipoGastoByTipoGasto(+idtipogasto).then((d) => $scope.subtiposgasto = d);
@@ -53,6 +56,13 @@
                 $scope.${grp}.p = p;
             `;
             eval(instruccion);
+        };
+
+        $scope.loadOts = (idestatuspresup) => {
+            $scope.params.fdelstr = moment($scope.params.fdel).format('YYYY-MM-DD');
+            $scope.params.falstr = moment($scope.params.fal).format('YYYY-MM-DD');
+            $scope.params.idestatuspresup = !!idestatuspresup ? idestatuspresup : '';
+            presupuestoSrvc.lstPresupuestos($scope.params).then(d => { $scope.lstots = d; });
         };
 
         $scope.setEmpresa = (item) => $scope.presupuesto.empresa = item.idempresa;
