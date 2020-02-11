@@ -8,7 +8,7 @@ $app->response->headers->set('Content-Type', 'application/json');
 
 function fixValor($totfact, $totdh, $codigocta, $idfactura, $campo){
     $db = new dbcpm();
-    $diferencia = $totfact - $totdh;
+    $diferencia = round($totfact - $totdh, 2);
     $query = "SELECT a.id FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta WHERE b.codigo LIKE '$codigocta%' AND a.origen = 3 AND a.idorigen = $idfactura LIMIT 1";
     $iddetcont = (int)$db->getOneField($query);
     if($iddetcont > 0){
