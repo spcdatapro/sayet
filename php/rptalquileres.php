@@ -65,7 +65,7 @@ $app->post('/alquileres', function(){
                 $query = "SELECT b.id AS idcontrato, UnidadesPorContrato(b.id) AS unidades, (a.monto - a.descuento) AS monto, b.fechainicia, b.fechavence, z.idtipoventa, y.desctiposervventa AS servicio, a.fechacobro, x.simbolo ";
                 $query.= "FROM cargo a INNER JOIN contrato b ON b.id = a.idcontrato INNER JOIN detfactcontrato z ON z.id = a.iddetcont INNER JOIN tiposervicioventa y ON y.id = z.idtipoventa ";
                 $query.= "INNER JOIN moneda x ON x.id = z.idmoneda ";
-                $query.= "WHERE a.anulado = 0 AND a.fechacobro >= '$d->fdelstr' AND a.fechacobro <= '$d->falstr' AND";
+                $query.= "WHERE a.anulado = 0 AND a.fechacobro >= '$d->fdelstr' AND a.fechacobro <= '$d->falstr' AND ";
                 $query.= "b.idempresa = $alquiler->idempresa AND b.idproyecto = $proyecto->idproyecto ";
                 $query.= (int)$d->verinactivos == 0 ? "AND (b.inactivo = 0 OR (b.inactivo = 1 AND b.fechainactivo > '$d->falstr')) " : '';
 				
