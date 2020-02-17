@@ -271,5 +271,50 @@
             });
         };
 
+        /* ---------------------------------------------------------- Aquí empieza lo relacionado con compras ---------------------------------------------------------- */
+
+        setObjCompra = (obj) => {
+            obj.idempresa = parseInt(obj.objEmpresa.id);
+            obj.idproveedor = parseInt(obj.objProveedor.id);
+            obj.conceptoprov = obj.objProveedor.concepto;
+            obj.idtipocompra = parseInt(obj.objTipoCompra.id);
+            obj.creditofiscal = obj.creditofiscal != null && obj.creditofiscal != undefined ? obj.creditofiscal : 0;
+            obj.extraordinario = obj.extraordinario != null && obj.extraordinario != undefined ? obj.extraordinario : 0;
+            obj.ordentrabajo = obj.ordentrabajo != null && obj.ordentrabajo != undefined ? obj.ordentrabajo : 0;
+            obj.fechaingresostr = dateToStr(obj.fechaingreso);
+            obj.fechafacturastr = dateToStr(obj.fechafactura);
+            obj.fechapagostr = dateToStr(obj.fechapago);
+            obj.idmoneda = parseInt(obj.objMoneda.id);
+            obj.idtipofactura = parseInt(obj.objTipoFactura.id);
+            obj.idtipocombustible = obj.objTipoCombustible != null && obj.objTipoCombustible != undefined ? (obj.objTipoCombustible.id != null && obj.objTipoCombustible.id != undefined ? obj.objTipoCombustible.id : 0) : 0;
+            obj.idunidad = obj.idunidad != null && obj.idunidad !== undefined ? +obj.idunidad : 0;       
+            //obj.idtipocombustible = 0;
+            //obj.idproyecto = 0;
+            return obj;
+        }
+
+        $scope.addCompra = (obj) => {
+            obj = setObjCompra(obj);
+            
+            proveedorSrvc.getLstCuentasCont(obj.idproveedor, obj.idempresa).then(function(lstCtas){
+                $scope.ctasGastoProv = lstCtas;
+                switch(true){
+                    case $scope.ctasGastoProv.length == 0:
+                        obj.ctagastoprov = 0;
+                        //console.log(obj);
+                        execCreate(obj);
+                        break;
+                    case $scope.ctasGastoProv.length == 1:
+                        obj.ctagastoprov = parseInt($scope.ctasGastoProv[0].idcuentac);
+                        //console.log(obj);
+                        execCreate(obj);
+                        break;
+                    case $scope.ctasGastoProv.length > 1:
+                        $scope.openSelectCtaGastoProv(obj, 'c');
+                        break;
+                }
+            });
+        };
+
     }]);
 }());
