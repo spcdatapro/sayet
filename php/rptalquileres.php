@@ -78,7 +78,7 @@ $app->post('/alquileres', function(){
                 $query.= "WHERE c.anulado = 0 AND c.fechacobro >= '$d->fdelstr' AND c.fechacobro <= '$d->falstr' AND ";
                 $query.= "d.idempresa = $alquiler->idempresa AND d.idproyecto = $proyecto->idproyecto AND ";
                 $query.= "d.idcliente = $cliente->idcliente AND d.id = b.id AND e.idtipoventa = z.idtipoventa ";
-                $query.= (int)$d->verinactivos == 0 ? "AND (c.inactivo = 0 OR (c.inactivo = 1 AND c.fechainactivo > '$d->falstr')) " : '';
+                $query.= (int)$d->verinactivos == 0 ? "AND (d.inactivo = 0 OR (d.inactivo = 1 AND d.fechainactivo > '$d->falstr')) " : '';
                 $query.= ") ";
                 $query.= "ORDER BY CAST(digits(UnidadesPorContrato(b.id)) AS UNSIGNED), 2, y.desctiposervventa";
                 $cliente->contratos = $db->getQuery($query);
@@ -135,7 +135,7 @@ $app->post('/sinproy', function(){
             $query.= "SELECT MIN(c.fechacobro) FROM cargo c	INNER JOIN contrato d ON d.id = c.idcontrato INNER JOIN detfactcontrato e ON e.id = c.iddetcont	";
             $query.= "WHERE c.anulado = 0 AND c.fechacobro >= '$d->fdelstr' AND c.fechacobro <= '$d->falstr' AND ";
             $query.= "d.idempresa = $alquiler->idempresa AND d.idcliente = $cliente->idcliente AND d.id = b.id AND e.idtipoventa = z.idtipoventa ";
-            $query.= (int)$d->verinactivos == 0 ? "AND (c.inactivo = 0 OR (c.inactivo = 1 AND c.fechainactivo > '$d->falstr')) " : '';
+            $query.= (int)$d->verinactivos == 0 ? "AND (d.inactivo = 0 OR (d.inactivo = 1 AND d.fechainactivo > '$d->falstr')) " : '';
             $query.= ") ";
             $query.= "ORDER BY CAST(digits(UnidadesPorContrato(b.id)) AS UNSIGNED), 2, y.desctiposervventa";
             $cliente->contratos = $db->getQuery($query);
