@@ -1,17 +1,14 @@
 (function(){
     
-        var rptingegrproysrvc = angular.module('cpm.rptingegrproysrvc', ['cpm.comunsrvc']);
+        const rptingegrproysrvc = angular.module('cpm.rptingegrproysrvc', ['cpm.comunsrvc']);
     
-        rptingegrproysrvc.factory('rptIngresosEgresosProySrvc', ['comunFact', function(comunFact){
-            var urlBase = 'php/rptingegrproy.php';
+        rptingegrproysrvc.factory('rptIngresosEgresosProySrvc', ['comunFact', (comunFact) => {
+            const urlBase = 'php/rptingegrproy.php';
     
             return {
-                resumen: function(obj){
-                    return comunFact.doPOST(urlBase + '/resumen', obj);
-                },
-                detalle: function(obj){
-                    return comunFact.doPOST(urlBase + '/detalle', obj);
-                }
+                resumen: (obj) => comunFact.doPOST(`${urlBase}/resumen`, obj),
+                detalle: (obj) => comunFact.doPOST(`${urlBase}/detalle`, obj),
+                ingegr: (obj) => comunFact.doPOST(`${urlBase}/ingegr`, obj),
             };
         }]);
     

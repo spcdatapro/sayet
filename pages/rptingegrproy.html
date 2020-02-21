@@ -1,17 +1,53 @@
 <style>
-    .tab{ padding-left: 2em !important; }
-    .total{ text-align: right; font-weight: bold; background-color: #A9E2F3; }
-    .brdfin { border-top: solid 0.1em black !important; border-bottom: double 0.30em black !important;}
-    .tituloIngEgr{ background-color: #E0F2F7; text-decoration: underline; }
-    .repHeader{
-        width: 80%; background-color: #FFFF00; margin: 0 auto; border-radius: 0.75em;
-        padding-left: 1em; padding-top: 0.1em; padding-bottom: 0.1em; padding-right: 1em; box-shadow: 0px 2px 5px lightgray;
+    .tab {
+        padding-left: 2em !important;
+    }
+
+    .total {
+        text-align: right;
+        font-weight: bold;
+        background-color: #A9E2F3;
+    }
+
+    .brdfin {
+        border-top: solid 0.1em black !important;
+        border-bottom: double 0.30em black !important;
+    }
+
+    .tituloIngEgr {
+        background-color: #E0F2F7;
+        text-decoration: underline;
+    }
+
+    .repHeader {
+        width: 80%;
+        background-color: #FFFF00;
+        margin: 0 auto;
+        border-radius: 0.75em;
+        padding-left: 1em;
+        padding-top: 0.1em;
+        padding-bottom: 0.1em;
+        padding-right: 1em;
+        box-shadow: 0px 2px 5px lightgray;
         font-family: Arial;
     }
-    .bld{ font-weight: bold; }
-    .subrayado{ text-decoration: underline; }
-    .smtxt{ font-size: smaller; }
-    .suma { border-top: solid 0.05em black !important; border-bottom: double 0.35em black !important;}
+
+    .bld {
+        font-weight: bold;
+    }
+
+    .subrayado {
+        text-decoration: underline;
+    }
+
+    .smtxt {
+        font-size: smaller;
+    }
+
+    .suma {
+        border-top: solid 0.05em black !important;
+        border-bottom: double 0.35em black !important;
+    }
 </style>
 <div class="container" ng-controller="rptIngresosEgresosProyCtrl">
     <div class="panel panel-default">
@@ -21,21 +57,24 @@
                 <div class="col-md-4 nopadding">
                     <div class="form-group required">
                         <label for="selEmpresa" class="control-label">Empresa:</label>
-                        <select name="selEmpresa" id="selEmpresa" class="form-control input-sm" ng-model="params.idempresa" ng-options="obj.id as obj.nomempresa for obj in empresas" ng-change="loadProyectos(params.idempresa)"></select>
+                        <select name="selEmpresa" id="selEmpresa" class="form-control input-sm"
+                            ng-model="params.idempresa" ng-options="obj.id as obj.nomempresa for obj in empresas"
+                            ng-change="loadProyectos(params.idempresa)"></select>
                     </div>
                 </div>
                 <div class="col-md-3 nopadding">
                     <div class="form-group required">
                         <label for="selProyecto" class="control-label">Proyecto:</label>
-                        <select name="selProyecto" id="selProyecto" class="form-control input-sm" ng-model="params.idproyecto"
-                                ng-options="obj.id as obj.nomproyecto for obj in proyectos" ng-change="loadUnidadesProyecto(params.idproyecto)"></select>
+                        <select name="selProyecto" id="selProyecto" class="form-control input-sm"
+                            ng-model="params.idproyecto" ng-options="obj.id as obj.nomproyecto for obj in proyectos"
+                            ng-change="loadUnidadesProyecto(params.idproyecto)"></select>
                     </div>
                 </div>
                 <div class="col-md-2 nopadding">
                     <div class="form-group">
                         <label for="selUnidad" class="control-label">Unidad:</label>
                         <select name="selUnidad" id="selUnidad" class="form-control input-sm" ng-model="params.idunidad"
-                                ng-options="obj.id as obj.nombre for obj in unidades">
+                            ng-options="obj.id as obj.nombre for obj in unidades">
                         </select>
                     </div>
                 </div>
@@ -80,30 +119,44 @@
                 <div class="col-md-1 nopadding">
                     <div class="form-group required">
                         <label for="txtAnio" class="control-label">A&ntilde;o:</label>
-                        <input name="txtAnio" id="txtAnio" type="number" class="form-control input-sm" min="2010" ng-model="params.anio"/>
+                        <input name="txtAnio" id="txtAnio" type="number" class="form-control input-sm" min="2010"
+                            ng-model="params.anio" />
                     </div>
                 </div>
             </div>
         </div>
         <div class="panel-footer" style="text-align: right !important;">
+            <!--
             <button type="button" class="btn btn-default btn-sm" ng-click="getResumen()" ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
                 <i class="fa fa-html5" aria-hidden="true"></i>&nbsp;Resumen
             </button>
+            -->
             <!--
             <button type="button" class="btn btn-default btn-sm" ng-click="getResumenPDF()" ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
                 <i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp;Resumen
             </button>
             -->
+            <!--
             <button type="button" class="btn btn-default btn-sm" ng-click="getDetalle()" ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
                 <i class="fa fa-html5" aria-hidden="true"></i>&nbsp;Detalle
             </button>
             <button type="button" class="btn btn-default btn-sm" ng-click="getDetallePDF()" ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
                 <i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp;Detalle
             </button>
+            -->
+            <button type="button" class="btn btn-default btn-sm" ng-click="ingegr(0)"
+                ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
+                Resumen
+            </button>
+            <button type="button" class="btn btn-default btn-sm" ng-click="ingegr(1)"
+                ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
+                Detalle
+            </button>
         </div>
     </div>
-    <hr/>
+    <hr />
     <!-- Inicia formato de resumen -->
+    <!--
     <div class="btn-group" role="group" aria-label="..." ng-show="rangeData.length > 0 && !verColumnar">
         <button type="button" class="btn btn-default btn-sm" ng-click="getExcel('tblResumen')">
             <i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;Excel
@@ -143,8 +196,10 @@
             </table>
         </div>
     </small>
+    -->
     <!-- Finaliza formato de resumen -->
     <!-- Inicia formato de detalle -->
+    <!--
     <div class="btn-group" role="group" aria-label="..." ng-show="rangeDataDetalle.length > 0 && !verColumnar">
         <button type="button" class="btn btn-default btn-sm" ng-click="getExcel('tblDetalle')">
             <i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;Excel
@@ -230,7 +285,6 @@
                             </tbody>
                         </table>
                     </td>
-                    <!--<td class="num bld subrayado" style="width:15% !important;">{{$last ? (egr.monto | number:2) : ''}}</td>-->
                     <td class="num bld subrayado" style="width:15% !important;">{{egr.monto | number:2}}</td>
                 </tr>
                 <tr>
@@ -239,8 +293,10 @@
             </table>
         </div>
     </small>
+    -->
     <!-- Finaliza formato de detalle -->
     <!-- Inicia formato columnar -->
+    <!--
     <div class="btn-group" role="group" aria-label="..." ng-show="(rangeDataDetalle.length > 0 || rangeData.length > 0) && verColumnar">
         <button type="button" class="btn btn-default btn-sm" ng-click="getExcel('tblColumnar')">
             <i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;Excel
@@ -271,5 +327,126 @@
             </table>
         </div>
     </small>
+    -->
     <!-- Finaliza formato columnar -->
+    <!-- Inicia formato solicitado por Don Manuel el 17/02/2020 -->
+    <div class="btn-group" role="group" aria-label="..." ng-show="!!info">
+        <button type="button" class="btn btn-default btn-sm" ng-click="getExcel('tblFormato')">
+            <i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;Excel
+        </button>
+    </div>
+    <small id="tblFormato" ng-show="!!info">
+        <div class="repHeader">
+            <h3>{{info.proyecto.nomproyecto}} - {{info.proyecto.referencia}}</h3>
+            <h4>{{info.proyecto.empresa}} ({{info.proyecto.abreviaempresa}})</h4>
+            <h5>De {{info.proyecto.dmes}} a {{info.proyecto.ames}} de {{info.proyecto.anio}}</h5>
+        </div>
+        <div class="table-responsive">
+            <!-- Inicia ingresos -->
+            <table class="table table-hover table-condensed" ng-show="info.ingresos.length > 0">
+                <caption><h3>Ingresos</h3></caption>
+                <tbody>
+                    <tr ng-repeat="ingreso in info.ingresos">
+                        <td style="width: 100%;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr ng-show="+ingreso.total !== 0">
+                                    <th style="width: 90%; padding-left: 0.5em; text-decoration: underline; font-size: 11pt;">{{ingreso.concepto}}</th>
+                                    <th style="width: 10%; font-size: 11pt;" class="num">{{ingreso.total | number:2}}</th>
+                                </tr>
+                                <tr ng-repeat="mes in ingreso.meses" ng-show="+ingreso.total !== 0">
+                                    <td style="width: 100%;">
+                                        <table style="width: 100%; border-collapse: collapse;">
+                                            <tr>
+                                                <th style="width: 90%; padding-left: 1em; text-decoration: underline; font-size: 10pt;">{{mes.mes}}</th>
+                                                <th style="width: 10%; font-size: 10pt;" class="num">{{mes.total | number:2}}</th>
+                                            </tr>
+                                            <tr ng-show="mes.detalle.length > 0">
+                                                <td colspan="2" style="width: 100%;" ng-show="mes.detalle.length > 0">
+                                                    <table style="width: 100%; border-collapse: collapse;" ng-show="mes.detalle.length > 0">
+                                                        <tr ng-show="mes.detalle.length > 0">
+                                                            <th style="width: 16.67; padding-left: 1.5em;">Cliente</th>
+                                                            <th style="width: 16.66;">Unidades</th>
+                                                            <th style="width: 16.66;" class="num">M<sup>2</sup></th>
+                                                            <th style="width: 16.67; padding-left: 0.5em;">Factura</th>
+                                                            <th style="width: 16.67;" class="num">Monto</th>
+                                                            <th style="width: 16.67;" class="num">Monto/M<sup>2</sup></th>
+                                                        </tr>
+                                                        <tr ng-repeat="det in mes.detalle">
+                                                            <td style="width: 16.67; padding-left: 1.5em;">{{det.abreviacliente}}</td>
+                                                            <td style="width: 16.66;" ng-class="{'bld suma': $last}">{{det.unidadescontrato}}</td>
+                                                            <td style="width: 16.66;" class="num" ng-class="{'bld suma': $last}">{{det.mcuadcontrato}}</td>
+                                                            <td style="width: 16.67; padding-left: 0.5em;" ng-class="{'bld suma': $last}">{{det.serie}} {{det.numero}}</td>
+                                                            <td style="width: 16.67;" class="num" ng-class="{'bld suma': $last}">{{det.preciotot | number:2}}</td>
+                                                            <td style="width: 16.67;" class="num" ng-class="{'bld suma': $last}">{{det.montomcuad | number:2}}</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- Fin de ingresos -->
+            <!-- Inicia egresos -->
+            <table class="table table-hover table-condensed" ng-show="info.egresos.length > 0">
+                <caption><h3>Egresos</h3></caption>
+                <tbody>
+                    <tr ng-repeat="egreso in info.egresos">
+                        <td style="width: 100%;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr ng-show="+egreso.total !== 0">
+                                    <th style="width: 90%; padding-left: 0.5em; text-decoration: underline; font-size: 11pt;">{{egreso.concepto}}</th>
+                                    <th style="width: 10%; font-size: 11pt;" class="num">{{egreso.total | number:2}}</th>
+                                </tr>
+                                <tr ng-repeat="mes in egreso.meses" ng-show="+egreso.total !== 0">
+                                    <td style="width: 100%;">
+                                        <table style="width: 100%; border-collapse: collapse;">
+                                            <tr>
+                                                <th style="width: 90%; padding-left: 1em; text-decoration: underline; font-size: 10pt;">{{mes.mes}}</th>
+                                                <th style="width: 10%; font-size: 10pt;" class="num">{{mes.total | number:2}}</th>
+                                            </tr>
+                                            <tr ng-show="mes.detalle.length > 0">
+                                                <td colspan="2" style="width: 100%;" ng-show="mes.detalle.length > 0">
+                                                    <table style="width: 100%; border-collapse: collapse;" ng-show="mes.detalle.length > 0">
+                                                        <tr ng-show="mes.detalle.length > 0">
+                                                            <th style="width: 11.11; padding-left: 1.5em;">Fecha</th>
+                                                            <th style="width: 11.11;">Documento</th>
+                                                            <th style="width: 11.11;">OT</sup></th>
+                                                            <th style="width: 11.11;">Beneficiario</th>
+                                                            <th style="width: 11.12;">Concepto</th>
+                                                            <th style="width: 11.11;" class="num">Monto</th>
+                                                            <th style="width: 11.11; padding-left: 0.5em;">Compra</th>
+                                                            <th style="width: 11.11;">Fecha</th>
+                                                            <th style="width: 11.11;" class="num">Monto</th>
+                                                        </tr>
+                                                        <tr ng-repeat="det in mes.detalle">
+                                                            <td style="width: 11.11; padding-left: 1.5em;">{{det.fecha}}</td>
+                                                            <td style="width: 11.11;">{{det.tipotrans}}{{det.numero}}</td>
+                                                            <td style="width: 11.11;">{{det.ot}}</td>
+                                                            <td style="width: 11.11;">{{det.beneficiario | shortenStr:15}}</td>
+                                                            <td style="width: 11.12;">{{det.concepto | shortenStr:20}}</td>
+                                                            <td style="width: 11.11;" class="num">{{det.moneda}} {{det.montotranban | number:2}}</td>
+                                                            <td style="width: 11.11; padding-left: 0.5em;">{{det.documento}}</td>
+                                                            <td style="width: 11.11;">{{det.fechafactura}}</td>
+                                                            <td style="width: 11.11;" class="num" ng-class="{'bld suma': $last}">{{det.monedafact}} {{det.montofact | number:2}}</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- Fin de egresos-->
+        </div>
+    </small>
+    <!-- Finaliza formato solicitado por Don Manuel el 17/02/2020 -->
 </div>

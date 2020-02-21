@@ -4,10 +4,14 @@
     
         rptingegrproyctrl.controller('rptIngresosEgresosProyCtrl', ['$scope', 'rptIngresosEgresosProySrvc', 'authSrvc', 'empresaSrvc', 'proyectoSrvc', '$window', 'jsReportSrvc', '$filter', function($scope, rptIngresosEgresosProySrvc, authSrvc, empresaSrvc, proyectoSrvc, $window, jsReportSrvc, $filter){
     
+            /*
             $scope.params = {
                 mes: (moment().month() + 1).toString(), anio: moment().year(), idempresa: undefined, idproyecto: undefined, dmes: (moment().month() + 1).toString(),
-                ames: (moment().month() + 1).toString(), idunidad: undefined
+                ames: (moment().month() + 1).toString(), idunidad: undefined, detallado: 1
             };
+            */
+
+            $scope.params = { mes: '1', anio: 2019, idempresa: undefined, idproyecto: undefined, dmes: '1', ames: '3', idunidad: undefined, detallado: 1 }; //Para pruebas...
             //$scope.datos = undefined;
             $scope.empresas = [];
             $scope.proyectos = [];
@@ -17,6 +21,7 @@
             $scope.rangeDataDetalle = [];
             $scope.columnar = {};
             $scope.verColumnar = false;
+            $scope.info = null;
 
             //$scope.$watch('params', function(newValue, oldValue){ });
 
@@ -30,7 +35,7 @@
                 });
             });
 
-            $scope.loadProyectos = function(idempresa){ proyectoSrvc.lstProyectosPorEmpresa(+idempresa).then(function(d){ $scope.proyectos = d; }); };
+            $scope.loadProyectos = (idempresa) => proyectoSrvc.lstProyectosPorEmpresa(+idempresa).then((d) => $scope.proyectos = d); 
 
             $scope.loadUnidadesProyecto = (idproyecto) => proyectoSrvc.lstUnidadesProyecto(+idproyecto).then((d) => $scope.unidades = d);
 
@@ -217,6 +222,17 @@
                 //console.log($scope.columnar);
             };
 
-        }]);
-    
+            /*
+            $scope.getXls = (idelemento) => {
+                $(`#${idelemento}`).table2excel({
+                    filename: `IngEgProyecto_${moment().format('YYYYMMDDHHmmss')}.xls`
+                });
+            }
+            */
+
+            $scope.ingegr = (conDetalle) => {
+                $scope.params.detallado = +conDetalle;
+                rptIngresosEgresosProySrvc.ingegr($scope.params).then(res => $scope.info = res);
+            }
+        }]);    
     }());
