@@ -4,14 +4,14 @@
     
         rptingegrproyctrl.controller('rptIngresosEgresosProyCtrl', ['$scope', 'rptIngresosEgresosProySrvc', 'authSrvc', 'empresaSrvc', 'proyectoSrvc', '$window', 'jsReportSrvc', '$filter', function($scope, rptIngresosEgresosProySrvc, authSrvc, empresaSrvc, proyectoSrvc, $window, jsReportSrvc, $filter){
     
-            /*
+            
             $scope.params = {
                 mes: (moment().month() + 1).toString(), anio: moment().year(), idempresa: undefined, idproyecto: undefined, dmes: (moment().month() + 1).toString(),
                 ames: (moment().month() + 1).toString(), idunidad: undefined, detallado: 1
             };
-            */
+            
 
-            $scope.params = { mes: '1', anio: 2019, idempresa: undefined, idproyecto: undefined, dmes: '1', ames: '3', idunidad: undefined, detallado: 1 }; //Para pruebas...
+            //$scope.params = { mes: '1', anio: 2019, idempresa: undefined, idproyecto: undefined, dmes: '1', ames: '3', idunidad: undefined, detallado: 1 }; //Para pruebas...
             //$scope.datos = undefined;
             $scope.empresas = [];
             $scope.proyectos = [];
