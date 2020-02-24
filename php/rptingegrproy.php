@@ -123,7 +123,7 @@ $app->post('/resumen', function () use ($db) {
                     INNER JOIN compra b ON b.id = a.idcompra
                     INNER JOIN cuentac c ON c.id = a.idcuentac
                     WHERE b.idproyecto = $d->idproyecto AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND b.idempresa = $d->idempresa AND 
-                    b.idreembolso = 0 AND a.idcuentac = $concepto->idcuenta ";
+                    b.idreembolso = 0 AND a.idcuentac = $concepto->idcuenta AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%' OR TRIM(c.codigo) = '1120299') ";
             $query .= (int) $d->idunidad == 0 ? '' : "AND a.idunidad = $d->idunidad ";
             $query .= "UNION ";
             $query .= "SELECT a.idcuenta, a.debe AS monto

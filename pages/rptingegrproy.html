@@ -125,39 +125,34 @@
                 </div>
             </div>
         </div>
-        <div class="panel-footer" style="text-align: right !important;">
-            <!--
+        <div class="panel-footer" style="text-align: right !important;">            
             <button type="button" class="btn btn-default btn-sm" ng-click="getResumen()" ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
                 <i class="fa fa-html5" aria-hidden="true"></i>&nbsp;Resumen
-            </button>
-            -->
+            </button>            
             <!--
             <button type="button" class="btn btn-default btn-sm" ng-click="getResumenPDF()" ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
                 <i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp;Resumen
             </button>
             -->
-            <!--
+            
             <button type="button" class="btn btn-default btn-sm" ng-click="getDetalle()" ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
                 <i class="fa fa-html5" aria-hidden="true"></i>&nbsp;Detalle
             </button>
             <button type="button" class="btn btn-default btn-sm" ng-click="getDetallePDF()" ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
                 <i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp;Detalle
             </button>
-            -->
-            <button type="button" class="btn btn-default btn-sm" ng-click="ingegr(0)"
-                ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
-                Resumen
+            
+            <button type="button" class="btn btn-default btn-sm" ng-click="ingegr(0)" ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
+                Resumen (Anual)
             </button>
-            <button type="button" class="btn btn-default btn-sm" ng-click="ingegr(1)"
-                ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
-                Detalle
+            <button type="button" class="btn btn-default btn-sm" ng-click="ingegr(1)" ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
+                Detalle (Anual)
             </button>
         </div>
     </div>
     <hr />
     <!-- Inicia formato de resumen -->
-    <!--
-    <div class="btn-group" role="group" aria-label="..." ng-show="rangeData.length > 0 && !verColumnar">
+    <div class="btn-group" role="group" aria-label="..." ng-show="rangeData.length > 0 && !verColumnar && !info">
         <button type="button" class="btn btn-default btn-sm" ng-click="getExcel('tblResumen')">
             <i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;Excel
         </button>
@@ -165,7 +160,7 @@
             Ver en columnas
         </button>
     </div>
-    <small id="tblResumen" ng-show="rangeData.length > 0 && !verColumnar">
+    <small id="tblResumen" ng-show="rangeData.length > 0 && !verColumnar && !info">
         <div class="repHeader">
             <h3>{{rangeData[0].nomproyecto}} - {{rangeData[0].referencia}}</h3>
             <h4>{{rangeData[0].empresa}} ({{rangeData[0].abreviaempresa}})</h4>
@@ -196,11 +191,9 @@
             </table>
         </div>
     </small>
-    -->
     <!-- Finaliza formato de resumen -->
     <!-- Inicia formato de detalle -->
-    <!--
-    <div class="btn-group" role="group" aria-label="..." ng-show="rangeDataDetalle.length > 0 && !verColumnar">
+    <div class="btn-group" role="group" aria-label="..." ng-show="rangeDataDetalle.length > 0 && !verColumnar && !info">
         <button type="button" class="btn btn-default btn-sm" ng-click="getExcel('tblDetalle')">
             <i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;Excel
         </button>
@@ -208,7 +201,7 @@
             Ver en columnas
         </button>
     </div>
-    <small id="tblDetalle" ng-show="rangeDataDetalle.length > 0 && !verColumnar">
+    <small id="tblDetalle" ng-show="rangeDataDetalle.length > 0 && !verColumnar && !info">
         <div class="repHeader">
             <h3>{{rangeDataDetalle[0].nomproyecto}} - {{rangeDataDetalle[0].referencia}}</h3>
             <h4>{{rangeDataDetalle[0].empresa}} ({{rangeDataDetalle[0].abreviaempresa}})</h4>
@@ -293,11 +286,9 @@
             </table>
         </div>
     </small>
-    -->
     <!-- Finaliza formato de detalle -->
     <!-- Inicia formato columnar -->
-    <!--
-    <div class="btn-group" role="group" aria-label="..." ng-show="(rangeDataDetalle.length > 0 || rangeData.length > 0) && verColumnar">
+    <div class="btn-group" role="group" aria-label="..." ng-show="(rangeDataDetalle.length > 0 || rangeData.length > 0) && verColumnar && !info">
         <button type="button" class="btn btn-default btn-sm" ng-click="getExcel('tblColumnar')">
             <i class="fa fa-file-excel-o" aria-hidden="true"></i>&nbsp;Excel
         </button>
@@ -306,7 +297,7 @@
         </button>
     </div>
     <hr ng-show="verColumnar"/>
-    <small id="tblColumnar" ng-show="verColumnar">
+    <small id="tblColumnar" ng-show="verColumnar && !info">
         <div class="repHeader">
             <h3>{{columnar.nomproyecto}} - {{columnar.referencia}}</h3>
             <h4>{{columnar.empresa}} ({{columnar.abreviaempresa}})</h4>
@@ -327,7 +318,6 @@
             </table>
         </div>
     </small>
-    -->
     <!-- Finaliza formato columnar -->
     <!-- Inicia formato solicitado por Don Manuel el 17/02/2020 -->
     <div class="btn-group" role="group" aria-label="..." ng-show="!!info">

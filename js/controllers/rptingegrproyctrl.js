@@ -44,6 +44,7 @@
                 $scope.rangeDataDetalle = [];
                 $scope.datosdet = undefined;
                 $scope.verColumnar = false;
+                $scope.info = null;
 
                 var ames = +$scope.params.ames;
                 var data = [];
@@ -77,6 +78,7 @@
                 $scope.rangeDataDetalle = [];
                 $scope.rangeData = [];
                 $scope.verColumnar = false;
+                $scope.info = null;
 
                 var ames = +$scope.params.ames;
                 var data = [];
