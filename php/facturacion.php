@@ -522,7 +522,7 @@ $app->post('/prntfact', function(){
 
         if(count($descuento) > 0){
             if((float)$descuento[0]->totdescconiva != 0){
-                $factura->detallefactura[] = [
+                $factura->detallefactura[] = (object)[
                     'montoconiva' => $descuento[0]->totdescconiva,
                     'descripcion' => 'Descuento'
                 ];
