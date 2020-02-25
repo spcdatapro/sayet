@@ -597,6 +597,7 @@ function getEgresosPlanilla($db, $d, $mes, $anio, $solosuma = true)
             ];
         }
     } else {
+        //agregar bono14 y aguinaldo 25/02/2020 12:02
         $query = "SELECT b.idproyecto, SUM(a.descigss) AS descigss, SUM(a.descisr) AS descisr, ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * 0.1267), 2) AS cuotapatronal, SUM(a.descanticipo + a.liquido + a.descprestamo) AS liquido, ";
         $query .= "DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.fecha AS fechaOrd, ";
         $query .= "(SUM(a.descigss) + SUM(a.descisr) + ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * 0.1267), 2) + SUM(a.descanticipo + a.liquido + a.descprestamo)) AS totplanilla, SUM(a.devengado) AS devengado ";

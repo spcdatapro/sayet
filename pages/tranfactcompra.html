@@ -79,6 +79,15 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row" ng-show="+laCompra.objProveedor.id == 1584 && +laCompra.objTipoFactura.id == 5">
+                            <div class="col-md-12">
+                                <div class="form-group required" ng-class="{'has-error':frmCompra.txtNombreRecibo.$invalid && !frmCompra.txtNombreRecibo.$pristine}">
+                                    <label for="txtNombreRecibo" class="control-label">Nombre en recibo:</label>
+                                    <input name="txtNombreRecibo" id="txtNombreRecibo" type="text" class="form-control" ng-model="laCompra.nombrerecibo"
+                                         ng-required="+laCompra.objProveedor.id == 1584 && +laCompra.objTipoFactura.id == 5" />
+                                </div>                                
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group required" ng-class="{'has-error':frmCompra.txtFechaIng.$invalid && !frmCompra.txtFechaIng.$pristine}">
