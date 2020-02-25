@@ -236,5 +236,13 @@
                 $scope.params.detallado = +conDetalle;
                 rptIngresosEgresosProySrvc.ingegr($scope.params).then(res => $scope.info = res);
             }
+
+            $scope.ingegrPDF = (conDetalle) => {
+                $scope.params.detallado = +conDetalle;
+                var test = false;
+                jsReportSrvc.getPDFReport(test ? 'S18VG0zVL' : 'S18VG0zVL', $scope.params).then(function(pdf){
+                    $window.open(pdf);
+                });
+            };
         }]);    
     }());

@@ -127,7 +127,7 @@
         </div>
         <div class="panel-footer" style="text-align: right !important;">            
             <button type="button" class="btn btn-default btn-sm" ng-click="getResumen()" ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
-                <i class="fa fa-html5" aria-hidden="true"></i>&nbsp;Resumen
+                Resumen
             </button>            
             <!--
             <button type="button" class="btn btn-default btn-sm" ng-click="getResumenPDF()" ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
@@ -136,7 +136,7 @@
             -->
             
             <button type="button" class="btn btn-default btn-sm" ng-click="getDetalle()" ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
-                <i class="fa fa-html5" aria-hidden="true"></i>&nbsp;Detalle
+                Detalle
             </button>
             <button type="button" class="btn btn-default btn-sm" ng-click="getDetallePDF()" ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
                 <i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp;Detalle
@@ -145,8 +145,14 @@
             <button type="button" class="btn btn-default btn-sm" ng-click="ingegr(0)" ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
                 Resumen (Anual)
             </button>
+            <button type="button" class="btn btn-default btn-sm" ng-click="ingegrPDF(0)" ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
+                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp;Resumen (Anual)
+            </button>
             <button type="button" class="btn btn-default btn-sm" ng-click="ingegr(1)" ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
                 Detalle (Anual)
+            </button>
+            <button type="button" class="btn btn-default btn-sm" ng-click="ingegrPDF(1)" ng-disabled="+params.mes <= 0 || +params.anio <=0 || +params.idproyecto <= 0">
+                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>&nbsp;Detalle (Anual)
             </button>
         </div>
     </div>
