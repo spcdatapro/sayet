@@ -4,7 +4,9 @@
 
     rptalquileresctrl.controller('rptAlquileresCtrl', ['$scope', 'empresaSrvc', 'proyectoSrvc', 'jsReportSrvc', 'authSrvc', 'tipoServicioVentaSrvc', function($scope, empresaSrvc, proyectoSrvc, jsReportSrvc, authSrvc, tipoServicioVentaSrvc){
 
-        $scope.params = { fdel: moment().startOf('month').toDate() , fal: moment().endOf('month').toDate(), usuario: '', porlocal: 0, sinproy: 0, verinactivos: 0 };
+        $scope.params = { 
+            fdel: moment().startOf('month').toDate() , fal: moment().endOf('month').toDate(), usuario: '', porlocal: 0, sinproy: 0, verinactivos: 0, solofacturados: 0
+        };
         $scope.content = `${window.location.origin}/sayet/blank.html`;
         $scope.empresas = [];
         $scope.proyectos = [];
@@ -21,6 +23,7 @@
             $scope.params.falstr = moment($scope.params.fal).format('YYYY-MM-DD');
             $scope.params.porlocal = !!$scope.params.porlocal ? $scope.params.porlocal : 0 ;
             $scope.params.verinactivos = !!$scope.params.verinactivos ? $scope.params.verinactivos : 0 ;
+            $scope.params.solofacturados = !!$scope.params.solofacturados ? $scope.params.solofacturados : 0 ;
 			$scope.params.empresa = $scope.aArreglo($scope.params.empresatmp, 'id'); 
 			$scope.params.proyecto = $scope.aArreglo($scope.params.proyectotmp, 'id');
 			$scope.params.tipo = $scope.aArreglo($scope.params.tipotmp, 'id');

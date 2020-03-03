@@ -3,34 +3,40 @@
         <div class="panel-heading">Reporte de alquileres</div>
         <div class="panel-body">
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <div class="form-group">
                         <label for="txtFDel">Del:</label>
-                        <input name="txtFDel" id="txtFDel" type="date" class="form-control" ng-model="params.fdel"/>
+                        <input name="txtFDel" id="txtFDel" type="date" class="form-control input-sm" ng-model="params.fdel"/>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <div class="form-group">
                         <label for="txtFAl">Al:</label>
-                        <input name="txtFAl" id="txtFAl" type="date" class="form-control" ng-model="params.fal"/>
+                        <input name="txtFAl" id="txtFAl" type="date" class="form-control input-sm" ng-model="params.fal"/>
                     </div>
                 </div>
                 <div class="col-md-2">
                     <div class="form-group">
                         <label for="chkPorUnidad">Ordenar por unidad:</label>
-                        <input name="chkPorUnidad" id="chkPorUnidad" type="checkbox" class="form-control" ng-model="params.porlocal" ng-true-value="1" ng-false-value="0"/>
+                        <input name="chkPorUnidad" id="chkPorUnidad" type="checkbox" class="form-control input-sm" ng-model="params.porlocal" ng-true-value="1" ng-false-value="0"/>
                     </div>
                 </div>
                 <div class="col-md-2">
                     <div class="form-group">
                         <label for="chkSinProy">Sin proyecto:</label>
-                        <input name="chkSinProy" id="chkSinProy" type="checkbox" class="form-control" ng-model="params.sinproy" ng-true-value="1" ng-false-value="0"/>
+                        <input name="chkSinProy" id="chkSinProy" type="checkbox" class="form-control input-sm" ng-model="params.sinproy" ng-true-value="1" ng-false-value="0"/>
                     </div>
                 </div>
                 <div class="col-md-2">
                     <div class="form-group">
                         <label for="chkVerInactivos">Ver inactivos:</label>
-                        <input name="chkVerInactivos" id="chkVerInactivos" type="checkbox" class="form-control" ng-model="params.verinactivos" ng-true-value="1" ng-false-value="0"/>
+                        <input name="chkVerInactivos" id="chkVerInactivos" type="checkbox" class="form-control input-sm" ng-model="params.verinactivos" ng-true-value="1" ng-false-value="0"/>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="chkVerFacturados">Solo facturados:</label>
+                        <input name="chkVerFacturados" id="chkVerFacturados" type="checkbox" class="form-control input-sm" ng-model="params.solofacturados" ng-true-value="1" ng-false-value="0"/>
                     </div>
                 </div>
             </div>

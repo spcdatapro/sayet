@@ -10,6 +10,7 @@ $app->post('/alquileres', function(){
     $db = new dbcpm();
 
     if(!isset($d->verinactivos)) { $d->verinactivos = 0; }
+    if(!isset($d->solofacturados)) { $d->solofacturados = 0; }
 
     $obyAlfa = (int)$d->porlocal == 0;
 
@@ -25,6 +26,7 @@ $app->post('/alquileres', function(){
     $query.= "FROM cargo a INNER JOIN contrato b ON b.id = a.idcontrato INNER JOIN empresa c ON c.id = b.idempresa ";
     $query.= "WHERE a.anulado = 0 AND a.fechacobro >= '$d->fdelstr' AND a.fechacobro <= '$d->falstr' ";
     $query.= (int)$d->verinactivos == 0 ? "AND (b.inactivo = 0 OR (b.inactivo = 1 AND b.fechainactivo > '$d->falstr')) " : '';
+    $query.= (int)$d->solofacturados == 0 ? '' : "AND a.facturado = 1 ";
 	
 	if (isset($d->empresa) && count($d->empresa)>0) {
 		$query.= " and b.idempresa in (" . implode(",", $d->empresa) . ") ";
@@ -41,6 +43,7 @@ $app->post('/alquileres', function(){
         $query.= "INNER JOIN (SELECT y.id, z.nombre AS unidad FROM unidad z, contrato y WHERE IF(y.inactivo = 0, FIND_IN_SET(z.id, y.idunidad), FIND_IN_SET(z.id, y.idunidadbck))) d ON b.id = d.id ";
         $query.= "WHERE a.anulado = 0 AND a.fechacobro >= '$d->fdelstr' AND a.fechacobro <= '$d->falstr' AND b.idempresa = $alquiler->idempresa ";
         $query.= (int)$d->verinactivos == 0 ? "AND (b.inactivo = 0 OR (b.inactivo = 1 AND b.fechainactivo > '$d->falstr')) " : '';
+        $query.= (int)$d->solofacturados == 0 ? '' : "AND a.facturado = 1 ";
 		
 		if (isset($d->proyecto) && count($d->proyecto)>0) {
 			$query.= " and b.idproyecto in (" . implode(",", $d->proyecto) . ") ";
@@ -57,6 +60,7 @@ $app->post('/alquileres', function(){
             $query.= "WHERE a.anulado = 0 AND a.fechacobro >= '$d->fdelstr' AND a.fechacobro <= '$d->falstr' AND ";
             $query.= "b.idempresa = $alquiler->idempresa AND b.idproyecto = $proyecto->idproyecto ";
             $query.= (int)$d->verinactivos == 0 ? "AND (b.inactivo = 0 OR (b.inactivo = 1 AND b.fechainactivo > '$d->falstr')) " : '';
+            $query.= (int)$d->solofacturados == 0 ? '' : "AND a.facturado = 1 ";
             $query.= "ORDER BY ".($obyAlfa ? "c.nombre" : "CAST(digits(d.unidad) AS unsigned), d.unidad");
             $proyecto->clientes = $db->getQuery($query);
             $cntCli = count($proyecto->clientes);
@@ -68,6 +72,7 @@ $app->post('/alquileres', function(){
                 $query.= "WHERE a.anulado = 0 AND a.fechacobro >= '$d->fdelstr' AND a.fechacobro <= '$d->falstr' AND ";
                 $query.= "b.idempresa = $alquiler->idempresa AND b.idproyecto = $proyecto->idproyecto ";
                 $query.= (int)$d->verinactivos == 0 ? "AND (b.inactivo = 0 OR (b.inactivo = 1 AND b.fechainactivo > '$d->falstr')) " : '';
+                $query.= (int)$d->solofacturados == 0 ? '' : "AND a.facturado = 1 ";
 				
 				if (isset($d->tipo) && count($d->tipo)>0) {
                     $query.= " AND z.idtipoventa in (" . implode(",", $d->tipo) . ") ";
@@ -79,6 +84,7 @@ $app->post('/alquileres', function(){
                 $query.= "d.idempresa = $alquiler->idempresa AND d.idproyecto = $proyecto->idproyecto AND ";
                 $query.= "d.idcliente = $cliente->idcliente AND d.id = b.id AND e.idtipoventa = z.idtipoventa ";
                 $query.= (int)$d->verinactivos == 0 ? "AND (d.inactivo = 0 OR (d.inactivo = 1 AND d.fechainactivo > '$d->falstr')) " : '';
+                $query.= (int)$d->solofacturados == 0 ? '' : "AND c.facturado = 1 ";
                 $query.= ") ";
                 $query.= "ORDER BY CAST(digits(UnidadesPorContrato(b.id)) AS UNSIGNED), 2, y.desctiposervventa";
                 $cliente->contratos = $db->getQuery($query);
