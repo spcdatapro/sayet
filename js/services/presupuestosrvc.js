@@ -40,6 +40,7 @@
             lstPagosPendOt: function(){
                 return comunFact.doGET(urlBase + '/pagospend');
             },
+            lstOtsImprimir: (obj) => comunFact.doPOST(`${urlBase}/pagosgenerados`, obj),
             lstNotificaciones: function(){
                 return comunFact.doGET(urlBase + '/notificaciones');
             },

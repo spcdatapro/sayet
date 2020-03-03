@@ -723,6 +723,16 @@ $app->post('/genpagos', function(){
     print json_encode(['segeneraron' => $chqGenerados !== '', 'cheques' => $chqGenerados]);
 });
 
+$app->post('/pagosgenerados', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();    
+
+    if (!isset($d->fechastr)) { $d->fechastr = date('Y-m-d'); }
+
+    $query = "SELECT a.iddetpresup AS idot FROM tranban a WHERE a.tipotrans = 'C' AND a.iddetpresup > 0 AND a.fecha = '$d->fechastr' ORDER BY a.id";
+    print $db->doSelectASJson($query);
+});
+
 $app->get('/notificaciones', function(){
     $db = new dbcpm();
     $query = "SELECT c.id AS idpresupuesto, b.id AS iddetpresupuesto, b.correlativo, a.nopago, b.idproveedor, d.nombre AS proveedor, c.idempresa, f.abreviatura AS empresa, e.simbolo, a.monto, ";

@@ -14,6 +14,7 @@
     .presPendiente {
         background-color: #F7C5AA;
     }
+    /*.app-modal-window .modal-dialog { width: 1000px; }*/
 </style>
 <div class="container" ng-controller="presupuestoCtrl">
     <ul class="nav nav-tabs">
@@ -75,6 +76,9 @@
                                     <button type="button" class="btn btn-default btn-sm tipo"
                                         ng-click="getLstPresupuestos(null)">
                                         Todos
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-sm tipo" ng-click="groupPrint()">
+                                        Imresi&oacute;n
                                     </button>
                                 </div>
                             </form>
@@ -837,6 +841,26 @@
         </div>
         <div class="modal-footer">
             <!--<button class="btn btn-info" type="button" ng-click="ok()">Aceptar</button>-->
+            <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="modalGroupPrint.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Impresión de OTs</h3>
+        </div>
+        <div class="modal-body" style="overflow-y: auto;">
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="form-group">
+                        <label for="txtFechaGenera">Fecha de generaci&oacute;n de cheque:</label>
+                        <input name="txtFechaGenera" id="txtFechaGenera" type="date" class="form-control input-sm" ng-model="params.fecha" required/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-info" type="button" ng-click="ok()" ng-disabled="!params.fecha">Generar</button>
             <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
         </div>
     </script>
