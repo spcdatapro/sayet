@@ -37,7 +37,7 @@
             lstPagosOt: function(idempresa){
                 return comunFact.doGET(urlBase + '/lstpagos/' + idempresa);
             },
-            lstPagosPendOt: function(idempresa){
+            lstPagosPendOt: function(){
                 return comunFact.doGET(urlBase + '/pagospend');
             },
             lstNotificaciones: function(){
