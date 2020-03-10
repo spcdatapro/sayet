@@ -32,6 +32,7 @@
 
         authSrvc.getSession().then(function(usrLogged){
             $scope.setTipoRecibo();
+            $scope.setOrigen();
             $scope.usr = usrLogged;
             if(parseInt(usrLogged.workingon) > 0){
                 authSrvc.gpr({idusuario: parseInt(usrLogged.uid), ruta:$route.current.params.name}).then(function(d){ $scope.permiso = d; });
@@ -45,6 +46,14 @@
                 $scope.loadTranBan($scope.reccli.idempresa);
             }
         });
+
+        $scope.setOrigen = () => {
+            if (+$scope.fltrre.tipo === 2) {
+                $scope.origen = 12;
+            } else {
+                $scope.origen = 8;
+            }
+        }
 
         $scope.loadEmpresas = () => empresaSrvc.lstEmpresas().then((res) => {
             res.forEach((e) => e.id = +e.id);
@@ -358,7 +367,7 @@
         $scope.zeroDebe = function(valor){ $scope.elDetCont.debe = parseFloat(valor) > 0 ? 0.0 : $scope.elDetCont.debe; };
         $scope.zeroHaber = function(valor){ $scope.elDetCont.haber = parseFloat(valor) > 0 ? 0.0 : $scope.elDetCont.haber; };
 
-        $scope.addDetCont = function(obj){
+        $scope.addDetCont = function(obj) {
             obj.origen = $scope.origen;
             obj.idorigen = parseInt($scope.reccli.id);
             obj.debe = parseFloat(obj.debe);

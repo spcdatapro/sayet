@@ -6,7 +6,7 @@ require_once 'db.php';
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
 
-$app->post('/rptbalgen', function(){
+$app->post('/rptbalgen', function () {
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
     $tblname = $db->crearTablasReportesConta('bg');
@@ -15,28 +15,28 @@ $app->post('/rptbalgen', function(){
     $actpascap = [3, 4, 5]; //3 = Activo; 4 = Pasivo; 5 = Capital
     $arrbs = [3 => 'Activo', 4 => 'Pasivo', 5 => 'Capital'];
     //$origenes = ['tranban' => 1, 'compra' => 2, 'venta' => 3, 'directa' => 4, 'reembolso' => 5, 'contrato' => 6, 'recprov' => 7, 'reccli' => 8, 'liquidadoc' => 9, 'ncdclientes' => 10, 'ncdproveedores' => 11];
-    $origenes = ['tranban' => 1, 'compra' => 2, 'venta' => 3, 'directa' => 4, 'reembolso' => 5, 'recprov' => 7, 'reccli' => 8, 'liquidadoc' => 9, 'ncdclientes' => 10, 'ncdproveedores' => 11];
-    foreach($actpascap AS $ig){
-        $ctasing = $db->getQuery("SELECT b.descripcion AS tipo, a.empiezancon, b.ingresos FROM confrptcont a INNER JOIN tiporptconfcont b ON b.id = a.idtiporptconfcont WHERE b.estres = 0 AND b.id = ".$ig);
-        foreach($ctasing as $ing){
+    $origenes = ['tranban' => 1, 'compra' => 2, 'venta' => 3, 'directa' => 4, 'reembolso' => 5, 'recprov' => 7, 'reccli' => 8, 'liquidadoc' => 9, 'ncdclientes' => 10, 'ncdproveedores' => 11, 'recint' => 12];
+    foreach ($actpascap as $ig) {
+        $ctasing = $db->getQuery("SELECT b.descripcion AS tipo, a.empiezancon, b.ingresos FROM confrptcont a INNER JOIN tiporptconfcont b ON b.id = a.idtiporptconfcont WHERE b.estres = 0 AND b.id = " . $ig);
+        foreach ($ctasing as $ing) {
             $inicianCon = preg_split('/\D/', $ing->empiezancon, NULL, PREG_SPLIT_NO_EMPTY);
-            foreach($inicianCon as $ini){
+            foreach ($inicianCon as $ini) {
                 $query = "INSERT INTO $tblname(idcuenta, codigo, nombrecta, tipocuenta, actpascap) ";
-                $query.= "SELECT id, codigo, nombrecta, tipocuenta, ".$ig." FROM cuentac WHERE idempresa = ".$d->idempresa." AND codigo LIKE '".$ini."%' ORDER BY codigo";
+                $query .= "SELECT id, codigo, nombrecta, tipocuenta, " . $ig . " FROM cuentac WHERE idempresa = " . $d->idempresa . " AND codigo LIKE '" . $ini . "%' ORDER BY codigo";
                 $db->doQuery($query);
-                foreach($origenes as $k => $v){
-                    $query = "UPDATE $tblname a INNER JOIN (".getSelect($v, $d, ((int)$d->acumulado == 1), $ini).") b ON a.idcuenta = b.idcuenta SET a.saldo = a.saldo + b.anterior";
+                foreach ($origenes as $k => $v) {
+                    $query = "UPDATE $tblname a INNER JOIN (" . getSelect($v, $d, ((int) $d->acumulado == 1), $ini) . ") b ON a.idcuenta = b.idcuenta SET a.saldo = a.saldo + b.anterior";
                     $db->doQuery($query);
                 }
                 $query = "INSERT INTO $tblname(idcuenta, codigo, nombrecta, tipocuenta, actpascap, saldo, parasuma) ";
-                $query.= "SELECT 0, '', 'Subtotal de cuentas de ".strtolower($arrbs[$ig])." que inician con ".$ini."', 1, ".$ig.", SUM(saldo), 1 ";
-                $query.= "FROM $tblname WHERE actpascap = ".$ig." AND LENGTH(codigo) <= 7 AND codigo LIKE '$ini%'";
+                $query .= "SELECT 0, '', 'Subtotal de cuentas de " . strtolower($arrbs[$ig]) . " que inician con " . $ini . "', 1, " . $ig . ", SUM(saldo), 1 ";
+                $query .= "FROM $tblname WHERE actpascap = " . $ig . " AND LENGTH(codigo) <= 7 AND codigo LIKE '$ini%'";
                 $db->doQuery($query);
             }
         }
         $query = "INSERT INTO $tblname(idcuenta, codigo, nombrecta, tipocuenta, actpascap, saldo, estotal) ";
-        $query.= "SELECT 0, '99999', 'Total de ".strtolower($arrbs[$ig])."', 1, ".$ig.", SUM(saldo), 1 ";
-        $query.= "FROM $tblname WHERE actpascap = ".$ig." AND parasuma = 1";
+        $query .= "SELECT 0, '99999', 'Total de " . strtolower($arrbs[$ig]) . "', 1, " . $ig . ", SUM(saldo), 1 ";
+        $query .= "FROM $tblname WHERE actpascap = " . $ig . " AND parasuma = 1";
         $db->doQuery($query);
     }
 
@@ -44,22 +44,22 @@ $app->post('/rptbalgen', function(){
     //$tamnivdet = [4 => 6, 2 => 6, 1 => 6];
     $query = "SELECT DISTINCT LENGTH(codigo) AS tamnivel FROM $tblname WHERE tipocuenta = 1 AND LENGTH(codigo) > 0 ORDER BY 1 DESC";
     $tamniveles = $db->getQuery($query);
-    foreach($tamniveles as $t){
-        $query = "SELECT id, idcuenta, codigo FROM $tblname WHERE tipocuenta = 1 AND LENGTH(codigo) = ".$t->tamnivel." ORDER BY codigo";
+    foreach ($tamniveles as $t) {
+        $query = "SELECT id, idcuenta, codigo FROM $tblname WHERE tipocuenta = 1 AND LENGTH(codigo) = " . $t->tamnivel . " ORDER BY codigo";
         $niveles = $db->getQuery($query);
-        foreach($niveles as $n){
+        foreach ($niveles as $n) {
             $query = "SELECT SUM(saldo) AS saldo ";
-            $query.= "FROM $tblname ";
-            $query.= "WHERE tipocuenta = 0 AND LENGTH(codigo) <= 7 AND codigo LIKE '".$n->codigo."%'";
+            $query .= "FROM $tblname ";
+            $query .= "WHERE tipocuenta = 0 AND LENGTH(codigo) <= 7 AND codigo LIKE '" . $n->codigo . "%'";
             $sumas = $db->getQuery($query)[0];
-            $query = "UPDATE $tblname SET saldo = ".$sumas->saldo." WHERE tipocuenta = 1 AND id = ".$n->id." AND idcuenta = ".$n->idcuenta;
+            $query = "UPDATE $tblname SET saldo = " . $sumas->saldo . " WHERE tipocuenta = 1 AND id = " . $n->id . " AND idcuenta = " . $n->idcuenta;
             $db->doQuery($query);
         }
     }
 
     $query = "SELECT id, idcuenta, codigo, nombrecta, tipocuenta, actpascap, parasuma, estotal, saldo FROM $tblname ";
-    $query.= "WHERE nombrecta NOT LIKE '%Subtotal de cuentas de%' AND LENGTH(codigo) <= $d->nivel ";
-    $query.= (int)$d->solomov == 1 ? "AND saldo <> 0 " : "";
+    $query .= "WHERE nombrecta NOT LIKE '%Subtotal de cuentas de%' AND LENGTH(codigo) <= $d->nivel ";
+    $query .= (int) $d->solomov == 1 ? "AND saldo <> 0 " : "";
 
     $empresa = $db->getQuery("SELECT nomempresa, abreviatura FROM empresa WHERE id = $d->idempresa")[0];
     //print $db->doSelectASJson($query);
@@ -67,41 +67,41 @@ $app->post('/rptbalgen', function(){
     $db->eliminarTablasRepConta($tblname);
 });
 
-function getSelect($cual, $d, $enrango, $ini){
+function getSelect($cual, $d, $enrango, $ini)
+{
     $query = "";
-    switch($cual){
+    switch ($cual) {
         case 1:
             $query = "SELECT a.idcuenta, SUM(a.debe) AS debe, SUM(a.haber) AS haber, (SUM(a.debe) - SUM(a.haber)) AS anterior ";
-            $query.= "FROM detallecontable a INNER JOIN tranban b ON b.id = a.idorigen INNER JOIN banco c ON c.id = b.idbanco INNER JOIN cuentac d ON d.id = a.idcuenta ";
-            $query.= "WHERE a.origen = 1 AND a.activada = 1 AND FILTROFECHA AND c.idempresa = ".$d->idempresa." AND d.codigo LIKE '".$ini."%' ";
-            $query.= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
+            $query .= "FROM detallecontable a INNER JOIN tranban b ON b.id = a.idorigen INNER JOIN banco c ON c.id = b.idbanco INNER JOIN cuentac d ON d.id = a.idcuenta ";
+            $query .= "WHERE a.origen = 1 AND a.activada = 1 AND FILTROFECHA AND c.idempresa = " . $d->idempresa . " AND d.codigo LIKE '" . $ini . "%' ";
+            $query .= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
             $query = str_replace("FILTROFECHA", ($enrango ?
                 //"((b.anulado = 0 AND b.fecha <= '$d->falstr') OR (b.anulado = 1 AND b.fecha <= '$d->falstr' AND b.fechaanula > '$d->falstr'))" :				
-				"((b.anulado = 0 AND b.fecha <= '$d->falstr') OR (b.anulado = 1 AND b.fecha <= '$d->falstr'))" :
-                "((b.anulado = 0 AND b.fecha >= '$d->fdelstr' AND b.fecha <= '$d->falstr') OR (b.anulado = 1 AND b.fecha >= '$d->fdelstr' AND b.fecha <= '$d->falstr' AND b.fechaanula > '$d->falstr'))"
-            ), $query);
+                "((b.anulado = 0 AND b.fecha <= '$d->falstr') OR (b.anulado = 1 AND b.fecha <= '$d->falstr'))" :
+                "((b.anulado = 0 AND b.fecha >= '$d->fdelstr' AND b.fecha <= '$d->falstr') OR (b.anulado = 1 AND b.fecha >= '$d->fdelstr' AND b.fecha <= '$d->falstr' AND b.fechaanula > '$d->falstr'))"), $query);
             break;
         case 2:
             $query = "SELECT a.idcuenta, SUM(a.debe) AS debe, SUM(a.haber) AS haber, (SUM(a.debe) - SUM(a.haber)) AS anterior ";
-            $query.= "FROM detallecontable a INNER JOIN compra b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta ";
-            $query.= "WHERE a.origen = 2 AND a.activada = 1 AND a.anulado = 0 AND FILTROFECHA AND b.idempresa = ".$d->idempresa." AND b.idreembolso = 0 AND c.codigo LIKE '".$ini."%' ";
-            $query.= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
-            $query = str_replace("FILTROFECHA", ($enrango ? "b.fechaingreso <= '".$d->falstr."'" : "b.fechaingreso >= '".$d->fdelstr."' AND b.fechaingreso <= '".$d->falstr."'"), $query);
+            $query .= "FROM detallecontable a INNER JOIN compra b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta ";
+            $query .= "WHERE a.origen = 2 AND a.activada = 1 AND a.anulado = 0 AND FILTROFECHA AND b.idempresa = " . $d->idempresa . " AND b.idreembolso = 0 AND c.codigo LIKE '" . $ini . "%' ";
+            $query .= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
+            $query = str_replace("FILTROFECHA", ($enrango ? "b.fechaingreso <= '" . $d->falstr . "'" : "b.fechaingreso >= '" . $d->fdelstr . "' AND b.fechaingreso <= '" . $d->falstr . "'"), $query);
             break;
         case 3:
             $query = "SELECT a.idcuenta, SUM(a.debe) AS debe, SUM(a.haber) AS haber, (SUM(a.debe) - SUM(a.haber)) AS anterior ";
-            $query.= "FROM detallecontable a INNER JOIN factura b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta ";
-            $query.= "WHERE a.origen = 3 AND a.activada = 1 AND a.anulado = 0 AND FILTROFECHA AND b.idempresa = ".$d->idempresa." AND c.codigo LIKE '".$ini."%' ";
-            $query.= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
-            $query = str_replace("FILTROFECHA", ($enrango ? "b.fecha <= '".$d->falstr."'" : "b.fecha >= '".$d->fdelstr."' AND b.fecha <= '".$d->falstr."'"), $query);
+            $query .= "FROM detallecontable a INNER JOIN factura b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta ";
+            $query .= "WHERE a.origen = 3 AND a.activada = 1 AND a.anulado = 0 AND FILTROFECHA AND b.idempresa = " . $d->idempresa . " AND c.codigo LIKE '" . $ini . "%' ";
+            $query .= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
+            $query = str_replace("FILTROFECHA", ($enrango ? "b.fecha <= '" . $d->falstr . "'" : "b.fecha >= '" . $d->fdelstr . "' AND b.fecha <= '" . $d->falstr . "'"), $query);
             break;
         case 4:
             $query = "SELECT a.idcuenta, SUM(a.debe) AS debe, SUM(a.haber) AS haber, (SUM(a.debe) - SUM(a.haber)) AS anterior ";
-            $query.= "FROM detallecontable a INNER JOIN directa b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta ";
-            $query.= "WHERE a.origen = 4 AND a.activada = 1 AND a.anulado = 0 AND FILTROFECHA AND b.idempresa = ".$d->idempresa." AND c.codigo LIKE '".$ini."%' ";
-            $query.= (int)$d->vercierre === 0 ? "AND b.tipocierre NOT IN(1, 2, 3, 4) " : '';
-            $query.= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
-            $query = str_replace("FILTROFECHA", ($enrango ? "b.fecha <= '".$d->falstr."'" : "b.fecha >= '".$d->fdelstr."' AND b.fecha <= '".$d->falstr."'"), $query);
+            $query .= "FROM detallecontable a INNER JOIN directa b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta ";
+            $query .= "WHERE a.origen = 4 AND a.activada = 1 AND a.anulado = 0 AND FILTROFECHA AND b.idempresa = " . $d->idempresa . " AND c.codigo LIKE '" . $ini . "%' ";
+            $query .= (int) $d->vercierre === 0 ? "AND b.tipocierre NOT IN(1, 2, 3, 4) " : '';
+            $query .= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
+            $query = str_replace("FILTROFECHA", ($enrango ? "b.fecha <= '" . $d->falstr . "'" : "b.fecha >= '" . $d->fdelstr . "' AND b.fecha <= '" . $d->falstr . "'"), $query);
             break;
         case 5:
             /*
@@ -112,12 +112,12 @@ function getSelect($cual, $d, $enrango, $ini){
             $query = str_replace("FILTROFECHA", ($enrango ? "b.ffin <= '".$d->falstr."'" : "b.ffin >= '".$d->fdelstr."' AND b.ffin <= '".$d->falstr."'"), $query);
             */
             $query = "SELECT a.idcuenta, SUM(a.debe) AS debe, SUM(a.haber) AS haber, (SUM(a.debe) - SUM(a.haber)) AS anterior ";
-            $query.= "FROM detallecontable a INNER JOIN compra b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta INNER JOIN reembolso d ON d.id = b.idreembolso ";
-            $query.= "WHERE a.origen = 2 AND a.anulado = 0 AND b.idreembolso > 0 AND FILTROFECHA AND b.idempresa = ".$d->idempresa." AND c.codigo LIKE '".$ini."%' ";
-            $query.= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
-            $query = str_replace("FILTROFECHA", ($enrango ? "b.fechaingreso <= '".$d->falstr."'" : "b.fechaingreso >= '".$d->fdelstr."' AND b.fechaingreso <= '".$d->falstr."'"), $query);
+            $query .= "FROM detallecontable a INNER JOIN compra b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta INNER JOIN reembolso d ON d.id = b.idreembolso ";
+            $query .= "WHERE a.origen = 2 AND a.anulado = 0 AND b.idreembolso > 0 AND FILTROFECHA AND b.idempresa = " . $d->idempresa . " AND c.codigo LIKE '" . $ini . "%' ";
+            $query .= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
+            $query = str_replace("FILTROFECHA", ($enrango ? "b.fechaingreso <= '" . $d->falstr . "'" : "b.fechaingreso >= '" . $d->fdelstr . "' AND b.fechaingreso <= '" . $d->falstr . "'"), $query);
             break;
-        /*
+            /*
         case 6:
             $query = "SELECT a.idcuenta, SUM(a.debe) AS debe, SUM(a.haber) AS haber, (SUM(a.debe) - SUM(a.haber)) AS anterior ";
             $query.= "FROM detallecontable a INNER JOIN contrato b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta ";
@@ -128,42 +128,48 @@ function getSelect($cual, $d, $enrango, $ini){
         */
         case 7:
             $query = "SELECT a.idcuenta, SUM(a.debe) AS debe, SUM(a.haber) AS haber, (SUM(a.debe) - SUM(a.haber)) AS anterior ";
-            $query.= "FROM detallecontable a INNER JOIN reciboprov b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta ";
-            $query.= "WHERE a.origen = 7 AND a.activada = 1 AND a.anulado = 0 AND FILTROFECHA AND b.idempresa = ".$d->idempresa." AND c.codigo LIKE '".$ini."%' ";
-            $query.= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
-            $query = str_replace("FILTROFECHA", ($enrango ? "b.fecha <= '".$d->falstr."'" : "b.fecha >= '".$d->fdelstr."' AND b.fecha <= '".$d->falstr."'"), $query);
+            $query .= "FROM detallecontable a INNER JOIN reciboprov b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta ";
+            $query .= "WHERE a.origen = 7 AND a.activada = 1 AND a.anulado = 0 AND FILTROFECHA AND b.idempresa = " . $d->idempresa . " AND c.codigo LIKE '" . $ini . "%' ";
+            $query .= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
+            $query = str_replace("FILTROFECHA", ($enrango ? "b.fecha <= '" . $d->falstr . "'" : "b.fecha >= '" . $d->fdelstr . "' AND b.fecha <= '" . $d->falstr . "'"), $query);
             break;
         case 8:
             $query = "SELECT a.idcuenta, SUM(a.debe) AS debe, SUM(a.haber) AS haber, (SUM(a.debe) - SUM(a.haber)) AS anterior ";
-            $query.= "FROM detallecontable a INNER JOIN recibocli b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta ";
-            $query.= "WHERE a.origen = 8 AND a.activada = 1 AND a.anulado = 0 AND FILTROFECHA AND b.idempresa = ".$d->idempresa." AND c.codigo LIKE '".$ini."%' ";
-            $query.= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
-            $query = str_replace("FILTROFECHA", ($enrango ? "b.fecha <= '".$d->falstr."'" : "b.fecha >= '".$d->fdelstr."' AND b.fecha <= '".$d->falstr."'"), $query);
+            $query .= "FROM detallecontable a INNER JOIN recibocli b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta ";
+            $query .= "WHERE a.origen = 8 AND a.activada = 1 AND a.anulado = 0 AND FILTROFECHA AND b.idempresa = " . $d->idempresa . " AND c.codigo LIKE '" . $ini . "%' ";
+            $query .= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
+            $query = str_replace("FILTROFECHA", ($enrango ? "b.fecha <= '" . $d->falstr . "'" : "b.fecha >= '" . $d->fdelstr . "' AND b.fecha <= '" . $d->falstr . "'"), $query);
             break;
         case 9:
             $query = "SELECT a.idcuenta, SUM(a.debe) AS debe, SUM(a.haber) AS haber, (SUM(a.debe) - SUM(a.haber)) AS anterior ";
-            $query.= "FROM detallecontable a INNER JOIN tranban b ON b.id = a.idorigen INNER JOIN banco c ON c.id = b.idbanco INNER JOIN cuentac d ON d.id = a.idcuenta ";
-            $query.= "WHERE a.origen = 9 AND a.activada = 1 AND FILTROFECHA AND c.idempresa = ".$d->idempresa." AND d.codigo LIKE '".$ini."%' ";
-            $query.= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
+            $query .= "FROM detallecontable a INNER JOIN tranban b ON b.id = a.idorigen INNER JOIN banco c ON c.id = b.idbanco INNER JOIN cuentac d ON d.id = a.idcuenta ";
+            $query .= "WHERE a.origen = 9 AND a.activada = 1 AND FILTROFECHA AND c.idempresa = " . $d->idempresa . " AND d.codigo LIKE '" . $ini . "%' ";
+            $query .= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
             $query = str_replace("FILTROFECHA", ($enrango ?
                 //"((b.anulado = 0 AND b.fechaliquida <= '$d->falstr') OR (b.anulado = 1 AND b.fechaliquida <= '$d->falstr' AND b.fechaanula > '$d->falstr'))" :				
-				"((b.anulado = 0 AND b.fechaliquida <= '$d->falstr') OR (b.anulado = 1 AND b.fechaliquida <= '$d->falstr'))" :
-                "((b.anulado = 0 AND b.fechaliquida >= '$d->fdelstr' AND b.fechaliquida <= '$d->falstr') OR (b.anulado = 1 AND b.fechaliquida >= '$d->fdelstr' AND b.fechaliquida <= '$d->falstr' AND b.fechaanula > '$d->falstr'))"
-            ), $query);
+                "((b.anulado = 0 AND b.fechaliquida <= '$d->falstr') OR (b.anulado = 1 AND b.fechaliquida <= '$d->falstr'))" :
+                "((b.anulado = 0 AND b.fechaliquida >= '$d->fdelstr' AND b.fechaliquida <= '$d->falstr') OR (b.anulado = 1 AND b.fechaliquida >= '$d->fdelstr' AND b.fechaliquida <= '$d->falstr' AND b.fechaanula > '$d->falstr'))"), $query);
             break;
         case 10:
             $query = "SELECT a.idcuenta, SUM(a.debe) AS debe, SUM(a.haber) AS haber, (SUM(a.debe) - SUM(a.haber)) AS anterior ";
-            $query.= "FROM detallecontable a INNER JOIN ncdcliente b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta ";
-            $query.= "WHERE a.origen = 10 AND a.activada = 1 AND a.anulado = 0 AND FILTROFECHA AND b.idempresa = ".$d->idempresa." AND c.codigo LIKE '".$ini."%' ";
-            $query.= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
-            $query = str_replace("FILTROFECHA", ($enrango ? "b.fecha <= '".$d->falstr."'" : "b.fecha >= '".$d->fdelstr."' AND b.fecha <= '".$d->falstr."'"), $query);
+            $query .= "FROM detallecontable a INNER JOIN ncdcliente b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta ";
+            $query .= "WHERE a.origen = 10 AND a.activada = 1 AND a.anulado = 0 AND FILTROFECHA AND b.idempresa = " . $d->idempresa . " AND c.codigo LIKE '" . $ini . "%' ";
+            $query .= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
+            $query = str_replace("FILTROFECHA", ($enrango ? "b.fecha <= '" . $d->falstr . "'" : "b.fecha >= '" . $d->fdelstr . "' AND b.fecha <= '" . $d->falstr . "'"), $query);
             break;
         case 11:
             $query = "SELECT a.idcuenta, SUM(a.debe) AS debe, SUM(a.haber) AS haber, (SUM(a.debe) - SUM(a.haber)) AS anterior ";
-            $query.= "FROM detallecontable a INNER JOIN ncdproveedor b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta ";
-            $query.= "WHERE a.origen = 11 AND a.activada = 1 AND a.anulado = 0 AND FILTROFECHA AND b.idempresa = ".$d->idempresa." AND c.codigo LIKE '".$ini."%' ";
-            $query.= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
-            $query = str_replace("FILTROFECHA", ($enrango ? "b.fecha <= '".$d->falstr."'" : "b.fecha >= '".$d->fdelstr."' AND b.fecha <= '".$d->falstr."'"), $query);
+            $query .= "FROM detallecontable a INNER JOIN ncdproveedor b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta ";
+            $query .= "WHERE a.origen = 11 AND a.activada = 1 AND a.anulado = 0 AND FILTROFECHA AND b.idempresa = " . $d->idempresa . " AND c.codigo LIKE '" . $ini . "%' ";
+            $query .= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
+            $query = str_replace("FILTROFECHA", ($enrango ? "b.fecha <= '" . $d->falstr . "'" : "b.fecha >= '" . $d->fdelstr . "' AND b.fecha <= '" . $d->falstr . "'"), $query);
+            break;
+        case 12:
+            $query = "SELECT a.idcuenta, SUM(a.debe) AS debe, SUM(a.haber) AS haber, (SUM(a.debe) - SUM(a.haber)) AS anterior ";
+            $query .= "FROM detallecontable a INNER JOIN recibocli b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta ";
+            $query .= "WHERE a.origen = 12 AND a.activada = 1 AND a.anulado = 0 AND b.tipo = 2 AND FILTROFECHA AND b.idempresa = " . $d->idempresa . " AND c.codigo LIKE '" . $ini . "%' ";
+            $query .= "GROUP BY a.idcuenta ORDER BY a.idcuenta";
+            $query = str_replace("FILTROFECHA", ($enrango ? "b.fecha <= '" . $d->falstr . "'" : "b.fecha >= '" . $d->fdelstr . "' AND b.fecha <= '" . $d->falstr . "'"), $query);
             break;
     }
     return $query;

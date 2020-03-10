@@ -12,7 +12,7 @@
         <li ng-show="reccli.id > 0">
             <a show-tab href="#divDocs" data-toggle="tab">DOCUMENTOS A REBAJAR</a>
         </li>
-        <li ng-show="reccli.id > 0 && reccli.espropio == 1">
+        <li ng-show="reccli.id > 0 && (reccli.espropio == 1 || +fltrre.tipo === 2)">
             <a show-tab href="#divDetCont" data-toggle="tab">DETALLE CONTABLE</a>
         </li>
     </ul> 
@@ -367,6 +367,7 @@
                 <div class="panel-body">
                     <form name="frmDetCont" id="frmDetCont" ng-submit="frmDetCont.$valid && addDetCont(elDetCont)" novalidate>
                         <div class="row">
+                            <!--
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="selCta">Cuenta:</label>
@@ -382,7 +383,43 @@
                                     </select>
                                 </div>
                             </div>
+                            -->
+                            <div class="col-md-6">
+                                <div class="form-group" ng-class="{'has-error':frmDetCont.selCta.$invalid && !frmDetCont.selCta.$pristine}">
+                                    <label>Cuenta contable:</label>
+                                    <ui-select ng-model="elDetCont.objCuenta"
+                                               title="Seleccione una cuenta contable..."
+                                               theme="bootstrap"
+                                               autofocus="false">
+                                        <ui-select-match placeholder="Buscar cuenta contable..." allow-clear="false">
+                                            <span ng-bind="$select.selected.nombrecta"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="item in cuentas | filter:$select.search">
+                                            <div ng-bind-html="item.nombrecta | highlight: $select.search"></div>
+                                            <small>
+                                                <strong>C&oacute;digo:</strong>&nbsp;<span ng-bind-html="item.codigo | highlight: $select.search" ></span>
+                                            </small>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmDetCont.txtDebe.$invalid && !frmDetCont.txtDebe.$pristine}">
+                                    <label for="txtDebe">Debe:</label>
+                                    <input name="txtDebe" id="txtDebe" type="text" class="form-control" ng-model="elDetCont.debe"
+                                           placeholder="Debe" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="zeroHaber(elDetCont.debe)" required />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group" ng-class="{'has-error':frmDetCont.txtHaber.$invalid && !frmDetCont.txtHaber.$pristine}">
+                                    <label for="txtHaber">Haber:</label>
+                                    <input name="txtHaber" id="txtHaber" type="text" class="form-control" ng-model="elDetCont.haber"
+                                           placeholder="Haber" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="zeroDebe(elDetCont.haber)" required />
+                                </div>
+                            </div>
                         </div>
+                        <!--
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group" ng-class="{'has-error':frmDetCont.txtDebe.$invalid && !frmDetCont.txtDebe.$pristine}">
@@ -399,6 +436,7 @@
                                 </div>
                             </div>
                         </div>
+                        -->
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group" ng-class="{'has-error':frmDetCont.txtConceptoMayor.$invalid && !frmDetCont.txtConceptoMayor.$pristine}">
