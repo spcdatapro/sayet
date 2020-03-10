@@ -372,7 +372,7 @@
             obj.idorigen = parseInt($scope.reccli.id);
             obj.debe = parseFloat(obj.debe);
             obj.haber = parseFloat(obj.haber);
-            obj.idcuenta = parseInt(obj.objCuenta[0].id);
+            obj.idcuenta = parseInt(obj.objCuenta.id);
             detContSrvc.editRow(obj, 'c').then(function(){
                 detContSrvc.lstDetalleCont($scope.origen, $scope.reccli.id).then(function(detc){
                     $scope.lstdetcont = procDetCont(detc);
