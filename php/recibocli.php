@@ -253,6 +253,21 @@ $app->post('/prntrecint', function() {
 
     if (count($recibo) > 0) {
         $recibo[0]->montoletras = $n2l->to_word($recibo[0]->total, 'GTQ');
+
+        $query = "SELECT b.codigo, b.nombrecta AS cuenta, FORMAT(a.debe, 2) AS debe, FORMAT(a.haber, 2) AS haber, a.conceptomayor AS concepto ";
+        $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta ";
+        $query.= "WHERE a.origen = 12 AND a.idorigen = $d->id ";
+        $query.= "ORDER BY a.debe DESC, a.haber, b.codigo";
+        $detcont = $db->getQuery($query);
+        
+        if(count($detcont) > 0) {
+            $query = "SELECT '' AS codigo, 'TOTAL' AS cuenta, FORMAT(SUM(a.debe), 2) AS debe, FORMAT(SUM(a.haber), 2) AS haber, '' AS concepto ";
+            $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta ";
+            $query.= "WHERE a.origen = 12 AND a.idorigen = $d->id";
+            $detcont[] = $db->getQuery($query)[0];
+            $recibo[0]->detcont = $detcont;
+        }
+
         print json_encode(['recibo' => $recibo[0]]);
     } else {
         print json_encode(['recibo' => null]);
