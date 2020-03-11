@@ -115,7 +115,8 @@ class contabilidad{
         $query.= $this->_codigo && $this->_codigoal ? "AND TRIM(x.codigo) >= $this->_codigo AND TRIM(x.codigo) <= $this->_codigoal " : '';
 
         //#Recibos internos -> origen = 12
-        $query = "SELECT CONCAT('P', YEAR(b.fecha), LPAD(MONTH(b.fecha), 2, '0'), LPAD(DAY(b.fecha), 2, '0'), LPAD(1, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fecha, ";
+        $query.= "UNION ALL ";
+        $query.= "SELECT CONCAT('P', YEAR(b.fecha), LPAD(MONTH(b.fecha), 2, '0'), LPAD(DAY(b.fecha), 2, '0'), LPAD(1, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fecha, ";
         $query.= "CONCAT(b.serie, b.numero, ' ', c.nombre) AS referencia, 'Recibo interno' AS concepto, b.id, 12 AS origen, ";
         $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber, CONCAT(b.serie, b.numero) AS transaccion ";
         $query.= "FROM recibocli b INNER JOIN cliente c ON c.id = b.idcliente ";
