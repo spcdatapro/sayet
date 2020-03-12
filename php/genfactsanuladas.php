@@ -28,14 +28,14 @@ $app->get('/generar', function() use($db){
         $query.= "0.00, 0.00, 0.00, 'ANULADA', 'ANULADA', 'ANULADA', 0.00, 0.00, ";
         $query.= "1, 6, '$fecha', 1";
         $query.= ")";
-        //$db->doQuery($query);
+        $db->doQuery($query);
         $lastid = $db->getLastId();
 
         $query = "INSERT INTO detfact(idfactura, cantidad, descripcion, preciounitario, preciotot, idtiposervicio, mes, anio, descuento, montoconiva, montoflatconiva) VALUES(";
         $query.= "$lastid, 1, 'ANULADA', 0.00, 0.00, 13, MONTH('$fecha'), YEAR('$fecha'), 0.00, 0.00, 0.00";
         $query.= ")";
 
-        //$db->doQuery($query);
+        $db->doQuery($query);
         $insertadas[] = ['id' => $lastid, 'numero' => $i];
     }
 
