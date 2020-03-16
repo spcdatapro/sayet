@@ -23,16 +23,27 @@
         });
 
         var test = false;
-        $scope.getData = function(){
+
+        prepParams = () => {
             $scope.params.idbanco = $scope.objBanco[0].id;            
             $scope.params.fdelstr = moment($scope.params.fDel).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.fAl).format('YYYY-MM-DD');
             $scope.params.resumen = $scope.params.resumen != null && $scope.params.resumen != undefined ? $scope.params.resumen : 0;
+        };
 
+        $scope.getData = function(){
+            prepParams();
             jsReportSrvc.getPDFReport(test ? 'rJAPqqWXZ' : 'SJB5nj-QW', $scope.params).then(function(pdf){ $scope.content = pdf; });
 
         };
 
+        $scope.getDataExcel = () => {
+            prepParams();
+            jsReportSrvc.getReport(test ? 'B1LjWdaBL' : 'B1LjWdaBL', $scope.params).then((result) => {
+                const file = new Blob([result.data], {type: 'application/vnd.ms-excel'});
+                saveAs(file, 'Estado_de_Cuenta.xlsx');
+            });
+        }
     }]);
 
 }());

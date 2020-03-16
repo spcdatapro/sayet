@@ -39,7 +39,11 @@
                     </div>
                 </div>
                 <button type="button" class="btn btn-primary btn-sm" ng-click="getData()" ng-disabled="objBanco.length == 0">
-                    <span class="glyphicon glyphicon-ok"></span>
+                    <!--<span class="glyphicon glyphicon-ok"></span>-->
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="getDataExcel()" ng-disabled="objBanco.length == 0">
+                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
                 </button>
             </div>
         </div>
