@@ -44,6 +44,7 @@ $app->post('/lstcomprasfltr', function(){
     $query.= $d->fdelstr != '' ? "AND a.fechafactura >= '$d->fdelstr' " : "" ;
     $query.= $d->falstr != '' ? "AND a.fechafactura <= '$d->falstr' " : "" ;
     $query.= "ORDER BY a.fechapago, b.nombre";
+    print $query;
     print $db->doSelectASJson($query);
 });
 
