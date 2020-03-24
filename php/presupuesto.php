@@ -729,7 +729,7 @@ $app->post('/pagosgenerados', function() {
 
     if (!isset($d->fechastr)) { $d->fechastr = date('Y-m-d'); }
 
-    $query = "SELECT a.iddetpresup AS idot FROM tranban a WHERE a.tipotrans = 'C' AND a.iddetpresup > 0 AND a.fecha = '$d->fechastr' ORDER BY a.id";
+    $query = "SELECT a.iddetpresup AS idot FROM tranban a WHERE a.tipotrans IN('C', 'B') AND a.iddetpresup > 0 AND a.fecha = '$d->fechastr' ORDER BY a.id";
     print $db->doSelectASJson($query);
 });
 

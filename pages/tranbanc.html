@@ -66,8 +66,8 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group"
-                             ng-show="laTran.objTipotrans.abreviatura === 'C' || laTran.tipotrans === 'C' || laTran.objTipotrans.abreviatura === 'R' || laTran.tipotrans === 'R'">
+                        <!--<div class="form-group" ng-show="laTran.objTipotrans.abreviatura === 'C' || laTran.tipotrans === 'C' || laTran.objTipotrans.abreviatura === 'R' || laTran.tipotrans === 'R'">-->
+                        <div class="form-group" ng-show="['C', 'R', 'B'].indexOf(laTran.objTipotrans.abreviatura) > -1 || ['C', 'R', 'B'].indexOf(laTran.tipotrans) > -1">
                             <label>Orden de trabajo:</label>
                             <ui-select ng-model="laTran.iddetpagopresup"
                                        title="Seleccione una orden de trabajo..."
