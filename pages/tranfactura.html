@@ -259,7 +259,7 @@
                             <td class="num">{{(p.montoconiva - p.descuento) | number:2}}</td>
                             <!--<td class="num">{{p.descuento | number:2}}</td>-->
                             <td style="text-align: center">
-                                <input name="chkFactAgua_{{p.id}}" id="chkFactAgua_{{p.id}}" type="checkbox" ng-model="p.facturar" ng-true-value="'1'" ng-false-value="'0'" ng-disabled="!(+p.consumoafacturar > 0)"/>
+                                <input name="chkFactAgua_{{p.id}}" id="chkFactAgua_{{p.id}}" type="checkbox" ng-model="p.facturar" ng-true-value="'1'" ng-false-value="'0'" ng-disabled="!(+p.consumoafacturar > 0) || ((+p.montoconiva - +p.descuento) <= 0 )"/>
                             </td>
                             <!--<td>&nbsp;</td>-->
                         </tr>

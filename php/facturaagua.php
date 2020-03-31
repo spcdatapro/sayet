@@ -26,8 +26,10 @@ $app->post('/pendientes', function(){
     $query.= "0.00 AS retisr, RetISR(d.id, b.idtiposervicio) as retenerisr, 0.00 AS retiva, RetIVA(d.id, b.idtiposervicio) AS reteneriva, c.idtipocliente, d.nombre, d.nombrecorto, ";
     $query.= "FacturarA(d.id, b.idtiposervicio) AS facturara, NitFacturarA(d.id, b.idtiposervicio) AS nit, DirFacturarA(d.id, b.idtiposervicio) AS direccion, PorcentajeRetIVA(d.id, b.idtiposervicio) AS porcentajeretiva, ";
     $query.= "f.desctiposervventa AS tipo, 0.00 AS totapagar, 0 AS numfact, '' AS seriefact, ";
-    $query.= "IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, 0, 1) AS facturar, c.id AS idcontrato, ";
-    $query.= "d.id AS idcliente, UPPER(f.desctiposervventa) AS tipo, UPPER(g.nomproyecto) AS proyecto, h.nombre AS unidad, ";
+
+    $query.= "IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, 0, 1) AS facturar, ";
+
+    $query.= "c.id AS idcontrato, d.id AS idcliente, UPPER(f.desctiposervventa) AS tipo, UPPER(g.nomproyecto) AS proyecto, h.nombre AS unidad, ";
 	$query.= "(SELECT nombre FROM mes WHERE id = a.mes) AS nommes, ";
 	$query.= "b.idtiposervicio, ";
     $query.= "DATE_FORMAT(FechaLecturaAnterior(a.idserviciobasico, a.mes, a.anio), '%d/%m/%Y') AS fechaanterior, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechaactual, ";
@@ -145,7 +147,7 @@ $app->post('/genfact', function(){
 
     foreach($pendientes as $p){
 
-        if((float)$p->consumoafacturar > 0){
+        if(round((float)$p->consumoafacturar, 2) > 0 && round((float)$p->totapagar, 2) > 0){
             if((int)$empresa->congface == 0){
                 $p->seriefact = "'$empresa->seriefact'";
                 $p->numfact = "'$empresa->correlafact'";

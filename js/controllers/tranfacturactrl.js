@@ -255,6 +255,12 @@
         $scope.getPendientesH2O = function(){
             $scope.paramsh2o.fvencestr = moment($scope.params.fvence).isValid() ? moment($scope.paramsh2o.fvence).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD');
             facturacionAguaSrvc.lstCargosPendientes($scope.paramsh2o).then(function(d){
+                d = d.map(p => {
+                    if((+p.montoconiva - +p.descuento) <= 0 && +p.facturar === 0) {
+                        p.facturar = '1';
+                    }
+                    return p;
+                });
                 $scope.pendientesh2o = d;
             });
         };
