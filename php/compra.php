@@ -48,8 +48,10 @@ $app->post('/lstcomprasfltr', function(){
     print $db->doSelectASJson($query);
 });
 
-$app->get('/getcompra/:idcompra', function($idcompra){
+$app->get('/getcompra/:idcompra(/:idot)', function($idcompra, $idot = 0){
     $db = new dbcpm();
+    $idcompra = (int)$idcompra;
+    $idot = (int)$idot;
     $query = "SELECT a.id, a.idempresa, d.nomempresa, a.idproveedor, b.nombre AS nomproveedor, a.serie, a.documento, a.fechaingreso, ";
     $query.= "a.mesiva, a.fechafactura, a.idtipocompra, c.desctipocompra, a.conceptomayor, a.creditofiscal, a.extraordinario, a.fechapago, ";
     $query.= "a.ordentrabajo, a.totfact, a.noafecto, a.subtotal, a.iva, a.idmoneda, a.tipocambio, f.simbolo AS moneda, ";
@@ -58,7 +60,16 @@ $app->get('/getcompra/:idcompra', function($idcompra){
     $query.= "FROM compra a INNER JOIN proveedor b ON b.id = a.idproveedor INNER JOIN tipocompra c ON c.id = a.idtipocompra ";
     $query.= "INNER JOIN empresa d ON d.id = a.idempresa LEFT JOIN moneda f ON f.id = a.idmoneda LEFT JOIN tipofactura g ON g.id = a.idtipofactura ";
     $query.= "LEFT JOIN tipocombustible h ON h.id = a.idtipocombustible ";
-    $query.= "WHERE a.id = ".$idcompra;
+    $query.= "WHERE ";
+
+    if($idcompra > 0 && $idot == 0) {
+        $query.= "a.id = $idcompra";
+    } else if($idcompra == 0 && $idot > 0) {
+        $query.= "a.ordentrabajo = $idot";
+    } else if($idcompra > 0 && $idot > 0) {
+        $query.= "a.id = $idcompra AND a.ordentrabajo = $idot";
+    }
+    
     print $db->doSelectASJson($query);
 });
 

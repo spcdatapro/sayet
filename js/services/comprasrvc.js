@@ -1,42 +1,42 @@
-(function(){
+(function () {
 
-    var comprasrvc = angular.module('cpm.comprasrvc', ['cpm.comunsrvc']);
+    const comprasrvc = angular.module('cpm.comprasrvc', ['cpm.comunsrvc']);
 
-    comprasrvc.factory('compraSrvc', ['comunFact', function(comunFact){
-        var urlBase = 'php/compra.php';
+    comprasrvc.factory('compraSrvc', ['comunFact', (comunFact) => {
+        const urlBase = 'php/compra.php';
 
         return {
-            lstCompras: function(idempresa){
+            lstCompras: function (idempresa) {
                 return comunFact.doGET(urlBase + '/lstcomras/' + idempresa);
             },
-            lstComprasFltr: function(obj){
+            lstComprasFltr: function (obj) {
                 return comunFact.doPOST(urlBase + '/lstcomprasfltr', obj);
             },
-            getCompra: function(idcompra){
-                return comunFact.doGET(urlBase + '/getcompra/' + idcompra);
-            },
-            getTransPago: function(idcompra){
+
+            getCompra: (idcompra, idot) => comunFact.doGET(`${urlBase}/getcompra/${idcompra}${+idot > 0 ? ('/' + idot) : ''}`),
+
+            getTransPago: function (idcompra) {
                 return comunFact.doGET(urlBase + '/tranpago/' + idcompra);
             },
-            getCompraISR: function(idcompra){
+            getCompraISR: function (idcompra) {
                 return comunFact.doGET(urlBase + '/getcompisr/' + idcompra);
             },
-            editRow: function(obj, op){
+            editRow: function (obj, op) {
                 return comunFact.doPOST(urlBase + '/' + op, obj);
             },
-            existeCompra: function(obj){
+            existeCompra: function (obj) {
                 return comunFact.doPOST(urlBase + '/chkexiste', obj);
             },
-            buscaFactura: function(obj){
+            buscaFactura: function (obj) {
                 return comunFact.doPOST(urlBase + '/buscar', obj);
             },
-            lstProyectosCompra: function(idcompra){
+            lstProyectosCompra: function (idcompra) {
                 return comunFact.doGET(urlBase + '/lstproycompra/' + idcompra);
             },
-            getProyectoCompra: function(idproycompra){
+            getProyectoCompra: function (idproycompra) {
                 return comunFact.doGET(urlBase + '/getproycompra/' + idproycompra);
             },
-            getChequesProveedor: function(obj){
+            getChequesProveedor: function (obj) {
                 return comunFact.doPOST(urlBase + '/lstchq', obj);
             }
         };
