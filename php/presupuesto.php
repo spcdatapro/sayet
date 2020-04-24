@@ -108,32 +108,32 @@ $app->post('/usrmonto', function(){
 $app->post('/lstpresaprob', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-
-    $query = "SELECT a.id, a.idestatuspresupuesto, a.fechasolicitud, a.idproyecto, b.nomproyecto AS proyecto, a.idempresa, TRIM(c.abreviatura) AS empresa, a.idtipogasto, d.desctipogast AS tipogasto, ";
-    $query.= "a.idmoneda, e.simbolo AS moneda, a.total, a.notas AS descripcion, a.tipo, a.idproveedor, a.idsubtipogasto, a.coniva, a.monto, a.tipocambio, a.excedente ";
-    $query.= "FROM presupuesto a INNER JOIN proyecto b ON b.id = a.idproyecto INNER JOIN empresa c ON c.id = a.idempresa INNER JOIN tipogasto d ON d.id = a.idtipogasto INNER JOIN moneda e ON e.id = a.idmoneda ";
-    $query.= "WHERE (a.idestatuspresupuesto = 3 OR (SELECT COUNT(idestatuspresupuesto) FROM detpresupuesto WHERE idpresupuesto = a.id AND idestatuspresupuesto = 3) > 0) ";
-    $query.= "AND a.fechasolicitud >= '$d->fdelstr' AND a.fechasolicitud <= '$d->falstr' ";
-    $query.= "ORDER BY a.id DESC, b.nomproyecto";
-    $presupuestos = $db->getQuery($query);
-    $cntPresup = count($presupuestos);
-    if($cntPresup > 0){
-        for($i = 0; $i < $cntPresup; $i++){
-            $presupuesto = $presupuestos[$i];
-            $query = "SELECT a.id AS idot, a.idpresupuesto, a.correlativo AS id, a.idproveedor, b.nombre AS proyecto, a.idsubtipogasto, c.descripcion AS tipogasto, a.coniva, a.monto AS total, ";
-            $query.= "a.tipocambio, a.excedente, a.origenprov ";
-            $query.= "FROM detpresupuesto a INNER JOIN proveedor b ON b.id = a.idproveedor INNER JOIN subtipogasto c ON c.id = a.idsubtipogasto ";
-            $query.= "WHERE a.origenprov = 1 AND a.idestatuspresupuesto = 3 AND a.idpresupuesto = $presupuesto->id ";
-            $query.= "UNION ";
-            $query.= "SELECT a.id AS idot, a.idpresupuesto, a.correlativo AS id, a.idproveedor, b.nombre AS proyecto, a.idsubtipogasto, c.descripcion AS tipogasto, a.coniva, a.monto AS total, ";
-            $query.= "a.tipocambio, a.excedente, a.origenprov ";
-            $query.= "FROM detpresupuesto a INNER JOIN beneficiario b ON b.id = a.idproveedor INNER JOIN subtipogasto c ON c.id = a.idsubtipogasto ";
-            $query.= "WHERE a.origenprov = 2 AND a.idestatuspresupuesto = 3 AND a.idpresupuesto = $presupuesto->id ";
-            $query.= "ORDER BY 3";
-            $presupuesto->children = $db->getQuery($query);
-        }
-    }else{ $presupuestos = []; }
-
+    if($d) {
+        $query = "SELECT a.id, a.idestatuspresupuesto, a.fechasolicitud, a.idproyecto, b.nomproyecto AS proyecto, a.idempresa, TRIM(c.abreviatura) AS empresa, a.idtipogasto, d.desctipogast AS tipogasto, ";
+        $query.= "a.idmoneda, e.simbolo AS moneda, a.total, a.notas AS descripcion, a.tipo, a.idproveedor, a.idsubtipogasto, a.coniva, a.monto, a.tipocambio, a.excedente ";
+        $query.= "FROM presupuesto a INNER JOIN proyecto b ON b.id = a.idproyecto INNER JOIN empresa c ON c.id = a.idempresa INNER JOIN tipogasto d ON d.id = a.idtipogasto INNER JOIN moneda e ON e.id = a.idmoneda ";
+        $query.= "WHERE (a.idestatuspresupuesto = 3 OR (SELECT COUNT(idestatuspresupuesto) FROM detpresupuesto WHERE idpresupuesto = a.id AND idestatuspresupuesto = 3) > 0) ";
+        $query.= "AND a.fechasolicitud >= '$d->fdelstr' AND a.fechasolicitud <= '$d->falstr' ";
+        $query.= "ORDER BY a.id DESC, b.nomproyecto";
+        $presupuestos = $db->getQuery($query);
+        $cntPresup = count($presupuestos);
+        if($cntPresup > 0){
+            for($i = 0; $i < $cntPresup; $i++){
+                $presupuesto = $presupuestos[$i];
+                $query = "SELECT a.id AS idot, a.idpresupuesto, a.correlativo AS id, a.idproveedor, b.nombre AS proyecto, a.idsubtipogasto, c.descripcion AS tipogasto, a.coniva, a.monto AS total, ";
+                $query.= "a.tipocambio, a.excedente, a.origenprov ";
+                $query.= "FROM detpresupuesto a INNER JOIN proveedor b ON b.id = a.idproveedor INNER JOIN subtipogasto c ON c.id = a.idsubtipogasto ";
+                $query.= "WHERE a.origenprov = 1 AND a.idestatuspresupuesto = 3 AND a.idpresupuesto = $presupuesto->id ";
+                $query.= "UNION ";
+                $query.= "SELECT a.id AS idot, a.idpresupuesto, a.correlativo AS id, a.idproveedor, b.nombre AS proyecto, a.idsubtipogasto, c.descripcion AS tipogasto, a.coniva, a.monto AS total, ";
+                $query.= "a.tipocambio, a.excedente, a.origenprov ";
+                $query.= "FROM detpresupuesto a INNER JOIN beneficiario b ON b.id = a.idproveedor INNER JOIN subtipogasto c ON c.id = a.idsubtipogasto ";
+                $query.= "WHERE a.origenprov = 2 AND a.idestatuspresupuesto = 3 AND a.idpresupuesto = $presupuesto->id ";
+                $query.= "ORDER BY 3";
+                $presupuesto->children = $db->getQuery($query);
+            }
+        } else { $presupuestos = []; }
+    } else { $presupuestos = []; }
     print json_encode($presupuestos);
 });
 

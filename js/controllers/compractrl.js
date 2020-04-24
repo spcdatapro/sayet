@@ -2,7 +2,7 @@
 
     var compractrl = angular.module('cpm.compractrl', ['cpm.comprasrvc']);
 
-    compractrl.controller('compraCtrl', ['$scope', '$filter', 'compraSrvc', 'authSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'proveedorSrvc', 'tipoCompraSrvc', 'toaster', 'cuentacSrvc', 'detContSrvc', '$uibModal', '$confirm', 'monedaSrvc', 'tipoFacturaSrvc', 'tipoCombustibleSrvc', 'presupuestoSrvc', 'proyectoSrvc', 'jsReportSrvc', '$sce', '$window', 'periodoContableSrvc', function($scope, $filter, compraSrvc, authSrvc, empresaSrvc, DTOptionsBuilder, proveedorSrvc, tipoCompraSrvc, toaster, cuentacSrvc, detContSrvc, $uibModal, $confirm, monedaSrvc, tipoFacturaSrvc, tipoCombustibleSrvc, presupuestoSrvc, proyectoSrvc, jsReportSrvc, sce, $window, periodoContableSrvc){
+    compractrl.controller('compraCtrl', ['$scope', '$filter', 'compraSrvc', 'authSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'proveedorSrvc', 'tipoCompraSrvc', 'toaster', 'cuentacSrvc', 'detContSrvc', '$uibModal', '$confirm', 'monedaSrvc', 'tipoFacturaSrvc', 'tipoCombustibleSrvc', 'presupuestoSrvc', 'proyectoSrvc', 'jsReportSrvc', '$sce', '$window', 'periodoContableSrvc', ($scope, $filter, compraSrvc, authSrvc, empresaSrvc, DTOptionsBuilder, proveedorSrvc, tipoCompraSrvc, toaster, cuentacSrvc, detContSrvc, $uibModal, $confirm, monedaSrvc, tipoFacturaSrvc, tipoCombustibleSrvc, presupuestoSrvc, proyectoSrvc, jsReportSrvc, sce, $window, periodoContableSrvc) => {
 
         $scope.lasEmpresas = [];
         $scope.lasCompras = [];
@@ -31,6 +31,7 @@
         $scope.proyectocompra = {};
         $scope.itemsLimit = 10;
         $scope.periodoCerrado = false;
+        $scope.idpresupuesto = 0;
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
 
@@ -57,11 +58,16 @@
                         proyectoSrvc.lstProyectosPorEmpresa(+$scope.laCompra.objEmpresa.id).then(function(d){ 
                             $scope.proyectos = d; 
                             $scope.resetCompra();
+                            $scope.esDePresupuesto();
                         });                        
                     });                    
                 });
             }
         });
+
+        $scope.esDePresupuesto = () => {            
+            console.log('ID PRESUPUESTO = ', $scope.idpresupuesto);
+        }
 
         proveedorSrvc.lstProveedores().then(function(d){ $scope.losProvs = d; });
         tipoCompraSrvc.lstTiposCompra().then(function(d){
