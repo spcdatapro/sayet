@@ -9,7 +9,7 @@ $app->response->headers->set('Content-Type', 'application/json');
 $app->get('/lstreembolsos/:idemp', function($idemp){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idempresa, a.idtiporeembolso, b.desctiporeembolso AS tipo, a.finicio, a.ffin, a.beneficiario, ";
-    $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto, a.idcuentaliq ";
+    $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto, a.idcuentaliq, a.ordentrabajo ";
     $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso ";
     $query.= "LEFT JOIN (SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) c ON a.id = c.idreembolso ";
     $query.= "WHERE a.idempresa = ".$idemp." ";
@@ -24,25 +24,38 @@ $app->post('/lstreembolsos', function(){
     if(!isset($d->idemp)){ $d->idemp = 4; }
     if(!isset($d->estatus)){ $d->estatus = 1; }
     if(!isset($d->tipo)){ $d->tipo = 0; }
+    if(!isset($d->idot)){ $d->idot = 0; }
 
     $query = "SELECT a.id, a.idempresa, a.idtiporeembolso, b.desctiporeembolso AS tipo, a.finicio, a.ffin, a.beneficiario, ";
-    $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto, a.idcuentaliq ";
+    $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto, a.idcuentaliq, a.ordentrabajo ";
     $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso ";
     $query.= "LEFT JOIN (SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) c ON a.id = c.idreembolso ";
     $query.= "WHERE a.idempresa = $d->idemp ";
     $query.= (int)$d->estatus > 0 ? "AND a.estatus = $d->estatus " : '';
     $query.= (int)$d->tipo > 0 ? "AND a.idtiporeembolso = $d->tipo " : '';
+    $query.= (int)$d->idot > 0 ? "AND a.ordentrabajo = $d->idot " : '';
     $query.= "ORDER BY a.estatus, a.finicio, b.desctiporeembolso";
     print $db->doSelectASJson($query);
 });
 
-$app->get('/getreembolso/:idreembolso', function($idreembolso){
+$app->get('/getreembolso/:idreembolso(/:idot)', function($idreembolso, $idot = 0){
     $db = new dbcpm();
+    $idreembolso = (int)$idreembolso;
+    $idot = (int)$idot;
     $query = "SELECT a.id, a.idempresa, a.idtiporeembolso, b.desctiporeembolso AS tipo, a.finicio, a.ffin, a.beneficiario, ";
-    $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto, a.idcuentaliq ";
+    $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto, a.idcuentaliq, a.ordentrabajo ";
     $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso ";
     $query.= "LEFT JOIN (SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) c ON a.id = c.idreembolso ";
-    $query.= "WHERE a.id = ".$idreembolso;
+    $query.= "WHERE ";
+
+    if($idreembolso > 0 && $idot == 0) {
+        $query.= "a.id = $idreembolso";
+    } else if($idreembolso == 0 && $idot > 0) {
+        $query.= "a.ordentrabajo = $idot";
+    } else if($idreembolso > 0 && $idot > 0) {
+        $query.= "a.id = $idreembolso AND a.ordentrabajo = $idot";
+    }
+
     print $db->doSelectASJson($query);
 });
 
@@ -63,11 +76,12 @@ $app->get('/srchnit/:qstr', function($qstr){
 
 $app->post('/c', function(){
     $d = json_decode(file_get_contents('php://input'));
+    if(!isset($d->ordentrabajo)) { $d->ordentrabajo = 0; }
     $db = new dbcpm();
     $fftmp = $d->ffinstr == '' ? 'NULL' : "'".$d->ffinstr."'";
-    $query = "INSERT INTO reembolso(idempresa, finicio, ffin, beneficiario, idbeneficiario, tblbeneficiario, estatus, idtiporeembolso, fondoasignado, idsubtipogasto, idcuentaliq) VALUES(";
-    $query.= $d->idempresa.", '".$d->finiciostr."', ".$fftmp.", '".$d->beneficiario."', ".$d->idbeneficiario.", ";
-    $query.= "'".$d->tblbeneficiario."', 1, ".$d->idtiporeembolso.", $d->fondoasignado, $d->idsubtipogasto, $d->idcuentaliq";
+    $query = "INSERT INTO reembolso(idempresa, finicio, ffin, beneficiario, idbeneficiario, tblbeneficiario, estatus, idtiporeembolso, fondoasignado, idsubtipogasto, idcuentaliq, ordentrabajo) VALUES(";
+    $query.= "$d->idempresa, '$d->finiciostr', ".$fftmp.", '$d->beneficiario', $d->idbeneficiario, ";
+    $query.= "'$d->tblbeneficiario', 1, $d->idtiporeembolso, $d->fondoasignado, $d->idsubtipogasto, $d->idcuentaliq, $d->ordentrabajo";
     $query.=")";
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
@@ -75,11 +89,12 @@ $app->post('/c', function(){
 
 $app->post('/u', function(){
     $d = json_decode(file_get_contents('php://input'));
+    if(!isset($d->ordentrabajo)) { $d->ordentrabajo = 0; }
     $db = new dbcpm();
     $fftmp = $d->ffinstr == '' ? 'NULL' : "'".$d->ffinstr."'";
-    $query = "UPDATE reembolso SET finicio = '".$d->finiciostr."', ffin = ".$fftmp.", beneficiario = '".$d->beneficiario."', ";
-    $query.= "idbeneficiario = ".$d->idbeneficiario.", tblbeneficiario = '".$d->tblbeneficiario."', idtiporeembolso = ".$d->idtiporeembolso.", ";
-    $query.= "fondoasignado = $d->fondoasignado, idsubtipogasto = $d->idsubtipogasto, idcuentaliq = $d->idcuentaliq ";
+    $query = "UPDATE reembolso SET finicio = '$d->finiciostr', ffin = ".$fftmp.", beneficiario = '$d->beneficiario', ";
+    $query.= "idbeneficiario = $d->idbeneficiario, tblbeneficiario = '$d->tblbeneficiario', idtiporeembolso = $d->idtiporeembolso, ";
+    $query.= "fondoasignado = $d->fondoasignado, idsubtipogasto = $d->idsubtipogasto, idcuentaliq = $d->idcuentaliq, ordentrabajo = $d->ordentrabajo ";
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
 });

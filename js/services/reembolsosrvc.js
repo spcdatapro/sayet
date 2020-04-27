@@ -9,10 +9,11 @@
             lstReembolsos: function(idempresa){
                 return comunFact.doGET(urlBase + '/lstreembolsos/' + idempresa);
             },
+
             lstReembolsosPost: (obj) => comunFact.doPOST(`${urlBase}/lstreembolsos`, obj),
-            getReembolso: function(idreembolso){
-                return comunFact.doGET(urlBase + '/getreembolso/' + idreembolso);
-            },
+
+            getReembolso: (idreembolso, idot) => comunFact.doGET(`urlBase/getreembolso/${idreembolso}${+idot > 0 ? ('/' + idot) : ''}`),
+
             lstBeneficiarios: function(){
                 return comunFact.doGET(urlBase + '/lstbenef');
             },

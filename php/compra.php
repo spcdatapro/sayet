@@ -29,6 +29,9 @@ $app->get('/lstcomras/:idempresa', function($idempresa){
 $app->post('/lstcomprasfltr', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+
+    if(!isset($d->idot)){ $d->idot = 0; }
+
     $query = "SELECT a.id, a.idempresa, d.nomempresa, a.idproveedor, b.nombre AS nomproveedor, a.serie, a.documento, a.fechaingreso, a.mesiva, ";
     $query.= "a.fechafactura, a.idtipocompra, c.desctipocompra, a.conceptomayor, a.creditofiscal, a.extraordinario, a.fechapago, a.ordentrabajo, ";
     $query.= "a.totfact, a.noafecto, a.subtotal, a.iva, IF(ISNULL(e.cantpagos), 0, e.cantpagos) AS cantpagos, a.idmoneda, a.tipocambio, f.simbolo AS moneda, ";
@@ -43,6 +46,7 @@ $app->post('/lstcomprasfltr', function(){
     $query.= "WHERE a.idempresa = ".$d->idempresa." AND a.idreembolso = 0 ";
     $query.= $d->fdelstr != '' ? "AND a.fechafactura >= '$d->fdelstr' " : "" ;
     $query.= $d->falstr != '' ? "AND a.fechafactura <= '$d->falstr' " : "" ;
+    $query.= (int)$d->idot == 0 ? '' : "AND a.ordentrabajo = $d->idot ";
     $query.= "ORDER BY a.fechapago, b.nombre";
     // print $query;
     print $db->doSelectASJson($query);

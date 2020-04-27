@@ -4,7 +4,7 @@
 
     otsimplificadoctrl.controller('otSimplificadoCtrl', [
         '$scope', '$route', '$filter', 'presupuestoSrvc', 'proyectoSrvc', 'empresaSrvc', 'tipogastoSrvc', 'monedaSrvc', 'tranBancSrvc', 'authSrvc', '$confirm',
-        ($scope, $route, $filter, presupuestoSrvc, proyectoSrvc, empresaSrvc, tipogastoSrvc, monedaSrvc, tranBancSrvc, authSrvc, $confirm ) => {
+        ($scope, $route, $filter, presupuestoSrvc, proyectoSrvc, empresaSrvc, tipogastoSrvc, monedaSrvc, tranBancSrvc, authSrvc, $confirm) => {
 
             $scope.presupuesto = {};
             $scope.lstpresupuestos = [];
@@ -46,6 +46,8 @@
                 authSrvc.gpr({ idusuario: parseInt(usrLogged.uid), ruta: $route.current.params.name }).then((d) => $scope.permiso = d);
                 $scope.loadOts('1,2,3');
             });
+
+            $scope.$on('$includeContentRequested', (event, url) => event.targetScope.idpresupuesto = $scope.presupuesto.id);
 
             $scope.loadSubtTiposGasto = (idtipogasto) => tipogastoSrvc.lstSubTipoGastoByTipoGasto(+idtipogasto).then((d) => $scope.subtiposgasto = d);
 
@@ -113,7 +115,7 @@
                     $scope.loadSubtTiposGasto($scope.presupuesto.idtipogasto);
                     $scope.getLstOts(idpresupuesto);
 
-                    switch(+$scope.presupuesto.tipodocumento) {
+                    switch (+$scope.presupuesto.tipodocumento) {
                         case 1: $scope.ngIncludeUrl = `pages/tranfactcompra.html`; break;
                         case 2: $scope.ngIncludeUrl = `pages/tranreembolso.html`; break;
                         default: $scope.ngIncludeUrl = undefined;
