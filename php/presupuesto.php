@@ -643,6 +643,7 @@ $app->get('/pagospend', function(){
 
 $app->post('/genpagos', function(){
     $d = json_decode(file_get_contents('php://input'));
+    if(!isset($d->tipo)) { $d->tipo = 'C'; }
     $db = new dbcpm();
 
     $cntPagos = count($d->pagos);
@@ -651,7 +652,13 @@ $app->post('/genpagos', function(){
     for($i = 0; $i < $cntPagos; $i++){
         $pago = $d->pagos[$i];
 
+        $fldCorrela = strtoupper(trim($d->tipo)) === 'B' ? 'correlativond' : 'correlativo';
+
         $getCorrela = "SELECT correlativo FROM banco WHERE id = $pago->idbanco";
+
+        if(strtoupper(trim($d->tipo)) === 'B') {
+            $getCorrela = "SELECT CONCAT('9999', correlativond) FROM banco WHERE id = $pago->idbanco";
+        }        
 
         $query = "SELECT a.idmoneda, b.eslocal FROM banco a INNER JOIN moneda b ON b.id = a.idmoneda WHERE a.id = $pago->idbanco";
         $datosMonedaBanco = $db->getQuery($query)[0];
@@ -692,24 +699,26 @@ $app->post('/genpagos', function(){
                     $monto = round(((float)$detpago->monto / (float)$datosMonedaOt->tipocambio) - ($isrAQuitar / (float)$datosMonedaOt->tipocambio), 2);
                 }
             }
+
             $query = "INSERT INTO tranban(";
-            $query.= "idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, origenbene, idbeneficiario, tipocambio, iddetpresup, iddetpagopresup, anticipo";
+            $query.= "idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, origenbene, idbeneficiario, tipocambio, iddetpresup, iddetpagopresup, anticipo, correlativond";
             $query.= ") VALUES(";
-            $query.= "$pago->idbanco, 'C', '$d->fecha', $monto, '$detpago->beneficiario', ";
-            $query.= "'$detpago->notas', ($getCorrela), $detpago->origenprov, $detpago->idproveedor, $datosMonedaOt->tipocambio, $detpago->iddetpresup, $pago->idpago, 1";
+            $query.= "$pago->idbanco, '$d->tipo', '$d->fecha', $monto, '$detpago->beneficiario', ";
+            $query.= "'$detpago->notas', ($getCorrela), $detpago->origenprov, $detpago->idproveedor, $datosMonedaOt->tipocambio, $detpago->iddetpresup, $pago->idpago, 1,";
+            $query.= strtoupper(trim($d->tipo)) === 'B' ? "(SELECT correlativond FROM banco WHERE id = $pago->idbanco)" : '0';
             $query.= ")";
             $db->doQuery($query);
             $lastid = $db->getLastId();
             if((int)$lastid > 0) {
-                $db->doQuery("UPDATE banco SET correlativo = correlativo + 1 WHERE id = $pago->idbanco");
+                $db->doQuery("UPDATE banco SET $fldCorrela = $fldCorrela + 1 WHERE id = $pago->idbanco");
 
                 $obj->tipocambio = $datosMonedaOt->tipocambio;
                 $obj->idbanco = $pago->idbanco;
                 $obj->origenbene = $detpago->origenprov;
                 $obj->monto = $monto;
                 $obj->concepto = $detpago->notas;
-                $url = 'http://localhost/sayet/php/tranbanc.php/doinsdetcont';
-                //$url = 'http://localhost/sytdev/php/tranbanc.php/doinsdetcont';
+                //$url = 'http://localhost/sytdev/php/tranbanc.php/doinsdetcont'; //Desarrollo
+                $url = 'http://localhost/sayet/php/tranbanc.php/doinsdetcont'; //Producción
                 $data = ['obj' => $obj, 'lastid' => $lastid];
                 $db->CallJSReportAPI('POST', $url, json_encode($data));
                 

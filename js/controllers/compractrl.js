@@ -358,11 +358,11 @@
                         $scope.editando = true;
                         cuentacSrvc.getByTipo($scope.laCompra.idempresa, 0).then(function (d) { $scope.lasCtasMov = d; });
                         $scope.loadUnidadesProyecto($scope.laCompra.idproyecto);
-                        $scope.getDetCont(idcomp);
-                        $scope.loadProyectosCompra(idcomp);
+                        $scope.getDetCont($scope.laCompra.id);
+                        $scope.loadProyectosCompra($scope.laCompra.id);
                         $scope.resetProyectoCompra();
                         empresaSrvc.getEmpresa(parseInt($scope.laCompra.idempresa)).then(function (d) { $scope.laCompra.objEmpresa = d[0]; });
-                        compraSrvc.getTransPago(idcomp).then(function (d) {
+                        compraSrvc.getTransPago($scope.laCompra.id).then(function (d) {
                             for (var i = 0; i < d.length; i++) {
                                 d[i].idtranban = parseInt(d[i].idtranban);
                                 d[i].numero = parseInt(d[i].numero);

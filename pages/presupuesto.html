@@ -4,13 +4,11 @@
             <a show-tab href="#divPresupuestos" data-toggle="tab">&Oacute;RDEN DE TRABAJO</a>
         </li>
         <li ng-show="+presupuesto.id > 0">
-            <a show-tab href="#divDocumentos" data-toggle="tab">DOCUMENTOS</a>
+            <a show-tab href="#divDocumentos" data-toggle="tab">DOCUMENTOS OT #{{presupuesto.id}}</a>
         </li>
-        <!--
-        <li ng-show="+presupuesto.id > 0">
-            <a show-tab href="#divDetPresup" data-toggle="tab">DETALLE</a>
+        <li>
+            <a show-tab href="#divGenPagosOTs" data-toggle="tab">Generación de pagos de OTs</a>
         </li>
-        -->
     </ul>
 
     <div class="tab-content">
@@ -530,6 +528,9 @@
         </div>
         <div id="divDocumentos" class="tab-pane fade">
             <div id="divNgInclude" ng-include="ngIncludeUrl" ng-init="idpresupuesto = presupuesto;"></div>
+        </div>
+        <div id="divGenPagosOTs" class="tab-pane fade">
+            <div id="divNgIncludeGenPagosOT" ng-include="urlGenCheques" ng-init="idpresupuesto = presupuesto;"></div>
         </div>
     </div>
 </div>

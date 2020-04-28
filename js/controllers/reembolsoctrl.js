@@ -73,7 +73,9 @@
                 .withOption('ordering', false);
             //.withOption('fnRowCallback', rowCallback);
 
-            authSrvc.getSession().then(function (usrLogged) {
+            authSrvc.getSession().then(async function (usrLogged) {
+                await $scope.esDePresupuesto();
+                usrLogged.workingon = $scope.presupuesto.idempresa || usrLogged.workingon;
                 if (parseInt(usrLogged.workingon) > 0) {
                     $scope.params.idemp = +usrLogged.workingon;
                     $scope.uid = +usrLogged.uid;
@@ -83,13 +85,23 @@
                             //$scope.reembolso.objEmpresa = d[0];
                             $scope.reembolso.idempresa = parseInt(d[0].id);
                             $scope.dectc = parseInt(d[0].dectc);
+                            if(!$scope.presupuesto.id) {
+                                $scope.resetReembolso();
+                                $scope.resetCompra();
+                            }
+                            // await $scope.esDePresupuesto();
+                            $scope.getLstReembolsos();
+                            $scope.loadProyectos();
+                            /*
                             proyectoSrvc.lstProyectosPorEmpresa($scope.reembolso.idempresa).then(async function (d) {
                                 $scope.proyectos = d;
                                 $scope.resetReembolso();
                                 $scope.resetCompra();
-                                await $scope.esDePresupuesto();
+                                await $scope.esDePresupuesto();                                
                                 $scope.getLstReembolsos();
+                                $scope.loadProyectos();
                             });
+                            */
                             cuentacSrvc.getByTipo($scope.reembolso.idempresa, 0).then(function (d) { $scope.cuentasc = d; });
                         });
                     });
@@ -115,6 +127,8 @@
             beneficiarioSrvc.lstBeneficiarios().then(function (d) { $scope.beneficiarios = d; });
 
             $scope.loadUnidadesProyecto = (idproyecto) => proyectoSrvc.lstUnidadesProyecto(+idproyecto).then((d) => $scope.unidades = d);
+
+            $scope.loadProyectos = () => proyectoSrvc.lstProyectosPorEmpresa($scope.reembolso.idempresa).then(d => $scope.proyectos = d);
 
             $scope.proyectoSelected = (item) => $scope.loadUnidadesProyecto(item.id);
 
@@ -174,7 +188,7 @@
 
             $scope.resetReembolso = function () {
                 $scope.reembolso = {
-                    idempresa: $scope.reembolso.idempresa,
+                    idempresa: !$scope.presupuesto.idempresa ? $scope.reembolso.idempresa : $scope.presupuesto.idempresa,
                     finicio: moment().toDate(),
                     ffin: null,
                     beneficiario: '',
@@ -195,7 +209,7 @@
 
             $scope.resetCompra = function () {
                 $scope.compra = {
-                    idempresa: parseInt($scope.reembolso.idempresa),
+                    idempresa: !$scope.presupuesto.idempresa ? parseInt($scope.reembolso.idempresa) : +$scope.presupuesto.idempresa,
                     idreembolso: 0,
                     idproveedor: 0,
                     proveedor: '',
@@ -219,9 +233,10 @@
                     galones: 0.00,
                     idp: 0.00,
                     revisada: 0,
-                    idproyecto: undefined,
+                    idproyecto: !$scope.presupuesto.idproyecto ? undefined : $scope.presupuesto.idproyecto,
                     idunidad: undefined,
-                    idsubtipogasto: $scope.reembolso ? ($scope.reembolso.objTipoReembolso && +$scope.reembolso.objTipoReembolso.id == 1 ? $scope.reembolso.idsubtipogasto : undefined) : undefined
+                    idsubtipogasto: $scope.reembolso ? ($scope.reembolso.objTipoReembolso && +$scope.reembolso.objTipoReembolso.id == 1 ? $scope.reembolso.idsubtipogasto : undefined) : undefined,
+                    ordentrabajo: !$scope.presupuesto.id ? 0 : $scope.presupuesto.id
                 };
                 //console.log($scope.compra);
                 $scope.comprastr = '';
@@ -231,15 +246,13 @@
                 goTop();
             };
 
-            $scope.getLstReembolsos = function () {
-                /*reembolsoSrvc.lstReembolsos($scope.reembolso.idempresa).then(function(d){$scope.reembolsos = procDataReemb(d);});*/
+            $scope.getLstReembolsos = function () {                
                 reembolsoSrvc.lstReembolsosPost($scope.params).then((d) => $scope.reembolsos = procDataReemb(d));
             };
 
             $scope.getDetReem = function (idreem) {
                 reembolsoSrvc.lstCompras(idreem).then(function (d) {
-                    $scope.compras = procDataCompras(d);
-                    //cuentacSrvc.getByTipo($scope.reembolso.idempresa, 0).then(function(d){ $scope.cuentasc = d; });
+                    $scope.compras = procDataCompras(d);                    
 
                     $scope.infocompras.cantidad = $scope.compras.length;
                     $scope.infocompras.sumtotfact = 0.00;
@@ -252,13 +265,12 @@
                 });
             };
 
-            $scope.esDePresupuesto = () => {
+            $scope.esDePresupuesto = async () => {
                 if (+$scope.idpresupuesto > 0 && !$scope.presupuesto.id) {
                     $scope.params.idot = $scope.idpresupuesto;
                     // console.log($scope.params);
-                    presupuestoSrvc.getPresupuesto($scope.params.idot).then(d => {
+                    await presupuestoSrvc.getPresupuesto($scope.params.idot).then(d => {
                         $scope.presupuesto = d[0];
-                        // console.log($scope.presupuesto);
                         $scope.getReembolso(0, $scope.params.idot);
                     });
                 }
@@ -272,12 +284,12 @@
                         $scope.reembolso = procDataReemb(d)[0];
                         $scope.reembolso.objTipoReembolso = $filter('getById')($scope.tiposreembolso, $scope.reembolso.idtiporeembolso);
                         $scope.reembolso.objBeneficiario = [$filter('getById')($scope.beneficiarios, $scope.reembolso.idbeneficiario)];
-                        $scope.reemstr = $scope.reembolso.tipo + ', No. ' + $filter('padNumber')(idreembolso, 5) + ', Iniciando el ' + moment($scope.reembolso.finicio).format('DD/MM/YYYY') + ', ' + $scope.reembolso.beneficiario;
+                        $scope.reemstr = $scope.reembolso.tipo + ', No. ' + $filter('padNumber')($scope.reembolso.id, 5) + ', Iniciando el ' + moment($scope.reembolso.finicio).format('DD/MM/YYYY') + ', ' + $scope.reembolso.beneficiario;
                         $scope.getDetReem($scope.reembolso.id);
                         bancoSrvc.lstBancosActivos($scope.reembolso.idempresa).then(function (d) { $scope.bancos = d; });
                         tipoMovTranBanSrvc.getBySuma(0).then(function (d) { $scope.tiposmov = d; });
-                        reembolsoSrvc.getTranBan(idreembolso).then(function (d) { $scope.tranban = d; });
-                        detContSrvc.lstDetalleCont($scope.origenReembolsos, idreembolso).then(function (d) {
+                        reembolsoSrvc.getTranBan($scope.reembolso.id).then(function (d) { $scope.tranban = d; });
+                        detContSrvc.lstDetalleCont($scope.origenReembolsos, $scope.reembolso.id).then(function (d) {
                             for (var i = 0; i < d.length; i++) {
                                 d[i].debe = parseFloat(parseFloat(d[i].debe).toFixed(2));
                                 d[i].haber = parseFloat(parseFloat(d[i].haber).toFixed(2));
@@ -285,9 +297,14 @@
                             $scope.detcontreem = d;
                         });
                     } else {
-
+                        if(!$scope.presupuesto.id) {
+                            $scope.resetReembolso();                            
+                        }
+                        $scope.reembolso.objBeneficiario = [$filter('getById')($scope.beneficiarios, $scope.presupuesto.idproveedor)];
+                        $scope.reembolso.idempresa = $scope.presupuesto.idempresa;
                     }
                     $scope.resetCompra();
+                    $scope.loadProyectos();
                     goTop();
                 });
             };
@@ -303,6 +320,7 @@
                 obj.fondoasignado = obj.fondoasignado != null && obj.fondoasignado != undefined && +obj.idtiporeembolso == 2 ? obj.fondoasignado : 0.00;
                 obj.idsubtipogasto = obj.idsubtipogasto != null && obj.idsubtipogasto != undefined && +obj.idtiporeembolso == 1 ? obj.idsubtipogasto : 0;
                 obj.idcuentaliq = !!obj.idcuentaliq ? obj.idcuentaliq : 0;
+                obj.ordentrabajo = !$scope.presupuesto.id ? 0 : $scope.presupuesto.id;
                 reembolsoSrvc.editRow(obj, 'c').then(function (d) {
                     $scope.getLstReembolsos();
                     $scope.getReembolso(parseInt(d.lastid));
@@ -318,6 +336,7 @@
                 obj.fondoasignado = obj.fondoasignado != null && obj.fondoasignado != undefined && +obj.idtiporeembolso == 2 ? obj.fondoasignado : 0.00;
                 obj.idsubtipogasto = obj.idsubtipogasto != null && obj.idsubtipogasto != undefined && +obj.idtiporeembolso == 1 ? obj.idsubtipogasto : 0;
                 obj.idcuentaliq = !!obj.idcuentaliq ? obj.idcuentaliq : 0;
+                obj.ordentrabajo = !$scope.presupuesto.id ? 0 : $scope.presupuesto.id;
                 reembolsoSrvc.editRow(obj, 'u').then(function () {
                     $scope.getLstReembolsos();
                 });

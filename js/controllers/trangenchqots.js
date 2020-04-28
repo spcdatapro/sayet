@@ -14,6 +14,8 @@
         $scope.fechatran = moment().toDate();
         $scope.empresas = [];
         $scope.generarTodos = 0;
+        $scope.presupuesto = {};
+        $scope.search = '';
 
         authSrvc.getSession().then(function (usrLogged) {
             if (parseInt(usrLogged.workingon) > 0) {
@@ -21,9 +23,19 @@
                     $scope.objEmpresa = d[0];
                     $scope.getPagos();
                     $scope.loadBancos();
+                    $scope.esDePresupuesto();
                 });
             }
         });
+
+        $scope.esDePresupuesto = () => {
+            if (+$scope.idpresupuesto > 0 && !$scope.presupuesto.id) {
+                presupuestoSrvc.getPresupuesto($scope.idpresupuesto).then(d => {
+                    $scope.presupuesto = d[0];
+                    $scope.search = $scope.presupuesto.id;
+                });                    
+            }
+        };
 
         $scope.loadBancos = function () {
             bancoSrvc.lstBancosActivos(null).then(function (d) { $scope.losBancos = d; });
@@ -95,7 +107,7 @@
             }
         }
 
-        $scope.generaCheques = () => {
+        $scope.generaCheques = (tipo) => {
             /*
             let pago;
             for(let i = 0; i < $scope.losPagos.length; i++){
@@ -112,13 +124,14 @@
             if ($scope.qpagos.length > 0) {
                 presupuestoSrvc.editRow({
                     fecha: moment($scope.fechatran).format('YYYY-MM-DD'),
+                    tipo: tipo,
                     pagos: $scope.qpagos
                 }, 'genpagos').then((d) => {
                     if (d.segeneraron) {
                         toaster.pop({
                             type: 'success',
                             title: 'Generación de pagos de OTs',
-                            body: `Se generaron los cheques No. ${d.cheques}`,
+                            body: `Se generaron los pagos No. ${d.cheques}`,
                             timeout: 3000
                         });
                         $scope.printOts($scope.qpagos);
@@ -126,7 +139,7 @@
                         toaster.pop({
                             type: 'error',
                             title: 'Generación de pagos de OTs',
-                            body: 'Hubo un error en la generación de cheques.',
+                            body: 'Hubo un error en la generación de pagos.',
                             timeout: 3000
                         });
                     }

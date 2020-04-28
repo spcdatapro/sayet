@@ -33,6 +33,7 @@
             $scope.lstdetpagos = [];
             $scope.fpago = {};
             $scope.ngIncludeUrl = undefined;
+            $scope.urlGenCheques = 'pages/trangenchqots.html';
 
             proyectoSrvc.lstProyecto().then((d) => $scope.proyectos = d);
             empresaSrvc.lstEmpresas().then((d) => $scope.empresas = d);
@@ -121,6 +122,8 @@
                         default: $scope.ngIncludeUrl = undefined;
                     }
 
+                    $scope.urlGenCheques = undefined;
+
                     $scope.lbl.presupuesto = 'No. ' + $scope.presupuesto.id + ' - ' + ($filter('getById')($scope.proyectos, $scope.presupuesto.idproyecto)).nomproyecto + ' - ';
                     $scope.lbl.presupuesto += ($filter('getById')($scope.empresas, $scope.presupuesto.idempresa)).nomempresa + ' - ';
                     $scope.lbl.presupuesto += ($filter('getById')($scope.tiposgasto, $scope.presupuesto.idtipogasto)).desctipogast + ' - ';
@@ -129,7 +132,7 @@
                     $scope.confGrpBtn('grpBtnPresupuesto', false, false, true, true, true, false, false);
                     $scope.sl.presupuesto = true;
                     goTop();
-                });
+                }).then(() => $scope.urlGenCheques = 'pages/trangenchqots.html');
             };
 
             setPresupuesto = (obj) => {

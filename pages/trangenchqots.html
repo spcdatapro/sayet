@@ -19,14 +19,16 @@
                 <tr ng-repeat="emp in empresas">
                     <td>{{emp.empresa}}</td>
                     <td>
+                        <!--bancomonedacorrela-->
                         <select name="selBancoDef_{{$index}}" id="selBancoDef_{{$index}}" class="form-control input-sm" style="width: 100%;" ng-model="defaultData.idbanco" ng-change="setBanco(emp.idempresa, defaultData.idbanco)"
-                                ng-options="obj.id as obj.bancomonedacorrela for obj in losBancos | filter:{idempresa:emp.idempresa}">
+                                ng-options="obj.id as obj.bancomoneda for obj in losBancos | filter:{idempresa:emp.idempresa}">
                         </select>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2" style="text-align: right">
-                        <button type="button" class="btn btn-primary" ng-click="generaCheques()" ng-disabled="periodoCerrado">Generar</button>
+                        <button type="button" class="btn btn-primary" ng-click="generaCheques('C')" ng-disabled="periodoCerrado">Generar Cheques</button>
+                        <button type="button" class="btn btn-primary" ng-click="generaCheques('B')" ng-disabled="periodoCerrado">Generar Notas de débito</button>
                     </td>
                 </tr>
                 </tbody>
@@ -65,7 +67,7 @@
                 <td>{{+pago.quitarisr == 1 ? 'Sí' : 'No'}}</td>
                 <td style="width: 17%;">
                     <select name="selBanco_{{$index}}" id="selBanco_{{$index}}" class="form-control input-sm" style="width: 100%;" ng-model="pago.idbanco"
-                            ng-options="obj.id as obj.bancomonedacorrela for obj in losBancos | filter:{idempresa:pago.idempresa}">
+                            ng-options="obj.id as obj.bancomoneda for obj in losBancos | filter:{idempresa:pago.idempresa}">
                     </select>
                 </td>
                 <td style="width: 5%; text-align: center;">
