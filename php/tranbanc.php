@@ -21,8 +21,9 @@ $app->get('/lsttranbanc/:idbanco(/:tipotrans)', function($idbanco, $tipotrans = 
 });
 
 $app->post('/lsttran', function(){
-    $d = json_decode(file_get_contents('php://input'));
+    $d = json_decode(file_get_contents('php://input'));    
     if(!isset($d->tipotrans)){ $d->tipotrans = ''; };
+    if(!isset($d->idot)){ $d->idot = 0; }
     $db = new dbcpm();
     $query = "SELECT a.id, a.idbanco, CONCAT(b.nombre, ' (', b.nocuenta, ')') AS nombanco, a.tipotrans, a.numero, a.fecha, a.monto, ";
     $query.= "a.beneficiario, a.concepto, a.operado, a.anticipo, a.idbeneficiario, a.origenbene, a.anulado, a.fechaanula, a.tipocambio, a.impreso, a.fechaliquida, a.esnegociable, ";
@@ -33,6 +34,7 @@ $app->post('/lsttran', function(){
     $query.= $d->fdelstr != "" ? "AND a.fecha >= '$d->fdelstr' " : "";
     $query.= $d->falstr != "" ? "AND a.fecha <= '$d->falstr' " : "";
     $query.= $d->tipotrans != '' ? "AND a.tipotrans = '$d->tipotrans' " : "";
+    $query.= (int)$d->idot > 0 ? "AND a.iddetpresup IN (SELECT id FROM detpresupuesto WHERE idpresupuesto = $d->idot) " : '';
     $query.= "ORDER BY a.fecha DESC, a.operado, b.nombre, a.tipotrans, a.numero";
     print $db->doSelectASJson($query);
 });

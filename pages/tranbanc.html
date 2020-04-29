@@ -257,16 +257,16 @@
                 <table class="table table-responsive table-hover table-condensed">
                     <caption>
                         <form class="form-inline">
-                            <label for="srchTxtDel">Del:</label>
-                            <input name="srchTxtDel" id="srchTxtDel" type="date" class="form-control input-sm" ng-model="fltrtran.fdel"/>
-                            <label for="srchTxtAl">al:</label>
+                            <label for="srchTxtDelTB">Del:</label>
+                            <input name="srchTxtDelTB" id="srchTxtDelTB" type="date" class="form-control input-sm" ng-model="fltrtran.fdel"/>
+                            <label for="srchTxtAlTB">al:</label>
                             <div class="input-group">
-                                <input name="srchTxtAl" id="srchTxtAl" type="date" class="form-control input-sm" ng-model="fltrtran.fal"/>
+                                <input name="srchTxtAlTB" id="srchTxtAlTB" type="date" class="form-control input-sm" ng-model="fltrtran.fal"/>
                                 <span class="input-group-btn">
                                     <button type="button" class="btn btn-primary btn-sm" ng-click="getLstTran()"><i class="fa fa-search" aria-hidden="true"></i></button>
                                 </span>
                             </div>
-                            <input name="srchTxt" id="srchTxt" type="text" class="form-control input-sm" style="width: 50em" ng-model="lookFor.$" placeholder="Tipo, documento, monto, beneficiario, concepto..."/>
+                            <input name="srchTxtTB" id="srchTxtTB" type="text" class="form-control input-sm" style="width: 50em" ng-model="lookFor.$" placeholder="Tipo, documento, monto, beneficiario, concepto..."/>
                         </form>
                     </caption>
                     <thead>
@@ -326,15 +326,15 @@
                                 </div>
                             </div>
                             <div class="col-md-1">
-                                <div class="form-group" ng-class="{'has-error':frmDocSop.txtSerie.$invalid && !frmDocSop.txtSerie.$pristine}">
-                                    <label for="txtSerie">Serie:</label>
-                                    <input name="txtSerie" id="txtSerie" type="text" class="form-control" ng-model="elDocSop.serie" placeholder="Serie" maxlength="15"/>
+                                <div class="form-group" ng-class="{'has-error':frmDocSop.txtSerieTB.$invalid && !frmDocSop.txtSerieTB.$pristine}">
+                                    <label for="txtSerieTB">Serie:</label>
+                                    <input name="txtSerieTB" id="txtSerieTB" type="text" class="form-control" ng-model="elDocSop.serie" placeholder="Serie" maxlength="15"/>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="form-group" ng-class="{'has-error':frmDocSop.txtDocu.$invalid && !frmDocSop.txtDocu.$pristine}">
-                                    <label for="txtDocu">Documento:</label>
-                                    <input name="txtDocu" id="txtDocu" type="text" class="form-control" ng-model="elDocSop.documento"
+                                <div class="form-group" ng-class="{'has-error':frmDocSop.txtDocuTB.$invalid && !frmDocSop.txtDocuTB.$pristine}">
+                                    <label for="txtDocuTB">Documento:</label>
+                                    <input name="txtDocuTB" id="txtDocuTB" type="text" class="form-control" ng-model="elDocSop.documento"
                                            placeholder="Documento" required />
                                 </div>
                             </div>
@@ -480,7 +480,7 @@
                     <hr ng-show="compras.length > 0"/>
                     <div class="row">
                         <div class="col-md-9">
-                            <form name="frmDetCont" id="frmDetCont" ng-submit="frmDetCont.$valid && addDetCont(elDetCont)" novalidate>
+                            <form name="frmDetContTB" id="frmDetContTB" ng-submit="frmDetContTB.$valid && addDetCont(elDetCont)" novalidate>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -521,25 +521,25 @@
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="form-group" ng-class="{'has-error':frmDetCont.txtDebe.$invalid && !frmDetCont.txtDebe.$pristine}">
-                                            <label for="txtDebe">Debe:</label>
-                                            <input name="txtDebe" id="txtDebe" type="text" class="form-control" ng-model="elDetCont.debe"
+                                        <div class="form-group" ng-class="{'has-error':frmDetContTB.txtDebeTB.$invalid && !frmDetContTB.txtDebeTB.$pristine}">
+                                            <label for="txtDebeTB">Debe:</label>
+                                            <input name="txtDebeTB" id="txtDebeTB" type="text" class="form-control" ng-model="elDetCont.debe"
                                                    placeholder="Debe" fcsa-number="{ maxDecimals: 2 }" ng-change="zeroHaber(elDetCont.debe)" required />
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="form-group" ng-class="{'has-error':frmDetCont.txtHaber.$invalid && !frmDetCont.txtHaber.$pristine}">
-                                            <label for="txtHaber">Haber:</label>
-                                            <input name="txtHaber" id="txtHaber" type="text" class="form-control" ng-model="elDetCont.haber"
+                                        <div class="form-group" ng-class="{'has-error':frmDetContTB.txtHaberTB.$invalid && !frmDetContTB.txtHaberTB.$pristine}">
+                                            <label for="txtHaberTB">Haber:</label>
+                                            <input name="txtHaberTB" id="txtHaberTB" type="text" class="form-control" ng-model="elDetCont.haber"
                                                    placeholder="Haber" fcsa-number="{ maxDecimals: 2 }" ng-change="zeroDebe(elDetCont.haber)" required />
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <div class="form-group" ng-class="{'has-error':frmDetCont.txtConceptoMayor.$invalid && !frmDetCont.txtConceptoMayor.$pristine}">
-                                            <label for="txtConceptoMayor">Concepto mayor:</label>
-                                    <textarea name="txtConceptoMayor" id="txtConceptoMayor" class="form-control"
+                                        <div class="form-group" ng-class="{'has-error':frmDetContTB.txtConceptoMayorTB.$invalid && !frmDetContTB.txtConceptoMayorTB.$pristine}">
+                                            <label for="txtConceptoMayorTB">Concepto mayor:</label>
+                                    <textarea name="txtConceptoMayorTB" id="txtConceptoMayorTB" class="form-control"
                                               ng-model="elDetCont.conceptomayor" placeholder="Concepto para el libro mayor"
                                               style="width:100%" rows="2" required>
                                     </textarea>
@@ -547,7 +547,7 @@
                                     </div>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
-                                    <button type="submit" class="btn btn-info" ng-disabled="frmDetCont.$invalid || laTran.anulado === 1 || periodoCerrado">
+                                    <button type="submit" class="btn btn-info" ng-disabled="frmDetContTB.$invalid || laTran.anulado === 1 || periodoCerrado">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
                                 </div>
@@ -735,14 +735,14 @@
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="form-group" ng-class="{'has-error':frmModalDetCont.txtDebe.$invalid && !frmModalDetCont.txtDebe.$pristine}">
+                    <div class="form-group" ng-class="{'has-error':frmModalDetCont.txtDebeTB.$invalid && !frmModalDetCont.txtDebeTB.$pristine}">
                         <label for="txtModalDebe">Debe:</label>
                         <input name="txtModalDebe" id="txtModalDebe" type="text" class="form-control" ng-model="detcont.debe"
                                placeholder="Debe" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="zeroHaber(detcont.debe)" required />
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="form-group" ng-class="{'has-error':frmModalDetCont.txtHaber.$invalid && !frmModalDetCont.txtHaber.$pristine}">
+                    <div class="form-group" ng-class="{'has-error':frmModalDetCont.txtHaberTB.$invalid && !frmModalDetCont.txtHaberTB.$pristine}">
                         <label for="txtModalHaber">Haber:</label>
                         <input name="txtModalHaber" id="txtModalHaber" type="text" class="form-control" ng-model="detcont.haber"
                                placeholder="Haber" fcsa-number="{ min:0, maxDecimals: 2 }" ng-change="zeroDebe(detcont.haber)" required />
@@ -751,7 +751,7 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <div class="form-group" ng-class="{'has-error':frmModalDetCont.txtConceptoMayor.$invalid && !frmModalDetCont.txtConceptoMayor.$pristine}">
+                    <div class="form-group" ng-class="{'has-error':frmModalDetCont.txtConceptoMayorTB.$invalid && !frmModalDetCont.txtConceptoMayorTB.$pristine}">
                         <label for="txtModalConceptoMayor">Concepto mayor:</label>
                             <textarea name="txtModalConceptoMayor" id="txtModalConceptoMayor" class="form-control"
                                       ng-model="detcont.conceptomayor" placeholder="Concepto para el libro mayor" style="width:100%" rows="3" required>

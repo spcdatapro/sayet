@@ -6,8 +6,11 @@
         <li ng-show="+presupuesto.id > 0">
             <a show-tab href="#divDocumentos" data-toggle="tab">DOCUMENTOS OT #{{presupuesto.id}}</a>
         </li>
+        <li ng-show="+presupuesto.id > 0">
+            <a show-tab href="#divTranBan" data-toggle="tab">TRANSACCIONES BANCARIAS OT #{{presupuesto.id}}</a>
+        </li>        
         <li>
-            <a show-tab href="#divGenPagosOTs" data-toggle="tab">Generación de pagos de OTs</a>
+            <a show-tab href="#divGenPagosOTs" data-toggle="tab">GENERACI&Oacute;N DE PAGOS</a>
         </li>
     </ul>
 
@@ -265,6 +268,11 @@
                                             cf="cancelEditPresup()" ef="startEditPresup()" pf="imprimirPresup()"
                                             ng-hide="(+presupuesto.idestatuspresupuesto == 6 || +presupuesto.idestatuspresupuesto == 5) || !permiso.m">
                                         </form-buttons>
+                                        <button type="button" class="btn btn-info btn-sm tipo" ng-click="enviar(presupuesto)"
+                                            ng-show="+presupuesto.idestatuspresupuesto == 1 && +presupuesto.tipo == 1" data-toggle="tooltip"
+                                            data-placement="auto" title="Enviar presupuesto a aprobación...">
+                                            <span class="glyphicon glyphicon-share-alt"></span>
+                                        </button>
                                         <button type="button" class="btn btn-info"
                                             ng-click="verDetPagos(presupuesto, true)"
                                             ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1"
@@ -528,6 +536,9 @@
         </div>
         <div id="divDocumentos" class="tab-pane fade">
             <div id="divNgInclude" ng-include="ngIncludeUrl" ng-init="idpresupuesto = presupuesto;"></div>
+        </div>
+        <div id="divTranBan" class="tab-pane fade">
+            <div id="divNgIncludeTB" ng-include="ngIncludeUrlTB" ng-init="idpresupuesto = presupuesto;"></div>
         </div>
         <div id="divGenPagosOTs" class="tab-pane fade">
             <div id="divNgIncludeGenPagosOT" ng-include="urlGenCheques" ng-init="idpresupuesto = presupuesto;"></div>

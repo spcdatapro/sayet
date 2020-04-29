@@ -11,7 +11,7 @@
         $scope.lasTran = [];
         $scope.editando = false;
         $scope.strTran = '';
-        $scope.fltrtran = { fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), idbanco: '0' };
+        $scope.fltrtran = { fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), idbanco: '0', idot: 0 };
         $scope.losDocsSoporte = [];
         $scope.elDocSop = {fechadoc: moment().toDate(), fechaliquida: null};
         $scope.sumaDocsSoporte = 0.00;
@@ -53,6 +53,7 @@
 
         $scope.dtOptionsDetContLiquidacion = $scope.dtOptionsDetCont;
         $scope.periodoCerrado = false;
+        $scope.presupuesto = {};
 
 
         //Infinite Scroll Magic
@@ -79,18 +80,31 @@
         tranBancSrvc.lstBeneficiarios().then(function(d){ $scope.beneficiarios = d; });
         razonAnulacionSrvc.lstRazones().then(function(d){$scope.razonesanula = d; });
 
-        authSrvc.getSession().then(function(usrLogged){
-			$scope.uid = +usrLogged.uid;
+        authSrvc.getSession().then(async function(usrLogged){
+            $scope.uid = +usrLogged.uid;
+            await $scope.esDePresupuesto();
+            // console.log($scope.presupuesto);
+            usrLogged.workingon = $scope.presupuesto.idempresa || usrLogged.workingon;
             if(parseInt(usrLogged.workingon) > 0){
                 empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function(d){
                     $scope.laEmpresa = d[0];
                     $scope.dectc = parseInt(d[0].dectc);
                     $scope.getLstBancos();
-                    presupuestoSrvc.lstPagosOt($scope.laEmpresa.id).then(function(d){ $scope.ots = d; });
+                    presupuestoSrvc.lstPagosOt($scope.laEmpresa.id, ($scope.presupuesto.id || 0)).then(function(d){ $scope.ots = d; });
                     proyectoSrvc.lstProyectosPorEmpresa($scope.laEmpresa.id).then(function(d){ $scope.proyectos = d; });
                 });
             }
         });
+
+        $scope.esDePresupuesto = async () => {
+            // console.log('ID PRESUPUESTO DESDE TRANBAN = ', +$scope.idpresupuesto);
+            if (+$scope.idpresupuesto > 0 && !$scope.presupuesto.id) {                
+                $scope.fltrtran.idot = +$scope.idpresupuesto;
+                await presupuestoSrvc.getPresupuesto($scope.idpresupuesto).then(d => {
+                    $scope.presupuesto = d[0];
+                });
+            }
+        };
 
         $scope.$watch('laTran.fecha', function(newValue, oldValue){
             if(newValue != null && newValue != undefined){

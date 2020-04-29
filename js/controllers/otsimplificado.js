@@ -33,6 +33,7 @@
             $scope.lstdetpagos = [];
             $scope.fpago = {};
             $scope.ngIncludeUrl = undefined;
+            $scope.ngIncludeUrlTB = undefined;
             $scope.urlGenCheques = 'pages/trangenchqots.html';
 
             proyectoSrvc.lstProyecto().then((d) => $scope.proyectos = d);
@@ -109,6 +110,7 @@
             $scope.getPresupuesto = (idpresupuesto) => {
                 $scope.ot = {};
                 //$scope.lstot = [];
+                const ahora = moment().toDate();
                 presupuestoSrvc.getPresupuesto(idpresupuesto).then((d) => {
                     $scope.presupuesto = procDataPresup(d)[0];
                     $scope.presupuesto.proyecto = $scope.presupuesto.idproyecto;
@@ -117,12 +119,13 @@
                     $scope.getLstOts(idpresupuesto);
 
                     switch (+$scope.presupuesto.tipodocumento) {
-                        case 1: $scope.ngIncludeUrl = `pages/tranfactcompra.html`; break;
-                        case 2: $scope.ngIncludeUrl = `pages/tranreembolso.html`; break;
+                        case 1: $scope.ngIncludeUrl = `pages/tranfactcompra.html?upd=${ahora}`; break;
+                        case 2: $scope.ngIncludeUrl = `pages/tranreembolso.html?upd=${ahora}`; break;
                         default: $scope.ngIncludeUrl = undefined;
                     }
 
                     $scope.urlGenCheques = undefined;
+                    $scope.ngIncludeUrlTB = `pages/tranbanc.html?upd=${ahora}`;
 
                     $scope.lbl.presupuesto = 'No. ' + $scope.presupuesto.id + ' - ' + ($filter('getById')($scope.proyectos, $scope.presupuesto.idproyecto)).nomproyecto + ' - ';
                     $scope.lbl.presupuesto += ($filter('getById')($scope.empresas, $scope.presupuesto.idempresa)).nomempresa + ' - ';
@@ -132,7 +135,7 @@
                     $scope.confGrpBtn('grpBtnPresupuesto', false, false, true, true, true, false, false);
                     $scope.sl.presupuesto = true;
                     goTop();
-                }).then(() => $scope.urlGenCheques = 'pages/trangenchqots.html');
+                }).then(() => $scope.urlGenCheques = `pages/trangenchqots.html?upd=${ahora}`);
             };
 
             setPresupuesto = (obj) => {
@@ -204,6 +207,26 @@
             };
 
             $scope.imprimirPresup = () => { };
+
+            $scope.enviar = (obj, idpresupuesto, correlativo) => {
+                let numpresup = obj.id;
+                obj.esot = 0;
+                if (idpresupuesto && correlativo) {
+                    numpresup = `${idpresupuesto}-${correlativo}`;
+                    obj.esot = 1;
+                }
+                $confirm({ text: `¿Esta seguro(a) de enviar el presupuesto No. ${numpresup} para aprobación?`, title: 'Envio de presupuesto', ok: 'Sí', cancel: 'No' }).then(() => {
+                    obj.idusuario = $scope.usrdata.uid;
+                    presupuestoSrvc.editRow(obj, '/ep').then(() => {
+                        $scope.loadOts('1,2,3');
+                        if (obj.esot === 1) {
+                            $scope.getLstOts(obj.id);
+                        }
+                        toaster.pop('info', 'Envio de presupuesto', `Presupuesto No. ${numpresup} enviado a aprobación...`, 'timeout:1500');
+                    });
+    
+                });
+            };
 
             procDataOts = (data) => {
                 // console.log('Antes', data);

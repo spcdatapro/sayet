@@ -589,7 +589,8 @@ $app->get('/getdetpago/:iddetpago', function($iddetpago){
     print $db->doSelectASJson($query);
 });
 
-$app->get('/lstpagos/:idempresa', function($idempresa){
+$app->get('/lstpagos/:idempresa(/:idpresupuesto)', function($idempresa, $idpresupuesto = 0){
+    $idpresupuesto = (int)$idpresupuesto;
     $db = new dbcpm();
     $query = "SELECT a.idpresupuesto, a.id, b.idproyecto, c.nomproyecto AS proyecto, b.fhaprobacion, a.idproveedor, e.nombre AS proveedor, b.idmoneda, d.simbolo AS moneda, a.monto, ";
     $query.= "b.fechasolicitud, f.nomempresa AS empresa, g.desctipogast AS tipogasto, h.descripcion AS subtipogasto, IF(a.coniva = 1, 'I.V.A. incluido', 'I.V.A. NO incluido') AS coniva, a.correlativo, ";
@@ -600,6 +601,7 @@ $app->get('/lstpagos/:idempresa', function($idempresa){
     $query.= "INNER JOIN subtipogasto h ON h.id = a.idsubtipogasto LEFT JOIN detpagopresup i ON a.id = i.iddetpresup ";
     $query.= "WHERE a.origenprov = 1 AND a.idestatuspresupuesto IN(3, 5) ";
     $query.= (int)$idempresa > 0 ? "AND f.id = $idempresa " : "";
+    $query.= $idpresupuesto > 0 ? "AND b.id = $idpresupuesto " : '';
     $query.= "UNION ";
     $query.= "SELECT a.idpresupuesto, a.id, b.idproyecto, c.nomproyecto AS proyecto, b.fhaprobacion, a.idproveedor, e.nombre AS proveedor, b.idmoneda, d.simbolo AS moneda, a.monto, ";
     $query.= "b.fechasolicitud, f.nomempresa AS empresa, g.desctipogast AS tipogasto, h.descripcion AS subtipogasto, IF(a.coniva = 1, 'I.V.A. incluido', 'I.V.A. NO incluido') AS coniva, a.correlativo, ";
@@ -610,6 +612,7 @@ $app->get('/lstpagos/:idempresa', function($idempresa){
     $query.= "INNER JOIN subtipogasto h ON h.id = a.idsubtipogasto LEFT JOIN detpagopresup i ON a.id = i.iddetpresup ";
     $query.= "WHERE a.origenprov = 2 AND a.idestatuspresupuesto IN(3, 5) ";
     $query.= (int)$idempresa > 0 ? "AND f.id = $idempresa " : "";
+    $query.= $idpresupuesto > 0 ? "AND b.id = $idpresupuesto " : '';
     $query.= "ORDER BY 1, 2, 5, 19";
     print $db->doSelectASJson($query);
 });

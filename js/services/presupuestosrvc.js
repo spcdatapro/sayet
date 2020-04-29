@@ -34,8 +34,8 @@
             getDetPagoOt: function(iddetpago){
                 return comunFact.doGET(urlBase + '/getdetpago/' + iddetpago);
             },
-            lstPagosOt: function(idempresa){
-                return comunFact.doGET(urlBase + '/lstpagos/' + idempresa);
+            lstPagosOt: function(idempresa, idot){
+                return comunFact.doGET(`${urlBase}/lstpagos/${idempresa}${+idot > 0 ? ('/' + idot) : ''}`);
             },
             lstPagosPendOt: function(){
                 return comunFact.doGET(urlBase + '/pagospend');
