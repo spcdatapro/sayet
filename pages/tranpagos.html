@@ -84,11 +84,11 @@
                         <input name="txtAPagar_{{pago.id}}" id="txtAPagar_{{pago.id}}" type="text"
                                class="form-control input-sm" style="text-align:right; width: 7em"
                                ng-model="pago.montoapagar" fcsa-number="{ maxDecimals: 2 }"
-                               ng-disabled="pago.pagatodo === 1" ng-change="chkMontoAPagar(pago); refrescarInfo()" required/>
+                               ng-disabled="pago.pagatodo === 1" ng-change="chkMontoAPagar(pago); refrescarInfo();" required/>
                     </td>
                     <td style="text-align:center">
                         <input name="chkPagar_{{pago.id}}" id="chkPagar_{{pago.id}}" type="checkbox" class="form-control input-sm"
-                               ng-model="pago.pagar" ng-true-value="1" ng-false-value="0" ng-change="refrescarInfo()"/>
+                               ng-model="pago.pagar" ng-true-value="1" ng-false-value="0" ng-change="addPagoAGenerar(pago); refrescarInfo();"/>
                     </td>
                 </tr>
                 </tbody>

@@ -27,10 +27,11 @@ $app->post('/g', function(){
     $db = new dbcpm();
     //$conn = $db->getConn();
     $objBanco = array_shift($d); //Es un objeto, no un array con un objeto
-    if(!isset($objBanco->tipo)) { $objBanco->tipo = 'C'; }
-    //Ordeno el array por id del proveedor
+    if(!isset($objBanco->tipo)) { $objBanco->tipo = 'C'; }    
     //var_dump($objBanco); die();
-    usort($d, function($a, $b){ $idpa = (int)$a->idproveedor; $idpb = (int)$b->idproveedor; return $idpa == $idpb ? 0 : ($idpa < $idpb ? -1 : 1); });
+    //Se comentá el ordenamiento por id de proveedor para que salga según el orden en que fueron seleccionados. 07/05/2020.
+    //Ordeno el array por id del proveedor
+    //usort($d, function($a, $b){ $idpa = (int)$a->idproveedor; $idpb = (int)$b->idproveedor; return $idpa == $idpb ? 0 : ($idpa < $idpb ? -1 : 1); });
 
     $cantPagos = count($d);
     $idprovs = [];

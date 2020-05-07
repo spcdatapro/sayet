@@ -12,6 +12,7 @@
         $scope.objBanco = {};
         $scope.esperando = false;
         $scope.qpagos = [];
+        $scope.pagosSelected = [];
         $scope.totales = {cantfacts: 0, monto: 0.00};
         $scope.periodoCerrado = false;
 
@@ -110,10 +111,24 @@
             }
         };
 
+        $scope.addPagoAGenerar = (pago) => {
+            if (+pago.pagar === 1) {
+                pago.fechapagostr = moment(pago.fechapago).format('YYYY-MM-DD');
+                $scope.pagosSelected.push(pago);
+            } else {                
+                const idx = $scope.pagosSelected.findIndex(p => +p.id === +pago.id);
+                if (idx >= 0) {
+                    $scope.pagosSelected.splice(idx, 1);
+                }
+            }
+            //console.log(`${moment().format('HH:mm:ss')} = `, $scope.pagosSelected);
+        };
+
         $scope.generaCheques = function(tipo){
+            let temp = [];
             $scope.esperando = true;
-            $scope.qpagos = [];
-            $scope.qpagos.push({
+            // temp = [];
+            temp.push({
                 idbanco: parseInt($scope.objBanco.id),
                 nombanco: $scope.objBanco.nombre,
                 idmoneda: parseInt($scope.objBanco.idmoneda),
@@ -121,24 +136,31 @@
                 fechatranstr: moment($scope.fechatran).format('YYYY-MM-DD'),
                 tipo: tipo
             });
+
+            /*
             for(var i = 0; i < $scope.losPagos.length; i++){
                 if($scope.losPagos[i].pagar === 1){
                     $scope.losPagos[i].fechapagostr = moment($scope.losPagos[i].fechapago).format('YYYY-MM-DD');
                     $scope.qpagos.push($scope.losPagos[i]);
                 }
             }
+            */
+
+            $scope.qpagos = temp.concat($scope.pagosSelected);
+            //console.log('SELECTED = ', $scope.pagosSelected); console.log('PAGOS = ', $scope.qpagos); return;
             if($scope.qpagos.length > 1){
                 tranPagosSrvc.genPagos($scope.qpagos).then(function(d){
                     $scope.esperando = false;
                     $scope.qpagos = [];
+                    $scope.pagosSelected = [];
                     $scope.getPagos($scope.objEmpresa.id, $scope.objBanco);
                     $scope.loadBancos();
-                    toaster.pop({ type: 'info', title: 'Cheques generados', body: d.mensaje, timeout: 7000 });
+                    toaster.pop({ type: 'info', title: 'Documentos generados.', body: d.mensaje, timeout: 7000 });
                 });
             }else{
                 $scope.esperando = false;
                 toaster.pop({ type: 'info', title: 'Información',
-                    body: 'Para poder generar cheques, seleccione una factura con saldo pendiente, por favor.', timeout: 7000 });
+                    body: 'Para poder generar documentos, seleccione una factura con saldo pendiente, por favor.', timeout: 7000 });
             }
 
         };
