@@ -321,7 +321,7 @@ $app->post('/lstchq', function(){
 
     $query = "SELECT a.id AS idtran, b.siglas, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.tipotrans, a.numero, c.simbolo AS moneda, FORMAT(a.monto, 2) AS monto ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN moneda c ON c.id = b.idmoneda ";
-    $query.= "WHERE a.tipotrans = 'C' AND a.anulado = 0 AND UPPER(a.beneficiario) NOT LIKE '%ANULAD%' AND a.concepto NOT LIKE '%ANULAD%' AND ";
+    $query.= "WHERE a.tipotrans IN('C', 'B') AND a.anulado = 0 AND UPPER(a.beneficiario) NOT LIKE '%ANULAD%' AND a.concepto NOT LIKE '%ANULAD%' AND ";
     $query.= "a.idbeneficiario = $d->idproveedor AND b.idempresa = $d->idempresa AND b.idmoneda = $d->idmoneda AND ";
     $query.= "(SELECT COUNT(id) FROM periodocontable WHERE abierto = 1 AND a.fecha >= del AND a.fecha <= al) > 0 AND ";
     $query.= "a.id NOT IN(SELECT idtranban FROM doctotranban WHERE idtipodoc = 1 AND iddocto = $d->idcompra) ";

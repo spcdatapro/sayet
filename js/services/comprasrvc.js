@@ -36,9 +36,7 @@
             getProyectoCompra: function (idproycompra) {
                 return comunFact.doGET(urlBase + '/getproycompra/' + idproycompra);
             },
-            getChequesProveedor: function (obj) {
-                return comunFact.doPOST(urlBase + '/lstchq', obj);
-            }
+            getChequesProveedor: (obj) => comunFact.doPOST(urlBase + '/lstchq', obj)
         };
     }]);
 
