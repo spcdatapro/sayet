@@ -18,9 +18,9 @@
                 </div>
                 <div class="col-md-8">
                     <div class="form-group">
-                        <label for="selBanco">Generar el/los cheque(s) del banco: </label>
+                        <label for="selBanco">Generar el/los documento(s) del banco: </label>
                         <select name="selBanco" id="selBanco" class="form-control" ng-model="objBanco"
-                                ng-options="obj.bancomonedacorrela for obj in losBancos track by obj.id"
+                                ng-options="obj.bancomoneda for obj in losBancos track by obj.id"
                                 ng-change="getPagos(objEmpresa.id, objBanco)" ng-disabled="esperando" required>
                         </select>
                     </div>
@@ -37,8 +37,10 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
-                        <button name="btnGenerar" id="btnGenerar" type="button" class="btn btn-primary" ng-click="generaCheques()"
-                                ng-disabled="objBanco.id === null || objBanco.id === undefined || periodoCerrado" ng-hide="esperando">Generar</button>
+                        <button name="btnGenerar" id="btnGenerar" type="button" class="btn btn-primary" ng-click="generaCheques('C')"
+                                ng-disabled="objBanco.id === null || objBanco.id === undefined || periodoCerrado" ng-hide="esperando">Generar cheques</button>
+                        <button name="btnGenerar" id="btnGenerar" type="button" class="btn btn-primary" ng-click="generaCheques('B')"
+                                ng-disabled="objBanco.id === null || objBanco.id === undefined || periodoCerrado" ng-hide="esperando">Generar notas de d&eacute;bito</button>
                         <img name="imgLoading" id="imgLoading" src="img/loading.gif" alt="Generando cheques..."
                              ng-show="esperando" style="width: 4em; height: 2.5em"/>
                     </div>

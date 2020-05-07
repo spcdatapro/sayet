@@ -654,12 +654,12 @@ $app->post('/genpagos', function(){
     $chqGenerados = '';
     for($i = 0; $i < $cntPagos; $i++){
         $pago = $d->pagos[$i];
-
-        $fldCorrela = strtoupper(trim($d->tipo)) === 'B' ? 'correlativond' : 'correlativo';
-
+        
+        $fldCorrela = 'correlativo';
         $getCorrela = "SELECT correlativo FROM banco WHERE id = $pago->idbanco";
 
         if(strtoupper(trim($d->tipo)) === 'B') {
+            $fldCorrela = 'correlativond';
             $getCorrela = "SELECT CONCAT('9999', correlativond) FROM banco WHERE id = $pago->idbanco";
         }        
 

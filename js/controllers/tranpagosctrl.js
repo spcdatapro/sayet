@@ -110,7 +110,7 @@
             }
         };
 
-        $scope.generaCheques = function(){
+        $scope.generaCheques = function(tipo){
             $scope.esperando = true;
             $scope.qpagos = [];
             $scope.qpagos.push({
@@ -118,7 +118,8 @@
                 nombanco: $scope.objBanco.nombre,
                 idmoneda: parseInt($scope.objBanco.idmoneda),
                 tipocambio: parseFloat($scope.objBanco.tipocambio),
-                fechatranstr: moment($scope.fechatran).format('YYYY-MM-DD')
+                fechatranstr: moment($scope.fechatran).format('YYYY-MM-DD'),
+                tipo: tipo
             });
             for(var i = 0; i < $scope.losPagos.length; i++){
                 if($scope.losPagos[i].pagar === 1){

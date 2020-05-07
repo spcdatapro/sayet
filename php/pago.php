@@ -15,7 +15,7 @@ $app->get('/lstpagos/:idempresa/:flimite/:idmoneda', function($idempresa, $flimi
     $query.= "FROM compra a LEFT JOIN proveedor b ON b.id = a.idproveedor LEFT JOIN (";
     $query.= "SELECT idcompra, SUM(monto) AS montopagado FROM detpagocompra GROUP BY idcompra) c ON a.id = c.idcompra ";
     $query.= "LEFT JOIN moneda d ON d.id = a.idmoneda ";
-    $query.= "WHERE (a.totfact - (a.isr + IFNULL(c.montopagado, 0.00))) > 0.00 AND a.idempresa = $idempresa ";
+    $query.= "WHERE (a.totfact - (a.isr + IFNULL(c.montopagado, 0.00))) > 0.00 AND a.idempresa = $idempresa AND YEAR(a.fechapago) >= 2019 ";
     $query.= $flimite !== "" ? ("AND a.fechapago <= '$flimite' ") : "";
     $query.= (int)$idmoneda > 0 ? ("AND a.idmoneda = $idmoneda ") : "";
     $query.= "ORDER BY b.nombre, a.fechapago";
@@ -23,11 +23,13 @@ $app->get('/lstpagos/:idempresa/:flimite/:idmoneda', function($idempresa, $flimi
 });
 
 $app->post('/g', function(){
-    $d = json_decode(file_get_contents('php://input'));
+    $d = json_decode(file_get_contents('php://input'));    
     $db = new dbcpm();
     //$conn = $db->getConn();
     $objBanco = array_shift($d); //Es un objeto, no un array con un objeto
+    if(!isset($objBanco->tipo)) { $objBanco->tipo = 'C'; }
     //Ordeno el array por id del proveedor
+    //var_dump($objBanco); die();
     usort($d, function($a, $b){ $idpa = (int)$a->idproveedor; $idpb = (int)$b->idproveedor; return $idpa == $idpb ? 0 : ($idpa < $idpb ? -1 : 1); });
 
     $cantPagos = count($d);
@@ -40,6 +42,13 @@ $app->post('/g', function(){
     };
     //print_r($idprovs);
     $generados = '';
+    $fldCorrela = 'correlativo';
+    $getCorrela = "SELECT correlativo FROM banco WHERE id = $objBanco->idbanco";
+    if(strtoupper(trim($objBanco->tipo)) === 'B') {
+        $fldCorrela = 'correlativond';
+        $getCorrela = "SELECT CONCAT('9999', correlativond) FROM banco WHERE id = $objBanco->idbanco";
+    }
+    $ctabanco = (int)$db->getOneField("SELECT idcuentac FROM banco WHERE id = ".$objBanco->idbanco);
     $cantProvs = count($idprovs);
     for($y = 0; $y < $cantProvs; $y++){
         $totAPagar = 0.0;
@@ -61,21 +70,28 @@ $app->post('/g', function(){
         };
 
         //Inserto la transaccion bancaria
-        $getCorrela = "SELECT correlativo FROM banco WHERE id = ".$objBanco->idbanco;
+        /*
+        $fldCorrela = 'correlativo';
+        $getCorrela = "SELECT correlativo FROM banco WHERE id = $objBanco->idbanco";
+        if(strtoupper(trim($objBanco->tipo)) === 'B') {
+            $fldCorrela = 'correlativond';
+            $getCorrela = "SELECT CONCAT('9999', correlativond) FROM banco WHERE id = $objBanco->idbanco";
+        }
+        */
         $query = "INSERT INTO tranban(idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, origenbene, idbeneficiario) ";
-        $query.= "VALUES($objBanco->idbanco, 'C', '$objBanco->fechatranstr', $totAPagar, '$nombreProveedor', ";
+        $query.= "VALUES($objBanco->idbanco, '$objBanco->tipo', '$objBanco->fechatranstr', $totAPagar, '$nombreProveedor', ";
         $query.= "'Pago de factura(s) $qFacturas', ($getCorrela), 1, $idprovs[$y])";
         //echo $query.'<br/><br/>';
         $db->doQuery($query);
         $lastid = $db->getLastId();
         if($generados !== ''){ $generados.= ', '; }
         $generados.= $lastid;
-        $db->doQuery("UPDATE banco SET correlativo = correlativo + 1 WHERE id = ".$objBanco->idbanco);
+        $db->doQuery("UPDATE banco SET $fldCorrela = $fldCorrela + 1 WHERE id = $objBanco->idbanco");
         $origen = 1;
 
         //Inserto el detalle contable
         $ctaproveedores = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$idempresa." AND idtipoconfig = 3");
-        $ctabanco = (int)$db->getOneField("SELECT idcuentac FROM banco WHERE id = ".$objBanco->idbanco);
+        //$ctabanco = (int)$db->getOneField("SELECT idcuentac FROM banco WHERE id = ".$objBanco->idbanco);
 
         if($ctaproveedores > 0){
             $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
@@ -107,8 +123,8 @@ $app->post('/g', function(){
 
     print json_encode(
         ['mensaje' => ($chequesGenerados !== '' ?
-        'Se generaron los cheques '.$chequesGenerados.' del banco '.$objBanco->nombanco :
-        'No se generó ningún cheque...')]
+        'Se generaron los documentos '.$chequesGenerados.' del banco '.$objBanco->nombanco :
+        'No se generó ningún documento...')]
     );
 });
 
