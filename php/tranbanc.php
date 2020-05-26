@@ -498,8 +498,8 @@ $app->post('/cd', function(){
     $db->doQuery($query);
     $tipodoc = (int)$d->idtipodoc;
 
-    switch($tipodoc){
-        case 1:
+    switch(true){
+        case in_array($tipodoc, array(1, 3)):
             if($d->fechaliquidastr != ''){
                 //Inserta abono a la factura
                 $query = "INSERT INTO detpagocompra (idcompra, idtranban, monto) VALUES(".$d->iddocto.", ".$d->idtranban.", ".$d->monto.")";
@@ -550,7 +550,7 @@ $app->post('/cd', function(){
                 */
             }
             break;
-        case 2:
+        case in_array($tipodoc, array(2, 4)):
             if($d->fechaliquidastr != ''){
                 $query = "UPDATE tranban SET fechaliquida = '$d->fechaliquidastr' WHERE id = $d->idtranban";                
                 $db->doQuery($query);

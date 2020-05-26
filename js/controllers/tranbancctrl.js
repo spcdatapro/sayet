@@ -261,10 +261,12 @@
             }
         };
 
-        $scope.getDocs = function(td){
-            switch(parseInt(td.id)){
-                case 1: tranBancSrvc.lstFactCompra($scope.laTran.idbeneficiario, $scope.laTran.id).then(function(d){ $scope.compraspendientes = d; }); break;
-                case 2: tranBancSrvc.lstReembolsos($scope.laTran.idbeneficiario).then(function(d){ $scope.compraspendientes = d; }); break;
+        $scope.getDocs = function(td){            
+            const idtd = +td.id;
+            console.log(idtd);
+            switch(true){
+                case [1, 3].indexOf(idtd) > -1: tranBancSrvc.lstFactCompra($scope.laTran.idbeneficiario, $scope.laTran.id).then(function(d){ $scope.compraspendientes = d; }); break;
+                case [2, 4].indexOf(idtd) > -1: tranBancSrvc.lstReembolsos($scope.laTran.idbeneficiario).then(function(d){ $scope.compraspendientes = d; }); break;
             }
         };
 
