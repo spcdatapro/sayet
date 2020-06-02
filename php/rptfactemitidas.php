@@ -23,6 +23,7 @@ $app->post('/factemitidas', function(){
     $info = new stdclass();
 
     if(!isset($d->idproyecto)){ $d->idproyecto = 0; }
+    if(!isset($d->soloanuladas)){ $d->soloanuladas = 0; }
 
     $query = "SELECT DATE_FORMAT('$d->fdelstr', '%d/%m/%Y') AS fdel, ";
     $query.= "DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS fal, 0.00 AS totfacturado, DATE_FORMAT(NOW(), '%d/%m/%Y') AS hoy, ";
@@ -56,6 +57,7 @@ $app->post('/factemitidas', function(){
     $qGen.= (int)$d->tipo == 2 ? "AND a.pagada = 1 " : ((int)$d->tipo == 3 ? "AND a.pagada = 0 " : '');
     $qGen.= (int)$d->idproyecto > 0 ? "AND e.idproyecto = $d->idproyecto " : '';
     $qGen.= (int)$d->idtsventa > 0 ? "AND (SELECT COUNT(idfactura) FROM detfact WHERE idfactura = a.id AND idtiposervicio = $d->idtsventa) > 0 " : '';
+    $qGen.= (int)$d->soloanuladas == 0 ? '' : 'AND a.anulada = 1 ';
     $qGen.= "ORDER BY a.numero";
 
     $query = "SELECT DISTINCT z.idempresa, z.empresa, 0.00 AS totfacturado FROM ($qGen) z ORDER BY z.ordensumario";
@@ -87,6 +89,7 @@ $app->post('/factspend', function(){
     $info = new stdclass();
 
     if(!isset($d->idproyecto)){ $d->idproyecto = 0; }
+    if(!isset($d->soloanuladas)){ $d->soloanuladas = 0; }
 
     $query = "SELECT DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS fal, 0.00 AS totpendiente, DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy ";
     $info->generales = $db->getQuery($query)[0];

@@ -40,7 +40,7 @@
                     </div>
                 </div>
                 <div class="row" style="text-align: left">
-                    <div class="col-md-10 col-sm-10">
+                    <div class="col-md-8 col-sm-8">
                         <div class="form-group">
                             <label for="txtCliente">Cliente:</label>
                             <!--<input name="txtCliente" id="txtCliente" type="text" class="form-control" ng-model="params.cliente" placeholder="Nombre, nombre corto, facturar a..."/>-->
@@ -73,6 +73,12 @@
                                 <option value="3">No pagadas</option>
                                 <option value="4">Pendientes de emitir</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-2">
+                        <div class="form-group">
+                            <label for="chkSoloAnuladas">Solo anuladas:</label>
+                            <input name="chkSoloAnuladas" id="chkSoloAnuladas" type="checkbox" class="form-control input-sm" ng-model="params.soloanuladas" ng-true-value="1" ng-false-value="0"/>
                         </div>
                     </div>
                 </div>
