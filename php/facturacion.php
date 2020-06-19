@@ -295,7 +295,7 @@ $app->post('/gengface', function() use($app){
     $query.=  $d->listafact != '' ? "AND a.id IN($d->listafact) " : '';
     $query.= "UNION ";
     $query.= "SELECT CONCAT(LPAD(YEAR(a.fecha), 4, ' '), LPAD(MONTH(a.fecha), 4, ' '), LPAD(DAY(a.fecha), 4, ' ')) AS fecha, 'FACE' AS tipodoc, a.nit, '1' AS codmoneda, a.id AS idfactura, 'S' AS tipoventa, ";
-    $query.= "a.nombre, '' AS direccion, '' AS nombrecorto, ";
+    $query.= "a.nombre, IFNULL(a.direccion, '') AS direccion, '' AS nombrecorto, ";
 
     $query.= "CONCAT('$ ', FORMAT(ROUND(a.subtotal / a.tipocambio, 2), 2)) AS montodol, ";
     $query.= "FORMAT(a.tipocambio, 4) AS tipocambio, ";
