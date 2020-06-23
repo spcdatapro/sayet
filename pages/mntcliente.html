@@ -1,8 +1,23 @@
 <style>
-    td{padding: 0; margin: 0; border-collapse: collapse}
-    .borderless td, .borderless th { border: none !important; padding: 0.1em !important; }
-    .app-modal-window .modal-dialog { width: 1000px; }
-    .app-modal-window-cargos .modal-dialog { width: 800px; }
+    td {
+        padding: 0;
+        margin: 0;
+        border-collapse: collapse
+    }
+
+    .borderless td,
+    .borderless th {
+        border: none !important;
+        padding: 0.1em !important;
+    }
+
+    .app-modal-window .modal-dialog {
+        width: 1000px;
+    }
+
+    .app-modal-window-cargos .modal-dialog {
+        width: 800px;
+    }
 </style>
 <div class="container" ng-controller="clienteCtrl">
     <ul class="nav nav-tabs">
@@ -21,30 +36,36 @@
             <div class="panel panel-info">
                 <div class="panel-heading">Lista de clientes y contratos</div>
                 <div class="panel-body">
-                    <table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover table-condensed">
+                    <table datatable="ng" dt-options="dtOptions"
+                        class="table table-responsive table-hover table-condensed">
                         <thead>
-                        <tr>
-                            <th style="white-space: nowrap">Nombre comercial</th>
-                            <th style="white-space: nowrap">Nombre corto</th>
-                            <th>Contratos</th>
-                        </tr>
+                            <tr>
+                                <th style="white-space: nowrap">Nombre comercial</th>
+                                <th style="white-space: nowrap">Nombre corto</th>
+                                <th>Contratos</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="c in clientes">
-                            <td style="white-space: nowrap">
-                                <button type="button" class="btn btn-info btn-xs" ng-click="printCliente(c.id, 'divLstClientes')"><span class="glyphicon glyphicon-print"></span></button>&nbsp;
-                                <a href="" ng-click="getCliente(c.id)">{{c.nombre}}</a>
-                            </td>
-                            <td style="white-space: nowrap">{{c.nombrecorto}}</td>
-                            <td>
-                                <table class="table table-condensed table-hover borderless">
-                                    <tr ng-repeat="lcont in c.conts" style="text-align: left">
-                                        <td><button type="button" class="btn btn-info btn-xs" ng-click="printContrato(lcont.idcontrato, 'divLstClientes')"><span class="glyphicon glyphicon-print"></span></button></td>
-                                        <td><a href="" ng-click="goToContrato(c.id, lcont.idcontrato)" style="font-size: smaller">{{lcont.nocontrato}}</a></td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
+                            <tr ng-repeat="c in clientes">
+                                <td style="white-space: nowrap">
+                                    <button type="button" class="btn btn-info btn-xs"
+                                        ng-click="printCliente(c.id, 'divLstClientes')"><span
+                                            class="glyphicon glyphicon-print"></span></button>&nbsp;
+                                    <a href="" ng-click="getCliente(c.id)">{{c.nombre}}</a>
+                                </td>
+                                <td style="white-space: nowrap">{{c.nombrecorto}}</td>
+                                <td>
+                                    <table class="table table-condensed table-hover borderless">
+                                        <tr ng-repeat="lcont in c.conts" style="text-align: left">
+                                            <td><button type="button" class="btn btn-info btn-xs"
+                                                    ng-click="printContrato(lcont.idcontrato, 'divLstClientes')"><span
+                                                        class="glyphicon glyphicon-print"></span></button></td>
+                                            <td><a href="" ng-click="goToContrato(c.id, lcont.idcontrato)"
+                                                    style="font-size: smaller">{{lcont.nocontrato}}</a></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -64,47 +85,69 @@
                     <div class="panel panel-info">
                         <div class="panel-heading">Datos generales&nbsp;<span class="badge">{{clientestr}}</span></div>
                         <div class="panel-body">
-                            <form name="frmCliente" id="frmCliente" ng-submit="frmCliente.$valid && addCliente(cliente)" novalidate>
+                            <form name="frmCliente" id="frmCliente" ng-submit="frmCliente.$valid && addCliente(cliente)"
+                                novalidate>
                                 <div class="row">
                                     <div class="col-md-8 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmCliente.txtNomCom.$invalid && !frmCliente.txtNomCom.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmCliente.txtNomCom.$invalid && !frmCliente.txtNomCom.$pristine}">
                                             <label for="txtNomCom" class="control-label">Nombre comercial:</label>
-                                            <input name="txtNomCom" id="txtNomCom" type="text" class="form-control input-sm" ng-model="cliente.nombre" placeholder="Nombre comercial" maxlength="250" required ng-disabled="lectura"/>
+                                            <input name="txtNomCom" id="txtNomCom" type="text"
+                                                class="form-control input-sm" ng-model="cliente.nombre"
+                                                placeholder="Nombre comercial" maxlength="250" required
+                                                ng-disabled="lectura" />
                                         </div>
                                     </div>
                                     <div class="col-md-4 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmCliente.txtNomCorto.$invalid && !frmCliente.txtNomCorto.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmCliente.txtNomCorto.$invalid && !frmCliente.txtNomCorto.$pristine}">
                                             <label for="txtNomCorto" class="control-label">Nombre corto:</label>
-                                            <input name="txtNomCorto" id="txtNomCorto" type="text" class="form-control input-sm" ng-model="cliente.nombrecorto" placeholder="Nombre corto" maxlength="125" required ng-disabled="lectura"/>
+                                            <input name="txtNomCorto" id="txtNomCorto" type="text"
+                                                class="form-control input-sm" ng-model="cliente.nombrecorto"
+                                                placeholder="Nombre corto" maxlength="125" required
+                                                ng-disabled="lectura" />
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmCliente.txtDirEntrega.$invalid && !frmCliente.txtDirEntrega.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmCliente.txtDirEntrega.$invalid && !frmCliente.txtDirEntrega.$pristine}">
                                             <label for="txtDirEntrega">Direcci&oacute;n de entrega:</label>
-                                            <input name="txtDirEntrega" id="txtDirEntrega" type="text" class="form-control  input-sm" ng-model="cliente.direntrega" placeholder="Direcci&oacute;n de entrega"
-                                                   maxlength="250" ng-disabled="lectura"/>
+                                            <input name="txtDirEntrega" id="txtDirEntrega" type="text"
+                                                class="form-control  input-sm" ng-model="cliente.direntrega"
+                                                placeholder="Direcci&oacute;n de entrega" maxlength="250"
+                                                ng-disabled="lectura" />
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-4 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmCliente.txtPbx.$invalid && !frmCliente.txtPbx.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmCliente.txtPbx.$invalid && !frmCliente.txtPbx.$pristine}">
                                             <label for="txtPbx">PBX:</label>
-                                            <input name="txtPbx" id="txtPbx" type="text" class="form-control  input-sm" ng-model="cliente.telpbx" maxlength="24" placeholder="PBX" ng-disabled="lectura"/>
+                                            <input name="txtPbx" id="txtPbx" type="text" class="form-control  input-sm"
+                                                ng-model="cliente.telpbx" maxlength="24" placeholder="PBX"
+                                                ng-disabled="lectura" />
                                         </div>
                                     </div>
                                     <div class="col-md-4 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmCliente.txtTelDir.$invalid && !frmCliente.txtTelDir.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmCliente.txtTelDir.$invalid && !frmCliente.txtTelDir.$pristine}">
                                             <label for="txtTelDir">Directo:</label>
-                                            <input name="txtTelDir" id="txtTelDir" type="text" class="form-control  input-sm" ng-model="cliente.teldirecto" maxlength="24" placeholder="Tel&eacute;fono directo" ng-disabled="lectura"/>
+                                            <input name="txtTelDir" id="txtTelDir" type="text"
+                                                class="form-control  input-sm" ng-model="cliente.teldirecto"
+                                                maxlength="24" placeholder="Tel&eacute;fono directo"
+                                                ng-disabled="lectura" />
                                         </div>
                                     </div>
                                     <div class="col-md-4 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmCliente.txtCel.$invalid && !frmCliente.txtCel.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmCliente.txtCel.$invalid && !frmCliente.txtCel.$pristine}">
                                             <label for="txtCel">Celular:</label>
-                                            <input name="txtCel" id="txtCel" type="text" class="form-control  input-sm" ng-model="cliente.telcel" maxlength="24" placeholder="Celular" ng-disabled="lectura"/>
+                                            <input name="txtCel" id="txtCel" type="text" class="form-control  input-sm"
+                                                ng-model="cliente.telcel" maxlength="24" placeholder="Celular"
+                                                ng-disabled="lectura" />
                                         </div>
                                     </div>
                                 </div>
@@ -113,70 +156,106 @@
                                         <table class="table">
                                             <caption>DATOS ADMINISTRATIVOS</caption>
                                             <tbody>
-                                            <tr>
-                                                <td style="width: 20%">
-                                                    <div class="form-group" ng-class="{'has-error':frmCliente.txtCargo.$invalid && !frmCliente.txtCargo.$pristine}">
-                                                        <label for="txtCargo">Cargo:</label>
-                                                        <input name="txtCargo" id="txtCargo" type="text" class="form-control  input-sm" ng-model="cliente.cargolegal" maxlength="45" placeholder="Cargo" ng-disabled="lectura"/>
-                                                    </div>
-                                                </td>
-                                                <td style="width: 20%">
-                                                    <div class="form-group" ng-class="{'has-error':frmCliente.txtNomLegal.$invalid && !frmCliente.txtNomLegal.$pristine}">
-                                                        <label for="txtNomLegal">Nombre(s):</label>
-                                                        <input name="txtNomLegal" id="txtNomLegal" type="text" class="form-control  input-sm" ng-model="cliente.nomlegal" maxlength="150" placeholder="Nombre(s)" ng-disabled="lectura"/>
-                                                    </div>
-                                                </td>
-                                                <td style="width: 20%">
-                                                    <div class="form-group" ng-class="{'has-error':frmCliente.txtApeLegal.$invalid && !frmCliente.txtApeLegal.$pristine}">
-                                                        <label for="txtApeLegal">Apellido(s):</label>
-                                                        <input name="txtApeLegal" id="txtApeLegal" type="text" class="form-control  input-sm" ng-model="cliente.apellidolegal" maxlength="150" placeholder="Apellido(s)" ng-disabled="lectura"/>
-                                                    </div>
-                                                </td>
-                                                <td style="width: 20%">
-                                                    <div class="form-group" ng-class="{'has-error':frmCliente.txtCorreo.$invalid && !frmCliente.txtCorreo.$pristine}">
-                                                        <label for="txtCorreo">E - mail:</label>
-                                                        <input name="txtCorreo" id="txtCorreo" type="text" class="form-control  input-sm" ng-model="cliente.correo" maxlength="75" placeholder="e - mail" ng-disabled="lectura"/>
-                                                    </div>
-                                                </td>
-                                                <td style="width: 20%">
-                                                    <div class="form-group" ng-class="{'has-error':frmCliente.txtDPI.$invalid && !frmCliente.txtDPI.$pristine}">
-                                                        <label for="txtDPI">D.P.I./Pass.:</label>
-                                                        <input name="txtDPI" id="txtDPI" type="text" class="form-control  input-sm" ng-model="cliente.dpi" maxlength="200" placeholder="D.P.I." ng-disabled="lectura"/>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td style="width: 20%">
-                                                    <div class="form-group" ng-class="{'has-error':frmCliente.txtNomAdmon.$invalid && !frmCliente.txtNomAdmon.$pristine}">
-                                                        <label for="txtNomAdmon">Contacto admon.:</label>
-                                                        <input name="txtNomAdmon" id="txtNomAdmon" type="text" class="form-control  input-sm" ng-model="cliente.nomadmon" maxlength="250"
-                                                               placeholder="Contacto administrativo" ng-disabled="lectura"/>
-                                                    </div>
-                                                </td>
-                                                <td style="width: 20%">
-                                                    <div class="form-group" ng-class="{'has-error':frmCliente.txtEmailAdmon.$invalid && !frmCliente.txtEmailAdmon.$pristine}">
-                                                        <label for="txtEmailAdmon">E-mail admon.:</label>
-                                                        <input name="txtEmailAdmon" id="txtEmailAdmon" type="text" class="form-control  input-sm" ng-model="cliente.mailadmon" maxlength="75"
-                                                               placeholder="E-mail administrativo" ng-disabled="lectura"/>
-                                                    </div>
-                                                </td>
-                                                <td style="width: 20%">
-                                                    <div class="form-group" ng-class="{'has-error':frmCliente.txtNomPagos.$invalid && !frmCliente.txtNomPagos.$pristine}">
-                                                        <label for="txtNomPagos">Contacto pagos:</label>
-                                                        <input name="txtNomPagos" id="txtNomPagos" type="text" class="form-control  input-sm" ng-model="cliente.nompago" maxlength="250"
-                                                               placeholder="Contacto de contabilidad" ng-disabled="lectura"/>
-                                                    </div>
-                                                </td>
-                                                <td style="width: 20%">
-                                                    <div class="form-group" ng-class="{'has-error':frmCliente.txtEmailPagos.$invalid && !frmCliente.txtEmailPagos.$pristine}">
-                                                        <label for="txtEmailPagos">E-mail contabilidad:</label>
-                                                        <input name="txtEmailPagos" id="txtEmailPagos" type="text" class="form-control  input-sm" ng-model="cliente.mailcont" maxlength="75"
-                                                               placeholder="E-mail de contabilidad" ng-disabled="lectura"/>
-                                                    </div>
-                                                </td>
-                                                <td>&nbsp;</td>
-                                            </tr>
-                                            <!--
+                                                <tr>
+                                                    <td style="width: 20%">
+                                                        <div class="form-group"
+                                                            ng-class="{'has-error':frmCliente.txtCargo.$invalid && !frmCliente.txtCargo.$pristine}">
+                                                            <label for="txtCargo">Cargo:</label>
+                                                            <input name="txtCargo" id="txtCargo" type="text"
+                                                                class="form-control  input-sm"
+                                                                ng-model="cliente.cargolegal" maxlength="45"
+                                                                placeholder="Cargo" ng-disabled="lectura" />
+                                                        </div>
+                                                    </td>
+                                                    <td style="width: 20%">
+                                                        <div class="form-group"
+                                                            ng-class="{'has-error':frmCliente.txtNomLegal.$invalid && !frmCliente.txtNomLegal.$pristine}">
+                                                            <label for="txtNomLegal">Nombre(s):</label>
+                                                            <input name="txtNomLegal" id="txtNomLegal" type="text"
+                                                                class="form-control  input-sm"
+                                                                ng-model="cliente.nomlegal" maxlength="150"
+                                                                placeholder="Nombre(s)" ng-disabled="lectura" />
+                                                        </div>
+                                                    </td>
+                                                    <td style="width: 20%">
+                                                        <div class="form-group"
+                                                            ng-class="{'has-error':frmCliente.txtApeLegal.$invalid && !frmCliente.txtApeLegal.$pristine}">
+                                                            <label for="txtApeLegal">Apellido(s):</label>
+                                                            <input name="txtApeLegal" id="txtApeLegal" type="text"
+                                                                class="form-control  input-sm"
+                                                                ng-model="cliente.apellidolegal" maxlength="150"
+                                                                placeholder="Apellido(s)" ng-disabled="lectura" />
+                                                        </div>
+                                                    </td>
+                                                    <td style="width: 20%">
+                                                        <div class="form-group"
+                                                            ng-class="{'has-error':frmCliente.txtCorreo.$invalid && !frmCliente.txtCorreo.$pristine}">
+                                                            <label for="txtCorreo">E - mail:</label>
+                                                            <input name="txtCorreo" id="txtCorreo" type="text"
+                                                                class="form-control  input-sm" ng-model="cliente.correo"
+                                                                maxlength="75" placeholder="e - mail"
+                                                                ng-disabled="lectura" />
+                                                        </div>
+                                                    </td>
+                                                    <td style="width: 20%">
+                                                        <div class="form-group"
+                                                            ng-class="{'has-error':frmCliente.txtDPI.$invalid && !frmCliente.txtDPI.$pristine}">
+                                                            <label for="txtDPI">D.P.I./Pass.:</label>
+                                                            <input name="txtDPI" id="txtDPI" type="text"
+                                                                class="form-control  input-sm" ng-model="cliente.dpi"
+                                                                maxlength="200" placeholder="D.P.I."
+                                                                ng-disabled="lectura" />
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="width: 20%">
+                                                        <div class="form-group"
+                                                            ng-class="{'has-error':frmCliente.txtNomAdmon.$invalid && !frmCliente.txtNomAdmon.$pristine}">
+                                                            <label for="txtNomAdmon">Contacto admon.:</label>
+                                                            <input name="txtNomAdmon" id="txtNomAdmon" type="text"
+                                                                class="form-control  input-sm"
+                                                                ng-model="cliente.nomadmon" maxlength="250"
+                                                                placeholder="Contacto administrativo"
+                                                                ng-disabled="lectura" />
+                                                        </div>
+                                                    </td>
+                                                    <td style="width: 20%">
+                                                        <div class="form-group"
+                                                            ng-class="{'has-error':frmCliente.txtEmailAdmon.$invalid && !frmCliente.txtEmailAdmon.$pristine}">
+                                                            <label for="txtEmailAdmon">E-mail admon.:</label>
+                                                            <input name="txtEmailAdmon" id="txtEmailAdmon" type="text"
+                                                                class="form-control  input-sm"
+                                                                ng-model="cliente.mailadmon" maxlength="75"
+                                                                placeholder="E-mail administrativo"
+                                                                ng-disabled="lectura" />
+                                                        </div>
+                                                    </td>
+                                                    <td style="width: 20%">
+                                                        <div class="form-group"
+                                                            ng-class="{'has-error':frmCliente.txtNomPagos.$invalid && !frmCliente.txtNomPagos.$pristine}">
+                                                            <label for="txtNomPagos">Contacto pagos:</label>
+                                                            <input name="txtNomPagos" id="txtNomPagos" type="text"
+                                                                class="form-control  input-sm"
+                                                                ng-model="cliente.nompago" maxlength="250"
+                                                                placeholder="Contacto de contabilidad"
+                                                                ng-disabled="lectura" />
+                                                        </div>
+                                                    </td>
+                                                    <td style="width: 20%">
+                                                        <div class="form-group"
+                                                            ng-class="{'has-error':frmCliente.txtEmailPagos.$invalid && !frmCliente.txtEmailPagos.$pristine}">
+                                                            <label for="txtEmailPagos">E-mail contabilidad:</label>
+                                                            <input name="txtEmailPagos" id="txtEmailPagos" type="text"
+                                                                class="form-control  input-sm"
+                                                                ng-model="cliente.mailcont" maxlength="75"
+                                                                placeholder="E-mail de contabilidad"
+                                                                ng-disabled="lectura" />
+                                                        </div>
+                                                    </td>
+                                                    <td>&nbsp;</td>
+                                                </tr>
+                                                <!--
                                             <tr>
                                                 <td colspan="5" style="width: 100%">
                                                     <div class="form-group" ng-class="{'has-error':frmCliente.selCC.$invalid && !frmCliente.selCC.$pristine}">
@@ -191,25 +270,32 @@
                                     </div>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
-                                    <button type="submit" class="btn btn-info" ng-disabled="frmCliente.$invalid" ng-show="grpBtnCliente.i">
+                                    <button type="submit" class="btn btn-info" ng-disabled="frmCliente.$invalid"
+                                        ng-show="grpBtnCliente.i">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info" ng-click="btnE()" ng-show="grpBtnCliente.e">
+                                    <button type="button" class="btn btn-info" ng-click="btnE()"
+                                        ng-show="grpBtnCliente.e">
                                         <span class="glyphicon glyphicon-edit"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info" ng-disabled="frmCliente.$invalid" ng-click="updCliente(cliente)" ng-show="grpBtnCliente.u">
+                                    <button type="button" class="btn btn-info" ng-disabled="frmCliente.$invalid"
+                                        ng-click="updCliente(cliente)" ng-show="grpBtnCliente.u">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info" ng-click="printCliente(cliente.id, 'divFrmCliente')" ng-show="cliente.id > 0">
+                                    <button type="button" class="btn btn-info"
+                                        ng-click="printCliente(cliente.id, 'divFrmCliente')" ng-show="cliente.id > 0">
                                         <span class="glyphicon glyphicon-print"></span>
                                     </button>
-                                    <button type="button" class="btn btn-warning" ng-click="btnC()" ng-show="grpBtnCliente.c">
+                                    <button type="button" class="btn btn-warning" ng-click="btnC()"
+                                        ng-show="grpBtnCliente.c">
                                         <span class="glyphicon glyphicon-remove-circle"></span>
                                     </button>
-                                    <button type="button" class="btn btn-danger" ng-click="delCliente(cliente)" ng-show="grpBtnCliente.d">
+                                    <button type="button" class="btn btn-danger" ng-click="delCliente(cliente)"
+                                        ng-show="grpBtnCliente.d">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info" ng-click="btnA()" ng-show="grpBtnCliente.a">
+                                    <button type="button" class="btn btn-info" ng-click="btnA()"
+                                        ng-show="grpBtnCliente.a">
                                         <span class="glyphicon glyphicon-plus"></span>
                                     </button>
                                 </div>
@@ -220,32 +306,44 @@
                 </div>
                 <div id="divClienteFact" class="tab-pane fade">
                     <div class="panel panel-info">
-                        <div class="panel-heading">Datos de facturaci&oacute;n&nbsp;<span class="badge">{{clientestr}}</span></div>
+                        <div class="panel-heading">Datos de facturaci&oacute;n&nbsp;<span
+                                class="badge">{{clientestr}}</span></div>
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-md-12 nopadding" style="text-align: right">
-                                    <button type="button" class="btn btn-info btn-xs" ng-click="showForm.detfact = !showForm.detfact" ng-hide="showForm.detfact" aria-label="Toggle ngHide">
+                                    <button type="button" class="btn btn-info btn-xs"
+                                        ng-click="showForm.detfact = !showForm.detfact" ng-hide="showForm.detfact"
+                                        aria-label="Toggle ngHide">
                                         <span class="glyphicon glyphicon-chevron-down"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info btn-xs" ng-click="showForm.detfact = !showForm.detfact" ng-show="showForm.detfact" aria-label="Toggle ngHide">
+                                    <button type="button" class="btn btn-info btn-xs"
+                                        ng-click="showForm.detfact = !showForm.detfact" ng-show="showForm.detfact"
+                                        aria-label="Toggle ngHide">
                                         <span class="glyphicon glyphicon-chevron-up"></span>
                                     </button>
                                 </div>
                             </div>
-                            <form name="frmDetFact" id="frmDetFact" ng-submit="frmDetFact.$valid && addDetFact(detfact)" class="check-element animate-show" ng-show="showForm.detfact" novalidate>
+                            <form name="frmDetFact" id="frmDetFact" ng-submit="frmDetFact.$valid && addDetFact(detfact)"
+                                class="check-element animate-show" ng-show="showForm.detfact" novalidate>
                                 <div class="row">
                                     <div class="col-md-6 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmDetFact.txtFactA.$invalid && !frmDetFact.txtFactA.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmDetFact.txtFactA.$invalid && !frmDetFact.txtFactA.$pristine}">
                                             <label for="txtFactA" class="control-label">Facturar a:</label>
-                                            <input name="txtFactA" id="txtFactA" type="text" class="form-control input-sm" ng-model="detfact.facturara" maxlength="250"
-                                                   placeholder="Facturar a" ng-disabled="sldatafact" required/>
+                                            <input name="txtFactA" id="txtFactA" type="text"
+                                                class="form-control input-sm" ng-model="detfact.facturara"
+                                                maxlength="250" placeholder="Facturar a" ng-disabled="sldatafact"
+                                                required />
                                         </div>
                                     </div>
                                     <div class="col-md-2 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmDetFact.txtNITDF.$invalid && !frmDetFact.txtNITDF.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmDetFact.txtNITDF.$invalid && !frmDetFact.txtNITDF.$pristine}">
                                             <label for="txtNITDF" class="control-label">N.I.T.:</label>
-                                            <input name="txtNITDF" id="txtNITDF" type="text" class="form-control input-sm" ng-model="detfact.nit" maxlength="25"
-                                                   placeholder="N.I.T. de facturaci&oacute;n" ng-disabled="sldatafact" required/>
+                                            <input name="txtNITDF" id="txtNITDF" type="text"
+                                                class="form-control input-sm" ng-model="detfact.nit" maxlength="25"
+                                                placeholder="N.I.T. de facturaci&oacute;n" ng-disabled="sldatafact"
+                                                required />
                                         </div>
                                     </div>
                                     <!--
@@ -258,96 +356,123 @@
                                     </div>
                                     -->
                                     <div class="col-md-1 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmDetFact.chkRetISRCli.$invalid && !frmDetFact.chkRetISRCli.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmDetFact.chkRetISRCli.$invalid && !frmDetFact.chkRetISRCli.$pristine}">
                                             <label for="chkRetISRCli">Ret. I.S.R.:</label>
-                                            <input name="chkRetISRCli" id="chkRetISRCli" type="checkbox" class="form-control input-sm" ng-model="detfact.retisr" ng-true-value="1" ng-false-value="0" ng-disabled="sldatafact"/>
+                                            <input name="chkRetISRCli" id="chkRetISRCli" type="checkbox"
+                                                class="form-control input-sm" ng-model="detfact.retisr"
+                                                ng-true-value="1" ng-false-value="0" ng-disabled="sldatafact" />
                                         </div>
                                     </div>
                                     <div class="col-md-1 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmDetFact.chkRetIVACli.$invalid && !frmDetFact.chkRetIVACli.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmDetFact.chkRetIVACli.$invalid && !frmDetFact.chkRetIVACli.$pristine}">
                                             <label for="chkRetIVACli">Ret. I.V.A.:</label>
-                                            <input name="chkRetIVACli" id="chkRetIVACli" type="checkbox" class="form-control input-sm" ng-model="detfact.retiva" ng-true-value="1" ng-false-value="0"
-                                                   ng-disabled="sldatafact" ng-change="detfact.porretiva = +detfact.retiva == 0 ? 0.00 : detfact.porretiva;"/>
+                                            <input name="chkRetIVACli" id="chkRetIVACli" type="checkbox"
+                                                class="form-control input-sm" ng-model="detfact.retiva"
+                                                ng-true-value="1" ng-false-value="0" ng-disabled="sldatafact"
+                                                ng-change="detfact.porretiva = +detfact.retiva == 0 ? 0.00 : detfact.porretiva;" />
                                         </div>
                                     </div>
                                     <div class="col-md-2 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmDetFact.txtPorRetIva.$invalid && !frmDetFact.txtPorRetIva.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmDetFact.txtPorRetIva.$invalid && !frmDetFact.txtPorRetIva.$pristine}">
                                             <label for="txtPorRetIva">% de Ret. I.V.A.:</label>
-                                            <input name="txtPorRetIva" id="txtPorRetIva" type="number" class="form-control input-sm" ng-model="detfact.porretiva" min="0.00" step="0.01"
-                                                   placeholder="Porcentaje de retención de I.V.A." ng-disabled="sldatafact || +detfact.retiva == 0" ng-required="+detfact.retiva == 1"/>
+                                            <input name="txtPorRetIva" id="txtPorRetIva" type="number"
+                                                class="form-control input-sm" ng-model="detfact.porretiva" min="0.00"
+                                                step="0.01" placeholder="Porcentaje de retención de I.V.A."
+                                                ng-disabled="sldatafact || +detfact.retiva == 0"
+                                                ng-required="+detfact.retiva == 1" />
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmDetFact.txtDirDF.$invalid && !frmDetFact.txtDirDF.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmDetFact.txtDirDF.$invalid && !frmDetFact.txtDirDF.$pristine}">
                                             <label for="txtDirDF" class="control-label">Direcci&oacute;n:</label>
-                                            <input name="txtDirDF" id="txtDirDF" type="text" class="form-control input-sm" ng-model="detfact.direccion" maxlength="250"
-                                                   placeholder="Direcci&oacute;n de facturaci&oacute;n" ng-disabled="sldatafact" required/>
+                                            <input name="txtDirDF" id="txtDirDF" type="text"
+                                                class="form-control input-sm" ng-model="detfact.direccion"
+                                                maxlength="250" placeholder="Direcci&oacute;n de facturaci&oacute;n"
+                                                ng-disabled="sldatafact" required />
                                         </div>
                                     </div>
                                     <div class="col-md-3 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmDetFact.txtFDelDF.$invalid && !frmDetFact.txtFDelDF.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmDetFact.txtFDelDF.$invalid && !frmDetFact.txtFDelDF.$pristine}">
                                             <label for="txtFDelDF">Del:</label>
-                                            <input name="txtFDelDF" id="txtFDelDF" type="date" class="form-control input-sm" ng-model="detfact.fdel" ng-disabled="sldatafact"/>
+                                            <input name="txtFDelDF" id="txtFDelDF" type="date"
+                                                class="form-control input-sm" ng-model="detfact.fdel"
+                                                ng-disabled="sldatafact" />
                                         </div>
                                     </div>
                                     <div class="col-md-3 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmDetFact.txtFalDF.$invalid && !frmDetFact.txtFalDF.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmDetFact.txtFalDF.$invalid && !frmDetFact.txtFalDF.$pristine}">
                                             <label for="txtFalDF">Al:</label>
-                                            <input name="txtFalDF" id="txtFalDF" type="date" class="form-control input-sm" ng-model="detfact.fal" ng-disabled="sldatafact"/>
+                                            <input name="txtFalDF" id="txtFalDF" type="date"
+                                                class="form-control input-sm" ng-model="detfact.fal"
+                                                ng-disabled="sldatafact" />
                                         </div>
                                     </div>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
-                                    <button type="submit" class="btn btn-info" ng-disabled="frmDetFact.$invalid" ng-show="grpBtnDataFact.i">
+                                    <button type="submit" class="btn btn-info" ng-disabled="frmDetFact.$invalid"
+                                        ng-show="grpBtnDataFact.i">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info" ng-click="btnEDF()" ng-show="grpBtnDataFact.e">
+                                    <button type="button" class="btn btn-info" ng-click="btnEDF()"
+                                        ng-show="grpBtnDataFact.e">
                                         <span class="glyphicon glyphicon-edit"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info" ng-disabled="frmDetFact.$invalid" ng-click="updDetFact(detfact)" ng-show="grpBtnDataFact.u">
+                                    <button type="button" class="btn btn-info" ng-disabled="frmDetFact.$invalid"
+                                        ng-click="updDetFact(detfact)" ng-show="grpBtnDataFact.u">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
-                                    <button type="button" class="btn btn-warning" ng-click="btnCDF()" ng-show="grpBtnDataFact.c">
+                                    <button type="button" class="btn btn-warning" ng-click="btnCDF()"
+                                        ng-show="grpBtnDataFact.c">
                                         <span class="glyphicon glyphicon-remove-circle"></span>
                                     </button>
-                                    <button type="button" class="btn btn-danger" ng-click="delDetFact(detfact)" ng-show="grpBtnDataFact.d">
+                                    <button type="button" class="btn btn-danger" ng-click="delDetFact(detfact)"
+                                        ng-show="grpBtnDataFact.d">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info" ng-click="btnADF()" ng-show="grpBtnDataFact.a">
+                                    <button type="button" class="btn btn-info" ng-click="btnADF()"
+                                        ng-show="grpBtnDataFact.a">
                                         <span class="glyphicon glyphicon-plus"></span>
                                     </button>
                                 </div>
                             </form>
-                            <hr/>
+                            <hr />
                             <table class="table table-responsive table-hover table-condensed">
                                 <thead>
-                                <tr>
-                                    <th>Facturar a</th>
-                                    <th ng-hide="true">E-mail FACE</th>
-                                    <th>N.I.T.</th>
-                                    <th>Del</th>
-                                    <th>Al</th>
-                                    <th>Servicios a facturar</th>
-                                </tr>
+                                    <tr>
+                                        <th>Facturar a</th>
+                                        <th ng-hide="true">E-mail FACE</th>
+                                        <th>N.I.T.</th>
+                                        <th>Del</th>
+                                        <th>Al</th>
+                                        <th>Servicios a facturar</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="df in detsfact" ng-click="getDetFact(df.id)">
-                                    <td>{{df.facturara}}</td>
-                                    <td ng-hide="true">{{df.emailfactura}}</td>
-                                    <td>{{df.nit}}</td>
-                                    <td>{{df.fdel | date:'dd/MM/yyyy'}}</td>
-                                    <td>{{df.fal | date:'dd/MM/yyyy'}}</td>
-                                    <td>
-                                        <a href="" ng-click="detServicios(df)" data-toggle="tooltip" data-placement="auto" title="Servicios que se le van a facturar...">{{df.serviciosafact}}</a>
-                                        <!--
+                                    <tr ng-repeat="df in detsfact" ng-click="getDetFact(df.id)">
+                                        <td>{{df.facturara}}</td>
+                                        <td ng-hide="true">{{df.emailfactura}}</td>
+                                        <td>{{df.nit}}</td>
+                                        <td>{{df.fdel | date:'dd/MM/yyyy'}}</td>
+                                        <td>{{df.fal | date:'dd/MM/yyyy'}}</td>
+                                        <td>
+                                            <a href="" ng-click="detServicios(df)" data-toggle="tooltip"
+                                                data-placement="auto"
+                                                title="Servicios que se le van a facturar...">{{df.serviciosafact}}</a>
+                                            <!--
                                         <button type="button" class="btn btn-info btn-sm" ng-click="detServicios(df)" data-toggle="tooltip" data-placement="auto" title="Servicios que se le van a facturar...">
                                             <span class="glyphicon glyphicon-list-alt"></span>
                                         </button>
                                         -->
-                                    </td>
-                                </tr>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -373,93 +498,116 @@
             <div class="tab-content">
                 <div id="divContDatGen" class="tab-pane fade in active">
                     <div class="panel panel-info">
-                        <div class="panel-heading">Datos de contrato&nbsp;<span class="badge">{{clientestr}}</span>&nbsp;<span class="badge">{{contratoStr}}</span></div>
+                        <div class="panel-heading">Datos de contrato&nbsp;<span
+                                class="badge">{{clientestr}}</span>&nbsp;<span class="badge">{{contratoStr}}</span>
+                        </div>
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-md-12 nopadding" style="text-align: right">
-                                    <button type="button" class="btn btn-info btn-xs" ng-click="showForm.contrato = !showForm.contrato" ng-hide="showForm.contrato" aria-label="Toggle ngHide">
+                                    <button type="button" class="btn btn-info btn-xs"
+                                        ng-click="showForm.contrato = !showForm.contrato" ng-hide="showForm.contrato"
+                                        aria-label="Toggle ngHide">
                                         <span class="glyphicon glyphicon-chevron-down"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info btn-xs" ng-click="showForm.contrato = !showForm.contrato" ng-show="showForm.contrato" aria-label="Toggle ngHide">
+                                    <button type="button" class="btn btn-info btn-xs"
+                                        ng-click="showForm.contrato = !showForm.contrato" ng-show="showForm.contrato"
+                                        aria-label="Toggle ngHide">
                                         <span class="glyphicon glyphicon-chevron-up"></span>
                                     </button>
                                 </div>
                             </div>
-                            <form name="frmCont" id="frmCont" ng-submit="frmCont.$valid && addContrato(contrato)" class="check-element animate-show" ng-show="showForm.contrato" novalidate>
+                            <form name="frmCont" id="frmCont" ng-submit="frmCont.$valid && addContrato(contrato)"
+                                class="check-element animate-show" ng-show="showForm.contrato" novalidate>
                                 <div class="row">
                                     <div class="col-md-2 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmCont.txtNoCont.$invalid && !frmCont.txtNoCont.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmCont.txtNoCont.$invalid && !frmCont.txtNoCont.$pristine}">
                                             <label for="txtNoCont" class="control-label">No. Contrato:</label>
-                                            <input name="txtNoCont" id="txtNoCont" type="text" class="form-control  input-sm" ng-model="contrato.nocontrato"
-                                                   placeholder="N&uacute;mero de contrato" maxlength="50" required ng-disabled="slcont"/>
+                                            <input name="txtNoCont" id="txtNoCont" type="text"
+                                                class="form-control  input-sm" ng-model="contrato.nocontrato"
+                                                placeholder="N&uacute;mero de contrato" maxlength="50" required
+                                                ng-disabled="slcont" />
                                         </div>
                                     </div>
                                     <div class="col-md-5 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmCont.txtAbogado.$invalid && !frmCont.txtAbogado.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmCont.txtAbogado.$invalid && !frmCont.txtAbogado.$pristine}">
                                             <label for="txtAbogado" class="control-label">Abogado:</label>
-                                            <div 
-                                                 angucomplete-alt id="txtAbogado"
-                                                 placeholder="Buscar abogado..."
-                                                 pause="400"
-                                                 selected-object="abogadoSelected"
-                                                 remote-url="php/cliente.php/lstabogados/"
-                                                 remote-url-data-field="results"
-                                                 title-field="abogado"
-                                                 input-class="form-control form-control-small input-sm"
-                                                 match-class="highlight"
-                                                 minlength="1"
-                                                 field-required="true"
-                                                 input-name="txtAbogado"
-                                                 override-suggestions="true"
-                                                 disable-input="slcont"
-                                            ></div>
+                                            <div angucomplete-alt id="txtAbogado" placeholder="Buscar abogado..."
+                                                pause="400" selected-object="abogadoSelected"
+                                                remote-url="php/cliente.php/lstabogados/"
+                                                remote-url-data-field="results" title-field="abogado"
+                                                input-class="form-control form-control-small input-sm"
+                                                match-class="highlight" minlength="1" field-required="true"
+                                                input-name="txtAbogado" override-suggestions="true"
+                                                disable-input="slcont"></div>
                                         </div>
                                     </div>
                                     <div class="col-md-2 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmCont.txtFIniCont.$invalid && !frmCont.txtFIniCont.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmCont.txtFIniCont.$invalid && !frmCont.txtFIniCont.$pristine}">
                                             <label for="txtFIniCont" class="control-label">Inicia:</label>
-                                            <input name="txtFIniCont" id="txtFIniCont" type="date" class="form-control  input-sm" ng-model="contrato.fechainicia" required ng-disabled="slcont"/>
+                                            <input name="txtFIniCont" id="txtFIniCont" type="date"
+                                                class="form-control  input-sm" ng-model="contrato.fechainicia" required
+                                                ng-disabled="slcont" />
                                         </div>
                                     </div>
                                     <div class="col-md-2 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmCont.txtFVenceCont.$invalid && !frmCont.txtFVenceCont.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmCont.txtFVenceCont.$invalid && !frmCont.txtFVenceCont.$pristine}">
                                             <label for="txtFVenceCont" class="control-label">Vence:</label>
-                                            <input name="txtFVenceCont" id="txtFVenceCont" type="date" class="form-control  input-sm" ng-model="contrato.fechavence" required ng-disabled="slcont"/>
+                                            <input name="txtFVenceCont" id="txtFVenceCont" type="date"
+                                                class="form-control  input-sm" ng-model="contrato.fechavence" required
+                                                ng-disabled="slcont" />
                                         </div>
                                     </div>
                                     <div class="col-md-1 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmCont.chkInactivo.$invalid && !frmCont.chkInactivo.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmCont.chkInactivo.$invalid && !frmCont.chkInactivo.$pristine}">
                                             <label for="chkInactivo">Inactivo:</label>
-                                            <input name="chkInactivo" id="chkInactivo" type="checkbox" class="form-control  input-sm" ng-model="contrato.inactivo" ng-change="showModInactivo()"
-                                                   ng-true-value="1" ng-false-value="0" ng-disabled="slcont"/>
+                                            <input name="chkInactivo" id="chkInactivo" type="checkbox"
+                                                class="form-control  input-sm" ng-model="contrato.inactivo"
+                                                ng-change="showModInactivo()" ng-true-value="1" ng-false-value="0"
+                                                ng-disabled="slcont" />
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-1 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmCont.selMonCont.$invalid && !frmCont.selMonCont.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmCont.selMonCont.$invalid && !frmCont.selMonCont.$pristine}">
                                             <label for="selMonCont" class="control-label">Moneda:</label>
-                                            <select name="selMonCont" id="selMonCont" class="form-control  input-sm" ng-model="contrato.objMoneda"
-                                                    ng-options="obj.simbolo for obj in monedas track by obj.id" required ng-disabled="slcont"></select>
+                                            <select name="selMonCont" id="selMonCont" class="form-control  input-sm"
+                                                ng-model="contrato.objMoneda"
+                                                ng-options="obj.simbolo for obj in monedas track by obj.id" required
+                                                ng-disabled="slcont"></select>
                                         </div>
                                     </div>
                                     <div class="col-md-3 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmCont.txtDepCont.$invalid && !frmCont.txtDepCont.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmCont.txtDepCont.$invalid && !frmCont.txtDepCont.$pristine}">
                                             <label for="txtDepCont" class="control-label">Dep&oacute;sito:</label>
                                             <div class="input-group">
                                                 <span class="input-group-btn">
-                                                    <select name="selMonDep" id="selMonDep" class="form-control input-sm" ng-model="contrato.objMonedaDep" style="width: 6em"
-                                                            ng-options="obj.simbolo for obj in monedas track by obj.id" required ng-disabled="slcont"></select>
+                                                    <select name="selMonDep" id="selMonDep"
+                                                        class="form-control input-sm" ng-model="contrato.objMonedaDep"
+                                                        style="width: 6em"
+                                                        ng-options="obj.simbolo for obj in monedas track by obj.id"
+                                                        required ng-disabled="slcont"></select>
                                                 </span>
-                                                <input name="txtDepCont" id="txtDepCont" type="text" class="form-control input-sm" ng-model="contrato.deposito"
-                                                       fcsa-number="{maxDecimals:2}" ng-disabled="slcont" required/>
+                                                <input name="txtDepCont" id="txtDepCont" type="text"
+                                                    class="form-control input-sm" ng-model="contrato.deposito"
+                                                    fcsa-number="{maxDecimals:2}" ng-disabled="slcont" required />
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-4 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmCont.selCCCont.$invalid && !frmCont.selCCCont.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmCont.selCCCont.$invalid && !frmCont.selCCCont.$pristine}">
                                             <label for="txtCCuentaC">Cuenta contable:</label>
-                                            <input name="txtCCuentaC" id="txtCCuentaC" type="text" class="form-control input-sm" ng-model="contrato.idcuentac" placeholder="Cuenta contable" ng-disabled="slcont"/>
+                                            <input name="txtCCuentaC" id="txtCCuentaC" type="text"
+                                                class="form-control input-sm" ng-model="contrato.idcuentac"
+                                                placeholder="Cuenta contable" ng-disabled="slcont" />
                                         </div>
                                     </div>
                                     <!--
@@ -479,73 +627,93 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-2 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmCont.txtRecProv.$invalid && !frmCont.txtRecProv.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmCont.txtRecProv.$invalid && !frmCont.txtRecProv.$pristine}">
                                             <label for="txtRecProv">Recibo provisional:</label>
-                                            <input name="txtRecProv" id="txtRecProv" type="text" class="form-control input-sm" ng-model="contrato.reciboprov"
-                                                   placeholder="N&uacute;mero de recibo provisional" ng-disabled="slcont"/>
+                                            <input name="txtRecProv" id="txtRecProv" type="text"
+                                                class="form-control input-sm" ng-model="contrato.reciboprov"
+                                                placeholder="N&uacute;mero de recibo provisional"
+                                                ng-disabled="slcont" />
                                         </div>
                                     </div>
                                     <div class="col-md-3 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmCont.selPeriodicidad.$invalid && !frmCont.selPeriodicidad.$pristine}">
-                                            <label for="selPeriodicidad" class="control-label">Periodicidad de cobro:</label>
-                                            <select name="selPeriodicidad" id="selPeriodicidad" class="form-control input-sm" ng-model="contrato.objPeriodicidad"
-                                                    ng-options="obj.descperiodicidad for obj in periodicidad track by obj.id" required ng-disabled="slcont"></select>
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmCont.selPeriodicidad.$invalid && !frmCont.selPeriodicidad.$pristine}">
+                                            <label for="selPeriodicidad" class="control-label">Periodicidad de
+                                                cobro:</label>
+                                            <select name="selPeriodicidad" id="selPeriodicidad"
+                                                class="form-control input-sm" ng-model="contrato.objPeriodicidad"
+                                                ng-options="obj.descperiodicidad for obj in periodicidad track by obj.id"
+                                                required ng-disabled="slcont"></select>
                                         </div>
                                     </div>
                                     <div class="col-md-2 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmCont.chkDoc.$invalid && !frmCont.chkDoc.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmCont.chkDoc.$invalid && !frmCont.chkDoc.$pristine}">
                                             <label for="chkDoc">Factura:</label>
-                                            <input name="chkDoc" id="chkDoc" type="checkbox" class="form-control input-sm" ng-model="contrato.documento" ng-true-value="1" ng-false-value="0" ng-disabled="slcont"/>
+                                            <input name="chkDoc" id="chkDoc" type="checkbox"
+                                                class="form-control input-sm" ng-model="contrato.documento"
+                                                ng-true-value="1" ng-false-value="0" ng-disabled="slcont" />
                                         </div>
                                     </div>
                                     <div class="col-md-2 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmCont.chkSubarr.$invalid && !frmCont.chkSubarr.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmCont.chkSubarr.$invalid && !frmCont.chkSubarr.$pristine}">
                                             <label for="chkSubarr">Sub-arrendado:</label>
-                                            <input name="chkSubarr" id="chkSubarr" type="checkbox" class="form-control input-sm" ng-model="contrato.subarrendado" ng-true-value="1" ng-false-value="0" ng-disabled="slcont"/>
+                                            <input name="chkSubarr" id="chkSubarr" type="checkbox"
+                                                class="form-control input-sm" ng-model="contrato.subarrendado"
+                                                ng-true-value="1" ng-false-value="0" ng-disabled="slcont" />
                                         </div>
                                     </div>
                                     <div class="col-md-3 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmCont.selTipoCli.$invalid && !frmCont.selTipoCli.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmCont.selTipoCli.$invalid && !frmCont.selTipoCli.$pristine}">
                                             <label for="selTipoCli" class="control-label">Tipo de cliente:</label>
-                                            <select name="selTipoCli" id="selTipoCli" class="form-control input-sm" ng-model="contrato.objTipoCliente"
-                                                    ng-options="obj.desctipocliente for obj in tiposcliente track by obj.id" required ng-disabled="slcont"
-                                                    ng-change="checkTipoCliente(contrato.objTipoCliente.id)"></select>
+                                            <select name="selTipoCli" id="selTipoCli" class="form-control input-sm"
+                                                ng-model="contrato.objTipoCliente"
+                                                ng-options="obj.desctipocliente for obj in tiposcliente track by obj.id"
+                                                required ng-disabled="slcont"
+                                                ng-change="checkTipoCliente(contrato.objTipoCliente.id)"></select>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-4 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmCont.selEmpCont.$invalid && !frmCont.selEmpCont.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmCont.selEmpCont.$invalid && !frmCont.selEmpCont.$pristine}">
                                             <label for="selEmpCont" class="control-label">Empresa:</label>
-                                            <select name="selEmpCont" id="selEmpCont" class="form-control" ng-model="contrato.objEmpresa"
-                                                    ng-options="obj.nomempresa for obj in empresas track by obj.id" ng-change="getCuentasC(contrato.objEmpresa.id)" required ng-disabled="slcont"></select>
+                                            <select name="selEmpCont" id="selEmpCont" class="form-control"
+                                                ng-model="contrato.objEmpresa"
+                                                ng-options="obj.nomempresa for obj in empresas track by obj.id"
+                                                ng-change="getCuentasC(contrato.objEmpresa.id)" required
+                                                ng-disabled="slcont"></select>
                                         </div>
                                     </div>
                                     <div class="col-md-4 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmCont.selProyCont.$invalid && !frmCont.selProyCont.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmCont.selProyCont.$invalid && !frmCont.selProyCont.$pristine}">
                                             <label for="selProyCont" class="control-label">Ubicaci&oacute;n:</label>
                                             <!--
                                             <select name="selProyCont" id="selProyCont" class="form-control input-sm" ng-model="contrato.objProyecto"
                                                     ng-options="obj.nomproyecto for obj in proyectos track by obj.id"
                                                     ng-change="getLstUnidadesDisponibles(contrato.objProyecto.id, contrato.id)" required ng-disabled="slcont"></select>
                                             -->
-                                            <ui-select id="selProyCont"
-                                                       ng-model="contrato.objProyecto"
-                                                       title="Seleccione un proyecto.."
-                                                       theme="bootstrap"
-                                                       autofocus="true"
-                                                       append-to-body="true"
-                                                       ng-disabled="slcont"
-                                                       ng-required="true"
-                                                       ng-class="form-control-small;"
-                                                       on-select="doGetLstUnidadesDisponibles($item, $model)">
-                                                <ui-select-match placeholder="Buscar proyecto por nombre..." allow-clear="false" ng-class="form-control-small;">
+                                            <ui-select id="selProyCont" ng-model="contrato.objProyecto"
+                                                title="Seleccione un proyecto.." theme="bootstrap" autofocus="true"
+                                                append-to-body="true" ng-disabled="slcont" ng-required="true"
+                                                ng-class="form-control-small;"
+                                                on-select="doGetLstUnidadesDisponibles($item, $model)">
+                                                <ui-select-match placeholder="Buscar proyecto por nombre..."
+                                                    allow-clear="false" ng-class="form-control-small;">
                                                     <span ng-bind="$select.selected.nomproyecto"></span>
                                                 </ui-select-match>
-                                                <ui-select-choices repeat="item in proyectos | filter:$select.search" ng-class="form-control-small;">
-                                                    <div ng-bind-html="item.nomproyecto | highlight: $select.search"></div>
+                                                <ui-select-choices repeat="item in proyectos | filter:$select.search"
+                                                    ng-class="form-control-small;">
+                                                    <div ng-bind-html="item.nomproyecto | highlight: $select.search">
+                                                    </div>
                                                     <small>
-                                                        <strong>Referencia:</strong>&nbsp;<span ng-bind-html="item.referencia | highlight: $select.search" ></span>
+                                                        <strong>Referencia:</strong>&nbsp;<span
+                                                            ng-bind-html="item.referencia | highlight: $select.search"></span>
                                                     </small>
                                                 </ui-select-choices>
                                                 <ui-select-no-choice>
@@ -555,10 +723,13 @@
                                         </div>
                                     </div>
                                     <div class="col-md-4 nopadding" ng-hide="slcont">
-                                        <div class="form-group" ng-class="{'has-error':frmCont.selUniCont.$invalid && !frmCont.selUniCont.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmCont.selUniCont.$invalid && !frmCont.selUniCont.$pristine}">
                                             <label for="selUniCont">Unidades:</label>
-                                            <select name="selUniCont" id="selUniCont" class="form-control input-sm" ng-model="contrato.objUnidad"
-                                                    ng-options="obj.nombre for obj in unidadesdisponibles track by obj.id" multiple ng-disabled="slcont"></select>
+                                            <select name="selUniCont" id="selUniCont" class="form-control input-sm"
+                                                ng-model="contrato.objUnidad"
+                                                ng-options="obj.nombre for obj in unidadesdisponibles track by obj.id"
+                                                multiple ng-disabled="slcont"></select>
                                         </div>
                                     </div>
                                     <div class="col-md-4 nopadding" ng-show="slcont">
@@ -572,57 +743,77 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-3 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmCont.selIPC.$invalid && !frmCont.selIPC.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmCont.selIPC.$invalid && !frmCont.selIPC.$pristine}">
                                             <label for="selIPC" class="control-label">Tipo de incremento:</label>
-                                            <select name="selIPC" id="selIPC" class="form-control input-sm" ng-model="contrato.idtipoipc"
-                                                    ng-options="obj.id as obj.descripcion for obj in lsttipoipc" required ng-disabled="slcont"></select>
+                                            <select name="selIPC" id="selIPC" class="form-control input-sm"
+                                                ng-model="contrato.idtipoipc"
+                                                ng-options="obj.id as obj.descripcion for obj in lsttipoipc" required
+                                                ng-disabled="slcont"></select>
                                         </div>
                                     </div>
                                     <div class="col-md-2 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmCont.chkCobro.$invalid && !frmCont.chkCobro.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmCont.chkCobro.$invalid && !frmCont.chkCobro.$pristine}">
                                             <label for="chkCobro">Cobro vencido:</label>
-                                            <input name="chkCobro" id="chkCobro" type="checkbox" class="form-control input-sm" ng-model="contrato.cobro"
-                                                   ng-true-value="1" ng-false-value="0" ng-disabled="slcont"/>
+                                            <input name="chkCobro" id="chkCobro" type="checkbox"
+                                                class="form-control input-sm" ng-model="contrato.cobro"
+                                                ng-true-value="1" ng-false-value="0" ng-disabled="slcont" />
                                         </div>
                                     </div>
                                     <div class="col-md-2 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmCont.txtPFDel.$invalid && !frmCont.txtPFDel.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmCont.txtPFDel.$invalid && !frmCont.txtPFDel.$pristine}">
                                             <label for="txtPFDel">Plazo forzoso del:</label>
-                                            <input name="txtPFDel" id="txtPFDel" type="date" class="form-control input-sm" ng-model="contrato.plazofdel" ng-disabled="slcont"/>
+                                            <input name="txtPFDel" id="txtPFDel" type="date"
+                                                class="form-control input-sm" ng-model="contrato.plazofdel"
+                                                ng-disabled="slcont" />
                                         </div>
                                     </div>
                                     <div class="col-md-2 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmCont.txtPFAl.$invalid && !frmCont.txtPFAl.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmCont.txtPFAl.$invalid && !frmCont.txtPFAl.$pristine}">
                                             <label for="txtPFAl">Al:</label>
-                                            <input name="txtPFAl" id="txtPFAl" type="date" class="form-control input-sm" ng-model="contrato.plazofal" ng-disabled="slcont"/>
+                                            <input name="txtPFAl" id="txtPFAl" type="date" class="form-control input-sm"
+                                                ng-model="contrato.plazofal" ng-disabled="slcont" />
                                         </div>
                                     </div>
                                     <div class="col-md-3 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmCont.txtPRes.$invalid && !frmCont.txtPRes.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmCont.txtPRes.$invalid && !frmCont.txtPRes.$pristine}">
                                             <label for="txtPRes">Per&iacute;odo de rescisi&oacute;n:</label>
-                                            <input name="txtPRes" id="txtPRes" type="number" class="form-control input-sm" ng-model="contrato.prescision" min="0" max="12" step="1" ng-disabled="slcont"/>
+                                            <input name="txtPRes" id="txtPRes" type="number"
+                                                class="form-control input-sm" ng-model="contrato.prescision" min="0"
+                                                max="12" step="1" ng-disabled="slcont" />
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmCont.txtObs.$invalid && !frmCont.txtObs.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmCont.txtObs.$invalid && !frmCont.txtObs.$pristine}">
                                             <label for="txtObs">Observaciones:</label>
-                                            <textarea name="txtObs" id="txtObs" class="form-control  input-sm" ng-model="contrato.observaciones" style="width: 100%" rows="4"
-                                                      placeholder="Observaciones del contrato" maxlength="5000" ng-disabled="slcont">
+                                            <textarea name="txtObs" id="txtObs" class="form-control  input-sm"
+                                                ng-model="contrato.observaciones" style="width: 100%" rows="4"
+                                                placeholder="Observaciones del contrato" maxlength="5000"
+                                                ng-disabled="slcont">
                                             </textarea>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row" ng-show="(contrato.fechainactivo != null && contrato.fechainactivo != undefined)">
+                                <div class="row"
+                                    ng-show="(contrato.fechainactivo != null && contrato.fechainactivo != undefined)">
                                     <div class="col-md-12 nopadding">
                                         <div class="well well-sm">
                                             <h4>Contrato inactivo desde
                                                 <a href="" ng-click="showModInactivo()" ng-hide="slcont">
                                                     {{contrato.fechainactivo | date:'dd/MM/yyyy'}}
                                                 </a>
-                                                <span ng-show="slcont">{{contrato.fechainactivo | date:'dd/MM/yyyy'}}</span>&nbsp;
-                                                <button type="button" class="btn btn-info btn-sm" ng-click="printContratoInactivo(contrato.id)" ng-show="contrato.id > 0">
+                                                <span
+                                                    ng-show="slcont">{{contrato.fechainactivo | date:'dd/MM/yyyy'}}</span>&nbsp;
+                                                <button type="button" class="btn btn-info btn-sm"
+                                                    ng-click="printContratoInactivo(contrato.id)"
+                                                    ng-show="contrato.id > 0">
                                                     <span class="glyphicon glyphicon-print"></span>
                                                 </button>
                                             </h4>
@@ -630,46 +821,59 @@
                                     </div>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
-                                    <button type="submit" class="btn btn-info" ng-disabled="frmCont.$invalid" ng-show="grpBtnCont.i">
+                                    <button type="submit" class="btn btn-info" ng-disabled="frmCont.$invalid"
+                                        ng-show="grpBtnCont.i">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info" ng-click="btnECont()" ng-show="grpBtnCont.e">
+                                    <button type="button" class="btn btn-info" ng-click="btnECont()"
+                                        ng-show="grpBtnCont.e">
                                         <span class="glyphicon glyphicon-edit"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info" ng-disabled="frmCont.$invalid" ng-click="updContrato(contrato)" ng-show="grpBtnCont.u">
+                                    <button type="button" class="btn btn-info" ng-disabled="frmCont.$invalid"
+                                        ng-click="updContrato(contrato)" ng-show="grpBtnCont.u">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info" ng-click="printContrato(contrato.id, 'divContrato')" ng-show="contrato.id > 0">
+                                    <button type="button" class="btn btn-info"
+                                        ng-click="printContrato(contrato.id, 'divContrato')" ng-show="contrato.id > 0">
                                         <span class="glyphicon glyphicon-print"></span>
                                     </button>
-                                    <button type="button" class="btn btn-warning" ng-click="btnCCont()" ng-show="grpBtnCont.c">
+                                    <button type="button" class="btn btn-info" ng-click="enUsufructo(contrato)"
+                                        ng-show="contrato.id > 0">
+                                        Dar en usufructo
+                                    </button>
+                                    <button type="button" class="btn btn-warning" ng-click="btnCCont()"
+                                        ng-show="grpBtnCont.c">
                                         <span class="glyphicon glyphicon-remove-circle"></span>
                                     </button>
-                                    <button type="button" class="btn btn-danger" ng-click="delContrato(contrato)" ng-show="grpBtnCont.d">
+                                    <button type="button" class="btn btn-danger" ng-click="delContrato(contrato)"
+                                        ng-show="grpBtnCont.d">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info" ng-click="btnACont()" ng-show="grpBtnCont.a">
+                                    <button type="button" class="btn btn-info" ng-click="btnACont()"
+                                        ng-show="grpBtnCont.a">
                                         <span class="glyphicon glyphicon-plus"></span>
                                     </button>
                                 </div>
                             </form>
-                            <hr/>
-                            <table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover table-condensed">
+                            <hr />
+                            <table datatable="ng" dt-options="dtOptions"
+                                class="table table-responsive table-hover table-condensed">
                                 <thead>
-                                <tr>
-                                    <th>No. Contrato</th>
-                                    <th>Inicia</th>
-                                    <th>Vence</th>
-                                    <th style="text-align: right">Dep&oacute;sito</th>
-                                </tr>
+                                    <tr>
+                                        <th>No. Contrato</th>
+                                        <th>Inicia</th>
+                                        <th>Vence</th>
+                                        <th style="text-align: right">Dep&oacute;sito</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="c in contratos" ng-click="getContrato(c.id)">
-                                    <td>{{c.nocontrato}}</td>
-                                    <td>{{c.fechainicia | date:'dd/MM/yyyy'}}</td>
-                                    <td>{{c.fechavence | date:'dd/MM/yyyy'}}</td>
-                                    <td style="text-align: right">{{c.monedadep}}&nbsp;{{c.deposito | number:2}}</td>
-                                </tr>
+                                    <tr ng-repeat="c in contratos" ng-click="getContrato(c.id)">
+                                        <td>{{c.nocontrato}}</td>
+                                        <td>{{c.fechainicia | date:'dd/MM/yyyy'}}</td>
+                                        <td>{{c.fechavence | date:'dd/MM/yyyy'}}</td>
+                                        <td style="text-align: right">{{c.monedadep}}&nbsp;{{c.deposito | number:2}}
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -677,75 +881,104 @@
                 </div>
                 <div id="divContDatFact" class="tab-pane fade">
                     <div class="panel panel-info">
-                        <div class="panel-heading">Detalle del contrato&nbsp;<span class="badge">{{clientestr}}</span>&nbsp;<span class="badge">{{contratoStr}}</span></div>
+                        <div class="panel-heading">Detalle del contrato&nbsp;<span
+                                class="badge">{{clientestr}}</span>&nbsp;<span class="badge">{{contratoStr}}</span>
+                        </div>
                         <div class="panel-body">
                             <div class="col-md-12 nopadding" style="text-align: right">
-                                <button type="button" class="btn btn-info btn-xs" ng-click="showForm.detcont = !showForm.detcont" ng-hide="showForm.detcont" aria-label="Toggle ngHide">
+                                <button type="button" class="btn btn-info btn-xs"
+                                    ng-click="showForm.detcont = !showForm.detcont" ng-hide="showForm.detcont"
+                                    aria-label="Toggle ngHide">
                                     <span class="glyphicon glyphicon-chevron-down"></span>
                                 </button>
-                                <button type="button" class="btn btn-info btn-xs" ng-click="showForm.detcont = !showForm.detcont" ng-show="showForm.detcont" aria-label="Toggle ngHide">
+                                <button type="button" class="btn btn-info btn-xs"
+                                    ng-click="showForm.detcont = !showForm.detcont" ng-show="showForm.detcont"
+                                    aria-label="Toggle ngHide">
                                     <span class="glyphicon glyphicon-chevron-up"></span>
                                 </button>
                             </div>
-                            <form name="frmDFC" id="frmDFC" ng-submit="frmDFC.$valid && addDetFContrato(detfcontrato)" class="check-element animate-show" ng-show="showForm.detcont" novalidate>
+                            <form name="frmDFC" id="frmDFC" ng-submit="frmDFC.$valid && addDetFContrato(detfcontrato)"
+                                class="check-element animate-show" ng-show="showForm.detcont" novalidate>
                                 <div class="row">
                                     <div class="col-md-2 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmDFC.txtNoPer.$invalid && !frmDFC.txtNoPer.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmDFC.txtNoPer.$invalid && !frmDFC.txtNoPer.$pristine}">
                                             <label for="txtNoPer" class="control-label">No. Per&iacute;odo:</label>
-                                            <input name="txtNoPer" id="txtNoPer" type="number" class="form-control input-sm" ng-model="detfcontrato.noperiodo" min="1" required ng-disabled="sldetcont || detcontfacturado"/>
+                                            <input name="txtNoPer" id="txtNoPer" type="number"
+                                                class="form-control input-sm" ng-model="detfcontrato.noperiodo" min="1"
+                                                required ng-disabled="sldetcont || detcontfacturado" />
                                         </div>
                                     </div>
                                     <div class="col-md-3 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmDFC.txtDFDel.$invalid && !frmDFC.txtDFDel.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmDFC.txtDFDel.$invalid && !frmDFC.txtDFDel.$pristine}">
                                             <label for="txtDFDel" class="control-label">Del:</label>
-                                            <input name="txtDFDel" id="txtDFDel" type="date" class="form-control  input-sm" ng-model="detfcontrato.fdel" required ng-disabled="sldetcont || detcontfacturado"/>
+                                            <input name="txtDFDel" id="txtDFDel" type="date"
+                                                class="form-control  input-sm" ng-model="detfcontrato.fdel" required
+                                                ng-disabled="sldetcont || detcontfacturado" />
                                         </div>
                                     </div>
                                     <div class="col-md-3 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmDFC.txtDFAl.$invalid && !frmDFC.txtDFAl.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmDFC.txtDFAl.$invalid && !frmDFC.txtDFAl.$pristine}">
                                             <label for="txtDFAl" class="control-label">Al:</label>
-                                            <input name="txtDFAl" id="txtDFAl" type="date" class="form-control  input-sm" ng-model="detfcontrato.fal" required
-                                                   ng-disabled="sldetcont || detcontfacturado" ng-change="chkFecha(detfcontrato.fal)" />
+                                            <input name="txtDFAl" id="txtDFAl" type="date"
+                                                class="form-control  input-sm" ng-model="detfcontrato.fal" required
+                                                ng-disabled="sldetcont || detcontfacturado"
+                                                ng-change="chkFecha(detfcontrato.fal)" />
                                         </div>
                                     </div>
                                     <div class="col-md-3 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmDFC.selTipoSV.$invalid && !frmDFC.selTipoSV.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmDFC.selTipoSV.$invalid && !frmDFC.selTipoSV.$pristine}">
                                             <label for="selTipoSV" class="control-label">Tipo:</label>
-                                            <select name="selTipoSV" id="selTipoSV" class="form-control  input-sm" ng-model="detfcontrato.objTipoVenta"
-                                                    ng-options="obj.desctiposervventa for obj in tsventa track by obj.id" required ng-disabled="sldetcont || detcontfacturado"></select>
+                                            <select name="selTipoSV" id="selTipoSV" class="form-control  input-sm"
+                                                ng-model="detfcontrato.objTipoVenta"
+                                                ng-options="obj.desctiposervventa for obj in tsventa track by obj.id"
+                                                required ng-disabled="sldetcont || detcontfacturado"></select>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-2 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmDFC.selDFMon.$invalid && !frmDFC.selDFMon.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmDFC.selDFMon.$invalid && !frmDFC.selDFMon.$pristine}">
                                             <label for="selDFMon" class="control-label">Moneda:</label>
-                                            <select name="selDFMon" id="selDFMon" class="form-control  input-sm" ng-model="detfcontrato.objMoneda"
-                                                    ng-options="obj.simbolo for obj in monedas track by obj.id" required ng-disabled="sldetcont || detcontfacturado"></select>
+                                            <select name="selDFMon" id="selDFMon" class="form-control  input-sm"
+                                                ng-model="detfcontrato.objMoneda"
+                                                ng-options="obj.simbolo for obj in monedas track by obj.id" required
+                                                ng-disabled="sldetcont || detcontfacturado"></select>
                                         </div>
                                     </div>
                                     <div class="col-md-2 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmDFC.txtDFMonto.$invalid && !frmDFC.txtDFMonto.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmDFC.txtDFMonto.$invalid && !frmDFC.txtDFMonto.$pristine}">
                                             <label for="txtDFMonto" class="control-label">Monto:</label>
-                                            <input name="txtDFMonto" id="txtDFMonto" type="text" class="form-control  input-sm" ng-model="detfcontrato.monto" fcsa-number="{maxDecimals:2}" required
-                                                   ng-disabled="sldetcont || detcontfacturado"/>
+                                            <input name="txtDFMonto" id="txtDFMonto" type="text"
+                                                class="form-control  input-sm" ng-model="detfcontrato.monto"
+                                                fcsa-number="{maxDecimals:2}" required
+                                                ng-disabled="sldetcont || detcontfacturado" />
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row" ng-show="+facturasperiodo > 0 && +detfcontrato.id > 0">
+                                <div class="row" ng-show="+detfcontrato.id > 0">
                                     <div class="col-md-11">
                                         <div class="form-group">
                                             <label for="lblInfo">Nota:</label>
                                             <div id="lblInfo" class="well well-sm">
                                                 <p>
                                                     <strong>
-                                                        Este per&iacute;odo ya tiene {{facturasperiodo | number:0}} facturas realizadas. No se puede modificar ni eliminar.
+                                                        <strong ng-show="+facturasperiodo > 0">
+                                                            Este per&iacute;odo ya tiene {{facturasperiodo | number:0}} facturas realizadas. No se puede modificar ni eliminar.
+                                                        </strong>
                                                         <span ng-show="dataanula.usuario == '' || dataanula.usuario == undefined || dataanula.usuario == null">
                                                             Debe <a href="" ng-click="anulaPeriodo(detfcontrato.id)">anular</a> lo que queda del per&iacute;odo y crear uno nuevo
                                                         </span>
                                                         <span ng-hide="dataanula.usuario == '' || dataanula.usuario == undefined || dataanula.usuario == null">
-                                                            Los cargos ya fueron anulados por <span class="label label-primary">{{dataanula.usuario}}</span> el <span class="label label-primary">{{dataanula.fechaanula | date:'dd/MM/yyyy'}}</span>
-                                                            por <span class="label label-primary">{{dataanula.razon}}</span>.
+                                                            Los cargos ya fueron anulados por 
+                                                            <span class="label label-primary">{{dataanula.usuario}}</span> el 
+                                                            <span class="label label-primary">{{dataanula.fechaanula | date:'dd/MM/yyyy'}}</span> por 
+                                                            <span class="label label-primary">{{dataanula.razon}}</span>.
                                                         </span>
                                                     </strong>
                                                 </p>
@@ -754,69 +987,83 @@
                                     </div>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
-                                    <button type="submit" class="btn btn-info" ng-disabled="frmDFC.$invalid || grabando" ng-show="grpBtnDetCont.i">
+                                    <button type="submit" class="btn btn-info" ng-disabled="frmDFC.$invalid || grabando"
+                                        ng-show="grpBtnDetCont.i">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info" ng-click="btnEDetCont()" ng-show="grpBtnDetCont.e" ng-disabled="detcontfacturado">
+                                    <button type="button" class="btn btn-info" ng-click="btnEDetCont()"
+                                        ng-show="grpBtnDetCont.e" ng-disabled="detcontfacturado">
                                         <span class="glyphicon glyphicon-edit"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info" ng-disabled="frmDFC.$invalid || detcontfacturado" ng-click="updDetFContrato(detfcontrato)" ng-show="grpBtnDetCont.u">
+                                    <button type="button" class="btn btn-info"
+                                        ng-disabled="frmDFC.$invalid || detcontfacturado"
+                                        ng-click="updDetFContrato(detfcontrato)" ng-show="grpBtnDetCont.u">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
-                                    <button type="button" class="btn btn-warning" ng-click="btnCDetCont()" ng-show="grpBtnDetCont.c">
+                                    <button type="button" class="btn btn-warning" ng-click="btnCDetCont()"
+                                        ng-show="grpBtnDetCont.c">
                                         <span class="glyphicon glyphicon-remove-circle"></span>
                                     </button>
-                                    <button type="button" class="btn btn-danger" ng-click="delDetFContrato(detfcontrato)" ng-show="grpBtnDetCont.d" ng-disabled="detcontfacturado">
+                                    <button type="button" class="btn btn-danger"
+                                        ng-click="delDetFContrato(detfcontrato)" ng-show="grpBtnDetCont.d"
+                                        ng-disabled="detcontfacturado">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info" ng-click="btnADetCont()" ng-show="grpBtnDetCont.a">
+                                    <button type="button" class="btn btn-info" ng-click="btnADetCont()"
+                                        ng-show="grpBtnDetCont.a">
                                         <span class="glyphicon glyphicon-plus"></span>
                                     </button>
                                 </div>
                             </form>
-                            <hr/>
+                            <hr />
                             <table class="table table-responsive table-hover table-condensed">
                                 <caption>
                                     <div class="row">
                                         <div class="col-md-4"></div>
-                                        <div class="col-md-4" style="text-align: center"><span><strong>DETALLE DEL CONTRATO</strong></span></div>
+                                        <div class="col-md-4" style="text-align: center"><span><strong>DETALLE DEL
+                                                    CONTRATO</strong></span></div>
                                         <div class="col-md-4" style="text-align: right">
-                                            <button type="button" class="btn btn-info btn-sm" ng-click="printContrato(contrato.id, 'divContDatFact')" ng-show="contrato.id > 0">
+                                            <button type="button" class="btn btn-info btn-sm"
+                                                ng-click="printContrato(contrato.id, 'divContDatFact')"
+                                                ng-show="contrato.id > 0">
                                                 <span class="glyphicon glyphicon-print"></span>
                                             </button>
                                         </div>
                                     </div>
                                 </caption>
                                 <thead>
-                                <tr>
-                                    <th style="text-align: right">Per&iacute;odo</th>
-                                    <th>Del</th>
-                                    <th>Al</th>
-                                    <th>Tipo</th>
-                                    <th style="text-align: right">Monto</th>
-                                    <th>&nbsp;</th>
-                                    <th>&nbsp;</th>
-                                </tr>
+                                    <tr>
+                                        <th style="text-align: right">Per&iacute;odo</th>
+                                        <th>Del</th>
+                                        <th>Al</th>
+                                        <th>Tipo</th>
+                                        <th style="text-align: right">Monto</th>
+                                        <th>&nbsp;</th>
+                                        <th>&nbsp;</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="d in lstdetfcontrato" ng-click="getDetFContrato(d.id)">
-                                    <td style="text-align: right">{{d.noperiodo}}</td>
-                                    <td>{{d.fdel | date:'dd/MM/yyyy'}}</td>
-                                    <td>{{d.fal | date:'dd/MM/yyyy'}}</td>
-                                    <td>{{d.tipoventa}}</td>
-                                    <td style="text-align: right">{{d.moneda}}&nbsp;{{d.monto | number:2}}</td>
-                                    <td>
-                                        <button type="button" class="btn btn-info btn-sm" ng-click="generaCobros(d.id)" data-toggle="tooltip" data-placement="auto" title="Agregar descuento al período...">
-                                            <span class="glyphicon glyphicon-list-alt"></span>
-                                        </button>
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-warning btn-sm" ng-show="d.fuerarango == 1"
-                                                data-toggle="tooltip" data-placement="auto" title="La fecha final de este período está fuera de la fecha de vencimiento del contrato.">
-                                            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+                                    <tr ng-repeat="d in lstdetfcontrato" ng-click="getDetFContrato(d.id)">
+                                        <td style="text-align: right">{{d.noperiodo}}</td>
+                                        <td>{{d.fdel | date:'dd/MM/yyyy'}}</td>
+                                        <td>{{d.fal | date:'dd/MM/yyyy'}}</td>
+                                        <td>{{d.tipoventa}}</td>
+                                        <td style="text-align: right">{{d.moneda}}&nbsp;{{d.monto | number:2}}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-info btn-sm"
+                                                ng-click="generaCobros(d.id)" data-toggle="tooltip"
+                                                data-placement="auto" title="Agregar descuento al período...">
+                                                <span class="glyphicon glyphicon-list-alt"></span>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-warning btn-sm"
+                                                ng-show="d.fuerarango == 1" data-toggle="tooltip" data-placement="auto"
+                                                title="La fecha final de este período está fuera de la fecha de vencimiento del contrato.">
+                                                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -828,94 +1075,116 @@
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-md-12 nopadding" style="text-align: right">
-                                    <button type="button" class="btn btn-info btn-xs" ng-click="showForm.fia = !showForm.fia" ng-hide="showForm.fia" aria-label="Toggle ngHide">
+                                    <button type="button" class="btn btn-info btn-xs"
+                                        ng-click="showForm.fia = !showForm.fia" ng-hide="showForm.fia"
+                                        aria-label="Toggle ngHide">
                                         <span class="glyphicon glyphicon-chevron-down"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info btn-xs" ng-click="showForm.fia = !showForm.fia" ng-show="showForm.fia" aria-label="Toggle ngHide">
+                                    <button type="button" class="btn btn-info btn-xs"
+                                        ng-click="showForm.fia = !showForm.fia" ng-show="showForm.fia"
+                                        aria-label="Toggle ngHide">
                                         <span class="glyphicon glyphicon-chevron-up"></span>
                                     </button>
                                 </div>
                             </div>
-                            <form name="frmFia" id="frmFia" ng-submit="frmFia.$valid && addFiador(fiador)" class="check-element animate-show" ng-show="showForm.fia" novalidate>
+                            <form name="frmFia" id="frmFia" ng-submit="frmFia.$valid && addFiador(fiador)"
+                                class="check-element animate-show" ng-show="showForm.fia" novalidate>
                                 <div class="row">
                                     <div class="col-md-6 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmFia.txtNomFia.$invalid && !frmFia.txtNomFia.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmFia.txtNomFia.$invalid && !frmFia.txtNomFia.$pristine}">
                                             <label for="txtNomFia">Propietario/Representante legal:</label>
-                                            <input name="txtNomFia" id="txtNomFia" type="text" class="form-control input-sm" ng-model="fiador.nombre" maxlength="250"
-                                                   placeholder="Nombre del fiador" ng-disabled="slfia" required/>
+                                            <input name="txtNomFia" id="txtNomFia" type="text"
+                                                class="form-control input-sm" ng-model="fiador.nombre" maxlength="250"
+                                                placeholder="Nombre del fiador" ng-disabled="slfia" required />
                                         </div>
                                     </div>
                                     <div class="col-md-6 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmFia.txtEmpre.$invalid && !frmFia.txtEmpre.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmFia.txtEmpre.$invalid && !frmFia.txtEmpre.$pristine}">
                                             <label for="txtEmpre">Empresa:</label>
-                                            <input name="txtEmpre" id="txtEmpre" type="text" class="form-control input-sm" ng-model="fiador.empresa" maxlength="150"
-                                                   placeholder="Empresa del fiador" ng-disabled="slfia"/>
+                                            <input name="txtEmpre" id="txtEmpre" type="text"
+                                                class="form-control input-sm" ng-model="fiador.empresa" maxlength="150"
+                                                placeholder="Empresa del fiador" ng-disabled="slfia" />
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmFia.txtDirFia.$invalid && !frmFia.txtDirFia.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmFia.txtDirFia.$invalid && !frmFia.txtDirFia.$pristine}">
                                             <label for="txtDirFia">Direcci&oacute;n:</label>
-                                            <input name="txtDirFia" id="txtDirFia" type="text" class="form-control input-sm" ng-model="fiador.direccion" maxlength="250"
-                                                   placeholder="Direcci&oacute;n del fiador" ng-disabled="slfia" required/>
+                                            <input name="txtDirFia" id="txtDirFia" type="text"
+                                                class="form-control input-sm" ng-model="fiador.direccion"
+                                                maxlength="250" placeholder="Direcci&oacute;n del fiador"
+                                                ng-disabled="slfia" required />
                                         </div>
                                     </div>
                                     <div class="col-md-3 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmFia.txtNITFia.$invalid && !frmFia.txtNITFia.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmFia.txtNITFia.$invalid && !frmFia.txtNITFia.$pristine}">
                                             <label for="txtNITFia">Tel&eacute;fono:</label>
-                                            <input name="txtNITFia" id="txtNITFia" type="text" class="form-control input-sm" ng-model="fiador.telefono" maxlength="25"
-                                                   placeholder="Tel&eacute;fono del fiador" ng-disabled="slfia" required/>
+                                            <input name="txtNITFia" id="txtNITFia" type="text"
+                                                class="form-control input-sm" ng-model="fiador.telefono" maxlength="25"
+                                                placeholder="Tel&eacute;fono del fiador" ng-disabled="slfia" required />
                                         </div>
                                     </div>
                                     <div class="col-md-3 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmFia.txtIdFia.$invalid && !frmFia.txtIdFia.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmFia.txtIdFia.$invalid && !frmFia.txtIdFia.$pristine}">
                                             <label for="txtIdFia">Identificaci&oacute;n:</label>
-                                            <input name="txtIdFia" id="txtIdFia" type="text" class="form-control input-sm" ng-model="fiador.identificacion" placeholder="DPI, c&eacute;dula, etc."
-                                                   ng-disabled="slfia" required/>
+                                            <input name="txtIdFia" id="txtIdFia" type="text"
+                                                class="form-control input-sm" ng-model="fiador.identificacion"
+                                                placeholder="DPI, c&eacute;dula, etc." ng-disabled="slfia" required />
                                         </div>
                                     </div>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
-                                    <button type="submit" class="btn btn-info" ng-disabled="frmFia.$invalid" ng-show="grpBtnFia.i">
+                                    <button type="submit" class="btn btn-info" ng-disabled="frmFia.$invalid"
+                                        ng-show="grpBtnFia.i">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info" ng-click="btnEFia()" ng-show="grpBtnFia.e">
+                                    <button type="button" class="btn btn-info" ng-click="btnEFia()"
+                                        ng-show="grpBtnFia.e">
                                         <span class="glyphicon glyphicon-edit"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info" ng-disabled="frmFia.$invalid" ng-click="updFiador(fiador)" ng-show="grpBtnFia.u">
+                                    <button type="button" class="btn btn-info" ng-disabled="frmFia.$invalid"
+                                        ng-click="updFiador(fiador)" ng-show="grpBtnFia.u">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
-                                    <button type="button" class="btn btn-warning" ng-click="btnCFia()" ng-show="grpBtnFia.c">
+                                    <button type="button" class="btn btn-warning" ng-click="btnCFia()"
+                                        ng-show="grpBtnFia.c">
                                         <span class="glyphicon glyphicon-remove-circle"></span>
                                     </button>
-                                    <button type="button" class="btn btn-danger" ng-click="delFiador(fiador)" ng-show="grpBtnFia.d">
+                                    <button type="button" class="btn btn-danger" ng-click="delFiador(fiador)"
+                                        ng-show="grpBtnFia.d">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </button>
-                                    <button type="button" class="btn btn-info" ng-click="btnAFia()" ng-show="grpBtnFia.a">
+                                    <button type="button" class="btn btn-info" ng-click="btnAFia()"
+                                        ng-show="grpBtnFia.a">
                                         <span class="glyphicon glyphicon-plus"></span>
                                     </button>
                                 </div>
                             </form>
-                            <hr/>
+                            <hr />
                             <table class="table table-responsive table-hover table-condensed">
                                 <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Empresa</th>
-                                    <th>Direcci&oacute;n</th>
-                                    <th>Tel&eacute;fono</th>
-                                    <th>Identificaci&oacute;n</th>
-                                </tr>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Empresa</th>
+                                        <th>Direcci&oacute;n</th>
+                                        <th>Tel&eacute;fono</th>
+                                        <th>Identificaci&oacute;n</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="fia in fiadores" ng-click="getFiador(fia.id)">
-                                    <td>{{fia.nombre}}</td>
-                                    <td>{{fia.empresa}}</td>
-                                    <td>{{fia.direccion}}</td>
-                                    <td>{{fia.telefono}}</td>
-                                    <td>{{fia.identificacion}}</td>
-                                </tr>
+                                    <tr ng-repeat="fia in fiadores" ng-click="getFiador(fia.id)">
+                                        <td>{{fia.nombre}}</td>
+                                        <td>{{fia.empresa}}</td>
+                                        <td>{{fia.direccion}}</td>
+                                        <td>{{fia.telefono}}</td>
+                                        <td>{{fia.identificacion}}</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -923,76 +1192,91 @@
                 </div>
                 <div id="divDocAdj" class="tab-pane fade">
                     <div class="panel panel-info">
-                        <div class="panel-heading">Documentos adjuntos&nbsp;<span class="badge">{{clientestr}}</span>&nbsp;<span class="badge">{{contratoStr}}</span></div>
+                        <div class="panel-heading">Documentos adjuntos&nbsp;<span
+                                class="badge">{{clientestr}}</span>&nbsp;<span class="badge">{{contratoStr}}</span>
+                        </div>
                         <div class="panel-body">
                             <div class="col-md-12 nopadding" style="text-align: right">
-                                <button type="button" class="btn btn-info btn-xs" ng-click="showForm.adjcont = !showForm.adjcont" ng-hide="showForm.adjcont" aria-label="Toggle ngHide">
+                                <button type="button" class="btn btn-info btn-xs"
+                                    ng-click="showForm.adjcont = !showForm.adjcont" ng-hide="showForm.adjcont"
+                                    aria-label="Toggle ngHide">
                                     <span class="glyphicon glyphicon-chevron-down"></span>
                                 </button>
-                                <button type="button" class="btn btn-info btn-xs" ng-click="showForm.adjcont = !showForm.adjcont" ng-show="showForm.adjcont" aria-label="Toggle ngHide">
+                                <button type="button" class="btn btn-info btn-xs"
+                                    ng-click="showForm.adjcont = !showForm.adjcont" ng-show="showForm.adjcont"
+                                    aria-label="Toggle ngHide">
                                     <span class="glyphicon glyphicon-chevron-up"></span>
                                 </button>
                             </div>
-                            <form name="frmAdjCont" id="frmAdjCont" ng-submit="frmAdjCont.$valid && addContratoAdjunto(adjcont)" class="check-element animate-show" ng-show="showForm.adjcont" novalidate>
+                            <form name="frmAdjCont" id="frmAdjCont"
+                                ng-submit="frmAdjCont.$valid && addContratoAdjunto(adjcont)"
+                                class="check-element animate-show" ng-show="showForm.adjcont" novalidate>
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <div class="form-group" ng-class="{'has-error':frmAdjCont.txtNomAjunto.$invalid && !frmAdjCont.txtNomAjunto.$pristine}">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmAdjCont.txtNomAjunto.$invalid && !frmAdjCont.txtNomAjunto.$pristine}">
                                             <label for="txtNomAjunto">Observaciones:</label>
-                                            <input name="txtNomAjunto" id="txtNomAjunto" type="text" class="form-control" ng-model="adjcont.descripcion" placeholder="Descripcion del adjunto" required/>
+                                            <input name="txtNomAjunto" id="txtNomAjunto" type="text"
+                                                class="form-control" ng-model="adjcont.descripcion"
+                                                placeholder="Descripcion del adjunto" required />
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="adjuntar_btn">&nbsp;</label>
-                                            <button name="adjuntar_btn" id="adjuntar_btn" type="button" class="btn btn-info"
-                                                    ngf-select ng-model="file" name="file" ngf-multiple="false"
-                                                    ngf-pattern="'image/*,application/pdf,.xls,.xlsx,.doc,.docx,.txt'"
-                                                    ngf-accept="'image/*,application/pdf,.xls,.xlsx,.doc,.docx,.txt'"
-                                                    ngf-max-size="200MB" style="width: 100%">
-                                                {{(file.name | textCleaner) || 'Seleccionar documento para subir'}}&nbsp;<span class="glyphicon glyphicon-upload"></span>
+                                            <button name="adjuntar_btn" id="adjuntar_btn" type="button"
+                                                class="btn btn-info" ngf-select ng-model="file" name="file"
+                                                ngf-multiple="false"
+                                                ngf-pattern="'image/*,application/pdf,.xls,.xlsx,.doc,.docx,.txt'"
+                                                ngf-accept="'image/*,application/pdf,.xls,.xlsx,.doc,.docx,.txt'"
+                                                ngf-max-size="200MB" style="width: 100%">
+                                                {{(file.name | textCleaner) || 'Seleccionar documento para subir'}}&nbsp;<span
+                                                    class="glyphicon glyphicon-upload"></span>
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-1">
-                                        <button type="submit" class="btn btn-info" ng-disabled="frmAdjCont.$invalid || file == null || file == undefined">
+                                        <button type="submit" class="btn btn-info"
+                                            ng-disabled="frmAdjCont.$invalid || file == null || file == undefined">
                                             <span class="glyphicon glyphicon-floppy-save"></span>
                                         </button>
                                     </div>
                                     <div class="col-md-2">
                                         <div>
-                                            <round-progress max="100" current="progressPercentage" color="#4CAF50" bgcolor="#eaeaea" radius="25" stroke="10"
-                                                            semi="true" rounded="true" clockwise="true" responsive="false" duration="800"
-                                                            animation="easeInOutQuart" animation-delay="0">
+                                            <round-progress max="100" current="progressPercentage" color="#4CAF50"
+                                                bgcolor="#eaeaea" radius="25" stroke="10" semi="true" rounded="true"
+                                                clockwise="true" responsive="false" duration="800"
+                                                animation="easeInOutQuart" animation-delay="0">
                                             </round-progress>
                                         </div>
                                     </div>
                                 </div>
                             </form>
-                            <hr/>
+                            <hr />
                             <table class="table table-hover table-condensed">
                                 <thead>
-                                <tr>
-                                    <th>Observaciones</th>
-                                    <th>&nbsp;</th>
-                                    <th>&nbsp;</th>
-                                </tr>
+                                    <tr>
+                                        <th>Observaciones</th>
+                                        <th>&nbsp;</th>
+                                        <th>&nbsp;</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="adj in lstadjcont">
-                                    <td>{{adj.descripcion}}</td>
-                                    <td>
-                                        <a class="btn btn-info" href="{{adj.ubicacion}}" target="_blank">
-                                            <span class="glyphicon glyphicon-download"></span>
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-danger" ng-click="delAdjCont(adj)">
-                                            <span class="glyphicon glyphicon-trash"></span>
-                                        </button>
-                                    </td>
-                                </tr>
+                                    <tr ng-repeat="adj in lstadjcont">
+                                        <td>{{adj.descripcion}}</td>
+                                        <td>
+                                            <a class="btn btn-info" href="{{adj.ubicacion}}" target="_blank">
+                                                <span class="glyphicon glyphicon-download"></span>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger" ng-click="delAdjCont(adj)">
+                                                <span class="glyphicon glyphicon-trash"></span>
+                                            </button>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -1207,3 +1491,55 @@
     </div>
 </script>
 <!--Fin de Template de la modal-->
+<script type="text/ng-template" id="modalUsufructo.html">
+    <div class="modal-header">
+        <h4 class="modal-title">Usufructo</h4>
+        <h5>
+            Contrato No. {{contrato.nocontrato}}<br/>
+            {{contrato.empresa}}<br/>
+            Proyecto: {{contrato.proyecto}} - Unidad: {{contrato.unidad}}<br/>
+            Inicia: {{contrato.fechainicia | date:'dd/MM/yyyy'}} - Vence: {{contrato.fechavence | date:'dd/MM/yyyy'}}
+        </h5>
+    </div>
+    <div class="modal-body">
+        <form name="frmUsufructo" id="frmUsufructo" novalidate>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group" ng-class="{'has-error':frmUsufructo.txtNoUsufructo.$invalid && !frmUsufructo.txtNoUsufructo.$pristine}">
+                        <label for="txtNoUsufructo">No. usufructo:</label>
+                        <input name="txtNoUsufructo" id="txtNoUsufructo" type="text" class="form-control input-sm" ng-model="params.usufructo" placeholder="No. de usufructo" required/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group" ng-class="{'has-error':frmUsufructo.selEmpUsufructo.$invalid && !frmUsufructo.selEmpUsufructo.$pristine}">
+                        <label for="selEmpUsufructo" class="control-label">Empresa:</label>
+                        <select name="selEmpUsufructo" id="selEmpUsufructo" class="form-control input-sm" ng-model="params.idempresa" 
+                        ng-options="obj.id as obj.nomempresa for obj in empresas | filter: { id: '!' + contrato.idempresa }" required></select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group" ng-class="{'has-error':frmUsufructo.txtIniciaUsufructo.$invalid && !frmUsufructo.txtIniciaUsufructo.$pristine}">
+                        <label for="txtIniciaUsufructo">Fecha de inicio:</label>
+                        <input name="txtIniciaUsufructo" id="txtIniciaUsufructo" type="date" class="form-control input-sm" ng-model="params.fechainicia" placeholder="Fecha de inicio" required/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group" ng-class="{'has-error':frmUsufructo.txtCuentaCUsufructo.$invalid && !frmUsufructo.txtCuentaCUsufructo.$pristine}">
+                        <label for="txtCuentaCUsufructo">Cuenta contable:</label>
+                        <input name="txtCuentaCUsufructo" id="txtCuentaCUsufructo" type="text" class="form-control input-sm" ng-model="params.idcuentac" placeholder="Cuenta contable" required/>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()" ng-disabled="frmUsufructo.$invalid">Aceptar</button>
+        <button class="btn btn-info" type="button" ng-click="cancel()">Cancelar</button>
+    </div>
+</script>

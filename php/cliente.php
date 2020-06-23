@@ -230,16 +230,20 @@ $app->get('/getfiador/:idfia', function($idfia){
     print $db->doSelectASJson($query);
 });
 
-$app->post('/cfia', function(){
-    $d = json_decode(file_get_contents('php://input'));
-    $db = new dbcpm();
+function creaNuevoFiador($d, $db) {
     $query = "INSERT INTO detclientefiadores(";
     $query.= "idcontrato, idcliente, nombre, direccion, telefono, identificacion, empresa";
     $query.= ") VALUES(";
-    $query.= $d->idcontrato.", ".$d->idcliente.", '".$d->nombre."', '".$d->direccion."', '".$d->telefono."', '".$d->identificacion."', '".$d->empresa."'";
+    $query.= "$d->idcontrato, $d->idcliente, '$d->nombre', '$d->direccion', '$d->telefono', '$d->identificacion', '$d->empresa'";
     $query.= ")";
     $db->doQuery($query);
-    print json_encode(['lastid' => $db->getLastId()]);
+    return $db->getLastId();
+}
+
+$app->post('/cfia', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    print json_encode(['lastid' => creaNuevoFiador($d, $db)]);
 });
 
 
@@ -333,28 +337,64 @@ $app->get('/lstabogados/:qstr', function($qstr){
     print json_encode(['results' => $db->getQuery($query)]);
 });
 
-$app->post('/cc', function(){
-    $d = json_decode(file_get_contents('php://input'));
-    $db = new dbcpm();
+function checkForPossibleNulls($d, $db) {
+    $query = "SELECT TRIM(column_name) AS columna, TRIM(data_type) AS tipo FROM information_schema.columns WHERE table_schema = 'sayet' AND table_name = 'contrato' AND IS_NULLABLE = 'YES'";
+    $columnas = $db->getQuery($query);
+    foreach($columnas as $col) {
+        if(!isset($d->{$col->columna})) {
+            $d->{$col->columna} = in_array($col->tipo, array('date', 'datetime')) ? '' : 'NULL';
+        }
+    }
+    return $d;
+}
+
+function creaNuevoContrato($d, $db) {
+    $d = checkForPossibleNulls($d, $db);
+    
+    if(!isset($d->plazofdelstr)) { $d->plazofdelstr = $d->plazofdel; }
+    if(!isset($d->plazofalstr)) { $d->plazofalstr = $d->plazofal; }
+    if(!isset($d->fechainactivostr)) { $d->fechainactivostr = $d->fechainactivo; }
+    if(!isset($d->fechavencestr)) { $d->fechavencestr = $d->fechavence; }
+    if(!isset($d->fechainiciastr)) { $d->fechainiciastr = $d->fechainicia; }
 
     $d->plazofdelstr = $d->plazofdelstr == '' ? "NULL" : "'$d->plazofdelstr'";
     $d->plazofalstr = $d->plazofalstr == '' ? "NULL" : "'$d->plazofalstr'";
     $d->fechainactivostr = ($d->fechainactivostr == '' || (int)$d->inactivo == 0) ? "NULL" : "'$d->fechainactivostr'";
+    
+    if(!isset($d->usufructo)) { 
+        $d->usufructo = 'NULL';
+        $d->fechacopia = 'NULL';
+    } else { 
+        $d->usufructo = "'$d->usufructo'"; 
+        $d->fechacopia = 'NOW()';
+    };
+    if(!isset($d->idcontratoorigen)) { $d->idcontratoorigen = 0; }
+    if(!isset($d->idusuariocopia)) { $d->idusuariocopia = 0; }
+
+    // print_r($d); die();
 
     $query = "INSERT INTO contrato(";
     $query.= "idcliente, nocontrato, abogado, inactivo, fechainicia, fechavence, nuevarenta, nuevomantenimiento, ";
     $query.= "idmoneda, idempresa, deposito, idproyecto, idunidad, retiva, prorrogable, retisr, ";
     $query.= "documento, adelantado, subarrendado, idtipocliente, idcuentac, observaciones, idmonedadep, ";
     $query.= "reciboprov, idperiodicidad, lastuser, idtipoipc, cobro, plazofdel, plazofal, prescision, ";
-    $query.= "fechainactivo";
+    $query.= "fechainactivo, usufructo, idcontratoorigen, fechacopia, idusuariocopia";
     $query.= ") VALUES(";
-    $query.= $d->idcliente.", '".$d->nocontrato."', '".$d->abogado."', ".$d->inactivo.", '".$d->fechainiciastr."', '".$d->fechavencestr."', ".$d->nuevarenta.", ".$d->nuevomantenimiento.", ";
-    $query.= $d->idmoneda.", ".$d->idempresa.", ".$d->deposito.", ".$d->idproyecto.", '".$d->idunidad."', ".$d->retiva.", ".$d->prorrogable.", ".$d->retisr.", ";
-    $query.= $d->documento.", ".$d->adelantado.", ".$d->subarrendado.", ".$d->idtipocliente.", '".$d->idcuentac."', '".$d->observaciones."', ".$d->idmonedadep.", ";
-    $query.= "'".$d->reciboprov."', ".$d->idperiodicidad.", $d->lastuser, $d->idtipoipc, $d->cobro, $d->plazofdelstr, $d->plazofalstr, $d->prescision, $d->fechainactivostr";
+    $query.= "$d->idcliente, '$d->nocontrato', '$d->abogado', $d->inactivo, '$d->fechainiciastr', '$d->fechavencestr', $d->nuevarenta, $d->nuevomantenimiento, ";
+    $query.= "$d->idmoneda, $d->idempresa, $d->deposito, $d->idproyecto, '$d->idunidad', $d->retiva, $d->prorrogable, $d->retisr, ";
+    $query.= "$d->documento, $d->adelantado, $d->subarrendado, $d->idtipocliente, '$d->idcuentac', '$d->observaciones', $d->idmonedadep, ";
+    $query.= "'$d->reciboprov', $d->idperiodicidad, $d->lastuser, $d->idtipoipc, $d->cobro, $d->plazofdelstr, $d->plazofalstr, $d->prescision, $d->fechainactivostr, ";
+    $query.= "$d->usufructo, $d->idcontratoorigen, $d->fechacopia, $d->idusuariocopia";
     $query.= ")";
+    // print_r($query); die();
     $db->doQuery($query);
-    print json_encode(['lastid' => $db->getLastId()]);
+    return $db->getLastId();
+}
+
+$app->post('/cc', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    print json_encode(['lastid' => creaNuevoContrato($d, $db)]);
 });
 
 $app->post('/uc', function(){
@@ -420,16 +460,24 @@ $app->get('/getdetcontrato/:iddetcontrato', function($iddetcontrato){
     print $db->doSelectASJson($query);
 });
 
+function creaNuevoPeriodo($d, $db) {
+    if(!isset($d->iddetcontorigen)) { $d->iddetcontorigen = 0; }
+    if(!isset($d->fdelstr)) { $d->fdelstr = $d->fdel; }
+    if(!isset($d->falstr)) { $d->falstr = $d->fal; }
+
+    $query = "INSERT INTO detfactcontrato(";
+    $query.= "idcontrato, fdel, fal, monto, idtipoventa, idmoneda, idperiodicidad, noperiodo, iddetcontorigen";
+    $query.= ") VALUES(";
+    $query.= "$d->idcontrato, '$d->fdelstr', '$d->falstr', $d->monto, $d->idtipoventa, $d->idmoneda, $d->idperiodicidad, $d->noperiodo, $d->iddetcontorigen";
+    $query.= ")";
+    $db->doQuery($query);
+    return $db->getLastId();
+}
+
 $app->post('/cdc', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $query = "INSERT INTO detfactcontrato(";
-    $query.= "idcontrato, fdel, fal, monto, idtipoventa, idmoneda, idperiodicidad, noperiodo";
-    $query.= ") VALUES(";
-    $query.= $d->idcontrato.", '".$d->fdelstr."', '".$d->falstr."', ".$d->monto.", ".$d->idtipoventa.", ".$d->idmoneda.", ".$d->idperiodicidad.", ".$d->noperiodo;
-    $query.= ")";
-    $db->doQuery($query);
-    print json_encode(['lastid' => $db->getLastId()]);
+    print json_encode(['lastid' => creaNuevoPeriodo($d, $db)]);
 });
 
 $app->post('/udc', function(){
@@ -456,11 +504,15 @@ $app->get('/chkdetcontfacturado/:iddetcontrato', function($iddetcontrato){
     print json_encode(['facturado' => (int)$db->getOneField("SELECT COUNT(id) FROM cargo WHERE iddetcont = $iddetcontrato AND facturado = 1")]);
 });
 
+function anulaCargoContrato($d, $db) {
+    $query = "UPDATE cargo SET anulado = 1, fechaanula = NOW(), usranula = $d->idusuario, idrazonanulacargo = $d->idrazonanula WHERE iddetcont = $d->iddetcontrato AND facturado = 0";
+    $db->doQuery($query);
+}
+
 $app->post('/apf', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $query = "UPDATE cargo SET anulado = 1, fechaanula = NOW(), usranula = $d->idusuario, idrazonanulacargo = $d->idrazonanula WHERE iddetcont = $d->iddetcontrato AND facturado = 0";
-    $db->doQuery($query);
+    anulaCargoContrato($d, $db);    
 });
 
 $app->get('/chkcargoanulado/:iddetcontrato', function($iddetcontrato){
@@ -536,16 +588,20 @@ $app->get('/getadj/:idadj', function($idadj){
     print $db->doSelectASJson($query);
 });
 
-$app->post('/cac', function(){
-    $d = json_decode(file_get_contents('php://input'));
-    $db = new dbcpm();
+function creaNuevoAdjunto($d, $db) {
     $query = "INSERT INTO contratoadjunto(";
     $query.= "idcontrato, descripcion, ubicacion";
     $query.= ") VALUES(";
-    $query.= $d->idcontrato.", '".$d->descripcion."', '".$d->ubicacion."'";
+    $query.= "$d->idcontrato, '$d->descripcion', '$d->ubicacion'";
     $query.= ")";
     $db->doQuery($query);
-    print json_encode(['lastid' => $db->getLastId()]);
+    return $db->getLastId();
+}
+
+$app->post('/cac', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    print json_encode(['lastid' => creaNuevoAdjunto($d, $db)]);
 });
 
 $app->post('/uac', function(){
@@ -591,6 +647,91 @@ $app->get('/chkadjuntos', function(){
 
     print json_encode($unfound);
 
+});
+
+$app->post('/copia', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $contratoOriginal = $db->getQuery("SELECT * FROM contrato WHERE id = $d->idcontrato")[0];
+    
+    //Hacer el proyecto multiempresa
+    $query = "UPDATE proyecto SET multiempresa = 1 WHERE id = $contratoOriginal->idproyecto";
+    $db->doQuery($query);
+
+    //Crea nuevo contrato en usufructo
+    $contratoOriginal->usufructo = $d->usufructo;
+    $contratoOriginal->idcontratoorigen = $d->idcontrato;
+    $contratoOriginal->idusuariocopia = $d->idusuario;
+    $contratoOriginal->idcuentac = $d->idcuentac;
+    $contratoOriginal->idempresa = $d->idempresa;
+    $contratoOriginal->fechainiciastr = $d->fechainiciastr;
+    // var_dump($contratoOriginal); die();
+    $idContratoNuevo = creaNuevoContrato($contratoOriginal, $db);
+
+    //Copia de períodos con cargos pendientes a facturar
+    if((int)$idContratoNuevo > 0) {
+        $query = "SELECT * FROM detfactcontrato ";
+        $query.= "WHERE idcontrato = $d->idcontrato AND id IN(SELECT iddetcont FROM cargo WHERE idcontrato = $d->idcontrato AND facturado = 0 AND anulado = 0 GROUP BY iddetcont) ";
+        $query.= "ORDER BY idtipoventa, noperiodo";
+        $periodosOriginales = $db->getQuery($query);
+        $cntPeriodosOriginales = count($periodosOriginales);
+        for($i = 0; $i < $cntPeriodosOriginales; $i++) {
+            $periodo = $periodosOriginales[$i];
+            $periodo->idcontrato = $idContratoNuevo;
+            $periodo->iddetcontorigen = $periodo->id;
+            $idPeriodoNuevo = creaNuevoPeriodo($periodo, $db);
+
+            //Copia de cargos pendientes de facturar
+            if((int)$idPeriodoNuevo > 0) {
+                $query = "SELECT * FROM cargo WHERE idcontrato = $d->idcontrato AND iddetcont = $periodo->id AND facturado = 0 AND anulado = 0";
+                $cargosOriginales = $db->getQuery($query);
+                $cntCargosOriginales = count($cargosOriginales);
+                for($j = 0; $j < $cntCargosOriginales; $j++) {
+                    $cargo = $cargosOriginales[$j];
+                    $query = "INSERT INTO cargo(idcontrato, iddetcont, fgeneracion, fechacobro, monto, descuento, conceptoadicional, idcargoorigen) VALUES(";
+                    $query.= "$idContratoNuevo, $idPeriodoNuevo, NOW(), '$cargo->fechacobro', $cargo->monto, $cargo->descuento, ";
+                    $query.= (empty($d->conceptoadicional) ? 'NULL' : "'$d->conceptoadicional'").", $cargo->id";
+                    $query.= ")";
+                    $db->doQuery($query);
+                    $idCargoNuevo = $db->getLastId();
+
+                    //Anulación del cargo original            
+                    if((int)$idCargoNuevo > 0) {
+                        $query = "UPDATE cargo SET anulado = 1, fechaanula = NOW(), usranula = $d->idusuario, idrazonanulacargo = 9 WHERE id = $cargo->id";
+                        $db->doQuery($query);
+                    }
+                }
+            }
+        }
+
+        //Copia de documentos adjuntos del contrato
+        $query = "SELECT * FROM contratoadjunto WHERE idcontrato = $d->idcontrato";
+        $adjuntos = $db->getQuery($query);
+        $cntAdjuntos = count($adjuntos);
+        for($i = 0; $i < $cntAdjuntos; $i++) {
+            $adjunto = $adjuntos[$i];
+            $adjunto->idcontrato = $idContratoNuevo;
+            creaNuevoAdjunto($adjunto, $db);
+        }
+
+        //Copia de fiadores del contrato    
+        $query = "SELECT * FROM detclientefiadores WHERE idcontrato = $d->idcontrato";
+        $fiadores = $db->getQuery($query);
+        $cntFiadores = count($fiadores);
+        for($i = 0; $i < $cntFiadores; $i++) {
+            $fiador = $fiadores[$i];
+            $fiador->idcontrato = $idContratoNuevo;
+            creaNuevoFiador($fiador, $db);
+        }
+
+        //Inactivar contrato original
+        $query = "UPDATE contrato SET inactivo = 1, fechainactivo = DATE(NOW()), idunidadbck = idunidad, idunidad = '' WHERE id = $d->idcontrato";
+        $db->doQuery($query);        
+        print json_encode(['mensaje' => 'Cambio en usufructo realizado...']);
+    } else {
+        print json_encode(['mensaje' => 'No se logro crear el contrato nuevo :-(']);
+    }
 });
 
 $app->run();

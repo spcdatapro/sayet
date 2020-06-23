@@ -44,4 +44,17 @@ $app->get('/test', function() {
     ]);
 });
 
+$app->get('/vacia', function(){
+
+    $obj = '';
+    $mensaje = 'NO ESTÁ VACÍA!!!';
+
+    if(empty($obj)) { $mensaje = 'Está vacía...'; }
+
+    print json_encode([
+        'exito' => true,
+        'mensaje' => $mensaje
+    ]);
+});
+
 $app->run();
