@@ -9,7 +9,7 @@ $app->get('/contratotoprint/:idcontrato/:del/:al/:idtiposervicio', function($idc
     $db = new dbcpm();
     $query = "SELECT a.id, a.idcliente, a.nocontrato, a.fechainicia, a.fechavence, ";
     $query.= "a.idempresa, c.nomempresa AS empresa, a.idproyecto, d.nomproyecto AS proyecto, ";
-    $query.= "i.unidades, a.reciboprov, j.descperiodicidad AS periodicidad ";
+    $query.= "i.unidades, a.reciboprov, j.descperiodicidad AS periodicidad, a.usufructo ";
     $query.= "FROM contrato a LEFT JOIN moneda b ON b.id = a.idmoneda LEFT JOIN empresa c ON c.id = a.idempresa LEFT JOIN proyecto d ON d.id = a.idproyecto ";
     $query.= "LEFT JOIN tipocliente f ON f.id = a.idtipocliente LEFT JOIN moneda h ON h.id = a.idmonedadep LEFT JOIN (";
     $query.= "SELECT c.idcontrato, GROUP_CONCAT(DISTINCT c.nombre ORDER BY c.nombre SEPARATOR ', ') AS unidades FROM (SELECT b.id AS idcontrato, a.nombre ";
