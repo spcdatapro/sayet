@@ -725,6 +725,20 @@ $app->post('/copia', function(){
             creaNuevoFiador($fiador, $db);
         }
 
+        //Cambio de empresa a los servicios atados a las unidades de ese contrato
+        $query = "SELECT idunidad FROM contrato WHERE id = $d->idcontrato";
+        $unidades = $db->getQuery($query);
+        if(count($unidades) > 0) {
+            $query = "SELECT GROUP_CONCAT(DISTINCT idserviciobasico SEPARATOR ',' ) AS servicios FROM unidadservicio WHERE ffin IS NULL AND idunidad IN(".$unidades[0]->idunidad.")";
+            $servicios = $db->getQuery($query);
+            if(count($servicios) > 0) {
+                $query = "UPDATE serviciobasico SET idempresa = 4, ";
+                $query.= "notas = CONCAT(IFNULL(notas, ''), (SELECT CONCAT('Dado en usufructo a ', abreviatura, ' el ', DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s')) FROM empresa WHERE id = $d->idempresa))";
+                $query.= "WHERE id IN(".$servicios[0]->servicios.")";
+                $db->doQuery($query);
+            }
+        }
+
         //Inactivar contrato original
         $query = "UPDATE contrato SET inactivo = 1, fechainactivo = DATE(NOW()), idunidadbck = idunidad, idunidad = '' WHERE id = $d->idcontrato";
         $db->doQuery($query);        
