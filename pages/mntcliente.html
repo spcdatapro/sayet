@@ -788,6 +788,13 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row" ng-show="!!contrato.usufructo">
+                                    <div class="col-md-12 nopadding">
+                                        <div class="form-group">
+                                            <span><strong>No. Usufructo:</strong> {{contrato.usufructo}}</span>
+                                        </div>                                        
+                                    </div>
+                                </div>
                                 <div class="row">
                                     <div class="col-md-12 nopadding">
                                         <div class="form-group"
@@ -861,6 +868,7 @@
                                 <thead>
                                     <tr>
                                         <th>No. Contrato</th>
+                                        <th>Usufructo</th>
                                         <th>Inicia</th>
                                         <th>Vence</th>
                                         <th style="text-align: right">Dep&oacute;sito</th>
@@ -869,6 +877,7 @@
                                 <tbody>
                                     <tr ng-repeat="c in contratos" ng-click="getContrato(c.id)">
                                         <td>{{c.nocontrato}}</td>
+                                        <td>{{c.usufructo}}</td>
                                         <td>{{c.fechainicia | date:'dd/MM/yyyy'}}</td>
                                         <td>{{c.fechavence | date:'dd/MM/yyyy'}}</td>
                                         <td style="text-align: right">{{c.monedadep}}&nbsp;{{c.deposito | number:2}}

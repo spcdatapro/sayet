@@ -269,7 +269,7 @@ $app->get('/lstcontratos/:idcliente', function($idcliente){
     $query = "SELECT a.id, a.idcliente, a.nocontrato, a.abogado, a.inactivo, a.fechainactivo, a.fechainicia, a.fechavence, a.nuevarenta, a.nuevomantenimiento, a.idmoneda, b.simbolo AS moneda, ";
     $query.= "a.idempresa, c.nomempresa AS empresa, a.deposito, a.idproyecto, d.nomproyecto AS proyecto, a.idunidad, IFNULL(UnidadesPorContrato(a.id), CONCAT('Contrato #', a.nocontrato)) AS unidad, a.retiva, a.prorrogable, a.retisr, ";
     $query.= "a.documento, a.adelantado, a.subarrendado, a.idtipocliente, f.desctipocliente AS tipocliente, a.idcuentac, a.observaciones, a.idmonedadep, ";
-    $query.= "h.simbolo AS monedadep, a.reciboprov, a.idperiodicidad, a.idtipoipc, a.cobro, a.plazofdel, a.plazofal, a.prescision ";
+    $query.= "h.simbolo AS monedadep, a.reciboprov, a.idperiodicidad, a.idtipoipc, a.cobro, a.plazofdel, a.plazofal, a.prescision, a.usufructo ";
     $query.= "FROM contrato a LEFT JOIN moneda b ON b.id = a.idmoneda LEFT JOIN empresa c ON c.id = a.idempresa LEFT JOIN proyecto d ON d.id = a.idproyecto ";
     $query.= "LEFT JOIN tipocliente f ON f.id = a.idtipocliente LEFT JOIN moneda h ON h.id = a.idmonedadep ";
     $query.= "WHERE a.idcliente = ".$idcliente;
@@ -281,7 +281,7 @@ $app->get('/lstcontemp/:idcliente/:idempresa', function($idcliente, $idempresa){
     $query = "SELECT a.id, a.idcliente, a.nocontrato, a.abogado, a.inactivo, a.fechainactivo, a.fechainicia, a.fechavence, a.nuevarenta, a.nuevomantenimiento, a.idmoneda, b.simbolo AS moneda, ";
     $query.= "a.idempresa, c.nomempresa AS empresa, a.deposito, a.idproyecto, d.nomproyecto AS proyecto, a.idunidad, IFNULL(UnidadesPorContrato(a.id), CONCAT('Contrato #', a.nocontrato)) AS unidad, a.retiva, a.prorrogable, a.retisr, ";
     $query.= "a.documento, a.adelantado, a.subarrendado, a.idtipocliente, f.desctipocliente AS tipocliente, a.idcuentac, a.observaciones, a.idmonedadep, ";
-    $query.= "h.simbolo AS monedadep, a.reciboprov, a.idperiodicidad, a.idtipoipc, a.cobro, a.plazofdel, a.plazofal, a.prescision ";
+    $query.= "h.simbolo AS monedadep, a.reciboprov, a.idperiodicidad, a.idtipoipc, a.cobro, a.plazofdel, a.plazofal, a.prescision, a.usufructo ";
     $query.= "FROM contrato a LEFT JOIN moneda b ON b.id = a.idmoneda LEFT JOIN empresa c ON c.id = a.idempresa LEFT JOIN proyecto d ON d.id = a.idproyecto ";
     $query.= "LEFT JOIN tipocliente f ON f.id = a.idtipocliente LEFT JOIN moneda h ON h.id = a.idmonedadep ";
     $query.= "WHERE a.idcliente = $idcliente AND a.idempresa = $idempresa ";
@@ -293,7 +293,7 @@ $app->get('/getcontrato/:idcontrato', function($idcontrato){
     $query = "SELECT a.id, a.idcliente, a.nocontrato, a.abogado, a.inactivo, a.fechainactivo, a.fechainicia, a.fechavence, a.nuevarenta, a.nuevomantenimiento, a.idmoneda, b.simbolo AS moneda, ";
     $query.= "a.idempresa, c.nomempresa AS empresa, a.deposito, a.idproyecto, d.nomproyecto AS proyecto, a.idunidad, e.nombre AS unidad, a.retiva, a.prorrogable, a.retisr, ";
     $query.= "a.documento, a.adelantado, a.subarrendado, a.idtipocliente, f.desctipocliente AS tipocliente, a.idcuentac, a.observaciones, a.idmonedadep, ";
-    $query.= "h.simbolo AS monedadep, a.reciboprov, a.idperiodicidad, a.idtipoipc, a.cobro, a.plazofdel, a.plazofal, a.prescision ";
+    $query.= "h.simbolo AS monedadep, a.reciboprov, a.idperiodicidad, a.idtipoipc, a.cobro, a.plazofdel, a.plazofal, a.prescision, a.usufructo ";
     $query.= "FROM contrato a LEFT JOIN moneda b ON b.id = a.idmoneda LEFT JOIN empresa c ON c.id = a.idempresa LEFT JOIN proyecto d ON d.id = a.idproyecto LEFT JOIN unidad e ON e.id = a.idunidad ";
     $query.= "LEFT JOIN tipocliente f ON f.id = a.idtipocliente LEFT JOIN moneda h ON h.id = a.idmonedadep ";
     $query.= "WHERE a.id = ".$idcontrato;
@@ -304,7 +304,7 @@ $app->get('/contratotoprint/:idcontrato', function($idcontrato){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idcliente, a.nocontrato, a.fechainicia, a.fechavence, ";
     $query.= "a.idempresa, c.nomempresa AS empresa, a.idproyecto, d.nomproyecto AS proyecto, ";
-    $query.= "i.unidades, a.reciboprov, j.descperiodicidad AS periodicidad ";
+    $query.= "i.unidades, a.reciboprov, j.descperiodicidad AS periodicidad, a.usufructo ";
     $query.= "FROM contrato a LEFT JOIN moneda b ON b.id = a.idmoneda LEFT JOIN empresa c ON c.id = a.idempresa LEFT JOIN proyecto d ON d.id = a.idproyecto ";
     $query.= "LEFT JOIN tipocliente f ON f.id = a.idtipocliente LEFT JOIN moneda h ON h.id = a.idmonedadep LEFT JOIN (";
     $query.= "SELECT c.idcontrato, GROUP_CONCAT(DISTINCT c.nombre ORDER BY c.nombre SEPARATOR ', ') AS unidades FROM (SELECT b.id AS idcontrato, a.nombre ";
