@@ -980,7 +980,7 @@
                                                         <strong ng-show="+facturasperiodo > 0">
                                                             Este per&iacute;odo ya tiene {{facturasperiodo | number:0}} facturas realizadas. No se puede modificar ni eliminar.
                                                         </strong>
-                                                        <span ng-show="dataanula.usuario == '' || dataanula.usuario == undefined || dataanula.usuario == null">
+                                                        <span ng-hide="dataanula.usuario == '' || dataanula.usuario == undefined || dataanula.usuario == null">                                                            
                                                             Debe <a href="" ng-click="anulaPeriodo(detfcontrato.id)">anular</a> lo que queda del per&iacute;odo y crear uno nuevo
                                                         </span>
                                                         <span ng-hide="dataanula.usuario == '' || dataanula.usuario == undefined || dataanula.usuario == null">

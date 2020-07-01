@@ -780,8 +780,10 @@
                 });
 
                 clienteSrvc.chkDetFContratoAnulado(iddet).then((d) => {
-                    $scope.detcontfacturado = true;
-                    $scope.dataanula = d[0];
+                    if(d.length > 0) {
+                        $scope.detcontfacturado = true;
+                        $scope.dataanula = d[0];
+                    }
                 });
 
                 goTop();
