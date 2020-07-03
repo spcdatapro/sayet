@@ -53,7 +53,7 @@
             getAmpliacion: function(idamplia){
                 return comunFact.doGET(urlBase + '/getampliapresup/' + idamplia);
             },
-            editRow: (obj, op) => comunFact.doPOST(urlBase + '/' + op, obj),
+            editRow: (obj, op) => comunFact.doPOST(`${urlBase}/${op}`, obj),
             usrApruebanOts: (id) => comunFact.doGET(`${urlBase}/usraprob` + (!id ? '' : `/${id}`))
         };
     }]);

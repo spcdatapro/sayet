@@ -46,6 +46,7 @@
                 idemp: undefined, estatus: 1, tipo: undefined
             };
             $scope.presupuesto = {};
+            $scope.ot = {};
 
             $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap()
                 .withBootstrapOptions({
@@ -73,15 +74,16 @@
                 .withOption('ordering', false);
             //.withOption('fnRowCallback', rowCallback);
 
-            authSrvc.getSession().then(async function (usrLogged) {
+            authSrvc.getSession().then(async (usrLogged) => {
                 await $scope.esDePresupuesto();
                 usrLogged.workingon = $scope.presupuesto.idempresa || usrLogged.workingon;
+                // console.log('USR = ', usrLogged);
                 if (parseInt(usrLogged.workingon) > 0) {
                     $scope.params.idemp = +usrLogged.workingon;
                     $scope.uid = +usrLogged.uid;
-                    authSrvc.gpr({ idusuario: parseInt(usrLogged.uid), ruta: $route.current.params.name }).then(function (d) {
+                    authSrvc.gpr({ idusuario: parseInt(usrLogged.uid), ruta: $route.current.params.name }).then((d) => {
                         $scope.permiso = d;
-                        empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function (d) {
+                        empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then((d) => {
                             //$scope.reembolso.objEmpresa = d[0];
                             $scope.reembolso.idempresa = parseInt(d[0].id);
                             $scope.dectc = parseInt(d[0].dectc);
@@ -108,6 +110,18 @@
                 }
             });
 
+            $scope.esDePresupuesto = async () => {                
+                if (+$scope.idot > 0 && !$scope.ot.id) {
+                    // console.log('ID OT DESDE REEMBOLSO = ', +$scope.idot);
+                    $scope.params.idot = +$scope.idot;
+                    await presupuestoSrvc.getOt($scope.idot).then(d => {
+                        $scope.ot = d[0];
+                        $scope.getReembolso(0, $scope.params.idot);
+                    });
+                    await presupuestoSrvc.getPresupuesto($scope.ot.idpresupuesto).then(d => { $scope.presupuesto = d[0]; });
+                }
+            };
+
             tipoReembolsoSrvc.lstTiposReembolso().then(function (d) {
                 $scope.tiposreembolso = d;
                 $scope.tiposreembolsosrch = $scope.tiposreembolsosrch.concat(d);
@@ -128,7 +142,12 @@
 
             $scope.loadUnidadesProyecto = (idproyecto) => proyectoSrvc.lstUnidadesProyecto(+idproyecto).then((d) => $scope.unidades = d);
 
-            $scope.loadProyectos = () => proyectoSrvc.lstProyectosPorEmpresa($scope.reembolso.idempresa).then(d => $scope.proyectos = d);
+            $scope.loadProyectos = () => {
+                // console.log('REEMBOLSO = ', $scope.reembolso);
+                if(+$scope.reembolso.idempresa){
+                    proyectoSrvc.lstProyectosPorEmpresa($scope.reembolso.idempresa).then(d => $scope.proyectos = d);
+                }                
+            }
 
             $scope.proyectoSelected = (item) => $scope.loadUnidadesProyecto(item.id);
 
@@ -246,7 +265,8 @@
                 goTop();
             };
 
-            $scope.getLstReembolsos = function () {                
+            $scope.getLstReembolsos = function () {
+                // console.log($scope.params);
                 reembolsoSrvc.lstReembolsosPost($scope.params).then((d) => $scope.reembolsos = procDataReemb(d));
             };
 
@@ -263,18 +283,7 @@
                     $scope.infocompras.sumtotfact = parseFloat(parseFloat($scope.infocompras.sumtotfact).toFixed(2));
 
                 });
-            };
-
-            $scope.esDePresupuesto = async () => {
-                if (+$scope.idpresupuesto > 0 && !$scope.presupuesto.id) {
-                    $scope.params.idot = $scope.idpresupuesto;
-                    // console.log($scope.params);
-                    await presupuestoSrvc.getPresupuesto($scope.params.idot).then(d => {
-                        $scope.presupuesto = d[0];
-                        $scope.getReembolso(0, $scope.params.idot);
-                    });
-                }
-            };
+            };            
 
             $scope.getReembolso = function (idreembolso, idot) {
                 $scope.resetCompra();

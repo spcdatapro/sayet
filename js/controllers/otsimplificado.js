@@ -10,9 +10,8 @@
             $scope.lstpresupuestos = [];
             $scope.ot = {};
             $scope.lstots = [];
-            $scope.params = {
-                fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), tipo: 1, idusuario: 0
-            };
+            // $scope.params = { fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), tipo: 1, idusuario: 0 };
+            $scope.params = { fdel: moment('2020-02-12').toDate(), fal: moment('2020-03-05').toDate(), tipo: 1, idusuario: 0 };
 
             $scope.proyectos = [];
             $scope.empresas = [];
@@ -36,6 +35,8 @@
             $scope.ngIncludeUrlTB = undefined;
             $scope.urlGenCheques = 'pages/trangenchqots.html';
 
+            $scope.multiples = [];
+
             proyectoSrvc.lstProyecto().then((d) => $scope.proyectos = d);
             empresaSrvc.lstEmpresas().then((d) => $scope.empresas = d);
             tipogastoSrvc.lstTipogastos().then((d) => $scope.tiposgasto = d);
@@ -47,9 +48,14 @@
                 $scope.params.idusuario = $scope.usrdata.uid;
                 authSrvc.gpr({ idusuario: parseInt(usrLogged.uid), ruta: $route.current.params.name }).then((d) => $scope.permiso = d);
                 $scope.loadOts('1,2,3');
+                $scope.loadPresupuestosMultiples();
+                $scope.resetPresupuesto();
             });
 
-            $scope.$on('$includeContentRequested', (event, url) => event.targetScope.idpresupuesto = $scope.presupuesto.id);
+            $scope.$on('$includeContentRequested', (event, url) => {
+                event.targetScope.idpresupuesto = $scope.presupuesto.id;
+                event.targetScope.idot = $scope.ot.id;
+            });
 
             $scope.loadSubtTiposGasto = (idtipogasto) => tipogastoSrvc.lstSubTipoGastoByTipoGasto(+idtipogasto).then((d) => $scope.subtiposgasto = d);
 
@@ -70,16 +76,29 @@
                 $scope.params.fdelstr = moment($scope.params.fdel).format('YYYY-MM-DD');
                 $scope.params.falstr = moment($scope.params.fal).format('YYYY-MM-DD');
                 $scope.params.idestatuspresup = !!idestatuspresup ? idestatuspresup : '';
+                // console.log($scope.params);
                 presupuestoSrvc.lstPresupuestos($scope.params).then(d => { $scope.lstots = d; });
             };
 
+            $scope.loadPresupuestosMultiples = () => presupuestoSrvc.editRow({}, 'lstpresupuestosm').then(d => $scope.multiples = d);
+
             $scope.setEmpresa = (item) => $scope.presupuesto.empresa = item.idempresa;
 
-            $scope.setOrigenProv = (item) => $scope.presupuesto.origenprov = +item.dedonde;
+            $scope.setOrigenProv = (item) => { 
+                if (+$scope.presupuesto.tipo === 1) {
+                    $scope.presupuesto.origenprov = +item.dedonde 
+                } else {
+                    $scope.ot.origenprov = +item.dedonde 
+                }
+            };
 
             $scope.resetPresupuesto = () => {
-                $scope.presupuesto = { tipo: '1', fechasolicitud: moment().toDate(), idmoneda: '1', tipocambio: 1.00, coniva: 1, tipodocumento: 1 };
-                $scope.ot = {};
+                $scope.presupuesto = { 
+                    tipo: (!!$scope.presupuesto.tipo ? $scope.presupuesto.tipo : '1'), fechasolicitud: moment().toDate(), idmoneda: '1', tipocambio: 1.00, coniva: 1, tipodocumento: 1 
+                };
+                $scope.ot = {
+
+                };
                 $scope.lstot = [];
                 $scope.srchproy = '';
                 $scope.srchemp = '';
@@ -107,21 +126,21 @@
                 return tmpData;
             }
 
-            $scope.getPresupuesto = (idpresupuesto) => {
+            $scope.getPresupuesto = (idpresupuesto, correlativo, idot) => {
+                //console.log(`IDPRESUPUESTO = ${idpresupuesto}\nCORRELATIVO = ${correlativo}\nIDOT = ${idot}`);
                 $scope.ot = {};
                 //$scope.lstot = [];
                 const ahora = moment().toDate();
                 presupuestoSrvc.getPresupuesto(idpresupuesto).then((d) => {
                     $scope.presupuesto = procDataPresup(d)[0];
+                    //console.log('PRESUPUESTO', $scope.presupuesto);
                     $scope.presupuesto.proyecto = $scope.presupuesto.idproyecto;
                     $scope.presupuesto.empresa = $scope.presupuesto.idempresa;
                     $scope.loadSubtTiposGasto($scope.presupuesto.idtipogasto);
-                    $scope.getLstOts(idpresupuesto);
-
-                    switch (+$scope.presupuesto.tipodocumento) {
-                        case 1: $scope.ngIncludeUrl = `pages/tranfactcompra.html?upd=${ahora}`; break;
-                        case 2: $scope.ngIncludeUrl = `pages/tranreembolso.html?upd=${ahora}`; break;
-                        default: $scope.ngIncludeUrl = undefined;
+                    if(+idot >= 0) {
+                        $scope.getLstOts(idpresupuesto, (+correlativo > 0 ? +idot : null), correlativo);
+                    } else {
+                        $scope.ot.idpresupuesto = idpresupuesto;
                     }
 
                     $scope.urlGenCheques = undefined;
@@ -132,11 +151,28 @@
                     $scope.lbl.presupuesto += ($filter('getById')($scope.tiposgasto, $scope.presupuesto.idtipogasto)).desctipogast + ' - ';
                     $scope.lbl.presupuesto += ($filter('getById')($scope.monedas, $scope.presupuesto.idmoneda)).simbolo + ' ';
                     $scope.lbl.presupuesto += $filter('number')($scope.presupuesto.total, 2);
-                    $scope.confGrpBtn('grpBtnPresupuesto', false, false, true, true, true, false, false);
-                    $scope.sl.presupuesto = true;
+                    if(+idot >= 0) {
+                        $scope.confGrpBtn('grpBtnPresupuesto', false, false, true, true, true, false, false);
+                        $scope.confGrpBtn('grpBtnOt', false, false, true, true, true, false, false);
+                        $scope.sl.presupuesto = true;
+                    } else {
+                        $scope.confGrpBtn('grpBtnOt', true, false, false, false, false, true, false);
+                        $scope.sl.presupuesto = false;
+                    }                    
                     goTop();
                 }).then(() => $scope.urlGenCheques = `pages/trangenchqots.html?upd=${ahora}`);
             };
+
+            $scope.loadComprobantes = (correlativo, idot) => {
+                const ahora = moment().toDate();
+                const qTipoDoc = (+correlativo > 0 && +idot > 0) ? +$scope.ot.tipodocumento : +$scope.presupuesto.tipodocumento;
+                //console.log(qTipoDoc);
+                switch (qTipoDoc) {
+                    case 1: $scope.ngIncludeUrl = `pages/tranfactcompra.html?upd=${ahora}`; break;
+                    case 2: $scope.ngIncludeUrl = `pages/tranreembolso.html?upd=${ahora}`; break;
+                    default: $scope.ngIncludeUrl = undefined;
+                }                
+            }
 
             setPresupuesto = (obj) => {
                 obj.idproyecto = obj.proyecto;
@@ -153,7 +189,17 @@
                 obj.tipocambio = !!obj.tipocambio ? obj.tipocambio : 1.0000;
                 obj.tipodocumento = !!obj.tipodocumento ? obj.tipodocumento : 1;
                 return obj;
-            }
+            };
+
+            $scope.addSelector = () => {
+                if(+$scope.presupuesto.tipo === 1) {
+                    // console.log('AGREGANDO PRESUPUESTO', $scope.presupuesto); return;
+                    $scope.addPresupuesto($scope.presupuesto);
+                } else {
+                    // console.log('AGREGANDO OT', $scope.ot); return;
+                    $scope.addOt($scope.ot);
+                }
+            };
 
             $scope.addPresupuesto = (obj) => {
                 obj = setPresupuesto(obj);
@@ -229,7 +275,7 @@
             };
 
             procDataOts = (data) => {
-                // console.log('Antes', data);
+                // console.log('ANTES', data);
                 const tmpData = data.map(d => {
                     d.id = parseInt(d.id);
                     d.idpresupuesto = parseInt(d.idpresupuesto);
@@ -241,14 +287,74 @@
                     d.origenprov = parseInt(d.origenprov);
                     return d;
                 });
-                // console.log('Después', tmpData);
+                // console.log('DESPUÉS', tmpData);
                 return tmpData;
             }
 
-            $scope.getLstOts = (idpresupuesto) => presupuestoSrvc.lstOts(idpresupuesto)
-                .then(d => $scope.ot = procDataOts(d)[0])
-                .then(() => $scope.resetFPago())
-                .then(() => $scope.loadFormasPago());
+            $scope.getLstOts = (idpresupuesto, idot, correlativo) => {
+                if(!idot) {
+                    presupuestoSrvc.lstOts(idpresupuesto)
+                    .then(d => { $scope.ot = procDataOts(d)[0]; console.log('OTS', $scope.ot);})
+                    .then(() => $scope.resetFPago())
+                    .then(() => $scope.loadFormasPago())
+                    .then(() => $scope.loadComprobantes(correlativo, idot));
+                } else {
+                    presupuestoSrvc.getOt(idot)
+                    .then(d => { $scope.ot = procDataOts(d)[0]; console.log('OTM', $scope.ot); })
+                    .then(() => $scope.resetFPago())
+                    .then(() => $scope.loadFormasPago())
+                    .then(() => $scope.loadComprobantes(correlativo, idot));
+                }
+            }
+
+            setDataOt = (obj) => {
+                obj.idpresupuesto = $scope.presupuesto.id;
+                obj.idusuario = $scope.usrdata.uid;
+                return obj;
+            }
+
+            $scope.addOt = (obj) => {
+                obj = setDataOt(obj);
+                //console.log(obj); return;
+                presupuestoSrvc.editRow(obj, 'cd').then((d) => {
+                    $scope.loadOts('1,2,3');
+                    $scope.getPresupuesto(obj.idpresupuesto, 1, +d.lastid);
+                    // $scope.getLstOts($scope.presupuesto.id);
+                    // $scope.getOt(parseInt(d.lastid));
+                });
+            };
+
+            $scope.updOt = (obj) => {
+                obj = setDataOt(obj);
+                // console.log(obj); return;
+                presupuestoSrvc.editRow(obj, 'ud').then((d) => {
+                    $scope.getPresupuesto(obj.idpresupuesto, obj.correlativo, obj.id);
+                });
+            };
+
+            $scope.delOt = (obj) => {
+                $confirm({ text: '¿Esta seguro(a) de eliminar la OT No. ' + obj.idpresupuesto + '-' + obj.correlativo + '?', title: 'Eliminar OT', ok: 'Sí', cancel: 'No' }).then(() => {
+                    presupuestoSrvc.editRow({ id: obj.id }, 'dd').then(() => { $scope.loadOts('1,2,3'); $scope.resetOt(); });
+                });
+            };
+
+            $scope.nuevaOt = () => { 
+                $scope.nuevoPresupuesto();
+                $scope.confGrpBtn('grpBtnOt', true, false, false, false, false, true, false);
+            };
+
+            $scope.cancelEditOt = function () {
+                $scope.cancelEditPresup();
+                $scope.confGrpBtn('grpBtnOt', false, false, false, true, false, false, false);                
+            };
+
+            $scope.startEditOt = function () {
+                $scope.startEditPresup();
+                $scope.confGrpBtn('grpBtnOt', false, true, true, false, false, true, false);
+                goTop();
+            };
+
+            $scope.imprimirOt = function () { console.log('Función pendiente...') };
 
             $scope.resetFPago = () => $scope.fpago = { iddetpresup: $scope.ot.id, quitarisr: 0, isr: 0.00 };
 

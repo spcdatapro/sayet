@@ -27,6 +27,15 @@
         <li ng-show="+presupuesto.id > 0">
             <a show-tab href="#divDetPresup" data-toggle="tab">DETALLE</a>
         </li>
+        <li ng-show="+presupuesto.id > 0 && +ot.id > 0">
+            <a show-tab href="#divDocumentos" data-toggle="tab">DOCUMENTOS</a>
+        </li>
+        <li ng-show="+presupuesto.id > 0 && +ot.id > 0">
+            <a show-tab href="#divTranBan" data-toggle="tab">TRANSACCIONES BANCARIAS</a>
+        </li>
+        <li ng-show="+presupuesto.id > 0 && +ot.id > 0">
+            <a show-tab href="#divGenPagos" data-toggle="tab">GENERACIÓN DE PAGOS</a>
+        </li>
     </ul>
 
     <div class="tab-content">
@@ -384,6 +393,17 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row" ng-show="+presupuesto.tipo == 1">
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="{'has-error':frmPresup.selTipoDocumentoPresOT.$invalid && !frmPresup.selTipoDocumentoPresOT.$pristine}">
+                                    <label for="selTipoDocumentoPresOT">Tipo de documento:</label>
+                                    <select name="selTipoDocumentoPresOT" id="selTipoDocumentoPresOT" class="form-control" ng-model="presupuesto.tipodocumento" ng-disabled="sl.presupuesto" required>
+                                        <option value="1" selected>Factura</option>
+                                        <option value="2">Reembolso</option>
+                                    </select>                                    
+                                </div>
+                            </div>                            
+                        </div>
                         <form-buttons vis="grpBtnPresupuesto" btn-dis="frmPresup.$invalid" obj="presupuesto"
                             uf="updPresupuesto(presupuesto)" df="delPresupuesto(presupuesto)" nf="nuevoPresupuesto()"
                             cf="cancelEditPresup()" ef="startEditPresup()" pf="imprimirPresup()"
@@ -447,8 +467,7 @@
                             </button>
                         </div>
                     </div>
-                    <form name="frmOT" id="frmOT" ng-submit="frmOT.$valid && addOt(ot)"
-                        class="check-element animate-show" ng-show="showForm.ot && +presupuesto.tipo == 2" novalidate>
+                    <form name="frmOT" id="frmOT" ng-submit="frmOT.$valid && addOt(ot)" class="check-element animate-show" ng-show="showForm.ot && +presupuesto.tipo == 2" novalidate>
                         <div class="row">
                             <div class="col-md-1 nopadding">
                                 <div class="form-group">
@@ -536,12 +555,21 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-12 nopadding">
+                            <div class="col-md-8 nopadding">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmOT.txtNotasOt.$invalid && !frmOT.txtNotasOt.$pristine}">
                                     <label for="txtNotasOt">Notas:</label>
                                     <textarea name="txtNotasOt" id="txtNotasOt" type="text" class="form-control"
                                         ng-model="ot.notas" required ng-disabled="sl.ot" rows="3"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-4 nopadding">
+                                <div class="form-group" ng-class="{'has-error':frmOT.selTipoDocumentoOT.$invalid && !frmOT.selTipoDocumentoOT.$pristine}">
+                                    <label for="selTipoDocumentoOT">Tipo de documento:</label>
+                                    <select name="selTipoDocumentoOT" id="selTipoDocumentoOT" class="form-control" ng-model="ot.tipodocumento" ng-disabled="sl.ot" required>
+                                        <option value="1" selected>Factura</option>
+                                        <option value="2">Reembolso</option>
+                                    </select>                                    
                                 </div>
                             </div>
                         </div>
@@ -631,6 +659,15 @@
                     </table>
                 </div>
             </div>
+        </div>
+        <div id="divDocumentos" class="tab-pane fade">
+            <div id="divNgInclude" ng-include="ngIncludeUrl"></div>
+        </div>
+        <div id="divTranBan" class="tab-pane fade">
+            <div id="divNgIncludeTB" ng-include="ngIncludeUrlTB"></div>
+        </div>
+        <div id="divGenPagos" class="tab-pane fade">
+            <div id="divNgIncludeGenPagosOT" ng-include="urlGenCheques"></div>
         </div>
     </div>
     <script type="text/ng-template" id="modalDetPagosOt.html">
@@ -774,7 +811,6 @@
             <button class="btn btn-info" type="button" ng-click="cancel()">Cancelar</button>
         </div>
     </script>
-
     <script type="text/ng-template" id="modalAmpliarOt.html">
         <div class="modal-header">
             <h3 class="modal-title">Ampliaciones de OT No. {{ot.idpresupuesto}}-{{ot.correlativo}}</h3>
@@ -844,7 +880,6 @@
             <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
         </div>
     </script>
-
     <script type="text/ng-template" id="modalGroupPrint.html">
         <div class="modal-header">
             <h3 class="modal-title">Impresión de OTs</h3>
@@ -864,5 +899,4 @@
             <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
         </div>
     </script>
-
 </div>

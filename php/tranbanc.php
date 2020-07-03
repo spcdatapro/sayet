@@ -34,7 +34,7 @@ $app->post('/lsttran', function(){
     $query.= $d->fdelstr != "" ? "AND a.fecha >= '$d->fdelstr' " : "";
     $query.= $d->falstr != "" ? "AND a.fecha <= '$d->falstr' " : "";
     $query.= $d->tipotrans != '' ? "AND a.tipotrans = '$d->tipotrans' " : "";
-    $query.= (int)$d->idot > 0 ? "AND a.iddetpresup IN (SELECT id FROM detpresupuesto WHERE idpresupuesto = $d->idot) " : '';
+    $query.= (int)$d->idot > 0 ? "AND a.iddetpresup = $d->idot " : '';
     $query.= "ORDER BY a.fecha DESC, a.operado, b.nombre, a.tipotrans, a.numero";
     print $db->doSelectASJson($query);
 });

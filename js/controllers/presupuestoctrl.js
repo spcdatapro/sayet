@@ -27,6 +27,9 @@
         $scope.fltrot = { fdel: moment('2017-10-01').toDate(), fal: moment().endOf('month').toDate(), idestatuspresup: null, idusuario: 0 };
         $scope.lstestatuspresup = [];
         $scope.loadingPresupuestos = false;
+        $scope.ngIncludeUrl = undefined;
+        $scope.ngIncludeUrlTB = undefined;
+        $scope.urlGenCheques = 'pages/trangenchqots.html';
 
         proyectoSrvc.lstProyecto().then(function (d) { $scope.proyectos = d; });
         empresaSrvc.lstEmpresas().then(function (d) { $scope.empresas = d; });
@@ -40,6 +43,11 @@
             $scope.fltrot.idusuario = $scope.usrdata.uid;
             authSrvc.gpr({ idusuario: parseInt(usrLogged.uid), ruta: $route.current.params.name }).then(function (d) { $scope.permiso = d; });
             $scope.getLstPresupuestos('1,2,3');
+        });
+
+        $scope.$on('$includeContentRequested', (event, url) => {
+            event.targetScope.idpresupuesto = $scope.presupuesto.id;
+            event.targetScope.idot = $scope.ot.id;
         });
 
         estatusPresupuestoSrvc.lstEstatusPresupuesto().then(function (d) { $scope.lstestatuspresup = d; });
@@ -306,8 +314,24 @@
         $scope.getLstOts = function (idpresupuesto) {
             presupuestoSrvc.lstOts(idpresupuesto).then(function (d) {
                 $scope.lstot = procDataOts(d);
+                if(+$scope.presupuesto.tipo === 1) {
+                    $scope.getOt(d[0].id);
+                }
             });
         };
+
+        $scope.loadPaginasComplemento = (correlativo, idot) => {
+            const ahora = moment().toDate();
+            $scope.urlGenCheques = `pages/trangenchqots.html?upd=${ahora}`;
+            $scope.ngIncludeUrlTB = `pages/tranbanc.html?upd=${ahora}`;
+            const qTipoDoc = (+correlativo > 0 && +idot > 0) ? +$scope.ot.tipodocumento : +$scope.presupuesto.tipodocumento;
+            //console.log(qTipoDoc);
+            switch (qTipoDoc) {
+                case 1: $scope.ngIncludeUrl = `pages/tranfactcompra.html?upd=${ahora}`; break;
+                case 2: $scope.ngIncludeUrl = `pages/tranreembolso.html?upd=${ahora}`; break;
+                default: $scope.ngIncludeUrl = undefined;
+            }                
+        }
 
         $scope.getOt = function (idot) {
             presupuestoSrvc.getOt(idot).then(function (d) {
@@ -315,6 +339,7 @@
                 $scope.confGrpBtn('grpBtnOt', false, false, true, true, true, false, false);
                 $scope.sl.ot = true;
                 $scope.showForm.ot = true;
+                $scope.loadPaginasComplemento($scope.ot.correlativo, $scope.ot.id);
                 goTop();
             });
         };

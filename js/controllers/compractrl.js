@@ -28,7 +28,7 @@
             $scope.lsttiposfact = [];
             $scope.combustibles = [];
             $scope.facturastr = '';
-            $scope.fltrcomp = { fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate() };
+            $scope.fltrcomp = { fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), idot: undefined };
             $scope.proyectos = [];
             $scope.unidades = [];
             $scope.params = { idcompra: 0 };
@@ -37,6 +37,7 @@
             $scope.itemsLimit = 10;
             $scope.periodoCerrado = false;
             $scope.presupuesto = {};
+            $scope.ot = {};
 
             $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
 
@@ -234,13 +235,15 @@
                 }
             };
 
-            $scope.esDePresupuesto = () => {
-                if (+$scope.idpresupuesto > 0 && !$scope.presupuesto.id) {
-                    $scope.fltrcomp.idot = $scope.idpresupuesto;
-                    presupuestoSrvc.getPresupuesto($scope.fltrcomp.idot).then(d => {
-                        $scope.presupuesto = d[0];                        
+            $scope.esDePresupuesto = async() => {
+                if (+$scope.idot > 0 && !$scope.ot.id) {
+                    // console.log('ID OT DESDE COMPRA = ', +$scope.idot);
+                    $scope.fltrcomp.idot = +$scope.idot;
+                    await presupuestoSrvc.getOt($scope.idot).then(d => {
+                        $scope.ot = d[0];
                         $scope.getCompra(0, $scope.fltrcomp.idot);
-                    });                    
+                    });
+                    await presupuestoSrvc.getPresupuesto($scope.ot.idpresupuesto).then(d => { $scope.presupuesto = d[0]; });
                 }
             };
 
@@ -383,10 +386,11 @@
                         $scope.facturastr += formatoNumero(tmp.totfact, 2) + coma + 'No afecto: ' + tmp.moneda + ' ' + formatoNumero(tmp.noafecto, 2) + coma + ' Subtotal: ' + tmp.moneda + ' ' + formatoNumero(tmp.subtotal, 2) + coma;
                         $scope.facturastr += 'I.V.A.: ' + tmp.moneda + ' ' + formatoNumero(tmp.iva, 2) + coma + 'I.S.R.: ' + tmp.moneda + ' ' + formatoNumero(tmp.isr, 2) + coma + 'I.D.P.: ' + tmp.moneda + ' ' + formatoNumero(tmp.idp, 2);
                     } else {
-                        $scope.laCompra.objProveedor = $filter('getById')($scope.losProvs, $scope.presupuesto.idproveedor);
+                        //console.log('PROVEEDORES = ', $scope.losProvs);
+                        $scope.laCompra.objProveedor = $filter('getById')($scope.losProvs, $scope.ot.idproveedor);
                         $scope.laCompra.idproyecto = $scope.presupuesto.idproyecto;
                         $scope.getConcepto($scope.laCompra.objProveedor);
-                        $scope.laCompra.totfact = $scope.presupuesto.total;
+                        $scope.laCompra.totfact = $scope.ot.monto;
                         $scope.calcular();
                     }
                     goTop();

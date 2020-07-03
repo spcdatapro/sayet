@@ -54,6 +54,7 @@
         $scope.dtOptionsDetContLiquidacion = $scope.dtOptionsDetCont;
         $scope.periodoCerrado = false;
         $scope.presupuesto = {};
+        $scope.ot = {};
 
 
         //Infinite Scroll Magic
@@ -90,19 +91,18 @@
                     $scope.laEmpresa = d[0];
                     $scope.dectc = parseInt(d[0].dectc);
                     $scope.getLstBancos();
-                    presupuestoSrvc.lstPagosOt($scope.laEmpresa.id, ($scope.presupuesto.id || 0)).then(function(d){ $scope.ots = d; });
+                    presupuestoSrvc.lstPagosOt($scope.laEmpresa.id, ($scope.ot.id || 0)).then(function(d){ $scope.ots = d; });
                     proyectoSrvc.lstProyectosPorEmpresa($scope.laEmpresa.id).then(function(d){ $scope.proyectos = d; });
                 });
             }
         });
 
         $scope.esDePresupuesto = async () => {
-            // console.log('ID PRESUPUESTO DESDE TRANBAN = ', +$scope.idpresupuesto);
-            if (+$scope.idpresupuesto > 0 && !$scope.presupuesto.id) {                
-                $scope.fltrtran.idot = +$scope.idpresupuesto;
-                await presupuestoSrvc.getPresupuesto($scope.idpresupuesto).then(d => {
-                    $scope.presupuesto = d[0];
-                });
+            // console.log('ID OT DESDE TRANBAN = ', +$scope.idot);
+            if (+$scope.idot > 0 && !$scope.ot.id) {                
+                $scope.fltrtran.idot = +$scope.idot;
+                await presupuestoSrvc.getOt($scope.idot).then(d => { $scope.ot = d[0]; });
+                await presupuestoSrvc.getPresupuesto($scope.ot.idpresupuesto).then(d => { $scope.presupuesto = d[0]; });
             }
         };
 
@@ -151,8 +151,15 @@
                 $scope.laTran.tipocambio = parseFloat($scope.laTran.objBanco.tipocambio).toFixed($scope.dectc);
                 $scope.cleanInfo();
                 $scope.fltrtran.idbanco = $scope.laTran.objBanco.id;
-                $scope.fltrtran.fdelstr = moment($scope.fltrtran.fdel).format('YYYY-MM-DD');
-                $scope.fltrtran.falstr = moment($scope.fltrtran.fal).format('YYYY-MM-DD');
+                // console.log($scope.ot);
+                if(+$scope.ot.id > 0) {
+                    $scope.fltrtran.fdelstr = '';
+                    $scope.fltrtran.falstr = '';                    
+                } else {
+                    $scope.fltrtran.fdelstr = moment($scope.fltrtran.fdel).format('YYYY-MM-DD');
+                    $scope.fltrtran.falstr = moment($scope.fltrtran.fal).format('YYYY-MM-DD');                    
+                }
+
                 $scope.fltrtran.tipotrans = '';
                 tranBancSrvc.lstTranFiltr($scope.fltrtran).then(function(d){
                     $scope.lasTran = prepareTranBan(d);

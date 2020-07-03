@@ -15,36 +15,47 @@
         $scope.empresas = [];
         $scope.generarTodos = 0;
         $scope.presupuesto = {};
+        $scope.ot = {};
         $scope.search = '';
 
-        authSrvc.getSession().then(function (usrLogged) {
+        authSrvc.getSession().then(async (usrLogged) => {
+            await $scope.esDePresupuesto();
             if (parseInt(usrLogged.workingon) > 0) {
-                empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function (d) {
+                empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then((d) => {
                     $scope.objEmpresa = d[0];
                     $scope.getPagos();
                     $scope.loadBancos();
-                    $scope.esDePresupuesto();
                 });
             }
         });
 
-        $scope.esDePresupuesto = () => {
-            if (+$scope.idpresupuesto > 0 && !$scope.presupuesto.id) {
-                presupuestoSrvc.getPresupuesto($scope.idpresupuesto).then(d => {
+        $scope.esDePresupuesto = async () => {
+            if (+$scope.idot > 0 && !$scope.ot.id) {
+                await presupuestoSrvc.getOt($scope.idot).then(d => { $scope.ot = d[0]; });
+                await presupuestoSrvc.getPresupuesto($scope.ot.idpresupuesto).then(d => {
                     $scope.presupuesto = d[0];
                     $scope.search = $scope.presupuesto.id;
-                });                    
+                });
             }
         };
 
         $scope.loadBancos = function () {
-            bancoSrvc.lstBancosActivos(null).then(function (d) { $scope.losBancos = d; });
+            bancoSrvc.lstBancosActivos(null).then(function (d) { 
+                d.map(bco => {
+                    bco.id = +bco.id;
+                    bco.idempresa = +bco.idempresa;
+                    return bco;
+                });
+                $scope.losBancos = d; 
+                //console.log($scope.losBancos);
+            });
         };
 
         function procDataPagos(data) {
             for (let i = 0; i < data.length; i++) {
                 data[i].id = +data[i].id;
                 data[i].generar = +data[i].generar;
+                data[i].idempresa = +data[i].idempresa;
             }
             return data;
         }
@@ -74,8 +85,15 @@
             }
         };
 
-        $scope.getPagos = function () {
-            presupuestoSrvc.lstPagosPendOt().then(function (d) {
+        $scope.getPagos = () => {
+            presupuestoSrvc.lstPagosPendOt().then((d) => {                
+                if(d.empresas.length > 0) {
+                    d.empresas.map(e => {
+                        e.idempresa = +e.idempresa;
+                        return e;
+                    });
+                }
+                //console.log(d.empresas);
                 $scope.empresas = d.empresas;
                 $scope.losPagos = procDataPagos(d.pagos);
             });
@@ -107,19 +125,7 @@
             }
         }
 
-        $scope.generaCheques = (tipo) => {
-            /*
-            let pago;
-            for(let i = 0; i < $scope.losPagos.length; i++){
-                pago = $scope.losPagos[i];
-                if(+pago.generar === 1 && +pago.idbanco > 0){
-                    $scope.qpagos.push({
-                        idpago: pago.iddetpagopresup,
-                        idbanco: pago.idbanco
-                    });
-                }
-            }
-            */
+        $scope.generaCheques = (tipo) => {            
             //console.log($scope.qpagos); return;
             if ($scope.qpagos.length > 0) {
                 presupuestoSrvc.editRow({

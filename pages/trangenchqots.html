@@ -21,7 +21,7 @@
                     <td>
                         <!--bancomonedacorrela-->
                         <select name="selBancoDef_{{$index}}" id="selBancoDef_{{$index}}" class="form-control input-sm" style="width: 100%;" ng-model="defaultData.idbanco" ng-change="setBanco(emp.idempresa, defaultData.idbanco)"
-                                ng-options="obj.id as obj.bancomoneda for obj in losBancos | filter:{idempresa:emp.idempresa}">
+                                ng-options="obj.id as ('(' + obj.abreviaempresa + ') ' + obj.bancomoneda) for obj in losBancos | filter:{ idempresa: emp.idempresa } : true">
                         </select>
                     </td>
                 </tr>
@@ -38,7 +38,7 @@
     <hr/>
     <div class="table-responsive">
         <table class="table table-condensed table-hover">
-            <caption>
+            <caption ng-hide="+ot.id > 0">
                 <input type="text" class="form-control input-sm" style="width: 100%" ng-model="search.$" placeholder="Buscar..."/>
             </caption>
             <thead>
@@ -67,7 +67,7 @@
                 <td>{{+pago.quitarisr == 1 ? 'Sí' : 'No'}}</td>
                 <td style="width: 17%;">
                     <select name="selBanco_{{$index}}" id="selBanco_{{$index}}" class="form-control input-sm" style="width: 100%;" ng-model="pago.idbanco"
-                            ng-options="obj.id as obj.bancomoneda for obj in losBancos | filter:{idempresa:pago.idempresa}">
+                            ng-options="obj.id as ('(' + obj.abreviaempresa + ') ' + obj.bancomoneda) for obj in losBancos | filter:{idempresa: pago.idempresa} : true">
                     </select>
                 </td>
                 <td style="width: 5%; text-align: center;">

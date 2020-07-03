@@ -23,22 +23,21 @@
                     <div class="row">
                         <div class="col-md-6" style="border-right: dashed 1px lightgray;">
                             <div class="row">
+                                <!--
                                 <div class="col-md-12">
                                     <strong>OTS</strong>
                                 </div>
+                                -->
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
-                                    <form name="frmPresup" id="frmPresup"
-                                        ng-submit="frmPresup.$valid && addPresupuesto(presupuesto)" novalidate>
+                                    <form name="frmPresup" id="frmPresup" ng-submit="frmPresup.$valid && addSelector()" novalidate>
                                         <div class="row">
                                             <div class="col-md-6 nopadding">
-                                                <div class="form-group"
-                                                    ng-class="{'has-error':frmPresup.selTipo.$invalid && !frmPresup.selTipo.$pristine}">
+                                                <div class="form-group" ng-class="{'has-error':frmPresup.selTipo.$invalid && !frmPresup.selTipo.$pristine}">
                                                     <label for="selTipo">Tipo:</label>
                                                     <select name="selTipo" id="selTipo" class="form-control"
-                                                        ng-model="presupuesto.tipo" ng-disabled="sl.presupuesto"
-                                                        required>
+                                                        ng-model="presupuesto.tipo" required>
                                                         <option value="1" selected>Simple</option>
                                                         <option value="2">M&uacute;ltiple</option>
                                                     </select>
@@ -54,6 +53,16 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="row" ng-show="+presupuesto.tipo == 2">
+                                            <div class="col-md-12 nopadding">
+                                                <div class="form-group" ng-class="{'has-error':frmPresup.NoOTM.$invalid && !frmPresup.NoOTM.$pristine}">
+                                                    <label for="selNoOTM">OTM:</label>
+                                                    <select name="NoOTM" id="NoOTM" class="form-control" ng-model="ot.idpresupuesto" 
+                                                    ng-options="obj.id as obj.id for obj in multiples" ng-required="+presupuesto.tipo == 2" ng-change="getPresupuesto(ot.idpresupuesto, 0, -1)">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="row">
                                             <div class="col-md-12 nopadding">
                                                 <div class="form-group"
@@ -62,7 +71,7 @@
                                                     <ui-select ng-model="presupuesto.proyecto"
                                                         title="Seleccione un proyecto..." theme="bootstrap"
                                                         autofocus="true" append-to-body="true"
-                                                        on-select="setEmpresa($item)" ng-disabled="sl.presupuesto">
+                                                        on-select="setEmpresa($item)" ng-disabled="sl.presupuesto || +presupuesto.tipo === 2">
                                                         <ui-select-match placeholder="Buscar proyecto..."
                                                             allow-clear="false">
                                                             <span ng-bind="$select.selected.nomproyecto"></span>
@@ -92,7 +101,7 @@
                                                     <ui-select ng-model="presupuesto.empresa"
                                                         title="Seleccione una empresa..." theme="bootstrap"
                                                         autofocus="true" append-to-body="true"
-                                                        ng-disabled="sl.presupuesto">
+                                                        ng-disabled="sl.presupuesto || +presupuesto.tipo === 2">
                                                         <ui-select-match placeholder="Buscar empresa..."
                                                             allow-clear="false">
                                                             <span ng-bind="$select.selected.nomempresa"></span>
@@ -117,19 +126,29 @@
                                                     <label for="selTipoGasto">Tipo de gasto:</label>
                                                     <select name="selTipoGasto" id="selTipoGasto" class="form-control"
                                                         ng-model="presupuesto.idtipogasto"
-                                                        ng-options="obj.id as obj.desctipogast for obj in tiposgasto"
-                                                        required ng-disabled="sl.presupuesto"
+                                                        ng-options="obj.id as obj.desctipogast for obj in tiposgasto" required ng-disabled="sl.presupuesto || +presupuesto.tipo === 2"
                                                         ng-change="loadSubtTiposGasto(presupuesto.idtipogasto)">
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="col-md-3 nopadding">
+                                            <div class="col-md-3 nopadding" ng-show="+presupuesto.tipo == 1">
                                                 <div class="form-group"
                                                     ng-class="{'has-error':frmPresup.selMoneda.$invalid && !frmPresup.selMoneda.$pristine}">
                                                     <label for="selMoneda">Moneda:</label>
                                                     <select name="selMoneda" id="selMoneda" class="form-control"
                                                         ng-model="presupuesto.idmoneda"
-                                                        ng-options="obj.id as obj.simbolo for obj in monedas" required
+                                                        ng-options="obj.id as obj.simbolo for obj in monedas" ng-required="+presupuesto.tipo == 1"
+                                                        ng-disabled="sl.presupuesto">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 nopadding" ng-show="+presupuesto.tipo == 2">
+                                                <div class="form-group"
+                                                    ng-class="{'has-error':frmPresup.selMonedaOT.$invalid && !frmPresup.selMonedaOT.$pristine}">
+                                                    <label for="selMonedaOT">Moneda:</label>
+                                                    <select name="selMonedaOT" id="selMonedaOT" class="form-control"
+                                                        ng-model="ot.idmoneda"
+                                                        ng-options="obj.id as obj.simbolo for obj in monedas" ng-required="+presupuesto.tipo == 2"
                                                         ng-disabled="sl.presupuesto">
                                                     </select>
                                                 </div>
@@ -144,6 +163,7 @@
                                                 </div>
                                             </div>
                                         </div>
+
                                         <div class="row" ng-show="+presupuesto.tipo == 1">
                                             <div class="col-md-12 nopadding">
                                                 <div class="form-group"
@@ -176,6 +196,39 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="row" ng-show="+presupuesto.tipo === 2 && +presupuesto.id > 0">
+                                            <div class="col-md-12 nopadding">
+                                                <div class="form-group"
+                                                    ng-class="{'has-error':frmPresup.selProveedorPresup.$invalid && !frmOT.selProveedorPresup.$pristine}">
+                                                    <label>Proveedor/Beneficiario:</label>
+                                                    <ui-select name="selProveedorPresup"
+                                                        ng-model="ot.idproveedor"
+                                                        title="Seleccione un proveedor/beneficiario..."
+                                                        theme="bootstrap" autofocus="true" append-to-body="true"
+                                                        ng-required="+presupuesto.tipo == 2"
+                                                        ng-disabled="sl.presupuesto" on-select="setOrigenProv($item)">
+                                                        <ui-select-match placeholder="Buscar proveedor/beneficiario..."
+                                                            allow-clear="false">
+                                                            <span ng-bind="$select.selected.beneficiario"></span>
+                                                        </ui-select-match>
+                                                        <ui-select-choices
+                                                            repeat="item.id as item in proveedores | filter:$select.search"
+                                                            group-by="'grupo'">
+                                                            <div
+                                                                ng-bind-html="item.beneficiario | highlight: $select.search">
+                                                            </div>
+                                                            <small>
+                                                                <strong>N.I.T.:</strong>&nbsp;<span
+                                                                    ng-bind-html="item.nit | highlight: $select.search"></span>
+                                                            </small>
+                                                        </ui-select-choices <ui-select-no-choice>
+                                                        No hay resultados...
+                                                        </ui-select-no-choice>
+                                                    </ui-select>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div class="row" ng-show="+presupuesto.tipo == 1">
                                             <div class="col-md-12 nopadding">
                                                 <div class="form-group"
@@ -204,6 +257,36 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <div class="row" ng-show="+presupuesto.tipo === 2 && +presupuesto.id > 0">
+                                            <div class="col-md-12 nopadding">
+                                                <div class="form-group"
+                                                    ng-class="{'has-error':frmPresup.selSubtTipoGastoPresup.$invalid && !frmPresup.selSubtTipoGastoPresup.$pristine}">
+                                                    <label>Sub-tipo de gasto:</label>
+                                                    <ui-select name="selSubtTipoGastoPresup"
+                                                        ng-model="ot.idsubtipogasto"
+                                                        title="Seleccione un sub-tipo de gasto..." theme="bootstrap"
+                                                        autofocus="false" append-to-body="true"
+                                                        ng-required="+presupuesto.tipo == 2"
+                                                        ng-disabled="sl.presupuesto">
+                                                        <ui-select-match placeholder="Buscar sub-tipo de gasto..."
+                                                            allow-clear="false">
+                                                            <span ng-bind="$select.selected.descripcion"></span>
+                                                        </ui-select-match>
+                                                        <ui-select-choices
+                                                            repeat="item.id as item in subtiposgasto | filter:$select.search">
+                                                            <div
+                                                                ng-bind-html="item.descripcion | highlight: $select.search">
+                                                            </div>
+                                                        </ui-select-choices>
+                                                        <ui-select-no-choice>
+                                                            No hay resultados...
+                                                        </ui-select-no-choice>
+                                                    </ui-select>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div class="row" ng-show="+presupuesto.tipo == 1">
                                             <div class="col-md-4 nopadding">
                                                 <div class="form-group">
@@ -237,21 +320,71 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row">
+
+                                        <div class="row" ng-show="+presupuesto.tipo === 2 && +presupuesto.id > 0">
+                                            <div class="col-md-4 nopadding">
+                                                <div class="form-group">
+                                                    <label for="chkIVAPresupOT">I.V.A.</label>
+                                                    <input name="chkIVAPresupOT" id="chkIVAPresupOT" type="checkbox"
+                                                        class="form-control" ng-model="ot.coniva"
+                                                        ng-true-value="1" ng-false-value="0"
+                                                        ng-disabled="sl.presupuesto" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 nopadding">
+                                                <div class="form-group"
+                                                    ng-class="{'has-error':frmPresup.txtMontoPresupOT.$invalid && !frmPresup.txtMontoPresupOT.$pristine}">
+                                                    <label for="txtMontoPresupOT">Valor:</label>
+                                                    <input name="txtMontoPresupOT" id="txtMontoPresupOT" type="text"
+                                                        class="form-control" ng-model="ot.monto"
+                                                        fcsa-number="{maxDecimals:2}"
+                                                        ng-required="+presupuesto.tipo == 2"
+                                                        ng-disabled="sl.presupuesto" />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 nopadding">
+                                                <div class="form-group"
+                                                    ng-class="{'has-error':frmPresup.txtTCPresupOT.$invalid && !frmPresup.txtTCPresupOT.$pristine}">
+                                                    <label for="txtTCPresupOT">TC:</label>
+                                                    <input name="txtTCPresupOT" id="txtTCPresupOT" type="text"
+                                                        class="form-control" ng-model="ot.tipocambio"
+                                                        fcsa-number="{maxDecimals:4}"
+                                                        ng-required="+presupuesto.tipo == 2"
+                                                        ng-disabled="sl.presupuesto" />
+                                                </div>
+                                            </div>
+                                        </div>                                        
+
+                                        <div class="row" ng-show="+presupuesto.tipo == 1">
                                             <div class="col-md-12 nopadding">
                                                 <div class="form-group"
                                                     ng-class="{'has-error':frmPresup.selTipoDocumento.$invalid && !frmPresup.selTipoDocumento.$pristine}">
                                                     <label for="selTipoDocumento">Tipo de documento:</label>
                                                     <select name="selTipoDocumento" id="selTipoDocumento"
                                                         class="form-control" ng-model="presupuesto.tipodocumento"
-                                                        ng-disabled="sl.presupuesto" required>
+                                                        ng-disabled="sl.presupuesto" ng-required="+presupuesto.tipo == 1">
                                                         <option value="1" selected>Factura</option>
                                                         <option value="2">Reembolso</option>
                                                     </select>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row">
+                                        <div class="row" ng-show="+presupuesto.tipo === 2 && +presupuesto.id > 0">
+                                            <div class="col-md-12 nopadding">
+                                                <div class="form-group"
+                                                    ng-class="{'has-error':frmPresup.selTipoDocumentoOT.$invalid && !frmPresup.selTipoDocumentoOT.$pristine}">
+                                                    <label for="selTipoDocumentoOT">Tipo de documento:</label>
+                                                    <select name="selTipoDocumentoOT" id="selTipoDocumentoOT"
+                                                        class="form-control" ng-model="ot.tipodocumento"
+                                                        ng-disabled="sl.presupuesto" ng-required="+presupuesto.tipo == 2">
+                                                        <option value="1" selected>Factura</option>
+                                                        <option value="2">Reembolso</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row" ng-show="+presupuesto.tipo == 1">
                                             <div class="col-md-12 nopadding">
                                                 <div class="form-group">
                                                     <label for="txtDescrip">Descripci&oacute;n:</label>
@@ -262,54 +395,79 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <form-buttons vis="grpBtnPresupuesto" btn-dis="frmPresup.$invalid"
-                                            obj="presupuesto" uf="updPresupuesto(presupuesto)"
-                                            df="delPresupuesto(presupuesto)" nf="nuevoPresupuesto()"
-                                            cf="cancelEditPresup()" ef="startEditPresup()" pf="imprimirPresup()"
-                                            ng-hide="(+presupuesto.idestatuspresupuesto == 6 || +presupuesto.idestatuspresupuesto == 5) || !permiso.m">
-                                        </form-buttons>
-                                        <button type="button" class="btn btn-info btn-sm tipo" ng-click="enviar(presupuesto)"
-                                            ng-show="+presupuesto.idestatuspresupuesto == 1 && +presupuesto.tipo == 1" data-toggle="tooltip"
-                                            data-placement="auto" title="Enviar presupuesto a aprobación...">
-                                            <span class="glyphicon glyphicon-share-alt"></span>
-                                        </button>
-                                        <button type="button" class="btn btn-info"
-                                            ng-click="verDetPagos(presupuesto, true)"
-                                            ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1"
-                                            data-toggle="tooltip" data-placement="auto" title="Ver detalle de pagos...">
-                                            <i class="fa fa-money fa-lg" aria-hidden="true"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-info"
-                                            ng-click="printOt(presupuesto.id, true)"
-                                            ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1"
-                                            data-toggle="tooltip" data-placement="auto" title="Imprimir...">
-                                            <i class="fa fa-print fa-lg" aria-hidden="true"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-primary"
-                                            ng-click="aumentaExcedente(presupuesto)"
-                                            ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1"
-                                            data-toggle="tooltip" data-placement="auto"
-                                            title="Cambiar porcentaje de excedente...">
-                                            <span class="glyphicon glyphicon-arrow-up"></span>
-                                        </button>
-                                        <button type="button" class="btn btn-warning"
-                                            ng-click="terminaPresupuesto(presupuesto)"
-                                            ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m"
-                                            data-toggle="tooltip" data-placement="auto" title="Terminar presupuesto">
-                                            <span class="glyphicon glyphicon-folder-close"></span>
-                                        </button>
-                                        <button type="button" class="btn btn-warning"
-                                            ng-click="reabrirPresupuesto(presupuesto)"
-                                            ng-show="+presupuesto.idestatuspresupuesto == 5 && permiso.m"
-                                            data-toggle="tooltip" data-placement="auto" title="Re-abrir presupuesto">
-                                            <span class="glyphicon glyphicon-folder-open"></span>
-                                        </button>
-                                        <button type="button" class="btn btn-danger"
-                                            ng-click="anulaPresupuesto(presupuesto)"
-                                            ng-show="+presupuesto.id > 0 && +presupuesto.idestatuspresupuesto < 4 && permiso.m"
-                                            data-toggle="tooltip" data-placement="auto" title="Anular">
-                                            <span class="glyphicon glyphicon-remove-circle"></span>
-                                        </button>
+                                        <div class="row" ng-show="+presupuesto.tipo === 2 && +presupuesto.id > 0">
+                                            <div class="col-md-12 nopadding">
+                                                <div class="form-group">
+                                                    <label for="txtDescripOT">Descripci&oacute;n:</label>
+                                                    <textarea name="txtDescripOT" id="txtDescripOT" class="form-control"
+                                                        style="width:100%" ng-model="ot.notas" rows="3"
+                                                        ng-disabled="sl.presupuesto">
+                                                </textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Inicia lo relacionado con las OTS-->
+                                        <!--<h5>{{presupuesto | json}}</h5>-->
+                                        <!--<h5>{{ot | json}}</h5>-->
+                                        <div ng-show="+presupuesto.tipo == 1">
+                                            <form-buttons id="frmBtnsPresup" vis="grpBtnPresupuesto" btn-dis="frmPresup.$invalid"
+                                                obj="presupuesto" uf="updPresupuesto(presupuesto)"
+                                                df="delPresupuesto(presupuesto)" nf="nuevoPresupuesto()"
+                                                cf="cancelEditPresup()" ef="startEditPresup()" pf="imprimirPresup()"
+                                                ng-hide="(+presupuesto.idestatuspresupuesto == 6 || +presupuesto.idestatuspresupuesto == 5) || !permiso.m">
+                                            </form-buttons>
+                                            <button type="button" class="btn btn-info btn-sm tipo" ng-click="enviar(presupuesto)"
+                                                ng-show="+presupuesto.idestatuspresupuesto == 1 && +presupuesto.tipo == 1" data-toggle="tooltip"
+                                                data-placement="auto" title="Enviar presupuesto a aprobación...">
+                                                <span class="glyphicon glyphicon-share-alt"></span>
+                                            </button>
+                                            <button type="button" class="btn btn-info"
+                                                ng-click="verDetPagos(presupuesto, true)"
+                                                ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1"
+                                                data-toggle="tooltip" data-placement="auto" title="Ver detalle de pagos...">
+                                                <i class="fa fa-money fa-lg" aria-hidden="true"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-info"
+                                                ng-click="printOt(presupuesto.id, true)"
+                                                ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1"
+                                                data-toggle="tooltip" data-placement="auto" title="Imprimir...">
+                                                <i class="fa fa-print fa-lg" aria-hidden="true"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-primary"
+                                                ng-click="aumentaExcedente(presupuesto)"
+                                                ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1"
+                                                data-toggle="tooltip" data-placement="auto"
+                                                title="Cambiar porcentaje de excedente...">
+                                                <span class="glyphicon glyphicon-arrow-up"></span>
+                                            </button>
+                                            <button type="button" class="btn btn-warning"
+                                                ng-click="terminaPresupuesto(presupuesto)"
+                                                ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m"
+                                                data-toggle="tooltip" data-placement="auto" title="Terminar presupuesto">
+                                                <span class="glyphicon glyphicon-folder-close"></span>
+                                            </button>
+                                            <button type="button" class="btn btn-warning"
+                                                ng-click="reabrirPresupuesto(presupuesto)"
+                                                ng-show="+presupuesto.idestatuspresupuesto == 5 && permiso.m"
+                                                data-toggle="tooltip" data-placement="auto" title="Re-abrir presupuesto">
+                                                <span class="glyphicon glyphicon-folder-open"></span>
+                                            </button>
+                                            <button type="button" class="btn btn-danger"
+                                                ng-click="anulaPresupuesto(presupuesto)"
+                                                ng-show="+presupuesto.id > 0 && +presupuesto.idestatuspresupuesto < 4 && permiso.m"
+                                                data-toggle="tooltip" data-placement="auto" title="Anular">
+                                                <span class="glyphicon glyphicon-remove-circle"></span>
+                                            </button>
+                                        </div>                                        
+                                        <!--Finaliza lo relacionado con las OTS-->
+                                        <!-- Inicia lo relacionado con las OTM-->
+                                        <div ng-show="+presupuesto.tipo == 2">
+                                            <form-buttons id="frmBtnsOt" vis="grpBtnOt" btn-dis="frmPresup.$invalid" obj="ot" uf="updOt(ot)" df="delOt(ot)" 
+                                            nf="nuevaOt()" cf="cancelEditOt()" ef="startEditOt()" pf="imprimirOt()" 
+                                            ng-hide="!permiso.m || [5, 6].indexOf(+ot.idestatuspresupuesto) > -1">
+                                            </form-buttons>
+                                        </div>
+                                        <!--Finaliza lo relacionado con las OTM-->
                                     </form>
                                 </div>
                             </div>
@@ -428,7 +586,7 @@
                                     <input name="srchTxtAl" id="srchTxtAl" type="date" class="form-control input-sm"
                                         ng-model="params.fal" required />
                                     <span class="input-group-btn">
-                                        <button type="button" class="btn btn-primary btn-sm" ng-click="loadOts()"
+                                        <button type="button" class="btn btn-primary btn-sm" ng-click="loadOts('1,2,3')"
                                             ng-disabled="frmBusqueda.$invalid"><i class="fa fa-search"
                                                 aria-hidden="true"></i></button>
                                     </span>
@@ -469,9 +627,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="p in lstots | filter:buscador" ng-click="getPresupuesto(p.id)"
+                            <tr ng-repeat="p in lstots | filter:buscador" ng-click="getPresupuesto(p.id, p.correlativo, p.idot)"
                                 ng-class="{'bld': +p.tipo!= 1, 'presPendiente': +p.idestatuspresupuesto == 2 && +p.tipo == 1, 'presAprobado': +p.idestatuspresupuesto == 3 && +p.tipo == 1}">
-                                <td style="white-space: nowrap">{{p.tipostr}}-{{p.id}}</td>
+                                <td style="white-space: nowrap">{{p.tipostr}}-{{p.id}}{{+p.correlativo == 0 ? '' : ('-' + p.correlativo)}}</td>
                                 <td>{{p.fechasolicitud | date:'dd/MM/yyyy'}}</td>
                                 <td>{{p.proyecto | shortenStr:17}}</td>
                                 <td>{{p.abreviaempre}}</td>
