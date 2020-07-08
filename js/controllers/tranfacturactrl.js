@@ -87,15 +87,19 @@
         function procesaPendientes(d){
             for(var i = 0; i < d.length; i++){
                 d[i].idcontrato = parseInt(d[i].idcontrato);
+                d[i].idmonedafact = parseInt(d[i].idmonedafact);
+                d[i].idmonedacargo = parseInt(d[i].idmonedacargo);
                 //eval('$scope.showForm.det_' + d[i].idcontrato + ' = false;');
                 d[i].idcliente = parseInt(d[i].idcliente);
                 d[i].idtipocliente = parseInt(d[i].idtipocliente);
+                d[i].retiva = parseInt(d[i].retiva);
+                
                 d[i].montosiniva = parseFloat(parseFloat(d[i].montosiniva).toFixed(2));
                 d[i].montoconiva = parseFloat(parseFloat(d[i].montoconiva).toFixed(2));
                 d[i].retisr = parseFloat(parseFloat(d[i].retisr).toFixed(2));
-                d[i].retiva = parseInt(d[i].retiva);
                 d[i].ivaaretener = parseFloat(parseFloat(d[i].ivaaretener).toFixed(2));
-                d[i].totapagar = parseFloat(parseFloat(d[i].totapagar).toFixed(2));
+                d[i].totapagar = parseFloat(parseFloat(d[i].totapagar).toFixed(2));                
+                
                 d[i].facturar = parseInt(d[i].facturar);
                 for(var j = 0; j < d[i].detalle.length; j++){
                     d[i].detalle[j].id = parseInt(d[i].detalle[j].id);
@@ -204,9 +208,10 @@
                 controller: 'ModalDetFactCtrl',
                 windowClass: 'app-modal-window',
                 resolve:{
-                    item: function(){ return obj; },
-                    usr: function() { return $scope.usrdata; },
-                    idempresa: function(){return $scope.params.idempresa; }
+                    item: () => obj,
+                    usr: () => $scope.usrdata,
+                    idempresa: () => $scope.params.idempresa,
+                    tc: () => $scope.params.tc
                 }
             });
 
@@ -644,9 +649,10 @@
 
     }]);
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
-    facturacionctrl.controller('ModalDetFactCtrl', ['$scope', '$uibModalInstance', 'toaster', 'facturacionSrvc', '$filter', 'item', 'usr', 'idempresa', function($scope, $uibModalInstance, toaster, facturacionSrvc, $filter, item, usr, idempresa){
+    facturacionctrl.controller('ModalDetFactCtrl', ['$scope', '$uibModalInstance', 'toaster', 'facturacionSrvc', '$filter', 'item', 'usr', 'idempresa', 'tc', function($scope, $uibModalInstance, toaster, facturacionSrvc, $filter, item, usr, idempresa, tc){
         $scope.p = item;
         $scope.todos = 1;
+        $scope.params = { tc: tc };
 
         $scope.recalcular = function(obj){
             var msiniva = 0.00, tipo = '', cntAFact = 0, mconiva = 0.00, descuento = 0.00, montoflatconiva = 0.00, montocargoflat = 0.00;

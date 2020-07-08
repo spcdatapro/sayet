@@ -26,14 +26,14 @@ $app->post('/factemitidas', function(){
     if(!isset($d->soloanuladas)){ $d->soloanuladas = 0; }
 
     $query = "SELECT DATE_FORMAT('$d->fdelstr', '%d/%m/%Y') AS fdel, ";
-    $query.= "DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS fal, 0.00 AS totfacturado, DATE_FORMAT(NOW(), '%d/%m/%Y') AS hoy, ";
+    $query.= "DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS fal, 0.00 AS totfacturado, 0.00 AS totfacturadocnv, DATE_FORMAT(NOW(), '%d/%m/%Y') AS hoy, ";
     $query.= ((int)$d->tipo == 2 ? "'PAGADAS'" : ((int)$d->tipo == 3 ? "'NO PAGADAS'" : "''"))." AS tipo ";
     //print $query;
     $info->general = $db->getQuery($query)[0];
 
     $qGen = "SELECT a.id, a.idempresa, b.nomempresa AS empresa, b.abreviatura AS abreviaempre, a.serie, a.numero, 
     IF(a.anulada = 0, TRIM(a.nombre), 'ANULADA') AS cliente, IF(c.tipo IS NULL, TRIM(SUBSTR(a.conceptomayor, LOCATE('(', a.conceptomayor) + 1, LOCATE(')', a.conceptomayor) - 10)), c.tipo) AS tipo, 
-    IF(a.anulada = 0, a.subtotal, 0.00) AS total, IF(c.periodo IS NULL, TRIM(SUBSTR(a.conceptomayor, (LOCATE(')', a.conceptomayor) + 1))), c.periodo) AS periodo, b.ordensumario 
+    IF(a.anulada = 0, IF(a.idmonedafact = 1, a.subtotal, a.subtotalcnv), 0.00) AS total, IF(c.periodo IS NULL, TRIM(SUBSTR(a.conceptomayor, (LOCATE(')', a.conceptomayor) + 1))), c.periodo) AS periodo, b.ordensumario, a.idmonedafact, f.simbolo AS monedafact
     FROM factura a 
     INNER JOIN empresa b ON b.id = a.idempresa 
     LEFT JOIN (
@@ -50,6 +50,7 @@ $app->post('/factemitidas', function(){
     $qGen.="GROUP BY x.idfactura";
     $qGen.= ") c ON a.id = c.idfactura LEFT JOIN cliente d ON d.id = a.idcliente ";
     $qGen.= "LEFT JOIN (SELECT v.id AS idcontrato, v.idproyecto, u.nomproyecto AS proyecto FROM contrato v INNER JOIN proyecto u ON u.id = v.idproyecto) e ON a.idcontrato = e.idcontrato ";
+    $qGen.= "LEFT JOIN moneda f ON f.id = a.idmonedafact ";
     $qGen.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.esparqueo = 0 AND LENGTH(a.numero) > 0 ";
     $qGen.= $d->idempresa != '' ? "AND a.idempresa IN($d->idempresa) " : '';
     $qGen.= trim($d->cliente) != '' && (int)$d->idcliente > 0 ? "AND a.anulada = 0 AND (a.idcliente = $d->idcliente OR a.nombre LIKE '%$d->cliente%' OR a.nit LIKE '%$d->cliente%' OR d.nombre LIKE '%$d->cliente%' OR d.nombrecorto LIKE '%$d->cliente%') " : '';
@@ -58,26 +59,30 @@ $app->post('/factemitidas', function(){
     $qGen.= (int)$d->idproyecto > 0 ? "AND e.idproyecto = $d->idproyecto " : '';
     $qGen.= (int)$d->idtsventa > 0 ? "AND (SELECT COUNT(idfactura) FROM detfact WHERE idfactura = a.id AND idtiposervicio = $d->idtsventa) > 0 " : '';
     $qGen.= (int)$d->soloanuladas == 0 ? '' : 'AND a.anulada = 1 ';
-    $qGen.= "ORDER BY a.numero";
+    $qGen.= "ORDER BY a.serie, a.numero";
 
-    $query = "SELECT DISTINCT z.idempresa, z.empresa, 0.00 AS totfacturado FROM ($qGen) z ORDER BY z.ordensumario";
+    $query = "SELECT DISTINCT z.idempresa, z.empresa, 0.00 AS totfacturado, 0.00 AS totfacturadocnv FROM ($qGen) z ORDER BY z.ordensumario";
     $info->facturas = $db->getQuery($query);
     $cntEmpresas = count($info->facturas);
     for($i = 0; $i < $cntEmpresas; $i++){
         $empresa = $info->facturas[$i];
-        $query = "SELECT z.id, z.idempresa, z.empresa, z.abreviaempre, z.serie, z.numero, z.cliente, z.tipo, FORMAT(z.total, 2) AS total, z.periodo ";
+        $query = "SELECT z.id, z.idempresa, z.empresa, z.abreviaempre, z.serie, z.numero, z.cliente, z.tipo, FORMAT(z.total, 2) AS total, z.periodo, z.monedafact ";
         $query.= "FROM ($qGen) z ";
         $query.= "WHERE z.idempresa = $empresa->idempresa ";
-        $query.= "ORDER BY z.numero";
+        $query.= "ORDER BY z.serie, z.numero";
         $empresa->facturas = $db->getQuery($query);
         if(count($empresa->facturas) > 0){
-            $query = "SELECT FORMAT(SUM(z.total), 2) FROM ($qGen) z WHERE z.idempresa = $empresa->idempresa";
+            $query = "SELECT FORMAT(SUM(z.total), 2) FROM ($qGen) z WHERE z.idempresa = $empresa->idempresa AND z.idmonedafact = 1";
             $empresa->totfacturado = $db->getOneField($query);
+            $query = "SELECT FORMAT(SUM(z.total), 2) FROM ($qGen) z WHERE z.idempresa = $empresa->idempresa AND z.idmonedafact <> 1";
+            $empresa->totfacturadocnv = $db->getOneField($query);
         }
     }
 
-    $query = "SELECT FORMAT(SUM(z.total), 2) FROM ($qGen) z ";
+    $query = "SELECT FORMAT(SUM(z.total), 2) FROM ($qGen) z WHERE z.idmonedafact = 1";
     $info->general->totfacturado = $db->getOneField($query);
+    $query = "SELECT FORMAT(SUM(z.total), 2) FROM ($qGen) z WHERE z.idmonedafact <> 1";
+    $info->general->totfacturadocnv = $db->getOneField($query);
 
     print json_encode($info);
 });

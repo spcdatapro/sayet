@@ -320,8 +320,10 @@ $app->get('/contratotoprint/:idcontrato', function($idcontrato){
     $serviciosVenta = $db->getQuery("SELECT id, desctiposervventa AS servicio FROM tiposervicioventa ORDER BY desctiposervventa");
     foreach($serviciosVenta as $sv){
         $query = "SELECT a.id, a.idcontrato, a.fdel, a.fal, a.monto, a.idtipoventa, b.desctiposervventa AS tipoventa, a.idmoneda, c.simbolo AS moneda, a.cobro, a.idperiodicidad, ";
-        $query.= "d.descperiodicidad AS periodicidad, a.noperiodo FROM detfactcontrato a INNER JOIN tiposervicioventa b ON b.id = a.idtipoventa INNER JOIN moneda c ON c.id = a.idmoneda ";
-        $query.= "INNER JOIN periodicidad d ON d.id = a.idperiodicidad WHERE a.idcontrato = ".$idcontrato." AND b.id = ".$sv->id." ORDER BY b.desctiposervventa, a.noperiodo";
+        $query.= "d.descperiodicidad AS periodicidad, a.noperiodo, a.idmonedafact, e.simbolo AS monedafact ";
+        $query.= "FROM detfactcontrato a INNER JOIN tiposervicioventa b ON b.id = a.idtipoventa INNER JOIN moneda c ON c.id = a.idmoneda ";
+        $query.= "INNER JOIN periodicidad d ON d.id = a.idperiodicidad LEFT JOIN moneda e ON e.id = a.idmonedafact ";
+        $query.= "WHERE a.idcontrato = ".$idcontrato." AND b.id = ".$sv->id." ORDER BY b.desctiposervventa, a.noperiodo";
         $tmp = $db->getQuery($query);
         if(count($tmp) > 0){
             $contrato->servicios[$sv->servicio] = $db->getQuery($query);
@@ -442,10 +444,10 @@ $app->post('/dc', function(){
 $app->get('/lstdetcontrato/:idcontrato', function($idcontrato){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idcontrato, a.fdel, a.fal, a.monto, a.idtipoventa, b.desctiposervventa AS tipoventa, a.idmoneda, c.simbolo AS moneda, a.cobro, a.idperiodicidad, ";
-    $query.= "d.descperiodicidad AS periodicidad, a.noperiodo, e.fechavence, IF(a.fal > e.fechavence, 1, 0) AS fuerarango ";
+    $query.= "d.descperiodicidad AS periodicidad, a.noperiodo, e.fechavence, IF(a.fal > e.fechavence, 1, 0) AS fuerarango, a.idmonedafact, f.simbolo AS monedafact ";
     $query.= "FROM detfactcontrato a INNER JOIN tiposervicioventa b ON b.id = a.idtipoventa INNER JOIN moneda c ON c.id = a.idmoneda INNER JOIN periodicidad d ON d.id = a.idperiodicidad ";
-    $query.= "INNER JOIN contrato e ON e.id = a.idcontrato ";
-    $query.= "WHERE a.idcontrato = ".$idcontrato." ";
+    $query.= "INNER JOIN contrato e ON e.id = a.idcontrato LEFT JOIN moneda f ON f.id = a.idmonedafact ";
+    $query.= "WHERE a.idcontrato = $idcontrato ";
     $query.= "ORDER BY b.desctiposervventa, a.noperiodo";
     print $db->doSelectASJson($query);
 });
@@ -453,9 +455,9 @@ $app->get('/lstdetcontrato/:idcontrato', function($idcontrato){
 $app->get('/getdetcontrato/:iddetcontrato', function($iddetcontrato){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idcontrato, a.fdel, a.fal, a.monto, a.idtipoventa, b.desctiposervventa AS tipoventa, a.idmoneda, c.simbolo AS moneda, a.cobro, a.idperiodicidad, ";
-    $query.= "d.descperiodicidad AS periodicidad, a.noperiodo, e.fechavence, IF(a.fal > e.fechavence, 1, 0) AS fuerarango ";
+    $query.= "d.descperiodicidad AS periodicidad, a.noperiodo, e.fechavence, IF(a.fal > e.fechavence, 1, 0) AS fuerarango, a.idmonedafact, f.simbolo AS monedafact ";
     $query.= "FROM detfactcontrato a INNER JOIN tiposervicioventa b ON b.id = a.idtipoventa INNER JOIN moneda c ON c.id = a.idmoneda INNER JOIN periodicidad d ON d.id = a.idperiodicidad ";
-    $query.= "INNER JOIN contrato e ON e.id = a.idcontrato ";
+    $query.= "INNER JOIN contrato e ON e.id = a.idcontrato LEFT JOIN moneda f ON f.id = a.idmonedafact ";
     $query.= "WHERE a.id = ".$iddetcontrato;
     print $db->doSelectASJson($query);
 });
@@ -464,11 +466,12 @@ function creaNuevoPeriodo($d, $db) {
     if(!isset($d->iddetcontorigen)) { $d->iddetcontorigen = 0; }
     if(!isset($d->fdelstr)) { $d->fdelstr = $d->fdel; }
     if(!isset($d->falstr)) { $d->falstr = $d->fal; }
+    if(!isset($d->idmonedafact)) { $d->idmonedafact = 1; }
 
     $query = "INSERT INTO detfactcontrato(";
-    $query.= "idcontrato, fdel, fal, monto, idtipoventa, idmoneda, idperiodicidad, noperiodo, iddetcontorigen";
+    $query.= "idcontrato, fdel, fal, monto, idtipoventa, idmoneda, idperiodicidad, noperiodo, iddetcontorigen, idmonedafact";
     $query.= ") VALUES(";
-    $query.= "$d->idcontrato, '$d->fdelstr', '$d->falstr', $d->monto, $d->idtipoventa, $d->idmoneda, $d->idperiodicidad, $d->noperiodo, $d->iddetcontorigen";
+    $query.= "$d->idcontrato, '$d->fdelstr', '$d->falstr', $d->monto, $d->idtipoventa, $d->idmoneda, $d->idperiodicidad, $d->noperiodo, $d->iddetcontorigen, $d->idmonedafact";
     $query.= ")";
     $db->doQuery($query);
     return $db->getLastId();
@@ -482,10 +485,11 @@ $app->post('/cdc', function(){
 
 $app->post('/udc', function(){
     $d = json_decode(file_get_contents('php://input'));
+    if(!isset($d->idmonedafact)) { $d->idmonedafact = 1; }
     $db = new dbcpm();
     $query = "UPDATE detfactcontrato SET ";
-    $query.= "fdel = '".$d->fdelstr."', fal = '".$d->falstr."', monto = ".$d->monto.", idtipoventa = ".$d->idtipoventa.", idmoneda = ".$d->idmoneda.", ";
-    $query.= "idperiodicidad = ".$d->idperiodicidad.", noperiodo = ".$d->noperiodo." ";
+    $query.= "fdel = '$d->fdelstr', fal = '$d->falstr', monto = $d->monto, idtipoventa = $d->idtipoventa, idmoneda = $d->idmoneda, ";
+    $query.= "idperiodicidad = $d->idperiodicidad, noperiodo = $d->noperiodo, idmonedafact = $d->idmonedafact ";
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
     $query = "DELETE FROM cargo WHERE iddetcont = $d->id AND facturado = 0";

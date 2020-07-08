@@ -969,6 +969,14 @@
                                                 ng-disabled="sldetcont || detcontfacturado" />
                                         </div>
                                     </div>
+                                    <div class="col-md-2 nopadding">
+                                        <div class="form-group required" ng-class="{'has-error':frmDFC.selDFMonFact.$invalid && !frmDFC.selDFMonFact.$pristine}">
+                                            <label for="selDFMonFact" class="control-label">Facturar en:</label>
+                                            <select name="selDFMonFact" id="selDFMonFact" class="form-control  input-sm"
+                                                ng-model="detfcontrato.idmonedafact"
+                                                ng-options="obj.id as (obj.nommoneda + ' (' + obj.simbolo + ')') for obj in monedas" required ng-disabled="sldetcont || detcontfacturado"></select>
+                                        </div>
+                                    </div>                                    
                                 </div>
                                 <div class="row" ng-show="+detfcontrato.id > 0">
                                     <div class="col-md-11">

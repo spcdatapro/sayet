@@ -135,7 +135,7 @@
                             <div class="row">
                                 <div class="col-md-3">{{p.clientecorto}}</div>
                                 <div class="col-md-2">{{p.facturara}}</div>
-                                <div class="col-md-2" style="text-align: right">{{p.montoconiva | number:2}}</div>
+                                <div class="col-md-2" style="text-align: right">{{p.monedafact}} {{(p.idmonedafact == 1 ? p.montoconiva : (p.montoconiva / params.tc)) | number:2}}</div>
                                 <div class="col-md-3">
                                     <div data-html="true" data-toggle="popover" title="Concepto" data-placement="auto" data-trigger="hover" data-content="{{p.tipo}}">
                                         {{p.tipo | shortenStr:20}}
@@ -769,23 +769,23 @@
                     </thead>
                     <tfoot>
                     <tr>
-                        <th style="text-align: right">Monto sin I.V.A.:</th><th style="text-align: right">{{p.montosiniva | number:2}}</th><th>&nbsp;</th>
+                        <th style="text-align: right">Monto sin I.V.A.:</th><th style="text-align: right">{{p.monedafact}} {{(p.idmonedafact == 1 ? p.montosiniva : (p.montosiniva / params.tc)) | number:2}}</th><th>&nbsp;</th>
                     </tr>
                     <tr>
-                        <th style="text-align: right">Monto con I.V.A.:</th><th style="text-align: right">{{p.montoconiva | number:2}}</th><th>&nbsp;</th>
+                        <th style="text-align: right">Monto con I.V.A.:</th><th style="text-align: right">{{p.monedafact}} {{(p.idmonedafact == 1 ? p.montoconiva : (p.montoconiva / params.tc)) | number:2}}</th><th>&nbsp;</th>
                     </tr>
                     <tr>
-                        <th style="text-align: right">I.S.R. por retener:</th><th style="text-align: right">{{p.retisr | number:2}}</th><th>&nbsp;</th>
+                        <th style="text-align: right">I.S.R. por retener:</th><th style="text-align: right">{{p.monedafact}} {{(p.idmonedafact == 1 ? p.retisr : (p.retisr / params.tc)) | number:2}}</th><th>&nbsp;</th>
                     </tr>
                     <tr>
-                        <th style="text-align: right">I.V.A. por retener:</th><th style="text-align: right">{{p.ivaaretener | number:2}}</th><th>&nbsp;</th>
+                        <th style="text-align: right">I.V.A. por retener:</th><th style="text-align: right">{{p.monedafact}} {{(p.idmonedafact == 1 ? p.ivaaretener : (p.ivaaretener / params.tc)) | number:2}}</th><th>&nbsp;</th>
                     </tr>
                     <tr>
                         <th style="text-align: right; border-bottom: double 0.35em black">
                             Total a pagar:
                         </th>
                         <th style="text-align: right; border-bottom: double 0.35em black">
-                            {{p.totapagar | number:2}}
+                            {{p.monedafact}} {{(p.idmonedafact == 1 ? p.totapagar : (p.totapagar / params.tc)) | number:2}}
                         </th>
                         <th style="text-align: right; border-bottom: double 0.35em black">&nbsp;</th>
                     </tr>
@@ -793,7 +793,7 @@
                     <tbody>
                     <tr ng-repeat="det in p.detalle">
                         <td style="width:20em">{{det.tipo}}&nbsp;{{det.nommes}}&nbsp;{{det.anio | number:0}}</td>
-                        <td style="text-align: right">{{det.montoconiva | number:2}}</td>
+                        <td style="text-align: right">{{p.monedafact}} {{(p.idmonedafact == 1 ? det.montoconiva : (det.montoconiva / params.tc)) | number:2}}</td>
                         <td style="text-align: center">
                             <input type="checkbox" ng-model="det.facturar" ng-true-value="1" ng-false-value="0" ng-change="recalcular(p)"/>
                         </td>

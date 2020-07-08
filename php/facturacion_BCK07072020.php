@@ -29,8 +29,7 @@ $app->post('/pendientes', function(){
     $query = "SELECT a.idcontrato, a.idcliente, a.cliente, a.idtipocliente, a.facturara, GROUP_CONCAT(DISTINCT a.tipo ORDER BY a.tipo SEPARATOR ', ') AS tipo, SUM(a.montosiniva) AS montosiniva, ";
     $query.= "SUM(a.montoconiva) AS montoconiva, 0.00 AS retisr, a.retiva, 0.00 AS ivaaretener, 0.00 AS totapagar, a.proyecto, a.unidades, 1 AS facturar, '$d->params' AS paramstr, 0 AS numfact, ";
     $query.= "'' AS serirefact, SUM(a.descuento) AS descuento, a.retenerisr, clientecorto, GROUP_CONCAT(DISTINCT a.idtipoventa SEPARATOR ',') AS idtipoventa, a.nit, a.direccion, ";
-    $query.= "SUM(a.montocargoconiva) AS montocargoconiva, SUM(a.montocargoflat) AS montocargoflat, ROUND(SUM(a.montoconiva) - (SUM(a.montoconiva) / 1.12), 2) AS iva, porcentajeretiva, ";
-    $query.= "idmonedafact, idmonedacargo, monedafact, monedacargo ";
+    $query.= "SUM(a.montocargoconiva) AS montocargoconiva, SUM(a.montocargoflat) AS montocargoflat, ROUND(SUM(a.montoconiva) - (SUM(a.montoconiva) / 1.12), 2) AS iva, porcentajeretiva ";
     $query.= "FROM(";
 
     $query.= "SELECT c.id as idcontrato, c.idcliente, d.nombre AS cliente, FacturarA(c.idcliente, b.idtipoventa) AS facturara, CONCAT(e.desctiposervventa, ' ', DATE_FORMAT(a.fechacobro, '%m/%Y')) AS tipo, ";
@@ -46,19 +45,18 @@ $app->post('/pendientes', function(){
     $query.= "a.monto AS montocargoflat, ";
 
     $query.= "RetISR(c.idcliente, b.idtipoventa) AS retenerisr, d.nombrecorto AS clientecorto, b.idtipoventa, ";
-    $query.= "NitFacturarA(c.idcliente, b.idtipoventa) AS nit, DirFacturarA(c.idcliente, b.idtipoventa) AS direccion, PorcentajeRetIVA(c.idcliente, b.idtipoventa) AS porcentajeretiva, ";
-    $query.= "b.idmonedafact, b.idmoneda AS idmonedacargo, k.simbolo AS monedafact, h.simbolo AS monedacargo ";
+    $query.= "NitFacturarA(c.idcliente, b.idtipoventa) AS nit, DirFacturarA(c.idcliente, b.idtipoventa) AS direccion, PorcentajeRetIVA(c.idcliente, b.idtipoventa) AS porcentajeretiva ";
     
     $query.= "FROM cargo a INNER JOIN detfactcontrato b ON b.id = a.iddetcont INNER JOIN contrato c ON c.id = b.idcontrato INNER JOIN cliente d ON d.id = c.idcliente ";
     $query.= "INNER JOIN tiposervicioventa e ON e.id = b.idtipoventa INNER JOIN tipocliente g ON g.id = c.idtipocliente ";
     $query.= "INNER JOIN moneda h ON h.id = b.idmoneda INNER JOIN empresa i ON i.id = c.idempresa ";
-    $query.= "INNER JOIN proyecto j ON j.id = c.idproyecto INNER JOIN moneda k ON k.id = b.idmonedafact ";
+    $query.= "INNER JOIN proyecto j ON j.id = c.idproyecto ";
     $query.= "WHERE a.fechacobro <= '$d->fvencestr' AND a.facturado = 0 AND a.anulado = 0 AND c.idempresa = $d->idempresa AND ";
     $query.= "(c.inactivo = 0 OR (c.inactivo = 1 AND c.fechainactivo > '$d->fvencestr')) AND (a.monto - a.descuento) <> 0 ";
     $query.= $d->idtipo != '' ? "AND e.id IN($d->idtipo) " : "";
 
     $query.= ") a ";
-    $query.= "GROUP BY a.idcontrato, a.idcliente, a.facturara, a.idmonedafact ";
+    $query.= "GROUP BY a.idcontrato, a.idcliente, a.facturara ";
     $query.= "ORDER BY 3, 5, 6";
     //echo $query."<br/>";
     $resumen = $db->getQuery($query);
@@ -221,20 +219,12 @@ $app->post('/genfact', function(){
         $query.= "idempresa, idtipofactura, idcontrato, idcliente, serie, numero, ";
         $query.= "fechaingreso, mesiva, fecha, idtipoventa, conceptomayor, iva, ";
         $query.= "total, noafecto, subtotal, totalletras, idmoneda, tipocambio, ";
-        $query.= "retisr, retiva, totdescuento, nit, nombre, direccion, montocargoiva, montocargoflat, idmonedafact,";
-        $query.= "subtotalcnv, totalcnv, retivacnv, retisrcnv, totdescuentocnv";
+        $query.= "retisr, retiva, totdescuento, nit, nombre, direccion, montocargoiva, montocargoflat";
         $query.= ") VALUES (";
         $query.= "$params->idempresa, $p->tipofact, $p->idcontrato, $p->idcliente, $p->seriefact, $p->numfact, ";
         $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '". str_replace(',', ', ', strip_tags($p->tipo))."', $p->iva, ";
         $query.= "$p->totapagar, 0.00, $p->montoconiva, '".$n2l->to_word($p->totapagar, 'GTQ')."', 1, $params->tc, ";
-        $query.= "$p->retisr, $p->ivaaretener, $p->descuento, '$p->nit', '$p->facturara', '$p->direccion', $p->montocargoconiva, $p->montocargoflat, $p->idmonedafact, ";
-
-        if((int)$p->idmonedafact !== 1) {
-            $query.= "($p->montoconiva / $params->tc), ($p->totapagar / $params->tc), ($p->ivaaretener / $params->tc), ($p->retisr / $params->tc), ($p->descuento / $params->tc)";
-        } else {
-            $query.= "$p->montoconiva, $p->totapagar, $p->ivaaretener, $p->retisr, $p->descuento";
-        }
-
+        $query.= "$p->retisr, $p->ivaaretener, $p->descuento, '$p->nit', '$p->facturara', '$p->direccion', $p->montocargoconiva, $p->montocargoflat";
         $query.= ")";
         //print $query.'<br/><br/>';
         $lastid = 0;
@@ -253,19 +243,9 @@ $app->post('/genfact', function(){
                         }
                     }
 
-                    $query = "INSERT INTO detfact(";
-                    $query.= "idfactura, cantidad, descripcion, preciounitario, preciotot, idtiposervicio, mes, anio, descuento, montoconiva, montoflatconiva, ";
-                    $query.= "conceptoadicional, montoflatconivacnv, preciounitariocnv, descuentocnv";
-                    $query.= ") VALUES(";
+                    $query = "INSERT INTO detfact(idfactura, cantidad, descripcion, preciounitario, preciotot, idtiposervicio, mes, anio, descuento, montoconiva, montoflatconiva, conceptoadicional) VALUES(";
                     $query.= "$lastid, 1, '".($det->tipo.' de '.$det->nommes.' '.$det->anio)."', $det->montoconiva, $det->montoconiva, $det->idtiposervicio, $det->mes, $det->anio, $det->descuento, $det->montoconiva, $det->montoflatconiva,";
-                    $query.= "$conceptoAdicional, ";
-
-                    if((int)$p->idmonedafact !== 1) {
-                        $query.= "($det->montoflatconiva / $params->tc), ($det->montoconiva / $params->tc), ($det->descuento / $params->tc)";
-                    } else {
-                        $query.= "$det->montoflatconiva, $det->montoconiva, $det->descuento";
-                    }
-
+                    $query.= "$conceptoAdicional";
                     $query.= ")";
                     //print $query;
                     if((float)$det->montoconiva != 0){
@@ -298,35 +278,35 @@ $app->post('/gengface', function() use($app){
     $db = new dbcpm();
 
     $query = "SELECT CONCAT(LPAD(YEAR(a.fecha), 4, ' '), LPAD(MONTH(a.fecha), 4, ' '), LPAD(DAY(a.fecha), 4, ' ')) AS fecha, 'FACE' AS tipodoc, ";
-    $query.= "TRIM(a.nit) AS nit, IF(a.idmonedafact = 1, '1', '2') AS codmoneda, a.id AS idfactura, 'S' AS tipoventa, ";
+    $query.= "TRIM(a.nit) AS nit, '1' AS codmoneda, a.id AS idfactura, 'S' AS tipoventa, ";
     $query.= "TRIM(a.nombre) AS nombre, ";
     $query.= "TRIM(a.direccion) AS direccion, b.nombrecorto, ";
 
-    $query.= "CONCAT('$ ', FORMAT(a.subtotalcnv, 2)) AS montodol, ";
+    $query.= "CONCAT('$ ', FORMAT(ROUND(a.subtotal / a.tipocambio, 2), 2)) AS montodol, ";
     $query.= "FORMAT(a.tipocambio, 4) AS tipocambio, ";
-    $query.= "CONCAT('$ ', FORMAT(a.totalcnv, 2)) AS pagonetodol, ";
-    $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2)) AS pagoneto, ";
-    $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2)) AS retiva, ";
-    $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.retisr, a.retisrcnv), 2)) AS isr, ";
-    $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = a.idmoneda, a.subtotal, a.subtotalcnv), 2)) AS monto, a.id AS idfactura, 1 AS descargar, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fechastr ";
+    $query.= "CONCAT('$ ', FORMAT(ROUND(a.total / a.tipocambio, 2), 2)) AS pagonetodol, ";
+    $query.= "CONCAT('Q ', FORMAT(a.total, 2)) AS pagoneto, ";
+    $query.= "CONCAT('Q ', FORMAT(a.retiva, 2)) AS retiva, ";
+    $query.= "CONCAT('Q ', FORMAT(a.retisr, 2)) AS isr, ";
+    $query.= "CONCAT('Q ', FORMAT(a.subtotal, 2)) AS monto, a.id AS idfactura, 1 AS descargar, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fechastr ";
 
-    $query.= "FROM factura a INNER JOIN cliente b ON b.id = a.idcliente INNER JOIN moneda c ON c.id = a.idmonedafact ";
+    $query.= "FROM factura a INNER JOIN cliente b ON b.id = a.idcliente ";
     $query.= "WHERE a.idempresa = $d->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.anulada = 0 AND (ISNULL(a.firmaelectronica) OR TRIM(a.firmaelectronica) = '') ";
     $query.= "AND a.id > 3680 AND a.total <> 0 ";
     $query.=  $d->listafact != '' ? "AND a.id IN($d->listafact) " : '';
     $query.= "UNION ";
-    $query.= "SELECT CONCAT(LPAD(YEAR(a.fecha), 4, ' '), LPAD(MONTH(a.fecha), 4, ' '), LPAD(DAY(a.fecha), 4, ' ')) AS fecha, 'FACE' AS tipodoc, a.nit, IF(a.idmonedafact = 1, '1', '2') AS codmoneda, ";
-    $query.= "a.id AS idfactura, 'S' AS tipoventa, a.nombre, IFNULL(a.direccion, '') AS direccion, '' AS nombrecorto, ";
+    $query.= "SELECT CONCAT(LPAD(YEAR(a.fecha), 4, ' '), LPAD(MONTH(a.fecha), 4, ' '), LPAD(DAY(a.fecha), 4, ' ')) AS fecha, 'FACE' AS tipodoc, a.nit, '1' AS codmoneda, a.id AS idfactura, 'S' AS tipoventa, ";
+    $query.= "a.nombre, IFNULL(a.direccion, '') AS direccion, '' AS nombrecorto, ";
 
-    $query.= "CONCAT('$ ', FORMAT(a.subtotalcnv, 2)) AS montodol, ";
+    $query.= "CONCAT('$ ', FORMAT(ROUND(a.subtotal / a.tipocambio, 2), 2)) AS montodol, ";
     $query.= "FORMAT(a.tipocambio, 4) AS tipocambio, ";
-    $query.= "CONCAT('$ ', FORMAT(a.totalcnv, 2)) AS pagonetodol, ";
-    $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2)) AS pagoneto, ";
-    $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2)) AS retiva, ";
-    $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.retisr, a.retisrcnv), 2)) AS isr, ";
-    $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.subtotal, a.subtotalcnv), 2)) AS monto, a.id AS idfactura, 1 AS descargar, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fechastr ";
+    $query.= "CONCAT('$ ', FORMAT(ROUND(a.total / a.tipocambio, 2), 2)) AS pagonetodol, ";
+    $query.= "CONCAT('Q ', FORMAT(a.total, 2)) AS pagoneto, ";
+    $query.= "CONCAT('Q ', FORMAT(a.retiva, 2)) AS retiva, ";
+    $query.= "CONCAT('Q ', FORMAT(a.retisr, 2)) AS isr, ";
+    $query.= "CONCAT('Q ', FORMAT(a.subtotal, 2)) AS monto, a.id AS idfactura, 1 AS descargar, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fechastr ";
 
-    $query.= "FROM factura a INNER JOIN moneda c ON c.id = a.idmonedafact ";
+    $query.= "FROM factura a ";
     $query.= "WHERE a.idempresa = $d->idempresa AND a.idcliente = 0 AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.anulada = 0 AND (ISNULL(a.firmaelectronica) OR TRIM(a.firmaelectronica) = '') ";
     $query.= "AND a.id > 3680 AND a.total <> 0 ";
     $query.=  $d->listafact != '' ? "AND a.id IN($d->listafact) " : '';
@@ -374,10 +354,10 @@ $app->post('/gengface', function() use($app){
             }
             $query = "SELECT DISTINCT ";
 
-            $query.= "TRUNCATE(IF(b.idmonedafact = 1, a.montoflatconiva, a.montoflatconivacnv), 2) AS montoconiva, ";
-            $query.= "ROUND(IF(b.idmonedafact = 1, a.montoflatconiva, a.montoflatconivacnv) / 1.12, 2)  AS montosiniva, ";
-            $query.= "ROUND(IF(b.idmonedafact = 1, a.montoflatconiva, a.montoflatconivacnv) - (IF(b.idmonedafact = 1, a.montoflatconiva, a.montoflatconivacnv) / 1.12), 2) AS iva, ";
-            $query.= "TRUNCATE(IF(b.idmonedafact = 1, a.preciounitario, a.preciounitariocnv) + IF(b.idmonedafact = 1, a.descuento, a.descuentocnv), 2) AS montounitario, ";
+            $query.= "TRUNCATE(a.montoflatconiva, 2) AS montoconiva, ";
+            $query.= "ROUND(a.montoflatconiva / 1.12, 2)  AS montosiniva, ";
+            $query.= "ROUND(a.montoflatconiva - (a.montoflatconiva / 1.12), 2) AS iva, ";
+            $query.= "TRUNCATE(a.preciounitario + a.descuento, 2) AS montounitario, ";
 
             $query.= "a.idtiposervicio, ";
 
@@ -396,10 +376,10 @@ $app->post('/gengface', function() use($app){
             $query.= "UNION ";
             $query.= "SELECT DISTINCT ";
 
-            $query.= "TRUNCATE(IF(b.idmonedafact = 1, a.montoflatconiva, a.montoflatconivacnv), 2) AS montoconiva, ";
-            $query.= "ROUND(IF(b.idmonedafact = 1, a.montoflatconiva, a.montoflatconivacnv) / 1.12, 2)  AS montosiniva, ";
-            $query.= "ROUND(IF(b.idmonedafact = 1, a.montoflatconiva, a.montoflatconivacnv) - (IF(b.idmonedafact = 1, a.montoflatconiva, a.montoflatconivacnv) / 1.12), 2) AS iva, ";
-            $query.= "TRUNCATE(IF(b.idmonedafact = 1, a.preciounitario, a.preciounitariocnv) + IF(b.idmonedafact = 1, a.descuento, a.descuentocnv), 2) AS montounitario, ";
+            $query.= "TRUNCATE(a.montoflatconiva, 2) AS montoconiva, ";
+            $query.= "ROUND(a.montoflatconiva / 1.12, 2)  AS montosiniva, ";
+            $query.= "ROUND(a.montoflatconiva - (a.montoflatconiva / 1.12), 2) AS iva, ";
+            $query.= "TRUNCATE(a.preciounitario + a.descuento, 2) AS montounitario, ";
 
             $query.= "a.idtiposervicio, TRIM(CONCAT(a.descripcion, ' ', IFNULL(a.conceptoadicional, ''))) AS descripcion, ";
 			$query.= "a.cantidad ";
@@ -411,9 +391,9 @@ $app->post('/gengface', function() use($app){
             //Linea de total de descuento por factura
             $query = "SELECT ";
 
-            $query.= "TRUNCATE((IF(a.idmonedafact = a.idmoneda, a.totdescuento, a.totdescuentocnv) * -1), 2) AS totdescconiva, ";
-            $query.= "ROUND((IF(a.idmonedafact = a.idmoneda, a.totdescuento, a.totdescuentocnv) / 1.12) * -1, 2) AS totdesc, ";
-            $query.= "ROUND((IF(a.idmonedafact = a.idmoneda, a.totdescuento, a.totdescuentocnv) - (IF(a.idmonedafact = a.idmoneda, a.totdescuento, a.totdescuentocnv) / 1.12)) * -1, 2) AS ivadesc, ";
+            $query.= "TRUNCATE((a.totdescuento * -1), 2) AS totdescconiva, ";
+            $query.= "ROUND((a.totdescuento / 1.12) * -1, 2) AS totdesc, ";
+            $query.= "ROUND((a.totdescuento - (a.totdescuento / 1.12)) * -1, 2) AS ivadesc, ";
 
             $query.= "'DESCUENTO' AS descripcion, 1 AS cantidad ";
             $query.= "FROM factura a ";
