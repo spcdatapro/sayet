@@ -28,7 +28,7 @@ $app->post('/rptlibventas', function(){
 	//$query.= "IF(a.anulada = 0, ROUND(a.iva, 2), 0.00) AS iva, IF(a.anulada = 0, ROUND(((a.subtotal + IF(a.idfox IS NULL, 0, a.iva + a.retiva))), 2), 0.00) AS totfact ";	
 	$query.= "IF(a.anulada = 0, ROUND(a.iva, 2), 0.00) AS iva, IF(a.anulada = 0, ROUND(a.subtotal, 2), 0.00) AS totfact ";
     $query.= "FROM factura a LEFT JOIN contrato b ON b.id = a.idcontrato LEFT JOIN tipofactura c ON c.id = a.idtipofactura LEFT JOIN cliente d ON d.id = a.idcliente ";
-    $query.= "WHERE a.idtipoventa <> 5 AND c.id <> 5 AND a.idempresa = ".$idempresa." AND a.mesiva = ".$mes." AND YEAR(a.fecha) = ".$anio." ";
+    $query.= "WHERE a.idtipoventa <> 5 AND c.id <> 5 AND a.idempresa = $idempresa AND a.mesiva = $mes AND YEAR(a.fecha) = $anio AND LENGTH(a.serie) > 0 AND LENGTH(a.numero) > 0 ";
     $query.= (int)$d->alfa > 0 ? "ORDER BY 6, 1, 3, 4" : "ORDER BY 1, 3, 4";
 	
 	$detlbventa = $db->getQuery($query);
