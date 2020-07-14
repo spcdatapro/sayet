@@ -1,0 +1,40 @@
+<div class="container" ng-controller="rptPlnIVSCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">Planilla IVS</div>
+            <div class="panel-body" style="text-align: right">
+                <div class="row" style="text-align: left">
+                    <div class="col-md-6 col-sm-6">
+                        <div class="form-group">
+                            <label for="selEmpleado">Empleado:</label>
+                            <select name="selEmpleado" id="selEmpleado" class="form-control input-sm" ng-model="params.idempleado"
+                                    ng-options="obj.id as (obj.nombre + ' ' + obj.apellidos) for obj in empleados">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="txtDel">Del:</label>
+                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.del" placeholder="Del"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-3">
+                        <div class="form-group">
+                            <label for="txtAl">Al:</label>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.al" placeholder="Al"/>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" ng-click="getReporte()">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+                <!--
+                <button type="button" class="btn btn-primary" ng-click="getLibroDiarioXLSX()">
+                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                </button>
+                -->
+            </div>
+        </div>
+    </div>
+    <rpt-viewer contenido="content"></rpt-viewer>
+</div>
