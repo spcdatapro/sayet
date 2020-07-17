@@ -302,9 +302,9 @@ $app->post('/gengface', function() use($app){
     $query.= "TRIM(a.nombre) AS nombre, ";
     $query.= "TRIM(a.direccion) AS direccion, b.nombrecorto, ";
 
-    $query.= "CONCAT('$ ', FORMAT(a.subtotalcnv, 2)) AS montodol, ";
+    $query.= "CONCAT('$ ', FORMAT(IF(a.idmonedafact = 1, ROUND(a.subtotal / a.tipocambio, 2), a.subtotalcnv), 2)) AS montodol, ";
     $query.= "FORMAT(a.tipocambio, 4) AS tipocambio, ";
-    $query.= "CONCAT('$ ', FORMAT(a.totalcnv, 2)) AS pagonetodol, ";
+    $query.= "CONCAT('$ ', FORMAT(IF(a.idmonedafact = 1, ROUND(a.total / a.tipocambio, 2), a.totalcnv), 2)) AS pagonetodol, ";
     $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2)) AS pagoneto, ";
     $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2)) AS retiva, ";
     $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.retisr, a.retisrcnv), 2)) AS isr, ";
@@ -318,9 +318,9 @@ $app->post('/gengface', function() use($app){
     $query.= "SELECT CONCAT(LPAD(YEAR(a.fecha), 4, ' '), LPAD(MONTH(a.fecha), 4, ' '), LPAD(DAY(a.fecha), 4, ' ')) AS fecha, 'FACE' AS tipodoc, a.nit, IF(a.idmonedafact = 1, '1', '2') AS codmoneda, ";
     $query.= "a.id AS idfactura, 'S' AS tipoventa, a.nombre, IFNULL(a.direccion, '') AS direccion, '' AS nombrecorto, ";
 
-    $query.= "CONCAT('$ ', FORMAT(a.subtotalcnv, 2)) AS montodol, ";
+    $query.= "CONCAT('$ ', FORMAT(IF(a.idmonedafact = 1, ROUND(a.subtotal / a.tipocambio, 2), a.subtotalcnv), 2)) AS montodol, ";
     $query.= "FORMAT(a.tipocambio, 4) AS tipocambio, ";
-    $query.= "CONCAT('$ ', FORMAT(a.totalcnv, 2)) AS pagonetodol, ";
+    $query.= "CONCAT('$ ', FORMAT(IF(a.idmonedafact = 1, ROUND(a.total / a.tipocambio, 2), a.totalcnv), 2)) AS pagonetodol, ";
     $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2)) AS pagoneto, ";
     $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2)) AS retiva, ";
     $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.retisr, a.retisrcnv), 2)) AS isr, ";
