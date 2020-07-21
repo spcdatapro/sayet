@@ -226,7 +226,12 @@ $app->post('/c', function(){
     if(!isset($d->idunidad)){ $d->idunidad = 0; }
     if(!isset($d->nombrerecibo)){ $d->nombrerecibo = 'NULL'; } else { $d->nombrerecibo = "'$d->nombrerecibo'"; }
 
-    $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
+    if((int)$d->idtipofactura !== 5) {
+        $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
+    } else {
+        $calcisr = false;
+    }
+    
     $d->isr = !$calcisr ? 0.00 : $db->calculaISR((float)$d->subtotal, (float)$d->tipocambio);
 
     $query = "INSERT INTO compra(idempresa, idproveedor, serie, documento, fechaingreso, mesiva, fechafactura, idtipocompra, ";
@@ -257,7 +262,12 @@ $app->post('/u', function(){
     if(!isset($d->idunidad)){ $d->idunidad = 0; }
     if(!isset($d->nombrerecibo)){ $d->nombrerecibo = 'NULL'; } else { $d->nombrerecibo = "'$d->nombrerecibo'"; }
 
-    $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
+    if((int)$d->idtipofactura !== 5) {
+        $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
+    } else {
+        $calcisr = false;        
+    }
+    
     $d->isr = !$calcisr ? 0.00 : $db->calculaISR((float)$d->subtotal, (float)$d->tipocambio);
 
     $query = "UPDATE compra SET ";
