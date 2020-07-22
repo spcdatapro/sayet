@@ -421,7 +421,7 @@ $app->post('/anulapres', function(){
         $obj->origen = 1;
         $obj->idpresupuesto = $d->id;
         $obj->evento = 'V';
-        $obj->idusuario = $d->idusuario;
+        $obj->idusuario = $d->idusuarioanula;
         insertaBitacoraPresupuesto($db, $obj);
     }
     $query = "UPDATE detpresupuesto SET idestatuspresupuesto = 6, fhanulacion = NOW(), idusuarioanula = $d->idusuarioanula, idrazonanula = $d->idrazonanula WHERE id = $idot";
@@ -429,7 +429,7 @@ $app->post('/anulapres', function(){
     $obj->origen = 2;
     $obj->idpresupuesto = $idot;
     $obj->evento = 'V';
-    $obj->idusuario = $d->idusuario;
+    $obj->idusuario = $d->idusuarioanula;
     insertaBitacoraPresupuesto($db, $obj);
 });
 
