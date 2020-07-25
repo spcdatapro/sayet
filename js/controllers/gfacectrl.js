@@ -18,7 +18,7 @@
         $scope.getPend = () => {
             $scope.params.fdelstr = moment($scope.params.fdel).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.fal).format('YYYY-MM-DD');
-            facturacionSrvc.factsPendGface($scope.params).then((d) => {
+            facturacionSrvc.factsPendFEL($scope.params).then((d) => {
                 //console.log(d);
                 d.map((i) => i.descargar = +i.descargar);
                 $scope.pendientes = d;
@@ -45,6 +45,25 @@
             nombre = abreviatura + '-GFACE' + moment().format('DDMMYYYYhhmmss');
             const qstr = $scope.params.idempresa + '/' + $scope.params.fdelstr + '/' + $scope.params.falstr + '/' + nombre + '/' + $scope.params.listafact;
             $window.open('php/facturacion.php/gettxt/' + qstr);            
+        };
+
+        $scope.getArchivoFEL = () => {
+            let facturas = '';
+            let abreviatura = $filter('getById')($scope.empresas, $scope.params.idempresa).abreviatura;            
+            abreviatura = !!abreviatura ? abreviatura : '';            
+            $scope.pendientes.forEach(f => {
+                if(+f.descargar === 1) {
+                    facturas += `${f.tiporegistro}|${f.fechadocumento}|${f.tipodocumento}|${f.nitcomprador}|${f.codigomoneda}|${f.tasacambio}|${f.ordenexterno}|${f.tipoventa}|${f.destinoventa}|${f.enviarcorreo}|${f.nombrecomprador}|${f.direccion}|${f.numeroacceso}|${f.serieadmin}|${f.numeroadmin}|${f.nombrecorto}|$ ${f.montodol}|${f.tasacambio}|$ ${f.pagonetodol}|${f.monedafact} ${f.pagoneto}|${f.monedafact} ${f.retiva}|${f.monedafact} ${f.retisr}|${f.monedafact} ${f.monto}\n`;
+                    f.detalle.forEach(d => {
+                        facturas += `${d.tiporegistro}|${d.cantidad}|${d.unidadmedida}|${d.precio}|${d.porcentajedescuento}|${d.importedescuento}|${d.importebruto}|${d.importeexento}|${d.importeneto}|${d.importeiva}|${d.importeotros}|${d.importetotal}|${d.producto}|${d.descripcion}|${d.tipoventa}\n`;
+                    });
+                    const t = f.totales;
+                    facturas += `${t.tiporegistro}|${t.importebruto}|${t.importedescuento}|${t.importeexento}|${t.importeneto}|${t.importeiva}|${t.importeotros}|${t.importetotal}|${t.porcentajeisr}|${t.importeisr}|${f.detalle.length}|${t.documentosasociados}\n`;
+                }
+            });
+            console.log(facturas);
+            let nombre = abreviatura + '-FEL-' + moment().format('DDMMYYYYhhmmss');
+            downloadString(facturas, 'text/plain;charset=windows-1252', `${nombre}.txt`);
         };
 
         $scope.resetParams = function(){ $scope.params = { idempresa: $scope.params.idempresa, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate()}; };

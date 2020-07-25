@@ -1,6 +1,6 @@
 //Funciones para todo el sitio...
 function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-    if(aData[0] == 'Total de partida'){
+    if (aData[0] == 'Total de partida') {
         var debe = parseFloat(parseFloat(aData[1].replace(',', '')).toFixed(2));
         var haber = parseFloat(parseFloat(aData[2].replace(',', '')).toFixed(2));
         var qClase = debe === haber ? 'partida-cuadrada' : 'partida-descuadrada';
@@ -11,11 +11,11 @@ function rowCallback(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
     }
 }
 
-function PrintElem(elem, tituloPagina){
-    setTimeout(function(){ Popup($(elem).html(), tituloPagina); }, 500);
+function PrintElem(elem, tituloPagina) {
+    setTimeout(function () { Popup($(elem).html(), tituloPagina); }, 500);
 }
 
-function Popup(data, tituloPagina){
+function Popup(data, tituloPagina) {
     var mywindow = window.open('', 'PrintVer', 'height=400,width=600');
     mywindow.document.write('<html><head><title>' + tituloPagina + '</title>');
     mywindow.document.write('<link rel="stylesheet" href="libs/bootstrap/css/bootstrap.min.css">');
@@ -40,54 +40,68 @@ function Popup(data, tituloPagina){
     mywindow.focus(); // necessary for IE >= 10
 
     //mywindow.print();
-    setTimeout(function(){mywindow.print();}, 500);
-    setTimeout(function(){mywindow.close();}, 1000);
+    setTimeout(function () { mywindow.print(); }, 500);
+    setTimeout(function () { mywindow.close(); }, 1000);
     //mywindow.close();
 
     return true;
 }
 
-function hideTableInPrintIdEndsWith(val){ $("table[id$='" + val + "']").hide(); }
+function hideTableInPrintIdEndsWith(val) { $("table[id$='" + val + "']").hide(); }
 
-function goTop(){ $('html, body').animate({ scrollTop: 0 }, 'fast'); }
+function goTop() { $('html, body').animate({ scrollTop: 0 }, 'fast'); }
 
 function pad(num, size) {
-    var s = num+"";
+    var s = num + "";
     while (s.length < size) s = "0" + s;
     return s;
 }
 
-function objectPropsToList(lstObj, nameProp, separator){
+function objectPropsToList(lstObj, nameProp, separator) {
     var lista = '';
-    try{
-        for(var i = 0; i < lstObj.length; i++){
-            if(lista != ''){ lista += separator}
+    try {
+        for (var i = 0; i < lstObj.length; i++) {
+            if (lista != '') { lista += separator }
             lista += eval('lstObj[i].' + nameProp);
         }
-    }catch(err){
+    } catch (err) {
         lista = '';
     }
     return lista;
 }
 
-function moveToTab(fromTab, toTab){
+function moveToTab(fromTab, toTab) {
     $('#' + fromTab).removeClass('active');
     $('#' + toTab).addClass('active');
-    $('.nav-tabs a[href="#'+ toTab +'"]').tab('show');
+    $('.nav-tabs a[href="#' + toTab + '"]').tab('show');
 }
 
-function moveToTabById(idNavTab, fromTab, toTab){
+function moveToTabById(idNavTab, fromTab, toTab) {
     $('#' + fromTab).removeClass('active');
     $('#' + toTab).addClass('active');
-    $('#' + idNavTab + ' a[href="#'+ toTab +'"]').tab('show');
+    $('#' + idNavTab + ' a[href="#' + toTab + '"]').tab('show');
 }
 
-function  enablePopOvers(){ $('[data-toggle="popover"]').popover(); }
+function enablePopOvers() { $('[data-toggle="popover"]').popover(); }
 
-function getIniciales(nombre){
+function getIniciales(nombre) {
     var iniciales = '';
-    nombre.split(' ').forEach(function(item){
+    nombre.split(' ').forEach(function (item) {
         iniciales += item.substring(0, 1);
     });
     return iniciales;
+}
+
+function downloadString(text, fileType, fileName) {
+    var blob = new Blob([text], { type: fileType });
+
+    var a = document.createElement('a');
+    a.download = fileName;
+    a.href = URL.createObjectURL(blob);
+    a.dataset.downloadurl = [fileType, a.download, a.href].join(':');
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1500);
 }

@@ -1,13 +1,13 @@
 <div class="container" ng-controller="gfaceCtrl">
     <ul class="nav nav-tabs">
         <li class="active">
-            <a show-tab href="#divDescargaGFACE" data-toggle="tab">BAJAR ARHCIVO PARA GFACE</a>
+            <a show-tab href="#divDescargaGFACE" data-toggle="tab">BAJAR ARHCIVO</a>
         </li>
         <li>
-            <a show-tab href="#divCargaGFACE" data-toggle="tab">SUBIR ARCHIVO DE GFACE</a>
+            <a show-tab href="#divCargaGFACE" data-toggle="tab">SUBIR ARCHIVO DE RESPUESTA</a>
         </li>
         <li>
-            <a show-tab href="#divRptPendientes" data-toggle="tab">PENDIENTES DE SUBIR A GFACE</a>
+            <a show-tab href="#divRptPendientes" data-toggle="tab">PENDIENTES DE SUBIR</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -36,14 +36,11 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-primary" ng-disabled="frmGetGFace.$invalid" ng-click="getPend()">
-                            <span class="glyphicon glyphicon-eye-open"></span>
-                        </button>
-                        <!--
-                        <button type="button" class="btn btn-primary" ng-disabled="frmGetGFace.$invalid" ng-click="getGFACE()">
-                            <span class="glyphicon glyphicon-download"></span>
-                        </button>
-                        -->
+                        <div class="text-right">
+                            <button type="button" class="btn btn-primary" ng-disabled="frmGetGFace.$invalid" ng-click="getPend()">
+                                <span class="glyphicon glyphicon-eye-open"></span>
+                            </button>
+                        </div>
                     </form>
                     <hr/>
                     <table class="table table-condensed table-hover">
@@ -61,10 +58,10 @@
                         </thead>
                         <tbody>
                         <tr ng-repeat="p in pendientes | filter:lookFor">
-                            <td>{{p.fechastr}}</td>
-                            <td>{{p.nit}}</td>
+                            <td>{{p.fecha}}</td>
+                            <td>{{p.nitcomprador}}</td>
                             <td>{{p.nombre | shortenStr:40}}</td>
-                            <td class="num">{{p.monto}}</td>
+                            <td class="num">{{p.monedafact}} {{p.monto}}</td>
                             <td style="text-align: center">
                                 <input type="checkbox" ng-model="p.descargar" ng-true-value="1" ng-false-value="0"/>
                             </td>
@@ -73,7 +70,7 @@
                         <tfoot>
                         <tr>
                             <td colspan="5" class="num">
-                                <button type="button" class="btn btn-primary" ng-disabled="frmGetGFace.$invalid" ng-click="getGFACE()">
+                                <button type="button" class="btn btn-primary" ng-disabled="frmGetGFace.$invalid" ng-click="getArchivoFEL()">
                                     <span class="glyphicon glyphicon-download"></span>
                                 </button>
                             </td>

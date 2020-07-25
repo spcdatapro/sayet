@@ -49,7 +49,8 @@ class dbcpm{
     public function getOneField($query){return $this->dbConn->query($query)->fetchColumn(0);}
 
     public function calculaISR($subtot, $tc = 1){
-        $query = "SELECT id, de, a, porcentaje, importefijo, enexcedente, FLOOR(de) AS excedente FROM isr WHERE ".$subtot." >= de AND ".$subtot." <= a LIMIT 1";
+        $subtot = round($subtot, 2);
+        $query = "SELECT id, de, a, porcentaje, importefijo, enexcedente, FLOOR(de) AS excedente FROM isr WHERE $subtot >= de AND $subtot <= a LIMIT 1";
         $arrisr = $this->getQuery($query);
         if(count($arrisr) > 0){ $infoisr = $arrisr[0]; } else { return 0.00; }
         //var_dump($infoisr); return 0.00;
@@ -62,7 +63,10 @@ class dbcpm{
     }
 
     public function calculaRetIVA($base, $esgubernamental, $monto, $esmaquila = false, $iva = 0, $porcentaje = 0.00){
+        $monto = round($monto, 2);
+        $base = round($base, 2);
         if($iva == 0){ $iva = $monto - $base; }
+        $iva = round($iva, 2);
         $factor = abs((float)$porcentaje) > 0 ? (abs((float)$porcentaje) / 100.00) : 0.00;
         if($monto > 2500.00){
             if($esgubernamental && $monto > 30000.00){
