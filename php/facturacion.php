@@ -108,29 +108,31 @@ $app->post('/pendientes', function(){
 function getQueryCargos($d) {
     $query = "SELECT c.id as idcontrato, c.idcliente, d.nombrecorto AS clientecorto, FacturarA(c.idcliente, b.idtipoventa) AS facturara, a.id AS idcargo, b.idmonedafact, k.simbolo AS monedafact,
 
-    @montoconiva := ROUND(((a.monto - a.descuento) * IF(h.eslocal = 0, 7.69, 1)) * 1.12, 2) AS montoconiva, 
+    @montoconiva := ROUND(((a.monto - a.descuento) * IF(h.eslocal = 0, $d->tc, 1)) * 1.12, 2) AS montoconiva, 
     @montosiniva := ROUND(@montoconiva / 1.12, 2) AS montosiniva,
     ROUND(@montoconiva - @montosiniva, 2) AS iva, 
 
-    @montoconivacnv := ROUND((@montoconiva / 7.69), 2) AS montoconivacnv, 
-    @montosinivacnv := ROUND(@montosiniva / 7.69, 2) AS montosinivacnv,
+    @montoconivacnv := ROUND((@montoconiva / $d->tc), 2) AS montoconivacnv, 
+    @montosinivacnv := ROUND(@montosiniva / $d->tc, 2) AS montosinivacnv,
     ROUND(@montoconivacnv - @montosinivacnv, 2) AS ivacnv, 
 
-    @descuentoconiva := ROUND((a.descuento * IF(h.eslocal = 0, 7.69, 1)) * 1.12, 2) AS descuentoconiva,
+    @descuentoconiva := ROUND((a.descuento * IF(h.eslocal = 0, $d->tc, 1)) * 1.12, 2) AS descuentoconiva,
     @descuentosiniva := ROUND(@descuentoconiva / 1.12, 2) AS descuentosiniva,
     ROUND(@descuentoconiva - @descuentosiniva, 2) AS descuentoiva,
 
-    @descuentoconivacnv := ROUND(@descuentoconiva / 7.69, 2) AS descuentoconivacnv,
-    @descuentosinivacnv := ROUND(@descuentosiniva / 7.69, 2) AS descuentosinivacnv,
+    @descuentoconivacnv := ROUND(@descuentoconiva / $d->tc, 2) AS descuentoconivacnv,
+    @descuentosinivacnv := ROUND(@descuentosiniva / $d->tc, 2) AS descuentosinivacnv,
     ROUND(@descuentoconivacnv - @descuentosinivacnv, 2) AS descuentoivacnv,
-
-    @importebruto := ROUND((a.monto * IF(h.eslocal = 0, 7.69, 1)) * 1.12, 2) AS importebruto,
+    
+    @precio := ROUND((a.monto * IF(h.eslocal = 0, $d->tc, 1)) * 1.12, 2) AS precio,
+    @importebruto := ROUND(@precio * 1, 2) AS importebruto,
     @porcentajedescuento := ROUND((@descuentoconiva * 100) / @importebruto, 4) AS porcentajedescuento,
     @importeneto := ROUND((@importebruto - @descuentoconiva) / 1.12, 2) AS importeneto, 
     @importeiva := ROUND((@importebruto - @descuentoconiva - @importeneto), 2) AS importeiva, 
     @importetotal := ROUND((@importeneto + @importeiva), 2) AS importetotal, 
 
-    ROUND(@importebruto / 7.69, 2) AS importebrutocnv, ROUND(@importeneto / 7.69, 2) AS importenetocnv, ROUND(@importeiva / 7.69, 2) AS importeivacnv, ROUND(@importetotal / 7.69, 2) AS importetotalcnv,
+    ROUND(@precio / $d->tc, 2) AS preciocnv, ROUND(@importebruto / $d->tc, 2) AS importebrutocnv, ROUND(@importeneto / $d->tc, 2) AS importenetocnv, ROUND(@importeiva / $d->tc, 2) AS importeivacnv, 
+    ROUND(@importetotal / $d->tc, 2) AS importetotalcnv,
     
     CONCAT(e.desctiposervventa, ' ', DATE_FORMAT(a.fechacobro, '%m/%Y')) AS tipo, e.id as idtipo, j.nomproyecto AS proyecto, 
     UnidadesPorContrato(a.idcontrato) AS unidades, RetISR(c.idcliente, b.idtipoventa) AS retenerisr, RetIVA(c.idcliente, b.idtipoventa) AS reteneriva, c.idtipocliente, 
@@ -168,7 +170,7 @@ $app->post('/pendientesfel', function() {
         SUM(z.importebruto) AS importebruto, SUM(z.importeneto) AS importeneto, SUM(z.importeiva) AS importeiva, SUM(z.importetotal) AS importetotal,
         SUM(z.importebrutocnv) AS importebrutocnv, SUM(z.importenetocnv) AS importenetocnv, SUM(z.importeivacnv) AS importeivacnv, SUM(z.importetotalcnv) AS importetotalcnv,
 
-        0 AS facturar
+        1 AS facturar
         FROM ($queryCargos) z
         GROUP BY z.idcontrato, z.idcliente, z.facturara, z.idmonedafact
         ORDER BY z.clientecorto, z.facturara, z.tipo
@@ -447,12 +449,14 @@ $app->post('/genfactfel', function() {
                     $query.= "idfactura, cantidad, descripcion, preciounitario, preciounitariocnv, preciotot, idtiposervicio, mes, anio, descuento, ";
                     $query.= "conceptoadicional, descuentocnv, ";
                     $query.= "importebruto, importeneto, importeiva, importetotal, descuentosiniva, descuentoiva, ";
-                    $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv, porcentajedescuento";
+                    $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv, porcentajedescuento, ";
+                    $query.= "precio, preciocnv";
                     $query.= ") VALUES(";
                     $query.= "$lastid, 1, '$det->tipo', $det->montoconiva, $det->importebrutocnv, $det->montoconiva, $det->idtipo, $det->mes, $det->anio, $det->descuentoconiva, ";
                     $query.= "$conceptoAdicional, $det->descuentoconivacnv, ";
                     $query.= "$det->importebruto, $det->importeneto, $det->importeiva, $det->importetotal, $det->descuentosiniva, $det->descuentoiva, ";
-                    $query.= "$det->importebrutocnv, $det->importenetocnv, $det->importeivacnv, $det->importetotalcnv, $det->descuentosinivacnv, $det->descuentoivacnv, $det->porcentajedescuento";
+                    $query.= "$det->importebrutocnv, $det->importenetocnv, $det->importeivacnv, $det->importetotalcnv, $det->descuentosinivacnv, $det->descuentoivacnv, $det->porcentajedescuento,";
+                    $query.= "$det->precio, $det->preciocnv";
                     $query.= ")";
                     //print $query;
                     if((float)$det->montoconiva != 0){
@@ -686,7 +690,7 @@ $app->post('/genfel', function() use($app) {
     //Encabezado
     $query = "SELECT 1 AS tiporegistro, DATE_FORMAT(a.fecha, '%Y%m%d') AS fechadocumento, b.siglasfel AS tipodocumento, a.nit AS nitcomprador, a.idmonedafact AS codigomoneda, 
     IF(a.idmonedafact = 1, 1, ROUND(a.tipocambio, 4)) AS tasacambio, a.id AS ordenexterno, 'S' AS tipoventa, 1 AS destinoventa, 'S' AS enviarcorreo, 
-    IF(a.nit <> 'CF', '', IF(LENGTH(a.nombre) > 0, a.nombre, 'Consumidor final')) AS nombrecomprador, IF(a.nit <> 'CF', '', IF(LENGTH(a.direccion) > 0, a.direccion, 'Ciudad')) AS direccion, 
+    IF(a.nit <> 'CF', '', IF(LENGTH(a.nombre) > 0, a.nombre, 'Consumidor final')) AS nombrecomprador, IF(LENGTH(a.direccion) > 0, a.direccion, 'Ciudad') AS direccion, 
     '' AS numeroacceso, '' AS serieadmin, '' AS numeroadmin, c.nombrecorto, a.importebrutocnv AS montodol, ROUND(a.tipocambio, 4) AS tipocambio, TRUNCATE(a.totalcnv, 2) AS pagonetodol, 
     TRUNCATE(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2) AS pagoneto, TRUNCATE(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2) AS retiva, TRUNCATE(IF(a.idmonedafact = 1, a.retisr, a.retisrcnv), 2) AS retisr, 
     IF(a.idmonedafact = 1, a.importebruto, a.importebrutocnv) AS monto, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.nombre, d.simbolo AS monedafact, 1 AS descargar
@@ -701,18 +705,18 @@ $app->post('/genfel', function() use($app) {
     for($i = 0; $i < $cntFacturas; $i++) {
         $factura = $facturas[$i];
         //Detalle
-        $query = "SELECT 2 AS tiporegistro, a.cantidad, 1 AS unidadmedida, TRUNCATE(IF(b.idmonedafact = 1, a.preciounitario, a.preciounitariocnv), 2)  AS precio, a.porcentajedescuento, 
+        $query = "SELECT 2 AS tiporegistro, a.cantidad, 1 AS unidadmedida, TRUNCATE(IF(b.idmonedafact = 1, a.precio, a.preciocnv), 2) AS precio, a.porcentajedescuento, 
         TRUNCATE(IF(b.idmonedafact = 1, a.descuento, a.descuentocnv), 2) AS importedescuento, IF(b.idmonedafact = 1, a.importebruto, a.importebrutocnv) AS importebruto, 0 AS importeexento, 
         IF(b.idmonedafact = 1, a.importeneto, a.importenetocnv) AS importeneto, IF(b.idmonedafact = 1, a.importeiva, a.importeivacnv) AS importeiva, 0 AS importeotros, 
         IF(b.idmonedafact = 1, a.importetotal, a.importetotalcnv) AS importetotal, a.idtiposervicio AS producto, TRIM(CONCAT(a.descripcionlarga, ' ', IFNULL(a.conceptoadicional, ''))) AS descripcion, 'S' AS tipoventa
         FROM detfact a INNER JOIN factura b ON b.id = a.idfactura
         WHERE a.idfactura = $factura->ordenexterno";
+        // print $query;
         $factura->detalle = $db->getQuery($query);
         //Totales
         $query = "SELECT 4 AS tiporegistro, IF(a.idmonedafact = 1, a.importebruto, a.importebrutocnv) AS importebruto, TRUNCATE(IF(a.idmonedafact = 1, a.totdescuento, a.totdescuentocnv), 2) AS importedescuento, 
         0 AS importeexento, IF(a.idmonedafact = 1, a.importeneto, a.importenetocnv) AS importeneto, IF(a.idmonedafact = 1, a.importeiva, a.importeivacnv) AS importeiva, 0 AS importeotros, 
-        IF(a.idmonedafact = 1, a.importetotal, a.importetotalcnv) AS importetotal, (SELECT porcentaje FROM isr WHERE a.importeneto >= de AND a.importeneto <= a LIMIT 1) AS porcentajeisr, 
-        TRUNCATE(IF(a.idmonedafact = 1, a.retisr, a.retisrcnv), 2) AS importeisr, 0 AS registrosdetalle, 0 AS documentosasociados
+        IF(a.idmonedafact = 1, a.importetotal, a.importetotalcnv) AS importetotal, 0 AS porcentajeisr, 0 AS importeisr, 0 AS registrosdetalle, 0 AS documentosasociados
         FROM factura a
         WHERE a.id = $factura->ordenexterno";
         $factura->totales = $db->getQuery($query)[0];
@@ -734,6 +738,21 @@ $app->get('/gettxt/:idempresa/:fdelstr/:falstr/:nombre(/:listafact)', function($
     $respuesta = $db->CallJSReportAPI('POST', $url, json_encode($data));
     $respuesta = str_replace('&amp;', '&', $respuesta);
     print iconv('UTF-8','Windows-1252', $respuesta);
+});
+
+$app->post('/convencod', function() use($app) {
+    $d = json_decode(file_get_contents('php://input'));
+    if(!isset($d)) {
+        $d = (object)$_REQUEST;
+    }
+    // var_dump($d);
+    // die();
+    $d->texto = str_replace('&amp;', '&', $d->texto);
+    $app->response->headers->clear();
+    $app->response->headers->set('Content-Type', 'text/plain');
+    $app->response->headers->set('Content-Disposition', 'attachment;filename="'.trim($d->nombre).'.txt"');
+    print iconv($d->de,$d->a, $d->texto);
+
 });
 
 $app->post('/respuesta', function(){

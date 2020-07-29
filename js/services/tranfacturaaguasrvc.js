@@ -1,20 +1,16 @@
 (function(){
 
-    var facturacionaguasrvc = angular.module('cpm.facturacionaguasrvc', ['cpm.comunsrvc']);
+    const facturacionaguasrvc = angular.module('cpm.facturacionaguasrvc', ['cpm.comunsrvc']);
 
-    facturacionaguasrvc.factory('facturacionAguaSrvc', ['comunFact', function(comunFact){
-        var urlBase = 'php/facturaagua.php';
+    facturacionaguasrvc.factory('facturacionAguaSrvc', ['comunFact', (comunFact) => {
+        const urlBase = 'php/facturaagua.php';
 
         return {
-            lstCargosPendientes: function(obj){
-                return comunFact.doPOST(urlBase + '/pendientes', obj);
-            },
-            recalcular: function(obj){
-                return comunFact.doPOST(urlBase + '/recalcular', obj);
-            },
-            generarFacturas: function(obj){
-                return comunFact.doPOST(urlBase + '/genfact', obj);
-            }
+            lstCargosPendientes: (obj) => comunFact.doPOST(urlBase + '/pendientes', obj),
+            lstCargosPendientesFEL: (obj) => comunFact.doPOST(urlBase + '/pendientesfel', obj),
+            recalcular: (obj) => comunFact.doPOST(urlBase + '/recalcular', obj),
+            generarFacturas: (obj) => comunFact.doPOST(urlBase + '/genfact', obj),
+            generarFacturasFEL: (obj) => comunFact.doPOST(urlBase + '/genfactfel', obj)
         };
     }]);
 

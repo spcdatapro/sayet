@@ -334,6 +334,19 @@
             });
         };
 
+        $scope.getPendientesH2OFEL = function () {
+            $scope.paramsh2o.fvencestr = moment($scope.params.fvence).isValid() ? moment($scope.paramsh2o.fvence).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD');
+            facturacionAguaSrvc.lstCargosPendientesFEL($scope.paramsh2o).then(function (d) {
+                d = d.map(p => {
+                    if ((+p.montoconiva - +p.descuento) <= 0 && +p.facturar === 0) {
+                        p.facturar = '1';
+                    }
+                    return p;
+                });
+                $scope.pendientesh2o = d;
+            });
+        };
+
         $scope.factSelectedH2O = function () {
             $scope.paramsh2o.ffacturastr = moment($scope.paramsh2o.ffactura).isValid() ? moment($scope.paramsh2o.ffactura).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD');
             var aFact = { params: $scope.paramsh2o, pendientes: [] };
@@ -346,6 +359,22 @@
                 facturacionAguaSrvc.generarFacturas(aFact).then(function () {
                     toaster.pop('info', 'Facturación', 'Facturas de agua generadas...');
                     $scope.getPendientesH2O();
+                });
+            }
+        };
+
+        $scope.factSelectedH2OFEL = () => {
+            $scope.paramsh2o.ffacturastr = moment($scope.paramsh2o.ffactura).isValid() ? moment($scope.paramsh2o.ffactura).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD');
+            var aFact = { params: $scope.paramsh2o, pendientes: [] };
+            $scope.pendientesh2o.forEach((pendiente) => {
+                if (+pendiente.facturar == 1) {
+                    aFact.pendientes.push(pendiente);
+                }
+            });
+            if (aFact.pendientes.length > 0) {
+                facturacionAguaSrvc.generarFacturasFEL(aFact).then(() => {
+                    toaster.pop('info', 'Facturación', 'Facturas de agua generadas...');
+                    $scope.getPendientesH2OFEL();
                 });
             }
         };

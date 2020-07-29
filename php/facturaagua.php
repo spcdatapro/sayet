@@ -68,6 +68,68 @@ $app->post('/pendientes', function(){
 
 });
 
+$app->post('/pendientesfel', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "SELECT a.id, a.idserviciobasico, a.idproyecto, a.idunidad, a.mes, a.anio, a.lectura, b.numidentificacion, b.preciomcubsug, b.mcubsug,
+    @ultimalecturafact := LecturaAnterior(a.idserviciobasico, a.mes, a.anio) AS ultimalecturafact, 
+    @consumo := ROUND((a.lectura - @ultimalecturafact), 2) AS consumo, 
+    b.mcubsug AS base,
+    @consumobase := ROUND(@consumo - b.mcubsug, 2) AS consumobase,
+    @consumoafacturar := ROUND(IF(@consumobase > 0, @consumobase, 0.00), 2) AS consumoafacturar, 
+    @montosiniva := ROUND(IF(@consumoafacturar > 0, (@consumoafacturar * b.preciomcubsug) / 1.12 - (IF(a.descuento > 0, a.descuento / 1.12, 0.00)), 0.00 ), 2) AS montosiniva, 
+    @montoconiva := ROUND(IF(@consumoafacturar > 0, (@consumoafacturar * b.preciomcubsug), 0.00 ), 2) AS montoconiva, 
+    @iva := ROUND(@montoconiva - @montosiniva, 2) AS iva,     
+    @precio := ROUND(@consumoafacturar * b.preciomcubsug, 2) AS precio,
+    @importebruto := ROUND(@precio * 1, 2) AS importebruto,
+    @porcentajedescuento := ROUND((a.descuento * 100) / @importebruto, 4) AS porcentajedescuento,
+    @importeneto := ROUND((@importebruto - a.descuento) / 1.12, 2) AS importeneto,
+    @importeiva := ROUND(@importebruto - a.descuento - @importeneto, 2) AS importeiva,
+    @importetotal := ROUND(@importeneto + @importeiva, 2)  AS importetotal,
+    a.descuento,
+    @descuentosiniva := ROUND((a.descuento / 1.12), 2) AS descuentosiniva,
+    @descuentoiva := ROUND(a.descuento - @descuentosiniva, 2) AS descuentoiva,    
+    @preciocnv := ROUND(@precio / $d->tc, 2) AS preciocnv,
+    @importebrutocnv := ROUND(@importebruto / $d->tc, 2) AS importebrutocnv,
+    @importenetocnv := ROUND(@importeneto / $d->tc, 2) AS importenetocnv,
+    @importeivacnv := ROUND(@importeiva / $d->tc, 2) AS importeivacnv,
+    @importetotalcnv := ROUND(@importetotal / $d->tc, 2)  AS importetotalcnv,
+    @descuentocnv := ROUND(a.descuento / $d->tc, 2) AS descuentocnv,
+    @descuentosinivacnv := ROUND(@descuentosiniva / $d->tc, 2) AS descuentosinivacnv,
+    @descuentoivacnv := ROUND(@descuentoiva / $d->tc, 2) AS descuentoivacnv,    
+    0.00 AS isrporretener, RetISR(d.id, b.idtiposervicio) as retenerisr, 0.00 AS ivaporretener, RetIVA(d.id, b.idtiposervicio) AS reteneriva, c.idtipocliente, d.nombre, d.nombrecorto, 
+    FacturarA(d.id, b.idtiposervicio) AS facturara, NitFacturarA(d.id, b.idtiposervicio) AS nit, DirFacturarA(d.id, b.idtiposervicio) AS direccion, PorcentajeRetIVA(d.id, b.idtiposervicio) AS porcentajeretiva, 
+    f.desctiposervventa AS tipo, 0.00 AS totapagar, c.id AS idcontrato, d.id AS idcliente, UPPER(f.desctiposervventa) AS tipo, UPPER(g.nomproyecto) AS proyecto, h.nombre AS unidad, 
+    (SELECT nombre FROM mes WHERE id = a.mes) AS nommes, b.idtiposervicio, DATE_FORMAT(FechaLecturaAnterior(a.idserviciobasico, a.mes, a.anio), '%d/%m/%Y') AS fechaanterior, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechaactual, 
+    a.fechacorte, a.conceptoadicional, 0.00 AS isrporretenercnv, 0.00 AS ivaporretenercnv, 0.00 AS totapagar, 0.00 AS totapagarcnv, 
+    1 AS facturar 
+    FROM lecturaservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico INNER JOIN contrato c ON c.id = (SELECT b.id FROM contrato b WHERE FIND_IN_SET(a.idunidad, b.idunidad) LIMIT 1) 
+    INNER JOIN cliente d ON d.id = c.idcliente INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio 
+    INNER JOIN proyecto g ON g.id = a.idproyecto INNER JOIN unidad h ON h.id = a.idunidad 
+    WHERE a.estatus = 2 AND b.pagacliente = 0 AND a.mes <= MONTH('$d->fvencestr') AND a.anio <= YEAR('$d->fvencestr') AND b.idempresa = $d->idempresa AND 
+    (c.inactivo = 0 OR (c.inactivo = 1 AND c.fechainactivo > '$d->fvencestr'))
+    ORDER BY g.nomproyecto, CAST(digits(h.nombre) AS UNSIGNED), h.nombre";
+    $pendientes = $db->getQuery($query);
+    
+    $cntPendientes = count($pendientes);
+    for($i = 0; $i < $cntPendientes; $i++) {
+        $pendiente = $pendientes[$i];
+        $pendiente = calculaImpuestosYTotal($db, $d, $pendientes[$i]);
+    }
+    print json_encode($pendientes);
+});
+
+function calculaImpuestosYTotal($db, $d, $factura) {
+    $factura->isrporretener = (int)$factura->retenerisr > 0 ? $db->calculaISR((float)$factura->importeneto) : 0.00;
+    $factura->isrporretenercnv = round($factura->isrporretener / (float)$d->tc, 2);
+    $factura->ivaporretener = (int)$factura->reteneriva > 0 ? $db->calculaRetIVA((float)$factura->importeneto, ((int)$factura->idtipocliente == 1 ? true : false), (float)$factura->importetotal, ((int)$factura->idtipocliente == 2 ? true : false), (float)$factura->importeiva, (float)$factura->porcentajeretiva) : 0.00;
+    $factura->ivaporretenercnv = round($factura->ivaporretener / (float)$d->tc, 2);
+    $factura->totapagar = round((float)$factura->importetotal - ($factura->isrporretener + $factura->ivaporretener), 2);
+    $factura->totapagarcnv = round($factura->totapagar / (float)$d->tc, 2);
+    return $factura;
+}
+
 $app->post('/proyeccion', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
@@ -222,6 +284,93 @@ $app->post('/genfact', function(){
 
     print json_encode('Generación de facturas completada...');
 
+});
+
+$app->post('/genfactfel', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $params = $d->params;
+    $pendientes = $d->pendientes;
+    $db = new dbcpm();
+    $n2l = new NumberToLetterConverter();
+    
+    foreach($pendientes as $p){
+
+        if(round((float)$p->consumoafacturar, 2) > 0 && round((float)$p->totapagar, 2) > 0){
+
+            $descripcion = $p->tipo.' DE '.$p->proyecto.' '.$p->unidad.', Contador: '.$p->numidentificacion.', Consumo(m3): '.$p->consumoafacturar.' Mes de '.$p->nommes.' '.$p->anio;
+            $p->nit = strtoupper(preg_replace("/[^a-zA-Z0-9]+/", "", $p->nit));
+
+            $query = "INSERT INTO factura(";
+            $query.= "idempresa, idtipofactura, idcontrato, idcliente, ";
+            $query.= "fechaingreso, mesiva, fecha, idtipoventa, conceptomayor, iva, ";
+            $query.= "total, subtotal, totalletras, idmoneda, tipocambio, ";
+            $query.= "retisr, retiva, totdescuento, nit, nombre, direccion, montocargoiva, montocargoflat, ";
+            $query.= "importebruto, importeneto, importeiva, importetotal, descuentosiniva, descuentoiva, ";
+            $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv ";
+            $query.= ") VALUES (";
+            $query.= "$params->idempresa, 1, $p->idcontrato, $p->idcliente, ";
+            $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '$descripcion', $p->iva, ";
+            $query.= "$p->totapagar, ".((float)$p->montoconiva - (float)$p->descuento).", '".$n2l->to_word($p->totapagar, 'GTQ')."', 1, $params->tc, ";
+            $query.= "$p->isrporretener, $p->ivaporretener, $p->descuento, '$p->nit', '$p->facturara', '$p->direccion', $p->montoconiva, $p->montoconiva, ";
+            $query.= "$p->importebruto, $p->importeneto, $p->importeiva, $p->importetotal, $p->descuentosiniva, $p->descuentoiva, ";
+            $query.= "$p->importebrutocnv, $p->importenetocnv, $p->importeivacnv, $p->importetotalcnv, $p->descuentosinivacnv, $p->descuentoivacnv";            
+            $query.= ")";
+            //echo $query.'<br/>';
+
+            $db->doQuery($query);
+            $lastid = $db->getLastId();
+
+            if((int)$lastid > 0) {
+                //Inserta detalle de factura
+                $conceptoAdicional = 'NULL';
+                if(isset($p->conceptoadicional)){
+                    if(trim($p->conceptoadicional) !== ''){
+                        $conceptoAdicional = "'".trim($p->conceptoadicional)."'";
+                    }
+                }
+
+                $query = "INSERT INTO detfact(";
+                $query.= "idfactura, cantidad, descripcion, preciounitario, preciounitariocnv, preciotot, idtiposervicio, mes, anio, descuento, ";
+                $query.= "conceptoadicional, descuentocnv, ";
+                $query.= "importebruto, importeneto, importeiva, importetotal, descuentosiniva, descuentoiva, ";
+                $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv, porcentajedescuento, ";
+                $query.= "precio, preciocnv";                
+                $query.= ") VALUES(";                
+                $query.= "$lastid, 1, '$descripcion', $p->montoconiva, $p->importebrutocnv, $p->montoconiva, $p->idtiposervicio, $p->mes, $p->anio, $p->descuento, ";
+                $query.= "$conceptoAdicional, $p->descuentocnv, ";
+                $query.= "$p->importebruto, $p->importeneto, $p->importeiva, $p->importetotal, $p->descuentosiniva, $p->descuentoiva, ";
+                $query.= "$p->importebrutocnv, $p->importenetocnv, $p->importeivacnv, $p->importetotalcnv, $p->descuentosinivacnv, $p->descuentoivacnv, $p->porcentajedescuento,";
+                $query.= "$p->precio, $p->preciocnv";
+                $query.= ")";
+                $db->doQuery($query);
+                $lastidDetalle = $db->getLastId();
+
+                if((int)$lastidDetalle > 0) {
+                    $query = "UPDATE detfact SET descripcionlarga = TRIM(CONCAT(descripcion, ' ', IFNULL(conceptoadicional, ''))) WHERE id = $lastidDetalle";
+                    $db->doQuery($query);
+
+                    $query = "UPDATE lecturaservicio SET estatus = 3, facturado = 1, idfactura = $lastid WHERE id = $p->id";
+                    $db->doQuery($query);
+    
+                    $query = "UPDATE serviciobasico SET ultimalecturafact = $p->lectura WHERE id = $p->idserviciobasico";
+                    $db->doQuery($query);
+    
+                    if((int)$lastid > 0){
+                        $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
+                        $data = ['ids' => $lastid, 'idcontrato' => 1];
+                        $db->CallJSReportAPI('POST', $url, json_encode($data));
+                    }                    
+                }
+            }
+        }else{
+            $query = "UPDATE lecturaservicio SET estatus = 3, facturado = 1, idfactura = 0 WHERE id = $p->id";
+            $db->doQuery($query);
+
+            $query = "UPDATE serviciobasico SET ultimalecturafact = $p->lectura WHERE id = $p->idserviciobasico";
+            $db->doQuery($query);
+        }
+    }
+    print json_encode('Generación de facturas completada...');
 });
 
 $app->post('/rptagua', function(){
