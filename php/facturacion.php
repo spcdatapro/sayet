@@ -406,8 +406,13 @@ $app->post('/genfactfel', function() {
     $n2l = new NumberToLetterConverter();
     
     //print json_encode($pendientes);
+    $query = "SELECT IFNULL(seriefel, 'A') AS seriefel, IFNULL(correlativofel, 0) AS correlativofel FROM empresa WHERE id = $params->idempresa";
+    $datosFel = $db->getQuery($query)[0];
+    $datosFel->correlativofel = (int)$datosFel->correlativofel;
     
     foreach($pendientes as $p) {
+
+        $datosFel->correlativofel++;
 
         $montoletras = (int)$p->idmonedafact == 1 ? $n2l->to_word($p->totapagar, 'GTQ') : $n2l->to_word($p->totapagarcnv, 'USD');        
         $p->nit = strtoupper(preg_replace("/[^a-zA-Z0-9]+/", "", $p->nit));
@@ -419,7 +424,8 @@ $app->post('/genfactfel', function() {
         $query.= "retisr, retiva, totdescuento, nit, nombre, direccion, idmonedafact,";
         $query.= "subtotalcnv, totalcnv, retivacnv, retisrcnv, totdescuentocnv,";
         $query.= "importebruto, importeneto, importeiva, importetotal, descuentosiniva, descuentoiva, ";
-        $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv ";
+        $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv, ";
+        $query.= "serieadmin, numeroadmin";
         $query.= ") VALUES (";
         $query.= "$params->idempresa, 1, $p->idcontrato, $p->idcliente, ";
         $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '". str_replace(',', ', ', strip_tags($p->tipo))."', $p->iva, ";
@@ -427,15 +433,19 @@ $app->post('/genfactfel', function() {
         $query.= "$p->isrporretener, $p->ivaporretener, $p->descuentoconiva, '$p->nit', '$p->facturara', '$p->direccion', $p->idmonedafact, ";
         $query.= "$p->montoconivacnv, $p->totapagarcnv, $p->ivaporretenercnv, $p->isrporretenercnv, $p->descuentoconivacnv, ";
         $query.= "$p->importebruto, $p->importeneto, $p->importeiva, $p->importetotal, $p->descuentosiniva, $p->descuentoiva, ";
-        $query.= "$p->importebrutocnv, $p->importenetocnv, $p->importeivacnv, $p->importetotalcnv, $p->descuentosinivacnv, $p->descuentoivacnv";
+        $query.= "$p->importebrutocnv, $p->importenetocnv, $p->importeivacnv, $p->importetotalcnv, $p->descuentosinivacnv, $p->descuentoivacnv, ";
+        $query.= "'$datosFel->seriefel', $datosFel->correlativofel";
         $query.= ")";
         //print $query;
+        //die();
         $lastid = 0;
         if((float)$p->montoconiva != 0){
             $db->doQuery($query);
             $lastid = $db->getLastId();
         }
         if((int)$lastid > 0) {
+            $query = "UPDATE empresa SET correlativofel = $datosFel->correlativofel WHERE id = $params->idempresa";
+            $db->doQuery($query);
             foreach($p->detalle as $det) {
                 if($det->facturar == 1){
                     $conceptoAdicional = 'NULL';
@@ -691,15 +701,17 @@ $app->post('/genfel', function() use($app) {
     $query = "SELECT 1 AS tiporegistro, DATE_FORMAT(a.fecha, '%Y%m%d') AS fechadocumento, b.siglasfel AS tipodocumento, a.nit AS nitcomprador, a.idmonedafact AS codigomoneda, 
     IF(a.idmonedafact = 1, 1, ROUND(a.tipocambio, 4)) AS tasacambio, a.id AS ordenexterno, 'S' AS tipoventa, 1 AS destinoventa, 'S' AS enviarcorreo, 
     IF(a.nit <> 'CF', '', IF(LENGTH(a.nombre) > 0, a.nombre, 'Consumidor final')) AS nombrecomprador, IF(LENGTH(a.direccion) > 0, a.direccion, 'Ciudad') AS direccion, 
-    '' AS numeroacceso, '' AS serieadmin, '' AS numeroadmin, c.nombrecorto, a.importebrutocnv AS montodol, ROUND(a.tipocambio, 4) AS tipocambio, TRUNCATE(a.totalcnv, 2) AS pagonetodol, 
-    TRUNCATE(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2) AS pagoneto, TRUNCATE(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2) AS retiva, TRUNCATE(IF(a.idmonedafact = 1, a.retisr, a.retisrcnv), 2) AS retisr, 
-    IF(a.idmonedafact = 1, a.importebruto, a.importebrutocnv) AS monto, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.nombre, d.simbolo AS monedafact, 1 AS descargar
+    '' AS numeroacceso, IFNULL(a.serieadmin, 'A') AS serieadmin, a.numeroadmin, c.nombrecorto, FORMAT(a.importebrutocnv, 2) AS montodol, ROUND(a.tipocambio, 4) AS tipocambio, FORMAT(TRUNCATE(a.totalcnv, 2), 2) AS pagonetodol, 
+    FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2), 2) AS pagoneto, FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2), 2) AS retiva, 
+    FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.retisr, a.retisrcnv), 2), 2) AS retisr, FORMAT(IF(a.idmonedafact = 1, a.importetotal, a.importetotalcnv), 2) AS monto, 
+    DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.nombre, d.simbolo AS monedafact, 1 AS descargar
     FROM factura a
     INNER JOIN tipofactura b ON b.id = a.idtipofactura
     LEFT JOIN cliente c ON c.id = a.idcliente
     LEFT JOIN moneda d ON d.id = a.idmonedafact
     WHERE a.id > 3680 AND a.total <> 0 AND a.idempresa = $d->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.anulada = 0 AND (ISNULL(a.firmaelectronica) OR TRIM(a.firmaelectronica) = '') ";
     $query.= $d->listafact != '' ? "AND a.id IN($d->listafact) " : '';
+    // print $query;
     $facturas = $db->getQuery($query);
     $cntFacturas = count($facturas);
     for($i = 0; $i < $cntFacturas; $i++) {

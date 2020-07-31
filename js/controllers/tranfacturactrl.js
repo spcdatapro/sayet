@@ -391,7 +391,7 @@
 
         $scope.factura = {
             id: 0, fechaingreso: moment().toDate(), fecha: moment().toDate(), idtipoventa: '2', idmoneda: 1, tipocambio: null, conceptomayor: undefined, idempresa: $scope.empredefault,
-            anioafecta: null, mesafecta: null, retenerisr: 0, reteneriva: 0, idproyecto: undefined, idcontrato: undefined, direccion: undefined, porretiva: 0.00
+            anioafecta: null, mesafecta: null, retenerisr: 0, reteneriva: 0, idproyecto: undefined, idcontrato: undefined, direccion: undefined, porretiva: 0.00, idtipofactura: 1
         };
         $scope.contratos = [];
         $scope.tiposfactura = [];
@@ -412,11 +412,12 @@
 
         $scope.$watch('factura.idempresa', function (newValue, oldValue) {
             if (newValue != null && newValue != undefined) {
-                $scope.setTipoFactura(newValue);
+                // $scope.setTipoFactura(newValue);
                 $scope.loadProyectos(newValue);
             }
         });
 
+        /*
         $scope.setTipoFactura = function (idempresa) {
             for (var i = 0; i < $scope.empresas.length; i++) {
                 if (+$scope.empresas[i].id == +idempresa) {
@@ -425,6 +426,7 @@
                 }
             }
         };
+        */
 
         $scope.loadProyectos = function (idempresa) {
             proyectoSrvc.lstProyectosPorEmpresa(+idempresa).then(function (d) { $scope.proyectos = d; });
@@ -525,6 +527,7 @@
         };
 
         function setObjFact(obj) {
+            obj.idtipofactura = 1;
             obj.fechastr = moment(obj.fecha).format('YYYY-MM-DD');
             obj.fechaingresostr = moment(obj.fechaingreso).format('YYYY-MM-DD');
             obj.mesiva = moment(obj.fechaingreso).month() + 1;
@@ -544,7 +547,7 @@
             $scope.factura = {
                 id: 0, fechaingreso: moment().toDate(), fecha: moment().toDate(), idtipoventa: '2', idmoneda: 1, tipocambio: null, conceptomayor: undefined,
                 idempresa: undefined, anioafecta: null, mesafecta: null, retenerisr: 0, reteneriva: 0, direccion: undefined, idproyecto: undefined,
-                idtipofactura: (+$scope.factura.idtipofactura > 0 ? $scope.factura.idtipofactura : undefined), porretiva: 0.00
+                idtipofactura: 1, porretiva: 0.00
             };
             $scope.factura.idempresa = $scope.empredefault;
             $scope.periodoCerrado = false;
@@ -598,6 +601,7 @@
             obj.anio = $scope.factura.anioafecta;
             obj.preciotot = parseFloat((+obj.cantidad * +obj.preciounitario).toFixed(2));
             obj.conceptomayor = obj.conceptomayor != null && obj.conceptomayor != undefined ? obj.conceptomayor : '';
+            obj.tipocambio = $scope.factura.tipocambio;
             return obj;
         }
 

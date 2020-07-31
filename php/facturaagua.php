@@ -292,8 +292,14 @@ $app->post('/genfactfel', function() {
     $pendientes = $d->pendientes;
     $db = new dbcpm();
     $n2l = new NumberToLetterConverter();
+
+    $query = "SELECT IFNULL(seriefel, 'A') AS seriefel, IFNULL(correlativofel, 0) AS correlativofel FROM empresa WHERE id = $params->idempresa";
+    $datosFel = $db->getQuery($query)[0];
+    $datosFel->correlativofel = (int)$datosFel->correlativofel;
     
     foreach($pendientes as $p){
+
+        $datosFel->correlativofel++;
 
         if(round((float)$p->consumoafacturar, 2) > 0 && round((float)$p->totapagar, 2) > 0){
 
@@ -306,14 +312,16 @@ $app->post('/genfactfel', function() {
             $query.= "total, subtotal, totalletras, idmoneda, tipocambio, ";
             $query.= "retisr, retiva, totdescuento, nit, nombre, direccion, montocargoiva, montocargoflat, ";
             $query.= "importebruto, importeneto, importeiva, importetotal, descuentosiniva, descuentoiva, ";
-            $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv ";
+            $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv, ";
+            $query.= "serieadmin, numeroadmin";
             $query.= ") VALUES (";
             $query.= "$params->idempresa, 1, $p->idcontrato, $p->idcliente, ";
             $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '$descripcion', $p->iva, ";
             $query.= "$p->totapagar, ".((float)$p->montoconiva - (float)$p->descuento).", '".$n2l->to_word($p->totapagar, 'GTQ')."', 1, $params->tc, ";
             $query.= "$p->isrporretener, $p->ivaporretener, $p->descuento, '$p->nit', '$p->facturara', '$p->direccion', $p->montoconiva, $p->montoconiva, ";
             $query.= "$p->importebruto, $p->importeneto, $p->importeiva, $p->importetotal, $p->descuentosiniva, $p->descuentoiva, ";
-            $query.= "$p->importebrutocnv, $p->importenetocnv, $p->importeivacnv, $p->importetotalcnv, $p->descuentosinivacnv, $p->descuentoivacnv";            
+            $query.= "$p->importebrutocnv, $p->importenetocnv, $p->importeivacnv, $p->importetotalcnv, $p->descuentosinivacnv, $p->descuentoivacnv, ";
+            $query.= "'$datosFel->seriefel', $datosFel->correlativofel";
             $query.= ")";
             //echo $query.'<br/>';
 
@@ -321,6 +329,8 @@ $app->post('/genfactfel', function() {
             $lastid = $db->getLastId();
 
             if((int)$lastid > 0) {
+                $query = "UPDATE empresa SET correlativofel = $datosFel->correlativofel WHERE id = $params->idempresa";
+                $db->doQuery($query);
                 //Inserta detalle de factura
                 $conceptoAdicional = 'NULL';
                 if(isset($p->conceptoadicional)){

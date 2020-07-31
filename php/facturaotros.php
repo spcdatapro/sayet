@@ -59,13 +59,22 @@ $app->get('/getfactura/:idfactura', function($idfactura){
 $app->post('/c', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+
     if(!isset($d->porretiva)){ $d->porretiva = 0.00; }
+    $d->nit = trim($d->nit) == '' ? 'NULL' : ("'".(strtoupper(preg_replace("/[^a-zA-Z0-9]+/", "", $d->nit)))."'");
+    $d->nombre = trim($d->nombre) == '' ? 'NULL' : ("'".trim($d->nombre)."'");
+    $d->direccion = trim($d->direccion) == '' ? 'Ciudad' : ("'".trim($d->direccion)."'");
+
+    $query = "SELECT IFNULL(seriefel, 'A') AS seriefel, IFNULL(correlativofel, 0) AS correlativofel FROM empresa WHERE id = $d->idempresa";
+    $datosFel = $db->getQuery($query)[0];
+    $datosFel->correlativofel = (int)$datosFel->correlativofel;
+    $datosFel->correlativofel++;
+
     $query = "INSERT INTO factura(";
-    $query.= "idempresa, idtipofactura, idcontrato, idcliente, nit, nombre, serie, numero, fechaingreso, mesiva, fecha, idtipoventa, conceptomayor, idmoneda, tipocambio, esinsertada,";
-    $query.= "reteneriva, retenerisr, mesafecta, anioafecta, direccion, idproyecto, porretiva) VALUES(";
-    $query.= "$d->idempresa, $d->idtipofactura, $d->idcontrato, $d->idcliente, ".($d->nit == '' ? "NULL" : "'".$d->nit."'").", ".($d->nombre == '' ? "NULL" : "'".$d->nombre."'").", ";
-    $query.= ($d->serie == '' ? "NULL" : "'".$d->serie."'").", ".($d->numero == '' ? "NULL" : "'".$d->numero."'").", '$d->fechaingresostr', $d->mesiva, '$d->fechastr', $d->idtipoventa, ";
-    $query.= "NULL, 1, $d->tipocambio, 1, $d->reteneriva, $d->retenerisr, $d->mesafecta, $d->anioafecta, '$d->direccion', $d->idproyecto, $d->porretiva";
+    $query.= "idempresa, idtipofactura, idcontrato, idcliente, nit, nombre, fechaingreso, mesiva, fecha, idtipoventa, idmoneda, tipocambio, esinsertada,";
+    $query.= "reteneriva, retenerisr, mesafecta, anioafecta, direccion, idproyecto, porretiva, serieadmin, numeroadmin) VALUES(";
+    $query.= "$d->idempresa, $d->idtipofactura, $d->idcontrato, $d->idcliente, $d->nit, $d->nombre, '$d->fechaingresostr', $d->mesiva, '$d->fechastr', $d->idtipoventa, 1, $d->tipocambio, 1,";
+    $query.= "$d->reteneriva, $d->retenerisr, $d->mesafecta, $d->anioafecta, $d->direccion, $d->idproyecto, $d->porretiva, '$datosFel->seriefel', $datosFel->correlativofel";
     $query.= ")";
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
@@ -74,12 +83,16 @@ $app->post('/c', function(){
 $app->post('/u', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+
     if(!isset($d->porretiva)){ $d->porretiva = 0.00; }
+    $d->nit = trim($d->nit) == '' ? 'NULL' : ("'".(strtoupper(preg_replace("/[^a-zA-Z0-9]+/", "", $d->nit)))."'");
+    $d->nombre = trim($d->nombre) == '' ? 'NULL' : ("'".trim($d->nombre)."'");
+    $d->direccion = trim($d->direccion) == '' ? 'Ciudad' : ("'".trim($d->direccion)."'");
+
     $query = "UPDATE factura SET ";
-    $query.= "idempresa = $d->idempresa, idtipofactura = $d->idtipofactura, idcontrato = $d->idcontrato, idcliente = $d->idcliente, nit = ".($d->nit == '' ? "NULL" : "'".$d->nit."'").", ";
-    $query.= "nombre = ".($d->nombre == '' ? "NULL" : "'".$d->nombre."'").", serie = ".($d->serie == '' ? "NULL" : "'".$d->serie."'").", numero = ".($d->numero == '' ? "NULL" : "'".$d->numero."'").", ";
-    $query.= "fechaingreso = '$d->fechaingresostr', mesiva = $d->mesiva, fecha = '$d->fechastr', idtipoventa = $d->idtipoventa, tipocambio = $d->tipocambio, ";
-    $query.= "reteneriva = $d->reteneriva, retenerisr = $d->retenerisr, mesafecta = $d->mesafecta, anioafecta = $d->anioafecta, direccion = '$d->direccion', idproyecto = $d->idproyecto, porretiva = $d->porretiva ";
+    $query.= "idempresa = $d->idempresa, idtipofactura = $d->idtipofactura, idcontrato = $d->idcontrato, idcliente = $d->idcliente, nit = $d->nit, ";
+    $query.= "nombre = $d->nombre, fechaingreso = '$d->fechaingresostr', mesiva = $d->mesiva, fecha = '$d->fechastr', idtipoventa = $d->idtipoventa, tipocambio = $d->tipocambio, ";
+    $query.= "reteneriva = $d->reteneriva, retenerisr = $d->retenerisr, mesafecta = $d->mesafecta, anioafecta = $d->anioafecta, direccion = $d->direccion, idproyecto = $d->idproyecto, porretiva = $d->porretiva ";
     $query.= "WHERE id = $d->id";
     //print $query;
     $db->doQuery($query);
@@ -88,7 +101,7 @@ $app->post('/u', function(){
     $db->doQuery($query);
 
     $d->idfactura = $d->id;
-    updateDatosFactura($d);
+    updateDatosFacturaFEL($d);
 });
 
 $app->post('/d', function(){
@@ -135,25 +148,35 @@ function recalc($d){
     return $r;
 }
 
+function calculaImpuestosYTotal($db, $d, $factura) {
+    $factura->isrporretener = (int)$factura->retenerisr > 0 ? $db->calculaISR((float)$factura->montosiniva) : 0.00;
+    $factura->isrporretenercnv = round($factura->isrporretener / (float)$d->tc, 2);
+    $factura->ivaporretener = (int)$factura->reteneriva > 0 ? $db->calculaRetIVA((float)$factura->montosiniva, ((int)$factura->idtipocliente == 1 ? true : false), (float)$factura->montoconiva, ((int)$factura->idtipocliente == 2 ? true : false), (float)$factura->iva, (float)$factura->porcentajeretiva) : 0.00;
+    $factura->ivaporretenercnv = round($factura->ivaporretener / (float)$d->tc, 2);
+    $factura->totapagar = round((float)$factura->montoconiva - ($factura->isrporretener + $factura->ivaporretener), 2);
+    $factura->totapagarcnv = round($factura->totapagar / (float)$d->tc, 2);
+    return $factura;
+}
+
 function updateDatosFactura($d){
     $db = new dbcpm();
     $n2l = new NumberToLetterConverter();
 
     $data = new stdClass();
-    $data->montoconiva = (float)$db->getOneField("SELECT SUM(preciotot) AS total FROM detfact WHERE idfactura = $d->idfactura");
-    $data->totdescuento = (float)$db->getOneField("SELECT SUM(descuento) AS totdesc FROM detfact WHERE idfactura = $d->idfactura");
-    $data->montosiniva = round((float)$data->montoconiva / 1.12, 7);
+    $data->montoconiva = round((float)$db->getOneField("SELECT SUM(preciotot) FROM detfact WHERE idfactura = $d->idfactura"), 2);
+    $data->totdescuento = round((float)$db->getOneField("SELECT SUM(descuento) FROM detfact WHERE idfactura = $d->idfactura"), 2);
+    $data->montosiniva = round((float)$data->montoconiva / 1.12, 2);
     $data->idempresa = (int)$db->getOneField("SELECT idempresa FROM factura WHERE id = $d->idfactura");
-    $data->idtipocliente = (int)$db->getOneField("SELECT idtipocliente FROM contrato WHERE id = (SELECT idcontrato FROM factura WHERE id = $d->idfactura)");
+    $data->idtipocliente = (int)$db->getOneField("SELECT idtipocliente FROM contrato WHERE id = (SELECT idcontrato FROM factura WHERE id = $d->idfactura)");    
     $data->reteneriva = (int)$db->getOneField("SELECT reteneriva FROM factura WHERE id = $d->idfactura");
     $data->retenerisr = (int)$db->getOneField("SELECT retenerisr FROM factura WHERE id = $d->idfactura");
     $data->porretiva = (float)$db->getOneField("SELECT porretiva FROM factura WHERE id = $d->idfactura");
     $data->iva = round($data->montoconiva - $data->montosiniva, 2);
-    $data->montocargoiva = (float)$db->getOneField("SELECT SUM(montoconiva) FROM detfact WHERE idfactura = $d->idfactura");
+    $data->montocargoiva = $data->montoconiva;
     $tc = (float)$db->getOneField("SELECT tipocambio FROM factura WHERE id = $d->idfactura");
-    $data->montocargoflat = (float)$db->getOneField("SELECT ROUND(SUM(montoconiva / 1.12) / $tc, 2) FROM detfact WHERE idfactura = $d->idfactura");
+    $data->montocargoflat = round($data->montoconiva / $tc, 2);
 
-    $calculo = recalc($data);
+    $calculo = recalc($d);
 
     $query = "SELECT GROUP_CONCAT(DISTINCT TRIM(descripcion) SEPARATOR ', ') FROM detfact WHERE idfactura = $d->idfactura";
     $conceptomayor = $db->getOneField($query);
@@ -171,18 +194,97 @@ function updateDatosFactura($d){
     $db->CallJSReportAPI('POST', $url, json_encode($dataa));
 }
 
+function updateDatosFacturaFEL($d){
+    $db = new dbcpm();
+    $n2l = new NumberToLetterConverter();
+
+    $data = new stdClass();
+    $data->montoconiva = round((float)$db->getOneField("SELECT SUM(importetotal) FROM detfact WHERE idfactura = $d->idfactura"), 2);
+    $data->totdescuento = round((float)$db->getOneField("SELECT SUM(descuento) FROM detfact WHERE idfactura = $d->idfactura"), 2);
+    $data->montosiniva = round((float)$db->getOneField("SELECT SUM(importeneto) FROM detfact WHERE idfactura = $d->idfactura"), 2);    
+    $data->idempresa = (int)$db->getOneField("SELECT idempresa FROM factura WHERE id = $d->idfactura");
+    $data->idtipocliente = (int)$db->getOneField("SELECT idtipocliente FROM contrato WHERE id = (SELECT idcontrato FROM factura WHERE id = $d->idfactura)");    
+    $data->reteneriva = (int)$db->getOneField("SELECT reteneriva FROM factura WHERE id = $d->idfactura");
+    $data->retenerisr = (int)$db->getOneField("SELECT retenerisr FROM factura WHERE id = $d->idfactura");
+    $data->porcentajeretiva = (float)$db->getOneField("SELECT porretiva FROM factura WHERE id = $d->idfactura");
+    $data->iva = round($data->montoconiva - $data->montosiniva, 2);
+    // $data->montocargoiva = $data->montoconiva;
+    $d->tc = (float)$db->getOneField("SELECT tipocambio FROM factura WHERE id = $d->idfactura");    
+
+    $calculo = calculaImpuestosYTotal($db, $d, $data);
+
+    $query = "SELECT GROUP_CONCAT(DISTINCT TRIM(descripcion) SEPARATOR ', ') FROM detfact WHERE idfactura = $d->idfactura";
+    $conceptomayor = $db->getOneField($query);
+    $conceptomayor = trim($conceptomayor) != '' ? ("'".trim($conceptomayor)."'") : 'NULL';
+
+    $query = "SELECT IFNULL(SUM(importebruto), 0.00) AS importebruto, IFNULL(SUM(importeneto), 0.00) AS importeneto, IFNULL(SUM(importeiva), 0.00) AS importeiva, IFNULL(SUM(descuentosiniva), 0.00) AS descuentosiniva, 
+    IFNULL(SUM(descuentoiva), 0.00) AS descuentoiva, IFNULL(SUM(importebrutocnv), 0.00) AS importebrutocnv, IFNULL(SUM(importenetocnv), 0.00) AS importenetocnv, IFNULL(SUM(importeivacnv), 0.00) AS importeivacnv, 
+    IFNULL(SUM(descuentosinivacnv), 0.00) AS descuentosinivacnv, IFNULL(SUM(descuentoivacnv), 0.00) AS descuentoivacnv, IFNULL(SUM(importetotal), 0.00) AS importetotal, IFNULL(SUM(importetotalcnv), 0.00) AS importetotalcnv
+    FROM detfact WHERE idfactura = $d->idfactura";
+    $importe = $db->getQuery($query)[0];
+
+    $query = "UPDATE factura SET iva = $data->iva, total = $calculo->totapagar, subtotal = $data->montoconiva, ";
+    $query.= "retisr = $calculo->isrporretener, retiva = $calculo->ivaporretener, totdescuento = $data->totdescuento, totalletras = '".$n2l->to_word($calculo->totapagar, 'GTQ')."', conceptomayor = $conceptomayor, ";
+    $query.= "importebruto = $importe->importebruto, importeneto = $importe->importeneto, importeiva = $importe->importeiva, importetotal = $importe->importetotal, descuentosiniva = $importe->descuentosiniva, ";
+    $query.= "descuentoiva = $importe->descuentoiva, importebrutocnv = $importe->importebrutocnv, importenetocnv = $importe->importenetocnv, importeivacnv = $importe->importeivacnv, importetotalcnv = $importe->importetotalcnv, ";
+    $query.= "descuentosinivacnv = $importe->descuentosinivacnv, descuentoivacnv = $importe->descuentoivacnv ";
+    $query.= "WHERE id = $d->idfactura";
+    $db->doQuery($query);
+
+
+    $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
+    $dataa = ['ids' => $d->idfactura, 'idcontrato' => (int)$db->getOneField("SELECT idcontrato FROM factura WHERE id = $d->idfactura")];
+    $db->CallJSReportAPI('POST', $url, json_encode($dataa));
+}
+
+function calcularImportes($d) {
+    $importe = new stdClass();
+
+    $importe->preciounitario = round((float)$d->preciounitario, 2);
+    $importe->descuento = round((float)$d->descuento, 2);
+    $importe->descuentosiniva = round($importe->descuento / 1.12, 2);
+    $importe->descuentoiva = round($importe->descuento - $importe->descuentosiniva, 2);
+    $importe->preciototal = round((int)$d->cantidad * $importe->preciounitario, 2);
+
+    $importe->bruto = round($d->cantidad * $importe->preciounitario, 2);
+    $importe->porcentajedescuento = round(($importe->descuento * 100) / $importe->bruto, 4);
+    $importe->neto = round(($importe->bruto - $importe->descuento) / 1.12, 2);
+    $importe->iva = round($importe->bruto - $importe->descuento - $importe->neto, 2);
+    $importe->total = round($importe->neto + $importe->iva, 2);
+
+    $importe->preciounitariocnv = round($importe->preciounitario / $d->tipocambio, 2);
+    $importe->descuentocnv = round($importe->descuento / $d->tipocambio, 2);
+
+    $importe->brutocnv = round($importe->bruto / $d->tipocambio, 2);
+    $importe->netocnv = round($importe->neto / $d->tipocambio, 2);
+    $importe->ivacnv = round($importe->iva / $d->tipocambio, 2);
+    $importe->totalcnv = round($importe->total / $d->tipocambio, 2);
+    $importe->descuentosinivacnv = round($importe->descuentosiniva / $d->tipocambio, 2);
+    $importe->descuentoivacnv = round($importe->descuentoiva / $d->tipocambio, 2);
+
+    return $importe;
+}
+
 $app->post('/cd', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
+    $importe = calcularImportes($d);
+
     $query = "INSERT INTO detfact(";
-    $query.= "idfactura, cantidad, idtiposervicio, mes, anio, descripcion, preciounitario, preciotot, descuento, montoconiva, montoflatconiva";
+    $query.= "idfactura, cantidad, descripcion, preciounitario, preciounitariocnv, preciotot, idtiposervicio, mes, anio, descuento, descuentocnv, ";
+    $query.= "importebruto, importeneto, importeiva, importetotal, descuentosiniva, descuentoiva, ";
+    $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv, porcentajedescuento, ";
+    $query.= "precio, preciocnv, descripcionlarga";
     $query.= ") VALUES(";
-    $query.= "$d->idfactura, $d->cantidad, $d->idtiposervicio, $d->mes, $d->anio, '$d->descripcion', ".round(((float)$d->preciotot - (float)$d->descuento)/(int)$d->cantidad, 2).", ".((float)$d->preciotot - (float)$d->descuento).", $d->descuento, $d->preciotot, $d->preciotot";
+    $query.= "$d->idfactura, $d->cantidad, '$d->descripcion', $importe->preciounitario, $importe->preciounitariocnv, $importe->preciototal, $d->idtiposervicio, $d->mes, $d->anio, $importe->descuento, $importe->descuentocnv, ";
+    $query.= "$importe->bruto, $importe->neto, $importe->iva, $importe->total, $importe->descuentosiniva, $importe->descuentoiva, ";
+    $query.= "$importe->brutocnv, $importe->netocnv, $importe->ivacnv, $importe->totalcnv, $importe->descuentosinivacnv, $importe->descuentoivacnv, $importe->porcentajedescuento, ";
+    $query.= "$importe->preciounitario, $importe->preciounitariocnv, '$d->descripcion'";
     $query.= ")";
     $db->doQuery($query);
     $lastid = $db->getLastId();
-    updateDatosFactura($d);
+    updateDatosFacturaFEL($d);
     print json_encode(['lastid' => $lastid]);
 });
 
@@ -190,12 +292,17 @@ $app->post('/ud', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
+    $importe = calcularImportes($d);
+
     $query = "UPDATE detfact SET ";
     $query.= "cantidad = $d->cantidad, idtiposervicio = $d->idtiposervicio, mes = $d->mes, anio = $d->anio, descripcion = '$d->descripcion', ";
-    $query.= "preciounitario = $d->preciounitario, preciotot = $d->preciotot, descuento = $d->descuento ";
+    $query.= "preciounitario = $importe->preciounitario, preciotot = $importe->preciototal, descuento = $importe->descuento, ";
+    $query.= "importebruto = $importe->bruto, importeneto = $importe->neto, importeiva = $importe->iva, importetotal = $importe->total, descuentosiniva = $importe->descuentosiniva, descuentoiva = $importe->descuentoiva, ";
+    $query.= "importebrutocnv = $importe->brutocnv, importenetocnv = $importe->netocnv, importeivacnv = $importe->ivacnv, importetotalcnv = $importe->totalcnv, descuentosinivacnv = $importe->descuentosinivacnv, ";
+    $query.= "descuentoivacnv = $importe->descuentoivacnv, precio = $importe->preciounitario, preciocnv = $importe->preciounitariocnv, descripcionlarga = '$d->descripcion' ";
     $query.= "WHERE id = $d->id";
     $db->doQuery($query);
-    updateDatosFactura($d);
+    updateDatosFacturaFEL($d);
 });
 
 $app->post('/dd', function(){
@@ -203,7 +310,7 @@ $app->post('/dd', function(){
     $db = new dbcpm();    
     $query = "DELETE FROM detfact WHERE id = $d->id";
     $db->doQuery($query);
-    updateDatosFactura($d);    
+    updateDatosFacturaFEL($d);    
 });
 
 $app->response()->setStatus(200);

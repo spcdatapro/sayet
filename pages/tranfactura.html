@@ -362,6 +362,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
+                                    <!--
                                     <div class="col-md-3">
                                         <div class="form-group required">
                                             <label for="selTipoFactura" class="control-label">Tipo de
@@ -373,6 +374,7 @@
                                             </select>
                                         </div>
                                     </div>
+                                    -->
                                     <div class="col-md-3">
                                         <div class="form-group required">
                                             <label for="txtCliente" class="control-label">Cliente:</label>
@@ -454,16 +456,31 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-8">
                                         <div class="form-group">
                                             <label for="txtFDir">Direcci&oacute;n:</label>
                                             <input name="txtFDir" id="txtFDir" type="text" class="form-control"
                                                 ng-model="factura.direccion" maxlength="250"
                                                 placeholder="Direcci&oacute;n del cliente..." />
+                                        </div>                                        
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group required">
+                                            <label for="txtFIng" class="control-label">Fecha de ingreso:</label>
+                                            <input name="txtFIng" id="txtFIng" type="date" class="form-control"
+                                                ng-model="factura.fechaingreso" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group required">
+                                            <label for="txtFFact" class="control-label">Fecha de factura:</label>
+                                            <input name="txtFFact" id="txtFFact" type="date" class="form-control"
+                                                ng-model="factura.fecha" required />
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
+                                <!--
+                                <div class="row">                                    
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label for="txtSerie">Serie:</label>
@@ -479,22 +496,9 @@
                                                 ng-model="factura.numero" maxlength="200"
                                                 placeholder="N&uacute;mero de factura..." />
                                         </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group required">
-                                            <label for="txtFIng" class="control-label">Fecha de ingreso:</label>
-                                            <input name="txtFIng" id="txtFIng" type="date" class="form-control"
-                                                ng-model="factura.fechaingreso" required />
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group required">
-                                            <label for="txtFFact" class="control-label">Fecha de factura:</label>
-                                            <input name="txtFFact" id="txtFFact" type="date" class="form-control"
-                                                ng-model="factura.fecha" required />
-                                        </div>
-                                    </div>
+                                    </div>                                
                                 </div>
+                                -->
                                 <div class="row">
                                     <div class="col-md-2">
                                         <div class="form-group required">

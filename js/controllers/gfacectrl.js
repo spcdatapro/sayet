@@ -78,7 +78,7 @@
             abreviatura = !!abreviatura ? abreviatura : '';
             $scope.pendientes.forEach(f => {
                 if (+f.descargar === 1) {
-                    facturas += `${f.tiporegistro}|${f.fechadocumento}|${f.tipodocumento}|${f.nitcomprador}|${f.codigomoneda}|${f.tasacambio}|${f.ordenexterno}|${f.tipoventa}|${f.destinoventa}|${f.enviarcorreo}|${f.nombrecomprador}|${f.direccion}|${f.nombrecorto}|$ ${f.montodol}|${f.tasacambio}|$ ${f.pagonetodol}|${f.monedafact} ${f.pagoneto}|${f.monedafact} ${f.retiva}|${f.monedafact} ${f.retisr}|${f.monedafact} ${f.monto}|${f.numeroacceso}|${f.serieadmin}|${f.numeroadmin}\n`;
+                    facturas += `${f.tiporegistro}|${f.fechadocumento}|${f.tipodocumento}|${f.nitcomprador}|${f.codigomoneda}|${f.tasacambio}|${f.ordenexterno}|${f.tipoventa}|${f.destinoventa}|${f.enviarcorreo}|${f.nombrecomprador}|${f.direccion}|${f.nombrecorto}|$ ${f.montodol}|${f.tipocambio}|$ ${f.pagonetodol}|${f.monedafact} ${f.pagoneto}|${f.monedafact} ${f.retiva}|${f.monedafact} ${f.retisr}|${f.monedafact} ${f.monto}|${f.numeroacceso}|${f.serieadmin}|${f.numeroadmin}\n`;
                     f.detalle.forEach(d => {
                         facturas += `${d.tiporegistro}|${d.cantidad}|${d.unidadmedida}|${d.precio}|${d.porcentajedescuento}|${d.importedescuento}|${d.importebruto}|${d.importeexento}|${d.importeneto}|${d.importeiva}|${d.importeotros}|${d.importetotal}|${d.producto}|${d.descripcion}|${d.tipoventa}\n`;
                     });
@@ -95,9 +95,30 @@
 
         $scope.showContent = function ($fileContent) {
             $scope.content = $fileContent;
-            $confirm({ text: '¿Desea actualizar las facturas con estos datos?', title: 'Archivo de respuesta de GFACE', ok: 'Sí', cancel: 'No' }).then(function () {
-                $scope.procesaArchivo($scope.content);
+            $confirm({ text: '¿Desea actualizar las facturas con estos datos?', title: 'Archivo de respuesta', ok: 'Sí', cancel: 'No' }).then(function () {
+                $scope.procesaArchivoFEL($scope.content);
             });
+        };
+
+        $scope.procesaArchivoFEL = (archivo) => {            
+            var cadena = archivo.split('\n');
+            // console.log(cadena); return;
+            var linea, facturas = [];
+            cadena.forEach(function (cad) {                
+                linea = cad.replace('\r', '').replace('\n', '').split('|');
+                // console.log(linea);
+                facturas.push({ id: +linea[8], firma: linea[7], serie: linea[2], numero: linea[3], nit: linea[4], nombre: linea[9], respuesta: cad });
+            });
+            // return;
+            // console.log(facturas); return;
+            if (facturas.length > 0) {
+                facturacionSrvc.respuestaGFACE(facturas).then(function (d) {
+                    //console.log(d.estatus);
+                    toaster.pop({ type: 'success', title: 'Proceso terminado', body: 'Las facturas fueron actualizadas con su firma.', timeout: 9000 });
+                    $scope.content = '';
+                    $('#txtFile').val(undefined);
+                })
+            }
         };
 
         $scope.procesaArchivo = function (archivo) {
