@@ -16,7 +16,7 @@
         $scope.showparamsh2o = true;
         $scope.paramsstr = '';
         $scope.empredefault = undefined;
-        $scope.allnone = 1;
+        $scope.allnone = '1';
         $scope.suma = { cantidad: 0, totmonto: 0.00 };
         $scope.paramsParqueo = { idempresa: undefined, idproyecto: undefined, fdel: moment().toDate(), fal: moment().toDate(), tc: 1.00 };
         $scope.periodoCerrado = false;
@@ -269,11 +269,11 @@
 
         $scope.updateFacturacion = function (obj) { enablePopOvers(); $scope.calculaMontos(); };
 
-        $scope.marcarDesmarcar = function () {
-            $scope.pendientes.forEach(function (pendiente) {
+        $scope.marcarDesmarcar = () => {
+            $scope.pendientes.forEach((pendiente) => {
                 pendiente.facturar = $scope.allnone;
             });
-            $scope.calculaMontos();
+            // $scope.calculaMontos();
         };
 
         $scope.calculaMontos = function () {

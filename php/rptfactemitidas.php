@@ -33,7 +33,8 @@ $app->post('/factemitidas', function(){
 
     $qGen = "SELECT a.id, a.idempresa, b.nomempresa AS empresa, b.abreviatura AS abreviaempre, a.serie, a.numero, 
     IF(a.anulada = 0, TRIM(a.nombre), 'ANULADA') AS cliente, IF(c.tipo IS NULL, TRIM(SUBSTR(a.conceptomayor, LOCATE('(', a.conceptomayor) + 1, LOCATE(')', a.conceptomayor) - 10)), c.tipo) AS tipo, 
-    IF(a.anulada = 0, IF(a.idmonedafact = 1, a.subtotal, a.subtotalcnv), 0.00) AS total, IF(c.periodo IS NULL, TRIM(SUBSTR(a.conceptomayor, (LOCATE(')', a.conceptomayor) + 1))), c.periodo) AS periodo, b.ordensumario, a.idmonedafact, f.simbolo AS monedafact
+    IF(a.anulada = 0, IF(a.idmonedafact = 1, a.subtotal, a.subtotalcnv), 0.00) AS total, IF(c.periodo IS NULL, TRIM(SUBSTR(a.conceptomayor, (LOCATE(')', a.conceptomayor) + 1))), c.periodo) AS periodo, b.ordensumario, 
+    a.idmonedafact, f.simbolo AS monedafact, a.serieadmin, a.numeroadmin
     FROM factura a 
     INNER JOIN empresa b ON b.id = a.idempresa 
     LEFT JOIN (
@@ -59,17 +60,17 @@ $app->post('/factemitidas', function(){
     $qGen.= (int)$d->idproyecto > 0 ? "AND e.idproyecto = $d->idproyecto " : '';
     $qGen.= (int)$d->idtsventa > 0 ? "AND (SELECT COUNT(idfactura) FROM detfact WHERE idfactura = a.id AND idtiposervicio = $d->idtsventa) > 0 " : '';
     $qGen.= (int)$d->soloanuladas == 0 ? '' : 'AND a.anulada = 1 ';
-    $qGen.= "ORDER BY a.serie, a.numero";
+    $qGen.= "ORDER BY a.serieadmin, a.numeroadmin, a.serie, a.numero";
 
     $query = "SELECT DISTINCT z.idempresa, z.empresa, 0.00 AS totfacturado, 0.00 AS totfacturadocnv FROM ($qGen) z ORDER BY z.ordensumario";
     $info->facturas = $db->getQuery($query);
     $cntEmpresas = count($info->facturas);
     for($i = 0; $i < $cntEmpresas; $i++){
         $empresa = $info->facturas[$i];
-        $query = "SELECT z.id, z.idempresa, z.empresa, z.abreviaempre, z.serie, z.numero, z.cliente, z.tipo, FORMAT(z.total, 2) AS total, z.periodo, z.monedafact ";
+        $query = "SELECT z.id, z.idempresa, z.empresa, z.abreviaempre, z.serie, z.numero, z.cliente, z.tipo, FORMAT(z.total, 2) AS total, z.periodo, z.monedafact, z.serieadmin, z.numeroadmin ";
         $query.= "FROM ($qGen) z ";
         $query.= "WHERE z.idempresa = $empresa->idempresa ";
-        $query.= "ORDER BY z.serie, z.numero";
+        $query.= "ORDER BY z.serieadmin, z.numeroadmin, z.serie, z.numero";
         $empresa->facturas = $db->getQuery($query);
         if(count($empresa->facturas) > 0){
             $query = "SELECT FORMAT(SUM(z.total), 2) FROM ($qGen) z WHERE z.idempresa = $empresa->idempresa AND z.idmonedafact = 1";

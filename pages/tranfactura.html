@@ -139,6 +139,14 @@
                                     <th class="text-center">Facturar</th>
                                 </thead>
                                 <tbody>
+                                    <tr>
+                                        <td colspan="5" class="text-right">
+                                            <label for="chkAllNone">Marcar/Desmarcar todos</label>
+                                        </td>
+                                        <td class="text-center" style="width: 6%;">
+                                            <input name="chkAllNone" id="chkAllNone" type="checkbox" ng-model="allnone" ng-true-value="'1'" ng-false-value="'0'" ng-change="marcarDesmarcar()"/>
+                                        </td>
+                                    </tr>
                                     <tr ng-repeat="p in pendientes | filter:fltrPends">
                                         <td style="width: 14%;">{{p.clientecorto}}</td>
                                         <td style="width: 34%;">{{p.facturara}}</td>
@@ -157,6 +165,14 @@
                                         <td class="text-center" style="width: 6%;">
                                             <input type="checkbox" ng-model="p.facturar" ng-true-value="'1'"
                                                 ng-false-value="'0'" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5" class="text-right">
+                                            <label for="chkAllNone1">Marcar/Desmarcar todos</label>
+                                        </td>
+                                        <td class="text-center" style="width: 6%;">
+                                            <input name="chkAllNone1" id="chkAllNone1" type="checkbox" ng-model="allnone" ng-true-value="'1'" ng-false-value="'0'" ng-change="marcarDesmarcar()"/>
                                         </td>
                                     </tr>
                                 </tbody>
