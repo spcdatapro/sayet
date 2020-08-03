@@ -313,7 +313,7 @@ $app->post('/genfactfel', function() {
             $query.= "retisr, retiva, totdescuento, nit, nombre, direccion, montocargoiva, montocargoflat, ";
             $query.= "importebruto, importeneto, importeiva, importetotal, descuentosiniva, descuentoiva, ";
             $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv, ";
-            $query.= "serieadmin, numeroadmin";
+            $query.= "serieadmin, numeroadmin, totalcnv";
             $query.= ") VALUES (";
             $query.= "$params->idempresa, 1, $p->idcontrato, $p->idcliente, ";
             $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '$descripcion', $p->iva, ";
@@ -321,7 +321,7 @@ $app->post('/genfactfel', function() {
             $query.= "$p->isrporretener, $p->ivaporretener, $p->descuento, '$p->nit', '$p->facturara', '$p->direccion', $p->montoconiva, $p->montoconiva, ";
             $query.= "$p->importebruto, $p->importeneto, $p->importeiva, $p->importetotal, $p->descuentosiniva, $p->descuentoiva, ";
             $query.= "$p->importebrutocnv, $p->importenetocnv, $p->importeivacnv, $p->importetotalcnv, $p->descuentosinivacnv, $p->descuentoivacnv, ";
-            $query.= "'$datosFel->seriefel', $datosFel->correlativofel";
+            $query.= "'$datosFel->seriefel', $datosFel->correlativofel, $p->totapagarcnv";
             $query.= ")";
             //echo $query.'<br/>';
 

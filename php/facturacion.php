@@ -701,7 +701,7 @@ $app->post('/genfel', function() use($app) {
     $query = "SELECT 1 AS tiporegistro, DATE_FORMAT(a.fecha, '%Y%m%d') AS fechadocumento, b.siglasfel AS tipodocumento, a.nit AS nitcomprador, a.idmonedafact AS codigomoneda, 
     IF(a.idmonedafact = 1, 1, ROUND(a.tipocambio, 4)) AS tasacambio, a.id AS ordenexterno, 'S' AS tipoventa, 1 AS destinoventa, 'S' AS enviarcorreo, 
     IF(a.nit <> 'CF', '', IF(LENGTH(a.nombre) > 0, a.nombre, 'Consumidor final')) AS nombrecomprador, IF(LENGTH(a.direccion) > 0, a.direccion, 'Ciudad') AS direccion, 
-    '' AS numeroacceso, IFNULL(a.serieadmin, 'A') AS serieadmin, a.numeroadmin, c.nombrecorto, FORMAT(a.importebrutocnv, 2) AS montodol, ROUND(a.tipocambio, 4) AS tipocambio, FORMAT(TRUNCATE(a.totalcnv, 2), 2) AS pagonetodol, 
+    '' AS numeroacceso, IFNULL(a.serieadmin, 'A') AS serieadmin, a.numeroadmin, c.nombrecorto, FORMAT(a.importetotalcnv, 2) AS montodol, ROUND(a.tipocambio, 4) AS tipocambio, FORMAT(TRUNCATE(a.totalcnv, 2), 2) AS pagonetodol, 
     FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2), 2) AS pagoneto, FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2), 2) AS retiva, 
     FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.retisr, a.retisrcnv), 2), 2) AS retisr, FORMAT(IF(a.idmonedafact = 1, a.importetotal, a.importetotalcnv), 2) AS monto, 
     DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.nombre, d.simbolo AS monedafact, 1 AS descargar
@@ -720,7 +720,7 @@ $app->post('/genfel', function() use($app) {
         $query = "SELECT 2 AS tiporegistro, a.cantidad, 1 AS unidadmedida, TRUNCATE(IF(b.idmonedafact = 1, a.precio, a.preciocnv), 2) AS precio, a.porcentajedescuento, 
         TRUNCATE(IF(b.idmonedafact = 1, a.descuento, a.descuentocnv), 2) AS importedescuento, IF(b.idmonedafact = 1, a.importebruto, a.importebrutocnv) AS importebruto, 0 AS importeexento, 
         IF(b.idmonedafact = 1, a.importeneto, a.importenetocnv) AS importeneto, IF(b.idmonedafact = 1, a.importeiva, a.importeivacnv) AS importeiva, 0 AS importeotros, 
-        IF(b.idmonedafact = 1, a.importetotal, a.importetotalcnv) AS importetotal, a.idtiposervicio AS producto, TRIM(CONCAT(a.descripcionlarga, ' ', IFNULL(a.conceptoadicional, ''))) AS descripcion, 'S' AS tipoventa
+        IF(b.idmonedafact = 1, a.importetotal, a.importetotalcnv) AS importetotal, a.idtiposervicio AS producto, TRIM(a.descripcionlarga) AS descripcion, 'S' AS tipoventa
         FROM detfact a INNER JOIN factura b ON b.id = a.idfactura
         WHERE a.idfactura = $factura->ordenexterno";
         // print $query;
