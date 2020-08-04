@@ -85,7 +85,7 @@
                             <div class="form-group">
                                 <label for="txtTC">Tasa de cambio:</label>
                                 <input name="txtTC" id="txtTC" type="number" class="form-control input-sm"
-                                    ng-model="params.tc" step="0.01" min="1" />
+                                    ng-model="params.tc" step="0.01" min="1" ng-change="pendientes = [];"/>
                             </div>
                         </div>
                     </div>
@@ -197,7 +197,7 @@
                         <div class="col-md-12 text-right">
                             <!--<button type="button" class="btn btn-info" ng-show="pendientes.length > 0" ng-disabled="periodoCerrado" ng-click="factSelected()">Facturar</button>-->
                             <button type="button" class="btn btn-info" ng-show="pendientes.length > 0"
-                                ng-disabled="periodoCerrado" ng-click="factSelectedFEL()">Facturar</button>
+                                ng-disabled="periodoCerrado || btnFactDeshabilitado" ng-click="factSelectedFEL()">Facturar</button>
                         </div>
                     </div>
                 </div>
@@ -247,7 +247,7 @@
                             <div class="form-group">
                                 <label for="txtTCH2O">Tasa de cambio:</label>
                                 <input name="txtTCH2O" id="txtTCH2O" type="number" class="form-control input-sm"
-                                    ng-model="paramsh2o.tc" step="0.01" min="1" />
+                                    ng-model="paramsh2o.tc" step="0.01" min="1" ng-change="pendientesh2o = [];" />
                             </div>
                         </div>
                     </div>
@@ -309,7 +309,7 @@
                         <div class="col-md-10"></div>
                         <div class="col-md-1">
                             <button type="button" class="btn btn-info" ng-show="pendientesh2o.length > 0"
-                                ng-click="factSelectedH2OFEL()" ng-disabled="periodoCerrado">Facturar</button>
+                                ng-click="factSelectedH2OFEL()" ng-disabled="periodoCerrado || btnFactDeshabilitado">Facturar</button>
                         </div>
                     </div>
                 </div>

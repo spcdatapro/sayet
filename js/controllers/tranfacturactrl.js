@@ -20,6 +20,7 @@
         $scope.suma = { cantidad: 0, totmonto: 0.00 };
         $scope.paramsParqueo = { idempresa: undefined, idproyecto: undefined, fdel: moment().toDate(), fal: moment().toDate(), tc: 1.00 };
         $scope.periodoCerrado = false;
+        $scope.btnFactDeshabilitado = false;
 
         authSrvc.getSession().then(function (usrLogged) {
             empresaSrvc.lstEmpresas().then(function (d) {
@@ -165,12 +166,14 @@
             $scope.params.fvencestr = moment($scope.params.fvence).isValid() ? moment($scope.params.fvence).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD');
             // $scope.params.params = $scope.paramsstr;
             // console.log($scope.params);
+            $scope.btnFactDeshabilitado = true;
             facturacionSrvc.lstCargosPendientesFEL($scope.params).then(function (d) {
                 $scope.showForm = {};
                 $scope.pendientes = d;
                 //console.log($scope.pendientes);
                 $scope.showparams = false;
                 // $scope.calculaMontos();
+                $scope.btnFactDeshabilitado = false;
             });
         };
 
@@ -304,6 +307,7 @@
         };
 
         $scope.factSelectedFEL = () => {
+            $scope.btnFactDeshabilitado = true;
             $scope.params.ffacturastr = moment($scope.params.ffactura).isValid() ? moment($scope.params.ffactura).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD');
             const aFact = { params: $scope.params, pendientes: [] };
             $scope.pendientes.forEach(function (pendiente) {
@@ -315,6 +319,7 @@
             if (aFact.pendientes.length > 0) {
                 facturacionSrvc.generarFacturasFEL(aFact).then(() => {
                     $scope.getPendientesFEL();
+                    $scope.btnFactDeshabilitado = false;
                     toaster.pop('info', 'Facturación', 'Facturas generadas...');
                 });
             }
@@ -335,6 +340,7 @@
         };
 
         $scope.getPendientesH2OFEL = function () {
+            $scope.btnFactDeshabilitado = true;
             $scope.paramsh2o.fvencestr = moment($scope.params.fvence).isValid() ? moment($scope.paramsh2o.fvence).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD');
             facturacionAguaSrvc.lstCargosPendientesFEL($scope.paramsh2o).then(function (d) {
                 d = d.map(p => {
@@ -344,6 +350,7 @@
                     return p;
                 });
                 $scope.pendientesh2o = d;
+                $scope.btnFactDeshabilitado = false;
             });
         };
 
@@ -364,6 +371,7 @@
         };
 
         $scope.factSelectedH2OFEL = () => {
+            $scope.btnFactDeshabilitado = true;
             $scope.paramsh2o.ffacturastr = moment($scope.paramsh2o.ffactura).isValid() ? moment($scope.paramsh2o.ffactura).format('YYYY-MM-DD') : moment().format('YYYY-MM-DD');
             var aFact = { params: $scope.paramsh2o, pendientes: [] };
             $scope.pendientesh2o.forEach((pendiente) => {
@@ -375,6 +383,7 @@
                 facturacionAguaSrvc.generarFacturasFEL(aFact).then(() => {
                     toaster.pop('info', 'Facturación', 'Facturas de agua generadas...');
                     $scope.getPendientesH2OFEL();
+                    $scope.btnFactDeshabilitado = false;
                 });
             }
         };
