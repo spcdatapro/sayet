@@ -77,7 +77,12 @@ $app->post('/c', function(){
     $query.= "$d->reteneriva, $d->retenerisr, $d->mesafecta, $d->anioafecta, $d->direccion, $d->idproyecto, $d->porretiva, '$datosFel->seriefel', $datosFel->correlativofel";
     $query.= ")";
     $db->doQuery($query);
-    print json_encode(['lastid' => $db->getLastId()]);
+    $lastid = $db->getLastId();
+    if((int)$lastid > 0) {
+        $query = "UPDATE empresa SET correlativofel = $datosFel->correlativofel WHERE id = $d->idempresa";
+        $db->doQuery($query);
+    }
+    print json_encode(['lastid' => $lastid]);
 });
 
 $app->post('/u', function(){
