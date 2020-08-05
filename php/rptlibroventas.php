@@ -50,7 +50,9 @@ $app->post('/rptlibventas', function(){
 				'servicio' => $dlbv->servicio,
 				'exento' => $dlbv->exento,
 				'tipodocumento' => $dlbv->tipodocumento,
-				'totfact' => $dlbv->totfact
+				'totfact' => $dlbv->totfact,
+				'serieadmin' => $dlbv->serieadmin,
+				'numeroadmin' => $dlbv->numeroadmin
 			)
 		);	
 	}
