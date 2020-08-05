@@ -27,8 +27,8 @@ $app->post('/rptlibventas', function(){
 	$query.= "IF(a.anulada = 0, ROUND(a.iva, 2), 0.00) AS iva, IF(a.anulada = 0, ROUND(a.subtotal, 2), 0.00) AS totfact ";
     $query.= "FROM factura a LEFT JOIN contrato b ON b.id = a.idcontrato LEFT JOIN tipofactura c ON c.id = a.idtipofactura LEFT JOIN cliente d ON d.id = a.idcliente ";
     $query.= "WHERE a.idtipoventa <> 5 AND c.id <> 5 AND a.idempresa = $idempresa AND a.mesiva = $mes AND YEAR(a.fecha) = $anio AND LENGTH(a.serie) > 0 AND LENGTH(a.numero) > 0 ";
-    $query.= "ORDER BY ".(int)$d->alfa > 0 ? "8, 1, 3, 4, 5, 6" : "1, 3, 4, 5, 6, 8";
-	
+	$query.= "ORDER BY ".((int)$d->alfa > 0 ? "8, 1, 3, 4, 5, 6" : "1, 3, 4, 5, 6, 8");	
+	//print $query;	
 	$detlbventa = $db->getQuery($query);
 	
 	$libventas = array();
