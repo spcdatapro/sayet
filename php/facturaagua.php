@@ -299,9 +299,9 @@ $app->post('/genfactfel', function() {
     
     foreach($pendientes as $p){
 
-        $datosFel->correlativofel++;
-
-        if(round((float)$p->consumoafacturar, 2) > 0 && round((float)$p->totapagar, 2) > 0){
+        if(round((float)$p->consumoafacturar, 2) > 0 && round((float)$p->totapagar, 2) > 0) {
+            
+            $datosFel->correlativofel++;
 
             $descripcion = $p->tipo.' DE '.$p->proyecto.' '.$p->unidad.', Contador: '.$p->numidentificacion.', Consumo(m3): '.$p->consumoafacturar.' Mes de '.$p->nommes.' '.$p->anio;
             $p->nit = strtoupper(preg_replace("/[^a-zA-Z0-9]+/", "", $p->nit));
