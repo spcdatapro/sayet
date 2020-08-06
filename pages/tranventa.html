@@ -237,6 +237,7 @@
                             <th>Fecha</th>
                             <th>Cliente</th>
                             <th>Contrato</th>
+                            <th>Correlativo</th>
                             <th>Documento</th>
                             <th style="text-align: right">Mon(TC)</th>
                             <th style="text-align: right">Total</th>
@@ -247,6 +248,7 @@
                             <td>{{v.fecha | date:'dd/MM/yyyy'}}</td>
                             <td>{{v.cliente}}</td>
                             <td>{{v.nocontrato}}</td>
+                            <td>{{v.correlativo}}</td>
                             <td>{{v.serie}}&nbsp;-&nbsp;{{v.numero}}</td>
                             <td style="text-align: right">{{v.moneda}}({{v.tipocambio | number:dectc}})</td>
                             <td style="text-align: right">{{v.total | number:2}}</td>

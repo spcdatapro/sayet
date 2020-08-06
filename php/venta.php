@@ -11,7 +11,7 @@ $app->get('/lstventas/:idempresa', function($idempresa){
     $db = new dbcpm();
     $query = "SELECT a.id, b.idempresa, d.nomempresa, b.idcliente, h.nombre AS cliente, a.serie, a.numero, a.fechaingreso, a.mesiva, a.fecha, a.idtipoventa, c.desctipocompra AS tipoventa, ";
     $query.= "a.conceptomayor, a.fechapago, a.anulada, a.idrazonanulafactura, a.total, a.subtotal, a.iva, a.idmoneda, a.tipocambio, f.simbolo AS moneda, a.idtipofactura, g.desctipofact AS tipofactura, ";
-    $query.= "b.nocontrato, a.idcontrato, a.anulada, a.idrazonanulafactura, a.fechaanula, i.razon ";
+    $query.= "b.nocontrato, a.idcontrato, a.anulada, a.idrazonanulafactura, a.fechaanula, i.razon, CONCAT(a.serieadmin, '-', a.numeroadmin) AS correlativo ";
     $query.= "FROM factura a INNER JOIN contrato b ON b.id = a.idcontrato INNER JOIN tipocompra c ON c.id = a.idtipoventa INNER JOIN empresa d ON d.id = b.idempresa INNER JOIN moneda f ON f.id = a.idmoneda ";
     $query.= "INNER JOIN tipofactura g ON g.id = a.idtipofactura INNER JOIN cliente h ON h.id = b.idcliente ";
     $query.= "LEFT JOIN razonanulacion i ON i.id = a.idrazonanulafactura ";
@@ -30,9 +30,9 @@ $app->get('/lstventas/:idempresa', function($idempresa){
 $app->post('/lstventas', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $query = "SELECT a.id, b.idempresa, d.nomempresa, b.idcliente, h.nombre AS cliente, a.serie, a.numero, a.fechaingreso, a.mesiva, a.fecha, a.idtipoventa, c.desctipocompra AS tipoventa, ";
+    $query = "SELECT a.serieadmin, a.numeroadmin, a.id, b.idempresa, d.nomempresa, b.idcliente, h.nombre AS cliente, a.serie, a.numero, a.fechaingreso, a.mesiva, a.fecha, a.idtipoventa, c.desctipocompra AS tipoventa, ";
     $query.= "a.conceptomayor, a.fechapago, a.anulada, a.idrazonanulafactura, a.total, a.subtotal, a.iva, a.idmoneda, a.tipocambio, f.simbolo AS moneda, a.idtipofactura, g.desctipofact AS tipofactura, ";
-    $query.= "b.nocontrato, a.idcontrato, a.anulada, a.idrazonanulafactura, a.fechaanula, i.razon ";
+    $query.= "b.nocontrato, a.idcontrato, a.anulada, a.idrazonanulafactura, a.fechaanula, i.razon, CONCAT(a.serieadmin, '-', a.numeroadmin) AS correlativo ";
     $query.= "FROM factura a INNER JOIN contrato b ON b.id = a.idcontrato INNER JOIN tipocompra c ON c.id = a.idtipoventa INNER JOIN empresa d ON d.id = b.idempresa INNER JOIN moneda f ON f.id = a.idmoneda ";
     $query.= "INNER JOIN tipofactura g ON g.id = a.idtipofactura INNER JOIN cliente h ON h.id = b.idcliente ";
     $query.= "LEFT JOIN razonanulacion i ON i.id = a.idrazonanulafactura ";
@@ -40,15 +40,15 @@ $app->post('/lstventas', function(){
     $query.= $d->fdelstr != '' ? "AND a.fecha >= '$d->fdelstr' " : '';
     $query.= $d->falstr != '' ? "AND a.fecha <= '$d->falstr' " : '';
     $query.= "UNION ";
-    $query.= "SELECT a.id, 0 AS idempresa, NULL AS nomempresa, a.idcliente, h.nombre AS cliente, a.serie, a.numero, a.fechaingreso, a.mesiva, a.fecha, a.idtipoventa, c.desctipocompra AS tipoventa, ";
+    $query.= "SELECT a.serieadmin, a.numeroadmin, a.id, 0 AS idempresa, NULL AS nomempresa, a.idcliente, h.nombre AS cliente, a.serie, a.numero, a.fechaingreso, a.mesiva, a.fecha, a.idtipoventa, c.desctipocompra AS tipoventa, ";
     $query.= "a.conceptomayor, a.fechapago, a.anulada, a.idrazonanulafactura, a.total, a.subtotal, a.iva, a.idmoneda, a.tipocambio, f.simbolo AS moneda, a.idtipofactura, g.desctipofact AS tipofactura, ";
-    $query.= "'Sin contrato' AS nocontrato, a.idcontrato, a.anulada, a.idrazonanulafactura, a.fechaanula, i.razon ";
+    $query.= "'Sin contrato' AS nocontrato, a.idcontrato, a.anulada, a.idrazonanulafactura, a.fechaanula, i.razon, CONCAT(a.serieadmin, '-', a.numeroadmin) AS correlativo ";
     $query.= "FROM factura a INNER JOIN tipocompra c ON c.id = a.idtipoventa INNER JOIN moneda f ON f.id = a.idmoneda INNER JOIN tipofactura g ON g.id = a.idtipofactura ";
     $query.= "LEFT JOIN cliente h ON h.id = a.idcliente LEFT JOIN razonanulacion i ON i.id = a.idrazonanulafactura ";
     $query.= "WHERE a.idcontrato = 0 AND a.idempresa = $d->idempresa ";
     $query.= $d->fdelstr != '' ? "AND a.fecha >= '$d->fdelstr' " : '';
     $query.= $d->falstr != '' ? "AND a.fecha <= '$d->falstr' " : '';
-    $query.= "ORDER BY 10, 5, 25";
+    $query.= "ORDER BY 1, 2, 12, 7, 27";
     print $db->doSelectASJson($query);
 });
 
@@ -56,7 +56,7 @@ $app->get('/getventa/:idventa', function($idventa){
     $db = new dbcpm();
     $query = "SELECT a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, a.retisr,  a.noformiva, a.noacciva, a.fechapagoformiva, a.mespagoiva, a.aniopagoiva, a.retiva,   a.id, b.idempresa, d.nomempresa, b.idcliente, h.nombre AS cliente, a.serie, a.numero, a.fechaingreso, a.mesiva, a.fecha, a.idtipoventa, c.desctipocompra AS tipoventa, ";
     $query.= "a.conceptomayor, a.fechapago, a.anulada, a.idrazonanulafactura, a.total, a.subtotal, a.iva, a.idmoneda, a.tipocambio, f.simbolo AS moneda, a.idtipofactura, g.desctipofact AS tipofactura, ";
-    $query.= "b.nocontrato, a.idcontrato, a.anulada, a.idrazonanulafactura, a.fechaanula, i.razon ";
+    $query.= "b.nocontrato, a.idcontrato, a.anulada, a.idrazonanulafactura, a.fechaanula, i.razon, CONCAT(a.serieadmin, '-', a.numeroadmin) AS correlativo ";
     $query.= "FROM factura a INNER JOIN contrato b ON b.id = a.idcontrato INNER JOIN tipocompra c ON c.id = a.idtipoventa INNER JOIN empresa d ON d.id = b.idempresa INNER JOIN moneda f ON f.id = a.idmoneda ";
     $query.= "INNER JOIN tipofactura g ON g.id = a.idtipofactura INNER JOIN cliente h ON h.id = b.idcliente ";
     $query.= "LEFT JOIN razonanulacion i ON i.id = a.idrazonanulafactura ";
@@ -64,7 +64,7 @@ $app->get('/getventa/:idventa', function($idventa){
     $query.= "UNION ";
     $query.= "SELECT a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, a.retisr,  a.noformiva, a.noacciva, a.fechapagoformiva, a.mespagoiva, a.aniopagoiva, a.retiva,  a.id, 0 AS idempresa, NULL AS nomempresa, a.idcliente, h.nombre AS cliente, a.serie, a.numero, a.fechaingreso, a.mesiva, a.fecha, a.idtipoventa, c.desctipocompra AS tipoventa, ";
     $query.= "a.conceptomayor, a.fechapago, a.anulada, a.idrazonanulafactura, a.total, a.subtotal, a.iva, a.idmoneda, a.tipocambio, f.simbolo AS moneda, a.idtipofactura, g.desctipofact AS tipofactura, ";
-    $query.= "'Sin contrato' AS nocontrato, a.idcontrato, a.anulada, a.idrazonanulafactura, a.fechaanula, i.razon ";
+    $query.= "'Sin contrato' AS nocontrato, a.idcontrato, a.anulada, a.idrazonanulafactura, a.fechaanula, i.razon, CONCAT(a.serieadmin, '-', a.numeroadmin) AS correlativo ";
     $query.= "FROM factura a INNER JOIN tipocompra c ON c.id = a.idtipoventa INNER JOIN moneda f ON f.id = a.idmoneda INNER JOIN tipofactura g ON g.id = a.idtipofactura ";
     $query.= "LEFT JOIN cliente h ON h.id = a.idcliente LEFT JOIN razonanulacion i ON i.id = a.idrazonanulafactura ";
     $query.= "WHERE a.id = ".$idventa;
