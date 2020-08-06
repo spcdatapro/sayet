@@ -232,7 +232,7 @@ function updateDatosFacturaFEL($d){
     $query.= "retisr = $calculo->isrporretener, retiva = $calculo->ivaporretener, totdescuento = $data->totdescuento, totalletras = '".$n2l->to_word($calculo->totapagar, 'GTQ')."', conceptomayor = $conceptomayor, ";
     $query.= "importebruto = $importe->importebruto, importeneto = $importe->importeneto, importeiva = $importe->importeiva, importetotal = $importe->importetotal, descuentosiniva = $importe->descuentosiniva, ";
     $query.= "descuentoiva = $importe->descuentoiva, importebrutocnv = $importe->importebrutocnv, importenetocnv = $importe->importenetocnv, importeivacnv = $importe->importeivacnv, importetotalcnv = $importe->importetotalcnv, ";
-    $query.= "descuentosinivacnv = $importe->descuentosinivacnv, descuentoivacnv = $importe->descuentoivacnv ";
+    $query.= "descuentosinivacnv = $importe->descuentosinivacnv, descuentoivacnv = $importe->descuentoivacnv, totalcnv = $calculo->totapagarcnv ";
     $query.= "WHERE id = $d->idfactura";
     $db->doQuery($query);
 
