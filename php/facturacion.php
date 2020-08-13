@@ -398,6 +398,23 @@ $app->post('/genfact', function(){
 
 });
 
+function revisaMontos($db, $p) {
+    $p->montoconiva = $p->importetotal;
+    $p->montoconivacnv = $p->importetotalcnv;
+    $p->iva = $p->importeiva;
+    if((float)$p->isrporretener > 0) {
+        $p->isrporretener = $db->calculaISR($p->importeneto);
+        $p->isrporretenercnv = round($p->isrporretener / (float)$p->tc, 2);
+    }
+    if((float)$p->ivaporretener > 0) {
+        $p->ivaporretener = $db->calculaRetIVA((float)$p->importeneto, ((int)$p->idtipocliente == 1), (float)$p->importetotal, ((int)$p->idtipocliente == 2), (float)$p->importeiva, (float)$p->porcentajeretiva);
+        $p->ivaporretenercnv = round($p->ivaporretener / (float)$p->tc, 2);
+    }
+    $p->totapagar = (float)$p->importetotal - ((float)$p->isrporretener + (float)$p->ivaporretener);
+    $p->totapagarcnv = round($p->totapagar / (float)$p->tc, 2);
+    return $p;
+}
+
 $app->post('/genfactfel', function() {
     $d = json_decode(file_get_contents('php://input'));
     $params = $d->params;
@@ -414,8 +431,9 @@ $app->post('/genfactfel', function() {
 
         $datosFel->correlativofel++;
 
+        $p = revisaMontos($db, $p);
         $montoletras = (int)$p->idmonedafact == 1 ? $n2l->to_word($p->totapagar, 'GTQ') : $n2l->to_word($p->totapagarcnv, 'USD');        
-        $p->nit = strtoupper(preg_replace("/[^a-zA-Z0-9]+/", "", $p->nit));
+        $p->nit = strtoupper(preg_replace("/[^a-zA-Z0-9]+/", "", $p->nit));        
 
         $query = "INSERT INTO factura(";
         $query.= "idempresa, idtipofactura, idcontrato, idcliente, ";
@@ -425,7 +443,7 @@ $app->post('/genfactfel', function() {
         $query.= "subtotalcnv, totalcnv, retivacnv, retisrcnv, totdescuentocnv,";
         $query.= "importebruto, importeneto, importeiva, importetotal, descuentosiniva, descuentoiva, ";
         $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv, ";
-        $query.= "serieadmin, numeroadmin";
+        $query.= "serieadmin, numeroadmin, porretiva";
         $query.= ") VALUES (";
         $query.= "$params->idempresa, 1, $p->idcontrato, $p->idcliente, ";
         $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '". str_replace(',', ', ', strip_tags($p->tipo))."', $p->iva, ";
@@ -434,7 +452,7 @@ $app->post('/genfactfel', function() {
         $query.= "$p->montoconivacnv, $p->totapagarcnv, $p->ivaporretenercnv, $p->isrporretenercnv, $p->descuentoconivacnv, ";
         $query.= "$p->importebruto, $p->importeneto, $p->importeiva, $p->importetotal, $p->descuentosiniva, $p->descuentoiva, ";
         $query.= "$p->importebrutocnv, $p->importenetocnv, $p->importeivacnv, $p->importetotalcnv, $p->descuentosinivacnv, $p->descuentoivacnv, ";
-        $query.= "'$datosFel->seriefel', $datosFel->correlativofel";
+        $query.= "'$datosFel->seriefel', $datosFel->correlativofel, $p->porcentajeretiva";
         $query.= ")";
         //print $query;
         //die();
