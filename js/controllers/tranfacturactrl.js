@@ -315,7 +315,7 @@
                     aFact.pendientes.push(pendiente);
                 }
             });
-            //console.log(aFact); return;
+            console.log(aFact.pendientes); //$scope.btnFactDeshabilitado = false; return;
             if (aFact.pendientes.length > 0) {
                 facturacionSrvc.generarFacturasFEL(aFact).then(() => {
                     $scope.getPendientesFEL();

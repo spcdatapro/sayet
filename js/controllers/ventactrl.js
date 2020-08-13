@@ -224,8 +224,9 @@
                 $scope.elDetCont = {debe: 0.0, haber: 0.0};
                 cuentacSrvc.getByTipo($scope.idempresa, 0).then(function(d){ $scope.cuentas = d; });
                 $scope.getDetalleContable(parseInt(idventa));
+                // console.log('VENTA = ', $scope.venta);
                 
-                if($scope.venta.noformisr != null && $scope.venta.noformisr != undefined)
+                if(($scope.venta.noformisr != null && $scope.venta.noformisr != undefined) || +$scope.venta.anulada === 1)
                 {
                     //console.log('');
                 }else{
