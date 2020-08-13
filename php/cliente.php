@@ -364,12 +364,14 @@ function creaNuevoContrato($d, $db) {
     $d->fechainactivostr = ($d->fechainactivostr == '' || (int)$d->inactivo == 0) ? "NULL" : "'$d->fechainactivostr'";
     
     if(!isset($d->usufructo)) { 
-        $d->usufructo = 'NULL';
-        $d->fechacopia = 'NULL';
-    } else { 
-        $d->usufructo = "'$d->usufructo'"; 
+        $d->usufructo = "NULL";
+        $d->fechacopia = "NULL";
+    } else {
+        // $d->usufructo = str_replace('NULL', '', strtoupper($d->usufructo));
+        $d->usufructo = "'".str_replace('NULL', '', strtoupper($d->usufructo))."'";
         $d->fechacopia = 'NOW()';
     };
+
     if(!isset($d->idcontratoorigen)) { $d->idcontratoorigen = 0; }
     if(!isset($d->idusuariocopia)) { $d->idusuariocopia = 0; }
 
