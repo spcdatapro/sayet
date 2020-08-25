@@ -41,7 +41,7 @@
         */
 
         $scope.resetbene = function(){
-            $scope.bene = { direccion: '', telefono: '', correo: '', concepto: '', tipocambioprov: 1, objMoneda: {} };
+            $scope.bene = { direccion: '', telefono: '', correo: '', concepto: '', tipocambioprov: 1, objMoneda: {}, debaja: '0', cuentabanco: undefined };
             $scope.editando = false;
             $scope.strBene = '';
             monedaSrvc.getMoneda(parseInt($scope.objEmpresa.idmoneda)).then(function(d){
@@ -60,7 +60,7 @@
             return data;
         }
 
-        $scope.getLstBeneficiarios = function(){ beneficiarioSrvc.lstBeneficiarios().then(function(d){ $scope.beneficiarios = procData(d); }); };
+        $scope.getLstBeneficiarios = function(){ beneficiarioSrvc.lstBeneficiarios(true).then(function(d){ $scope.beneficiarios = procData(d); }); };
 
         $scope.getLstDetCuentaC = function(idprov){
             beneficiarioSrvc.lstDetCuentaC(parseInt(idprov)).then(function(det){

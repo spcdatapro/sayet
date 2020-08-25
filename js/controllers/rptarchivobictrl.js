@@ -5,13 +5,7 @@
     rptarchivobictrl.controller('rptArchivoBICtrl', ['$scope', '$window', 'authSrvc', 'empresaSrvc', '$filter', 'planillaSrvc', function($scope, $window, authSrvc, empresaSrvc, $filter, planillaSrvc){
 
         $scope.params = {fdel: moment().toDate(), fal: moment().toDate(), idempresa: undefined, mediopago: 3};
-        $scope.empresas = [];
-
-        /*authSrvc.getSession().then(function(usrLogged){
-            if(parseInt(usrLogged.workingon) > 0){
-                $scope.params.idempresa = usrLogged.workingon.toString();
-            }
-        });*/
+        $scope.empresas = [];       
 
         empresaSrvc.lstEmpresas().then(function(d){ $scope.empresas = d; });
 

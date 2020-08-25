@@ -44,6 +44,16 @@ $app->get('/lstbcosfltr/:idempresa', function($idempresa){
     print $db->doSelectASJson($query);
 });
 
+$app->get('/lstnombrebcosactivos(/:idempresa)', function($idempresa = 0){
+    $db = new dbcpm();
+    $query = "SELECT a.nombre FROM banco a ";
+    $query.= "WHERE a.debaja = 0 ";
+    $query.= (int)$idempresa > 0 ? "AND a.idempresa = $idempresa " : '';
+    $query.= "GROUP BY a.nombre ORDER BY a.nombre";
+
+    print $db->doSelectASJson($query);
+});
+
 $app->get('/getbco/:idbco', function($idbco){
     $db = new dbcpm();
     $query = "SELECT a.id AS idbanco, b.id AS idcuentac, b.nombrecta, a.nombre, a.nocuenta, a.siglas, a.nomcuenta, a.idempresa, ";

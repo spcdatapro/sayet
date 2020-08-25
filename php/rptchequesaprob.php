@@ -12,23 +12,28 @@ $app->post('/getcheques', function(){
     $query = "SELECT a.numero, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.monto, REPLACE(b.nocuenta, '-', '') AS nocuenta, ";
     $query.= "SUBSTR(CONCAT(TRIM(limpiaString(c.abreviatura)), ' ', TRIM(limpiaString(a.beneficiario)), ' ', TRIM(limpiaString(a.concepto))), 1, 57) AS descripcion ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN empresa c ON c.id = b.idempresa ";
-    $query.= "WHERE a.tipotrans = 'C' AND a.anulado = 0 AND a.fecha = '$d->fechastr' AND UPPER(TRIM(b.nombre)) LIKE '%INDUSTRIAL%' AND b.idempresa <> 16 AND b.idmoneda = $d->idmoneda ";
-    //"AND a.idbanco IN($d->bancos) ";
+    $query.= "WHERE a.tipotrans = 'C' AND a.anulado = 0 AND a.fecha = '$d->fechastr' AND UPPER(TRIM(b.nombre)) LIKE '%$d->banco%' AND b.idempresa <> 16 AND b.idmoneda = $d->idmoneda ";    
     $query.= (int)$d->idempresa == 0 ? "" : "AND b.idempresa = $d->idempresa ";
     $query.= "ORDER BY b.ordensumario, a.numero";
-    //print $query;
+    // print $query;
     print $db->doSelectAsJSON($query);
 });
 
-$app->get('/gettxt/:idempresa/:fechastr/:idmoneda/:nombre', function($idempresa, $fechastr, $idmoneda, $nombre) use($app){
+$app->get('/gettxt/:idempresa/:fechastr/:idmoneda/:nombre(/:idbanco)', function($idempresa, $fechastr, $idmoneda, $nombre, $idbanco = 0) use($app){
     $db = new dbcpm();
     $app->response->headers->clear();
     $app->response->headers->set('Content-Type', 'text/csv;charset=windows-1252');
     $app->response->headers->set('Content-Disposition', 'attachment;filename="'.trim($nombre).'.csv"');
 
+    $banco = 'INDUSTRIAL';
+    if((int)$idbanco > 0) {
+        $query = "SELECT nombre FROM banco WHERE id = $idbanco";
+        $banco = $db->getOneField($query);
+    }    
+
     //$url = 'http://104.197.209.57:5489/api/report';
     $url = 'http://localhost:5489/api/report';
-    $data = ['template' => ['shortid' => 'B1ICfUfDb'], 'data' => ['idempresa' => "$idempresa", 'fechastr' => "$fechastr", 'idmoneda' => "$idmoneda"]];
+    $data = ['template' => ['shortid' => 'B1ICfUfDb'], 'data' => ['idempresa' => "$idempresa", 'fechastr' => "$fechastr", 'idmoneda' => "$idmoneda", 'banco' => $banco]];
     //print json_encode($data);
 
     $respuesta = $db->CallJSReportAPI('POST', $url, json_encode($data));
