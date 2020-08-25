@@ -1,20 +1,14 @@
 (function(){
 
-    var beneficiariosrvc = angular.module('cpm.beneficiariosrvc', ['cpm.comunsrvc']);
+    const beneficiariosrvc = angular.module('cpm.beneficiariosrvc', ['cpm.comunsrvc']);
 
-    beneficiariosrvc.factory('beneficiarioSrvc', ['comunFact', function(comunFact){
-        var urlBase = 'php/beneficiario.php';
+    beneficiariosrvc.factory('beneficiarioSrvc', ['comunFact', (comunFact) => {
+        const urlBase = 'php/beneficiario.php';
 
-        var beneficiarioSrvc = {
-            lstBeneficiarios: function(){
-                return comunFact.doGET(urlBase + '/lstbene');
-            },
-            getBeneficiario: function(idbene){
-                return comunFact.doGET(urlBase + '/getbene/' + idbene);
-            },
-            editRow: function(obj, op){
-                return comunFact.doPOST(urlBase + '/' + op, obj);
-            }
+        const beneficiarioSrvc = {
+            lstBeneficiarios: (todos) => comunFact.doGET(`${urlBase}/lstbene${todos ? ('/1'): ''}`),
+            getBeneficiario: (idbene) => comunFact.doGET(`${urlBase}/getbene/${idbene}`),
+            editRow: (obj, op) => comunFact.doPOST(`${urlBase}/${op}`, obj)
         };
         return beneficiarioSrvc;
     }]);

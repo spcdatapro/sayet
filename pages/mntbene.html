@@ -82,6 +82,23 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <lable for="txtCtaBco" class="control-label">Cuenta para transferencias:</lable>
+                                    <input name="txtCtaBco" id="txtCtaBco" class="form-control"
+                                        ng-model="bene.cuentabanco" type="text" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <center>
+                                        <label for="chkDeBaja">De baja:</label>
+                                        <input name="chkDeBaja" id="chkDeBaja" type="checkbox" class="checkbox" ng-model="bene.debaja" ng-true-value="'1'" ng-false-value="'0'" />
+                                    </center>
+                                </div>
+                            </div>
+                        </div>
                         <div class="btn-group" role="group" aria-label="...">
                             <button type="submit" class="btn btn-primary" ng-disabled="frmBene.$invalid || !permiso.c" ng-hide="editando">
                                 <span class="glyphicon glyphicon-floppy-save"></span>

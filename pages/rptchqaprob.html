@@ -3,7 +3,7 @@
         <div class="panel-heading">Generaci&oacute;n de archivo de cheques</div>
         <div class="panel-body">
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-2">
                     <div class="form-group">
                         <label for="txtFecha">Fecha:</label>
                         <input name="txtFecha" id="txtFecha" type="date" class="form-control" ng-model="params.fecha"/>
@@ -13,15 +13,23 @@
                     <div class="form-group">
                         <label for="selEmpresa">Empresa:</label>
                         <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="params.idempresa" 
-                                ng-options="obj.id as obj.nomempresa for obj in empresas">
+                                ng-options="obj.id as obj.nomempresa for obj in empresas" ng-change="bancos = []; params.banco = undefined; loadBancos(params.idempresa)">
                         </select>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
+                        <label for="selEmpresa">Banco:</label>
+                        <select name="selBanco" id="selBanco" class="form-control" ng-model="params.banco" 
+                                ng-options="obj.id as obj.nombre for obj in bancos">
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
                         <label for="selMoneda">Moneda:</label>
                         <select name="selMoneda" id="selMoneda" class="form-control" ng-model="params.idmoneda" 
-                                ng-options="obj.id as obj.nommoneda for obj in monedas">
+                                ng-options="obj.id as obj.simbolo for obj in monedas">
                         </select>
                     </div>
                 </div>

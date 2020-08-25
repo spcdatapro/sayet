@@ -44,7 +44,7 @@
 
         $scope.resetElProv = function(){
             $scope.elProv = { direccion: '', telefono: '', correo: '', concepto: '', chequesa: '', retensionisr: 0, diascred: 0,
-                limitecred: parseFloat(0.0), pequeniocont: 0, tipocambioprov: 1, objMoneda: {} };
+                limitecred: parseFloat(0.0), pequeniocont: 0, tipocambioprov: 1, objMoneda: {}, debaja: '0', cuentabanco: undefined };
             $scope.editando = false;
             $scope.strProveedor = '';
             monedaSrvc.getMoneda(parseInt($scope.objEmpresa.idmoneda)).then(function(d){
@@ -55,7 +55,7 @@
         };
 
         $scope.getLstProveedores = function(){
-            proveedorSrvc.lstProveedores().then(function(d){
+            proveedorSrvc.lstProveedores(true).then(function(d){
                 $scope.losProvs = d;
                 for(var i = 0; i < $scope.losProvs.length; i++){
                     $scope.losProvs[i].retensionisr = parseInt($scope.losProvs[i].retensionisr);
@@ -86,7 +86,7 @@
 
         $scope.getDataProv = function(idprov){
             proveedorSrvc.getProveedor(parseInt(idprov)).then(function(d){
-                var provTmp = procData(d[0]);
+                const provTmp = procData(d[0]);
                 $scope.elProv.id = provTmp.id;
                 $scope.elProv.nit = provTmp.nit;
                 $scope.elProv.nombre = provTmp.nombre;
@@ -103,6 +103,8 @@
                 $scope.elProv.tipocambioprov = provTmp.tipocambioprov;
                 $scope.elProv.objMoneda = $filter('getById')($scope.monedas, $scope.elProv.idmoneda);
                 $scope.strProveedor = 'No. ' + pad($scope.elProv.id, 4) + ', ' + provTmp.nitnombre;
+                $scope.elProv.debaja = provTmp.debaja;
+                $scope.elProv.cuentabanco = provTmp.cuentabanco;
                 $scope.editando = true;
                 $scope.getLstDetCuentaC(idprov);
             });

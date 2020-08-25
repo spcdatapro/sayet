@@ -1,32 +1,18 @@
 (function(){
 
-    var proveedorsrvc = angular.module('cpm.proveedorsrvc', ['cpm.comunsrvc']);
+    const proveedorsrvc = angular.module('cpm.proveedorsrvc', ['cpm.comunsrvc']);
 
-    proveedorsrvc.factory('proveedorSrvc', ['comunFact', function(comunFact){
-        var urlBase = 'php/proveedor.php';
+    proveedorsrvc.factory('proveedorSrvc', ['comunFact', (comunFact) => {
+        const urlBase = 'php/proveedor.php';
 
         return {
-            lstProveedores: function(){
-                return comunFact.doGET(urlBase + '/lstprovs');
-            },
-            getProveedor: function(idprov){
-                return comunFact.doGET(urlBase + '/getprov/' + idprov);
-            },
-            getProveedorByNit: function(nit){
-                return comunFact.doGET(urlBase + '/getprovbynit/' + nit);
-            },
-            editRow: function(obj, op){
-                return comunFact.doPOST(urlBase + '/' + op, obj);
-            },
-            lstDetCuentaC: function(idprov){
-                return comunFact.doGET(urlBase + '/detcontprov/' + idprov);
-            },
-            getDetCuentaC: function(iddet){
-                return comunFact.doGET(urlBase + '/getdetcontprov/' + iddet);
-            },
-            getLstCuentasCont: function(idprov, idempresa){
-                return comunFact.doGET(urlBase + '/lstdetcontprov/' + idprov + '/' + idempresa);
-            }
+            lstProveedores: (todos) => comunFact.doGET(`${urlBase}/lstprovs${todos ? ('/1'): ''}`),
+            getProveedor: (idprov) => comunFact.doGET(`${urlBase}/getprov/${idprov}`),
+            getProveedorByNit: (nit) => comunFact.doGET(`${urlBase}/getprovbynit/${nit}`),
+            editRow: (obj, op) => comunFact.doPOST(`${urlBase}/${op}`, obj),
+            lstDetCuentaC: (idprov) => comunFact.doGET(`${urlBase}/detcontprov/${idprov}`),
+            getDetCuentaC: (iddet) => comunFact.doGET(`${urlBase}/getdetcontprov/${iddet}`),
+            getLstCuentasCont: (idprov, idempresa) => comunFact.doGET(`${urlBase}/lstdetcontprov/${idprov}/${idempresa}`)
         };
     }]);
 

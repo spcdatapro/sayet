@@ -1,0 +1,38 @@
+<div class="container" ng-controller="rptArchivoNDCtrl">
+    <div class="panel panel-info">
+        <div class="panel-heading">Bajar archivo de Notas de D&eacute;bito</div>
+        <div class="panel-body">
+            <form name="frmGetArchivoBI" id="frmGetArchivoBI" novalidate>
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="txFecha">Fecha:</label>
+                            <input name="txFecha" id="txFecha" type="date" class="form-control" ng-model="params.fecha"
+                                required />
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label for="selEmpresa">Empresa:</label>
+                            <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="params.idempresa"
+                                ng-change="loadBancos(params.idempresa)"
+                                ng-options="obj.id as (obj.nomempresa) for obj in empresas">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label for="selBanco">Banco:</label>
+                            <select name="selBanco" id="selBanco" class="form-control" ng-model="params.idbanco"
+                                ng-options="obj.id as obj.bancomoneda for obj in bancos"></select>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" ng-disabled="frmGetArchivoBI.$invalid"
+                    ng-click="getArchivo()">
+                    <span class="glyphicon glyphicon-download"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
