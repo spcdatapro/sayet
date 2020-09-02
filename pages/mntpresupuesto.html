@@ -397,7 +397,8 @@
                             <div class="col-md-4">
                                 <div class="form-group" ng-class="{'has-error':frmPresup.selTipoDocumentoPresOT.$invalid && !frmPresup.selTipoDocumentoPresOT.$pristine}">
                                     <label for="selTipoDocumentoPresOT">Tipo de documento:</label>
-                                    <select name="selTipoDocumentoPresOT" id="selTipoDocumentoPresOT" class="form-control" ng-model="presupuesto.tipodocumento" ng-disabled="sl.presupuesto" required>
+                                    <select name="selTipoDocumentoPresOT" id="selTipoDocumentoPresOT" class="form-control" ng-model="presupuesto.tipodocumento" ng-disabled="sl.presupuesto" 
+                                    ng-required="+presupuesto.tipo == 1">
                                         <option value="1" selected>Factura</option>
                                         <option value="2">Reembolso</option>
                                     </select>                                    
