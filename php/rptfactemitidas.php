@@ -52,7 +52,7 @@ $app->post('/factemitidas', function(){
     $qGen.= ") c ON a.id = c.idfactura LEFT JOIN cliente d ON d.id = a.idcliente ";
     $qGen.= "LEFT JOIN (SELECT v.id AS idcontrato, v.idproyecto, u.nomproyecto AS proyecto FROM contrato v INNER JOIN proyecto u ON u.id = v.idproyecto) e ON a.idcontrato = e.idcontrato ";
     $qGen.= "LEFT JOIN moneda f ON f.id = a.idmonedafact ";
-    $qGen.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.esparqueo = 0 AND LENGTH(a.numero) > 0 ";
+    $qGen.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.esparqueo = 0 AND LENGTH(a.numero) > 0 AND a.idtipofactura <> 9 ";
     $qGen.= $d->idempresa != '' ? "AND a.idempresa IN($d->idempresa) " : '';
     $qGen.= trim($d->cliente) != '' && (int)$d->idcliente > 0 ? "AND a.anulada = 0 AND (a.idcliente = $d->idcliente OR a.nombre LIKE '%$d->cliente%' OR a.nit LIKE '%$d->cliente%' OR d.nombre LIKE '%$d->cliente%' OR d.nombrecorto LIKE '%$d->cliente%') " : '';
     $qGen.= trim($d->cliente) != '' && (int)$d->idcliente == 0 ? "AND a.anulada = 0 AND (a.nombre LIKE '%$d->cliente%' OR a.nit LIKE '%$d->cliente%' OR d.nombre LIKE '%$d->cliente%' OR d.nombrecorto LIKE '%$d->cliente%') " : '';
@@ -158,7 +158,7 @@ $app->post('/factsparqueo', function(){
 
     $qGen = "SELECT a.idempresa, b.nomempresa AS empresa, a.idproyecto, c.nomproyecto AS proyecto, a.serie, MIN(a.numero) AS defactura, MAX(a.numero) AS afactura, SUM(a.subtotal) AS subtotal, b.ordensumario ";
     $qGen.= "FROM factura a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN proyecto c ON c.id = a.idproyecto ";
-    $qGen.= "WHERE a.esparqueo = 1 AND a.fecha >= '$d->fdelstr' and a.fecha <= '$d->falstr' ";
+    $qGen.= "WHERE a.esparqueo = 1 AND a.fecha >= '$d->fdelstr' and a.fecha <= '$d->falstr' AND a.idtipofactura <> 9 ";
     $qGen.= $d->idempresa != '' ? "AND a.idempresa IN ($d->idempresa) " : '';
     $qGen.= $d->idproyecto != '' ? "AND a.idproyecto IN ($d->idproyecto) " : '';
     $qGen.= "GROUP BY a.idempresa, a.idproyecto, a.serie";

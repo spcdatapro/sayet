@@ -722,7 +722,7 @@ $app->post('/genfel', function() use($app) {
     '' AS numeroacceso, IFNULL(a.serieadmin, 'A') AS serieadmin, a.numeroadmin, c.nombrecorto, FORMAT(a.importetotalcnv, 2) AS montodol, ROUND(a.tipocambio, 4) AS tipocambio, FORMAT(TRUNCATE(a.totalcnv, 2), 2) AS pagonetodol, 
     FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2), 2) AS pagoneto, FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2), 2) AS retiva, 
     FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.retisr, a.retisrcnv), 2), 2) AS retisr, FORMAT(IF(a.idmonedafact = 1, a.importetotal, a.importetotalcnv), 2) AS monto, 
-    DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.nombre, d.simbolo AS monedafact, 1 AS descargar
+    DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.nombre, d.simbolo AS monedafact, 1 AS descargar, a.idfacturaafecta
     FROM factura a
     INNER JOIN tipofactura b ON b.id = a.idtipofactura
     LEFT JOIN cliente c ON c.id = a.idcliente
@@ -743,10 +743,18 @@ $app->post('/genfel', function() use($app) {
         WHERE a.idfactura = $factura->ordenexterno";
         // print $query;
         $factura->detalle = $db->getQuery($query);
+        //Notas de crédito/débito. 22/09/2020.
+        $cntDocumentosAsociados = 0;
+        $factura->docasoc = [];
+        if (in_array(trim($factura->tipodocumento), array('NCRE', 'NDEB'))) {
+            $query = "SELECT 3 AS tiporegistro, 'FACT' AS tipodocumento, serie, numero, DATE_FORMAT(fecha, '%Y%m%d') AS fechadocumento FROM factura WHERE id = $factura->idfacturaafecta";
+            $factura->docasoc = $db->getQuery($query);
+            //$cntDocumentosAsociados = 1;
+        }
         //Totales
         $query = "SELECT 4 AS tiporegistro, IF(a.idmonedafact = 1, a.importebruto, a.importebrutocnv) AS importebruto, TRUNCATE(IF(a.idmonedafact = 1, a.totdescuento, a.totdescuentocnv), 2) AS importedescuento, 
         0 AS importeexento, IF(a.idmonedafact = 1, a.importeneto, a.importenetocnv) AS importeneto, IF(a.idmonedafact = 1, a.importeiva, a.importeivacnv) AS importeiva, 0 AS importeotros, 
-        IF(a.idmonedafact = 1, a.importetotal, a.importetotalcnv) AS importetotal, 0 AS porcentajeisr, 0 AS importeisr, 0 AS registrosdetalle, 0 AS documentosasociados
+        IF(a.idmonedafact = 1, a.importetotal, a.importetotalcnv) AS importetotal, 0 AS porcentajeisr, 0 AS importeisr, 0 AS registrosdetalle, $cntDocumentosAsociados AS documentosasociados
         FROM factura a
         WHERE a.id = $factura->ordenexterno";
         $factura->totales = $db->getQuery($query)[0];

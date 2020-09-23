@@ -82,6 +82,9 @@
                     f.detalle.forEach(d => {
                         facturas += `${d.tiporegistro}|${d.cantidad}|${d.unidadmedida}|${d.precio}|${d.porcentajedescuento}|${d.importedescuento}|${d.importebruto}|${d.importeexento}|${d.importeneto}|${d.importeiva}|${d.importeotros}|${d.importetotal}|${d.producto}|${d.descripcion}|${d.tipoventa}\n`;
                     });
+                    f.docasoc.forEach(da => {
+                        facturas += `${da.tiporegistro}|${da.tipodocumento}|${da.serie}|${da.numero}|${da.fechadocumento}\n`;
+                    });
                     const t = f.totales;
                     facturas += `${t.tiporegistro}|${t.importebruto}|${t.importedescuento}|${t.importeexento}|${t.importeneto}|${t.importeiva}|${t.importeotros}|${t.importetotal}|${t.porcentajeisr}|${t.importeisr}|${f.detalle.length}|${t.documentosasociados}\n`;
                 }
