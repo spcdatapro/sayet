@@ -277,8 +277,8 @@ function calcularImportes($d) {
     $importe->descuentosinivacnv = round($importe->descuentosiniva / $d->tipocambio, 2);
     $importe->descuentoivacnv = round($importe->descuentoiva / $d->tipocambio, 2);
 
-    $importe->exento = $factor === 1 ? $importe->bruto : 0.00;
-    $importe->exentocnv = $factor === 1 ? $importe->brutocnv : 0.00;
+    $importe->exento = $factor === 1 ? $importe->total : 0.00;
+    $importe->exentocnv = $factor === 1 ? $importe->totalcnv : 0.00;
 
     return $importe;
 }

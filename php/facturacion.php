@@ -134,10 +134,10 @@ function getQueryCargos($d) {
     @importetotal := ROUND((@importeneto + @importeiva), 2) AS importetotal, 
 
     ROUND(@precio / $d->tc, 2) AS preciocnv, @importebrutocnv := ROUND(@importebruto / $d->tc, 2) AS importebrutocnv, ROUND(@importeneto / $d->tc, 2) AS importenetocnv, ROUND(@importeiva / $d->tc, 2) AS importeivacnv, 
-    ROUND(@importetotal / $d->tc, 2) AS importetotalcnv,
+    @importetotalcnv := ROUND(@importetotal / $d->tc, 2) AS importetotalcnv,
 
-    @importeexento := IF(@factor = 1, @importebruto, 0.00) AS importeexento,
-    @importeexentocnv := IF(@factor = 1, @importebrutocnv, 0.00) AS importeexentocnv,
+    @importeexento := IF(@factor = 1, @importetotal, 0.00) AS importeexento,
+    @importeexentocnv := IF(@factor = 1, @importetotalcnv, 0.00) AS importeexentocnv,
     
     CONCAT(e.desctiposervventa, ' ', DATE_FORMAT(a.fechacobro, '%m/%Y')) AS tipo, e.id as idtipo, j.nomproyecto AS proyecto, 
     UnidadesPorContrato(a.idcontrato) AS unidades, RetISR(c.idcliente, b.idtipoventa) AS retenerisr, RetIVA(c.idcliente, b.idtipoventa) AS reteneriva, c.idtipocliente, 
