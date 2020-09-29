@@ -78,17 +78,18 @@ $app->post('/pendientesfel', function() {
     b.mcubsug AS base,
     @consumobase := ROUND(@consumo - b.mcubsug, 2) AS consumobase,
     @consumoafacturar := ROUND(IF(@consumobase > 0, @consumobase, 0.00), 2) AS consumoafacturar, 
-    @montosiniva := ROUND(IF(@consumoafacturar > 0, (@consumoafacturar * b.preciomcubsug) / 1.12 - (IF(a.descuento > 0, a.descuento / 1.12, 0.00)), 0.00 ), 2) AS montosiniva, 
+    @factor := IF(ExentoIVA(d.id, b.idtiposervicio) = 0, 1.12, 1) AS factor,
+    @montosiniva := ROUND(IF(@consumoafacturar > 0, (@consumoafacturar * b.preciomcubsug) / @factor - (IF(a.descuento > 0, a.descuento / @factor, 0.00)), 0.00 ), 2) AS montosiniva, 
     @montoconiva := ROUND(IF(@consumoafacturar > 0, (@consumoafacturar * b.preciomcubsug), 0.00 ), 2) AS montoconiva, 
     @iva := ROUND(@montoconiva - @montosiniva, 2) AS iva,     
     @precio := ROUND(@consumoafacturar * b.preciomcubsug, 2) AS precio,
     @importebruto := ROUND(@precio * 1, 2) AS importebruto,
     @porcentajedescuento := ROUND((a.descuento * 100) / @importebruto, 4) AS porcentajedescuento,
-    @importeneto := ROUND((@importebruto - a.descuento) / 1.12, 2) AS importeneto,
+    @importeneto := ROUND((@importebruto - a.descuento) / @factor, 2) AS importeneto,
     @importeiva := ROUND(@importebruto - a.descuento - @importeneto, 2) AS importeiva,
     @importetotal := ROUND(@importeneto + @importeiva, 2)  AS importetotal,
     a.descuento,
-    @descuentosiniva := ROUND((a.descuento / 1.12), 2) AS descuentosiniva,
+    @descuentosiniva := ROUND((a.descuento / @factor), 2) AS descuentosiniva,
     @descuentoiva := ROUND(a.descuento - @descuentosiniva, 2) AS descuentoiva,    
     @preciocnv := ROUND(@precio / $d->tc, 2) AS preciocnv,
     @importebrutocnv := ROUND(@importebruto / $d->tc, 2) AS importebrutocnv,
@@ -98,11 +99,13 @@ $app->post('/pendientesfel', function() {
     @descuentocnv := ROUND(a.descuento / $d->tc, 2) AS descuentocnv,
     @descuentosinivacnv := ROUND(@descuentosiniva / $d->tc, 2) AS descuentosinivacnv,
     @descuentoivacnv := ROUND(@descuentoiva / $d->tc, 2) AS descuentoivacnv,    
+    @importeexento := IF(@factor = 1, @importebruto, 0.00) AS importeexento,
+    @importeexentocnv := IF(@factor = 1, @importebrutocnv, 0.00) AS importeexentocnv,
     0.00 AS isrporretener, RetISR(d.id, b.idtiposervicio) as retenerisr, 0.00 AS ivaporretener, RetIVA(d.id, b.idtiposervicio) AS reteneriva, c.idtipocliente, d.nombre, d.nombrecorto, 
     FacturarA(d.id, b.idtiposervicio) AS facturara, NitFacturarA(d.id, b.idtiposervicio) AS nit, DirFacturarA(d.id, b.idtiposervicio) AS direccion, PorcentajeRetIVA(d.id, b.idtiposervicio) AS porcentajeretiva, 
     f.desctiposervventa AS tipo, 0.00 AS totapagar, c.id AS idcontrato, d.id AS idcliente, UPPER(f.desctiposervventa) AS tipo, UPPER(g.nomproyecto) AS proyecto, h.nombre AS unidad, 
     (SELECT nombre FROM mes WHERE id = a.mes) AS nommes, b.idtiposervicio, DATE_FORMAT(FechaLecturaAnterior(a.idserviciobasico, a.mes, a.anio), '%d/%m/%Y') AS fechaanterior, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechaactual, 
-    a.fechacorte, a.conceptoadicional, 0.00 AS isrporretenercnv, 0.00 AS ivaporretenercnv, 0.00 AS totapagar, 0.00 AS totapagarcnv, 
+    a.fechacorte, a.conceptoadicional, 0.00 AS isrporretenercnv, 0.00 AS ivaporretenercnv, 0.00 AS totapagar, 0.00 AS totapagarcnv, ExentoIVA(d.id, b.idtiposervicio) AS exentoiva,
     1 AS facturar 
     FROM lecturaservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico INNER JOIN contrato c ON c.id = (SELECT b.id FROM contrato b WHERE FIND_IN_SET(a.idunidad, b.idunidad) LIMIT 1) 
     INNER JOIN cliente d ON d.id = c.idcliente INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio 
@@ -121,9 +124,10 @@ $app->post('/pendientesfel', function() {
 });
 
 function calculaImpuestosYTotal($db, $d, $factura) {
-    $factura->isrporretener = (int)$factura->retenerisr > 0 ? $db->calculaISR((float)$factura->importeneto) : 0.00;
+    $noEsExentoIVA = (int)$factura->exentoiva === 0;
+    $factura->isrporretener = $noEsExentoIVA ? ((int)$factura->retenerisr > 0 ? $db->calculaISR((float)$factura->importeneto) : 0.00) : 0.00;
     $factura->isrporretenercnv = round($factura->isrporretener / (float)$d->tc, 2);
-    $factura->ivaporretener = (int)$factura->reteneriva > 0 ? $db->calculaRetIVA((float)$factura->importeneto, ((int)$factura->idtipocliente == 1 ? true : false), (float)$factura->importetotal, ((int)$factura->idtipocliente == 2 ? true : false), (float)$factura->importeiva, (float)$factura->porcentajeretiva) : 0.00;
+    $factura->ivaporretener = $noEsExentoIVA ? ((int)$factura->reteneriva > 0 ? $db->calculaRetIVA((float)$factura->importeneto, ((int)$factura->idtipocliente == 1 ? true : false), (float)$factura->importetotal, ((int)$factura->idtipocliente == 2 ? true : false), (float)$factura->importeiva, (float)$factura->porcentajeretiva) : 0.00) : 0.00;
     $factura->ivaporretenercnv = round($factura->ivaporretener / (float)$d->tc, 2);
     $factura->totapagar = round((float)$factura->importetotal - ($factura->isrporretener + $factura->ivaporretener), 2);
     $factura->totapagarcnv = round($factura->totapagar / (float)$d->tc, 2);
@@ -313,7 +317,7 @@ $app->post('/genfactfel', function() {
             $query.= "retisr, retiva, totdescuento, nit, nombre, direccion, montocargoiva, montocargoflat, ";
             $query.= "importebruto, importeneto, importeiva, importetotal, descuentosiniva, descuentoiva, ";
             $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv, ";
-            $query.= "serieadmin, numeroadmin, totalcnv";
+            $query.= "serieadmin, numeroadmin, totalcnv, importeexento, importeexentocnv, exentoiva";
             $query.= ") VALUES (";
             $query.= "$params->idempresa, 1, $p->idcontrato, $p->idcliente, ";
             $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '$descripcion', $p->iva, ";
@@ -321,7 +325,7 @@ $app->post('/genfactfel', function() {
             $query.= "$p->isrporretener, $p->ivaporretener, $p->descuento, '$p->nit', '$p->facturara', '$p->direccion', $p->montoconiva, $p->montoconiva, ";
             $query.= "$p->importebruto, $p->importeneto, $p->importeiva, $p->importetotal, $p->descuentosiniva, $p->descuentoiva, ";
             $query.= "$p->importebrutocnv, $p->importenetocnv, $p->importeivacnv, $p->importetotalcnv, $p->descuentosinivacnv, $p->descuentoivacnv, ";
-            $query.= "'$datosFel->seriefel', $datosFel->correlativofel, $p->totapagarcnv";
+            $query.= "'$datosFel->seriefel', $datosFel->correlativofel, $p->totapagarcnv, $p->importeexento, $p->importeexentocnv, $p->exentoiva";
             $query.= ")";
             //echo $query.'<br/>';
 
@@ -344,13 +348,13 @@ $app->post('/genfactfel', function() {
                 $query.= "conceptoadicional, descuentocnv, ";
                 $query.= "importebruto, importeneto, importeiva, importetotal, descuentosiniva, descuentoiva, ";
                 $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv, porcentajedescuento, ";
-                $query.= "precio, preciocnv";                
+                $query.= "precio, preciocnv, importeexento, importeexentocnv";                
                 $query.= ") VALUES(";                
                 $query.= "$lastid, 1, '$descripcion', $p->montoconiva, $p->importebrutocnv, $p->montoconiva, $p->idtiposervicio, $p->mes, $p->anio, $p->descuento, ";
                 $query.= "$conceptoAdicional, $p->descuentocnv, ";
                 $query.= "$p->importebruto, $p->importeneto, $p->importeiva, $p->importetotal, $p->descuentosiniva, $p->descuentoiva, ";
                 $query.= "$p->importebrutocnv, $p->importenetocnv, $p->importeivacnv, $p->importetotalcnv, $p->descuentosinivacnv, $p->descuentoivacnv, $p->porcentajedescuento,";
-                $query.= "$p->precio, $p->preciocnv";
+                $query.= "$p->precio, $p->preciocnv, $p->importeexento, $p->importeexentocnv";
                 $query.= ")";
                 $db->doQuery($query);
                 $lastidDetalle = $db->getLastId();

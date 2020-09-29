@@ -24,7 +24,7 @@ $app->post('/rptlibventas', function(){
     $query.= "IF(a.anulada = 0, IF(a.idtipoventa = 4, IF(c.generaiva = 1 AND a.idtipofactura <> 6, ROUND((a.total - a.noafecto - a.iva), 2), 0.00), 0.00), 0.00) AS activo, ";
     $query.= "IF(a.anulada = 0, IF(a.idtipoventa = 1, IF(c.generaiva = 1 AND a.idtipofactura <> 6, ROUND((a.total - a.noafecto - a.iva), 2), 0.00), 0.00), 0.00) AS bien, ";    	
 	$query.= "IF(a.anulada = 0, IF(a.idtipoventa = 2, IF(c.generaiva = 1 AND a.idtipofactura <> 6, ROUND(a.subtotal - a.iva, 2), 0.00), 0.00), 0.00) AS servicio, ";	
-	$query.= "IF(a.anulada = 0, ROUND(a.iva, 2), 0.00) AS iva, IF(a.anulada = 0, ROUND(a.subtotal, 2), 0.00) AS totfact ";
+	$query.= "IF(a.anulada = 0, ROUND(a.iva, 2), 0.00) AS iva, IF(a.anulada = 0, ROUND(a.subtotal, 2), 0.00) AS totfact, a.idtipofactura, a.importeexento ";
     $query.= "FROM factura a LEFT JOIN contrato b ON b.id = a.idcontrato LEFT JOIN tipofactura c ON c.id = a.idtipofactura LEFT JOIN cliente d ON d.id = a.idcliente ";
     $query.= "WHERE a.idtipoventa <> 5 AND c.id <> 5 AND a.idempresa = $idempresa AND a.mesiva = $mes AND YEAR(a.fecha) = $anio AND LENGTH(a.serie) > 0 AND LENGTH(a.numero) > 0 ";
 	$query.= "ORDER BY ".((int)$d->alfa > 0 ? "8, 1, 3, 4, 5, 6" : "1, 3, 4, 5, 6, 8");	
@@ -32,10 +32,11 @@ $app->post('/rptlibventas', function(){
 	$detlbventa = $db->getQuery($query);
 	
 	$libventas = array();
-	$idarray = 0;
+	$idarray = 0;	
 			
 	foreach ($detlbventa as $dlbv) {
-		$idarray++;
+		$factor = (int)$dlbv->idtipofactura !== 9 ? 1 : -1;
+		$idarray++;		
 		
 		array_push($libventas,
 			array(
@@ -43,16 +44,17 @@ $app->post('/rptlibventas', function(){
 				'bien' => $dlbv->bien,
 				'documento' => $dlbv->documento,
 				'fechafactura' => $dlbv->fechafactura,
-				'iva' => $dlbv->iva,
+				'iva' => round((float)$dlbv->iva * $factor, 2),
 				'nit' => $dlbv->nit,
 				'cliente' => $dlbv->cliente,
 				'serie' => $dlbv->serie,
-				'servicio' => $dlbv->servicio,
-				'exento' => $dlbv->exento,
+				'servicio' => round((float)$dlbv->servicio * $factor, 2),
+				'exento' => round((float)$dlbv->exento * $factor, 2),
 				'tipodocumento' => $dlbv->tipodocumento,
-				'totfact' => $dlbv->totfact,
+				'totfact' => round((float)$dlbv->totfact * $factor, 2),
 				'serieadmin' => $dlbv->serieadmin,
-				'numeroadmin' => $dlbv->numeroadmin
+				'numeroadmin' => $dlbv->numeroadmin,
+				'exento' => $dlbv->importeexento
 			)
 		);	
 	}

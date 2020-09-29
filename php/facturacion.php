@@ -108,36 +108,41 @@ $app->post('/pendientes', function(){
 function getQueryCargos($d) {
     $query = "SELECT c.id as idcontrato, c.idcliente, d.nombrecorto AS clientecorto, FacturarA(c.idcliente, b.idtipoventa) AS facturara, a.id AS idcargo, b.idmonedafact, k.simbolo AS monedafact,
 
-    @montoconiva := ROUND(((a.monto - a.descuento) * IF(h.eslocal = 0, $d->tc, 1)) * 1.12, 2) AS montoconiva, 
-    @montosiniva := ROUND(@montoconiva / 1.12, 2) AS montosiniva,
+    @factor := IF(ExentoIVA(c.idcliente, b.idtipoventa) = 0, 1.12, 1) AS factor,
+
+    @montoconiva := ROUND(((a.monto - a.descuento) * IF(h.eslocal = 0, $d->tc, 1)) * @factor, 2) AS montoconiva, 
+    @montosiniva := ROUND(@montoconiva / @factor, 2) AS montosiniva,
     ROUND(@montoconiva - @montosiniva, 2) AS iva, 
 
     @montoconivacnv := ROUND((@montoconiva / $d->tc), 2) AS montoconivacnv, 
     @montosinivacnv := ROUND(@montosiniva / $d->tc, 2) AS montosinivacnv,
     ROUND(@montoconivacnv - @montosinivacnv, 2) AS ivacnv, 
 
-    @descuentoconiva := ROUND((a.descuento * IF(h.eslocal = 0, $d->tc, 1)) * 1.12, 2) AS descuentoconiva,
-    @descuentosiniva := ROUND(@descuentoconiva / 1.12, 2) AS descuentosiniva,
+    @descuentoconiva := ROUND((a.descuento * IF(h.eslocal = 0, $d->tc, 1)) * @factor, 2) AS descuentoconiva,
+    @descuentosiniva := ROUND(@descuentoconiva / @factor, 2) AS descuentosiniva,
     ROUND(@descuentoconiva - @descuentosiniva, 2) AS descuentoiva,
 
     @descuentoconivacnv := ROUND(@descuentoconiva / $d->tc, 2) AS descuentoconivacnv,
     @descuentosinivacnv := ROUND(@descuentosiniva / $d->tc, 2) AS descuentosinivacnv,
     ROUND(@descuentoconivacnv - @descuentosinivacnv, 2) AS descuentoivacnv,
     
-    @precio := ROUND((a.monto * IF(h.eslocal = 0, $d->tc, 1)) * 1.12, 2) AS precio,
+    @precio := ROUND((a.monto * IF(h.eslocal = 0, $d->tc, 1)) * @factor, 2) AS precio,
     @importebruto := ROUND(@precio * 1, 2) AS importebruto,
     @porcentajedescuento := ROUND((@descuentoconiva * 100) / @importebruto, 4) AS porcentajedescuento,
-    @importeneto := ROUND((@importebruto - @descuentoconiva) / 1.12, 2) AS importeneto, 
+    @importeneto := ROUND((@importebruto - @descuentoconiva) / @factor, 2) AS importeneto, 
     @importeiva := ROUND((@importebruto - @descuentoconiva - @importeneto), 2) AS importeiva, 
     @importetotal := ROUND((@importeneto + @importeiva), 2) AS importetotal, 
 
-    ROUND(@precio / $d->tc, 2) AS preciocnv, ROUND(@importebruto / $d->tc, 2) AS importebrutocnv, ROUND(@importeneto / $d->tc, 2) AS importenetocnv, ROUND(@importeiva / $d->tc, 2) AS importeivacnv, 
+    ROUND(@precio / $d->tc, 2) AS preciocnv, @importebrutocnv := ROUND(@importebruto / $d->tc, 2) AS importebrutocnv, ROUND(@importeneto / $d->tc, 2) AS importenetocnv, ROUND(@importeiva / $d->tc, 2) AS importeivacnv, 
     ROUND(@importetotal / $d->tc, 2) AS importetotalcnv,
+
+    @importeexento := IF(@factor = 1, @importebruto, 0.00) AS importeexento,
+    @importeexentocnv := IF(@factor = 1, @importebrutocnv, 0.00) AS importeexentocnv,
     
     CONCAT(e.desctiposervventa, ' ', DATE_FORMAT(a.fechacobro, '%m/%Y')) AS tipo, e.id as idtipo, j.nomproyecto AS proyecto, 
     UnidadesPorContrato(a.idcontrato) AS unidades, RetISR(c.idcliente, b.idtipoventa) AS retenerisr, RetIVA(c.idcliente, b.idtipoventa) AS reteneriva, c.idtipocliente, 
     PorcentajeRetIVA(c.idcliente, b.idtipoventa) AS porcentajeretiva, a.conceptoadicional, MONTH(a.fechacobro) AS mes, YEAR(a.fechacobro) AS anio, 
-    NitFacturarA(c.idcliente, b.idtipoventa) AS nit, DirFacturarA(c.idcliente, b.idtipoventa) AS direccion, 1 AS facturar
+    NitFacturarA(c.idcliente, b.idtipoventa) AS nit, DirFacturarA(c.idcliente, b.idtipoventa) AS direccion, ExentoIVA(c.idcliente, b.idtipoventa) AS exentoiva, 1 AS facturar
     FROM cargo a INNER JOIN detfactcontrato b ON b.id = a.iddetcont INNER JOIN contrato c ON c.id = b.idcontrato INNER JOIN cliente d ON d.id = c.idcliente 
     INNER JOIN tiposervicioventa e ON e.id = b.idtipoventa INNER JOIN tipocliente g ON g.id = c.idtipocliente 
     INNER JOIN moneda h ON h.id = b.idmoneda INNER JOIN empresa i ON i.id = c.idempresa 
@@ -163,12 +168,13 @@ $app->post('/pendientesfel', function() {
         SUM(z.montoconivacnv) AS montoconivacnv, SUM(z.montosinivacnv) AS montosinivacnv, SUM(z.ivacnv) AS ivacnv,
         GROUP_CONCAT(DISTINCT z.tipo ORDER BY z.tipo SEPARATOR ', ') AS tipo, GROUP_CONCAT(DISTINCT z.idtipo SEPARATOR ', ') AS idtipo, $d->tc AS tc, z.proyecto, z.unidades, 
         z.retenerisr, z.reteneriva, z.porcentajeretiva, z.idtipocliente, 0.00 AS isrporretener, 0.00 AS isrporretenercnv, 0.00 AS ivaporretener, 0.00 AS ivaporretenercnv, 
-        0.00 AS totapagar, 0.00 AS totapagarcnv, z.nit, z.direccion,
+        0.00 AS totapagar, 0.00 AS totapagarcnv, z.nit, z.direccion, z.exentoiva,
 
         SUM(z.descuentoconiva) AS descuentoconiva, SUM(z.descuentosiniva) AS descuentosiniva, SUM(z.descuentoiva) AS descuentoiva,
         SUM(z.descuentoconivacnv) AS descuentoconivacnv, SUM(z.descuentosinivacnv) AS descuentosinivacnv, SUM(z.descuentoivacnv) AS descuentoivacnv,
         SUM(z.importebruto) AS importebruto, SUM(z.importeneto) AS importeneto, SUM(z.importeiva) AS importeiva, SUM(z.importetotal) AS importetotal,
         SUM(z.importebrutocnv) AS importebrutocnv, SUM(z.importenetocnv) AS importenetocnv, SUM(z.importeivacnv) AS importeivacnv, SUM(z.importetotalcnv) AS importetotalcnv,
+        SUM(z.importeexento) AS importeexento, SUM(z.importeexentocnv) AS importeexentocnv,
 
         1 AS facturar
         FROM ($queryCargos) z
@@ -187,9 +193,10 @@ $app->post('/pendientesfel', function() {
 });
 
 function calculaImpuestosYTotal($db, $d, $factura) {
-    $factura->isrporretener = (int)$factura->retenerisr > 0 ? $db->calculaISR((float)$factura->montosiniva) : 0.00;
+    $noEsExentoIVA = (int)$factura->exentoiva === 0;
+    $factura->isrporretener = $noEsExentoIVA ? ((int)$factura->retenerisr > 0 ? $db->calculaISR((float)$factura->montosiniva) : 0.00) : 0.00;
     $factura->isrporretenercnv = round($factura->isrporretener / (float)$d->tc, 2);
-    $factura->ivaporretener = (int)$factura->reteneriva > 0 ? $db->calculaRetIVA((float)$factura->montosiniva, ((int)$factura->idtipocliente == 1 ? true : false), (float)$factura->montoconiva, ((int)$factura->idtipocliente == 2 ? true : false), (float)$factura->iva, (float)$factura->porcentajeretiva) : 0.00;
+    $factura->ivaporretener = $noEsExentoIVA ? ((int)$factura->reteneriva > 0 ? $db->calculaRetIVA((float)$factura->montosiniva, ((int)$factura->idtipocliente == 1 ? true : false), (float)$factura->montoconiva, ((int)$factura->idtipocliente == 2 ? true : false), (float)$factura->iva, (float)$factura->porcentajeretiva) : 0.00) : 0.00;
     $factura->ivaporretenercnv = round($factura->ivaporretener / (float)$d->tc, 2);
     $factura->totapagar = round((float)$factura->montoconiva - ($factura->isrporretener + $factura->ivaporretener), 2);
     $factura->totapagarcnv = round($factura->totapagar / (float)$d->tc, 2);
@@ -443,7 +450,7 @@ $app->post('/genfactfel', function() {
         $query.= "subtotalcnv, totalcnv, retivacnv, retisrcnv, totdescuentocnv,";
         $query.= "importebruto, importeneto, importeiva, importetotal, descuentosiniva, descuentoiva, ";
         $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv, ";
-        $query.= "serieadmin, numeroadmin, porretiva";
+        $query.= "serieadmin, numeroadmin, porretiva, importeexento, importeexentocnv, exentoiva";
         $query.= ") VALUES (";
         $query.= "$params->idempresa, 1, $p->idcontrato, $p->idcliente, ";
         $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '". str_replace(',', ', ', strip_tags($p->tipo))."', $p->iva, ";
@@ -452,7 +459,7 @@ $app->post('/genfactfel', function() {
         $query.= "$p->montoconivacnv, $p->totapagarcnv, $p->ivaporretenercnv, $p->isrporretenercnv, $p->descuentoconivacnv, ";
         $query.= "$p->importebruto, $p->importeneto, $p->importeiva, $p->importetotal, $p->descuentosiniva, $p->descuentoiva, ";
         $query.= "$p->importebrutocnv, $p->importenetocnv, $p->importeivacnv, $p->importetotalcnv, $p->descuentosinivacnv, $p->descuentoivacnv, ";
-        $query.= "'$datosFel->seriefel', $datosFel->correlativofel, $p->porcentajeretiva";
+        $query.= "'$datosFel->seriefel', $datosFel->correlativofel, $p->porcentajeretiva, $p->importeexento, $p->importeexentocnv, $p->exentoiva";
         $query.= ")";
         //print $query;
         //die();
@@ -478,13 +485,13 @@ $app->post('/genfactfel', function() {
                     $query.= "conceptoadicional, descuentocnv, ";
                     $query.= "importebruto, importeneto, importeiva, importetotal, descuentosiniva, descuentoiva, ";
                     $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv, porcentajedescuento, ";
-                    $query.= "precio, preciocnv";
+                    $query.= "precio, preciocnv, importeexento, importeexentocnv";
                     $query.= ") VALUES(";
                     $query.= "$lastid, 1, '$det->tipo', $det->montoconiva, $det->importebrutocnv, $det->montoconiva, $det->idtipo, $det->mes, $det->anio, $det->descuentoconiva, ";
                     $query.= "$conceptoAdicional, $det->descuentoconivacnv, ";
                     $query.= "$det->importebruto, $det->importeneto, $det->importeiva, $det->importetotal, $det->descuentosiniva, $det->descuentoiva, ";
                     $query.= "$det->importebrutocnv, $det->importenetocnv, $det->importeivacnv, $det->importetotalcnv, $det->descuentosinivacnv, $det->descuentoivacnv, $det->porcentajedescuento,";
-                    $query.= "$det->precio, $det->preciocnv";
+                    $query.= "$det->precio, $det->preciocnv, $det->importeexento, $det->importeexentocnv";
                     $query.= ")";
                     //print $query;
                     if((float)$det->montoconiva != 0){
@@ -722,7 +729,7 @@ $app->post('/genfel', function() use($app) {
     '' AS numeroacceso, IFNULL(a.serieadmin, 'A') AS serieadmin, a.numeroadmin, c.nombrecorto, FORMAT(a.importetotalcnv, 2) AS montodol, ROUND(a.tipocambio, 4) AS tipocambio, FORMAT(TRUNCATE(a.totalcnv, 2), 2) AS pagonetodol, 
     FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2), 2) AS pagoneto, FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2), 2) AS retiva, 
     FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.retisr, a.retisrcnv), 2), 2) AS retisr, FORMAT(IF(a.idmonedafact = 1, a.importetotal, a.importetotalcnv), 2) AS monto, 
-    DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.nombre, d.simbolo AS monedafact, 1 AS descargar
+    DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.nombre, d.simbolo AS monedafact, 1 AS descargar, a.idfacturaafecta
     FROM factura a
     INNER JOIN tipofactura b ON b.id = a.idtipofactura
     LEFT JOIN cliente c ON c.id = a.idcliente
@@ -736,17 +743,27 @@ $app->post('/genfel', function() use($app) {
         $factura = $facturas[$i];
         //Detalle
         $query = "SELECT 2 AS tiporegistro, a.cantidad, 1 AS unidadmedida, TRUNCATE(IF(b.idmonedafact = 1, a.precio, a.preciocnv), 2) AS precio, a.porcentajedescuento, 
-        TRUNCATE(IF(b.idmonedafact = 1, a.descuento, a.descuentocnv), 2) AS importedescuento, IF(b.idmonedafact = 1, a.importebruto, a.importebrutocnv) AS importebruto, 0 AS importeexento, 
-        IF(b.idmonedafact = 1, a.importeneto, a.importenetocnv) AS importeneto, IF(b.idmonedafact = 1, a.importeiva, a.importeivacnv) AS importeiva, 0 AS importeotros, 
+        TRUNCATE(IF(b.idmonedafact = 1, a.descuento, a.descuentocnv), 2) AS importedescuento, IF(b.idmonedafact = 1, a.importebruto, a.importebrutocnv) AS importebruto,
+        IF(b.idmonedafact = 1, a.importeexento, a.importeexentocnv) AS importeexento, IF(b.idmonedafact = 1, a.importeneto, a.importenetocnv) AS importeneto,
+        IF(b.idmonedafact = 1, a.importeiva, a.importeivacnv) AS importeiva, 0 AS importeotros, 
         IF(b.idmonedafact = 1, a.importetotal, a.importetotalcnv) AS importetotal, a.idtiposervicio AS producto, TRIM(a.descripcionlarga) AS descripcion, 'S' AS tipoventa
         FROM detfact a INNER JOIN factura b ON b.id = a.idfactura
         WHERE a.idfactura = $factura->ordenexterno";
         // print $query;
         $factura->detalle = $db->getQuery($query);
+        //Notas de crédito/débito. 22/09/2020.
+        $cntDocumentosAsociados = 0;
+        $factura->docasoc = [];
+        if (in_array(trim($factura->tipodocumento), array('NCRE', 'NDEB'))) {
+            $query = "SELECT 3 AS tiporegistro, 'FACT' AS tipodocumento, serie, numero, DATE_FORMAT(fecha, '%Y%m%d') AS fechadocumento FROM factura WHERE id = $factura->idfacturaafecta";
+            $factura->docasoc = $db->getQuery($query);
+            //$cntDocumentosAsociados = 1;
+        }
         //Totales
         $query = "SELECT 4 AS tiporegistro, IF(a.idmonedafact = 1, a.importebruto, a.importebrutocnv) AS importebruto, TRUNCATE(IF(a.idmonedafact = 1, a.totdescuento, a.totdescuentocnv), 2) AS importedescuento, 
-        0 AS importeexento, IF(a.idmonedafact = 1, a.importeneto, a.importenetocnv) AS importeneto, IF(a.idmonedafact = 1, a.importeiva, a.importeivacnv) AS importeiva, 0 AS importeotros, 
-        IF(a.idmonedafact = 1, a.importetotal, a.importetotalcnv) AS importetotal, 0 AS porcentajeisr, 0 AS importeisr, 0 AS registrosdetalle, 0 AS documentosasociados
+        IF(a.idmonedafact = 1, a.importeexento, a.importeexentocnv) AS importeexento, IF(a.idmonedafact = 1, a.importeneto, a.importenetocnv) AS importeneto,
+        IF(a.idmonedafact = 1, a.importeiva, a.importeivacnv) AS importeiva, 0 AS importeotros, 
+        IF(a.idmonedafact = 1, a.importetotal, a.importetotalcnv) AS importetotal, 0 AS porcentajeisr, 0 AS importeisr, 0 AS registrosdetalle, $cntDocumentosAsociados AS documentosasociados
         FROM factura a
         WHERE a.id = $factura->ordenexterno";
         $factura->totales = $db->getQuery($query)[0];

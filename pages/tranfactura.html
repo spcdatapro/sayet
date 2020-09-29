@@ -363,7 +363,7 @@
                             <form name="frmFact" id="frmFact" ng-submit="frmFact.$valid && addFactura(factura)"
                                 novalidate>
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-12 nopadding">
                                         <div class="form-group required">
                                             <label for="selEmpresaOtr" class="control-label">Empresa:</label>
                                             <select name="selEmpresaOtr" id="selEmpresaOtr" class="form-control"
@@ -389,7 +389,7 @@
                                         </div>
                                     </div>
                                     -->
-                                    <div class="col-md-3">
+                                    <div class="col-md-3 nopadding">
                                         <div class="form-group required">
                                             <label for="txtCliente" class="control-label">Cliente:</label>
                                             <div angucomplete-alt id="txtCliente" placeholder="Buscar cliente..."
@@ -402,14 +402,14 @@
                                                 override-suggestions="true"></div>
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-2 nopadding">
                                         <div class="form-group required">
                                             <label for="txtNit" class="control-label">N.I.T.</label>
                                             <input name="txtNit" id="txtNit" type="text" class="form-control"
                                                 ng-model="factura.nit" maxlength="25" required />
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-4 nopadding">
                                         <div class="form-group" ng-show="contratos.length > 0">
                                             <label>Contrato (si aplica):</label>
                                             <ui-select ng-model="factura.idcontrato"
@@ -444,7 +444,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-12">
+                                    <div class="col-md-12 nopadding">
                                         <div class="form-group required">
                                             <label for="selProyectoFact" class="control-label">Proyecto:</label>
                                             <ui-select id="selProyectoFact" ng-model="factura.idproyecto"
@@ -470,7 +470,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-8">
+                                    <div class="col-md-8 nopadding">
                                         <div class="form-group">
                                             <label for="txtFDir">Direcci&oacute;n:</label>
                                             <input name="txtFDir" id="txtFDir" type="text" class="form-control"
@@ -478,14 +478,14 @@
                                                 placeholder="Direcci&oacute;n del cliente..." />
                                         </div>                                        
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-2 nopadding">
                                         <div class="form-group required">
                                             <label for="txtFIng" class="control-label">Fecha de ingreso:</label>
                                             <input name="txtFIng" id="txtFIng" type="date" class="form-control"
                                                 ng-model="factura.fechaingreso" required />
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-2 nopadding">
                                         <div class="form-group required">
                                             <label for="txtFFact" class="control-label">Fecha de factura:</label>
                                             <input name="txtFFact" id="txtFFact" type="date" class="form-control"
@@ -514,7 +514,7 @@
                                 </div>
                                 -->
                                 <div class="row">
-                                    <div class="col-md-2">
+                                    <div class="col-md-2 nopadding">
                                         <div class="form-group required">
                                             <label for="selTVenta" class="control-label">Tipo de venta:</label>
                                             <select name="selTVenta" id="selTVenta" class="form-control"
@@ -524,7 +524,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-2 nopadding">
                                         <div class="form-group required"
                                             ng-class="{'has-error':frmFact.txtTipC.$invalid && !frmFact.txtTipC.$pristine}">
                                             <label for="txtTipC" class="control-label">Tipo de cambio:</label>
@@ -533,37 +533,44 @@
                                                 step="0.01" required />
                                         </div>
                                     </div>
-                                    <div class="col-md-1">
+                                    <div class="col-md-1 nopadding">
+                                        <div class="form-group">
+                                            <label for="chkExentoIVA">Exe. IVA:</label>
+                                            <input name="chkExentoIVA" id="chkExentoIVA" type="checkbox"
+                                                class="form-control" ng-model="factura.exentoiva" ng-true-value="1" ng-false-value="0" ng-change="esExento()" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1 nopadding">
                                         <div class="form-group">
                                             <label for="chkRetenerISR">Ret. ISR:</label>
                                             <input name="chkRetenerISR" id="chkRetenerISR" type="checkbox"
-                                                class="form-control" ng-model="factura.retenerisr" ng-true-value="1"
+                                                class="form-control" ng-model="factura.retenerisr" ng-true-value="1" ng-disabled="+factura.exentoiva === 1"
                                                 ng-false-value="0" />
                                         </div>
                                     </div>
-                                    <div class="col-md-1">
+                                    <div class="col-md-1 nopadding">
                                         <div class="form-group">
                                             <label for="chkRetenerIVA">Ret. IVA</label>
                                             <input name="chkRetenerIVA" id="chkRetenerIVA" type="checkbox"
                                                 class="form-control" ng-model="factura.reteneriva" ng-true-value="1"
                                                 ng-false-value="0"
-                                                ng-change="factura.porretiva = +factura.reteneriva == 0 ? 0.00 : factura.porretiva;" />
+                                                ng-change="factura.porretiva = +factura.reteneriva == 0 ? 0.00 : factura.porretiva;" ng-disabled="+factura.exentoiva === 1" />
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-2 nopadding">
                                         <div class="form-group"
                                             ng-class="{'has-error':frmFact.txtPorRetIva.$invalid && !frmFact.txtPorRetIva.$pristine, 'required': +factura.reteneriva == 1}">
                                             <label for="txtPorRetIva" class="control-label">% Ret. I.V.A.:</label>
                                             <input name="txtPorRetIva" id="txtPorRetIva" type="number"
                                                 class="form-control" ng-model="factura.porretiva" min="0"
                                                 placeholder="Tipo de cambio..." step="0.01"
-                                                ng-required="+factura.reteneriva == 1" />
+                                                ng-required="+factura.reteneriva == 1" ng-disabled="+factura.exentoiva === 1" />
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-1 nopadding">
                                         <div class="form-group required"
                                             ng-class="{'has-error':frmFact.selMesAfecta.$invalid && !frmFact.selMesAfecta.$pristine}">
-                                            <label for="selMesAfecta" class="control-label">Mes que afecta:</label>
+                                            <label for="selMesAfecta" class="control-label">Mes afecta:</label>
                                             <select name="selMesAfecta" id="selMesAfecta" class="form-control"
                                                 ng-model="factura.mesafecta" required>
                                                 <option value="1">Ene</option>
@@ -581,11 +588,10 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-2 nopadding">
                                         <div class="form-group required"
                                             ng-class="{'has-error':frmFact.txtAnioAfecta.$invalid && !frmFact.txtAnioAfecta.$pristine}">
-                                            <label for="txtAnioAfecta" class="control-label">A&ntilde;o que
-                                                afecta:</label>
+                                            <label for="txtAnioAfecta" class="control-label">A&ntilde;o afecta:</label>
                                             <input name="txtAnioAfecta" id="txtAnioAfecta" type="number"
                                                 class="form-control" ng-model="factura.anioafecta" min="2016"
                                                 required />
@@ -603,7 +609,7 @@
                                     -->
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-2">
+                                    <div class="col-md-2 nopadding">
                                         <div class="form-group">
                                             <label for="txtSubTot">Total:</label>
                                             <input name="txtSubTot" id="txtSubTot" type="text" class="form-control"
@@ -611,7 +617,7 @@
                                                 fcsa-number="{ maxDecimals:2 }" style="text-align: right" />
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-2 nopadding">
                                         <div class="form-group">
                                             <label for="txtIva">I.V.A.:</label>
                                             <input name="txtIva" id="txtIva" type="text" class="form-control"
@@ -619,7 +625,7 @@
                                                 fcsa-number="{ maxDecimals:2 }" style="text-align: right" />
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-2 nopadding">
                                         <div class="form-group">
                                             <label for="txtRetISR">I.S.R.:</label>
                                             <input name="txtRetISR" id="txtRetISR" type="text" class="form-control"
@@ -627,7 +633,7 @@
                                                 fcsa-number="{ maxDecimals:2 }" style="text-align: right" />
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-2 nopadding">
                                         <div class="form-group">
                                             <label for="txtRetIVA">Ret. I.V.A.:</label>
                                             <input name="txtRetIVA" id="txtRetIVA" type="text" class="form-control"
@@ -635,7 +641,7 @@
                                                 fcsa-number="{ maxDecimals:2 }" style="text-align: right" />
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-2 nopadding">
                                         <div class="form-group">
                                             <label for="txtDescuento">Descuento:</label>
                                             <input name="txtDescuento" id="txtDescuento" type="text"
@@ -643,7 +649,7 @@
                                                 fcsa-number="{ maxDecimals:2 }" style="text-align: right" />
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-2 nopadding">
                                         <div class="form-group">
                                             <label for="txtAPagar">A pagar:</label>
                                             <input name="txtAPagar" id="txtAPagar" type="text" class="form-control"

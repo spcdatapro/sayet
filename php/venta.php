@@ -32,7 +32,7 @@ $app->post('/lstventas', function(){
     $db = new dbcpm();
     $query = "SELECT a.serieadmin, a.numeroadmin, a.id, b.idempresa, d.nomempresa, b.idcliente, h.nombre AS cliente, a.serie, a.numero, a.fechaingreso, a.mesiva, a.fecha, a.idtipoventa, c.desctipocompra AS tipoventa, ";
     $query.= "a.conceptomayor, a.fechapago, a.anulada, a.idrazonanulafactura, a.total, a.subtotal, a.iva, a.idmoneda, a.tipocambio, f.simbolo AS moneda, a.idtipofactura, g.desctipofact AS tipofactura, ";
-    $query.= "b.nocontrato, a.idcontrato, a.anulada, a.idrazonanulafactura, a.fechaanula, i.razon, CONCAT(a.serieadmin, '-', a.numeroadmin) AS correlativo ";
+    $query.= "b.nocontrato, a.idcontrato, a.anulada, a.idrazonanulafactura, a.fechaanula, i.razon, CONCAT(a.serieadmin, '-', a.numeroadmin) AS correlativo, g.siglas AS abreviatipofactura ";
     $query.= "FROM factura a INNER JOIN contrato b ON b.id = a.idcontrato INNER JOIN tipocompra c ON c.id = a.idtipoventa INNER JOIN empresa d ON d.id = b.idempresa INNER JOIN moneda f ON f.id = a.idmoneda ";
     $query.= "INNER JOIN tipofactura g ON g.id = a.idtipofactura INNER JOIN cliente h ON h.id = b.idcliente ";
     $query.= "LEFT JOIN razonanulacion i ON i.id = a.idrazonanulafactura ";
@@ -42,7 +42,7 @@ $app->post('/lstventas', function(){
     $query.= "UNION ";
     $query.= "SELECT a.serieadmin, a.numeroadmin, a.id, 0 AS idempresa, NULL AS nomempresa, a.idcliente, h.nombre AS cliente, a.serie, a.numero, a.fechaingreso, a.mesiva, a.fecha, a.idtipoventa, c.desctipocompra AS tipoventa, ";
     $query.= "a.conceptomayor, a.fechapago, a.anulada, a.idrazonanulafactura, a.total, a.subtotal, a.iva, a.idmoneda, a.tipocambio, f.simbolo AS moneda, a.idtipofactura, g.desctipofact AS tipofactura, ";
-    $query.= "'Sin contrato' AS nocontrato, a.idcontrato, a.anulada, a.idrazonanulafactura, a.fechaanula, i.razon, CONCAT(a.serieadmin, '-', a.numeroadmin) AS correlativo ";
+    $query.= "'Sin contrato' AS nocontrato, a.idcontrato, a.anulada, a.idrazonanulafactura, a.fechaanula, i.razon, CONCAT(a.serieadmin, '-', a.numeroadmin) AS correlativo, g.siglas AS abreviatipofactura ";
     $query.= "FROM factura a INNER JOIN tipocompra c ON c.id = a.idtipoventa INNER JOIN moneda f ON f.id = a.idmoneda INNER JOIN tipofactura g ON g.id = a.idtipofactura ";
     $query.= "LEFT JOIN cliente h ON h.id = a.idcliente LEFT JOIN razonanulacion i ON i.id = a.idrazonanulafactura ";
     $query.= "WHERE a.idcontrato = 0 AND a.idempresa = $d->idempresa ";
@@ -56,17 +56,21 @@ $app->get('/getventa/:idventa', function($idventa){
     $db = new dbcpm();
     $query = "SELECT a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, a.retisr,  a.noformiva, a.noacciva, a.fechapagoformiva, a.mespagoiva, a.aniopagoiva, a.retiva,   a.id, b.idempresa, d.nomempresa, b.idcliente, h.nombre AS cliente, a.serie, a.numero, a.fechaingreso, a.mesiva, a.fecha, a.idtipoventa, c.desctipocompra AS tipoventa, ";
     $query.= "a.conceptomayor, a.fechapago, a.anulada, a.idrazonanulafactura, a.total, a.subtotal, a.iva, a.idmoneda, a.tipocambio, f.simbolo AS moneda, a.idtipofactura, g.desctipofact AS tipofactura, ";
-    $query.= "b.nocontrato, a.idcontrato, a.anulada, a.idrazonanulafactura, a.fechaanula, i.razon, CONCAT(a.serieadmin, '-', a.numeroadmin) AS correlativo ";
+    $query.= "b.nocontrato, a.idcontrato, a.anulada, a.idrazonanulafactura, a.fechaanula, i.razon, CONCAT(a.serieadmin, '-', a.numeroadmin) AS correlativo, j.simbolo AS monedafact, ";
+    $query.= "IF(a.idmonedafact = 1, a.importetotal, a.importetotalcnv) AS importetotal, g.siglas AS abreviatipofactura, ";
+    $query.= "(SELECT COUNT(id) FROM factura WHERE idtipofactura IN(9) AND idfacturaafecta = a.id) AS connc ";
     $query.= "FROM factura a INNER JOIN contrato b ON b.id = a.idcontrato INNER JOIN tipocompra c ON c.id = a.idtipoventa INNER JOIN empresa d ON d.id = b.idempresa INNER JOIN moneda f ON f.id = a.idmoneda ";
     $query.= "INNER JOIN tipofactura g ON g.id = a.idtipofactura INNER JOIN cliente h ON h.id = b.idcliente ";
-    $query.= "LEFT JOIN razonanulacion i ON i.id = a.idrazonanulafactura ";
+    $query.= "LEFT JOIN razonanulacion i ON i.id = a.idrazonanulafactura LEFT JOIN moneda j ON j.id = a.idmonedafact ";
     $query.= "WHERE a.id = ".$idventa." ";
     $query.= "UNION ";
     $query.= "SELECT a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, a.retisr,  a.noformiva, a.noacciva, a.fechapagoformiva, a.mespagoiva, a.aniopagoiva, a.retiva,  a.id, 0 AS idempresa, NULL AS nomempresa, a.idcliente, h.nombre AS cliente, a.serie, a.numero, a.fechaingreso, a.mesiva, a.fecha, a.idtipoventa, c.desctipocompra AS tipoventa, ";
     $query.= "a.conceptomayor, a.fechapago, a.anulada, a.idrazonanulafactura, a.total, a.subtotal, a.iva, a.idmoneda, a.tipocambio, f.simbolo AS moneda, a.idtipofactura, g.desctipofact AS tipofactura, ";
-    $query.= "'Sin contrato' AS nocontrato, a.idcontrato, a.anulada, a.idrazonanulafactura, a.fechaanula, i.razon, CONCAT(a.serieadmin, '-', a.numeroadmin) AS correlativo ";
+    $query.= "'Sin contrato' AS nocontrato, a.idcontrato, a.anulada, a.idrazonanulafactura, a.fechaanula, i.razon, CONCAT(a.serieadmin, '-', a.numeroadmin) AS correlativo, j.simbolo AS monedafact, ";
+    $query.= "IF(a.idmonedafact = 1, a.importetotal, a.importetotalcnv) AS importetotal, g.siglas AS abreviatipofactura, ";
+    $query.= "(SELECT COUNT(id) FROM factura WHERE idtipofactura IN(9) AND idfacturaafecta = a.id) AS connc ";
     $query.= "FROM factura a INNER JOIN tipocompra c ON c.id = a.idtipoventa INNER JOIN moneda f ON f.id = a.idmoneda INNER JOIN tipofactura g ON g.id = a.idtipofactura ";
-    $query.= "LEFT JOIN cliente h ON h.id = a.idcliente LEFT JOIN razonanulacion i ON i.id = a.idrazonanulafactura ";
+    $query.= "LEFT JOIN cliente h ON h.id = a.idcliente LEFT JOIN razonanulacion i ON i.id = a.idrazonanulafactura LEFT JOIN moneda j ON j.id = a.idmonedafact ";
     $query.= "WHERE a.id = ".$idventa;
     print $db->doSelectASJson($query);
 });
@@ -281,6 +285,100 @@ $app->post('/lstfactret', function(){
     $query.= $d->numero != '' ? "AND a.numero LIKE '%$d->numero%' " : '';
     $query.= "ORDER BY b.ordensumario, a.serie, a.numero";
     print $db->doSelectASJson($query);
+});
+
+function calculaMontos($cantidad, $valor, $tc) {
+    $importe = new stdClass();
+
+    $importe->bruto = round((float)$cantidad * (float)$valor, 2);
+    $importe->brutocnv = round($importe->bruto / $tc, 2);
+
+    $importe->neto = round($importe->bruto / 1.12, 2);
+    $importe->netocnv = round($importe->neto / $tc, 2);
+
+    $importe->iva = round($importe->bruto - $importe->neto, 2);
+    $importe->ivacnv = round($importe->iva / $tc, 2);
+
+    $importe->total = round($importe->neto + $importe->iva, 2);
+    $importe->totalcnv = round($importe->total / $tc, 2);
+
+    return $importe;
+}
+
+$app->post('/generandc', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    if ((int)$d->tipo === 2) {
+        $query = "SELECT GROUP_CONCAT(COLUMN_NAME SEPARATOR ', ') FROM information_schema.columns WHERE TABLE_SCHEMA = 'sayet' AND TABLE_NAME = 'factura' AND COLUMN_NAME NOT IN('id', 'serie', 'numero')";
+        $columnas = $db->getOneField($query);
+
+        $query = "INSERT INTO factura($columnas) SELECT $columnas FROM factura WHERE id = $d->idfactura";
+        $db->doQuery($query);
+        $lastid = $db->getLastId();
+
+        if((int)$lastid > 0) {
+            $query = "UPDATE factura SET ";
+            $query.= "idtipofactura = 9, fecha = DATE(NOW()), fechaingreso = DATE(NOW()), mesiva = MONTH(NOW()), ";
+            $query.= "firmaelectronica = NULL, respuestagface = NULL, idfacturaafecta = $d->idfactura ";
+            $query.= "WHERE id = $lastid";
+            $db->doQuery($query);
+
+            $query = "SELECT GROUP_CONCAT(COLUMN_NAME SEPARATOR ', ') AS columnas FROM information_schema.columns WHERE TABLE_SCHEMA = 'sayet' AND TABLE_NAME = 'detfact' AND COLUMN_NAME NOT IN('id', 'idfactura')";
+            $coldet = $db->getOneField($query);
+
+            $query = "INSERT INTO detfact(idfactura, $coldet) SELECT $lastid, $coldet FROM detfact WHERE idfactura = $d->idfactura";
+            $db->doQuery($query);
+        }
+    } else {
+        $query = "SELECT * FROM factura WHERE id = $d->idfactura";
+        $factura = $db->getQuery($query)[0];
+        $n2l = new NumberToLetterConverter();
+
+        $p = calculaMontos(1, $d->monto, (float)$factura->tipocambio);
+        $montoletras = (int)$factura->idmonedafact == 1 ? $n2l->to_word($p->total, 'GTQ') : $n2l->to_word($p->totalcnv, 'USD');
+        
+        $query = "INSERT INTO factura(";
+        $query.= "idempresa, idtipofactura, idcontrato, idcliente, ";
+        $query.= "fechaingreso, mesiva, fecha, idtipoventa, conceptomayor, iva, ";
+        $query.= "total, subtotal, totalletras, idmoneda, tipocambio, ";
+        $query.= "retisr, retiva, totdescuento, nit, nombre, direccion, idmonedafact,";
+        $query.= "subtotalcnv, totalcnv, retivacnv, retisrcnv, totdescuentocnv,";
+        $query.= "importebruto, importeneto, importeiva, importetotal, descuentosiniva, descuentoiva, ";
+        $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv, ";
+        $query.= "serieadmin, numeroadmin, porretiva, idfacturaafecta, idproyecto";
+        $query.= ") VALUES (";
+        $query.= "$factura->idempresa, 9, $factura->idcontrato, $factura->idcliente, ";
+        $query.= "NOW(), MONTH(NOW()), DATE(NOW()), $factura->idtipoventa, '$d->descripcion', $p->iva, ";
+        $query.= "$p->total, $p->total, '$montoletras', 1, $factura->tipocambio, ";
+        $query.= "0.00, 0.00, 0.00, '$factura->nit', '$factura->nombre', '$factura->direccion', $factura->idmonedafact, ";
+        $query.= "$p->totalcnv, $p->totalcnv, 0.00, 0.00, 0.00, ";
+        $query.= "$p->bruto, $p->neto, $p->iva, $p->total, 0.00, 0.00, ";
+        $query.= "$p->brutocnv, $p->netocnv, $p->ivacnv, $p->totalcnv, 0.00, 0.00, ";
+        $query.= "'$factura->serieadmin', $factura->numeroadmin, $factura->porretiva, $d->idfactura, $factura->idproyecto";
+        $query.= ")";
+
+        $db->doQuery($query);
+        $lastid = $db->getLastId();
+        
+        if ((int)$lastid > 0) {
+            $query = "INSERT INTO detfact(";
+            $query.= "idfactura, cantidad, descripcion, preciounitario, preciounitariocnv, preciotot, idtiposervicio, mes, anio, descuento, ";
+            $query.= "conceptoadicional, descuentocnv, importebruto, importeneto, importeiva, importetotal, descuentosiniva, descuentoiva, ";
+            $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv, porcentajedescuento, ";
+            $query.= "precio, preciocnv, descripcionlarga";                
+            $query.= ") VALUES(";                
+            $query.= "$lastid, 1, '$d->descripcion', $p->bruto, $p->brutocnv, $p->total, $d->idtiposervicio, MONTH(NOW()), YEAR(NOW()), 0.00, ";
+            $query.= "'$d->descripcion', 0.00, $p->bruto, $p->neto, $p->iva, $p->total, 0.00, 0.00, ";
+            $query.= "$p->brutocnv, $p->netocnv, $p->ivacnv, $p->totalcnv, 0.00, 0.00, 0.00,";
+            $query.= "$p->bruto, $p->brutocnv, '$d->descripcion'";
+            $query.= ")";
+
+            $db->doQuery($query);
+        }
+    }
+
+    print json_encode(['exito' => true, 'mensaje' => 'Nota de crédito generada con éxito.']);
 });
 
 $app->run();

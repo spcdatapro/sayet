@@ -115,7 +115,7 @@ $app->get('/clientetoprint/:idcliente', function($idcliente){
 //Detalle de datos de facturacion
 $app->get('/lstdatosfact/:idcliente', function($idcliente){
     $db = new dbcpm();
-    $query = "SELECT a.id, a.idcliente, a.facturara, a.direccion, a.nit, a.fdel, a.fal, a.emailfactura, ";
+    $query = "SELECT a.id, a.idcliente, a.facturara, a.direccion, a.nit, a.fdel, a.fal, a.emailfactura, a.exentoiva, ";
     $query.= "(SELECT IF(GROUP_CONCAT(DISTINCT c.desctiposervventa ORDER BY c.desctiposervventa SEPARATOR ', ') IS NULL, 'Todos', GROUP_CONCAT(DISTINCT c.desctiposervventa ORDER BY c.desctiposervventa SEPARATOR ', ')) ";
     $query.= "FROM detclienteserv b INNER JOIN tiposervicioventa c ON c.id = b.idservicioventa ";
     $query.= "WHERE b.iddetclientefact = a.id) AS serviciosafact, a.retisr, a.retiva, a.porretiva ";
@@ -127,7 +127,7 @@ $app->get('/lstdatosfact/:idcliente', function($idcliente){
 
 $app->get('/getfacturara/:iddetfact', function($iddetfact){
     $db = new dbcpm();
-    $query = "SELECT a.id, a.idcliente, a.facturara, a.direccion, a.nit, a.fdel, a.fal, a.emailfactura, ";
+    $query = "SELECT a.id, a.idcliente, a.facturara, a.direccion, a.nit, a.fdel, a.fal, a.emailfactura, a.exentoiva, ";
     $query.= "(SELECT IF(GROUP_CONCAT(DISTINCT c.desctiposervventa ORDER BY c.desctiposervventa SEPARATOR ', ') IS NULL, 'Todos', GROUP_CONCAT(DISTINCT c.desctiposervventa ORDER BY c.desctiposervventa SEPARATOR ', ')) ";
     $query.= "FROM detclienteserv b INNER JOIN tiposervicioventa c ON c.id = b.idservicioventa ";
     $query.= "WHERE b.iddetclientefact = a.id) AS serviciosafact, a.retisr, a.retiva, a.porretiva ";
@@ -142,10 +142,11 @@ $app->post('/cdf', function(){
     $d->fdelstr = $d->fdelstr != '' ? "'".$d->fdelstr."'" : 'NULL';
     $d->falstr = $d->falstr != '' ? "'".$d->falstr."'" : 'NULL';
     if(!isset($d->porretiva)){ $d->porretiva = 0.00; }
+    if(!isset($d->exentoiva)){ $d->exentoiva = 0; }
     $query = "INSERT INTO detclientefact(";
-    $query.= "idcliente, facturara, direccion, nit, fdel, fal, emailfactura, retisr, retiva, porretiva";
+    $query.= "idcliente, facturara, direccion, nit, fdel, fal, emailfactura, retisr, retiva, porretiva, exentoiva";
     $query.= ") VALUES(";
-    $query.= "$d->idcliente, '$d->facturara', '$d->direccion', '$d->nit', $d->fdelstr, $d->falstr, '$d->emailfactura', $d->retisr, $d->retiva, $d->porretiva";
+    $query.= "$d->idcliente, '$d->facturara', '$d->direccion', '$d->nit', $d->fdelstr, $d->falstr, '$d->emailfactura', $d->retisr, $d->retiva, $d->porretiva, $d->exentoiva";
     $query.= ")";
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
@@ -158,8 +159,10 @@ $app->post('/udf', function(){
     $d->fdelstr = $d->fdelstr != '' ? "'".$d->fdelstr."'" : 'NULL';
     $d->falstr = $d->falstr != '' ? "'".$d->falstr."'" : 'NULL';
     if(!isset($d->porretiva)){ $d->porretiva = 0.00; }
+    if(!isset($d->exentoiva)){ $d->exentoiva = 0; }
     $query = "UPDATE detclientefact SET ";
-    $query.= "facturara = '$d->facturara', direccion = '$d->direccion', nit = '$d->nit', fdel = $d->fdelstr, fal = $d->falstr, emailfactura = '$d->emailfactura', retisr = $d->retisr, retiva = $d->retiva, porretiva = $d->porretiva ";
+    $query.= "facturara = '$d->facturara', direccion = '$d->direccion', nit = '$d->nit', fdel = $d->fdelstr, fal = $d->falstr, emailfactura = '$d->emailfactura', retisr = $d->retisr, ";
+    $query.= "retiva = $d->retiva, porretiva = $d->porretiva, exentoiva = $d->exentoiva ";
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
 });
