@@ -326,7 +326,7 @@
                             <form name="frmDetFact" id="frmDetFact" ng-submit="frmDetFact.$valid && addDetFact(detfact)"
                                 class="check-element animate-show" ng-show="showForm.detfact" novalidate>
                                 <div class="row">
-                                    <div class="col-md-6 nopadding">
+                                    <div class="col-md-4 nopadding">
                                         <div class="form-group required"
                                             ng-class="{'has-error':frmDetFact.txtFactA.$invalid && !frmDetFact.txtFactA.$pristine}">
                                             <label for="txtFactA" class="control-label">Facturar a:</label>
@@ -346,22 +346,22 @@
                                                 required />
                                         </div>
                                     </div>
-                                    <!--
-                                    <div class="col-md-4 nopadding">
-                                        <div class="form-group" ng-class="{'has-error':frmDetFact.txtEmailFact.$invalid && !frmDetFact.txtEmailFact.$pristine}" ng-hide="true">
-                                            <label for="txtEmailFact">E-mail FACE:</label>
-                                            <input name="txtEmailFact" id="txtEmailFact" type="email" class="form-control input-sm" ng-model="detfact.emailfactura" maxlength="50"
-                                                   placeholder="Enviar factura electr&oacute;nica al correo..." ng-disabled="sldatafact"/>
+                                    <div class="col-md-2 nopadding">
+                                        <div class="form-group"
+                                            ng-class="{'has-error':frmDetFact.chkExeIvaCli.$invalid && !frmDetFact.chkExeIvaCli.$pristine}">
+                                            <label for="chkExeIvaCli">Exento I.V.A.:</label>
+                                            <input name="chkExeIvaCli" id="chkExeIvaCli" type="checkbox" class="form-control input-sm" ng-model="detfact.exentoiva"
+                                                ng-true-value="1" ng-false-value="0" ng-disabled="sldatafact"
+                                                ng-change="esExentoIva()" />
                                         </div>
                                     </div>
-                                    -->
                                     <div class="col-md-1 nopadding">
                                         <div class="form-group"
                                             ng-class="{'has-error':frmDetFact.chkRetISRCli.$invalid && !frmDetFact.chkRetISRCli.$pristine}">
                                             <label for="chkRetISRCli">Ret. I.S.R.:</label>
                                             <input name="chkRetISRCli" id="chkRetISRCli" type="checkbox"
                                                 class="form-control input-sm" ng-model="detfact.retisr"
-                                                ng-true-value="1" ng-false-value="0" ng-disabled="sldatafact" />
+                                                ng-true-value="1" ng-false-value="0" ng-disabled="sldatafact || +detfact.exentoiva === 1" />
                                         </div>
                                     </div>
                                     <div class="col-md-1 nopadding">
@@ -370,7 +370,7 @@
                                             <label for="chkRetIVACli">Ret. I.V.A.:</label>
                                             <input name="chkRetIVACli" id="chkRetIVACli" type="checkbox"
                                                 class="form-control input-sm" ng-model="detfact.retiva"
-                                                ng-true-value="1" ng-false-value="0" ng-disabled="sldatafact"
+                                                ng-true-value="1" ng-false-value="0" ng-disabled="sldatafact || +detfact.exentoiva === 1"
                                                 ng-change="detfact.porretiva = +detfact.retiva == 0 ? 0.00 : detfact.porretiva;" />
                                         </div>
                                     </div>

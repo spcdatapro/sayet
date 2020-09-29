@@ -248,7 +248,7 @@
             }, function () { return 0; });
         };
 
-        $scope.verDetFactFEL = (obj) => {            
+        $scope.verDetFactFEL = (obj) => {
             const modalInstance = $uibModal.open({
                 animation: true,
                 templateUrl: 'modalDetalleFacturaFEL.html',
@@ -315,7 +315,7 @@
                     aFact.pendientes.push(pendiente);
                 }
             });
-            console.log(aFact.pendientes); //$scope.btnFactDeshabilitado = false; return;
+            // console.log(aFact.pendientes); $scope.btnFactDeshabilitado = false; return;
             if (aFact.pendientes.length > 0) {
                 facturacionSrvc.generarFacturasFEL(aFact).then(() => {
                     $scope.getPendientesFEL();
@@ -461,6 +461,7 @@
                         $scope.factura.nit = undefined;
                         $scope.factura.idcliente = 0;
                         $scope.factura.idcontrato = 0;
+                        $scope.factura.exentoiva = 0;
                         $scope.factura.reteneriva = 0;
                         $scope.factura.retenerisr = 0;
                         $scope.factura.direccion = undefined;
@@ -472,6 +473,7 @@
                         $scope.factura.nit = item.originalObject.nit;
                         if (+item.originalObject.idcliente > 0) {
                             $scope.factura.idcliente = +item.originalObject.idcliente;
+                            $scope.factura.exentoiva = +item.originalObject.exentoiva;
                             $scope.factura.retenerisr = +item.originalObject.retisr;
                             $scope.factura.reteneriva = +item.originalObject.retiva;
                             $scope.factura.direccion = item.originalObject.direccion;
@@ -481,6 +483,7 @@
                             });
                         } else {
                             $scope.factura.idcontrato = 0;
+                            $scope.factura.exentoiva = 0;
                             $scope.factura.reteneriva = 0;
                             $scope.factura.retenerisr = 0;
                             $scope.factura.direccion = undefined;
@@ -491,6 +494,14 @@
                 }
             }
         };
+
+        $scope.esExento = () => {
+            if (+$scope.factura.exentoiva === 1) {
+                $scope.factura.reteneriva = 0;
+                $scope.factura.retenerisr = 0;
+                $scope.factura.porretiva = 0.00;
+            }
+        }
 
         function procDataFact(d) {
             for (var i = 0; i < d.length; i++) {
@@ -504,6 +515,7 @@
                 d[i].retiva = parseFloat(parseFloat(d[i].retiva).toFixed(2));
                 d[i].totdescuento = parseFloat(parseFloat(d[i].totdescuento).toFixed(2));
                 d[i].tipocambio = parseFloat(parseFloat(d[i].tipocambio).toFixed(2));
+                d[i].exentoiva = parseInt(d[i].exentoiva);
                 d[i].retenerisr = parseInt(d[i].retenerisr);
                 d[i].reteneriva = parseInt(d[i].reteneriva);
                 d[i].anioafecta = parseInt(d[i].anioafecta);
@@ -843,7 +855,7 @@
             $scope.p.importebrutocnv = 0.00;
             $scope.p.importenetocnv = 0.00;
             $scope.p.importeivacnv = 0.00;
-            $scope.p.importetotalcnv = 0.00;           
+            $scope.p.importetotalcnv = 0.00;
 
             $scope.p.tipo = '';
             $scope.p.idtipo = '';
@@ -904,7 +916,9 @@
     facturacionctrl.controller('ModalRptPreliminarCtrl', ['$scope', '$uibModalInstance', 'toaster', '$filter', 'empresas', 'proyectoSrvc', function ($scope, $uibModalInstance, toaster, $filter, empresas, proyectoSrvc) {
         $scope.empresas = empresas;
         $scope.proyectos = [];
-        $scope.params = { fdelstr: '', falstr: '', empresa: '', proyecto: '', tc: undefined, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), objEmpresa: undefined, objProyecto: undefined, coniva: 0 };
+        $scope.params = { 
+            fdelstr: '', falstr: '', empresa: '', proyecto: '', tc: undefined, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), objEmpresa: undefined, objProyecto: undefined, coniva: 0 
+        };
 
         proyectoSrvc.lstProyecto().then(function (d) { $scope.proyectos = d; });
 

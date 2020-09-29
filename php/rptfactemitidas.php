@@ -96,11 +96,12 @@ $app->post('/factspend', function(){
 
     if(!isset($d->idproyecto)){ $d->idproyecto = 0; }
     if(!isset($d->soloanuladas)){ $d->soloanuladas = 0; }
+    if(!isset($d->tc)){ $d->tc = 7.80; }
 
     $query = "SELECT DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS fal, 0.00 AS totpendiente, DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy ";
     $info->generales = $db->getQuery($query)[0];
 
-    $qGen = "SELECT d.nombre AS cliente, d.nombrecorto AS abreviacliente, e.desctiposervventa AS tipo, (((a.monto - a.descuento) * IF(f.eslocal = 0, 7.40, 1)) * 1.12) AS montoconiva, DATE_FORMAT(a.fechacobro, '%d/%m/%Y') AS fechacobro, c.idempresa 
+    $qGen = "SELECT d.nombre AS cliente, d.nombrecorto AS abreviacliente, e.desctiposervventa AS tipo, (((a.monto - a.descuento) * IF(f.eslocal = 0, $d->tc, 1)) * 1.12) AS montoconiva, DATE_FORMAT(a.fechacobro, '%d/%m/%Y') AS fechacobro, c.idempresa 
         FROM cargo a
         INNER JOIN detfactcontrato b ON b.id = a.iddetcont
         INNER JOIN contrato c ON c.id = b.idcontrato

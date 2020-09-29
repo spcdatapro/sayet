@@ -9,19 +9,19 @@
             <div class="panel-heading">Reporte de facturas emitidas</div>
             <div class="panel-body" style="text-align: right">
                 <div class="row" style="text-align: left">
-                    <div class="col-md-3 col-sm-3">
+                    <div class="col-md-3 col-sm-3 nopadding">
                         <div class="form-group">
                             <label for="txtDel">Del:</label>
                             <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.fdel" placeholder="Del"/>
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-3">
+                    <div class="col-md-3 col-sm-3 nopadding">
                         <div class="form-group">
                             <label for="txtAl">Al:</label>
                             <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fal" placeholder="Al"/>
                         </div>
                     </div>
-                    <div class="col-md-6 col-sm-6">
+                    <div class="col-md-6 col-sm-6 nopadding">
                         <div class="form-group">
                             <label for="selEmpresa">Empresa:</label>
                             <div class="input-group">
@@ -40,7 +40,7 @@
                     </div>
                 </div>
                 <div class="row" style="text-align: left">
-                    <div class="col-md-8 col-sm-8">
+                    <div class="col-md-6 col-sm-6 nopadding">
                         <div class="form-group">
                             <label for="txtCliente">Cliente:</label>
                             <!--<input name="txtCliente" id="txtCliente" type="text" class="form-control" ng-model="params.cliente" placeholder="Nombre, nombre corto, facturar a..."/>-->
@@ -64,7 +64,7 @@
                             ></div>
                         </div>
                     </div>
-                    <div class="col-md-2 col-sm-2">
+                    <div class="col-md-2 col-sm-2 nopadding">
                         <div class="form-group">
                             <label for="selVer">Ver:</label>
                             <select name="selVer" id="selVer" class="form-control" ng-model="params.tipo">
@@ -75,7 +75,13 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-2 col-sm-2">
+                    <div class="col-md-2 col-sm-2 nopadding">
+                        <div class="form-group">
+                            <label for="txtTC">TC:</label>
+                            <input name="txtTC" id="txtTC" type="number" class="form-control" ng-model="params.tc" step="0.01"/>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-2 nopadding">
                         <div class="form-group">
                             <label for="chkSoloAnuladas">Solo anuladas:</label>
                             <input name="chkSoloAnuladas" id="chkSoloAnuladas" type="checkbox" class="form-control input-sm" ng-model="params.soloanuladas" ng-true-value="1" ng-false-value="0"/>
@@ -83,7 +89,7 @@
                     </div>
                 </div>
                 <div class="row" style="text-align: left">
-                    <div class="col-md-6 col-sm-6">
+                    <div class="col-md-6 col-sm-6 nopadding">
                         <div class="form-group">
                             <label for="selProyecto">Proyecto:</label>
                             <div class="input-group">
@@ -97,7 +103,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 col-sm-6">
+                    <div class="col-md-6 col-sm-6 nopadding">
                         <div class="form-group">
                             <label for="selTipo">Tipo:</label>
                             <div class="input-group">
