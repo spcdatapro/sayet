@@ -177,9 +177,8 @@
 
         $scope.esExentoIva = () => {
             if ($scope.detfact.exentoiva === 1) {
-                $scope.detfact.retiva = 0;
-                $scope.detfact.retisr = 0;
-                $scope.detfact.porretiva = 0.00;                
+                $scope.detfact.retiva = 0;                
+                $scope.detfact.porretiva = 0.00;
             }
         }
 

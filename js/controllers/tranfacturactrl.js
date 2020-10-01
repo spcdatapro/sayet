@@ -420,22 +420,10 @@
         };
 
         $scope.$watch('factura.idempresa', function (newValue, oldValue) {
-            if (newValue != null && newValue != undefined) {
-                // $scope.setTipoFactura(newValue);
+            if (newValue != null && newValue != undefined) {                
                 $scope.loadProyectos(newValue);
             }
         });
-
-        /*
-        $scope.setTipoFactura = function (idempresa) {
-            for (var i = 0; i < $scope.empresas.length; i++) {
-                if (+$scope.empresas[i].id == +idempresa) {
-                    $scope.factura.idtipofactura = +$scope.empresas[i].congface == 1 ? '1' : '2';
-                    break;
-                }
-            }
-        };
-        */
 
         $scope.loadProyectos = function (idempresa) {
             proyectoSrvc.lstProyectosPorEmpresa(+idempresa).then(function (d) { $scope.proyectos = d; });
@@ -497,8 +485,7 @@
 
         $scope.esExento = () => {
             if (+$scope.factura.exentoiva === 1) {
-                $scope.factura.reteneriva = 0;
-                $scope.factura.retenerisr = 0;
+                $scope.factura.reteneriva = 0;                
                 $scope.factura.porretiva = 0.00;
             }
         }
