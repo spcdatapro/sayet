@@ -125,7 +125,7 @@ $app->post('/pendientesfel', function() {
 
 function calculaImpuestosYTotal($db, $d, $factura) {
     $noEsExentoIVA = (int)$factura->exentoiva === 0;
-    $factura->isrporretener = $noEsExentoIVA ? ((int)$factura->retenerisr > 0 ? $db->calculaISR((float)$factura->importeneto) : 0.00) : 0.00;
+    $factura->isrporretener = (int)$factura->retenerisr > 0 ? $db->calculaISR((float)$factura->importeneto) : 0.00;
     $factura->isrporretenercnv = round($factura->isrporretener / (float)$d->tc, 2);
     $factura->ivaporretener = $noEsExentoIVA ? ((int)$factura->reteneriva > 0 ? $db->calculaRetIVA((float)$factura->importeneto, ((int)$factura->idtipocliente == 1 ? true : false), (float)$factura->importetotal, ((int)$factura->idtipocliente == 2 ? true : false), (float)$factura->importeiva, (float)$factura->porcentajeretiva) : 0.00) : 0.00;
     $factura->ivaporretenercnv = round($factura->ivaporretener / (float)$d->tc, 2);
