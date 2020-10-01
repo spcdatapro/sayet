@@ -744,7 +744,8 @@ $app->post('/genfel', function() use($app) {
         //Detalle
         $query = "SELECT 2 AS tiporegistro, a.cantidad, 1 AS unidadmedida, TRUNCATE(IF(b.idmonedafact = 1, a.precio, a.preciocnv), 2) AS precio, a.porcentajedescuento, 
         TRUNCATE(IF(b.idmonedafact = 1, a.descuento, a.descuentocnv), 2) AS importedescuento, IF(b.idmonedafact = 1, a.importebruto, a.importebrutocnv) AS importebruto,
-        IF(b.idmonedafact = 1, a.importeexento, a.importeexentocnv) AS importeexento, IF(b.idmonedafact = 1, a.importeneto, a.importenetocnv) AS importeneto,
+        IF(b.idmonedafact = 1, a.importeexento, a.importeexentocnv) AS importeexento,
+        IF(b.exentoiva = 0, IF(b.idmonedafact = 1, a.importeneto, a.importenetocnv), 0.00) AS importeneto,
         IF(b.idmonedafact = 1, a.importeiva, a.importeivacnv) AS importeiva, 0 AS importeotros, 
         IF(b.idmonedafact = 1, a.importetotal, a.importetotalcnv) AS importetotal, IF(b.exentoiva = 0, a.idtiposervicio, 5) AS producto, TRIM(a.descripcionlarga) AS descripcion, 'S' AS tipoventa
         FROM detfact a INNER JOIN factura b ON b.id = a.idfactura
@@ -761,7 +762,8 @@ $app->post('/genfel', function() use($app) {
         }
         //Totales
         $query = "SELECT 4 AS tiporegistro, IF(a.idmonedafact = 1, a.importebruto, a.importebrutocnv) AS importebruto, TRUNCATE(IF(a.idmonedafact = 1, a.totdescuento, a.totdescuentocnv), 2) AS importedescuento, 
-        IF(a.idmonedafact = 1, a.importeexento, a.importeexentocnv) AS importeexento, IF(a.idmonedafact = 1, a.importeneto, a.importenetocnv) AS importeneto,
+        IF(a.idmonedafact = 1, a.importeexento, a.importeexentocnv) AS importeexento,
+        IF(a.exentoiva = 0, IF(a.idmonedafact = 1, a.importeneto, a.importenetocnv), 0.00) AS importeneto,
         IF(a.idmonedafact = 1, a.importeiva, a.importeivacnv) AS importeiva, 0 AS importeotros, 
         IF(a.idmonedafact = 1, a.importetotal, a.importetotalcnv) AS importetotal, 0 AS porcentajeisr, 0 AS importeisr, 0 AS registrosdetalle, $cntDocumentosAsociados AS documentosasociados
         FROM factura a
