@@ -53,18 +53,19 @@ $app->post('/rptecuentacli', function(){
             $msumsaldo = 0.00;
 
             $querydet1 = "SELECT a.nombre,b.venta,b.factura,b.serie,b.fecha,
-                    round(b.monto,2) as saldo,round(b.totalfac,2) as totalfac, round(b.retisr,2) as retisr, substr(b.concepto,1,31) as concepto, b.contrato, b.proyecto, b.nomproyecto, round(b.apagar,2) as apagar,b.empresa,b.idempresa,round(b.retiva,2) as retiva
+                    round(b.monto,2) as saldo,round(b.totalfac,2) as totalfac, round(b.retisr,2) as retisr, substr(b.concepto,1,31) as concepto, b.contrato, b.proyecto, b.nomproyecto, round(b.apagar,2) as apagar,b.empresa,
+					b.idempresa,round(b.retiva,2) as retiva, b.serieadmin, b.numeroadmin
                 from sayet.cliente a
                 inner join (
 
                     select a.orden,a.cliente,a.venta,a.fecha,a.factura,a.serie,
                         a.concepto,if(isnull(c.idpago) and a.pagada=1,0000000000.00,(a.total-(ifnull(sum(b.monto),0)))) as monto,a.codigo,a.tc_cambio,a.fecpago,a.dias,a.monto as totalfac,a.retisr,a.contrato,a.proyecto,a.nomproyecto,
-						(a.total) as apagar,a.empresa,a.idempresa,a.retiva,a.pagada,b.idpago,c.idpago as allpago
+						(a.total) as apagar,a.empresa,a.idempresa,a.retiva,a.pagada,b.idpago,c.idpago as allpago, a.serieadmin, a.numeroadmin
                     from (
                         SELECT 1 as orden,c.idcliente as cliente,c.id as venta,c.fecha,c.numero as factura,c.serie,c.conceptomayor as concepto,
                             round(c.subtotal,2) as monto,e.simbolo as codigo,c.tipocambio as tc_cambio,
                             if(c.fechapago is not null, c.fechapago,c.fecha) as fecpago,datediff('" . $d->falstr . "',if(c.fechapago is not null, c.fechapago,c.fecha)) as dias,
-							c.retisr, a.id as contrato, b.id as proyecto, b.nomproyecto, d.nomempresa as empresa,c.idempresa,c.retiva,c.pagada,round(c.total,2) as total
+							c.retisr, a.id as contrato, b.id as proyecto, b.nomproyecto, d.nomempresa as empresa,c.idempresa,c.retiva,c.pagada,round(c.total,2) as total, c.serieadmin, c.numeroadmin
                         from sayet.factura c
 							inner join sayet.empresa d on c.idempresa=d.id
                             inner join sayet.moneda e on c.idmoneda=e.id
@@ -219,7 +220,9 @@ $app->post('/rptecuentacli', function(){
 								'concepto' => $hac->concepto,
 								'apagar' => $hac->apagar,
 								'empresa' => $hac->empresa,
-								'retiva' => $hac->retiva
+								'retiva' => $hac->retiva,
+								'serieadmin' => $hac->serieadmin,
+								'numeroadmin' => $hac->numeroadmin
 							)
 						);
 						//
