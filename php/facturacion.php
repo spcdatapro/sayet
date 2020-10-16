@@ -718,10 +718,16 @@ $app->post('/gengface', function() use($app){
 
 });
 
+function regeneraCorrelativo($d)
+{
+    $db = new dbcpm();
+};
+
 $app->post('/genfel', function() use($app) {
     $d = json_decode(file_get_contents('php://input'));
     if(!isset($d->listafact)){ $d->listafact = ''; }
     $db = new dbcpm();
+    // regeneraCorrelativo($d);
     //Encabezado
     $query = "SELECT 1 AS tiporegistro, DATE_FORMAT(a.fecha, '%Y%m%d') AS fechadocumento, b.siglasfel AS tipodocumento, a.nit AS nitcomprador, a.idmonedafact AS codigomoneda, 
     IF(a.idmonedafact = 1, 1, ROUND(a.tipocambio, 4)) AS tasacambio, a.id AS ordenexterno, 'S' AS tipoventa, 1 AS destinoventa, 'S' AS enviarcorreo, 
