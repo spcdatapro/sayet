@@ -759,11 +759,16 @@ class Empleado extends Principal
 
 	public function set_finiquito_aguinaldo()
 	{
-		$sql = "SELECT DATE_FORMAT(fecha,'%Y-%m-01') as ultimo
-				FROM plnnomina
-				WHERE idplnempleado = {$this->emp->id} 
-				AND aguinaldo > 0
-				ORDER BY fecha DESC
+		$sql = "SELECT IF(
+					b.reingreso > DATE_FORMAT(a.fecha,'%Y-%m-01'), 
+					b.reingreso, 
+					DATE_FORMAT(a.fecha,'%Y-%m-01')
+				) as ultimo
+				FROM plnnomina a 
+				INNER JOIN plnempleado b on b.id = a.idplnempleado
+				WHERE a.idplnempleado = {$this->emp->id} 
+				AND a.aguinaldo > 0
+				ORDER BY a.fecha DESC
 				LIMIT 1";
 		
 		$tmp      = $this->db->query($sql)->fetchAll();
@@ -783,11 +788,16 @@ class Empleado extends Principal
 
 	public function set_finiquito_bono14()
 	{
-		$sql = "SELECT DATE_FORMAT(fecha,'%Y-%m-01') as ultimo
-				FROM plnnomina
-				WHERE idplnempleado = {$this->emp->id} 
-				AND bonocatorce > 0
-				ORDER BY fecha DESC
+		$sql = "SELECT IF(
+					b.reingreso > DATE_FORMAT(a.fecha,'%Y-%m-01'), 
+					b.reingreso, 
+					DATE_FORMAT(a.fecha,'%Y-%m-01')
+				) as ultimo
+				FROM plnnomina a 
+				INNER JOIN plnempleado b on b.id = a.idplnempleado
+				WHERE a.idplnempleado = {$this->emp->id} 
+				AND a.bonocatorce > 0
+				ORDER BY a.fecha DESC
 				LIMIT 1";
 		
 		$tmp      = $this->db->query($sql)->fetchAll();
