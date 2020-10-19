@@ -924,7 +924,8 @@
                                             <label for="txtDFDel" class="control-label">Del:</label>
                                             <input name="txtDFDel" id="txtDFDel" type="date"
                                                 class="form-control  input-sm" ng-model="detfcontrato.fdel" required
-                                                ng-disabled="sldetcont || detcontfacturado" />
+                                                ng-disabled="sldetcont || detcontfacturado" 
+                                                ng-change="chkFechaRango(detfcontrato.fdel, contrato.fechainicia, false)" />
                                         </div>
                                     </div>
                                     <div class="col-md-3 nopadding">
@@ -934,7 +935,7 @@
                                             <input name="txtDFAl" id="txtDFAl" type="date"
                                                 class="form-control  input-sm" ng-model="detfcontrato.fal" required
                                                 ng-disabled="sldetcont || detcontfacturado"
-                                                ng-change="chkFecha(detfcontrato.fal)" />
+                                                ng-change="chkFechaRango(detfcontrato.fal, contrato.fechavence, true)" />
                                         </div>
                                     </div>
                                     <div class="col-md-3 nopadding">

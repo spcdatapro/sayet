@@ -800,20 +800,20 @@
                 goTop();
             });
         };
-
-        $scope.chkFecha = function (fechaal) {
-            var ffincont = $scope.contrato.fechavence;
-            if (moment(fechaal).isValid()) {
-                if (moment(fechaal).isAfter(ffincont)) {
-                    toaster.pop('warning', 'Error en fechas',
-                        'La fecha final de este período (' + moment(fechaal).format('DD/MM/YYYY') +
-                        ') esta fuera de la fecha de vencimiento (' + moment(ffincont).format('DD/MM/YYYY') + ') del contrato. Favor revisar.',
+        
+        $scope.chkFechaRango = (fecha, fechacomp, via) => {
+            if (moment(fecha).isValid()) {
+                const hayError = via ? moment(fecha).isAfter(fechacomp) : moment(fecha).isBefore(fechacomp);
+                if (hayError) {
+                    toaster.pop(
+                        'warning',
+                        'Error en fechas',
+                        `La fecha de este período (${moment(fecha).format('DD/MM/YYYY')}) esta fuera del rango de validez del contrato. Favor revisar.`,
                         'timeout:10000'
-                    );
-                    //$scope.detfcontrato.fal = null;
+                    );                    
                 }
             }
-        };
+        }
 
         $scope.addDetFContrato = function (obj) {
             $scope.grabando = true;
