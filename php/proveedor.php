@@ -9,7 +9,7 @@ $app->response->headers->set('Content-Type', 'application/json');
 $app->get('/lstprovs(/:todos)', function($todos = 0){
     $db = new dbcpm();
     $query = "SELECT a.id, a.nit, a.nombre, a.direccion, a.telefono, a.correo, a.concepto, a.chequesa, a.retensionisr, a.diascred, a.limitecred, ";
-    $query.= "a.pequeniocont, CONCAT('(', a.nit, ') ', a.nombre, ' (', b.simbolo, ')') AS nitnombre, a.idmoneda, b.nommoneda AS moneda, a.tipocambioprov, a.debaja, a.cuentabanco ";
+    $query.= "a.pequeniocont, CONCAT('(', a.nit, ') ', a.nombre, ' (', b.simbolo, ')') AS nitnombre, a.idmoneda, b.nommoneda AS moneda, a.tipocambioprov, a.debaja, a.cuentabanco, a.recurrente ";
     $query.= "FROM proveedor a INNER JOIN moneda b ON b.id = a.idmoneda ";
     $query.= (int)$todos === 0 ? 'WHERE a.debaja = 0 ' : '';
     $query.= "ORDER BY a.nombre";
@@ -19,7 +19,7 @@ $app->get('/lstprovs(/:todos)', function($todos = 0){
 $app->get('/getprov/:idprov', function($idprov){
     $db = new dbcpm();
     $query = "SELECT a.id, a.nit, a.nombre, a.direccion, a.telefono, a.correo, a.concepto, a.chequesa, a.retensionisr, a.diascred, a.limitecred, ";
-    $query.= "a.pequeniocont, CONCAT('(', a.nit, ') ', a.nombre, ' (', b.simbolo, ')') AS nitnombre, a.idmoneda, b.nommoneda AS moneda, a.tipocambioprov, a.debaja, a.cuentabanco ";
+    $query.= "a.pequeniocont, CONCAT('(', a.nit, ') ', a.nombre, ' (', b.simbolo, ')') AS nitnombre, a.idmoneda, b.nommoneda AS moneda, a.tipocambioprov, a.debaja, a.cuentabanco, a.recurrente ";
     $query.= "FROM proveedor a INNER JOIN moneda b ON b.id = a.idmoneda ";
     $query.= "WHERE a.id = ".$idprov;
     print $db->doSelectASJson($query);
@@ -28,7 +28,7 @@ $app->get('/getprov/:idprov', function($idprov){
 $app->get('/getprovbynit/:nit', function($nit){
     $db = new dbcpm();
     $query = "SELECT a.id, a.nit, a.nombre, a.direccion, a.telefono, a.correo, a.concepto, a.chequesa, a.retensionisr, a.diascred, a.limitecred, ";
-    $query.= "a.pequeniocont, CONCAT('(', a.nit, ') ', a.nombre, ' (', b.simbolo, ')') AS nitnombre, a.idmoneda, b.nommoneda AS moneda, a.tipocambioprov, a.debaja, a.cuentabanco ";
+    $query.= "a.pequeniocont, CONCAT('(', a.nit, ') ', a.nombre, ' (', b.simbolo, ')') AS nitnombre, a.idmoneda, b.nommoneda AS moneda, a.tipocambioprov, a.debaja, a.cuentabanco, a.recurrente ";
     $query.= "FROM proveedor a INNER JOIN moneda b ON b.id = a.idmoneda ";
     $query.= "WHERE TRIM(a.nit) = '".trim($nit)."' LIMIT 1";
     print $db->doSelectASJson($query);
@@ -38,17 +38,18 @@ $app->post('/c', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    if (!isset($d->debaja)) { $d->debaja = 0; }
+    if (!isset($d->debaja)) { $d->debaja = 0; }    
     if (!isset($d->cuentabanco)) { 
         $d->cuentabanco = 'NULL'; 
     } else {
         $d->cuentabanco = "'$d->cuentabanco'";
     }
+    if (!isset($d->recurrente)) { $d->recurrente = 0; }
 
     $query = "INSERT INTO proveedor(nit, nombre, direccion, telefono, correo, concepto, chequesa, ";
-    $query.= "retensionisr, diascred, limitecred, pequeniocont, idmoneda, tipocambioprov, debaja, cuentabanco) ";
+    $query.= "retensionisr, diascred, limitecred, pequeniocont, idmoneda, tipocambioprov, debaja, cuentabanco, recurrente) ";
     $query.= "VALUES('$d->nit', '$d->nombre', '$d->direccion', '$d->telefono', '$d->correo', '$d->concepto', '$d->chequesa', ";
-    $query.= "$d->retensionisr, $d->diascred, $d->limitecred, $d->pequeniocont, $d->idmoneda, $d->tipocambioprov, $d->debaja, $d->cuentabanco)";
+    $query.= "$d->retensionisr, $d->diascred, $d->limitecred, $d->pequeniocont, $d->idmoneda, $d->tipocambioprov, $d->debaja, $d->cuentabanco, $d->recurrente)";
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
 });
@@ -63,10 +64,11 @@ $app->post('/u', function(){
     } else {
         $d->cuentabanco = "'$d->cuentabanco'";
     }
+    if (!isset($d->recurrente)) { $d->recurrente = 0; }
 
     $query = "UPDATE proveedor SET nit = '$d->nit', nombre = '$d->nombre', direccion = '$d->direccion', telefono = '$d->telefono', correo = '$d->correo', concepto = '$d->concepto', ";
     $query.= "chequesa = '$d->chequesa', retensionisr = $d->retensionisr, diascred = $d->diascred, limitecred = $d->limitecred, pequeniocont = $d->pequeniocont, ";
-    $query.= "idmoneda = $d->idmoneda, tipocambioprov = $d->tipocambioprov, debaja = $d->debaja, cuentabanco = $d->cuentabanco ";
+    $query.= "idmoneda = $d->idmoneda, tipocambioprov = $d->tipocambioprov, debaja = $d->debaja, cuentabanco = $d->cuentabanco, recurrente = $d->recurrente ";
     $query.= "WHERE id = $d->id";
     // print $query;
     $db->doQuery($query);
