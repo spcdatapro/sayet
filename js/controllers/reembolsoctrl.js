@@ -847,9 +847,14 @@
                     sortKey: 'documento'
                 },
                 {
+                    columnHeaderDisplayName: 'Fecha de Ingreso',
+                    template: '<div ng-class="{' + "'compra-pendiente':+item.revisada == 0, 'compra-revisada':+item.revisada == 1" + '}">{{item.fechaingreso | date:"dd/MM/yyyy"}}</div>',
+                    sortKey: 'fechaingreso'
+                },
+                {
                     columnHeaderDisplayName: 'Fecha de factura',
                     template: '<div ng-class="{' + "'compra-pendiente':+item.revisada == 0, 'compra-revisada':+item.revisada == 1" + '}">{{item.fechafactura | date:"dd/MM/yyyy"}}</div>',
-                    sortKey: 'fechaingreso'
+                    sortKey: 'fechafactura'
                 },
                 {
                     columnHeaderDisplayName: 'Tipo de compra',
