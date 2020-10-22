@@ -764,7 +764,7 @@ $app->post('/genfel', function() use($app) {
         if (in_array(trim($factura->tipodocumento), array('NCRE', 'NDEB'))) {
             $query = "SELECT 3 AS tiporegistro, 'FACT' AS tipodocumento, serie, numero, DATE_FORMAT(fecha, '%Y%m%d') AS fechadocumento FROM factura WHERE id = $factura->idfacturaafecta";
             $factura->docasoc = $db->getQuery($query);
-            //$cntDocumentosAsociados = 1;
+            $cntDocumentosAsociados = 1;
         }
         //Totales
         $query = "SELECT 4 AS tiporegistro, IF(a.idmonedafact = 1, a.importebruto, a.importebrutocnv) AS importebruto, TRUNCATE(IF(a.idmonedafact = 1, a.totdescuento, a.totdescuentocnv), 2) AS importedescuento, 
