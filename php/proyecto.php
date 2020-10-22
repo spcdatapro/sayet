@@ -81,7 +81,7 @@ $app->post('/u', function(){
     $query.= "notas_contrato = '$d->notas_contrato', referencia= '$d->referencia', fechaapertura = $d->fechaaperturastr, ";
     $query.= "multiempresa = $d->multiempresa, fechabaja = $d->fechabajastr ";
     $query.= "WHERE id = ".$d->id;
-    print $query;
+    //print $query;
     $upd = $conn->query($query);
 });
 
