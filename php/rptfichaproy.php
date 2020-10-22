@@ -209,4 +209,31 @@ $app->post('/ocupacion', function(){
 
 });
 
+$app->post('/lista', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    if(!isset($d->cuales)) { $d->cuales = 1; }
+
+    $query = "SELECT a.id, a.nomproyecto, a.referencia, a.idempresa, b.nomempresa AS empresa, b.abreviatura AS abreviaempresa, a.tipo_proyecto,
+              c.descripcion AS tipo, a.direccion, FORMAT(a.metros_rentable, 2) AS metros_rentable, FORMAT (a.metros, 2) AS metros,
+              IF(a.subarrendado = 1, 'Sí', '') AS subarrendado,
+              DATE_FORMAT(a.fechaapertura, '%d/%m/%Y') AS fechaapertura, IF(a.multiempresa = 1, 'Sí', '') AS multiempresa,
+              DATE_FORMAT(a.fechabaja, '%d/%m/%Y') AS fechabaja, a.notas 
+              FROM proyecto a 
+              INNER JOIN empresa b ON b.id = a.idempresa
+              INNER JOIN tipo_proyecto c ON c.id = a.tipo_proyecto 
+              WHERE 1 = 1 ";
+    $query.= $d->idempresa !== '' ? "AND a.idempresa IN($d->idempresa) " : '';
+    $query.= $d->tipo !== '' ? "AND a.tipo_proyecto IN($d->tipo) " : '';
+    $query.= (int)$d->cuales === 1 ? '' : ((int)$d->cuales === 2 ? "AND a.fechabaja IS NULL " : "AND a.fechabaja IS NOT NULL ");
+    $query.= "ORDER BY a.nomproyecto";
+    $proyectos = $db->getQuery($query);
+
+    $query = "SELECT DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy";
+    $general = $db->getQuery($query)[0];
+
+    print json_encode(['general' => $general, 'proyectos' => $proyectos]);
+});
+
 $app->run();

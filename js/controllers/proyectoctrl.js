@@ -96,7 +96,8 @@
                 notas_contrato : '',
                 referencia : '',
                 fechaapertura: null,
-                multiempresa: 0
+                multiempresa: 0,
+                fechabaja: null
             };
             $scope.proyectostr = '';
         };
@@ -225,6 +226,7 @@
             d.tipo_proyecto = parseInt(d.tipo_proyecto);
             d.fechaapertura = moment(d.fechaapertura).isValid() ? moment(d.fechaapertura).toDate() : undefined;
             d.multiempresa = parseInt(d.multiempresa);
+            d.fechabaja = moment(d.fechabaja).isValid() ? moment(d.fechabaja).toDate() : undefined;
             return d;
         }
 
@@ -304,6 +306,7 @@
                 data.subarrendado = data.subarrendado != null && data.subarrendado != undefined ? data.subarrendado : 0;
                 data.fechaaperturastr = data.fechaapertura != null && data.fechaapertura != undefined ? moment(data.fechaapertura).format('YYYY-MM-DD') : '';
                 data.multiempresa = data.multiempresa != null && data.multiempresa != undefined ? data.multiempresa : 0;
+                data.fechabajastr = !!data.fechabaja ? moment(data.fechabaja).format('YYYY-MM-DD') : '';
                 proyectoSrvc.editRow(data, 'u').then(function(){
                     $scope.getLstProyectos();
                     $scope.btnCP2();
