@@ -216,7 +216,7 @@ $app->post('/lista', function() {
     if(!isset($d->cuales)) { $d->cuales = 1; }
 
     $query = "SELECT a.id, a.nomproyecto, a.referencia, a.idempresa, b.nomempresa AS empresa, b.abreviatura AS abreviaempresa, a.tipo_proyecto,
-              c.descripcion AS tipo, a.direccion, FORMAT(a.metros_rentable, 2) AS metros_rentable, FORMAT (a.metros, 2) AS metros,
+              c.descripcion AS tipo, SUBSTRING(a.direccion, 1, 40) AS direccion, FORMAT(a.metros_rentable, 2) AS metros_rentable, FORMAT (a.metros, 2) AS metros,
               IF(a.subarrendado = 1, 'Sí', '') AS subarrendado,
               DATE_FORMAT(a.fechaapertura, '%d/%m/%Y') AS fechaapertura, IF(a.multiempresa = 1, 'Sí', '') AS multiempresa,
               DATE_FORMAT(a.fechabaja, '%d/%m/%Y') AS fechabaja, a.notas 
