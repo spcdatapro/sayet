@@ -11,4 +11,6 @@ pln/archivos/*
 .idea/workspace.xml
 node_modules
 .idea
-js\services\socketiosrvc.js
+js/services/socketiosrvc.js
+.vscode
+.vscode/*

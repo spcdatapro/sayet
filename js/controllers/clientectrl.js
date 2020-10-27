@@ -248,6 +248,10 @@
             $scope.paramscli = { idcliente: 0 };
         };
 
+        $scope.loadEmpresas = () => empresaSrvc.lstEmpresas().then((d) => $scope.empresas = d);
+        
+        $scope.loadEmpresas();
+
         $scope.getCliente = function (idcliente) {
             $scope.detsfact = [];
             $scope.fiadores = [];
@@ -261,7 +265,7 @@
                 $scope.resetContrato();
                 $scope.clientestr = $scope.cliente.nombre + ' (' + $scope.cliente.nombrecorto + ')';
                 monedaSrvc.lstMonedas().then(function (d) { $scope.monedas = d; });
-                empresaSrvc.lstEmpresas().then(function (d) { $scope.empresas = d; });
+                // empresaSrvc.lstEmpresas().then(function (d) { $scope.empresas = d; });
                 proyectoSrvc.lstProyecto().then(function (d) { $scope.proyectos = d; });
                 tipoClienteSrvc.lstTiposCliente().then(function (d) { $scope.tiposcliente = d; });
                 periodicidadSrvc.lstPeriodicidad().then(function (d) { $scope.periodicidad = d; });
@@ -293,6 +297,22 @@
             }, function () { return 0; });
 
             //jsReportSrvc.getPDFReport(test ? 'HJfp-erkg' : 'SyZ8gmHkx', $scope.paramscli).then(function(pdf){ $scope.contentcli = pdf; });
+        };
+
+        $scope.printListaClientes = () => {
+            var modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: 'modalListaClientes.html',
+                controller: 'ModalListClientesCtrl',
+                windowClass: 'app-modal-window',
+                resolve: {
+                    empresas:  () => $scope.empresas,
+                }
+            });
+
+            modalInstance.result.then(function (obj) {
+                console.log(obj);
+            }, function () { return 0; });
         };
 
         $scope.printContrato = function (idcontrato, fromTab) {
@@ -536,7 +556,8 @@
                 $scope.resetContrato();
                 $scope.clientestr = $scope.cliente.nombre + ' (' + $scope.cliente.nombrecorto + ')';
                 monedaSrvc.lstMonedas().then(function (d) { $scope.monedas = d; });
-                empresaSrvc.lstEmpresas().then(function (d) { $scope.empresas = d; });
+                $scope.loadEmpresas();
+                // empresaSrvc.lstEmpresas().then(function (d) { $scope.empresas = d; });
                 proyectoSrvc.lstProyecto().then(function (d) { $scope.proyectos = d; });
                 tipoClienteSrvc.lstTiposCliente().then(function (d) { $scope.tiposcliente = d; });
                 periodicidadSrvc.lstPeriodicidad().then(function (d) { $scope.periodicidad = d; });
@@ -1179,5 +1200,22 @@
 
     }]);
 
+    clientectrl.controller('ModalListClientesCtrl', ['$scope', '$uibModalInstance', 'empresas', 'jsReportSrvc', function ($scope, $uibModalInstance, empresas, jsReportSrvc) {
+        $scope.empresas = empresas;
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
+        $scope.resetParams = () => $scope.params = { idempresa: undefined};        
+
+        $scope.ok = () => {
+            $scope.params.idempresa = !!$scope.params.idempresa ? $scope.params.idempresa : '';
+            console.log($scope.params);
+            const test = false;
+            jsReportSrvc.getPDFReport(test ? 'SkV0SgWuD' : 'SkV0SgWuD', $scope.params).then((pdf) => $scope.content = pdf);
+        };
+
+        $scope.cancel = () => $uibModalInstance.dismiss('cancel');
+        
+        $scope.resetParams();
+
+    }]);    
 }());

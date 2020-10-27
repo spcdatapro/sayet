@@ -48,5 +48,25 @@ $app->get('/clientetoprint/:idcliente', function($idcliente){
     $cliente->datafact = count($df) > 0 ? $df[0] : [];
     print json_encode($cliente);
 });
+$app->post('/lista', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "SELECT d.idempresa, c.nomempresa AS nombreempresa, c.abreviatura, a.nombre AS cliente, a.nombrecorto, b.facturara, b.direccion, b.nit, 
+            IF(b.retisr = 1, 'Sí', '') AS retieneisr, IF(b.retiva = 1, 'Sí', '') AS retieneiva, b.porretiva AS porretiva, IF(b.exentoiva = 0, '', 'Sí') AS exentoiva
+            FROM contrato d
+            INNER JOIN cliente a ON a.id = d.idcliente
+            INNER JOIN empresa c ON c.id = d.idempresa
+            INNER JOIN detclientefact b ON b.idcliente = a.id
+            WHERE b.fal IS NULL ";
+    $query.= $d->idempresa !== '' ? "AND d.idempresa IN($d->idempresa) " : '';
+    $query.= "ORDER BY c.ordensumario, a.nombre, b.facturara";
+    $clientes = $db->getQuery($query);
+
+    $query = "SELECT DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy";
+    $general = $db->getQuery($query)[0];
+
+    print json_encode(['general' => $general, 'clientes' => $clientes]);
+});
 
 $app->run();

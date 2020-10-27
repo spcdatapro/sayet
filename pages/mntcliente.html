@@ -38,6 +38,11 @@
                 <div class="panel-body">
                     <table datatable="ng" dt-options="dtOptions"
                         class="table table-responsive table-hover table-condensed">
+                        <caption class="text-right">
+                            <button type="button" class="btn btn-info btn-sm" ng-click="printListaClientes()">
+                                <span class="glyphicon glyphicon-print"></span>
+                            </button>
+                        </caption>
                         <thead>
                             <tr>
                                 <th style="white-space: nowrap">Nombre comercial</th>
@@ -1561,3 +1566,34 @@
         <button class="btn btn-info" type="button" ng-click="cancel()">Cancelar</button>
     </div>
 </script>
+<script type="text/ng-template" id="modalListaClientes.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Lista de clientes</h3>            
+    </div>
+    <div class="modal-body">
+        <form name="frmLstClt" id="frmLstClt" novalidate>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group" ng-class="{'has-error':frmCliente.selEmpresa.$invalid && !frmCliente.selEmpresa.$pristine}">
+                        <label for="lisEmpresa">Empresa:</label>
+                          <div class="input-group">
+                            <select name="lisEmpresa" id="lisEmpresa" class="form-control" ng-model="params.idempresa"
+                                ng-options="obj.id as obj.nomempresa for obj in empresas">
+                            </select>
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-info" ng-click="resetParams()">
+                                    <span class="glyphicon glyphicon-refresh"></span>
+                                </button>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <rpt-viewer contenido="content"></rpt-viewer>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-info" type="button" ng-click="ok()">Generar</button>
+        <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
+    </div>
+</script>
+</div>
