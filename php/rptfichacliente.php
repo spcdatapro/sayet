@@ -52,8 +52,9 @@ $app->post('/lista', function() {
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $query = "SELECT d.idempresa, c.nomempresa AS nombreempresa, c.abreviatura, a.nombre AS cliente, a.nombrecorto, b.facturara, b.direccion, b.nit, 
-            IF(b.retisr = 1, 'Sí', '') AS retieneisr, IF(b.retiva = 1, 'Sí', '') AS retieneiva, b.porretiva AS porretiva, IF(b.exentoiva = 0, '', 'Sí') AS exentoiva
+    $query = "SELECT DISTINCT d.idempresa, c.nomempresa AS nombreempresa, c.abreviatura, SUBSTRING(a.nombre, 1, 30) AS cliente, a.nombrecorto, SUBSTRING(b.facturara, 1, 45) AS facturara,
+            SUBSTRING(b.direccion, 1, 50) AS direccion, b.nit, 
+            IF(b.retisr = 1, 'Sí', '') AS retieneisr, IF(b.retiva = 1, 'Sí', '') AS retieneiva, IF(b.porretiva = 0, '', b.porretiva) AS porretiva, IF(b.exentoiva = 0, '', 'Sí') AS exentoiva
             FROM contrato d
             INNER JOIN cliente a ON a.id = d.idcliente
             INNER JOIN empresa c ON c.id = d.idempresa

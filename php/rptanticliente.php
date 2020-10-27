@@ -340,7 +340,8 @@ function queryFacturas($d){
     if(trim($d->cliente) != ''){ $cliente = str_replace(' ', '%', trim($d->cliente)); }
 
     $qFacts = "
-        SELECT a.idempresa, b.nomempresa AS empresa, b.abreviatura AS abreviaempresa, a.idproyecto, IF(a.idproyecto = 0, TRIM(d.nomproyecto), TRIM(e.nomproyecto)) AS proyecto, a.idcliente, IF(a.idcliente = 0, TRIM(a.nombre), TRIM(f.nombre)) AS cliente,
+        SELECT a.idempresa, b.nomempresa AS empresa, b.abreviatura AS abreviaempresa, a.idproyecto, IF(a.idproyecto = 0, TRIM(d.nomproyecto), TRIM(e.nomproyecto)) AS proyecto, a.idcliente, IF(a.idcliente = 0, TRIM(a.nombre), 
+        TRIM(f.nombre)) AS cliente,
         a.id AS idfactura, a.serie, a.numero, a.fecha, DATEDIFF('$d->falstr', a.fecha) AS dias, ROUND(a.subtotal, 2) AS subtotal, ROUND(a.retisr, 2) AS retisr, ROUND(a.retiva, 2) AS retiva, ROUND(a.total, 2) AS monto,
         IFNULL(g.montopagado, 0.00) AS montopagado, ROUND(a.total, 2) - IFNULL(g.montopagado, 0.00) AS saldo, b.ordensumario, a.serieadmin, a.numeroadmin
         FROM factura a
@@ -374,6 +375,7 @@ $app->post('/antiguedad', function(){
     if(!isset($d->cliente)){ $d->cliente = ''; }
     if(!isset($d->pagoextra)){ $d->pagoextra = 0; }
     if(!isset($d->vernegativos)){ $d->vernegativos = 0; }
+    if(!isset($d->abreviado)){ $d->abreviado = 0; }
 
     $db = new dbcpm();
 

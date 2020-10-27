@@ -62,6 +62,12 @@
                             <input name="chkVerNegs" id="chkVerNegs" type="checkbox" class="form-control input-sm" ng-model="params.vernegativos" ng-true-value="1" ng-false-value="0" />
                         </div>
                     </div>
+                    <div class="col-md-1">
+                        <div class="form-group">
+                            <label for="chkAbreviado">Abreviado</label>
+                            <input name="chkAbreviado" id="chkAbreviado" type="checkbox" class="form-control input-sm" ng-model="params.abreviado" ng-true-value="1" ng-false-value="0" ng-change="params.pagoextra = 0" />
+                        </div>
+                    </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="chkExt">Ver solo saldos a favor del cliente</label>

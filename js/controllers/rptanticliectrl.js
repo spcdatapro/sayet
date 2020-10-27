@@ -5,7 +5,7 @@
     rptanticlictrl.controller('rptAntiClientesCtrl', ['$scope',  'authSrvc', 'jsReportSrvc', '$sce','clienteSrvc','empresaSrvc', 'proyectoSrvc', ($scope, authSrvc, jsReportSrvc, $sce, clienteSrvc, empresaSrvc, proyectoSrvc) => {
 
         $scope.params = {
-            al: moment().toDate(), idempresa: undefined, idproyecto: undefined, detallada: 1, orderalfa: 1, cliente: undefined, pagoextra: 0, vernegativos: 1
+            al: moment().toDate(), idempresa: undefined, idproyecto: undefined, detallada: 1, orderalfa: 1, cliente: undefined, pagoextra: 0, vernegativos: 1, abreviado: 0
         };
         $scope.content = `${window.location.origin}/sayet/blank.html`;
         //$scope.clientes = [];
@@ -47,12 +47,16 @@
             $scope.params.cliente = $scope.params.cliente != null && $scope.params.cliente !== undefined ? $scope.params.cliente : '';
             $scope.params.pagoextra = $scope.params.pagoextra != null && $scope.params.pagoextra !== undefined ? +$scope.params.pagoextra : 0;
             $scope.params.vernegativos = $scope.params.vernegativos != null && $scope.params.vernegativos !== undefined ? +$scope.params.vernegativos : 0;
+            $scope.params.abreviado = $scope.params.abreviado != null && $scope.params.abreviado !== undefined ? +$scope.params.abreviado : 0;
         };
 
         const test = false;
         $scope.getAntiCli = () => {
             setParams();
-            const idRpt = $scope.params.pagoextra === 0 ? (test ? 'rJfbwLe4B' : 'rJfbwLe4B') : (test ? 'B1UScXIcS' : 'B1UScXIcS');
+            let idRpt = $scope.params.pagoextra === 0 ? (test ? 'rJfbwLe4B' : 'rJfbwLe4B') : (test ? 'B1UScXIcS' : 'B1UScXIcS');
+            if ($scope.params.abreviado === 1) {
+                idRpt = 'B1lebL0Dv';
+            }
             jsReportSrvc.getPDFReport(idRpt, $scope.params).then((pdf) => $scope.content = pdf);
         };
 
