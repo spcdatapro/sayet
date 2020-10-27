@@ -12,7 +12,7 @@ $app->post('/comparativo', function() use($db){
     $query = "SELECT DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy, CONCAT(UPPER(a.nombre), ' ', $d->anio) AS al, CONCAT(UPPER(a.nombrecorto), SUBSTR('$d->anio', 3, 2)) AS actual FROM mes a WHERE a.id = $d->mes";
     $generales = $db->getQuery($query)[0];
 
-    $qGen ="SELECT b.idempresa, i.nomempresa AS empresa, a.idproyecto, g.nomproyecto AS proyecto, a.idserviciobasico, b.numidentificacion, a.idunidad, h.nombre AS unidad, ";
+    $qGen ="SELECT c.idcliente, b.idempresa, i.nomempresa AS empresa, a.idproyecto, g.nomproyecto AS proyecto, a.idserviciobasico, b.numidentificacion, a.idunidad, h.nombre AS unidad, ";
     $qGen.= "0.00 AS mes01, 0.00 AS mes02, 0.00 AS mes03, 0.00 AS mes04, 0.00 AS mes05, 0.00 AS mes06, 0.00 AS mes07, 0.00 AS mes08, 0.00 AS mes09, 0.00 AS mes10, 0.00 AS mes11, 0.00 AS mes12, ";
     $qGen.= "0.00 AS promedio, (a.lectura - LecturaAnterior(a.idserviciobasico, $d->mes, $d->anio)) AS consumoactual, IFNULL(d.nombrecorto, 'VACANTE') AS cliente ";
     $qGen.= "FROM lecturaservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico LEFT JOIN contrato c ON c.id = (SELECT b.id FROM contrato b WHERE IF(b.inactivo = 1 AND MONTH(b.fechainactivo) = $d->mes AND YEAR(b.fechainactivo) = $d->anio, FIND_IN_SET(a.idunidad, b.idunidadbck), FIND_IN_SET(a.idunidad, b.idunidad)) LIMIT 1) ";
@@ -20,9 +20,11 @@ $app->post('/comparativo', function() use($db){
     $qGen.= "WHERE a.estatus IN(2, 3) AND b.pagacliente = 0 AND (c.inactivo = 0 OR (c.inactivo = 1 AND MONTH(c.fechainactivo) = $d->mes AND YEAR(c.fechainactivo) = $d->anio) OR c.inactivo IS NULL) AND a.mes = $d->mes AND a.anio = $d->anio ";
     $qGen.= $d->empresas != '' ? "AND b.idempresa IN($d->empresas) " : '';
     $qGen.= $d->proyectos != '' ? "AND a.idproyecto IN($d->proyectos) " : '';
+    $qGen.= $d->cliente != '' ? "AND c.idcliente IN($d->cliente) " : '';
     //$qGen.= "ORDER BY i.nomempresa, g.nomproyecto, CAST(digits(h.nombre) AS UNSIGNED), h.nombre, b.numidentificacion";
 
     $query = "SELECT DISTINCT z.idempresa, z.empresa FROM ($qGen) z ORDER BY z.empresa";
+    //print $query;
     $empresas = $db->getQuery($query);
     $cntEmpresas = count($empresas);
     for($i = 0; $i < $cntEmpresas; $i++){

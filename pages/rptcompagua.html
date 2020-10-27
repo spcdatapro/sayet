@@ -59,6 +59,20 @@
                         </span>
                     </div>
                 </div>
+                <div class="col-md-6">
+                    <label for="selProy">Cliente:</label>
+                    <div class="input-group">
+                        <select name="selClt" id="selClt" class="form-control" ng-model="params.cliente"
+                                ng-options="obj.id as (obj.nombrecorto + ' (' + obj.nombre + ')') for obj in lstClientes">
+                        </select>
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" type="button" ng-click="params.cliente = undefined;"
+                                    ng-disabled="params.cliente === null || params.cliente === undefined || params.cliente === ''">
+                                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                            </button>
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="panel-footer" style="text-align: right">

@@ -294,7 +294,7 @@ $app->get('/lstcontemp/:idcliente/:idempresa', function($idcliente, $idempresa){
 $app->get('/getcontrato/:idcontrato', function($idcontrato){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idcliente, a.nocontrato, a.abogado, a.inactivo, a.fechainactivo, a.fechainicia, a.fechavence, a.nuevarenta, a.nuevomantenimiento, a.idmoneda, b.simbolo AS moneda, ";
-    $query.= "a.idempresa, c.nomempresa AS empresa, a.deposito, a.idproyecto, d.nomproyecto AS proyecto, a.idunidad, e.nombre AS unidad, a.retiva, a.prorrogable, a.retisr, ";
+    $query.= "a.idempresa, c.nomempresa AS empresa, a.deposito, a.idproyecto, d.nomproyecto AS proyecto, a.idunidad, UnidadesPorContrato(a.id) AS unidad, a.retiva, a.prorrogable, a.retisr, ";
     $query.= "a.documento, a.adelantado, a.subarrendado, a.idtipocliente, f.desctipocliente AS tipocliente, a.idcuentac, a.observaciones, a.idmonedadep, ";
     $query.= "h.simbolo AS monedadep, a.reciboprov, a.idperiodicidad, a.idtipoipc, a.cobro, a.plazofdel, a.plazofal, a.prescision, a.usufructo ";
     $query.= "FROM contrato a LEFT JOIN moneda b ON b.id = a.idmoneda LEFT JOIN empresa c ON c.id = a.idempresa LEFT JOIN proyecto d ON d.id = a.idproyecto LEFT JOIN unidad e ON e.id = a.idunidad ";

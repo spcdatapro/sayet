@@ -655,7 +655,7 @@
             obj.idmonedadep = obj.objMonedaDep != null && obj.objMonedaDep != undefined ? obj.objMonedaDep.id : 0;
             obj.idempresa = obj.objEmpresa != null && obj.objEmpresa != undefined ? obj.objEmpresa.id : 0;
             obj.idproyecto = obj.objProyecto != null && obj.objProyecto != undefined ? obj.objProyecto.id : 0;
-            obj.idunidad = obj.objUnidad != null && obj.objUnidad != undefined ? objectPropsToList(obj.objUnidad, 'id', ',') : '';
+            obj.idunidad = obj.objUnidad != null && obj.objUnidad != undefined ? objectPropsToList(obj.objUnidad, 'id', ',') : 'id';
             obj.idtipocliente = obj.objTipoCliente != null && obj.objTipoCliente != undefined ? obj.objTipoCliente.id : 0;
             obj.fechainiciastr = moment(obj.fechainicia).format('YYYY-MM-DD');
             obj.fechavencestr = moment(obj.fechavence).format('YYYY-MM-DD');

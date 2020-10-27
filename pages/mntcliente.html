@@ -726,8 +726,8 @@
                                                 </ui-select-no-choice>
                                             </ui-select>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4 nopadding" ng-hide="slcont">
+                                    </div>                                    
+                                    <div class="col-md-4 nopadding" ng-hide="slcont || +contrato.inactivo === 1">
                                         <div class="form-group"
                                             ng-class="{'has-error':frmCont.selUniCont.$invalid && !frmCont.selUniCont.$pristine}">
                                             <label for="selUniCont">Unidades:</label>
@@ -736,12 +736,13 @@
                                                 ng-options="obj.nombre for obj in unidadesdisponibles track by obj.id"
                                                 multiple ng-disabled="slcont"></select>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4 nopadding" ng-show="slcont">
+                                    </div>                                    
+                                    <div class="col-md-4 nopadding" ng-show="slcont || +contrato.inactivo === 1">
                                         <div class="form-group">
                                             <label for="divUnidadesStr">Unidades:</label>
-                                            <div id="divUnidadesStr" class="well well-sm" style="font-size: x-small">
-                                                <p>{{unidadesStr}}</p>
+                                            <div id="divUnidadesStr" class="well well-sm" style="font-size: x-small">                                                
+                                                <p ng-show="+contrato.inactivo === 0">{{unidadesStr}}</p>                                                
+                                                <p ng-show="+contrato.inactivo === 1">{{contrato.unidad}}</p>                                                
                                             </div>
                                         </div>
                                     </div>
