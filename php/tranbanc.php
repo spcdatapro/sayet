@@ -176,6 +176,14 @@ $app->post('/u', function(){
     }
 });
 
+$app->post('/uda', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    
+    $query = "UPDATE tranban SET monto = 0.00, fechaanula = '$d->fechaanulastr' WHERE id = $d->id";
+    $db->doQuery($query);
+});
+
 $app->post('/d', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();

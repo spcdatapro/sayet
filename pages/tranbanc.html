@@ -253,6 +253,12 @@
                                 ng-show="editando && laTran.tipotrans === 'C'" ng-click="anular(laTran)">
                                 <span class="glyphicon glyphicon-ban-circle"></span>
                             </button>
+                            <button type="button" class="btn btn-primary"
+                                ng-disabled="frmTranBan.$invalid || periodoCerrado"
+                                ng-show="editando && laTran.tipotrans === 'C'"
+                                ng-click="updTranAnul(laTran)">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </button>
                             <!--
                     <a download class="btn btn-primary" target="_blank" ng-href="php/{{laTran.objBanco.formato}}.php?c={{laTran.id}}" ng-show="editando && laTran.tipotrans === 'C'"
                        ng-disabled="frmTranBan.$invalid || laTran.anulado === 1 || laTran.impreso === 1" ng-click="laTran.impreso = 1">
@@ -903,22 +909,24 @@
         <button class="btn btn-primary" type="button" ng-click="ok()">Generar</button>
         <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
     </div>
-    <!--<div class="form-group" ng-show="formularioid">
-             <table class="table table-responsive table-hover table-condensed">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>numero</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr ng-repeat="lt in correlativos | filter:lookFor">
-                        <td>{{lt.id}}</td>
-                        <td>{{lt.numero}}</td>
-                    </tr>
-                    </tbody>
-            </table>
-        </div>-->
+</script>
+<script type="text/ng-template" id="editarAnulacion.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Fecha de anulaci&oacute;n</h3>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="txtFecAnul">Fecha de anulaci&oacute;n:</label>
+            <input name="txtFecAnul" id="txtFecAnul" type="date" class="form-control" ng-model="params.fechaanula" required/>
+        </div>
+        <div class="well-sm">
+            <strong>NOTA:</strong> El monto tambi&eacute;n se actualizar&aacute; a valor 0.
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()" ng-disabled="!params.fechaanula">Aceptar</button>
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
+    </div>
 </script>
 <script>
     $(document).ready(function () {
