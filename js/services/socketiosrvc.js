@@ -4,8 +4,12 @@
 
     socketiosrvc.factory('socketIOSrvc', ['$rootScope', ($rootScope) => {
 		const urlSocketServer = `${window.location.origin}:3520`;
+		let socket;
 		
-		const socket = io.connect(urlSocketServer);
+		if (urlSocketServer.indexOf('localhost') < 0) {
+			socket = io.connect(urlSocketServer);
+		}
+		
 		return {
 			on: (eventName, callback) => {
 				socket.on(eventName, function () {  
