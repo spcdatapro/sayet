@@ -931,7 +931,7 @@
                                             <input name="txtDFDel" id="txtDFDel" type="date"
                                                 class="form-control  input-sm" ng-model="detfcontrato.fdel" required
                                                 ng-disabled="sldetcont || detcontfacturado" 
-                                                ng-change="chkFechaRango(detfcontrato.fdel, contrato.fechainicia, false)" />
+                                                ng-blur="chkFechaRango(detfcontrato.fdel, contrato.fechainicia, false)" />
                                         </div>
                                     </div>
                                     <div class="col-md-3 nopadding">
@@ -941,7 +941,7 @@
                                             <input name="txtDFAl" id="txtDFAl" type="date"
                                                 class="form-control  input-sm" ng-model="detfcontrato.fal" required
                                                 ng-disabled="sldetcont || detcontfacturado"
-                                                ng-change="chkFechaRango(detfcontrato.fal, contrato.fechavence, true)" />
+                                                ng-maxlength="chkFechaRango(detfcontrato.fal, contrato.fechavence, true)" />
                                         </div>
                                     </div>
                                     <div class="col-md-3 nopadding">
