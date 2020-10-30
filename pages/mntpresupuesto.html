@@ -28,6 +28,9 @@
             <a show-tab href="#divDetPresup" data-toggle="tab">DETALLE</a>
         </li>
         <li ng-show="+presupuesto.id > 0 && +ot.id > 0">
+            <a show-tab href="#divAdjuntos" data-toggle="tab">ADJUNTOS</a>
+        </li>
+        <li ng-show="+presupuesto.id > 0 && +ot.id > 0">
             <a show-tab href="#divDocumentos" data-toggle="tab">DOCUMENTOS</a>
         </li>
         <li ng-show="+presupuesto.id > 0 && +ot.id > 0">
@@ -420,6 +423,11 @@
                             data-toggle="tooltip" data-placement="auto" title="Imprimir...">
                             <i class="fa fa-print fa-lg" aria-hidden="true"></i>
                         </button>
+                        <button type="button" class="btn btn-info" ng-click="adherirAOTM(presupuesto, true)"
+                            ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1"
+                            data-toggle="tooltip" data-placement="auto" title="Adherir a OTM existente...">
+                            <span class="glyphicon glyphicon-refresh"></span>
+                        </button>
                         <button type="button" class="btn btn-primary" ng-click="aumentaExcedente(presupuesto)"
                             ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1"
                             data-toggle="tooltip" data-placement="auto" title="Cambiar porcentaje de excedente...">
@@ -661,6 +669,72 @@
                 </div>
             </div>
         </div>
+        <div id="divAdjuntos" class="tab-pane fade">
+            <div class="panel panel-info">
+                <div class="panel-heading">Archivos adjuntos</div>
+                <div class="panel-body">
+                    <form name="frmOTAdjunto" id="frmOTAdjunto" ng-submit="frmOTAdjunto.$valid && addOTAdjunto()" class="check-element animate-show" ng-show="+ot.id > 0" novalidate>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="{'has-error':frmOTAdjunto.txtNomAjunto.$invalid && !frmOTAdjunto.txtNomAjunto.$pristine}">
+                                    <label for="txtNomAjunto">Nombre:</label>
+                                    <input name="txtNomAjunto" id="txtNomAjunto" type="text" class="form-control" ng-model="otAdjunto.nomadjunto" placeholder="Nombre del adjunto" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <button name="adjuntar_btn" id="adjuntar_btn" type="button" class="btn btn-info"
+                                        ngf-select ng-model="file" name="file" ngf-multiple="false"
+                                        ngf-pattern="'image/*,application/pdf,.xls,.xlsx,.doc,.docx,.txt'"
+                                        ngf-accept="'image/*,application/pdf,.xls,.xlsx,.doc,.docx,.txt'"
+                                        ngf-max-size="200MB" style="width: 100%">
+                                    {{(file.name | textCleaner) || 'Seleccionar documento para subir'}}&nbsp;<span class="glyphicon glyphicon-upload"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-1">
+                                <button type="submit" class="btn btn-info" ng-disabled="frmOTAdjunto.$invalid || file == null || file == undefined">
+                                    <span class="glyphicon glyphicon-floppy-save"></span>
+                                </button>
+                            </div>
+                            <div class="col-md-2">
+                                <div>
+                                    <round-progress max="100" current="progressPercentage" color="#4CAF50" bgcolor="#eaeaea" radius="25" stroke="10"
+                                                    semi="true" rounded="true" clockwise="true" responsive="false" duration="800"
+                                                    animation="easeInOutQuart" animation-delay="0">
+                                    </round-progress>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <hr/>
+                    <table class="table table-responsive table-hover table-condensed">
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>&nbsp;</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="ot_adjunto in lstotadjuntos">
+                            <td>{{ot_adjunto.nomadjunto}}</td>                            
+                            <td>
+                                <a class="btn btn-info" href="{{ot_adjunto.ubicacion}}" target="_blank">
+                                    <span class="glyphicon glyphicon-download"></span>
+                                </a>
+                            </td>
+                            <td style="white-space: nowrap">
+                                <button type="button" class="btn btn-danger" ng-click="delOTAdjunto(ot_adjunto.id)">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>                    
+                </div>
+            </div>
+        </div>
         <div id="divDocumentos" class="tab-pane fade">
             <div id="divNgInclude" ng-include="ngIncludeUrl"></div>
         </div>
@@ -898,6 +972,26 @@
         <div class="modal-footer">
             <button class="btn btn-info" type="button" ng-click="ok()" ng-disabled="!params.fecha">Generar</button>
             <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
+        </div>
+    </script>
+    <script type="text/ng-template" id="modalAttachTo.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Adherir OT {{ot.idpresupuesto}}-{{ot.correlativo}} a OTM</h3>
+        </div>
+        <div class="modal-body" style="overflow-y: auto;">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="selOTMAtt">Seleccione la OTM a la que desea adherir la OT:</label>
+                        <select name="selOTMAtt" id="selOTMAtt" class="form-control input-sm" ng-model="params.idpresupuesto" ng-options="obj.idpresupuesto as ('OTM-' + obj.idpresupuesto) for obj in otms" required>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-info" type="button" ng-click="ok()" ng-disabled="!params.idpresupuesto">Aceptar</button>
+            <button class="btn btn-info" type="button" ng-click="cancel()">Cancelar</button>
         </div>
     </script>
 </div>

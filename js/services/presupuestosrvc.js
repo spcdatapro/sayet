@@ -37,9 +37,7 @@
             lstPagosOt: function(idempresa, idot){
                 return comunFact.doGET(`${urlBase}/lstpagos/${idempresa}${+idot > 0 ? ('/' + idot) : ''}`);
             },
-            lstPagosPendOt: function(){
-                return comunFact.doGET(urlBase + '/pagospend');
-            },
+            lstPagosPendOt: () => comunFact.doGET(urlBase + '/pagospend'),
             lstOtsImprimir: (obj) => comunFact.doPOST(`${urlBase}/pagosgenerados`, obj),
             lstNotificaciones: function(){
                 return comunFact.doGET(urlBase + '/notificaciones');
@@ -54,7 +52,9 @@
                 return comunFact.doGET(urlBase + '/getampliapresup/' + idamplia);
             },
             editRow: (obj, op) => comunFact.doPOST(`${urlBase}/${op}`, obj),
-            usrApruebanOts: (id) => comunFact.doGET(`${urlBase}/usraprob` + (!id ? '' : `/${id}`))
+            usrApruebanOts: (id) => comunFact.doGET(`${urlBase}/usraprob` + (!id ? '' : `/${id}`)),
+            lstOtsAdjuntos: (idot) => comunFact.doGET(`${urlBase}/lstotadjuntos/${idot}`),
+            lstOTMs: () => comunFact.doGET(`${urlBase}/lstotm`)
         };
     }]);
 

@@ -2,7 +2,7 @@
 
     var presupuestoctrl = angular.module('cpm.presupuestoctrl', []);
 
-    presupuestoctrl.controller('presupuestoCtrl', ['$scope', 'presupuestoSrvc', '$confirm', 'proyectoSrvc', 'empresaSrvc', 'tipogastoSrvc', 'monedaSrvc', '$filter', 'authSrvc', 'proveedorSrvc', 'toaster', '$uibModal', 'desktopNotification', 'jsReportSrvc', '$window', 'tranBancSrvc', 'estatusPresupuestoSrvc', '$route', function ($scope, presupuestoSrvc, $confirm, proyectoSrvc, empresaSrvc, tipogastoSrvc, monedaSrvc, $filter, authSrvc, proveedorSrvc, toaster, $uibModal, desktopNotification, jsReportSrvc, $window, tranBancSrvc, estatusPresupuestoSrvc, $route) {
+    presupuestoctrl.controller('presupuestoCtrl', ['$scope', 'presupuestoSrvc', '$confirm', 'proyectoSrvc', 'empresaSrvc', 'tipogastoSrvc', 'monedaSrvc', '$filter', 'authSrvc', 'proveedorSrvc', 'toaster', '$uibModal', 'desktopNotification', 'jsReportSrvc', '$window', 'tranBancSrvc', 'estatusPresupuestoSrvc', '$route', 'Upload', function ($scope, presupuestoSrvc, $confirm, proyectoSrvc, empresaSrvc, tipogastoSrvc, monedaSrvc, $filter, authSrvc, proveedorSrvc, toaster, $uibModal, desktopNotification, jsReportSrvc, $window, tranBancSrvc, estatusPresupuestoSrvc, $route, Upload) {
 
         //$scope.presupuesto = {fechasolicitud: moment().toDate(), idmoneda: '1', tipocambio: 1.00};
         $scope.presupuesto = {};
@@ -314,7 +314,7 @@
         $scope.getLstOts = function (idpresupuesto) {
             presupuestoSrvc.lstOts(idpresupuesto).then(function (d) {
                 $scope.lstot = procDataOts(d);
-                if(+$scope.presupuesto.tipo === 1) {
+                if (+$scope.presupuesto.tipo === 1 && $scope.lstot.length > 0) {
                     $scope.getOt(d[0].id);
                 }
             });
@@ -330,7 +330,7 @@
                 case 1: $scope.ngIncludeUrl = `pages/tranfactcompra.html?upd=${ahora}`; break;
                 case 2: $scope.ngIncludeUrl = `pages/tranreembolso.html?upd=${ahora}`; break;
                 default: $scope.ngIncludeUrl = undefined;
-            }                
+            }
         }
 
         $scope.getOt = function (idot) {
@@ -340,6 +340,7 @@
                 $scope.sl.ot = true;
                 $scope.showForm.ot = true;
                 $scope.loadPaginasComplemento($scope.ot.correlativo, $scope.ot.id);
+                $scope.loadOTAdjuntos();
                 goTop();
             });
         };
@@ -438,6 +439,35 @@
             modalInstance.result.then((obj) => { }, () => { });
         };
 
+        $scope.adherirAOTM = async (obj, esPresupuesto) => {
+            let qOt = {};
+            if (esPresupuesto) {
+                qOt = await presupuestoSrvc.lstOts(+obj.id);
+                qOt = procDataOts(qOt)[0];
+                // console.log(qOt);
+            }
+
+            var modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: 'modalAttachTo.html',
+                controller: 'ModalAttachToCtrl',
+                resolve: {
+                    ot: () => (esPresupuesto ? qOt : obj),
+                    permiso: () => $scope.permiso
+                }
+            });
+            modalInstance.result.then((d) => {
+                toaster.pop('info', 'Adhesión de OT a OTM', `El nuevo número de la OT es ${d.numero}...`, 'timeout:1500');
+                $scope.getLstPresupuestos('1,2,3');
+                if (esPresupuesto) {
+                    $scope.getPresupuesto(obj.id, true);
+                } else {
+                    $scope.getLstOts(obj.idpresupuesto);
+                    $scope.getOt(obj.id);
+                }
+            }, () => { });
+        };
+
         $scope.ampliar = function (obj) {
             var modalInstance = $uibModal.open({
                 animation: true,
@@ -486,7 +516,72 @@
             modalInstance.result.then(() => { }, () => { });
         };
 
+        $scope.otAdjunto = { };
+        $scope.lstotadjuntos = [];
+
+        $scope.loadOTAdjuntos = () => presupuestoSrvc.lstOtsAdjuntos($scope.ot.id).then((d) => $scope.lstotadjuntos = d);        
+
+        $scope.resetOTAdjunot = () => $scope.otAdjunto = { idot: undefined, ubicacion: undefined };
+
+        $scope.resetOTAdjunot();
+
+        $scope.upload = () => {
+            const file = $scope.file;
+            console.log(file);
+            if (file){
+                Upload.upload({
+                    url: 'php/upload.php',
+                    method: 'POST',
+                    file: file,
+                    sendFieldsAs: 'form',
+                    fields: {
+                        directorio: '../ots_adjunto/',
+                        prefijo: 'OT_' + $scope.ot.id + '_'
+                    }
+                }).then(() => {
+                    $scope.file = null;
+                    $scope.progressPercentage = 0;
+                },
+                    () => { },
+                    (evt) => $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total)
+                );
+            }
+        };        
+
+        $scope.addOTAdjunto = () => {
+            $scope.upload();
+            $scope.otAdjunto.idot = $scope.ot.id;            
+            $scope.otAdjunto.ubicacion = "ots_adjunto/"+'OT_'+$scope.ot.id+'_'+ $filter('textCleaner')($scope.file.name);
+            presupuestoSrvc.editRow($scope.otAdjunto, 'aaot').then(() => $scope.loadOTAdjuntos());
+        };
+
+        $scope.delOTAdjunto = (id) => {
+            $confirm({
+                text: '¿Seguro(a) de eliminar este adjunto? (Esto también eliminará físicamente el documento)',
+                title: 'Eliminar adjunto de OT', ok: 'Sí', cancel: 'No'}).then(() => presupuestoSrvc.editRow({ id: id }, 'daot').then(() => $scope.loadOTAdjuntos()));
+        };
     }]);
+
+        //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+        presupuestoctrl.controller('ModalAttachToCtrl', ['$scope', '$uibModalInstance', '$filter', 'toaster', '$confirm', 'presupuestoSrvc', 'ot', 'permiso', function ($scope, $uibModalInstance, $filter, toaster, $confirm, presupuestoSrvc, ot, permiso) {
+            $scope.ot = ot;
+            $scope.otms = [];
+            $scope.params = {
+                id: $scope.ot.id, idpresupuesto: undefined
+            };            
+
+            $scope.loadListaOTMs = () => { presupuestoSrvc.lstOTMs().then((d) => $scope.otms = d); };
+
+            $scope.ok = function () {                
+                $confirm({ text: '¿Esta seguro(a) de continuar?', title: 'Adherir OT a OTM', ok: 'Sí', cancel: 'No' }).then(() => {
+                    presupuestoSrvc.editRow($scope.params, 'attachto').then((d) => { $uibModalInstance.close(d); });
+                });
+            };
+
+            $scope.cancel = () => $uibModalInstance.dismiss('cancel');
+
+            $scope.loadListaOTMs();
+        }]);
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     presupuestoctrl.controller('ModalDetPagosOtCtrl', ['$scope', '$uibModalInstance', '$filter', 'toaster', '$confirm', 'presupuestoSrvc', 'ot', 'permiso', 'monedaSrvc', function ($scope, $uibModalInstance, $filter, toaster, $confirm, presupuestoSrvc, ot, permiso, monedaSrvc) {
         $scope.ot = ot;
