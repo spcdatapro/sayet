@@ -721,13 +721,29 @@ $app->post('/gengface', function() use($app){
 function regeneraCorrelativo($d)
 {
     $db = new dbcpm();
+    $query = "SELECT IFNULL(MAX(numeroadmin), 0) + 1 FROM factura WHERE idempresa = $d->idempresa AND serie IS NOT NULL AND numero IS NOT NULL AND idtipofactura = 1";
+    $correlativo = (int)$db->getOneField($query);
+
+    $query = "SELECT id FROM factura WHERE id IN($d->listafact) AND idtipofactura = 1 ORDER BY fecha, id";
+    $facturas = $db->getQuery($query);
+    $cntFacturas = count($facturas);
+    for($i = 0; $i < $cntFacturas; $i++) {
+        $factura = $facturas[$i];
+        $query = "UPDATE factura SET numeroadmin = $correlativo WHERE id = $factura->id";
+        $db->doQuery($query);
+        $correlativo++;
+    }
+    $query = "UPDATE empresa SET correlativofel = $correlativo WHERE id = $d->idempresa";
 };
 
 $app->post('/genfel', function() use($app) {
     $d = json_decode(file_get_contents('php://input'));
     if(!isset($d->listafact)){ $d->listafact = ''; }
+    if(!isset($d->regenerar)){ $d->regenerar = 0; }
     $db = new dbcpm();
-    // regeneraCorrelativo($d);
+    if ((int)$d->regenerar === 1) {
+        regeneraCorrelativo($d);
+    }    
     //Encabezado
     $query = "SELECT 1 AS tiporegistro, DATE_FORMAT(a.fecha, '%Y%m%d') AS fechadocumento, b.siglasfel AS tipodocumento, a.nit AS nitcomprador, a.idmonedafact AS codigomoneda, 
     IF(a.idmonedafact = 1, 1, ROUND(a.tipocambio, 4)) AS tasacambio, a.id AS ordenexterno, 'S' AS tipoventa, 1 AS destinoventa, 'S' AS enviarcorreo, 
@@ -742,6 +758,7 @@ $app->post('/genfel', function() use($app) {
     LEFT JOIN moneda d ON d.id = a.idmonedafact
     WHERE a.id > 3680 AND a.total <> 0 AND a.idempresa = $d->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.anulada = 0 AND (ISNULL(a.firmaelectronica) OR TRIM(a.firmaelectronica) = '') ";
     $query.= $d->listafact != '' ? "AND a.id IN($d->listafact) " : '';
+    $query.= "ORDER BY a.fecha, a.id";
     // print $query;
     $facturas = $db->getQuery($query);
     $cntFacturas = count($facturas);
