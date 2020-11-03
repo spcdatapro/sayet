@@ -329,6 +329,12 @@ $app->post('/generandc', function() {
 
             $query = "INSERT INTO detfact(idfactura, $coldet) SELECT $lastid, $coldet FROM detfact WHERE idfactura = $d->idfactura";
             $db->doQuery($query);
+
+            //Liberación de cargos atados a la factura que se le generó NdC
+            $query = "UPDATE cargo SET facturado = 0, idfactura = 0 WHERE facturado = 1 AND idfactura = $d->idfactura";
+            $db->doQuery($query);
+            $query = "UPDATE lecturaservicio SET estatus = 2, facturado = 0, idfactura = 0 WHERE estatus = 3 AND facturado = 1 AND idfactura = $d->idfactura";
+            $db->doQuery($query);
         }
     } else {
         $query = "SELECT * FROM factura WHERE id = $d->idfactura";
