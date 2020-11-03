@@ -1,8 +1,8 @@
-(function(){
+(function () {
 
     var tranpagosctrl = angular.module('cpm.tranpagosctrl', ['cpm.tranbacsrvc']);
 
-    tranpagosctrl.controller('tranPagosCtrl', ['$scope', 'tranPagosSrvc', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'toaster', 'periodoContableSrvc', function($scope, tranPagosSrvc, authSrvc, bancoSrvc, empresaSrvc, DTOptionsBuilder, toaster, periodoContableSrvc){
+    tranpagosctrl.controller('tranPagosCtrl', ['$scope', 'tranPagosSrvc', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'toaster', 'periodoContableSrvc', function ($scope, tranPagosSrvc, authSrvc, bancoSrvc, empresaSrvc, DTOptionsBuilder, toaster, periodoContableSrvc) {
 
         $scope.objEmpresa = {};
         $scope.losPagos = [];
@@ -13,14 +13,14 @@
         $scope.esperando = false;
         $scope.qpagos = [];
         $scope.pagosSelected = [];
-        $scope.totales = {cantfacts: 0, monto: 0.00};
+        $scope.totales = { cantfacts: 0, monto: 0.00 };
         $scope.periodoCerrado = false;
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('ordering', false).withOption('paging', false);
 
-        authSrvc.getSession().then(function(usrLogged){
-            if(parseInt(usrLogged.workingon) > 0){
-                empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function(d){
+        authSrvc.getSession().then(function (usrLogged) {
+            if (parseInt(usrLogged.workingon) > 0) {
+                empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function (d) {
                     $scope.objEmpresa = d[0];
                     $scope.getPagos($scope.objEmpresa.id, null);
                     $scope.loadBancos();
@@ -28,12 +28,12 @@
             }
         });
 
-        $scope.loadBancos = function(){
-            bancoSrvc.lstBancosActivos($scope.objEmpresa.id).then(function(d){ $scope.losBancos = d; });
+        $scope.loadBancos = function () {
+            bancoSrvc.lstBancosActivos($scope.objEmpresa.id).then(function (d) { $scope.losBancos = d; });
         };
 
-        function procDataPagos(data){
-            for(var i = 0; i < data.length; i++){
+        function procDataPagos(data) {
+            for (var i = 0; i < data.length; i++) {
                 data[i].id = parseInt(data[i].id);
                 data[i].idempresa = parseInt(data[i].idempresa);
                 data[i].idproveedor = parseInt(data[i].idproveedor);
@@ -54,22 +54,24 @@
             return data;
         }
 
-        $scope.$watch('fechatran', function(newValue, oldValue){
-            if(newValue != null && newValue !== undefined){
+        $scope.$watch('fechatran', function (newValue, oldValue) {
+            if (newValue != null && newValue !== undefined) {
                 $scope.chkFechaEnPeriodo(newValue);
             }
         });
 
-        $scope.chkFechaEnPeriodo = function(qFecha){
-            if(angular.isDate(qFecha)){
-                if(qFecha.getFullYear() >= 2000){
-                    periodoContableSrvc.validaFecha(moment(qFecha).format('YYYY-MM-DD')).then(function(d){
+        $scope.chkFechaEnPeriodo = function (qFecha) {
+            if (angular.isDate(qFecha)) {
+                if (qFecha.getFullYear() >= 2000) {
+                    periodoContableSrvc.validaFecha(moment(qFecha).format('YYYY-MM-DD')).then(function (d) {
                         var fechaValida = parseInt(d.valida) === 1;
-                        if(!fechaValida){
+                        if (!fechaValida) {
                             $scope.periodoCerrado = true;
                             //$scope.fechatran = null;
-                            toaster.pop({ type: 'error', title: 'Fecha de transacción inválida.',
-                                body: 'No está dentro de ningún período contable abierto.', timeout: 7000 });
+                            toaster.pop({
+                                type: 'error', title: 'Fecha de transacción inválida.',
+                                body: 'No está dentro de ningún período contable abierto.', timeout: 7000
+                            });
                         } else {
                             $scope.periodoCerrado = false;
                         }
@@ -78,33 +80,36 @@
             }
         };
 
-        $scope.getPagos = function(idempresa, bco){
+        $scope.getPagos = function (idempresa, bco) {
+            $scope.pagosSelected = [];
             var fmoneda = 1;
-            if(bco != null && bco != undefined){
+            if (bco != null && bco != undefined) {
                 //fmoneda = parseFloat(bco.tipocambio) > 1 ? parseInt(bco.idmoneda) : 0;
                 fmoneda = parseInt(bco.idmoneda);
             }
-            tranPagosSrvc.lstPagos(idempresa, moment($scope.feclimite).format('YYYY-MM-DD'), fmoneda).then(function(d){ $scope.losPagos = procDataPagos(d); });
+            tranPagosSrvc.lstPagos(idempresa, moment($scope.feclimite).format('YYYY-MM-DD'), fmoneda).then(function (d) { $scope.losPagos = procDataPagos(d); });
         };
 
-        $scope.setMontoAPagar = function(obj){
-            if(obj.pagatodo === 1){
+        $scope.setMontoAPagar = function (obj) {
+            if (obj.pagatodo === 1) {
                 obj.montoapagar = obj.saldo;
             }
         };
 
-        $scope.chkMontoAPagar = function(obj){
-            if(obj.montoapagar <= 0 || obj.montoapagar > obj.saldo){
+        $scope.chkMontoAPagar = function (obj) {
+            if (obj.montoapagar <= 0 || obj.montoapagar > obj.saldo) {
                 obj.montoapagar = obj.saldo;
-                toaster.pop({ type: 'error', title: 'Error en el monto a pagar. Factura ' + obj.serie + ' ' + obj.documento + '.',
-                    body: 'El monto a pagar no puede ser cero (0) ni mayor a ' + obj.saldo.toFixed(2), timeout: 7000 });
+                toaster.pop({
+                    type: 'error', title: 'Error en el monto a pagar. Factura ' + obj.serie + ' ' + obj.documento + '.',
+                    body: 'El monto a pagar no puede ser cero (0) ni mayor a ' + obj.saldo.toFixed(2), timeout: 7000
+                });
             }
         };
 
-        $scope.refrescarInfo = function(){
-            $scope.totales = {cantfacts: 0, monto: 0.00};
-            for(var i = 0; i < $scope.losPagos.length; i++){
-                if(+$scope.losPagos[i].pagar === 1){
+        $scope.refrescarInfo = function () {
+            $scope.totales = { cantfacts: 0, monto: 0.00 };
+            for (var i = 0; i < $scope.losPagos.length; i++) {
+                if (+$scope.losPagos[i].pagar === 1) {
                     $scope.totales.cantfacts++;
                     $scope.totales.monto += parseFloat(parseFloat($scope.losPagos[i].montoapagar).toFixed(2));
                 }
@@ -115,7 +120,7 @@
             if (+pago.pagar === 1) {
                 pago.fechapagostr = moment(pago.fechapago).format('YYYY-MM-DD');
                 $scope.pagosSelected.push(pago);
-            } else {                
+            } else {
                 const idx = $scope.pagosSelected.findIndex(p => +p.id === +pago.id);
                 if (idx >= 0) {
                     $scope.pagosSelected.splice(idx, 1);
@@ -124,7 +129,7 @@
             //console.log(`${moment().format('HH:mm:ss')} = `, $scope.pagosSelected);
         };
 
-        $scope.generaCheques = function(tipo){
+        $scope.generaCheques = function (tipo) {
             let temp = [];
             $scope.esperando = true;
             // temp = [];
@@ -148,8 +153,8 @@
 
             $scope.qpagos = temp.concat($scope.pagosSelected);
             //console.log('SELECTED = ', $scope.pagosSelected); console.log('PAGOS = ', $scope.qpagos); return;
-            if($scope.qpagos.length > 1){
-                tranPagosSrvc.genPagos($scope.qpagos).then(function(d){
+            if ($scope.qpagos.length > 1) {
+                tranPagosSrvc.genPagos($scope.qpagos).then(function (d) {
                     $scope.esperando = false;
                     $scope.qpagos = [];
                     $scope.pagosSelected = [];
@@ -157,10 +162,12 @@
                     $scope.loadBancos();
                     toaster.pop({ type: 'info', title: 'Documentos generados.', body: d.mensaje, timeout: 7000 });
                 });
-            }else{
+            } else {
                 $scope.esperando = false;
-                toaster.pop({ type: 'info', title: 'Información',
-                    body: 'Para poder generar documentos, seleccione una factura con saldo pendiente, por favor.', timeout: 7000 });
+                toaster.pop({
+                    type: 'info', title: 'Información',
+                    body: 'Para poder generar documentos, seleccione una factura con saldo pendiente, por favor.', timeout: 7000
+                });
             }
 
         };

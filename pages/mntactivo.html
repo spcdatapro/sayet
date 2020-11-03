@@ -450,17 +450,16 @@
                     <table class="table table-responsive table-hover table-condensed">
                         <thead>
                         <tr>
-                            <th>Descripcion</th>
-                            <th>Tipo</th>
-                            <!--<th>Ext</th>-->
+                            <th>Descripci&oacute;n</th>
+                            <th>Tipo</th>                            
+                            <th>&nbsp;</th>
                             <th>&nbsp;</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr ng-repeat="activo_adjunto in losActivosAdjuntos">
                             <td>{{activo_adjunto.nomadjunto}}</td>
-                            <td>{{activo_adjunto.nomtipo_adjunto}}</td>
-                            <!--<td>{{activo_adjunto.extension}}</td>-->
+                            <td>{{activo_adjunto.nomtipo_adjunto}}</td>                            
                             <td>
                                 <a class="btn btn-info" href="{{activo_adjunto.ubicacion}}" target="_blank">
                                     <span class="glyphicon glyphicon-download"></span>

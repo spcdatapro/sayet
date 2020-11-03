@@ -34,6 +34,7 @@ $app->post('/g', function(){
     //usort($d, function($a, $b){ $idpa = (int)$a->idproveedor; $idpb = (int)$b->idproveedor; return $idpa == $idpb ? 0 : ($idpa < $idpb ? -1 : 1); });
 
     $cantPagos = count($d);
+    //print "Cantidad de pagos: $cantPagos";
     $idprovs = [];
     //Extraigo los diferentes ids de proveedores del array de compras
     for($x = 0; $x < $cantPagos; $x++){
@@ -50,7 +51,8 @@ $app->post('/g', function(){
         $getCorrela = "SELECT CONCAT('9999', correlativond) FROM banco WHERE id = $objBanco->idbanco";
     }
     $ctabanco = (int)$db->getOneField("SELECT idcuentac FROM banco WHERE id = ".$objBanco->idbanco);
-    $cantProvs = count($idprovs);
+    $cantProvs = count($idprovs);    
+    // print "Cantidad de proveedores: $cantProvs --- ";
     for($y = 0; $y < $cantProvs; $y++){
         $totAPagar = 0.0;
         $qFacturas = '';
@@ -69,6 +71,7 @@ $app->post('/g', function(){
                 $losPagos[] = ['idcompra' => $d[$z]->id, 'monto' => ($d[$z]->montoapagar * $tc)];
             };
         };
+        // print_r($losPagos); die();
 
         //Inserto la transaccion bancaria
         /*
@@ -109,6 +112,7 @@ $app->post('/g', function(){
         //Inserto el detalle de pagos
         if((int)$lastid > 0){
             $cantCompras = count($losPagos);
+            // print "Cantidad de compras: $cantCompras --- ";
             for($i = 0; $i < $cantCompras; $i++){
                 $query = "INSERT INTO detpagocompra(idcompra, idtranban, monto)";
                 $query.= "VALUES(".$losPagos[$i]['idcompra'].", ".$lastid.", ".$losPagos[$i]['monto'].")";

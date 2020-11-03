@@ -49,8 +49,8 @@
 
         openWindowWithPostRequest = (url, params) => {
             var winName = 'MyWindow';
-            var winURL = url; 
-            var windowoption = 'resizable=yes,height=600,width=800,location=0,menubar=0,scrollbars=1';            
+            var winURL = url;
+            var windowoption = 'resizable=yes,height=600,width=800,location=0,menubar=0,scrollbars=1';
             var form = document.createElement("form");
             form.setAttribute("method", "post");
             form.setAttribute("action", winURL);
@@ -69,29 +69,45 @@
             form.target = winName;
             form.submit();
             document.body.removeChild(form);
-            setTimeout(() => win.close(), 5000);
+            setTimeout(() => win.close(), 3000);
         }
 
         $scope.getArchivoFEL = () => {
-            let facturas = '';
-            let abreviatura = $filter('getById')($scope.empresas, $scope.params.idempresa).abreviatura;
-            abreviatura = !!abreviatura ? abreviatura : '';
+            let seleccionadas = '';
             $scope.pendientes.forEach(f => {
                 if (+f.descargar === 1) {
-                    facturas += `${f.tiporegistro}|${f.fechadocumento}|${f.tipodocumento}|${f.nitcomprador}|${f.codigomoneda}|${f.tasacambio}|${f.ordenexterno}|${f.tipoventa}|${f.destinoventa}|${f.enviarcorreo}|${f.nombrecomprador}|${f.direccion}|${f.nombrecorto}|$ ${f.montodol}|${f.tipocambio}|$ ${f.pagonetodol}|${f.monedafact} ${f.pagoneto}|${f.monedafact} ${f.retiva}|${f.monedafact} ${f.retisr}|${f.monedafact} ${f.monto}|${f.numeroacceso}|${f.serieadmin}|${f.numeroadmin}\n`;
-                    f.detalle.forEach(d => {
-                        facturas += `${d.tiporegistro}|${d.cantidad}|${d.unidadmedida}|${d.precio}|${d.porcentajedescuento}|${d.importedescuento}|${d.importebruto}|${d.importeexento}|${d.importeneto}|${d.importeiva}|${d.importeotros}|${d.importetotal}|${d.producto}|${d.descripcion}|${d.tipoventa}\n`;
-                    });
-                    f.docasoc.forEach(da => {
-                        facturas += `${da.tiporegistro}|${da.tipodocumento}|${da.serie}|${da.numero}|${da.fechadocumento}\n`;
-                    });
-                    const t = f.totales;
-                    facturas += `${t.tiporegistro}|${t.importebruto}|${t.importedescuento}|${t.importeexento}|${t.importeneto}|${t.importeiva}|${t.importeotros}|${t.importetotal}|${t.porcentajeisr}|${t.importeisr}|${f.detalle.length}|${t.documentosasociados}\n`;
+                    if (seleccionadas !== '') {
+                        seleccionadas += ', ';
+                    }
+                    seleccionadas += f.ordenexterno;
                 }
             });
-            //console.log(facturas);
-            const nombre = abreviatura + '-FEL-' + moment().format('YYYYMMDDhhmmss');
-            openWindowWithPostRequest('php/facturacion.php/convencod', { de: 'UTF-8', a: 'Windows-1252', texto: facturas, nombre: nombre });
+            if (seleccionadas !== '') {
+                $scope.params.listafact = seleccionadas;
+                $scope.params.regenerar = 1;
+                facturacionSrvc.factsPendFEL($scope.params).then(d => {
+                    let facturas = '';
+                    let abreviatura = $filter('getById')($scope.empresas, $scope.params.idempresa).abreviatura;
+                    abreviatura = !!abreviatura ? abreviatura : '';
+                    d.forEach(f => {
+                        facturas += `${f.tiporegistro}|${f.fechadocumento}|${f.tipodocumento}|${f.nitcomprador}|${f.codigomoneda}|${f.tasacambio}|${f.ordenexterno}|${f.tipoventa}|${f.destinoventa}|${f.enviarcorreo}|${f.nombrecomprador}|${f.direccion}|${f.nombrecorto}|$ ${f.montodol}|${f.tipocambio}|$ ${f.pagonetodol}|${f.monedafact} ${f.pagoneto}|${f.monedafact} ${f.retiva}|${f.monedafact} ${f.retisr}|${f.monedafact} ${f.monto}|${f.numeroacceso}|${f.serieadmin}|${f.numeroadmin}\n`;
+                        f.detalle.forEach(d => {
+                            facturas += `${d.tiporegistro}|${d.cantidad}|${d.unidadmedida}|${d.precio}|${d.porcentajedescuento}|${d.importedescuento}|${d.importebruto}|${d.importeexento}|${d.importeneto}|${d.importeiva}|${d.importeotros}|${d.importetotal}|${d.producto}|${d.descripcion}|${d.tipoventa}\n`;
+                        });
+                        f.docasoc.forEach(da => {
+                            facturas += `${da.tiporegistro}|${da.tipodocumento}|${da.serie}|${da.numero}|${da.fechadocumento}\n`;
+                        });
+                        const t = f.totales;
+                        facturas += `${t.tiporegistro}|${t.importebruto}|${t.importedescuento}|${t.importeexento}|${t.importeneto}|${t.importeiva}|${t.importeotros}|${t.importetotal}|${t.porcentajeisr}|${t.importeisr}|${f.detalle.length}|${t.documentosasociados}\n`;
+                    });
+                    //console.log(facturas);
+                    const nombre = abreviatura + '-FEL-' + moment().format('YYYYMMDDhhmmss');
+                    openWindowWithPostRequest('php/facturacion.php/convencod', { de: 'UTF-8', a: 'Windows-1252', texto: facturas, nombre: nombre });
+                    $scope.pendientes = [];
+                    $scope.params.listafact = '';
+                    $scope.params.regenerar = 0;
+                })
+            }
         };
 
         $scope.resetParams = function () { $scope.params = { idempresa: $scope.params.idempresa, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate() }; };
@@ -103,11 +119,11 @@
             });
         };
 
-        $scope.procesaArchivoFEL = (archivo) => {            
+        $scope.procesaArchivoFEL = (archivo) => {
             var cadena = archivo.split('\n');
             // console.log(cadena); return;
             var linea, facturas = [];
-            cadena.forEach(function (cad) {                
+            cadena.forEach(function (cad) {
                 linea = cad.replace('\r', '').replace('\n', '').split('|');
                 // console.log(linea);
                 facturas.push({ id: +linea[8], firma: linea[7], serie: linea[2], numero: linea[3], nit: linea[4], nombre: linea[9], respuesta: cad });

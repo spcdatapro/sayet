@@ -63,7 +63,7 @@
                 <td>{{pago.proyecto}}</td>
                 <td>{{pago.proveedor}}</td>
                 <td>{{pago.ot}}/{{pago.nopago}}</td>
-                <td>{{pago.moneda}} {{pago.valor | number:2}}</td>
+                <td>{{pago.monedapago}} {{pago.valor | number:2}}</td>
                 <td>{{+pago.quitarisr == 1 ? 'Sí' : 'No'}}</td>
                 <td style="width: 17%;">
                     <select name="selBanco_{{$index}}" id="selBanco_{{$index}}" class="form-control input-sm" style="width: 100%;" ng-model="pago.idbanco"
