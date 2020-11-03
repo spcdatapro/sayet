@@ -117,4 +117,39 @@ $app->post('/d', function(){
     }    
 });
 
+$app->get('/asignacion/:idservicio', function($idservicio){
+    $db = new dbcpm();
+    $asignado = new stdClass();
+    $asignado->idproyecto = 0;
+    $asignado->idunidad = 0;
+
+    $query = "SELECT b.idproyecto, a.idunidad, a.idserviciobasico 
+            FROM unidadservicio a
+            INNER JOIN unidad b ON b.id = a.idunidad
+            INNER JOIN proyecto c ON c.id = b.idproyecto
+            WHERE a.ffin IS NULL AND a.idserviciobasico = $idservicio
+            LIMIT 1";
+    $asignacion = $db->getQuery($query);
+    if(count($asignacion) > 0) {
+        $asignado->idproyecto = (int)$asignacion[0]->idproyecto;
+        $asignado->idunidad = (int)$asignacion[0]->idunidad;
+    }
+
+    print json_encode(['asignacion' => $asignado]);
+});
+
+$app->post('/lecturainicial', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();    
+
+    $query = "INSERT INTO lecturaservicio(";
+    $query.= "idserviciobasico, idusuario, idproyecto, idunidad, mes, anio, fechacorte, lectura, fechaingreso, estatus, fechaenvio, usrenvio, ";
+    $query.= "facturado, idfactura, descuento, conceptoadicional";
+    $query.= ") VALUES(";
+    $query.= "$d->idservicio, $d->idusuario, $d->idproyecto, $d->idunidad, $d->mes, $d->anio, '$d->fechacortestr', $d->lectura, NOW(), 3, NOW(), $d->idusuario,";
+    $query.= "1, 0, 0, 'INSERCIÓN DE LECTURA INICIAL DEL CONTADOR.'";
+    $query.= ")";
+    $db->doQuery($query);
+});
+
 $app->run();

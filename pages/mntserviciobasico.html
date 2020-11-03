@@ -14,40 +14,46 @@
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-md-12 nopadding" style="text-align: right">
-                            <button type="button" class="btn btn-info btn-xs" ng-click="showForm.servbas = !showForm.servbas" ng-hide="showForm.servbas" aria-label="Toggle ngHide">
+                            <button type="button" class="btn btn-info btn-xs"
+                                ng-click="showForm.servbas = !showForm.servbas" ng-hide="showForm.servbas"
+                                aria-label="Toggle ngHide">
                                 <span class="glyphicon glyphicon-chevron-down"></span>
                             </button>
-                            <button type="button" class="btn btn-info btn-xs" ng-click="showForm.servbas = !showForm.servbas" ng-show="showForm.servbas" aria-label="Toggle ngHide">
+                            <button type="button" class="btn btn-info btn-xs"
+                                ng-click="showForm.servbas = !showForm.servbas" ng-show="showForm.servbas"
+                                aria-label="Toggle ngHide">
                                 <span class="glyphicon glyphicon-chevron-up"></span>
                             </button>
                         </div>
                     </div>
-                    <form name="frmSrvc" id="frmSrvc" ng-submit="frmSrvc.$valid && addServicio(servicio)" class="check-element animate-show" ng-show="showForm.servbas" novalidate>
+                    <form name="frmSrvc" id="frmSrvc" ng-submit="frmSrvc.$valid && addServicio(servicio)"
+                        class="check-element animate-show" ng-show="showForm.servbas" novalidate>
                         <div class="row">
                             <div class="col-md-3">
-                                <div class="form-group" ng-class="{'has-error':frmSrvc.selEsProp.$invalid && !frmSrvc.selEsProp.$pristine}">
+                                <div class="form-group"
+                                    ng-class="{'has-error':frmSrvc.selEsProp.$invalid && !frmSrvc.selEsProp.$pristine}">
                                     <label for="selEsProp">¿Propio o de terceros?</label>
-                                    <select name="selEsProp" id="selEsProp" class="form-control" ng-model="servicio.espropio" required>
+                                    <select name="selEsProp" id="selEsProp" class="form-control"
+                                        ng-model="servicio.espropio" required>
                                         <option value="1">Propio</option>
                                         <option value="0">Terceros</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="form-group" ng-class="{'has-error':frmSrvc.selTipo.$invalid && !frmSrvc.selTipo.$pristine}">
+                                <div class="form-group"
+                                    ng-class="{'has-error':frmSrvc.selTipo.$invalid && !frmSrvc.selTipo.$pristine}">
                                     <label for="selTipo">Tipo:</label>
                                     <select name="selTipo" id="selTipo" class="form-control" ng-model="servicio.objTipo"
-                                            ng-options="obj.desctiposervventa for obj in tipos track by obj.id" required>
+                                        ng-options="obj.desctiposervventa for obj in tipos track by obj.id" required>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-md-6" ng-hide="+servicio.espropio == 1">
                                 <div class="form-group">
                                     <label>Proveedor:</label>
-                                    <ui-select ng-model="servicio.objProveedor"
-                                               title="Seleccione un proveedor.."
-                                               theme="bootstrap"
-                                               append-to-body="true">
+                                    <ui-select ng-model="servicio.objProveedor" title="Seleccione un proveedor.."
+                                        theme="bootstrap" append-to-body="true">
                                         <ui-select-match placeholder="Buscar proveedor..." allow-clear="false">
                                             <span ng-bind="$select.selected.nitnombre"></span>
                                         </ui-select-match>
@@ -63,55 +69,65 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group" ng-class="{'has-error':frmSrvc.txtNoId.$invalid && !frmSrvc.txtNoId.$pristine}">
+                                <div class="form-group"
+                                    ng-class="{'has-error':frmSrvc.txtNoId.$invalid && !frmSrvc.txtNoId.$pristine}">
                                     <label for="txtNoId">No. de identificaci&oacute;n:</label>
-                                    <input name="txtNoId" id="txtNoId" type="text" class="form-control" ng-model="servicio.numidentificacion"
-                                           placeholder="No. contador, etc..." maxlength="50" required/>
+                                    <input name="txtNoId" id="txtNoId" type="text" class="form-control"
+                                        ng-model="servicio.numidentificacion" placeholder="No. contador, etc..."
+                                        maxlength="50" required />
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group" ng-class="{'has-error':frmSrvc.txtNoRef.$invalid && !frmSrvc.txtNoRef.$pristine}">
+                                <div class="form-group"
+                                    ng-class="{'has-error':frmSrvc.txtNoRef.$invalid && !frmSrvc.txtNoRef.$pristine}">
                                     <label for="txtNoRef">No. de referencia:</label>
-                                    <input name="txtNoRef" id="txtNoRef" type="text" class="form-control" ng-model="servicio.numreferencia"
-                                           placeholder="No. de correlativo, tel&eacute;fono, etc..." maxlength="50" required/>
+                                    <input name="txtNoRef" id="txtNoRef" type="text" class="form-control"
+                                        ng-model="servicio.numreferencia"
+                                        placeholder="No. de correlativo, tel&eacute;fono, etc..." maxlength="50"
+                                        required />
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="form-group" ng-class="{'has-error':frmSrvc.selEmpresa.$invalid && !frmSrvc.selEmpresa.$pristine}">
+                                <div class="form-group"
+                                    ng-class="{'has-error':frmSrvc.selEmpresa.$invalid && !frmSrvc.selEmpresa.$pristine}">
                                     <label for="selEmpresa">Empresa</label>
-                                    <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="servicio.objEmpresa"
-                                            ng-options="obj.nomempresa for obj in empresas track by obj.id" required>
+                                    <select name="selEmpresa" id="selEmpresa" class="form-control"
+                                        ng-model="servicio.objEmpresa"
+                                        ng-options="obj.nomempresa for obj in empresas track by obj.id" required>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-md-2" ng-hide="+servicio.espropio == 1">
-                                <div class="form-group" ng-class="{'has-error':frmSrvc.chkPagaCli.$invalid && !frmSrvc.chkPagaCli.$pristine}">
+                                <div class="form-group"
+                                    ng-class="{'has-error':frmSrvc.chkPagaCli.$invalid && !frmSrvc.chkPagaCli.$pristine}">
                                     <label for="chkPagaCli">Pagado por cliente:</label>
-                                    <input name="chkPagaCli" id="chkPagaCli" type="checkbox" class="form-control" ng-model="servicio.pagacliente"
-                                           ng-true-value="1" ng-false-value="0"/>
+                                    <input name="chkPagaCli" id="chkPagaCli" type="checkbox" class="form-control"
+                                        ng-model="servicio.pagacliente" ng-true-value="1" ng-false-value="0" />
                                 </div>
                             </div>
                             <div class="col-md-5">
-                                <div class="form-group" ng-class="{'has-error':frmSrvc.selPadre.$invalid && !frmSrvc.selPadre.$pristine}">
+                                <div class="form-group"
+                                    ng-class="{'has-error':frmSrvc.selPadre.$invalid && !frmSrvc.selPadre.$pristine}">
                                     <label for="selPadre">Contador padre:</label>
-                                    <ui-select name="selPadre"
-                                               id="selPadre"
-                                               ng-model="servicio.idpadre"
-                                               title="Seleccione un contador.."
-                                               theme="bootstrap"
-                                               append-to-body="true"
-                                               ng-required="false">
+                                    <ui-select name="selPadre" id="selPadre" ng-model="servicio.idpadre"
+                                        title="Seleccione un contador.." theme="bootstrap" append-to-body="true"
+                                        ng-required="false">
                                         <ui-select-match placeholder="Buscar contador..." allow-clear="true">
                                             <span ng-bind="$select.selected.numidentificacion"></span>
                                         </ui-select-match>
-                                        <ui-select-choices repeat="item.id as item in servicios | filter:$select.search">
-                                            <div ng-bind-html="item.numidentificacion | highlight: $select.search"></div>
+                                        <ui-select-choices
+                                            repeat="item.id as item in servicios | filter:$select.search">
+                                            <div ng-bind-html="item.numidentificacion | highlight: $select.search">
+                                            </div>
                                             <small>
-                                                <strong>Empresa:</strong>&nbsp;<span ng-bind-html="item.empresa | highlight: $select.search" ></span><br/>
-                                                <strong>Referencia:</strong>&nbsp;<span ng-bind-html="item.numreferencia | highlight: $select.search" ></span><br/>
-                                                <strong>Contador padre:</strong>&nbsp;<span ng-bind-html="item.contadorpadre | highlight: $select.search" ></span>
+                                                <strong>Empresa:</strong>&nbsp;<span
+                                                    ng-bind-html="item.empresa | highlight: $select.search"></span><br />
+                                                <strong>Referencia:</strong>&nbsp;<span
+                                                    ng-bind-html="item.numreferencia | highlight: $select.search"></span><br />
+                                                <strong>Contador padre:</strong>&nbsp;<span
+                                                    ng-bind-html="item.contadorpadre | highlight: $select.search"></span>
                                             </small>
                                         </ui-select-choices>
                                         <ui-select-no-choice>
@@ -123,7 +139,8 @@
                             <div class="col-md-1">
                                 <div class="form-group">
                                     <label for="chkCobrar">¿Cobrar?</label>
-                                    <input name="chkCobrar" id="chkCobrar" type="checkbox" class="form-control" ng-model="servicio.cobrar" ng-true-value="1" ng-false-value="0"/>
+                                    <input name="chkCobrar" id="chkCobrar" type="checkbox" class="form-control"
+                                        ng-model="servicio.cobrar" ng-true-value="1" ng-false-value="0" />
                                 </div>
                             </div>
                         </div>
@@ -131,20 +148,23 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="txtUbicadoEn">Ubicado en:</label>
-                                    <input name="txtUbicadoEn" id="txtUbicadoEn" type="text" class="form-control" ng-model="servicio.ubicadoen" maxlength="100"
-                                           placeholder='Ej.: "Al pie del tanque", "En salida del pozo", "Predio de trailer", entre otros...'/>
+                                    <input name="txtUbicadoEn" id="txtUbicadoEn" type="text" class="form-control"
+                                        ng-model="servicio.ubicadoen" maxlength="100"
+                                        placeholder='Ej.: "Al pie del tanque", "En salida del pozo", "Predio de trailer", entre otros...' />
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
                                     <label for="chkDeBaja">De baja:</label>
-                                    <input name="chkDeBaja" id="chkDeBaja" type="checkbox" class="form-control" ng-model="servicio.debaja" ng-true-value="1" ng-false-value="0"/>
+                                    <input name="chkDeBaja" id="chkDeBaja" type="checkbox" class="form-control"
+                                        ng-model="servicio.debaja" ng-true-value="1" ng-false-value="0" />
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="txtFBaja">Fecha de baja:</label>
-                                    <input name="txtFBaja" id="txtFBaja" type="date" class="form-control" ng-model="servicio.fechabaja"/>
+                                    <input name="txtFBaja" id="txtFBaja" type="date" class="form-control"
+                                        ng-model="servicio.fechabaja" />
                                 </div>
                             </div>
                         </div>
@@ -152,48 +172,59 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="txtNotas">Notas:</label>
-                                    <textarea name="txtNotas" id="txtNotas" class="form-control" style="width: 100%;" ng-model="servicio.notas" rows="4" placeholder="Cualquier anotación relacionada con el servicio..."></textarea>
+                                    <textarea name="txtNotas" id="txtNotas" class="form-control" style="width: 100%;"
+                                        ng-model="servicio.notas" rows="4"
+                                        placeholder="Cualquier anotación relacionada con el servicio..."></textarea>
                                 </div>
                             </div>
                         </div>
                         <div class="btn-group" role="group" aria-label="...">
-                            <button type="submit" class="btn btn-info" ng-disabled="frmSrvc.$invalid" ng-hide="servicio.id > 0">
+                            <button type="submit" class="btn btn-info" ng-disabled="frmSrvc.$invalid"
+                                ng-hide="servicio.id > 0">
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                             </button>
-                            <button type="button" class="btn btn-info" ng-disabled="frmSrvc.$invalid" ng-show="servicio.id > 0" ng-click="updServicio(servicio)">
+                            <button type="button" class="btn btn-info" ng-disabled="frmSrvc.$invalid"
+                                ng-show="servicio.id > 0" ng-click="updServicio(servicio)">
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                             </button>
-                            <button type="button" class="btn btn-danger" ng-show="servicio.id > 0" ng-click="delServicio(servicio)" ng-disabled="+servicio.asignado == 1">
+                            <button type="button" class="btn btn-info" ng-show="servicio.id > 0"
+                                ng-click="lecturaInicial()">
+                                <span class="glyphicon glyphicon-wrench"></span>
+                            </button>
+                            <button type="button" class="btn btn-danger" ng-show="servicio.id > 0"
+                                ng-click="delServicio(servicio)" ng-disabled="+servicio.asignado == 1">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </button>
-                            <button type="button" class="btn btn-info" ng-show="servicio.id > 0" ng-click="resetservicio()">
+                            <button type="button" class="btn btn-info" ng-show="servicio.id > 0"
+                                ng-click="resetservicio()">
                                 <span class="glyphicon glyphicon-plus"></span>
                             </button>
                         </div>
                     </form>
-                    <hr/>
-                    <table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover table-condensed">
+                    <hr />
+                    <table datatable="ng" dt-options="dtOptions"
+                        class="table table-responsive table-hover table-condensed">
                         <thead>
-                        <tr>
-                            <th>Tipo</th>
-                            <th>Proveedor</th>
-                            <th>No. Identificaci&oacute;n</th>
-                            <th>No. Referencia</th>
-                            <th>Empresa</th>
-                            <th>Pagado por cliente</th>
-                            <th>Fecha de baja</th>
-                        </tr>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Proveedor</th>
+                                <th>No. Identificaci&oacute;n</th>
+                                <th>No. Referencia</th>
+                                <th>Empresa</th>
+                                <th>Pagado por cliente</th>
+                                <th>Fecha de baja</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="s in servicios" ng-click="getServicio(s.id)">
-                            <td>{{s.tiposervicio}}</td>
-                            <td>{{s.proveedor || 'Propio'}}</td>
-                            <td>{{s.numidentificacion}}</td>
-                            <td>{{s.numreferencia}}</td>
-                            <td>{{s.empresa}}</td>
-                            <td>{{s.pagacliente === 1 ? 'Sí' : 'No'}}</td>
-                            <td>{{s.fechabaja | date:'dd/MM/yyyy'}}</td>
-                        </tr>
+                            <tr ng-repeat="s in servicios" ng-click="getServicio(s.id)">
+                                <td>{{s.tiposervicio}}</td>
+                                <td>{{s.proveedor || 'Propio'}}</td>
+                                <td>{{s.numidentificacion}}</td>
+                                <td>{{s.numreferencia}}</td>
+                                <td>{{s.empresa}}</td>
+                                <td>{{s.pagacliente === 1 ? 'Sí' : 'No'}}</td>
+                                <td>{{s.fechabaja | date:'dd/MM/yyyy'}}</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -204,48 +235,127 @@
                 <div class="panel-heading">Historial</div>
                 <div class="panel-body">
                     <table class="table table-responsive table-hover table-condensed">
-                        <caption><h4>Ha estado en:</h4></caption>
+                        <caption>
+                            <h4>Ha estado en:</h4>
+                        </caption>
                         <thead>
-                        <tr>
-                            <th>Proyecto</th>
-                            <th>Unidad</th>
-                            <th>De</th>
-                            <th>A</th>
-                        </tr>
+                            <tr>
+                                <th>Proyecto</th>
+                                <th>Unidad</th>
+                                <th>De</th>
+                                <th>A</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="h in historico">
-                            <td>{{h.proyecto}}</td>
-                            <td>{{h.tipolocal}} - {{h.nombre}} - {{h.descripcion}}</td>
-                            <td>{{h.fini | date:'dd/MM/yyyy'}}</td>
-                            <td>{{h.ffin | date:'dd/MM/yyyy'}}</td>
-                        </tr>
+                            <tr ng-repeat="h in historico">
+                                <td>{{h.proyecto}}</td>
+                                <td>{{h.tipolocal}} - {{h.nombre}} - {{h.descripcion}}</td>
+                                <td>{{h.fini | date:'dd/MM/yyyy'}}</td>
+                                <td>{{h.ffin | date:'dd/MM/yyyy'}}</td>
+                            </tr>
                         </tbody>
                     </table>
-                    <hr/>
+                    <hr />
                     <table class="table table-responsive table-hover table-condensed">
-                        <caption><h4>Cambios en la cantidad base:</h4></caption>
+                        <caption>
+                            <h4>Cambios en la cantidad base:</h4>
+                        </caption>
                         <thead>
-                        <tr>
-                            <th>Proyecto</th>
-                            <th>Unidad</th>
-                            <th>Usuario</th>
-                            <th>Fecha de cambio</th>
-                            <th style="text-align: right">Cantidad base</th>
-                        </tr>
+                            <tr>
+                                <th>Proyecto</th>
+                                <th>Unidad</th>
+                                <th>Usuario</th>
+                                <th>Fecha de cambio</th>
+                                <th style="text-align: right">Cantidad base</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="cb in histocantbase">
-                            <td>{{cb.proyecto}}</td>
-                            <td>{{cb.unidad}}</td>
-                            <td>{{cb.usuario}}</td>
-                            <td>{{cb.fechacambio | date:'dd/MM/yyyy HH:mm:ss'}}</td>
-                            <td style="text-align: right">{{cb.cantbase | number:2}}</td>
-                        </tr>
+                            <tr ng-repeat="cb in histocantbase">
+                                <td>{{cb.proyecto}}</td>
+                                <td>{{cb.unidad}}</td>
+                                <td>{{cb.usuario}}</td>
+                                <td>{{cb.fechacambio | date:'dd/MM/yyyy HH:mm:ss'}}</td>
+                                <td style="text-align: right">{{cb.cantbase | number:2}}</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
+    <script type="text/ng-template" id="modalLecturaInicial.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Lectura inicial</h3>            
+        </div>
+        <div class="modal-body">
+            <form name="frmLecInc" id="frmLecInc" novalidate>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group" ng-class="{'has-error':frmLectura.selProyecto.$invalid && !frmLectura.selProyecto.$pristine}">
+                            <label for="lisProyecto">Proyecto:</label>                            
+                            <select name="selLectura" id="selLecturaProy" class="form-control"
+                                    ng-model="params.idproyecto"
+                                    ng-options="obj.id as obj.nomproyecto for obj in proyectos"
+                                    ng-change="loadUnidades(params.idproyecto)" required>
+                            </select>                            
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group" ng-class="{'has-error':frmLectura.selUnidades.$invalid && !frmLectura.selUnidades.$pristine}">
+                            <label for="lisUnidad">Unidades:</label>                            
+                            <select name="selLectura" id="selLecturaUni" class="form-control" ng-model="params.idunidad"
+                                    ng-options="obj.id as obj.descripcion for obj in unidades" required>
+                            </select>                            
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="lisFecha">Mes: </label>
+                            <select name="selMes" id="selMes" class="form-control" ng-model="params.mes" required>
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Mayo</option>
+                                <option value="6">Junio</option>
+                                <option value="7">Julio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Septiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11">Noviembre</option>
+                                <option value="12">Diciembre</option>
+                            </select>   
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="lisFecha">A&ntilde;o:</label>
+                            <input name="txtAnio" id="txtAnio" type="number" class="form-control" ng-model="params.anio" 
+                            placeholder="A&ntilde;o" required/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for='lisFrchaCorte'>Fecha corte:</label>
+                            <input name="txtFCort" id="txtFCort" type="date" class="form-control" ng-model="params.fechacorte" required/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="txtLecturaInicial">Lectura:</label>
+                            <input name="txtLecturaInicial" id="txtLecturaInicial" type="number" class="form-control" ng-model="params.lectura" required/>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-info" type="button" ng-click="ok()">Insertar</button>
+            <button class="btn btn-default" type="button" ng-click="cancel()">Cancelar</button>
+        </div>
+    </script>
 </div>
