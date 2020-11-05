@@ -98,8 +98,8 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="selCtaLiq">Cuenta de liquidaci&oacute;n</label>
-                                    <ui-select id="selCtaLiq" ng-model="reembolso.idcuentaliq" title="Seleccione una cuenta contable..."
-                                        theme="bootstrap" autofocus="false">
+                                    <ui-select id="selCtaLiq" ng-model="reembolso.idcuentaliq"
+                                        title="Seleccione una cuenta contable..." theme="bootstrap" autofocus="false">
                                         <ui-select-match placeholder="Buscar cuenta contable..." allow-clear="true">
                                             <span ng-bind="$select.selected.nombrecta"></span>
                                         </ui-select-match>
@@ -113,7 +113,7 @@
                                         <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
                                     </ui-select>
                                 </div>
-                            </div>                            
+                            </div>
                             <div class="col-md-6" ng-show="+reembolso.objTipoReembolso.id == 1">
                                 <div class="form-group required"
                                     ng-class="{'has-error':frmReembolso.selIdSubTipoGastRee.$invalid && !frmReembolso.selIdSubTipoGastRee.$pristine}">
@@ -134,6 +134,17 @@
                                         </ui-select-choices>
                                         <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
                                     </ui-select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6" ng-show="+reembolso.objTipoReembolso.id == 1">
+                                <div class="form-group required">
+                                    <label for="selProyecto"> Proyecto:</label>
+                                    <select name="selProyecto" id="selProyecto" class="form-control"
+                                    ng-model="reembolso.idproyecto"
+                                    ng-options="obj.id as obj.nomproyecto for obj in proyectos">
+                                    </select>
                                 </div>
                             </div>
                         </div>

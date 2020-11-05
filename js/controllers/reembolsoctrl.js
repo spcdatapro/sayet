@@ -258,6 +258,12 @@
                     ordentrabajo: !$scope.presupuesto.id ? 0 : $scope.presupuesto.id
                 };
                 //console.log($scope.compra);
+                if(!!$scope.reembolso.objTipoReembolso && !!$scope.reembolso.objTipoReembolso.id) {
+                    if (+$scope.reembolso.objTipoReembolso.id === 1) {
+                        $scope.compra.idproyecto = $scope.reembolso.idproyecto;
+                    }
+                }
+
                 $scope.comprastr = '';
                 $scope.$broadcast('angucomplete-alt:clearInput', 'txtNit');
                 $scope.periodoCerrado = false;

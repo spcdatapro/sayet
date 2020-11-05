@@ -372,6 +372,21 @@
             modalInstance.result.then(() => { $scope.getLstVentas($scope.idempresa) }, () => { });
         }
 
+        $scope.retIvaIsr = () => {
+            // console.log($scope.venta);
+            var modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: 'modalRetieneIvaIsr.html',
+                controller: 'ModalRetieneIvaIsrCtrl',                
+                resolve: {
+                    retiva: () => $scope.venta.retiva,
+                    retisr: () => $scope.venta.retisr,
+                }
+            });
+
+            modalInstance.result.then(() => { }, () => { });
+        };
+
     }]);
     //------------------------------------------------------------------------------------------------------------------------------------------------//
     ventactrl.controller('ModalNdCFacturaCtrl', ['$scope', '$uibModalInstance', 'venta', 'ventaSrvc', 'tipoServicioVentaSrvc', 'toaster', function ($scope, $uibModalInstance, venta, ventaSrvc, tipoServicioVentaSrvc, toaster) {
@@ -509,5 +524,25 @@
 
     }]);
 
+    //------------------------------------------------------------------------------------------------------------------------------------------------//
+    ventactrl.controller('ModalRetieneIvaIsrCtrl', ['$scope', '$uibModalInstance', 'retiva', 'retisr', function ($scope, $uibModalInstance, retiva, retisr) {
+        $scope.params = {};        
+
+        $scope.resetParams = () => $scope.params = {
+            retiva: retiva, retisr: retisr
+        };
+
+        $scope.ok = () => {
+            $scope.params.retiva = !!$scope.params.retiva ? $scope.params.retiva : 0;
+            $scope.params.retisr = !!$scope.params.retisr ? $scope.params.retisr : 0;
+            
+        };
+
+        $scope.cancel = () => $uibModalInstance.dismiss('cancel');
+
+        $scope.resetParams();
+
+    }]);
+    
 
 }());
