@@ -335,6 +335,8 @@ $app->post('/generandc', function() {
             $db->doQuery($query);
             $query = "UPDATE lecturaservicio SET estatus = 2, facturado = 0, idfactura = 0 WHERE estatus = 3 AND facturado = 1 AND idfactura = $d->idfactura";
             $db->doQuery($query);
+            $query = "UPDATE factura SET pagada = 1 WHERE id = $d->idfactura";
+            $db->doQuery($query);
         }
     } else {
         $query = "SELECT * FROM factura WHERE id = $d->idfactura";

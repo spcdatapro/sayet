@@ -138,6 +138,21 @@ $app->post('/u', function(){
     $query.= "WHERE id = $d->id";
     $db->doQuery($query);
 
+    //Fix para que libere compras o pagos de OTs si ponenen la palabra ANULADO en beneficiario o concepto. 04/11/2020
+    $enBene = strpos(strtoupper($d->beneficiario), 'ANULA');
+    $enConc = strpos(strtoupper($d->concepto), 'ANULA');
+    if ($enBene !== false || $enConc !== false) {
+        $db->doQuery("DELETE FROM detpagocompra WHERE idtranban = $d->id");
+        $db->doQuery("UPDATE reembolso SET idtranban = 0 WHERE idtranban = $d->id");
+    
+        $tran = $db->getQuery("SELECT iddetpresup, iddetpagopresup FROM tranban WHERE id = $d->id")[0];
+        if((int)$tran->iddetpresup > 0 && (int)$tran->iddetpagopresup > 0){
+            $query = "UPDATE detpagopresup SET pagado = 0, origen = 1, idorigen = 0 WHERE id = $tran->iddetpagopresup AND origen = 1 AND idorigen = $d->id";
+            $db->doQuery($query);
+            updateGastosOT($tran->iddetpresup);
+        }
+    }
+
     //$query = "DELETE FROM detallecontable WHERE origen = 1 AND idorigen = $d->id";
     $db->doQuery($query);
     $ttsalida = ['C', 'B'];
