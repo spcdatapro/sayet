@@ -8,6 +8,12 @@
                         <label for="txtDel">Del:</label>
                         <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.fdel" placeholder="Del"/>
                     </div>
+                    <style>
+                        .redBg{
+                            background-color: salmon;
+                        }
+                    </style>
+                
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
@@ -71,7 +77,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="vta in ventas">
+                <tr ng-repeat="vta in ventas" ng-class="{'redBg':(vta.noformisr == null && vta.retisr !== 0) && (vta.noformiva == null && vta.retiva !== 0)}">
                     <td>{{vta.empresa}}</td>
                     <td>{{vta.fecha}}</td>
                     <td>{{vta.nombre | shortenStr:25}}</td>

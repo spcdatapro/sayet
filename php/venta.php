@@ -278,7 +278,7 @@ $app->post('/lstfactret', function(){
     $query.= "FORMAT(a.retisr, 2) AS retisr, a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, ";
     $query.= "FORMAT(a.retiva, 2) AS retiva, a.noformiva, a.noacciva, a.fechapagoformiva, a.mespagoiva, a.aniopagoiva ";
     $query.= "FROM factura a INNER JOIN empresa b ON b.id = a.idempresa ";
-    $query.= "WHERE (a.retisr <> 0 OR a.retiva <> 0) ";
+    $query.= "WHERE a.anulada = 0 AND (a.retisr <> 0 OR a.retiva <> 0) ";
     $query.= $d->fdelstr != '' ? "AND a.fecha >= '$d->fdelstr' " : '';
     $query.= $d->falstr != '' ? "AND a.fecha <= '$d->falstr' " : '';
     $query.= (int)$d->idempresa > 0 ? "AND a.idempresa = $d->idempresa " : '';
