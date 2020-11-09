@@ -36,19 +36,7 @@ $app->post('/rptisr', function(){
 	$meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
 	$mesletra = $meses[$mes-1];
 	
-    $db = new dbcpm();
-	/*
-    $query = "SELECT a.fecha AS fechafactura, c.siglas AS tipodocumento, a.serie, a.numero AS documento, if(a.noformisr is null,'',a.noformisr) as retencion, ";
-	$query.= "TRIM(a.nit) AS nit, ";
-    $query.= "substr(TRIM(a.nombre),1,30) AS cliente, ";
-    $query.= "IF(c.generaiva = 1 AND a.idtipofactura <> 6, ROUND(((a.subtotal - a.totdescuento) + IF(a.idfox IS NULL, 0, a.retiva) - IF(a.idfox IS NULL, a.iva, 0)), 2), 0.00) AS subtotal, TRUNCATE(a.retisr, 2) AS retisr, ";
-    $query.= "IF(a.anulada = 0, a.total, 0.00) AS totfact, '$retenido' as retenido, '$parqueo' as parqueo ";
-    $query.= "FROM factura a LEFT JOIN contrato b ON b.id = a.idcontrato LEFT JOIN tipofactura c ON c.id = a.idtipofactura LEFT JOIN cliente d ON d.id = a.idcliente ";
-    $query.= "WHERE a.anulada = 0 and a.idtipoventa <> 5 AND c.id <> 5 AND a.idempresa = ".$idempresa." AND a.mesiva = ".$mes." AND YEAR(a.fecha) = ".$anio." ";
-	$query.= $qrret;
-    $query.= "ORDER BY 3, 4";
-	*/
-	
+    $db = new dbcpm();	
 	$query = "SELECT a.fecha AS fechafactura, c.siglas AS tipodocumento, a.serie, a.numero AS documento, if(a.noformisr is null,'',a.noformisr) as retencion, ";
 	$query.= "TRIM(a.nit) AS nit, ";
     $query.= "substr(TRIM(a.nombre),1,30) AS cliente, ";
@@ -60,9 +48,10 @@ $app->post('/rptisr', function(){
     AS subtotal,
     ";
     $query.= "TRUNCATE(a.retisr, 2) AS retisr, ";
-    $query.= "IF(a.anulada = 0, a.total, 0.00) AS totfact, '$retenido' as retenido, '$parqueo' as parqueo ";
+    $query.= "IF(a.anulada = 0, a.total, 0.00) AS totfact, '$retenido' as retenido, '$parqueo' as parqueo, a.idtipofactura ";
     $query.= "FROM factura a LEFT JOIN contrato b ON b.id = a.idcontrato LEFT JOIN tipofactura c ON c.id = a.idtipofactura LEFT JOIN cliente d ON d.id = a.idcliente ";
-    $query.= "WHERE a.anulada = 0 and a.idtipoventa <> 5 AND c.id <> 5 AND a.idempresa = ".$idempresa." ";
+	$query.= "WHERE a.anulada = 0 and a.idtipoventa <> 5 AND c.id <> 5 AND a.idempresa = $idempresa ";
+	$query.= (int)$resumen === 1 ? '' : 'AND a.idtipofactura <> 9 ';
 	$query.= $d->fdelstr == '' || $d->falstr == '' ? "AND a.mesiva = $mes AND YEAR(a.fecha) = $anio " : '';
 	$query.= $d->fdelstr != '' && $d->falstr != '' ? "AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' " : '';
 	$query.= $qrret;
@@ -95,9 +84,9 @@ $app->post('/rptisr', function(){
 				'nit' => $dlbi->nit,
 				'cliente' => $dlbi->cliente,
 				'serie' => $dlbi->serie,
-				'subtotal' => $dlbi->subtotal,
+				'subtotal' => (float)$dlbi->subtotal * ((int)$dlbi->idtipofactura !== 9 ? 1 : -1),
 				'tipodocumento' => $dlbi->tipodocumento,
-				'totfact' => $dlbi->totfact,
+				'totfact' => (float)$dlbi->totfact * ((int)$dlbi->idtipofactura !== 9 ? 1 : -1),
 				'retencion' => $dlbi->retencion,
 				'retenido' => $dlbi->retenido,
 				'parqueo' => $dlbi->parqueo
