@@ -78,6 +78,11 @@
                             <input name="txtFAl" id="txtFAl" type="date" class="form-control" ng-model="params.fal" ng-change="resetData()"/>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <label for="chkAlfa">Orden alfab&eacute;tico:</label>
+                        <input name="chkAlfa" id="chkAlfa" type="checkbox" class="form-control" ng-model="params.ordenalfa" 
+                        ng-change="resetData()" ng-true-value="1" ng-false-value="0"/>
+                    </div>
                 </div>
 				<button type="button" class="btn btn-primary btn-sm" ng-click="getLibIsr()">
 					<span>Detalle</span>
@@ -86,7 +91,10 @@
 				<button type="button" class="btn btn-primary btn-sm" ng-click="getLibIsrRes()">
 					<span>Resumen</span>
 					<i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-				</button>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="getExcel()">
+                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                </button>
             </div>
         </div>
     </div>

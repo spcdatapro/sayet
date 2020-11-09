@@ -6,7 +6,7 @@
 
         $scope.params = {
             mes: (moment().month() + 1).toString(), anio: moment().year(), idempresa: 0, sinret: 0, resumen: 0, parqueo: 0.00, retenido: 0.00, alfa:0, cliente: undefined,
-            fdel: undefined, fal: undefined, nofolio: undefined
+            fdel: undefined, fal: undefined, nofolio: undefined, ordenalfa: 1,
         };
         $scope.libroventas = [];
         $scope.meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
@@ -33,10 +33,22 @@
         $scope.getLibVenta = function(){
             $scope.params.alfa = $scope.params.alfa != null && $scope.params.alfa != undefined ? $scope.params.alfa : 0;
             $scope.params.nofolio = $scope.params.nofolio != null && $scope.params.nofolio !== undefined ? $scope.params.nofolio : '';
+            $scope.params.ordenalfa = $scope.params.ordenalfa != null && $scope.params.ordenalfa !== undefined ? +$scope.params.ordenalfa : 0;
 			jsReportSrvc.libroventas($scope.params).then(function (result) {
                     var file = new Blob([result.data], {type: 'application/pdf'});
                     var fileURL = URL.createObjectURL(file);
                     $scope.content = $sce.trustAsResourceUrl(fileURL);
+                });
+        };
+
+        $scope.getExcel = function(){
+            $scope.params.alfa = $scope.params.alfa != null && $scope.params.alfa != undefined ? $scope.params.alfa : 0;
+            $scope.params.nofolio = $scope.params.nofolio != null && $scope.params.nofolio !== undefined ? $scope.params.nofolio : '';
+            $scope.params.ordenalfa = $scope.params.ordenalfa != null && $scope.params.ordenalfa !== undefined ? +$scope.params.ordenalfa : 0;
+            jsReportSrvc.getReport(test ? '' : 'Hkj2imDYD', $scope.params).then(function (result) {
+                var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+                var nombre = $scope.meses[$scope.params.mes - 1] + '_' + $scope.params.anio;
+                saveAs(file, 'PagoISR_' + nombre + '.xlsx');
                 });
         };
 
@@ -56,7 +68,7 @@
             $scope.params.cliente = $scope.params.cliente != null && $scope.params.cliente != undefined ? $scope.params.cliente : '';
             $scope.params.fdelstr = $scope.params.fdel != null && $scope.params.fdel != undefined && moment($scope.params.fdel).isValid() ? moment($scope.params.fdel).format('YYYY-MM-DD') : '';
             $scope.params.falstr = $scope.params.fal != null && $scope.params.fal != undefined && moment($scope.params.fal).isValid() ? moment($scope.params.fal).format('YYYY-MM-DD') : '';
-			
+            $scope.params.ordenalfa = $scope.params.ordenalfa != null && $scope.params.ordenalfa !== undefined ? +$scope.params.ordenalfa : 0;
 			jsReportSrvc.libroisr($scope.params).then(function (result) {
                     var file = new Blob([result.data], {type: 'application/pdf'});
                     var fileURL = URL.createObjectURL(file);

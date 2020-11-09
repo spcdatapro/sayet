@@ -8,6 +8,7 @@ $app->response->headers->set('Content-Type', 'application/json');
 $app->post('/rptisr', function(){
 	
 	$d = json_decode(file_get_contents('php://input'));
+	if(!isset($d->ordenalfa)) { $d->ordenalfa = 1; }
 	
 	$idempresa = $d->idempresa;
 	$mes = $d->mes;
@@ -66,7 +67,7 @@ $app->post('/rptisr', function(){
 	$query.= $d->fdelstr != '' && $d->falstr != '' ? "AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' " : '';
 	$query.= $qrret;
 	$query.= $d->cliente != '' ? "AND a.nombre = '$d->cliente' " : '';
-    $query.= "ORDER BY 3, 4";
+    $query.= "ORDER BY ".((int)$d->ordenalfa === 1 ? 'a.nombre, ' : '')." 3, 4";
 	
 	$detisr = $db->getQuery($query);
 	
