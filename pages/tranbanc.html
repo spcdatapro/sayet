@@ -295,6 +295,12 @@
                             <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printVersion()">
                                 <span class="glyphicon glyphicon-print"></span>
                             </button>
+                            <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printSelloFactura(laTran.id)">
+                                <span>Sello factura</span>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printSelloNotaCredito(laTran.id)">
+                                <span>Sello NC</span>
+                            </button>
                             <button type="button" class="btn btn-primary" ng-show="editando" ng-click="resetLaTran()">
                                 <span class="glyphicon glyphicon-plus"></span>
                             </button>

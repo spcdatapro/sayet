@@ -733,6 +733,10 @@
                 $scope.getDataTran(+obj.id);
             }, () => { });
         };
+        
+        $scope.printSelloFactura = (idtranban) => jsReportSrvc.getPDFReport('S1Uc-8wYv', { idtranban: idtranban }).then((pdf) => $window.open(pdf));
+
+        $scope.printSelloNotaCredito = (idtranban) => jsReportSrvc.getPDFReport('S1H3T8uFw', { idtranban: idtranban }).then((pdf) => $window.open(pdf));
     }]);
 
     //------------------------------------------------------------------------------------------------------------------------------------------------//
