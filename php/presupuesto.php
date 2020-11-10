@@ -84,7 +84,7 @@ $app->get('/lstpresupuestospend(/:idusr)', function ($idusr = 0) {
     $query = "
         SELECT b.fechasolicitud AS fechaOrd, a.idpresupuesto AS id, a.correlativo, a.id AS idot, CONCAT(a.idpresupuesto, '-', a.correlativo) AS numero, DATE_FORMAT(b.fechasolicitud, '%d/%m/%Y') AS fechasolicitud, 
         c.abreviatura AS empresa, d.referencia AS proyecto, e.nombre AS proveedor, f.simbolo AS moneda, a.monto, a.tipocambio, CONCAT(g.descripcion, ' - ', h.desctipogast) AS gasto, a.notas, 0 AS aprobada, 0 AS denegada, i.iniciales AS usuario,
-        b.tipo
+        b.tipo, (SELECT COUNT(id) FROM ot_adjunto WHERE idot = a.id) AS adjuntos
         FROM detpresupuesto a
         INNER JOIN presupuesto b ON b.id = a.idpresupuesto
         INNER JOIN empresa c ON c.id = b.idempresa
@@ -100,7 +100,7 @@ $app->get('/lstpresupuestospend(/:idusr)', function ($idusr = 0) {
         UNION
         SELECT b.fechasolicitud AS fechaOrd, a.idpresupuesto AS id, a.correlativo, a.id AS idot, CONCAT(a.idpresupuesto, '-', a.correlativo) AS numero, DATE_FORMAT(b.fechasolicitud, '%d/%m/%Y') AS fechasolicitud, 
         c.abreviatura AS empresa, d.referencia AS proyecto, e.nombre AS proveedor, f.simbolo AS moneda, a.monto, a.tipocambio, CONCAT(g.descripcion, ' - ', h.desctipogast) AS gasto, a.notas, 0 AS aprobada, 0 AS denegada, i.iniciales AS usuario,
-        b.tipo
+        b.tipo, (SELECT COUNT(id) FROM ot_adjunto WHERE idot = a.id) AS adjuntos
         FROM detpresupuesto a
         INNER JOIN presupuesto b ON b.id = a.idpresupuesto
         INNER JOIN empresa c ON c.id = b.idempresa

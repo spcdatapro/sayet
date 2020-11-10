@@ -1,5 +1,7 @@
 <style>
-    .app-modal-window .modal-dialog { width: 625px; }
+    .app-modal-window .modal-dialog {
+        width: 625px;
+    }
 </style>
 <div class="container" ng-controller="tranAprobPresupuestoCtrl">
     <div class="panel panel-info">
@@ -7,41 +9,84 @@
         <div class="panel-body">
             <table datatable="ng" dt-options="dtOptions" class="table table-condensed table-hover">
                 <thead>
-                <tr>
-                    <th style="text-align: right">No.</th>
-                    <th>Solicita</th>
-                    <th>Fecha de solicitud</th>
-                    <th>Proveedor</th>
-                    <th style="text-align: right">Monto</th>
-                    <th>&nbsp;</th>
-                    <th style="text-align: center">Aprobar</th>
-                    <th style="text-align: center">Denegar</th>
-                </tr>
+                    <tr>
+                        <th style="text-align: right">No.</th>
+                        <th>Solicita</th>
+                        <th>Fecha de solicitud</th>
+                        <th>Proveedor</th>
+                        <th style="text-align: right">Monto</th>
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
+                        <th style="text-align: center">Aprobar</th>
+                        <th style="text-align: center">Denegar</th>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="p in presupuestos">
-                    <td style="text-align: right">{{p.numero}}</td>
-                    <td>{{p.usuario}}</td>
-                    <td>{{p.fechasolicitud}}</td>
-                    <td>{{p.proveedor}}</td>
-                    <td style="text-align: right">{{p.moneda}}&nbsp;{{p.monto | number:2}}</td>
-                    <td>
-                        <button type="button" class="btn btn-info btn-sm" ng-click="verDetPresup(p)">
-                            <span class="glyphicon glyphicon-align-justify"></span>
-                        </button>
-                    </td>
-                    <td style="text-align: center">
-                        <input name="chkAprobada_{{p.idot}}" id="chkAprobada_{{p.idot}}" type="checkbox" ng-model="p.aprobada" ng-true-value="1" ng-false-value="0" ng-change="aprobar(p)"/>
-                    </td>
-                    <td style="text-align: center">
-                        <input name="chkDenegada_{{p.idot}}" id="chkDenegada_{{p.idot}}" type="checkbox" ng-model="p.denegada" ng-true-value="1" ng-false-value="0" ng-change="denegar(p)"/>
-                    </td>
-                </tr>
+                    <tr ng-repeat="p in presupuestos">
+                        <td style="text-align: right">{{p.numero}}</td>
+                        <td>{{p.usuario}}</td>
+                        <td>{{p.fechasolicitud}}</td>
+                        <td>{{p.proveedor}}</td>
+                        <td style="text-align: right">{{p.moneda}}&nbsp;{{p.monto | number:2}}</td>
+                        <td>
+                            <button type="button" class="btn btn-info btn-sm" ng-click="verDetPresup(p)">
+                                <span class="glyphicon glyphicon-align-justify"></span>
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-info btn-sm" ng-click="verAdjuntos(p)"
+                                ng-show="+p.adjuntos > 0">
+                                <span class="glyphicon glyphicon-paperclip"></span>
+                            </button>
+                        </td>
+                        <td style="text-align: center">
+                            <input name="chkAprobada_{{p.idot}}" id="chkAprobada_{{p.idot}}" type="checkbox"
+                                ng-model="p.aprobada" ng-true-value="1" ng-false-value="0" ng-change="aprobar(p)" />
+                        </td>
+                        <td style="text-align: center">
+                            <input name="chkDenegada_{{p.idot}}" id="chkDenegada_{{p.idot}}" type="checkbox"
+                                ng-model="p.denegada" ng-true-value="1" ng-false-value="0" ng-change="denegar(p)" />
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+<script type="text/ng-template" id="modalAdjuntosPresupuesto.html">
+    <div class="modal-header">
+        <h4 class="modal-title">Presupuesto No. {{presupuesto.numero}}</h4>
+        <h5>Documentos adjuntos</h5>
+    </div>
+    <div class="modal-body" style="height: 300px; overflow-y: auto">
+        <table class="table table-responsive table-hover table-condensed">
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>&nbsp;</th>                
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="ot_adjunto in lstadjuntos">
+                <td>{{ot_adjunto.nomadjunto}}</td>                            
+                <td>
+                    <a class="btn btn-info" href="{{ot_adjunto.ubicacion}}" target="_blank">
+                        <span class="glyphicon glyphicon-download"></span>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <!--
+        <button class="btn btn-primary" type="button" ng-click="ok()" ng-disabled="selectedBanco == undefined || selectedTipoMov == undefined">
+            Aceptar
+        </button>
+        -->
+        <button class="btn btn-info" type="button" ng-click="cancel()">Cerrar</button>
+    </div>
+</script>
 <!--Template de la modal //Este usa el controlador ModalCargosCtrl-->
 <script type="text/ng-template" id="modalDetallePresupuesto.html">
     <div class="modal-header">
