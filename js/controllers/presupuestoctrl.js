@@ -76,12 +76,12 @@
             return data;
         }
 
-        $scope.getLstPresupuestos = function (idestatuspresup) {
+        $scope.getLstPresupuestos = (idestatuspresup) => {
             $scope.fltrot.fdelstr = moment($scope.fltrot.fdel).format('YYYY-MM-DD');
             $scope.fltrot.falstr = moment($scope.fltrot.fal).format('YYYY-MM-DD');
             $scope.fltrot.idestatuspresup = idestatuspresup != null && idestatuspresup !== undefined ? idestatuspresup : '';
             $scope.loadingPresupuestos = true;
-            presupuestoSrvc.lstPresupuestos($scope.fltrot).then(function (d) {
+            presupuestoSrvc.lstPresupuestos($scope.fltrot).then((d) => {
                 $scope.lstpresupuestos = procDataPresup(d);
             });
         };

@@ -43,33 +43,9 @@ $app->post('/lstpresupuestos', function () {
     $query .= "WHERE a.fechasolicitud >= '$d->fdelstr' AND a.fechasolicitud <= '$d->falstr' ";
     $query .= (int)$d->tipo > 0 ? "AND a.tipo = $d->tipo " : '';
     $query .= trim($proyectos) != '' ? "AND a.idproyecto IN ($proyectos) " : '';
-    $query .= $d->idestatuspresup != '' ? "AND (IF(a.tipo = 1, a.idestatuspresupuesto IN($d->idestatuspresup), (SELECT COUNT(idestatuspresupuesto) FROM detpresupuesto WHERE idpresupuesto = a.id AND idestatuspresupuesto IN($d->idestatuspresup)) > 0)) " : '';
+    $query .= $d->idestatuspresup != '' ? "AND (IF(a.tipo = 1, a.idestatuspresupuesto IN($d->idestatuspresup), IF((SELECT COUNT(id) FROM detpresupuesto WHERE idpresupuesto = a.id) > 0, (SELECT COUNT(idestatuspresupuesto) FROM detpresupuesto WHERE idpresupuesto = a.id AND idestatuspresupuesto IN(1,2,3)) > 0,a.idestatuspresupuesto IN(1,2,3)))) " : '';
     $query .= 'ORDER BY a.id DESC';
-
-    /*if((int)$d->tipo === 0) {
-        $query.= 'ORDER BY a.id DESC';
-    } else {
-        $query.= 'UNION ';
-        $query.= "SELECT a.id, a.fechasolicitud, a.idproyecto, b.nomproyecto AS proyecto, a.idempresa, c.nomempresa AS empresa, a.idtipogasto, d.desctipogast AS tipogasto, a.idmoneda, e.simbolo, 
-        j.monto AS total, a.notas, a.idusuario, f.nombre AS usuario, a.idestatuspresupuesto, g.descestatuspresup AS estatus, a.fechacreacion, a.fhenvioaprobacion, a.fhaprobacion, 
-        a.idusuarioaprueba, h.nombre AS aprobadopor, a.tipo, j.idproveedor, a.idsubtipogasto, a.coniva, a.monto, a.tipocambio, a.excedente, TRIM(c.abreviatura) AS abreviaempre, a.origenprov, i.proveedor, 
-        a.gastado AS gastado, 'OTM' AS tipostr, j.id AS idot, j.tipodocumento, j.correlativo
-        FROM presupuesto a 
-        INNER JOIN proyecto b ON b.id = a.idproyecto 
-        INNER JOIN empresa c ON c.id = a.idempresa 
-        INNER JOIN tipogasto d ON d.id = a.idtipogasto 
-        INNER JOIN usuario f ON f.id = a.idusuario 
-        INNER JOIN estatuspresupuesto g ON g.id = a.idestatuspresupuesto 
-        INNER JOIN detpresupuesto j ON a.id = j.idpresupuesto
-        INNER JOIN moneda e ON e.id = j.idmoneda 
-        LEFT JOIN usuario h ON h.id = a.idusuarioaprueba 
-        LEFT JOIN (SELECT z.id, y.nombre AS proveedor FROM detpresupuesto z INNER JOIN proveedor y ON y.id = z.idproveedor WHERE z.origenprov = 1 UNION 
-        SELECT z.id, y.nombre AS proveedor FROM detpresupuesto z INNER JOIN beneficiario y ON y.id = z.idproveedor WHERE z.origenprov = 2) i ON j.id = i.id
-        WHERE a.fechasolicitud >= '$d->fdelstr' AND a.fechasolicitud <= '$d->falstr' AND a.tipo = 2 
-        AND j.idestatuspresupuesto IN(1,2,3)
-        ORDER BY 1 DESC";
-    }*/
-    // print $query;
+    //print $query;
     print $db->doSelectASJson($query);
 });
 
