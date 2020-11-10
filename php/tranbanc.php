@@ -754,7 +754,7 @@ $app->get('/imprimir/:idtran', function($idtran){
     $query = " SELECT a.idfactura, a.idrecibocli, d.siglas, b.serie, b.numero, b.fecha, c.simbolo, FORMAT(b.total, 2) AS total, FORMAT(a.monto, 2) AS monto, a.interes ";
     $query.= "FROM detcobroventa a INNER JOIN factura b ON b.id = a.idfactura INNER JOIN moneda c ON c.id = b.idmoneda INNER JOIN tipofactura d ON d.id = b.idtipofactura ";
     $query.= "INNER JOIN recibocli n ON n.id = a.idrecibocli LEFT JOIN tranban m ON m.id = n.idtranban ";
-    $query.= "WHERE m.id=$idtran ";
+    //$query.= "WHERE m.id=$idtran ";
     $tran[0]->facrec =$db->getQuery($query);
 
     if(count($tran[0]->detcont) > 0){
@@ -777,6 +777,42 @@ $app->post('/existe', function(){
     $query = "SELECT COUNT(*) FROM tranban WHERE idbanco = $d->idbanco AND tipotrans = '$d->tipotrans' AND numero = $d->numero AND anulado = 0";
     $existe = (int)$db->getOneField($query) > 0;
     print json_encode(['existe' => ($existe ? 1 : 0)]);
+});
+
+$app->post('/sellofactura', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "SELECT DISTINCT b.siglas AS banco, a.tipotrans AS tipo, a.numero, 
+              DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, c.serie, c.numero AS numerorecibo, 
+              DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy
+              FROM tranban a
+              INNER JOIN banco b ON b.id = a.idbanco
+              INNER JOIN recibocli c ON a.id = c.idtranban
+              INNER JOIN detcobroventa d ON c.id = d.idrecibocli
+              WHERE c.idtranban = $d->idtranban";
+    $sellos = $db->getQuery($query);
+    $sello = new stdClass();
+    if (count($sellos) > 0) {
+        $sello = $sellos[0];
+    }
+    print json_encode(['sello' => $sello]);
+});
+
+$app->post('/sellonc', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "
+        SELECT e.nombre AS cliente, e.serie, e.numero, e.serieadmin, e.numeroadmin, DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy
+        FROM tranban a
+        INNER JOIN banco b ON b.id = a.idbanco
+        INNER JOIN recibocli c ON a.id = c.idtranban
+        INNER JOIN detcobroventa d ON c.id = d.idrecibocli
+        INNER JOIN factura e ON e.id = d.idfactura
+        WHERE c.idtranban = $d->idtranban
+        ORDER BY e.numeroadmin";
+    print $db->doSelectASJson($query);
 });
 
 $app->run();
