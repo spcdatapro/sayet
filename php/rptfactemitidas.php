@@ -195,5 +195,37 @@ $app->post('/factsparqueo', function(){
 
 });
 
+$app->post('/reportenc', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    if(!isset($d->idempresa)) { $d->idempresa = ''; }
+    if(!isset($d->idcliente)) { $d->cliente = 0; }
+    if(!isset($d->cliente)) { $d->cliente = ''; }
+    if(!isset($d->fdelstr)) { $d->fdelstr = ''; }
+    if(!isset($d->falstr)) { $d->falstr = ''; }
+
+    $query = "SELECT CONCAT(a.serie, '-', a.numero) AS numerofac, CONCAT(a.serieadmin, '-', a.numeroadmin) AS correlativo, a.nombre, 
+            SUBSTRING(a.conceptomayor, 1, 40) AS conceptomayor, FORMAT(a.importetotal, 2) AS totalfactura,
+            DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fechafactura, CONCAT(b.serie, '-', b.numero) AS numeronc, FORMAT(b.importetotal, 2) AS totalnotacredito, 
+            DATE_FORMAT(b.fecha, '%d/%m/%Y') AS fechanotacredito, c.nombrecorto, d.abreviatura
+            FROM factura a 
+            INNER JOIN factura b ON a.id = b.idfacturaafecta
+            INNER JOIN cliente c ON c.id = a.idcliente
+            INNER JOIN empresa d ON d.id = a.idempresa
+            WHERE a.anulada = 0 ";
+    $query.= $d->idempresa !== '' ? "AND a.idempresa IN($d->idempresa) " : '';    
+    $query.= trim($d->cliente) != '' && (int)$d->idcliente > 0 ? "AND (a.idcliente = $d->idcliente OR a.nombre LIKE '%$d->cliente%' OR a.nit LIKE '%$d->cliente%' OR c.nombre LIKE '%$d->cliente%' OR c.nombrecorto LIKE '%$d->cliente%') " : '';
+    $query.= trim($d->cliente) != '' && (int)$d->idcliente == 0 ? "AND (a.nombre LIKE '%$d->cliente%' OR a.nit LIKE '%$d->cliente%' OR c.nombre LIKE '%$d->cliente%' OR c.nombrecorto LIKE '%$d->cliente%') " : '';    
+    $query.= trim($d->fdelstr) !== '' ? "AND a.fecha >= '$d->fdelstr' " : '';
+    $query.= trim($d->falstr) !== '' ? "AND a.fecha <= '$d->falstr' " : '';
+    $query.= "ORDER BY d.ordensumario, a.serieadmin, a.numeroadmin, a.nombre, c.nombrecorto, a.fecha";
+            $reporte = $db->getQuery($query);
+
+$query = "SELECT DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy";
+$general = $db->getQuery($query)[0];
+print json_encode(['general' => $general, 'reporte' => $reporte]);
+
+});
 
 $app->run();
