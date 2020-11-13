@@ -42,7 +42,7 @@ $app->post('/ivaventa', function(){
         $query.= "ORDER BY ".((int)$d->ordenalfa === 1 ? 'a.nombre, ' : '')."a.serie, a.numero, a.fecha";
 
         if((int)$empresa->idempresa == 8){
-            $query = "SELECT a.id AS idfactura, a.serie, a.numero, a.nombre, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, ";
+            $query = "SELECT a.idtipofactura, a.id AS idfactura, a.serie, a.numero, a.nombre, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, ";
             $query.= "FORMAT(ROUND(((a.subtotal - round(a.totdescuento*1.12,2)) + IF(a.idfox IS NULL, 0, a.retiva) - IF(a.idfox IS NULL, a.iva, 0)), 2), 2) AS base, FORMAT(a.iva, 2) AS iva, FORMAT(a.iva, 2) AS retiva, a.noformiva, ";
             $query.= "IF(a.porretiva = 0, ROUND((a.retiva / a.iva * 100), 2), a.porretiva) AS porretiva ";
             $query.= "FROM factura a INNER JOIN empresa b ON b.id = a.idempresa ";
@@ -62,7 +62,7 @@ $app->post('/ivaventa', function(){
             $query.= (int)$empresa->idempresa != 8 ? "FORMAT(SUM(a.retiva), 2) AS retiva, " : "FORMAT(SUM(a.iva), 2) AS retiva, ";
             $query.= "'' AS noformiva ";
             $query.= "FROM factura a ";
-            $query.= "WHERE a.anulada = 0 ";
+            $query.= "WHERE a.anulada = 0 AND a.idtipofactura != 9 ";
             $query.= $d->fdelstr == '' || $d->falstr == '' ? "AND a.mesiva = $d->mes AND YEAR(a.fecha) = $d->anio " : '';
             $query.= $d->fdelstr != '' && $d->falstr != '' ? "AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' " : '';
             $query.= $d->cliente != '' && (int)$empresa->idempresa != 8 ? "AND a.nombre = '$d->cliente' " : '';
