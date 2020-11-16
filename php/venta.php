@@ -330,6 +330,12 @@ $app->post('/generandc', function() {
             $query = "INSERT INTO detfact(idfactura, $coldet) SELECT $lastid, $coldet FROM detfact WHERE idfactura = $d->idfactura";
             $db->doQuery($query);
 
+            //Inserción del detalle contable de la NC
+            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado)
+            SELECT 3, $lastid, idcuenta, IF(debe = 0, haber, 0.00) AS debe, IF(haber = 0, debe, 0.00) AS haber, conceptomayor, activada, anulado
+            FROM detallecontable WHERE origen = 3 and idorigen = $d->idfactura";
+            $db->doQuery($query);
+
             //Liberación de cargos atados a la factura que se le generó NdC
             $query = "UPDATE cargo SET facturado = 0, idfactura = 0 WHERE facturado = 1 AND idfactura = $d->idfactura";
             $db->doQuery($query);
