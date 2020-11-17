@@ -83,7 +83,7 @@ class Vacaciones extends Empleado
             
             $dusados["anio"] = $args["anio"];
         } else {
-            $vacasdias = 21;
+            $vacasdias = 15;
 
             if (elemento($args, "vacasultimas")) {
                 $dusados["fdel"] = $args["vacasultimas"];
@@ -131,8 +131,8 @@ class Vacaciones extends Empleado
             $inicio = formatoFecha($vac["inicio"], 1);
             $fin = formatoFecha($vac["fin"], 1);
             $vacasgozar = "01/12/" . $args["anio"];
-            $fingoce = "21/12/" . $args["anio"];
-            $presentar = "22/12/" . $args["anio"];
+            $fingoce = "15/12/" . $args["anio"];
+            $presentar = "16/12/" . $args["anio"];
             
             return [
                 "uno" => "Guatemala {$fecha}",
