@@ -79,7 +79,7 @@ class Vacaciones extends Empleado
                 $diasLaborados = $dias;
             }
 
-            $vacasdias = (($diasLaborados*21)/$diasAnio);
+            $vacasdias = (($diasLaborados*15)/$diasAnio);
             
             $dusados["anio"] = $args["anio"];
         } else {
