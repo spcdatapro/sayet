@@ -4,7 +4,7 @@
             <div class="panel-heading">Detalle contable de facturas de venta</div>
             <div class="panel-body" style="text-align: right">
                 <div class="row" style="text-align: left">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="selEmpre">Empresa:</label>
                             <select name="selEmpre" id="selEmpre" class="form-control input-sm" ng-model="params.idempresa" ng-options="obj.id as obj.nomempresa for obj in empresas"></select>
@@ -22,15 +22,20 @@
                             <input name="txtAl" id="txtAl" type="date" class="form-control input-sm" ng-model="params.al" placeholder="Al"/>
                         </div>
                     </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="selTipoFac">Tipo:</label>
+                            <select name="selTipoFac" id="selTipoFac" class="form-control input-sm" ng-model="params.tipo">
+                                <option value="1">Todos</option>
+                                <option value="2">Facturas</option>
+                                <option value="3">Notas de Cr&eacute;dito</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 <button type="button" class="btn btn-primary" ng-click="getDetcontVentas()">
                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                 </button>
-                <!--
-                <button type="button" class="btn btn-primary" ng-click="getCorrelativosChequesExcel()" ng-disabled="objBanco == null || objBanco == undefined">
-                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
-                </button>
-                -->
             </div>
         </div>
     </div>

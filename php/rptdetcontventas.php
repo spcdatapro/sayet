@@ -8,6 +8,7 @@ $app->response->headers->set('Content-Type', 'application/json');
 $app->post('/rptdetcontventas', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    if(!isset($d->tipo)) { $d->tipo = 1; }
 
     $query = "SELECT TRIM(nomempresa) AS empresa, abreviatura AS abreviaempresa, DATE_FORMAT('$d->fdelstr', '%d/%m/%Y') AS del, DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS al FROM empresa WHERE id = $d->idempresa";
     $generales = $db->getQuery($query)[0];
@@ -18,6 +19,14 @@ $app->post('/rptdetcontventas', function(){
     $query.= "FROM factura a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN tipofactura c ON c.id = a.idtipofactura ";
     $query.= "WHERE a.idempresa = $d->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' ";
     $query.= "AND a.anulada = 0 ";
+
+    $query.= (int)$d->tipo === 2 ? 'AND a.idtipofactura != 9 ' : ((int)$d->tipo === 3 ? 'AND a.idtipofactura = 9 ' : '');
+
+    /*switch((int)$d->tipo) {
+        case 2: $query.= 'AND a.idtipofactura != 9 '; break;
+        case 3: $query.= 'AND a.idtipofactura = 9 '; break;
+    }*/
+
     $query.= "ORDER BY a.fecha, a.numero";
     //print $query;
     $facturas = $db->getQuery($query);

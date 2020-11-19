@@ -1,0 +1,63 @@
+<div class="container" ng-controller="rptContInactCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">Lista de contratos inactivos</div>
+            <div class="panel-body" style="text-align: right">
+                <div class="row" style="text-align: left">
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                            <label for="selEmpresa">Empresa:</label>
+                            <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="params.idempresa" 
+                            ng-options="obj.id as obj.nomempresa for obj in empresas" ng-change="loadProyectos()"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                            <label for="selProyecto">Proyecto:</label>
+                            <select name="selProyecto" id="selProyecto" class="form-control" ng-model="params.idproyecto" 
+                            ng-options="obj.id as obj.nomproyecto for obj in proyectos"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                            <label for="selCliente">Cliente:</label>
+                            <select name="selCliente" id="selCliente" class="form-control" ng-model="params.idcliente" 
+                            ng-options="obj.id as obj.nombre for obj in lstClientes"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="text-align: left">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="txtFdel">Del:</label>
+                            <input name="txtFdel" id="txtFdel" type="date" class="form-control" ng-model="params.fdel"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="txtFAl">Al:</label>
+                            <input name="txtFAl" id="txtFAl" type="date" class="form-control" ng-model="params.fal"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-gorup">
+                            <label for="chkUsufructo">Con usufructo:</label>
+                            <input name="chkUsufructo" id="chkUsufructo" type="checkbox" class="form-control" ng-model="params.usufructo" ng-true-value="1" ng-false-value="0"/>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="getLisContInavtivos()">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="getLisContExcel()">
+                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="resetParams()">
+                    <i class="fa fa-refresh" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <hr/>
+    <rpt-viewer contenido="content"></rpt-viewer>
+</div>

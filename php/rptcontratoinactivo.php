@@ -93,4 +93,36 @@ $app->post('/contrato', function(){
     print json_encode($info);
 });
 
+$app->post('/lista', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    if(!isset($d->idempresa)) { $d->idempresa = ''; }
+    if(!isset($d->idcliente)) { $d->cliente = ''; }
+    if(!isset($d->cliente)) { $d->cliente = ''; }
+    if(!isset($d->fdelstr)) { $d->fdelstr = ''; }
+    if(!isset($d->falstr)) { $d->falstr = ''; }
+
+    $query = "SELECT b.nomempresa AS empresa, c.nomproyecto AS proyecto, UnidadesPorContrato(a.id) as unidad, d.nombre AS cliente, a.nocontrato AS NoContrato, 
+            DATE_FORMAT(a.fechainactivo, '%d/%m%/%Y') AS fechainactivo
+            FROM contrato a
+            INNER JOIN empresa b ON a.idempresa = b.id
+            INNER JOIN proyecto c ON a.idproyecto = c.id
+            INNER JOIN cliente d ON a.idcliente = d.id
+            WHERE a.inactivo = 1 ";
+    $query.= $d->idempresa !== '' ? "AND a.idempresa IN($d->idempresa) " : '';
+    $query.= $d->idproyecto !== '' ? "AND a.idproyecto IN($d->idproyecto) " : '';
+    $query.= $d->idcliente !== '' ? "AND a.idcliente IN($d->idcliente) " : ''; 
+    $query.= trim($d->fdelstr) !== '' ? "AND a.fechainactivo >= '$d->fdelstr' " : '';
+    $query.= trim($d->falstr) !== '' ? "AND a.fechainactivo <= '$d->falstr' " : '';
+    $query.= (int)$d->usufructo === 0 ? "AND a.id NOT IN(SELECT idcontratoorigen FROM contrato) " : '';
+    $query.= " ORDER BY b.ordensumario, c.nomproyecto, d.nombre, a.fechainactivo ";
+    $reporte = $db->getQuery($query);
+
+    $query = "SELECT DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy, IFNULL(DATE_FORMAT('$d->fdelstr', '%d/%m/%Y'), '') AS fdel, ";
+    $query.= "IFNULL(DATE_FORMAT('$d->falstr', '%d/%m/%Y'), '') AS fal";
+    $general = $db->getQuery($query)[0];
+    print json_encode(['general' => $general, 'reporte' => $reporte]);
+});
+
 $app->run();
