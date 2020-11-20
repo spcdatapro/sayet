@@ -754,7 +754,7 @@ $app->get('/imprimir/:idtran', function($idtran){
     $query = " SELECT a.idfactura, a.idrecibocli, d.siglas, b.serie, b.numero, b.fecha, c.simbolo, FORMAT(b.total, 2) AS total, FORMAT(a.monto, 2) AS monto, a.interes ";
     $query.= "FROM detcobroventa a INNER JOIN factura b ON b.id = a.idfactura INNER JOIN moneda c ON c.id = b.idmoneda INNER JOIN tipofactura d ON d.id = b.idtipofactura ";
     $query.= "INNER JOIN recibocli n ON n.id = a.idrecibocli LEFT JOIN tranban m ON m.id = n.idtranban ";
-    //$query.= "WHERE m.id=$idtran ";
+    $query.= "WHERE m.id=$idtran ";
     $tran[0]->facrec =$db->getQuery($query);
 
     if(count($tran[0]->detcont) > 0){
