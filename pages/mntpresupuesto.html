@@ -30,9 +30,9 @@
         <li ng-show="+presupuesto.id > 0 && +ot.id > 0">
             <a show-tab href="#divAdjuntos" data-toggle="tab">ADJUNTOS</a>
         </li>
-        <li ng-show="+presupuesto.id > 0 && +ot.id > 0">
+        <!--<li ng-show="+presupuesto.id > 0 && +ot.id > 0">
             <a show-tab href="#divDocumentos" data-toggle="tab">DOCUMENTOS</a>
-        </li>
+        </li>-->
         <li ng-show="+presupuesto.id > 0 && +ot.id > 0">
             <a show-tab href="#divTranBan" data-toggle="tab">TRANSACCIONES BANCARIAS</a>
         </li>
@@ -348,7 +348,7 @@
                                     </ui-select>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmPresup.selSubtTipoGastoPresup.$invalid && !frmPresup.selSubtTipoGastoPresup.$pristine}">
                                     <label>Sub-tipo de gasto:</label>
@@ -377,6 +377,13 @@
                                         ng-disabled="sl.presupuesto" />
                                 </div>
                             </div>
+                            <div class="col-md-1">
+                                <div class="form-group">
+                                    <label for="chkContado">Contado:</label>
+                                    <input name="chkContado" id="chkContado" type="checkbox" class="form-control" ng-model="presupuesto.escontado" 
+                                    ng-true-value="'1'" ng-false-value="'0'" ng-disabled="sl.presupuesto"/>
+                                </div>
+                            </div>
                             <div class="col-md-2">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmPresup.txtMontoPresup.$invalid && !frmPresup.txtMontoPresup.$pristine}">
@@ -395,18 +402,6 @@
                                         ng-required="+presupuesto.tipo == 1" ng-disabled="sl.presupuesto" />
                                 </div>
                             </div>
-                        </div>
-                        <div class="row" ng-show="+presupuesto.tipo == 1">
-                            <div class="col-md-4">
-                                <div class="form-group" ng-class="{'has-error':frmPresup.selTipoDocumentoPresOT.$invalid && !frmPresup.selTipoDocumentoPresOT.$pristine}">
-                                    <label for="selTipoDocumentoPresOT">Tipo de documento:</label>
-                                    <select name="selTipoDocumentoPresOT" id="selTipoDocumentoPresOT" class="form-control" ng-model="presupuesto.tipodocumento" ng-disabled="sl.presupuesto" 
-                                    ng-required="+presupuesto.tipo == 1">
-                                        <option value="1" selected>Factura</option>
-                                        <option value="2">Reembolso</option>
-                                    </select>                                    
-                                </div>
-                            </div>                            
                         </div>
                         <form-buttons vis="grpBtnPresupuesto" btn-dis="frmPresup.$invalid" obj="presupuesto"
                             uf="updPresupuesto(presupuesto)" df="delPresupuesto(presupuesto)" nf="nuevoPresupuesto()"
@@ -443,8 +438,13 @@
                             data-placement="auto" title="Re-abrir presupuesto">
                             <span class="glyphicon glyphicon-folder-open"></span>
                         </button>
+                        <button type="button" class="btn btn-info" ng-click="enviar(presupuesto)"
+                        ng-hide="(+presupuesto.idestatuspresupuesto == 6 || +presupuesto.idestatuspresupuesto == 5) || !permiso.m" data-toggle="tooltip"
+                        data-placement="auto" title="Enviar presupuesto a aprobación...">
+                        <span class="glyphicon glyphicon-share-alt"></span>
+                    </button>
                         <button type="button" class="btn btn-danger" ng-click="anulaPresupuesto(presupuesto)"
-                            ng-show="+presupuesto.idestatuspresupuesto < 4 && permiso.m" data-toggle="tooltip"
+                        ng-hide="(+presupuesto.idestatuspresupuesto == 6 || +presupuesto.idestatuspresupuesto == 5) || !permiso.m" data-toggle="tooltip"
                             data-placement="auto" title="Anular">
                             <span class="glyphicon glyphicon-remove-circle"></span>
                         </button>
@@ -572,13 +572,11 @@
                                         ng-model="ot.notas" required ng-disabled="sl.ot" rows="3"></textarea>
                                 </div>
                             </div>
-                            <div class="col-md-4 nopadding">
-                                <div class="form-group" ng-class="{'has-error':frmOT.selTipoDocumentoOT.$invalid && !frmOT.selTipoDocumentoOT.$pristine}">
-                                    <label for="selTipoDocumentoOT">Tipo de documento:</label>
-                                    <select name="selTipoDocumentoOT" id="selTipoDocumentoOT" class="form-control" ng-model="ot.tipodocumento" ng-disabled="sl.ot" required>
-                                        <option value="1" selected>Factura</option>
-                                        <option value="2">Reembolso</option>
-                                    </select>                                    
+                            <div class="col-md-1">
+                                <div class="form-group">
+                                    <label for="chkContadoOt">Contado:</label>
+                                    <input name="chkContadoOt" id="chkContadoOt" type="checkbox" class="form-control" ng-model="ot.escontado" 
+                                    ng-true-value="1" ng-false-value="0" ng-disabled="sl.ot"/>
                                 </div>
                             </div>
                         </div>
@@ -599,6 +597,7 @@
                                 <th>Proveedor/Beneficiario</th>
                                 <th>Sub-tipo de gasto</th>
                                 <th>Incluye I.V.A.</th>
+                                <th>Al Contado</th>
                                 <th style="text-align: right">Monto</th>
                                 <th style="text-align: right">TC</th>
                                 <th style="text-align: center">Detalle de pagos</th>
@@ -610,7 +609,8 @@
                                 <td style="text-align: right">{{o.idpresupuesto}}-{{o.correlativo}}</td>
                                 <td>{{o.proveedor}}</td>
                                 <td>{{o.subtipogasto}}</td>
-                                <td>{{o.coniva == 1 ? 'Sí' : ''}}</td>
+                                <td>{{o.coniva === 1 ? 'Sí' : ''}}</td>
+                                <td>{{o.escontado === 1 ? 'Sí' : ''}} </td>
                                 <td style="text-align: right">{{o.moneda}} {{o.monto | number:2}}</td>
                                 <td style="text-align: right">{{o.tipocambio | number:4}}</td>
                                 <td>
@@ -735,9 +735,9 @@
                 </div>
             </div>
         </div>
-        <div id="divDocumentos" class="tab-pane fade">
+        <!--<div id="divDocumentos" class="tab-pane fade">
             <div id="divNgInclude" ng-include="ngIncludeUrl"></div>
-        </div>
+        </div>-->
         <div id="divTranBan" class="tab-pane fade">
             <div id="divNgIncludeTB" ng-include="ngIncludeUrlTB"></div>
         </div>

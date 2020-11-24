@@ -79,7 +79,7 @@
                 $scope.losTiposCompra = d;
             });
 
-            presupuestoSrvc.presupuestosAprobados().then((d) => $scope.ots = d);
+            $scope.loadPresupuestosProveedor = (idproveedor) => compraSrvc.getOtsProveedor(idproveedor, $scope.laCompra.objEmpresa.id).then((d) => $scope.ots = d);
 
             $scope.loadDataProvs = () => $scope.itemsLimit = $scope.itemsLimit + 10;
 
@@ -89,11 +89,25 @@
 
             $scope.proyectoSelected = (item) => $scope.loadUnidadesProyecto(item.id);
 
+            $scope.fillDataCompraOt = (idot) => {                
+                const idx = $scope.ots.findIndex(i => +i.id === +idot);
+                if (idx > -1) {
+                    const otSelected = $scope.ots[idx];
+                    console.log('OT = ', otSelected);
+                    $scope.laCompra.totfact = +otSelected.monto;
+                    $scope.calcular();
+                    $scope.laCompra.objMoneda = $scope.monedas.find(m => +m.id === +otSelected.idmoneda);
+                    $scope.laCompra.idproyecto = otSelected.idproyecto;
+                    $scope.laCompra.conceptomayor = otSelected.notas;
+                }
+            }
+
             $scope.resetCompra = function () {
                 $scope.laCompra = {
                     fechaingreso: new Date(), mesiva: hoy.getMonth() + 1, fechafactura: new Date(), creditofiscal: 0, extraordinario: 0, noafecto: 0.0,
                     objEmpresa: $scope.laCompra.objEmpresa, objMoneda: {}, tipocambio: 1, isr: 0.00, galones: 0.00, idp: 0.00, objTipoCombustible: {},
-                    totfact: 0.00, subtotal: 0.00, iva: 0.00, ordentrabajo: undefined, idproyecto: undefined, idunidad: undefined, nombrerecibo: undefined
+                    totfact: 0.00, subtotal: 0.00, iva: 0.00, ordentrabajo: undefined, idproyecto: undefined, idunidad: undefined, nombrerecibo: undefined,
+                    iddetpagopresup: undefined
                 };
                 $scope.search = "";
                 $scope.facturastr = '';
@@ -246,7 +260,7 @@
                     await presupuestoSrvc.getPresupuesto($scope.ot.idpresupuesto).then(d => { $scope.presupuesto = d[0]; });
                 }
             };
-
+            
             $scope.$watch('laCompra.objEmpresa', function (newValue, oldValue) {
                 if (newValue != null && newValue != undefined) {
                     $scope.esDePresupuesto();
@@ -256,6 +270,7 @@
 
             $scope.getConcepto = (qProv) => {
                 $scope.chkExisteCompra();
+                $scope.loadPresupuestosProveedor(qProv.id);
                 if (!$scope.laCompra.id > 0) {
                     if (!!qProv) {
                         $scope.laCompra.conceptomayor = qProv.concepto;
@@ -456,6 +471,7 @@
                 obj.idtipofactura = parseInt(obj.objTipoFactura.id);
                 obj.idtipocombustible = obj.objTipoCombustible != null && obj.objTipoCombustible != undefined ? (obj.objTipoCombustible.id != null && obj.objTipoCombustible.id != undefined ? obj.objTipoCombustible.id : 0) : 0;
                 obj.idunidad = obj.idunidad != null && obj.idunidad !== undefined ? +obj.idunidad : 0;
+                obj.iddetpagopresup = obj.iddetpagopresup != null && obj.iddetpagopresup !== undefined ? obj.iddetpagopresup : 0;
                 if (obj.nombrerecibo == null || obj.nombrerecibo == undefined) {
                     delete obj.nombrerecibo;
                 }

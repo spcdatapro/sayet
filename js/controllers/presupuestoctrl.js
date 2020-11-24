@@ -87,7 +87,7 @@
         };
 
         $scope.resetPresupuesto = function () {
-            $scope.presupuesto = { fechasolicitud: moment().toDate(), idmoneda: '1', tipocambio: 1.00, coniva: 1 };
+            $scope.presupuesto = { fechasolicitud: moment().toDate(), idmoneda: '1', tipocambio: 1.00, coniva: 1, escontado: 0 };
             $scope.ot = {};
             $scope.lstot = [];
             $scope.srchproy = '';
@@ -107,6 +107,7 @@
             obj.origenprov = obj.origenprov != null && obj.origenprov != undefined ? obj.origenprov : 0;
             obj.idsubtipogasto = obj.idsubtipogasto != null && obj.idsubtipogasto != undefined ? obj.idsubtipogasto : 0;
             obj.coniva = obj.coniva != null && obj.coniva != undefined ? obj.coniva : 1;
+            obj.escontado = obj.escontado != null && obj.escontado != undefined ? obj.escontado : 0;
             obj.monto = obj.monto != null && obj.monto != undefined ? obj.monto : 0.00;
             obj.tipocambio = obj.tipocambio != null && obj.tipocambio != undefined ? obj.tipocambio : 1.0000;
             return obj;
@@ -307,6 +308,8 @@
                 data[i].tipocambio = parseFloat(parseFloat(data[i].tipocambio).toFixed(4));
                 data[i].excedente = parseFloat(parseFloat(data[i].excedente).toFixed(2));
                 data[i].origenprov = parseInt(data[i].origenprov);
+                data[i].escontado = parseInt(data[i].escontado);
+
             }
             return data;
         }
@@ -346,7 +349,7 @@
         };
 
         $scope.resetOt = function () {
-            $scope.ot = { idpresupuesto: $scope.presupuesto.id, coniva: 1, monto: 0.00, idproveedor: undefined, idsubtipogasto: undefined, tipocambio: 1.0000, origenprov: 0 }
+            $scope.ot = { idpresupuesto: $scope.presupuesto.id, escontado: 0, coniva: 1, monto: 0.00, idproveedor: undefined, idsubtipogasto: undefined, tipocambio: 1.0000, origenprov: 0 }
         };
 
         $scope.cancelEditOt = function () {

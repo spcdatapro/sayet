@@ -110,7 +110,7 @@ $app->post('/usrmonto', function () {
 //Fin de Configuración de montos de OTs que los usuarios pueden autorizar
 
 $app->post('/lstpresaprob', function () {
-    $d = json_decode(file_get_contents('php://input'));
+    $d = json_decode(file_get_contents('php://input'));    
     $db = new dbcpm();
     if ($d) {
         $query = "SELECT a.id, a.idestatuspresupuesto, a.fechasolicitud, a.idproyecto, b.nomproyecto AS proyecto, a.idempresa, TRIM(c.abreviatura) AS empresa, a.idtipogasto, d.desctipogast AS tipogasto, ";
@@ -155,7 +155,7 @@ $app->get('/getpresupuesto/:idpresupuesto', function ($idpresupuesto) {
     $db = new dbcpm();
     $query = "SELECT a.id, a.fechasolicitud, a.idproyecto, b.nomproyecto AS proyecto, a.idempresa, c.nomempresa AS empresa, a.idtipogasto, d.desctipogast AS tipogasto, a.idmoneda, e.simbolo, ";
     $query .= "a.total, a.notas, a.idusuario, f.nombre AS usuario, a.idestatuspresupuesto, g.descestatuspresup AS estatus, a.fechacreacion, a.fhenvioaprobacion, a.fhaprobacion, ";
-    $query .= "a.idusuarioaprueba, h.nombre AS aprobadopor, a.tipo, a.idproveedor, a.idsubtipogasto, a.coniva, a.monto, a.tipocambio, a.excedente, TRIM(c.abreviatura) AS abreviaempre, a.origenprov, a.tipodocumento ";
+    $query .= "a.idusuarioaprueba, h.nombre AS aprobadopor, a.tipo, a.idproveedor, a.idsubtipogasto, a.coniva, a.monto, a.escontado, a.tipocambio, a.excedente, TRIM(c.abreviatura) AS abreviaempre, a.origenprov, a.tipodocumento ";
     $query .= "FROM presupuesto a INNER JOIN proyecto b ON b.id = a.idproyecto INNER JOIN empresa c ON c.id = a.idempresa ";
     $query .= "INNER JOIN tipogasto d ON d.id = a.idtipogasto INNER JOIN moneda e ON e.id = a.idmoneda INNER JOIN usuario f ON f.id = a.idusuario ";
     $query .= "INNER JOIN estatuspresupuesto g ON g.id = a.idestatuspresupuesto LEFT JOIN usuario h ON h.id = a.idusuarioaprueba ";
@@ -176,9 +176,9 @@ function creaDetallePresupuesto($d)
     $correlativo = (int)$db->getOneField("SELECT IF(ISNULL(MAX(correlativo)), 1, MAX(correlativo) + 1) AS correlativo FROM detpresupuesto WHERE idpresupuesto = $d->idpresupuesto");
     $excedente = round((float)$db->getOneField("SELECT excedente FROM confpresupuestos WHERE id = 1"), 2);
     $query = "INSERT INTO detpresupuesto(";
-    $query .= "idpresupuesto, correlativo, idproveedor, idsubtipogasto, coniva, monto, tipocambio, excedente, notas, origenprov, idmoneda, tipodocumento";
+    $query .= "idpresupuesto, correlativo, idproveedor, idsubtipogasto, coniva, escontado, monto, tipocambio, excedente, notas, origenprov, idmoneda, tipodocumento";
     $query .= ") VALUES(";
-    $query .= "$d->idpresupuesto, $correlativo, $d->idproveedor, $d->idsubtipogasto, $d->coniva, $d->monto, $d->tipocambio, $excedente, '$d->notas', $d->origenprov, $d->idmoneda, $d->tipodocumento";
+    $query .= "$d->idpresupuesto, $correlativo, $d->idproveedor, $d->idsubtipogasto, $d->coniva, $d->escontado, $d->monto, $d->tipocambio, $excedente, '$d->notas', $d->origenprov, $d->idmoneda, $d->tipodocumento";
     $query .= ")";
     $db->doQuery($query);
     $lastid = $db->getLastId();
@@ -201,10 +201,10 @@ $app->post('/c', function () {
     $excedente = round((float)$db->getOneField("SELECT excedente FROM confpresupuestos WHERE id = 1"), 2);
     $query = "INSERT INTO presupuesto(";
     $query .= "fechasolicitud, idproyecto, idempresa, idtipogasto, idmoneda, total, notas, fechacreacion, idusuario, idestatuspresupuesto, ";
-    $query .= "tipo, idproveedor, idsubtipogasto, coniva, monto, tipocambio, excedente, origenprov, tipodocumento";
+    $query .= "tipo, idproveedor, idsubtipogasto, coniva, escontado, monto, tipocambio, excedente, origenprov, tipodocumento";
     $query .= ") VALUES(";
     $query .= "'$d->fechasolicitudstr', $d->idproyecto, $d->idempresa, $d->idtipogasto, $d->idmoneda, 0.00, '$d->notas', NOW(), $d->idusuario, 1, ";
-    $query .= "$d->tipo, $d->idproveedor, $d->idsubtipogasto, $d->coniva, $d->monto, $d->tipocambio, $excedente, $d->origenprov, $d->tipodocumento";
+    $query .= "$d->tipo, $d->idproveedor, $d->idsubtipogasto, $d->coniva, $d->escontado, $d->monto, $d->tipocambio, $excedente, $d->origenprov, $d->tipodocumento";
     $query .= ")";
     $db->doQuery($query);
     $lastid = $db->getLastId();
@@ -228,7 +228,7 @@ function actualizaDetallePresupuesto($d)
 {
     $db = new dbcpm();
     $query = "UPDATE detpresupuesto SET ";
-    $query .= "idproveedor = $d->idproveedor, idsubtipogasto = $d->idsubtipogasto, coniva = $d->coniva, monto = $d->monto, tipocambio = $d->tipocambio, notas = '$d->notas', origenprov = $d->origenprov, ";
+    $query .= "idproveedor = $d->idproveedor, idsubtipogasto = $d->idsubtipogasto, coniva = $d->coniva, escontado = $d->escontado, monto = $d->monto, tipocambio = $d->tipocambio, notas = '$d->notas', origenprov = $d->origenprov, ";
     $query .= "idmoneda = $d->idmoneda, tipodocumento = $d->tipodocumento ";
     $query .= "WHERE idpresupuesto = " . $d->id;
     $db->doQuery($query);
@@ -251,7 +251,7 @@ $app->post('/u', function () {
     $query = "UPDATE presupuesto SET ";
     $query .= "fechasolicitud = '$d->fechasolicitudstr', idproyecto = $d->idproyecto, idempresa = $d->idempresa, idtipogasto = $d->idtipogasto, ";
     $query .= "idmoneda = $d->idmoneda, notas = '$d->notas', fechamodificacion = NOW(), lastuser = $d->idusuario, ";
-    $query .= "idproveedor = $d->idproveedor, idsubtipogasto = $d->idsubtipogasto, coniva = $d->coniva, monto = $d->monto, tipocambio = $d->tipocambio, origenprov = $d->origenprov, ";
+    $query .= "idproveedor = $d->idproveedor, idsubtipogasto = $d->idsubtipogasto, coniva = $d->coniva, escontado = $d->escontado, monto = $d->monto, tipocambio = $d->tipocambio, origenprov = $d->origenprov, ";
     $query .= "tipodocumento = $d->tipodocumento ";
     $query .= "WHERE id = " . $d->id;
     $db->doQuery($query);
@@ -436,13 +436,13 @@ $app->post('/anulapres', function () {
 //API detalle de presupuestos (OTs)
 $app->get('/lstot/:idpresupuesto', function ($idpresupuesto) {
     $db = new dbcpm();
-    $query = "SELECT a.id, a.idpresupuesto, a.correlativo, a.idproveedor, b.nombre AS proveedor, a.idsubtipogasto, c.descripcion AS subtipogasto, a.coniva, a.monto, f.simbolo AS moneda, d.total, a.tipocambio, a.excedente, a.notas, a.origenprov, ";
+    $query = "SELECT a.id, a.idpresupuesto, a.correlativo, a.idproveedor, b.nombre AS proveedor, a.idsubtipogasto, c.descripcion AS subtipogasto, a.coniva, a.escontado, a.monto, f.simbolo AS moneda, d.total, a.tipocambio, a.excedente, a.notas, a.origenprov, ";
     $query .= "a.idmoneda, a.idestatuspresupuesto ";
     $query .= "FROM detpresupuesto a INNER JOIN proveedor b ON b.id = a.idproveedor INNER JOIN subtipogasto c ON c.id = a.idsubtipogasto INNER JOIN presupuesto d ON d.id = a.idpresupuesto ";
     $query .= "INNER JOIN moneda e ON e.id = d.idmoneda LEFT JOIN moneda f ON f.id = a.idmoneda ";
     $query .= "WHERE a.origenprov = 1 AND a.idpresupuesto = $idpresupuesto ";
     $query .= "UNION ";
-    $query .= "SELECT a.id, a.idpresupuesto, a.correlativo, a.idproveedor, b.nombre AS proveedor, a.idsubtipogasto, c.descripcion AS subtipogasto, a.coniva, a.monto, f.simbolo AS moneda, d.total, a.tipocambio, a.excedente, a.notas, a.origenprov, ";
+    $query .= "SELECT a.id, a.idpresupuesto, a.correlativo, a.idproveedor, b.nombre AS proveedor, a.idsubtipogasto, c.descripcion AS subtipogasto, a.coniva, a.escontado, a.monto, f.simbolo AS moneda, d.total, a.tipocambio, a.excedente, a.notas, a.origenprov, ";
     $query .= "a.idmoneda, a.idestatuspresupuesto ";
     $query .= "FROM detpresupuesto a INNER JOIN beneficiario b ON b.id = a.idproveedor INNER JOIN subtipogasto c ON c.id = a.idsubtipogasto INNER JOIN presupuesto d ON d.id = a.idpresupuesto ";
     $query .= "INNER JOIN moneda e ON e.id = d.idmoneda LEFT JOIN moneda f ON f.id = a.idmoneda ";
@@ -453,14 +453,14 @@ $app->get('/lstot/:idpresupuesto', function ($idpresupuesto) {
 
 $app->get('/getot/:idot', function ($idot) {
     $db = new dbcpm();
-    $query = "SELECT a.id, a.idpresupuesto, a.correlativo, a.idproveedor, b.nombre AS proveedor, a.idsubtipogasto, c.descripcion AS subtipogasto, a.coniva, a.monto, i.simbolo AS moneda, d.total, a.tipocambio, a.excedente, ";
+    $query = "SELECT a.id, a.idpresupuesto, a.correlativo, a.idproveedor, b.nombre AS proveedor, a.idsubtipogasto, c.descripcion AS subtipogasto, a.coniva, a.escontado, a.monto, i.simbolo AS moneda, d.total, a.tipocambio, a.excedente, ";
     $query .= "f.nomproyecto AS proyecto, g.desctipogast AS tipogasto, d.fechasolicitud, h.abreviatura AS empresa, a.notas, a.origenprov, a.idmoneda, a.idestatuspresupuesto, a.tipodocumento ";
     $query .= "FROM detpresupuesto a INNER JOIN proveedor b ON b.id = a.idproveedor INNER JOIN subtipogasto c ON c.id = a.idsubtipogasto INNER JOIN presupuesto d ON d.id = a.idpresupuesto ";
     $query .= "INNER JOIN moneda e ON e.id = d.idmoneda INNER JOIN proyecto f ON f.id = d.idproyecto INNER JOIN tipogasto g ON g.id = d.idtipogasto INNER JOIN empresa h ON h.id = d.idempresa ";
     $query .= "LEFT JOIN moneda i ON i.id = a.idmoneda ";
     $query .= "WHERE a.origenprov = 1 AND a.id = $idot ";
     $query .= "UNION ";
-    $query .= "SELECT a.id, a.idpresupuesto, a.correlativo, a.idproveedor, b.nombre AS proveedor, a.idsubtipogasto, c.descripcion AS subtipogasto, a.coniva, a.monto, i.simbolo AS moneda, d.total, a.tipocambio, a.excedente, ";
+    $query .= "SELECT a.id, a.idpresupuesto, a.correlativo, a.idproveedor, b.nombre AS proveedor, a.idsubtipogasto, c.descripcion AS subtipogasto, a.coniva, a.escontado, a.monto, i.simbolo AS moneda, d.total, a.tipocambio, a.excedente, ";
     $query .= "f.nomproyecto AS proyecto, g.desctipogast AS tipogasto, d.fechasolicitud, h.abreviatura AS empresa, a.notas, a.origenprov, a.idmoneda, a.idestatuspresupuesto, a.tipodocumento ";
     $query .= "FROM detpresupuesto a INNER JOIN beneficiario b ON b.id = a.idproveedor INNER JOIN subtipogasto c ON c.id = a.idsubtipogasto INNER JOIN presupuesto d ON d.id = a.idpresupuesto ";
     $query .= "INNER JOIN moneda e ON e.id = d.idmoneda INNER JOIN proyecto f ON f.id = d.idproyecto INNER JOIN tipogasto g ON g.id = d.idtipogasto INNER JOIN empresa h ON h.id = d.idempresa ";
@@ -481,9 +481,9 @@ $app->post('/cd', function () {
     $correlativo = (int)$db->getOneField("SELECT IF(ISNULL(MAX(correlativo)), 1, MAX(correlativo) + 1) AS correlativo FROM detpresupuesto WHERE idpresupuesto = $d->idpresupuesto");
     $excedente = round((float)$db->getOneField("SELECT excedente FROM confpresupuestos WHERE id = 1"), 2);
     $query = "INSERT INTO detpresupuesto(";
-    $query .= "idpresupuesto, correlativo, idproveedor, idsubtipogasto, coniva, monto, tipocambio, excedente, notas, origenprov, idmoneda, tipodocumento";
+    $query .= "idpresupuesto, correlativo, idproveedor, idsubtipogasto, coniva, escontado, monto, tipocambio, excedente, notas, origenprov, idmoneda, tipodocumento";
     $query .= ") VALUES(";
-    $query .= "$d->idpresupuesto, $correlativo, $d->idproveedor, $d->idsubtipogasto, $d->coniva, $d->monto, $d->tipocambio, $excedente, '$d->notas', $d->origenprov, $d->idmoneda, $d->tipodocumento";
+    $query .= "$d->idpresupuesto, $correlativo, $d->idproveedor, $d->idsubtipogasto, $d->coniva, $d->escontado, $d->monto, $d->tipocambio, $excedente, '$d->notas', $d->origenprov, $d->idmoneda, $d->tipodocumento";
     $query .= ")";
     $db->doQuery($query);
     $lastid = $db->getLastId();
@@ -508,7 +508,7 @@ $app->post('/ud', function () {
     }
     $db = new dbcpm();
     $query = "UPDATE detpresupuesto SET ";
-    $query .= "idproveedor = $d->idproveedor, idsubtipogasto = $d->idsubtipogasto, coniva = $d->coniva, monto = $d->monto, tipocambio = $d->tipocambio, notas = '$d->notas', origenprov = $d->origenprov, ";
+    $query .= "idproveedor = $d->idproveedor, idsubtipogasto = $d->idsubtipogasto, coniva = $d->coniva, escontado = $d->escontado, monto = $d->monto, tipocambio = $d->tipocambio, notas = '$d->notas', origenprov = $d->origenprov, ";
     $query .= "idmoneda = $d->idmoneda, tipodocumento = $d->tipodocumento ";
     $query .= "WHERE id = $d->id";
     $db->doQuery($query);
