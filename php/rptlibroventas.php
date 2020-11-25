@@ -17,7 +17,7 @@ $app->post('/rptlibventas', function(){
 	$mesletra = $meses[$mes-1];
 	
     $db = new dbcpm();
-    $query = "SELECT a.idtipofactura, a.fecha AS fechafactura, IF(a.fecha >= '2020-08-01', c.siglasfel, c.siglas) AS tipodocumento, a.serieadmin, a.numeroadmin, a.serie, a.numero AS documento, ";
+    $query = "SELECT a.fecha AS fechafactura, IF(a.fecha >= '2020-08-01', c.siglasfel, c.siglas) AS tipodocumento, a.serieadmin, a.numeroadmin, a.serie, a.numero AS documento, ";
 	$query.= "IF(a.anulada = 0, TRIM(a.nit), '0') AS nit, ";
     $query.= "substr(IF(a.anulada = 0, TRIM(a.nombre), 'ANULADA'),1,35) AS cliente, ";
     $query.= "IF(a.anulada = 0, IF(a.idtipoventa IN(1, 2, 4), IF(c.generaiva = 0 AND a.idtipofactura IN (1, 2, 3, 4, 5, 7, 8, 9), ROUND((a.subtotal - a.noafecto), 2), 0.00), 0.00), 0.00) AS exento, ";
