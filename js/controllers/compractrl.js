@@ -472,6 +472,7 @@
                 obj.idtipocombustible = obj.objTipoCombustible != null && obj.objTipoCombustible != undefined ? (obj.objTipoCombustible.id != null && obj.objTipoCombustible.id != undefined ? obj.objTipoCombustible.id : 0) : 0;
                 obj.idunidad = obj.idunidad != null && obj.idunidad !== undefined ? +obj.idunidad : 0;
                 obj.iddetpagopresup = obj.iddetpagopresup != null && obj.iddetpagopresup !== undefined ? obj.iddetpagopresup : 0;
+                // obj.ordencompra = obj.ordencompra !== null && obj.ordencompra !== undefined ? obj.ordencompra : 0;
                 if (obj.nombrerecibo == null || obj.nombrerecibo == undefined) {
                     delete obj.nombrerecibo;
                 }

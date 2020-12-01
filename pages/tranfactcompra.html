@@ -164,10 +164,15 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group" ng-class="{'required': +laCompra.objProveedor.recurrente === 0}">
-                                    <label class="control-label">Orden de trabajo:</label>
+                                    <!--<label class="control-label">Orden de trabajo:</label>-->
+                                    <label>Orden de trabajo:</label>
+                                    <!--<select name="selOTProv" id="selOTProv" class="form-control"
+                                        ng-model="laCompra.ordentrabajo" ng-options="obj.id as obj.ot for obj in ots"
+                                        ng-required="+laCompra.objProveedor.recurrente === 0" ng-change="fillDataCompraOt(laCompra.ordentrabajo)">
+                                    </select>-->
                                     <select name="selOTProv" id="selOTProv" class="form-control"
-                                        ng-model="laCompra.ordencompra" ng-options="obj.id as obj.ot for obj in ots"
-                                        ng-required="+laCompra.objProveedor.recurrente === 0" ng-change="fillDataCompraOt(laCompra.ordencompra)">
+                                        ng-model="laCompra.ordentrabajo" ng-options="obj.id as obj.ot for obj in ots"
+                                        ng-required="false" ng-change="fillDataCompraOt(laCompra.ordentrabajo)">
                                     </select>
                                 </div>
                             </div>
