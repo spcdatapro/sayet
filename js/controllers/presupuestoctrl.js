@@ -784,6 +784,12 @@
             });
         };
 
+        $scope.enviarRevision = function (obj) {
+            $confirm({ text: '¿Esta seguro(a) de enviar a revisión la ampliación No. ' + obj.correlativoamplia + '?', title: 'Enviar a revisión', ok: 'Sí', cancel: 'No'}).then(function () {
+                presupuestoSrvc.editRow({ idamplia: obj.id }, 'revap').then(function () { $scope.loadData(); $scope.resetAmpliacion(); });
+            });
+        };
+
         $scope.delAmpliacion = function (obj) {
             $confirm({ text: '¿Esta seguro(a) de eliminar la ampliación No. ' + obj.correlativoamplia + '?', title: 'Eliminar ampliación', ok: 'Sí', cancel: 'No' }).then(function () {
                 presupuestoSrvc.editRow({ idamplia: obj.id }, 'dap').then(function () { $scope.loadData(); $scope.resetAmpliacion(); });

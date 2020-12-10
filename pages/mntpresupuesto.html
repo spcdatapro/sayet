@@ -931,7 +931,8 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="det in lstampliaciones">
+                <tr ng-repeat="det in lstampliaciones"
+                ng-class="{presAprobado: +det.idestatuspresupuesto === 3, presPendiente: +det.idestatuspresupuesto === 2, presPendiente: +det.idestatuspresupuesto === 4}">
                     <td style="text-align: right">{{det.correlativoamplia}}</td>
                     <td style="text-align: right">{{det.monto | number:2}}</td>
                     <td><p>{{det.notas}}</p></td>
@@ -939,6 +940,11 @@
                         <button type="button" class="btn btn-danger btn-sm" ng-click="delAmpliacion(det)" ng-show="permiso.e">
                             <span class="glyphicon glyphicon-trash"></span>
                         </button>
+                    </td>
+                    <td>
+                    <button class="btn btn-info btn-sm" type="button" ng-click="enviarRevision(det)" ng-show="permiso.e">
+                        <span class="glyphicon glyphicon-share-alt"></span>
+                    </button>
                     </td>
                 </tr>
                 <tr ng-show="lstampliaciones.length > 0">
@@ -951,7 +957,7 @@
             </table>
         </div>
         <div class="modal-footer">
-            <!--<button class="btn btn-info" type="button" ng-click="ok()">Aceptar</button>-->
+            <!--<button class="btn btn-info" type="button" ng-click="enviarRevision()">Enviar a aprobación</button>-->
             <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
         </div>
     </script>

@@ -34,7 +34,8 @@ $app->post('/lstpresupuestos', function () {
     $query .= "a.total, a.notas, a.idusuario, f.nombre AS usuario, a.idestatuspresupuesto, g.descestatuspresup AS estatus, a.fechacreacion, a.fhenvioaprobacion, a.fhaprobacion, ";
     $query .= "a.idusuarioaprueba, h.nombre AS aprobadopor, a.tipo, a.idproveedor, a.idsubtipogasto, a.coniva, a.monto, a.tipocambio, a.excedente, TRIM(c.abreviatura) AS abreviaempre, a.origenprov, i.proveedor, ";
     $query .= "a.gastado AS gastado, IF(a.tipo = 1, 'OTS', 'OTM') AS tipostr, ";
-    $query .= "IF(a.tipo = 1, (SELECT id FROM detpresupuesto WHERE idpresupuesto = a.id LIMIT 1), 0) AS idot, a.tipodocumento, 0 AS correlativo ";
+    $query .= "IF(a.tipo = 1, (SELECT id FROM detpresupuesto WHERE idpresupuesto = a.id LIMIT 1), 0) AS idot, a.tipodocumento, 0 AS correlativo, ";
+    $query .= "(SELECT GROUP_CONCAT(notas SEPARATOR '; ') FROM detpresupuesto WHERE idpresupuesto = a.id) AS notasdetalle ";
     $query .= "FROM presupuesto a INNER JOIN proyecto b ON b.id = a.idproyecto INNER JOIN empresa c ON c.id = a.idempresa ";
     $query .= "INNER JOIN tipogasto d ON d.id = a.idtipogasto INNER JOIN moneda e ON e.id = a.idmoneda INNER JOIN usuario f ON f.id = a.idusuario ";
     $query .= "INNER JOIN estatuspresupuesto g ON g.id = a.idestatuspresupuesto LEFT JOIN usuario h ON h.id = a.idusuarioaprueba ";
@@ -153,12 +154,12 @@ $app->post('/lstpresupuestosm', function () {
 
 $app->get('/getpresupuesto/:idpresupuesto', function ($idpresupuesto) {
     $db = new dbcpm();
-    $query = "SELECT a.id, a.fechasolicitud, a.idproyecto, b.nomproyecto AS proyecto, a.idempresa, c.nomempresa AS empresa, a.idtipogasto, d.desctipogast AS tipogasto, a.idmoneda, e.simbolo, ";
-    $query .= "a.total, a.notas, a.idusuario, f.nombre AS usuario, a.idestatuspresupuesto, g.descestatuspresup AS estatus, a.fechacreacion, a.fhenvioaprobacion, a.fhaprobacion, ";
-    $query .= "a.idusuarioaprueba, h.nombre AS aprobadopor, a.tipo, a.idproveedor, a.idsubtipogasto, a.coniva, a.monto, a.escontado, a.tipocambio, a.excedente, TRIM(c.abreviatura) AS abreviaempre, a.origenprov, a.tipodocumento ";
-    $query .= "FROM presupuesto a INNER JOIN proyecto b ON b.id = a.idproyecto INNER JOIN empresa c ON c.id = a.idempresa ";
-    $query .= "INNER JOIN tipogasto d ON d.id = a.idtipogasto INNER JOIN moneda e ON e.id = a.idmoneda INNER JOIN usuario f ON f.id = a.idusuario ";
-    $query .= "INNER JOIN estatuspresupuesto g ON g.id = a.idestatuspresupuesto LEFT JOIN usuario h ON h.id = a.idusuarioaprueba ";
+    $query = "SELECT a.id, a.fechasolicitud, a.idproyecto, b.nomproyecto AS proyecto, a.idempresa, c.nomempresa AS empresa, a.idtipogasto, d.desctipogast AS tipogasto, a.idmoneda, e.simbolo, 
+            a.total, a.notas, a.idusuario, f.nombre AS usuario, a.idestatuspresupuesto, g.descestatuspresup AS estatus, a.fechacreacion, a.fhenvioaprobacion, a.fhaprobacion, 
+            a.idusuarioaprueba, h.nombre AS aprobadopor, a.tipo, a.idproveedor, a.idsubtipogasto, a.coniva, a.monto, a.escontado, a.tipocambio, a.excedente, TRIM(c.abreviatura) AS abreviaempre, a.origenprov, a.tipodocumento 
+            FROM presupuesto a INNER JOIN proyecto b ON b.id = a.idproyecto INNER JOIN empresa c ON c.id = a.idempresa 
+            INNER JOIN tipogasto d ON d.id = a.idtipogasto INNER JOIN moneda e ON e.id = a.idmoneda INNER JOIN usuario f ON f.id = a.idusuario 
+            INNER JOIN estatuspresupuesto g ON g.id = a.idestatuspresupuesto LEFT JOIN usuario h ON h.id = a.idusuarioaprueba ";
     $query .= "WHERE a.id = $idpresupuesto";
     print $db->doSelectASJson($query);
 });
@@ -465,7 +466,7 @@ $app->get('/getot/:idot', function ($idot) {
     $query .= "FROM detpresupuesto a INNER JOIN beneficiario b ON b.id = a.idproveedor INNER JOIN subtipogasto c ON c.id = a.idsubtipogasto INNER JOIN presupuesto d ON d.id = a.idpresupuesto ";
     $query .= "INNER JOIN moneda e ON e.id = d.idmoneda INNER JOIN proyecto f ON f.id = d.idproyecto INNER JOIN tipogasto g ON g.id = d.idtipogasto INNER JOIN empresa h ON h.id = d.idempresa ";
     $query .= "LEFT JOIN moneda i ON i.id = a.idmoneda ";
-    $query .= "WHERE a.origenprov = 2 AND a.id = $idot";
+    $query .= "WHERE a.origenprov = 2 AND a.id = $idot ";
     print $db->doSelectASJson($query);
 });
 
@@ -916,10 +917,10 @@ $app->post('/calcisr', function () {
 $app->get('/ampliapresup/:iddetpresup', function ($iddetpresup) {
     $db = new dbcpm();
 
-    $query = "SELECT id, idpresupuesto, iddetpresupuesto, correlativoamplia, monto, notas ";
-    $query .= "FROM ampliapresupuesto ";
-    $query .= "WHERE iddetpresupuesto = $iddetpresup ";
-    $query .= "ORDER BY correlativoamplia";
+    $query = "SELECT id, idpresupuesto, iddetpresupuesto, correlativoamplia, monto, notas, idestatuspresupuesto 
+    FROM ampliapresupuesto 
+    WHERE iddetpresupuesto = $iddetpresup 
+    ORDER BY correlativoamplia ";
 
     print $db->doSelectASJson($query);
 });
@@ -1014,6 +1015,168 @@ $app->post('/daot', function () {
         unlink('../' . $ubicacion);
     }
     $query = "DELETE FROM ot_adjunto WHERE id = $d->id";
+    $db->doQuery($query);
+});
+
+$app->get('/pagopencont', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "SELECT a.id, c.abreviatura AS empresa, d.nomproyecto as proyecto, e.nombre AS proveedor, 
+            CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, f.simbolo, a.monto, c.ordensumario, c.id 
+            AS idempresa, a.tipocambio, a.notas, a.idproveedor, a.origenprov
+            FROM detpresupuesto a
+            INNER JOIN presuuesto b ON b.id = a.idpresupuesto
+            INNER JOIN empresa c ON c.id = b.idempresa
+            INNER JOIN proyecto d ON d.id = b.idproyecto
+            INNER JOIN proveedor e ON e.id = a.idproveedor
+            INNER JOIN moneda f ON f.id = a.idmoneda
+            WHERE a.idestatuspresupuesto = 3 AND a.escontado = 1 AND a.id NOT IN (
+                SELECT iddetpresup 
+                FROM tranban 
+                WHERE tipotrans IN('C', 'B') AND iddetpresup > 0 AND anulado = 0 AND beneficiario NOT LIKE '%anula%' AND concepto NOT LIKE '%anula%') " ; 
+
+    //print $db->doSelectASJson($query);
+    $queryEmpresas = "SELECT DISTINCT z.idempresa, z.empresa FROM ($query) z ORDER BY z.ordensumario";
+    //print $queryEmpresas;
+    print json_encode(['empresas' => $db->getQuery($queryEmpresas), 'pagos' => $db->getQuery($query)]);
+});
+
+$app->post('/genpagoscontado', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    if (!isset($d->tipo)) {
+        $d->tipo = 'C';
+    }
+    $db = new dbcpm();
+
+    $cntPagos = count($d->pagos);
+    $obj = new stdClass();
+    $chqGenerados = '';
+    for ($i = 0; $i < $cntPagos; $i++) {
+        $pago = $d->pagos[$i];
+
+        $fldCorrela = 'correlativo';
+        $getCorrela = "SELECT correlativo FROM banco WHERE id = $pago->idbanco";
+
+        if (strtoupper(trim($d->tipo)) === 'B') {
+            $fldCorrela = 'correlativond';
+            $getCorrela = "SELECT CONCAT('9999', correlativond) FROM banco WHERE id = $pago->idbanco";
+        }
+
+        $query = "SELECT a.idmoneda, b.eslocal FROM banco a INNER JOIN moneda b ON b.id = a.idmoneda WHERE a.id = $pago->idbanco";
+        $datosMonedaBanco = $db->getQuery($query)[0];
+
+        $query = "SELECT b.idmoneda, b.tipocambio, c.eslocal FROM detpresupuesto b INNER JOIN moneda c ON c.id = b.idmoneda WHERE b.id = $pago->idpago";
+        $datosMonedaOt = $db->getQuery($query)[0];
+
+        $seMultiplica = true;
+        $noConvertir = true;
+
+        if ((int)$datosMonedaOt->idmoneda !== (int)$datosMonedaBanco->idmoneda) {
+            $noConvertir = false;
+            if ((int)$datosMonedaOt->eslocal == 1 && (int)$datosMonedaBanco->eslocal == 0) {
+                $seMultiplica = false;
+            }
+        }
+
+        $query = "SELECT b.monto, b.notas, c.retensionisr, b.idproveedor, c.chequesa AS beneficiario, b.origenprov, b.id AS iddetpresup
+        FROM detpresupuesto b INNER JOIN proveedor c ON c.id = b.idproveedor WHERE b.id = $pago->idpago AND b.origenprov = 1 UNION
+        SELECT b.monto, b.notas, a.retensionisr, b.idproveedor, c.nombre AS beneficiario, b.origenprov, b.id AS iddetpresup
+        FROM detpresupuesto b INNER JOIN beneficiario c ON c.id = b.idproveedor INNER JOIN proveedor a ON b.id = a.id WHERE b.id = $pago->idpago AND b.origenprov = 2 ";
+        $detspago = $db->getQuery($query);
+        if (count($detspago) > 0) {
+            $detpago = $detspago[0];
+
+            $isrAQuitar = 0.00;
+            if ((int)$detpago->retensionisr == 1) {
+                $isrAQuitar = $db->calculaISR($db->calculaMontoBase($detpago->monto));
+            }
+
+            $monto = 0.00;
+            if ($noConvertir) {
+                $monto = $detpago->monto - ((int)$datosMonedaOt->eslocal == 1 ? $isrAQuitar : round($isrAQuitar / (float)$datosMonedaOt->tipocambio, 2));
+            } else {
+                if ($seMultiplica) {
+                    $monto = round((float)$detpago->monto * (float)$datosMonedaOt->tipocambio, 2) - $isrAQuitar;
+                } else {
+                    $monto = round(((float)$detpago->monto / (float)$datosMonedaOt->tipocambio) - ($isrAQuitar / (float)$datosMonedaOt->tipocambio), 2);
+                }
+            }
+
+            $query = "INSERT INTO tranban(";
+            $query .= "idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, origenbene, idbeneficiario, tipocambio, iddetpresup, anticipo, correlativond";
+            $query .= ") VALUES(";
+            $query .= "$pago->idbanco, '$d->tipo', '$d->fecha', $monto, '$detpago->beneficiario', ";
+            $query .= "'$detpago->notas', ($getCorrela), $detpago->origenprov, $detpago->idproveedor, $datosMonedaOt->tipocambio, $detpago->iddetpresup, 1,";
+            $query .= strtoupper(trim($d->tipo)) === 'B' ? "(SELECT correlativond FROM banco WHERE id = $pago->idbanco)" : '0';
+            $query .= ")";
+            $db->doQuery($query);
+            $lastid = $db->getLastId();
+            if ((int)$lastid > 0) {
+                $db->doQuery("UPDATE banco SET $fldCorrela = $fldCorrela + 1 WHERE id = $pago->idbanco");
+
+                $obj->tipocambio = $datosMonedaOt->tipocambio;
+                $obj->idbanco = $pago->idbanco;
+                $obj->origenbene = $detpago->origenprov;
+                $obj->monto = $monto;
+                $obj->concepto = $detpago->notas;
+                //$url = 'http://localhost/sytdev/php/tranbanc.php/doinsdetcont'; //Desarrollo
+                $url = 'http://localhost/sayet/php/tranbanc.php/doinsdetcont'; //Producción
+                $data = ['obj' => $obj, 'lastid' => $lastid];
+                $db->CallJSReportAPI('POST', $url, json_encode($data));
+
+                //$query = "UPDATE detpagopresup SET pagado = 1, origen = 1, idorigen = $lastid WHERE id = $pago->idpago";
+                //$db->doQuery($query);
+                if ($chqGenerados !== '') {
+                    $chqGenerados .= ', ';
+                }
+                $chqGenerados .= $db->getOneField("SELECT numero FROM tranban WHERE id = $lastid");
+            }
+        }
+    }
+    print json_encode(['segeneraron' => $chqGenerados !== '', 'cheques' => $chqGenerados]);
+});
+
+$app->post('/revap', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "UPDATE ampliapresupuesto SET idestatuspresupuesto = 2 
+    WHERE id = $d->idamplia ";
+    $db->doQuery($query);
+});
+
+$app->get('/aprobacionamp', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "SELECT a.id, CONCAT(b.idpresupuesto, '-', b.correlativo) AS ot, e.iniciales AS usuario, c.nombre AS proveedor, a.correlativoamplia AS ampliacion, f.simbolo AS moneda, a.monto, a.notas, 0 AS aprobada, 0 AS rechazada 
+    FROM ampliapresupuesto a 
+    INNER JOIN detpresupuesto b ON a.idpresupuesto = b.id
+    INNER JOIN proveedor c ON b.idproveedor = c.id
+    INNER JOIN presupuesto d ON b.idpresupuesto = d.id
+    INNER JOIN usuario e ON e.id = d.idusuario
+    INNER JOIN moneda f ON f.id = b.idmoneda
+    WHERE a.idestatuspresupuesto = 2 "; 
+
+    print $db->doSelectASJson($query);
+});
+
+$app->post('/apamp', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "UPDATE ampliapresupuesto SET idestatuspresupuesto = 3 
+    WHERE id = $d->idamplia ";
+    $db->doQuery($query);
+});
+
+$app->post('/rechamp', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "UPDATE ampliapresupuesto SET idestatuspresupuesto = 4 
+    WHERE id = $d->idamplia ";
     $db->doQuery($query);
 });
 

@@ -594,10 +594,12 @@ $app->get('/comprobante/:id', function($id) use ($app) {
 
 $app->get('/selots/:idproveedor/:idempresa', function($idproveedor, $idempresa){
     $db = new dbcpm();
-    $query = "SELECT a.id, CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, b.idproyecto, a.monto, a.idmoneda, a.notas 
-              FROM detpresupuesto a
-              INNER JOIN presupuesto b ON b.id = a.idpresupuesto
-              WHERE a.origenprov = 1 AND a.idestatuspresupuesto = 3 AND a.idproveedor = $idproveedor AND b.idempresa = $idempresa";
+    $query = "SELECT a.id, CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, b.idproyecto, ROUND(SUM((a.monto + c.monto) * 1.10), 2) as monto, a.idmoneda, a.notas
+            FROM detpresupuesto a
+            INNER JOIN presupuesto b ON b.id = a.idpresupuesto
+            INNER JOIN ampliapresupuesto c ON c.idpresupuesto = a.idpresupuesto
+            WHERE a.origenprov = 1 AND a.idestatuspresupuesto = 3 AND a.idproveedor = 1 AND c.idestatuspresupuesto = 3 
+            AND a.idproveedor = $idproveedor AND b.idempresa = $idempresa";
     print $db->doSelectASJson($query);
 });
 

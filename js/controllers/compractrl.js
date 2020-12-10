@@ -38,6 +38,7 @@
             $scope.periodoCerrado = false;
             $scope.presupuesto = {};
             $scope.ot = {};
+            $scope.montoMaximo = 9999999;
 
             $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
 
@@ -93,12 +94,10 @@
                 const idx = $scope.ots.findIndex(i => +i.id === +idot);
                 if (idx > -1) {
                     const otSelected = $scope.ots[idx];
-                    console.log('OT = ', otSelected);
-                    $scope.laCompra.totfact = +otSelected.monto;
-                    $scope.calcular();
                     $scope.laCompra.objMoneda = $scope.monedas.find(m => +m.id === +otSelected.idmoneda);
                     $scope.laCompra.idproyecto = otSelected.idproyecto;
                     $scope.laCompra.conceptomayor = otSelected.notas;
+                    $scope.montoMaximo = +otSelected.monto;
                 }
             }
 
@@ -207,6 +206,7 @@
                 }
                 return false;
             }
+            
 
             calcIDP = (genidp) => {
                 //if (genidp && $scope.laCompra.objTipoCombustible != null && $scope.laCompra.objTipoCombustible != undefined) {
@@ -237,6 +237,14 @@
                 exento = parseFloat($scope.laCompra.idp) + noAfecto;
                 subtotal = totFact - exento;
 
+                if (totFact > $scope.montoMaximo) {
+                    toaster.pop({
+                        type: 'error', title: 'Error en el Total.', 
+                        body: 'El monto del total no puede ser mayor al total de la ot.', timeout: 7000
+                    });
+                    $scope.laCompra.totfact = undefined;
+                    totFact = 0.00;
+                }
                 if (noAfecto <= totFact) {
                     $scope.laCompra.subtotal = geniva ? parseFloat(subtotal / 1.12).toFixed(2) : totFact;
                     $scope.laCompra.iva = geniva ? parseFloat($scope.laCompra.subtotal * 0.12).toFixed(2) : 0.00;
