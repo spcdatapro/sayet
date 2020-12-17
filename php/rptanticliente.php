@@ -339,11 +339,16 @@ function queryFacturas($d){
     $cliente = '';
     if(trim($d->cliente) != ''){ $cliente = str_replace(' ', '%', trim($d->cliente)); }
 
-    $qFacts = "
-        SELECT a.idempresa, b.nomempresa AS empresa, b.abreviatura AS abreviaempresa, a.idproyecto, IF(a.idproyecto = 0, TRIM(d.nomproyecto), TRIM(e.nomproyecto)) AS proyecto, a.idcliente, IF(a.idcliente = 0, TRIM(a.nombre), 
+    $qFacts = "SELECT a.idempresa, b.nomempresa AS empresa, b.abreviatura AS abreviaempresa, a.idproyecto, IF(a.idproyecto = 0, TRIM(d.nomproyecto), TRIM(e.nomproyecto)) AS proyecto, a.idcliente, IF(a.idcliente = 0, TRIM(a.nombre), 
         TRIM(f.nombre)) AS cliente,
-        a.id AS idfactura, a.serie, a.numero, a.fecha, DATEDIFF('$d->falstr', a.fecha) AS dias, ROUND(a.subtotal, 2) AS subtotal, ROUND(a.retisr, 2) AS retisr, ROUND(a.retiva, 2) AS retiva, ROUND(a.total, 2) AS monto,
-        IFNULL(g.montopagado, 0.00) AS montopagado, ROUND(a.total, 2) - IFNULL(g.montopagado, 0.00) AS saldo, b.ordensumario, a.serieadmin, a.numeroadmin
+        a.id AS idfactura, a.serie, a.numero, a.fecha, DATEDIFF('$d->falstr', a.fecha) AS dias,
+        ROUND(a.subtotal, 2) AS subtotal,
+        ROUND(a.retisr, 2) AS retisr,
+        ROUND(a.retiva, 2) AS retiva,
+        ROUND(a.total, 2) AS monto,
+        IFNULL(g.montopagado, 0.00) AS montopagado,
+        ROUND(a.total, 2) - IFNULL(g.montopagado, 0.00) AS saldo,
+        b.ordensumario, a.serieadmin, a.numeroadmin
         FROM factura a
         INNER JOIN empresa b ON b.id = a.idempresa
         LEFT JOIN contrato c ON c.id = a.idcontrato
@@ -351,13 +356,23 @@ function queryFacturas($d){
         LEFT JOIN proyecto e ON e.id = a.idproyecto
         LEFT JOIN cliente f ON f.id = a.idcliente
         LEFT JOIN (
-            SELECT z.idfactura, SUM(z.monto) AS montopagado
-            FROM detcobroventa z
-            INNER JOIN recibocli y ON y.id = z.idrecibocli    
-            WHERE y.fecha <= '$d->falstr'
-            GROUP BY z.idfactura
+            SELECT x.idfactura, SUM(x.montopagado) AS montopagado
+            FROM (
+                SELECT z.idfactura, SUM(z.monto) AS montopagado
+                FROM detcobroventa z
+                INNER JOIN recibocli y ON y.id = z.idrecibocli    
+                WHERE y.fecha <= '$d->falstr'
+                GROUP BY z.idfactura
+                UNION    
+                SELECT z.idfacturaafecta AS idfactura, SUM(z.total) AS montopagado
+                FROM factura z 
+                WHERE z.idtipofactura = 9 AND z.fecha <= '$d->falstr'
+                GROUP BY z.idfacturaafecta
+            ) x
+            GROUP BY x.idfactura
         ) g ON a.id = g.idfactura
-        WHERE a.fecha <= '$d->falstr' AND a.idfox IS NULL AND (a.anulada = 0 OR (a.anulada = 1 AND a.fechaanula > '$d->falstr')) AND ROUND(a.total, 2) - IFNULL(g.montopagado, 0.00) <> 0 AND IF(ISNULL(g.idfactura) AND a.pagada = 1, 1 = 0, 1 = 1) ";
+        WHERE a.idtipofactura <> 9 AND a.fecha <= '$d->falstr' AND a.idfox IS NULL AND (a.anulada = 0 OR (a.anulada = 1 AND a.fechaanula > '$d->falstr')) AND ROUND(a.total, 2) - IFNULL(g.montopagado, 0.00) <> 0 AND 
+        IF(ISNULL(g.idfactura) AND a.pagada = 1, 1 = 0, 1 = 1) ";
     $qFacts.= (int)$d->abreviado === 0 ? '' : "AND DATEDIFF('$d->falstr', a.fecha) > 60 ";
     $qFacts.= (int)$d->vernegativos === 1 ? '' : ('AND (ROUND(a.total, 2) - IFNULL(g.montopagado, 0.00)) '.((int)$d->pagoextra == 0 ? '>= 0 ' : '< 0 '));
     $qFacts.= (int)$d->idempresa > 0 ? "AND a.idempresa = $d->idempresa " : '';
