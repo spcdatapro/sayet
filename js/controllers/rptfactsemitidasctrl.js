@@ -55,8 +55,14 @@
             $scope.params.idproyecto = $scope.params.idproyecto != null && $scope.params.idproyecto !== undefined ? $scope.params.idproyecto : 0;
             $scope.params.idtsventa = $scope.params.idtsventa != null && $scope.params.idtsventa !== undefined ? $scope.params.idtsventa : 0;
             $scope.params.soloanuladas = $scope.params.soloanuladas != null && $scope.params.soloanuladas !== undefined ? $scope.params.soloanuladas : 0;
-            if(+$scope.params.tipo === 4){ reporte = 'ByqyuVFnW'; }
-            if(+$scope.params.tipo === 5){reporte = 'B1nLiotFw'}
+
+            switch(+$scope.params.tipo) {
+                case 4: reporte = 'ByqyuVFnW'; break;
+                case 5: reporte = 'B1nLiotFw'; break;
+                case 6: reporte = 'HkRpuReRP'; break;
+                default: reporte = 'BJW6LWoYb';
+            }
+
             //console.log($scope.params); return;
             jsReportSrvc.getPDFReport(test ? '' : reporte, $scope.params).then((pdf) => $scope.content = pdf);
         };       
