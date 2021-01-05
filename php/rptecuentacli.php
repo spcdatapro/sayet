@@ -71,7 +71,7 @@ $app->post('/rptecuentacli', function(){
                             inner join sayet.moneda e on c.idmoneda=e.id
 							left join sayet.contrato a on c.idcontrato=a.id
                             left join sayet.proyecto b on b.id=a.idproyecto
-                        where c.anulada=0  
+                        where c.anulada=0 and c.idtipofactura <> 9 
                             and c.fecha<='" . $d->falstr . "'
 							and c.idmoneda = " . $dmon->idmoneda ;
 			$querydet1.= (int)$d->idcontrato == 0 ? '' : " AND c.idcontrato = $d->idcontrato AND a.id = $d->idcontrato ";
@@ -87,9 +87,15 @@ $app->post('/rptecuentacli', function(){
                                 inner join sayet.detcobroventa b on a.id=b.idfactura
                                 inner join sayet.recibocli c on b.idrecibocli=c.id
                                 left join sayet.tranban d on c.idtranban=d.id
-                            where c.anulado=0 
+                            where a.idtipofactura <> 9 and c.anulado=0 
                                 and c.fecha<='" . $d->falstr . "'
 								and a.idmoneda = " . $dmon->idmoneda;
+			$querydet2.= (int)$d->idcontrato == 0 ? '' : " AND a.idcontrato = $d->idcontrato ";
+			$querydet2.=" UNION 
+				SELECT 2 as orden, a.idcliente as cliente, a.idfacturaafecta as venta, a.fecha, CONCAT(a.serie, '-', a.numero, ' (', a.serieadmin, '-', a.numeroadmin, ')') as documento, 'NC' as tipo, a.total as monto, 
+				'Q' as codigo, a.tipocambio as tc_cambio, a.id as idpago, a.idfox 
+				from sayet.factura a 
+				where a.idtipofactura = 9 and a.anulada = 0 and a.serie is not null and a.numero is not null and a.fecha <= '$d->falstr' and a.idmoneda = $dmon->idmoneda ";
 			$querydet2.= (int)$d->idcontrato == 0 ? '' : " AND a.idcontrato = $d->idcontrato ";
 
 			$querydet3 = ") as b
@@ -103,9 +109,16 @@ $app->post('/rptecuentacli', function(){
                                 inner join sayet.detcobroventa b on a.id=b.idfactura
                                 inner join sayet.recibocli c on b.idrecibocli=c.id
                                 left join sayet.tranban d on c.idtranban=d.id
-                            where c.anulado=0
+                            where a.idtipofactura <> 9 and c.anulado=0
 								and a.idmoneda = " . $dmon->idmoneda;
 			$querydet3.= (int)$d->idcontrato == 0 ? '' : " AND a.idcontrato = $d->idcontrato ";
+			$querydet3.= " UNION 
+				SELECT 2 as orden, a.idcliente as cliente, a.idfacturaafecta as venta, a.fecha, CONCAT(a.serie, '-', a.numero, ' (', a.serieadmin, '-', a.numeroadmin, ')') as documento, 'NC' as tipo, a.total as monto, 
+				'Q' as codigo, a.tipocambio as tc_cambio, a.id as idpago, a.idfox 
+				from sayet.factura a 
+				where a.idtipofactura = 9 and a.anulada = 0 and a.serie is not null and a.numero is not null and a.idmoneda = $dmon->idmoneda ";
+			$querydet3.= (int)$d->idcontrato == 0 ? '' : " AND a.idcontrato = $d->idcontrato ";
+
 			$querydet3.= ") as b
 						group by venta
 					) as c on a.venta=c.venta
@@ -184,10 +197,15 @@ $app->post('/rptecuentacli', function(){
 										inner join sayet.detcobroventa b on a.id=b.idfactura
 										inner join sayet.recibocli c on b.idrecibocli=c.id
 										left join sayet.tranban d on c.idtranban=d.id
-									where c.anulado=0 
+									where a.idtipofactura <> 9 and c.anulado=0 
 										and c.fecha<='" . $d->falstr . "' and a.id=" . $hac->venta . " and a.idmoneda = " . $dmon->idmoneda . "";
 							$qdetpago.= (int)$d->idcontrato == 0 ? '' : " AND a.idcontrato = $d->idcontrato ";
-
+							$qdetpago.= " UNION SELECT a.idcliente as cliente, a.idfacturaafecta as venta, a.fecha, CONCAT(a.serie, '-', a.numero, ' (', a.serieadmin, '-', a.numeroadmin, ')') as documento, 'NC' as tipotrans, 
+							a.total as monto,  CONCAT(a.serie, '-', a.numero, ' (', a.serieadmin, '-', a.numeroadmin, ')') as recibo
+							from sayet.factura a
+							where a.idtipofactura = 9 and a.anulada = 0 and a.fecha <= '$d->falstr' and a.idfacturaafecta = $hac->venta and a.idmoneda = $dmon->idmoneda ";
+							$qdetpago.= (int)$d->idcontrato == 0 ? '' : " AND a.idcontrato = $d->idcontrato ";
+							
 							$qdfac = $db->getQuery($qdetpago);
 							//echo $qdetpago;
 							foreach ($qdfac as $row) {
