@@ -261,7 +261,7 @@ $app->post('/avanceot', function(){
 
     $query = "SELECT a.id, CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, DATE_FORMAT(b.fecha, '%d/%m/%Y') AS fechasolicitud, 
             CONCAT(c.siglas,'-', b.tipotrans, '-', b.beneficiario) AS datosbanco, FORMAT(b.monto, 2) AS pagado, FORMAT(e.totfact, 2) AS cobro, 
-            FORMAT(e.isr, 2) AS isr, b.tipocambio, CONCAT(e.serie, '-', e.documento) AS factura, b.concepto, d.simbolo 
+            FORMAT(e.isr, 2) AS isr, ROUND(b.tipocambio, 5) AS tipocambio, CONCAT(e.serie, '-', e.documento) AS factura, b.concepto, d.simbolo 
             AS monedaot, f.simbolo AS monedafac
             FROM detpresupuesto a 
             INNER JOIN tranban b ON a.id = b.iddetpresup
@@ -272,7 +272,7 @@ $app->post('/avanceot', function(){
             WHERE a.id = $d->idot";
     $ordentrabajo = $db->getQuery($query);
 
-    $query = "SELECT CONCAT(IF(a.tipocambio > 1, (SELECT IFNULL(IF(k.iddetpresupuesto = a.id, ROUND(SUM(b.monto + j.isr) * 100 / (a.monto + k.monto), 2), 
+    $query = "SELECT ROUND(a.tipocambio, 5) AS tipocambio, CONCAT(IF(a.tipocambio > 1, (SELECT IFNULL(IF(k.iddetpresupuesto = a.id, ROUND(SUM(b.monto + j.isr) * 100 / (a.monto + k.monto), 2), 
         ROUND(SUM(b.monto + j.isr) * 100 / a.monto, 2)), 0) 
         FROM detpresupuesto a 
         INNER JOIN tranban b ON a.id = b.iddetpresup 

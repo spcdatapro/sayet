@@ -603,23 +603,19 @@ $app->get('/selots/:idproveedor/:idempresa', function($idproveedor, $idempresa){
 
 $app->get('/montoots/:idot', function($idot){
     $db = new dbcpm();
-    $query = "SELECT ROUND(IF(a.tipocambio > 1, (SELECT IF(b.iddetpresupuesto = a.id, ROUND(SUM((a.monto + b.monto) * 1.10 * a.tipocambio), 2), a.monto * 1.10)
+    $query = "SELECT ROUND(IF(a.tipocambio > 1, (SELECT IF(b.iddetpresupuesto = a.id, a.monto * a.tipocambio +  SUM(b.monto) * b.tipocambio, a.monto * 1.10 * a.tipocambio)
             FROM detpresupuesto a 
             INNER JOIN ampliapresupuesto b ON a.id = b.iddetpresupuesto
-            WHERE a.id = $idot AND a.idestatuspresupuesto = 3 AND IF (b.iddetpresupuesto = a.id, b.idestatuspresupuesto = 3, 0)) -
-            ((SELECT IFNULL(SUM(totfact) + SUM(isr), 0) 
-            FROM compra WHERE ordentrabajo = $idot AND tipocambio = 1) +
-            (SELECT IFNULL((SUM(totfact) + SUM(isr)) * tipocambio, 0)
-            FROM compra WHERE ordentrabajo = $idot AND tipocambio != 1)), 
-            (SELECT IF(b.iddetpresupuesto = a.id, ROUND(SUM((a.monto + b.monto) * 1.10), 2), a.monto * 1.10)
+            WHERE a.id = $idot AND a.idestatuspresupuesto = 3 AND IF (b.iddetpresupuesto = a.id, b.idestatuspresupuesto = 3, 0)),
+            (SELECT IF(b.iddetpresupuesto = a.id, (a.monto + SUM(b.monto)) * 1.10, a.monto * 1.10)
             FROM detpresupuesto a 
             INNER JOIN ampliapresupuesto b ON a.id = b.iddetpresupuesto
-            WHERE a.id = $idot AND a.idestatuspresupuesto = 3 AND IF (b.iddetpresupuesto = a.id, b.idestatuspresupuesto = 3, 0)) -
-            ((SELECT IFNULL(SUM(totfact) + SUM(isr), 0) 
+            WHERE a.id = $idot AND a.idestatuspresupuesto = 3 AND IF (b.iddetpresupuesto = a.id, b.idestatuspresupuesto = 3, 0))) -
+            ((SELECT IFNULL(SUM(totfact), 0) 
             FROM compra WHERE ordentrabajo = $idot AND tipocambio = 1) +
-            (SELECT IFNULL((SUM(totfact) + SUM(isr)) * tipocambio, 0)
-            FROM compra WHERE ordentrabajo = $idot AND tipocambio != 1))), 2) AS monto
-            FROM detpresupuesto a 
+            (SELECT IFNULL(SUM(totfact) * tipocambio, 0)
+            FROM compra WHERE ordentrabajo = $idot AND tipocambio != 1)), 2) AS monto
+            FROM detpresupuesto a
             WHERE a.id = $idot ";
 
     $monto = $db->getOneField($query);
