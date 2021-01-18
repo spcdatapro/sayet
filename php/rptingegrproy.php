@@ -85,7 +85,7 @@ $app->post('/resumen', function () use ($db) {
         $cntConceptos = count($conceptos);
         $totIngresos = 0.00;
         for ($i = 0; $i < $cntConceptos; $i++) {
-            $query = "SELECT ROUND(SUM(b.preciotot / 1.12), 2) ";
+            $query = "SELECT ROUND(SUM((b.preciotot * IF(a.idtipofactura <> 9, 1, -1)) / 1.12), 2) ";
             $query .= "FROM factura a INNER JOIN detfact b ON a.id = b.idfactura INNER JOIN contrato c ON c.id = a.idcontrato INNER JOIN tiposervicioventa d ON d.id = b.idtiposervicio ";
             $query .= "WHERE a.anulada = 0 AND MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio AND c.idproyecto = $d->idproyecto AND a.idempresa = $d->idempresa AND b.idtiposervicio = " . $conceptos[$i]->idtiposervicio;
             $montoIngreso = $db->getOneField($query);
@@ -209,12 +209,15 @@ $app->post('/detalle', function () use ($db) {
     $cntConceptos = count($conceptos);
     $totIngresos = 0.00;
     for ($i = 0; $i < $cntConceptos; $i++) {
-        $query = "SELECT ROUND(SUM(b.preciotot / 1.12), 2) ";
+        $query = "SELECT ROUND(SUM((b.preciotot * IF(a.idtipofactura <> 9, 1, -1)) / 1.12), 2) ";
         $query .= "FROM factura a INNER JOIN detfact b ON a.id = b.idfactura INNER JOIN contrato c ON c.id = a.idcontrato INNER JOIN tiposervicioventa d ON d.id = b.idtiposervicio ";
         $query .= "WHERE a.anulada = 0 AND MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio AND c.idproyecto = $d->idproyecto AND a.idempresa = $d->idempresa AND b.idtiposervicio = " . $conceptos[$i]->idtiposervicio;
         $montoIngreso = $db->getOneField($query);
 
-        $query = "SELECT a.id AS idfactura, e.nombre AS cliente, e.nombrecorto AS abreviacliente, c.nocontrato, UnidadesPorContrato(c.id) AS unidadescontrato, a.serie, a.numero, FORMAT(TRUNCATE(b.preciotot / 1.12, 2), 2) AS totalneto, ";
+        $query = "SELECT a.id AS idfactura, e.nombre AS cliente, e.nombrecorto AS abreviacliente, c.nocontrato, UnidadesPorContrato(c.id) AS unidadescontrato, ";
+        $query.= "TRIM(CONCAT(a.serie, IFNULL(CONCAT(' (', a.serieadmin, ')'), ''), ' - ')) AS serie, TRIM(CONCAT(a.numero, IF(a.numeroadmin > 0, CONCAT(' (', a.numeroadmin, ')'), ''))) AS numero, ";        
+        // $query.= "FORMAT(TRUNCATE((b.preciotot * IF(a.idtipofactura <> 9, 1, -1)) / 1.12, 2), 2) AS totalneto, ";
+        $query.= "@totalneto := FORMAT(TRUNCATE((b.preciotot * IF(a.idtipofactura <> 9, 1, -1)) / 1.12, 2), 2) AS totalnetocalc, IF(a.idtipofactura <> 9, @totalneto, CONCAT( REPLACE(@totalneto, '-', '('), ')' )) AS totalneto, ";
         $query .= "FORMAT(MCuadPorContrato(c.id), 4) AS mcuadcontrato, FORMAT(IF(MCuadPorContrato(c.id) > 0, ((b.preciotot / 1.12) / MCuadPorContrato(c.id)), 0.00), 2) AS montomcuad ";
         $query .= "FROM factura a INNER JOIN detfact b ON a.id = b.idfactura INNER JOIN contrato c ON c.id = a.idcontrato INNER JOIN tiposervicioventa d ON d.id = b.idtiposervicio INNER JOIN cliente e ON e.id = a.idcliente ";
         $query .= "WHERE a.anulada = 0 AND MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio AND c.idproyecto = $d->idproyecto AND a.idempresa = $d->idempresa AND b.idtiposervicio = " . $conceptos[$i]->idtiposervicio . " ";

@@ -205,7 +205,7 @@ $app->post('/modmontos', function(){
     $query.= "WHERE a.id = $d->id";
     $old = $db->getQuery($query)[0];
 
-    $query = "UPDATE factura SET total = $d->total, retisr = $d->retisr, retiva = $d->retiva WHERE id = $d->id";
+    $query = "UPDATE factura SET total = $d->total, retisr = $d->retisr, retiva = $d->retiva WHERE (id = $d->id OR idfacturaafecta = $d->id)";
     $db->doQuery($query);
 
     $cambio = "Modificación a la venta $old->factura de los montos: TOTAL A COBRAR = $old->moneda $old->total, ";

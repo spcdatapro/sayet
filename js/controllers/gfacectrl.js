@@ -126,10 +126,12 @@
             cadena.forEach(function (cad) {
                 linea = cad.replace('\r', '').replace('\n', '').split('|');
                 // console.log(linea);
-                facturas.push({ id: +linea[8], firma: linea[7], serie: linea[2], numero: linea[3], nit: linea[4], nombre: linea[9], respuesta: cad });
-            });
-            // return;
-            // console.log(facturas); return;
+                const qTipo = linea[0] || '';
+                if ((qTipo.trim().toUpperCase().indexOf('FACT') > -1) || (qTipo.trim().toUpperCase().indexOf('NCRE') > -1)) {
+                    facturas.push({ id: +linea[8], firma: linea[7], serie: linea[2], numero: linea[3], nit: linea[4], nombre: linea[9], respuesta: cad });                    
+                }
+            });            
+            // console.log(facturas); //return;
             if (facturas.length > 0) {
                 facturacionSrvc.respuestaGFACE(facturas).then(function (d) {
                     //console.log(d.estatus);
@@ -137,6 +139,8 @@
                     $scope.content = '';
                     $('#txtFile').val(undefined);
                 })
+            } else {
+                toaster.pop({ type: 'error', title: 'Archivo de respuesta', body: 'Hubo un error al cargar el archivo, por favor revise que la información es correcta.', timeout: 9000 });
             }
         };
 
