@@ -105,7 +105,7 @@ $app->post('/buscar', function(){
     DATE_FORMAT(a.fechafactura, '%d/%m/%Y') AS fechafactura, DATE_FORMAT(a.fechaingreso, '%d/%m/%Y') AS fechaingreso, DATE_FORMAT(a.fechapago, '%d/%m/%Y') AS fechapago,
     a.mesiva, a.idtipocompra, f.desctipocompra AS tipocompra, a.conceptomayor AS concepto, IF(a.creditofiscal = 1, 'SI', '') AS creditofiscal, 
     IF(a.extraordinario = 1, 'SI', '') AS extraordinario, a.totfact, a.noafecto, a.subtotal, a.iva, a.isr, a.idtipocombustible, g.descripcion AS tipocombustible, a.galones,
-    a.idp, a.idmoneda, h.simbolo AS moneda, a.tipocambio, i.tranban, a.idproyecto, a.idunidad, a.nombrerecibo ";
+    a.idp, a.idmoneda, h.simbolo AS moneda, a.tipocambio, i.tranban, a.idproyecto, a.ordentrabajo, a.idunidad, a.nombrerecibo ";
     $query.= "FROM compra a LEFT JOIN empresa b ON b.id = a.idempresa LEFT JOIN reembolso c ON c.id = a.idreembolso LEFT JOIN tipofactura d ON d.id = a.idtipofactura 
     LEFT JOIN proveedor e ON e.id = a.idproveedor LEFT JOIN tipocompra f ON f.id = a.idtipocompra LEFT JOIN tipocombustible g ON g.id = a.idtipocombustible 
     LEFT JOIN moneda h ON h.id = a.idmoneda LEFT JOIN (
@@ -594,13 +594,37 @@ $app->get('/comprobante/:id', function($id) use ($app) {
 
 $app->get('/selots/:idproveedor/:idempresa', function($idproveedor, $idempresa){
     $db = new dbcpm();
-    $query = "SELECT a.id, CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, b.idproyecto, ROUND(SUM((a.monto + c.monto) * 1.10), 2) as monto, a.idmoneda, a.notas
-            FROM detpresupuesto a
-            INNER JOIN presupuesto b ON b.id = a.idpresupuesto
-            INNER JOIN ampliapresupuesto c ON c.idpresupuesto = a.idpresupuesto
-            WHERE a.origenprov = 1 AND a.idestatuspresupuesto = 3 AND a.idproveedor = 1 AND c.idestatuspresupuesto = 3 
-            AND a.idproveedor = $idproveedor AND b.idempresa = $idempresa";
+    $query = "SELECT a.id, CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, b.idproyecto, a.idmoneda, a.notas
+            FROM detpresupuesto a 
+            INNER JOIN presupuesto b ON b.id = a.idpresupuesto 
+            WHERE a.idestatuspresupuesto = 3 AND a.idproveedor = $idproveedor AND b.idempresa = $idempresa ";
     print $db->doSelectASJson($query);
+});
+
+$app->get('/montoots/:idot', function($idot){
+    $db = new dbcpm();
+    $query = "SELECT ROUND(IF(a.tipocambio > 1, (SELECT IF(b.iddetpresupuesto = a.id, ROUND(SUM((a.monto + b.monto) * 1.10 * a.tipocambio), 2), a.monto * 1.10)
+            FROM detpresupuesto a 
+            INNER JOIN ampliapresupuesto b ON a.id = b.iddetpresupuesto
+            WHERE a.id = $idot AND a.idestatuspresupuesto = 3 AND IF (b.iddetpresupuesto = a.id, b.idestatuspresupuesto = 3, 0)) -
+            ((SELECT IFNULL(SUM(totfact) + SUM(isr), 0) 
+            FROM compra WHERE ordentrabajo = $idot AND tipocambio = 1) +
+            (SELECT IFNULL((SUM(totfact) + SUM(isr)) * tipocambio, 0)
+            FROM compra WHERE ordentrabajo = $idot AND tipocambio != 1)), 
+            (SELECT IF(b.iddetpresupuesto = a.id, ROUND(SUM((a.monto + b.monto) * 1.10), 2), a.monto * 1.10)
+            FROM detpresupuesto a 
+            INNER JOIN ampliapresupuesto b ON a.id = b.iddetpresupuesto
+            WHERE a.id = $idot AND a.idestatuspresupuesto = 3 AND IF (b.iddetpresupuesto = a.id, b.idestatuspresupuesto = 3, 0)) -
+            ((SELECT IFNULL(SUM(totfact) + SUM(isr), 0) 
+            FROM compra WHERE ordentrabajo = $idot AND tipocambio = 1) +
+            (SELECT IFNULL((SUM(totfact) + SUM(isr)) * tipocambio, 0)
+            FROM compra WHERE ordentrabajo = $idot AND tipocambio != 1))), 2) AS monto
+            FROM detpresupuesto a 
+            WHERE a.id = $idot ";
+
+    $monto = $db->getOneField($query);
+    
+    print json_encode(['monto' => $monto ? $monto : 0.00 ]);
 });
 
 $app->run();

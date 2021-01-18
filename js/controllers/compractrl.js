@@ -24,7 +24,7 @@
             $scope.yaPagada = false;
             $scope.tranpago = [];
             $scope.monedas = [];
-            $scope.dectc = 2;
+            $scope.dectc = 10;
             $scope.lsttiposfact = [];
             $scope.combustibles = [];
             $scope.facturastr = '';
@@ -38,7 +38,7 @@
             $scope.periodoCerrado = false;
             $scope.presupuesto = {};
             $scope.ot = {};
-            $scope.montoMaximo = 9999999;
+            $scope.montoMax = 999999999;
 
             $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
 
@@ -80,7 +80,7 @@
                 $scope.losTiposCompra = d;
             });
 
-            $scope.loadPresupuestosProveedor = (idproveedor) => compraSrvc.getOtsProveedor(idproveedor, $scope.laCompra.objEmpresa.id).then((d) => $scope.ots = d);
+            $scope.loadPresupuestosProveedor = (idproveedor) => compraSrvc.getOtsProveedor(idproveedor, (!!$scope.laCompra.objEmpresa ? $scope.laCompra.objEmpresa.id : $scope.laCompra.idempresa )).then((d) => $scope.ots = d);
 
             $scope.loadDataProvs = () => $scope.itemsLimit = $scope.itemsLimit + 10;
 
@@ -92,12 +92,17 @@
 
             $scope.fillDataCompraOt = (idot) => {                
                 const idx = $scope.ots.findIndex(i => +i.id === +idot);
-                if (idx > -1) {
+                if (idx > -1) {                 
                     const otSelected = $scope.ots[idx];
                     $scope.laCompra.objMoneda = $scope.monedas.find(m => +m.id === +otSelected.idmoneda);
                     $scope.laCompra.idproyecto = otSelected.idproyecto;
                     $scope.laCompra.conceptomayor = otSelected.notas;
-                    $scope.montoMaximo = +otSelected.monto;
+                    compraSrvc.getMontoOt(idot).then(d => {
+                        $scope.montoMax = d.monto;
+                        console.log(`Monto max: ${$scope.montoMax}`);
+                    });
+                } else {
+                    $scope.montoMax = 999999999;
                 }
             }
 
@@ -106,7 +111,6 @@
                     fechaingreso: new Date(), mesiva: hoy.getMonth() + 1, fechafactura: new Date(), creditofiscal: 0, extraordinario: 0, noafecto: 0.0,
                     objEmpresa: $scope.laCompra.objEmpresa, objMoneda: {}, tipocambio: 1, isr: 0.00, galones: 0.00, idp: 0.00, objTipoCombustible: {},
                     totfact: 0.00, subtotal: 0.00, iva: 0.00, ordentrabajo: undefined, idproyecto: undefined, idunidad: undefined, nombrerecibo: undefined,
-                    iddetpagopresup: undefined
                 };
                 $scope.search = "";
                 $scope.facturastr = '';
@@ -120,6 +124,7 @@
                 });
                 $scope.periodoCerrado = false;
                 $scope.unidades = [];
+                $scope.ots = [];
                 goTop();
             };
 
@@ -171,7 +176,7 @@
 
             $scope.chkExisteCompra = function () {
                 //console.log($scope.laCompra); return;
-                var params = { idproveedor: 0, nit: '', serie: '', documento: 0 };
+                var params = { idproveedor: 0, nit: '', serie: '', documento: 0, ordentrabajo: 0 };
                 if ($scope.laCompra.objProveedor != null && $scope.laCompra.objProveedor != undefined) {
                     params.idproveedor = +$scope.laCompra.objProveedor.id;
                     params.nit = $scope.laCompra.objProveedor.nit != null && $scope.laCompra.objProveedor.nit != undefined ? $scope.laCompra.objProveedor.nit.trim() : '';
@@ -237,13 +242,12 @@
                 exento = parseFloat($scope.laCompra.idp) + noAfecto;
                 subtotal = totFact - exento;
 
-                if (totFact > $scope.montoMaximo) {
+                if (totFact > $scope.montoMax) {                 
                     toaster.pop({
                         type: 'error', title: 'Error en el Total.', 
-                        body: 'El monto del total no puede ser mayor al total de la ot.', timeout: 7000
+                        body: 'El monto del total no puede ser mayor al total de la ot, solicite un aumento.', timeout: 7000
                     });
                     $scope.laCompra.totfact = undefined;
-                    totFact = 0.00;
                 }
                 if (noAfecto <= totFact) {
                     $scope.laCompra.subtotal = geniva ? parseFloat(subtotal / 1.12).toFixed(2) : totFact;
@@ -370,16 +374,16 @@
 
             $scope.getCompra = function (idcomp, idot) {
                 $scope.losDetCont = [];
+                $scope.ots = [];
                 $scope.elDetCont = { debe: 0.0, haber: 0.0, objCuenta: undefined, idcuenta: undefined };
 
                 compraSrvc.getCompra(idcomp, idot).then((d) => {
                     if (d.length > 0) {
                         $scope.laCompra = procDataCompras(d)[0];
-                        $scope.laCompra.objProveedor = $filter('getById')($scope.losProvs, $scope.laCompra.idproveedor);
+                        $scope.laCompra.objProveedor = $filter('getById')($scope.losProvs, $scope.laCompra.idproveedor);                        
                         $scope.laCompra.objMoneda = $filter('getById')($scope.monedas, $scope.laCompra.idmoneda);
                         $scope.laCompra.objTipoFactura = $filter('getById')($scope.lsttiposfact, $scope.laCompra.idtipofactura);
                         $scope.laCompra.objTipoCombustible = $filter('getById')($scope.combustibles, $scope.laCompra.idtipocombustible);
-                        $scope.search = $scope.laCompra.objProveedor.nitnombre;
                         tipoCompraSrvc.getTipoCompra($scope.laCompra.idtipocompra).then(function (tc) { $scope.laCompra.objTipoCompra = tc[0]; });
                         $scope.editando = true;
                         cuentacSrvc.getByTipo($scope.laCompra.idempresa, 0).then(function (d) { $scope.lasCtasMov = d; });
@@ -387,6 +391,7 @@
                         $scope.getDetCont($scope.laCompra.id);
                         $scope.loadProyectosCompra($scope.laCompra.id);
                         $scope.resetProyectoCompra();
+                        $scope.loadPresupuestosProveedor($scope.laCompra.idproveedor);
                         empresaSrvc.getEmpresa(parseInt($scope.laCompra.idempresa)).then(function (d) { $scope.laCompra.objEmpresa = d[0]; });
                         compraSrvc.getTransPago($scope.laCompra.id).then(function (d) {
                             for (var i = 0; i < d.length; i++) {
@@ -479,7 +484,6 @@
                 obj.idtipofactura = parseInt(obj.objTipoFactura.id);
                 obj.idtipocombustible = obj.objTipoCombustible != null && obj.objTipoCombustible != undefined ? (obj.objTipoCombustible.id != null && obj.objTipoCombustible.id != undefined ? obj.objTipoCombustible.id : 0) : 0;
                 obj.idunidad = obj.idunidad != null && obj.idunidad !== undefined ? +obj.idunidad : 0;
-                obj.iddetpagopresup = obj.iddetpagopresup != null && obj.iddetpagopresup !== undefined ? obj.iddetpagopresup : 0;
                 // obj.ordencompra = obj.ordencompra !== null && obj.ordencompra !== undefined ? obj.ordencompra : 0;
                 if (obj.nombrerecibo == null || obj.nombrerecibo == undefined) {
                     delete obj.nombrerecibo;

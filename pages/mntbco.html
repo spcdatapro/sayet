@@ -47,11 +47,19 @@
                                    placeholder="Siglas" maxlength="15" required/>
                         </div>
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-5">
                         <div class="form-group" ng-class="{'has-error':frmBco.txtNomCta.$invalid && !frmBco.txtNomCta.$pristine}">
                             <label for="txtNomCta">Nombre de la cuenta:</label>
                             <input name="txtNomCta" id="txtNomCta" type="text" class="form-control" ng-model="elBco.nomcuenta"
                                    placeholder="Nombre de la cuenta" maxlength="150" required/>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="selBan">Banco del pais:</label>
+                            <select name="selBan" id="selBan" class="form-control" ng-model="elBco.objBancoPais"
+                                    ng-options="obj.nombre for obj in losBancosPais track by obj.id">
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-2">

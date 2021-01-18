@@ -2,7 +2,7 @@
 
     var proveedorctrl = angular.module('cpm.proveedorctrl', ['cpm.proveedorsrvc']);
 
-    proveedorctrl.controller('proveedorCtrl', ['$scope', 'proveedorSrvc', 'DTOptionsBuilder', 'empresaSrvc', 'cuentacSrvc', 'authSrvc', '$confirm', 'monedaSrvc', '$filter', '$route', 'toaster', function($scope, proveedorSrvc, DTOptionsBuilder, empresaSrvc, cuentacSrvc, authSrvc, $confirm, monedaSrvc, $filter, $route, toaster){
+    proveedorctrl.controller('proveedorCtrl', ['$scope', 'proveedorSrvc', 'DTOptionsBuilder', 'empresaSrvc', 'cuentacSrvc', 'authSrvc', '$confirm', 'monedaSrvc', '$filter', '$route', 'toaster', 'bancoSrvc', function($scope, proveedorSrvc, DTOptionsBuilder, empresaSrvc, cuentacSrvc, authSrvc, $confirm, monedaSrvc, $filter, $route, toaster, bancoSrvc){
         //$scope.tituloPagina = 'CPM';
 
         $scope.elProv = {};
@@ -15,6 +15,7 @@
         $scope.objEmpresa = {};
         $scope.lasCuentas = [];
         $scope.monedas = [];
+        $scope.losBancosPais = [];
         $scope.dectc = 2;
         $scope.permiso = {};
 
@@ -32,6 +33,10 @@
                         $scope.monedas = d;
                         $scope.resetElProv();
                     });
+                    bancoSrvc.lstBancosPais().then(function(d){
+                        $scope.losBancosPais = d;
+                        $scope.resetElProv();
+                    });
                 });
             }
         });
@@ -43,14 +48,17 @@
         });
 
         $scope.resetElProv = function(){
-            $scope.elProv = { direccion: '', telefono: '', correo: '', concepto: '', chequesa: '', retensionisr: 0, diascred: 0,
-                limitecred: parseFloat(0.0), pequeniocont: 0, tipocambioprov: 1, objMoneda: {}, debaja: '0', cuentabanco: undefined, recurrente: '0' };
+            $scope.elProv = { direccion: '', telefono: '', correo: '', concepto: '', chequesa: '', retensionisr: 0, diascred: 0, objBancoPais: {},
+                limitecred: parseFloat(0.0), pequeniocont: 0, tipocambioprov: 1, objMoneda: {}, debaja: '0', cuentabanco: undefined, 
+                recurrente: '0', tipcuenta: 0, identificacion: undefined };
             $scope.editando = false;
             $scope.strProveedor = '';
             monedaSrvc.getMoneda(parseInt($scope.objEmpresa.idmoneda)).then(function(d){
                 $scope.elProv.objMoneda = d[0];
                 $scope.elProv.objMoneda.tipocambioprov = parseFloat($scope.elProv.objMoneda.tipocambioprov).toFixed($scope.dectc);
                 $scope.elProv.tipocambioprov = parseFloat(d[0].tipocambio).toFixed($scope.dectc);
+            });
+            bancoSrvc.lstBancosPais(parseInt($scope.objEmpresa.idbancopais)).then(function(d){ $scope.elProv.objBancoPais = d[0];
             });
         };
 
@@ -74,6 +82,7 @@
             data.pequeniocont = parseInt(data.pequeniocont);
             data.idmoneda = parseInt(data.idmoneda);
             data.tipocambioprov = parseFloat(data.tipocambioprov).toFixed($scope.dectc);
+            data.idbancopais = parseInt(data.idbancopais)
             return data;
         }
 
@@ -109,6 +118,7 @@
                 */
                 $scope.elProv = procData(d[0]);
                 $scope.elProv.objMoneda = $filter('getById')($scope.monedas, $scope.elProv.idmoneda);
+                $scope.elProv.objBancoPais = $filter('getById')($scope.losBancosPais, $scope.elProv.idbancopais);
                 $scope.strProveedor = `No. ${pad($scope.elProv.id, 4)}, ${$scope.elProv.nitnombre}`;
                 $scope.editando = true;
                 $scope.getLstDetCuentaC(idprov);
@@ -146,6 +156,7 @@
 
         $scope.addProv = function(obj){
             obj.idmoneda = parseInt(obj.objMoneda.id);
+            obj.idbancopais = parseInt(obj.objBancoPais.id);
             obj = setDataProv(obj);
             proveedorSrvc.editRow(obj, 'c').then(function(d){
                 $scope.getLstProveedores();
@@ -158,6 +169,7 @@
 
         $scope.updProv = function(data, id){
             data.idmoneda = parseInt(data.objMoneda.id);
+            data.idbancopais = parseInt(data.objBancoPais.id);
             data = setDataProv(data);
             proveedorSrvc.editRow(data, 'u').then(function(){
                 $scope.getLstProveedores();

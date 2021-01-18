@@ -36,6 +36,7 @@
             getProyectoCompra: function (idproycompra) {
                 return comunFact.doGET(urlBase + '/getproycompra/' + idproycompra);
             },
+            getMontoOt: (idot) => comunFact.doGET(`${urlBase}/montoots/${idot}`),
             getChequesProveedor: (obj) => comunFact.doPOST(urlBase + '/lstchq', obj),
             getOtsProveedor: (idproveedor, idempresa) => comunFact.doGET(`${urlBase}/selots/${idproveedor}/${idempresa}`)
         };

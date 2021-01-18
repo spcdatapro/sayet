@@ -80,7 +80,7 @@
                                 <div class="form-group required"
                                     ng-class="{'has-error':frmCompra.txtDocu.$invalid && !frmCompra.txtDocu.$pristine}">
                                     <label for="txtDocu" class="control-label">Documento:</label>
-                                    <input name="txtDocu" id="txtDocu" type="text" class="form-control"
+                                    <input name="txtDocu" id="txtDocu" type="number" class="form-control"
                                         ng-model="laCompra.documento" ng-change="chkExisteCompra()"
                                         placeholder="Documento" required />
                                 </div>
@@ -164,12 +164,7 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group" ng-class="{'required': +laCompra.objProveedor.recurrente === 0}">
-                                    <!--<label class="control-label">Orden de trabajo:</label>-->
                                     <label>Orden de trabajo:</label>
-                                    <!--<select name="selOTProv" id="selOTProv" class="form-control"
-                                        ng-model="laCompra.ordentrabajo" ng-options="obj.id as obj.ot for obj in ots"
-                                        ng-required="+laCompra.objProveedor.recurrente === 0" ng-change="fillDataCompraOt(laCompra.ordentrabajo)">
-                                    </select>-->
                                     <select name="selOTProv" id="selOTProv" class="form-control"
                                         ng-model="laCompra.ordentrabajo" ng-options="obj.id as obj.ot for obj in ots"
                                         ng-required="false" ng-change="fillDataCompraOt(laCompra.ordentrabajo)">

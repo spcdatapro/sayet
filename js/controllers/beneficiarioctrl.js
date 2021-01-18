@@ -2,7 +2,7 @@
 
     var beneficiarioctrl = angular.module('cpm.beneficiarioctrl', []);
 
-    beneficiarioctrl.controller('beneficiarioCtrl', ['$scope', 'beneficiarioSrvc', 'DTOptionsBuilder', 'empresaSrvc', 'cuentacSrvc', 'authSrvc', '$confirm', 'monedaSrvc', '$filter', '$route', function($scope, beneficiarioSrvc, DTOptionsBuilder, empresaSrvc, cuentacSrvc, authSrvc, $confirm, monedaSrvc, $filter, $route){
+    beneficiarioctrl.controller('beneficiarioCtrl', ['$scope', 'beneficiarioSrvc', 'DTOptionsBuilder', 'empresaSrvc', 'cuentacSrvc', 'authSrvc', '$confirm', 'monedaSrvc', '$filter', '$route', 'bancoSrvc', function($scope, beneficiarioSrvc, DTOptionsBuilder, empresaSrvc, cuentacSrvc, authSrvc, $confirm, monedaSrvc, $filter, $route, bancoSrvc){
 
         $scope.bene = {};
         $scope.beneficiarios = [];
@@ -13,10 +13,12 @@
         $scope.monedas = [];
         $scope.dectc = 2;
         $scope.permiso = {};
+        $scope.bancoPais
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true);
 
         empresaSrvc.lstEmpresas().then(function(d){ $scope.lasEmpresas = d; });
+        bancoSrvc.lstBancosPais().then(function(d){ $scope.bancoPais = d; });
 
         authSrvc.getSession().then(function(usrLogged){
             if(parseInt(usrLogged.workingon) > 0){
@@ -41,7 +43,8 @@
         */
 
         $scope.resetbene = function(){
-            $scope.bene = { direccion: '', telefono: '', correo: '', concepto: '', tipocambioprov: 1, objMoneda: {}, debaja: '0', cuentabanco: undefined };
+            $scope.bene = { direccion: '', telefono: '', correo: '', concepto: '', tipocambioprov: 1, objMoneda: {}, debaja: '0', cuentabanco: undefined,
+                            idbancopais: undefined, tipcuenta: undefined, identificacion: undefined  };
             $scope.editando = false;
             $scope.strBene = '';
             monedaSrvc.getMoneda(parseInt($scope.objEmpresa.idmoneda)).then(function(d){
@@ -56,6 +59,7 @@
                 data[i].id = parseInt(data[i].id);
                 data[i].idmoneda = parseInt(data[i].idmoneda);
                 data[i].tipocambioprov = parseFloat(data[i].tipocambioprov).toFixed($scope.dectc);
+                data[i].idbancopais = parseInt(data[i].idbancopais);
             }
             return data;
         }
@@ -73,6 +77,7 @@
             beneficiarioSrvc.getBeneficiario(parseInt(idbene)).then(function(d){
                 $scope.bene = procData(d)[0];
                 $scope.bene.objMoneda = $filter('getById')($scope.monedas, $scope.bene.idmoneda);
+                $scope.bene.idbancopais = $filter('getById')($scope.bancoPais, $scope.bene.idbancopais)
                 $scope.strBene = 'No. ' + pad($scope.bene.id, 4) + ', ' + $scope.bene.nitnombre;
                 $scope.editando = true;
             });
@@ -80,6 +85,7 @@
 
         $scope.addBene = function(obj){
             obj.idmoneda = parseInt(obj.objMoneda.id);
+            obj.idbancopais = parseInt(obj.idbancopais.id);
             beneficiarioSrvc.editRow(obj, 'c').then(function(d){
                 $scope.getLstBeneficiarios();
                 $scope.getBene(d.lastid);
@@ -88,6 +94,7 @@
 
         $scope.updBene = function(data, id){
             data.idmoneda = parseInt(data.objMoneda.id);
+            data.idbancopais = parseInt(data.idbancopais.id);
             beneficiarioSrvc.editRow(data, 'u').then(function(){
                 $scope.getLstBeneficiarios();
                 $scope.getBene(id);

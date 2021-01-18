@@ -170,8 +170,18 @@
             if (esPresupuesto) {
                 qOt = await presupuestoSrvc.lstOts(idot);
             }
+            console.log(qOt)
             var test = false;
             jsReportSrvc.getPDFReport(test ? 'BJdOgyV2W' : 'S1eAuyN2b', { idot: esPresupuesto ? +qOt[0].id : idot }).then(function (pdf) { $window.open(pdf); });
+        };
+
+        $scope.printOtNue = async function (idot, esPresupuesto) {
+            let qOt = {};
+            if (esPresupuesto) {
+                qOt = await presupuestoSrvc.lstOts(idot);
+            }
+            var test = false;
+            jsReportSrvc.getPDFReport(test ? 'BJdOgyV2W' : 'rJPo84G0w', { idot: esPresupuesto ? +qOt[0].id : idot }).then(function (pdf) { $window.open(pdf); });
         };
 
         $scope.nuevoPresupuesto = function () {
@@ -744,7 +754,7 @@
     presupuestoctrl.controller('ModalAmpliarOtCtrl', ['$scope', '$uibModalInstance', '$filter', 'toaster', '$confirm', 'presupuestoSrvc', 'ot', 'permiso', function ($scope, $uibModalInstance, $filter, toaster, $confirm, presupuestoSrvc, ot, permiso) {
         $scope.ot = ot;
         $scope.lstampliaciones = [];
-        $scope.amplia = { idpresupuesto: ot.idpresupuesto, iddetpresupuesto: ot.id };
+        $scope.amplia = { idpresupuesto: ot.idpresupuesto, iddetpresupuesto: ot.id, idmoneda: ot.idmoneda, tipocambio: ot.tipocambio };
         $scope.permiso = permiso;
         $scope.sumaAmpliaciones = 0.00;
 
@@ -773,7 +783,7 @@
         };
 
         $scope.resetAmpliacion = function () {
-            $scope.amplia = { idpresupuesto: ot.idpresupuesto, iddetpresupuesto: ot.id };
+            $scope.amplia = { idpresupuesto: ot.idpresupuesto, iddetpresupuesto: ot.id, idmoneda: ot.idmoneda, tipocambio: ot.tipocambio };
         };
 
         $scope.addAmpliacion = function (obj) {

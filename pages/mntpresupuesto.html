@@ -398,7 +398,7 @@
                                     ng-class="{'has-error':frmPresup.txtTCPresup.$invalid && !frmPresup.txtTCPresup.$pristine}">
                                     <label for="txtTCPresup">TC:</label>
                                     <input name="txtTCPresup" id="txtTCPresup" type="text" class="form-control"
-                                        ng-model="presupuesto.tipocambio" fcsa-number="{maxDecimals:4}"
+                                        ng-model="presupuesto.tipocambio" fcsa-number="{maxDecimals:5}"
                                         ng-required="+presupuesto.tipo == 1" ng-disabled="sl.presupuesto" />
                                 </div>
                             </div>
@@ -418,6 +418,11 @@
                             data-toggle="tooltip" data-placement="auto" title="Imprimir...">
                             <i class="fa fa-print fa-lg" aria-hidden="true"></i>
                         </button>
+                        <button type="button" class="btn btn-primary" ng-click="printOtNue(presupuesto.id, true)"
+                        ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1"
+                        data-toggle="tooltip" data-placement="auto" title="Imprimir...">
+                        <i class="fa fa-print fa-lg" aria-hidden="true"></i>
+                    </button>
                         <button type="button" class="btn btn-info" ng-click="adherirAOTM(presupuesto, true)"
                             ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1"
                             data-toggle="tooltip" data-placement="auto" title="Adherir a OTM existente...">
@@ -439,8 +444,8 @@
                             <span class="glyphicon glyphicon-folder-open"></span>
                         </button>
                         <button type="button" class="btn btn-info" ng-click="enviar(presupuesto)"
-                        ng-hide="(+presupuesto.idestatuspresupuesto == 6 || +presupuesto.idestatuspresupuesto == 5) || !permiso.m" data-toggle="tooltip"
-                        data-placement="auto" title="Enviar presupuesto a aprobación...">
+                        ng-hide="(+presupuesto.idestatuspresupuesto == 6 || +presupuesto.idestatuspresupuesto == 5) || !permiso.m " data-toggle="tooltip"
+                        data-placement="auto" title="Enviar presupuesto a aprobación..." ng-disabled="frmPresup.$invalid" >
                         <span class="glyphicon glyphicon-share-alt"></span>
                     </button>
                         <button type="button" class="btn btn-danger" ng-click="anulaPresupuesto(presupuesto)"
@@ -558,7 +563,7 @@
                                     ng-class="{'has-error':frmOT.txtTC.$invalid && !frmOT.txtTC.$pristine}">
                                     <label for="txtTC">TC:</label>
                                     <input name="txtTC" id="txtTC" type="text" class="form-control"
-                                        ng-model="ot.tipocambio" fcsa-number="{maxDecimals:4}" required
+                                        ng-model="ot.tipocambio" fcsa-number="{maxDecimals:5}" required
                                         ng-disabled="sl.ot" />
                                 </div>
                             </div>
@@ -630,6 +635,10 @@
                                         <button type="button" class="btn btn-sm btn-info" ng-click="printOt(o.id)"
                                             data-toggle="tooltip" data-placement="auto" title="Imprimir...">
                                             <i class="fa fa-print fa-lg" aria-hidden="true"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-primary" ng-click="printOtNue(presupuesto.id, true)"
+                                        data-toggle="tooltip" data-placement="auto" title="Imprimir...">
+                                        <i class="fa fa-print fa-lg" aria-hidden="true"></i>
                                         </button>
                                         <button type="button" class="btn btn-sm btn-info" ng-click="ampliar(o)"
                                             ng-show="+o.idestatuspresupuesto == 3 && permiso.m" data-toggle="tooltip"
