@@ -177,6 +177,20 @@ $app->post('/resumen', function () use ($db) {
         $totEgresos += $totDepre;
         //Finaliza depreciaciones
 
+        //Inicia gastos por partida directa
+        $ogpd = $db->getQuery(getQueryDepreciaciones($d->idempresa, $d->idproyecto, $d->mes, $d->anio, true, false));
+        $cntOgpd = count($ogpd);
+        $totOgpd = 0.00;
+        if ($cntOgpd > 0) {
+            $totOgpd = (float) $ogpd[0]->debe;
+        }
+        $datos->egresos[] = [
+            'concepto' => 'OTROS GASTOS',
+            'monto' => $totOgpd,
+        ];
+        $totEgresos += $totOgpd;        
+        //Finaliza gastos por partida directa
+
         $datos->egresos[] = ['concepto' => 'TOTAL DE EGRESOS', 'monto' => $totEgresos];
 
         $datos->proyecto->diferencia = (float) $totIngresos - (float) $totEgresos;
@@ -431,6 +445,36 @@ $app->post('/detalle', function () use ($db) {
     $totEgresos += $totDepre;
     //Finaliza depreciaciones
 
+    //Inicia gastos por partida Directa
+    $depre = $db->getQuery(getQueryDepreciaciones($d->idempresa, $d->idproyecto, $d->mes, $d->anio, true, false));
+    $cntDepre = count($depre);
+    //print "DEPRE = $cntDepre";
+    $detDepre = $db->getQuery(getQueryDepreciaciones($d->idempresa, $d->idproyecto, $d->mes, $d->anio, false, false));
+    $cntDetDepre = count($detDepre);
+    //var_dump($detDepre);
+    $detalle = [];
+    $totDepre = 0.00;
+    if ($cntDepre > 0) {
+        $totDepre = (float) $depre[0]->debe;
+        if ($totDepre > 0) {
+            for ($i = 0; $i < $cntDetDepre; $i++) {
+                $det = $detDepre[$i];
+                $detalle[] = [
+                    'fechaOrd' => $det->fechaOrd, 'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => $det->fecha, 'beneficiario' => '',
+                    'concepto' => $det->cuenta, 'moneda' => '', 'montotranban' => '', 'idcompra' => '', 'proveedor' => '', 'nit' => '',
+                    'serie' => '', 'documento' => '', 'monedafact' => '', 'montofact' => (float) $det->debe, 'ot' => '', 'fechafactura' => ''
+                ];
+            }
+        }
+    }
+    $datos->egresos[] = [
+        'concepto' => 'OTROS GASTOS',
+        'monto' => $totDepre,
+        'detalle' => $detalle
+    ];
+    $totEgresos += $totDepre;
+    //Finaliza gastos por partida directa
+
     usort($datos->egresos, function ($a, $b) {
         if ((float) $a['monto'] === (float) $b['monto']) {
             return 0;
@@ -445,21 +489,22 @@ $app->post('/detalle', function () use ($db) {
     print json_encode($datos);
 });
 
-function getQueryDepreciaciones($idempresa, $idproyecto, $mes, $anio, $sinDetalle = true)
+function getQueryDepreciaciones($idempresa, $idproyecto, $mes, $anio, $sinDetalle = true, $soloDepre = true)
 {
     $query = "SELECT c.nombrecta AS cuenta, SUM(b.debe) AS debe, a.fecha AS fechaOrd, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha ";
     $query .= "FROM directa a INNER JOIN detallecontable b ON a.id = b.idorigen INNER JOIN cuentac c ON c.id = b.idcuenta ";
-    $query .= "WHERE a.idempresa = $idempresa AND MONTH(a.fecha) = $mes AND YEAR(a.fecha) = $anio AND a.idproyecto = $idproyecto AND b.origen = 4 AND c.codigo like '51206%' ";
+    $query .= "WHERE a.idempresa = $idempresa AND MONTH(a.fecha) = $mes AND YEAR(a.fecha) = $anio AND a.idproyecto = $idproyecto AND b.origen = 4 ";
+    $query .= $soloDepre ? "AND c.codigo like '51206%' " : "AND c.codigo NOT LIKE '51206%' AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%') ";
     $query .= $sinDetalle ? '' : 'GROUP BY c.id';
     //print $query;
     return $query;
 }
 
-function getDepreciaciones($db, $d, $mes, $anio, $solosuma = true)
+function getDepreciaciones($db, $d, $mes, $anio, $solosuma = true, $soloDepre = true)
 {
-    $depre = $db->getQuery(getQueryDepreciaciones($d->idempresa, $d->idproyecto, $mes, $anio));
+    $depre = $db->getQuery(getQueryDepreciaciones($d->idempresa, $d->idproyecto, $mes, $anio, true, $soloDepre));
     $cntDepre = count($depre);
-    $detDepre = $db->getQuery(getQueryDepreciaciones($d->idempresa, $d->idproyecto, $mes, $anio, false));
+    $detDepre = $db->getQuery(getQueryDepreciaciones($d->idempresa, $d->idproyecto, $mes, $anio, false, $soloDepre));
     $cntDetDepre = count($detDepre);
     $detalle = [];
     $totDepre = 0.00;
@@ -828,6 +873,28 @@ $app->post('/ingegr', function () use ($db) {
     if ($conceptoDepre->total == 0) {
         array_pop($datos->egresos);
     }
+
+    //Otros gastos (partidas directas)
+    $datos->egresos[] = (object) [
+        'idcuenta' => 0,
+        'concepto' => 'Otros gastos',
+        'total' => 0.00
+    ];
+    $conceptoOtros = $datos->egresos[count($datos->egresos) - 1];
+    for ($mes = (int) $d->dmes; $mes <= (int) $d->ames; $mes++) {
+        $suma = getDepreciaciones($db, $d, $mes, $d->anio, true, false);
+        $conceptoOtros->total += $suma;
+        $conceptoOtros->meses[] = [
+            'idmes' => $mes,
+            'mes' => $losMeses[$mes - 1]->nombre,
+            'total' => $suma,
+            'detalle' => $detallado ? getDepreciaciones($db, $d, $mes, $d->anio, false, false) : []
+        ];
+    }
+    if ($conceptoOtros->total == 0) {
+        array_pop($datos->egresos);
+    }
+
 
     print json_encode($datos);
 });
