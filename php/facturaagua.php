@@ -72,6 +72,8 @@ $app->post('/pendientesfel', function() {
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
+    if(!isset($d->tc)) { $d->tc = 1.00; }
+
     $query = "SELECT a.id, a.idserviciobasico, a.idproyecto, a.idunidad, a.mes, a.anio, a.lectura, b.numidentificacion, b.preciomcubsug, b.mcubsug,
     @ultimalecturafact := LecturaAnterior(a.idserviciobasico, a.mes, a.anio) AS ultimalecturafact, 
     @consumo := ROUND((a.lectura - @ultimalecturafact), 2) AS consumo, 

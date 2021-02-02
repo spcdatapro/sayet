@@ -108,7 +108,7 @@ $app->get('/generar', function(){
 $app->get('/regen', function(){
     $db = new dbcpm();
     $origen = 3;
-    $ids = "13841, 13575, 13786, 14026";
+    $ids = "14635, 14639, 14645, 14648";
     echo "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body><small><h3>Regeneración de facturas específicas</h3><h2>$ids</h2>";
 
     $query = "DELETE FROM detallecontable WHERE origen = $origen AND idorigen IN($ids)";
@@ -119,7 +119,7 @@ $app->get('/regen', function(){
     $query.= "ROUND(a.retisr, 2) AS retisr, ";
     $query.= "ROUND(a.retiva, 2) AS retiva, ";
     $query.= "ROUND(a.iva, 2) AS iva, ";
-    $query.= "a.anulada, a.esinsertada ";
+    $query.= "a.anulada, a.esinsertada, a.exentoiva ";
     $query.= "FROM factura a ";
     $query.= "WHERE a.id IN($ids) ";
     $query.= "AND a.idcontrato > 0 ";
@@ -129,6 +129,7 @@ $app->get('/regen', function(){
     $cntFact = count($facturas);
     for($i = 0; $i < $cntFact; $i++){
         $factura = $facturas[$i];
+        $factura->exentoiva = (int)$factura->exentoiva;
 
         $yaesta = ((int)$db->getOneField("SELECT COUNT(id) FROM detallecontable WHERE origen = 3 AND idorigen = $factura->id")) > 0;
 
@@ -169,7 +170,7 @@ $app->get('/regen', function(){
 
             //Cuentas de detalle de factura
             //$query = "SELECT a.id, a.idtiposervicio, a.descripcion, ROUND((a.preciotot - IF($factura->esinsertada = 0, 0, a.descuento)) / 1.12, 2) AS monto ";
-            $query = "SELECT a.id, a.idtiposervicio, a.descripcion, ROUND(a.preciotot / 1.12, 2) AS monto ";
+            $query = "SELECT a.id, a.idtiposervicio, a.descripcion, IF($factura->exentoiva = 0, ROUND(a.preciotot / 1.12, 2), ROUND(a.preciotot, 2)) AS monto ";
             $query.= "FROM detfact a ";
             $query.= "WHERE idfactura = $factura->id";
             $detfact = $db->getQuery($query);
@@ -186,11 +187,13 @@ $app->get('/regen', function(){
             }
 
             //Cuenta del IVA débito
-            $query = "SELECT idcuentac FROM detcontempresa WHERE idempresa = $factura->idempresa AND idtipoconfig = 1";
-            $ctaivadebito = (int)$db->getOneField($query);
-            if($ctaivadebito > 0){
-                echo "<span style='text-decoration: underline;'>Cuenta de IVA débito</span><br/>";
-                idc($db, $origen, $factura->id, $ctaivadebito, 0.00, $factura->iva, $factura->conceptomayor, (int)$factura->anulada);
+            if ($factura->exentoiva === 0) {
+                $query = "SELECT idcuentac FROM detcontempresa WHERE idempresa = $factura->idempresa AND idtipoconfig = 1";
+                $ctaivadebito = (int)$db->getOneField($query);
+                if($ctaivadebito > 0){
+                    echo "<span style='text-decoration: underline;'>Cuenta de IVA débito</span><br/>";
+                    idc($db, $origen, $factura->id, $ctaivadebito, 0.00, $factura->iva, $factura->conceptomayor, (int)$factura->anulada);
+                }
             }
         }
     }
@@ -219,7 +222,7 @@ $app->post('/genpost', function(){
     $query.= "ROUND(a.retisr, 2) AS retisr, ";
     $query.= "ROUND(a.retiva, 2) AS retiva, ";
     $query.= "ROUND(a.iva, 2) AS iva, ";
-    $query.= "a.anulada, a.esinsertada ";
+    $query.= "a.anulada, a.esinsertada, a.exentoiva ";
     $query.= "FROM factura a ";
     $query.= "WHERE a.id IN($ids) ";
     $query.= "AND a.idcontrato ".((int)$d->idcontrato > 0 ? ">" : "=")." 0 ";
@@ -228,6 +231,7 @@ $app->post('/genpost', function(){
     $cntFact = count($facturas);
     for($i = 0; $i < $cntFact; $i++){
         $factura = $facturas[$i];
+        $factura->exentoiva = (int)$factura->exentoiva;
 
         $yaesta = ((int)$db->getOneField("SELECT COUNT(id) FROM detallecontable WHERE origen = 3 AND idorigen = $factura->id")) > 0;
 
@@ -272,7 +276,7 @@ $app->post('/genpost', function(){
             }
 
             //Cuentas de detalle de factura
-            $query = "SELECT a.id, a.idtiposervicio, a.descripcion, ROUND(a.preciotot / 1.12, 2) AS monto ";
+            $query = "SELECT a.id, a.idtiposervicio, a.descripcion, IF($factura->exentoiva = 0, ROUND(a.preciotot / 1.12, 2), ROUND(a.preciotot, 2)) AS monto ";
             $query.= "FROM detfact a ";
             $query.= "WHERE idfactura = $factura->id";
             $detfact = $db->getQuery($query);
@@ -288,12 +292,14 @@ $app->post('/genpost', function(){
                 }
             }
 
-            //Cuenta del IVA débito
-            $query = "SELECT idcuentac FROM detcontempresa WHERE idempresa = $factura->idempresa AND idtipoconfig = 1";
-            $ctaivadebito = (int)$db->getOneField($query);
-            if($ctaivadebito > 0){
-                echo "<span style='text-decoration: underline;'>Cuenta de IVA débito</span><br/>";
-                idc($db, $origen, $factura->id, $ctaivadebito, 0.00, $factura->iva, $factura->conceptomayor, (int)$factura->anulada);
+            //Cuenta del IVA débito (IVA POR PAGAR)
+            if ($factura->exentoiva === 0) {
+                $query = "SELECT idcuentac FROM detcontempresa WHERE idempresa = $factura->idempresa AND idtipoconfig = 1";
+                $ctaivadebito = (int)$db->getOneField($query);
+                if($ctaivadebito > 0){
+                    echo "<span style='text-decoration: underline;'>Cuenta de IVA débito</span><br/>";
+                    idc($db, $origen, $factura->id, $ctaivadebito, 0.00, $factura->iva, $factura->conceptomayor, (int)$factura->anulada);
+                }
             }
         }
     }

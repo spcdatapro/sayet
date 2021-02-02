@@ -28,7 +28,7 @@
 		
 		$scope.loadPendientes = () => {
 			$scope.params.fvencestr = moment($scope.params.fechavence).format('YYYY-MM-DD');
-			facturacionAguaSrvc.lstCargosPendientes($scope.params).then((d) => {
+			facturacionAguaSrvc.lstCargosPendientesFEL($scope.params).then((d) => {
 				$scope.lecturas = prepareData(d);
 			});
 		};
