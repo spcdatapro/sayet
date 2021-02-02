@@ -372,7 +372,7 @@ function queryFacturas($d){
             GROUP BY x.idfactura
         ) g ON a.id = g.idfactura
         WHERE a.idtipofactura <> 9 AND a.fecha <= '$d->falstr' AND a.idfox IS NULL AND (a.anulada = 0 OR (a.anulada = 1 AND a.fechaanula > '$d->falstr')) AND ROUND(a.total, 2) - IFNULL(g.montopagado, 0.00) <> 0 AND 
-        IF(ISNULL(g.idfactura) AND a.pagada = 1, 1 = 0, 1 = 1) ";
+        IF(ISNULL(g.idfactura) AND a.pagada = 1 AND a.forzada = 1, 1 = 0, 1 = 1) ";
     $qFacts.= (int)$d->abreviado === 0 ? '' : "AND DATEDIFF('$d->falstr', a.fecha) > 60 ";
     $qFacts.= (int)$d->vernegativos === 1 ? '' : ('AND (ROUND(a.total, 2) - IFNULL(g.montopagado, 0.00)) '.((int)$d->pagoextra == 0 ? '>= 0 ' : '< 0 '));
     $qFacts.= (int)$d->idempresa > 0 ? "AND a.idempresa = $d->idempresa " : '';
