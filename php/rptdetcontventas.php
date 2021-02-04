@@ -27,7 +27,7 @@ $app->post('/rptdetcontventas', function(){
         case 3: $query.= 'AND a.idtipofactura = 9 '; break;
     }*/
 
-    $query.= "ORDER BY a.fecha, a.numero";
+    $query.= "ORDER BY a.numeroadmin, a.fecha, a.numero";
     //print $query;
     $facturas = $db->getQuery($query);
     $cntFacturas = count($facturas);

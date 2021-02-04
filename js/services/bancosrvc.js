@@ -6,6 +6,7 @@
         const urlBase = 'php/banco.php';
 
         return {
+            lstBancosPais: () => comunFact.doGET(`${urlBase}/lstbcospais`),
             lstBancos: (idempresa) => comunFact.doGET(urlBase + '/lstbcos/' + idempresa),
             lstBancosActivos: (idempresa) => comunFact.doGET(urlBase + '/lstbcosactivos' + (idempresa ? `/${idempresa}` : '')),
             lstBancosFltr: (idempresa) => comunFact.doGET(urlBase + '/lstbcosfltr/' + idempresa),
