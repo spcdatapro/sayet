@@ -4,7 +4,7 @@
             <a show-tab href="#divFrmCompra" data-toggle="tab">FACTURAS DE COMPRA</a>
         </li>
         <li ng-show="+laCompra.id > 0">
-            <a show-tab href="#divFrmCompraProyecto" data-toggle="tab">PROYECTOS AFECTADOS</a>
+            <a show-tab href="#divFrmCompraProyecto" data-toggle="tab" ng-hide="true">PROYECTOS AFECTADOS</a>
         </li>
         <li ng-show="editando">
             <a show-tab href="#divFrmDetContCompra" data-toggle="tab">DETALLE CONTABLE</a>
@@ -165,10 +165,18 @@
                             <div class="col-md-4">
                                 <div class="form-group" ng-class="{'required': +laCompra.objProveedor.recurrente === 0}">
                                     <label>Orden de trabajo:</label>
-                                    <select name="selOTProv" id="selOTProv" class="form-control"
+                                    <div class="input-group">
+                                        <select name="selOTProv" id="selOTProv" class="form-control"
                                         ng-model="laCompra.ordentrabajo" ng-options="obj.id as obj.ot for obj in ots"
                                         ng-required="false" ng-change="fillDataCompraOt(laCompra.ordentrabajo)">
-                                    </select>
+                                        </select>
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-primary" ng-click="printChequesSinFact()" 
+                                                ng-disabled="losCheques.length === 0">
+                                                <span class="glyphicon glyphicon-paste"></span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -303,9 +311,16 @@
                                 <div class="form-group required"
                                     ng-class="{'has-error':frmCompra.txtCambio.$invalid && !frmCompra.txtCambio.$pristine}">
                                     <label for="txtTCambioSug" class="control-label">Tipo de cambio:</label>
+                                    <div class="input-group">
                                     <input name="txtTCambioSug" id="txtTCambioSug" class="form-control"
                                         ng-model="laCompra.tipocambio" type="text" min="1"
                                         fcsa-number="{ min:1, maxDecimals:dectc }" required />
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-primary" ng-click="laCompra.tipocambio = tipocambiogt;">
+                                                <span>TC</span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -456,7 +471,7 @@
                 </div>
             </div>
         </div>
-        <div id="divFrmCompraProyecto" class="tab-pane fade">
+        <div id="divFrmCompraProyecto" class="tab-pane fade" ng-hide="true">
             <div class="panel-info">
                 <div class="panel-heading">Proyectos afectados&nbsp;<span class="badge"
                         style="color: white !important;">{{facturastr}}</span></div>
@@ -939,4 +954,38 @@
         </div>
     </script>
     <!--Fin de Template de la modal-->
+    <script type="text/ng-template" id="modalChequeSinFact.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Lista de cheques sin factura</h3>            
+        </div>
+        <div class="modal-body">
+            <div class="table-responsive">
+                <table class="table table-responsive table-hover table-condensed">
+                    <thead>
+                        <tr>
+                            <th>No. Cheque</th>
+                            <th>Banco</th>
+                            <th>Monto</th>
+                            <th>Tipo Cambio</th>
+                            <th>Tipo</th>
+                            <th>Concepto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="cq in cheques " ng-click="ok(cq)">
+                            <td>{{cq.numero}}</td>
+                            <td>{{cq.banco}}</td>
+                            <td>{{cq.moneda}}{{cq.monto}}</td>
+                            <td>{{cq.tipocambio}}</td>
+                            <td>{{cq.tipo}}</td>
+                            <td>{{cq.concepto}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
+        </div>
+    </script>
 </div>

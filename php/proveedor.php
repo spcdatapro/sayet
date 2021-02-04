@@ -50,6 +50,7 @@ $app->post('/c', function(){
         $d->identificacion = "'$d->identificacion'";
     }
     if (!isset($d->recurrente)) { $d->recurrente = 0; }
+    if (!isset($d->tipcuenta)) { $d->tipcuenta = 'NULL'; }
 
     $query = "INSERT INTO proveedor(nit, nombre, direccion, telefono, correo, concepto, chequesa, ";
     $query.= "retensionisr, diascred, limitecred, pequeniocont, idmoneda, tipocambioprov, debaja, cuentabanco, recurrente, idbancopais, tipcuenta, identificacion) ";
@@ -75,6 +76,7 @@ $app->post('/u', function(){
         $d->identificacion = "'$d->identificacion'";
     }
     if (!isset($d->recurrente)) { $d->recurrente = 0; }
+    if (!isset($d->tipcuenta)) { $d->tipcuenta = 'NULL'; }
 
     $query = "UPDATE proveedor SET nit = '$d->nit', nombre = '$d->nombre', direccion = '$d->direccion', telefono = '$d->telefono', correo = '$d->correo', concepto = '$d->concepto', ";
     $query.= "chequesa = '$d->chequesa', retensionisr = $d->retensionisr, diascred = $d->diascred, limitecred = $d->limitecred, pequeniocont = $d->pequeniocont, ";

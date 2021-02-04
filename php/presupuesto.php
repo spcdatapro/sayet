@@ -167,7 +167,7 @@ $app->get('/getpresupuesto/:idpresupuesto', function ($idpresupuesto) {
             INNER JOIN usuario f ON f.id = a.idusuario 
             INNER JOIN estatuspresupuesto g ON g.id = a.idestatuspresupuesto 
             LEFT JOIN usuario h ON h.id = a.idusuarioaprueba ";
-    $query .= "WHERE a.id = $idpresupuesto";
+    $query .= "WHERE a.id = $idpresupuesto ";
     print $db->doSelectASJson($query);
 });
 

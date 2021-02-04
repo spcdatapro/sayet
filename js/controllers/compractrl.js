@@ -4,9 +4,9 @@
 
     compractrl.controller('compraCtrl', [
         '$scope', '$filter', 'compraSrvc', 'authSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'proveedorSrvc', 'tipoCompraSrvc', 'toaster', 'cuentacSrvc', 'detContSrvc', '$uibModal', '$confirm', 'monedaSrvc', 'tipoFacturaSrvc',
-        'tipoCombustibleSrvc', 'presupuestoSrvc', 'proyectoSrvc', 'jsReportSrvc', '$window', 'periodoContableSrvc',
+        'tipoCombustibleSrvc', 'presupuestoSrvc', 'proyectoSrvc', 'jsReportSrvc', '$window', 'periodoContableSrvc', 'tipoCambioSrvc',
         ($scope, $filter, compraSrvc, authSrvc, empresaSrvc, DTOptionsBuilder, proveedorSrvc, tipoCompraSrvc, toaster, cuentacSrvc, detContSrvc, $uibModal, $confirm, monedaSrvc, tipoFacturaSrvc,
-            tipoCombustibleSrvc, presupuestoSrvc, proyectoSrvc, jsReportSrvc, $window, periodoContableSrvc,
+            tipoCombustibleSrvc, presupuestoSrvc, proyectoSrvc, jsReportSrvc, $window, periodoContableSrvc, tipoCambioSrvc,
         ) => {
 
             $scope.lasEmpresas = [];
@@ -24,7 +24,7 @@
             $scope.yaPagada = false;
             $scope.tranpago = [];
             $scope.monedas = [];
-            $scope.dectc = 10;
+            $scope.dectc = 5;
             $scope.lsttiposfact = [];
             $scope.combustibles = [];
             $scope.facturastr = '';
@@ -39,10 +39,13 @@
             $scope.presupuesto = {};
             $scope.ot = {};
             $scope.montoMax = 999999999;
+            $scope.losCheques = [];
+            $scope.tipocambiobgt = {};
 
             $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
 
             empresaSrvc.lstEmpresas().then(function (d) { $scope.lasEmpresas = d; });
+            tipoCambioSrvc.getLastTC().then(function (d) {$scope.tipocambiogt = +d.lasttc;});
 
             tipoFacturaSrvc.lstTiposFactura().then(function (d) {
                 for (var i = 0; i < d.length; i++) { d[i].id = parseInt(d[i].id); d[i].paracompra = parseInt(d[i].paracompra); }
@@ -80,7 +83,7 @@
                 $scope.losTiposCompra = d;
             });
 
-            $scope.loadPresupuestosProveedor = (idproveedor) => compraSrvc.getOtsProveedor(idproveedor, (!!$scope.laCompra.objEmpresa ? $scope.laCompra.objEmpresa.id : $scope.laCompra.idempresa )).then((d) => $scope.ots = d);
+            $scope.loadPresupuestosProveedor = (idproveedor) => compraSrvc.getOtsProveedor(idproveedor, (!!$scope.laCompra.objEmpresa ? $scope.laCompra.objEmpresa.id : $scope.laCompra.idempresa)).then((d) => $scope.ots = d);
 
             $scope.loadDataProvs = () => $scope.itemsLimit = $scope.itemsLimit + 10;
 
@@ -90,17 +93,17 @@
 
             $scope.proyectoSelected = (item) => $scope.loadUnidadesProyecto(item.id);
 
-            $scope.fillDataCompraOt = (idot) => {                
+            $scope.fillDataCompraOt = (idot) => {
                 const idx = $scope.ots.findIndex(i => +i.id === +idot);
-                if (idx > -1) {                 
+                if (idx > -1) {
                     const otSelected = $scope.ots[idx];
                     $scope.laCompra.objMoneda = $scope.monedas.find(m => +m.id === +otSelected.idmoneda);
                     $scope.laCompra.idproyecto = otSelected.idproyecto;
                     $scope.laCompra.conceptomayor = otSelected.notas;
                     compraSrvc.getMontoOt(idot).then(d => {
                         $scope.montoMax = d.monto;
-                        console.log(`Monto max: ${$scope.montoMax}`);
                     });
+                    compraSrvc.getCheques(idot).then(d => { $scope.losCheques = d; });
                 } else {
                     $scope.montoMax = 999999999;
                 }
@@ -111,6 +114,7 @@
                     fechaingreso: new Date(), mesiva: hoy.getMonth() + 1, fechafactura: new Date(), creditofiscal: 0, extraordinario: 0, noafecto: 0.0,
                     objEmpresa: $scope.laCompra.objEmpresa, objMoneda: {}, tipocambio: 1, isr: 0.00, galones: 0.00, idp: 0.00, objTipoCombustible: {},
                     totfact: 0.00, subtotal: 0.00, iva: 0.00, ordentrabajo: undefined, idproyecto: undefined, idunidad: undefined, nombrerecibo: undefined,
+                    idcheque: undefined
                 };
                 $scope.search = "";
                 $scope.facturastr = '';
@@ -211,7 +215,7 @@
                 }
                 return false;
             }
-            
+
 
             calcIDP = (genidp) => {
                 //if (genidp && $scope.laCompra.objTipoCombustible != null && $scope.laCompra.objTipoCombustible != undefined) {
@@ -242,9 +246,9 @@
                 exento = parseFloat($scope.laCompra.idp) + noAfecto;
                 subtotal = totFact - exento;
 
-                if (totFact > $scope.montoMax) {                 
+                if (totFact > $scope.montoMax) {
                     toaster.pop({
-                        type: 'error', title: 'Error en el Total.', 
+                        type: 'error', title: 'Error en el Total.',
                         body: 'El monto del total no puede ser mayor al total de la ot, solicite un aumento.', timeout: 7000
                     });
                     $scope.laCompra.totfact = undefined;
@@ -261,7 +265,7 @@
                 }
             };
 
-            $scope.esDePresupuesto = async() => {
+            $scope.esDePresupuesto = async () => {
                 if (+$scope.idot > 0 && !$scope.ot.id) {
                     // console.log('ID OT DESDE COMPRA = ', +$scope.idot);
                     $scope.fltrcomp.idot = +$scope.idot;
@@ -272,7 +276,7 @@
                     await presupuestoSrvc.getPresupuesto($scope.ot.idpresupuesto).then(d => { $scope.presupuesto = d[0]; });
                 }
             };
-            
+
             $scope.$watch('laCompra.objEmpresa', function (newValue, oldValue) {
                 if (newValue != null && newValue != undefined) {
                     $scope.esDePresupuesto();
@@ -380,7 +384,7 @@
                 compraSrvc.getCompra(idcomp, idot).then((d) => {
                     if (d.length > 0) {
                         $scope.laCompra = procDataCompras(d)[0];
-                        $scope.laCompra.objProveedor = $filter('getById')($scope.losProvs, $scope.laCompra.idproveedor);                        
+                        $scope.laCompra.objProveedor = $filter('getById')($scope.losProvs, $scope.laCompra.idproveedor);
                         $scope.laCompra.objMoneda = $filter('getById')($scope.monedas, $scope.laCompra.idmoneda);
                         $scope.laCompra.objTipoFactura = $filter('getById')($scope.lsttiposfact, $scope.laCompra.idtipofactura);
                         $scope.laCompra.objTipoCombustible = $filter('getById')($scope.combustibles, $scope.laCompra.idtipocombustible);
@@ -607,6 +611,27 @@
                 modalInstance.result.then(() => $scope.getCompra($scope.laCompra.id), () => { });
             };
 
+            $scope.printChequesSinFact = () => {
+                var modalInstance = $uibModal.open({
+                    animation: true,
+                    templateUrl: 'modalChequeSinFact.html',
+                    controller: 'ModalListChequeSinFactCtrl',
+                    windowClass: 'app-modal-window',
+                    resolve: {
+                        cheques: () => $scope.losCheques
+                    }
+                });
+
+                modalInstance.result.then(function (obj) {
+                    console.log(obj);
+                    $scope.laCompra.idcheque = obj.id;
+                    $scope.laCompra.totfact = obj.monto.toString().replace(',', '');
+                    $scope.laCompra.objMoneda = $scope.monedas.find(m => +m.id === +obj.idmoneda);
+                    $scope.laCompra.conceptomayor = obj.concepto;
+                    $scope.laCompra.tipocambio = obj.tipocambio;
+                }, function () { return 0; });
+            };
+
             $scope.zeroDebe = function (valor) { $scope.elDetCont.debe = parseFloat(valor) > 0 ? 0.0 : $scope.elDetCont.debe; };
             $scope.zeroHaber = function (valor) { $scope.elDetCont.haber = parseFloat(valor) > 0 ? 0.0 : $scope.elDetCont.haber; };
 
@@ -755,6 +780,18 @@
         };
 
         $scope.loadCheques();
+
+    }]);
+
+    //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    compractrl.controller('ModalListChequeSinFactCtrl', ['$scope', '$uibModalInstance', 'cheques', function ($scope, $uibModalInstance, cheques) {
+        $scope.cheques = cheques;
+
+
+        $scope.cancel = () => $uibModalInstance.dismiss('cancel');
+
+        $scope.ok = (chq) => $uibModalInstance.close(chq);
+
 
     }]);
 

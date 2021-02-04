@@ -139,6 +139,13 @@ $app->post('/updproycomp', function(){
 function insertaDetalleContable($d, $idorigen){
     $db = new dbcpm();
     $origen = 2;
+
+    //Validación de la moneda de la factura
+    $query = "SELECT eslocal FROM moneda WHERE id = $d->idmoneda";
+    $esLocal = (int)$db->getOneField($query) === 1;
+    $d->tipocambio = $esLocal ? 1.00 : $d->tipocambio;
+    //Fin de la validación de la moneda de la factura
+
     //Inicia inserción automática de detalle contable de la factura
     $ctagastoprov = (int)$d->ctagastoprov;
     $ctaivaporpagar = (int)$db->getOneField("SELECT idcuentac FROM tipocompra WHERE id = ".$d->idtipocompra);
@@ -205,7 +212,8 @@ function generaDetalleProyecto($db, $lastid){
     $idproyecto = (int)$db->getOneField($query);
     $query = "SELECT idunidad FROM compra WHERE id = $lastid";
     $idunidad = (int)$db->getOneField($query);
-    $query = "SELECT a.idcuenta, a.debe FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta WHERE a.origen = 2 AND a.idorigen = $lastid AND (b.codigo LIKE '5%' OR b.codigo LIKE '6%')";
+    $query = "SELECT a.idcuenta, a.debe FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta 
+    WHERE a.origen = 2 AND a.idorigen = $lastid AND (b.codigo LIKE '5%' OR b.codigo LIKE '6%')";
     $gastos = $db->getQuery($query);
     $cntGastos = count($gastos);
     if($idproyecto > 0 && $cntGastos > 0){
@@ -219,12 +227,40 @@ function generaDetalleProyecto($db, $lastid){
     }
 };
 
+function atarChequeAFactura($db, $d, $idfactura) {
+    if((int)$d->idcheque > 0) {
+        $query = "UPDATE tranban SET idfact = $idfactura WHERE id = $d->idcheque";
+        $db->doQuery($query);        
+
+        $query = "SELECT a.id, b.idmoneda, a.monto, c.eslocal ";
+        $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN moneda c ON c.id = b.idmoneda ";
+        $query.= "WHERE a.id = $d->idcheque";
+        $datosCheque = $db->getQuery($query)[0];
+
+        $montoAInsertar = (float)$datosCheque->monto;
+
+        $esLocalMonedaFact = (int)$db->getOneField("SELECT eslocal FROM moneda WHERE id = $d->idmoneda") === 1;
+
+        if((int)$datosCheque->idmoneda !== (int)$d->idmoneda) {
+            if((int)$datosCheque->eslocal === 1 && !$esLocalMonedaFact) {
+                $montoAInsertar = round((float)$datosCheque->monto / (float)$d->tipocambio, 2);
+            } else {
+                $montoAInsertar = round((float)$datosCheque->monto * (float)$d->tipocambio, 2);
+            }
+        }
+        
+        $query = "INSERT INTO detpagocompra(idcompra, idtranban, monto, esrecprov) VALUES($idfactura, $d->idcheque, $montoAInsertar, 0)";
+        $db->doQuery($query);
+    }
+}
+
 $app->post('/c', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
     if(!isset($d->idunidad)){ $d->idunidad = 0; }
     if(!isset($d->nombrerecibo)){ $d->nombrerecibo = 'NULL'; } else { $d->nombrerecibo = "'$d->nombrerecibo'"; }
+    if(!isset($d->idcheque)){ $d->idcheque = 0; }
 
     if((int)$d->idtipofactura !== 5) {
         $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
@@ -250,6 +286,7 @@ $app->post('/c', function(){
         insertaDetalleContable($d, $lastid);
         //Fin de inserción automática de detalle contable de la factura
         generaDetalleProyecto($db, $lastid);
+        atarChequeAFactura($db, $d, $lastid);
     }
 
     print json_encode(['lastid' => $lastid]);
@@ -261,6 +298,7 @@ $app->post('/u', function(){
 
     if(!isset($d->idunidad)){ $d->idunidad = 0; }
     if(!isset($d->nombrerecibo)){ $d->nombrerecibo = 'NULL'; } else { $d->nombrerecibo = "'$d->nombrerecibo'"; }
+    if(!isset($d->idcheque)){ $d->idcheque = 0; }
 
     if((int)$d->idtipofactura !== 5) {
         $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
@@ -287,8 +325,9 @@ $app->post('/u', function(){
     $db->doQuery($query);
 
     //Inicia inserción automática de detalle contable de la factura
-    insertaDetalleContable($d, $idorigen);
+    insertaDetalleContable($d, $d->id);
     //Fin de inserción automática de detalle contable de la factura
+    // atarChequeAFactura($db, $d, $d->id);
     print json_encode(['lastid' => $idorigen]);
 });
 
@@ -603,24 +642,29 @@ $app->get('/selots/:idproveedor/:idempresa', function($idproveedor, $idempresa){
 
 $app->get('/montoots/:idot', function($idot){
     $db = new dbcpm();
-    $query = "SELECT ROUND(IF(a.tipocambio > 1, (SELECT IF(b.iddetpresupuesto = a.id, a.monto * a.tipocambio +  SUM(b.monto) * b.tipocambio, a.monto * 1.10 * a.tipocambio)
-            FROM detpresupuesto a 
-            INNER JOIN ampliapresupuesto b ON a.id = b.iddetpresupuesto
-            WHERE a.id = $idot AND a.idestatuspresupuesto = 3 AND IF (b.iddetpresupuesto = a.id, b.idestatuspresupuesto = 3, 0)),
-            (SELECT IF(b.iddetpresupuesto = a.id, (a.monto + SUM(b.monto)) * 1.10, a.monto * 1.10)
-            FROM detpresupuesto a 
-            INNER JOIN ampliapresupuesto b ON a.id = b.iddetpresupuesto
-            WHERE a.id = $idot AND a.idestatuspresupuesto = 3 AND IF (b.iddetpresupuesto = a.id, b.idestatuspresupuesto = 3, 0))) -
-            ((SELECT IFNULL(SUM(totfact), 0) 
-            FROM compra WHERE ordentrabajo = $idot AND tipocambio = 1) +
-            (SELECT IFNULL(SUM(totfact) * tipocambio, 0)
-            FROM compra WHERE ordentrabajo = $idot AND tipocambio != 1)), 2) AS monto
-            FROM detpresupuesto a
-            WHERE a.id = $idot ";
+    $query = "SELECT ROUND(IF(c.eslocal = 1, IF(a.id = d.iddetpresupuesto, a.monto + SUM(d.monto), a.monto), 
+    IF(a.id = d.iddetpresupuesto, (a.monto * a.tipocambio) + (d.monto * d.tipocambio), a.monto * a.tipocambio)) - (IFNULL((SELECT SUM(b.totfact) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda = b.idmoneda), 0.00) + 
+    IFNULL(IF(c.eslocal = 1, (SELECT SUM(b.totfact * b.tipocambio) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda != b.idmoneda),
+    (SELECT SUM(b.totfact) / b.tipocambio FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda != b.idmoneda)), 0.00)), 2) AS monto
+    FROM detpresupuesto a 
+    INNER JOIN compra b ON a.id = b.ordentrabajo
+    INNER JOIN moneda c ON c.id = a.idmoneda
+    LEFT JOIN ampliapresupuesto d ON a.id = d.iddetpresupuesto
+    WHERE a.id = $idot AND d.idestatuspresupuesto = 3";
 
     $monto = $db->getOneField($query);
     
     print json_encode(['monto' => $monto ? $monto : 0.00 ]);
+});
+
+$app->get('/selcheques/:idot', function($idot){
+    $db = new dbcpm();
+    $query = "SELECT a.id, b.idmoneda, a.numero, FORMAT(a.monto, 2) AS monto, ROUND(a.tipocambio, 5) AS tipocambio, a.concepto, a.tipotrans AS tipo, b.nombre AS banco, c.simbolo AS moneda
+            FROM tranban a
+            INNER JOIN banco b ON b.id = a.idbanco 
+            INNER JOIN moneda c ON  c.id = b.idmoneda
+            WHERE iddetpresup = $idot AND anticipo = 1 AND idfact IS NULL ";
+    print $db->doSelectASJson($query);
 });
 
 $app->run();

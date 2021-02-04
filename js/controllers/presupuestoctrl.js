@@ -2,7 +2,7 @@
 
     var presupuestoctrl = angular.module('cpm.presupuestoctrl', []);
 
-    presupuestoctrl.controller('presupuestoCtrl', ['$scope', 'presupuestoSrvc', '$confirm', 'proyectoSrvc', 'empresaSrvc', 'tipogastoSrvc', 'monedaSrvc', '$filter', 'authSrvc', 'proveedorSrvc', 'toaster', '$uibModal', 'desktopNotification', 'jsReportSrvc', '$window', 'tranBancSrvc', 'estatusPresupuestoSrvc', '$route', 'Upload', function ($scope, presupuestoSrvc, $confirm, proyectoSrvc, empresaSrvc, tipogastoSrvc, monedaSrvc, $filter, authSrvc, proveedorSrvc, toaster, $uibModal, desktopNotification, jsReportSrvc, $window, tranBancSrvc, estatusPresupuestoSrvc, $route, Upload) {
+    presupuestoctrl.controller('presupuestoCtrl', ['$scope', 'presupuestoSrvc', '$confirm', 'proyectoSrvc', 'empresaSrvc', 'tipogastoSrvc', 'monedaSrvc', '$filter', 'authSrvc', 'proveedorSrvc', 'toaster', '$uibModal', 'desktopNotification', 'jsReportSrvc', '$window', 'tranBancSrvc', 'estatusPresupuestoSrvc', '$route', 'Upload', 'tipoCambioSrvc', function ($scope, presupuestoSrvc, $confirm, proyectoSrvc, empresaSrvc, tipogastoSrvc, monedaSrvc, $filter, authSrvc, proveedorSrvc, toaster, $uibModal, desktopNotification, jsReportSrvc, $window, tranBancSrvc, estatusPresupuestoSrvc, $route, Upload, tipoCambioSrvc) {
 
         //$scope.presupuesto = {fechasolicitud: moment().toDate(), idmoneda: '1', tipocambio: 1.00};
         $scope.presupuesto = {};
@@ -16,6 +16,7 @@
         $scope.monedas = [];
         $scope.proveedores = [];
         $scope.subtiposgasto = [];
+        $scope.tipocambiogt = {};
         $scope.sl = { presupuesto: true, ot: true };
         $scope.usrdata = {};
         $scope.permiso = {};
@@ -35,6 +36,7 @@
         empresaSrvc.lstEmpresas().then(function (d) { $scope.empresas = d; });
         tipogastoSrvc.lstTipogastos().then(function (d) { $scope.tiposgasto = d; });
         monedaSrvc.lstMonedas().then(function (d) { $scope.monedas = d; });
+        tipoCambioSrvc.getLastTC().then(function (d) {$scope.tipocambiogt = +d.lasttc;});
         //proveedorSrvc.lstProveedores().then(function(d){ $scope.proveedores = d; });
         tranBancSrvc.lstBeneficiarios().then(function (d) { $scope.proveedores = d; });
 
@@ -573,6 +575,8 @@
                 text: '¿Seguro(a) de eliminar este adjunto? (Esto también eliminará físicamente el documento)',
                 title: 'Eliminar adjunto de OT', ok: 'Sí', cancel: 'No'}).then(() => presupuestoSrvc.editRow({ id: id }, 'daot').then(() => $scope.loadOTAdjuntos()));
         };
+
+        // $scope.setTC = () => $scope.presupuesto.tipocambio = $scope.tipocambiogt;        
     }]);
 
         //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//

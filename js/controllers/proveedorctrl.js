@@ -48,7 +48,7 @@
         });
 
         $scope.resetElProv = function(){
-            $scope.elProv = { direccion: '', telefono: '', correo: '', concepto: '', chequesa: '', retensionisr: 0, diascred: 0, objBancoPais: {},
+            $scope.elProv = { direccion: '', telefono: '', correo: '', concepto: '', chequesa: '', retensionisr: 0, diascred: 0, objBancoPais: undefined,
                 limitecred: parseFloat(0.0), pequeniocont: 0, tipocambioprov: 1, objMoneda: {}, debaja: '0', cuentabanco: undefined, 
                 recurrente: '0', tipcuenta: 0, identificacion: undefined };
             $scope.editando = false;
@@ -58,8 +58,8 @@
                 $scope.elProv.objMoneda.tipocambioprov = parseFloat($scope.elProv.objMoneda.tipocambioprov).toFixed($scope.dectc);
                 $scope.elProv.tipocambioprov = parseFloat(d[0].tipocambio).toFixed($scope.dectc);
             });
-            bancoSrvc.lstBancosPais(parseInt($scope.objEmpresa.idbancopais)).then(function(d){ $scope.elProv.objBancoPais = d[0];
-            });
+            // bancoSrvc.lstBancosPais(parseInt($scope.objEmpresa.idbancopais)).then(function(d){ $scope.elProv.objBancoPais = d[0];
+            //});
         };
 
         $scope.getLstProveedores = function(){
@@ -156,7 +156,7 @@
 
         $scope.addProv = function(obj){
             obj.idmoneda = parseInt(obj.objMoneda.id);
-            obj.idbancopais = parseInt(obj.objBancoPais.id);
+            obj.idbancopais = !!obj.objBancoPais ? parseInt(obj.objBancoPais.id) : 0;
             obj = setDataProv(obj);
             proveedorSrvc.editRow(obj, 'c').then(function(d){
                 $scope.getLstProveedores();
@@ -169,7 +169,7 @@
 
         $scope.updProv = function(data, id){
             data.idmoneda = parseInt(data.objMoneda.id);
-            data.idbancopais = parseInt(data.objBancoPais.id);
+            data.idbancopais = !!data.objBancoPais ? parseInt(data.objBancoPais.id) : 0;
             data = setDataProv(data);
             proveedorSrvc.editRow(data, 'u').then(function(){
                 $scope.getLstProveedores();

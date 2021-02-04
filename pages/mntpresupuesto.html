@@ -397,9 +397,17 @@
                                 <div class="form-group"
                                     ng-class="{'has-error':frmPresup.txtTCPresup.$invalid && !frmPresup.txtTCPresup.$pristine}">
                                     <label for="txtTCPresup">TC:</label>
+                                    <div class="input-group">
                                     <input name="txtTCPresup" id="txtTCPresup" type="text" class="form-control"
                                         ng-model="presupuesto.tipocambio" fcsa-number="{maxDecimals:5}"
                                         ng-required="+presupuesto.tipo == 1" ng-disabled="sl.presupuesto" />
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-primary" ng-click="presupuesto.tipocambio = tipocambiogt;"
+                                            ng-disabled="sl.presupuesto">
+                                                <span>TC</span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -444,8 +452,9 @@
                             <span class="glyphicon glyphicon-folder-open"></span>
                         </button>
                         <button type="button" class="btn btn-info" ng-click="enviar(presupuesto)"
-                        ng-hide="(+presupuesto.idestatuspresupuesto == 6 || +presupuesto.idestatuspresupuesto == 5) || !permiso.m " data-toggle="tooltip"
-                        data-placement="auto" title="Enviar presupuesto a aprobación..." ng-disabled="frmPresup.$invalid" >
+                        ng-hide="+presupuesto.idestatuspresupuesto == 2 || +presupuesto.idestatuspresupuesto == 3 || +idestatuspresupuesto == 4
+                        || +presupuesto.idestatuspresupuesto == 5 || +idestatuspresupuesto == 6" data-toggle="tooltip"
+                        data-placement="auto" title="Enviar presupuesto a aprobación..." ng-disabled="frmPresup.$invalid || +presupuesto.idestatuspresupuesto == 2" >
                         <span class="glyphicon glyphicon-share-alt"></span>
                     </button>
                         <button type="button" class="btn btn-danger" ng-click="anulaPresupuesto(presupuesto)"
