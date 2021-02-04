@@ -1,0 +1,31 @@
+<div class="container" ng-controller="rptCheqSinFactCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">Lista de contratos inactivos</div>
+            <div class="panel-body" style="text-align: right">
+                <div class="row" style="text-align: left">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="txtFdel">Del:</label>
+                            <input name="txtFdel" id="txtFdel" type="date" class="form-control" ng-model="params.fdel"/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="txtFAl">Al:</label>
+                            <input name="txtFAl" id="txtFAl" type="date" class="form-control" ng-model="params.fal"/>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="getLisCheqFact()">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="resetParams()">
+                    <i class="fa fa-refresh" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <hr/>
+    <rpt-viewer contenido="content"></rpt-viewer>
+</div>

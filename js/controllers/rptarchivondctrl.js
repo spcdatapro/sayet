@@ -4,7 +4,7 @@
 
     rptarchivondctrl.controller('rptArchivoNDCtrl', ['$scope', '$window', 'empresaSrvc', 'bancoSrvc', ($scope, $window, empresaSrvc, bancoSrvc) => {
 
-        $scope.params = { fecha: moment().toDate(), idempresa: undefined, idbanco: undefined };
+        $scope.params = { fecha: moment().toDate(), idempresa: undefined, idbanco: undefined};
         $scope.empresas = [];
         $scope.bancos = [];
 

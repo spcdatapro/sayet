@@ -82,10 +82,10 @@
 
         $scope.getPagos = function (idempresa, bco) {
             $scope.pagosSelected = [];
-            var fmoneda = 1;
+            const fmoneda = 0;
             if (bco != null && bco != undefined) {
-                //fmoneda = parseFloat(bco.tipocambio) > 1 ? parseInt(bco.idmoneda) : 0;
-                fmoneda = parseInt(bco.idmoneda);
+                // fmoneda = parseFloat(bco.tipocambio) > 1 ? parseInt(bco.idmoneda) : 0;
+                // fmoneda = parseInt(bco.idmoneda);
             }
             tranPagosSrvc.lstPagos(idempresa, moment($scope.feclimite).format('YYYY-MM-DD'), fmoneda).then(function (d) { $scope.losPagos = procDataPagos(d); });
         };

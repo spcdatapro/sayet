@@ -7,11 +7,11 @@ header('Content-Type: application/json');
 $app = new \Slim\Slim();
 
 //API para pagos
-$app->get('/lstpagos/:idempresa/:flimite/:idmoneda', function($idempresa, $flimite, $idmoneda){
+$app->get('/lstpagos/:idempresa/:flimite(/:idmoneda)', function($idempresa, $flimite, $idmoneda = 0){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idempresa, a.idproveedor, b.nombre AS proveedor, a.serie, a.documento, a.fechapago, a.conceptomayor, a.subtotal, a.totfact, ";
     $query.= "IFNULL(c.montopagado, 0.00) AS montopagado, 0 AS retenisr, 1 AS pagatodo, (a.totfact - (a.isr + IFNULL(c.montopagado, 0.00))) AS montoapagar, ";
-    $query.= "(a.totfact - (a.isr + IFNULL(c.montopagado, 0.00))) AS saldo, 0 AS pagar, d.simbolo AS moneda, a.tipocambio, a.idmoneda, a.isr, b.chequesa ";
+    $query.= "(a.totfact - (a.isr + IFNULL(c.montopagado, 0.00))) AS saldo, 0 AS pagar, d.simbolo AS moneda, a.tipocambio, a.idmoneda, a.isr, b.chequesa, a.ordentrabajo ";
     $query.= "FROM compra a LEFT JOIN proveedor b ON b.id = a.idproveedor LEFT JOIN (";
     $query.= "SELECT idcompra, SUM(monto) AS montopagado FROM detpagocompra GROUP BY idcompra) c ON a.id = c.idcompra ";
     $query.= "LEFT JOIN moneda d ON d.id = a.idmoneda ";
@@ -52,6 +52,8 @@ $app->post('/g', function(){
     }
     $ctabanco = (int)$db->getOneField("SELECT idcuentac FROM banco WHERE id = ".$objBanco->idbanco);
     $cantProvs = count($idprovs);    
+
+    $objBanco->esLocal = (int)$db->getOneField("SELECT eslocal FROM moneda WHERE id = $objBanco->idmoneda") === 1;
     // print "Cantidad de proveedores: $cantProvs --- ";
     for($y = 0; $y < $cantProvs; $y++){
         $totAPagar = 0.0;
@@ -59,16 +61,34 @@ $app->post('/g', function(){
         $nombreProveedor = '';
         $idempresa = 0;
         $losPagos = [];
+        $ots = '';
+        $idfac = '';
+        $tpcambio = '';
         for($z = 0; $z < $cantPagos; $z++){
             $quetzalizar = false;
             $tc = ($quetzalizar ? (float)$d[$z]->tipocambio : 1.00);
             if((int)$d[$z]->idproveedor == $idprovs[$y]){
-                $totAPagar += (float)$d[$z]->montoapagar * $tc;
+
+                if((int)$objBanco->idmoneda === (int)$d[$z]->idmoneda) {
+                    $totAPagar += (float)$d[$z]->montoapagar;
+                } else {
+                    if($objBanco->esLocal) {
+                        $totAPagar += ((float)$d[$z]->montoapagar * (float)$d[$z]->tipocambio);
+                    } else {
+                        $totAPagar += ((float)$d[$z]->montoapagar / (float)$d[$z]->tipocambio);
+                    }
+                }
+
                 if($idempresa == 0) {$idempresa = $d[$z]->idempresa; };
                 if($nombreProveedor == ''){ $nombreProveedor = $d[$z]->chequesa; };
                 if($qFacturas !== ''){ $qFacturas.= ', '; };
                 $qFacturas.= $d[$z]->serie.'-'.$d[$z]->documento;
-                $losPagos[] = ['idcompra' => $d[$z]->id, 'monto' => ($d[$z]->montoapagar * $tc)];
+                $losPagos[] = ['idcompra' => $d[$z]->id, 'monto' => ($d[$z]->montoapagar)];
+                $ots = $d[$z]->ordentrabajo;
+                $idfac = $d[$z]->id; 
+                $tpcambio = $d[$z]->tipocambio;
+                // $query = "SELECT eslocal FROM moneda WHERE id = $dimoneda";
+                // $esLocal = (int)$db->getOneField($query) === 1;
             };
         };
         // print_r($losPagos); die();
@@ -82,9 +102,9 @@ $app->post('/g', function(){
             $getCorrela = "SELECT CONCAT('9999', correlativond) FROM banco WHERE id = $objBanco->idbanco";
         }
         */
-        $query = "INSERT INTO tranban(idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, origenbene, idbeneficiario) ";
+        $query = "INSERT INTO tranban(idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, origenbene, idbeneficiario, iddetpresup, idfact, tipocambio) ";
         $query.= "VALUES($objBanco->idbanco, '$objBanco->tipo', '$objBanco->fechatranstr', $totAPagar, '$nombreProveedor', ";
-        $query.= "'Pago de factura(s) $qFacturas', ($getCorrela), 1, $idprovs[$y])";
+        $query.= "'Pago de factura(s) $qFacturas', ($getCorrela), 1, $idprovs[$y], $ots, $idfac, $tpcambio)";
         //echo $query.'<br/><br/>';
         $db->doQuery($query);
         $lastid = $db->getLastId();

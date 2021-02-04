@@ -47,4 +47,29 @@ $app->post('/rptrescheques', function(){
     print json_encode($datos);
 });
 
+$app->post('/cheqsinfact', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    if(!isset($d->fdelstr)) { $d->fdelstr = ''; }
+    if(!isset($d->falstr)) { $d->falstr = ''; }
+
+    $query = "SELECT a.fecha, a.numero, a.beneficiario, d.nombre AS banco, CONCAT(b.simbolo, FORMAT(a.monto, 2)) AS monto,
+            a.tipocambio, IFNULL(CONCAT(c.idpresupuesto, '-', c.correlativo), '') AS ot
+            FROM tranban a 
+            INNER JOIN banco d ON d.id = a.idbanco
+            INNER JOIN moneda b ON b.id = d.idmoneda
+            LEFT JOIN detpresupuesto c ON c.id = a.iddetpresup
+            WHERE a.anticipo = 1 AND a.idfact IS NULL  ";
+    $query.= trim($d->fdelstr) !== '' ? "AND a.fecha >= '$d->fdelstr' " : '';
+    $query.= trim($d->falstr) !== '' ? "AND a.fecha <= '$d->falstr' " : '';
+    $query.= "ORDER BY a.fecha DESC ";
+    $cheques = $db->getQuery($query);
+
+    $query = "SELECT DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy, IFNULL(DATE_FORMAT('$d->fdelstr', '%d/%m/%Y'), '') AS fdel, ";
+    $query.= "IFNULL(DATE_FORMAT('$d->falstr', '%d/%m/%Y'), '') AS fal";
+    $general = $db->getQuery($query)[0];
+    print json_encode(['general' => $general, 'cheques' => $cheques]);
+});
+
 $app->run();

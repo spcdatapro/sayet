@@ -316,7 +316,7 @@
             //$scope.laTran.idproyecto = item.idproyecto;
 
             $scope.laTran.tipocambio = parseFloat(item.tipocambio).toFixed($scope.dectc);
-            $scope.laTran.monto = (+$scope.laTran.objBanco.idmoneda != +item.idmoneda) ? parseFloat(parseFloat(item.valor) * parseFloat($scope.laTran.tipocambio)).toFixed(2) : parseFloat(item.valor).toFixed(2);
+            //$scope.laTran.monto = (+$scope.laTran.objBanco.idmoneda != +item.idmoneda) ? parseFloat(parseFloat(item.valor) * parseFloat($scope.laTran.tipocambio)).toFixed(2) : parseFloat(item.valor).toFixed(2);
             $scope.laTran.iddetpresup = item.id;
         };
 

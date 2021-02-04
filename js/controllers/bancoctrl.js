@@ -9,6 +9,7 @@
         $scope.lasEmpresas = [];
         $scope.losBancos = [];
         $scope.lasCuentas = [];
+        $scope.losBancosPais = [];
         $scope.lasMonedas = [];
         $scope.permiso = {};
         $scope.tiposimp = [];
@@ -27,6 +28,7 @@
         });
 
         monedaSrvc.lstMonedas().then(function(d){ $scope.lasMonedas = d; });
+        bancoSrvc.lstBancosPais().then(function(d){ $scope.losBancosPais = d; });
         tipoImpresionChequeSrvc.lstTiposImpresionCheque().then(function(d){ $scope.tiposimp = d; });
 
         $scope.$watch('elBco.objEmpresa', function(newValue, oldValue){
@@ -45,6 +47,7 @@
                 data[i].debaja = parseInt(data[i].debaja);
                 data[i].gruposumario = parseInt(data[i].gruposumario);
                 data[i].ordensumario = parseInt(data[i].ordensumario);
+                data[i].idbancopais = parseInt(data[i].idbancopais);
             }
             return data;
         }
@@ -52,7 +55,7 @@
         $scope.resetBanco = function(){
             $scope.elBco = {
                 objEmpresa: $scope.elBco.objEmpresa, idempresa: $scope.elBco.objEmpresa.id, objCuentaC: null, objMoneda: null, idcuentac: 0, nombre: '',
-                nocuenta: '', siglas: '', nomcuenta: '', correlativo: 1, debaja: 0, gruposumario: 0, ordensumario: 0
+                nocuenta: '', siglas: '', nomcuenta: '', correlativo: 1, debaja: 0, gruposumario: 0, ordensumario: 0, objBancoPais: undefined
             };
         };
 
@@ -68,12 +71,17 @@
             bancoSrvc.lstBancos($scope.elBco.objEmpresa.id).then(function(d){
                 $scope.losBancos = procDatos(d);
             });
+
+            bancoSrvc.lstBancosPais(parseInt($scope.elBco.objEmpresa.idbancopais)).then(function(d){
+                $scope.elBco.objBancoPais = d[0];
+            });
         };
 
         $scope.getBanco = function(idbanco){
             bancoSrvc.getBanco(idbanco).then(function(d){
                 $scope.elBco = procDatos(d)[0];
                 $scope.elBco.objEmpresa = $filter('getById')($scope.lasEmpresas, $scope.elBco.idempresa);
+                $scope.elBco.objBancoPais = $filter('getById')($scope.losBancosPais, $scope.elBco.idbancopais);
                 $scope.elBco.objCuentaC = $filter('getById')($scope.lasCuentas, $scope.elBco.idcuentac);
                 $scope.elBco.objMoneda = $filter('getById')($scope.lasMonedas, $scope.elBco.idmoneda);
                 goTop();
@@ -84,6 +92,7 @@
             obj.idempresa = $scope.elBco.objEmpresa.id;
             obj.idcuentac = $scope.elBco.objCuentaC.id;
             obj.idmoneda = $scope.elBco.objMoneda.id;
+            obj.idbancopais = $scope.elBco.objBancoPais.id;
             obj.debaja = obj.debaja != null && obj.debaja != undefined ? obj.debaja : 0;
             bancoSrvc.editRow(obj, 'c').then(function(){
                 $scope.getLstBancos();
@@ -97,6 +106,7 @@
             data.idempresa = $scope.elBco.objEmpresa.id;
             data.idcuentac = $scope.elBco.objCuentaC.id;
             data.idmoneda = $scope.elBco.objMoneda.id;
+            data.idbancopais = $scope.elBco.objBancoPais.id;
             data.debaja = data.debaja != null && data.debaja != undefined ? data.debaja : 0;
             bancoSrvc.editRow(data, 'u').then(function(){
                 $scope.getLstBancos();

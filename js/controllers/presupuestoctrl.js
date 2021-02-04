@@ -2,7 +2,7 @@
 
     var presupuestoctrl = angular.module('cpm.presupuestoctrl', []);
 
-    presupuestoctrl.controller('presupuestoCtrl', ['$scope', 'presupuestoSrvc', '$confirm', 'proyectoSrvc', 'empresaSrvc', 'tipogastoSrvc', 'monedaSrvc', '$filter', 'authSrvc', 'proveedorSrvc', 'toaster', '$uibModal', 'desktopNotification', 'jsReportSrvc', '$window', 'tranBancSrvc', 'estatusPresupuestoSrvc', '$route', 'Upload', function ($scope, presupuestoSrvc, $confirm, proyectoSrvc, empresaSrvc, tipogastoSrvc, monedaSrvc, $filter, authSrvc, proveedorSrvc, toaster, $uibModal, desktopNotification, jsReportSrvc, $window, tranBancSrvc, estatusPresupuestoSrvc, $route, Upload) {
+    presupuestoctrl.controller('presupuestoCtrl', ['$scope', 'presupuestoSrvc', '$confirm', 'proyectoSrvc', 'empresaSrvc', 'tipogastoSrvc', 'monedaSrvc', '$filter', 'authSrvc', 'proveedorSrvc', 'toaster', '$uibModal', 'desktopNotification', 'jsReportSrvc', '$window', 'tranBancSrvc', 'estatusPresupuestoSrvc', '$route', 'Upload', 'tipoCambioSrvc', function ($scope, presupuestoSrvc, $confirm, proyectoSrvc, empresaSrvc, tipogastoSrvc, monedaSrvc, $filter, authSrvc, proveedorSrvc, toaster, $uibModal, desktopNotification, jsReportSrvc, $window, tranBancSrvc, estatusPresupuestoSrvc, $route, Upload, tipoCambioSrvc) {
 
         //$scope.presupuesto = {fechasolicitud: moment().toDate(), idmoneda: '1', tipocambio: 1.00};
         $scope.presupuesto = {};
@@ -16,6 +16,7 @@
         $scope.monedas = [];
         $scope.proveedores = [];
         $scope.subtiposgasto = [];
+        $scope.tipocambiogt = {};
         $scope.sl = { presupuesto: true, ot: true };
         $scope.usrdata = {};
         $scope.permiso = {};
@@ -35,6 +36,7 @@
         empresaSrvc.lstEmpresas().then(function (d) { $scope.empresas = d; });
         tipogastoSrvc.lstTipogastos().then(function (d) { $scope.tiposgasto = d; });
         monedaSrvc.lstMonedas().then(function (d) { $scope.monedas = d; });
+        tipoCambioSrvc.getLastTC().then(function (d) {$scope.tipocambiogt = +d.lasttc;});
         //proveedorSrvc.lstProveedores().then(function(d){ $scope.proveedores = d; });
         tranBancSrvc.lstBeneficiarios().then(function (d) { $scope.proveedores = d; });
 
@@ -170,8 +172,18 @@
             if (esPresupuesto) {
                 qOt = await presupuestoSrvc.lstOts(idot);
             }
+            console.log(qOt)
             var test = false;
             jsReportSrvc.getPDFReport(test ? 'BJdOgyV2W' : 'S1eAuyN2b', { idot: esPresupuesto ? +qOt[0].id : idot }).then(function (pdf) { $window.open(pdf); });
+        };
+
+        $scope.printOtNue = async function (idot, esPresupuesto) {
+            let qOt = {};
+            if (esPresupuesto) {
+                qOt = await presupuestoSrvc.lstOts(idot);
+            }
+            var test = false;
+            jsReportSrvc.getPDFReport(test ? 'BJdOgyV2W' : 'rJPo84G0w', { idot: esPresupuesto ? +qOt[0].id : idot }).then(function (pdf) { $window.open(pdf); });
         };
 
         $scope.nuevoPresupuesto = function () {
@@ -563,6 +575,8 @@
                 text: '¿Seguro(a) de eliminar este adjunto? (Esto también eliminará físicamente el documento)',
                 title: 'Eliminar adjunto de OT', ok: 'Sí', cancel: 'No'}).then(() => presupuestoSrvc.editRow({ id: id }, 'daot').then(() => $scope.loadOTAdjuntos()));
         };
+
+        // $scope.setTC = () => $scope.presupuesto.tipocambio = $scope.tipocambiogt;        
     }]);
 
         //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -744,7 +758,7 @@
     presupuestoctrl.controller('ModalAmpliarOtCtrl', ['$scope', '$uibModalInstance', '$filter', 'toaster', '$confirm', 'presupuestoSrvc', 'ot', 'permiso', function ($scope, $uibModalInstance, $filter, toaster, $confirm, presupuestoSrvc, ot, permiso) {
         $scope.ot = ot;
         $scope.lstampliaciones = [];
-        $scope.amplia = { idpresupuesto: ot.idpresupuesto, iddetpresupuesto: ot.id };
+        $scope.amplia = { idpresupuesto: ot.idpresupuesto, iddetpresupuesto: ot.id, idmoneda: ot.idmoneda, tipocambio: ot.tipocambio };
         $scope.permiso = permiso;
         $scope.sumaAmpliaciones = 0.00;
 
@@ -773,7 +787,7 @@
         };
 
         $scope.resetAmpliacion = function () {
-            $scope.amplia = { idpresupuesto: ot.idpresupuesto, iddetpresupuesto: ot.id };
+            $scope.amplia = { idpresupuesto: ot.idpresupuesto, iddetpresupuesto: ot.id, idmoneda: ot.idmoneda, tipocambio: ot.tipocambio };
         };
 
         $scope.addAmpliacion = function (obj) {

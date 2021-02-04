@@ -180,9 +180,10 @@
                 <thead>
                     <tr>
                         <th style="text-align: center">No. Ot</th>
+                        <th style="text-align: center">No. Ampliaci&oacute;n</th>
                         <th style="text-align: center">Solicita</th>
                         <th style="text-align: center">Proveedor</th>
-                        <th style="text-align: center">No. Ampliaci&oacute;n</th>
+                        <th style="text-align: center">Notas</th>
                         <th style="text-align: center">Monto</th>
                         <th style="text-align: center">Aprobar</th>
                         <th style="text-align: center">Denegar</th>
@@ -191,10 +192,11 @@
                 <tbody>
                     <tr ng-repeat="p in presupuestos">
                         <td style="text-align: center">{{p.ot}}</td>
-                        <td style="text-align: center">{{p.usuario}}</td>
-                        <td style="text-align: center">{{p.proveedor}}</td>
                         <td style="text-align: center">{{p.ampliacion}}</td>
-                        <td style="text-align: center">{{p.moneda}}&nbsp;{{p.monto | number:2}}</td>
+                        <td style="text-align: center">{{p.iniciales}}</td>
+                        <td style="text-align: center">{{p.proveedor}}</td>
+                        <td style="text-align: center">{{p.notas}}</td>
+                        <td style="text-align: center">{{p.monto}}</td>
                         <td style="text-align: center">
                             <input name="chkAprobada_{{p.idot}}" id="chkAprobada_{{p.idot}}" type="checkbox"
                                 ng-model="p.aprobada" ng-true-value="1" ng-false-value="0" ng-change="aprobar(p)" />

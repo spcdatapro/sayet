@@ -84,13 +84,13 @@
                                         on-select="fillData($item, $model)">
                                         <ui-select-match placeholder="Buscar orden de trabajo..." allow-clear="true">
                                             <span
-                                                ng-bind="($select.selected.ot + ' - Pago #' + $select.selected.nopago)"></span>
+                                                ng-bind="($select.selected.ot)"></span>
                                         </ui-select-match>
                                         <ui-select-choices
                                             ui-disable-choice="+item.pagado == 1 && (laTran.objTipotrans.abreviatura === 'C' || laTran.tipotrans === 'C')"
                                             repeat="item.iddetpagopresup as item in ots | filter:$select.search">
                                             <div
-                                                ng-bind-html="(item.ot + ' - Pago #' + item.nopago ) | highlight: $select.search">
+                                                ng-bind-html="(item.ot) | highlight: $select.search">
                                             </div>
                                             <small>
                                                 <span ng-show="+item.pagado == 1" style="color: red">PAGADO</span><br
@@ -102,9 +102,6 @@
                                                 <strong>Monto OT:</strong>&nbsp;<span
                                                     ng-bind-html="item.moneda | highlight: $select.search"></span>&nbsp;<span
                                                     ng-bind-html="item.monto | highlight: $select.search"></span><br />
-                                                <strong>Anticipo:</strong>&nbsp;<span
-                                                    ng-bind-html="item.moneda | highlight: $select.search"></span>&nbsp;<span
-                                                    ng-bind-html="item.valor | highlight: $select.search"></span><br />
                                                 <strong>TC:</strong>&nbsp;<span
                                                     ng-bind-html="item.tipocambio | highlight: $select.search"></span><br />
                                                 <strong>Notas:</strong>&nbsp;<span

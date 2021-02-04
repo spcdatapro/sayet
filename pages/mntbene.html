@@ -92,6 +92,33 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <label for="selBcnPai" class="control-label">Banco del pais</label>
+                                    <select name="selBcnPai" id="selBcnPai" class="form-control" ng-model="bene.idbancopais" 
+                                    ng-options="obj.nombre for obj in bancoPais track by obj.id">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="selTipCuet" class="control-label">Tipo de cuenta:</label>
+                                    <select name="selTipCuet" id="selTipCuet" class="form-control" ng-model="bene.tipcuenta">
+                                    <option value="1">Monetaria</option>
+                                    <option value="2">Ahorro</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="txtId" class="control-label">Identificacion:</label>
+                                    <input name="txId" id="txtId" class="form-control" ng-model="bene.identificacion" type="text" />
+                                </div>
+                            </div> 
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
                                     <center>
                                         <label for="chkDeBaja">De baja:</label>
                                         <input name="chkDeBaja" id="chkDeBaja" type="checkbox" class="checkbox" ng-model="bene.debaja" ng-true-value="'1'" ng-false-value="'0'" />

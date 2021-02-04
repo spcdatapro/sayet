@@ -21,7 +21,7 @@
         $scope.getLisContInavtivos = function(){
             $scope.params.idempresa = $scope.params.idempresa != null && $scope.params.idempresa != undefined ? $scope.params.idempresa : '';
             $scope.params.idproyecto = $scope.params.idproyecto != null && $scope.params.idproyecto != undefined ? $scope.params.idproyecto : '';
-            $scope.params.idcliente = $scope.params.idcliente !=null && $scope.params.idcliente != undefined ? $scope.params.idcliente : '';
+            $scope.params.idcliente = $scope.params.idcliente != null && $scope.params.idcliente != undefined ? $scope.params.idcliente : '';
             $scope.params.usufructo = !!$scope.params.usufructo ? $scope.params.usufructo : 0 ;
             $scope.params.fdelstr = moment($scope.params.fdel).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.fal).format('YYYY-MM-DD');
