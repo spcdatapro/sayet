@@ -827,10 +827,12 @@ $app->get('/imprimir_sp', function(){
 				if (isset($datos[$fila['idempresaactual']])) {
 					$datos[$fila['idempresaactual']]['prestamos'][] = new Prestamo($fila['id']);
 				} else {
-					$emp = $g->get_empresa(['id' => $fila['idempresaactual'], 'uno' => TRUE]);
+					// $emp = $g->get_empresa(['id' => $fila['idempresaactual'], 'uno' => TRUE]);
+					$emp = $g->get_plnempresa(['id' => $fila['idempresaactual'], 'uno' => TRUE]);					
 
 					$datos[$fila['idempresaactual']] = [
-						'nombre'    => $emp['nomempresa'], 
+						// 'nombre'    => $emp['nomempresa'], 
+						'nombre'    => $emp['nombre'], 
 						'prestamos' => [new Prestamo($fila['id'])]
 					];
 				}
