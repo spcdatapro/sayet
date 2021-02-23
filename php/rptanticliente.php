@@ -366,7 +366,7 @@ function queryFacturas($d){
                 UNION    
                 SELECT z.idfacturaafecta AS idfactura, SUM(z.total) AS montopagado
                 FROM factura z 
-                WHERE z.idtipofactura = 9 AND z.fecha <= '$d->falstr'
+                WHERE z.idtipofactura = 9 AND z.fecha <= '$d->falstr' AND (z.anulada = 0 OR (z.anulada = 1 AND z.fechaanula > '$d->falstr'))
                 GROUP BY z.idfacturaafecta
             ) x
             GROUP BY x.idfactura
