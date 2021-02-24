@@ -25,7 +25,7 @@ $app->post('/lsttran', function(){
     if(!isset($d->tipotrans)){ $d->tipotrans = ''; };
     if(!isset($d->idot)){ $d->idot = 0; }
     $db = new dbcpm();
-    $query = "SELECT a.id, a.idbanco, CONCAT(b.nombre, ' (', b.nocuenta, ')') AS nombanco, a.tipotrans, a.numero, a.fecha, a.monto, ";
+    $query = "SELECT a.id, a.idbanco, CONCAT(b.nombre, ' (', b.nocuenta, ')') AS nombanco, a.tipotrans, a.numero, a.fecha, a.monto,  a.retisr, a.montooriginal, a.isr, a.montocalcisr, ";
     $query.= "a.beneficiario, a.concepto, a.operado, a.anticipo, a.idbeneficiario, a.origenbene, a.anulado, a.fechaanula, a.tipocambio, a.impreso, a.fechaliquida, a.esnegociable, ";
     $query.= "CONCAT('OT: ', c.idpresupuesto, '-', c.correlativo, ' (', e.nombre,')') AS ot, a.iddetpresup, a.iddetpagopresup, a.idproyecto, a.iddocliquida ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco ";
@@ -41,7 +41,7 @@ $app->post('/lsttran', function(){
 
 $app->get('/gettran/:idtran', function($idtran){
     $db = new dbcpm();
-    $query = "SELECT a.id, a.idbanco, CONCAT(b.nombre, ' (', b.nocuenta, ')') AS nombanco, a.tipotrans, a.numero, a.fecha, a.monto, ";
+    $query = "SELECT a.id, a.idbanco, CONCAT(b.nombre, ' (', b.nocuenta, ')') AS nombanco, a.tipotrans, a.numero, a.fecha, a.monto,  a.retisr, a.montooriginal, a.isr, a.montocalcisr, ";
     $query.= "a.beneficiario, a.concepto, a.operado, a.anticipo, a.idbeneficiario, a.origenbene, a.anulado, c.razon, a.fechaanula, a.tipocambio, d.simbolo AS moneda, a.impreso, a.fechaliquida, a.esnegociable, ";
     $query.= "CONCAT('OT: ', e.idpresupuesto, '-', e.correlativo, ' (', g.nombre,')') AS ot, a.iddetpresup, a.iddetpagopresup, a.idproyecto, a.iddocliquida ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco LEFT JOIN razonanulacion c ON c.id = a.idrazonanulacion LEFT JOIN moneda d ON d.id = b.idmoneda ";
@@ -63,8 +63,10 @@ function insertaDetalleContable($d, $idorigen){
     //Si es C o B, va de la cuenta por liquidar o de la cuenta de proveedores en el debe al banco en el haber
     $idempresa = (int)$db->getOneField("SELECT idempresa FROM banco WHERE id = ".$d->idbanco);
     $ctabco = (int)$db->getOneField("SELECT idcuentac FROM banco WHERE id = ".$d->idbanco);
-    //$tc = (float)$db->getOneField("SELECT a.tipocambio FROM moneda a INNER JOIN banco b ON a.id = b.idmoneda WHERE b.id = ".$d->idbanco);
-    $cuenta = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$idempresa." AND idtipoconfig = ".((int)$d->origenbene === 2 ? 5 : 3));
+    $tc = (float)$db->getOneField("SELECT a.tipocambio FROM moneda a INNER JOIN banco b ON a.id = b.idmoneda WHERE b.id = ".$d->idbanco);
+
+    $cuenta = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$idempresa." AND idtipoconfig = ".((int)$d->anticipo === 1 ? 5 : 3));
+
 
     if($cuenta > 0){
         $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
@@ -101,9 +103,9 @@ $app->post('/c', function(){
     $ttsalida = ['C', 'B'];
     $tentrada = ['D', 'R'];
     $query = "INSERT INTO tranban(idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, anticipo, idbeneficiario, origenbene, tipocambio, esnegociable, iddetpresup, ";
-    $query.= "iddetpagopresup, idproyecto, iddocliquida) ";
+    $query.= "iddetpagopresup, idproyecto, iddocliquida, retisr, montooriginal, isr, montocalcisr) ";
     $query.= "VALUES(".$d->idbanco.", '".$d->tipotrans."', '".$d->fechastr."', ".$d->monto.", '".$d->beneficiario."', '".$d->concepto."', ";
-    $query.= $d->numero.", ".$d->anticipo.", ".$d->idbeneficiario.", ".$d->origenbene.", ".$d->tipocambio.", $d->esnegociable, $d->iddetpresup, $d->iddetpagopresup, $d->idproyecto, $d->iddocliquida)";
+    $query.= $d->numero.", ".$d->anticipo.", ".$d->idbeneficiario.", ".$d->origenbene.", ".$d->tipocambio.", $d->esnegociable, $d->iddetpresup, $d->iddetpagopresup, $d->idproyecto, $d->iddocliquida, $d->retisr, $d->montooriginal, $d->isr, $d->montocalcisr)";
     $db->doQuery($query);
     $lastid = $db->getLastId();
     if(in_array($d->tipotrans, $ttsalida)){
@@ -287,8 +289,8 @@ function getInfoCheque($db, $idtran, $idusr) {
     $n2l = new NumberToLetterConverter();
 
     $query = "SELECT CONCAT(a.numero, '/', b.siglas) AS numero, CONCAT('Guatemala, ', DAY(a.fecha), ' de ', (SELECT LOWER(nombre) FROM mes WHERE id = MONTH(a.fecha)), ' de ', YEAR(a.fecha)) AS fecha, ";
-    $query.= "FORMAT(a.monto, 2) AS monto, a.monto AS numMonto, a.beneficiario, '' AS montoEnLetras, b.siglas AS banco, d.abreviatura AS empresa, e.formato, e.impresora, a.concepto, ";
-    $query.= "a.iddetpagopresup, a.esnegociable, e.pagewidth, e.pageheight, e.papel, (SELECT UPPER(TRIM(iniciales)) FROM usuario WHERE id = $idusr) AS hechopor ";
+    $query.= "FORMAT(a.monto, 2) AS monto, a.monto AS numMonto, a.beneficiario, '' AS montoEnLetras, b.siglas AS banco, d.abreviatura AS empresa, e.formato, e.impresora, a.concepto, a.montooriginal, a.isr, a.montocalcisr, a.retisr, ";
+    $query.= "a.iddetpagopresup, a.iddetpresup, a.esnegociable, e.pagewidth, e.pageheight, e.papel, (SELECT UPPER(TRIM(iniciales)) FROM usuario WHERE id = $idusr) AS hechopor ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN moneda c ON c.id = b.idmoneda INNER JOIN empresa d ON d.id = b.idempresa ";
     $query.= "LEFT JOIN tipoimpresioncheque e ON e.id = b.idtipoimpresion ";
     $query.= "WHERE a.id = $idtran";
@@ -813,6 +815,55 @@ $app->post('/sellonc', function() {
             WHERE c.idtranban = $d->idtranban
             ORDER BY e.numeroadmin";
     print $db->doSelectASJson($query);
+});
+
+$app->get('/montoots/:idot', function($idot){
+    $db = new dbcpm();
+    $query = "SELECT ROUND((ROUND(IF(c.eslocal = 1, IF(a.id = d.iddetpresupuesto, a.monto + SUM(d.monto), a.monto), 
+    IF(a.id = d.iddetpresupuesto, (a.monto * a.tipocambio) + (d.monto * d.tipocambio), a.monto * a.tipocambio)) - (IFNULL((SELECT SUM(b.totfact) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda = b.idmoneda), 0.00) + 
+    IFNULL(IF(c.eslocal = 1, (SELECT SUM(b.totfact * b.tipocambio) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda != b.idmoneda),
+    (SELECT SUM(b.totfact) / b.tipocambio FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda != b.idmoneda)), 0.00)), 2) +
+    ROUND(IF(c.eslocal = 1, IF(a.id = d.iddetpresupuesto, a.monto + SUM(d.monto), a.monto), 
+    IF(a.id = d.iddetpresupuesto, (a.monto * a.tipocambio) + (d.monto * d.tipocambio), a.monto * a.tipocambio)) - (IFNULL((SELECT SUM(b.totfact) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda = b.idmoneda), 0.00) + 
+    IFNULL(IF(c.eslocal = 1, (SELECT SUM(b.totfact * b.tipocambio) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda != b.idmoneda),
+    (SELECT SUM(b.totfact) / b.tipocambio FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda != b.idmoneda)), 0.00)), 2) * 0.10), 2)
+    AS monto
+    FROM detpresupuesto a 
+    INNER JOIN compra b ON a.id = b.ordentrabajo
+    INNER JOIN moneda c ON c.id = a.idmoneda
+    LEFT JOIN ampliapresupuesto d ON a.id = d.iddetpresupuesto
+    WHERE a.id = $idot AND d.idestatuspresupuesto = 3";
+
+    $monto = $db->getOneField($query);
+    
+    print json_encode(['monto' => $monto ? $monto : 0.00 ]);
+});
+
+$app->post('/calcisr', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    
+    $montoOriginal = (float)$d->montooriginal;
+    $montoCalcISR = (float)$d->montocalcisr;
+    $idbanco = $d->objBanco->id;
+
+    $eslocal = (int)$db->getOneField("SELECT a.eslocal FROM moneda a INNER JOIN banco b ON a.id = b.idmoneda WHERE b.id = $idbanco") === 1;
+    if (!$eslocal) {
+        $montoCalcISR = round((float)$d->montocalcisr * (float)$d->tipocambio, 2);
+    }
+
+    $d->isr = $db->calculaISR($montoCalcISR);
+    
+    if (!$eslocal) {
+        $d->isr = round($d->isr / (float)$d->tipocambio, 2);
+    }
+
+    $d->monto = round($montoOriginal - $d->isr, 2);
+
+    print json_encode([
+        'isr' => $d->isr,
+        'monto' => $d->monto
+    ]);
 });
 
 $app->run();

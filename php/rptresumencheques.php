@@ -55,12 +55,13 @@ $app->post('/cheqsinfact', function(){
     if(!isset($d->falstr)) { $d->falstr = ''; }
 
     $query = "SELECT a.fecha, a.numero, a.beneficiario, d.nombre AS banco, CONCAT(b.simbolo, FORMAT(a.monto, 2)) AS monto,
-            a.tipocambio, IFNULL(CONCAT(c.idpresupuesto, '-', c.correlativo), '') AS ot
+            a.tipocambio, IFNULL(CONCAT(c.idpresupuesto, '-', c.correlativo), '') AS ot, e.nomempresa AS empresa
             FROM tranban a 
             INNER JOIN banco d ON d.id = a.idbanco
             INNER JOIN moneda b ON b.id = d.idmoneda
-            LEFT JOIN detpresupuesto c ON c.id = a.iddetpresup
-            WHERE a.anticipo = 1 AND a.idfact IS NULL  ";
+            INNER JOIN detpresupuesto c ON c.id = a.iddetpresup
+            INNER JOIN empresa e ON e.id = d.idempresa 
+            WHERE a.anticipo = 1 AND a.idfact IS NULL ";
     $query.= trim($d->fdelstr) !== '' ? "AND a.fecha >= '$d->fdelstr' " : '';
     $query.= trim($d->falstr) !== '' ? "AND a.fecha <= '$d->falstr' " : '';
     $query.= "ORDER BY a.fecha DESC ";

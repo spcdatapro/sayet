@@ -247,7 +247,7 @@
 
         $scope.aprobar = (obj) => {
             if(+obj.aprobada === 1){
-                $confirm({text: '¿Esta seguro(a) de aprobar la ampliación No. ' + obj.ampliacion +'?', title: 'Aprobar presupuesto', ok: 'Sí', cancel: 'No'}).then(function() {
+                $confirm({text: '¿Esta seguro(a) de aprobar la ampliación No. ' + obj.ampliacion +'?', title: 'Aprobar ampliación', ok: 'Sí', cancel: 'No'}).then(function() {
                     obj.idusuario = $scope.usrdata.uid;
                     presupuestoSrvc.editRow({ idamplia: obj.id }, 'apamp').then(function(){
                         $scope.getPendientes();
@@ -261,7 +261,7 @@
 
         $scope.denegar = (obj) => {
             if(+obj.denegada === 1){
-                $confirm({text: '¿Esta seguro(a) de denegar el ampliación No. ' + obj.ampliacion +'?', title: 'Denegar presupuesto', ok: 'Sí', cancel: 'No'}).then(function() {
+                $confirm({text: '¿Esta seguro(a) de denegar el ampliación No. ' + obj.ampliacion +'?', title: 'Denegar ampliación', ok: 'Sí', cancel: 'No'}).then(function() {
                     obj.idusuario = $scope.usrdata.uid;
                     presupuestoSrvc.editRow({ idamplia: obj.id }, 'rechamp').then(function(){
                         $scope.getPendientes();

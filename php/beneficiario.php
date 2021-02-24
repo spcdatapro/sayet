@@ -37,6 +37,9 @@ $app->post('/c', function(){
         $d->cuentabanco = "'$d->cuentabanco'";
     }
 
+    if (!isset($d->tipcuenta)) { $d->tipcuenta = 0; }
+    if (!isset($d->identificacion)) { $d->identificacion = 0; }
+
     $query = "INSERT INTO beneficiario(nit, nombre, direccion, telefono, correo, concepto, idmoneda, tipocambioprov, debaja, cuentabanco, idbancopais, tipcuenta, identificacion ) ";
     $query.= "VALUES('$d->nit', '$d->nombre', '$d->direccion', '$d->telefono', '$d->correo', '$d->concepto', $d->idbancopais, $d->tipcuenta, $d->identificacion, ";
     $query.= "$d->idmoneda, $d->tipocambioprov, $d->debaja, $d->cuentabanco)";
@@ -54,6 +57,9 @@ $app->post('/u', function(){
     } else {
         $d->cuentabanco = "'$d->cuentabanco'";
     }
+
+    if (!isset($d->tipcuenta)) { $d->tipcuenta = 0; }
+    if (!isset($d->identificacion)) { $d->identificacion = 0; }
 
     $query = "UPDATE beneficiario SET nit = '$d->nit', nombre = '$d->nombre', direccion = '$d->direccion', idbancopais = $d->idbancopais, tipcuenta = $d->tipcuenta, ";
     $query.= "telefono = '$d->telefono', correo = '$d->correo', concepto = '$d->concepto', ";

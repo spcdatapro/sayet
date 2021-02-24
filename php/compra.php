@@ -151,10 +151,19 @@ function insertaDetalleContable($d, $idorigen){
     $ctaivaporpagar = (int)$db->getOneField("SELECT idcuentac FROM tipocompra WHERE id = ".$d->idtipocompra);
     if($ctaivaporpagar == 0){ $ctaivaporpagar = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 2"); }
 
-    $ctaproveedores = (int)$db->getOneField("SELECT a.idcxp FROM detcontprov a INNER JOIN cuentac b ON b.id = a.idcxp WHERE a.idproveedor = $d->idproveedor AND b.idempresa = $d->idempresa LIMIT 1");
-    if(!($ctaproveedores > 0)) {
-        $ctaproveedores = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = " . $d->idempresa . " AND idtipoconfig = 3");
+    $esAnticipo = false;
+    if((int)$d->idcheque > 0){
+        $esAnticipo = (int)$db->getOneField("SELECT anticipo FROM tranban WHERE id = $d->idcheque") === 1;
     }
+
+    $ctaproveedores = (int)$db->getOneField("SELECT a.idcxp FROM detcontprov a INNER JOIN cuentac b ON b.id = a.idcxp WHERE a.idproveedor = $d->idproveedor AND b.idempresa = $d->idempresa LIMIT 1");    
+    if(!($ctaproveedores > 0)) {
+        $ctaproveedores = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 3");
+    }
+
+    if($esAnticipo) {
+        $ctaproveedores = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 5");
+    }    
 
     $ctaisrretenido = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 8");
     $ctaidp = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 9");
@@ -268,7 +277,13 @@ $app->post('/c', function(){
         $calcisr = false;
     }
     
-    $d->isr = !$calcisr ? 0.00 : $db->calculaISR((float)$d->subtotal, (float)$d->tipocambio);
+    $esLocalMonedaFact = (int)$db->getOneField("SELECT eslocal FROM moneda WHERE id = $d->idmoneda") === 1;
+    
+    if ($esLocalMonedaFact) {
+        $d->isr = !$calcisr ? 0.00 : $db->calculaISR((float)$d->subtotal);
+    } else {
+        $d->isr = !$calcisr ? 0.00 : round(($db->calculaISR((float)$d->subtotal * (float)$d->tipocambio)) / (float)$d->tipocambio, 2);
+    }
 
     $query = "INSERT INTO compra(idempresa, idproveedor, serie, documento, fechaingreso, mesiva, fechafactura, idtipocompra, ";
     $query.= "conceptomayor, creditofiscal, extraordinario, fechapago, ordentrabajo, totfact, noafecto, subtotal, iva, idmoneda, tipocambio, ";
@@ -642,10 +657,15 @@ $app->get('/selots/:idproveedor/:idempresa', function($idproveedor, $idempresa){
 
 $app->get('/montoots/:idot', function($idot){
     $db = new dbcpm();
-    $query = "SELECT ROUND(IF(c.eslocal = 1, IF(a.id = d.iddetpresupuesto, a.monto + SUM(d.monto), a.monto), 
+    $query = "SELECT ROUND((ROUND(IF(c.eslocal = 1, IF(a.id = d.iddetpresupuesto, a.monto + SUM(d.monto), a.monto), 
     IF(a.id = d.iddetpresupuesto, (a.monto * a.tipocambio) + (d.monto * d.tipocambio), a.monto * a.tipocambio)) - (IFNULL((SELECT SUM(b.totfact) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda = b.idmoneda), 0.00) + 
     IFNULL(IF(c.eslocal = 1, (SELECT SUM(b.totfact * b.tipocambio) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda != b.idmoneda),
-    (SELECT SUM(b.totfact) / b.tipocambio FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda != b.idmoneda)), 0.00)), 2) AS monto
+    (SELECT SUM(b.totfact) / b.tipocambio FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda != b.idmoneda)), 0.00)), 2) +
+    ROUND(IF(c.eslocal = 1, IF(a.id = d.iddetpresupuesto, a.monto + SUM(d.monto), a.monto), 
+    IF(a.id = d.iddetpresupuesto, (a.monto * a.tipocambio) + (d.monto * d.tipocambio), a.monto * a.tipocambio)) - (IFNULL((SELECT SUM(b.totfact) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda = b.idmoneda), 0.00) + 
+    IFNULL(IF(c.eslocal = 1, (SELECT SUM(b.totfact * b.tipocambio) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda != b.idmoneda),
+    (SELECT SUM(b.totfact) / b.tipocambio FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda != b.idmoneda)), 0.00)), 2) * 0.10), 2)
+    AS monto
     FROM detpresupuesto a 
     INNER JOIN compra b ON a.id = b.ordentrabajo
     INNER JOIN moneda c ON c.id = a.idmoneda
@@ -659,7 +679,7 @@ $app->get('/montoots/:idot', function($idot){
 
 $app->get('/selcheques/:idot', function($idot){
     $db = new dbcpm();
-    $query = "SELECT a.id, b.idmoneda, a.numero, FORMAT(a.monto, 2) AS monto, ROUND(a.tipocambio, 5) AS tipocambio, a.concepto, a.tipotrans AS tipo, b.nombre AS banco, c.simbolo AS moneda
+    $query = "SELECT a.id, b.idmoneda, a.numero, FORMAT(IF(a.isr > 0.00, a.monto + a.isr, a.monto), 2) AS monto, ROUND(a.tipocambio, 5) AS tipocambio, a.concepto, a.tipotrans AS tipo, b.nombre AS banco, c.simbolo AS moneda, a.isr
             FROM tranban a
             INNER JOIN banco b ON b.id = a.idbanco 
             INNER JOIN moneda c ON  c.id = b.idmoneda

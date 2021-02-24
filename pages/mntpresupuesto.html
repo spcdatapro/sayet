@@ -142,10 +142,20 @@
                                             data-placement="auto" title="Imprimir sin avances">
                                             R.
                                         </button>
+                                        <button type="button" class="btn btn-info btn-sm tipo"
+                                        ng-click="printPrespuestoNue(p.id)" data-toggle="tooltip"
+                                        data-placement="auto" title="Imprimir sin avances">
+                                        N.
+                                        </button>
                                         <button type="button" class="btn btn-default btn-sm tipo"
                                             ng-click="printPrespuesto(p.id, 1)" data-toggle="tooltip"
                                             data-placement="auto" title="Imprimir con avances">
                                             D.
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-sm tipo"
+                                        ng-click="printPrespuestoNueD(p.id)" data-toggle="tooltip"
+                                        data-placement="auto" title="Imprimir con avances">
+                                        N.
                                         </button>
                                         <button type="button" class="btn btn-primary btn-sm tipo"
                                             ng-click="printOt(p.idot)" data-toggle="tooltip" data-placement="auto"
@@ -377,14 +387,14 @@
                                         ng-disabled="sl.presupuesto" />
                                 </div>
                             </div>
-                            <div class="col-md-1">
+                            <!--<div class="col-md-1">
                                 <div class="form-group">
                                     <label for="chkContado">Contado:</label>
                                     <input name="chkContado" id="chkContado" type="checkbox" class="form-control" ng-model="presupuesto.escontado" 
                                     ng-true-value="'1'" ng-false-value="'0'" ng-disabled="sl.presupuesto"/>
                                 </div>
-                            </div>
-                            <div class="col-md-2">
+                            </div>-->
+                            <div class="col-md-3">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmPresup.txtMontoPresup.$invalid && !frmPresup.txtMontoPresup.$pristine}">
                                     <label for="txtMontoPresup">Valor:</label>
@@ -454,7 +464,7 @@
                         <button type="button" class="btn btn-info" ng-click="enviar(presupuesto)"
                         ng-hide="+presupuesto.idestatuspresupuesto == 2 || +presupuesto.idestatuspresupuesto == 3 || +idestatuspresupuesto == 4
                         || +presupuesto.idestatuspresupuesto == 5 || +idestatuspresupuesto == 6" data-toggle="tooltip"
-                        data-placement="auto" title="Enviar presupuesto a aprobación..." ng-disabled="frmPresup.$invalid || +presupuesto.idestatuspresupuesto == 2" >
+                        data-placement="auto" title="Enviar presupuesto a aprobación..." ng-disabled="(!sl.presupuesto)  || +presupuesto.idestatuspresupuesto == 2" >
                         <span class="glyphicon glyphicon-share-alt"></span>
                     </button>
                         <button type="button" class="btn btn-danger" ng-click="anulaPresupuesto(presupuesto)"
@@ -571,14 +581,22 @@
                                 <div class="form-group"
                                     ng-class="{'has-error':frmOT.txtTC.$invalid && !frmOT.txtTC.$pristine}">
                                     <label for="txtTC">TC:</label>
+                                    <div class="input-group">
                                     <input name="txtTC" id="txtTC" type="text" class="form-control"
                                         ng-model="ot.tipocambio" fcsa-number="{maxDecimals:5}" required
                                         ng-disabled="sl.ot" />
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-primary" ng-click="ot.tipocambio = tipocambiogt;"
+                                            ng-disabled="sl.ot">
+                                                <span>TC</span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-8 nopadding">
+                            <div class="col-md-9 nopadding">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmOT.txtNotasOt.$invalid && !frmOT.txtNotasOt.$pristine}">
                                     <label for="txtNotasOt">Notas:</label>
@@ -586,13 +604,13 @@
                                         ng-model="ot.notas" required ng-disabled="sl.ot" rows="3"></textarea>
                                 </div>
                             </div>
-                            <div class="col-md-1">
+                            <!--<div class="col-md-1">
                                 <div class="form-group">
                                     <label for="chkContadoOt">Contado:</label>
                                     <input name="chkContadoOt" id="chkContadoOt" type="checkbox" class="form-control" ng-model="ot.escontado" 
                                     ng-true-value="1" ng-false-value="0" ng-disabled="sl.ot"/>
                                 </div>
-                            </div>
+                            </div>-->
                         </div>
                         <form-buttons vis="grpBtnOt" btn-dis="frmOT.$invalid" obj="ot" uf="updOt(ot)" df="delOt(ot)"
                             nf="nuevaOt()" cf="cancelEditOt()" ef="startEditOt()" pf="imprimirOt()"
@@ -607,26 +625,24 @@
                         </caption>
                         <thead>
                             <tr>
-                                <th style="text-align: right">No.</th>
-                                <th>Proveedor/Beneficiario</th>
-                                <th>Sub-tipo de gasto</th>
-                                <th>Incluye I.V.A.</th>
-                                <th>Al Contado</th>
-                                <th style="text-align: right">Monto</th>
-                                <th style="text-align: right">TC</th>
+                                <th style="text-align: center">No.</th>
+                                <th style="text-align: center">Proveedor/Beneficiario</th>
+                                <th style="text-align: center">Sub-tipo de gasto</th>
+                                <th style="text-align: center">Incluye I.V.A.</th>
+                                <th style="text-align: center">Monto</th>
+                                <th style="text-align: center">TC</th>
                                 <th style="text-align: center">Detalle de pagos</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="o in lstot | filter:lookFor" ng-click="getOt(o.id)"
                                 ng-class="{'presPendiente': +o.idestatuspresupuesto == 2, 'presAprobado': +o.idestatuspresupuesto == 3}">
-                                <td style="text-align: right">{{o.idpresupuesto}}-{{o.correlativo}}</td>
-                                <td>{{o.proveedor}}</td>
-                                <td>{{o.subtipogasto}}</td>
-                                <td>{{o.coniva === 1 ? 'Sí' : ''}}</td>
-                                <td>{{o.escontado === 1 ? 'Sí' : ''}} </td>
-                                <td style="text-align: right">{{o.moneda}} {{o.monto | number:2}}</td>
-                                <td style="text-align: right">{{o.tipocambio | number:4}}</td>
+                                <td style="text-align: center">{{o.idpresupuesto}}-{{o.correlativo}}</td>
+                                <td style="text-align: center">{{o.proveedor}}</td>
+                                <td style="text-align: center">{{o.subtipogasto}}</td>
+                                <td style="text-align: center">{{o.coniva === 1 ? 'Sí' : ''}}</td>
+                                <td style="text-align: center">{{o.moneda}}{{o.monto | number:2}}</td>
+                                <td style="text-align: center">{{o.tipocambio | number:5}}</td>
                                 <td>
                                     <div class="btn-group" role="group" aria-label="..."
                                         style="padding-top: 0.75em; width: 100%; margin: 0 auto !important; text-align: center">
@@ -645,7 +661,7 @@
                                             data-toggle="tooltip" data-placement="auto" title="Imprimir...">
                                             <i class="fa fa-print fa-lg" aria-hidden="true"></i>
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-primary" ng-click="printOtNue(presupuesto.id, true)"
+                                        <button type="button" class="btn btn-sm btn-primary" ng-click="printOtNue(o.id)"
                                         data-toggle="tooltip" data-placement="auto" title="Imprimir...">
                                         <i class="fa fa-print fa-lg" aria-hidden="true"></i>
                                         </button>

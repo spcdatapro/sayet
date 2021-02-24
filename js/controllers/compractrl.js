@@ -249,7 +249,7 @@
                 if (totFact > $scope.montoMax) {
                     toaster.pop({
                         type: 'error', title: 'Error en el Total.',
-                        body: 'El monto del total no puede ser mayor al total de la ot, solicite un aumento.', timeout: 7000
+                        body: 'El monto de la factura no puede ser mayor al monto de la orden de trabajo, solicite un aumento.', timeout: 7000
                     });
                     $scope.laCompra.totfact = undefined;
                 }
@@ -629,6 +629,7 @@
                     $scope.laCompra.objMoneda = $scope.monedas.find(m => +m.id === +obj.idmoneda);
                     $scope.laCompra.conceptomayor = obj.concepto;
                     $scope.laCompra.tipocambio = obj.tipocambio;
+                    $scope.calcular();
                 }, function () { return 0; });
             };
 

@@ -13,7 +13,7 @@
         $scope.monedas = [];
         $scope.dectc = 2;
         $scope.permiso = {};
-        $scope.bancoPais
+        $scope.bancoPais = {};
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true);
 
@@ -85,7 +85,7 @@
 
         $scope.addBene = function(obj){
             obj.idmoneda = parseInt(obj.objMoneda.id);
-            obj.idbancopais = parseInt(obj.idbancopais.id);
+            obj.idbancopais = !!obj.idbancopais ? parseInt(obj.idbancopais.id) : 0;
             beneficiarioSrvc.editRow(obj, 'c').then(function(d){
                 $scope.getLstBeneficiarios();
                 $scope.getBene(d.lastid);
@@ -94,7 +94,7 @@
 
         $scope.updBene = function(data, id){
             data.idmoneda = parseInt(data.objMoneda.id);
-            data.idbancopais = parseInt(data.idbancopais.id);
+            data.idbancopais = !!data.idbancopais ? parseInt(data.idbancopais.id) : 0; 
             beneficiarioSrvc.editRow(data, 'u').then(function(){
                 $scope.getLstBeneficiarios();
                 $scope.getBene(id);

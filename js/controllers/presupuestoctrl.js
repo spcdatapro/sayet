@@ -167,6 +167,18 @@
 
         };
 
+        $scope.printPrespuestoNue = function (idpresupuesto) {
+            var test = false;
+            jsReportSrvc.getPDFReport(test ? 'r1UD2qMnZ' : 'S183YxGZ_', { idpresupuesto: idpresupuesto }).then(function (pdf) { $window.open(pdf); });
+
+        };
+
+        $scope.printPrespuestoNueD = function (idpresupuesto) {
+            var test = false;
+            jsReportSrvc.getPDFReport(test ? 'r1UD2qMnZ' : 'H1w6yuaWd', { idpresupuesto: idpresupuesto }).then(function (pdf) { $window.open(pdf); });
+
+        };
+
         $scope.printOt = async function (idot, esPresupuesto) {
             let qOt = {};
             if (esPresupuesto) {

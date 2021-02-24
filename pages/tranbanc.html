@@ -83,14 +83,12 @@
                                         title="Seleccione una orden de trabajo..." theme="bootstrap" autofocus="false"
                                         on-select="fillData($item, $model)">
                                         <ui-select-match placeholder="Buscar orden de trabajo..." allow-clear="true">
-                                            <span
-                                                ng-bind="($select.selected.ot)"></span>
+                                            <span ng-bind="($select.selected.ot)"></span>
                                         </ui-select-match>
                                         <ui-select-choices
                                             ui-disable-choice="+item.pagado == 1 && (laTran.objTipotrans.abreviatura === 'C' || laTran.tipotrans === 'C')"
                                             repeat="item.iddetpagopresup as item in ots | filter:$select.search">
-                                            <div
-                                                ng-bind-html="(item.ot) | highlight: $select.search">
+                                            <div ng-bind-html="(item.ot) | highlight: $select.search">
                                             </div>
                                             <small>
                                                 <span ng-show="+item.pagado == 1" style="color: red">PAGADO</span><br
@@ -145,7 +143,8 @@
                                     <label for="txtMonto" class="control-label">Monto:</label>
                                     <input name="txtMonto" id="txtMonto" type="text" class="form-control"
                                         ng-model="laTran.monto" min="0" placeholder="Monto de la transacci&oacute;n"
-                                        required fcsa-number="{ maxDecimals: 2 }" />
+                                        required fcsa-number="{ maxDecimals: 2 }" ng-disabled="+laTran.retisr === 1"
+                                        ng-change="montoMaximo()" />
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -184,6 +183,53 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="row" ng-show="+laTran.anticipo === 1">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="chkIsr">¿Retiene ISR?</label>
+                                    <input name="chkIsr" id="chkIsr" type="checkbox" class="form-control"
+                                        ng-model="laTran.retisr" ng-true-value="1" ng-false-value="0" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="form-group">
+                                        <label for="txtMontoCalc">Monto a calcular ISR:</label>
+                                        <input name="txtMontoCalc" id="txtMontoCalc" type="number" class="form-control"
+                                            ng-model="laTran.montocalcisr" ng-disabled="+laTran.retisr === 0" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="form-group">
+                                        <label for="txtMontoOri">Monto original del cheque:</label>
+                                        <div class="input-group">
+                                        <input name="txtMontoOri" id="txtMontoOri" type="number" class="form-control"
+                                            ng-model="laTran.montooriginal" ng-disabled="+laTran.retisr === 0" />
+                                            <div class="input-group-btn">
+                                                <button type="button" class="btn btn-primary" ng-click="calcIsr(laTran)" ng-disabled="(!laTran.montooriginal)">
+                                                    <!--<span class="glyphicon glyphicon-ok"></span>-->
+                                                    <span>ISR</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="form-group">
+                                        <label for="txtMontoIsr">Monto ISR:</label>
+                                        <input name="txtMontoIsr" id="txtMontoCalc" type="number" class="form-control"
+                                            ng-model="laTran.isr" disabled />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group required"
@@ -226,6 +272,7 @@
                                     </ui-select>
                                 </div>
                             </div>
+
                         </div>
                         <div class="row" ng-show="laTran.anulado === 1">
                             <div class="col-md-12">
@@ -252,8 +299,7 @@
                             </button>
                             <button type="button" class="btn btn-primary"
                                 ng-disabled="frmTranBan.$invalid || periodoCerrado"
-                                ng-show="editando && laTran.tipotrans === 'C'"
-                                ng-click="updTranAnul(laTran)">
+                                ng-show="editando && laTran.tipotrans === 'C'" ng-click="updTranAnul(laTran)">
                                 <span class="glyphicon glyphicon-pencil"></span>
                             </button>
                             <!--
@@ -292,10 +338,12 @@
                             <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printVersion()">
                                 <span class="glyphicon glyphicon-print"></span>
                             </button>
-                            <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printSelloFactura(laTran.id)">
+                            <button type="button" class="btn btn-primary" ng-show="editando"
+                                ng-click="printSelloFactura(laTran.id)">
                                 <span>Sello factura</span>
                             </button>
-                            <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printSelloNotaCredito(laTran.id)">
+                            <button type="button" class="btn btn-primary" ng-show="editando"
+                                ng-click="printSelloNotaCredito(laTran.id)">
                                 <span>Sello NC</span>
                             </button>
                             <button type="button" class="btn btn-primary" ng-show="editando" ng-click="resetLaTran()">
@@ -941,4 +989,33 @@
             angular.element('#pageTranBanc').scope().getCompras();
         });
     });
+</script>
+
+<!--retencion isr-->
+<script type="text/ng-template" id="modalRetencionIsr.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Retencion de ISR</h3>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="txtMontoCalc">Monto a calcular ISR:</label>
+            <input name="txtMontoCalc" id="txtMontoCalc" type="number" class="form-control" ng-model=""/>
+        </div>
+        <div class="form-group">
+            <label for="txtMontoOri">Monto original del cheque:</label>
+            <input name="txtMontoOri" id="txtMontoOri" type="number" class="form-control" ng-model=""/>
+        </div>
+        <div class="form-group">
+            <label for="txtMontoIsr">Monto ISR:</label>
+            <input name="txtMontoIsr" id="txtMontoCalc" type="number" class="form-control" ng-model=""/>
+        </div>
+        <div class="form-group">
+            <label for="txtMontoCheq">Monto cheque:</label>
+            <input name="txtMontoCheq" id="txtMontoCalc" type="number" class="form-control" ng-model=""/>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()">Aceptar</button>
+        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
+    </div>
 </script>

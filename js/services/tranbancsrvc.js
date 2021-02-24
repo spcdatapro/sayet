@@ -25,6 +25,7 @@
                 return comunFact.doGET(urlBase + '/reem/' + idbene);
             },
             getInfoToPrint: (idtran, idusr) => comunFact.doGET(`${urlBase}/prntinfochq/${idtran}/${idusr}`),
+            getMontoOt: (idot) => comunFact.doGET(`${urlBase}/montoots/${idot}`),
             getBatchInfoToPrint: (idbanco, del, al, idusr) => comunFact.doGET(`${urlBase}/prntchqcont/${idbanco}/${del}/${al}/${idusr}`),
             editRow: function(obj, op){
                 return comunFact.doPOST(urlBase + '/' + op, obj);
@@ -58,6 +59,9 @@
             },
             existe: function(obj){
                 return comunFact.doPOST(urlBase + '/existe', obj);
+            },
+            calcIsr: function(obj){
+                return comunFact.doPOST(urlBase + '/calcisr', obj);
             }
         };
     }]);

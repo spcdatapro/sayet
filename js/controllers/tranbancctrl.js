@@ -32,6 +32,7 @@
         $scope.uid = 0;
         $scope.proyectos = [];
         $scope.selected = {};
+        $scope.montoMax = 999999999;
         //$scope.tipotrans = [{value: 'C', text: 'C'}, {value: 'D', text: 'D'}, {value: 'B', text: 'B'}, {value: 'R', text: 'R'}];
         $scope.tipotrans = [];
         $scope.lstndc = [];
@@ -98,7 +99,6 @@
         });
 
         $scope.esDePresupuesto = async () => {
-            // console.log('ID OT DESDE TRANBAN = ', +$scope.idot);
             if (+$scope.idot > 0 && !$scope.ot.id) {
                 $scope.fltrtran.idot = +$scope.idot;
                 await presupuestoSrvc.getOt($scope.idot).then(d => { $scope.ot = d[0]; });
@@ -187,6 +187,10 @@
             $scope.laTran.iddetpagopresup = undefined;
             $scope.laTran.idproyecto = undefined;
             $scope.laTran.iddocliquida = undefined;
+            $scope.laTran.montooriginal = undefined;
+            $scope.laTran.retisr = 0;
+            $scope.laTran.isr = undefined;
+            $scope.laTran.montocalcisr = undefined;
         };
 
         $scope.resetLaTran = function () {
@@ -298,12 +302,14 @@
         };
 
         $scope.fillData = function (item, model) {
-            //console.log(item);
             //var tmpObjBene = $filter('filter')($scope.beneficiarios, {id:item.idproveedor, dedonde:"1"}, true);
             var tmpObjBene = $filter('filter')($scope.beneficiarios, { id: item.idproveedor, dedonde: item.origenprov }, true);
             $scope.laTran.anticipo = 1;
             $scope.laTran.objBeneficiario = tmpObjBene.length > 0 ? tmpObjBene[0] : undefined;
             $scope.setNombreBene($scope.laTran.objBeneficiario);
+            tranBancSrvc.getMontoOt(item.id).then(d => {
+                $scope.montoMax = d.monto; 
+            });
 
             if (item && item.notas && item.notas.trim() !== '') {
                 if (!$scope.laTran.concepto || $scope.laTran.concepto.trim() == '') {
@@ -327,6 +333,18 @@
             }
         };
 
+        $scope.montoMaximo = function () {
+            if (+$scope.laTran.monto > +$scope.montoMax) {
+                toaster.pop({
+                    type: 'error',
+                    title: 'Error en el total',
+                    body: 'El monto de la transacción no puede ser mayor al monto de la orden de trabajo, solicite un aumento.',
+                    timeout: 7000
+                });
+                $scope.laTran.monto = undefined;
+            }
+        };
+
         $scope.addTran = function (obj) {
             obj.idbanco = obj.objBanco.id;
             obj.fechastr = moment(obj.fecha).format('YYYY-MM-DD');
@@ -340,6 +358,10 @@
             obj.iddetpagopresup = obj.iddetpagopresup != null && obj.iddetpagopresup !== undefined ? obj.iddetpagopresup : 0;
             obj.idproyecto = obj.idproyecto != null && obj.idproyecto !== undefined ? obj.idproyecto : 0;
             obj.iddocliquida = obj.iddocliquida != null && obj.iddocliquida !== undefined ? obj.iddocliquida : 0;
+            obj.montooriginal = obj.montooriginal != null && obj.montooriginal !== undefined ? obj.montooriginal : 0.00;
+            obj.retisr = obj.retisr != null && obj.retisr !== undefined ? obj.retisr : 0;
+            obj.isr = obj.isr != null && obj.isr !== undefined ? obj.isr : 0.00;
+            obj.montocalcisr = obj.montocalcisr != null && obj.montocalcisr !== undefined ? obj.montocalcisr : 0.00;
             //console.log(obj); return;
             tranBancSrvc.editRow(obj, 'c').then(function (d) {
                 $scope.getLstTran();
@@ -366,6 +388,11 @@
                 data[i].fechaliquida = moment(data[i].fechaliquida).isValid() ? moment(data[i].fechaliquida).toDate() : null;
                 data[i].iddetpagopresup = +data[i].iddetpagopresup === 0 ? undefined : data[i].iddetpagopresup;
                 data[i].iddocliquida = +data[i].iddocliquida === 0 ? undefined : data[i].iddocliquida;
+                data[i].retisr = parseInt(data[i].retisr);
+                data[i].montooriginal = parseFloat(parseFloat(data[i].montooriginal).toFixed(2));
+                data[i].isr = parseFloat(parseFloat(data[i].isr).toFixed(2));
+                data[i].montocalcisr = parseFloat(parseFloat(data[i].montocalcisr).toFixed(2));
+                data[i].iddetpresup = parseInt(data[i].iddetpresup);
             }
             return data;
         }
@@ -737,6 +764,14 @@
         $scope.printSelloFactura = (idtranban) => jsReportSrvc.getPDFReport('S1Uc-8wYv', { idtranban: idtranban }).then((pdf) => $window.open(pdf));
 
         $scope.printSelloNotaCredito = (idtranban) => jsReportSrvc.getPDFReport('S1H3T8uFw', { idtranban: idtranban }).then((pdf) => $window.open(pdf));
+
+        $scope.calcIsr = function(obj) {
+            //console.log(obj); return;
+            tranBancSrvc.calcIsr(obj).then(function(d) {
+                $scope.laTran.isr = d.isr,
+                $scope.laTran.monto = d.monto
+            });
+        };    
     }]);
 
     //------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -794,7 +829,7 @@
 
     //Controlador de formulario de impresion cheques continuos
     //------------------------------------------------------------------------------------------------------------------------------------------------//
-    tranbancctrl.controller('ModalPrin', ['$scope', '$uibModalInstance', 'venta', 'userid', 'objbancos', 'tranBancSrvc', 'socketIOSrvc', function ($scope, $uibModalInstance, venta, userid, objbancos, tranBancSrvc, socketIOSrvc) {
+    tranbancctrl.controller('ModalRetencionIsrCtrl', ['$scope', '$uibModalInstance', 'venta', 'userid', 'objbancos', 'tranBancSrvc', 'socketIOSrvc', function ($scope, $uibModalInstance, venta, userid, objbancos, tranBancSrvc, socketIOSrvc) {
         $scope.venta = venta;
         $scope.losBancos = objbancos;
         $scope.correlativos = [];
