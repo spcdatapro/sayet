@@ -6,7 +6,7 @@ class dbcpm{
     private $dbUser = 'root';
     private $dbPass = 'PoChoco2016';    
     private $dbSchema = 'sayet';    
-    private $sessOpts = ['cookie_samesite' => 'lax'];
+    // private $sessOpts = ['cookie_samesite' => 'lax'];
 
     private $dbConn;
 
@@ -266,7 +266,7 @@ class dbcpm{
 
     public function initSession($userdata){
         if (!isset($_SESSION)) {
-            session_start($this->sessOpts);
+            session_start();
         }
         $_SESSION['uid'] = $userdata['id'];
         $_SESSION['nombre'] = $userdata['nombre'];
@@ -278,7 +278,7 @@ class dbcpm{
 
     public function getSession(){
         try{
-            session_start($this->sessOpts);
+            session_start();
             $sess = array();
             $sess['uid'] = $_SESSION['uid'];
             $sess['nombre'] = $_SESSION['nombre'];
@@ -294,7 +294,7 @@ class dbcpm{
 
     public function setEmpreSess($qIdEmpresa){
         try{
-            session_start($this->sessOpts);
+            session_start();
             $_SESSION['workingon'] = (int) $qIdEmpresa;
             return ['workingon' => $_SESSION['workingon']];
         }catch(Exception $e){
@@ -304,7 +304,7 @@ class dbcpm{
 
     public function finishSession(){
         if (!isset($_SESSION)) {
-            session_start($this->sessOpts);
+            session_start();
         }
         if(isset($_SESSION['uid'])){
             unset($_SESSION['uid']);
