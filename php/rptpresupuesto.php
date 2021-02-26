@@ -259,7 +259,7 @@ $app->post('/avanceot', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $query = "SELECT b.fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', e.nombre) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
+    $query = "SELECT DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', e.nombre) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
     g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, b.tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, b.conceptomayor
     FROM detpresupuesto a 
     INNER JOIN compra b ON a.id = b.ordentrabajo
@@ -272,7 +272,7 @@ $app->post('/avanceot', function(){
     ORDER BY b.fechapago ASC ";
     $ordentrabajo = $db->getQuery($query);
 
-    $query = "SELECT CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, b.fechasolicitud, c.nomproyecto AS proyecto, IF(a.origenprov = 1, d.nombre, e.nombre) AS proveedor,
+    $query = "SELECT CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, DATE_FORMAT(b.fechasolicitud, '%d-%m-%Y') AS fechasolicitud, c.nomproyecto AS proyecto, IF(a.origenprov = 1, d.nombre, e.nombre) AS proveedor,
     f.nomempresa AS empresa, g.desctipogast AS tipogasto, h.descripcion AS subtipogasto, i.simbolo AS moneda, 
     FORMAT(IF(a.id = j.iddetpresupuesto, a.monto + j.monto, a.monto), 2) AS montoot, a.tipocambio, FORMAT(IFNULL((SELECT SUM(b.totfact) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda = b.idmoneda), 0.00) + 
     IFNULL(IF(i.eslocal = 1, (SELECT SUM(b.totfact * b.tipocambio) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda != b.idmoneda),
@@ -296,7 +296,8 @@ $app->post('/avanceot', function(){
     INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda = b.idmoneda), 0.00) + 
     IFNULL(IF(i.eslocal = 1, (SELECT SUM(b.isr * b.tipocambio) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda != b.idmoneda),
     (SELECT SUM(b.isr) /b.tipocambio FROM detpresupuesto a INNER JOIN  compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda != b.idmoneda)), 0.00), 2) AS totgastado,
-	a.fhenvioaprobacion AS creacion, l.nombre AS creador, a.fhaprobacion AS aprobacion, m.nombre AS aprobador, n.nombre AS modificador, a.fechamodificacion AS modificacion
+	DATE_FORMAT(a.fhenvioaprobacion, '%d-%m-%Y %H:%i') AS creacion, l.nombre AS creador, DATE_FORMAT(a.fhaprobacion, '%d-%m-%Y %H:%i') AS aprobacion, m.nombre AS aprobador, n.nombre AS modificador, 
+    DATE_FORMAT(a.fechamodificacion, '%d-%m-%Y %H:%i') AS modificacion
 	FROM detpresupuesto a 
     INNER JOIN presupuesto b ON b.id = a.idpresupuesto
     INNER JOIN proyecto c ON c.id = b.idproyecto
@@ -323,7 +324,7 @@ $app->post('/avanceotm', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $query = "SELECT CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, SUBSTRING(a.fhenvioaprobacion, 1, 10) AS fhenvioaprobacion, 
+    $query = "SELECT CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, DATE_FORMAT(a.fhenvioaprobacion, '%d-%m-%Y') AS fhenvioaprobacion, 
     IF(a.origenprov = 1, b.nombre, c.nombre) AS proveedor, SUBSTRING(e.descripcion, 1, 45) AS subtipogasto,
     d.simbolo, FORMAT(a.monto, 2) AS montoot, a.notas, 
     FORMAT(IFNULL((SELECT SUM(b.totfact) FROM compra b WHERE b.ordentrabajo = a.id AND b.idmoneda = a.idmoneda), 0.00) + 
@@ -346,7 +347,7 @@ $app->post('/avanceotm', function(){
     for($i = 0; $i < $cntOrdenes; $i++) {
         $ot = $ordentrabajo[$i];
 
-        $query = "SELECT a.id, b.fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', e.nombre) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
+        $query = "SELECT a.id, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', e.nombre) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
             g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, b.tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, b.conceptomayor
             FROM detpresupuesto a 
             INNER JOIN compra b ON a.id = b.ordentrabajo
@@ -360,7 +361,7 @@ $app->post('/avanceotm', function(){
         $ot->documento = $db->getQuery($query);
     }
 
-    $query = "SELECT a.id AS ot, SUBSTRING(a.fechasolicitud, 1, 10) AS fechasolicitud, b.nomproyecto AS proyecto, e.nomempresa AS empresa, f.desctipogast AS tipogasto, g.simbolo AS moneda,
+    $query = "SELECT a.id AS ot, DATE_FORMAT(a.fechasolicitud, '%d-%m-%Y') AS fechasolicitud, b.nomproyecto AS proyecto, e.nomempresa AS empresa, f.desctipogast AS tipogasto, g.simbolo AS moneda,
     FORMAT(IFNULL((SELECT SUM(b.monto) FROM presupuesto a INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto WHERE a.id = $d->idpresupuesto AND a.idmoneda = b.idmoneda), 0.00) +
     IFNULL(IF(g.eslocal = 1, 
     (SELECT SUM(b.monto * b.tipocambio) FROM presupuesto a INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto WHERE a.id = $d->idpresupuesto AND a.idmoneda != b.idmoneda), 

@@ -79,7 +79,7 @@
                                 <div class="form-group"
                                     ng-show="['C', 'R', 'B'].indexOf(laTran.objTipotrans.abreviatura) > -1 || ['C', 'R', 'B'].indexOf(laTran.tipotrans) > -1">
                                     <label>Orden de trabajo:</label>
-                                    <ui-select ng-model="laTran.iddetpagopresup"
+                                    <ui-select ng-model="laTran.iddetpresup"
                                         title="Seleccione una orden de trabajo..." theme="bootstrap" autofocus="false"
                                         on-select="fillData($item, $model)">
                                         <ui-select-match placeholder="Buscar orden de trabajo..." allow-clear="true">
@@ -87,7 +87,7 @@
                                         </ui-select-match>
                                         <ui-select-choices
                                             ui-disable-choice="+item.pagado == 1 && (laTran.objTipotrans.abreviatura === 'C' || laTran.tipotrans === 'C')"
-                                            repeat="item.iddetpagopresup as item in ots | filter:$select.search">
+                                            repeat="item.iddetpresup as item in ots | filter:$select.search">
                                             <div ng-bind-html="(item.ot) | highlight: $select.search">
                                             </div>
                                             <small>

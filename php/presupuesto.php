@@ -665,7 +665,7 @@ $app->get('/lstpagos/:idempresa(/:idpresupuesto)', function ($idempresa, $idpres
     $db = new dbcpm();
     $query = "SELECT a.idpresupuesto, a.id, b.idproyecto, c.nomproyecto AS proyecto, b.fhaprobacion, a.idproveedor, e.nombre AS proveedor, b.idmoneda, d.simbolo AS moneda, a.monto, ";
     $query .= "b.fechasolicitud, f.nomempresa AS empresa, g.desctipogast AS tipogasto, h.descripcion AS subtipogasto, IF(a.coniva = 1, 'I.V.A. incluido', 'I.V.A. NO incluido') AS coniva, a.correlativo, ";
-    $query .= "CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, b.idempresa, i.nopago, i.porcentaje, i.monto AS valor, i.notas, i.id AS iddetpagopresup, i.pagado, ";
+    $query .= "CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, b.idempresa, i.nopago, i.porcentaje, i.monto AS valor, a.notas, i.id AS iddetpagopresup, i.pagado, ";
     $query .= "IF(i.pagado = 0, NULL, 'Pagado') AS estatuspagado, b.total, a.tipocambio, a.origenprov, i.isr, i.quitarisr ";
     $query .= "FROM detpresupuesto a INNER JOIN presupuesto b ON b.id = a.idpresupuesto INNER JOIN proyecto c ON c.id = b.idproyecto INNER JOIN moneda d ON d.id = b.idmoneda ";
     $query .= "INNER JOIN proveedor e ON e.id = a.idproveedor INNER JOIN empresa f ON f.id = b.idempresa INNER JOIN tipogasto g ON g.id = b.idtipogasto ";
@@ -676,7 +676,7 @@ $app->get('/lstpagos/:idempresa(/:idpresupuesto)', function ($idempresa, $idpres
     $query .= "UNION ";
     $query .= "SELECT a.idpresupuesto, a.id, b.idproyecto, c.nomproyecto AS proyecto, b.fhaprobacion, a.idproveedor, e.nombre AS proveedor, b.idmoneda, d.simbolo AS moneda, a.monto, ";
     $query .= "b.fechasolicitud, f.nomempresa AS empresa, g.desctipogast AS tipogasto, h.descripcion AS subtipogasto, IF(a.coniva = 1, 'I.V.A. incluido', 'I.V.A. NO incluido') AS coniva, a.correlativo, ";
-    $query .= "CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, b.idempresa, i.nopago, i.porcentaje, i.monto AS valor, i.notas, i.id AS iddetpagopresup, i.pagado, ";
+    $query .= "CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, b.idempresa, i.nopago, i.porcentaje, i.monto AS valor, a.notas, i.id AS iddetpagopresup, i.pagado, ";
     $query .= "IF(i.pagado = 0, NULL, 'Pagado') AS estatuspagado, b.total, a.tipocambio, a.origenprov, i.isr, i.quitarisr ";
     $query .= "FROM detpresupuesto a INNER JOIN presupuesto b ON b.id = a.idpresupuesto INNER JOIN proyecto c ON c.id = b.idproyecto INNER JOIN moneda d ON d.id = b.idmoneda ";
     $query .= "INNER JOIN beneficiario e ON e.id = a.idproveedor INNER JOIN empresa f ON f.id = b.idempresa INNER JOIN tipogasto g ON g.id = b.idtipogasto ";

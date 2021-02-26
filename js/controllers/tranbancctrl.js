@@ -310,14 +310,15 @@
             tranBancSrvc.getMontoOt(item.id).then(d => {
                 $scope.montoMax = d.monto; 
             });
+            $scope.laTran.concepto = 'Orden de trabajo ' + item.idpresupuesto + '-' + item.correlativo + ' [' + item.notas + ']';
 
-            if (item && item.notas && item.notas.trim() !== '') {
+            /*if (item && item.notas && item.notas.trim() !== '') {
                 if (!$scope.laTran.concepto || $scope.laTran.concepto.trim() == '') {
                     $scope.laTran.concepto = item.notas.trim();
                 }
             } else {
                 $scope.laTran.concepto = $scope.laTran.objBeneficiario != null && $scope.laTran.objBeneficiario != undefined ? $scope.laTran.objBeneficiario.concepto : undefined;
-            }
+            }*/
 
             //$scope.laTran.idproyecto = item.idproyecto;
 
@@ -386,13 +387,13 @@
                 data[i].tipocambio = parseFloat(parseFloat(data[i].tipocambio).toFixed($scope.dectc));
                 data[i].impreso = parseInt(data[i].impreso);
                 data[i].fechaliquida = moment(data[i].fechaliquida).isValid() ? moment(data[i].fechaliquida).toDate() : null;
-                data[i].iddetpagopresup = +data[i].iddetpagopresup === 0 ? undefined : data[i].iddetpagopresup;
+                data[i].iddetpagopresup = +data[i].iddetpagopresup === 0 ? (+data[i].iddetpresup === 0 ? undefined : data[i].iddetpresup) : data[i].iddetpagopresup;
                 data[i].iddocliquida = +data[i].iddocliquida === 0 ? undefined : data[i].iddocliquida;
                 data[i].retisr = parseInt(data[i].retisr);
                 data[i].montooriginal = parseFloat(parseFloat(data[i].montooriginal).toFixed(2));
                 data[i].isr = parseFloat(parseFloat(data[i].isr).toFixed(2));
                 data[i].montocalcisr = parseFloat(parseFloat(data[i].montocalcisr).toFixed(2));
-                data[i].iddetpresup = parseInt(data[i].iddetpresup);
+                data[i].iddetpresup = +data[i].iddetpresup;                
             }
             return data;
         }
@@ -513,12 +514,12 @@
         };
 
         $scope.gcprint = function (obj) {
-            //var gadget = new cloudprint.Gadget();
+            // var gadget = new cloudprint.Gadget();
             //var url = "http://52.35.3.1/sayet/php/" + obj.objBanco.formato + ".php?c=" + obj.id;
-            //var url = window.location.origin + "/sayet/php/" + obj.objBanco.formato + ".php?c=" + obj.id + "&uid=" + $scope.uid;
+            // var url = window.location.origin + "/sayet/php/" + obj.objBanco.formato + ".php?c=" + obj.id + "&uid=" + $scope.uid;
             //console.log(url);
-            //gadget.setPrintDocument("url", "C" + obj.numero, url);
-            //gadget.openPrintDialog();
+            // gadget.setPrintDocument("url", "C" + obj.numero, url);
+            // gadget.openPrintDialog();
         };
 
         $scope.modalPRINT = function (obj) {
@@ -544,6 +545,7 @@
                         datos: chqs[i]
                     });
                 }
+                // console.log(objs); return;
                 socketIOSrvc.emit('sayet:print', JSON.stringify(objs));
             });
         };
