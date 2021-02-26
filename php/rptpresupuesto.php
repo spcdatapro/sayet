@@ -259,28 +259,27 @@ $app->post('/avanceot', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $query = "SELECT b.fechapago AS fechaOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', e.nombre) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
+    $query = "SELECT b.fechapago AS fechaOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', d.numero, '-', e.nombre) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
     g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, b.tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, b.conceptomayor, d.numero
     FROM detpresupuesto a 
     INNER JOIN compra b ON a.id = b.ordentrabajo
-    INNER JOIN tranban d ON b.id = d.idfact
+    INNER JOIN detpagocompra h ON h.idcompra = b.id
+    INNER JOIN tranban d ON d.id = h.idtranban
     INNER JOIN banco c ON c.id = d.idbanco
     INNER JOIN proveedor e ON e.id = a.idproveedor
     INNER JOIN moneda f ON f.id = b.idmoneda
     INNER JOIN moneda g ON g.id = c.idmoneda
-    WHERE a.id = 2628    
+    WHERE a.id = $d->idot    
     UNION
-    
-SELECT d.fecha AS fechaOrd, NULL AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', e.nombre) AS datosbanco, NULL AS monedafact, NULL AS montofac, 
+    SELECT d.fecha AS fechaOrd, NULL AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', d.numero, '-', e.nombre) AS datosbanco, NULL AS monedafact, NULL AS montofac, 
     g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(d.isr, 2) AS isr, d.tipocambio, NULL AS fact, d.concepto AS conceptomayor, d.numero
     FROM detpresupuesto a     
     INNER JOIN tranban d ON d.iddetpresup = a.id
     INNER JOIN banco c ON c.id = d.idbanco
     INNER JOIN proveedor e ON e.id = a.idproveedor    
     INNER JOIN moneda g ON g.id = c.idmoneda
-    WHERE a.id = $d->idot  AND d.anticipo = 1 AND d.idfact IS NULL
-    ORDER BY 1 ASC
-    ";
+    WHERE a.id = $d->idot AND d.anticipo = 1 AND d.idfact is null
+    ORDER BY 1 ASC ";
     $ordentrabajo = $db->getQuery($query);
 
     $query = "SELECT CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, DATE_FORMAT(b.fechasolicitud, '%d-%m-%Y') AS fechasolicitud, c.nomproyecto AS proyecto, IF(a.origenprov = 1, d.nombre, e.nombre) AS proveedor,
@@ -358,17 +357,27 @@ $app->post('/avanceotm', function(){
     for($i = 0; $i < $cntOrdenes; $i++) {
         $ot = $ordentrabajo[$i];
 
-        $query = "SELECT a.id, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', d.numero, '-', e.nombre) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
-            g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, b.tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, b.conceptomayor
-            FROM detpresupuesto a 
-            INNER JOIN compra b ON a.id = b.ordentrabajo
-            INNER JOIN tranban d ON b.id = d.idfact
-            INNER JOIN banco c ON c.id = d.idbanco
-            INNER JOIN proveedor e ON e.id = a.idproveedor
-            INNER JOIN moneda f ON f.id = b.idmoneda
-            INNER JOIN moneda g ON g.id = c.idmoneda
-            WHERE a.id = $ot->id 
-            ORDER BY b.fechapago ASC ";
+        $query = "SELECT b.fechapago AS fechaOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', d.numero, '-', e.nombre) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
+    g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, b.tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, b.conceptomayor, d.numero
+    FROM detpresupuesto a 
+    INNER JOIN compra b ON a.id = b.ordentrabajo
+    INNER JOIN detpagocompra h ON h.idcompra = b.id
+    INNER JOIN tranban d ON d.id = h.idtranban
+    INNER JOIN banco c ON c.id = d.idbanco
+    INNER JOIN proveedor e ON e.id = a.idproveedor
+    INNER JOIN moneda f ON f.id = b.idmoneda
+    INNER JOIN moneda g ON g.id = c.idmoneda
+    WHERE a.id = $ot->id    
+    UNION
+    SELECT d.fecha AS fechaOrd, NULL AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', d.numero, '-', e.nombre) AS datosbanco, NULL AS monedafact, NULL AS montofac, 
+    g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(d.isr, 2) AS isr, d.tipocambio, NULL AS fact, d.concepto AS conceptomayor, d.numero
+    FROM detpresupuesto a     
+    INNER JOIN tranban d ON d.iddetpresup = a.id
+    INNER JOIN banco c ON c.id = d.idbanco
+    INNER JOIN proveedor e ON e.id = a.idproveedor    
+    INNER JOIN moneda g ON g.id = c.idmoneda
+    WHERE a.id = $ot->id AND d.anticipo = 1 AND d.idfact is null
+    ORDER BY 1 ASC ";
         $ot->documento = $db->getQuery($query);
     }
 
