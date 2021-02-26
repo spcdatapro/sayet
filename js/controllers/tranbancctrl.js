@@ -829,7 +829,7 @@
 
     //Controlador de formulario de impresion cheques continuos
     //------------------------------------------------------------------------------------------------------------------------------------------------//
-    tranbancctrl.controller('ModalRetencionIsrCtrl', ['$scope', '$uibModalInstance', 'venta', 'userid', 'objbancos', 'tranBancSrvc', 'socketIOSrvc', function ($scope, $uibModalInstance, venta, userid, objbancos, tranBancSrvc, socketIOSrvc) {
+    tranbancctrl.controller('ModalPrin', ['$scope', '$uibModalInstance', 'venta', 'userid', 'objbancos', 'tranBancSrvc', 'socketIOSrvc', function ($scope, $uibModalInstance, venta, userid, objbancos, tranBancSrvc, socketIOSrvc) {
         $scope.venta = venta;
         $scope.losBancos = objbancos;
         $scope.correlativos = [];
