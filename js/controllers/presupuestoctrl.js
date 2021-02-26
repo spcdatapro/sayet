@@ -184,7 +184,7 @@
             if (esPresupuesto) {
                 qOt = await presupuestoSrvc.lstOts(idot);
             }
-            console.log(qOt)
+            //console.log(qOt)
             var test = false;
             jsReportSrvc.getPDFReport(test ? 'BJdOgyV2W' : 'S1eAuyN2b', { idot: esPresupuesto ? +qOt[0].id : idot }).then(function (pdf) { $window.open(pdf); });
         };
@@ -532,12 +532,15 @@
             }, function () { return 0; });
         };
 
-        $scope.groupPrint = () => {
+        $scope.groupPrint = (nvoformato) => {
+            //console.log('NUEVO = ', nvoformato);
             const modalInstance = $uibModal.open({
                 animation: true,
                 templateUrl: 'modalGroupPrint.html',
                 controller: 'ModalGroupPrintCtrl',
-                resolve: {}
+                resolve: {
+                    nuevoFormato: function() { return nvoformato; }
+                }
             });
 
             modalInstance.result.then(() => { }, () => { });
@@ -828,7 +831,7 @@
     }]);
 
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
-    presupuestoctrl.controller('ModalGroupPrintCtrl', ['$scope', '$uibModalInstance', '$filter', 'toaster', '$confirm', 'presupuestoSrvc', '$http', '$window', '$q', function ($scope, $uibModalInstance, $filter, toaster, $confirm, presupuestoSrvc, $http, $window, $q) {
+    presupuestoctrl.controller('ModalGroupPrintCtrl', ['$scope', '$uibModalInstance', '$filter', 'toaster', '$confirm', 'presupuestoSrvc', '$http', '$window', '$q', 'nuevoFormato', function ($scope, $uibModalInstance, $filter, toaster, $confirm, presupuestoSrvc, $http, $window, $q, nuevoFormato) {
         $scope.params = { fecha: moment().toDate() };
         $scope.content = undefined;
 
@@ -837,9 +840,11 @@
             presupuestoSrvc.lstOtsImprimir($scope.params).then(generados => {
                 const url = window.location.origin + ':5489/api/report';
                 let props = {}, file, formData = new FormData();
+                //console.log('NUEVO (MODAL) = ', nuevoFormato);
+                const shortId = nuevoFormato ? 'rJPo84G0w' : 'S1eAuyN2b';
 
                 const promises = generados.map(generado => {
-                    props = { 'template': { 'shortid': 'S1eAuyN2b' }, 'data': { idot: generado.idot } };
+                    props = { 'template': { 'shortid': shortId }, 'data': { idot: generado.idot } };
                     return $http.post(url, props, { responseType: 'arraybuffer' });
                 });
 

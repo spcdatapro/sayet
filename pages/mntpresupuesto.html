@@ -89,9 +89,13 @@
                                         ng-click="getLstPresupuestos(null)">
                                         Todos
                                     </button>
-                                    <button type="button" class="btn btn-default btn-sm tipo" ng-click="groupPrint()">
-                                        Imresi&oacute;n
+                                    <button type="button" class="btn btn-default btn-sm tipo" ng-click="groupPrint(true)">
+                                        Impresi&oacute;n
                                     </button>
+                                    <button type="button" class="btn btn-default btn-sm tipo" ng-click="groupPrint(false)">
+                                        Impresi&oacute;n (Anterior)
+                                    </button>
+                                    
                                 </div>
                             </form>
                         </caption>
