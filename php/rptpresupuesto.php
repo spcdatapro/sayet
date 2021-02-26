@@ -260,7 +260,7 @@ $app->post('/avanceot', function(){
     $db = new dbcpm();
 
     $query = "SELECT DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', e.nombre) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
-    g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, b.tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, b.conceptomayor
+    g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, b.tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, b.conceptomayor, d.numero
     FROM detpresupuesto a 
     INNER JOIN compra b ON a.id = b.ordentrabajo
     INNER JOIN tranban d ON b.id = d.idfact
