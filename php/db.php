@@ -4,10 +4,9 @@ class dbcpm{
 
     private $dbHost = 'localhost';
     private $dbUser = 'root';
-    private $dbPass = 'PoChoco2016';
-    //private $dbPass = 'Solon_06';
-    private $dbSchema = 'sayet';
-    //private $dbSchema = 'sayetprod';
+    private $dbPass = 'PoChoco2016';    
+    private $dbSchema = 'sayet';    
+    // private $sessOpts = ['cookie_samesite' => 'lax'];
 
     private $dbConn;
 
