@@ -390,8 +390,8 @@ $app->post('/anula', function(){
 
 $app->get('/lstbeneficiarios', function(){
     $db = new dbcpm();
-    $query = "SELECT id, CONCAT(nombre, ' (', nit, ')') AS beneficiario, chequesa, 1 AS dedonde, concepto, CONVERT(retensionisr, UNSIGNED) AS retieneisr, nit, 'Proveedor(es)' AS grupo FROM proveedor UNION ";
-    $query.= "SELECT id, CONCAT(nombre, ' (', nit, ')') AS beneficiario, nombre AS chequesa, 2 AS dedonde, concepto, 0 AS retieneisr, nit, 'Beneficiario(s)' AS grupo FROM beneficiario ";
+    $query = "SELECT id, CONCAT(nit, ' (', nombre, ')') AS beneficiario, chequesa, 1 AS dedonde, concepto, CONVERT(retensionisr, UNSIGNED) AS retieneisr, nit, 'Proveedor(es)' AS grupo FROM proveedor UNION ";
+    $query.= "SELECT id, CONCAT(nit, ' (', nombre, ')') AS beneficiario, nombre AS chequesa, 2 AS dedonde, concepto, 0 AS retieneisr, nit, 'Beneficiario(s)' AS grupo FROM beneficiario ";
     $query.= "ORDER BY 4, 2";
     print $db->doSelectASJson($query);
 });

@@ -259,7 +259,7 @@ $app->post('/avanceot', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $query = "SELECT DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', e.nombre) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
+    $query = "SELECT DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', d.numero,'-', e.nombre) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
     g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, b.tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, b.conceptomayor, d.numero
     FROM detpresupuesto a 
     INNER JOIN compra b ON a.id = b.ordentrabajo
@@ -347,7 +347,7 @@ $app->post('/avanceotm', function(){
     for($i = 0; $i < $cntOrdenes; $i++) {
         $ot = $ordentrabajo[$i];
 
-        $query = "SELECT a.id, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', e.nombre) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
+        $query = "SELECT a.id, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', d.numero, '-', e.nombre) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
             g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, b.tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, b.conceptomayor
             FROM detpresupuesto a 
             INNER JOIN compra b ON a.id = b.ordentrabajo
