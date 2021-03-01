@@ -271,7 +271,7 @@ $app->post('/avanceot', function(){
     INNER JOIN moneda g ON g.id = c.idmoneda
     WHERE a.id = $d->idot    
     UNION
-    SELECT d.fecha AS fechaOrd, NULL AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', d.numero, '-', e.nombre) AS datosbanco, NULL AS monedafact, NULL AS montofac, 
+    SELECT d.fecha AS fechaOrd, d.fecha AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', d.numero, '-', e.nombre) AS datosbanco, NULL AS monedafact, NULL AS montofac, 
     g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(d.isr, 2) AS isr, d.tipocambio, NULL AS fact, d.concepto AS conceptomayor, d.numero
     FROM detpresupuesto a     
     INNER JOIN tranban d ON d.iddetpresup = a.id
@@ -369,7 +369,7 @@ $app->post('/avanceotm', function(){
     INNER JOIN moneda g ON g.id = c.idmoneda
     WHERE a.id = $ot->id    
     UNION
-    SELECT d.fecha AS fechaOrd, NULL AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', d.numero, '-', e.nombre) AS datosbanco, NULL AS monedafact, NULL AS montofac, 
+    SELECT d.fecha AS fechaOrd, d.fecha AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', d.numero, '-', e.nombre) AS datosbanco, NULL AS monedafact, NULL AS montofac, 
     g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(d.isr, 2) AS isr, d.tipocambio, NULL AS fact, d.concepto AS conceptomayor, d.numero
     FROM detpresupuesto a     
     INNER JOIN tranban d ON d.iddetpresup = a.id
