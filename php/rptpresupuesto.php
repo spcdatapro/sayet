@@ -259,8 +259,8 @@ $app->post('/avanceot', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $query = "SELECT b.fechapago AS fechaOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', d.numero, '-', e.nombre) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
-    g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, b.tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, b.conceptomayor, d.numero
+    $query = "SELECT b.fechapago AS fechaOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(SUBSTRING(c.siglas, 1, 2), '-', d.tipotrans, '-', SUBSTRING(c.siglas, 4, 5), '-',  d.numero) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
+    g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, b.tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, b.conceptomayor, d.numero, IF(d.anulado = 1, 'true', NULL) AS anulado
     FROM detpresupuesto a 
     INNER JOIN compra b ON a.id = b.ordentrabajo
     INNER JOIN detpagocompra h ON h.idcompra = b.id
@@ -271,8 +271,8 @@ $app->post('/avanceot', function(){
     INNER JOIN moneda g ON g.id = c.idmoneda
     WHERE a.id = $d->idot    
     UNION
-    SELECT d.fecha AS fechaOrd, d.fecha AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', d.numero, '-', e.nombre) AS datosbanco, NULL AS monedafact, NULL AS montofac, 
-    g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(d.isr, 2) AS isr, d.tipocambio, NULL AS fact, d.concepto AS conceptomayor, d.numero
+    SELECT d.fecha AS fechaOrd, d.fecha AS fechafactura, CONCAT(SUBSTRING(c.siglas, 1, 2), '-', d.tipotrans, '-', SUBSTRING(c.siglas, 4, 5), '-',  d.numero) AS datosbanco, NULL AS monedafact, NULL AS montofac, 
+    g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(d.isr, 2) AS isr, d.tipocambio, NULL AS fact, d.concepto AS conceptomayor, d.numero, IF(d.anulado = 1, 'true', NULL) AS anulado
     FROM detpresupuesto a     
     INNER JOIN tranban d ON d.iddetpresup = a.id
     INNER JOIN banco c ON c.id = d.idbanco
@@ -284,13 +284,13 @@ $app->post('/avanceot', function(){
 
     $query = "SELECT CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, DATE_FORMAT(b.fechasolicitud, '%d-%m-%Y') AS fechasolicitud, c.nomproyecto AS proyecto, IF(a.origenprov = 1, d.nombre, e.nombre) AS proveedor,
     f.nomempresa AS empresa, g.desctipogast AS tipogasto, h.descripcion AS subtipogasto, i.simbolo AS moneda, 
-    FORMAT(IF(a.id = j.iddetpresupuesto, a.monto + j.monto, a.monto), 2) AS montoot, a.tipocambio, FORMAT(IFNULL((SELECT SUM(b.totfact) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda = b.idmoneda), 0.00) + 
+    FORMAT(IF(a.id = j.iddetpresupuesto, a.monto + j.monto, a.monto), 2) AS montoot, IF(i.eslocal, a.tipocambio, NULL) AS tipocambio, FORMAT(IFNULL((SELECT SUM(b.totfact) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda = b.idmoneda), 0.00) + 
     IFNULL(IF(i.eslocal = 1, (SELECT SUM(b.totfact * b.tipocambio) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda != b.idmoneda),
     (SELECT SUM(b.totfact) / b.tipocambio FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda != b.idmoneda)), 0.00), 2) AS totfact,
     a.notas,
     FORMAT(IFNULL((SELECT SUM(b.monto) FROM detpresupuesto a INNER JOIN tranban b ON a.id = b.iddetpresup INNER JOIN banco c ON c.id = b.idbanco WHERE a.id = $d->idot AND
-    a.idmoneda = c.idmoneda), 0.00) + IFNULL(IF(i.eslocal = 1, (SELECT SUM(b.monto * b.tipocambio) FROM detpresupuesto a INNER JOIN tranban b ON a.id = b.iddetpresup 
-    INNER JOIN banco c ON c.id = b.idbanco WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda), (SELECT SUM(b.monto / b.tipocambio) FROM detpresupuesto a INNER JOIN tranban b 
+    a.idmoneda = c.idmoneda AND b.anulado = 0), 0.00) + IFNULL(IF(i.eslocal = 1, (SELECT SUM(b.monto * b.tipocambio) FROM detpresupuesto a INNER JOIN tranban b ON a.id = b.iddetpresup 
+    INNER JOIN banco c ON c.id = b.idbanco WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.anulado = 0), (SELECT SUM(b.monto / b.tipocambio) FROM detpresupuesto a INNER JOIN tranban b 
     ON a.id = b.iddetpresup INNER JOIN banco c ON c.id = b.idbanco WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda)), 0.00), 2) AS totcheques,
     FORMAT(IFNULL((SELECT SUM(b.isr) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda = b.idmoneda), 0.00) + 
     IFNULL(IF(i.eslocal = 1, (SELECT SUM(b.isr * b.tipocambio) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda != b.idmoneda),
@@ -300,9 +300,9 @@ $app->post('/avanceot', function(){
     (SELECT SUM(b.totfact) / b.tipocambio FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda != b.idmoneda)), 0.00)) 
     * 100) / IF(a.id = j.iddetpresupuesto, a.monto + j.monto, a.monto), 2), '%') AS avanceot, 
     FORMAT(IFNULL((SELECT SUM(b.monto) FROM detpresupuesto a INNER JOIN tranban b ON a.id = b.iddetpresup INNER JOIN banco c ON c.id = b.idbanco WHERE a.id = $d->idot AND
-    a.idmoneda = c.idmoneda), 0.00) + IFNULL(IF(i.eslocal = 1, (SELECT SUM(b.monto * b.tipocambio) FROM detpresupuesto a INNER JOIN tranban b ON a.id = b.iddetpresup 
+    a.idmoneda = c.idmoneda AND b.anulado = 0), 0.00) + IFNULL(IF(i.eslocal = 1, (SELECT SUM(b.monto * b.tipocambio) FROM detpresupuesto a INNER JOIN tranban b ON a.id = b.iddetpresup 
     INNER JOIN banco c ON c.id = b.idbanco WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda), (SELECT SUM(b.monto / b.tipocambio) FROM detpresupuesto a INNER JOIN tranban b 
-    ON a.id = b.iddetpresup INNER JOIN banco c ON c.id = b.idbanco WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda)), 0.00) + IFNULL((SELECT SUM(b.isr) FROM detpresupuesto a 
+    ON a.id = b.iddetpresup INNER JOIN banco c ON c.id = b.idbanco WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.anulado = 0)), 0.00) + IFNULL((SELECT SUM(b.isr) FROM detpresupuesto a 
     INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda = b.idmoneda), 0.00) + 
     IFNULL(IF(i.eslocal = 1, (SELECT SUM(b.isr * b.tipocambio) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda != b.idmoneda),
     (SELECT SUM(b.isr) /b.tipocambio FROM detpresupuesto a INNER JOIN  compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda != b.idmoneda)), 0.00), 2) AS totgastado,
@@ -357,8 +357,8 @@ $app->post('/avanceotm', function(){
     for($i = 0; $i < $cntOrdenes; $i++) {
         $ot = $ordentrabajo[$i];
 
-        $query = "SELECT b.fechapago AS fechaOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', d.numero, '-', e.nombre) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
-    g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, b.tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, b.conceptomayor, d.numero
+        $query = "SELECT b.fechapago AS fechaOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(SUBSTRING(c.siglas, 1, 2), '-', d.tipotrans, '-', SUBSTRING(c.siglas, 4, 5), '-',  d.numero) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
+    g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, b.tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, b.conceptomayor, d.numero, IF(d.anulado = 1, 'true', NULL) AS anulado
     FROM detpresupuesto a 
     INNER JOIN compra b ON a.id = b.ordentrabajo
     INNER JOIN detpagocompra h ON h.idcompra = b.id
@@ -369,8 +369,8 @@ $app->post('/avanceotm', function(){
     INNER JOIN moneda g ON g.id = c.idmoneda
     WHERE a.id = $ot->id    
     UNION
-    SELECT d.fecha AS fechaOrd, d.fecha AS fechafactura, CONCAT(c.siglas, '-', d.tipotrans, '-', d.numero, '-', e.nombre) AS datosbanco, NULL AS monedafact, NULL AS montofac, 
-    g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(d.isr, 2) AS isr, d.tipocambio, NULL AS fact, d.concepto AS conceptomayor, d.numero
+    SELECT d.fecha AS fechaOrd, d.fecha AS fechafactura, CONCAT(SUBSTRING(c.siglas, 1, 2), '-', d.tipotrans, '-', SUBSTRING(c.siglas, 4, 5), '-',  d.numero) AS datosbanco, NULL AS monedafact, NULL AS montofac, 
+    g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(d.isr, 2) AS isr, d.tipocambio, NULL AS fact, d.concepto AS conceptomayor, d.numero, IF(d.anulado = 1, 'true', NULL) AS anulado
     FROM detpresupuesto a     
     INNER JOIN tranban d ON d.iddetpresup = a.id
     INNER JOIN banco c ON c.id = d.idbanco
