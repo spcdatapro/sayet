@@ -394,14 +394,14 @@ $app->post('/avanceotm', function(){
     (SELECT SUM(c.totfact / c.tipocambio) FROM presupuesto a INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto INNER JOIN compra c ON b.id = c.ordentrabajo WHERE a.id = $d->idpresupuesto AND
     a.idmoneda != c.idmoneda)), 0.00), 2) AS montogastado,
     CONCAT(ROUND((FORMAT(IFNULL((SELECT SUM(c.totfact) FROM presupuesto a INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto INNER JOIN compra c ON b.id = c.ordentrabajo
-    WHERE a.id = 1970 AND a.idmoneda = c.idmoneda), 0.00) + IFNULL(IF(g.eslocal = 1, 
-    (SELECT SUM(c.totfact * c.tipocambio) FROM presupuesto a INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto INNER JOIN compra c ON b.id = c.ordentrabajo WHERE a.id = 1970 AND
+    WHERE a.id = $d->idpresupuesto AND a.idmoneda = c.idmoneda), 0.00) + IFNULL(IF(g.eslocal = 1, 
+    (SELECT SUM(c.totfact * c.tipocambio) FROM presupuesto a INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto INNER JOIN compra c ON b.id = c.ordentrabajo WHERE a.id = $d->idpresupuesto AND
     a.idmoneda != c.idmoneda), 
-    (SELECT SUM(c.totfact / c.tipocambio) FROM presupuesto a INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto INNER JOIN compra c ON b.id = c.ordentrabajo WHERE a.id = 1970 AND
-    a.idmoneda != c.idmoneda)), 0.00), 2) * 100) / FORMAT(IFNULL((SELECT SUM(b.monto) FROM presupuesto a INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto WHERE a.id = 1970 AND a.idmoneda = b.idmoneda), 0.00) +
+    (SELECT SUM(c.totfact / c.tipocambio) FROM presupuesto a INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto INNER JOIN compra c ON b.id = c.ordentrabajo WHERE a.id = $d->idpresupuesto AND
+    a.idmoneda != c.idmoneda)), 0.00), 2) * 100) / FORMAT(IFNULL((SELECT SUM(b.monto) FROM presupuesto a INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto WHERE a.id = $d->idpresupuesto AND a.idmoneda = b.idmoneda), 0.00) +
     IFNULL(IF(g.eslocal = 1, 
-    (SELECT SUM(b.monto * b.tipocambio) FROM presupuesto a INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto WHERE a.id = 1970 AND a.idmoneda != b.idmoneda), 
-    (SELECT SUM(b.monto / b.tipocambio) FROM presupuesto a INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto WHERE a.id = 1970 AND a.idmoneda != b.idmoneda)), 0.00), 2), 2), '%') AS avanceot,
+    (SELECT SUM(b.monto * b.tipocambio) FROM presupuesto a INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto WHERE a.id = $d->idpresupuesto AND a.idmoneda != b.idmoneda), 
+    (SELECT SUM(b.monto / b.tipocambio) FROM presupuesto a INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto WHERE a.id = $d->idpresupuesto AND a.idmoneda != b.idmoneda)), 0.00), 2), 2), '%') AS avanceot,
     a.notas
     FROM presupuesto a 
     INNER JOIN proyecto b ON b.id = a.idproyecto
