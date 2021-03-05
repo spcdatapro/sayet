@@ -317,9 +317,13 @@ $app->post('/avanceot', function(){
     FORMAT(IFNULL((SELECT SUM(b.isr) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda = b.idmoneda), 0.00) + 
     IFNULL(IF(i.eslocal = 1, (SELECT SUM(b.isr * b.tipocambio) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda != b.idmoneda),
     (SELECT SUM(b.isr) /b.tipocambio FROM detpresupuesto a INNER JOIN  compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda != b.idmoneda)), 0.00), 2) AS totisr,
-    CONCAT(ROUND(((IFNULL((SELECT SUM(b.totfact) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda = b.idmoneda), 0.00) + 
-    IFNULL(IF(i.eslocal = 1, (SELECT SUM(b.totfact * b.tipocambio) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda != b.idmoneda),
-    (SELECT SUM(b.totfact) / b.tipocambio FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda != b.idmoneda)), 0.00)) 
+    CONCAT(ROUND(((	IFNULL((SELECT SUM(b.monto) FROM detpresupuesto a INNER JOIN tranban b ON a.id = b.iddetpresup INNER JOIN banco c ON c.id = b.idbanco WHERE a.id = $d->idot AND
+    a.idmoneda = c.idmoneda AND b.anulado = 0), 0.00) + IFNULL(IF(i.eslocal = 1, (SELECT SUM(b.monto * b.tipocambio) FROM detpresupuesto a INNER JOIN tranban b ON a.id = b.iddetpresup 
+    INNER JOIN banco c ON c.id = b.idbanco WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda), (SELECT SUM(b.monto / b.tipocambio) FROM detpresupuesto a INNER JOIN tranban b 
+    ON a.id = b.iddetpresup INNER JOIN banco c ON c.id = b.idbanco WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.anulado = 0)), 0.00) + IFNULL((SELECT SUM(b.isr) FROM detpresupuesto a 
+    INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda = b.idmoneda), 0.00) + 
+    IFNULL(IF(i.eslocal = 1, (SELECT SUM(b.isr * b.tipocambio) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda != b.idmoneda),
+    (SELECT SUM(b.isr) /b.tipocambio FROM detpresupuesto a INNER JOIN  compra b ON a.id = b.ordentrabajo WHERE a.id = $d->idot AND a.idmoneda != b.idmoneda)), 0.00))
     * 100) / IF(a.id = j.iddetpresupuesto, a.monto + j.monto, a.monto), 2), '%') AS avanceot, 
     FORMAT(IFNULL((SELECT SUM(b.monto) FROM detpresupuesto a INNER JOIN tranban b ON a.id = b.iddetpresup INNER JOIN banco c ON c.id = b.idbanco WHERE a.id = $d->idot AND
     a.idmoneda = c.idmoneda AND b.anulado = 0), 0.00) + IFNULL(IF(i.eslocal = 1, (SELECT SUM(b.monto * b.tipocambio) FROM detpresupuesto a INNER JOIN tranban b ON a.id = b.iddetpresup 
@@ -343,7 +347,7 @@ $app->post('/avanceot', function(){
     INNER JOIN usuario l ON l.id = b.idusuario
     INNER JOIN usuario m ON m.id = a.idusuarioaprueba
     LEFT JOIN usuario n ON n.id = a.lastuser
-    WHERE a.id = $d->idot ";
+    WHERE a.id = $d->idot; ";
     $general = $db->getQuery($query)[0];
 
     $query = "SELECT DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS fecha";
