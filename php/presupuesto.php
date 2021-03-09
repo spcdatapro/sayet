@@ -796,6 +796,7 @@ $app->post('/genpagos', function () {
                 $obj->concepto = $detpago->notas;
                 //$url = 'http://localhost/sytdev/php/tranbanc.php/doinsdetcont'; //Desarrollo
                 $url = 'http://localhost/sayet/php/tranbanc.php/doinsdetcont'; //Producción
+                $obj->anticipo = 1;
                 $data = ['obj' => $obj, 'lastid' => $lastid];
                 $db->CallJSReportAPI('POST', $url, json_encode($data));
 
