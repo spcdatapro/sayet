@@ -724,7 +724,7 @@ function regeneraCorrelativo($d)
     $query = "SELECT IFNULL(MAX(numeroadmin), 0) + 1 FROM factura WHERE idempresa = $d->idempresa AND serie IS NOT NULL AND numero IS NOT NULL AND idtipofactura = 1";
     $correlativo = (int)$db->getOneField($query);
 
-    $query = "SELECT id FROM factura WHERE id IN($d->listafact) AND idtipofactura = 1 ORDER BY fecha, id";
+    $query = "SELECT id, nombre FROM factura WHERE id IN($d->listafact) AND idtipofactura = 1 ORDER BY nombre, fecha, id";
     $facturas = $db->getQuery($query);
     $cntFacturas = count($facturas);
     for($i = 0; $i < $cntFacturas; $i++) {
@@ -758,7 +758,7 @@ $app->post('/genfel', function() use($app) {
     LEFT JOIN moneda d ON d.id = a.idmonedafact
     WHERE a.id > 3680 AND a.total <> 0 AND a.idempresa = $d->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.anulada = 0 AND (ISNULL(a.firmaelectronica) OR TRIM(a.firmaelectronica) = '') ";
     $query.= $d->listafact != '' ? "AND a.id IN($d->listafact) " : '';
-    $query.= "ORDER BY a.fecha, a.id";
+    $query.= "ORDER BY a.nombre, a.fecha, a.id";
     // print $query;
     $facturas = $db->getQuery($query);
     $cntFacturas = count($facturas);
