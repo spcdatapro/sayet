@@ -87,7 +87,7 @@
                                         </ui-select-match>
                                         <ui-select-choices
                                             ui-disable-choice="+item.pagado == 1 && (laTran.objTipotrans.abreviatura === 'C' || laTran.tipotrans === 'C')"
-                                            repeat="item.iddetpresup as item in ots | filter:$select.search">
+                                            repeat="item.id as item in ots | filter:$select.search">
                                             <div ng-bind-html="(item.ot) | highlight: $select.search">
                                             </div>
                                             <small>
@@ -222,7 +222,7 @@
                                 <div class="form-group">
                                     <div class="form-group">
                                         <label for="txtMontoIsr">Monto ISR:</label>
-                                        <input name="txtMontoIsr" id="txtMontoCalc" type="number" class="form-control"
+                                        <input name="txtMontoIsr" id="txtMontoIsr" type="number" class="form-control"
                                             ng-model="laTran.isr" disabled />
                                     </div>
                                 </div>
@@ -991,31 +991,3 @@
     });
 </script>
 
-<!--retencion isr-->
-<script type="text/ng-template" id="modalRetencionIsr.html">
-    <div class="modal-header">
-        <h3 class="modal-title">Retencion de ISR</h3>
-    </div>
-    <div class="modal-body">
-        <div class="form-group">
-            <label for="txtMontoCalc">Monto a calcular ISR:</label>
-            <input name="txtMontoCalc" id="txtMontoCalc" type="number" class="form-control" ng-model=""/>
-        </div>
-        <div class="form-group">
-            <label for="txtMontoOri">Monto original del cheque:</label>
-            <input name="txtMontoOri" id="txtMontoOri" type="number" class="form-control" ng-model=""/>
-        </div>
-        <div class="form-group">
-            <label for="txtMontoIsr">Monto ISR:</label>
-            <input name="txtMontoIsr" id="txtMontoCalc" type="number" class="form-control" ng-model=""/>
-        </div>
-        <div class="form-group">
-            <label for="txtMontoCheq">Monto cheque:</label>
-            <input name="txtMontoCheq" id="txtMontoCalc" type="number" class="form-control" ng-model=""/>
-        </div>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-primary" type="button" ng-click="ok()">Aceptar</button>
-        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
-    </div>
-</script>

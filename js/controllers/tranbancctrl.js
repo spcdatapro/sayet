@@ -151,7 +151,7 @@
                 $scope.laTran.tipocambio = parseFloat($scope.laTran.objBanco.tipocambio).toFixed($scope.dectc);
                 $scope.cleanInfo();
                 $scope.fltrtran.idbanco = $scope.laTran.objBanco.id;
-                // console.log($scope.ot);
+                 console.log($scope.ot);
                 if (+$scope.ot.id > 0) {
                     $scope.fltrtran.fdelstr = '';
                     $scope.fltrtran.falstr = '';
@@ -310,7 +310,7 @@
             tranBancSrvc.getMontoOt(item.id).then(d => {
                 $scope.montoMax = d.monto; 
             });
-            $scope.laTran.concepto = 'Orden de trabajo ' + item.idpresupuesto + '-' + item.correlativo + ' [' + item.notas + ']';
+            $scope.laTran.concepto = 'Orden de trabajo ' + item.ot + ' [' + item.notas + ']';
 
             /*if (item && item.notas && item.notas.trim() !== '') {
                 if (!$scope.laTran.concepto || $scope.laTran.concepto.trim() == '') {
@@ -324,7 +324,7 @@
 
             $scope.laTran.tipocambio = parseFloat(item.tipocambio).toFixed($scope.dectc);
             //$scope.laTran.monto = (+$scope.laTran.objBanco.idmoneda != +item.idmoneda) ? parseFloat(parseFloat(item.valor) * parseFloat($scope.laTran.tipocambio)).toFixed(2) : parseFloat(item.valor).toFixed(2);
-            $scope.laTran.iddetpresup = item.id;
+            //$scope.laTran.iddetpresup = item.id;
         };
 
         $scope.fillDataOnChangeBene = function (item, model) {
@@ -387,13 +387,14 @@
                 data[i].tipocambio = parseFloat(parseFloat(data[i].tipocambio).toFixed($scope.dectc));
                 data[i].impreso = parseInt(data[i].impreso);
                 data[i].fechaliquida = moment(data[i].fechaliquida).isValid() ? moment(data[i].fechaliquida).toDate() : null;
-                data[i].iddetpagopresup = +data[i].iddetpagopresup === 0 ? (+data[i].iddetpresup === 0 ? undefined : data[i].iddetpresup) : data[i].iddetpagopresup;
+                data[i].iddetpagopresup = data[i].iddetpagopresup === 0 ? (+data[i].iddetpresup === 0 ? undefined : data[i].iddetpresup) : data[i].iddetpagopresup;
                 data[i].iddocliquida = +data[i].iddocliquida === 0 ? undefined : data[i].iddocliquida;
                 data[i].retisr = parseInt(data[i].retisr);
                 data[i].montooriginal = parseFloat(parseFloat(data[i].montooriginal).toFixed(2));
                 data[i].isr = parseFloat(parseFloat(data[i].isr).toFixed(2));
-                data[i].montocalcisr = parseFloat(parseFloat(data[i].montocalcisr).toFixed(2));
-                data[i].iddetpresup = +data[i].iddetpresup;                
+                data[i].montocalcisr = parseFloat(parseFloat(data[i].montocalcisr).toFixed(2)); 
+                //data[i].iddetpresup = data[i].iddetpresup; 
+                //data[i].iddetpresup = +data[i].ot;            
             }
             return data;
         }
@@ -473,7 +474,7 @@
             presupuestoSrvc.lstPagosOt($scope.laEmpresa.id).then(function (d) { $scope.ots = d; });
             tranBancSrvc.getTransaccion(parseInt(idtran)).then(function (d) {
                 $scope.laTran = processData(d)[0];
-                //console.log($scope.laTran);
+                console.log($scope.laTran);
                 $scope.laTran.objBanco = $filter('getById')($scope.losBancos, $scope.laTran.idbanco);
 
                 var tmp = $scope.laTran, coma = ', ';
@@ -850,6 +851,7 @@
                         datos: chqs[i]
                     });
                 }
+                // console.log(objs); return;
                 socketIOSrvc.emit('sayet:print', JSON.stringify(objs));
             });
         };
