@@ -44,7 +44,7 @@
 
         $scope.resetbene = function(){
             $scope.bene = { direccion: '', telefono: '', correo: '', concepto: '', tipocambioprov: 1, objMoneda: {}, debaja: '0', cuentabanco: undefined,
-                            idbancopais: undefined, tipcuenta: undefined, identificacion: undefined  };
+                            idbancopais: undefined, tipcuenta: 0, identificacion: undefined  };
             $scope.editando = false;
             $scope.strBene = '';
             monedaSrvc.getMoneda(parseInt($scope.objEmpresa.idmoneda)).then(function(d){
@@ -77,7 +77,7 @@
             beneficiarioSrvc.getBeneficiario(parseInt(idbene)).then(function(d){
                 $scope.bene = procData(d)[0];
                 $scope.bene.objMoneda = $filter('getById')($scope.monedas, $scope.bene.idmoneda);
-                $scope.bene.idbancopais = $filter('getById')($scope.bancoPais, $scope.bene.idbancopais)
+                $scope.bene.idbancopais = $filter('getById')($scope.bancoPais, $scope.bene.idbancopais);
                 $scope.strBene = 'No. ' + pad($scope.bene.id, 4) + ', ' + $scope.bene.nitnombre;
                 $scope.editando = true;
             });

@@ -58,8 +58,6 @@
                 $scope.elProv.objMoneda.tipocambioprov = parseFloat($scope.elProv.objMoneda.tipocambioprov).toFixed($scope.dectc);
                 $scope.elProv.tipocambioprov = parseFloat(d[0].tipocambio).toFixed($scope.dectc);
             });
-            // bancoSrvc.lstBancosPais(parseInt($scope.objEmpresa.idbancopais)).then(function(d){ $scope.elProv.objBancoPais = d[0];
-            //});
         };
 
         $scope.getLstProveedores = function(){

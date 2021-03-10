@@ -40,7 +40,7 @@ $app->post('/c', function(){
     if (!isset($d->tipcuenta)) { $d->tipcuenta = 0; }
     if (!isset($d->identificacion)) { $d->identificacion = 0; }
 
-    $query = "INSERT INTO beneficiario(nit, nombre, direccion, telefono, correo, concepto, idmoneda, tipocambioprov, debaja, cuentabanco, idbancopais, tipcuenta, identificacion ) ";
+    $query = "INSERT INTO beneficiario(nit, nombre, direccion, telefono, correo, concepto, idbancopais, tipcuenta, identificacion, idmoneda, tipocambioprov, debaja, cuentabanco ) ";
     $query.= "VALUES('$d->nit', '$d->nombre', '$d->direccion', '$d->telefono', '$d->correo', '$d->concepto', $d->idbancopais, $d->tipcuenta, $d->identificacion, ";
     $query.= "$d->idmoneda, $d->tipocambioprov, $d->debaja, $d->cuentabanco)";
     $db->doQuery($query);
