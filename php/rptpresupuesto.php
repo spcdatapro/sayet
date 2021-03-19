@@ -660,7 +660,7 @@ $app->post('/avanceotm', function(){
         SELECT b.fechapago AS fechaOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(SUBSTRING(c.siglas, 1, 2), '-', d.tipotrans, '-', 
         SUBSTRING(c.siglas, 4, 5), '-',  d.numero) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
         g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, b.tipocambio, 
-        CONCAT(b.serie, '-', b.documento) AS fact, b.conceptomayor, d.numero, 
+        CONCAT(b.serie, '-', b.documento) AS fact, d.concepto, d.numero, 
         IF((d.anulado = 1 OR (d.anulado = 0 AND (d.beneficiario LIKE '%anula%' OR d.concepto LIKE '%anula%'))), 1, NULL) AS anulado, d.id, d.beneficiario,
         IF(d.idreembolso = 0, NULL, 1) AS reembolso
         FROM detpresupuesto a 
@@ -671,7 +671,19 @@ $app->post('/avanceotm', function(){
         INNER JOIN proveedor e ON e.id = a.idproveedor
         INNER JOIN moneda f ON f.id = b.idmoneda
         INNER JOIN moneda g ON g.id = c.idmoneda
-        WHERE a.id = $ot->id AND d.idreembolso IS NOT NULL  
+        WHERE a.id = $ot->id AND d.idreembolso IS NOT NULL 
+        UNION
+        SELECT b.fechapago AS fechaOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, NULL AS datosbanco, 
+        f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, NULL AS monedacheq, 
+        NULL AS montocheq, FORMAT(b.isr, 2) AS isr, b.tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, b.conceptomayor, NULL AS numero, 
+        NULL AS anulado, NULL AS id, NULL AS beneficiario,
+        NULL AS reembolso
+        FROM detpresupuesto a 
+        INNER JOIN compra b ON a.id = b.ordentrabajo
+        LEFT JOIN detpagocompra c ON b.id = c.idcompra
+        INNER JOIN proveedor e ON e.id = a.idproveedor
+        INNER JOIN moneda f ON f.id = b.idmoneda
+        WHERE a.id = $ot->id AND c.id IS NULL
         ORDER BY 1 ASC ";
         $ot->documento = $db->getQuery($query);
     }
