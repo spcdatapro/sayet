@@ -71,7 +71,7 @@
         };
 
         $scope.ctaContSelected = function (item) {
-            console.log(item);
+            //console.log(item);
         };
 
         empresaSrvc.lstEmpresas().then(function (d) {
@@ -151,7 +151,7 @@
                 $scope.laTran.tipocambio = parseFloat($scope.laTran.objBanco.tipocambio).toFixed($scope.dectc);
                 $scope.cleanInfo();
                 $scope.fltrtran.idbanco = $scope.laTran.objBanco.id;
-                 console.log($scope.ot);
+                 //console.log($scope.ot);
                 if (+$scope.ot.id > 0) {
                     $scope.fltrtran.fdelstr = '';
                     $scope.fltrtran.falstr = '';
@@ -276,7 +276,7 @@
 
         $scope.getDocs = function (td) {
             const idtd = +td.id;
-            console.log(idtd);
+            //console.log(idtd);
             switch (true) {
                 case [1, 3].indexOf(idtd) > -1: tranBancSrvc.lstFactCompra($scope.laTran.idbeneficiario, $scope.laTran.id).then(function (d) { $scope.compraspendientes = d; }); break;
                 case [2, 4].indexOf(idtd) > -1: tranBancSrvc.lstReembolsos($scope.laTran.idbeneficiario).then(function (d) { $scope.compraspendientes = d; }); break;
@@ -310,7 +310,20 @@
             tranBancSrvc.getMontoOt(item.id).then(d => {
                 $scope.montoMax = d.monto; 
             });
-            $scope.laTran.concepto = 'Orden de trabajo ' + item.ot + ' [' + item.notas + ']';
+
+            if ( !$scope.laTran.concepto ) {
+                $scope.laTran.concepto = 'Orden de trabajo ' + item.ot + ' [' + item.notas + ']';
+            } else {
+                    $scope.laTran.concepto = $scope.laTran.concepto + ' / ' + 'Orden de trabajo ' + item.ot + ' [' + item.notas + ']';    
+                }
+            
+
+            /*if ($scope.laTran.concepto.length > 0) {
+                $scope.laTran.concepto = $scope.laTran.concepto + ' / ' + 'Orden de trabajo ' + item.ot + ' [' + item.notas + ']'; 
+            } 
+                else ( $scope.laTran.concepto.length = undefined ) 
+                    $scope.laTran.concepto =  'Orden de trabajo ' + item.ot + ' [' + item.notas + ']';*/
+             
 
             /*if (item && item.notas && item.notas.trim() !== '') {
                 if (!$scope.laTran.concepto || $scope.laTran.concepto.trim() == '') {
@@ -474,7 +487,7 @@
             presupuestoSrvc.lstPagosOt($scope.laEmpresa.id).then(function (d) { $scope.ots = d; });
             tranBancSrvc.getTransaccion(parseInt(idtran)).then(function (d) {
                 $scope.laTran = processData(d)[0];
-                console.log($scope.laTran);
+                //console.log($scope.laTran);
                 $scope.laTran.objBanco = $filter('getById')($scope.losBancos, $scope.laTran.idbanco);
 
                 var tmp = $scope.laTran, coma = ', ';

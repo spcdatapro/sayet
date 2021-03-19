@@ -382,9 +382,9 @@ $app->post('/gentranban', function(){
     $haber = (float)$db->getOneField($query);
     //Generación del cheque/nota de débito para pagar el reembolso
     $getCorrela = $d->numero;
-    $query = "INSERT INTO tranban(idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, origenbene, idbeneficiario) ";
+    $query = "INSERT INTO tranban(idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, origenbene, idbeneficiario, idreembolso) ";
     $query.= "VALUES(".$d->objBanco->id.", '".$d->tipotrans."', '".$d->fechatrans."', ".$haber.", '".$d->beneficiario."', ";
-    $query.= "'Pago de reembolso No. ".$d->id."', ".$getCorrela.", 2, $d->idbeneficiario)";
+    $query.= "'Pago de reembolso No. ".$d->id."', ".$getCorrela.", 2, $d->idbeneficiario, ".$d->id.")";
     $db->doQuery($query);
     $lastid = $db->getLastId();
     if($d->tipotrans == 'C') { $db->doQuery("UPDATE banco SET correlativo = correlativo + 1 WHERE id = " . $d->objBanco->id); }

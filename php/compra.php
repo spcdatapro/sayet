@@ -683,7 +683,7 @@ $app->get('/selcheques/:idot', function($idot){
             FROM tranban a
             INNER JOIN banco b ON b.id = a.idbanco 
             INNER JOIN moneda c ON  c.id = b.idmoneda
-            WHERE iddetpresup = $idot AND anticipo = 1 AND idfact IS NULL ";
+            WHERE a.iddetpresup = $idot AND a.anticipo = 1 AND a.idfact IS NULL AND a.idreembolso IS NULL ";
     print $db->doSelectASJson($query);
 });
 
