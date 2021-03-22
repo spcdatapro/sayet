@@ -27,7 +27,7 @@
         <li ng-show="+presupuesto.id > 0">
             <a show-tab href="#divDetPresup" data-toggle="tab">DETALLE</a>
         </li>
-        <li ng-show="+presupuesto.id > 0 && +ot.id > 0">
+        <li ng-show="+presupuesto.id > 0">
             <a show-tab href="#divAdjuntos" data-toggle="tab">ADJUNTOS</a>
         </li>
         <!--<li ng-show="+presupuesto.id > 0 && +ot.id > 0">
@@ -716,7 +716,7 @@
             <div class="panel panel-info">
                 <div class="panel-heading">Archivos adjuntos</div>
                 <div class="panel-body">
-                    <form name="frmOTAdjunto" id="frmOTAdjunto" ng-submit="frmOTAdjunto.$valid && addOTAdjunto()" class="check-element animate-show" ng-show="+ot.id > 0" novalidate>
+                    <form name="frmOTAdjunto" id="frmOTAdjunto" ng-submit="frmOTAdjunto.$valid && addOTAdjunto()" class="check-element animate-show" ng-show="+presupuesto.id > 0" novalidate>
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group" ng-class="{'has-error':frmOTAdjunto.txtNomAjunto.$invalid && !frmOTAdjunto.txtNomAjunto.$pristine}">

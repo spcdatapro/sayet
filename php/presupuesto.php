@@ -999,17 +999,17 @@ $app->post('/ibp', function () {
     insertaBitacoraPresupuesto($db, $d);
 });
 
-$app->get('/lstotadjuntos/:idot', function ($idot) {
+$app->get('/lstotadjuntos/:idot(/:multiple)', function ($idot, $multiple) {
     $db = new dbcpm();
-    $query = "SELECT id, idot, nomadjunto, ubicacion FROM ot_adjunto WHERE idot = $idot ORDER BY nomadjunto";
+    $query = "SELECT id, idot, nomadjunto, ubicacion FROM ot_adjunto WHERE idot = $idot AND esmultiple = $multiple ORDER BY nomadjunto";
     print $db->doSelectASJson($query);
 });
 
 $app->post('/aaot', function () {
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $query = "INSERT INTO ot_adjunto(idot, nomadjunto, ubicacion) VALUES(";
-    $query .= "$d->idot,'$d->nomadjunto', '$d->ubicacion'";
+    $query = "INSERT INTO ot_adjunto(idot, nomadjunto, ubicacion, esmultiple) VALUES(";
+    $query .= "$d->idot,'$d->nomadjunto', '$d->ubicacion', '$d->esmultiple'";
     $query .= ")";
     $db->doQuery($query);
 });

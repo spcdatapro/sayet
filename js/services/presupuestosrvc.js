@@ -57,7 +57,7 @@
             },
             editRow: (obj, op) => comunFact.doPOST(`${urlBase}/${op}`, obj),
             usrApruebanOts: (id) => comunFact.doGET(`${urlBase}/usraprob` + (!id ? '' : `/${id}`)),
-            lstOtsAdjuntos: (idot) => comunFact.doGET(`${urlBase}/lstotadjuntos/${idot}`),
+            lstOtsAdjuntos: (idot, multiple) => comunFact.doGET(`${urlBase}/lstotadjuntos/${idot}/${multiple}`),
             lstOTMs: () => comunFact.doGET(`${urlBase}/lstotm`)
         };
     }]);

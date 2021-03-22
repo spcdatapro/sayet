@@ -129,6 +129,7 @@
                 $scope.presupuesto.empresa = $scope.presupuesto.idempresa;
                 $scope.loadSubtTiposGasto($scope.presupuesto.idtipogasto);
                 $scope.getLstOts(idpresupuesto);
+                $scope.loadOTAdjuntos(idpresupuesto, 1);
                 $scope.lbl.presupuesto = 'No. ' + $scope.presupuesto.id + ' - ' + ($filter('getById')($scope.proyectos, $scope.presupuesto.idproyecto)).nomproyecto + ' - ';
                 $scope.lbl.presupuesto += ($filter('getById')($scope.empresas, $scope.presupuesto.idempresa)).nomempresa + ' - ';
                 $scope.lbl.presupuesto += ($filter('getById')($scope.tiposgasto, $scope.presupuesto.idtipogasto)).desctipogast + ' - ';
@@ -549,9 +550,17 @@
         $scope.otAdjunto = { };
         $scope.lstotadjuntos = [];
 
-        $scope.loadOTAdjuntos = () => presupuestoSrvc.lstOtsAdjuntos($scope.ot.id).then((d) => $scope.lstotadjuntos = d);        
+        $scope.loadOTAdjuntos = (id, multiple) => {
+            //if($scope.ot.id > 0) {id = $scope.ot.id}
+            //else {id = $scope.presupuesto.id};
+            //if($scope.ot.id > 0) {multiple = 0}
+            //else {multiple = 1};
+            if(!id) { id = $scope.ot.id; }
+            if(!multiple) { multiple = 0; }
+            presupuestoSrvc.lstOtsAdjuntos(id, multiple).then((d) => $scope.lstotadjuntos = d);
+        };
 
-        $scope.resetOTAdjunot = () => $scope.otAdjunto = { idot: undefined, ubicacion: undefined };
+        $scope.resetOTAdjunot = () => $scope.otAdjunto = { idot: undefined, ubicacion: undefined, esmultiple: 0 };
 
         $scope.resetOTAdjunot();
 
@@ -580,15 +589,36 @@
 
         $scope.addOTAdjunto = () => {
             $scope.upload();
-            $scope.otAdjunto.idot = $scope.ot.id;            
-            $scope.otAdjunto.ubicacion = "ots_adjunto/"+'OT_'+$scope.ot.id+'_'+ $filter('textCleaner')($scope.file.name);
-            presupuestoSrvc.editRow($scope.otAdjunto, 'aaot').then(() => $scope.loadOTAdjuntos());
+            if ($scope.ot.id > 0) {
+                $scope.otAdjunto.idot = $scope.ot.id
+            } else {
+                $scope.otAdjunto.idot = $scope.presupuesto.id
+            };
+            $scope.otAdjunto.ubicacion = "ots_adjunto/"+'OT_'+(($scope.ot && $scope.ot.id) ? $scope.ot.id : (`${$scope.presupuesto.id}_1`))+'_'+ $filter('textCleaner')($scope.file.name);
+            if ($scope.ot.id > 0) {
+                $scope.otAdjunto.esmultiple = 0
+            } else {
+                $scope.otAdjunto.esmultiple = 1
+            };
+            presupuestoSrvc.editRow($scope.otAdjunto, 'aaot').then(() => {                
+                if($scope.ot && $scope.ot.id){
+                    $scope.loadOTAdjuntos();
+                } else {
+                    $scope.loadOTAdjuntos($scope.presupuesto.id, 1);
+                }
+            });
         };
 
         $scope.delOTAdjunto = (id) => {
             $confirm({
                 text: '¿Seguro(a) de eliminar este adjunto? (Esto también eliminará físicamente el documento)',
-                title: 'Eliminar adjunto de OT', ok: 'Sí', cancel: 'No'}).then(() => presupuestoSrvc.editRow({ id: id }, 'daot').then(() => $scope.loadOTAdjuntos()));
+                title: 'Eliminar adjunto de OT', ok: 'Sí', cancel: 'No'}).then(() => presupuestoSrvc.editRow({ id: id }, 'daot').then(() => {
+                    if($scope.ot && $scope.ot.id){
+                        $scope.loadOTAdjuntos();
+                    } else {
+                        $scope.loadOTAdjuntos($scope.presupuesto.id, 1);
+                    }
+                }));
         };
 
         // $scope.setTC = () => $scope.presupuesto.tipocambio = $scope.tipocambiogt;        
