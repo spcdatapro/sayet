@@ -85,7 +85,12 @@
         $scope.presupuesto = presupuesto;
         $scope.lstadjuntos = [];
 
-        $scope.loadAdjuntos = () => presupuestoSrvc.lstOtsAdjuntos($scope.presupuesto.idot).then((d) => $scope.lstadjuntos = d);
+        $scope.loadAdjuntos = (id, multiple) => {
+            id = $scope.presupuesto.idot;
+            multiple = 0;
+            presupuestoSrvc.lstOtsAdjuntos(id, multiple).then((d) => $scope.lstadjuntos = d);
+            //presupuestoSrvc.lstOtsAdjuntos($scope.presupuesto.idot).then((d) => $scope.lstadjuntos = d);
+        };
 
         $scope.cancel = () =>$uibModalInstance.dismiss('cancel');
 
@@ -231,20 +236,6 @@
             modalInstance.result.then(() => { }, () => { });
         };
 
-        $scope.verAdjuntos = (obj) => {
-            const modalInstance = $uibModal.open({
-                animation: true,
-                templateUrl: 'modalAdjuntosPresupuesto.html',
-                controller: 'ModalAdjuntoPresupCtrl',
-                windowClass: 'app-modal-window',
-                resolve:{
-                    presupuesto: () => obj
-                }
-            });
-
-            modalInstance.result.then(() => { }, () => { });            
-        };
-
         $scope.aprobar = (obj) => {
             if(+obj.aprobada === 1){
                 $confirm({text: '¿Esta seguro(a) de aprobar la ampliación No. ' + obj.ampliacion +'?', title: 'Aprobar ampliación', ok: 'Sí', cancel: 'No'}).then(function() {
@@ -273,17 +264,7 @@
             }
         };
     }]);
-    //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
-    tranaprobpresupctrl.controller('ModalAdjuntoPresupCtrl', ['$scope', '$uibModalInstance', 'toaster', 'presupuesto', 'presupuestoSrvc', '$uibModal', function($scope, $uibModalInstance, toaster, presupuesto, presupuestoSrvc, $uibModal){
-        $scope.presupuesto = presupuesto;
-        $scope.lstadjuntos = [];
 
-        $scope.loadAdjuntos = () => presupuestoSrvc.lstOtsAdjuntos($scope.presupuesto.idot).then((d) => $scope.lstadjuntos = d);
-
-        $scope.cancel = () =>$uibModalInstance.dismiss('cancel');
-
-        $scope.loadAdjuntos();
-    }]);
 
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     tranaprobpresupctrl.controller('ModalDetPresupCtrl', ['$scope', '$uibModalInstance', 'toaster', 'presupuesto', 'presupuestoSrvc', '$uibModal', function($scope, $uibModalInstance, toaster, presupuesto, presupuestoSrvc, $uibModal){
