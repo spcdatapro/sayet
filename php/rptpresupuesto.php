@@ -824,7 +824,7 @@ $app->post('/avanceotm', function(){
     WHERE a.id = $d->idpresupuesto AND a.idmoneda != b.idmoneda)), 0.00)), 2), '%') AS avanceot, a.notas
     FROM presupuesto a 
     INNER JOIN proyecto b ON b.id = a.idproyecto
-    INNER JOIN empresa e ON e.id = a.idproyecto
+    INNER JOIN empresa e ON e.id = a.idempresa
     INNER JOIN tipogasto f ON f.id = a.idtipogasto
     INNER JOIN moneda g ON g.id = a.idmoneda
     WHERE a.id = $d->idpresupuesto ";
