@@ -633,7 +633,7 @@ $app->post('/avanceotm', function(){
         $query = "SELECT b.fechapago AS fechaOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(SUBSTRING(c.siglas, 1, 2), '-', d.tipotrans, '-', 
         SUBSTRING(c.siglas, 4, 5), '-',  d.numero) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, g.simbolo AS monedacheq, 
         FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, b.tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, 
-        b.conceptomayor AS conceptomayor, d.numero, 
+        SUBSTRING(d.concepto, 1, 30) AS conceptomayor, d.numero, 
         IF((d.anulado = 1 OR (d.anulado = 0 AND (d.beneficiario LIKE '%anula%' OR d.concepto LIKE '%anula%'))), 1, NULL) AS anulado, d.id, d.beneficiario,
         IF(d.idreembolso = 0, NULL, 1) AS reembolso
         FROM detpresupuesto a 
@@ -648,7 +648,7 @@ $app->post('/avanceotm', function(){
         UNION
         SELECT d.fecha AS fechaOrd, d.fecha AS fechafactura, CONCAT(SUBSTRING(c.siglas, 1, 2), '-', d.tipotrans, '-', 
         SUBSTRING(c.siglas, 4, 5), '-',  d.numero) AS datosbanco, NULL AS monedafact, NULL AS montofac, g.simbolo AS monedacheq, 
-        FORMAT(d.monto, 2) AS montocheq, FORMAT(d.isr, 2) AS isr, d.tipocambio, NULL AS fact, SUBSTRING(d.concepto, 1, 60) AS conceptomayor, d.numero, 
+        FORMAT(d.monto, 2) AS montocheq, FORMAT(d.isr, 2) AS isr, d.tipocambio, NULL AS fact, SUBSTRING(d.concepto, 1, 30) AS conceptomayor, d.numero, 
         IF(d.anulado = 1 OR (d.anulado = 0 AND (d.beneficiario LIKE '%anula%' OR d.concepto LIKE '%anula%')), 1, NULL) AS anulado, d.id, d.beneficiario,
         IF(d.idreembolso = 0, NULL, 1) AS reembolso
         FROM detpresupuesto a     
@@ -661,7 +661,7 @@ $app->post('/avanceotm', function(){
         SELECT b.fechapago AS fechaOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(SUBSTRING(c.siglas, 1, 2), '-', d.tipotrans, '-', 
         SUBSTRING(c.siglas, 4, 5), '-',  d.numero) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, g.simbolo AS monedacheq, 
         FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, b.tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, 
-        b.conceptomayor AS conceptomayor, d.numero, 
+        SUBSTRING(d.concepto, 1, 30) AS conceptomayor, d.numero, 
         IF((d.anulado = 1 OR (d.anulado = 0 AND (d.beneficiario LIKE '%anula%' OR d.concepto LIKE '%anula%'))), 1, NULL) AS anulado, d.id, d.beneficiario,
         IF(d.idreembolso = 0, NULL, 1) AS reembolso
         FROM detpresupuesto a 
@@ -676,7 +676,7 @@ $app->post('/avanceotm', function(){
         SELECT b.fechapago AS fechaOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(SUBSTRING(c.siglas, 1, 2), '-', d.tipotrans, '-', 
         SUBSTRING(c.siglas, 4, 5), '-',  d.numero) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
         g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, b.tipocambio, 
-        CONCAT(b.serie, '-', b.documento) AS fact, b.conceptomayor AS conceptomayor, d.numero, 
+        CONCAT(b.serie, '-', b.documento) AS fact, SUBSTRING(d.concepto, 1, 30) AS conceptomayor, d.numero, 
         IF((d.anulado = 1 OR (d.anulado = 0 AND (d.beneficiario LIKE '%anula%' OR d.concepto LIKE '%anula%'))), 1, NULL) AS anulado, d.id, d.beneficiario,
         IF(d.idreembolso = 0, NULL, 1) AS reembolso
         FROM detpresupuesto a 
@@ -692,7 +692,7 @@ $app->post('/avanceotm', function(){
         SELECT b.fechapago AS fechaOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(SUBSTRING(c.siglas, 1, 2), '-', d.tipotrans, '-', 
         SUBSTRING(c.siglas, 4, 5), '-',  d.numero) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
         g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, b.tipocambio, 
-        CONCAT(b.serie, '-', b.documento) AS fact, d.concepto AS conceptomayor, d.numero, 
+        CONCAT(b.serie, '-', b.documento) AS fact, SUBSTRING(d.concepto, 1, 30) AS conceptomayor, d.numero, 
         IF((d.anulado = 1 OR (d.anulado = 0 AND (d.beneficiario LIKE '%anula%' OR d.concepto LIKE '%anula%'))), 1, NULL) AS anulado, d.id, d.beneficiario,
         IF(d.idreembolso = 0, NULL, 1) AS reembolso
         FROM detpresupuesto a 
@@ -708,7 +708,7 @@ $app->post('/avanceotm', function(){
         SELECT b.fechapago AS fechaOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, NULL AS datosbanco, 
         f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, NULL AS monedacheq, 
         NULL AS montocheq, FORMAT(b.isr, 2) AS isr, b.tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, 
-        b.conceptomayor AS conceptomayor, NULL AS numero, 
+        SUBSTRING(b.conceptomayor, 1, 30) AS conceptomayor, NULL AS numero, 
         NULL AS anulado, NULL AS id, NULL AS beneficiario,
         NULL AS reembolso
         FROM detpresupuesto a 
