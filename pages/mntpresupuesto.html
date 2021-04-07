@@ -492,8 +492,16 @@
                     <div class="row">
                         <div class="col-md-12 nopadding">
                             <div class="well well-sm">
-                                <h3>&Oacute;RDEN DE TRABAJO {{+presupuesto.tipo == 1 ? 'SIMPLE' : 'MÚLTIPLE'}}</h3>
-                                <h4>{{lbl.presupuesto}}</h4>
+                                <h3>&Oacute;RDEN DE TRABAJO {{+presupuesto.tipo == 1 ? 'SIMPLE' : 'MÚLTIPLE'}}: {{lbl.id}}</h3>
+                                <ul>
+                                    <!--<li><h3>{{lbl.id}}</h3></li>-->
+                                    <li style="color: black; font-size: 120%;"><p>{{lbl.proyecto}}</p></li>
+                                    <li style="color: black; font-size: 120%;"><p>{{lbl.empresa}}</p></li>
+                                    <li style="color: black; font-size: 120%;"><p>{{lbl.tipgasto}}</p></li>
+                                    <li style="color: black; font-size: 120%;"><p>{{lbl.montopres}}</p></li>
+                                    <li style="color: black; font-size: 120%;"><p>{{lbl.montogas}}</p></li>
+                                    <li style="color: black; font-size: 120%;"><p>{{lbl.avance}}</p></li>
+                                </ul>
                             </div>
                         </div>
                     </div>

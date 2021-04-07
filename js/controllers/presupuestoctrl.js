@@ -20,7 +20,7 @@
         $scope.sl = { presupuesto: true, ot: true };
         $scope.usrdata = {};
         $scope.permiso = {};
-        $scope.lbl = { presupuesto: '', ot: '' };
+        $scope.lbl = { id: '', proyecto: '', empresa: '', tipgasto: '', montopres: '', motnogas: '', avance: '' };
 
         $scope.grpBtnPresupuesto = { i: false, p: false, e: false, u: false, c: false, d: false, a: true };
         $scope.grpBtnOt = { i: false, p: false, e: false, u: false, c: false, d: false, a: true };
@@ -94,8 +94,13 @@
             $scope.lstot = [];
             $scope.srchproy = '';
             $scope.srchemp = '';
-            $scope.lbl.presupuesto = '';
-            $scope.lbl.ot = '';
+            $scope.lbl.id = '';
+            $scope.lbl.proyecto = '';
+            $scope.lbl.empresa = '';
+            $scope.lbl.tipgasto = '';
+            $scope.lbl.montopres = '';
+            $scope.lbl.montogas = '';
+            $scope.lbl.avance = '';
         };
 
         function setPresupuesto(obj) {
@@ -130,11 +135,13 @@
                 $scope.loadSubtTiposGasto($scope.presupuesto.idtipogasto);
                 $scope.getLstOts(idpresupuesto);
                 $scope.loadOTAdjuntos(idpresupuesto, 1);
-                $scope.lbl.presupuesto = 'No. ' + $scope.presupuesto.id + ' - ' + ($filter('getById')($scope.proyectos, $scope.presupuesto.idproyecto)).nomproyecto + ' - ';
-                $scope.lbl.presupuesto += ($filter('getById')($scope.empresas, $scope.presupuesto.idempresa)).nomempresa + ' - ';
-                $scope.lbl.presupuesto += ($filter('getById')($scope.tiposgasto, $scope.presupuesto.idtipogasto)).desctipogast + ' - ';
-                $scope.lbl.presupuesto += ($filter('getById')($scope.monedas, $scope.presupuesto.idmoneda)).simbolo + ' ';
-                $scope.lbl.presupuesto += $filter('number')($scope.presupuesto.total, 2);
+                $scope.lbl.id = $scope.presupuesto.id ;
+                $scope.lbl.proyecto = ' Proyecto: ' + ($filter('getById')($scope.proyectos, $scope.presupuesto.idproyecto)).nomproyecto;
+                $scope.lbl.empresa = ' Empresa: ' + ($filter('getById')($scope.empresas, $scope.presupuesto.idempresa)).nomempresa;
+                $scope.lbl.tipgasto = ' Tipo gasto: ' + ($filter('getById')($scope.tiposgasto, $scope.presupuesto.idtipogasto)).desctipogast;
+                $scope.lbl.montopres = ' Monto Presupuestado: ' + ($filter('getById')($scope.monedas, $scope.presupuesto.idmoneda)).simbolo + $scope.presupuesto.montoot;
+                $scope.lbl.montogas = ' Monto Gastado: ' + ($filter('getById')($scope.monedas, $scope.presupuesto.idmoneda)).simbolo + $scope.presupuesto.montogastado;
+                $scope.lbl.avance = ' Avance: ' + $scope.presupuesto.avanceot;
                 $scope.confGrpBtn('grpBtnPresupuesto', false, false, true, true, true, false, false);
                 $scope.sl.presupuesto = true;
                 if (movertab) {
@@ -143,6 +150,7 @@
                 goTop();
             });
         };
+
 
         $scope.cancelEditPresup = function () {
             if ($scope.presupuesto.id > 0) {

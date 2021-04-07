@@ -743,7 +743,7 @@ $app->post('/avanceotm', function(){
     INNER JOIN banco d ON d.id = c.idbanco
     WHERE a.id = $d->idpresupuesto AND a.idmoneda = d.idmoneda AND c.beneficiario NOT LIKE '%anula%'), 0.00) 
     + 
-    IFNULL(IF(g.eslocal = 1, (SELECT SUM(c.monto* c.tipocambio) 
+    IFNULL(IF(g.eslocal = 1, (SELECT SUM(c.monto * c.tipocambio) 
     FROM presupuesto a 
     INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
     INNER JOIN tranban c ON b.id = c.iddetpresup

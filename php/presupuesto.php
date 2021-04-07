@@ -155,10 +155,109 @@ $app->post('/lstpresupuestosm', function () {
 $app->get('/getpresupuesto/:idpresupuesto', function ($idpresupuesto) {
     $db = new dbcpm();
     $query = "SELECT a.id, a.fechasolicitud, a.idproyecto, b.nomproyecto AS proyecto, a.idempresa, c.nomempresa AS empresa, a.idtipogasto, d.desctipogast 
-            AS tipogasto, a.idmoneda, e.simbolo, FORMAT(IF(a.tipocambio > 1, a.total / a.tipocambio, a.total), 2) AS total, a.notas, a.idusuario, f.nombre 
+            AS tipogasto, a.idmoneda, e.simbolo,     
+            FORMAT(IFNULL((SELECT SUM(b.monto) 
+            FROM presupuesto a 
+            INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
+            WHERE a.id = $idpresupuesto AND a.idmoneda = b.idmoneda), 0.00) 
+            +
+            IFNULL(IF(e.eslocal = 1, (SELECT SUM(b.monto * b.tipocambio) 
+            FROM presupuesto a 
+            INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
+            WHERE a.id = $idpresupuesto AND a.idmoneda != b.idmoneda), 
+            (SELECT SUM(b.monto / b.tipocambio) 
+            FROM presupuesto a 
+            INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
+            WHERE a.id = $idpresupuesto AND a.idmoneda != b.idmoneda)), 0.00), 2) AS montoot, a.notas, a.idusuario, f.nombre 
             AS usuario, a.idestatuspresupuesto, g.descestatuspresup AS estatus, a.fechacreacion, a.fhenvioaprobacion, a.fhaprobacion, 
             a.idusuarioaprueba, h.nombre AS aprobadopor, a.tipo, a.idproveedor, a.idsubtipogasto, a.coniva, a.monto, a.escontado, a.tipocambio, a.excedente, 
-            TRIM(c.abreviatura) AS abreviaempre, a.origenprov, a.tipodocumento 
+            TRIM(c.abreviatura) AS abreviaempre, a.origenprov, a.tipodocumento,
+            FORMAT(IFNULL((SELECT SUM(c.monto) 
+            FROM detpresupuesto a 
+            INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
+            INNER JOIN tranban c ON b.id = c.iddetpresup
+            INNER JOIN banco d ON d.id = c.idbanco
+            WHERE a.id = $idpresupuesto AND a.idmoneda = d.idmoneda AND c.beneficiario NOT LIKE '%anula%'), 0.00) 
+            + 
+            IFNULL(IF(e.eslocal = 1, (SELECT SUM(c.monto * c.tipocambio) 
+            FROM presupuesto a 
+            INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
+            INNER JOIN tranban c ON b.id = c.iddetpresup
+            INNER JOIN banco d ON d.id = c.idbanco
+            WHERE a.id = $idpresupuesto AND a.idmoneda != d.idmoneda AND c.beneficiario NOT LIKE '%anula%'), 
+            (SELECT SUM(c.monto / c.tipocambio) 
+            FROM presupuesto a 
+            INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
+            INNER JOIN tranban c ON b.id = c.iddetpresup
+            INNER JOIN banco d ON d.id = c.idbanco
+            WHERE a.id = $idpresupuesto AND a.idmoneda != d.idmoneda AND c.beneficiario NOT LIKE '%anula%')), 0.00)
+            +
+            IFNULL((SELECT SUM(c.isr)
+            FROM presupuesto a 
+            INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto
+            INNER JOIN compra c ON b.id = c.ordentrabajo
+            WHERE a.id = $idpresupuesto AND a.idmoneda = c.idmoneda), 0.00)
+            +
+            IFNULL(IF(e.eslocal = 1, (SELECT SUM(c.isr)
+            FROM presupuesto a 
+            INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto
+            INNER JOIN compra c ON b.id = c.ordentrabajo
+            WHERE a.id = $idpresupuesto AND a.idmoneda != c.idmoneda),
+            (SELECT SUM(c.isr)
+            FROM presupuesto a 
+            INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto
+            INNER JOIN compra c ON b.id = c.ordentrabajo
+            WHERE a.id = $idpresupuesto AND a.idmoneda != c.idmoneda)), 0.00), 2) AS montogastado,
+            CONCAT(ROUND((IFNULL((SELECT SUM(c.monto) 
+            FROM presupuesto a 
+            INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
+            INNER JOIN tranban c ON b.id = c.iddetpresup
+            INNER JOIN banco d ON d.id = c.idbanco
+            WHERE a.id = $idpresupuesto AND a.idmoneda = d.idmoneda AND c.beneficiario NOT LIKE '%anula%'), 0.00) 
+            + 
+            IFNULL(IF(e.eslocal = 1, (SELECT SUM(c.monto * c.tipocambio) 
+            FROM presupuesto a 
+            INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
+            INNER JOIN tranban c ON b.id = c.iddetpresup
+            INNER JOIN banco d ON d.id = c.idbanco
+            WHERE a.id = $idpresupuesto AND a.idmoneda != d.idmoneda AND c.beneficiario NOT LIKE '%anula%'), 
+            (SELECT SUM(c.monto / c.tipocambio) 
+            FROM presupuesto a 
+            INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
+            INNER JOIN tranban c ON b.id = c.iddetpresup
+            INNER JOIN banco d ON d.id = c.idbanco
+            WHERE a.id = $idpresupuesto AND a.idmoneda != d.idmoneda AND c.beneficiario NOT LIKE '%anula%')), 0.00)
+            +
+            IFNULL((SELECT SUM(c.isr) 
+            FROM presupuesto a 
+            INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto
+            INNER JOIN compra c ON b.id = c.ordentrabajo
+            WHERE a.id = $idpresupuesto AND a.idmoneda = c.idmoneda), 0.00)
+            +
+            IFNULL(IF(e.eslocal = 1, (SELECT SUM(c.isr * c.tipocambio)
+            FROM presupuesto a 
+            INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto
+            INNER JOIN compra c ON b.id = c.ordentrabajo
+            WHERE a.id = $idpresupuesto AND a.idmoneda != c.idmoneda),
+            (SELECT SUM(c.isr / c.tipocambio)
+            FROM presupuesto a 
+            INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto
+            INNER JOIN compra c ON b.id = c.ordentrabajo
+            WHERE a.id = $idpresupuesto AND a.idmoneda != c.idmoneda)), 0.00))
+            * 100 
+            / 
+            (IFNULL((SELECT SUM(b.monto) 
+            FROM presupuesto a 
+            INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
+            WHERE a.id = $idpresupuesto AND a.idmoneda = b.idmoneda), 0.00) +
+            IFNULL(IF(e.eslocal = 1, (SELECT SUM(b.monto * b.tipocambio) 
+            FROM presupuesto a 
+            INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
+            WHERE a.id = $idpresupuesto AND a.idmoneda != b.idmoneda), 
+            (SELECT SUM(b.monto / b.tipocambio) 
+            FROM presupuesto a 
+            INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
+            WHERE a.id = $idpresupuesto AND a.idmoneda != b.idmoneda)), 0.00)), 2), '%') AS avanceot
             FROM presupuesto a 
             INNER JOIN proyecto b ON b.id = a.idproyecto 
             INNER JOIN empresa c ON c.id = a.idempresa 
@@ -166,8 +265,8 @@ $app->get('/getpresupuesto/:idpresupuesto', function ($idpresupuesto) {
             INNER JOIN moneda e ON e.id = a.idmoneda 
             INNER JOIN usuario f ON f.id = a.idusuario 
             INNER JOIN estatuspresupuesto g ON g.id = a.idestatuspresupuesto 
-            LEFT JOIN usuario h ON h.id = a.idusuarioaprueba ";
-    $query .= "WHERE a.id = $idpresupuesto ";
+            LEFT JOIN usuario h ON h.id = a.idusuarioaprueba
+            WHERE a.id = $idpresupuesto ";
     print $db->doSelectASJson($query);
 });
 
