@@ -388,19 +388,19 @@ $app->post('/avanceot', function(){
     FROM detpresupuesto a 
     INNER JOIN tranban b ON a.id = b.iddetpresup 
     INNER JOIN banco c ON c.id = b.idbanco 
-    WHERE a.id = $d->idot AND a.idmoneda = c.idmoneda AND b.anulado = 0), 0.00) 
+    WHERE a.id = $d->idot AND a.idmoneda = c.idmoneda AND b.beneficiario NOT LIKE '%anula%'), 0.00) 
     + 
     IFNULL(IF(i.eslocal = 1, 
     (SELECT SUM(b.monto * b.tipocambio) 
     FROM detpresupuesto a 
     INNER JOIN tranban b ON a.id = b.iddetpresup 
     INNER JOIN banco c ON c.id = b.idbanco 
-    WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.anulado = 0), 
+    WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.beneficiario NOT LIKE '%anula%'), 
     (SELECT SUM(b.monto / b.tipocambio) 
     FROM detpresupuesto a 
     INNER JOIN tranban b ON a.id = b.iddetpresup 
     INNER JOIN banco c ON c.id = b.idbanco 
-    WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda)), 0.00), 2) AS totcheques,
+    WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.beneficiario NOT LIKE '%anula%')), 0.00), 2) AS totcheques,
     FORMAT(IFNULL((SELECT SUM(b.isr) 
     FROM detpresupuesto a 
     INNER JOIN compra b ON a.id = b.ordentrabajo 
@@ -438,7 +438,7 @@ $app->post('/avanceot', function(){
     FROM detpresupuesto a 
     INNER JOIN tranban b ON a.id = b.iddetpresup 
     INNER JOIN banco c ON c.id = b.idbanco 
-    WHERE a.id = $d->idot AND a.idmoneda = c.idmoneda AND b.anulado = 0), 0.00) 
+    WHERE a.id = $d->idot AND a.idmoneda = c.idmoneda AND b.beneficiario NOT LIKE '%anula%'), 0.00) 
     + 
     IFNULL(IF(i.eslocal = 1, (SELECT SUM(b.monto * b.tipocambio) 
     FROM detpresupuesto a 
@@ -449,7 +449,7 @@ $app->post('/avanceot', function(){
     FROM detpresupuesto a 
     INNER JOIN tranban b ON a.id = b.iddetpresup 
     INNER JOIN banco c ON c.id = b.idbanco 
-    WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.anulado = 0)), 0.00) 
+    WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.beneficiario NOT LIKE '%anula%')), 0.00) 
     + 
     IFNULL((SELECT SUM(b.isr) 
     FROM detpresupuesto a 
@@ -490,18 +490,18 @@ $app->post('/avanceot', function(){
     FROM detpresupuesto a 
     INNER JOIN tranban b ON a.id = b.iddetpresup 
     INNER JOIN banco c ON c.id = b.idbanco 
-    WHERE a.id = $d->idot AND a.idmoneda = c.idmoneda AND b.anulado = 0), 0.00) 
+    WHERE a.id = $d->idot AND a.idmoneda = c.idmoneda AND b.beneficiario NOT LIKE '%anula%'), 0.00) 
     + 
     IFNULL(IF(i.eslocal = 1, (SELECT SUM(b.monto * b.tipocambio) 
     FROM detpresupuesto a 
     INNER JOIN tranban b ON a.id = b.iddetpresup 
     INNER JOIN banco c ON c.id = b.idbanco 
-    WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda), 
+    WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.beneficiario NOT LIKE '%anula%'), 
     (SELECT SUM(b.monto / b.tipocambio) 
     FROM detpresupuesto a 
     INNER JOIN tranban b ON a.id = b.iddetpresup 
     INNER JOIN banco c ON c.id = b.idbanco 
-    WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.anulado = 0)), 0.00) 
+    WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.beneficiario NOT LIKE '%anula%')), 0.00) 
     + 
     IFNULL((SELECT SUM(b.isr) 
     FROM detpresupuesto a 
