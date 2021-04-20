@@ -471,8 +471,7 @@
                             <span class="glyphicon glyphicon-folder-open"></span>
                         </button>
                         <button type="button" class="btn btn-info" ng-click="enviar(presupuesto)"
-                        ng-hide="+presupuesto.idestatuspresupuesto == 2 || +presupuesto.idestatuspresupuesto == 3 || +idestatuspresupuesto == 4
-                        || +presupuesto.idestatuspresupuesto == 5 || +idestatuspresupuesto == 6" data-toggle="tooltip"
+                        ng-show="+presupuesto.idestatuspresupuesto === 1 && +presupuesto.tipo === 1" data-toggle="tooltip"
                         data-placement="auto" title="Enviar presupuesto a aprobación..." ng-disabled="(!sl.presupuesto)  || +presupuesto.idestatuspresupuesto == 2" >
                         <span class="glyphicon glyphicon-share-alt"></span>
                     </button>
@@ -500,7 +499,13 @@
                                     <li style="color: black; font-size: 120%;"><p>{{lbl.tipgasto}}</p></li>
                                     <li style="color: black; font-size: 120%;"><p>{{lbl.montopres}}</p></li>
                                     <li style="color: black; font-size: 120%;"><p>{{lbl.montogas}}</p></li>
-                                    <li style="color: black; font-size: 120%;"><p>{{lbl.avance}}</p></li>
+                                    <li style="color: black; font-size: 120%;"><p style="float: left;">{{lbl.avance}}</p>
+                                        <button ng-hide="+presupuesto.tipo == 1" style="float: right;" type="button" class="btn btn-primary btn-sm tipo"
+                                        ng-click="printPrespuestoNueD(lbl.id)" data-toggle="tooltip"
+                                        data-placement="auto" title="Imprimir con avances nuevo">
+                                        N.
+                                        </button>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -645,9 +650,10 @@
                                 <th style="text-align: center">No.</th>
                                 <th style="text-align: center">Proveedor/Beneficiario</th>
                                 <th style="text-align: center">Sub-tipo de gasto</th>
-                                <th style="text-align: center">Incluye I.V.A.</th>
+                                <th style="text-align: center;">Avance</th>
+                                <!-- <th style="text-align: center">Incluye I.V.A.</th>
                                 <th style="text-align: center">Monto</th>
-                                <th style="text-align: center">TC</th>
+                                <th style="text-align: center">TC</th> -->
                                 <th style="text-align: center">Detalle de pagos</th>
                             </tr>
                         </thead>
@@ -657,10 +663,11 @@
                                 <td style="text-align: center">{{o.idpresupuesto}}-{{o.correlativo}}</td>
                                 <td style="text-align: center">{{o.proveedor}}</td>
                                 <td style="text-align: center">{{o.subtipogasto}}</td>
-                                <td style="text-align: center">{{o.coniva === 1 ? 'Sí' : ''}}</td>
+                                <td style="text-align: center;">{{o.avanceot}}</td>
+                                <!-- <td style="text-align: center">{{o.coniva === 1 ? 'Sí' : ''}}</td>
                                 <td style="text-align: center">{{o.moneda}}{{o.monto | number:2}}</td>
-                                <td style="text-align: center">{{o.tipocambio | number:5}}</td>
-                                <td>
+                                <td style="text-align: center">{{o.tipocambio | number:5}}</td> -->
+                                <td style="text-align: center;">
                                     <div class="btn-group" role="group" aria-label="..."
                                         style="padding-top: 0.75em; width: 100%; margin: 0 auto !important; text-align: center">
                                         <button type="button" class="btn btn-info btn-sm tipo"
