@@ -179,7 +179,7 @@ $app->post('/pendientesfel', function() {
         1 AS facturar
         FROM ($queryCargos) z
         GROUP BY z.idcontrato, z.idcliente, z.facturara, z.idmonedafact
-        ORDER BY z.clientecorto, z.facturara, z.tipo
+        ORDER BY z.facturara, z.clientecorto, z.tipo
     ";
     $pendientes = $db->getQuery($query);
     $cntPendientes = count($pendientes);

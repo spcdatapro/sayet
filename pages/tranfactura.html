@@ -129,8 +129,8 @@
                                         placeholder="Buscar cobro..." />
                                 </caption>
                                 <thead>
-                                    <th>Cliente</th>
                                     <th>Facturar a</th>
+                                    <th>Cliente</th>                                    
                                     <th class="num">A pagar</th>
                                     <th>Tipo</th>
                                     <th>&nbsp;</th>
@@ -146,8 +146,8 @@
                                         </td>
                                     </tr>
                                     <tr ng-repeat="p in pendientes | filter:fltrPends">
-                                        <td style="width: 14%;">{{p.clientecorto}}</td>
                                         <td style="width: 34%;">{{p.facturara}}</td>
+                                        <td style="width: 14%;">{{p.clientecorto}}</td>                                        
                                         <td class="num" style="width: 10%;">{{p.monedafact}}
                                             {{+p.idmonedafact === 1 ? (p.montoconiva | number:2) : (p.montoconivacnv | number:2)}}
                                         </td>
