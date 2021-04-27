@@ -11,10 +11,11 @@ $app->get('/lstcliente', function(){
     $query = "SELECT a.id, a.nombre, a.nombrecorto, a.direntrega, a.dirplanta, a.telpbx, a.teldirecto, a.telfax, a.telcel, a.correo, a.idordencedula, a.regcedula, a.dpi, a.cargolegal, a.nomlegal, a.apellidolegal, ";
     $query.= "a.nomadmon, a.mailadmon, a.nompago, a.mailcont, a.idcuentac, a.creadopor, a.fhcreacion, a.actualizadopor, a.fhactualizacion, c.contratos ";
     $query.= "FROM cliente a LEFT JOIN (";
-    $query.= "SELECT idcliente, GROUP_CONCAT(contratos SEPARATOR ';') AS contratos FROM (";
+    $query.= "SELECT idcliente, GROUP_CONCAT(contratos ORDER BY contratos SEPARATOR ';') AS contratos FROM (";
     $query.= "SELECT c.idcliente, CONCAT(c.idcontrato, '_', GROUP_CONCAT(DISTINCT c.nombre ORDER BY c.nombre SEPARATOR ', ')) AS contratos FROM (";
-    $query.= "SELECT b.idcliente, b.id AS idcontrato, a.nombre FROM unidad a, contrato b WHERE FIND_IN_SET(a.id, b.idunidad)) c GROUP BY c.idcliente, c.idcontrato) a ";
+    $query.= "SELECT b.idcliente, b.id AS idcontrato, a.nombre FROM unidad a, contrato b WHERE FIND_IN_SET(a.id, b.idunidad) AND b.inactivo = 0) c GROUP BY c.idcliente, c.idcontrato) a ";
     $query.= "GROUP BY idcliente) c ON a.id = c.idcliente ";
+    $query.= "WHERE a.nomostrar = 0 ";
     $query.= "ORDER BY a.nombre";
     //echo $query.'<br/>';
     print $db->doSelectASJson($query);
