@@ -56,6 +56,28 @@ $app->get('/getfactura/:idfactura', function($idfactura){
     print $db->doSelectASJson($query);
 });
 
+function actualizaContratoClienteCF($db, $idfactura)
+{
+    $query = "SELECT * FROM factura WHERE id = $idfactura AND idcontrato = 0 AND idcliente = 0 AND UPPER(TRIM(nit)) = 'CF'";
+    $factura = $db->getQuery($query);
+    if (count($factura) > 0)
+    {
+        $fac = $factura[0];
+        $query = "SELECT id FROM contrato WHERE inactivo = 0 AND idempresa = $fac->idempresa AND idcliente = 207 AND idproyecto = $fac->idproyecto LIMIT 1";
+        $idcontrato = (int)$db->getOneField($query);
+        if ($idcontrato === 0)
+        {
+            $query = "INSERT INTO contrato(idcliente, idempresa, idproyecto, inactivo, nocontrato, idunidad, idcuentac, idusuariocopia) VALUES(";
+            $query.= "207, $fac->idempresa, $fac->idproyecto, 0, 'CF".$fac->idempresa.$fac->idproyecto."', '', '', 0";
+            $query.= ")";
+            $db->doQuery($query);
+            $idcontrato = (int)$db->getLastId();
+        }
+        $query = "UPDATE factura SET idcontrato = $idcontrato, idcliente = 207 WHERE id = $idfactura";
+        $db->doQuery($query);
+    }
+}
+
 $app->post('/c', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
@@ -83,6 +105,9 @@ $app->post('/c', function(){
         $query = "UPDATE empresa SET correlativofel = $datosFel->correlativofel WHERE id = $d->idempresa";
         $db->doQuery($query);
     }
+
+    actualizaContratoClienteCF($db, $lastid);
+
     print json_encode(['lastid' => $lastid]);
 });
 
