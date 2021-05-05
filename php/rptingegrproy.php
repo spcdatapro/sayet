@@ -323,7 +323,7 @@ $app->post('/detalle', function () use ($db) {
         $query .= "IFNULL(CONCAT(k.idpresupuesto, '-', k.correlativo), '') AS ot, DATE_FORMAT(b.fechafactura, '%d/%m/%Y') AS fechafactura ";
         $query .= "FROM compraproyecto a INNER JOIN compra b ON b.id = a.idcompra INNER JOIN cuentac c ON c.id = a.idcuentac LEFT JOIN detpagocompra d ON b.id = d.idcompra LEFT JOIN tranban e ON e.id = d.idtranban ";
         $query .= "LEFT JOIN banco f ON f.id = e.idbanco LEFT JOIN moneda g ON g.id = f.idmoneda LEFT JOIN moneda i ON i.id = b.idmoneda LEFT JOIN proveedor h ON h.id = b.idproveedor ";
-        $query .= "LEFT JOIN detpagopresup j ON j.id = e.iddetpagopresup LEFT JOIN detpresupuesto k ON k.id = j.iddetpresup ";
+        $query .= "LEFT JOIN detpagopresup j ON j.id = e.iddetpagopresup LEFT JOIN detpresupuesto k ON k.id = e.iddetpresup ";
         $query .= "WHERE a.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND a.idcuentac = $concepto->idcuenta AND b.idreembolso = 0 ";
         $query .= (int) $d->idunidad == 0 ? '' : "AND a.idunidad = $d->idunidad ";
         $query .= "UNION ALL ";
@@ -332,7 +332,7 @@ $app->post('/detalle', function () use ($db) {
         $query .= "IFNULL(CONCAT(k.idpresupuesto, '-', k.correlativo), '') AS ot, DATE_FORMAT(b.fechafactura, '%d/%m/%Y') AS fechafactura ";
         $query .= "FROM detallecontable a INNER JOIN compra b ON b.id = a.idorigen INNER JOIN cuentac c ON c.id = a.idcuenta INNER JOIN reembolso d ON d.id = b.idreembolso LEFT JOIN tranban e ON e.id = d.idtranban ";
         $query .= "LEFT JOIN banco f ON f.id = e.idbanco LEFT JOIN moneda g ON g.id = f.idmoneda LEFT JOIN moneda i ON i.id = b.idmoneda LEFT JOIN proveedor h ON h.id = b.idproveedor ";
-        $query .= "LEFT JOIN detpagopresup j ON j.id = e.iddetpagopresup LEFT JOIN detpresupuesto k ON k.id = j.iddetpresup ";
+        $query .= "LEFT JOIN detpagopresup j ON j.id = e.iddetpagopresup LEFT JOIN detpresupuesto k ON k.id = e.iddetpresup ";
         $query .= "WHERE a.origen = 2 AND b.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND a.idcuenta = $concepto->idcuenta AND b.idreembolso > 0 ";
         $query .= (int) $d->idunidad == 0 ? '' : "AND b.idunidad = $d->idunidad ";
         $query .= "ORDER BY 1, 6";
