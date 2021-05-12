@@ -22,7 +22,8 @@ $app->post('/alquileres', function(){
     $query.= "(b.inactivo = 1 AND a.fechacobro >= '$d->fdelstr' AND a.fechacobro <= '$d->falstr' AND b.fechainactivo > '$d->falstr')";
     $query.= ") ";
     */
-    $query = "SELECT DISTINCT b.idempresa, c.nomempresa ";
+    $query = "SELECT DISTINCT b.idempresa, c.nomempresa, 0.00 AS montosindescuento, 0.00 AS descuento, 0.00 AS monto, ";
+    $query.= "0.00 AS montosindescuentodol, 0.00 AS descuentodol, 0.00 AS montodol ";
     $query.= "FROM cargo a INNER JOIN contrato b ON b.id = a.idcontrato INNER JOIN empresa c ON c.id = b.idempresa ";
     $query.= "WHERE a.anulado = 0 AND a.fechacobro >= '$d->fdelstr' AND a.fechacobro <= '$d->falstr' ";
     $query.= (int)$d->verinactivos == 0 ? "AND (b.inactivo = 0 OR (b.inactivo = 1 AND b.fechainactivo > '$d->falstr')) " : '';
@@ -38,7 +39,8 @@ $app->post('/alquileres', function(){
     $cntAlqui = count($alquileres);
     for($i = 0; $i < $cntAlqui; $i++){
         $alquiler = $alquileres[$i];
-        $query = "SELECT DISTINCT b.idproyecto, c.nomproyecto ";
+        $query = "SELECT DISTINCT b.idproyecto, c.nomproyecto, 0.00 AS montosindescuento, 0.00 AS descuento, 0.00 AS monto, ";
+        $query.= "0.00 AS montosindescuentodol, 0.00 AS descuentodol, 0.00 AS montodol ";
         $query.= "FROM cargo a INNER JOIN contrato b ON b.id = a.idcontrato INNER JOIN proyecto c ON c.id = b.idproyecto ";
         $query.= "INNER JOIN (SELECT y.id, z.nombre AS unidad FROM unidad z, contrato y WHERE IF(y.inactivo = 0, FIND_IN_SET(z.id, y.idunidad), FIND_IN_SET(z.id, y.idunidadbck))) d ON b.id = d.id ";
         $query.= "WHERE a.anulado = 0 AND a.fechacobro >= '$d->fdelstr' AND a.fechacobro <= '$d->falstr' AND b.idempresa = $alquiler->idempresa ";
@@ -54,7 +56,8 @@ $app->post('/alquileres', function(){
         $cntProy = count($alquiler->proyectos);
         for($j = 0; $j < $cntProy; $j++){
             $proyecto = $alquiler->proyectos[$j];
-            $query = "SELECT DISTINCT b.idcliente, c.nombre, c.nombrecorto ";
+            $query = "SELECT DISTINCT b.idcliente, c.nombre, c.nombrecorto, 0.00 AS montosindescuento, 0.00 AS descuento, 0.00 AS monto, ";
+            $query.= "0.00 AS montosindescuentodol, 0.00 AS descuentodol, 0.00 AS montodol ";
             $query.= "FROM cargo a INNER JOIN contrato b ON b.id = a.idcontrato INNER JOIN cliente c ON c.id = b.idcliente ";
             $query.= "INNER JOIN (SELECT y.id, z.nombre AS unidad FROM unidad z, contrato y WHERE IF(y.inactivo = 0, FIND_IN_SET(z.id, y.idunidad), FIND_IN_SET(z.id, y.idunidadbck))) d ON b.id = d.id ";
             $query.= "WHERE a.anulado = 0 AND a.fechacobro >= '$d->fdelstr' AND a.fechacobro <= '$d->falstr' AND ";
@@ -67,7 +70,7 @@ $app->post('/alquileres', function(){
             for($k = 0; $k < $cntCli; $k++){
                 $cliente = $proyecto->clientes[$k];
                 $query = "SELECT b.id AS idcontrato, UnidadesPorContrato(b.id) AS unidades, (a.monto - a.descuento) AS monto, b.fechainicia, b.fechavence, z.idtipoventa, y.desctiposervventa AS servicio, a.fechacobro, x.simbolo, ";
-                $query.= "a.monto AS montosindescuento, a.descuento ";
+                $query.= "a.monto AS montosindescuento, a.descuento, x.eslocal AS eslocal ";
                 $query.= "FROM cargo a INNER JOIN contrato b ON b.id = a.idcontrato INNER JOIN detfactcontrato z ON z.id = a.iddetcont INNER JOIN tiposervicioventa y ON y.id = z.idtipoventa ";
                 $query.= "INNER JOIN moneda x ON x.id = z.idmoneda ";
                 $query.= "WHERE a.anulado = 0 AND a.fechacobro >= '$d->fdelstr' AND a.fechacobro <= '$d->falstr' AND ";
@@ -89,9 +92,48 @@ $app->post('/alquileres', function(){
                 $query.= ") ";
                 $query.= "ORDER BY CAST(digits(UnidadesPorContrato(b.id)) AS UNSIGNED), 2, y.desctiposervventa";
                 $cliente->contratos = $db->getQuery($query);
+                if (count($cliente->contratos) > 0) {
+                    foreach($cliente->contratos as $contrato) {
+                        if ((int)$contrato->eslocal === 1) {
+                            $cliente->montosindescuento += (float)$contrato->montosindescuento;                        
+                            $cliente->descuento += (float)$contrato->descuento;
+                            $cliente->monto += (float)$contrato->monto;
+                        } else {
+                            $cliente->montosindescuentodol += (float)$contrato->montosindescuento;                        
+                            $cliente->descuentodol += (float)$contrato->descuento;
+                            $cliente->montodol += (float)$contrato->monto;
+                        }                        
+                    }
+                }
+            }
+            if ($cntCli > 0) {
+                foreach($proyecto->clientes as $cli) {
+                    $proyecto->montosindescuento += (float)$cli->montosindescuento;
+                    $proyecto->descuento += (float)$cli->descuento;
+                    $proyecto->monto += (float)$cli->monto;
+                    $proyecto->montosindescuentodol += (float)$cli->montosindescuentodol;
+                    $proyecto->descuentodol += (float)$cli->descuentodol;
+                    $proyecto->montodol += (float)$cli->montodol;
+                }
             }
         }
-    }
+        if ($cntProy > 0) {
+            foreach($alquiler->proyectos as $proy) {
+                $alquiler->montosindescuento += (float)$proy->montosindescuento;
+                $alquiler->descuento += (float)$proy->descuento;
+                $alquiler->monto += (float)$proy->monto;
+                $alquiler->montosindescuentodol += (float)$proy->montosindescuentodol;
+                $alquiler->descuentodol += (float)$proy->descuentodol;
+                $alquiler->montodol += (float)$proy->montodol;
+            }
+        }
+        $alquiler->montosindescuento = number_format((float)$alquiler->montosindescuento, 2);
+        $alquiler->descuento = number_format((float)$alquiler->descuento, 2);
+        $alquiler->monto = number_format((float)$alquiler->monto, 2);
+        $alquiler->montosindescuentodol = number_format((float)$alquiler->montosindescuentodol, 2);
+        $alquiler->descuentodol = number_format((float)$alquiler->descuentodol, 2);
+        $alquiler->montodol = number_format((float)$alquiler->montodol, 2);
+    }   
 
     print json_encode($alquileres);
 });
