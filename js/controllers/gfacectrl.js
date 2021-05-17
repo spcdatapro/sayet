@@ -79,7 +79,7 @@
                     if (seleccionadas !== '') {
                         seleccionadas += ', ';
                     }
-                    seleccionadas += f.ordenexterno;
+                    seleccionadas += f.id;
                 }
             });
             if (seleccionadas !== '') {

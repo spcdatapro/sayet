@@ -744,21 +744,21 @@ $app->post('/genfel', function() use($app) {
     if ((int)$d->regenerar === 1) {
         regeneraCorrelativo($d);
     }    
-    //Encabezado
+    //Encabezado //CONCAT(TRIM(a.serieadmin), '-', LPAD(a.numeroadmin, 10, '0'))
     $query = "SELECT 1 AS tiporegistro, DATE_FORMAT(a.fecha, '%Y%m%d') AS fechadocumento, b.siglasfel AS tipodocumento, a.nit AS nitcomprador, a.idmonedafact AS codigomoneda, 
     IF(a.idmonedafact = 1, 1, ROUND(a.tipocambio, 4)) AS tasacambio, a.id AS ordenexterno, 'S' AS tipoventa, 1 AS destinoventa, 'S' AS enviarcorreo, 
     IF(a.nit <> 'CF', '', IF(LENGTH(a.nombre) > 0, a.nombre, 'Consumidor final')) AS nombrecomprador, IF(LENGTH(a.direccion) > 0, a.direccion, 'Ciudad') AS direccion, 
     '' AS numeroacceso, IFNULL(a.serieadmin, 'A') AS serieadmin, a.numeroadmin, c.nombrecorto, FORMAT(a.importetotalcnv, 2) AS montodol, ROUND(a.tipocambio, 4) AS tipocambio, FORMAT(TRUNCATE(a.totalcnv, 2), 2) AS pagonetodol, 
     FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2), 2) AS pagoneto, FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2), 2) AS retiva, 
     FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.retisr, a.retisrcnv), 2), 2) AS retisr, FORMAT(IF(a.idmonedafact = 1, a.importetotal, a.importetotalcnv), 2) AS monto, 
-    DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.nombre, d.simbolo AS monedafact, 1 AS descargar, a.idfacturaafecta
+    DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.nombre, d.simbolo AS monedafact, 1 AS descargar, a.idfacturaafecta, a.id
     FROM factura a
     INNER JOIN tipofactura b ON b.id = a.idtipofactura
     LEFT JOIN cliente c ON c.id = a.idcliente
     LEFT JOIN moneda d ON d.id = a.idmonedafact
     WHERE a.id > 3680 AND a.total <> 0 AND a.idempresa = $d->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.anulada = 0 AND (ISNULL(a.firmaelectronica) OR TRIM(a.firmaelectronica) = '') ";
     $query.= $d->listafact != '' ? "AND a.id IN($d->listafact) " : '';
-    $query.= "ORDER BY a.nombre, a.fecha, a.id";
+    $query.= "ORDER BY a.nombre, 7, a.fecha, a.id";
     // print $query;
     $facturas = $db->getQuery($query);
     $cntFacturas = count($facturas);
@@ -772,7 +772,7 @@ $app->post('/genfel', function() use($app) {
         IF(b.idmonedafact = 1, a.importeiva, a.importeivacnv) AS importeiva, 0 AS importeotros, 
         IF(b.idmonedafact = 1, a.importetotal, a.importetotalcnv) AS importetotal, IF(b.exentoiva = 0, a.idtiposervicio, 5) AS producto, TRIM(a.descripcionlarga) AS descripcion, 'S' AS tipoventa
         FROM detfact a INNER JOIN factura b ON b.id = a.idfactura
-        WHERE a.idfactura = $factura->ordenexterno";
+        WHERE a.idfactura = $factura->id";
         // print $query;
         $factura->detalle = $db->getQuery($query);
         //Notas de crédito/débito. 22/09/2020.
@@ -790,7 +790,7 @@ $app->post('/genfel', function() use($app) {
         IF(a.idmonedafact = 1, a.importeiva, a.importeivacnv) AS importeiva, 0 AS importeotros, 
         IF(a.idmonedafact = 1, a.importetotal, a.importetotalcnv) AS importetotal, 0 AS porcentajeisr, 0 AS importeisr, 0 AS registrosdetalle, $cntDocumentosAsociados AS documentosasociados
         FROM factura a
-        WHERE a.id = $factura->ordenexterno";
+        WHERE a.id = $factura->id";
         $factura->totales = $db->getQuery($query)[0];
     }
     print json_encode($facturas);
