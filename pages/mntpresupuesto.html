@@ -101,13 +101,13 @@
                         </caption>
                         <thead>
                             <tr>
-                                <th style="text-align: left">No.</th>
-                                <th>Solicitud</th>
-                                <th>Proyecto</th>
-                                <th>Empresa</th>
-                                <th>Tipo</th>
-                                <th>Prov./Bene.</th>
-                                <th style="text-align: right">Total</th>
+                                <th style="text-align: center">No.</th>
+                                <th style="text-align: center">Solicitud</th>
+                                <th style="text-align: center">Proyecto</th>
+                                <th style="text-align: center">Empresa</th>
+                                <th style="text-align: center">Tipo</th>
+                                <th style="text-align: center">Concepto</th>
+                                <th style="text-align: center">Total</th>
                                 <!--<th style="text-align: right">Gastado</th>-->
                                 <th>&nbsp;</th>
                             </tr>
@@ -126,18 +126,16 @@
                             </tr>
                             <tr ng-repeat="p in lstpresupuestos | filter:buscador" ng-click="getPresupuesto(p.id)"
                                 ng-class="{'bld': +p.tipo!= 1, 'presPendiente': +p.idestatuspresupuesto == 2 && +p.tipo == 1, 'presAprobado': +p.idestatuspresupuesto == 3 && +p.tipo == 1}">
-                                <td style="white-space: nowrap">{{p.tipostr}}-{{p.id}}</td>
-                                <td>{{p.fechasolicitud | date:'dd/MM/yyyy'}}</td>
-                                <td>{{p.proyecto | shortenStr:17}}</td>
-                                <td>{{p.abreviaempre}}</td>
-                                <td>{{p.tipogasto | shortenStr:10}}</td>
+                                <td style="white-space: nowrap; text-align: center;">{{p.tipostr}}-{{p.id}}</td>
+                                <td style="text-align: center">{{p.fechasolicitud | date:'dd/MM/yyyy'}}</td>
+                                <td style="text-align: center">{{p.proyecto | shortenStr:17}}</td>
+                                <td style="text-align: center">{{p.abreviaempre}}</td>
+                                <td style="text-align: center">{{p.tipogasto | shortenStr:10}}</td>
                                 <td>
-                                    <p style="white-space: normal">{{p.proveedor | shortenStr:22}}</p>
+                                    <p style="white-space: normal; text-align: center;">{{p.notas | shortenStr:50}}</p>
                                 </td>
-                                <td style="text-align: right; width: 10% !important;">
+                                <td style="text-align: center;  ">
                                     {{p.simbolo}}&nbsp;{{p.total | number:2}}</td>
-                                <td style="text-align: right; width: 10% !important;">
-                                    {{p.gastado ? ('Q ' + (p.gastado | number:2)) : ''}}</td>
                                 <td style="white-space: nowrap !important;">
                                     <div class="btn-group" role="group" aria-label="..."
                                         style="white-space: nowrap !important;">
@@ -496,6 +494,7 @@
                                     <!--<li><h3>{{lbl.id}}</h3></li>-->
                                     <li style="color: black; font-size: 120%;"><p>{{lbl.proyecto}}</p></li>
                                     <li style="color: black; font-size: 120%;"><p>{{lbl.empresa}}</p></li>
+                                    <li style="color: black; font-size: 120%;"><p>{{lbl.notas}}</p></li>
                                     <li style="color: black; font-size: 120%;"><p>{{lbl.tipgasto}}</p></li>
                                     <li style="color: black; font-size: 120%;"><p>{{lbl.montopres}}</p></li>
                                     <li style="color: black; font-size: 120%;"><p>{{lbl.montogas}}</p></li>
