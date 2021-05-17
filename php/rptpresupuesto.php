@@ -387,7 +387,7 @@ $app->post('/avanceot', function(){
             INNER JOIN tranban c ON a.id = c.iddetpresup
             INNER JOIN reembolso d ON d.id = c.idreembolso
             INNER JOIN compra b ON d.id = b.idreembolso
-            WHERE a.id = $d->idot AND a.idmoneda != b.idmoneda)), 0.00), 2) AS totfact, a.notas, SUBSTRING(a.notas, 1, 15) AS concepto,
+            WHERE a.id = $d->idot AND a.idmoneda != b.idmoneda)), 0.00), 2) AS totfact, a.notas, SUBSTRING(a.notas, 1, 20) AS concepto,
             FORMAT(IFNULL((SELECT SUM(b.monto) 
             FROM detpresupuesto a 
             INNER JOIN tranban b ON a.id = b.iddetpresup 
@@ -570,7 +570,7 @@ $app->post('/avanceotm', function(){
 
     $query = "SELECT CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, DATE_FORMAT(a.fhenvioaprobacion, '%d-%m-%Y') AS fhenvioaprobacion, 
             IF(a.origenprov = 1, b.nombre, c.nombre) AS proveedor, SUBSTRING(e.descripcion, 1, 45) AS subtipogasto,
-            d.simbolo, FORMAT(a.monto, 2) AS montoot, a.notas, SUBSTRING(a.notas, 1, 15) AS concepto,
+            d.simbolo, FORMAT(a.monto, 2) AS montoot, a.notas,
             FORMAT(IFNULL((SELECT SUM(b.monto) 
             FROM tranban b
             INNER JOIN banco c ON c.id = b.idbanco
@@ -727,7 +727,7 @@ $app->post('/avanceotm', function(){
     }
 
     $query = "SELECT a.id AS ot, DATE_FORMAT(a.fechasolicitud, '%d-%m-%Y') AS fechasolicitud, b.nomproyecto AS proyecto, e.nomempresa AS empresa, 
-            f.desctipogast AS tipogasto, g.simbolo AS moneda,
+            f.desctipogast AS tipogasto, g.simbolo AS moneda, SUBSTRING(a.notas, 1, 20) AS concepto,
             FORMAT(IFNULL((SELECT SUM(b.monto) 
             FROM presupuesto a 
             INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
