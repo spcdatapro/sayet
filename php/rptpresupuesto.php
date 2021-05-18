@@ -746,20 +746,20 @@ $app->post('/avanceotm', function(){
             INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
             INNER JOIN tranban c ON b.id = c.iddetpresup
             INNER JOIN banco d ON d.id = c.idbanco
-            WHERE a.id = $d->idpresupuesto AND a.idmoneda = d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.concepto NOT LIKE '%REINGRESO%' AND c.anulado != 1), 0.00) 
+            WHERE a.id = $d->idpresupuesto AND a.idmoneda = d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.beneficiario NOT LIKE '%REINGRESO%' AND c.anulado != 1), 0.00) 
             + 
             IFNULL(IF(g.eslocal = 1, (SELECT SUM(c.monto * c.tipocambio) 
             FROM presupuesto a 
             INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
             INNER JOIN tranban c ON b.id = c.iddetpresup
             INNER JOIN banco d ON d.id = c.idbanco
-            WHERE a.id = $d->idpresupuesto AND a.idmoneda != d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.concepto NOT LIKE '%REINGRESO%' AND c.anulado != 1), 
+            WHERE a.id = $d->idpresupuesto AND a.idmoneda != d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.beneficiario NOT LIKE '%REINGRESO%' AND c.anulado != 1), 
             (SELECT SUM(c.monto / c.tipocambio) 
             FROM presupuesto a 
             INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
             INNER JOIN tranban c ON b.id = c.iddetpresup
             INNER JOIN banco d ON d.id = c.idbanco
-            WHERE a.id = $d->idpresupuesto AND a.idmoneda != d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.concepto NOT LIKE '%REINGRESO%' AND c.anulado != 1)), 0.00)
+            WHERE a.id = $d->idpresupuesto AND a.idmoneda != d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.beneficiario NOT LIKE '%REINGRESO%' AND c.anulado != 1)), 0.00)
             +
             IFNULL((SELECT SUM(c.isr)
             FROM presupuesto a 
@@ -782,20 +782,20 @@ $app->post('/avanceotm', function(){
             INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
             INNER JOIN tranban c ON b.id = c.iddetpresup
             INNER JOIN banco d ON d.id = c.idbanco
-            WHERE a.id = $d->idpresupuesto AND a.idmoneda = d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.concepto NOT LIKE '%REINGRESO%' AND c.anulado != 1), 0.00) 
+            WHERE a.id = $d->idpresupuesto AND a.idmoneda = d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.beneficiario NOT LIKE '%REINGRESO%' AND c.anulado != 1), 0.00) 
             + 
             IFNULL(IF(g.eslocal = 1, (SELECT SUM(c.monto * c.tipocambio) 
             FROM presupuesto a 
             INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
             INNER JOIN tranban c ON b.id = c.iddetpresup
             INNER JOIN banco d ON d.id = c.idbanco
-            WHERE a.id = $d->idpresupuesto AND a.idmoneda != d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.concepto NOT LIKE '%REINGRESO%' AND c.anulado != 1), 
+            WHERE a.id = $d->idpresupuesto AND a.idmoneda != d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.beneficiario NOT LIKE '%REINGRESO%' AND c.anulado != 1), 
             (SELECT SUM(c.monto / c.tipocambio) 
             FROM presupuesto a 
             INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
             INNER JOIN tranban c ON b.id = c.iddetpresup
             INNER JOIN banco d ON d.id = c.idbanco
-            WHERE a.id = $d->idpresupuesto AND a.idmoneda != d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.concepto NOT LIKE '%REINGRESO%' AND c.anulado != 1)), 0.00)
+            WHERE a.id = $d->idpresupuesto AND a.idmoneda != d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.beneficiario NOT LIKE '%REINGRESO%' AND c.anulado != 1)), 0.00)
             +
             IFNULL((SELECT SUM(c.isr) 
             FROM presupuesto a 
