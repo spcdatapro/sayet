@@ -264,7 +264,7 @@ $app->post('/avanceot', function(){
             FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, ROUND(b.tipocambio, 2) AS tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, 
             SUBSTRING(b.conceptomayor, 1, 90) AS conceptomayor, d.numero, 
             IF((d.anulado = 1 OR (d.anulado = 0 AND (d.beneficiario LIKE '%anula%' OR d.concepto LIKE '%anula%'))), 1, NULL) AS anulado, d.id, d.beneficiario,
-            IF(d.idreembolso = 0, NULL, 1) AS reembolso, IF(b.conceptomayor LIKE '%REINGRESO%', 1, NULL) AS esreigreso
+            IF(d.idreembolso = 0, NULL, 1) AS reembolso, IF(b.conceptomayor LIKE '%REINGRESO%' OR b.conceptomayor LIKE '%REINGRESADO%', 1, NULL) AS esreigreso
             FROM detpresupuesto a 
             INNER JOIN compra b ON a.id = b.ordentrabajo
             INNER JOIN detpagocompra h ON h.idcompra = b.id
@@ -280,7 +280,7 @@ $app->post('/avanceot', function(){
             FORMAT(d.monto, 2) AS montocheq, FORMAT(d.isr, 2) AS isr, ROUND(d.tipocambio, 2) AS tipocambio, NULL AS fact, 
             SUBSTRING(d.concepto, 1, 90) AS conceptomayor, d.numero, 
             IF(d.anulado = 1 OR (d.anulado = 0 AND (d.beneficiario LIKE '%anula%' OR d.concepto LIKE '%anula%')), 1, NULL) AS anulado, d.id, d.beneficiario,
-            IF(d.idreembolso = 0, NULL, 1) AS reembolso, IF(d.concepto LIKE '%REINGRESO%', 1, NULL) AS esreigreso
+            IF(d.idreembolso = 0, NULL, 1) AS reembolso, IF(d.concepto LIKE '%REINGRESO%' OR d.beneficiario LIKE '%REINGRESADO%', 1, NULL) AS esreigreso
             FROM detpresupuesto a     
             INNER JOIN tranban d ON d.iddetpresup = a.id
             INNER JOIN banco c ON c.id = d.idbanco
@@ -293,7 +293,7 @@ $app->post('/avanceot', function(){
             FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, ROUND(b.tipocambio, 2) AS tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, 
             SUBSTRING(b.conceptomayor, 1, 90) AS conceptomayor, d.numero, 
             IF((d.anulado = 1 OR (d.anulado = 0 AND (d.beneficiario LIKE '%anula%' OR d.concepto LIKE '%anula%'))), 1, NULL) AS anulado, d.id, d.beneficiario,
-            IF(d.idreembolso = 0, NULL, 1) AS reembolso, IF(b.conceptomayor LIKE '%REINGRESO%', 1, NULL) AS esreigreso
+            IF(d.idreembolso = 0, NULL, 1) AS reembolso, IF(b.conceptomayor LIKE '%REINGRESO%' OR b.conceptomayor LIKE '%REINGRESADO%', 1, NULL) AS esreigreso
             FROM detpresupuesto a 
             INNER JOIN compra b ON a.id = b.ordentrabajo
             INNER JOIN tranban d ON b.id = d.idfact
@@ -308,7 +308,7 @@ $app->post('/avanceot', function(){
             g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, ROUND(b.tipocambio, 2) AS tipocambio, 
             CONCAT(b.serie, '-', b.documento) AS fact, SUBSTRING(b.conceptomayor, 1, 90) AS conceptomayor, d.numero, 
             IF((d.anulado = 1 OR (d.anulado = 0 AND (d.beneficiario LIKE '%anula%' OR d.concepto LIKE '%anula%'))), 1, NULL) AS anulado, d.id, d.beneficiario,
-            IF(d.idreembolso = 0, NULL, 1) AS reembolso, IF(b.conceptomayor LIKE '%REINGRESO%', 1, NULL) AS esreigreso
+            IF(d.idreembolso = 0, NULL, 1) AS reembolso, IF(b.conceptomayor LIKE '%REINGRESO%' OR b.conceptomayor LIKE '%REINGRESADO%', 1, NULL) AS esreigreso
             FROM detpresupuesto a 
             INNER JOIN tranban d ON a.id = d.iddetpresup
             INNER JOIN detpagocompra h ON h.idtranban = d.id
@@ -324,7 +324,7 @@ $app->post('/avanceot', function(){
             g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, ROUND(b.tipocambio, 2) AS tipocambio, 
             CONCAT(b.serie, '-', b.documento) AS fact, SUBSTRING(d.concepto, 1, 90) AS conceptomayor, d.numero, 
             IF((d.anulado = 1 OR (d.anulado = 0 AND (d.beneficiario LIKE '%anula%' OR d.concepto LIKE '%anula%'))), 1, NULL) AS anulado, d.id, d.beneficiario,
-            IF(d.idreembolso = 0, NULL, 1) AS reembolso, IF(d.concepto LIKE '%REINGRESO%', 1, NULL) AS esreigreso
+            IF(d.idreembolso = 0, NULL, 1) AS reembolso, IF(d.concepto LIKE '%REINGRESO%' OR d.beneficiario LIKE '%REINGRESADO%', 1, NULL) AS esreigreso
             FROM detpresupuesto a 
             INNER JOIN tranban d ON a.id = d.iddetpresup
             INNER JOIN reembolso h ON h.id = d.idreembolso
@@ -340,7 +340,7 @@ $app->post('/avanceot', function(){
             NULL AS montocheq, FORMAT(b.isr, 2) AS isr, ROUND(b.tipocambio, 2) AS tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, 
             SUBSTRING(b.conceptomayor, 1, 90) AS conceptomayor, NULL AS numero, 
             NULL AS anulado, NULL AS id, NULL AS beneficiario,
-            NULL AS reembolso, IF(b.conceptomayor LIKE '%REINGRESO%', 1, NULL) AS esreigreso
+            NULL AS reembolso, IF(b.conceptomayor LIKE '%REINGRESO%' OR b.conceptomayor LIKE '%REINGRESADO%', 1, NULL) AS esreigreso
             FROM detpresupuesto a 
             INNER JOIN compra b ON a.id = b.ordentrabajo
             LEFT JOIN detpagocompra c ON b.id = c.idcompra
@@ -392,19 +392,22 @@ $app->post('/avanceot', function(){
             FROM detpresupuesto a 
             INNER JOIN tranban b ON a.id = b.iddetpresup 
             INNER JOIN banco c ON c.id = b.idbanco 
-            WHERE a.id = $d->idot AND a.idmoneda = c.idmoneda AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' AND b.anulado != 1), 0.00) 
+            WHERE a.id = $d->idot AND a.idmoneda = c.idmoneda AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
+            AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1), 0.00) 
             + 
             IFNULL(IF(i.eslocal = 1, 
             (SELECT SUM(b.monto * b.tipocambio) 
             FROM detpresupuesto a 
             INNER JOIN tranban b ON a.id = b.iddetpresup 
             INNER JOIN banco c ON c.id = b.idbanco 
-            WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' AND b.anulado != 1), 
+            WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
+            AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1), 
             (SELECT SUM(b.monto / b.tipocambio) 
             FROM detpresupuesto a 
             INNER JOIN tranban b ON a.id = b.iddetpresup 
             INNER JOIN banco c ON c.id = b.idbanco 
-            WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' AND b.anulado != 1)), 0.00), 2) AS totcheques,
+            WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
+            AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1)), 0.00), 2) AS totcheques,
             FORMAT(IFNULL((SELECT SUM(b.isr) 
             FROM detpresupuesto a 
             INNER JOIN compra b ON a.id = b.ordentrabajo 
@@ -442,7 +445,8 @@ $app->post('/avanceot', function(){
             FROM detpresupuesto a 
             INNER JOIN tranban b ON a.id = b.iddetpresup 
             INNER JOIN banco c ON c.id = b.idbanco 
-            WHERE a.id = $d->idot AND a.idmoneda = c.idmoneda AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' AND b.anulado != 1), 0.00) 
+            WHERE a.id = $d->idot AND a.idmoneda = c.idmoneda AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
+            AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1), 0.00) 
             + 
             IFNULL(IF(i.eslocal = 1, (SELECT SUM(b.monto * b.tipocambio) 
             FROM detpresupuesto a 
@@ -453,7 +457,8 @@ $app->post('/avanceot', function(){
             FROM detpresupuesto a 
             INNER JOIN tranban b ON a.id = b.iddetpresup 
             INNER JOIN banco c ON c.id = b.idbanco 
-            WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' AND b.anulado != 1)), 0.00) 
+            WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
+            AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1)), 0.00) 
             + 
             IFNULL((SELECT SUM(b.isr) 
             FROM detpresupuesto a 
@@ -494,18 +499,21 @@ $app->post('/avanceot', function(){
             FROM detpresupuesto a 
             INNER JOIN tranban b ON a.id = b.iddetpresup 
             INNER JOIN banco c ON c.id = b.idbanco 
-            WHERE a.id = $d->idot AND a.idmoneda = c.idmoneda AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' AND b.anulado != 1), 0.00) 
+            WHERE a.id = $d->idot AND a.idmoneda = c.idmoneda AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
+            AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1), 0.00) 
             + 
             IFNULL(IF(i.eslocal = 1, (SELECT SUM(b.monto * b.tipocambio) 
             FROM detpresupuesto a 
             INNER JOIN tranban b ON a.id = b.iddetpresup 
             INNER JOIN banco c ON c.id = b.idbanco 
-            WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' AND b.anulado != 1), 
+            WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
+            AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1), 
             (SELECT SUM(b.monto / b.tipocambio) 
             FROM detpresupuesto a 
             INNER JOIN tranban b ON a.id = b.iddetpresup 
             INNER JOIN banco c ON c.id = b.idbanco 
-            WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' AND b.anulado != 1)), 0.00) 
+            WHERE a.id = $d->idot AND a.idmoneda != c.idmoneda AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
+            AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1)), 0.00) 
             + 
             IFNULL((SELECT SUM(b.isr) 
             FROM detpresupuesto a 
@@ -574,16 +582,19 @@ $app->post('/avanceotm', function(){
             FORMAT(IFNULL((SELECT SUM(b.monto) 
             FROM tranban b
             INNER JOIN banco c ON c.id = b.idbanco
-            WHERE c.idmoneda = a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' AND b.anulado != 1), 0.00)
+            WHERE c.idmoneda = a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
+            AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1), 0.00)
             +
             IFNULL(IF(d.eslocal = 1, (SELECT SUM(b.monto * b.tipocambio)
             FROM tranban b
             INNER JOIN banco c ON c.id = b.idbanco
-            WHERE c.idmoneda != a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' AND b.anulado != 1), 
+            WHERE c.idmoneda != a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
+            AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1), 
             (SELECT SUM(b.monto / b.tipocambio) 
             FROM tranban b 
             INNER JOIN banco c ON c.id = b.idbanco
-            WHERE c.idmoneda != a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' AND b.anulado != 1)), 0.00)
+            WHERE c.idmoneda != a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
+            AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1)), 0.00)
             +
             IFNULL((SELECT SUM(b.isr) 
             FROM compra b 
@@ -598,16 +609,19 @@ $app->post('/avanceotm', function(){
             CONCAT(ROUND((IFNULL((SELECT SUM(b.monto) 
             FROM tranban b
             INNER JOIN banco c ON c.id = b.idbanco 
-            WHERE c.idmoneda = a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' AND b.anulado != 1), 0.00)
+            WHERE c.idmoneda = a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
+            AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1), 0.00)
             +
             IFNULL(IF(d.eslocal = 1, (SELECT SUM(b.monto * b.tipocambio)
             FROM tranban b 
             INNER JOIN banco c ON c.id = b.idbanco
-            WHERE b.idmoneda != a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' AND b.anulado != 1), 
+            WHERE b.idmoneda != a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
+            AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1), 
             (SELECT SUM(b.monto / b.tipocambio) 
             FROM tranban b 
             INNER JOIN banco c ON  c.id = b.idbanco
-            WHERE b.idmoneda != a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' AND b.anulado != 1)), 0.00)
+            WHERE b.idmoneda != a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
+            AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1)), 0.00)
             +
             IFNULL((SELECT SUM(b.isr) 
             FROM compra b 
@@ -639,7 +653,7 @@ $app->post('/avanceotm', function(){
                 FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, ROUND(b.tipocambio, 2) AS tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, 
                 SUBSTRING(b.conceptomayor, 1, 90) AS conceptomayor, d.numero, 
                 IF((d.anulado = 1 OR (d.anulado = 0 AND (d.beneficiario LIKE '%anula%' OR d.concepto LIKE '%anula%'))), 1, NULL) AS anulado, d.id, d.beneficiario,
-                IF(d.idreembolso = 0, NULL, 1) AS reembolso, IF(b.conceptomayor LIKE '%REINGRESO%', 1, NULL) AS esreigreso
+                IF(d.idreembolso = 0, NULL, 1) AS reembolso, IF(b.conceptomayor LIKE '%REINGRESO%' OR b.conceptomayor LIKE '%REINGRESADO%', 1, NULL) AS esreigreso
                 FROM detpresupuesto a 
                 INNER JOIN compra b ON a.id = b.ordentrabajo
                 INNER JOIN detpagocompra h ON h.idcompra = b.id
@@ -655,7 +669,7 @@ $app->post('/avanceotm', function(){
                 FORMAT(d.monto, 2) AS montocheq, FORMAT(d.isr, 2) AS isr, ROUND(d.tipocambio, 2) AS tipocambio, NULL AS fact, 
                 SUBSTRING(d.concepto, 1, 90) AS conceptomayor, d.numero, 
                 IF(d.anulado = 1 OR (d.anulado = 0 AND (d.beneficiario LIKE '%anula%' OR d.concepto LIKE '%anula%')), 1, NULL) AS anulado, d.id, d.beneficiario,
-                IF(d.idreembolso = 0, NULL, 1) AS reembolso, IF(d.concepto LIKE '%REINGRESO%', 1, NULL) AS esreigreso
+                IF(d.idreembolso = 0, NULL, 1) AS reembolso, IF(d.concepto LIKE '%REINGRESO%' OR d.beneficiario LIKE '%REINGRESADO%', 1, NULL) AS esreigreso
                 FROM detpresupuesto a     
                 INNER JOIN tranban d ON d.iddetpresup = a.id
                 INNER JOIN banco c ON c.id = d.idbanco
@@ -668,7 +682,7 @@ $app->post('/avanceotm', function(){
                 FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, ROUND(b.tipocambio, 2) AS tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, 
                 SUBSTRING(b.conceptomayor, 1, 90) AS conceptomayor, d.numero, 
                 IF((d.anulado = 1 OR (d.anulado = 0 AND (d.beneficiario LIKE '%anula%' OR d.concepto LIKE '%anula%'))), 1, NULL) AS anulado, d.id, d.beneficiario,
-                IF(d.idreembolso = 0, NULL, 1) AS reembolso, IF(b.conceptomayor LIKE '%REINGRESO%', 1, NULL) AS esreigreso
+                IF(d.idreembolso = 0, NULL, 1) AS reembolso, IF(b.conceptomayor LIKE '%REINGRESO%' OR b.conceptomayor LIKE '%REINGRESADO%', 1, NULL) AS esreigreso
                 FROM detpresupuesto a 
                 INNER JOIN compra b ON a.id = b.ordentrabajo
                 INNER JOIN tranban d ON b.id = d.idfact
@@ -683,7 +697,7 @@ $app->post('/avanceotm', function(){
                 g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, ROUND(b.tipocambio, 2) AS tipocambio, 
                 CONCAT(b.serie, '-', b.documento) AS fact, SUBSTRING(b.conceptomayor, 1, 90) AS conceptomayor, d.numero, 
                 IF((d.anulado = 1 OR (d.anulado = 0 AND (d.beneficiario LIKE '%anula%' OR d.concepto LIKE '%anula%'))), 1, NULL) AS anulado, d.id, d.beneficiario,
-                IF(d.idreembolso = 0, NULL, 1) AS reembolso, IF(b.conceptomayor LIKE '%REINGRESO%', 1, NULL) AS esreigreso
+                IF(d.idreembolso = 0, NULL, 1) AS reembolso, IF(b.conceptomayor LIKE '%REINGRESO%' OR b.conceptomayor LIKE '%REINGRESADO%', 1, NULL) AS esreigreso
                 FROM detpresupuesto a 
                 INNER JOIN tranban d ON a.id = d.iddetpresup
                 INNER JOIN detpagocompra h ON h.idtranban = d.id
@@ -699,7 +713,7 @@ $app->post('/avanceotm', function(){
                 g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, ROUND(b.tipocambio, 2) AS tipocambio, 
                 CONCAT(b.serie, '-', b.documento) AS fact, SUBSTRING(d.concepto, 1, 90) AS conceptomayor, d.numero, 
                 IF((d.anulado = 1 OR (d.anulado = 0 AND (d.beneficiario LIKE '%anula%' OR d.concepto LIKE '%anula%'))), 1, NULL) AS anulado, d.id, d.beneficiario,
-                IF(d.idreembolso = 0, NULL, 1) AS reembolso, IF(d.concepto LIKE '%REINGRESO%', 1, NULL) AS esreigreso
+                IF(d.idreembolso = 0, NULL, 1) AS reembolso, IF(d.concepto LIKE '%REINGRESO%' OR d.beneficiario LIKE '%REINGRESADO%', 1, NULL) AS esreigreso
                 FROM detpresupuesto a 
                 INNER JOIN tranban d ON a.id = d.iddetpresup
                 INNER JOIN reembolso h ON h.id = d.idreembolso
@@ -715,7 +729,7 @@ $app->post('/avanceotm', function(){
                 NULL AS montocheq, FORMAT(b.isr, 2) AS isr, ROUND(b.tipocambio, 2) AS tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, 
                 SUBSTRING(b.conceptomayor, 1, 90) AS conceptomayor, NULL AS numero, 
                 NULL AS anulado, NULL AS id, NULL AS beneficiario,
-                NULL AS reembolso, IF(b.conceptomayor LIKE '%REINGRESO%', 1, NULL) AS esreigreso
+                NULL AS reembolso, IF(b.conceptomayor LIKE '%REINGRESO%' OR b.conceptomayor LIKE '%REINGRESADO%', 1, NULL) AS esreigreso
                 FROM detpresupuesto a 
                 INNER JOIN compra b ON a.id = b.ordentrabajo
                 LEFT JOIN detpagocompra c ON b.id = c.idcompra
@@ -746,20 +760,23 @@ $app->post('/avanceotm', function(){
             INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
             INNER JOIN tranban c ON b.id = c.iddetpresup
             INNER JOIN banco d ON d.id = c.idbanco
-            WHERE a.id = $d->idpresupuesto AND a.idmoneda = d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.beneficiario NOT LIKE '%REINGRESO%' AND c.anulado != 1), 0.00) 
+            WHERE a.id = $d->idpresupuesto AND a.idmoneda = d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.beneficiario NOT LIKE '%REINGRESO%' AND
+            c.beneficiario NOT LIKE '%REINGRESADO%' AND c.anulado != 1), 0.00) 
             + 
             IFNULL(IF(g.eslocal = 1, (SELECT SUM(c.monto * c.tipocambio) 
             FROM presupuesto a 
             INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
             INNER JOIN tranban c ON b.id = c.iddetpresup
             INNER JOIN banco d ON d.id = c.idbanco
-            WHERE a.id = $d->idpresupuesto AND a.idmoneda != d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.beneficiario NOT LIKE '%REINGRESO%' AND c.anulado != 1), 
+            WHERE a.id = $d->idpresupuesto AND a.idmoneda != d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.beneficiario NOT LIKE '%REINGRESO%' AND
+            c.beneficiario NOT LIKE '%REINGRESADO%' AND c.anulado != 1), 
             (SELECT SUM(c.monto / c.tipocambio) 
             FROM presupuesto a 
             INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
             INNER JOIN tranban c ON b.id = c.iddetpresup
             INNER JOIN banco d ON d.id = c.idbanco
-            WHERE a.id = $d->idpresupuesto AND a.idmoneda != d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.beneficiario NOT LIKE '%REINGRESO%' AND c.anulado != 1)), 0.00)
+            WHERE a.id = $d->idpresupuesto AND a.idmoneda != d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.beneficiario NOT LIKE '%REINGRESO%' AND
+            c.beneficiario NOT LIKE '%REINGRESADO%' AND c.anulado != 1)), 0.00)
             +
             IFNULL((SELECT SUM(c.isr)
             FROM presupuesto a 
@@ -782,20 +799,23 @@ $app->post('/avanceotm', function(){
             INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
             INNER JOIN tranban c ON b.id = c.iddetpresup
             INNER JOIN banco d ON d.id = c.idbanco
-            WHERE a.id = $d->idpresupuesto AND a.idmoneda = d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.beneficiario NOT LIKE '%REINGRESO%' AND c.anulado != 1), 0.00) 
+            WHERE a.id = $d->idpresupuesto AND a.idmoneda = d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.beneficiario NOT LIKE '%REINGRESO%' AND
+            c.beneficiario NOT LIKE '%REINGRESO%' AND c.anulado != 1), 0.00) 
             + 
             IFNULL(IF(g.eslocal = 1, (SELECT SUM(c.monto * c.tipocambio) 
             FROM presupuesto a 
             INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
             INNER JOIN tranban c ON b.id = c.iddetpresup
             INNER JOIN banco d ON d.id = c.idbanco
-            WHERE a.id = $d->idpresupuesto AND a.idmoneda != d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.beneficiario NOT LIKE '%REINGRESO%' AND c.anulado != 1), 
+            WHERE a.id = $d->idpresupuesto AND a.idmoneda != d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.beneficiario NOT LIKE '%REINGRESO%' AND
+            c.beneficiario NOT LIKE '%REINGRESO%' AND c.anulado != 1), 
             (SELECT SUM(c.monto / c.tipocambio) 
             FROM presupuesto a 
             INNER JOIN detpresupuesto b ON a.id = b.idpresupuesto 
             INNER JOIN tranban c ON b.id = c.iddetpresup
             INNER JOIN banco d ON d.id = c.idbanco
-            WHERE a.id = $d->idpresupuesto AND a.idmoneda != d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.beneficiario NOT LIKE '%REINGRESO%' AND c.anulado != 1)), 0.00)
+            WHERE a.id = $d->idpresupuesto AND a.idmoneda != d.idmoneda AND c.beneficiario NOT LIKE '%anula%' AND c.beneficiario NOT LIKE '%REINGRESO%' AND
+            c.beneficiario NOT LIKE '%REINGRESO%' AND c.anulado != 1)), 0.00)
             +
             IFNULL((SELECT SUM(c.isr) 
             FROM presupuesto a 
