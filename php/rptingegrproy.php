@@ -334,6 +334,7 @@ $app->post('/detalle', function () use ($db) {
         $query .= "LEFT JOIN banco f ON f.id = e.idbanco LEFT JOIN moneda g ON g.id = f.idmoneda LEFT JOIN moneda i ON i.id = b.idmoneda LEFT JOIN proveedor h ON h.id = b.idproveedor ";
         $query .= "LEFT JOIN detpagopresup j ON j.id = e.iddetpagopresup LEFT JOIN detpresupuesto k ON k.id = e.iddetpresup ";
         $query .= "WHERE a.origen = 2 AND b.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND a.idcuenta = $concepto->idcuenta AND b.idreembolso > 0 ";
+        $query .= "AND b.idsubtipogasto NOT IN(1) ";
         $query .= (int) $d->idunidad == 0 ? '' : "AND b.idunidad = $d->idunidad ";
         $query .= "ORDER BY 1, 6";
         //print $query;
@@ -604,6 +605,7 @@ function getEgresosPorConcepto($db, $d, $mes, $anio, $idcuenta, $solosuma = true
     $query .= "LEFT JOIN banco f ON f.id = e.idbanco LEFT JOIN moneda g ON g.id = f.idmoneda LEFT JOIN moneda i ON i.id = b.idmoneda LEFT JOIN proveedor h ON h.id = b.idproveedor ";
     $query .= "LEFT JOIN detpagopresup j ON j.id = e.iddetpagopresup LEFT JOIN detpresupuesto k ON k.id = j.iddetpresup ";
     $query .= "WHERE a.origen = 2 AND b.idproyecto = $d->idproyecto AND b.idempresa = $d->idempresa AND MONTH(b.fechafactura) = $mes AND YEAR(b.fechafactura) = $anio AND a.idcuenta = $idcuenta AND b.idreembolso > 0 ";
+    $query .= "AND b.idsubtipogasto NOT IN(1) ";
     $query .= (int) $d->idunidad == 0 ? '' : "AND b.idunidad = $d->idunidad ";
     $query .= "ORDER BY 1, 6";
     $detegr = $db->getQuery($query);
