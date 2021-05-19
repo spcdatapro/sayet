@@ -744,9 +744,9 @@ $app->post('/genfel', function() use($app) {
     if ((int)$d->regenerar === 1) {
         regeneraCorrelativo($d);
     }    
-    //Encabezado //CONCAT(TRIM(a.serieadmin), '-', LPAD(a.numeroadmin, 10, '0'))
+    //Encabezado //CONCAT(TRIM(a.serieadmin), '-', LPAD(a.numeroadmin, 10, '0')) AS ordenexterno
     $query = "SELECT 1 AS tiporegistro, DATE_FORMAT(a.fecha, '%Y%m%d') AS fechadocumento, b.siglasfel AS tipodocumento, a.nit AS nitcomprador, a.idmonedafact AS codigomoneda, 
-    IF(a.idmonedafact = 1, 1, ROUND(a.tipocambio, 4)) AS tasacambio, a.id AS ordenexterno, 'S' AS tipoventa, 1 AS destinoventa, 'S' AS enviarcorreo, 
+    IF(a.idmonedafact = 1, 1, ROUND(a.tipocambio, 4)) AS tasacambio, CONCAT(TRIM(a.serieadmin), '-', LPAD(a.numeroadmin, 10, '0')) AS ordenexterno, 'S' AS tipoventa, 1 AS destinoventa, 'S' AS enviarcorreo, 
     IF(a.nit <> 'CF', '', IF(LENGTH(a.nombre) > 0, a.nombre, 'Consumidor final')) AS nombrecomprador, IF(LENGTH(a.direccion) > 0, a.direccion, 'Ciudad') AS direccion, 
     '' AS numeroacceso, IFNULL(a.serieadmin, 'A') AS serieadmin, a.numeroadmin, c.nombrecorto, FORMAT(a.importetotalcnv, 2) AS montodol, ROUND(a.tipocambio, 4) AS tipocambio, FORMAT(TRUNCATE(a.totalcnv, 2), 2) AS pagonetodol, 
     FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2), 2) AS pagoneto, FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2), 2) AS retiva, 
@@ -835,9 +835,18 @@ $app->post('/respuesta', function(){
     for($i = 0; $i < $cntFacts; $i++){
         if($d[$i]->id !== NULL){
             $factura = $d[$i];
+
             $query = "UPDATE factura SET firmaelectronica = '$factura->firma', respuestagface = '".str_replace("'", " ", $factura->respuesta)."', serie = '$factura->serie', numero = '$factura->numero', ";
             $query.= "nit = '$factura->nit', nombre = '".str_replace("'", " ", $factura->nombre)."', pendiente = 1 ";
-            $query.= "WHERE id = $factura->id";
+
+            $pos = strpos($factura->id, '-');
+            if($pos !== false) {
+                $serieadmin = trim(substr($factura->id, 0, $pos));
+                $numeroadmin = (int)substr($factura->id, $pos + 1);
+                $query.= "WHERE serieadmin = '$serieadmin' AND numeroadmin = $numeroadmin AND idtipofactura = ".(trim(strtoupper($factura->tipo)) === 'FACT' ? 1 : 9);
+            } else {
+                $query.= "WHERE id = ".(int)$factura->id;
+            }
             //print $query;
             $db->doQuery($query);
         }

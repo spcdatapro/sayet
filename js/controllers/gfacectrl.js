@@ -128,7 +128,7 @@
                 // console.log(linea);
                 const qTipo = linea[0] || '';
                 if ((qTipo.trim().toUpperCase().indexOf('FACT') > -1) || (qTipo.trim().toUpperCase().indexOf('NCRE') > -1)) {
-                    facturas.push({ id: +linea[8], firma: linea[7], serie: linea[2], numero: linea[3], nit: linea[4], nombre: linea[9], respuesta: cad });                    
+                    facturas.push({ id: linea[8], firma: linea[7], serie: linea[2], numero: linea[3], nit: linea[4], nombre: linea[9], respuesta: cad, tipo: linea[0] });
                 }
             });            
             // console.log(facturas); //return;
