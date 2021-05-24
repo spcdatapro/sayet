@@ -106,8 +106,9 @@
                                 <th style="text-align: center">Proyecto</th>
                                 <th style="text-align: center">Empresa</th>
                                 <th style="text-align: center">Tipo</th>
+                                <th style="text-align: center;"> Prov/Bene </th>
                                 <th style="text-align: center">Concepto</th>
-                                <th style="text-align: center">Total</th>
+                                <!-- <th style="text-align: center">Total</th> -->
                                 <!--<th style="text-align: right">Gastado</th>-->
                                 <th>&nbsp;</th>
                             </tr>
@@ -131,11 +132,12 @@
                                 <td style="text-align: center">{{p.proyecto | shortenStr:17}}</td>
                                 <td style="text-align: center">{{p.abreviaempre}}</td>
                                 <td style="text-align: center">{{p.tipogasto | shortenStr:10}}</td>
+                                <td style="text-align: center;">{{p.proveedor | shortenStr:15}}</td>
                                 <td>
-                                    <p style="white-space: normal; text-align: center;">{{p.notas | shortenStr:50}}</p>
+                                    <p style="white-space: normal; text-align: center;">{{p.notas | shortenStr:60}}</p>
                                 </td>
-                                <td style="text-align: center;  ">
-                                    {{p.simbolo}}&nbsp;{{p.total | number:2}}</td>
+                                <!-- <td style="text-align: center;  ">
+                                    {{p.simbolo}}&nbsp;{{p.total | number:2}}</td> -->
                                 <td style="white-space: nowrap !important;">
                                     <div class="btn-group" role="group" aria-label="..."
                                         style="white-space: nowrap !important;">
@@ -495,6 +497,7 @@
                                     <li style="color: black; font-size: 120%;"><p>{{lbl.proyecto}}</p></li>
                                     <li style="color: black; font-size: 120%;"><p>{{lbl.empresa}}</p></li>
                                     <li style="color: black; font-size: 120%;"><p>{{lbl.notas}}</p></li>
+                                    <li style="color: black; font-size: 120%;"><p>{{lbl.desc}}</p>
                                     <li style="color: black; font-size: 120%;"><p>{{lbl.tipgasto}}</p></li>
                                     <li style="color: black; font-size: 120%;"><p>{{lbl.montopres}}</p></li>
                                     <li style="color: black; font-size: 120%;"><p>{{lbl.montogas}}</p></li>
