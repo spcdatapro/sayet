@@ -136,14 +136,14 @@
                 $scope.getLstOts(idpresupuesto);
                 $scope.loadOTAdjuntos(idpresupuesto, 1);
                 $scope.lbl.id = $scope.presupuesto.id ;
-                $scope.lbl.proyecto = ' Proyecto: ' + ($filter('getById')($scope.proyectos, $scope.presupuesto.idproyecto)).nomproyecto;
-                $scope.lbl.empresa = ' Empresa: ' + ($filter('getById')($scope.empresas, $scope.presupuesto.idempresa)).nomempresa;
-                $scope.lbl.notas = ' Concepto: ' + $scope.presupuesto.notas.substring(0,20);
-                $scope.lbl.tipgasto = ' Tipo gasto: ' + ($filter('getById')($scope.tiposgasto, $scope.presupuesto.idtipogasto)).desctipogast;
-                $scope.lbl.montopres = ' Monto Presupuestado: ' + ($filter('getById')($scope.monedas, $scope.presupuesto.idmoneda)).simbolo + $scope.presupuesto.montoot;
-                $scope.lbl.montogas = ' Monto Gastado: ' + ($filter('getById')($scope.monedas, $scope.presupuesto.idmoneda)).simbolo + $scope.presupuesto.montogastado;
-                $scope.lbl.avance = ' Avance: ' + $scope.presupuesto.avanceot;
-                $scope.lbl.desc = ' Descripcion: ' + $scope.presupuesto.notas;
+                $scope.lbl.proyecto = ' ' + ($filter('getById')($scope.proyectos, $scope.presupuesto.idproyecto)).nomproyecto;
+                $scope.lbl.empresa = ' ' + ($filter('getById')($scope.empresas, $scope.presupuesto.idempresa)).nomempresa;
+                $scope.lbl.notas = ' ' + $scope.presupuesto.notas.substring(0,20);
+                $scope.lbl.tipgasto = ' ' + ($filter('getById')($scope.tiposgasto, $scope.presupuesto.idtipogasto)).desctipogast;
+                $scope.lbl.montopres = ' ' + ($filter('getById')($scope.monedas, $scope.presupuesto.idmoneda)).simbolo + $scope.presupuesto.montoot;
+                $scope.lbl.montogas = ' ' + ($filter('getById')($scope.monedas, $scope.presupuesto.idmoneda)).simbolo + $scope.presupuesto.montogastado;
+                $scope.lbl.avance = ' ' + $scope.presupuesto.avanceot;
+                $scope.lbl.desc = ' ' + $scope.presupuesto.notas;
                 $scope.confGrpBtn('grpBtnPresupuesto', false, false, true, true, true, false, false);
                 $scope.sl.presupuesto = true;
                 if (movertab) {

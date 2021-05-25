@@ -134,7 +134,7 @@
                                 <td style="text-align: center">{{p.tipogasto | shortenStr:10}}</td>
                                 <td style="text-align: center;">{{p.proveedor | shortenStr:15}}</td>
                                 <td>
-                                    <p style="white-space: normal; text-align: center;">{{p.notas | shortenStr:60}}</p>
+                                    <p style="white-space: normal; text-align: center;">{{p.notas | shortenStr:50}}</p>
                                 </td>
                                 <!-- <td style="text-align: center;  ">
                                     {{p.simbolo}}&nbsp;{{p.total | number:2}}</td> -->
@@ -494,14 +494,14 @@
                                 <h3>&Oacute;RDEN DE TRABAJO {{+presupuesto.tipo == 1 ? 'SIMPLE' : 'MÚLTIPLE'}}: {{lbl.id}}</h3>
                                 <ul>
                                     <!--<li><h3>{{lbl.id}}</h3></li>-->
-                                    <li style="color: black; font-size: 120%;"><p>{{lbl.proyecto}}</p></li>
-                                    <li style="color: black; font-size: 120%;"><p>{{lbl.empresa}}</p></li>
-                                    <li style="color: black; font-size: 120%;"><p>{{lbl.notas}}</p></li>
-                                    <li style="color: black; font-size: 120%;"><p>{{lbl.desc}}</p>
-                                    <li style="color: black; font-size: 120%;"><p>{{lbl.tipgasto}}</p></li>
-                                    <li style="color: black; font-size: 120%;"><p>{{lbl.montopres}}</p></li>
-                                    <li style="color: black; font-size: 120%;"><p>{{lbl.montogas}}</p></li>
-                                    <li style="color: black; font-size: 120%;"><p style="float: left;">{{lbl.avance}}</p>
+                                    <li style="color: black; font-size: 120%;"><p><b>Proyecto: </b>{{lbl.proyecto}}</p></li>
+                                    <li style="color: black; font-size: 120%;"><p><b>Empresa: </b>{{lbl.empresa}}</p></li>
+                                    <li style="color: black; font-size: 120%;"><p><b>Concepto: </b>{{lbl.notas}}</p></li>
+                                    <li style="color: black; font-size: 120%;"><p><b>Descripci&oacute;n: </b>{{lbl.desc}}</p>
+                                    <li style="color: black; font-size: 120%;"><p><b>Tipo gasto: </b>{{lbl.tipgasto}}</p></li>
+                                    <li style="color: black; font-size: 120%;"><p><b>Monto Presupuestado: </b>{{lbl.montopres}}</p></li>
+                                    <li style="color: black; font-size: 120%;"><p><b>Monto Gastado: </b>{{lbl.montogas}}</p></li>
+                                    <li style="color: black; font-size: 120%;"><p style="float: left;"><b>Avance: </b>{{lbl.avance}}</p>
                                         <button ng-hide="+presupuesto.tipo == 1" style="float: right;" type="button" class="btn btn-primary btn-sm tipo"
                                         ng-click="printPrespuestoNueD(lbl.id)" data-toggle="tooltip"
                                         data-placement="auto" title="Imprimir con avances nuevo">
