@@ -107,7 +107,7 @@ class dbcpm{
         return $info;
     }
 
-    public function CallJSReportAPI($method, $url, $data = false){
+    public function CallJSReportAPI($method, $url, $data = []){
         $curl = curl_init();
 
         switch ($method)
