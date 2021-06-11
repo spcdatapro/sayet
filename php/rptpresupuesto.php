@@ -578,7 +578,7 @@ $app->post('/avanceotm', function(){
 
     $query = "SELECT CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, DATE_FORMAT(a.fhenvioaprobacion, '%d-%m-%Y') AS fhenvioaprobacion, 
             IF(a.origenprov = 1, b.nombre, c.nombre) AS proveedor, SUBSTRING(e.descripcion, 1, 45) AS subtipogasto,
-            d.simbolo, FORMAT(a.monto, 2) AS montoot, a.notas,
+            d.simbolo, FORMAT(IF(a.id = j.iddetpresupuesto, a.monto + j.monto, a.monto), 2) AS montoot, a.notas,
             FORMAT(IFNULL((SELECT SUM(b.monto) 
             FROM tranban b
             INNER JOIN banco c ON c.id = b.idbanco
@@ -634,8 +634,9 @@ $app->post('/avanceotm', function(){
             FROM compra b 
             WHERE b.idmoneda != a.idmoneda AND b.ordentrabajo = a.id)), 0.00))
             * 100
-            / a.monto, 2), '%') AS avanceot, a.id, a.idmoneda, d.eslocal
+            / IF(a.id = j.iddetpresupuesto, a.monto + j.monto, a.monto), 2), '%') AS avanceot, a.id, a.idmoneda, d.eslocal
             FROM detpresupuesto a 
+            LEFT JOIN ampliapresupuesto j ON j.iddetpresupuesto = a.id
             LEFT JOIN proveedor b ON b.id = a.idproveedor
             LEFT JOIN beneficiario c ON c.id = a.idproveedor
             INNER JOIN moneda d ON d.id = a.idmoneda
