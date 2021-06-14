@@ -557,7 +557,7 @@ $app->get('/lstot/:idpresupuesto', function ($idpresupuesto) {
     WHERE c.idmoneda = a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
     AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1), 0.00)
     +
-    IFNULL(IF(e.eslocal = 1, (SELECT SUM(b.monto * b.tipocambio)
+    IFNULL(IF(f.eslocal = 1, (SELECT SUM(b.monto * b.tipocambio)
     FROM tranban b 
     INNER JOIN banco c ON c.id = b.idbanco
     WHERE b.idmoneda != a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
@@ -572,7 +572,7 @@ $app->get('/lstot/:idpresupuesto', function ($idpresupuesto) {
     FROM compra b 
     WHERE b.idmoneda = a.idmoneda AND b.ordentrabajo = a.id), 0.00)
     +
-    IFNULL(IF(e.eslocal = 1, (SELECT SUM(b.isr * b.tipocambio)
+    IFNULL(IF(f.eslocal = 1, (SELECT SUM(b.isr * b.tipocambio)
     FROM compra b 
     WHERE b.idmoneda != a.idmoneda AND b.ordentrabajo = a.id), 
     (SELECT SUM(b.isr / b.tipocambio) 
@@ -592,7 +592,7 @@ $app->get('/lstot/:idpresupuesto', function ($idpresupuesto) {
     WHERE c.idmoneda = a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
     AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1), 0.00)
     +
-    IFNULL(IF(e.eslocal = 1, (SELECT SUM(b.monto * b.tipocambio)
+    IFNULL(IF(f.eslocal = 1, (SELECT SUM(b.monto * b.tipocambio)
     FROM tranban b 
     INNER JOIN banco c ON c.id = b.idbanco
     WHERE b.idmoneda != a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
@@ -607,7 +607,7 @@ $app->get('/lstot/:idpresupuesto', function ($idpresupuesto) {
     FROM compra b 
     WHERE b.idmoneda = a.idmoneda AND b.ordentrabajo = a.id), 0.00)
     +
-    IFNULL(IF(e.eslocal = 1, (SELECT SUM(b.isr * b.tipocambio)
+    IFNULL(IF(f.eslocal = 1, (SELECT SUM(b.isr * b.tipocambio)
     FROM compra b 
     WHERE b.idmoneda != a.idmoneda AND b.ordentrabajo = a.id), 
     (SELECT SUM(b.isr / b.tipocambio) 
