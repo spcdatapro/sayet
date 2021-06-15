@@ -40,9 +40,12 @@
                     <button type="button" class="btn btn-primary" ng-disabled="frmCta.$invalid" ng-show="editando" ng-click="updCuenta(laCta, laCta.id)">
                         <span class="glyphicon glyphicon-floppy-save"></span>
                     </button>
-                    <button type="button" class="btn btn-primary" ng-disabled="!laCta.objEmpresa" ng-click="printCatalogo(laCta.objEmpresa.id)">
+                    <!-- <button type="button" class="btn btn-primary" ng-disabled="!laCta.objEmpresa" ng-click="printCatalogo(laCta.objEmpresa.id)">
                         <span class="glyphicon glyphicon-print"></span>
                     </button>
+                    <button type="button" class="btn btn-primary" ng-disabled="!laCta.objEmpresa" ng-click="printExcel(laCta.objEmpresa.id)">
+                        <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                    </button> -->
                     <button type="button" class="btn btn-primary" ng-disabled="frmCta.$invalid" ng-show="editando" ng-click="resetLaCta()">
                         <span class="glyphicon glyphicon-plus"></span>
                     </button>
@@ -51,6 +54,20 @@
             <hr/>
             <table id="dtCuentaC" class="table table-hover table-striped table-condensed">
                 <caption>
+                    <div class="input-group" style="margin-bottom: 5px;">
+                        <input ng-model="params.iniciancon" placeholder="Imprimir/Descargar cuentas que inician con: (Ej. 112)" class="form-control"/>
+                        <span class="input-group-btn">
+                            <!-- <button class="btn btn-secondary" type="button" ng-click="getPagos(objEmpresa.id, null)">
+                                <span class="glyphicon glyphicon-search"></span>
+                            </button> -->
+                            <button type="button" class="btn btn-primary" ng-disabled="!laCta.objEmpresa" ng-click="printCatalogo(laCta.objEmpresa.id)">
+                                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="!laCta.objEmpresa" ng-click="printExcel(laCta.objEmpresa.id)">
+                                <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                            </button>
+                        </span>
+                    </div>
                     <input ng-model="searchCta.$" class="form-control" placeholder="Buscar cuenta..." style="width: 100%"/>
                 </caption>
                 <thead>

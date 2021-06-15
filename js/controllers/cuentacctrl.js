@@ -9,6 +9,9 @@
         $scope.lasEmpresas = [];
         $scope.lasCuentas = [];
         $scope.editando = false;
+        $scope.params = {
+            idempresa: null, iniciancon: null
+        }
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true);
 
@@ -19,7 +22,7 @@
         authSrvc.getSession().then(function(usrLogged){
             if(parseInt(usrLogged.workingon) > 0){
                 empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function(r){
-                    $scope.laCta.objEmpresa = r[0];
+                    $scope.laCta.objEmpresa = r[0];                    
                 });
             }
         });
@@ -91,7 +94,19 @@
 
         $scope.printCatalogo = function(idempresa){
             var test = false;
-            jsReportSrvc.getPDFReport(test ? '' : 'HknpYQSCW', { idempresa: idempresa }).then(function(pdf){ $window.open(pdf); });
+            $scope.params.idempresa = idempresa;
+            jsReportSrvc.getPDFReport(test ? '' : 'HknpYQSCW', $scope.params).then(function(pdf){ $window.open(pdf); });
+        }
+
+        $scope.printExcel = (idempresa) => {
+            const test = false;
+            $scope.params.idempresa = idempresa;
+            const empresa = $scope.lasEmpresas.find(e => +e.id === +idempresa);
+            jsReportSrvc.getReport(test ? '' : 'ryu6MLIiO', $scope.params).then((result) => {                
+                var file = new Blob([result.data], {type: 'application/vnd.ms-excel'});
+                var nombre = `Catalogo_Cuentas_${empresa.abreviatura ? empresa.abreviatura : empresa.nomempresa}`;
+                saveAs(file, `${nombre}.xlsx`);
+            });
         }
 
     }]);
