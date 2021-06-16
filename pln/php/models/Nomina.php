@@ -116,11 +116,14 @@ class Nomina extends Principal
 	public function buscar($args=[])
 	{
 		$fecha = $args['fecha'];
-		$dia   = date('d', strtotime($fecha));
+		
+		$tmpFecha = new DateTime($fecha);
+		$dia = $tmpFecha->format('d') == 15 ? '-01' : '-16';
+		$inicio = new DateTime($tmpFecha->format('Y-m').$dia);
 
 		$this->limpiar_nomina($args);
 
-		$condicion = ['activo' => 1];
+		$condicion = [];
 
 		if (elemento($args, 'empresa')) {
 			$condicion["idempresadebito"] = $args['empresa'];
@@ -133,27 +136,41 @@ class Nomina extends Principal
 		);
 
 		foreach ($tmp as $row) {
-			$where = [
-				'idplnempleado' => $row['id'], 
-				'idempresa'     => $row['idempresadebito'], 
-				'fecha'         => $fecha
-			];
+			$insertar = FALSE;
 
-			$ex = (object)$this->db->get(
-				'plnnomina', 
-				['*'], 
-				['AND' => $where]
-			);
+			if ($row['activo'] == 1) {
+				$insertar = TRUE;
+			} else {
+				$baja = new DateTime($row['baja']);
 
-			if (isset($ex->scalar)) {
-				$datos = [
+				if ($baja >= $inicio && $baja <= $tmpFecha) {
+					$insertar = TRUE;
+				}
+			}
+
+			if ($insertar) {
+				$where = [
 					'idplnempleado' => $row['id'], 
 					'idempresa'     => $row['idempresadebito'], 
-					'idproyecto'    => $row['idproyecto'],
 					'fecha'         => $fecha
 				];
 
-				$this->db->insert('plnnomina', $datos);
+				$ex = (object)$this->db->get(
+					'plnnomina', 
+					['*'], 
+					['AND' => $where]
+				);
+
+				if (isset($ex->scalar)) {
+					$datos = [
+						'idplnempleado' => $row['id'], 
+						'idempresa'     => $row['idempresadebito'], 
+						'idproyecto'    => $row['idproyecto'],
+						'fecha'         => $fecha
+					];
+
+					$this->db->insert('plnnomina', $datos);
+				}
 			}
 		}
 
@@ -168,7 +185,7 @@ class Nomina extends Principal
 				        JOIN
 				    plnempleado b ON b.id = a.idplnempleado
 				WHERE
-				    a.fecha = '{$fecha}' AND b.activo = 1 ";
+				    a.fecha = '{$fecha}' ";
 
 		if (elemento($args, 'empresa')) {
 			$sql .= "AND a.idempresa = {$args['empresa']} ";
@@ -232,6 +249,10 @@ class Nomina extends Principal
 
 				if (isset($args['viaticos'])) {
 					$datos["viaticos"] = elemento($args, "viaticos", 0);
+				}
+
+				if (isset($args['diastrabajados'])) {
+					$datos["diastrabajados"] = $args['diastrabajados'];
 				}
 
 				if (isset($args["aguinaldo"])) {
@@ -420,12 +441,14 @@ class Nomina extends Principal
 							$datos['anticipo']  = $e->get_anticipo();
 						}
 					} else {
-						$datos['descanticipo']    = $e->get_descanticipo();
-						$datos['bonificacion']    = $e->get_bono_ley();
+						$datos['descanticipo'] = $e->get_descanticipo();
+						$datos['bonificacion'] = $e->get_bono_ley();
 						$datos['sueldoordinario'] = $e->get_sueldo();
-						$datos['diastrabajados']  = $e->get_dias_trabajados();
-						$datos['descisr']		  = $e->emp->descuentoisr;
-						$datos['descigss']        = $e->get_descingss();
+						$datos['diastrabajados'] = $e->get_dias_trabajados();
+						$datos['descisr'] = $e->emp->descuentoisr;
+						$datos['descigss'] = $e->get_descingss([
+							"vacaciones" => $datos["vacaciones"]
+						]);
 						
 						$prest = $e->get_descprestamo(['sin_idplnnomina' => $row['id']]);
 						
@@ -487,12 +510,6 @@ class Nomina extends Principal
 				'plnnomina.terminada' => 0
 			];
 
-			/*if (isset($args['bono14']) && $args['bono14'] != 'false') {
-				$where['plnnomina.esbonocatorce'] = 1;
-			} else {
-				$where['plnnomina.esbonocatorce'] = 0;
-			}*/
-
 			$tmp = $this->db->select("plnnomina", [
 					'[><]plnempleado(b)' => ['plnnomina.idplnempleado' => 'id']
 				], 
@@ -527,12 +544,6 @@ class Nomina extends Principal
 				}
 
 				if ($anterior !== null && $eliminar === false) {
-					/*if (
-						$anterior["idplnempleado"] === $row["idplnempleado"] && 
-						$anterior["esbonocatorce"] === $row["esbonocatorce"] 
-					) {
-						$eliminar = true;
-					}*/
 					if ($anterior["idplnempleado"] === $row["idplnempleado"]) {
 						$eliminar = true;
 					}
