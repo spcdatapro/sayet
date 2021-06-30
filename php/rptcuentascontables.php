@@ -5,7 +5,7 @@ require_once 'db.php';
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
 
-$app->get('/catalogo/:idempresa', function($idempresa){
+$app->get('/catalogo/:idempresa(/:iniciacon)', function($idempresa, $iniciancon = ''){
     $db = new dbcpm();
 
     //Datos de empresa
@@ -16,6 +16,7 @@ $app->get('/catalogo/:idempresa', function($idempresa){
     $query = "SELECT a.id, a.codigo, a.nombrecta, a.tipocuenta, IF(a.tipocuenta = 0, '', 'Sí') AS esdetotales ";
     $query.= "FROM cuentac a ";
     $query.= "WHERE a.idempresa = $idempresa ";
+    $query.= trim($iniciancon) !== '' ? "AND a.codigo LIKE '$iniciancon%' " : '';
     $query.= "ORDER BY a.codigo";
     $cuentas = $db->getQuery($query);
 
