@@ -437,17 +437,21 @@ class Empleado extends Principal
 
 	public function set_sueldo()
 	{
-		$this->sueldo = $this->emp->sueldo;
+		if ($this->dtrabajados == 15 || $this->dtrabajados == 30) {
+			$this->sueldo = $this->emp->sueldo;
+		} else {
+			$this->sueldo = $this->get_gana_dia() * $this->dtrabajados;
+		}
 	}
 
 	public function get_sueldo()
 	{
-		return $this->emp->sueldo;
+		return $this->sueldo;
 	}
 
 	public function get_gana_dia()
 	{
-		return $this->sueldo/30;
+		return $this->emp->sueldo/30;
 	}
 
 	public function get_bono_dia()
@@ -489,8 +493,17 @@ class Empleado extends Principal
 				$this->dtrabajados = ($this->ndia-$idia)+1;
 			}
 		} else {
-			if ($this->nanio >= $ianio) {
-				$this->dtrabajados = $this->ndia == 15 ? 15 : 30;
+			if (empty($this->emp->baja)) {
+				if ($this->nanio >= $ianio) {
+					$this->dtrabajados = $this->ndia == 15 ? 15 : 30;
+				}
+			} else {
+				$baja = new DateTime($this->emp->baja);
+
+				if ($baja->format('Y') == $this->nanio && $baja->format('m') == $this->nmes) {
+					$dia = $baja->format('d');
+					$this->dtrabajados = $dia < $this->ndia ? $dia : $this->ndia;
+				}
 			}
 		}
 	}
@@ -509,17 +522,25 @@ class Empleado extends Principal
 		return 0;
 	}
 
+	public function get_descuento_isr()
+	{
+		if ($this->dtrabajados == 30) {
+			return $this->emp->descuentoisr;
+		} else {
+			return round(($this->emp->descuentoisr/30)*$this->dtrabajados, 2);
+		}
+		
+	}
+
 	public function get_bono_ley()
 	{
 		if ($this->dtrabajados > 0) {
-
-			if ($this->ndia != 15 && $this->dtrabajados == $this->ndia) {
+			if ($this->dtrabajados == 30) {
 				return $this->emp->bonificacionley;
+			} else {
+				return round($this->get_bono_dia()*$this->dtrabajados, 2);
 			}
-
-			return $this->get_bono_dia()*$this->dtrabajados;
 		}
-
 		return 0;
 	}
 
@@ -531,9 +552,16 @@ class Empleado extends Principal
 	{
 
 		if ($this->emp->formapago == 1 && $this->ndia == 15) {
+			if ($this->dtrabajados == 15) {
+				return (($this->emp->sueldo+$this->emp->bonificacionley)/2);
+			} else {
+				$sueldo = $this->dtrabajados * $this->get_gana_dia();
+				$bono = $this->dtrabajados * $this->get_bono_dia();
+				$isr = $this->get_descuento_isr();
+				$igss = ($sueldo * ($this->emp->porcentajeigss/100));
 
-			#return round( ($this->dtrabajados * ($this->get_gana_dia() + $this->get_bono_dia())), 2);
-			return (($this->sueldo+$this->emp->bonificacionley)/2);
+				return round(($sueldo-$igss)+$bono-$isr, 2);
+			}
 		}
 
 		return 0;

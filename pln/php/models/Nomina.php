@@ -116,10 +116,7 @@ class Nomina extends Principal
 	public function buscar($args=[])
 	{
 		$fecha = $args['fecha'];
-		
 		$tmpFecha = new DateTime($fecha);
-		$dia = $tmpFecha->format('d') == 15 ? '-01' : '-16';
-		$inicio = new DateTime($tmpFecha->format('Y-m').$dia);
 
 		$this->limpiar_nomina($args);
 
@@ -143,7 +140,7 @@ class Nomina extends Principal
 			} else {
 				$baja = new DateTime($row['baja']);
 
-				if ($baja >= $inicio && $baja <= $tmpFecha) {
+				if ($baja->format('Y') == $tmpFecha->format('Y') && $baja->format('m') == $tmpFecha->format('m')) {
 					$insertar = TRUE;
 				}
 			}
@@ -243,7 +240,6 @@ class Nomina extends Principal
 				return false;
 			} else {
 				$mpld = new Empleado($nom->idplnempleado);
-				$mpld->set_sueldo();
 
 				$datos = [];
 
@@ -379,11 +375,11 @@ class Nomina extends Principal
 				foreach ($test as $row) {
 					$e = new Empleado($row['idplnempleado']);
 					$e->set_fecha($fecha);
-					$e->set_sueldo();
 					$e->set_dias_trabajados();
+					$e->set_sueldo();
 
 					$datos = [
-						"sueldoordinarioreporte" => $e->get_sueldo(),
+						"sueldoordinarioreporte" => $e->emp->sueldo,
 						"bonocatorce"            => 0,
 						"bonocatorcedias"        => 0,
 						"esbonocatorce"          => 0,
@@ -445,7 +441,7 @@ class Nomina extends Principal
 						$datos['bonificacion'] = $e->get_bono_ley();
 						$datos['sueldoordinario'] = $e->get_sueldo();
 						$datos['diastrabajados'] = $e->get_dias_trabajados();
-						$datos['descisr'] = $e->emp->descuentoisr;
+						$datos['descisr'] = $e->get_descuento_isr();
 						$datos['descigss'] = $e->get_descingss([
 							"vacaciones" => $datos["vacaciones"]
 						]);
