@@ -55,6 +55,27 @@
                                         ng-model="laTran.esnegociable" ng-true-value="1" ng-false-value="0" />
                                 </div>
                             </div>
+                            <div class="col-md-3" ng-show="laTran.objTipotrans.abreviatura === 'R'">
+                                <div class="form-group">
+                                    <label>Cheque al que se atar&aacute;</label>
+                                    <ui-select ng-model="laTran.iddocliquida"
+                                        title="Seleccione un cheque..." theme="bootstrap"
+                                        autofocus="false" on-select="fillDataOnDocLiq($item, $model)">
+                                        <ui-select-match placeholder="Buscar cheque..."
+                                            allow-clear="true">
+                                            <span ng-bind="($select.selected.tipotrans + ' ' + $select.selected.numero)"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices 
+                                            repeat="item.id as item in lstchq | filter:$select.search"
+                                            group-by="'grupo'">
+                                            <div
+                                                ng-bind-html="(item.tipotrans + ' ' + item.numero) | highlight: $select.search">
+                                            </div>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-3">
@@ -250,7 +271,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row" ng-show="laTran.objTipotrans.abreviatura === 'C' || laTran.tipotrans === 'C'">
+                        <!-- <div class="row" ng-show="laTran.objTipotrans.abreviatura === 'C' || laTran.tipotrans === 'C'">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Nota de cr&eacute;dito:</label>
@@ -272,8 +293,7 @@
                                     </ui-select>
                                 </div>
                             </div>
-
-                        </div>
+                        </div> -->
                         <div class="row" ng-show="laTran.anulado === 1">
                             <div class="col-md-12">
                                 <div class="well well-sm">

@@ -166,7 +166,11 @@
                     $scope.fltrtran.tipotrans = 'R';
                     tranBancSrvc.lstTranFiltr($scope.fltrtran).then(function (dr) {
                         $scope.lstndc = prepareTranBan(dr);
-                        $scope.fltrtran.tipotrans = '';
+                        $scope.fltrtran.tipotrans = 'C';
+                        tranBancSrvc.lstTranFiltr($scope.fltrtran).then(function (y){
+                            $scope.lstchq = prepareTranBan(y);
+                            $scope.fltrtran.tipotrans = '';
+                        });
                     });
                 });
             }
@@ -340,6 +344,19 @@
             //$scope.laTran.iddetpresup = item.id;
         };
 
+        
+        $scope.fillDataOnDocLiq = function (item, model) {
+            var tmpObjBene = $filter('filter')($scope.beneficiarios, { id: item.idbeneficiario, dedonde: item.origenbene }, true);
+            $scope.laTran.objBeneficiario = tmpObjBene.length > 0 ? tmpObjBene[0] : undefined;
+            $scope.laTran.beneficiario = 'Reingreso (' + item.beneficiario + ')';
+            $scope.laTran.monto = item.monto;
+            $scope.laTran.concepto = 'Reingreso de cheque numero ' + item.numero + ' del proveedor ' + item.beneficiario;
+            $scope.laTran.numero = item.numero;
+            $scope.laTran.iddetpresup = item.iddetpresup;
+            $scope.laTran.tipocambio = item.tipocambio;
+            //console.log(item);
+        };
+
         $scope.fillDataOnChangeBene = function (item, model) {
             $scope.setNombreBene(item);
             if (!$scope.laTran.concepto || $scope.laTran.concepto.trim() == '') {
@@ -366,8 +383,8 @@
             obj.anticipo = obj.anticipo != null && obj.anticipo !== undefined ? obj.anticipo : 0;
             obj.esnegociable = obj.esnegociable != null && obj.esnegociable !== undefined ? obj.esnegociable : 0;
             obj.esnegociable = obj.tipotrans.toUpperCase() === 'C' ? obj.esnegociable : 0;
-            obj.idbeneficiario = (parseInt(obj.anticipo) === 0) ? 0 : (obj.objBeneficiario != null && obj.objBeneficiario !== undefined ? obj.objBeneficiario.id : 0);
-            obj.origenbene = (parseInt(obj.anticipo) === 0) ? 0 : (obj.objBeneficiario != null && obj.objBeneficiario !== undefined ? obj.objBeneficiario.dedonde : 0);
+            obj.idbeneficiario = obj.objBeneficiario != null && obj.objBeneficiario !== undefined ? obj.objBeneficiario.id : 0;
+            obj.origenbene = obj.objBeneficiario != null && obj.objBeneficiario !== undefined ? obj.objBeneficiario.dedonde : 0;
             obj.iddetpresup = obj.iddetpresup != null && obj.iddetpresup !== undefined ? obj.iddetpresup : 0;
             obj.iddetpagopresup = obj.iddetpagopresup != null && obj.iddetpagopresup !== undefined ? obj.iddetpagopresup : 0;
             obj.idproyecto = obj.idproyecto != null && obj.idproyecto !== undefined ? obj.idproyecto : 0;
