@@ -3,6 +3,7 @@ require_once 'vendor/catfan/medoo/medoo.php';
 class dbcpm{
 
     private $dbHost = 'localhost';
+    // private $dbHost = 'mysql-local';
     private $dbUser = 'root';
     private $dbPass = 'PoChoco2016';    
     private $dbSchema = 'sayet';    
