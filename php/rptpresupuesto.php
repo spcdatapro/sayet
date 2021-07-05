@@ -347,7 +347,7 @@ $app->post('/avanceot', function(){
             INNER JOIN proveedor e ON e.id = a.idproveedor
             INNER JOIN moneda f ON f.id = b.idmoneda
             WHERE a.id = $d->idot AND c.id IS NULL
-            ORDER BY 1 DESC ";
+            ORDER BY fechaOrd DESC ";
     $ordentrabajo = $db->getQuery($query);
 
     $query = "SELECT CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, DATE_FORMAT(b.fechasolicitud, '%d-%m-%Y') AS fechasolicitud, c.nomproyecto AS proyecto, 
@@ -549,7 +549,7 @@ $app->post('/avanceot', function(){
             INNER JOIN compra b ON d.id = b.idreembolso 
             WHERE a.id = $d->idot AND a.idmoneda != b.idmoneda)), 0.00), 2) AS totgastado, DATE_FORMAT(a.fhenvioaprobacion, '%d-%m-%Y %H:%i') AS creacion, 
             l.nombre AS creador, DATE_FORMAT(a.fhaprobacion, '%d-%m-%Y %H:%i') AS aprobacion, m.nombre AS aprobador, n.nombre AS modificador, 
-            DATE_FORMAT(a.fechamodificacion, '%d-%m-%Y %H:%i') AS modificacion
+            DATE_FORMAT(a.fechamodificacion, '%d-%m-%Y %H:%i') AS modificacion, IF(b.tipo = 2, 1, NULL) AS esotm, b.notas AS notasotm
             FROM detpresupuesto a 
             INNER JOIN presupuesto b ON b.id = a.idpresupuesto
             INNER JOIN proyecto c ON c.id = b.idproyecto
