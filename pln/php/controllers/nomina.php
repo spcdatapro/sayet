@@ -606,6 +606,7 @@ $app->get('/imprimir_bono14', function(){
 
 		$pdf = new TCPDF('P', 'mm', $s);
 		$pdf->SetAutoPageBreak(TRUE, 0);
+		$pdf->AddPage();
 
 		$_GET['esbonocatorce'] = true;
 
@@ -628,7 +629,6 @@ $app->get('/imprimir_bono14', function(){
 				}
 			}
 
-			$hojas = 1;
 			$rpag = 45; # Registros por página
 
 			$mes  = date('m', strtotime($_GET['fal']));
@@ -636,22 +636,6 @@ $app->get('/imprimir_bono14', function(){
 			$dia  = date('d', strtotime($_GET['fal']));
 
 			$cabecera = $b->get_cabecera_bono14($_GET);
-			
-			for ($i=0; $i < ((count($todos)+(count($datos)*2))/$rpag) ; $i++) { 
-				$pdf->AddPage();
-
-				foreach ($cabecera as $campo => $valor) {
-					$conf = $g->get_campo_impresion($campo, $tipoImpresion);
-
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$pdf = generar_fimpresion($pdf, $valor, $conf);
-					}
-				}
-			}
-
-			$pagina = 1;
-
-			$pdf->setPage($pagina);
 
 			$espacio = 0;
 			$totales = [];
@@ -662,8 +646,7 @@ $app->get('/imprimir_bono14', function(){
 				if ($registros == $rpag) {
 					$espacio   = 0;
 					$registros = 0;
-					$pagina++;
-					$pdf->setPage($pagina);
+					$pdf->AddPage();
 				}
 				
 				$confe      = $g->get_campo_impresion('idempresa', $tipoImpresion);
@@ -711,15 +694,12 @@ $app->get('/imprimir_bono14', function(){
 						}
 					}
 
-					# $pdf = generar_fimpresion($pdf, $valor, $conf);
-
 					$espacio += $confe->espacio;
 
 					if ($registros == $rpag) {
 						$espacio   = 0;
 						$registros = 0;
-						$pagina++;
-						$pdf->setPage($pagina);
+						$pdf->AddPage();
 					}
 				}
 
@@ -728,8 +708,7 @@ $app->get('/imprimir_bono14', function(){
 				if ($registros == $rpag) {
 					$espacio   = 0;
 					$registros = 0;
-					$pagina++;
-					$pdf->setPage($pagina);
+					$pdf->AddPage();
 				}
 
 				$pdf->SetLineStyle(array(
@@ -740,49 +719,13 @@ $app->get('/imprimir_bono14', function(){
 					'color' => array(0, 0, 0)
 				));
 
-				foreach ($etotales as $campo => $total) {
-					$conf = $g->get_campo_impresion($campo, $tipoImpresion);
-
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$conf->psy = ($conf->psy+$espacio);
-						$pdf       = generar_fimpresion($pdf, number_format($total, 2), $conf);
-
-						$pdf->Line($conf->psx, $conf->psy, ($conf->psx+$conf->ancho), $conf->psy);
-
-						$y = ($conf->psy+$conf->espacio);
-
-						$pdf->Line($conf->psx, $y, $conf->psx+$conf->ancho, $y);
-						$pdf->Line($conf->psx, $y+1, $conf->psx+$conf->ancho, $y+1);
-					}
-				}
+				$pdf = imprimirTotalesEmpresa($pdf, $g, $tipoImpresion, $etotales, $espacio);
 
 				$espacio += $confe->espacio;	
 			}
 
-			$pie  = $g->get_campo_impresion("vtotalespie", $tipoImpresion);
-
-			foreach ($totales as $key => $subtotales) {
-				$pdf->setPage($key);
-
-				foreach ($subtotales as $campo => $total) {
-					$conf = $g->get_campo_impresion($campo, $tipoImpresion);
-
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$conf->psy = $pie->psy;
-						$pdf       = generar_fimpresion($pdf, number_format($total, 2), $conf);
-
-						$y = ($conf->psy+$conf->espacio);
-
-						$pdf->Line($conf->psx, $y, $conf->psx+$conf->ancho, $y);
-						$pdf->Line($conf->psx, $y+1, $conf->psx+$conf->ancho, $y+1);
-					}
-				}
-
-				$conf = $g->get_campo_impresion("vnopagina", $tipoImpresion);
-				if (!isset($conf->scalar) && $conf->visible == 1) {
-					$pdf = generar_fimpresion($pdf, $key, $conf);
-				}
-			}
+			$pdf = imprimirTotalesPagina($pdf, $g, $tipoImpresion, $totales);
+			$pdf = imprimirEncabezado($pdf, $g, $tipoImpresion, $cabecera);
 
 			$pdf->Output("nomina" . time() . ".pdf", 'I');
 			die();
