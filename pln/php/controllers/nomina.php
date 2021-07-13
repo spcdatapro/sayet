@@ -957,6 +957,7 @@ $app->get('/imprimir_aguinaldo', function(){
 			$pdf = new TCPDF('P', 'mm', $s);
 			$pdf->SetAutoPageBreak(TRUE, 0);
 
+			$_GET['esaguinaldo'] = true;
 			$todos = $b->get_datos_recibo($_GET);
 
 			$tipoImpresion = 14;
