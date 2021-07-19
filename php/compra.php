@@ -657,20 +657,21 @@ $app->get('/selots/:idproveedor/:idempresa', function($idproveedor, $idempresa){
 
 $app->get('/montoots/:idot', function($idot){
     $db = new dbcpm();
-    $query = "SELECT ROUND((ROUND(IF(c.eslocal = 1, IF(a.id = d.iddetpresupuesto, a.monto + SUM(d.monto), a.monto), 
-    IF(a.id = d.iddetpresupuesto, (a.monto * a.tipocambio) + (d.monto * d.tipocambio), a.monto * a.tipocambio)) - (IFNULL((SELECT SUM(b.totfact) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda = b.idmoneda), 0.00) + 
-    IFNULL(IF(c.eslocal = 1, (SELECT SUM(b.totfact * b.tipocambio) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda != b.idmoneda),
-    (SELECT SUM(b.totfact) / b.tipocambio FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda != b.idmoneda)), 0.00)), 2) +
-    ROUND(IF(c.eslocal = 1, IF(a.id = d.iddetpresupuesto, a.monto + SUM(d.monto), a.monto), 
-    IF(a.id = d.iddetpresupuesto, (a.monto * a.tipocambio) + (d.monto * d.tipocambio), a.monto * a.tipocambio)) - (IFNULL((SELECT SUM(b.totfact) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda = b.idmoneda), 0.00) + 
-    IFNULL(IF(c.eslocal = 1, (SELECT SUM(b.totfact * b.tipocambio) FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda != b.idmoneda),
-    (SELECT SUM(b.totfact) / b.tipocambio FROM detpresupuesto a INNER JOIN compra b ON a.id = b.ordentrabajo WHERE a.id = $idot AND a.idmoneda != b.idmoneda)), 0.00)), 2) * 0.10), 2)
-    AS monto
+    $query = "SELECT ROUND(IF(a.id = e.iddetpresupuesto, 
+    IF(c.eslocal = 1 AND d.eslocal = 1, (((e.monto + a.monto) * 0.10) + a.monto + e.monto) - SUM(b.totfact), 
+    IF(c.eslocal = 1 AND d.eslocal = 2, (((e.monto + a.monto) * 0.10) + a.monto + e.monto) - SUM(b.totfact) * b.tipocambio, 
+    IF(c.eslocal = 2 AND d.eslocal = 1, ((((e.monto + a.monto) * a.tipocambio) * 0.10) + a.monto * a.tipocambio) - SUM(b.totfact), 
+    IF(c.eslocal = 2 AND d.eslocal = 2, ((((e.monto + a.monto) * a.tipocambio) * 0.10) + a.monto * a.tipocambio) - SUM(b.totfact) * b.tipocambio, 0)))), 
+    IF(c.eslocal = 1 AND d.eslocal = 1, ((a.monto * 0.10) + a.monto) - SUM(b.totfact), 
+    IF(c.eslocal = 1 AND d.eslocal = 2, ((a.monto * 0.10) + a.monto) - SUM(b.totfact) * b.tipocambio, 
+    IF(c.eslocal = 2 AND d.eslocal = 1, (((a.monto * a.tipocambio) * 0.10) + a.monto * a.tipocambio) - SUM(b.totfact), 
+    IF(c.eslocal = 2 AND d.eslocal = 2, (((a.monto * a.tipocambio) * 0.10) + a.monto * a.tipocambio) - SUM(b.totfact) * b.tipocambio, 0))))), 2) AS monto
     FROM detpresupuesto a 
     INNER JOIN compra b ON a.id = b.ordentrabajo
     INNER JOIN moneda c ON c.id = a.idmoneda
-    LEFT JOIN ampliapresupuesto d ON a.id = d.iddetpresupuesto
-    WHERE a.id = $idot AND d.idestatuspresupuesto = 3";
+    INNER JOIN moneda d ON d.id = a.idmoneda
+    LEFT JOIN ampliapresupuesto e ON a.id = e.iddetpresupuesto
+    WHERE a.id = $idot ";  
 
     $monto = $db->getOneField($query);
     
@@ -679,6 +680,7 @@ $app->get('/montoots/:idot', function($idot){
 
 $app->get('/selcheques/:idot', function($idot){
     $db = new dbcpm();
+
     $query = "SELECT a.id, b.idmoneda, a.numero, FORMAT(IF(a.isr > 0.00, a.monto + a.isr, a.monto), 2) AS monto, ROUND(a.tipocambio, 5) AS tipocambio, a.concepto, a.tipotrans AS tipo, b.nombre AS banco, c.simbolo AS moneda, a.isr
             FROM tranban a
             INNER JOIN banco b ON b.id = a.idbanco 
