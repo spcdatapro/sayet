@@ -592,6 +592,14 @@ class Nomina extends Principal
 			$where .= "AND (b.formapago = 1 or a.bonocatorce<>0 or a.aguinaldo<>0) ";
 		}
 
+		if (isset($args["esbonocatorce"])) {
+			$where .= "AND a.bonocatorce > 0 ";
+		}
+
+		if (isset($args["esaguinaldo"])) {
+			$where .= "AND a.aguinaldo > 0 ";
+		}
+
 		$orden = "c.ordenreppres";
 
 		if (isset($args['agrupar_por']) && $args['agrupar_por'] == 2) {

@@ -1074,15 +1074,16 @@ EOT;
 				$fecha = $this->nfecha;
 			}
 
-			$pasado = date('Y-m-t', strtotime('-1 year', strtotime($fecha)));
-			$inicio = date('Y-m-d', strtotime('+1 days', strtotime($pasado)));
-			$uno    = new DateTime($inicio);
+			$pasado  = date('Y-m-t', strtotime('-1 year', strtotime($fecha)));
+			$inicio  = date('Y-m-d', strtotime('+1 days', strtotime($pasado)));
+			$uno     = new DateTime($inicio);
 			$ingreso = new DateTime($this->getFechaIngreso());
+			$actual  = new DateTime($fecha);
 
 			if ($ingreso <= $uno) {
 				$this->bonocatorcedias = 365;
 				$this->bonocatorce     = $this->emp->sueldo;
-			} else {
+			} else if ($ingreso <= $actual) {
 				$actual = new DateTime($fecha);
 				$interval = $ingreso->diff($actual);
 				$this->bonocatorcedias = ($interval->format('%a')+1);
@@ -1102,16 +1103,16 @@ EOT;
 				$fecha = $this->nfecha;
 			}
 
-			$pasado = date('Y-m-t', strtotime('-1 year', strtotime($fecha)));
-			$inicio = date('Y-m-d', strtotime('+1 days', strtotime($pasado)));
-			$uno    = new DateTime($inicio);
+			$pasado  = date('Y-m-t', strtotime('-1 year', strtotime($fecha)));
+			$inicio  = date('Y-m-d', strtotime('+1 days', strtotime($pasado)));
+			$uno     = new DateTime($inicio);
 			$ingreso = new DateTime($this->getFechaIngreso());
+			$actual  = new DateTime($fecha);
 
 			if ($ingreso <= $uno) {
 				$this->aguinaldoDias  = 365;
 				$this->aguinaldoMonto = $this->emp->sueldo;
-			} else {
-				$actual   = new DateTime($fecha);
+			} else if ($ingreso <= $actual) {
 				$interval = $ingreso->diff($actual);
 				
 				$this->aguinaldoDias  = ($interval->format('%a')+1);
