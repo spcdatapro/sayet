@@ -91,7 +91,7 @@ $app->post('/c', function(){
     $query = "SELECT IFNULL(seriefel, 'A') AS seriefel, IFNULL(correlativofel, 0) AS correlativofel FROM empresa WHERE id = $d->idempresa";
     $datosFel = $db->getQuery($query)[0];
     $datosFel->correlativofel = (int)$datosFel->correlativofel;
-    $datosFel->correlativofel++;
+    // $datosFel->correlativofel++;
 
     $query = "INSERT INTO factura(";
     $query.= "idempresa, idtipofactura, idcontrato, idcliente, nit, nombre, fechaingreso, mesiva, fecha, idtipoventa, idmoneda, tipocambio, esinsertada,";
