@@ -253,16 +253,21 @@
                     });
                     $scope.laCompra.totfact = undefined;
                 }
-                if (noAfecto <= totFact) {
+                if ($scope.laCompra.objProveedor.pequeniocont == 1) {
+                    $scope.laCompra.subtotal = totFact;
+                    $scope.laCompra.iva = 0.00;
+                } else {
+                    if (noAfecto <= totFact) {
                     $scope.laCompra.subtotal = geniva ? parseFloat(subtotal / 1.12).toFixed(2) : totFact;
                     $scope.laCompra.iva = geniva ? parseFloat($scope.laCompra.subtotal * 0.12).toFixed(2) : 0.00;
-                } else {
-                    $scope.laCompra.noafecto = 0;
-                    toaster.pop({
-                        type: 'error', title: 'Error en el monto de No afecto.',
-                        body: 'El monto de No afecto no puede ser mayor al total de la factura.', timeout: 7000
-                    });
-                }
+                        } else {
+                        $scope.laCompra.noafecto = 0;
+                        toaster.pop({
+                            type: 'error', title: 'Error en el monto de No afecto.',
+                            body: 'El monto de No afecto no puede ser mayor al total de la factura.', timeout: 7000
+                        });
+                    }
+                }    
             };
 
             $scope.esDePresupuesto = async () => {
