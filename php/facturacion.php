@@ -733,7 +733,7 @@ function regeneraCorrelativo($d)
         $db->doQuery($query);
         $correlativo++;
     }
-    $query = "UPDATE empresa SET correlativofel = $correlativo WHERE id = $d->idempresa";
+    $query = "UPDATE empresa SET correlativofel = ($correlativo - 1) WHERE id = $d->idempresa";
 };
 
 $app->post('/genfel', function() use($app) {
