@@ -109,7 +109,7 @@ $app->post('/c', function(){
     $db->doQuery($query);
     $lastid = $db->getLastId();
     if(in_array($d->tipotrans, $tentrada)){
-        if($d->tipotrans === 'R' AND $d->iddocliquida > 0){$db->doQuery("UPDATE tranban SET liquidado = 1 where id = $d->iddocliquida"); }
+        if($d->iddocliquida > 0){$db->doQuery("UPDATE tranban SET liquidado = 1 where id = $d->iddocliquida"); }
     }
     if(in_array($d->tipotrans, $ttsalida)){
         if($d->tipotrans === 'C'){ $db->doQuery("UPDATE banco SET correlativo = correlativo + 1 WHERE id = ".$d->idbanco); }
