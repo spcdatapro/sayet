@@ -218,10 +218,12 @@ $app->post('/genpost', function(){
     $db->doQuery($query);
 
     $query = "SELECT a.id, a.idempresa, a.idcliente, a.idcontrato, TRIM(a.serie) AS serie, TRIM(a.numero) AS numero, TRIM(a.conceptomayor) AS conceptomayor, ";
-    $query.= "ROUND(a.total, 2) AS pagoneto, ";
+    // $query.= "ROUND(a.total, 2) AS pagoneto, ";
+    $query.= "IF(a.importetotal <> 0, a.importetotal, ROUND(a.total, 2)) AS pagoneto, ";
     $query.= "ROUND(a.retisr, 2) AS retisr, ";
     $query.= "ROUND(a.retiva, 2) AS retiva, ";
-    $query.= "ROUND(a.iva, 2) AS iva, ";
+    // $query.= "ROUND(a.iva, 2) AS iva, ";
+    $query.= "IF(a.importeiva <> 0, a.importeiva, ROUND(a.iva, 2)) AS iva, ";
     $query.= "a.anulada, a.esinsertada, a.exentoiva ";
     $query.= "FROM factura a ";
     $query.= "WHERE a.id IN($ids) ";
@@ -276,7 +278,9 @@ $app->post('/genpost', function(){
             }
 
             //Cuentas de detalle de factura
-            $query = "SELECT a.id, a.idtiposervicio, a.descripcion, IF($factura->exentoiva = 0, ROUND(a.preciotot / 1.12, 2), ROUND(a.preciotot, 2)) AS monto ";
+            // $query = "SELECT a.id, a.idtiposervicio, a.descripcion, IF($factura->exentoiva = 0, ROUND(a.preciotot / 1.12, 2), ROUND(a.preciotot, 2)) AS monto ";
+            $query = "SELECT a.id, a.idtiposervicio, a.descripcion, ";
+            $query.= "IF($factura->exentoiva = 0, IF(a.importetotal <> 0, ROUND(a.importetotal / 1.12, 2), ROUND(a.preciotot / 1.12, 2)), IF(a.importetotal <> 0, a.importetotal, ROUND(a.preciotot, 2))) AS monto ";
             $query.= "FROM detfact a ";
             $query.= "WHERE idfactura = $factura->id";
             $detfact = $db->getQuery($query);
