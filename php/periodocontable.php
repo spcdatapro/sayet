@@ -49,7 +49,8 @@ $app->post('/validar', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
     $query = "SELECT COUNT(id) AS abiertos FROM periodocontable WHERE abierto = 1 AND '$d->fecha' >= del AND '$d->fecha' <= al";
-    print json_encode(['valida' => (int)$db->getOneField($query)]);
+    $hayAbiertos = (int)$db->getOneField($query) === 0 ? 0 : 1;
+    print json_encode(['valida' => $hayAbiertos]);
 });
 
 $app->run();
