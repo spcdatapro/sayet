@@ -91,7 +91,7 @@ $app->post('/rptdescuadres', function(){
     $query.= "SELECT CONCAT('P', YEAR(b.fecha), LPAD(MONTH(b.fecha), 2, '0'), LPAD(DAY(b.fecha), 2, '0'), LPAD(8, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fecha AS fecha, ";
     $query.= "CONCAT(b.serie, b.numero, ' ', c.nombre) AS referencia, 'Recibo interno' AS concepto, b.id, 12 AS origen ";
     $query.= "FROM recibocli b INNER JOIN cliente c ON c.id = b.idcliente ";
-    $query.= "LEFT JOIN (SELECT origen, idorigen, SUM(debe) AS totdebe, SUM(haber) AS tothaber FROM detallecontable WHERE origen = 8 GROUP BY origen, idorigen HAVING totdebe <> tothaber) z ON z.idorigen = b.id ";
+    $query.= "LEFT JOIN (SELECT origen, idorigen, SUM(debe) AS totdebe, SUM(haber) AS tothaber FROM detallecontable WHERE origen = 12 GROUP BY origen, idorigen HAVING totdebe <> tothaber) z ON z.idorigen = b.id ";
     $query.= "WHERE b.fecha >= '$d->fdelstr' AND b.fecha <= '$d->falstr' AND b.idempresa = $d->idempresa AND (z.idorigen = NULL OR z.totdebe <> z.tothaber) ";
 
     $query.= "ORDER BY 2, 1";
