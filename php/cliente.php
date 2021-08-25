@@ -758,4 +758,29 @@ $app->post('/copia', function(){
     }
 });
 
+$app->get('/reclstclie', function(){
+    $db = new dbcpm();
+    $query="SELECT a.id AS id, a.nombre, a.nombrecorto, a.id AS idcliente, NULL AS nit
+    FROM cliente a LEFT JOIN (
+    SELECT idcliente, GROUP_CONCAT(contratos ORDER BY contratos SEPARATOR ';') AS contratos FROM (
+    SELECT c.idcliente, CONCAT(c.idcontrato, '_', GROUP_CONCAT(DISTINCT c.nombre ORDER BY c.nombre SEPARATOR ', ')) AS contratos FROM (
+    SELECT b.idcliente, b.id AS idcontrato, a.nombre FROM unidad a, contrato b WHERE FIND_IN_SET(a.id, b.idunidad) AND b.inactivo = 0) c 
+    GROUP BY c.idcliente, c.idcontrato) a 
+    GROUP BY idcliente) c ON a.id = c.idcliente 
+    WHERE a.nomostrar = 0 
+    UNION
+    SELECT a.nit AS id, a.nombre, SUBSTRING(a.nombre, 1, 10) AS nombrecorto, NULL AS id, a.nit
+    FROM factura a 
+    WHERE a.idcontrato = 0 AND a.idcliente = 0 AND a.nit IS NOT NULL AND TRIM(UPPER(a.nit)) <> 'CF' AND trim(upper(a.nit)) <> 'C/F' AND YEAR(a.fecha) > 2019 
+    AND a.nit NOT LIKE '%anula%'
+    ORDER BY 2";
+    print $db->doSelectASJson($query);
+});
+
+$app->get('/lstcatclie', function(){
+    $db = new dbcpm();
+    $query="SELECT id, nombre FROM catclie";
+    print $db->doSelectASJson($query);
+});
+
 $app->run();

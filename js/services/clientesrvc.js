@@ -71,6 +71,9 @@
             },
             editRow: function(obj, op){
                 return comunFact.doPOST(urlBase + '/' + op, obj);
+            },
+            lstRecCliente: function(){
+                return comunFact.doGET(urlBase + '/reclstclie');
             }
         };
     }]);

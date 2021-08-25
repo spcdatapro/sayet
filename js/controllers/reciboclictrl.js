@@ -70,12 +70,12 @@
             }
         };
 
-        clienteSrvc.lstCliente().then(function(d){
+        clienteSrvc.lstRecCliente().then(function(d){
             d.push({
-                id: "0", nombre: "Facturas contado (Clientes varios)", nombrecorto: "FactCont",
-                direntrega: "", dirplanta: null, telpbx: "", teldirecto: "", telfax: null, telcel: "", correo: "", idordencedula: "", regcedula: null, dpi: "",
-                cargolegal: "", nomlegal: "", apellidolegal: "", nomadmon: "", mailadmon: "", nompago: "", mailcont: "", idcuentac: "", creadopor: "", fhcreacion: "", actualizadopor: "",
-                fhactualizacion: "",contratos: ""
+                id: "0", nombre: "Facturas contado (Clientes varios)", nombrecorto: "FactCont", idcliente:"0", nit:"0"
+                // direntrega: "", dirplanta: null, telpbx: "", teldirecto: "", telfax: null, telcel: "", correo: "", idordencedula: "", regcedula: null, dpi: "",
+                // cargolegal: "", nomlegal: "", apellidolegal: "", nomadmon: "", mailadmon: "", nompago: "", mailcont: "", idcuentac: "", creadopor: "", fhcreacion: "", actualizadopor: "",
+                // fhactualizacion: "",contratos: ""
             });
             $scope.clientes = d;
         });
@@ -86,6 +86,7 @@
                 fecha: moment().toDate(),
                 idtranban: 0,
                 idcliente: 0,
+                nit: 0,
                 objTranBan: [],
                 objCliente: undefined,
                 espropio: 0,
@@ -126,6 +127,7 @@
                 d[i].idtranban = parseInt(d[i].idtranban);
                 d[i].idempresa = parseInt(d[i].idempresa);
                 d[i].idcliente = parseInt(d[i].idcliente);
+                d[i].nit = parseInt(d[i].nit);
                 d[i].espropio = parseInt(d[i].espropio);
                 d[i].anulado = parseInt(d[i].anulado);
                 d[i].idrazonanulacion = parseInt(d[i].idrazonanulacion);
@@ -179,14 +181,22 @@
         $scope.getRecCli = function(idreccli){
             reciboClientesSrvc.getReciboCliente(idreccli).then(function(d){
                 $scope.reccli = procDataRecs(d)[0];
-                $scope.reccli.objCliente = $filter('getById')($scope.clientes, $scope.reccli.idcliente);
+                if($scope.reccli.idcliente == 0){
+                    $scope.reccli.objCliente = $filter('getById')($scope.clientes, $scope.reccli.nit);
+                }
+                else{
+                    $scope.reccli.objCliente = $filter('getById')($scope.clientes, $scope.reccli.idcliente);
+                };
+                //$scope.reccli.objCliente = $filter('getById')($scope.clientes, $scope.reccli.nit);
+                // $scope.reccli.objCliente = $filter('getById')($scope.clientes, $scope.reccli.nit);
                 $scope.reccli.objTranBan = [$filter('getById')($scope.tranban, $scope.reccli.idtranban)];
                 $scope.resetDetRecCli();
                 $scope.loadDetRecCli(idreccli);
-                $scope.loadDocsPend($scope.reccli.idempresa, $scope.reccli.idcliente); //Esta linea actualiza la informacion de facturas pendientes del cliente
+                $scope.loadDocsPend($scope.reccli.idempresa, $scope.reccli.idcliente, $scope.reccli.nit); //Esta linea actualiza la informacion de facturas pendientes del cliente
                 cuentacSrvc.getByTipo($scope.reccli.idempresa, 0).then(function(d){ $scope.cuentas = d; });
                 $scope.loadDetCont(idreccli);
                 goTop();
+                //console.log(d)
             });
         };
 
@@ -195,11 +205,12 @@
         };
 
         function setRecCliData(obj){
-            //console.log(obj);
+            //console.log(obj); return;
 
             obj.fechastr = moment(obj.fecha).format('YYYY-MM-DD');
             //obj.idcliente = obj.objCliente[0].id;
-            obj.idcliente = obj.objCliente.id;
+            obj.idcliente = obj.objCliente.idcliente != null && obj.objCliente.idcliente != undefined ? obj.objCliente.idcliente : 0;
+            obj.nit = obj.objCliente.nit != null && obj.objCliente.nit != undefined ? obj.objCliente.nit : 0;
             obj.espropio = obj.espropio != null && obj.espropio != undefined ? obj.espropio : 0;
             obj.idtranban = obj.objTranBan[0] != null && obj.objTranBan[0] != undefined ? obj.objTranBan[0].id : 0;
             obj.usuariocrea = $scope.usr.usuario;
@@ -211,7 +222,7 @@
 
         $scope.addRecCli = function(obj){
             obj = setRecCliData(obj);
-            //console.log(obj); return;
+            // console.log(obj); return;
             reciboClientesSrvc.editRow(obj, 'c').then(function(d){
                 //Inicio Modificacion
                 //$scope.getLstRecibosCli(obj.idempresa);
@@ -258,8 +269,8 @@
             goTop();
         };
 
-        $scope.loadDocsPend = function(idempresa, idcliente){
-            reciboClientesSrvc.lstDocsPend(idempresa, idcliente, $scope.fltrre.tipo).then(function(d){
+        $scope.loadDocsPend = function(idempresa, idcliente, nit){
+            reciboClientesSrvc.lstDocsPend(idempresa, idcliente, nit, $scope.fltrre.tipo).then(function(d){
                 for(var i = 0; i < d.length; i++){
                     d[i].id = parseInt(d[i].id);
                     d[i].fecha = moment(d[i].fecha).toDate();
@@ -307,10 +318,10 @@
 
         $scope.addDetRecCli = function(obj){
             obj = setDetRec(obj);
-            //console.log(obj);
+            // console.log(obj); return;
             reciboClientesSrvc.editRow(obj, 'cd').then(function(d){
                 $scope.loadDetRecCli(obj.idrecibocli);
-                $scope.loadDocsPend($scope.reccli.idempresa, $scope.reccli.idcliente);
+                $scope.loadDocsPend($scope.reccli.idempresa, $scope.reccli.idcliente, $scope.reccli.nit);
                 $scope.resetDetRecCli();
             });
         };

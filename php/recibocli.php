@@ -15,11 +15,11 @@ $app->post('/lstreciboscli', function(){
     if(!isset($d->tipo)){ $d->tipo = 1; }
 
     $db = new dbcpm();
-    $query = "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, c.tipotrans, c.numero AS notranban, e.nombre, ";
-    $query.= "f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto ";
-    $query.= "FROM recibocli a INNER JOIN cliente b ON b.id = a.idcliente LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion ";
-    $query.= "LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda ";
-    $query.= "WHERE a.idempresa = $d->idempresa AND a.tipo = $d->tipo ";
+    $query = "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, c.tipotrans, c.numero AS notranban, e.nombre, 
+    f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit 
+    FROM recibocli a INNER JOIN cliente b ON b.id = a.idcliente LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
+    LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda 
+    WHERE a.idempresa = $d->idempresa AND a.tipo = $d->tipo ";
     $query.= $d->fdelstr != '' ? "AND a.fecha >= '$d->fdelstr' " : "" ;
     $query.= $d->falstr != '' ? "AND a.fecha <= '$d->falstr' " : "" ;
     $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : "" ;
@@ -28,34 +28,69 @@ $app->post('/lstreciboscli', function(){
     $query.= $d->ban_numerostr != '' ? "AND c.numero = '$d->ban_numerostr' " : "" ;
     $query.= $d->ban_cuentastr != '' ? "AND e.nombre LIKE '%$d->ban_cuentastr%' " : "" ;
     $query.= " UNION ALL ";
-    $query.= "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, 'Facturas contado (Clientes varios)' AS cliente, c.tipotrans, c.numero AS notranban, e.nombre, ";
-    $query.= "f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto ";
-    $query.= "FROM recibocli a LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion ";
-    $query.= "LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda ";
-    $query.= "WHERE a.idempresa = $d->idempresa AND a.tipo = $d->tipo AND (a.idcliente = 0 OR a.idcliente IS NULL) ";
+    $query.= "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, 'Facturas contado (Clientes varios)' AS cliente, c.tipotrans, c.numero AS notranban, e.nombre, 
+    f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit 
+    FROM recibocli a LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
+    LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda 
+    WHERE a.idempresa = $d->idempresa AND a.tipo = $d->tipo AND (a.idcliente = 0 OR a.idcliente IS NULL) AND (a.nit = 0 OR a.nit IS NULL)";
     $query.= $d->fdelstr != '' ? "AND a.fecha >= '$d->fdelstr' " : "" ;
     $query.= $d->falstr != '' ? "AND a.fecha <= '$d->falstr' " : "" ;
     $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : "" ;
     $query.= (int)$d->recibostr != 0 ? "AND a.numero = $d->recibostr " : "" ;
     $query.= $d->ban_numerostr != '' ? "AND c.numero = '$d->ban_numerostr' " : "" ;
     $query.= $d->ban_cuentastr != '' ? "AND e.nombre LIKE '%$d->ban_cuentastr%' " : "" ;
-    $query.= "ORDER BY 18, 19";
+    $query.= "UNION ALL ";
+    $query.= "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, c.tipotrans, c.numero AS notranban, e.nombre, 
+    f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit 
+    FROM recibocli a 
+    INNER JOIN factura b ON a.nit = b.nit
+    LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
+    LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda 
+    WHERE a.idempresa = $d->idempresa AND a.tipo = $d->tipo AND (a.idcliente = 0 OR a.idcliente IS NULL)";
+        $query.= $d->fdelstr != '' ? "AND a.fecha >= '$d->fdelstr' " : "" ;
+        $query.= $d->falstr != '' ? "AND a.fecha <= '$d->falstr' " : "" ;
+        $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : "" ;
+        $query.= (int)$d->recibostr != 0 ? "AND a.numero = $d->recibostr " : "" ;
+        $query.= $d->clientestr != '' ? "AND b.nombre LIKE '%$d->clientestr%' " : "" ;
+        $query.= $d->ban_numerostr != '' ? "AND c.numero = '$d->ban_numerostr' " : "" ;
+        $query.= $d->ban_cuentastr != '' ? "AND e.nombre LIKE '%$d->ban_cuentastr%' " : "" ;
+    $query.="ORDER BY 18, 19";
     print $db->doSelectASJson($query);
 });
 //Fin modificacion
 $app->get('/getrecibocli/:idrecibo', function($idrecibo){
     $db = new dbcpm();
-    $query = "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, c.tipotrans, c.numero AS notranban, e.nombre, ";
-    $query.= "f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto ";
-    $query.= "FROM recibocli a INNER JOIN cliente b ON b.id = a.idcliente LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion ";
-    $query.= "LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda ";
-    $query.= "WHERE a.id = $idrecibo";
-    $query.= " UNION ALL ";
-    $query.= "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, 'Facturas contado (Clientes varios)' AS cliente, c.tipotrans, c.numero AS notranban, e.nombre, ";
-    $query.= "f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto ";
-    $query.= "FROM recibocli a LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion ";
-    $query.= "LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda ";
-    $query.= "WHERE a.id = $idrecibo";
+    $query = "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, 
+            c.tipotrans, c.numero AS notranban, e.nombre, 
+            f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit 
+            FROM recibocli a 
+            INNER JOIN cliente b ON b.id = a.idcliente 
+            LEFT JOIN tranban c ON c.id = a.idtranban 
+            LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
+            LEFT JOIN banco e ON e.id = c.idbanco 
+            LEFT JOIN moneda f ON f.id = e.idmoneda 
+            WHERE a.id = $idrecibo
+            UNION ALL 
+            SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, 
+            'Facturas contado (Clientes varios)' AS cliente, c.tipotrans, c.numero AS notranban, e.nombre, 
+            f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit 
+            FROM recibocli a 
+            LEFT JOIN tranban c ON c.id = a.idtranban 
+            LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
+            LEFT JOIN banco e ON e.id = c.idbanco 
+            LEFT JOIN moneda f ON f.id = e.idmoneda 
+            WHERE a.id = $idrecibo AND (a.nit = 0 or a.nit IS NULL) AND (a.idcliente = 0 or a.idcliente IS NULL)
+            UNION ALL
+            SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, 
+            c.tipotrans, c.numero AS notranban, e.nombre, 
+            f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit 
+            FROM recibocli a 
+            INNER JOIN factura b ON a.nit = b.nit 
+            LEFT JOIN tranban c ON c.id = a.idtranban 
+            LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
+            LEFT JOIN banco e ON e.id = c.idbanco 
+            LEFT JOIN moneda f ON f.id = e.idmoneda 
+            WHERE a.id = $idrecibo AND a.idcliente = 0 ";
     print $db->doSelectASJson($query);
 });
 
@@ -73,8 +108,8 @@ $app->post('/c', function(){
         $d->numero = (int)$db->getOneField("SELECT IFNULL(MAX(numero), 0) + 1 FROM recibocli WHERE tipo = $d->tipo");
     }
 
-    $query = "INSERT INTO recibocli(idempresa, fecha, fechacrea, idcliente, espropio, idtranban, serie, numero, usuariocrea, tipo, concepto) VALUES(";
-    $query.= "$d->idempresa,'$d->fechastr', NOW(), $d->idcliente, $d->espropio, $d->idtranban, '$d->serie', $d->numero, '$d->usuariocrea', $d->tipo, '$d->concepto'";
+    $query = "INSERT INTO recibocli(idempresa, fecha, fechacrea, idcliente, espropio, idtranban, serie, numero, usuariocrea, tipo, concepto, nit) VALUES(";
+    $query.= "$d->idempresa,'$d->fechastr', NOW(), $d->idcliente, $d->espropio, $d->idtranban, '$d->serie', $d->numero, '$d->usuariocrea', $d->tipo, '$d->concepto', $d->nit";
     $query.= ")";
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
@@ -88,7 +123,7 @@ $app->post('/u', function(){
     $query = "UPDATE recibocli SET ";
     $query.= "fecha = '$d->fechastr', idcliente = $d->idcliente, espropio = $d->espropio, idtranban = $d->idtranban, ";
     $query.= (int)$d->tipo == 1 ? "serie = '$d->serie', numero = $d->numero " : "concepto = '$d->concepto', ";
-    $query.= "usuariocrea = '$d->usuariocrea' ";
+    $query.= "usuariocrea = '$d->usuariocrea', nit = $d->nit ";
     $query.= "WHERE id = $d->id";
     $db->doQuery($query);
 });
@@ -137,7 +172,7 @@ $app->get('/lsttranban/:idempresa(/:tipo)', function($idempresa, $tipo = 1){
     print $db->doSelectASJson($query);
 });
 
-$app->get('/docspend/:idempresa/:idcliente(/:tipo)', function($idempresa, $idcliente, $tipo = 1){
+$app->get('/docspend/:idempresa/:idcliente/:nit(/:tipo)', function($idempresa, $idcliente, $nit, $tipo = 1){
     $db = new dbcpm();
     $query = "SELECT a.id, c.siglas, a.serie, a.numero, a.fecha, b.simbolo, a.total, IF(ISNULL(d.cobrado), 0.00, d.cobrado) AS cobrado, ";
     $query.= "(a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) AS saldo, ";
@@ -150,7 +185,7 @@ $app->get('/docspend/:idempresa/:idcliente(/:tipo)', function($idempresa, $idcli
     $query.= "WHERE a.anulada = 0 AND a.idempresa = $idempresa ";
     $query.= (int)$tipo < 3 ? "AND a.pagada = 0 AND (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) > 0 " : "AND (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) < 0 ";
     //$query.= "AND a.pagada = 0 AND (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) > 0 ";
-    $query.= "AND a.idcliente = $idcliente ";
+    $query.= (int)$idcliente > 0 ? "AND a.idcliente = $idcliente " : "AND a.nit = $nit ";
     $query.= "ORDER BY a.fecha";
     print $db->doSelectASJson($query);
 });

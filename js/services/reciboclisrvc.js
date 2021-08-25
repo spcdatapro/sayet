@@ -22,8 +22,8 @@
             getDetRecCli: function(iddetrec){
                 return comunFact.doGET(urlBase + '/getdetreccli/' + iddetrec);
             },
-            lstDocsPend: function(idempresa, idcliente, tipo){
-                return comunFact.doGET(`${urlBase}/docspend/${idempresa}/${idcliente}/${tipo}`);
+            lstDocsPend: function(idempresa, idcliente, nit, tipo){
+                return comunFact.doGET(`${urlBase}/docspend/${idempresa}/${idcliente}/${nit}/${tipo}`);
             },
             editRow: function(obj, op){
                 return comunFact.doPOST(urlBase + '/' + op, obj);
