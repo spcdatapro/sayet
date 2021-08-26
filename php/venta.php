@@ -310,7 +310,7 @@ $app->post('/generandc', function() {
     $db = new dbcpm();
 
     if ((int)$d->tipo === 2) {
-        $query = "SELECT GROUP_CONCAT(COLUMN_NAME SEPARATOR ', ') FROM information_schema.columns WHERE TABLE_SCHEMA = 'sayet' AND TABLE_NAME = 'factura' AND COLUMN_NAME NOT IN('id', 'serie', 'numero')";
+        $query = "SELECT GROUP_CONCAT(COLUMN_NAME SEPARATOR ', ') FROM information_schema.columns WHERE TABLE_SCHEMA = 'sayet' AND TABLE_NAME = 'factura' AND COLUMN_NAME NOT IN('id', 'serie', 'numero', 'idtipofactura')";
         $columnas = $db->getOneField($query);
 
         $query = "INSERT INTO factura($columnas) SELECT $columnas FROM factura WHERE id = $d->idfactura";
