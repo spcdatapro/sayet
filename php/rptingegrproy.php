@@ -371,14 +371,21 @@ $app->post('/detalle', function () use ($db) {
         ];
         $totEgresos += $montoPlanilla;
     } else {
+        $query = "SELECT b.idproyecto, SUM(a.bonocatorce) AS bonocatorce, SUM(a.aguinaldo) AS aguinaldo ";
+        $query .= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado ";
+        $query .= "WHERE a.fecha >= '$d->anio-$d->mes-15' AND MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio AND b.idproyecto = $d->idproyecto";
+        $datosPlanillaEspecial = $db->getQuery($query);
+
         $query = "SELECT b.idproyecto, SUM(a.descigss) AS descigss, SUM(a.descisr) AS descisr, ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * 0.1267), 2) AS cuotapatronal, SUM(a.descanticipo + a.liquido + a.descprestamo) AS liquido, ";
         $query .= "DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.fecha AS fechaOrd, ";
-        $query .= "(SUM(a.descigss) + SUM(a.descisr) + ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * 0.1267), 2) + SUM(a.descanticipo + a.liquido + a.descprestamo)) AS totplanilla, SUM(a.devengado) AS devengado ";
+        $query .= "(SUM(a.descigss) + SUM(a.descisr) + ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * 0.1267), 2) + SUM(a.descanticipo + a.liquido + a.descprestamo)) AS totplanilla, SUM(a.devengado) AS devengado, ";
+        $query .= "SUM(a.bonocatorce) AS bonocatorce, SUM(a.aguinaldo) AS aguinaldo ";
         $query .= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado ";
         $query .= "WHERE a.esbonocatorce <> 1 AND a.fecha > '$d->anio-$d->mes-15' AND MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio AND b.idproyecto = $d->idproyecto";
         $datosPlanilla = $db->getQuery($query);
-        if (count($datosPlanilla) > 0) {
+        if (count($datosPlanilla) > 0 || count($datosPlanillaEspecial) > 0) {
             $pln = $datosPlanilla[0];
+            $totPlanilla = (float) $pln->totplanilla;
             $detPln = [
                 [
                     'fechaOrd' => $pln->fechaOrd, 'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => $pln->fecha, 'beneficiario' => '',
@@ -399,19 +406,39 @@ $app->post('/detalle', function () use ($db) {
                     'fechaOrd' => $pln->fechaOrd, 'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => $pln->fecha, 'beneficiario' => '',
                     'concepto' => 'Devengado', 'moneda' => '', 'montotranban' => '', 'idcompra' => '', 'proveedor' => '', 'nit' => '',
                     'serie' => '', 'documento' => '', 'monedafact' => '', 'montofact' => (float) $pln->liquido, 'ot' => '', 'fechafactura' => ''
-                ],
-                [
-                    'fechaOrd' => '', 'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => '', 'beneficiario' => '',
-                    'concepto' => '', 'moneda' => '', 'montotranban' => '', 'idcompra' => '', 'proveedor' => '', 'nit' => '',
-                    'serie' => '', 'documento' => '', 'monedafact' => '', 'montofact' => (float) $pln->totplanilla, 'ot' => '', 'fechafactura' => 'Total:'
                 ]
+            ];
+
+            if(count($datosPlanillaEspecial) > 0) {
+                $plnEsp = $datosPlanillaEspecial[0];
+                $detPln[] = [
+                    'fechaOrd' => $pln->fechaOrd, 'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => $pln->fecha, 'beneficiario' => '',
+                    'concepto' => 'Bono 14', 'moneda' => '', 'montotranban' => '', 'idcompra' => '', 'proveedor' => '', 'nit' => '',
+                    'serie' => '', 'documento' => '', 'monedafact' => '', 'montofact' => (float) $plnEsp->bonocatorce, 'ot' => '', 'fechafactura' => ''
+                ];
+
+                $totPlanilla += (float) $plnEsp->bonocatorce;
+
+                $detPln[] = [
+                    'fechaOrd' => $pln->fechaOrd, 'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => $pln->fecha, 'beneficiario' => '',
+                    'concepto' => 'Aguinaldo', 'moneda' => '', 'montotranban' => '', 'idcompra' => '', 'proveedor' => '', 'nit' => '',
+                    'serie' => '', 'documento' => '', 'monedafact' => '', 'montofact' => (float) $plnEsp->aguinaldo, 'ot' => '', 'fechafactura' => ''
+                ];
+
+                $totPlanilla += (float) $plnEsp->aguinaldo;
+            }
+
+            $detPln[] = [
+                'fechaOrd' => '', 'idtranban' => '', 'tipotrans' => '', 'numero' => '', 'fecha' => '', 'beneficiario' => '',
+                'concepto' => '', 'moneda' => '', 'montotranban' => '', 'idcompra' => '', 'proveedor' => '', 'nit' => '',
+                'serie' => '', 'documento' => '', 'monedafact' => '', 'montofact' => $totPlanilla, 'ot' => '', 'fechafactura' => 'Total:'
             ];
             $datos->egresos[] = [
                 'concepto' => 'PLANILLA',
-                'monto' => (float) $pln->totplanilla,
+                'monto' => (float) $totPlanilla,
                 'detalle' => $detPln
             ];
-            $totEgresos += (float) $pln->totplanilla;
+            $totEgresos += (float) $totPlanilla;
         }
     }
     //Fin de Egresos de planilla
