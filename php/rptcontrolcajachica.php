@@ -15,11 +15,12 @@ $app->post('/rptctrlcc', function(){
     $query.= "FROM beneficiario WHERE id = $d->idbeneficiario";
     $cajas->generales = $db->getQuery($query)[0];
 
-    $query = "SELECT DISTINCT a.idempresa, TRIM(b.nomempresa) AS empresa, b.abreviatura AS abreviaempre ";
+    $query = "SELECT DISTINCT a.idempresa, TRIM(b.nomempresa) AS empresa, b.abreviatura AS abreviaempre, IF(a.idtiporeembolso = 2, 1, NULL) AS escc ";
     $query.= "FROM reembolso a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN tiporeembolso c ON c.id = a.idtiporeembolso ";
     $query.= "LEFT JOIN beneficiario d ON d.id = a.idbeneficiario LEFT JOIN tranban e ON e.id = a.idtranban ";
     $query.= "WHERE a.esrecprov = 0 AND a.idbeneficiario = $d->idbeneficiario ";
     $query.= (int)$d->solocc != 0 ? "AND a.idtiporeembolso = 2 " : '';
+    $query.= (int)$d->solorem != 0 ? "AND a.idtiporeembolso = 1 " : '';
     $query.= $d->fdinistr != "" ? "AND a.finicio >= '$d->fdinistr' " : "";
     $query.= $d->fainistr != "" ? "AND a.finicio <= '$d->fainistr' " : "";
     $query.= $d->fdfinstr != "" ? "AND a.ffin >= '$d->fdfinstr' " : "";
@@ -35,7 +36,7 @@ $app->post('/rptctrlcc', function(){
     for($i = 0; $i < $cntCajas; $i++){
         $caja = $cajas->cajas[$i];
         $query = "SELECT a.id, a.idtiporeembolso, c.desctiporeembolso AS tipo, DATE_FORMAT(a.finicio, '%d/%m/%Y') AS finicio, DATE_FORMAT(a.ffin, '%d/%m/%Y') AS ffin, ";
-        $query.= "a.idbeneficiario, d.nombre AS beneficiario, ";
+        $query.= "a.idbeneficiario, d.nombre AS beneficiario,  ";
         $query.= "a.beneficiario AS beneficiariostr, a.estatus, IF(a.estatus = 1, 'ABIERTA', 'CERRADA') AS estatusstr, FORMAT(a.fondoasignado, 2) AS fondoasignado, ";
         $query.= "CONCAT(e.tipotrans, e.numero) as tranban, LPAD(a.id, 5, '0') AS nocaja ";
         $query.= "FROM reembolso a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN tiporeembolso c ON c.id = a.idtiporeembolso ";
@@ -43,6 +44,7 @@ $app->post('/rptctrlcc', function(){
         $query.= "LEFT JOIN tranban e ON e.id = a.idtranban ";
         $query.= "WHERE a.esrecprov = 0 AND a.idbeneficiario = $d->idbeneficiario AND a.idempresa = $caja->idempresa ";
         $query.= (int)$d->solocc != 0 ? "AND a.idtiporeembolso = 2 " : '';
+        $query.= (int)$d->solorem != 0 ? "AND a.idtiporeembolso = 1 " : '';
         $query.= $d->fdinistr != "" ? "AND a.finicio >= '$d->fdinistr' " : "";
         $query.= $d->fainistr != "" ? "AND a.finicio <= '$d->fainistr' " : "";
         $query.= $d->fdfinstr != "" ? "AND a.ffin >= '$d->fdfinstr' " : "";
@@ -59,6 +61,7 @@ $app->post('/rptctrlcc', function(){
             $query.= "LEFT JOIN tranban e ON e.id = a.idtranban ";
             $query.= "WHERE a.esrecprov = 0 AND a.idbeneficiario = $d->idbeneficiario AND a.idempresa = $caja->idempresa ";
             $query.= (int)$d->solocc != 0 ? "AND a.idtiporeembolso = 2 " : '';
+            $query.= (int)$d->solorem != 0 ? "AND a.idtiporeembolso = 1 " : '';
             $query.= $d->fdinistr != "" ? "AND a.finicio >= '$d->fdinistr' " : "";
             $query.= $d->fainistr != "" ? "AND a.finicio <= '$d->fainistr' " : "";
             $query.= $d->fdfinstr != "" ? "AND a.ffin >= '$d->fdfinstr' " : "";

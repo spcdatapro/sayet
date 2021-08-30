@@ -76,13 +76,19 @@
                             </select>
                         </div>                        
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label for="chkSoloCC">Ver solo cajas chicas:</label>
                             <input name="chkSoloCC" id="chkSoloCC" type="checkbox" class="form-control" ng-model="params.solocc" ng-true-value="1" ng-false-value="0"/>
                         </div>
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="chkSoloRem">Ver solo reembolsos:</label>
+                            <input name="chkSoloRem" id="chkSoloRem" type="checkbox" class="form-control" ng-model="params.solorem" ng-true-value="1" ng-false-value="0"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="txtNumReem">No. de Reembolso/CC:</label>
                             <input name="txtNumReem" id="txtNumReem" type="text" class="form-control" ng-model="params.idreembolso" placeholder="Puede ser una lista separada por coma (,)"/>
