@@ -7,7 +7,7 @@
         $scope.beneficiarios = []; 
         $scope.empresas = [];
         $scope.params = {
-            idbeneficiario:undefined, fdini: undefined, faini: undefined, fdfin: undefined, fafin:undefined, empresas:'', estatus:'0', lstEmpresas: undefined, solocc: 1, idrembolso: undefined, solorem: 0
+            idbeneficiario:undefined, fdini: undefined, faini: undefined, fdfin: undefined, fafin:undefined, empresas:'', estatus:'0', lstEmpresas: undefined, solocc: 0, idrembolso: undefined, solorem: 0
         };
         $scope.content = `${window.location.origin}/sayet/blank.html`;
 
