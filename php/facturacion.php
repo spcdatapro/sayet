@@ -844,7 +844,7 @@ $app->post('/respuesta', function(){
             if($pos !== false) {
                 $serieadmin = trim(substr($factura->id, 0, $pos));
                 $numeroadmin = (int)substr($factura->id, $pos + 1, 10);
-                $query.= "WHERE TRIM(serieadmin) = '$serieadmin' AND numeroadmin = $numeroadmin AND idtipofactura = ".(trim(strtoupper($factura->tipo)) === 'FACT' ? 1 : 9);
+                $query.= "WHERE anulada = 0 AND TRIM(serieadmin) = '$serieadmin' AND numeroadmin = $numeroadmin AND idtipofactura = ".(trim(strtoupper($factura->tipo)) === 'FACT' ? 1 : 9);
             } else {
                 $query.= "WHERE id = ".(int)$factura->id;
             }
