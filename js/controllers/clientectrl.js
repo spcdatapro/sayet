@@ -58,6 +58,7 @@
         $scope.paramscli = { idcliente: 0 };
         $scope.lsttipoipc = [];
         $scope.grabando = false;
+        $scope.categoriaclie = [];
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('paging', false);
         $scope.dtOptionsDetCont = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('ordering', false).withOption('paging', false);
@@ -187,7 +188,8 @@
                 idcliente: $scope.cliente.id != null && $scope.cliente.id != undefined ? $scope.cliente.id : 0, nocontrato: '', abogado: '', inactivo: 0,
                 fechainicia: null, fechavence: null, nuevarenta: 0, nuevomantenimiento: 0, idmoneda: 0, idempresa: 0,
                 deposito: 0, idproyecto: 0, idunidad: 0, retiva: 0, prorrogable: 1, retisr: 0, documento: 0, adelantado: 0, subarrendado: 0, idtipocliente: 0, idcuentac: '', observaciones: '',
-                objMoneda: null, objEmpresa: null, objProyecto: null, objUnidad: [], objTipoCliente: null, reciboprov: '', objPeriodicidad: null, fechainactivo: undefined
+                objMoneda: null, objEmpresa: null, objProyecto: null, objUnidad: [], objTipoCliente: null, reciboprov: '', objPeriodicidad: null, fechainactivo: undefined, objCategoriaClie: null,
+                idcatclie:0
             };
             $scope.contratoStr = '';
             $scope.unidadesStr = '';
@@ -268,6 +270,7 @@
                 // empresaSrvc.lstEmpresas().then(function (d) { $scope.empresas = d; });
                 proyectoSrvc.lstProyecto().then(function (d) { $scope.proyectos = d; });
                 tipoClienteSrvc.lstTiposCliente().then(function (d) { $scope.tiposcliente = d; });
+                clienteSrvc.lstCatClie().then(function (d) { $scope.categoriaclie = d; });
                 periodicidadSrvc.lstPeriodicidad().then(function (d) { $scope.periodicidad = d; });
                 $scope.getLstContratos(idcliente);
                 $scope.resetDetFContrato();
@@ -530,6 +533,7 @@
                 d[i].adelantado = parseInt(d[i].adelantado);
                 d[i].subarrendado = parseInt(d[i].subarrendado);
                 d[i].idtipocliente = parseInt(d[i].idtipocliente);
+                d[i].idcatclie = parseInt(d[i].idcatclie);
                 d[i].idperiodicidad = parseInt(d[i].idperiodicidad);
                 //d[i].idtipoipc = parseInt(d[i].idtipoipc);
                 d[i].cobro = parseInt(d[i].cobro);
@@ -560,6 +564,8 @@
                 // empresaSrvc.lstEmpresas().then(function (d) { $scope.empresas = d; });
                 proyectoSrvc.lstProyecto().then(function (d) { $scope.proyectos = d; });
                 tipoClienteSrvc.lstTiposCliente().then(function (d) { $scope.tiposcliente = d; });
+                clienteSrvc.lstCatClie().then(function(d){ 
+                    $scope.categoriaclie = d;});
                 periodicidadSrvc.lstPeriodicidad().then(function (d) { $scope.periodicidad = d; });
                 clienteSrvc.lstContratos(parseInt(idcliente)).then(function (d) {
                     $scope.contratos = procDataContratos(d);
@@ -611,6 +617,7 @@
                 $scope.getLstUnidadesDisponibles($scope.contrato.idproyecto, $scope.contrato.id);
 
                 $scope.contrato.objTipoCliente = $filter('getById')($scope.tiposcliente, $scope.contrato.idtipocliente);
+                $scope.contrato.objCategoriaClie = $filter('getById')($scope.categoriaclie, $scope.contrato.idcatclie);
                 cuentacSrvc.getByTipo($scope.contrato.idempresa, 0).then(function (d) { $scope.cuentascCont = d; });
                 $scope.contratoStr = 'No. ' + $scope.contrato.nocontrato;
                 $scope.resetDetFContrato();
@@ -657,6 +664,7 @@
             obj.idproyecto = obj.objProyecto != null && obj.objProyecto != undefined ? obj.objProyecto.id : 0;
             obj.idunidad = obj.objUnidad != null && obj.objUnidad != undefined ? objectPropsToList(obj.objUnidad, 'id', ',') : 'id';
             obj.idtipocliente = obj.objTipoCliente != null && obj.objTipoCliente != undefined ? obj.objTipoCliente.id : 0;
+            obj.idcatclie = obj.objCategoriaClie != null && obj.objCategoriaClie != undefined ? obj.objCategoriaClie.id : 0;
             obj.fechainiciastr = moment(obj.fechainicia).format('YYYY-MM-DD');
             obj.fechavencestr = moment(obj.fechavence).format('YYYY-MM-DD');
             obj.reciboprov = obj.reciboprov != null && obj.reciboprov != undefined ? obj.reciboprov : '';
@@ -691,7 +699,7 @@
 
         $scope.addContrato = function (obj) {
             obj = procObjContract(obj);
-            //console.log(obj); return;
+            // console.log(obj); return;
             clienteSrvc.editRow(obj, 'cc').then(function (d) {
                 $scope.getLstContratos(obj.idcliente);
                 $scope.getLstClientes();

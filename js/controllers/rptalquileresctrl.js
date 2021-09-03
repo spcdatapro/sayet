@@ -2,20 +2,22 @@
 
     var rptalquileresctrl = angular.module('cpm.rptalquileresctrl', []);
 
-    rptalquileresctrl.controller('rptAlquileresCtrl', ['$scope', 'empresaSrvc', 'proyectoSrvc', 'jsReportSrvc', 'authSrvc', 'tipoServicioVentaSrvc', function($scope, empresaSrvc, proyectoSrvc, jsReportSrvc, authSrvc, tipoServicioVentaSrvc){
+    rptalquileresctrl.controller('rptAlquileresCtrl', ['$scope', 'empresaSrvc', 'proyectoSrvc', 'jsReportSrvc', 'authSrvc', 'tipoServicioVentaSrvc', 'clienteSrvc', function($scope, empresaSrvc, proyectoSrvc, jsReportSrvc, authSrvc, tipoServicioVentaSrvc, clienteSrvc){
 
         $scope.params = { 
-            fdel: moment().startOf('month').toDate() , fal: moment().endOf('month').toDate(), usuario: '', porlocal: 0, sinproy: 0, verinactivos: 0, solofacturados: 0
+            fdel: moment().startOf('month').toDate() , fal: moment().endOf('month').toDate(), usuario: '', porlocal: 0, sinproy: 0, verinactivos: 0, solofacturados: 0, categoria: undefined
         };
         $scope.content = `${window.location.origin}/sayet/blank.html`;
         $scope.empresas = [];
         $scope.proyectos = [];
         $scope.tipos = [];
+        $scope.categorias = [];
 
         authSrvc.getSession().then(function(usrLogged){ $scope.params.usuario = getIniciales(usrLogged.nombre); });
 
         empresaSrvc.lstEmpresas().then(function(d){ $scope.empresas = d; });
         tipoServicioVentaSrvc.lstTSVenta().then(function(d){ $scope.tipos = d; });
+        clienteSrvc.lstCatClie().then(function(d){ $scope.categorias = d; });
 
         prepParams = () => {
             $scope.params.fdelstr = moment($scope.params.fdel).format('YYYY-MM-DD');
@@ -25,8 +27,9 @@
             $scope.params.solofacturados = !!$scope.params.solofacturados ? $scope.params.solofacturados : 0 ;
 			$scope.params.empresa = $scope.aArreglo($scope.params.empresatmp, 'id'); 
 			$scope.params.proyecto = $scope.aArreglo($scope.params.proyectotmp, 'id');
-			$scope.params.tipo = $scope.aArreglo($scope.params.tipotmp, 'id');            
-        }
+			$scope.params.tipo = $scope.aArreglo($scope.params.tipotmp, 'id');                                                                                                                                                                                                                                                                                    
+            $scope.params.categoria = $scope.params.categoria != null && $scope.params.categoria != undefined ? $scope.params.categoria : '';
+        };
 
         var test = false;
         $scope.getRptAlquileres = function(){
@@ -47,7 +50,7 @@
             });            
         }
 
-        $scope.resetParams = function(){ $scope.params = { fdel: moment().startOf('month').toDate() , fal: moment().endOf('month').toDate(), porlocal: 0, sinproy: 0 }; };
+        $scope.resetParams = function(){ $scope.params = { fdel: moment().startOf('month').toDate() , fal: moment().endOf('month').toDate(), porlocal: 0, sinproy: 0, categoria: undefined }; };
 
         $scope.mostrarProyectos = function() {
             $scope.proyectos = [];

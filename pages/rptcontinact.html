@@ -27,22 +27,30 @@
                     </div>
                 </div>
                 <div class="row" style="text-align: left">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="txtFdel">Del:</label>
                             <input name="txtFdel" id="txtFdel" type="date" class="form-control" ng-model="params.fdel"/>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="txtFAl">Al:</label>
                             <input name="txtFAl" id="txtFAl" type="date" class="form-control" ng-model="params.fal"/>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-gorup">
                             <label for="chkUsufructo">Con usufructo:</label>
                             <input name="chkUsufructo" id="chkUsufructo" type="checkbox" class="form-control" ng-model="params.usufructo" ng-true-value="1" ng-false-value="0"/>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="selCatClie">Categoria Cliente:</label>
+                            <select name="selCatClie" id="selCatClie" class="form-control"
+                            ng-model="params.idcategoria"
+                            ng-options="obj.id as obj.nombre for obj in categorias "></select>
                         </div>
                     </div>
                 </div>

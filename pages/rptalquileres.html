@@ -41,7 +41,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label for="selEmpresas">Empresas:</label>
                         <ui-select
@@ -68,7 +68,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label for="selProy">Proyectos:</label>
                         <ui-select
@@ -93,8 +93,7 @@
                         </ui-select>
                     </div>
                 </div>
-
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label for="selTSV">Concepto:</label>
                         <ui-select
@@ -114,6 +113,14 @@
                             </ui-select-choices>
                             <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
                         </ui-select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="selCatClie">Categoria Cliente:</label>
+                        <select name="selCatClie" id="selCatClie" class="form-control input-sm"
+                        ng-model="params.categoria"
+                        ng-options="obj.id as obj.nombre for obj in categorias "></select>
                     </div>
                 </div>
             </div>

@@ -74,6 +74,9 @@
             },
             lstRecCliente: function(){
                 return comunFact.doGET(urlBase + '/reclstclie');
+            },
+            lstCatClie: function(){
+                return comunFact.doGET(urlBase + '/lstcatclie');
             }
         };
     }]);

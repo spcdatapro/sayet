@@ -98,25 +98,24 @@ $app->post('/lista', function(){
     $db = new dbcpm();
 
     if(!isset($d->idempresa)) { $d->idempresa = ''; }
-    if(!isset($d->idcliente)) { $d->cliente = ''; }
-    if(!isset($d->cliente)) { $d->cliente = ''; }
-    if(!isset($d->fdelstr)) { $d->fdelstr = ''; }
-    if(!isset($d->falstr)) { $d->falstr = ''; }
+    if(!isset($d->idcliente)) { $d->idcliente = ''; }
+    if(!isset($d->idcategoria)) { $d->idcategoria = ''; }
+    if(!isset($d->idcliente)) { $d->idcliente = ''; }
+    if(!isset($d->idproyecto)) { $d->idproyecto = ''; }
 
     $query = "SELECT b.nomempresa AS empresa, c.nomproyecto AS proyecto, UnidadesPorContrato(a.id) as unidad, d.nombre AS cliente, a.nocontrato AS NoContrato, 
-            DATE_FORMAT(a.fechainactivo, '%d/%m%/%Y') AS fechainactivo
+            DATE_FORMAT(a.fechainactivo, '%d/%m%/%Y') AS fechainactivo, a.catclie
             FROM contrato a
             INNER JOIN empresa b ON a.idempresa = b.id
             INNER JOIN proyecto c ON a.idproyecto = c.id
             INNER JOIN cliente d ON a.idcliente = d.id
-            WHERE a.inactivo = 1 ";
-    $query.= $d->idempresa !== '' ? "AND a.idempresa IN($d->idempresa) " : '';
-    $query.= $d->idproyecto !== '' ? "AND a.idproyecto IN($d->idproyecto) " : '';
-    $query.= $d->idcliente !== '' ? "AND a.idcliente IN($d->idcliente) " : ''; 
-    $query.= trim($d->fdelstr) !== '' ? "AND a.fechainactivo >= '$d->fdelstr' " : '';
-    $query.= trim($d->falstr) !== '' ? "AND a.fechainactivo <= '$d->falstr' " : '';
-    $query.= (int)$d->usufructo === 0 ? "AND a.id NOT IN(SELECT idcontratoorigen FROM contrato) " : '';
-    $query.= " ORDER BY b.ordensumario, c.nomproyecto, d.nombre, a.fechainactivo ";
+            WHERE a.inactivo = 1 AND a.fechainactivo >= '$d->fdelstr' AND a.fechainactivo <= '$d->falstr' ";
+    $query.= $d->idcategoria != '' ? "AND a.catclie = $d->idcategoria " : '';
+    $query.= $d->idempresa != '' ? "AND a.idempresa = $d->idempresa " : '';
+    $query.= $d->idproyecto != '' ? "AND a.idproyecto = $d->idproyecto " : '';
+    $query.= $d->idcliente != '' ? "AND a.idcliente = $d->idcliente " : ''; 
+    $query.= (int)$d->usufructo === 0 ? "AND a.usufructo IS NULL " : '';
+    $query.= "ORDER BY b.ordensumario, c.nomproyecto, d.nombre, a.fechainactivo";
     $reporte = $db->getQuery($query);
 
     $query = "SELECT DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy, IFNULL(DATE_FORMAT('$d->fdelstr', '%d/%m/%Y'), '') AS fdel, ";
