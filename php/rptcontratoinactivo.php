@@ -104,11 +104,12 @@ $app->post('/lista', function(){
     if(!isset($d->idproyecto)) { $d->idproyecto = ''; }
 
     $query = "SELECT b.nomempresa AS empresa, c.nomproyecto AS proyecto, UnidadesPorContrato(a.id) as unidad, d.nombre AS cliente, a.nocontrato AS NoContrato, 
-            DATE_FORMAT(a.fechainactivo, '%d/%m%/%Y') AS fechainactivo, a.catclie
+            DATE_FORMAT(a.fechainactivo, '%d/%m%/%Y') AS fechainactivo, e.catclie
             FROM contrato a
             INNER JOIN empresa b ON a.idempresa = b.id
             INNER JOIN proyecto c ON a.idproyecto = c.id
             INNER JOIN cliente d ON a.idcliente = d.id
+            LEFT JOIN catclie e ON a.catclie = e.id
             WHERE a.inactivo = 1 AND a.fechainactivo >= '$d->fdelstr' AND a.fechainactivo <= '$d->falstr' ";
     $query.= $d->idcategoria != '' ? "AND a.catclie = $d->idcategoria " : '';
     $query.= $d->idempresa != '' ? "AND a.idempresa = $d->idempresa " : '';
