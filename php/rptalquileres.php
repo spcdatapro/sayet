@@ -40,7 +40,7 @@ $app->post('/alquileres', function(){
     $cntAlqui = count($alquileres);
     for($i = 0; $i < $cntAlqui; $i++){
         $alquiler = $alquileres[$i];
-        $query = "SELECT DISTINCT b.idproyecto, c.nomproyecto, 0.00 AS montosindescuento, 0.00 AS descuento, 0.00 AS monto";
+        $query = "SELECT DISTINCT b.idproyecto, c.nomproyecto, 0.00 AS montosindescuento, 0.00 AS descuento, 0.00 AS monto, ";
         $query.= "0.00 AS montosindescuentodol, 0.00 AS descuentodol, 0.00 AS montodol ";
         $query.= "FROM cargo a INNER JOIN contrato b ON b.id = a.idcontrato INNER JOIN proyecto c ON c.id = b.idproyecto ";
         $query.= "INNER JOIN (SELECT y.id, z.nombre AS unidad FROM unidad z, contrato y WHERE IF(y.inactivo = 0, FIND_IN_SET(z.id, y.idunidad), FIND_IN_SET(z.id, y.idunidadbck))) d ON b.id = d.id ";
