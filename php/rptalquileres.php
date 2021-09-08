@@ -45,7 +45,6 @@ $app->post('/alquileres', function(){
         $query.= "FROM cargo a INNER JOIN contrato b ON b.id = a.idcontrato INNER JOIN proyecto c ON c.id = b.idproyecto ";
         $query.= "INNER JOIN (SELECT y.id, z.nombre AS unidad FROM unidad z, contrato y WHERE IF(y.inactivo = 0, FIND_IN_SET(z.id, y.idunidad), FIND_IN_SET(z.id, y.idunidadbck))) d ON b.id = d.id ";
         $query.= "WHERE a.anulado = 0 AND a.fechacobro >= '$d->fdelstr' AND a.fechacobro <= '$d->falstr' AND b.idempresa = $alquiler->idempresa ";
-        $query.= (int)$d->categoria != NULL ? "AND b.catclie = $d->categoria " : '';
         $query.= (int)$d->verinactivos == 0 ? "AND (b.inactivo = 0 OR (b.inactivo = 1 AND b.fechainactivo > '$d->falstr')) " : '';
         $query.= (int)$d->solofacturados == 0 ? '' : "AND a.facturado = 1 ";
 		
@@ -78,6 +77,7 @@ $app->post('/alquileres', function(){
                 $query.= "INNER JOIN moneda x ON x.id = z.idmoneda LEFT JOIN catclie e ON b.catclie = e.id ";
                 $query.= "WHERE a.anulado = 0 AND a.fechacobro >= '$d->fdelstr' AND a.fechacobro <= '$d->falstr' AND ";
                 $query.= "b.idempresa = $alquiler->idempresa AND b.idproyecto = $proyecto->idproyecto ";
+                $query.= (int)$d->categoria != NULL ? "AND b.catclie = $d->categoria " : '';
                 $query.= (int)$d->verinactivos == 0 ? "AND (b.inactivo = 0 OR (b.inactivo = 1 AND b.fechainactivo > '$d->falstr')) " : '';
                 $query.= (int)$d->solofacturados == 0 ? '' : "AND a.facturado = 1 ";
 				
