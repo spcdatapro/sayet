@@ -46,6 +46,7 @@ $app->post('/alquileres', function(){
         $query.= "INNER JOIN (SELECT y.id, z.nombre AS unidad FROM unidad z, contrato y WHERE IF(y.inactivo = 0, FIND_IN_SET(z.id, y.idunidad), FIND_IN_SET(z.id, y.idunidadbck))) d ON b.id = d.id ";
         $query.= "WHERE a.anulado = 0 AND a.fechacobro >= '$d->fdelstr' AND a.fechacobro <= '$d->falstr' AND b.idempresa = $alquiler->idempresa ";
         $query.= (int)$d->verinactivos == 0 ? "AND (b.inactivo = 0 OR (b.inactivo = 1 AND b.fechainactivo > '$d->falstr')) " : '';
+        $query.= (int)$d->categoria != NULL ? "AND b.catclie = $d->categoria " : '';
         $query.= (int)$d->solofacturados == 0 ? '' : "AND a.facturado = 1 ";
 		
 		if (isset($d->proyecto) && count($d->proyecto)>0) {
@@ -64,6 +65,7 @@ $app->post('/alquileres', function(){
             $query.= "LEFT JOIN catclie e ON b.catclie = e.id ";
             $query.= "WHERE a.anulado = 0 AND a.fechacobro >= '$d->fdelstr' AND a.fechacobro <= '$d->falstr' AND ";
             $query.= "b.idempresa = $alquiler->idempresa AND b.idproyecto = $proyecto->idproyecto ";
+            $query.= (int)$d->categoria != NULL ? "AND b.catclie = $d->categoria " : '';
             $query.= (int)$d->verinactivos == 0 ? "AND (b.inactivo = 0 OR (b.inactivo = 1 AND b.fechainactivo > '$d->falstr')) " : '';
             $query.= (int)$d->solofacturados == 0 ? '' : "AND a.facturado = 1 ";
             $query.= "ORDER BY ".($obyAlfa ? "c.nombre" : "CAST(digits(d.unidad) AS unsigned), d.unidad");
@@ -90,6 +92,7 @@ $app->post('/alquileres', function(){
                 $query.= "WHERE c.anulado = 0 AND c.fechacobro >= '$d->fdelstr' AND c.fechacobro <= '$d->falstr' AND ";
                 $query.= "d.idempresa = $alquiler->idempresa AND d.idproyecto = $proyecto->idproyecto AND ";
                 $query.= "d.idcliente = $cliente->idcliente AND d.id = b.id AND e.idtipoventa = z.idtipoventa ";
+                $query.= (int)$d->categoria != NULL ? "AND b.catclie = $d->categoria " : '';
                 $query.= (int)$d->verinactivos == 0 ? "AND (d.inactivo = 0 OR (d.inactivo = 1 AND d.fechainactivo > '$d->falstr')) " : '';
                 $query.= (int)$d->solofacturados == 0 ? '' : "AND c.facturado = 1 ";
                 $query.= ") ";
