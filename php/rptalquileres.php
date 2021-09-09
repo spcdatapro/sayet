@@ -26,6 +26,7 @@ $app->post('/alquileres', function(){
     $query.= "0.00 AS montosindescuentodol, 0.00 AS descuentodol, 0.00 AS montodol ";
     $query.= "FROM cargo a INNER JOIN contrato b ON b.id = a.idcontrato INNER JOIN empresa c ON c.id = b.idempresa ";
     $query.= "WHERE a.anulado = 0 AND a.fechacobro >= '$d->fdelstr' AND a.fechacobro <= '$d->falstr' ";
+    $query.= (int)$d->categoria != NULL ? "AND b.catclie = $d->categoria " : '';
     $query.= (int)$d->verinactivos == 0 ? "AND (b.inactivo = 0 OR (b.inactivo = 1 AND b.fechainactivo > '$d->falstr')) " : '';
     $query.= (int)$d->solofacturados == 0 ? '' : "AND a.facturado = 1 ";
 
