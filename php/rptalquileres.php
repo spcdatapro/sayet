@@ -60,10 +60,9 @@ $app->post('/alquileres', function(){
         for($j = 0; $j < $cntProy; $j++){
             $proyecto = $alquiler->proyectos[$j];
             $query = "SELECT DISTINCT b.idcliente, c.nombre, c.nombrecorto, 0.00 AS montosindescuento, 0.00 AS descuento, 0.00 AS monto, ";
-            $query.= "0.00 AS montosindescuentodol, 0.00 AS descuentodol, 0.00 AS montodol, e.nombre AS catclie ";
+            $query.= "0.00 AS montosindescuentodol, 0.00 AS descuentodol, 0.00 AS montodol ";
             $query.= "FROM cargo a INNER JOIN contrato b ON b.id = a.idcontrato INNER JOIN cliente c ON c.id = b.idcliente ";
             $query.= "INNER JOIN (SELECT y.id, z.nombre AS unidad FROM unidad z, contrato y WHERE IF(y.inactivo = 0, FIND_IN_SET(z.id, y.idunidad), FIND_IN_SET(z.id, y.idunidadbck))) d ON b.id = d.id ";
-            $query.= "LEFT JOIN catclie e ON b.catclie = e.id ";
             $query.= "WHERE a.anulado = 0 AND a.fechacobro >= '$d->fdelstr' AND a.fechacobro <= '$d->falstr' AND ";
             $query.= "b.idempresa = $alquiler->idempresa AND b.idproyecto = $proyecto->idproyecto ";
             $query.= (int)$d->categoria != NULL ? "AND b.catclie = $d->categoria " : '';
