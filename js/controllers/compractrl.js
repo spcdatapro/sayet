@@ -508,13 +508,22 @@
                     $scope.ctasGastoProv = lstCtas;
                     switch (true) {
                         case $scope.ctasGastoProv.length == 0:
-                            obj.ctagastoprov = 0;
-                            //console.log(obj);
-                            execCreate(obj);
+                            proveedorSrvc.lstCuentacProv(obj.idproveedor, obj.idempresa).then((lstCtas) => {
+                                $scope.ctasGastoProv = lstCtas;
+                                if($scope.ctasGastoProv.length == 1){
+                                    obj.ctagastoprov = parseInt($scope.ctasGastoProv[0].idcuentac);
+                                    execCreate(obj);
+                                }
+                                else{
+                                    toaster.pop({
+                                        type: 'error', title: 'Error en la creación de la factura.',
+                                        body: 'La factura de este proveedor no pudo ser creada. Favor verifique que el proveedor tenga una cuenta contable.', timeout: 9000
+                                    });
+                                };
+                            });
                             break;
                         case $scope.ctasGastoProv.length == 1:
                             obj.ctagastoprov = parseInt($scope.ctasGastoProv[0].idcuentac);
-                            //console.log(obj);
                             execCreate(obj);
                             break;
                         case $scope.ctasGastoProv.length > 1:

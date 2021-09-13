@@ -169,4 +169,48 @@ $app->post('/ubp', function(){
     $db->doQuery($query);
 });
 
+$app->get('/lstdetcontprovifnull/:idprov/:idempresa', function($idprov, $idempresa){
+    $db = new dbcpm();
+    $nomcuenta = $db->getOneField(
+        "SELECT b.nombrecta AS nombre
+        FROM 
+            detcontprov a 
+                INNER JOIN 
+            cuentac b ON b.id = a.idcuentac
+        WHERE 
+            a.idproveedor = $idprov
+        ORDER BY b.codigo
+        LIMIT 1 ");
+
+    if($nomcuenta != NULL){
+        $idcuentac = $db->getOneField(
+            "SELECT 
+                id 
+            FROM 
+                cuentac 
+            WHERE 
+                nombrecta LIKE '%$nomcuenta%' 
+                    AND idempresa = $idempresa");
+
+        $insertcc = "INSERT INTO detcontprov(idproveedor, idcuentac, idcxp) VALUES ($idprov, $idcuentac, 0)";
+        $db->doQuery($insertcc);
+
+        $conn = $db->getConn();
+        $query = 
+        "SELECT 
+            a.idcuentac,
+            CONCAT('(', b.codigo, ') ', b.nombrecta) AS cuentac
+        FROM
+            detcontprov a
+                INNER JOIN
+            cuentac b ON b.id = a.idcuentac
+        WHERE
+            a.idproveedor = $idprov AND idempresa = $idempresa
+        ORDER BY b.codigo
+        LIMIT 1";
+        $data = $conn->query($query)->fetchAll(5);
+        print json_encode($data);
+    }
+});
+
 $app->run();
