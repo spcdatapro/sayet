@@ -772,7 +772,7 @@ $app->get('/reclstclie', function(){
     SELECT a.nit AS id, a.nombre, SUBSTRING(a.nombre, 1, 10) AS nombrecorto, NULL AS id, a.nit
     FROM factura a 
     WHERE a.nit IS NOT NULL AND TRIM(UPPER(a.nit)) <> 'CF' AND trim(upper(a.nit)) <> 'C/F' AND YEAR(a.fecha) > 2019 
-    AND a.nit NOT LIKE '%anula%'
+    AND a.nit NOT LIKE '%anula%' AND a.pagada = 0 AND a.idcliente IN(207, NULL, 0)
     ORDER BY 2";
     print $db->doSelectASJson($query);
 });
