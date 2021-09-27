@@ -309,4 +309,57 @@ $app->post('/prntrecint', function() {
     }
 });
 
+$app->post('/prtrecibocli', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $n2l = new NumberToLetterConverter();
+    $db = new dbcpm();
+    $recibo =
+                "SELECT 
+                a.serie,
+                a.numero,
+                FORMAT(SUM(b.monto), 2) AS montorecli,
+                DAY(a.fecha) AS dia,
+                MONTH(a.fecha) AS mes,
+                YEAR(a.fecha) AS anio,
+                d.nombre AS cliente,
+                NULL AS montoletras,
+                a.concepto,
+                e.numero AS cheque,
+                f.siglas AS banco,
+                FORMAT(e.monto, 2) AS montochq
+            FROM
+                recibocli a
+                    INNER JOIN
+                detcobroventa b ON b.idrecibocli = a.id
+                    INNER JOIN
+                factura c ON b.idfactura = c.id
+                    LEFT JOIN
+                cliente d ON a.idcliente = d.id
+                    LEFT JOIN
+                tranban e ON a.idtranban = e.id
+                    LEFT JOIN
+                banco f ON e.idbanco = f.id
+            WHERE
+                a.id = 11339";
+    $recibo = $db->getQuery($recibo);
+
+        $recibo[0]->montoletras = $n2l->to_word($recibo[0]->montorecli, 'GTQ');
+
+    $facturas = 
+                "SELECT 
+                CONCAT(c.serie, '-', c.numero) AS factura,
+                FORMAT(b.monto, 2) AS montofact
+            FROM
+                recibocli a
+                    INNER JOIN
+                detcobroventa b ON b.idrecibocli = a.id
+                    INNER JOIN
+                factura c ON b.idfactura = c.id
+            WHERE
+                a.id = 11339";
+    $facturas = $db->getQuery($facturas);
+
+    print json_encode(['recibo' => $recibo, 'facturas' => $facturas]);
+});
+
 $app->run();
