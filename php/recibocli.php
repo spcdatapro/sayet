@@ -358,7 +358,7 @@ $app->post('/prtrecibocli', function() {
                 factura c ON b.idfactura = c.id
             WHERE
                 a.id = 11339";
-    $facturas = $db->getQuery($query)[0];
+    $facturas = $db->getQuery($query);
 
     print json_encode(['recibo' => $recibo[0], 'facturas' => $facturas]);
 });
