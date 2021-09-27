@@ -313,7 +313,7 @@ $app->post('/prtrecibocli', function() {
     $d = json_decode(file_get_contents('php://input'));
     $n2l = new NumberToLetterConverter();
     $db = new dbcpm();
-    $recibo =
+    $query =
                 "SELECT 
                 a.serie,
                 a.numero,
@@ -341,13 +341,14 @@ $app->post('/prtrecibocli', function() {
                 banco f ON e.idbanco = f.id
             WHERE
                 a.id = 11339";
-    $recibo = $db->getQuery($recibo);
+    $recibo = $db->getQuery($query);
 
         $recibo[0]->montoletras = $n2l->to_word($recibo[0]->montorecli, 'GTQ');
 
-    $facturas = 
+    $query = 
                 "SELECT 
-                CONCAT(c.serie, '-', c.numero) AS factura,
+                c.serie AS seriefact,
+                c.numero AS numfact,
                 FORMAT(b.monto, 2) AS montofact
             FROM
                 recibocli a
@@ -357,9 +358,9 @@ $app->post('/prtrecibocli', function() {
                 factura c ON b.idfactura = c.id
             WHERE
                 a.id = 11339";
-    $facturas = $db->getQuery($facturas);
+    $facturas = $db->getQuery($query)[0];
 
-    print json_encode(['recibo' => $recibo, 'facturas' => $facturas]);
+    print json_encode(['recibo' => $recibo[0], 'facturas' => $facturas]);
 });
 
 $app->run();
