@@ -205,7 +205,7 @@
         };
 
         $scope.printRecCli = (idrecibo) => {
-            jsReportSrvc.getPDFReport('BJ7TdDyVY', {idrecibo: +idrecibo}).then(function(pdf){ $window.open(pdf); });
+            jsReportSrvc.getPDFReport('r1jAA3sQY', {idrecibo: +idrecibo}).then(function(pdf){ $window.open(pdf); });
         };
 
         function setRecCliData(obj){
