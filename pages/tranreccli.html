@@ -170,6 +170,9 @@
                             <button type="button" class="btn btn-primary" ng-show="reccli.id > 0" ng-click="resetRecCli()" ng-disabled="!permiso.c">
                                 <span class="glyphicon glyphicon-plus"></span>
                             </button>
+                            <button type="button" class="btn btn-primary" ng-show="reccli.id > 0 && +fltrre.tipo == 1" ng-click="printRecCli(reccli.id)" ng-disabled="!permiso.c">
+                                <span class="glyphicon glyphicon-print"></span>
+                            </button>
                         </div>
                     </form>
                     <hr/>

@@ -321,7 +321,7 @@ $app->post('/prtrecibocli', function() {
                 DAY(a.fecha) AS dia,
                 MONTH(a.fecha) AS mes,
                 YEAR(a.fecha) AS anio,
-                d.nombre AS cliente,
+                IFNULL(d.nombre, c.nombre) AS cliente,
                 NULL AS montoletras,
                 a.concepto,
                 e.numero AS cheque,
@@ -340,7 +340,7 @@ $app->post('/prtrecibocli', function() {
                     LEFT JOIN
                 banco f ON e.idbanco = f.id
             WHERE
-                a.id = 11339";
+                a.id = $d->idrecibo ";
     $recibo = $db->getQuery($query);
 
         $recibo[0]->montoletras = $n2l->to_word($recibo[0]->montorecli, 'GTQ');
@@ -357,7 +357,7 @@ $app->post('/prtrecibocli', function() {
                     INNER JOIN
                 factura c ON b.idfactura = c.id
             WHERE
-                a.id = 11339";
+                a.id = $d->idrecibo ";
     $facturas = $db->getQuery($query);
 
     print json_encode(['recibo' => $recibo[0], 'facturas' => $facturas]);
