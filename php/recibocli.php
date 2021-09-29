@@ -318,6 +318,7 @@ $app->post('/prtrecibocli', function() {
                 a.serie,
                 a.numero,
                 FORMAT(SUM(b.monto), 2) AS montorecli,
+                g.simbolo AS monedarecli,
                 DAY(a.fecha) AS dia,
                 MONTH(a.fecha) AS mes,
                 YEAR(a.fecha) AS anio,
@@ -326,7 +327,8 @@ $app->post('/prtrecibocli', function() {
                 a.concepto,
                 e.numero AS cheque,
                 f.siglas AS banco,
-                FORMAT(e.monto, 2) AS montochq
+                FORMAT(e.monto, 2) AS montochq,
+                h.simbolo AS monedachq
             FROM
                 recibocli a
                     INNER JOIN
@@ -339,6 +341,10 @@ $app->post('/prtrecibocli', function() {
                 tranban e ON a.idtranban = e.id
                     LEFT JOIN
                 banco f ON e.idbanco = f.id
+                    LEFT JOIN
+                moneda g ON c.idmoneda = g.id
+                    LEFT JOIN
+                moneda h ON f.idmoneda = h.id
             WHERE
                 a.id = $d->idrecibo ";
     $recibo = $db->getQuery($query);
@@ -349,13 +355,16 @@ $app->post('/prtrecibocli', function() {
                 "SELECT 
                 c.serie AS seriefact,
                 c.numero AS numfact,
-                FORMAT(b.monto, 2) AS montofact
+                FORMAT(b.monto, 2) AS montofact,
+                e.simbolo AS monedafact
             FROM
                 recibocli a
                     INNER JOIN
                 detcobroventa b ON b.idrecibocli = a.id
                     INNER JOIN
                 factura c ON b.idfactura = c.id
+                    INNER JOIN
+				moneda e ON c.idmoneda = e.id
             WHERE
                 a.id = $d->idrecibo ";
     $facturas = $db->getQuery($query);
