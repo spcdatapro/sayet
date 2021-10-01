@@ -219,7 +219,7 @@ $app->post('/genpost', function(){
 
     $query = "SELECT a.id, a.idempresa, a.idcliente, a.idcontrato, TRIM(a.serie) AS serie, TRIM(a.numero) AS numero, TRIM(a.conceptomayor) AS conceptomayor, ";
     // $query.= "ROUND(a.total, 2) AS pagoneto, ";
-    $query.= "IF(a.importetotal <> 0, a.importetotal, ROUND(a.total, 2)) AS pagoneto, ";
+    $query.= "IF(a.importetotal <> 0, (a.importetotal - a.retisr), ROUND(a.total, 2)) AS pagoneto, ";
     $query.= "ROUND(a.retisr, 2) AS retisr, ";
     $query.= "ROUND(a.retiva, 2) AS retiva, ";
     // $query.= "ROUND(a.iva, 2) AS iva, ";
