@@ -354,6 +354,7 @@
             $scope.laTran.numero = item.numero;
             $scope.laTran.iddetpresup = item.iddetpresup;
             $scope.laTran.tipocambio = item.tipocambio;
+            $scope.laTran.anticipo = 1;
             //console.log(item);
         };
 
