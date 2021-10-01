@@ -321,7 +321,8 @@ $app->get('/gencontaventa', function() {
     $params = (object)$_GET;
     $query = "SELECT a.id, a.idcontrato ";
     $query.= "FROM factura a ";
-    $query.= "WHERE a.anulada = 0 AND a.idtipofactura = 1 AND a.numero IS NOT NULL AND a.serie IS NOT NULL ";
+    $query.= "WHERE a.anulada = 0 AND a.idtipofactura = 1 ";
+    $query.= isset($params->firmadas) ? "AND a.numero IS NOT NULL AND a.serie IS NOT NULL " : '';
     $query.= isset($params->ids) ? "AND a.id IN ($params->ids) " : '';
     $query.= isset($params->idempresa) ? "AND a.idempresa = $params->idempresa " : '';
     $query.= isset($params->fdel) ? "AND a.fecha >= '$params->fdel' " : '';
