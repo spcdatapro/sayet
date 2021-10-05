@@ -430,13 +430,13 @@ $app->post('/genfactfel', function() {
     $n2l = new NumberToLetterConverter();
     
     //print json_encode($pendientes);
-    $query = "SELECT IFNULL(seriefel, 'A') AS seriefel, IFNULL(correlativofel, 0) AS correlativofel FROM empresa WHERE id = $params->idempresa";
+    $query = "SELECT IFNULL(seriefel, 'A') AS seriefel, NULL AS correlativofel FROM empresa WHERE id = $params->idempresa";
     $datosFel = $db->getQuery($query)[0];
-    $datosFel->correlativofel = (int)$datosFel->correlativofel;
+    // $datosFel->correlativofel = (int)$datosFel->correlativofel;
     
     foreach($pendientes as $p) {
 
-        $datosFel->correlativofel++;
+        // $datosFel->correlativofel++;
 
         $p = revisaMontos($db, $p);
         $montoletras = (int)$p->idmonedafact == 1 ? $n2l->to_word($p->totapagar, 'GTQ') : $n2l->to_word($p->totapagarcnv, 'USD');        
@@ -459,7 +459,7 @@ $app->post('/genfactfel', function() {
         $query.= "$p->montoconivacnv, $p->totapagarcnv, $p->ivaporretenercnv, $p->isrporretenercnv, $p->descuentoconivacnv, ";
         $query.= "$p->importebruto, $p->importeneto, $p->importeiva, $p->importetotal, $p->descuentosiniva, $p->descuentoiva, ";
         $query.= "$p->importebrutocnv, $p->importenetocnv, $p->importeivacnv, $p->importetotalcnv, $p->descuentosinivacnv, $p->descuentoivacnv, ";
-        $query.= "'$datosFel->seriefel', $datosFel->correlativofel, $p->porcentajeretiva, $p->importeexento, $p->importeexentocnv, $p->exentoiva";
+        $query.= "'$datosFel->seriefel', NULL, $p->porcentajeretiva, $p->importeexento, $p->importeexentocnv, $p->exentoiva";
         $query.= ")";
         //print $query;
         //die();
@@ -469,8 +469,8 @@ $app->post('/genfactfel', function() {
             $lastid = $db->getLastId();
         }
         if((int)$lastid > 0) {
-            $query = "UPDATE empresa SET correlativofel = $datosFel->correlativofel WHERE id = $params->idempresa";
-            $db->doQuery($query);
+            // $query = "UPDATE empresa SET correlativofel = $datosFel->correlativofel WHERE id = $params->idempresa";
+            // $db->doQuery($query);
             foreach($p->detalle as $det) {
                 if($det->facturar == 1){
                     $conceptoAdicional = 'NULL';
