@@ -364,15 +364,15 @@ $app->post('/genfactfel', function() {
     $db = new dbcpm();
     $n2l = new NumberToLetterConverter();
 
-    $query = "SELECT IFNULL(seriefel, 'A') AS seriefel, IFNULL(correlativofel, 0) AS correlativofel FROM empresa WHERE id = $params->idempresa";
+    $query = "SELECT IFNULL(seriefel, 'A') AS seriefel, NULL correlativofel FROM empresa WHERE id = $params->idempresa";
     $datosFel = $db->getQuery($query)[0];
-    $datosFel->correlativofel = (int)$datosFel->correlativofel;
+    // $datosFel->correlativofel = (int)$datosFel->correlativofel;
     
     foreach($pendientes as $p){
 
         if(round((float)$p->consumoafacturar, 2) > 0 && round((float)$p->totapagar, 2) > 0) {
             
-            $datosFel->correlativofel++;
+            // $datosFel->correlativofel++;
 
             $descripcion = $p->tipo.' DE '.$p->proyecto.' '.$p->unidad.', Contador: '.$p->numidentificacion.', Consumo(m3): '.$p->consumoafacturar.' Mes de '.$p->nommes.' '.$p->anio;
             $p->nit = strtoupper(preg_replace("/[^a-zA-Z0-9]+/", "", $p->nit));
@@ -392,7 +392,7 @@ $app->post('/genfactfel', function() {
             $query.= "$p->isrporretener, $p->ivaporretener, $p->descuento, '$p->nit', '$p->facturara', '$p->direccion', $p->montoconiva, $p->montoconiva, ";
             $query.= "$p->importebruto, $p->importeneto, $p->importeiva, $p->importetotal, $p->descuentosiniva, $p->descuentoiva, ";
             $query.= "$p->importebrutocnv, $p->importenetocnv, $p->importeivacnv, $p->importetotalcnv, $p->descuentosinivacnv, $p->descuentoivacnv, ";
-            $query.= "'$datosFel->seriefel', $datosFel->correlativofel, $p->totapagarcnv, $p->importeexento, $p->importeexentocnv, $p->exentoiva";
+            $query.= "'$datosFel->seriefel', NULL, $p->totapagarcnv, $p->importeexento, $p->importeexentocnv, $p->exentoiva";
             $query.= ")";
             //echo $query.'<br/>';
 
@@ -400,8 +400,8 @@ $app->post('/genfactfel', function() {
             $lastid = $db->getLastId();
 
             if((int)$lastid > 0) {
-                $query = "UPDATE empresa SET correlativofel = $datosFel->correlativofel WHERE id = $params->idempresa";
-                $db->doQuery($query);
+                // $query = "UPDATE empresa SET correlativofel = $datosFel->correlativofel WHERE id = $params->idempresa";
+                // $db->doQuery($query);
                 //Inserta detalle de factura
                 $conceptoAdicional = 'NULL';
                 if(isset($p->conceptoadicional)){
