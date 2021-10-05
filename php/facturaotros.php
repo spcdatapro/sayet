@@ -88,23 +88,23 @@ $app->post('/c', function(){
     $d->nombre = trim($d->nombre) == '' ? 'NULL' : ("'".trim($d->nombre)."'");
     $d->direccion = trim($d->direccion) == '' ? 'Ciudad' : ("'".trim($d->direccion)."'");
 
-    $query = "SELECT IFNULL(seriefel, 'A') AS seriefel, IFNULL(correlativofel, 0) AS correlativofel FROM empresa WHERE id = $d->idempresa";
+    $query = "SELECT IFNULL(seriefel, 'A') AS seriefel FROM empresa WHERE id = $d->idempresa";
     $datosFel = $db->getQuery($query)[0];
-    $datosFel->correlativofel = (int)$datosFel->correlativofel;
-    $datosFel->correlativofel++;
+    // $datosFel->correlativofel = (int)$datosFel->correlativofel;
+    // $datosFel->correlativofel++;
 
     $query = "INSERT INTO factura(";
     $query.= "idempresa, idtipofactura, idcontrato, idcliente, nit, nombre, fechaingreso, mesiva, fecha, idtipoventa, idmoneda, tipocambio, esinsertada,";
     $query.= "reteneriva, retenerisr, mesafecta, anioafecta, direccion, idproyecto, porretiva, serieadmin, numeroadmin, exentoiva) VALUES(";
     $query.= "$d->idempresa, $d->idtipofactura, $d->idcontrato, $d->idcliente, $d->nit, $d->nombre, '$d->fechaingresostr', $d->mesiva, '$d->fechastr', $d->idtipoventa, 1, $d->tipocambio, 1,";
-    $query.= "$d->reteneriva, $d->retenerisr, $d->mesafecta, $d->anioafecta, $d->direccion, $d->idproyecto, $d->porretiva, '$datosFel->seriefel', $datosFel->correlativofel, $d->exentoiva";
+    $query.= "$d->reteneriva, $d->retenerisr, $d->mesafecta, $d->anioafecta, $d->direccion, $d->idproyecto, $d->porretiva, '$datosFel->seriefel', NULL, $d->exentoiva";
     $query.= ")";
     $db->doQuery($query);
     $lastid = $db->getLastId();
-    if((int)$lastid > 0) {
-        $query = "UPDATE empresa SET correlativofel = $datosFel->correlativofel WHERE id = $d->idempresa";
-        $db->doQuery($query);
-    }
+    // if((int)$lastid > 0) {
+    //     $query = "UPDATE empresa SET correlativofel = $datosFel->correlativofel WHERE id = $d->idempresa";
+    //     $db->doQuery($query);
+    // }
 
     actualizaContratoClienteCF($db, $lastid);
 

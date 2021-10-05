@@ -219,7 +219,7 @@ $app->post('/genpost', function(){
 
     $query = "SELECT a.id, a.idempresa, a.idcliente, a.idcontrato, TRIM(a.serie) AS serie, TRIM(a.numero) AS numero, TRIM(a.conceptomayor) AS conceptomayor, ";
     // $query.= "ROUND(a.total, 2) AS pagoneto, ";
-    $query.= "IF(a.importetotal <> 0, a.importetotal, ROUND(a.total, 2)) AS pagoneto, ";
+    $query.= "IF(a.importetotal <> 0, (a.importetotal - (a.retisr + a.retiva)), ROUND(a.total, 2)) AS pagoneto, ";
     $query.= "ROUND(a.retisr, 2) AS retisr, ";
     $query.= "ROUND(a.retiva, 2) AS retiva, ";
     // $query.= "ROUND(a.iva, 2) AS iva, ";
@@ -313,6 +313,29 @@ $app->post('/genpost', function(){
     $db->CallJSReportAPI('POST', $url, json_encode($dataa));
 
     echo "<p><strong>Terminamos la regeneración...</strong></p></small></body></html>";
+});
+
+$app->get('/gencontaventa', function() {
+    set_time_limit(0);
+    $db = new dbcpm();
+    $params = (object)$_GET;
+    $query = "SELECT a.id, a.idcontrato ";
+    $query.= "FROM factura a ";
+    $query.= "WHERE a.anulada = 0 AND a.idtipofactura = 1 ";
+    $query.= isset($params->firmadas) ? "AND a.numero IS NOT NULL AND a.serie IS NOT NULL " : '';
+    $query.= isset($params->ids) ? "AND a.id IN ($params->ids) " : '';
+    $query.= isset($params->idempresa) ? "AND a.idempresa = $params->idempresa " : '';
+    $query.= isset($params->fdel) ? "AND a.fecha >= '$params->fdel' " : '';
+    $query.= isset($params->fal) ? "AND a.fecha <= '$params->fal' " : '';
+
+    $facturas = $db->getQuery($query);
+    $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
+    foreach($facturas as $factura) {
+            $data = ['ids' => $factura->id, 'idcontrato' => ((int)$factura->idcontrato > 0 ? 1 : 0)];
+            $db->CallJSReportAPI('POST', $url, json_encode($data));
+    }
+
+    print json_encode(['mensaje' => 'Regeneración de partidas contables de facturas de ventas exitosa.', 'parametros' => $params]);
 });
 
 $app->run();
