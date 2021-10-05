@@ -328,7 +328,8 @@ $app->post('/prtrecibocli', function() {
                 e.numero AS cheque,
                 f.siglas AS banco,
                 FORMAT(e.monto, 2) AS montochq,
-                h.simbolo AS monedachq
+                h.simbolo AS monedachq,
+                i.nomempresa AS empresa
             FROM
                 recibocli a
                     INNER JOIN
@@ -345,6 +346,8 @@ $app->post('/prtrecibocli', function() {
                 moneda g ON c.idmoneda = g.id
                     LEFT JOIN
                 moneda h ON f.idmoneda = h.id
+                    INNER JOIN
+				empresa i ON a.idempresa = i.id
             WHERE
                 a.id = $d->idrecibo ";
     $recibo = $db->getQuery($query);
