@@ -253,6 +253,91 @@ $app->post('/actualizar', function(){
 	enviar_json($datos);
 });
 
+$app->get('/empleado/:empleado', function($empleado){
+	ini_set('display_errors', 1);
+	ini_set('display_startup_errors', 1);
+	error_reporting(E_ALL);
+
+	if (isset($_GET["fecha"])) {
+		$fec = $_GET["fecha"];
+
+		$e = new Empleado($empleado);
+		if (isset($_GET["baja"])) {
+	    	$e->emp->baja = $_GET['baja'];
+	    }
+
+		$where = [
+			'idplnempleado' => $empleado,
+			'fecha'         => $fec
+		];
+
+		$ex = $e->db->get(
+			'plnnomina', 
+			['*'], 
+			['AND' => $where]
+		);
+
+		if ($ex !== false) {
+			echo "Actual: <pre>";
+			print_r ($ex);
+			echo "</pre>";
+
+			$e->set_fecha($_GET["fecha"]);
+		    $e->set_dias_trabajados();
+		    $e->set_sueldo();
+
+		    $datos = [
+				"sueldoordinarioreporte" => $e->emp->sueldo
+			];
+
+			$istr = strtotime($fec);
+
+			if (date('d', $istr) == 15) {
+				if ($e->emp->formapago == 1) {
+					$datos['anticipo']  = $e->get_anticipo();
+				}
+			} else {
+				$quincena = date('Y', $istr).'-'.date('m', $istr).'-15';
+				$anterior = $e->db->get(
+					'plnnomina', 
+					['*'], 
+					['AND' => [
+						'idplnempleado' => $empleado,
+						'fecha' => $quincena
+					]]
+				);
+
+				if ($quincena !== false) {
+					echo "Anterior: <pre>";
+					print_r ($anterior);
+					echo "</pre>";
+				}
+
+				$datos['descanticipo'] = $e->get_descanticipo();
+				$datos['bonificacion'] = $e->get_bono_ley();
+				$datos['sueldoordinario'] = $e->get_sueldo();
+				$datos['diastrabajados'] = $e->get_dias_trabajados();
+				$datos['descisr'] = $e->get_descuento_isr();
+				
+				$prest = $e->get_descprestamo(['sin_idplnnomina' => $ex['id']]);
+				$datos['descprestamo'] = $prest['total'];
+			}
+
+		    echo "Datos: <pre>";
+		    print_r ($datos);
+		    echo "</pre>";
+
+		    echo "Emp: <pre>";
+		    print_r ($e->emp);
+		    echo "</pre>";
+		} else {
+			die("No hay planilla generada para esta fecha");
+		}
+	} else {
+		die("Es necesario una fecha");
+	}
+});
+
 $app->post('/generar', function(){
 	$n = new Nomina();
 

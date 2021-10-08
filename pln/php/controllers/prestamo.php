@@ -1,8 +1,8 @@
 <?php 
 
-/*ini_set('display_errors', 1);
+ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);*/
+error_reporting(E_ALL);
 
 define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
 define('PLNPATH', BASEPATH . '/pln/php');
@@ -26,9 +26,10 @@ $app->get('/buscar', function(){
 	$b = new General();
 
 	$resultados = $b->buscar_prestamo($_GET);
+	$cantidad = $resultados === false ? 0 : count($resultados);
 	
 	enviar_json([
-		'cantidad'   => count($resultados), 
+		'cantidad'   => $cantidad, 
 		'resultados' => $resultados, 
 		'maximo'     => get_limite()
 	]);

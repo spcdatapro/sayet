@@ -580,8 +580,8 @@ class Empleado extends Principal
 					]
 				]
 			);
-
-			if (!isset($ant['scalar'])) {
+			
+			if ($ant !== false) {
 				return $ant['anticipo'];
 			}
 		}
