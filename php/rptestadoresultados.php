@@ -30,7 +30,7 @@ $app->post('/rptestres', function () {
                 }
                 $query = "INSERT INTO $tblname(idcuenta, codigo, nombrecta, tipocuenta, ingresos, saldo, parasuma) ";
                 $query .= "SELECT 0, '', 'Subtotal de cuentas de " . ($ig == 1 ? "ingreso" : "gasto") . " que inician con " . $ini . " --->', 1, " . $ig . ", SUM(saldo), 1 ";
-                $query .= "FROM $tblname WHERE ingresos = " . $ig . " AND tipocuenta = 0 AND LENGTH(codigo) <= 7 AND codigo LIKE '$ini%'";
+                $query .= "FROM $tblname WHERE ingresos = " . $ig . " AND tipocuenta = 0 AND LENGTH(codigo) <= 10 AND codigo LIKE '$ini%'";
                 $db->doQuery($query);
             }
         }
@@ -59,7 +59,7 @@ $app->post('/rptestres', function () {
         foreach ($niveles as $n) {
             $query = "SELECT SUM(saldo) AS saldo ";
             $query .= "FROM $tblname ";
-            $query .= "WHERE tipocuenta = 0 AND LENGTH(codigo) <= 7 AND codigo LIKE '" . $n->codigo . "%'";
+            $query .= "WHERE tipocuenta = 0 AND LENGTH(codigo) <= 10 AND codigo LIKE '" . $n->codigo . "%'";
             $sumas = $db->getQuery($query)[0];
             $query = "UPDATE $tblname SET saldo = " . $sumas->saldo . " WHERE tipocuenta = 1 AND id = " . $n->id . " AND idcuenta = " . $n->idcuenta;
             $db->doQuery($query);
