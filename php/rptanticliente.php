@@ -348,7 +348,8 @@ function queryFacturas($d){
         ROUND(a.total, 2) AS monto,
         IFNULL(g.montopagado, 0.00) AS montopagado,
         ROUND(a.total, 2) - IFNULL(g.montopagado, 0.00) AS saldo,
-        b.ordensumario, a.serieadmin, a.numeroadmin
+        b.ordensumario, a.serieadmin, a.numeroadmin,
+        IF(a.idcliente = 0, '', TRIM(f.nombrecorto)) AS nombrecorto
         FROM factura a
         INNER JOIN empresa b ON b.id = a.idempresa
         LEFT JOIN contrato c ON c.id = a.idcontrato
@@ -417,7 +418,7 @@ $app->post('/antiguedad', function(){
         for($j = 0; $j < $cntProyectos; $j++){
             $proyecto = $antiguedad->proyectos[$j];
             $andProyecto = "AND j.proyecto = ".(!is_null($proyecto->proyecto) ? "'".$proyecto->proyecto."'" : 'NULL');
-            $query = "SELECT DISTINCT j.cliente, 0.00 AS r030, 0.00 AS r3160, 0.00 AS r6190, 0.00 AS r90 FROM ($qFacts) j WHERE j.idempresa = $antiguedad->idempresa $andProyecto ORDER BY j.cliente";
+            $query = "SELECT DISTINCT j.cliente, 0.00 AS r030, 0.00 AS r3160, 0.00 AS r6190, 0.00 AS r90, j.nombrecorto FROM ($qFacts) j WHERE j.idempresa = $antiguedad->idempresa $andProyecto ORDER BY j.cliente";
             $proyecto->clientes = $db->getQuery($query);
             $cntClientes = count($proyecto->clientes);
             for($k = 0; $k < $cntClientes; $k++){

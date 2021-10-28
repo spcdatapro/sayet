@@ -29,8 +29,13 @@ $app->post('/rptecuentacli', function(){
         $sqlwhr = "";
 		$sqlemp = "  and c.idempresa>0 ";
 		
-        if(!empty($d->clistr)){
+        $datosCliente = new stdClass();
+		$datosCliente->nombre = '';
+		$datosCliente->nombrecorto = '';
+		if(!empty($d->clistr)){
             $sqlwhr = " where a.id = ".$d->clistr;
+			$query = "SELECT nombre, nombrecorto FROM cliente WHERE id = $d->clistr";
+			$datosCliente = $db->getQuery($query)[0];
         }
 		//$sqlemp = "";
 		if(intval($d->idempresa) > 0){
@@ -54,7 +59,7 @@ $app->post('/rptecuentacli', function(){
 
             $querydet1 = "SELECT a.nombre,b.venta,b.factura,b.serie,b.fecha,
                     round(b.monto,2) as saldo,round(b.totalfac,2) as totalfac, round(b.retisr,2) as retisr, substr(b.concepto,1,31) as concepto, b.contrato, b.proyecto, b.nomproyecto, round(b.apagar,2) as apagar,b.empresa,
-					b.idempresa,round(b.retiva,2) as retiva, b.serieadmin, b.numeroadmin
+					b.idempresa,round(b.retiva,2) as retiva, b.serieadmin, b.numeroadmin, a.nombrecorto
                 from sayet.cliente a
                 inner join (
 
@@ -298,7 +303,7 @@ $app->post('/rptecuentacli', function(){
             //$strjson .= json_encode($rdet);
         }
 
-        print json_encode($strjson);
+        print json_encode(['cliente' => $datosCliente, 'estado_cuenta' => $strjson]);
         //print '['.json_encode($detrepo[]).']';
         //print $detrepo;
 

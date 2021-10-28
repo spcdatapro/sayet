@@ -48,7 +48,8 @@
         'cpm.cierreanualctrl', 'cpm.rptplnpremiosctrl', 'cpm.empleadosrvc', 'cpm.rptplnhistosueldoctrl', 'cpm.plnpagoboletoornatosrvc',
         'cpm.plnpagoboletoornatoctrl', 'cpm.scrolldetector', 'cpm.rptplncatemplevalctrl', 'cpm.trangenchqotsctrl', 'cpm.socketiosrvc',
         'cpm.tranlecturasaguactrl', 'cpm.tipoimpchqctrl', 'cpm.confaprotsctrl', 'cpm.rptviewer', 'cpm.otsimplificadoctrl',
-        'cpm.testctrl', 'cpm.rptplnivsctrl', 'cpm.rptarchivondctrl', 'cpm.rptcontinactctrl', 'cpm.trangenchqotscontctrl', 'cpm.rptcheqsinfactctrl'
+        'cpm.testctrl', 'cpm.rptplnivsctrl', 'cpm.rptarchivondctrl', 'cpm.rptcontinactctrl', 'cpm.trangenchqotscontctrl', 'cpm.rptcheqsinfactctrl',
+        'cpm.testsrvc'
     ]);
 
     app.config(['$routeProvider', 'desktopNotificationProvider', function ($routeProvider, desktopNotificationProvider) {

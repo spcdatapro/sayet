@@ -4,8 +4,18 @@
 
     comun.factory('comunFact', ['$http', function($http){
         var comunFact = {
-            doGET: function(urlBase){
-                var promise = $http({method: 'GET', url: urlBase}).then(function(response){
+            doGET: function(urlBase, headers = null){
+                const req = {
+                    method: 'GET',
+                    url: urlBase,
+                    headers: {}
+                };
+
+                if (!headers) {
+                    delete req.headers;
+                }
+
+                var promise = $http(req).then(function(response){
                     return response.data;
                 });
                 return promise;

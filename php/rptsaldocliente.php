@@ -27,7 +27,7 @@ $app->post('/rptsaldocli', function(){
             $sumabonos = 0.00;
             $sumsaldo = 0.00;
 
-            $query = "select c.nombre,round(a.saldo,2) as anterior, round(b.cargos,2) as cargos,round(b.abonos,2) as abonos,round((a.saldo+b.cargos)-b.abonos,2) as saldo,c.id as cliente from
+            $query = "select c.nombre,round(a.saldo,2) as anterior, round(b.cargos,2) as cargos,round(b.abonos,2) as abonos,round((a.saldo+b.cargos)-b.abonos,2) as saldo,c.id as cliente, c.nombrecorto from
                     sayet.cliente c
                     left join (
                         SELECT a.id as cliente,
@@ -102,6 +102,7 @@ $app->post('/rptsaldocli', function(){
                         'abonos' => $sld->abonos,
                         'saldo' => $sld->saldo,
                         'cliente' => $sld->cliente,
+                        'nombrecorto' => $sld->nombrecorto
                     )
                 );
 
