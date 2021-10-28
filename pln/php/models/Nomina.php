@@ -152,13 +152,13 @@ class Nomina extends Principal
 					'fecha'         => $fecha
 				];
 
-				$ex = (object)$this->db->get(
+				$ex = $this->db->get(
 					'plnnomina', 
 					['*'], 
 					['AND' => $where]
 				);
 
-				if (isset($ex->scalar)) {
+				if ($ex === false) {
 					$datos = [
 						'idplnempleado' => $row['id'], 
 						'idempresa'     => $row['idempresadebito'], 
@@ -380,6 +380,7 @@ class Nomina extends Principal
 
 					$datos = [
 						"sueldoordinarioreporte" => $e->emp->sueldo,
+						"fecha_baja"             => $e->emp->baja,
 						"bonocatorce"            => 0,
 						"bonocatorcedias"        => 0,
 						"esbonocatorce"          => 0,

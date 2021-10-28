@@ -4,7 +4,7 @@
 
     rptbalgenctrl.controller('rptBalanceGeneralCtrl', ['$scope', 'rptBalanceGeneralSrvc', 'empresaSrvc', 'authSrvc', 'jsReportSrvc', '$sce', function($scope, rptBalanceGeneralSrvc, empresaSrvc, authSrvc, jsReportSrvc, $sce){
 
-        $scope.params = {al: moment().endOf('month').toDate(), idempresa: 0, acumulado: 1, nivel: '7', solomov: 1, vercierre: 1};
+        $scope.params = {al: moment().endOf('month').toDate(), idempresa: 0, acumulado: 1, nivel: '10', solomov: 1, vercierre: 1};
         $scope.balancegeneral = [];
         $scope.content = '';
         $scope.empresa = {};

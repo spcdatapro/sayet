@@ -42,7 +42,7 @@ $app->post('/rptlibmay', function(){
             //echo "Codigo = ".$n->codigo."<br/><br/>";
             $query = "SELECT SUM(anterior) AS anterior, SUM(debe) AS debe, SUM(haber) AS haber, SUM(actual) AS actual ";
             $query.= "FROM $tblname ";
-            $query.= "WHERE tipocuenta = 0 AND LENGTH(codigo) <= 7 AND codigo LIKE '".$n->codigo."%'";
+            $query.= "WHERE tipocuenta = 0 AND LENGTH(codigo) <= 10 AND codigo LIKE '".$n->codigo."%'";
             //echo $query."<br/><br/>";
             $sumas = $db->getQuery($query)[0];
             $query = "UPDATE $tblname SET anterior = ".$sumas->anterior.", debe = ".$sumas->debe.", haber = ".$sumas->haber.", actual = ".$sumas->actual." ";

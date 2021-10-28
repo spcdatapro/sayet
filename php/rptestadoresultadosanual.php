@@ -44,7 +44,7 @@ $app->post('/rptestres', function(){
                 $query = "INSERT INTO rptestadoresultados(idcuenta, codigo, nombrecta, tipocuenta, ingresos, saldo, parasuma, s_ene, s_feb,s_mar,s_abr,s_may,s_jun,s_jul,s_ago,s_sep,s_oct,s_nov,s_dic) ";
                 $query.= "SELECT 0, '', 'Subtotal de cuentas de ".($ig == 1 ? "ingreso" : "gasto")." que inician con ".$ini." --->', 1, ".$ig.", SUM(saldo), 1 , ";
                 $query.= "SUM(s_ene), SUM(s_feb),SUM(s_mar),SUM(s_abr),SUM(s_may),SUM(s_jun),SUM(s_jul),SUM(s_ago),SUM(s_sep),SUM(s_oct),SUM(s_nov),SUM(s_dic) ";
-                $query.= "FROM rptestadoresultados WHERE ingresos = ".$ig." AND tipocuenta = 0 AND LENGTH(codigo) <= 7";
+                $query.= "FROM rptestadoresultados WHERE ingresos = ".$ig." AND tipocuenta = 0 AND LENGTH(codigo) <= 10";
                 $db->doQuery($query);
             }
         }
@@ -88,7 +88,7 @@ $app->post('/rptestres', function(){
             $query.= "SUM(s_may) AS s_may,SUM(s_jun) AS s_jun,SUM(s_jul) AS s_jul,SUM(s_ago) AS s_ago, ";
             $query.= "SUM(s_sep) AS s_sep,SUM(s_oct) AS s_oct,SUM(s_nov) AS s_nov,SUM(s_dic) AS s_dic   ";
             $query.= "FROM rptestadoresultados  ";
-            $query.= "WHERE tipocuenta = 0 AND LENGTH(codigo) <= 7 AND codigo LIKE '".$n->codigo."%'";
+            $query.= "WHERE tipocuenta = 0 AND LENGTH(codigo) <= 10 AND codigo LIKE '".$n->codigo."%'";
             $sumas = $db->getQuery($query)[0];
             $query = "UPDATE rptestadoresultados SET s_ene = ".$sumas->s_ene."  
                                                    , s_feb = ".$sumas->s_feb." 

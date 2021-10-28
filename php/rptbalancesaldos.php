@@ -176,7 +176,7 @@ function getSelect($cual, $d, $enrango){
 $app->post('/balancesaldos', function(){
     $d = json_decode(file_get_contents('php://input'));
     if(!isset($d->vercierre)){ $d->vercierre = 0; }
-    if(!isset($d->nivel)){ $d->nivel = 7; }
+    if(!isset($d->nivel)){ $d->nivel = 10; }
     if(!isset($d->solomov)){ $d->solomov = 1; }
     $db = new dbcpm();
 

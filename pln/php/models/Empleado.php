@@ -489,8 +489,12 @@ class Empleado extends Principal
 		$ianio = date('Y', $istr);
 
 		if ($ianio == $this->nanio && $imes == $this->nmes) {
-			if ($this->ndia > $idia) {
-				$this->dtrabajados = ($this->ndia-$idia)+1;
+			if ($this->ndia >= $idia) {
+				if (intval($idia) === 1) {
+					$this->dtrabajados = $this->ndia == 15 ? 15 : 30;
+				} else {
+					$this->dtrabajados = ($this->ndia-$idia)+1;
+				}
 			}
 		} else {
 			if (empty($this->emp->baja)) {
@@ -580,8 +584,8 @@ class Empleado extends Principal
 					]
 				]
 			);
-
-			if (!isset($ant['scalar'])) {
+			
+			if ($ant !== false) {
 				return $ant['anticipo'];
 			}
 		}
