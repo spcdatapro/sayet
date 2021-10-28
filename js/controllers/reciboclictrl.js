@@ -2,7 +2,7 @@
 
     var reciboclictrl = angular.module('cpm.reciboclictrl', []);
 
-    reciboclictrl.controller('reciboClientesCtrl',  ['$scope' , 'reciboClientesSrvc' , 'authSrvc' , '$route' , '$confirm' , '$filter'  , 'DTOptionsBuilder' , 'detContSrvc' , 'cuentacSrvc' , 'clienteSrvc', '$location', 'jsReportSrvc', '$window', 'empresaSrvc', function($scope , reciboClientesSrvc , authSrvc , $route , $confirm , $filter , DTOptionsBuilder , detContSrvc , cuentacSrvc , clienteSrvc, $location, jsReportSrvc, $window, empresaSrvc){
+    reciboclictrl.controller('reciboClientesCtrl',  ['$scope' , 'reciboClientesSrvc' , 'authSrvc' , '$route' , '$confirm' , '$filter'  , 'DTOptionsBuilder' , 'detContSrvc' , 'cuentacSrvc' , 'clienteSrvc', '$location', 'jsReportSrvc', '$window', 'empresaSrvc', '$uibModal', function($scope , reciboClientesSrvc , authSrvc , $route , $confirm , $filter , DTOptionsBuilder , detContSrvc , cuentacSrvc , clienteSrvc, $location, jsReportSrvc, $window, empresaSrvc, $uibModal){
 
         $scope.reccli = {idempresa: 0};
         $scope.reciboscli = [];
@@ -158,13 +158,9 @@
  //Fin Modificacion
 
         function procDetCont(d){
-            for(var i = 0; i < d.length; i++){
-                d[i].id = parseInt(d[i].id);
-                d[i].idcuenta = parseInt(d[i].idcuenta);
-                d[i].origen = parseInt(d[i].origen);
-                d[i].idorigen = parseInt(d[i].idorigen);
-                d[i].debe = parseFloat(parseFloat(d[i].debe).toFixed(2));
-                d[i].haber = parseFloat(parseFloat(d[i].haber).toFixed(2));
+            for (var i = 0; i < d.length; i++) {
+                d[i].debe = parseFloat(d[i].debe);
+                d[i].haber = parseFloat(d[i].haber);
             }
             return d;
         }
@@ -249,8 +245,8 @@
         };
 
         $scope.delRecCli = function(obj){
-            $confirm({text: '¿Seguro(a) de eliminar el recibo de clientes No. ' + $filter('padNumber')(obj.id, 5) + '?', title: 'Eliminar recibo de clientes', ok: 'Sí', cancel: 'No'}).then(function() {
-                reciboClientesSrvc.editRow({id: obj.id}, 'd').then(function(){ 
+            $confirm({text: '¿Seguro(a) de eliminar el recibo de clientes No. ' + $scope.reccli.serie + '-' + $scope.reccli.numero + '?', title: 'Eliminar recibo de clientes', ok: 'Sí', cancel: 'No'}).then(function() {
+                reciboClientesSrvc.editRow({id: $scope.reccli.id}, 'd').then(function(){ 
                     //Inicio modificacion
                     //$scope.getLstRecibosCli(obj.idempresa); 
                     $scope.getLstRecibosCli();
@@ -397,12 +393,57 @@
             });
         };
 
-        $scope.delDetCont = function(obj){
-            $confirm({text: '¿Seguro(a) de eliminar esta cuenta?', title: 'Eliminar cuenta contable', ok: 'Sí', cancel: 'No'}).then(function() {
-                detContSrvc.editRow({id:obj.id}, 'd').then(function(){ $scope.loadDetCont(obj.idorigen); });
+        $scope.loadDetaCont = () => {
+            detContSrvc.lstDetalleCont(+$scope.origen, +$scope.reccli.id).then((detc) => {
+                    $scope.lstdetcont = procDetCont(detc);
+                    $scope.elDetCont = { debe: 0.0, haber: 0.0, objCuenta: undefined, idcuenta: undefined };
+                });
+        };
+
+        $scope.delDetCont = (obj) => {
+            $confirm({ text: '¿Seguro(a) de eliminar esta cuenta?', title: 'Eliminar cuenta contable', ok: 'Sí', cancel: 'No' }).then(() => {
+                    detContSrvc.editRow({ id: obj.id }, 'd').then(() => { $scope.loadDetCont(obj.idorigen); });
+                });
+        };
+
+        $scope.updDetCont = (obj) => {
+            var modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: 'modalUpdDetCont.html',
+                controller: 'ModalUpdDetContCtrl',
+                resolve: {
+                    detalle: () => obj,
+                    idempresa: () => $scope.reccli.idempresa
+                }
             });
+
+            modalInstance.result.then(() => {
+                $scope.loadDetaCont();
+            }, () => { $scope.loadDetaCont(); });
         };
 
     }]);
+
+    // --------------------------------------------------------------------------------------------------------------------------------------------
+
+    reciboclictrl.controller('ModalUpdDetContCtrl', ['$scope', '$uibModalInstance', 'detalle', 'cuentacSrvc', 'idempresa', 'detContSrvc', '$confirm', ($scope, $uibModalInstance, detalle, cuentacSrvc, idempresa, detContSrvc, $confirm) => {
+            $scope.detcont = detalle;
+            $scope.cuentas = [];
+
+            cuentacSrvc.getByTipo(+idempresa, 0).then(function (d) { $scope.cuentas = d; });
+
+            $scope.ok = () => { $uibModalInstance.close(); };
+            $scope.cancel = () => { $uibModalInstance.dismiss('cancel'); };
+
+            $scope.zeroDebe = (valor) => { $scope.detcont.debe = parseFloat(valor) > 0 ? 0.0 : $scope.detcont.debe; };
+            $scope.zeroHaber = (valor) => { $scope.detcont.haber = parseFloat(valor) > 0 ? 0.0 : $scope.detcont.haber; };
+
+            $scope.actualizar = (obj) => {
+                $confirm({ text: '¿Seguro(a) de guardar los cambios?', title: 'Modificar detalle contable', ok: 'Sí', cancel: 'No' }).then(() => {
+                    detContSrvc.editRow(obj, 'u').then(() => { $scope.ok(); });
+                });
+            };
+
+        }]);
 
 }());

@@ -375,4 +375,40 @@ $app->post('/prtrecibocli', function() {
     print json_encode(['recibo' => $recibo[0], 'facturas' => $facturas]);
 });
 
+$app->post('/prtrecibocli', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $n2l = new NumberToLetterConverter();
+    $db = new dbcpm();
+    $query = 
+                "SELECT 
+                a.id,
+                CONCAT(a.serie, '-', a.numero) AS recibo,
+                IFNULL(b.nombre, e.nombre) AS cliente,
+                a.fecha,
+                (SELECT 
+                        FORMAT(SUM(c.monto), 2)
+                    FROM
+                        detcobroventa c
+                    WHERE
+                        c.idrecibocli = a.id) AS monto,
+                d.nomempresa AS empresa
+            FROM
+                recibocli a
+                    LEFT JOIN
+                cliente b ON a.idcliente = b.id
+                    INNER JOIN
+                empresa d ON a.idempresa = d.id
+                    INNER JOIN
+                detcobroventa f ON f.idrecibocli = a.id
+                    LEFT JOIN
+                factura e ON f.idfactura = e.id
+            WHERE
+                a.fecha >= $d->fechadel
+                    AND a.fecha <= $d->fechaal ";
+    $query.= (int)$d->tipo = 1 ? "AND a.tipo = 1 " : ((int)$d->tipo = 2 ? "AND a.tipo = 2 " : '');
+    $query/= "ORDER BY a.fecha ASC ";
+    $facturas = $db->getQuery($query);
+
+    print json_encode(['facturas' => $facturas]);
+});
 $app->run();
