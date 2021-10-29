@@ -152,19 +152,59 @@ class Prestamo extends Principal
 
 	public function guardar_abono($args = [])
 	{
-		$saldo = round($this->get_saldo(), 2);
+		if (isset($args["id"])) {
+			$saldo = round($this->get_saldo(["_directo" => $args["id"]]), 2);
+		} else {
+			$saldo = round($this->get_saldo(), 2);
+		}
+		
 		$monto = round($args['monto'], 2);
 		
 		if ($saldo >= $monto) {
 			$datos = [
 				'fecha' => $args['fecha'],
 				'monto' => $monto,
-				'concepto' => $args['concepto'],
-				'idusuario' => $_SESSION['uid'],
-				'idplnprestamo' => $this->pre->id
+				'concepto' => $args['concepto']
 			];
 
-			$lid = $this->db->insert('plnpresabono', $datos);
+			if (isset($args["id"])) {
+				$where = ["AND" => [
+					"id [=]" => $args["id"],
+					"idplnprestamo [=]" => $this->pre->id
+				]];
+
+				$antes = $this->db->get(
+					"plnpresabono", 
+					['*'], 
+					$where
+				);
+
+				$lid = $this->db->update(
+					"plnpresabono", 
+					$datos,
+					$where
+				);
+
+				if ($lid) {
+					$despues = $this->db->get(
+						"plnpresabono", 
+						['*'], 
+						$where
+					);
+
+					$emp = new Empleado($this->pre->idplnempleado);
+					$emp->guardar_bitacora([
+						"movdescripcion" => "Actualización de abono directo, préstamos # {$this->pre->id}",
+						"antes" => json_encode($antes),
+						"despues" => json_encode($despues)
+					]);
+				}
+			} else {
+				$datos["idusuario"] = $_SESSION['uid'];
+				$datos["idplnprestamo"] = $this->pre->id;
+
+				$lid = $this->db->insert('plnpresabono', $datos);
+			}
 
 			if ($lid) {
 				$this->guardar(['saldo' => $this->get_saldo()]);
@@ -179,22 +219,27 @@ class Prestamo extends Principal
 		return FALSE;
 	}
 
-	public function get_abonos()
+	public function get_abonos($args = [])
 	{
+		$condiciones = ['plnpresabono.idplnprestamo' => $this->pre->id];
+
+		if (elemento($args, 'id')) {
+			$condiciones['plnpresabono.id[=]'] = $args['id'];
+		}
+
 		return $this->db->select("plnpresabono", [
 				'[><]usuario(b)' => ['plnpresabono.idusuario' => 'id']
 			], 
 			[
 				"plnpresabono.id",
+				"plnpresabono.idplnprestamo",
 				"plnpresabono.fecha",
 				"plnpresabono.monto",
 				"plnpresabono.concepto",
 				"plnpresabono.registro",
 				"b.nombre"
 			],
-			[
-				'idplnprestamo' => $this->pre->id
-			]
+			['AND' => $condiciones]
 		);
 	}
 
@@ -259,6 +304,10 @@ class Prestamo extends Principal
 
 		if (elemento($args, 'actual')) {
 			$condiciones['fecha[<=]'] = $args['actual'];
+		}
+
+		if (elemento($args, '_directo')) {
+			$condiciones['id[!]'] = $args['_directo'];
 		}
 
 		$tmpdir = $this->db->select(

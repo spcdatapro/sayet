@@ -379,13 +379,16 @@ $app->get('/descargar', function(){
 		'tingreso'       => 'Ingreso',
 		'tbaja'          => 'Baja',
 		'tempresadebito' => 'Empresa Débito',
-		'tsueldo'        => 'Sueldo',
-		'tbonificacion'  => 'Bonificación', 
-		'tisr'           => 'ISR',
 		'tlineat'		 => str_repeat("_", 250),
 		'tlineapiet'     => str_repeat("_", 250),
 		'tnopaginat'     => "Página No. "
 	];
+
+	if (elemento($params, "sin_valores") !== 'on') {
+		$cabecera["tsueldo"] = "Sueldo";
+		$cabecera["tbonificacion"] = "Bonificación";
+		$cabecera["tisr"] = "ISR";
+	}
 
 	$espacio   = 0;
 	$registros = 0;
@@ -429,13 +432,19 @@ $app->get('/descargar', function(){
 						'descuentoisr'
 					];
 
-					if (in_array($campo, $numericos)) {
+					if (in_array($campo, $numericos) && elemento($params, "sin_valores") !== 'on') {
 						$etotales = totalesIndice($etotales, $campo, $valor);
 						$totales  = totalesPagina($totales, $pdf, $campo, $valor);
 						$valor    = number_format($valor, 2);
 					}
 
-					$pdf = generar_fimpresion($pdf, $valor, $conf);
+					if (elemento($params, "sin_valores") === 'on') {
+						if (!in_array($campo, $numericos)) {
+							$pdf = generar_fimpresion($pdf, $valor, $conf);
+						}
+					} else {
+						$pdf = generar_fimpresion($pdf, $valor, $conf);
+					}
 				}
 			}
 
@@ -464,12 +473,17 @@ $app->get('/descargar', function(){
 			'color' => array(0, 0, 0)
 		));
 
-		$pdf = imprimirTotalesEmpresa($pdf, $bus, $tipoImpresion, $etotales, $espacio);
+		if (elemento($params, "sin_valores") !== 'on') {
+			$pdf = imprimirTotalesEmpresa($pdf, $bus, $tipoImpresion, $etotales, $espacio);
+		}
 
 		$espacio += $confe->espacio;
 	}
 
-	$pdf = imprimirTotalesPagina($pdf, $bus, $tipoImpresion, $totales);
+	if (elemento($params, "sin_valores") !== 'on') {
+		$pdf = imprimirTotalesPagina($pdf, $bus, $tipoImpresion, $totales);
+	}
+
 	$pdf = imprimirEncabezado($pdf, $bus, $tipoImpresion, $cabecera);
 
 	$pdf->Output("reporte_empleados_" . time() . ".pdf", 'I');

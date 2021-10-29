@@ -6,12 +6,13 @@
 				  <div class="form-group form-group-sm">
 				    <label for="selectEmpresa">Empresa:</label>
 				    <select class="form-control" ng-model="gen.empresa" id="selectEmpresa">
+				    	<option value="">- TODAS -</option>
 				    	<option ng-repeat="option in empresas" value="{{option.id}}">{{option.nomempresa}}</option>
 				    </select>
 				  </div>
 				  <div class="form-group form-group-sm">
 				    <label for="inputFecha">Fecha</label>
-				    <input type="date" ng-model="gen.fch" class="form-control" placeholder="Fecha" ng-blur="expression">
+				    <input type="date" ng-model="gen.fch" class="form-control" placeholder="Fecha" ng-blur="expression" required>
 				  </div>
 				  <div class="checkbox" title="Incluye generación de bono 14, funciona únicamente el 15/07">
 				    <label>

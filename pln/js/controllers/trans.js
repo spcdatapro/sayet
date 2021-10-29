@@ -175,6 +175,7 @@ angular.module('cpm')
         $scope.empleados   = []
         $scope.omisiones   = []
         $scope.abonos      = []
+        $scope.abono       = {}
         
         $scope.mostrarForm = function() {
             $scope.pre = {}
@@ -293,20 +294,37 @@ angular.module('cpm')
             }
         }
 
-        $scope.guardarAbono = function(ab) {
-            if (ab.fecha_abono && ab.monto && ab.concepto) {
-                $('#btnGuardarAbono').button('loading')
-                ab.fecha = $scope.formatoFecha(ab.fecha_abono)
-                preServicios.guardarAbono(ab, $scope.pre.id).then(function(data){
-                    $scope.verAbonos($scope.pre.id)
-                    alert(data.mensaje)
-                    $('#btnGuardarAbono').button('reset')
-                    $('#mdlAbono').modal('hide')
-                    $scope.abono = {}
-                })
-            } else {
-                alert('Por favor llene el formulario. Todos los campos son obligatorios.')
-            }
+        $scope.formAbono = () => {
+            $scope.abono = {}
+            $('#mdlAbono').modal()
+        }
+
+        $scope.guardarAbono = function() {
+            $scope.abono.fecha = $scope.formatoFecha($scope.abono.fecha_abono)
+            $('#btnGuardarAbono').button('loading')
+            preServicios.guardarAbono($scope.abono, $scope.pre.id).then(function(data){
+                $scope.verAbonos($scope.pre.id)
+                alert(data.mensaje)
+                $('#btnGuardarAbono').button('reset')
+                $('#mdlAbono').modal('hide')
+                $scope.abono = {}
+            })
+            .catch(error => {
+                alert(error)
+                $('#btnGuardarAbono').button('reset')
+            })
+        }
+
+        $scope.editarAbono = (idx) => {
+            $scope.abono = {}
+            let abo = $scope.abonos[idx]
+
+            $scope.abono.id = abo.id
+            $scope.abono.fecha_abono = new Date(Date.parse(abo.fecha))
+            $scope.abono.monto = parseFloat(abo.monto)
+            $scope.abono.concepto = abo.concepto
+
+            $('#mdlAbono').modal()
         }
 
         $scope.verAbonos = function(pre) {

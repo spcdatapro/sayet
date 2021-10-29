@@ -104,19 +104,34 @@
                         <table class="table table-condensed table-hover table-bordered">
                             <thead>
                                 <tr class="active">
-                                    <th colspan="3">Abonos Directos</th>
+                                    <th colspan="4">Abonos Directos</th>
                                 </tr>
                                 <tr>
                                     <th>Fecha</th>
                                     <th>Concepto</th>
                                     <th class="text-right">Monto</th>
+                                    <th class="text-center"></th>
                                 </tr>
                             </thead>
                             <tbody ng-cloak="">
                                 <tr ng-repeat="a in abonos track by $index">
-                                    <td>{{ a.fecha | date:'dd/MM/yyyy' }}</td>
+                                    <td>
+                                        <a
+                                            href="javascript:;" 
+                                            ng-click="editarAbono($index)"
+                                            ng-show="hay"
+                                        >{{ a.fecha | date:'dd/MM/yyyy' }}</a>
+                                    </td>
                                     <th><small>{{ a.concepto }}</small></th>
                                     <td class="text-right">{{ a.monto | number }}</td>
+                                    <td class="text-center">
+                                        <a
+                                            ng-href="/sayet/pln/php/controllers/prestamo.php/imprimir_abono/{{ a.idplnprestamo }}/{{ a.id }}"
+                                            title="Imprimir abono"
+                                        >
+                                            <i class="glyphicon glyphicon-print"></i>
+                                        </a>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -125,7 +140,12 @@
                         <a class="btn btn-default btn-sm" ng-href="/sayet/pln/php/controllers/prestamo.php/imprimir/{{pre.id}}" ng-show="hay" target="_blank" title="Imprimir préstamo">
                             <i class="glyphicon glyphicon-print"></i>
                         </a>
-                        <button type="button" class="btn btn-success btn-sm" ng-show="pre.finalizado == 0" data-toggle="modal" data-target="#mdlAbono">
+                        <button
+                            type="button"
+                            class="btn btn-success btn-sm"
+                            ng-show="pre.finalizado == 0"
+                            ng-click="formAbono()"
+                        >
                             <i class="glyphicon glyphicon-plus"></i> Abono Directo
                         </button>
                         <button type="button" class="btn btn-warning btn-sm" ng-show="pre.finalizado == 0" data-toggle="modal" data-target="#myModal">
@@ -227,7 +247,7 @@
                   <h4 class="modal-title" id="mdlAbonoLabel">Abono Directo</h4>
                 </div>
                 <div class="modal-body">
-                  <form class="form-horizontal" role="form" ng-submit="false">
+                  <form class="form-horizontal" role="form" ng-submit="guardarAbono()">
                         <div class="form-group form-group-sm">
                             <label for="inputAbonoFecha" class="col-sm-2 control-label">Fecha:</label>
                             <div class="col-sm-4">
@@ -244,20 +264,19 @@
                                 <textarea ng-model="abono.concepto" class="form-control" id="areaConcepto" rows="3" required></textarea>
                             </div>
                         </div>
+                        <div class="form-group form-group-sm">
+                            <div class="col-sm-12 text-right">
+                                <button 
+                                    type="submit" 
+                                    class="btn btn-sm btn-primary" 
+                                    id="btnGuardarAbono" 
+                                    data-loading-text="Guardando..."
+                                >
+                                    <i class="glyphicon glyphicon-floppy-disk"></i> Guardar
+                                </button>
+                            </div>
+                        </div>
                   </form>
-                  
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
-                        <i class="glyphicon glyphicon-remove"></i> Cerrar
-                    </button>
-                    <button 
-                        type="button" 
-                        class="btn btn-sm btn-primary" 
-                        ng-click="guardarAbono(abono)" 
-                        id="btnGuardarAbono" 
-                        data-loading-text="Guardando..."
-                    > <i class="glyphicon glyphicon-floppy-disk"></i> Guardar</button>
                 </div>
               </div>
             </div>
