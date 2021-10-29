@@ -22,6 +22,7 @@ class dbcpm{
 
 
     function __construct() {
+        $this->getDbNameFromFile();
         $this->dbConn = new medoo([
             'database_type' => 'mysql',
             'database_name' => $this->dbSchema,
@@ -34,6 +35,18 @@ class dbcpm{
 
     function __destruct() {
         unset($this->dbConn);
+    }
+
+    private function getDbNameFromFile() {
+        $dbName = '';
+        try {
+            $myfile = fopen("db.syt", "r");
+            $dbName = fgets($myfile);
+            fclose($myfile);
+        } catch (Exception $e) {
+            $dbName = 'sayet';
+        }
+        $this->dbSchema = $dbName;        
     }
 
     public function doSelectASJson($query){ return json_encode($this->dbConn->query($query)->fetchAll(5)); }

@@ -16,3 +16,4 @@ js/services/socketiosrvc.js
 .vscode/*
 ots_adjunto/
 Dockerfile
+php/db.syt
