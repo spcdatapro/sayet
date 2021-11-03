@@ -365,17 +365,17 @@
             }
         };
 
-        $scope.montoMaximo = function () {
-            if (+$scope.laTran.monto > +$scope.montoMax) {
-                toaster.pop({
-                    type: 'error',
-                    title: 'Error en el total',
-                    body: 'El monto de la transacción no puede ser mayor al monto de la orden de trabajo, solicite un aumento.',
-                    timeout: 7000
-                });
-                $scope.laTran.monto = undefined;
-            }
-        };
+        // $scope.montoMaximo = function () {
+        //     if (+$scope.laTran.monto > +$scope.montoMax) {
+        //         toaster.pop({
+        //             type: 'error',
+        //             title: 'Error en el total',
+        //             body: 'El monto de la transacción no puede ser mayor al monto de la orden de trabajo, solicite un aumento.',
+        //             timeout: 7000
+        //         });
+        //         $scope.laTran.monto = undefined;
+        //     }
+        // };
 
         $scope.addTran = function (obj) {
             obj.idbanco = obj.objBanco.id;

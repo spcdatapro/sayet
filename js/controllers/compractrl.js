@@ -246,13 +246,13 @@
                 exento = parseFloat($scope.laCompra.idp) + noAfecto;
                 subtotal = totFact - exento;
 
-                if (totFact > $scope.montoMax) {
-                    toaster.pop({
-                        type: 'error', title: 'Error en el Total.',
-                        body: 'El monto de la factura no puede ser mayor al monto de la orden de trabajo, solicite un aumento.', timeout: 7000
-                    });
-                    $scope.laCompra.totfact = undefined;
-                }
+                // if (totFact > $scope.montoMax) {
+                //     toaster.pop({
+                //         type: 'error', title: 'Error en el Total.',
+                //         body: 'El monto de la factura no puede ser mayor al monto de la orden de trabajo, solicite un aumento.', timeout: 7000
+                //     });
+                //     $scope.laCompra.totfact = undefined;
+                // }
                 if ($scope.laCompra.objProveedor.pequeniocont == 1) {
                     $scope.laCompra.subtotal = totFact;
                     $scope.laCompra.iva = 0.00;
