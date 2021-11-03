@@ -383,7 +383,7 @@ $app->post('/prtreciboclifch', function() {
                 a.id,
                 CONCAT(a.serie, '-', a.numero) AS recibo,
                 IFNULL(b.nombre, e.nombre) AS cliente,
-                a.fecha,
+                a.fecha, g.simbolo,
                 (SELECT 
                         FORMAT(SUM(c.monto), 2)
                     FROM
@@ -401,13 +401,23 @@ $app->post('/prtreciboclifch', function() {
                 detcobroventa f ON f.idrecibocli = a.id
                     LEFT JOIN
                 factura e ON f.idfactura = e.id
+                    LEFT JOIN
+	        moneda g ON e.idmoneda = g.id
             WHERE
                 a.fecha >= $d->fechadel
                 AND a.fecha <= $d->fechaal ";
     $query.= (int)$d->tipo === 1 ? "AND a.tipo = 1 " : ((int)$d->tipo === 2 ? "AND a.tipo = 2 " : '');
+    $query.= (int)$d->idempresa > 0 ? "AND d.id = $d->idempresa " : '';
     $query.= "ORDER BY a.fecha ASC ";
     $recli = $db->getQuery($query);
 
-    print json_encode(['recli' => $recli]);
+    $query = 
+                "SELECT
+                DATE_FORMAT('$d->fechadel', '%d/%m/%Y') AS fdel, 
+                DATE_FORMAT('$d->fechaal', '%d/%m/%Y') AS fal ";
+    $query.= (int)$d->tipo === 1 ? ", 1 AS escli " : ((int)$d->tipo === 2 ? ", 1 AS esint" : '');
+    $general = $db->getQuery($query)[0];
+
+    print json_encode(['recli' => $recli, 'general' => $general]);
 });
 $app->run();
