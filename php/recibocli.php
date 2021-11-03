@@ -375,9 +375,8 @@ $app->post('/prtrecibocli', function() {
     print json_encode(['recibo' => $recibo[0], 'facturas' => $facturas]);
 });
 
-$app->post('/prtrecibocli', function() {
+$app->post('/prtreciboclifch', function() {
     $d = json_decode(file_get_contents('php://input'));
-    $n2l = new NumberToLetterConverter();
     $db = new dbcpm();
     $query = 
                 "SELECT 
@@ -404,11 +403,11 @@ $app->post('/prtrecibocli', function() {
                 factura e ON f.idfactura = e.id
             WHERE
                 a.fecha >= $d->fechadel
-                    AND a.fecha <= $d->fechaal ";
-    $query.= (int)$d->tipo = 1 ? "AND a.tipo = 1 " : ((int)$d->tipo = 2 ? "AND a.tipo = 2 " : '');
-    $query/= "ORDER BY a.fecha ASC ";
-    $facturas = $db->getQuery($query);
+                AND a.fecha <= $d->fechaal ";
+    $query.= (int)$d->tipo === 1 ? "AND a.tipo = 1 " : ((int)$d->tipo === 2 ? "AND a.tipo = 2 " : '');
+    $query.= "ORDER BY a.fecha ASC ";
+    $recli = $db->getQuery($query);
 
-    print json_encode(['facturas' => $facturas]);
+    print json_encode(['recli' => $recli]);
 });
 $app->run();
