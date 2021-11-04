@@ -47,7 +47,7 @@ $app->post('/recibos', function() use($db){
 
         for($j = 0; $j < $cntEmpresas; $j++){
             $empresa = $moneda->empresas[$j];
-            $query = "SELECT a.id AS idrecibo, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.serie, IF(a.numero IS NULL, a.id, a.numero) AS numero, IFNULL(TRIM(b.nombre), TRIM(d.nombre)) AS cliente, ";
+            $query = "SELECT a.id AS idrecibo, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.serie, IF(a.numero IS NULL, a.id, a.numero) AS numero, TRIM(b.nombre) AS cliente, ";
             $query.= "GROUP_CONCAT(DISTINCT TRIM(CONCAT(TRIM(d.serie), ' ', TRIM(d.numero), IF(d.serieadmin IS NOT NULL, CONCAT(' (', d.serieadmin, '-', d.numeroadmin, ')') , ''))) ORDER BY d.serie, d.numero SEPARATOR ', ') AS facturas, FORMAT(SUM(c.monto), 2) AS totrecibo, ";
             $query.= "CONCAT(f.tipotrans, f.numero) AS tranban, h.simbolo AS monedadep, g.siglas AS banco, FORMAT(f.monto, 2) AS montotran ";
             $query.= "FROM recibocli a INNER JOIN cliente b ON b.id = a.idcliente INNER JOIN empresa e ON e.id = a.idempresa LEFT JOIN detcobroventa c ON a.id = c.idrecibocli ";
@@ -96,7 +96,7 @@ $app->post('/correlativo', function() use($db){
     $query = "SELECT DATE_FORMAT('$d->fdelstr', '%d/%m/%Y') AS del,  DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS al, DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy";
     $generales = $db->getQuery($query)[0];
 
-    $qGen = "SELECT a.idempresa, d.nomempresa AS empresa, a.id, IFNULL(CONCAT(a.serie, a.numero), a.id) AS norecibo, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, IFNULL(c.nombre,  AS cliente, a.usuariocrea, ";
+    $qGen = "SELECT a.idempresa, d.nomempresa AS empresa, a.id, IFNULL(CONCAT(a.serie, a.numero), a.id) AS norecibo, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, IFNULL(c.nombre, f.nombre) AS cliente, a.usuariocrea, ";
     $qGen.= "'Q' AS moneda, IFNULL(b.totrecibo, 0.00) AS totrecibo, a.serie, a.numero, d.ordensumario, IFNULL(c.nombrecorto, '') as nombrecorto ";
     $qGen.= "FROM recibocli a LEFT JOIN (SELECT idrecibocli, SUM(monto) AS totrecibo FROM detcobroventa GROUP BY idrecibocli) b ON a.id = b.idrecibocli ";
     $qGen.= "LEFT JOIN cliente c ON c.id = a.idcliente LEFT JOIN empresa d ON d.id = a.idempresa LEFT JOIN detcobroventa e ON e.idrecibocli = a.id LEFT JOIN factura f on e.idfactura = f.id  ";
