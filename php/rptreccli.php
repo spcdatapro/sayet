@@ -47,7 +47,7 @@ $app->post('/recibos', function() use($db){
 
         for($j = 0; $j < $cntEmpresas; $j++){
             $empresa = $moneda->empresas[$j];
-            $query = "SELECT a.id AS idrecibo, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.serie, IF(a.numero IS NULL, a.id, a.numero) AS numero, TRIM(b.nombre) AS cliente, ";
+            $query = "SELECT a.id AS idrecibo, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.serie, IF(a.numero IS NULL, a.id, a.numero) AS numero, IFNULL(TRIM(b.nombre), TRIM(d.nombre)) AS cliente, ";
             $query.= "GROUP_CONCAT(DISTINCT TRIM(CONCAT(TRIM(d.serie), ' ', TRIM(d.numero), IF(d.serieadmin IS NOT NULL, CONCAT(' (', d.serieadmin, '-', d.numeroadmin, ')') , ''))) ORDER BY d.serie, d.numero SEPARATOR ', ') AS facturas, FORMAT(SUM(c.monto), 2) AS totrecibo, ";
             $query.= "CONCAT(f.tipotrans, f.numero) AS tranban, h.simbolo AS monedadep, g.siglas AS banco, FORMAT(f.monto, 2) AS montotran ";
             $query.= "FROM recibocli a INNER JOIN cliente b ON b.id = a.idcliente INNER JOIN empresa e ON e.id = a.idempresa LEFT JOIN detcobroventa c ON a.id = c.idrecibocli ";
