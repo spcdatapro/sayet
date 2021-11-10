@@ -1,15 +1,15 @@
-<style>
-		#tablaNomina > tbody > tr > td {
-			padding: 0px;
-		}
-	
-		td > input {
-			width: 100%;
-		}
-	
-		#tablaNomina {
-			font-size: 0.8em;
-		}
+<style type="text/css">
+#tablaNomina > tbody > tr > td {
+	padding: 0px;
+}
+
+td > input {
+	width: 100%;
+}
+
+#tablaNomina {
+	font-size: 0.8em;
+}
 </style>
 
 <div class="container-fluid" ng-controller="transNominaController">
@@ -56,11 +56,11 @@
 			</div>
 		</div>
 		<div class="col-sm-10">
-			<div class="panel panel-primary">
+			<div class="panel panel-primary sticky-table sticky-headers sticky-ltr-cells">
 				<table class="table table-condensed table-hover" id="tablaNomina" ng-show="edicion">
 					<thead>
-						<tr>
-							<th>Empleado</th>
+						<tr class="sticky-header">
+							<th class="sticky-cell">Empleado</th>
 							<th class="text-right" ng-show="shingresos_uno">Anticipo</th>
 							
 							<th class="text-right" ng-show="shingresos_dos" title="Sueldo Ordinario">S. Ordinario</th>
@@ -87,7 +87,7 @@
 					</thead>
 					<tbody ng-cloak>
 						<tr ng-repeat="(indice, valor) in nomina">
-							<td>{{ valor.nempleado }}</td>
+							<td class="sticky-cell">{{ valor.nempleado }}</td>
 
 							<td class="text-right" ng-show="shingresos_uno"><input type="number" step="0.01" ng-model="valor.anticipo" string-to-number ng-blur="actualizarNomina(valor, indice)"></td>
 

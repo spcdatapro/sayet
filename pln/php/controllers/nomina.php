@@ -5,14 +5,15 @@ define('PLNPATH', BASEPATH . '/pln/php');
 
 set_time_limit(0);
 
-require BASEPATH . "/php/vendor/autoload.php";
-require BASEPATH . "/php/ayuda.php";
-require PLNPATH . '/Principal.php';
-require PLNPATH . '/models/Prestamo.php';
-require PLNPATH . '/models/Empleado.php';
-require PLNPATH . '/models/Vacaciones.php';
-require PLNPATH . '/models/Nomina.php';
-require PLNPATH . '/models/General.php';
+require(BASEPATH . "/php/vendor/autoload.php");
+require(BASEPATH . "/php/ayuda.php");
+require(PLNPATH . '/Principal.php');
+require(PLNPATH . '/models/Prestamo.php');
+require(PLNPATH . '/models/Empleado.php');
+require(PLNPATH . '/models/Vacaciones.php');
+require(PLNPATH . '/models/Nomina.php');
+require(PLNPATH . '/models/General.php');
+require_once(BASEPATH . '/libs/tcpdf/tcpdf.php');
 
 $app = new \Slim\Slim();
 
@@ -43,7 +44,6 @@ $app->get('/imprimir_recibo', function(){
 	$g = new General();
 
 	if (elemento($_GET, 'fdel') && elemento($_GET, 'fal')) {
-		require dirname(dirname(dirname(__DIR__))) . '/libs/tcpdf/tcpdf.php';
 		$s = [215.9, 279.4]; # Carta mm
 
 		$pdf = new TCPDF('P', 'mm', $s);
@@ -94,8 +94,6 @@ $app->get('/imprimir', function(){
 	$g = new General();
 
 	if (elemento($_GET, 'fdel') && elemento($_GET, 'fal')) {
-		require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
-		
 		$s = [215.9, 330.2]; # Oficio mm
 
 		$pdf = new TCPDF('L', 'mm', $s);
@@ -365,8 +363,6 @@ $app->get('/imprimir_igss', function(){
 	$g = new General();
 
 	if (elemento($_GET, 'fal')) {
-		require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
-
 		$_GET['fdel'] = formatoFecha($_GET['fal'], 4).'-'.formatoFecha($_GET['fal'], 3).'-16';
 		
 		$s = [215.9, 279.4]; # Carta mm
@@ -535,8 +531,6 @@ $app->get('/imprimir_isr', function(){
 	$g = new General();
 
 	if (elemento($_GET, 'fal')) {
-		require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
-
 		$_GET['fdel'] = formatoFecha($_GET['fal'], 4).'-'.formatoFecha($_GET['fal'], 3).'-16';
 
 		$s = [215.9, 279.4]; # Carta mm
@@ -679,8 +673,6 @@ $app->get('/imprimir_bono14', function(){
 	$g = new General();
 
 	if (elemento($_GET, 'fal')) {
-		require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
-
 		if (formatoFecha($_GET['fal'], 2) == 15) {
 			$_GET['fdel'] = formatoFecha($_GET['fal'], 4).'-'.formatoFecha($_GET['fal'], 3).'-01';
 		} else {
@@ -840,8 +832,6 @@ $app->get('/imprimir_sp', function(){
 		$tipoImpresion = 5;
 
 		if (count($todos) > 0) {
-			require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
-
 			$s = [215.9, 330.2]; # Oficio mm
 
 			$pdf = new TCPDF('L', 'mm', $s);
@@ -1034,7 +1024,6 @@ $app->get('/imprimir_aguinaldo', function(){
 
 	if (elemento($_GET, 'fal')) {
 		if (formatoFecha($_GET['fal'], 2) == 15 && formatoFecha($_GET['fal'], 3) == 12) {
-			require BASEPATH . '/libs/tcpdf/tcpdf.php';
 			$_GET['fdel'] = formatoFecha($_GET['fal'], 4).'-'.formatoFecha($_GET['fal'], 3).'-01';
 
 			$s = [215.9, 279.4]; # Carta mm

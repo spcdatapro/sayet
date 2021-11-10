@@ -9,14 +9,15 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require BASEPATH . "/php/vendor/autoload.php";
-require BASEPATH . "/php/ayuda.php";
-require PLNPATH . '/Principal.php';
-require PLNPATH . '/models/General.php';
-require PLNPATH . '/models/Nomina.php';
-require PLNPATH . '/models/Empleado.php';
-require PLNPATH . '/models/Vacaciones.php';
-require PLNPATH . '/models/Prestamo.php';
+require(BASEPATH . "/php/vendor/autoload.php");
+require(BASEPATH . "/php/ayuda.php");
+require(PLNPATH . '/Principal.php');
+require(PLNPATH . '/models/General.php');
+require(PLNPATH . '/models/Nomina.php');
+require(PLNPATH . '/models/Empleado.php');
+require(PLNPATH . '/models/Vacaciones.php');
+require(PLNPATH . '/models/Prestamo.php');
+require_once(BASEPATH . '/libs/tcpdf/tcpdf.php');
 
 $app = new \Slim\Slim();
 
@@ -82,7 +83,6 @@ $app->post('/actualizar', function(){
 $app->get('/imprimir', function(){
 	if (elemento($_GET, "anio")) {
 		if (isset($_GET["carta"])) {
-			require BASEPATH . '/libs/tcpdf/tcpdf.php';
 			$s = [215.9, 279.4]; # Carta mm
 
 			$pdf = new TCPDF('P', 'mm', $s);
@@ -133,8 +133,6 @@ $app->get('/imprimir', function(){
 			die();
 		} else {
 			$g = new General();
-
-			require BASEPATH . '/libs/tcpdf/tcpdf.php';
 			$s = [215.9, 330.2]; # Oficio mm
 
 			$pdf = new TCPDF('L', 'mm', $s);
