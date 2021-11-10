@@ -259,7 +259,7 @@ $app->post('/avanceot', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $query = "SELECT b.fechapago AS fechaOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(SUBSTRING(c.siglas, 1, 2), '-', d.tipotrans, '-', 
+    $query = "SELECT b.fechafactura AS fechaOrd, d.numero AS chqOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(SUBSTRING(c.siglas, 1, 2), '-', d.tipotrans, '-', 
             SUBSTRING(c.siglas, 4, 5), '-',  d.numero) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, g.simbolo AS monedacheq, 
             FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, ROUND(b.tipocambio, 2) AS tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, 
             SUBSTRING(b.conceptomayor, 1, 90) AS conceptomayor, d.numero, 
@@ -275,7 +275,7 @@ $app->post('/avanceot', function(){
             INNER JOIN moneda g ON g.id = c.idmoneda
             WHERE a.id = $d->idot and d.idfact IS NOT NULL
             UNION
-            SELECT d.fecha AS fechaOrd, DATE_FORMAT(d.fecha, '%d-%m-%Y') AS fechafactura, CONCAT(SUBSTRING(c.siglas, 1, 2), '-', d.tipotrans, '-', 
+            SELECT d.fecha AS fechaOrd, d.numero AS chqOrd, DATE_FORMAT(d.fecha, '%d-%m-%Y') AS fechafactura, CONCAT(SUBSTRING(c.siglas, 1, 2), '-', d.tipotrans, '-', 
             SUBSTRING(c.siglas, 4, 5), '-',  d.numero) AS datosbanco, NULL AS monedafact, NULL AS montofac, g.simbolo AS monedacheq, 
             FORMAT(d.monto, 2) AS montocheq, FORMAT(d.isr, 2) AS isr, ROUND(d.tipocambio, 2) AS tipocambio, NULL AS fact, 
             SUBSTRING(d.concepto, 1, 90) AS conceptomayor, d.numero, 
@@ -288,7 +288,7 @@ $app->post('/avanceot', function(){
             INNER JOIN moneda g ON g.id = c.idmoneda
             WHERE a.id = $d->idot AND d.anticipo = 1 AND d.idfact IS NULL AND d.idreembolso IS NULL
             UNION
-            SELECT b.fechapago AS fechaOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(SUBSTRING(c.siglas, 1, 2), '-', d.tipotrans, '-', 
+            SELECT b.fechafactura AS fechaOrd, d.numero AS chqOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(SUBSTRING(c.siglas, 1, 2), '-', d.tipotrans, '-', 
             SUBSTRING(c.siglas, 4, 5), '-',  d.numero) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, g.simbolo AS monedacheq, 
             FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, ROUND(b.tipocambio, 2) AS tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, 
             SUBSTRING(b.conceptomayor, 1, 90) AS conceptomayor, d.numero, 
@@ -303,7 +303,7 @@ $app->post('/avanceot', function(){
             INNER JOIN moneda g ON g.id = c.idmoneda
             WHERE a.id = $d->idot and d.idfact IS NOT NULL AND d.idreembolso IS NULL
             UNION
-            SELECT b.fechapago AS fechaOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(SUBSTRING(c.siglas, 1, 2), '-', d.tipotrans, '-', 
+            SELECT b.fechafactura AS fechaOrd, d.numero AS chqOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(SUBSTRING(c.siglas, 1, 2), '-', d.tipotrans, '-', 
             SUBSTRING(c.siglas, 4, 5), '-',  d.numero) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
             g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, ROUND(b.tipocambio, 2) AS tipocambio, 
             CONCAT(b.serie, '-', b.documento) AS fact, SUBSTRING(b.conceptomayor, 1, 90) AS conceptomayor, d.numero, 
@@ -319,7 +319,7 @@ $app->post('/avanceot', function(){
             INNER JOIN moneda g ON g.id = c.idmoneda
             WHERE a.id = $d->idot and d.idfact IS NOT NULL AND d.idreembolso IS NULL
             UNION
-            SELECT b.fechapago AS fechaOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(SUBSTRING(c.siglas, 1, 2), '-', d.tipotrans, '-', 
+            SELECT b.fechafactura AS fechaOrd, d.numero AS chqOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, CONCAT(SUBSTRING(c.siglas, 1, 2), '-', d.tipotrans, '-', 
             SUBSTRING(c.siglas, 4, 5), '-',  d.numero) AS datosbanco, f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, 
             g.simbolo AS monedacheq, FORMAT(d.monto, 2) AS montocheq, FORMAT(b.isr, 2) AS isr, ROUND(b.tipocambio, 2) AS tipocambio, 
             CONCAT(b.serie, '-', b.documento) AS fact, SUBSTRING(d.concepto, 1, 90) AS conceptomayor, d.numero, 
@@ -335,7 +335,7 @@ $app->post('/avanceot', function(){
             INNER JOIN moneda g ON g.id = c.idmoneda
             WHERE a.id = $d->idot AND d.idreembolso IS NOT NULL 
             UNION
-            SELECT b.fechapago AS fechaOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, NULL AS datosbanco, 
+            SELECT b.fechafactura AS fechaOrd, b.documento AS chqOrd, DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura, NULL AS datosbanco, 
 	        f.simbolo AS monedafact, FORMAT(b.totfact, 2) AS montofac, NULL AS monedacheq, 
             NULL AS montocheq, FORMAT(b.isr, 2) AS isr, ROUND(b.tipocambio, 2) AS tipocambio, CONCAT(b.serie, '-', b.documento) AS fact, 
             SUBSTRING(b.conceptomayor, 1, 90) AS conceptomayor, NULL AS numero, 
@@ -347,7 +347,7 @@ $app->post('/avanceot', function(){
             INNER JOIN proveedor e ON e.id = a.idproveedor
             INNER JOIN moneda f ON f.id = b.idmoneda
             WHERE a.id = $d->idot AND c.id IS NULL
-            ORDER BY fechaOrd DESC ";
+            ORDER BY fechaOrd, chqOrd DESC ";
     $ordentrabajo = $db->getQuery($query);
 
     $query = "SELECT CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, DATE_FORMAT(b.fechasolicitud, '%d-%m-%Y') AS fechasolicitud, c.nomproyecto AS proyecto, 
