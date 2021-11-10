@@ -1,16 +1,17 @@
 <?php
 use \setasign\Fpdi;
 
-define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
+define('BASEPATH', dirname(dirname(dirname(__DIR__))));
 define('PLNPATH', BASEPATH . '/pln/php');
 
-require BASEPATH . "/php/vendor/autoload.php";
-require BASEPATH . "/php/ayuda.php";
-require BASEPATH . "/php/NumberToLetterConverter.class.php";
-require PLNPATH . '/Principal.php';
-require PLNPATH . '/models/Empleado.php';
-require PLNPATH . '/models/General.php';
-require PLNPATH . '/models/Prestamo.php';
+require(BASEPATH . "/php/vendor/autoload.php");
+require(BASEPATH . "/php/ayuda.php");
+require(BASEPATH . "/php/NumberToLetterConverter.class.php");
+require(PLNPATH . '/Principal.php');
+require(PLNPATH . '/models/Empleado.php');
+require(PLNPATH . '/models/General.php');
+require(PLNPATH . '/models/Prestamo.php');
+require_once(BASEPATH . '/libs/tcpdf/tcpdf.php');
 
 $app = new \Slim\Slim();
 
@@ -180,10 +181,6 @@ $app->get('/get_empresas', function(){
 
 $app->post('/finiquito', function(){
 	if (elemento($_POST, 'empleado', FALSE)) {
-		require BASEPATH . '/libs/tcpdf/tcpdf.php';
-
-		# $_GET['fdel'] = formatoFecha($_GET['fal'], 4).'-'.formatoFecha($_GET['fal'], 3).'-16';
-
 		$s = [215.9, 279.4]; # Carta mm
 
 		$pdf = new TCPDF('P', 'mm', $s);
@@ -308,8 +305,6 @@ $app->get('/descargar', function(){
 	$params['ordenar_proyecto'] = TRUE;
 
 	$todos = $bus->buscar_empleado($params);
-
-	require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
 
 	$s = [215.9, 330.2]; # Oficio mm
 
@@ -491,12 +486,11 @@ $app->get('/descargar', function(){
 });
 
 $app->get('/printbit/:empleado/:id', function($empleado,$id){
+	require_once(PLNPATH . '/libraries/fpdi/src/autoload.php');
+
 	$gen = new General();
     $emp = new Empleado($empleado);
     $datos = $emp->get_datos_movimiento(['id' => $id]);
-
-    require BASEPATH . '/libs/tcpdf/tcpdf.php';
-    require_once(PLNPATH . '/libraries/fpdi/src/autoload.php');
 
     $pdf = new Fpdi\TcpdfFpdi();
 	$pdf->AddPage();
@@ -528,7 +522,6 @@ $app->get('/altasbajas', function(){
 	$todos = $bus->buscar_empleado($params);
 
 	if (count($todos) > 0) {
-		require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
 		$tipoImpresion = 11;
 
 		$s = [215.9, 279.4]; # Carta mm
@@ -699,11 +692,10 @@ $app->get('/altasbajas', function(){
 });
 
 $app->get('/ficha/:empleado', function($empleado){
+	require_once(PLNPATH . '/libraries/fpdi/src/autoload.php');
+
 	$gen = new General();
     $emp = new Empleado($empleado);
-
-    require BASEPATH . '/libs/tcpdf/tcpdf.php';
-    require_once(PLNPATH . '/libraries/fpdi/src/autoload.php');
 
     $pdf = new Fpdi\TcpdfFpdi();
 	$pdf->AddPage();
@@ -736,8 +728,6 @@ $app->get('/librosalario', function(){
 		$g = new General();
 
 		if (elemento($_GET, 'fdel') && elemento($_GET, 'fal')) {
-			require_once BASEPATH . '/libs/tcpdf/tcpdf.php';
-			
 			$s = [215.9, 330.2]; # Oficio mm
 
 			$pdf = new TCPDF('L', 'mm', $s);

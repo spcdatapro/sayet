@@ -126,7 +126,7 @@
                                     <td class="text-right">{{ a.monto | number }}</td>
                                     <td class="text-center">
                                         <a
-                                            ng-href="/sayet/pln/php/controllers/prestamo.php/imprimir_abono/{{ a.idplnprestamo }}/{{ a.id }}"
+                                            ng-href="pln/php/controllers/prestamo.php/imprimir_abono/{{ a.idplnprestamo }}/{{ a.id }}"
                                             title="Imprimir abono"
                                         >
                                             <i class="glyphicon glyphicon-print"></i>
@@ -137,7 +137,7 @@
                         </table>
                     </div>
                     <div class="col-sm-4 text-right">
-                        <a class="btn btn-default btn-sm" ng-href="/sayet/pln/php/controllers/prestamo.php/imprimir/{{pre.id}}" ng-show="hay" target="_blank" title="Imprimir préstamo">
+                        <a class="btn btn-default btn-sm" ng-href="pln/php/controllers/prestamo.php/imprimir/{{pre.id}}" ng-show="hay" target="_blank" title="Imprimir préstamo">
                             <i class="glyphicon glyphicon-print"></i>
                         </a>
                         <button
@@ -187,7 +187,7 @@
                         <td class="text-right">{{ p.monto | number }}</td>
                         <td class="text-right">{{ p.saldo | number }}</td>
                         <td class="text-right">
-                            <a ng-href="/sayet/pln/php/controllers/prestamo.php/imprimir/{{p.id}}" target="_blank">
+                            <a ng-href="pln/php/controllers/prestamo.php/imprimir/{{p.id}}" target="_blank">
                                 <i class="glyphicon glyphicon-print"></i>
                             </a>
                         </td>

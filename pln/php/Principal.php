@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(dirname(__DIR__)) . '/php/db.php';
+require_once(BASEPATH . '/php/db.php');
 
 /**
 * Clase principal que se heredarà, incluye funciones bàsica que se usaràn 

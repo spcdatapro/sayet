@@ -359,7 +359,7 @@ class Empleado extends Principal
 		
 		if (isset($fl['archivo'])) {
 			$base = "archivos/emp/{$this->emp->id}/" . date('Y-m-d');
-			$ruta = dirname(dirname(__DIR__)) . "/{$base}";
+			$ruta = BASEPATH . "/pln/{$base}";
 			$nom  = $fl['archivo']['name'];
 
 			if (!file_exists($ruta)) {
@@ -370,7 +370,9 @@ class Empleado extends Principal
 
 			move_uploaded_file($fl['archivo']['tmp_name'], $ruta);
 
-			$link = "/sayet/pln/{$base}/{$nom}";
+			$dir = basename(BASEPATH);
+
+			$link = "/{$dir}/pln/{$base}/{$nom}";
 
 			$this->set_dato('ruta', $link);
 			$this->set_dato('nombre', $nom);

@@ -4,16 +4,17 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
+define('BASEPATH', dirname(dirname(dirname(__DIR__))));
 define('PLNPATH', BASEPATH . '/pln/php');
 
-require BASEPATH . "/php/vendor/autoload.php";
-require BASEPATH . "/php/ayuda.php";
-require BASEPATH . "/php/NumberToLetterConverter.class.php";
-require PLNPATH . '/Principal.php';
-require PLNPATH . '/models/Prestamo.php';
-require PLNPATH . '/models/Empleado.php';
-require PLNPATH . '/models/General.php';
+require(BASEPATH . "/php/vendor/autoload.php");
+require(BASEPATH . "/php/ayuda.php");
+require(BASEPATH . "/php/NumberToLetterConverter.class.php");
+require(PLNPATH . '/Principal.php');
+require(PLNPATH . '/models/Prestamo.php');
+require(PLNPATH . '/models/Empleado.php');
+require(PLNPATH . '/models/General.php');
+require_once(BASEPATH . '/libs/tcpdf/tcpdf.php');
 
 $app = new \Slim\Slim();
 
@@ -108,8 +109,6 @@ $app->get('/imprimir_abono/:prestamo/:abono', function($prestamo, $abono){
 	$pre = new Prestamo($prestamo);
 	$abo = $pre->get_abonos(["id" => $abono]);
 
-	require BASEPATH . '/libs/tcpdf/tcpdf.php';
-
 	$s = [215.9, 279.4]; # Carta mm
 
 	$pdf = new TCPDF('P', 'mm', $s);
@@ -151,8 +150,6 @@ $app->get('/imprimir_abono/:prestamo/:abono', function($prestamo, $abono){
 $app->get('/imprimir/:prestamo', function($prestamo){
 	$gen = new General();
 	$pre = new Prestamo($prestamo);
-	
-	require BASEPATH . '/libs/tcpdf/tcpdf.php';
 
 	$s = [215.9, 279.4]; # Carta mm
 
@@ -186,7 +183,6 @@ $app->get('/proyeccion', function(){
 		]);
 
 		if (count($todos) > 0) {
-			require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
 			$tipoImpresion = 13;
 
 			$s = [215.9, 279.4]; # Carta mm
@@ -377,7 +373,6 @@ $app->get('/catalogo', function(){
 		]);
 
 		if (count($todos) > 0) {
-			require BASEPATH . '/libs/tcpdf/tcpdf.php';
 			$tipoImpresion = 17;
 
 			$s = [215.9, 279.4]; # Carta mm

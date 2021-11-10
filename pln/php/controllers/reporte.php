@@ -1,14 +1,14 @@
 <?php 
 
-define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
+define('BASEPATH', dirname(dirname(dirname(__DIR__))));
 define('PLNPATH', BASEPATH . '/pln/php');
 
-require BASEPATH . "/php/vendor/autoload.php";
-require BASEPATH . "/php/ayuda.php";
-require PLNPATH . '/Principal.php';
-require PLNPATH . '/models/General.php';
-require PLNPATH . '/models/Reporte.php';
-
+require(BASEPATH . "/php/vendor/autoload.php");
+require(BASEPATH . "/php/ayuda.php");
+require(PLNPATH . '/Principal.php');
+require(PLNPATH . '/models/General.php');
+require(PLNPATH . '/models/Reporte.php');
+require_once(BASEPATH . '/libs/tcpdf/tcpdf.php');
 
 $app = new \Slim\Slim();
 
@@ -17,8 +17,6 @@ $app->get('/antiguedad_empleado', function(){
 		$rep   = new Reporte();
 		$g     = new General();
 		$datos = $rep->get_antiguedad_empleado($_GET);
-
-		require $_SERVER['DOCUMENT_ROOT'] . '/sayet/libs/tcpdf/tcpdf.php';
 
 		$s = [215.9, 279.4]; # Carta mm
 

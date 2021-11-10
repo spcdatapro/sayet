@@ -1,6 +1,6 @@
 <?php
 
-define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
+define('BASEPATH', dirname(dirname(dirname(__DIR__))));
 define('PLNPATH', BASEPATH . '/pln/php');
 
 require BASEPATH . "/php/vendor/autoload.php";
