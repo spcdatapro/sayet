@@ -500,7 +500,7 @@ $app->post('/tp', function () {
         $obj->evento = 'T';
         $obj->idusuario = $d->idusuario;
         insertaBitacoraPresupuesto($db, $obj);
-    } elseif ($d-> esot == 0) {
+    } elseif ($d-> esot == 1) {
         $query = "UPDATE detpresupuesto SET idestatuspresupuesto = 5, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE id = $idot";
         $db->getQuery($query);
         $obj->origen = 2;
