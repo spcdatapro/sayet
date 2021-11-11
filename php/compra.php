@@ -334,6 +334,9 @@ $app->post('/u', function(){
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
 
+    $query = "UPDATE compraproyecto SET idproyecto = $d->idproyecto where idcompra = ".$d->id ;
+    $db->doQuery($query);
+
     $origen = 2;
     $idorigen = (int)$d->id;
     $query = "DELETE FROM detallecontable WHERE origen = ".$origen." AND idorigen = ".$idorigen;
