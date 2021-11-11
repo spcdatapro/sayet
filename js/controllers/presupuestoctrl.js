@@ -114,7 +114,7 @@
             obj.origenprov = obj.origenprov != null && obj.origenprov != undefined ? obj.origenprov : 0;
             obj.idsubtipogasto = obj.idsubtipogasto != null && obj.idsubtipogasto != undefined ? obj.idsubtipogasto : 0;
             obj.coniva = obj.coniva != null && obj.coniva != undefined ? obj.coniva : 1;
-            obj.escontado = obj.escontado != null && obj.escontado != undefined ? obj.escontado : 0;
+            // obj.escontado = obj.escontado != null && obj.escontado != undefined ? obj.escontado : 0;
             obj.monto = obj.monto != null && obj.monto != undefined ? obj.monto : 0.00;
             obj.tipocambio = obj.tipocambio != null && obj.tipocambio != undefined ? obj.tipocambio : 1.0000;
             return obj;
@@ -278,7 +278,7 @@
                 numpresup = `${idpresupuesto}-${correlativo}`;
                 obj.esot = 1;
             }
-            $confirm({ text: `¿Esta seguro(a) de terminar el presupuesto No. ${numpresup}? Si lo termina, ya no podrá modificarlo a menos que lo reaperturen.`, title: 'Terminar presupuesto', ok: 'Sí', cancel: 'No' }).then(function () {
+            $confirm({ text: `¿Esta seguro(a) de terminar la presupuesto No. ${numpresup}? Si lo termina, ya no podrá modificarlo a menos que lo reaperturen.`, title: 'Terminar presupuesto', ok: 'Sí', cancel: 'No' }).then(function () {
                 obj.idusuario = $scope.usrdata.uid;
                 presupuestoSrvc.editRow(obj, '/tp').then(function () {
                     $scope.getLstPresupuestos('1,2,3');
@@ -287,6 +287,37 @@
                         $scope.getLstOts(idpresupuesto);
                     }
                     toaster.pop('info', 'Terminar presupuesto', `Presupuesto No. ${numpresup} terminado...`, 'timeout:1500');
+                });
+            });
+        };
+
+        $scope.cerrarOtm = (obj, idpresupuesto) => {
+            let numpresup = obj.id;
+            obj.esot = 3;
+            $confirm({text: `¿Esta seguro(a) de terminar la OTM No. ${numpresup}? Si lo termina, ya no podrá modificarlo a menos que lo reaperturen.`, title: 'Terminar OTM', ok: 'Sí', cancel: 'No' }).then(function(){
+                presupuestoSrvc.editRow(obj, '/tp').then(function(){
+                    $scope.getLstPresupuestos('1,2,3');
+                    $scope.getPresupuesto(obj.id, true);
+                    if (obj.esot === 3) {
+                        $scope.getLstOts(idpresupuesto);
+                    }
+                    toaster.pop('info', 'Terminar presupuesto', `Presupuesto No. ${numpresup} terminado...`, 'timeout:1500');
+                });
+            });
+        };
+
+        $scope.reabrirOtm = (obj, idpresupuesto) => {
+            let numpresup = obj.id;
+            obj.esot = 3;
+            $confirm({ text: `¿Esta seguro(a) de abrir nuevamente la OTM No. ${numpresup}?`, title: 'Re-abrir OTM', ok: 'Sí', cancel: 'No' }).then(function () {
+                obj.idusuario = $scope.usrdata.uid;
+                presupuestoSrvc.editRow(obj, '/rp').then(function () {
+                    $scope.getLstPresupuestos('1,2,3');
+                    $scope.getPresupuesto(obj.id, true);
+                    if (obj.esot === 3) {
+                        $scope.getLstOts(idpresupuesto);
+                    }
+                    toaster.pop('info', 'Re-abrir presupuesto', `Presupuesto No. ${numpresup} reaperturado...`, 'timeout:1500');
                 });
             });
         };

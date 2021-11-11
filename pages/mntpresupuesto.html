@@ -151,21 +151,31 @@
                                         data-placement="auto" title="Imprimir sin avances">
                                         N.
                                         </button>-->
-                                        <button type="button" class="btn btn-info btn-sm tipo"
-                                            ng-click="printPrespuesto(p.id, 1)" data-toggle="tooltip"
+                                        <!-- <button type="button" class="btn btn-info btn-sm tipo"
+                                            ng-click="printPrespuesto(p.id, 1)" data-toggle="tooltip" ng-show="+p.tipo == 2"
                                             data-placement="auto" title="Imprimir con avances">
                                             D.
-                                        </button>
+                                        </button> -->
                                         <button type="button" class="btn btn-primary btn-sm tipo"
-                                        ng-click="printPrespuestoNueD(p.id)" data-toggle="tooltip"
+                                        ng-click="printPrespuestoNueD(p.id)" data-toggle="tooltip" ng-show="+p.tipo == 2"
                                         data-placement="auto" title="Imprimir con avances nuevo">
                                         N.
                                         </button>
-                                        <button type="button" class="btn btn-info btn-sm tipo"
+                                        <button type="button" class="btn btn-warning btn-sm tipo"
+                                        ng-click="cerrarOtm(p)" data-toggle="tooltip" ng-show="+p.tipo == 2 && [1, 2, 3].indexOf(+p.idestatuspresupuesto) > -1"
+                                        data-placement="auto" title="Terminar OTM">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-sm tipo" ng-click="reabrirOtm(p)" data-toggle="tooltip"
+                                        ng-show="+p.tipo == 2 && +p.idestatuspresupuesto == 5" data-placement="auto" title="Reabrir OTM">
+                                        <span class="glyphicon glyphicon-cog">
+                                        </span>
+                                        </button>
+                                        <!-- <button type="button" class="btn btn-info btn-sm tipo"
                                             ng-click="printOt(p.idot)" data-toggle="tooltip" data-placement="auto"
                                             title="Imprimir detalle" ng-show="+p.tipo === 1">
                                             <span class="glyphicon glyphicon-print"></span>
-                                        </button>
+                                        </button> -->
                                         <button type="button" class="btn btn-primary btn-sm tipo"
                                         ng-click="printOtNue(p.idot)" data-toggle="tooltip" data-placement="auto"
                                         title="Imprimir detalle" ng-show="+p.tipo === 1">
@@ -184,15 +194,21 @@
                                         </button>
                                         <button type="button" class="btn btn-warning btn-sm tipo"
                                             ng-click="reabrirPresupuesto(p)"
-                                            ng-show="+p.idestatuspresupuesto == 5 && permiso.m && +p.tipo == 1"
+                                            ng-show="+p.idestatuspresupuesto == 5 && permiso.m && +p.tipo === 1"
                                             data-toggle="tooltip" data-placement="auto" title="Re-abrir presupuesto">
                                             <span class="glyphicon glyphicon-folder-open"></span>
                                         </button>
                                         <button type="button" class="btn btn-danger btn-sm tipo"
                                             ng-click="anulaPresupuesto(p)"
-                                            ng-show="+p.idestatuspresupuesto < 4 && permiso.m && +p.tipo == 1"
+                                            ng-show="+p.idestatuspresupuesto > 2 && permiso.m && +p.tipo == 1"
                                             data-toggle="tooltip" data-placement="auto" title="Anular">
                                             <span class="glyphicon glyphicon-remove-circle"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-sm tipo"
+                                        ng-click="delPresupuesto(p)"
+                                        ng-show="+p.idestatuspresupuesto < 3 && permiso.m && +p.tipo === 1"
+                                        data-toggle="tooltip" data-placement="auto" title="Anular">
+                                        <span class="glyphicon glyphicon-trash"></span>
                                         </button>
                                     </div>
                                 </td>
@@ -433,40 +449,46 @@
                         <form-buttons vis="grpBtnPresupuesto" btn-dis="frmPresup.$invalid" obj="presupuesto"
                             uf="updPresupuesto(presupuesto)" df="delPresupuesto(presupuesto)" nf="nuevoPresupuesto()"
                             cf="cancelEditPresup()" ef="startEditPresup()" pf="imprimirPresup()"
-                            ng-hide="(+presupuesto.idestatuspresupuesto == 6 || +presupuesto.idestatuspresupuesto == 5) || !permiso.m">
-                        </form-buttons>
-                        <button type="button" class="btn btn-info" ng-click="verDetPagos(presupuesto, true)"
+                            ng-hide="(+presupuesto.idestatuspresupuesto == 6 || +presupuesto.idestatuspresupuesto == 5 || +presupuesto.idestatuspresupuesto == 3) || !permiso.m">
+                        </form-buttons> 
+                        <button type="button" class="btn btn-info" ng-click="nuevoPresupuesto()" 
+                        ng-show="[3, 4, 5, 6].indexOf(+ot.idestatuspresupuesto) > -1 && permiso.m" data-toggle="tooltip" data-placement="auto" 
+                        title="Nuevo presupuesto...">
+                            <span class="glyphicon glyphicon-plus">
+                            </span>
+                        </button>
+                        <!-- <button type="button" class="btn btn-info" ng-click="verDetPagos(presupuesto, true)"
                             ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1"
                             data-toggle="tooltip" data-placement="auto" title="Ver detalle de pagos...">
                             <i class="fa fa-money fa-lg" aria-hidden="true"></i>
-                        </button>
-                        <button type="button" class="btn btn-info" ng-click="printOt(presupuesto.id, true)"
+                        </button> -->
+                        <!-- <button type="button" class="btn btn-info" ng-click="printOt(presupuesto.id, true)"
                             ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1"
                             data-toggle="tooltip" data-placement="auto" title="Imprimir...">
                             <i class="fa fa-print fa-lg" aria-hidden="true"></i>
-                        </button>
+                        </button> -->
                         <button type="button" class="btn btn-primary" ng-click="printOtNue(presupuesto.id, true)"
                         ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1"
                         data-toggle="tooltip" data-placement="auto" title="Imprimir...">
                         <i class="fa fa-print fa-lg" aria-hidden="true"></i>
-                    </button>
+                        </button>
                         <button type="button" class="btn btn-info" ng-click="adherirAOTM(presupuesto, true)"
                             ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1"
                             data-toggle="tooltip" data-placement="auto" title="Adherir a OTM existente...">
                             <span class="glyphicon glyphicon-refresh"></span>
                         </button>
-                        <button type="button" class="btn btn-primary" ng-click="aumentaExcedente(presupuesto)"
+                        <!-- <button type="button" class="btn btn-primary" ng-click="aumentaExcedente(presupuesto)"
                             ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1"
                             data-toggle="tooltip" data-placement="auto" title="Cambiar porcentaje de excedente...">
                             <span class="glyphicon glyphicon-arrow-up"></span>
-                        </button>
+                        </button> -->
                         <button type="button" class="btn btn-warning" ng-click="terminaPresupuesto(presupuesto)"
                             ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m" data-toggle="tooltip"
                             data-placement="auto" title="Terminar presupuesto">
                             <span class="glyphicon glyphicon-folder-close"></span>
                         </button>
                         <button type="button" class="btn btn-warning" ng-click="reabrirPresupuesto(presupuesto)"
-                            ng-show="+presupuesto.idestatuspresupuesto == 5 && permiso.m" data-toggle="tooltip"
+                            ng-show="+presupuesto.idestatuspresupuesto == 5 && permiso.m && presupuesto.tipo == 1" data-toggle="tooltip"
                             data-placement="auto" title="Re-abrir presupuesto">
                             <span class="glyphicon glyphicon-folder-open"></span>
                         </button>
@@ -474,11 +496,21 @@
                         ng-show="+presupuesto.idestatuspresupuesto === 1 && +presupuesto.tipo === 1" data-toggle="tooltip"
                         data-placement="auto" title="Enviar presupuesto a aprobación..." ng-disabled="(!sl.presupuesto)  || +presupuesto.idestatuspresupuesto == 2" >
                         <span class="glyphicon glyphicon-share-alt"></span>
-                    </button>
+                        </button>
                         <button type="button" class="btn btn-danger" ng-click="anulaPresupuesto(presupuesto)"
-                        ng-hide="(+presupuesto.idestatuspresupuesto == 6 || +presupuesto.idestatuspresupuesto == 5) || !permiso.m" data-toggle="tooltip"
+                        ng-hide="(+presupuesto.idestatuspresupuesto == 6 || +presupuesto.idestatuspresupuesto == 5 || +presupuesto.idestatuspresupuesto == 1 || +presupuesto.idestatuspresupuesto == 2) || !permiso.m || +presupuesto.id == 0" data-toggle="tooltip"
                             data-placement="auto" title="Anular">
                             <span class="glyphicon glyphicon-remove-circle"></span>
+                        </button>
+                        <button type="button" class="btn btn-warning"
+                        ng-click="cerrarOtm(presupuesto)" data-toggle="tooltip" ng-show="+presupuesto.tipo == 2 && [1, 2, 3].indexOf(+presupuesto.idestatuspresupuesto) > -1"
+                        data-placement="auto" title="Terminar OTM">
+                        <span class="glyphicon glyphicon-ok"></span>
+                        </button>
+                        <button type="button" class="btn btn-warning" ng-click="reabrirOtm(presupuesto)" data-toggle="tooltip"
+                        ng-show="+presupuesto.tipo == 2 && +presupuesto.idestatuspresupuesto == 5" data-placement="auto" title="Reabrir OTM">
+                        <span class="glyphicon glyphicon-cog">
+                        </span>
                         </button>
                     </form>
                 </div>
@@ -506,7 +538,18 @@
                                         ng-click="printPrespuestoNueD(lbl.id)" data-toggle="tooltip"
                                         data-placement="auto" title="Imprimir con avances nuevo">
                                         N.
+                                        <!-- </button>
+                                        <button type="button" style="float: right;" type="button" class="btn btn-warning btn-sm tipo"
+                                        ng-click="cerrarOtm(lbl.id)" data-toggle="tooltip" ng-show="+presupuesto.tipo == 2 && [1, 2, 3].indexOf(+presupuesto.idestatuspresupuesto) > -1"
+                                        data-placement="auto" title="Terminar OTM">
+                                        <span class="glyphicon glyphicon-ok"></span>
                                         </button>
+                                        <button type="button"  style="float: right;" type="button" class="btn btn-warning btn-sm tipo" 
+                                        ng-click="reabrirOtm(lbl.id)" data-toggle="tooltip"
+                                        ng-show="+presupuesto.tipo == 2 && +presupuesto.idestatuspresupuesto == 5" data-placement="auto" title="Reabrir OTM">
+                                        <span class="glyphicon glyphicon-cog">
+                                        </span>
+                                        </button> -->
                                     </li>
                                 </ul>
                             </div>
@@ -638,8 +681,23 @@
                         </div>
                         <form-buttons vis="grpBtnOt" btn-dis="frmOT.$invalid" obj="ot" uf="updOt(ot)" df="delOt(ot)"
                             nf="nuevaOt()" cf="cancelEditOt()" ef="startEditOt()" pf="imprimirOt()"
-                            ng-hide="!permiso.m || [5, 6].indexOf(+ot.idestatuspresupuesto) > -1">
+                            ng-hide="!permiso.m || [5, 6, 3].indexOf(+ot.idestatuspresupuesto) > -1">
                         </form-buttons>
+                        <button type="button" class="btn btn-info" ng-click="enviar(ot, +ot.idpresupuesto, +ot.correlativo)"
+                        ng-show="+ot.idestatuspresupuesto == 1 && +presupuesto.tipo != 1" data-toggle="tooltip"
+                        data-placement="auto" title="Enviar presupuesto a aprobación...">
+                        <span class="glyphicon glyphicon-share-alt"></span>
+                        </button>
+                        <button type="button" class="btn btn-danger" ng-click="anulaPresupuesto(ot, +ot.idpresupuesto, +ot.correlativo)"
+                        ng-show="+ot.idestatuspresupuesto === 3 && permiso.m" data-toggle="tooltip"
+                        data-placement="auto" title="Anular presupuesto...">
+                        <span class="glyphicon glyphicon-remove-circle"></span>
+                        </button>
+                        <button type="button" class="btn btn-info" ng-click="nuevaOt()"
+                        ng-show="[5, 6, 3].indexOf(+ot.idestatuspresupuesto) > -1" data-toggle="tooltip"
+                        data-placement="auto" title="Nuevo proesupuesto...">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        </button>
                     </form>
                     <hr />
                     <table class="table table-hover table-condensed">
@@ -652,7 +710,7 @@
                                 <th style="text-align: center">No.</th>
                                 <th style="text-align: center">Proveedor/Beneficiario</th>
                                 <th style="text-align: center">Sub-tipo de gasto</th>
-                                <th style="text-align: center;">Avance</th>
+                                <th style="text-align: center;">Monto</th>
                                 <!-- <th style="text-align: center">Incluye I.V.A.</th>
                                 <th style="text-align: center">Monto</th>
                                 <th style="text-align: center">TC</th> -->
@@ -665,13 +723,13 @@
                                 <td style="text-align: center">{{o.idpresupuesto}}-{{o.correlativo}}</td>
                                 <td style="text-align: center">{{o.proveedor}}</td>
                                 <td style="text-align: center">{{o.subtipogasto}}</td>
-                                <td style="text-align: center;">{{o.avanceot}}</td>
+                                <td style="text-align: center;">{{o.moneda}}{{o.monto | number:2}}</td>
                                 <!-- <td style="text-align: center">{{o.coniva === 1 ? 'Sí' : ''}}</td>
                                 <td style="text-align: center">{{o.moneda}}{{o.monto | number:2}}</td>
                                 <td style="text-align: center">{{o.tipocambio | number:5}}</td> -->
-                                <td style="text-align: center;">
+                                <td style="text-align: right;">
                                     <div class="btn-group" role="group" aria-label="..."
-                                        style="padding-top: 0.75em; width: 100%; margin: 0 auto !important; text-align: center">
+                                        style="padding-top: 0.75em; width: 100%; margin-left:70px !important; text-align: center">
                                         <button type="button" class="btn btn-info btn-sm tipo"
                                             ng-click="enviar(o, +o.idpresupuesto, +o.correlativo)"
                                             ng-show="+o.idestatuspresupuesto == 1 && +presupuesto.tipo != 1"
@@ -679,14 +737,14 @@
                                             title="Enviar ot a aprobación...">
                                             <span class="glyphicon glyphicon-share-alt"></span>
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-info" ng-click="verDetPagos(o)"
+                                        <!-- <button type="button" class="btn btn-sm btn-info" ng-click="verDetPagos(o)"
                                             data-toggle="tooltip" data-placement="auto" title="Ver detalle de pagos...">
                                             <i class="fa fa-money fa-lg" aria-hidden="true"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-info" ng-click="printOt(o.id)"
+                                        </button> -->
+                                        <!-- <button type="button" class="btn btn-sm btn-info" ng-click="printOt(o.id)"
                                             data-toggle="tooltip" data-placement="auto" title="Imprimir...">
                                             <i class="fa fa-print fa-lg" aria-hidden="true"></i>
-                                        </button>
+                                        </button> -->
                                         <button type="button" class="btn btn-sm btn-primary" ng-click="printOtNue(o.id)"
                                         data-toggle="tooltip" data-placement="auto" title="Imprimir...">
                                         <i class="fa fa-print fa-lg" aria-hidden="true"></i>
@@ -696,13 +754,13 @@
                                             data-placement="auto" title="Ampliar presupuesto...">
                                             <i class="fas fa-plane-departure"></i>
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-primary"
+                                        <!-- <button type="button" class="btn btn-sm btn-primary"
                                             ng-click="aumentaExcedente(o, true)"
                                             ng-show="+o.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo !== 1"
                                             data-toggle="tooltip" data-placement="auto"
                                             title="Cambiar porcentaje de excedente...">
                                             <span class="glyphicon glyphicon-arrow-up"></span>
-                                        </button>
+                                        </button> -->
                                         <button type="button" class="btn btn-warning btn-sm tipo"
                                             ng-click="terminaPresupuesto(o, +o.idpresupuesto, +o.correlativo)"
                                             ng-show="+o.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo != 1"
