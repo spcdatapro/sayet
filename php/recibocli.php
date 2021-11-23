@@ -327,7 +327,7 @@ $app->post('/prtrecibocli', function() {
                 a.concepto,
                 e.numero AS cheque,
                 f.siglas AS banco,
-                FORMAT(e.monto, 2) AS montochq,
+                FORMAT(e.monto, 2) AS montorec,
                 h.simbolo AS monedachq,
                 i.nomempresa AS empresa
             FROM
@@ -372,52 +372,72 @@ $app->post('/prtrecibocli', function() {
                 a.id = $d->idrecibo ";
     $facturas = $db->getQuery($query);
 
-    print json_encode(['recibo' => $recibo[0], 'facturas' => $facturas]);
+    $query = 
+                "SELECT 
+                    b.numero,
+                    b.banco,
+                    b.monto
+                FROM
+                    recibocli a
+                        INNER JOIN
+                    detpagorecli b ON a.id = b.idreccli
+                WHERE
+                    b.idreccli = $d->idrecibo ";
+    $cheques = $db->getQuery($query);
+
+    print json_encode(['recibo' => $recibo[0], 'facturas' => $facturas, 'cheques' => $cheques]);
 });
 
-// $app->post('/prtreciboclifch', function() {
-//     $d = json_decode(file_get_contents('php://input'));
-//     $db = new dbcpm();
-//     $query = 
-//                 "SELECT 
-//                 a.id,
-//                 CONCAT(a.serie, '-', a.numero) AS recibo,
-//                 IFNULL(b.nombre, e.nombre) AS cliente,
-//                 a.fecha, g.simbolo,
-//                 (SELECT 
-//                         FORMAT(SUM(c.monto), 2)
-//                     FROM
-//                         detcobroventa c
-//                     WHERE
-//                         c.idrecibocli = a.id) AS monto,
-//                 d.nomempresa AS empresa
-//             FROM
-//                 recibocli a
-//                     LEFT JOIN
-//                 cliente b ON a.idcliente = b.id
-//                     INNER JOIN
-//                 empresa d ON a.idempresa = d.id
-//                     INNER JOIN
-//                 detcobroventa f ON f.idrecibocli = a.id
-//                     LEFT JOIN
-//                 factura e ON f.idfactura = e.id
-//                     LEFT JOIN
-// 	        moneda g ON e.idmoneda = g.id
-//             WHERE
-//                 a.fecha >= $d->fechadel
-//                 AND a.fecha <= $d->fechaal ";
-//     $query.= (int)$d->tipo === 1 ? "AND a.tipo = 1 " : ((int)$d->tipo === 2 ? "AND a.tipo = 2 " : '');
-//     $query.= (int)$d->idempresa > 0 ? "AND d.id = $d->idempresa " : '';
-//     $query.= "ORDER BY a.fecha ASC ";
-//     $recli = $db->getQuery($query);
+$app->post('/cp', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $query = "INSERT INTO detpagorecli(idreccli, numero, banco, monto) VALUES($d->idrecibocli, '$d->numero', '$d->banco', '$d->monto')";
+    $db->doQuery($query);
+});
 
-//     $query = 
-//                 "SELECT
-//                 DATE_FORMAT('$d->fechadel', '%d/%m/%Y') AS fdel, 
-//                 DATE_FORMAT('$d->fechaal', '%d/%m/%Y') AS fal ";
-//     $query.= (int)$d->tipo === 1 ? ", 1 AS escli " : ((int)$d->tipo === 2 ? ", 1 AS esint" : '');
-//     $general = $db->getQuery($query)[0];
+$app->post('/dp', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $db->doQuery("DELETE FROM detpagorecli WHERE id = $d->id");
+});
 
-//     print json_encode(['recli' => $recli, 'general' => $general]);
-// });
+$app->get('/getpagorecli/:idrecibo', function($idrecibo){
+    $db = new dbcpm();
+    $query = "SELECT 
+            b.id, b.idreccli, b.numero, b.banco, b.monto
+                FROM
+            recibocli a
+                INNER JOIN
+            detpagorecli b ON a.id = b.idreccli
+                WHERE
+            b.idreccli = $idrecibo ";
+    print $db->doSelectASJson($query);
+});
+
+$app->get('/getlstrecpend/:idempresa', function($idempresa){
+    $db = new dbcpm();
+    $query = "SELECT 
+                a.id,
+                a.serie,
+                a.numero,
+                (SELECT 
+                        IFNULL(ROUND(SUM(b.monto), 2), 0.00)
+                    FROM
+                        detcobroventa b
+                    WHERE
+                        a.id = b.idrecibocli) AS montorec,
+                IFNULL(b.nombre, c.nombre) AS cliente,
+                a.concepto
+            FROM
+                recibocli a
+                    LEFT JOIN
+                cliente b ON a.idcliente = b.id
+                    LEFT JOIN
+                factura c ON a.nit = c.nit
+            WHERE
+                a.idtranban = 0 AND a.fecha >= 20211101
+                    AND a.tipo = 1
+                    AND a.idempresa = $idempresa ";
+    print $db->doSelectASJson($query);
+});
 $app->run();
