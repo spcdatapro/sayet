@@ -374,10 +374,12 @@ function creaNuevoContrato($d, $db) {
         // $d->usufructo = str_replace('NULL', '', strtoupper($d->usufructo));
         $d->usufructo = "'".str_replace('NULL', '', strtoupper($d->usufructo))."'";
         $d->fechacopia = 'NOW()';
+        $d->idcatclie = 0;
     };
 
     if(!isset($d->idcontratoorigen)) { $d->idcontratoorigen = 0; }
     if(!isset($d->idusuariocopia)) { $d->idusuariocopia = 0; }
+
 
     // print_r($d); die();
 
@@ -386,13 +388,13 @@ function creaNuevoContrato($d, $db) {
     $query.= "idmoneda, idempresa, deposito, idproyecto, idunidad, retiva, prorrogable, retisr, ";
     $query.= "documento, adelantado, subarrendado, idtipocliente, idcuentac, observaciones, idmonedadep, ";
     $query.= "reciboprov, idperiodicidad, lastuser, idtipoipc, cobro, plazofdel, plazofal, prescision, ";
-    $query.= "fechainactivo, usufructo, idcontratoorigen, fechacopia, idusuariocopia, catclie";
+    $query.= "fechainactivo, usufructo, idcontratoorigen, fechacopia, idusuariocopia, catclie ";
     $query.= ") VALUES(";
     $query.= "$d->idcliente, '$d->nocontrato', '$d->abogado', $d->inactivo, '$d->fechainiciastr', '$d->fechavencestr', $d->nuevarenta, $d->nuevomantenimiento, ";
     $query.= "$d->idmoneda, $d->idempresa, $d->deposito, $d->idproyecto, '$d->idunidad', $d->retiva, $d->prorrogable, $d->retisr, ";
     $query.= "$d->documento, $d->adelantado, $d->subarrendado, $d->idtipocliente, '$d->idcuentac', '$d->observaciones', $d->idmonedadep, ";
     $query.= "'$d->reciboprov', $d->idperiodicidad, $d->lastuser, $d->idtipoipc, $d->cobro, $d->plazofdelstr, $d->plazofalstr, $d->prescision, $d->fechainactivostr, ";
-    $query.= "$d->usufructo, $d->idcontratoorigen, $d->fechacopia, $d->idusuariocopia, $d->idcatclie";
+    $query.= "$d->usufructo, $d->idcontratoorigen, $d->fechacopia, $d->idusuariocopia, $d->idcatclie ";
     $query.= ")";
     // print_r($query); die();
     $db->doQuery($query);
