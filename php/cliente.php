@@ -273,7 +273,7 @@ $app->get('/lstcontratos/:idcliente', function($idcliente){
     $query = "SELECT a.id, a.idcliente, a.nocontrato, a.abogado, a.inactivo, a.fechainactivo, a.fechainicia, a.fechavence, a.nuevarenta, a.nuevomantenimiento, a.idmoneda, b.simbolo AS moneda, ";
     $query.= "a.idempresa, c.nomempresa AS empresa, a.deposito, a.idproyecto, d.nomproyecto AS proyecto, a.idunidad, IFNULL(UnidadesPorContrato(a.id), CONCAT('Contrato #', a.nocontrato)) AS unidad, a.retiva, a.prorrogable, a.retisr, ";
     $query.= "a.documento, a.adelantado, a.subarrendado, a.idtipocliente, f.desctipocliente AS tipocliente, a.idcuentac, a.observaciones, a.idmonedadep, ";
-    $query.= "h.simbolo AS monedadep, a.reciboprov, a.idperiodicidad, a.idtipoipc, a.cobro, a.plazofdel, a.plazofal, a.prescision, a.usufructo, a.catclie ";
+    $query.= "h.simbolo AS monedadep, a.reciboprov, a.idperiodicidad, a.idtipoipc, a.cobro, a.plazofdel, a.plazofal, a.prescision, a.usufructo, a.idcatclie ";
     $query.= "FROM contrato a LEFT JOIN moneda b ON b.id = a.idmoneda LEFT JOIN empresa c ON c.id = a.idempresa LEFT JOIN proyecto d ON d.id = a.idproyecto ";
     $query.= "LEFT JOIN tipocliente f ON f.id = a.idtipocliente LEFT JOIN moneda h ON h.id = a.idmonedadep ";
     $query.= "WHERE a.idcliente = ".$idcliente;
@@ -285,7 +285,7 @@ $app->get('/lstcontemp/:idcliente/:idempresa', function($idcliente, $idempresa){
     $query = "SELECT a.id, a.idcliente, a.nocontrato, a.abogado, a.inactivo, a.fechainactivo, a.fechainicia, a.fechavence, a.nuevarenta, a.nuevomantenimiento, a.idmoneda, b.simbolo AS moneda, ";
     $query.= "a.idempresa, c.nomempresa AS empresa, a.deposito, a.idproyecto, d.nomproyecto AS proyecto, a.idunidad, IFNULL(UnidadesPorContrato(a.id), CONCAT('Contrato #', a.nocontrato)) AS unidad, a.retiva, a.prorrogable, a.retisr, ";
     $query.= "a.documento, a.adelantado, a.subarrendado, a.idtipocliente, f.desctipocliente AS tipocliente, a.idcuentac, a.observaciones, a.idmonedadep, ";
-    $query.= "h.simbolo AS monedadep, a.reciboprov, a.idperiodicidad, a.idtipoipc, a.cobro, a.plazofdel, a.plazofal, a.prescision, a.usufructo, a.catclie ";
+    $query.= "h.simbolo AS monedadep, a.reciboprov, a.idperiodicidad, a.idtipoipc, a.cobro, a.plazofdel, a.plazofal, a.prescision, a.usufructo, a.idcatclie ";
     $query.= "FROM contrato a LEFT JOIN moneda b ON b.id = a.idmoneda LEFT JOIN empresa c ON c.id = a.idempresa LEFT JOIN proyecto d ON d.id = a.idproyecto ";
     $query.= "LEFT JOIN tipocliente f ON f.id = a.idtipocliente LEFT JOIN moneda h ON h.id = a.idmonedadep ";
     $query.= "WHERE a.idcliente = $idcliente AND a.idempresa = $idempresa ";
@@ -297,9 +297,9 @@ $app->get('/getcontrato/:idcontrato', function($idcontrato){
     $query = "SELECT a.id, a.idcliente, a.nocontrato, a.abogado, a.inactivo, a.fechainactivo, a.fechainicia, a.fechavence, a.nuevarenta, a.nuevomantenimiento, a.idmoneda, b.simbolo AS moneda, ";
     $query.= "a.idempresa, c.nomempresa AS empresa, a.deposito, a.idproyecto, d.nomproyecto AS proyecto, a.idunidad, UnidadesPorContrato(a.id) AS unidad, a.retiva, a.prorrogable, a.retisr, ";
     $query.= "a.documento, a.adelantado, a.subarrendado, a.idtipocliente, f.desctipocliente AS tipocliente, a.idcuentac, a.observaciones, a.idmonedadep, ";
-    $query.= "h.simbolo AS monedadep, a.reciboprov, a.idperiodicidad, a.idtipoipc, a.cobro, a.plazofdel, a.plazofal, a.prescision, a.usufructo, a.catclie AS idcatclie, i.nombre AS catclie ";
+    $query.= "h.simbolo AS monedadep, a.reciboprov, a.idperiodicidad, a.idtipoipc, a.cobro, a.plazofdel, a.plazofal, a.prescision, a.usufructo, a.idcatclie AS idcatclie, i.nombre AS catclie ";
     $query.= "FROM contrato a LEFT JOIN moneda b ON b.id = a.idmoneda LEFT JOIN empresa c ON c.id = a.idempresa LEFT JOIN proyecto d ON d.id = a.idproyecto LEFT JOIN unidad e ON e.id = a.idunidad ";
-    $query.= "LEFT JOIN tipocliente f ON f.id = a.idtipocliente LEFT JOIN moneda h ON h.id = a.idmonedadep LEFT JOIN catclie i ON i.id = a.catclie ";
+    $query.= "LEFT JOIN tipocliente f ON f.id = a.idtipocliente LEFT JOIN moneda h ON h.id = a.idmonedadep LEFT JOIN catclie i ON i.id = a.idcatclie ";
     $query.= "WHERE a.id = ".$idcontrato;
     print $db->doSelectASJson($query);
 });
@@ -374,7 +374,7 @@ function creaNuevoContrato($d, $db) {
         // $d->usufructo = str_replace('NULL', '', strtoupper($d->usufructo));
         $d->usufructo = "'".str_replace('NULL', '', strtoupper($d->usufructo))."'";
         $d->fechacopia = 'NOW()';
-        $d->idcatclie = 0;
+        // $d->idcatclie = 0;
     };
 
     if(!isset($d->idcontratoorigen)) { $d->idcontratoorigen = 0; }
@@ -388,7 +388,7 @@ function creaNuevoContrato($d, $db) {
     $query.= "idmoneda, idempresa, deposito, idproyecto, idunidad, retiva, prorrogable, retisr, ";
     $query.= "documento, adelantado, subarrendado, idtipocliente, idcuentac, observaciones, idmonedadep, ";
     $query.= "reciboprov, idperiodicidad, lastuser, idtipoipc, cobro, plazofdel, plazofal, prescision, ";
-    $query.= "fechainactivo, usufructo, idcontratoorigen, fechacopia, idusuariocopia, catclie ";
+    $query.= "fechainactivo, usufructo, idcontratoorigen, fechacopia, idusuariocopia, idcatclie ";
     $query.= ") VALUES(";
     $query.= "$d->idcliente, '$d->nocontrato', '$d->abogado', $d->inactivo, '$d->fechainiciastr', '$d->fechavencestr', $d->nuevarenta, $d->nuevomantenimiento, ";
     $query.= "$d->idmoneda, $d->idempresa, $d->deposito, $d->idproyecto, '$d->idunidad', $d->retiva, $d->prorrogable, $d->retisr, ";
@@ -425,7 +425,7 @@ $app->post('/uc', function(){
     $query.= "documento = ".$d->documento.", adelantado = ".$d->adelantado.", subarrendado = ".$d->subarrendado.", idtipocliente = ".$d->idtipocliente.", ";
     $query.= "idcuentac = '".$d->idcuentac."', observaciones = '".$d->observaciones."', idmonedadep = ".$d->idmonedadep.", reciboprov = '".$d->reciboprov."', ";
     $query.= "idperiodicidad = ".$d->idperiodicidad.", lastuser = $d->lastuser, idtipoipc = $d->idtipoipc, cobro = $d->cobro, ";
-    $query.= "plazofdel = $d->plazofdelstr, plazofal = $d->plazofalstr, prescision = $d->prescision, fechainactivo = $d->fechainactivostr, catclie = $d->idcatclie ";
+    $query.= "plazofdel = $d->plazofdelstr, plazofal = $d->plazofalstr, prescision = $d->prescision, fechainactivo = $d->fechainactivostr, idcatclie = $d->idcatclie ";
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
 
