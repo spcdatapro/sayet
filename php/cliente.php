@@ -751,6 +751,8 @@ $app->post('/copia', function(){
             }
         }
 
+        //periodos de facturacion, detallde contrato 
+
         //Inactivar contrato original
         $query = "UPDATE contrato SET inactivo = 1, fechainactivo = DATE(NOW()), idunidadbck = idunidad, idunidad = '' WHERE id = $d->idcontrato";
         $db->doQuery($query);        

@@ -109,9 +109,9 @@ $app->post('/lista', function(){
             INNER JOIN empresa b ON a.idempresa = b.id
             INNER JOIN proyecto c ON a.idproyecto = c.id
             INNER JOIN cliente d ON a.idcliente = d.id
-            LEFT JOIN catclie e ON a.catclie = e.id
+            LEFT JOIN catclie e ON a.idcatclie = e.id
             WHERE a.inactivo = 1 AND a.fechainactivo >= '$d->fdelstr' AND a.fechainactivo <= '$d->falstr' ";
-    $query.= $d->idcategoria != '' ? "AND a.catclie = $d->idcategoria " : '';
+    $query.= $d->idcategoria != '' ? "AND a.idcatclie = $d->idcategoria " : '';
     $query.= $d->idempresa != '' ? "AND a.idempresa = $d->idempresa " : '';
     $query.= $d->idproyecto != '' ? "AND a.idproyecto = $d->idproyecto " : '';
     $query.= $d->idcliente != '' ? "AND a.idcliente = $d->idcliente " : ''; 
