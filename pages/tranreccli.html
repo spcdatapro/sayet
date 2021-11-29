@@ -12,6 +12,9 @@
         <li class="active" ng-show="+fltrre.tipo === 3">
             <a show-tab href="#divFrmRecCli" data-toggle="tab">CONSTANCIA DE DEVOLUCIÓN AL CLIENTE</a>
         </li>
+        <li ng-show="+fltrre.tipo == 1 && reccli.id > 0">
+            <a show-tab href="#divPago" data-toggle="tab">DOCUMENTOS DE PAGO</a>
+        </li>
         <li ng-show="reccli.id > 0">
             <a show-tab href="#divDocs" data-toggle="tab">DOCUMENTOS A REBAJAR</a>
         </li>
@@ -121,7 +124,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row" ng-hide="+fltrre.tipo == 2">
+                        <!-- <div class="row" ng-hide="+fltrre.tipo == 2">
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="selTranBan" ng-show="+fltrre.tipo == 1">Dep&oacute;sito / Nota de
@@ -142,13 +145,13 @@
                                     </select>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="row ">
                             <div class="col-md-12 ">
                                 <div class="form-group">
                                     <label for="selTranBan">Concepto:</label>
                                     <textarea class="form-control" ng-model="reccli.concepto"
-                                        placeholder="Concepto del recibo interno..." rows="3"></textarea>
+                                        placeholder="Concepto del recibo" rows="3"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -354,7 +357,6 @@
                 </div>
             </div>
         </div>
-
         <!-- //Rony 2017-11-16 Editar monto abono -->
         <script type="text/ng-template" id="display">
             <td ng-class="{'num': +tr.oby == 1, 'bld': +tr.oby == 1}">
@@ -376,6 +378,61 @@
             </button>                                 
         </td>
         </script>
+
+                <!-- forma de pago -->
+                <div id="divPago" class="tab-pane fade">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">Documentos de pago</div>
+                        <div class="panel-body">
+                            <form name="frmDocsPag" id="frmDocsPag" ng-submit="addPagoRecCli(pagoreccli)">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="intPag">No. Cheque/Transferencia</label>
+                                            <input type="number" class="form-control" ng-model="pagoreccli.numero" placeholder="646565"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="intBanco">Banco</label>
+                                            <input type="text" class="form-control" ng-model="pagoreccli.banco" placeholder="Industrial (IND.)"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="intValor">Monto</label>
+                                            <input type="text" class="form-control" ng-model="pagoreccli.monto" placeholder="Q./$.4503.01"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-success" data-toggle="tooltip" data-placement="auto" title="Guardar pago"
+                                ng-disabled="(!pagoreccli.numero.length > 0 && !pagoreccli.banco.length > 0) || !pagoreccli.monto.length > 0">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                                </button>
+                            </form>
+                        <br>
+                            <table class="table table-hover table-condensed">
+                                    <tr>
+                                        <th style="text-align: center; border-top: 0px;">Numero</th>
+                                        <th style="text-align: center; border-top: 0px;">Banco</th>
+                                        <th style="text-align: center; border-top: 0px;">Monto</th>
+                                    </tr>
+                                    <tr ng-repeat="tr in lstpagorecli">
+                                        <tb style="text-align: center;"></tb>
+                                        <td style="text-align: center;">{{tr.numero}}</td>
+                                        <td style="text-align: center;">{{tr.banco}}</td>
+                                        <td style="text-align: center;">{{tr.monto}}</td>
+                                        <td style="text-align: right;">
+                                            <button type="button" class="btn btn-danger btn-sm tipo" data-toggle="tooltip" data-placement="auto" 
+                                            ng-click="delPagoRecli(tr)" title="Eliminar forma de pago">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
         <!-- //Rony 2017-11-16 Editar monto abono -->
         <script type="text/ng-template" id="edit">

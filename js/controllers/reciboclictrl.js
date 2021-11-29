@@ -10,7 +10,9 @@
         $scope.clientes = [];
         $scope.tranban = [];
         $scope.detreccli = {};
+        $scope.pagoreccli = {};
         $scope.lstdetreccli = [];
+        $scope.lstpagorecli = [];
         $scope.lstdocspend = [];
         $scope.lstdetcont = [];
         $scope.elDetCont = {};
@@ -188,6 +190,7 @@
                 $scope.reccli.objTranBan = [$filter('getById')($scope.tranban, $scope.reccli.idtranban)];
                 $scope.resetDetRecCli();
                 $scope.loadDetRecCli(idreccli);
+                $scope.loadPagoRecCli(idreccli);
                 $scope.loadDocsPend($scope.reccli.idempresa, $scope.reccli.idcliente, $scope.reccli.nit); //Esta linea actualiza la informacion de facturas pendientes del cliente
                 cuentacSrvc.getByTipo($scope.reccli.idempresa, 0).then(function(d){ $scope.cuentas = d; });
                 $scope.loadDetCont(idreccli);
@@ -205,7 +208,7 @@
         };
 
         function setRecCliData(obj){
-            //console.log(obj); return;
+            // console.log(obj); return;
 
             obj.fechastr = moment(obj.fecha).format('YYYY-MM-DD');
             //obj.idcliente = obj.objCliente[0].id;
@@ -421,6 +424,62 @@
                 $scope.loadDetaCont();
             }, () => { $scope.loadDetaCont(); });
         };
+
+    //pago recli 
+
+    $scope.resetPagoRecCli = function(){
+        $scope.pagoreccli = {
+            numero: undefined,
+            banco: undefined,
+            monto: undefined
+        };
+        goTop();
+    };
+
+    function procDetaPagoRec(d){
+        for(var i = 0; i < d.length; i++){
+            // d[i].id = parseInt(d[i].id);
+            // d[i].idrecibocli = parseInt(d[i].idrecibocli);
+            d[i].numero = parseInt(d[i].numero);
+            // d[i].banco = parseInt(d[i].banco);
+            // d[i].monto = parseInt(d[i].monto);
+        }
+        return d;
+    };
+
+    $scope.loadPagoRecCli = function(idreccli){
+        reciboClientesSrvc.lstPagoRecCli(idreccli).then(function(d){
+            $scope.lstpagorecli = procDetaPagoRec(d);
+        });
+    };
+
+    function setPagoRec(obj){
+        // console.log(obj); return;
+        obj.idrecibocli = $scope.reccli.id;
+        obj.numero = obj.numero != null && obj.numero != undefined ? obj.numero : 0;
+        obj.banco = obj.banco != null && obj.banco != undefined ? obj.banco : 0;
+        obj.monto = obj.monto != null && obj.monto != undefined ? obj.monto : 0.00;
+        return obj;
+    }
+
+    $scope.addPagoRecCli = function(obj){
+        obj = setPagoRec(obj);
+        // console.log(obj); return;
+        reciboClientesSrvc.editRow(obj, 'cp').then(function(d){
+            $scope.loadPagoRecCli(obj.idrecibocli);
+            $scope.resetPagoRecCli();
+        });
+    };
+
+    $scope.delPagoRecli = function(obj){
+        $confirm({text: '¿Seguro desea eliminar esta forma de pago? ', title: 'Eliminar forma de pago', ok: 'Sí', cancel: 'No'}).then(function() {
+            // console.log(obj);return
+            reciboClientesSrvc.editRow({id: obj.id}, 'dp').then(function(){
+                $scope.loadPagoRecCli(obj.idreccli);
+                $scope.resetPagoRecCli();
+            });
+        });
+    };
 
     }]);
 

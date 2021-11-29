@@ -418,8 +418,7 @@ $app->get('/getlstrecpend/:idempresa', function($idempresa){
     $db = new dbcpm();
     $query = "SELECT 
                 a.id,
-                a.serie,
-                a.numero,
+                CONCAT(a.serie, '-', a.numero) AS reccli,
                 (SELECT 
                         IFNULL(ROUND(SUM(b.monto), 2), 0.00)
                     FROM
@@ -440,4 +439,31 @@ $app->get('/getlstrecpend/:idempresa', function($idempresa){
                     AND a.idempresa = $idempresa ";
     print $db->doSelectASJson($query);
 });
+
+$app->get('/getlstrec/:idempresa', function($idempresa){
+    $db = new dbcpm();
+    $query = "SELECT 
+                a.id,
+                CONCAT(a.serie, '-', a.numero) AS reccli,
+                (SELECT 
+                        IFNULL(ROUND(SUM(b.monto), 2), 0.00)
+                    FROM
+                        detcobroventa b
+                    WHERE
+                        a.id = b.idrecibocli) AS montorec,
+                IFNULL(b.nombre, c.nombre) AS cliente,
+                a.concepto
+            FROM
+                recibocli a
+                    LEFT JOIN
+                cliente b ON a.idcliente = b.id
+                    LEFT JOIN
+                factura c ON a.nit = c.nit
+            WHERE
+                    a.fecha >= 20210101
+                    AND a.tipo = 1
+                    AND a.idempresa = $idempresa ";
+    print $db->doSelectASJson($query);
+});
+
 $app->run();

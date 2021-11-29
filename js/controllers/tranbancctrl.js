@@ -2,7 +2,7 @@
 
     var tranbancctrl = angular.module('cpm.tranbancctrl', ['cpm.tranbacsrvc']);
 
-    tranbancctrl.controller('tranBancCtrl', ['$scope', 'tranBancSrvc', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'tipoDocSopTBSrvc', 'tipoMovTranBanSrvc', 'periodoContableSrvc', 'toaster', 'detContSrvc', 'cuentacSrvc', '$confirm', '$filter', '$uibModal', 'razonAnulacionSrvc', 'presupuestoSrvc', 'jsReportSrvc', '$window', 'localStorageSrvc', 'proyectoSrvc', 'socketIOSrvc', function ($scope, tranBancSrvc, authSrvc, bancoSrvc, empresaSrvc, DTOptionsBuilder, tipoDocSopTBSrvc, tipoMovTranBanSrvc, periodoContableSrvc, toaster, detContSrvc, cuentacSrvc, $confirm, $filter, $uibModal, razonAnulacionSrvc, presupuestoSrvc, jsReportSrvc, $window, localStorageSrvc, proyectoSrvc, socketIOSrvc) {
+    tranbancctrl.controller('tranBancCtrl', ['$scope', 'tranBancSrvc', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'tipoDocSopTBSrvc', 'tipoMovTranBanSrvc', 'periodoContableSrvc', 'toaster', 'detContSrvc', 'cuentacSrvc', '$confirm', '$filter', '$uibModal', 'razonAnulacionSrvc', 'presupuestoSrvc', 'jsReportSrvc', '$window', 'localStorageSrvc', 'proyectoSrvc', 'socketIOSrvc', 'reciboClientesSrvc', function ($scope, tranBancSrvc, authSrvc, bancoSrvc, empresaSrvc, DTOptionsBuilder, tipoDocSopTBSrvc, tipoMovTranBanSrvc, periodoContableSrvc, toaster, detContSrvc, cuentacSrvc, $confirm, $filter, $uibModal, razonAnulacionSrvc, presupuestoSrvc, jsReportSrvc, $window, localStorageSrvc, proyectoSrvc, socketIOSrvc, reciboClientesSrvc) {
 
         $scope.laTran = { fecha: new Date(), concepto: '', anticipo: 0, idbeneficiario: 0, tipocambio: parseFloat('1.00').toFixed($scope.dectc), esnegociable: 0 };
         $scope.laEmpresa = {};
@@ -31,6 +31,8 @@
         $scope.hayDescuadre = false;
         $scope.uid = 0;
         $scope.proyectos = [];
+        $scope.recibos = [];
+        $scope.recibo = [];
         $scope.selected = {};
         $scope.montoMax = 999999999;
         //$scope.tipotrans = [{value: 'C', text: 'C'}, {value: 'D', text: 'D'}, {value: 'B', text: 'B'}, {value: 'R', text: 'R'}];
@@ -94,6 +96,8 @@
                     $scope.getLstBancos();
                     presupuestoSrvc.lstPagosOt($scope.laEmpresa.id, ($scope.ot.id || 0)).then(function (d) { $scope.ots = d; });
                     proyectoSrvc.lstProyectosPorEmpresa($scope.laEmpresa.id).then(function (d) { $scope.proyectos = d; });
+                    reciboClientesSrvc.lstRecPend($scope.laEmpresa.id).then(function (d){ $scope.recibos = d; });
+                    reciboClientesSrvc.getLstRec($scope.laEmpresa.id).then(function(d){ $scope.recibo = d; });
                 });
             }
         });
@@ -209,7 +213,9 @@
                 iddetpresup: undefined,
                 iddetpagopresup: undefined,
                 idproyecto: undefined,
-                iddocliquida: undefined
+                iddocliquida: undefined,
+                recibocli: undefined,
+                idrecibocli: 0
             };
             $scope.lasTran = [];
             $scope.lstndc = [];
@@ -358,24 +364,18 @@
             //console.log(item);
         };
 
+        $scope.fillDataOnRecli = function (item, model) {
+            $scope.laTran.beneficiario = item.cliente;
+            $scope.laTran.monto = item.montorec;
+            $scope.laTran.concepto = 'Ingreso recibo clientes ' + item.reccli + '[' + item.concepto + ']';
+        };
+
         $scope.fillDataOnChangeBene = function (item, model) {
             $scope.setNombreBene(item);
             if (!$scope.laTran.concepto || $scope.laTran.concepto.trim() == '') {
                 $scope.laTran.concepto = item.concepto;
             }
         };
-
-        // $scope.montoMaximo = function () {
-        //     if (+$scope.laTran.monto > +$scope.montoMax) {
-        //         toaster.pop({
-        //             type: 'error',
-        //             title: 'Error en el total',
-        //             body: 'El monto de la transacción no puede ser mayor al monto de la orden de trabajo, solicite un aumento.',
-        //             timeout: 7000
-        //         });
-        //         $scope.laTran.monto = undefined;
-        //     }
-        // };
 
         $scope.addTran = function (obj) {
             obj.idbanco = obj.objBanco.id;
@@ -394,7 +394,8 @@
             obj.retisr = obj.retisr != null && obj.retisr !== undefined ? obj.retisr : 0;
             obj.isr = obj.isr != null && obj.isr !== undefined ? obj.isr : 0.00;
             obj.montocalcisr = obj.montocalcisr != null && obj.montocalcisr !== undefined ? obj.montocalcisr : 0.00;
-            //console.log(obj); return;
+            obj.idrecibocli = obj.recibocli != null && obj.recibocli !== undefined ? obj.recibocli : 0;
+            // console.log(obj); return;
             tranBancSrvc.editRow(obj, 'c').then(function (d) {
                 $scope.getLstTran();
                 $scope.getDataTran(parseInt(d.lastid));
@@ -420,6 +421,7 @@
                 data[i].fechaliquida = moment(data[i].fechaliquida).isValid() ? moment(data[i].fechaliquida).toDate() : null;
                 data[i].iddetpagopresup = data[i].iddetpagopresup === 0 ? (+data[i].iddetpresup === 0 ? undefined : data[i].iddetpresup) : data[i].iddetpagopresup;
                 data[i].iddocliquida = +data[i].iddocliquida === 0 ? undefined : data[i].iddocliquida;
+                data[i].idrecibocli = parseInt(data[i].idrecibocli);
                 data[i].retisr = parseInt(data[i].retisr);
                 data[i].montooriginal = parseFloat(parseFloat(data[i].montooriginal).toFixed(2));
                 data[i].isr = parseFloat(parseFloat(data[i].isr).toFixed(2));
@@ -505,11 +507,10 @@
             presupuestoSrvc.lstPagosOt($scope.laEmpresa.id).then(function (d) { $scope.ots = d; });
             tranBancSrvc.getTransaccion(parseInt(idtran)).then(function (d) {
                 $scope.laTran = processData(d)[0];
-                //console.log($scope.laTran);
                 $scope.laTran.objBanco = $filter('getById')($scope.losBancos, $scope.laTran.idbanco);
 
                 var tmp = $scope.laTran, coma = ', ';
-
+                $scope.laTran.recibocli = $filter('getById')($scope.recibo, $scope.laTran.idrecibocli);
                 $scope.strTran = (tmp.anticipo === 0 ? '' : 'Anticipo, ') + tmp.objBanco.nombre + ' (' + tmp.objBanco.nocuenta + ')' + coma;
                 $scope.strTran += tmp.tipotrans + '-' + tmp.numero + coma;
                 $scope.strTran += moment(tmp.fecha).format('DD/MM/YYYY') + coma + tmp.moneda + ' ' + formatoNumero(tmp.monto, 2) + coma + tmp.beneficiario;

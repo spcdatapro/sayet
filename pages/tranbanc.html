@@ -96,6 +96,27 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
+                                <div class="form-group" ng-show="laTran.objTipotrans.abreviatura === 'D'">
+                                    <label>Recibo a cliente</label>
+                                    <ui-select ng-model="laTran.recibocli"
+                                        title="Seleccione un recibo..." theme="bootstrap"
+                                        autofocus="false" on-select="fillDataOnRecli($item, $model)">
+                                        <ui-select-match placeholder="Buscar recibo..."
+                                            allow-clear="true">
+                                            <span ng-bind="($select.selected.reccli)"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices 
+                                            repeat="item.id as item in recibos | filter:$select.search"
+                                            group-by="'grupo'">
+                                            <div
+                                                ng-bind-html="(item.reccli) | highlight: $select.search">
+                                            </div>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
                                 <!--<div class="form-group" ng-show="laTran.objTipotrans.abreviatura === 'C' || laTran.tipotrans === 'C' || laTran.objTipotrans.abreviatura === 'R' || laTran.tipotrans === 'R'">-->
                                 <div class="form-group"
                                     ng-show="['C', 'R', 'B'].indexOf(laTran.objTipotrans.abreviatura) > -1 || ['C', 'R', 'B'].indexOf(laTran.tipotrans) > -1">
@@ -249,8 +270,6 @@
                                 </div>
                             </div>
                         </div>
-
-
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group required"
@@ -268,6 +287,29 @@
                                         ng-model="laTran.concepto" placeholder="Concepto de la transacci&oacute;n"
                                         maxlength="2000" rows="1" required>
                             </textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group" ng-show="laTran.objTipotrans.abreviatura === 'R'">
+                                    <label>Recibo a cliente</label>
+                                    <ui-select ng-model="laTran.recibocli"
+                                        title="Seleccione un recibo..." theme="bootstrap"
+                                        autofocus="false" on-select="fillDataOnRecli($item, $model)">
+                                        <ui-select-match placeholder="Buscar recibo..."
+                                            allow-clear="true">
+                                            <span ng-bind="($select.selected.reccli)"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices 
+                                            repeat="item.id as item in recibos | filter:$select.search"
+                                            group-by="'grupo'">
+                                            <div
+                                                ng-bind-html="(item.reccli) | highlight: $select.search">
+                                            </div>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
                                 </div>
                             </div>
                         </div>

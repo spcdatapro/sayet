@@ -27,6 +27,15 @@
             },
             editRow: function(obj, op){
                 return comunFact.doPOST(urlBase + '/' + op, obj);
+            },
+            lstPagoRecCli: function(idreccli){
+                return comunFact.doGET(urlBase + '/getpagorecli/' + idreccli);
+            },
+            lstRecPend: function(idempresa){
+                return comunFact.doGET(urlBase + '/getlstrecpend/' + idempresa);
+            },
+            getLstRec: function(idempresa){
+                return comunFact.doGET(urlBase + '/getlstrec/' + idempresa);
             }
         };
  
