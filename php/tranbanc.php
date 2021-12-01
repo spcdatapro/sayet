@@ -116,9 +116,9 @@ $app->post('/c', function(){
             $db->doQuery("UPDATE tranban SET anticipo = WHERE id = $d->iddocliquida");
         };
 
-        // if($d->recibocli != null){
-        //     $db->doQuery("UPDATE recibocli SET idtranban = $lastid WHERE id = $d->recibocli");
-        // };
+        if($d->idrecibocli != null){
+            $db->doQuery("UPDATE recibocli SET idtranban = $lastid WHERE id = $d->idrecibocli");
+        };
     }
     if(in_array($d->tipotrans, $ttsalida)){
         if($d->tipotrans === 'C'){ $db->doQuery("UPDATE banco SET correlativo = correlativo + 1 WHERE id = ".$d->idbanco); }
