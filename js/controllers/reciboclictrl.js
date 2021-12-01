@@ -2,7 +2,7 @@
 
     var reciboclictrl = angular.module('cpm.reciboclictrl', []);
 
-    reciboclictrl.controller('reciboClientesCtrl',  ['$scope' , 'reciboClientesSrvc' , 'authSrvc' , '$route' , '$confirm' , '$filter'  , 'DTOptionsBuilder' , 'detContSrvc' , 'cuentacSrvc' , 'clienteSrvc', '$location', 'jsReportSrvc', '$window', 'empresaSrvc', '$uibModal', function($scope , reciboClientesSrvc , authSrvc , $route , $confirm , $filter , DTOptionsBuilder , detContSrvc , cuentacSrvc , clienteSrvc, $location, jsReportSrvc, $window, empresaSrvc, $uibModal){
+    reciboclictrl.controller('reciboClientesCtrl',  ['$scope' , 'reciboClientesSrvc' , 'authSrvc' , '$route' , '$confirm' , '$filter'  , 'DTOptionsBuilder' , 'detContSrvc' , 'cuentacSrvc' , 'clienteSrvc', '$location', 'jsReportSrvc', '$window', 'empresaSrvc', '$uibModal', 'bancoSrvc', 'monedaSrvc', function($scope , reciboClientesSrvc , authSrvc , $route , $confirm , $filter , DTOptionsBuilder , detContSrvc , cuentacSrvc , clienteSrvc, $location, jsReportSrvc, $window, empresaSrvc, $uibModal, bancoSrvc, monedaSrvc){
 
         $scope.reccli = {idempresa: 0};
         $scope.reciboscli = [];
@@ -16,6 +16,8 @@
         $scope.lstdocspend = [];
         $scope.lstdetcont = [];
         $scope.elDetCont = {};
+        $scope.losBancoPais = [];
+        $scope.lasMonedas = [];
         //Inicio modificacion
         $scope.fltrre = {
             idempresa:0, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), recibostr:'', clientestr:'', ban_numerostr: '',
@@ -427,10 +429,16 @@
 
     //pago recli 
 
+    bancoSrvc.lstBancosPais().then(function(d){ $scope.losBancoPais = d; });
+    monedaSrvc.lstMonedas().then(function(d){ $scope.lasMonedas = d; });
+
     $scope.resetPagoRecCli = function(){
         $scope.pagoreccli = {
             numero: undefined,
-            banco: undefined,
+            objBancoPais: null,
+            idbanco: 0,
+            objMoneda: null,
+            idmoneda: 0,
             monto: undefined
         };
         goTop();
@@ -457,7 +465,8 @@
         // console.log(obj); return;
         obj.idrecibocli = $scope.reccli.id;
         obj.numero = obj.numero != null && obj.numero != undefined ? obj.numero : 0;
-        obj.banco = obj.banco != null && obj.banco != undefined ? obj.banco : 0;
+        obj.idbanco = obj.objBancoPais != null && obj.objBancoPais != undefined ? obj.objBancoPais.id : 0;
+        obj.idmoneda = obj.objMoneda != null && obj.objMoneda != undefined ? obj.objMoneda.id : 0;
         obj.monto = obj.monto != null && obj.monto != undefined ? obj.monto : 0.00;
         return obj;
     }

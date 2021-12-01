@@ -391,7 +391,7 @@ $app->post('/prtrecibocli', function() {
 $app->post('/cp', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $query = "INSERT INTO detpagorecli(idreccli, numero, banco, monto) VALUES($d->idrecibocli, '$d->numero', '$d->banco', '$d->monto')";
+    $query = "INSERT INTO detpagorecli(idreccli, numero, idbanco, idmoneda, monto) VALUES($d->idrecibocli, $d->numero, $d->idbanco, $d->idmoneda, $d->monto)";
     $db->doQuery($query);
 });
 
@@ -404,11 +404,20 @@ $app->post('/dp', function(){
 $app->get('/getpagorecli/:idrecibo', function($idrecibo){
     $db = new dbcpm();
     $query = "SELECT 
-            b.id, b.idreccli, b.numero, b.banco, b.monto
-                FROM
-            recibocli a
-                INNER JOIN
-            detpagorecli b ON a.id = b.idreccli
+                b.id,
+                b.idreccli,
+                b.numero,
+                c.nombre AS banco,
+                d.simbolo AS moneda,
+                b.monto
+            FROM
+                recibocli a
+                    INNER JOIN
+                detpagorecli b ON a.id = b.idreccli
+                    INNER JOIN
+                bancopais c ON c.id = b.idbanco
+                    INNER JOIN
+                moneda d ON d.id = b.idmoneda
                 WHERE
             b.idreccli = $idrecibo ";
     print $db->doSelectASJson($query);
