@@ -375,12 +375,17 @@ $app->post('/prtrecibocli', function() {
     $query = 
                 "SELECT 
                     b.numero,
-                    b.banco,
+                    c.nombre AS banco,
+                    d.simbolo AS moneda,
                     b.monto
                 FROM
                     recibocli a
                         INNER JOIN
                     detpagorecli b ON a.id = b.idreccli
+                        INNER JOIN
+                    bancopais c ON c.id = b.idbanco
+                        INNER JOIN
+                    moneda d ON d.id = b.idmoneda
                 WHERE
                     b.idreccli = $d->idrecibo ";
     $cheques = $db->getQuery($query);
