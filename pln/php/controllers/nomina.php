@@ -1086,8 +1086,7 @@ $app->get('/imprimir_aguinaldo', function(){
 					if ($registros == $rpag) {
 						$espacio   = 0;
 						$registros = 0;
-						$pagina++;
-						$pdf->setPage($pagina);
+						$pdf->AddPage();
 					}
 					
 					$confe      = $g->get_campo_impresion('idempresa', $tipoImpresion);
@@ -1142,8 +1141,7 @@ $app->get('/imprimir_aguinaldo', function(){
 						if ($registros == $rpag) {
 							$espacio   = 0;
 							$registros = 0;
-							$pagina++;
-							$pdf->setPage($pagina);
+							$pdf->AddPage();
 						}
 					}
 
@@ -1152,8 +1150,7 @@ $app->get('/imprimir_aguinaldo', function(){
 					if ($registros == $rpag) {
 						$espacio   = 0;
 						$registros = 0;
-						$pagina++;
-						$pdf->setPage($pagina);
+						$pdf->AddPage();
 					}
 
 					$pdf->SetLineStyle(array(
@@ -1164,51 +1161,15 @@ $app->get('/imprimir_aguinaldo', function(){
 						'color' => array(0, 0, 0)
 					));
 
-					foreach ($etotales as $campo => $total) {
-						$conf = $g->get_campo_impresion($campo, $tipoImpresion);
-
-						if (!isset($conf->scalar) && $conf->visible == 1) {
-							$conf->psy = ($conf->psy+$espacio);
-							$pdf       = generar_fimpresion($pdf, number_format($total, 2), $conf);
-
-							$pdf->Line($conf->psx, $conf->psy, ($conf->psx+$conf->ancho), $conf->psy);
-
-							$y = ($conf->psy+$conf->espacio);
-
-							$pdf->Line($conf->psx, $y, $conf->psx+$conf->ancho, $y);
-							$pdf->Line($conf->psx, $y+1, $conf->psx+$conf->ancho, $y+1);
-						}
-					}
+					$pdf = imprimirTotalesEmpresa($pdf, $g, $tipoImpresion, $etotales, $espacio);
 
 					$espacio += $confe->espacio;	
 				}
 
-				$pie  = $g->get_campo_impresion("vtotalespie", $tipoImpresion);
+				$pdf = imprimirTotalesPagina($pdf, $g, $tipoImpresion, $totales);
+				$pdf = imprimirEncabezado($pdf, $g, $tipoImpresion, $cabecera);
 
-				foreach ($totales as $key => $subtotales) {
-					$pdf->setPage($key);
-
-					foreach ($subtotales as $campo => $total) {
-						$conf = $g->get_campo_impresion($campo, $tipoImpresion);
-
-						if (!isset($conf->scalar) && $conf->visible == 1) {
-							$conf->psy = $pie->psy;
-							$pdf       = generar_fimpresion($pdf, number_format($total, 2), $conf);
-
-							$y = ($conf->psy+$conf->espacio);
-
-							$pdf->Line($conf->psx, $y, $conf->psx+$conf->ancho, $y);
-							$pdf->Line($conf->psx, $y+1, $conf->psx+$conf->ancho, $y+1);
-						}
-					}
-
-					$conf = $g->get_campo_impresion("vnopagina", $tipoImpresion);
-					if (!isset($conf->scalar) && $conf->visible == 1) {
-						$pdf = generar_fimpresion($pdf, $key, $conf);
-					}
-				}
-
-				$pdf->Output("nomina" . time() . ".pdf", 'I');
+				$pdf->Output("nomina_aguinaldo_" . time() . ".pdf", 'I');
 				die();
 			} else {
 				echo "Nada que mostrar";
