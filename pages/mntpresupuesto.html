@@ -452,11 +452,16 @@
                             ng-hide="(+presupuesto.idestatuspresupuesto == 6 || +presupuesto.idestatuspresupuesto == 5 || +presupuesto.idestatuspresupuesto == 3) || !permiso.m">
                         </form-buttons> 
                         <button type="button" class="btn btn-info" ng-click="nuevoPresupuesto()" 
-                        ng-show="[3, 4, 5, 6].indexOf(+ot.idestatuspresupuesto) > -1 && permiso.m" data-toggle="tooltip" data-placement="auto" 
+                        ng-show="[3, 4, 5, 6].indexOf(+ot.idestatuspresupuesto) > -1 && permiso.m && (usrdata.uid != 10 || usrdata.uid != 11)" data-toggle="tooltip" data-placement="auto" 
                         title="Nuevo presupuesto...">
                             <span class="glyphicon glyphicon-plus">
                             </span>
                         </button>
+                        <form-buttons vis="grpBtnPresupuesto" btn-dis="frmPresup.$invalid" obj="presupuesto"
+                        uf="updPresupuesto(presupuesto)" df="delPresupuesto(presupuesto)" nf="nuevoPresupuesto()"
+                        cf="cancelEditPresup()" ef="startEditPresup()" pf="imprimirPresup()"
+                        ng-show="[3, 4, 5, 6].indexOf(+ot.idestatuspresupuesto) > -1 && [1, 10, 11].indexOf(+usrdata.uid) > -1">
+                        </form-buttons>
                         <!-- <button type="button" class="btn btn-info" ng-click="verDetPagos(presupuesto, true)"
                             ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1"
                             data-toggle="tooltip" data-placement="auto" title="Ver detalle de pagos...">
@@ -468,7 +473,7 @@
                             <i class="fa fa-print fa-lg" aria-hidden="true"></i>
                         </button> -->
                         <button type="button" class="btn btn-primary" ng-click="printOtNue(presupuesto.id, true)"
-                        ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m && +presupuesto.tipo == 1"
+                        ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m "
                         data-toggle="tooltip" data-placement="auto" title="Imprimir...">
                         <i class="fa fa-print fa-lg" aria-hidden="true"></i>
                         </button>

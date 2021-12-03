@@ -52,6 +52,20 @@ $app->post('/c', function(){
 $app->post('/u', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    $origen = "SELECT origen FROM detallecontable WHERE id = $d->id ";
+    if(2 == $d->origen)
+    {
+        $idorigen = "SELECT idorigen FROM detallecontabel WHERE id = $d->id ";
+        $existe = "SELECT IFNULL(id, NULL) FROM compraproyecto WHERE idcompra = $idorigen ";
+    }else {
+        $existe = NULL;
+    }
+    if($existe != NULL && 2 == $d->origen)
+    {
+        $query = "UPDATE compraproyecto SET idcuentac = $d->idcuenta WHERE idcompra = $d->idorigen ";
+        $db->doQuery($query);
+    }
+
     $query = "UPDATE detallecontable SET idcuenta = $d->idcuenta, debe = $d->debe, haber = $d->haber, ";
     $query.= "conceptomayor = '$d->conceptomayor' WHERE id = $d->id";
     $db->doQuery($query);
