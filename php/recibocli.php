@@ -430,7 +430,7 @@ $app->get('/getpagorecli/:idrecibo', function($idrecibo){
 
 $app->get('/getlstrecpend/:idempresa', function($idempresa){
     $db = new dbcpm();
-    $query = "SELECT 
+    $query = "SELECT DISTINCT 
                 a.id,
                 CONCAT(a.serie, '-', a.numero) AS reccli,
                 (SELECT 
@@ -456,7 +456,7 @@ $app->get('/getlstrecpend/:idempresa', function($idempresa){
 
 $app->get('/getlstrec/:idempresa', function($idempresa){
     $db = new dbcpm();
-    $query = "SELECT 
+    $query = "SELECT DISTINCT
                 a.id,
                 CONCAT(a.serie, '-', a.numero) AS reccli,
                 (SELECT 
