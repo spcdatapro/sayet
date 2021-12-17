@@ -59,12 +59,10 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="form-group"
-                                    ng-class="{'has-error':frmRecCli.txtNumero.$invalid && !frmRecCli.txtNumero.$pristine}">
+                                <div class="form-group">
                                     <label for="txtNumero">N&uacute;mero:</label>
                                     <input name="txtNumero" id="txtNumero" type="number" class="form-control"
-                                        ng-model="reccli.numero" ng-required="+fltrre.tipo == 1"
-                                        ng-disabled="+fltrre.tipo > 2" />
+                                        ng-model="reccli.numero" ng-disabled="true" />
                                 </div>
                             </div>
                             <div class="col-md-3">

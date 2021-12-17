@@ -108,8 +108,8 @@ $app->post('/c', function(){
         $d->numero = (int)$db->getOneField("SELECT IFNULL(MAX(numero), 0) + 1 FROM recibocli WHERE tipo = $d->tipo");
     }
 
-    $query = "INSERT INTO recibocli(idempresa, fecha, fechacrea, idcliente, espropio, idtranban, serie, numero, usuariocrea, tipo, concepto, nit) VALUES(";
-    $query.= "$d->idempresa,'$d->fechastr', NOW(), $d->idcliente, $d->espropio, $d->idtranban, '$d->serie', $d->numero, '$d->usuariocrea', $d->tipo, '$d->concepto', $d->nit";
+    $query = "INSERT INTO recibocli(idempresa, fecha, fechacrea, idcliente, espropio, idtranban, serie, usuariocrea, tipo, concepto, nit) VALUES(";
+    $query.= "$d->idempresa,'$d->fechastr', NOW(), $d->idcliente, $d->espropio, $d->idtranban, '$d->serie', '$d->usuariocrea', $d->tipo, '$d->concepto', $d->nit";
     $query.= ")";
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
@@ -316,7 +316,7 @@ $app->post('/prtrecibocli', function() {
     $query =
                 "SELECT 
                 a.serie,
-                a.numero,
+                IFNULL(a.numero, a.id) AS numero,
                 FORMAT(SUM(b.monto), 2) AS montorecli,
                 g.simbolo AS monedarecli,
                 DAY(a.fecha) AS dia,
@@ -432,7 +432,7 @@ $app->get('/getlstrecpend/:idempresa', function($idempresa){
     $db = new dbcpm();
     $query = "SELECT DISTINCT 
                 a.id,
-                CONCAT(a.serie, '-', a.numero) AS reccli,
+                CONCAT(a.serie, '-', IFNULL(a.numero, a.id)) AS reccli,
                 (SELECT 
                         IFNULL(ROUND(SUM(b.monto), 2), 0.00)
                     FROM
@@ -458,7 +458,7 @@ $app->get('/getlstrec/:idempresa', function($idempresa){
     $db = new dbcpm();
     $query = "SELECT DISTINCT
                 a.id,
-                CONCAT(a.serie, '-', a.numero) AS reccli,
+                CONCAT(a.serie, '-', IFNULL(a.numero, a.id)) AS reccli,
                 (SELECT 
                         IFNULL(ROUND(SUM(b.monto), 2), 0.00)
                     FROM

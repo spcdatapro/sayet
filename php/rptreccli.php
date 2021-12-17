@@ -96,7 +96,7 @@ $app->post('/correlativo', function() use($db){
     $query = "SELECT DATE_FORMAT('$d->fdelstr', '%d/%m/%Y') AS del,  DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS al, DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy";
     $generales = $db->getQuery($query)[0];
 
-    $qGen = "SELECT a.idempresa, d.nomempresa AS empresa, a.id, IFNULL(CONCAT(a.serie, a.numero), a.id) AS norecibo, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, IFNULL(c.nombre, f.nombre) AS cliente, a.usuariocrea, ";
+    $qGen = "SELECT a.idempresa, d.nomempresa AS empresa, a.id, CONCAT(a.serie, IFNULL(a.numero, a.id)) AS norecibo, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, IFNULL(c.nombre, f.nombre) AS cliente, a.usuariocrea, ";
     $qGen.= "'Q' AS moneda, IFNULL(b.totrecibo, 0.00) AS totrecibo, a.serie, a.numero, d.ordensumario, IFNULL(c.nombrecorto, '') as nombrecorto ";
     $qGen.= "FROM recibocli a LEFT JOIN (SELECT idrecibocli, SUM(monto) AS totrecibo FROM detcobroventa GROUP BY idrecibocli) b ON a.id = b.idrecibocli ";
     $qGen.= "LEFT JOIN cliente c ON c.id = a.idcliente LEFT JOIN empresa d ON d.id = a.idempresa LEFT JOIN detcobroventa e ON e.idrecibocli = a.id LEFT JOIN factura f on e.idfactura = f.id  ";
