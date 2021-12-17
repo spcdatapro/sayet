@@ -384,31 +384,41 @@
                         <div class="panel-body">
                             <form name="frmDocsPag" id="frmDocsPag" ng-submit="addPagoRecCli(pagoreccli)">
                                 <div class="row">
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="intPag">No. Cheque/Transferencia</label>
+                                            <label for="selTipoTrans" class="control-label">Tipo de transacci&oacute;n:</label>
+                                            <select name="selTipoTrans" id="selTipoTrans" class="form-control" ng-model="pagoreccli.objTipotrans"
+                                            ng-options="obj.abreviadesc for obj in tipotran track by obj.abreviatura">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="intPag">Numero:</label>
                                             <input type="number" class="form-control" ng-model="pagoreccli.numero" placeholder="646565"/>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="selBcnPai" class="control-label">Banco</label>
+                                            <label for="selBcnPai" class="control-label">Banco:</label>
                                             <select name="selBcnPai" id="selBcnPai" class="form-control" ng-model="pagoreccli.objBancoPais" 
                                             ng-options="obj.nombre for obj in losBancoPais track by obj.id">
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="selMon" class="control-label">Moneda</label>
+                                            <label for="selMon" class="control-label">Moneda:</label>
                                             <select name="selMon" id="selMon" class="form-control" ng-model="pagoreccli.objMoneda" 
                                             ng-options="obj.simbolo for obj in lasMonedas track by obj.id">
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="intValor">Monto</label>
+                                            <label for="intValor">Monto:</label>
                                             <input type="text" class="form-control" ng-model="pagoreccli.monto" placeholder="4503.01"/>
                                         </div>
                                     </div>
@@ -427,7 +437,7 @@
                                     </tr>
                                     <tr ng-repeat="tr in lstpagorecli">
                                         <tb style="text-align: center;"></tb>
-                                        <td style="text-align: center;">{{tr.numero}}</td>
+                                        <td style="text-align: center;">{{tr.tipotrans}} {{tr.numero}}</td>
                                         <td style="text-align: center;">{{tr.banco}}</td>
                                         <td style="text-align: center;">{{tr.moneda}}.{{tr.monto}}</td>
                                         <td style="text-align: right;">

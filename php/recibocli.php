@@ -372,21 +372,23 @@ $app->post('/prtrecibocli', function() {
                 a.id = $d->idrecibo ";
     $facturas = $db->getQuery($query);
 
-    $query = 
-                "SELECT 
-                    b.numero,
-                    c.nombre AS banco,
-                    d.simbolo AS moneda,
-                    b.monto
-                FROM
-                    recibocli a
-                        INNER JOIN
-                    detpagorecli b ON a.id = b.idreccli
-                        INNER JOIN
-                    bancopais c ON c.id = b.idbanco
-                        INNER JOIN
-                    moneda d ON d.id = b.idmoneda
-                WHERE
+    $query = "SELECT 
+                IFNULL(CONCAT(e.abreviatura, '-', b.numero),
+                        b.numero) AS numero,
+                c.nombre AS banco,
+                d.simbolo AS moneda,
+                b.monto
+            FROM
+                recibocli a
+                    INNER JOIN
+                detpagorecli b ON a.id = b.idreccli
+                    INNER JOIN
+                bancopais c ON c.id = b.idbanco
+                    INNER JOIN
+                moneda d ON d.id = b.idmoneda
+                    LEFT JOIN
+                tipomovtranban e ON b.tipotrans = e.id
+            WHERE
                     b.idreccli = $d->idrecibo ";
     $cheques = $db->getQuery($query);
 
@@ -396,7 +398,7 @@ $app->post('/prtrecibocli', function() {
 $app->post('/cp', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $query = "INSERT INTO detpagorecli(idreccli, numero, idbanco, idmoneda, monto) VALUES($d->idrecibocli, $d->numero, $d->idbanco, $d->idmoneda, $d->monto)";
+    $query = "INSERT INTO detpagorecli(idreccli, numero, idbanco, idmoneda, monto, tipotrans) VALUES($d->idrecibocli, $d->numero, $d->idbanco, $d->idmoneda, $d->monto, $d->idtipotrans)";
     $db->doQuery($query);
 });
 
@@ -414,7 +416,8 @@ $app->get('/getpagorecli/:idrecibo', function($idrecibo){
                 b.numero,
                 c.nombre AS banco,
                 d.simbolo AS moneda,
-                b.monto
+                b.monto, 
+                e.abreviatura AS tipotrans
             FROM
                 recibocli a
                     INNER JOIN
@@ -423,6 +426,8 @@ $app->get('/getpagorecli/:idrecibo', function($idrecibo){
                 bancopais c ON c.id = b.idbanco
                     INNER JOIN
                 moneda d ON d.id = b.idmoneda
+                    LEFT JOIN 
+                tipomovtranban e ON b.tipotrans = e.id
                 WHERE
             b.idreccli = $idrecibo ";
     print $db->doSelectASJson($query);

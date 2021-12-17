@@ -2,7 +2,7 @@
 
     var reciboclictrl = angular.module('cpm.reciboclictrl', []);
 
-    reciboclictrl.controller('reciboClientesCtrl',  ['$scope' , 'reciboClientesSrvc' , 'authSrvc' , '$route' , '$confirm' , '$filter'  , 'DTOptionsBuilder' , 'detContSrvc' , 'cuentacSrvc' , 'clienteSrvc', '$location', 'jsReportSrvc', '$window', 'empresaSrvc', '$uibModal', 'bancoSrvc', 'monedaSrvc', function($scope , reciboClientesSrvc , authSrvc , $route , $confirm , $filter , DTOptionsBuilder , detContSrvc , cuentacSrvc , clienteSrvc, $location, jsReportSrvc, $window, empresaSrvc, $uibModal, bancoSrvc, monedaSrvc){
+    reciboclictrl.controller('reciboClientesCtrl',  ['$scope' , 'reciboClientesSrvc' , 'authSrvc' , '$route' , '$confirm' , '$filter'  , 'DTOptionsBuilder' , 'detContSrvc' , 'cuentacSrvc' , 'clienteSrvc', '$location', 'jsReportSrvc', '$window', 'empresaSrvc', '$uibModal', 'bancoSrvc', 'monedaSrvc', 'tipoMovTranBanSrvc', function($scope , reciboClientesSrvc , authSrvc , $route , $confirm , $filter , DTOptionsBuilder , detContSrvc , cuentacSrvc , clienteSrvc, $location, jsReportSrvc, $window, empresaSrvc, $uibModal, bancoSrvc, monedaSrvc, tipoMovTranBanSrvc){
 
         $scope.reccli = {idempresa: 0};
         $scope.reciboscli = [];
@@ -18,6 +18,7 @@
         $scope.elDetCont = {};
         $scope.losBancoPais = [];
         $scope.lasMonedas = [];
+        $scope.tipotran = [];
         //Inicio modificacion
         $scope.fltrre = {
             idempresa:0, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), recibostr:'', clientestr:'', ban_numerostr: '',
@@ -431,6 +432,7 @@
 
     bancoSrvc.lstBancosPais().then(function(d){ $scope.losBancoPais = d; });
     monedaSrvc.lstMonedas().then(function(d){ $scope.lasMonedas = d; });
+    tipoMovTranBanSrvc.lstTiposMovTB().then(function (d) { $scope.tipotran = d; });
 
     $scope.resetPagoRecCli = function(){
         $scope.pagoreccli = {
@@ -439,6 +441,8 @@
             idbanco: 0,
             objMoneda: null,
             idmoneda: 0,
+            objTipotrans: null,
+            idtipotrans: 0,
             monto: undefined
         };
         goTop();
@@ -467,6 +471,7 @@
         obj.numero = obj.numero != null && obj.numero != undefined ? obj.numero : 0;
         obj.idbanco = obj.objBancoPais != null && obj.objBancoPais != undefined ? obj.objBancoPais.id : 0;
         obj.idmoneda = obj.objMoneda != null && obj.objMoneda != undefined ? obj.objMoneda.id : 0;
+        obj.idtipotrans = obj.objTipotrans != null && obj.objTipotrans != undefined ? obj.objTipotrans.id : 0;
         obj.monto = obj.monto != null && obj.monto != undefined ? obj.monto : 0.00;
         return obj;
     }
