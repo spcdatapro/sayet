@@ -251,7 +251,7 @@
         };
 
         $scope.delRecCli = function(obj){
-            $confirm({text: '¿Seguro(a) de eliminar el recibo de clientes No. ' + $scope.reccli.serie + '-' + $scope.reccli.numero + '?', title: 'Eliminar recibo de clientes', ok: 'Sí', cancel: 'No'}).then(function() {
+            $confirm({text: '¿Seguro(a) de eliminar el recibo de clientes No. ' + $scope.reccli.serie + '-' + $scope.reccli.id + '?', title: 'Eliminar recibo de clientes', ok: 'Sí', cancel: 'No'}).then(function() {
                 reciboClientesSrvc.editRow({id: $scope.reccli.id}, 'd').then(function(){ 
                     //Inicio modificacion
                     //$scope.getLstRecibosCli(obj.idempresa); 

@@ -204,7 +204,7 @@ $app->post('/rptecuentacli', function(){
 										 ifnull(d.tipotrans, IF(c.tipo = 1, 'P', c.serie)) as tipotrans,
 
 										 round((b.monto*if(a.idmoneda=1,1,a.tipocambio)),2) as monto,
-										 concat(c.serie,c.numero) as recibo
+										 concat(c.serie,IFNULL(c.numero, c.id)) as recibo
 									from sayet.factura a
 										inner join sayet.detcobroventa b on a.id=b.idfactura
 										inner join sayet.recibocli c on b.idrecibocli=c.id

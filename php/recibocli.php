@@ -183,7 +183,7 @@ $app->get('/docspend/:idempresa/:idcliente/:nit(/:tipo)', function($idempresa, $
     $query.= "FROM factura a INNER JOIN moneda b ON b.id = a.idmoneda INNER JOIN tipofactura c ON c.id = a.idtipofactura ";
     $query.= "LEFT JOIN (SELECT a.idfactura, SUM(a.monto) AS cobrado FROM detcobroventa a INNER JOIN recibocli b ON b.id = a.idrecibocli WHERE b.anulado = 0 GROUP BY a.idfactura) d ON a.id = d.idfactura ";
     $query.= "WHERE a.anulada = 0 AND a.idempresa = $idempresa ";
-    $query.= (int)$tipo < 3 ? "AND a.pagada = 0 AND (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) > 0 " : "AND (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) < 0 ";
+    $query.= (int)$tipo < 3 ? "AND IF(a.pagada = 0, (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) > 0, (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) < 0)" : "AND (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) < 0 ";
     //$query.= "AND a.pagada = 0 AND (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) > 0 ";
     $query.= (int)$idcliente > 0 ? "AND a.idcliente = $idcliente " : "AND a.nit = $nit ";
     $query.= "ORDER BY a.fecha";
@@ -355,20 +355,24 @@ $app->post('/prtrecibocli', function() {
         $recibo[0]->montoletras = $n2l->to_word($recibo[0]->montorecli, 'GTQ');
 
     $query = 
-                "SELECT 
-                c.serie AS seriefact,
-                c.numero AS numfact,
-                FORMAT(b.monto, 2) AS montofact,
-                e.simbolo AS monedafact
-            FROM
-                recibocli a
-                    INNER JOIN
-                detcobroventa b ON b.idrecibocli = a.id
-                    INNER JOIN
-                factura c ON b.idfactura = c.id
-                    INNER JOIN
-				moneda e ON c.idmoneda = e.id
-            WHERE
+                "SELECT  
+                    c.serie AS seriefact,
+                    c.numero AS numfact,
+                    IF(b.monto < 0,
+                        CONCAT('(',
+                                SUBSTRING(FORMAT(b.monto, 2), 2, 10),
+                                ')'),
+                        FORMAT(b.monto, 2)) AS montofact,
+                    e.simbolo AS monedafact
+                FROM
+                    recibocli a
+                        INNER JOIN
+                    detcobroventa b ON b.idrecibocli = a.id
+                        INNER JOIN
+                    factura c ON b.idfactura = c.id
+                        INNER JOIN
+                    moneda e ON c.idmoneda = e.id
+                WHERE
                 a.id = $d->idrecibo ";
     $facturas = $db->getQuery($query);
 
