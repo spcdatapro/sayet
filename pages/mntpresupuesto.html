@@ -452,7 +452,7 @@
                             ng-hide="(+presupuesto.idestatuspresupuesto == 6 || +presupuesto.idestatuspresupuesto == 5 || +presupuesto.idestatuspresupuesto == 3) || !permiso.m">
                         </form-buttons> 
                         <button type="button" class="btn btn-info" ng-click="nuevoPresupuesto()" 
-                        ng-show="[3, 4, 5, 6].indexOf(+ot.idestatuspresupuesto) > -1 && permiso.m && (usrdata.uid != 10 || usrdata.uid != 11)" data-toggle="tooltip" data-placement="auto" 
+                        ng-show="[3, 4, 5, 6].indexOf(+ot.idestatuspresupuesto) > -1 && permiso.m && !(usrdata.uid == 10 || usrdata.uid == 11)" data-toggle="tooltip" data-placement="auto" 
                         title="Nuevo presupuesto...">
                             <span class="glyphicon glyphicon-plus">
                             </span>
@@ -688,18 +688,22 @@
                             nf="nuevaOt()" cf="cancelEditOt()" ef="startEditOt()" pf="imprimirOt()"
                             ng-hide="!permiso.m || [5, 6, 3].indexOf(+ot.idestatuspresupuesto) > -1">
                         </form-buttons>
+                        <form-buttons vis="grpBtnOt" btn-dis="frmOT.$invalid" obj="ot" uf="updOt(ot)" df="delOt(ot)"
+                            nf="nuevaOt()" cf="cancelEditOt()" ef="startEditOt()" pf="imprimirOt()"
+                            ng-show="[3, 4, 5, 6].indexOf(+ot.idestatuspresupuesto) > -1 && [1, 10, 11].indexOf(+usrdata.uid) > -1">
+                        </form-buttons>
                         <button type="button" class="btn btn-info" ng-click="enviar(ot, +ot.idpresupuesto, +ot.correlativo)"
                         ng-show="+ot.idestatuspresupuesto == 1 && +presupuesto.tipo != 1" data-toggle="tooltip"
                         data-placement="auto" title="Enviar presupuesto a aprobación...">
                         <span class="glyphicon glyphicon-share-alt"></span>
                         </button>
                         <button type="button" class="btn btn-danger" ng-click="anulaPresupuesto(ot, +ot.idpresupuesto, +ot.correlativo)"
-                        ng-show="+ot.idestatuspresupuesto === 3 && permiso.m" data-toggle="tooltip"
+                        ng-show="[3, 4, 5, 6].indexOf(+ot.idestatuspresupuesto) > -1 && permiso.m" data-toggle="tooltip"
                         data-placement="auto" title="Anular presupuesto...">
                         <span class="glyphicon glyphicon-remove-circle"></span>
                         </button>
                         <button type="button" class="btn btn-info" ng-click="nuevaOt()"
-                        ng-show="[5, 6, 3].indexOf(+ot.idestatuspresupuesto) > -1" data-toggle="tooltip"
+                        ng-show="[3, 4, 5, 6].indexOf(+ot.idestatuspresupuesto) > -1 && permiso.m && !(usrdata.uid == 10 || usrdata.uid == 11)" data-toggle="tooltip"
                         data-placement="auto" title="Nuevo proesupuesto...">
                         <span class="glyphicon glyphicon-plus"></span>
                         </button>
