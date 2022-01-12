@@ -62,4 +62,12 @@ $app->post('/d', function(){
     $del = $conn->query($query);
 });
 
+$app->get('/lstmovreccli', function(){
+    $db = new dbcpm();
+    $conn = $db->getConn();
+    $query = "SELECT id, abreviatura, descripcion, CONCAT('(', abreviatura, ') ', descripcion) AS abreviadesc FROM pagosreccli";
+    $data = $conn->query($query)->fetchAll(5);
+    print json_encode($data);
+});
+
 $app->run();

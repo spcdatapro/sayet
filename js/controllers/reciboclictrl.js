@@ -432,7 +432,7 @@
 
     bancoSrvc.lstBancosPais().then(function(d){ $scope.losBancoPais = d; });
     monedaSrvc.lstMonedas().then(function(d){ $scope.lasMonedas = d; });
-    tipoMovTranBanSrvc.lstTiposMovTB().then(function (d) { $scope.tipotran = d; });
+    tipoMovTranBanSrvc.lstTipoMovRec().then(function (d) { $scope.tipotran = d; });
 
     $scope.resetPagoRecCli = function(){
         $scope.pagoreccli = {

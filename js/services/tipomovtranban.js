@@ -20,6 +20,9 @@
             },
             editRow: function(obj, op){
                 return comunFact.doPOST(urlBase + '/' + op, obj);
+            },
+            lstTipoMovRec: function(){
+                return comunFact.doGET(urlBase + '/lstmovreccli');
             }
         };
         return tipoMovTranBanSrvc;
