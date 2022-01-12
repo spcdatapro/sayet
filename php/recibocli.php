@@ -383,22 +383,22 @@ $app->post('/prtrecibocli', function() {
     $facturas = $db->getQuery($query);
 
     $query = "SELECT 
-                IFNULL(CONCAT(e.abreviatura, '-', b.numero),
-                        b.numero) AS numero,
-                c.nombre AS banco,
-                d.simbolo AS moneda,
-                b.monto
-            FROM
-                recibocli a
-                    INNER JOIN
-                detpagorecli b ON a.id = b.idreccli
-                    INNER JOIN
-                bancopais c ON c.id = b.idbanco
-                    INNER JOIN
-                moneda d ON d.id = b.idmoneda
-                    LEFT JOIN
-                pagosreccli e ON b.tipotrans = e.id
-            WHERE
+                    IFNULL(CONCAT(e.abreviatura, '-', b.numero),
+                            CONCAT('(', e.abreviatura, ') ', e.descripcion)) AS numero,
+                    IFNULL(c.nombre, '') AS banco,
+                    d.simbolo AS moneda,
+                    FORMAT(b.monto, 2) AS monto
+                FROM
+                    recibocli a
+                        INNER JOIN
+                    detpagorecli b ON a.id = b.idreccli
+                        LEFT JOIN
+                    bancopais c ON c.id = b.idbanco
+                        INNER JOIN
+                    moneda d ON d.id = b.idmoneda
+                        LEFT JOIN
+                    pagosreccli e ON b.tipotrans = e.id
+                WHERE
                     b.idreccli = $d->idrecibo ";
     $cheques = $db->getQuery($query);
 
@@ -423,8 +423,8 @@ $app->get('/getpagorecli/:idrecibo', function($idrecibo){
     $query = "SELECT 
                 b.id,
                 b.idreccli,
-                b.numero,
-                c.nombre AS banco,
+                IFNULL(b.numero, e.descripcion) AS numero,
+                IFNULL(c.nombre, '') AS banco,
                 d.simbolo AS moneda,
                 b.monto, 
                 e.abreviatura AS tipotrans
@@ -432,7 +432,7 @@ $app->get('/getpagorecli/:idrecibo', function($idrecibo){
                 recibocli a
                     INNER JOIN
                 detpagorecli b ON a.id = b.idreccli
-                    INNER JOIN
+                    LEFT JOIN
                 bancopais c ON c.id = b.idbanco
                     INNER JOIN
                 moneda d ON d.id = b.idmoneda

@@ -452,7 +452,7 @@
         for(var i = 0; i < d.length; i++){
             // d[i].id = parseInt(d[i].id);
             // d[i].idrecibocli = parseInt(d[i].idrecibocli);
-            d[i].numero = parseInt(d[i].numero);
+            // d[i].numero = parseInt(d[i].numero);
             // d[i].banco = parseInt(d[i].banco);
             // d[i].monto = parseInt(d[i].monto);
         }
