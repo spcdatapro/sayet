@@ -58,14 +58,14 @@ $app->get('/getfactura/:idfactura', function($idfactura){
 
 function actualizaContratoClienteCF($db, $idfactura)
 {
-    $query = "SELECT * FROM factura WHERE id = $idfactura AND idcontrato = 0 AND idcliente = 0 AND UPPER(TRIM(nit)) = 'CF'";
+    $query = "SELECT * FROM factura WHERE id = $idfactura AND idcontrato = 0 AND (idcliente = 0 OR idcliente = 207) ";
     $factura = $db->getQuery($query);
     if (count($factura) > 0)
     {
         $fac = $factura[0];
         $query = "SELECT id FROM contrato WHERE inactivo = 0 AND idempresa = $fac->idempresa AND idcliente = 207 AND idproyecto = $fac->idproyecto LIMIT 1";
         $idcontrato = (int)$db->getOneField($query);
-        if ($idcontrato === 0)
+        if ($idcontrato === NULL)
         {
             $query = "INSERT INTO contrato(idcliente, idempresa, idproyecto, inactivo, nocontrato, idunidad, idcuentac, idusuariocopia) VALUES(";
             $query.= "207, $fac->idempresa, $fac->idproyecto, 0, 'CF".$fac->idempresa.$fac->idproyecto."', '', '', 0";
