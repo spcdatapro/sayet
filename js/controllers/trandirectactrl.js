@@ -136,6 +136,7 @@
             for(var i = 0; i < data.length; i++){
                 data[i].debe = parseFloat(data[i].debe);
                 data[i].haber = parseFloat(data[i].haber);
+                console.log(data[i]);
             }
             return data;
         }
@@ -146,6 +147,8 @@
             obj.debe = parseFloat(obj.debe);
             obj.haber = parseFloat(obj.haber);
             obj.idcuenta = parseInt(obj.objCuenta[0].id);
+            obj.idproyecto = +obj.idproyecto;
+            // console.log(obj); return;
 
             if(obj.conceptomayor){
                 if(obj.conceptomayor.toString().trim() !== ''){

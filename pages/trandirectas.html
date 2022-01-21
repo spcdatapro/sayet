@@ -31,14 +31,14 @@
                                         ng-model="laDirecta.fecha" required />
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                            <!-- <div class="col-md-5">
                                 <div class="form-group">
                                     <label for="selProyecto" class="control-label">Proyecto (dejar vacío si no aplica):</label>
                                     <select name="selProyecto" id="selProyecto" class="form-control"
                                         ng-model="laDirecta.idproyecto"
                                         ng-options="obj.id as obj.nomproyecto for obj in proyectos"></select>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="row">
                             <div class="col-md-12">
@@ -179,6 +179,16 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="selProyecto" class="control-label">Proyecto (dejar vacío si no aplica):</label>
+                                    <select name="selProyecto" id="selProyecto" class="form-control"
+                                        ng-model="elDetCont.idproyecto"
+                                        ng-options="obj.id as obj.nomproyecto for obj in proyectos"></select>
+                                </div>
+                            </div>
+                        </div>
                         <div class="btn-group" role="group" aria-label="...">
                             <button type="submit" class="btn btn-info"
                                 ng-disabled="frmDetCont.$invalid || periodoCerrado">
@@ -194,6 +204,7 @@
                                 <th>Debe</th>
                                 <th>Haber</th>
                                 <th>Concepto mayor</th>
+                                <th>Proyecto</th>
                                 <th>&nbsp;</th>
                             </tr>
                         </thead>
@@ -203,6 +214,7 @@
                                 <td>{{dc.debe | number:2}}</td>
                                 <td>{{dc.haber | number:2}}</td>
                                 <td>{{dc.conceptomayor}}</td>
+                                <td>{{dc.idproyecto}}</td>
                                 <td>
                                     <button type="button" class="btn btn-info btn-sm" ng-click="updDetCont(dc)"
                                         ng-disabled="periodoCerrado" ng-hide="dc.id == 0" data-toggle="tooltip"

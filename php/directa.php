@@ -68,8 +68,8 @@ $app->get('/print/:iddirecta', function($iddirecta) {
         $query = "SELECT a.idcuenta, b.codigo, b.nombrecta, ";
         $query.= "IF(a.debe <> 0, FORMAT(a.debe, 2), '') AS debe, ";
         $query.= "IF(a.haber <> 0, FORMAT(a.haber, 2), '') AS haber, ";
-        $query.= "TRIM(a.conceptomayor) AS conceptomayor, NULL AS valcuadre ";
-        $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta ";
+        $query.= "TRIM(a.conceptomayor) AS conceptomayor, c.nomproyecto AS proyecto, NULL AS valcuadre ";
+        $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta LEFT JOIN proyecto c ON c.id = a.idproyecto ";
         $query.= "WHERE a.origen = 4 AND a.idorigen = $iddirecta ";
         $query.= "ORDER BY a.id";
         $directa->detalle = $db->getQuery($query);

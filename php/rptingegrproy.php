@@ -528,7 +528,7 @@ function getQueryDepreciaciones($idempresa, $idproyecto, $mes, $anio, $sinDetall
 {
     $query = "SELECT c.nombrecta AS cuenta, SUM(b.debe) AS debe, a.fecha AS fechaOrd, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha ";
     $query .= "FROM directa a INNER JOIN detallecontable b ON a.id = b.idorigen INNER JOIN cuentac c ON c.id = b.idcuenta ";
-    $query .= "WHERE a.idempresa = $idempresa AND MONTH(a.fecha) = $mes AND YEAR(a.fecha) = $anio AND a.idproyecto = $idproyecto AND b.origen = 4 ";
+    $query .= "WHERE a.idempresa = $idempresa AND MONTH(a.fecha) = $mes AND YEAR(a.fecha) = $anio AND (b.idproyecto = $idproyecto OR a.idproyecto = $idproyecto) AND b.origen = 4 ";
     $query .= $soloDepre ? "AND c.codigo like '51206%' " : "AND c.codigo NOT LIKE '51206%' AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%') ";
     $query .= $sinDetalle ? '' : 'GROUP BY c.id';
     //print $query;

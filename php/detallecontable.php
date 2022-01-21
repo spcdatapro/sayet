@@ -9,8 +9,8 @@ $app->response->headers->set('Content-Type', 'application/json');
 $app->get('/lstdetcont/:origen/:idorigen', function($origen, $idorigen){
     $db = new dbcpm();
     $query = "SELECT a.id, a.origen, a.idorigen, a.idcuenta, CONCAT('(', b.codigo, ') ', b.nombrecta) AS desccuentacont, ";
-    $query.= "a.debe, a.haber, a.conceptomayor ";
-    $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta ";
+    $query.= "a.debe, a.haber, a.conceptomayor, c.nomproyecto AS idproyecto ";
+    $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta LEFT JOIN proyecto c ON a.idproyecto = c.id ";
     $query.= "WHERE a.origen = ".$origen." AND a.idorigen = ".$idorigen." ";
     $query.= "ORDER BY a.debe DESC, a.haber, b.codigo";
     $res1 = $db->getQuery($query);
@@ -44,8 +44,9 @@ $app->get('/sumpartida/:origen/:idorigen', function($origen, $idorigen){
 $app->post('/c', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) ";
-    $query.= "VALUES($d->origen, $d->idorigen, $d->idcuenta, $d->debe, $d->haber, '$d->conceptomayor')";
+    if(!isset($d->idproyecto)) { $d->idproyecto = 0; };
+    $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, idproyecto) ";
+    $query.= "VALUES($d->origen, $d->idorigen, $d->idcuenta, $d->debe, $d->haber, '$d->conceptomayor', $d->idproyecto)";
     $db->doQuery($query);
 });
 
