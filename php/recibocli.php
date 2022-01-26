@@ -26,9 +26,11 @@ $app->post('/lstreciboscli', function(){
     $query.= $d->falstr != '' ? "AND a.fecha <= '$d->falstr' " : "" ;
     $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : "" ;
     $query.= (int)$d->recibostr != 0 ? "AND a.numero = $d->recibostr " : "" ;
-    $query.= $d->clientestr != '' ? "AND b.nombre LIKE '%$d->clientestr%' " : "" ;
+    $query.= $d->clientestr != '' ? "AND b.nombrecorto LIKE '%$d->clientestr%' " : "" ;
     $query.= $d->ban_numerostr != '' ? "AND c.numero = '$d->ban_numerostr' " : "" ;
     $query.= $d->ban_cuentastr != '' ? "AND e.nombre LIKE '%$d->ban_cuentastr%' " : "" ;
+    $query.= $d->correstr != '' ? "AND a.id = $d->correstr " : "" ;
+    $query.= $d->nomcortstr != '' ? "AND b.nombrecorto LIKE '%$d->nomcortstr%' " : "";
     $query.= " UNION ALL ";
     $query.= "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, 'Facturas contado (Clientes varios)' AS cliente, 
     IFNULL(h.abreviatura, c.tipotrans) AS tipotrans, IFNULL(g.numero, c.numero) AS notranban, IFNULL(i.nombre, e.nombre) AS nombre, 
@@ -43,6 +45,7 @@ $app->post('/lstreciboscli', function(){
     $query.= (int)$d->recibostr != 0 ? "AND a.numero = $d->recibostr " : "" ;
     $query.= $d->ban_numerostr != '' ? "AND c.numero = '$d->ban_numerostr' " : "" ;
     $query.= $d->ban_cuentastr != '' ? "AND e.nombre LIKE '%$d->ban_cuentastr%' " : "" ;
+    $query.= $d->correstr != '' ? "AND a.id = $d->correstr " : "" ;
     $query.= "UNION ALL ";
     $query.= "SELECT DISTINCT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, 
     IFNULL(h.abreviatura, c.tipotrans) AS tipotrans, IFNULL(g.numero, c.numero) AS notranban, IFNULL(i.nombre, e.nombre) AS nombre, 
@@ -60,6 +63,7 @@ $app->post('/lstreciboscli', function(){
         $query.= $d->clientestr != '' ? "AND b.nombre LIKE '%$d->clientestr%' " : "" ;
         $query.= $d->ban_numerostr != '' ? "AND c.numero = '$d->ban_numerostr' " : "" ;
         $query.= $d->ban_cuentastr != '' ? "AND e.nombre LIKE '%$d->ban_cuentastr%' " : "" ;
+        $query.= $d->correstr != '' ? "AND a.id = $d->correstr " : "" ;
     $query.="ORDER BY 1, 18, 19";
     print $db->doSelectASJson($query);
 });

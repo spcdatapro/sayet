@@ -224,31 +224,41 @@
                                         <input name="srchTxtserierec" id="srchTxtserierec" type="text"
                                             class="form-control input-sm" ng-model="fltrre.serie" />
                                     </div>
-                                    <div class="col-md-3">
-                                        <label for="srchTxtrec">N&uacute;mero:</label>
+                                    <div class="col-md-3" ng-hide="+fltrre.tipo == 1">
+                                        <label for="srchTxtrec">Numero:</label>
                                         <input name="srchTxtrec" id="srchTxtrec" type="number"
                                             class="form-control input-sm" ng-model="fltrre.recibostr" />
                                     </div>
+                                    <div class="col-md-3" ng-hide="+fltrre.tipo == 2">
+                                        <label for="srchTxtrec">Correlativo:</label>
+                                        <input name="srchTxtrec" id="srchTxtrec" type="number"
+                                            class="form-control input-sm" ng-model="fltrre.correstr" />
+                                    </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-4">
+                                    <!-- <div class="col-md-6" ng-hide="+fltrre.tipo == 2">
+                                        <label for="srchTxtNumb">Numero tran:</label>
+                                        <input name="srchTxtNumb" id="srchTxtNumb" type="text"
+                                            class="form-control input-sm" ng-model="fltrre.ban_numerostr" />
+                                    </div> -->
+                                    <div class="col-md-6" ng-hide="+fltrre.tipo == 2">
+                                        <label for="srchNomCort">Nombre corto:</label>
+                                        <input name="srchNomCort" id="srchNomCort" type="text"
+                                        class="form-control input-sm" ng-model="fltrre.nomcortstr" />
+                                    </div>
+                                    <div class="col-md-6">
                                         <label for="srchTxtcli">Cliente:</label>
                                         <div class="input-group">
                                             <input name="srchTxtcli" id="srchTxtcli" type="text"
                                                 class="form-control input-sm" ng-model="fltrre.clientestr" />
-                                            <span class="input-group-btn" ng-show="+fltrre.tipo == 2">
+                                            <span class="input-group-btn">
                                                 <button type="button" class="btn btn-primary btn-sm"
                                                     ng-click="getLstRecibosCli()"><i class="fa fa-search"
                                                         aria-hidden="true"></i></button>
                                             </span>
                                         </div>
                                     </div>
-                                    <div class="col-md-4" ng-hide="+fltrre.tipo == 2">
-                                        <label for="srchTxtNumb">No. de Transacci&oacute;n:</label>
-                                        <input name="srchTxtNumb" id="srchTxtNumb" type="text"
-                                            class="form-control input-sm" ng-model="fltrre.ban_numerostr" />
-                                    </div>
-                                    <div class="col-md-4" ng-hide="+fltrre.tipo == 2">
+                                    <!-- <div class="col-md-4" ng-hide="+fltrre.tipo == 2">
                                         <label for="srchTxtNomb">Nombre del Banco:</label>
                                         <div class="input-group">
                                             <input name="srchTxtNomb" id="srchTxtNomb" type="text"
@@ -259,7 +269,7 @@
                                                         aria-hidden="true"></i></button>
                                             </span>
                                         </div>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </form>
                         </caption>

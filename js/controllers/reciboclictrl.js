@@ -22,7 +22,7 @@
         //Inicio modificacion
         $scope.fltrre = {
             idempresa:0, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), recibostr:'', clientestr:'', ban_numerostr: '',
-            ban_cuentastr:'', serie:'', tipo: 1
+            ban_cuentastr:'', serie:'', tipo: 1, correstr:'', nomcortstr:''
         };
         //Fin modificacion
         $scope.origen = 8;
@@ -150,8 +150,10 @@
             $scope.fltrre.falstr = moment($scope.fltrre.fal).format('YYYY-MM-DD');
             $scope.fltrre.serie = $scope.fltrre.serie != null && $scope.fltrre.serie != undefined ? $scope.fltrre.serie : '';
             $scope.fltrre.recibostr = $scope.fltrre.recibostr != null && $scope.fltrre.recibostr != undefined ? $scope.fltrre.recibostr : 0;
+            $scope.fltrre.correstr = $scope.fltrre.correstr != null && $scope.fltrre.correstr != undefined ? $scope.fltrre.correstr: 0; 
             $scope.fltrre.clientestr = $scope.fltrre.clientestr != null && $scope.fltrre.clientestr != undefined ? $scope.fltrre.clientestr : '';
             $scope.fltrre.ban_numerostr = $scope.fltrre.ban_numerostr != null && $scope.fltrre.ban_numerostr != undefined ? $scope.fltrre.ban_numerostr : '';
+            $scope.fltrre.nomcortstr = $scope.fltrre.nomcortstr != null && $scope.fltrre.nomcortstr != undefined ? $scope.fltrre.nomcortstr : '';
             $scope.fltrre.ban_cuentastr = $scope.fltrre.ban_cuentastr != null && $scope.fltrre.ban_cuentastr != undefined ? $scope.fltrre.ban_cuentastr : '';
 
             //console.clear(); console.log('FILTROS = ', $scope.fltrre);
