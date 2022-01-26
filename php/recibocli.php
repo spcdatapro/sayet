@@ -26,7 +26,7 @@ $app->post('/lstreciboscli', function(){
     $query.= $d->falstr != '' ? "AND a.fecha <= '$d->falstr' " : "" ;
     $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : "" ;
     $query.= (int)$d->recibostr != 0 ? "AND a.numero = $d->recibostr " : "" ;
-    $query.= $d->clientestr != '' ? "AND b.nombrecorto LIKE '%$d->clientestr%' " : "" ;
+    $query.= $d->clientestr != '' ? "AND b.nombre LIKE '%$d->clientestr%' " : "" ;
     $query.= $d->ban_numerostr != '' ? "AND c.numero = '$d->ban_numerostr' " : "" ;
     $query.= $d->ban_cuentastr != '' ? "AND e.nombre LIKE '%$d->ban_cuentastr%' " : "" ;
     $query.= $d->correstr != '' ? "AND a.id = $d->correstr " : "" ;
