@@ -46,6 +46,8 @@ $app->post('/lstreciboscli', function(){
     $query.= $d->ban_numerostr != '' ? "AND c.numero = '$d->ban_numerostr' " : "" ;
     $query.= $d->ban_cuentastr != '' ? "AND e.nombre LIKE '%$d->ban_cuentastr%' " : "" ;
     $query.= $d->correstr != '' ? "AND a.id = $d->correstr " : "" ;
+    $query.= $d->clientestr != '' ? "AND a.idcliente != 0 " : "" ;
+    $query.= $d->nomcortstr != '' ? "AND a.nit != 0 " : "";
     $query.= "UNION ALL ";
     $query.= "SELECT DISTINCT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, 
     IFNULL(h.abreviatura, c.tipotrans) AS tipotrans, IFNULL(g.numero, c.numero) AS notranban, IFNULL(i.nombre, e.nombre) AS nombre, 
