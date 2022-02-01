@@ -102,14 +102,15 @@ $app->post('/correlativo', function() use($db){
     $qGen.= "LEFT JOIN cliente c ON c.id = a.idcliente LEFT JOIN empresa d ON d.id = a.idempresa LEFT JOIN detcobroventa e ON e.idrecibocli = a.id LEFT JOIN factura f on e.idfactura = f.id LEFT JOIN serierecli g ON g.idrecibocli = a.id ";
     $qGen.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' ";
     $qGen.= $d->idempresa != '' ? "AND a.idempresa IN($d->idempresa) " : '';
-    $qGen.= "ORDER BY d.ordensumario, a.serie, a.numero";
+    $qGen.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
+    $qGen.= "ORDER BY d.ordensumario, a.serie, a.id ";
 
     $query = "SELECT DISTINCT idempresa, empresa FROM ($qGen) z ORDER BY ordensumario";
     $recibos = $db->getQuery($query);
     $cntRecibos = count($recibos);
     for($i = 0; $i < $cntRecibos; $i++){
         $recibo = $recibos[$i];
-        $query = "SELECT norecibo, fecha, cliente, usuariocrea, moneda, FORMAT(totrecibo, 2) AS totrecibo, nombrecorto FROM ($qGen) z WHERE idempresa = $recibo->idempresa ORDER BY serie, numero";
+        $query = "SELECT norecibo, fecha, cliente, usuariocrea, moneda, FORMAT(totrecibo, 2) AS totrecibo, nombrecorto FROM ($qGen) z WHERE idempresa = $recibo->idempresa ORDER BY serie, id";
         $recibo->recibos = $db->getQuery($query);
         if(count($recibo->recibos) > 0){
             $query = "SELECT FORMAT(SUM(totrecibo), 2) AS totrecibo FROM ($qGen) z WHERE idempresa = $recibo->idempresa";
