@@ -6,7 +6,7 @@
 
         $scope.params = {
             fdel: moment().startOf('month').toDate(), fal:moment().endOf('month').toDate(), serie: undefined, numdel: undefined, numal: undefined, idempresa: undefined, lasEmpresas: undefined,
-            idmoneda: undefined, encorrelativo: 0
+            idmoneda: undefined, encorrelativo: 1
         };
 
         $scope.empresas = [];

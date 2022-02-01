@@ -46,10 +46,10 @@
                                 <div class="form-group">
                                     <label for="lblNoRec">Correlativo:</label>
                                     <span name="lblNoRec" id="lblNoRec" class="form-control">{{ reccli.id != null &&
-                                        reccli.id != undefined ? (reccli.id | padNumber:5) : ''}}</span>
+                                        reccli.id != undefined ? (reccli.correlativo) : ''}}</span>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-4">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmRecCli.txtSerie.$invalid && !frmRecCli.txtSerie.$pristine}">
                                     <label for="txtSerie">Serie:</label>
@@ -58,14 +58,14 @@
                                         ng-disabled="+fltrre.tipo > 1" />
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-4" ng-show="+fltrre.tipo == 2">
                                 <div class="form-group">
                                     <label for="txtNumero">N&uacute;mero:</label>
                                     <input name="txtNumero" id="txtNumero" type="number" class="form-control"
                                         ng-model="reccli.numero" ng-disabled="true" />
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmRecCli.txtFecha.$invalid && !frmRecCli.txtFecha.$pristine}">
                                     <label for="txtFecha">Fecha:</label>
@@ -287,7 +287,7 @@
                         <tbody>
                             <tr ng-repeat="rec in reciboscli" ng-click="getRecCli(rec.id)">
                                 <td>{{rec.serie || ''}}{{rec.numero || ''}}</td>
-                                <td ng-show="+fltrre.tipo == 1">{{rec.id | padNumber:5}}</td>
+                                <td ng-show="+fltrre.tipo == 1">{{rec.correlativo}}</td>
                                 <td>{{rec.fecha | date:'dd/MM/yyyy'}}</td>
                                 <td>{{rec.cliente}}</td>
                                 <td ng-hide="+fltrre.tipo == 2">{{rec.tipotrans}} {{rec.notranban}} {{rec.nombre}}
