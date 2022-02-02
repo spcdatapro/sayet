@@ -1062,6 +1062,29 @@ $app->post('/avanceotm', function(){
                                             AND a.tipocambio = 1
                                             AND a.tipotrans = 'R'
                                             AND a.iddocliquida = 0),
+                                0.00)) + IFNULL((SELECT 
+                                    SUM(a.isr)
+                                FROM
+                                    compra a
+                                WHERE
+                                    a.ordentrabajo = b.id
+                                        AND a.tipocambio = 1),
+                            0.00) + IF(f.eslocal = 1,
+                        IFNULL((SELECT 
+                                        SUM(a.isr) * a.tipocambio
+                                    FROM
+                                        compra a
+                                    WHERE
+                                        a.ordentrabajo = b.id
+                                            AND a.tipocambio != 1),
+                                0.00),
+                        IFNULL((SELECT 
+                                        SUM(a.isr) / a.tipocambio
+                                    FROM
+                                        compra a
+                                    WHERE
+                                        a.ordentrabajo = b.id
+                                            AND a.tipocambio != 1),
                                 0.00)),
                     2) AS montogastado,
                 CONCAT(ROUND((IFNULL((SELECT 
@@ -1137,6 +1160,29 @@ $app->post('/avanceotm', function(){
                                                         AND a.tipocambio = 1
                                                         AND a.tipotrans = 'R'
                                                         AND a.iddocliquida = 0),
+                                            0.00)) + IFNULL((SELECT 
+                                                SUM(a.isr)
+                                            FROM
+                                                compra a
+                                            WHERE
+                                                a.ordentrabajo = b.id
+                                                    AND a.tipocambio = 1),
+                                        0.00) + IF(f.eslocal = 1,
+                                    IFNULL((SELECT 
+                                                    SUM(a.isr) * a.tipocambio
+                                                FROM
+                                                    compra a
+                                                WHERE
+                                                    a.ordentrabajo = b.id
+                                                        AND a.tipocambio != 1),
+                                            0.00),
+                                    IFNULL((SELECT 
+                                                    SUM(a.isr) / a.tipocambio
+                                                FROM
+                                                    compra a
+                                                WHERE
+                                                    a.ordentrabajo = b.id
+                                                        AND a.tipocambio != 1),
                                             0.00))) * 100 / b.monto,
                                 2),
                         '%') AS avanceot
@@ -1154,7 +1200,7 @@ $app->post('/avanceotm', function(){
                 moneda f ON b.idmoneda = f.id
             WHERE
                 a.id = $d->idpresupuesto
-                    AND b.idestatuspresupuesto IN (3 , 5); ";
+                    AND b.idestatuspresupuesto IN (3 , 5) ";
     $ordentrabajo = $db->getQuery($query);
 
     $cntOrdenes = count($ordentrabajo);
