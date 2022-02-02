@@ -1200,7 +1200,9 @@ $app->post('/avanceotm', function(){
                 moneda f ON b.idmoneda = f.id
             WHERE
                 a.id = $d->idpresupuesto
-                    AND b.idestatuspresupuesto IN (3 , 5) ";
+                    AND b.idestatuspresupuesto IN (3 , 5) 
+            ORDER BY 
+                b.correlativo";
     $ordentrabajo = $db->getQuery($query);
 
     $cntOrdenes = count($ordentrabajo);
