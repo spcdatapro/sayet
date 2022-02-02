@@ -410,7 +410,7 @@ $app->post('/avanceot', function(){
                 CONCAT(f.serie, '-', f.documento) AS fact,
                 ROUND(f.tipocambio, 2) AS tipocambio,
                 SUBSTRING(f.conceptomayor, 1, 90) AS conceptomayor,
-                h.nombre AS beneficiario,
+                IFNULL(h.nombre, f.proveedor) AS beneficiario,
                 IF((b.anulado = 1
                         OR (b.anulado = 0
                         AND (b.beneficiario LIKE '%anula%'
@@ -440,7 +440,7 @@ $app->post('/avanceot', function(){
                 compra f ON f.idreembolso = e.id
                     INNER JOIN
                 moneda g ON f.idmoneda = g.id
-                    INNER JOIN
+                    LEFT JOIN
                 proveedor h ON f.idproveedor = h.id
             WHERE
                 a.id = $d->idot
@@ -1312,7 +1312,7 @@ $app->post('/avanceotm', function(){
                     CONCAT(f.serie, '-', f.documento) AS fact,
                     ROUND(f.tipocambio, 2) AS tipocambio,
                     SUBSTRING(f.conceptomayor, 1, 90) AS conceptomayor,
-                    h.nombre AS beneficiario,
+                    IFNULL(h.nombre, f.proveedor) AS beneficiario,
                     IF((b.anulado = 1
                             OR (b.anulado = 0
                             AND (b.beneficiario LIKE '%anula%'
@@ -1342,7 +1342,7 @@ $app->post('/avanceotm', function(){
                     compra f ON f.idreembolso = e.id
                         INNER JOIN
                     moneda g ON f.idmoneda = g.id
-                        INNER JOIN
+                        LEFT JOIN
                     proveedor h ON f.idproveedor = h.id
                 WHERE
                     a.id = $ot->id
