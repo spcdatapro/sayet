@@ -1499,7 +1499,7 @@ $app->post('/avanceotm', function(){
                                         INNER JOIN
                                     banco d ON d.id = c.idbanco
                                 WHERE
-                                    d.idmoneda = b.idmoneda
+                                    d.idmoneda = a.idmoneda
                                         AND b.idpresupuesto = a.id
                                         AND c.anulado = 0
                                         AND c.beneficiario NOT LIKE '%ANULA%'
@@ -1517,7 +1517,7 @@ $app->post('/avanceotm', function(){
                                         INNER JOIN
                                     banco d ON d.id = c.idbanco
                                 WHERE
-                                    d.idmoneda = b.idmoneda
+                                    d.idmoneda = a.idmoneda
                                         AND b.idpresupuesto = a.id
                                         AND c.tipotrans = 'R'
                                         AND c.iddocliquida = 0),
@@ -1531,7 +1531,7 @@ $app->post('/avanceotm', function(){
                                             INNER JOIN
                                         banco d ON d.id = c.idbanco
                                     WHERE
-                                        d.idmoneda != b.idmoneda
+                                        d.idmoneda != a.idmoneda
                                             AND b.idpresupuesto = a.id
                                             AND c.anulado = 0
                                             AND c.beneficiario NOT LIKE '%ANULA%'
@@ -1550,7 +1550,7 @@ $app->post('/avanceotm', function(){
                                             INNER JOIN
                                         banco d ON d.id = c.idbanco
                                     WHERE
-                                        d.idmoneda != b.idmoneda
+                                        d.idmoneda != a.idmoneda
                                             AND b.idpresupuesto = a.id
                                             AND c.anulado = 0
                                             AND c.beneficiario NOT LIKE '%ANULA%'
@@ -1569,7 +1569,7 @@ $app->post('/avanceotm', function(){
                                             INNER JOIN
                                         banco d ON d.id = c.idbanco
                                     WHERE
-                                        d.idmoneda != b.idmoneda
+                                        d.idmoneda != a.idmoneda
                                             AND b.idpresupuesto = a.id
                                             AND c.tipotrans = 'R'
                                             AND c.iddocliquida = 0),
@@ -1594,7 +1594,7 @@ $app->post('/avanceotm', function(){
                                         INNER JOIN
                                     compra c ON b.id = c.ordentrabajo
                                 WHERE
-                                    c.idmoneda = b.idmoneda
+                                    c.idmoneda = a.idmoneda
                                         AND b.idpresupuesto = a.id),
                             0.00) + IF(f.eslocal = 1,
                         IFNULL((SELECT 
@@ -1604,7 +1604,7 @@ $app->post('/avanceotm', function(){
                                             INNER JOIN
                                         compra c ON b.id = c.ordentrabajo
                                     WHERE
-                                        c.idmoneda != b.idmoneda
+                                        c.idmoneda != a.idmoneda
                                             AND b.idpresupuesto = a.id),
                                 0.00),
                         IFNULL((SELECT 
@@ -1614,7 +1614,7 @@ $app->post('/avanceotm', function(){
                                             INNER JOIN
                                         compra c ON b.id = c.ordentrabajo
                                     WHERE
-                                        c.idmoneda != b.idmoneda
+                                        c.idmoneda != a.idmoneda
                                             AND b.idpresupuesto = a.id),
                                 0.00)) + IFNULL((SELECT 
                                     SUM(d.isr)
@@ -1625,7 +1625,7 @@ $app->post('/avanceotm', function(){
                                         INNER JOIN
                                     compra d ON c.idreembolso = d.idreembolso
                                 WHERE
-                                    d.idmoneda = b.idmoneda
+                                    d.idmoneda = a.idmoneda
                                         AND b.idpresupuesto = a.id),
                             0.00) + IF(f.eslocal = 1,
                         IFNULL((SELECT 
@@ -1637,7 +1637,7 @@ $app->post('/avanceotm', function(){
                                             INNER JOIN
                                         compra d ON c.idreembolso = d.idreembolso
                                     WHERE
-                                        d.idmoneda = b.idmoneda
+                                        d.idmoneda = a.idmoneda
                                             AND b.idpresupuesto = a.id),
                                 0.00),
                         IFNULL((SELECT 
@@ -1649,7 +1649,7 @@ $app->post('/avanceotm', function(){
                                             INNER JOIN
                                         compra d ON c.idreembolso = d.idreembolso
                                     WHERE
-                                        d.idmoneda = b.idmoneda
+                                        d.idmoneda = a.idmoneda
                                             AND b.idpresupuesto = a.id),
                                 0.00)),
                     2) AS montogastado,
@@ -1662,7 +1662,7 @@ $app->post('/avanceotm', function(){
                                                     INNER JOIN
                                                 banco d ON d.id = c.idbanco
                                             WHERE
-                                                d.idmoneda = b.idmoneda
+                                                d.idmoneda = a.idmoneda
                                                     AND b.idpresupuesto = a.id
                                                     AND c.anulado = 0
                                                     AND c.beneficiario NOT LIKE '%ANULA%'
@@ -1680,7 +1680,7 @@ $app->post('/avanceotm', function(){
                                                     INNER JOIN
                                                 banco d ON d.id = c.idbanco
                                             WHERE
-                                                d.idmoneda = b.idmoneda
+                                                d.idmoneda = a.idmoneda
                                                     AND b.idpresupuesto = a.id
                                                     AND c.tipotrans = 'R'
                                                     AND c.iddocliquida = 0),
@@ -1694,7 +1694,7 @@ $app->post('/avanceotm', function(){
                                                         INNER JOIN
                                                     banco d ON d.id = c.idbanco
                                                 WHERE
-                                                    d.idmoneda != b.idmoneda
+                                                    d.idmoneda != a.idmoneda
                                                         AND b.idpresupuesto = a.id
                                                         AND c.anulado = 0
                                                         AND c.beneficiario NOT LIKE '%ANULA%'
@@ -1713,7 +1713,7 @@ $app->post('/avanceotm', function(){
                                                         INNER JOIN
                                                     banco d ON d.id = c.idbanco
                                                 WHERE
-                                                    d.idmoneda != b.idmoneda
+                                                    d.idmoneda != a.idmoneda
                                                         AND b.idpresupuesto = a.id
                                                         AND c.anulado = 0
                                                         AND c.beneficiario NOT LIKE '%ANULA%'
@@ -1732,7 +1732,7 @@ $app->post('/avanceotm', function(){
                                                         INNER JOIN
                                                     banco d ON d.id = c.idbanco
                                                 WHERE
-                                                    d.idmoneda != b.idmoneda
+                                                    d.idmoneda != a.idmoneda
                                                         AND b.idpresupuesto = a.id
                                                         AND c.tipotrans = 'R'
                                                         AND c.iddocliquida = 0),
@@ -1757,7 +1757,7 @@ $app->post('/avanceotm', function(){
                                                     INNER JOIN
                                                 compra c ON b.id = c.ordentrabajo
                                             WHERE
-                                                c.idmoneda = b.idmoneda
+                                                c.idmoneda = a.idmoneda
                                                     AND b.idpresupuesto = a.id),
                                         0.00) + IF(f.eslocal = 1,
                                     IFNULL((SELECT 
@@ -1767,7 +1767,7 @@ $app->post('/avanceotm', function(){
                                                         INNER JOIN
                                                     compra c ON b.id = c.ordentrabajo
                                                 WHERE
-                                                    c.idmoneda != b.idmoneda
+                                                    c.idmoneda != a.idmoneda
                                                         AND b.idpresupuesto = a.id),
                                             0.00),
                                     IFNULL((SELECT 
@@ -1777,7 +1777,7 @@ $app->post('/avanceotm', function(){
                                                         INNER JOIN
                                                     compra c ON b.id = c.ordentrabajo
                                                 WHERE
-                                                    c.idmoneda != b.idmoneda
+                                                    c.idmoneda != a.idmoneda
                                                         AND b.idpresupuesto = a.id),
                                             0.00)) + IFNULL((SELECT 
                                                 SUM(d.isr)
@@ -1788,7 +1788,7 @@ $app->post('/avanceotm', function(){
                                                     INNER JOIN
                                                 compra d ON c.idreembolso = d.idreembolso
                                             WHERE
-                                                d.idmoneda = b.idmoneda
+                                                d.idmoneda = a.idmoneda
                                                     AND b.idpresupuesto = a.id),
                                         0.00) + IF(f.eslocal = 1,
                                     IFNULL((SELECT 
@@ -1800,7 +1800,7 @@ $app->post('/avanceotm', function(){
                                                         INNER JOIN
                                                     compra d ON c.idreembolso = d.idreembolso
                                                 WHERE
-                                                    d.idmoneda = b.idmoneda
+                                                    d.idmoneda = a.idmoneda
                                                         AND b.idpresupuesto = a.id),
                                             0.00),
                                     IFNULL((SELECT 
@@ -1812,7 +1812,7 @@ $app->post('/avanceotm', function(){
                                                         INNER JOIN
                                                     compra d ON c.idreembolso = d.idreembolso
                                                 WHERE
-                                                    d.idmoneda = b.idmoneda
+                                                    d.idmoneda = a.idmoneda
                                                         AND b.idpresupuesto = a.id),
                                             0.00))) * 100 / a.total,
                                 2),
