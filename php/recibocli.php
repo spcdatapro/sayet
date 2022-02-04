@@ -152,6 +152,9 @@ $app->post('/c', function(){
     if((int)$d->tipo > 1){
         $d->serie = (int)$d->tipo == 2 ? 'I' : 'D';
         $d->numero = (int)$db->getOneField("SELECT IFNULL(MAX(numero), 0) + 1 FROM recibocli WHERE tipo = $d->tipo");
+    } else 
+    {
+        $d->numero = 0;
     }
 
     $query = "INSERT INTO recibocli(idempresa, fecha, fechacrea, idcliente, espropio, idtranban, serie, numero, usuariocrea, tipo, concepto, nit) VALUES(";
@@ -210,8 +213,21 @@ $app->post('/anula', function(){
     $db = new dbcpm();
     $query = "UPDATE recibocli SET anulado = 1, idrazonanulacion = $d->idrazonanulacion, fechaanula = '$d->fechaanulastr' WHERE id = $d->id";
     $db->doQuery($query);
-    $query = "UPDATE detallecontable SET activada = 0, anulado = 1 WHERE origen = 8 AND idorigen = $d->id";
-    $db->doQuery($query);
+
+    //Rony 2017-11-21 Poner como NO pagada las facturas aplicdas en recibo eliminado
+    $datos = [];
+    $query ="SELECT * FROM detcobroventa WHERE idrecibocli = $d->id";
+    $datos = $db->getQuery($query);
+
+    $registros = count($datos);
+    for($i = 0; $i < $registros; $i++){
+        $registro = $datos[$i];
+
+        $query = "UPDATE factura SET pagada = 0, fechapago = NULL WHERE id = $registro->idfactura";
+        $db->doQuery($query);
+    }
+    // $query = "UPDATE detallecontable SET activada = 0, anulado = 1 WHERE origen = 8 AND idorigen = $d->id";
+    // $db->doQuery($query);
 });
 
 $app->get('/lsttranban/:idempresa(/:tipo)', function($idempresa, $tipo = 1){
