@@ -176,12 +176,7 @@
                             <button type="button" class="btn btn-danger" ng-click="delRecCli(+reccli.id)"
                                 ng-disabled="!permiso.e || +reccli.id == 0">
                                 <span class="glyphicon glyphicon-trash"></span>
-                            </button>
-                            <!--
-                            <button type="button" class="btn btn-warning" ng-disabled="frmRecCli.$invalid || laTran.anulado === 1" ng-show="editando && laTran.tipotrans === 'C'" ng-click="anular(laTran)">
-                                <span class="glyphicon glyphicon-ban-circle"></span>
-                            </button>
-                            -->
+                            </button>     
                             <!--
                             <a class="btn btn-primary" target="_blank" ng-href="php/printcheck.php?c={{laTran.id}}" ng-show="editando && laTran.tipotrans === 'C'"
                                ng-disabled="frmRecCli.$invalid || laTran.anulado === 1 || laTran.impreso === 1" ng-click="laTran.impreso = 1">
@@ -198,8 +193,12 @@
                                 <span class="glyphicon glyphicon-plus"></span>
                             </button>
                             <button type="button" class="btn btn-primary" ng-show="reccli.id > 0 && +fltrre.tipo == 1"
-                                ng-click="printRecCli(reccli.id)" ng-disabled="!permiso.c">
+                                ng-click="printRecCli(reccli.id)">
                                 <span class="glyphicon glyphicon-print"></span>
+                            </button>
+                            <button type="button" class="btn btn-warning" ng-show="reccli.id > 0 && +fltrre.tipo == 1"
+                                ng-disabled="!permiso.e || reccli.anulado != 0" ng-click="anulRecli(reccli)">
+                                <span class="glyphicon glyphicon-ban-circle"></span>
                             </button>
                         </div>
                     </form>

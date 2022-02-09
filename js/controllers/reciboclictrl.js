@@ -431,72 +431,82 @@
             }, () => { $scope.loadDetaCont(); });
         };
 
-    //pago recli 
+        //pago recli 
 
-    bancoSrvc.lstBancosPais().then(function(d){ $scope.losBancoPais = d; });
-    monedaSrvc.lstMonedas().then(function(d){ $scope.lasMonedas = d; });
-    tipoMovTranBanSrvc.lstTipoMovRec().then(function (d) { $scope.tipotran = d; });
+        bancoSrvc.lstBancosPais().then(function(d){ $scope.losBancoPais = d; });
+        monedaSrvc.lstMonedas().then(function(d){ $scope.lasMonedas = d; });
+        tipoMovTranBanSrvc.lstTipoMovRec().then(function (d) { $scope.tipotran = d; });
 
-    $scope.resetPagoRecCli = function(){
-        $scope.pagoreccli = {
-            numero: undefined,
-            objBancoPais: null,
-            idbanco: 0,
-            objMoneda: null,
-            idmoneda: 0,
-            objTipotrans: null,
-            idtipotrans: 0,
-            monto: undefined
+        $scope.resetPagoRecCli = function(){
+            $scope.pagoreccli = {
+                numero: undefined,
+                objBancoPais: null,
+                idbanco: 0,
+                objMoneda: null,
+                idmoneda: 0,
+                objTipotrans: null,
+                idtipotrans: 0,
+                monto: undefined
+            };
+            goTop();
         };
-        goTop();
-    };
 
-    function procDetaPagoRec(d){
-        for(var i = 0; i < d.length; i++){
-            // d[i].id = parseInt(d[i].id);
-            // d[i].idrecibocli = parseInt(d[i].idrecibocli);
-            // d[i].numero = parseInt(d[i].numero);
-            // d[i].banco = parseInt(d[i].banco);
-            // d[i].monto = parseInt(d[i].monto);
+        function procDetaPagoRec(d){
+            for(var i = 0; i < d.length; i++){
+                // d[i].id = parseInt(d[i].id);
+                // d[i].idrecibocli = parseInt(d[i].idrecibocli);
+                // d[i].numero = parseInt(d[i].numero);
+                // d[i].banco = parseInt(d[i].banco);
+                // d[i].monto = parseInt(d[i].monto);
+            }
+            return d;
+        };
+
+        $scope.loadPagoRecCli = function(idreccli){
+            reciboClientesSrvc.lstPagoRecCli(idreccli).then(function(d){
+                $scope.lstpagorecli = procDetaPagoRec(d);
+            });
+        };
+
+        function setPagoRec(obj){
+            // console.log(obj); return;
+            obj.idrecibocli = $scope.reccli.id;
+            obj.numero = obj.numero != null && obj.numero != undefined ? obj.numero : 0;
+            obj.idbanco = obj.objBancoPais != null && obj.objBancoPais != undefined ? obj.objBancoPais.id : 0;
+            obj.idmoneda = obj.objMoneda != null && obj.objMoneda != undefined ? obj.objMoneda.id : 0;
+            obj.idtipotrans = obj.objTipotrans != null && obj.objTipotrans != undefined ? obj.objTipotrans.id : 0;
+            obj.monto = obj.monto != null && obj.monto != undefined ? obj.monto : 0.00;
+            return obj;
         }
-        return d;
-    };
 
-    $scope.loadPagoRecCli = function(idreccli){
-        reciboClientesSrvc.lstPagoRecCli(idreccli).then(function(d){
-            $scope.lstpagorecli = procDetaPagoRec(d);
-        });
-    };
-
-    function setPagoRec(obj){
-        // console.log(obj); return;
-        obj.idrecibocli = $scope.reccli.id;
-        obj.numero = obj.numero != null && obj.numero != undefined ? obj.numero : 0;
-        obj.idbanco = obj.objBancoPais != null && obj.objBancoPais != undefined ? obj.objBancoPais.id : 0;
-        obj.idmoneda = obj.objMoneda != null && obj.objMoneda != undefined ? obj.objMoneda.id : 0;
-        obj.idtipotrans = obj.objTipotrans != null && obj.objTipotrans != undefined ? obj.objTipotrans.id : 0;
-        obj.monto = obj.monto != null && obj.monto != undefined ? obj.monto : 0.00;
-        return obj;
-    }
-
-    $scope.addPagoRecCli = function(obj){
-        obj = setPagoRec(obj);
-        // console.log(obj); return;
-        reciboClientesSrvc.editRow(obj, 'cp').then(function(d){
-            $scope.loadPagoRecCli(obj.idrecibocli);
-            $scope.resetPagoRecCli();
-        });
-    };
-
-    $scope.delPagoRecli = function(obj){
-        $confirm({text: '¿Seguro desea eliminar esta forma de pago? ', title: 'Eliminar forma de pago', ok: 'Sí', cancel: 'No'}).then(function() {
-            // console.log(obj);return
-            reciboClientesSrvc.editRow({id: obj.id}, 'dp').then(function(){
-                $scope.loadPagoRecCli(obj.idreccli);
+        $scope.addPagoRecCli = function(obj){
+            obj = setPagoRec(obj);
+            // console.log(obj); return;
+            reciboClientesSrvc.editRow(obj, 'cp').then(function(d){
+                $scope.loadPagoRecCli(obj.idrecibocli);
                 $scope.resetPagoRecCli();
             });
-        });
-    };
+        };
+
+        $scope.delPagoRecli = function(obj){
+            $confirm({text: '¿Seguro desea eliminar esta forma de pago? ', title: 'Eliminar forma de pago', ok: 'Sí', cancel: 'No'}).then(function() {
+                // console.log(obj);return
+                reciboClientesSrvc.editRow({id: obj.id}, 'dp').then(function(){
+                    $scope.loadPagoRecCli(obj.idreccli);
+                    $scope.resetPagoRecCli();
+                });
+            });
+        };
+
+        $scope.anulRecli = function(rec){
+            $confirm({text: '¿Seguro desea anular el recibo ' + rec.serie + '-' + rec.correlativo + '?', 
+            title: 'Anulación de Recibos', ok: 'Sí', cancel: 'No' }).then(function(){
+                reciboClientesSrvc.editRow({id: rec.id}, 'anula').then(function(){
+                    $scope.getLstRecibosCli();
+                    $scope.getRecCli(parseInt(rec.id));
+                });
+            }); 
+        }
 
     }]);
 
@@ -521,5 +531,4 @@
             };
 
         }]);
-
 }());

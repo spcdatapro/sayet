@@ -18,7 +18,7 @@ $app->post('/lstreciboscli', function(){
     $query = "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, 
 	IFNULL(h.abreviatura, c.tipotrans) AS tipotrans, IFNULL(g.numero, c.numero) AS notranban, IFNULL(i.nombre, e.nombre) AS nombre, 
     IFNULL(j.simbolo, f.simbolo) AS simbolo, IFNULL(g.monto, c.monto) AS monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
-    IFNULL(IF(a.serie = 'A', k.seriea, k.serieb), a.id) AS correlativo
+    IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', k.seriea, k.serieb), a.id), 'ANULADO') AS correlativo
     FROM recibocli a INNER JOIN cliente b ON b.id = a.idcliente LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
     LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda LEFT JOIN detpagorecli g ON g.idreccli = a.id LEFT JOIN pagosreccli h ON g.tipotrans = h.id
     LEFT JOIN bancopais i ON g.idbanco = i.id LEFT JOIN moneda j ON g.idmoneda = j.id LEFT JOIN serierecli k ON k.idrecibocli = a.id
@@ -36,7 +36,7 @@ $app->post('/lstreciboscli', function(){
     $query.= "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, 'Facturas contado (Clientes varios)' AS cliente, 
     IFNULL(h.abreviatura, c.tipotrans) AS tipotrans, IFNULL(g.numero, c.numero) AS notranban, IFNULL(i.nombre, e.nombre) AS nombre, 
     IFNULL(j.simbolo, f.simbolo) AS simbolo, IFNULL(g.monto, c.monto) AS monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
-    IFNULL(IF(a.serie = 'A', k.seriea, k.serieb), a.id) AS correlativo
+    IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', k.seriea, k.serieb), a.id), 'ANULADO') AS correlativo
     FROM recibocli a LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
     LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda LEFT JOIN detpagorecli g ON g.idreccli = a.id  LEFT JOIN pagosreccli h ON g.tipotrans = h.id 
     LEFT JOIN bancopais i ON g.idbanco = i.id LEFT JOIN moneda j ON g.idmoneda = j.id LEFT JOIN serierecli k ON k.idrecibocli = a.id
@@ -54,7 +54,7 @@ $app->post('/lstreciboscli', function(){
     $query.= "SELECT DISTINCT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, 
     IFNULL(h.abreviatura, c.tipotrans) AS tipotrans, IFNULL(g.numero, c.numero) AS notranban, IFNULL(i.nombre, e.nombre) AS nombre, 
     IFNULL(j.simbolo, f.simbolo) AS simbolo, IFNULL(g.monto, c.monto) AS monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
-    IFNULL(IF(a.serie = 'A', k.seriea, k.serieb), a.id) AS correlativo
+    IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', k.seriea, k.serieb), a.id), 'ANULADO') AS correlativo
     FROM recibocli a 
     INNER JOIN factura b ON a.nit = b.nit
     LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
@@ -78,7 +78,7 @@ $app->get('/getrecibocli/:idrecibo', function($idrecibo){
     $query = "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, 
             c.tipotrans, c.numero AS notranban, e.nombre, 
             f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
-            IFNULL(IF(a.serie = 'A', g.seriea, g.serieb), a.id) AS correlativo
+            IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', g.seriea, g.serieb), a.id), 'ANULADO') AS correlativo
             FROM recibocli a 
             INNER JOIN cliente b ON b.id = a.idcliente 
             LEFT JOIN tranban c ON c.id = a.idtranban 
@@ -91,7 +91,7 @@ $app->get('/getrecibocli/:idrecibo', function($idrecibo){
             SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, 
             'Facturas contado (Clientes varios)' AS cliente, c.tipotrans, c.numero AS notranban, e.nombre, 
             f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
-            IFNULL(IF(a.serie = 'A', g.seriea, g.serieb), a.id) AS correlativo
+            IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', g.seriea, g.serieb), a.id), 'ANULADO') AS correlativo
             FROM recibocli a 
             LEFT JOIN tranban c ON c.id = a.idtranban 
             LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
@@ -103,7 +103,7 @@ $app->get('/getrecibocli/:idrecibo', function($idrecibo){
             SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, 
             c.tipotrans, c.numero AS notranban, e.nombre, 
             f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
-            IFNULL(IF(a.serie = 'A', g.seriea, g.serieb), a.id) AS correlativo
+            IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', g.seriea, g.serieb), a.id), 'ANULADO') AS correlativo
             FROM recibocli a 
             INNER JOIN factura b ON a.nit = b.nit 
             LEFT JOIN tranban c ON c.id = a.idtranban 
@@ -211,7 +211,7 @@ $app->post('/d', function(){
 $app->post('/anula', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $query = "UPDATE recibocli SET anulado = 1, idrazonanulacion = $d->idrazonanulacion, fechaanula = '$d->fechaanulastr' WHERE id = $d->id";
+    $query = "UPDATE recibocli SET anulado = 1, fechaanula = NOW()  WHERE id = $d->id";
     $db->doQuery($query);
 
     //Rony 2017-11-21 Poner como NO pagada las facturas aplicdas en recibo eliminado
@@ -226,6 +226,10 @@ $app->post('/anula', function(){
         $query = "UPDATE factura SET pagada = 0, fechapago = NULL WHERE id = $registro->idfactura";
         $db->doQuery($query);
     }
+
+        $query = "DELETE FROM detpagorecli WHERE idreccli = $d->id ";
+        $db->doQuery($query);
+
     // $query = "UPDATE detallecontable SET activada = 0, anulado = 1 WHERE origen = 8 AND idorigen = $d->id";
     // $db->doQuery($query);
 });
