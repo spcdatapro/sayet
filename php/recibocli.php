@@ -505,30 +505,40 @@ $app->get('/getpagorecli/:idrecibo', function($idrecibo){
 $app->get('/getlstrecpend/:idempresa', function($idempresa){
     $db = new dbcpm();
     $query = "SELECT DISTINCT
-                a.id,
-                CONCAT(a.serie,
-                        '-',
-                        IFNULL(IF(a.serie = 'A', d.seriea, d.serieb),
-                                a.id)) AS reccli,
-                (SELECT 
-                        IFNULL(ROUND(SUM(b.monto), 2), 0.00)
-                    FROM
-                        detcobroventa b
-                    WHERE
-                        a.id = b.idrecibocli) AS montorec,
-                IFNULL(b.nombre, c.nombre) AS cliente,
-                a.concepto
-            FROM
-                recibocli a
-                    LEFT JOIN
-                cliente b ON a.idcliente = b.id
-                    LEFT JOIN
-                factura c ON a.nit = c.nit
-                    LEFT JOIN
-                serierecli d ON d.idrecibocli = a.id
+                    a.id,
+                    CONCAT(a.serie,
+                            '-',
+                            IFNULL(IF(a.serie = 'A', d.seriea, d.serieb),
+                                    a.id)) AS reccli,
+                    (SELECT 
+                            IFNULL(ROUND(SUM(b.monto), 2), 0.00)
+                        FROM
+                            detcobroventa b
+                        WHERE
+                            a.id = b.idrecibocli) AS montorec,
+                    IFNULL(b.nombre, c.nombre) AS cliente,
+                    a.concepto,
+                    (SELECT 
+                            GROUP_CONCAT(c.serie, '-', c.numero
+                                    SEPARATOR ', ')
+                        FROM
+                            detcobroventa b
+                                INNER JOIN
+                            factura c ON b.idfactura = c.id
+                        WHERE
+                            a.id = b.idrecibocli) AS facturas
+                FROM
+                    recibocli a
+                        LEFT JOIN
+                    cliente b ON a.idcliente = b.id
+                        LEFT JOIN
+                    factura c ON a.nit = c.nit
+                        LEFT JOIN
+                    serierecli d ON d.idrecibocli = a.id
             WHERE
                 a.idtranban = 0 AND a.fecha >= 20211101
                     AND a.tipo = 1
+                    AND a.anulado = 0
                     AND a.idempresa = $idempresa ";
     print $db->doSelectASJson($query);
 });
@@ -560,6 +570,7 @@ $app->get('/getlstrec/:idempresa', function($idempresa){
             WHERE
                     a.fecha >= 20210101
                     AND a.tipo = 1
+                    AND a.anulado = 0
                     AND a.idempresa = $idempresa ";
     print $db->doSelectASJson($query);
 });

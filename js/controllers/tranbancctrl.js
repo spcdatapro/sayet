@@ -367,7 +367,7 @@
         $scope.fillDataOnRecli = function (item, model) {
             $scope.laTran.beneficiario = item.cliente;
             $scope.laTran.monto = item.montorec;
-            $scope.laTran.concepto = 'Ingreso recibo clientes ' + item.reccli + '[' + item.concepto + ']';
+            $scope.laTran.concepto = 'Ingreso recibo clientes ' + item.reccli + '[' + item.concepto + '] Facturas: ' + item.facturas;
         };
 
         $scope.fillDataOnChangeBene = function (item, model) {
