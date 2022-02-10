@@ -129,8 +129,8 @@ $app->post('/correlativo', function(){
                             'ANULADO')) AS norecibo,
                 c.nomempresa AS empresa,
                 a.fecha,
-                IFNULL(IFNULL(d.nombrecorto, e.nombre),
-                        'Cientes varios') AS cliente,
+                SUBSTRING(IFNULL(IFNULL(d.nombrecorto, e.nombre),
+                        'Cientes varios'), 1, 25) AS cliente,
                 (SELECT 
                         GROUP_CONCAT(c.serie, '-', c.numero
                                 SEPARATOR ', ')
@@ -139,7 +139,7 @@ $app->post('/correlativo', function(){
                             INNER JOIN
                         factura c ON b.idfactura = c.id
                     WHERE
-                        b.idrecibocli = a.id) AS facturas,
+                        b.idrecibocli = a.id LIMIT 2) AS facturas,
                 (SELECT 
                         CONCAT(d.simbolo, '.', FORMAT(SUM(b.monto), 2))
                     FROM
@@ -164,7 +164,7 @@ $app->post('/correlativo', function(){
                 a.fecha >= '$d->fdelstr'
                     AND a.fecha <= '$d->falstr' ";
     $query.= $d->idempresa != '' ? "AND a.idempresa = $d->idempresa " : '';
-    $query.= $d->anulados != 0 ? "AND a.anulado = 0 " : '';               
+    $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';               
     $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
     $query.= "ORDER BY a.serie ASC , IFNULL(IF(a.serie = 'A', b.seriea, b.serieb), 
                 a.id) ASC ";
@@ -187,7 +187,7 @@ $app->post('/correlativo', function(){
                 a.fecha >= '$d->fdelstr'
                     AND a.fecha <= '$d->falstr' ";
     $query.= $d->idempresa != 0 ? "AND a.idempresa = $d->idempresa " : '';
-    $query.= $d->anulados = 1 ? "AND a.anulado = 0 " : '';               
+    $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';               
     $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
     $titulos = $db->getQuery($query)[0];
 
