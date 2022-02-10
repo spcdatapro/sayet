@@ -171,7 +171,7 @@ $app->post('/correlativo', function(){
     $recibos = $db->getQuery($query);
 
     $query = "SELECT DISTINCT
-                b.nomempresa AS empresa,   
+                IF($d->idempresa = 0 , 'MULTI EMPRESA', b.nomempresa) AS empresa,   
                 CONCAT(e.simbolo, '.', FORMAT(SUM(c.monto), 2)) AS total            
             FROM
                 recibocli a
@@ -186,8 +186,8 @@ $app->post('/correlativo', function(){
             WHERE
                 a.fecha >= '$d->fdelstr'
                     AND a.fecha <= '$d->falstr' ";
-    $query.= $d->idempresa != '' ? "AND a.idempresa = $d->idempresa " : '';
-    $query.= $d->anulados != 0 ? "AND a.anulado = 0 " : '';               
+    $query.= $d->idempresa != 0 ? "AND a.idempresa = $d->idempresa " : '';
+    $query.= $d->anulados = 0 ? "AND a.anulado = 0 " : '';               
     $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
     $titulos = $db->getQuery($query)[0];
 
