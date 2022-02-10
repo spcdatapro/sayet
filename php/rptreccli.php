@@ -187,7 +187,7 @@ $app->post('/correlativo', function(){
                 a.fecha >= '$d->fdelstr'
                     AND a.fecha <= '$d->falstr' ";
     $query.= $d->idempresa != 0 ? "AND a.idempresa = $d->idempresa " : '';
-    $query.= $d->anulados = 0 ? "AND a.anulado = 0 " : '';               
+    $query.= $d->anulados = 1 ? "AND a.anulado = 0 " : '';               
     $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
     $titulos = $db->getQuery($query)[0];
 
