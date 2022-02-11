@@ -132,14 +132,14 @@ $app->post('/correlativo', function(){
                 SUBSTRING(IFNULL(IFNULL(d.nombrecorto, e.nombre),
                         'Cientes varios'), 1, 25) AS cliente,
                 (SELECT 
-                        GROUP_CONCAT(c.serie, '-', c.numero
-                                SEPARATOR ', ')
+                        SUBSTRING(GROUP_CONCAT(c.serie, '-', c.numero
+                            SEPARATOR ', '), 1, 49)
                     FROM
                         detcobroventa b
                             INNER JOIN
                         factura c ON b.idfactura = c.id
                     WHERE
-                        b.idrecibocli = a.id LIMIT 2) AS facturas,
+                        b.idrecibocli = a.id) AS facturas,
                 (SELECT 
                         CONCAT(d.simbolo, '.', FORMAT(SUM(b.monto), 2))
                     FROM
