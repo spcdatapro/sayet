@@ -133,8 +133,8 @@ $app->post('/correlativo', function(){
                                 'ANULADO')) AS norecibo,
                     c.nomempresa AS empresa,
                     DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
-                    SUBSTRING(IFNULL(IFNULL(d.nombrecorto, e.nombre),
-                            'Cientes varios'), 1, 25) AS cliente,
+                    IFNULL(IFNULL(d.nombre, e.nombre),
+                            'Cientes varios') AS cliente,
                     (SELECT 
                             CONCAT(d.simbolo, '.', FORMAT(SUM(b.monto), 2))
                         FROM
@@ -244,6 +244,5 @@ $app->post('/correlativo', function(){
 
     print json_encode(['generales' => $generales, 'recempre' => $empresas, 'totalesgen' => $totalgen]);
 });
-
 
 $app->run();
