@@ -66,6 +66,7 @@ $app->post('/lstreciboscli', function(){
         $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : "" ;
         $query.= (int)$d->recibostr != 0 ? "AND a.numero = $d->recibostr " : "" ;
         $query.= $d->clientestr != '' ? "AND a.idcliente != 0 " : "" ;
+        $query.= $d->nomcortstr != '' ? "AND a.idcliente != 0 " : "";
         $query.= $d->ban_numerostr != '' ? "AND c.numero = '$d->ban_numerostr' " : "" ;
         $query.= $d->ban_cuentastr != '' ? "AND a.idcliente != 0 " : "" ;
         $query.= $d->correstr != '' ? "AND a.id = $d->correstr " : "" ;
