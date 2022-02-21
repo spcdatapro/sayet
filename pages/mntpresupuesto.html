@@ -183,7 +183,8 @@
                                     </button>
                                         <button type="button" class="btn btn-info btn-sm tipo" ng-click="enviar(p)"
                                             ng-show="+p.idestatuspresupuesto == 1 && +p.tipo == 1" data-toggle="tooltip"
-                                            data-placement="auto" title="Enviar presupuesto a aprobación...">
+                                            data-placement="auto" title="Enviar presupuesto a aprobación..."
+                                            ng-disabled="lstotadjuntos.length == 0">
                                             <span class="glyphicon glyphicon-share-alt"></span>
                                         </button>
                                         <button type="button" class="btn btn-warning btn-sm tipo"
@@ -499,7 +500,7 @@
                         </button>
                         <button type="button" class="btn btn-info" ng-click="enviar(presupuesto)"
                         ng-show="+presupuesto.idestatuspresupuesto === 1 && +presupuesto.tipo === 1" data-toggle="tooltip"
-                        data-placement="auto" title="Enviar presupuesto a aprobación..." ng-disabled="(!sl.presupuesto)  || +presupuesto.idestatuspresupuesto == 2" >
+                        data-placement="auto" title="Enviar presupuesto a aprobación..." ng-disabled="(!sl.presupuesto)  || +presupuesto.idestatuspresupuesto == 2 || lstotadjuntos.length == 0" >
                         <span class="glyphicon glyphicon-share-alt"></span>
                         </button>
                         <button type="button" class="btn btn-danger" ng-click="anulaPresupuesto(presupuesto)"
