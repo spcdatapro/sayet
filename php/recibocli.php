@@ -427,7 +427,7 @@ $app->post('/prtrecibocli', function() {
                         CONCAT('(',
                                 SUBSTRING(FORMAT(b.monto, 2), 2, 10),
                                 ')'),
-                        FORMAT(b.monto, 2)) AS montofact,
+                        FORMAT(c.total, 2)) AS montofact,
                     e.simbolo AS monedafact
                 FROM
                     recibocli a
