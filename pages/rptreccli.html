@@ -21,7 +21,7 @@
                             <label>Empresa: </label>
                             <ui-select ng-model="params.idempresa"
                                 title="Seleccione una empresa..." theme="bootstrap"
-                                autofocus="false">
+                                autofocus="false" on-select="getDataEmpresa($item)">
                                 <ui-select-match placeholder="Buscar empresa..."
                                     allow-clear="true">
                                     <span ng-bind="($select.selected.nomempresa)"></span>
@@ -39,44 +39,60 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Cliente: </label>
+                            <ui-select ng-model="params.idcliente"
+                                title="Seleccione un cliente..." theme="bootstrap"
+                                autofocus="false">
+                                <ui-select-match placeholder="Buscar cliente..."
+                                    allow-clear="true">
+                                    <span ng-bind="($select.selected.nombre)"></span>
+                                </ui-select-match>
+                                <ui-select-choices 
+                                    repeat="item.id as item in clientes | filter:$select.search"
+                                    group-by="'grupo'">
+                                    <div
+                                        ng-bind-html="(item.nombre) | highlight: $select.search">
+                                    </div>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label for="txtSerie">Serie:</label>
                             <input name="txtSerie" id="txtSerie" type="text" maxlength="5" class="form-control" ng-model="params.serie" placeholder="Serie"/>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label for="anulados">Ver anulados:</label>
                             <input name="anulados" id="anulados" type="checkbox" class="form-control" ng-model="params.anulados" ng-true-value="1" ng-false-value="0"/>
                         </div>
                     </div>
-                    <!-- <div class="col-md-2">
+                    <div class="col-md-4">
                         <div class="form-group">
-                            <label for="txtNumDel">N&uacute;mero del:</label>
-                            <input name="txtNumDel" id="txtNumDel" type="number" class="form-control" ng-model="params.numdel" placeholder="Número del"/>
+                            <label>Proyecto: </label>
+                            <ui-select ng-model="params.idproyecto"
+                                title="Seleccione un proyecto..." theme="bootstrap"
+                                autofocus="false">
+                                <ui-select-match placeholder="Buscar proyecto..."
+                                    allow-clear="true">
+                                    <span ng-bind="($select.selected.nomproyecto)"></span>
+                                </ui-select-match>
+                                <ui-select-choices 
+                                    repeat="item.id as item in proyectos | filter:$select.search"
+                                    group-by="'grupo'">
+                                    <div
+                                        ng-bind-html="(item.nomproyecto) | highlight: $select.search">
+                                    </div>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
                         </div>
                     </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="txtNumAl">al:</label>
-                            <input name="txtNumAl" id="txtNumAl" type="number" class="form-control" ng-model="params.numal" placeholder="al"/>
-                        </div>
-                    </div> -->
-                    <!-- <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="selMoneda">Moneda:</label>
-                            <select name="selMoneda" id="selMoneda" class="form-control" ng-model="params.idmoneda"
-                                    ng-options="obj.id as obj.nommoneda for obj in monedas">
-                            </select>
-                        </div>
-                    </div> -->
-                    <!-- <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="chkCorrela">Formato correlativo:</label>
-                            <input name="chkCorrela" id="chkCorrela" type="checkbox" class="form-control" ng-model="params.encorrelativo" ng-true-value="1" ng-false-value="0"/>
-                        </div>
-                    </div> -->
                 </div>
             </div>
             <div class="panel-footer text-right">
