@@ -1,5 +1,6 @@
 <?php
 require_once 'vendor/catfan/medoo/medoo.php';
+error_reporting(E_ALL ^ E_DEPRECATED);
 class dbcpm{
 
     private $dbHost = 'localhost';
