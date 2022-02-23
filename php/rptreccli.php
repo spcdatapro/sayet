@@ -105,12 +105,18 @@ $app->post('/correlativo', function(){
                 recibocli a
                     INNER JOIN
                 empresa b ON b.id = a.idempresa
+                    LEFT JOIN 
+				detcobroventa c ON a.id = c.idrecibocli
+					LEFT JOIN 
+				factura d ON d.id = c.idfactura
             WHERE
                 a.fecha >= '$d->fdelstr'
                     AND a.fecha <= '$d->falstr' ";
     $query.= $d->idempresa != 0 ? "AND a.idempresa = $d->idempresa " : '';
     $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';               
     $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
+    $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
+    $query.= $d->idproyecto != 0 ? "AND d.idproyecto = $d->idproyecto ": '';
     $query.="ORDER BY b.id ASC ";
     $empresas = $db->getQuery($query);
 
@@ -133,8 +139,8 @@ $app->post('/correlativo', function(){
                                 'ANULADO')) AS norecibo,
                     c.nomempresa AS empresa,
                     DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
-                    SUBSTRING(IFNULL(IFNULL(d.nombrecorto, e.nombre),
-                            'Cientes varios'), 1, 25) AS cliente,
+                    IFNULL(IFNULL(d.nombre, e.nombre),
+                            'Cientes varios') AS cliente,
                     (SELECT 
                             CONCAT(d.simbolo, '.', FORMAT(SUM(b.monto), 2))
                         FROM
@@ -155,12 +161,18 @@ $app->post('/correlativo', function(){
                     cliente d ON d.id = a.idcliente
                         LEFT JOIN
                     factura e ON e.nit = a.nit 
+                        LEFT JOIN 
+					detcobroventa f ON f.idrecibocli = a.id
+						LEFT JOIN
+					factura g ON g.id = f.idfactura
                 WHERE
                     a.fecha >= '$d->fdelstr'
                         AND a.fecha <= '$d->falstr' 
                         AND a.idempresa = $empresa->idempresa ";
         $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';               
         $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
+        $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
+        $query.= $d->idproyecto != 0 ? "AND g.idproyecto = $d->idproyecto ": '';
         $query.= "ORDER BY a.serie ASC , IFNULL(IF(a.serie = 'A', b.seriea, b.serieb), 
             a.id) ASC ";   
         $empresa->recibos = $db->getQuery($query);
@@ -182,6 +194,8 @@ $app->post('/correlativo', function(){
                     AND a.fecha <= '$d->falstr' ";
         $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
         $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';
+        $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
+        $query.= $d->idproyecto != 0 ? "AND c.idproyecto = $d->idproyecto ": '';
         $query.=" AND a.idempresa = $empresa->idempresa
                     AND c.idmonedafact = 1) AS montoempresaQ,
         (SELECT 
@@ -199,6 +213,8 @@ $app->post('/correlativo', function(){
                     AND a.fecha <= '$d->falstr' ";
         $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
         $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';
+        $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
+        $query.= $d->idproyecto != 0 ? "AND c.idproyecto = $d->idproyecto ": '';
         $query.=" AND a.idempresa = $empresa->idempresa
                     AND c.idmonedafact = 2) AS montoempresa$ ";
         $empresa->totalemp = $db->getQuery($query);
@@ -222,6 +238,8 @@ $app->post('/correlativo', function(){
     $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
     $query.= $d->idempresa != 0 ? "AND a.idempresa = $d->idempresa " : '';
     $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';
+    $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
+    $query.= $d->idproyecto != 0 ? "AND c.idproyecto = $d->idproyecto ": '';
     $query.=" AND c.idmonedafact = 1) AS montoQ,
     (SELECT 
             IFNULL(CONCAT(d.simbolo, '.', FORMAT(SUM(c.total), 2)), 0.00)
@@ -239,11 +257,12 @@ $app->post('/correlativo', function(){
     $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
     $query.= $d->idempresa != 0 ? "AND a.idempresa = $d->idempresa " : '';
     $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';
+    $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
+    $query.= $d->idproyecto != 0 ? "AND c.idproyecto = $d->idproyecto ": '';
     $query.=" AND c.idmonedafact = 2) AS monto$ ";
     $totalgen = $db->getQuery($query)[0];
 
     print json_encode(['generales' => $generales, 'recempre' => $empresas, 'totalesgen' => $totalgen]);
 });
-
 
 $app->run();
