@@ -478,6 +478,14 @@ $app->post('/dp', function(){
     $db->doQuery("DELETE FROM detpagorecli WHERE id = $d->id");
 });
 
+$app->post('/up', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $query = "UPDATE detpagorecli SET numero = $d->numero, idbanco = $d->idbanco, idmoneda = $d->idmoneda, 
+            monto = $d->monto, tipotrans = $d->idtipotrans WHERE id = $d->id ";
+    $db->doQuery($query);
+});
+
 $app->get('/getpagorecli/:idrecibo', function($idrecibo){
     $db = new dbcpm();
     $query = "SELECT 
@@ -486,7 +494,7 @@ $app->get('/getpagorecli/:idrecibo', function($idrecibo){
                 IFNULL(b.numero, e.descripcion) AS numero,
                 IFNULL(c.nombre, '') AS banco,
                 d.simbolo AS moneda,
-                b.monto, 
+                FORMAT(b.monto, 2) AS monto, 
                 e.abreviatura AS tipotrans
             FROM
                 recibocli a
@@ -573,6 +581,17 @@ $app->get('/getlstrec/:idempresa', function($idempresa){
                     AND a.tipo = 1
                     AND a.anulado = 0
                     AND a.idempresa = $idempresa ";
+    print $db->doSelectASJson($query);
+});
+
+$app->get('/getpago/:idpago', function($idpago){
+    $db = new dbcpm();
+    $query = "SELECT 
+                id, numero, idbanco, idmoneda, ROUND(monto, 2) AS monto, tipotrans AS idtipotrans
+            FROM
+                detpagorecli
+            WHERE
+                id = $idpago ";
     print $db->doSelectASJson($query);
 });
 

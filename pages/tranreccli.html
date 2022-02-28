@@ -391,7 +391,7 @@
                     <div class="panel panel-success">
                         <div class="panel-heading">Documentos de pago</div>
                         <div class="panel-body">
-                            <form name="frmDocsPag" id="frmDocsPag" ng-submit="addPagoRecCli(pagoreccli)">
+                            <form name="frmDocsPag" id="frmDocsPag" ng-submit="pagoreccli.id > 0 ? updPagoRecCli(pagoreccli) : addPagoRecCli(pagoreccli)">
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
@@ -432,10 +432,13 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-success" data-toggle="tooltip" data-placement="auto" title="Guardar pago"
-                                ng-disabled="">
+                                <button type="submit" class="btn btn-success" data-toggle="tooltip" data-placement="auto" title="Guardar pago">
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                                 </button>
+                                <!-- <button ng-click="updPagoRecCli(pagoreccli.id)" class="btn btn-info" data-toggle="tooltip" data-placement="auto" title="Guardar pago"
+                                ng-hide="!pagoreccli.id">
+                                <span class="glyphicon glyphicon-floppy-save"></span>
+                                </button> -->
                             </form>
                         <br>
                             <table class="table table-hover table-condensed">
@@ -444,7 +447,7 @@
                                         <th style="text-align: center; border-top: 0px;">Banco</th>
                                         <th style="text-align: center; border-top: 0px;">Monto</th>
                                     </tr>
-                                    <tr ng-repeat="tr in lstpagorecli">
+                                    <tr ng-repeat="tr in lstpagorecli" ng-click="getPagoRecli(tr.id)">
                                         <tb style="text-align: center;"></tb>
                                         <td style="text-align: center;">{{tr.tipotrans}} {{tr.numero}}</td>
                                         <td style="text-align: center;">{{tr.banco}}</td>

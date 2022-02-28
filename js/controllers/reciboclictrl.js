@@ -199,7 +199,8 @@
                 cuentacSrvc.getByTipo($scope.reccli.idempresa, 0).then(function(d){ $scope.cuentas = d; });
                 $scope.loadDetCont(idreccli);
                 goTop();
-                //console.log(d)
+                $scope.resetPagoRecCli();
+                // console.log(d)
             });
         };
 
@@ -431,8 +432,6 @@
             }, () => { $scope.loadDetaCont(); });
         };
 
-        //pago recli 
-
         bancoSrvc.lstBancosPais().then(function(d){ $scope.losBancoPais = d; });
         monedaSrvc.lstMonedas().then(function(d){ $scope.lasMonedas = d; });
         tipoMovTranBanSrvc.lstTipoMovRec().then(function (d) { $scope.tipotran = d; });
@@ -453,11 +452,7 @@
 
         function procDetaPagoRec(d){
             for(var i = 0; i < d.length; i++){
-                // d[i].id = parseInt(d[i].id);
-                // d[i].idrecibocli = parseInt(d[i].idrecibocli);
-                // d[i].numero = parseInt(d[i].numero);
-                // d[i].banco = parseInt(d[i].banco);
-                // d[i].monto = parseInt(d[i].monto);
+                d[i].numero = +d[i].numero;
             }
             return d;
         };
@@ -498,6 +493,15 @@
             });
         };
 
+        $scope.updPagoRecCli = function(obj){
+            obj = setPagoRec(obj);
+            // console.log(obj); return;
+            reciboClientesSrvc.editRow(obj, 'up').then(function(d){
+                $scope.loadPagoRecCli(obj.idrecibocli);
+                $scope.getPagoRecli(+obj.id);
+            });
+        };
+
         $scope.anulRecli = function(rec){
             $confirm({text: '¿Seguro desea anular el recibo ' + rec.serie + '-' + rec.correlativo + '?', 
             title: 'Anulación de Recibos', ok: 'Sí', cancel: 'No' }).then(function(){
@@ -507,6 +511,16 @@
                 });
             }); 
         }
+
+        $scope.getPagoRecli = function(idpago){
+            reciboClientesSrvc.getPagoRec(idpago).then(function(d){
+                $scope.pagoreccli = procDetaPagoRec(d)[0];
+                $scope.pagoreccli.objBancoPais = $filter('getById')($scope.losBancoPais, $scope.pagoreccli.idbanco);
+                $scope.pagoreccli.objMoneda = $filter('getById')($scope.lasMonedas, $scope.pagoreccli.idmoneda);
+                $scope.pagoreccli.objTipotrans = $filter('getById')($scope.tipotran, $scope.pagoreccli.idtipotrans);
+                // console.log(d)
+            });
+        };  
 
     }]);
 
