@@ -5,7 +5,7 @@
     rptrecclictrl.controller('rptRecibosClienteCtrl', ['$scope', 'jsReportSrvc', 'empresaSrvc', 'monedaSrvc', 'clienteSrvc', 'proyectoSrvc', function($scope, jsReportSrvc, empresaSrvc, monedaSrvc, clienteSrvc, proyectoSrvc){
 
         $scope.params = {
-            fdel: moment().startOf('month').toDate(), fal:moment().endOf('month').toDate(), serie: undefined, idempresa: 4, anulados: 0, 
+            fdel: moment().startOf('month').toDate(), fal:moment().endOf('month').toDate(), serie: undefined, idempresa: 0, anulados: 0, 
             idcliente: undefined, idproyecto: undefined
         };
 
@@ -14,7 +14,6 @@
         $scope.clientes = [];
         $scope.proyectos = [];
         $scope.content = `${window.location.origin}/sayet/blank.html`;
-        var idempresa = $scope.params.idempresa;
 
         empresaSrvc.lstEmpresas().then(function(d){ $scope.empresas = d; });
         monedaSrvc.lstMonedas().then(function(d){ $scope.monedas = d; });
