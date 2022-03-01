@@ -172,7 +172,7 @@ $app->post('/correlativo', function(){
                                     'ANULADO')) AS norecibo,
                         c.nomempresa AS empresa,
                         DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
-                        IFNULL(IFNULL(d.nombre, e.nombre),
+                        IFNULL(IFNULL(SUBSTRING(d.nombre, 1, 39), SUBSTRING(e.nombre, 1, 39)),
                                 'Cientes varios') AS cliente, 
                         (SELECT 
                                 CONCAT(d.simbolo, '.', FORMAT(SUM(b.monto), 2))
@@ -218,7 +218,7 @@ $app->post('/correlativo', function(){
             // suma de monto recibos por proyecto
             $query = "SELECT 
                         (SELECT 
-                            IFNULL(CONCAT(d.simbolo, '.', FORMAT(SUM(c.total), 2)), 0.00)
+                            IFNULL(CONCAT(d.simbolo, '.', FORMAT(SUM(c.total), 2)), CONCAT(d.simbolo, '.', 0.00))
                         FROM
                             recibocli a
                                 INNER JOIN
@@ -241,7 +241,7 @@ $app->post('/correlativo', function(){
             $query.=" AND f.id = $proyecto->idproyecto
                         AND c.idmonedafact = 1) AS montoempresaQ,
                 (SELECT 
-                    IFNULL(CONCAT(d.simbolo, '.', FORMAT(SUM(c.total), 2)), 0.00)
+                    IFNULL(CONCAT(d.simbolo, '.', FORMAT(SUM(c.total), 2)), CONCAT(d.simbolo, '.', 0.00))
                 FROM
                     recibocli a
                         INNER JOIN
