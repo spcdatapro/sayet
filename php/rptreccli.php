@@ -109,6 +109,10 @@ $app->post('/correlativo', function(){
 				detcobroventa c ON a.id = c.idrecibocli
 					LEFT JOIN 
 				factura d ON d.id = c.idfactura
+                    LEFT JOIN
+                contrato e ON d.idcontrato = e.id
+                    LEFT JOIN
+                proyecto f ON e.idproyecto = f.id
             WHERE
                 a.fecha >= '$d->fdelstr'
                     AND a.fecha <= '$d->falstr' ";
@@ -116,7 +120,7 @@ $app->post('/correlativo', function(){
     $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';               
     $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
     $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
-    $query.= $d->idproyecto != 0 ? "AND d.idproyecto = $d->idproyecto ": '';
+    $query.= $d->idproyecto != 0 ? "AND f.id = $d->idproyecto ": '';
     $query.="ORDER BY b.id ASC ";
     $empresas = $db->getQuery($query);
 
@@ -149,7 +153,7 @@ $app->post('/correlativo', function(){
         $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';               
         $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
         $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
-        $query.= $d->idproyecto != 0 ? "AND g.idproyecto = $d->idproyecto ": '';
+        $query.= $d->idproyecto != 0 ? "AND e.id = $d->idproyecto ": '';
         $query.= "ORDER BY e.id ASC ";
         $empresa->proyectos = $db->getQuery($query);
 
@@ -210,7 +214,7 @@ $app->post('/correlativo', function(){
             $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';               
             $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
             $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
-            $query.= $d->idproyecto != 0 ? "AND g.idproyecto = $d->idproyecto ": '';
+            $query.= $d->idproyecto != 0 ? "AND i.id = $d->idproyecto ": '';
             $query.= "ORDER BY a.serie ASC , IFNULL(IF(a.serie = 'A', b.seriea, b.serieb), 
             a.id) ASC ";   
             $proyecto->recibos = $db->getQuery($query);
@@ -237,7 +241,7 @@ $app->post('/correlativo', function(){
             $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
             $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';
             $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
-            $query.= $d->idproyecto != 0 ? "AND c.idproyecto = $d->idproyecto ": '';
+            $query.= $d->idproyecto != 0 ? "AND f.id = $d->idproyecto ": '';
             $query.=" AND f.id = $proyecto->idproyecto
                         AND c.idmonedafact = 1) AS montoempresaQ,
                 (SELECT 
@@ -260,7 +264,7 @@ $app->post('/correlativo', function(){
             $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
             $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';
             $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
-            $query.= $d->idproyecto != 0 ? "AND c.idproyecto = $d->idproyecto ": '';
+            $query.= $d->idproyecto != 0 ? "AND f.id = $d->idproyecto ": '';
             $query.=" AND f.id = $proyecto->idproyecto
                     AND c.idmonedafact = 2) AS montoempresa$ ";
             $proyecto->totalproy = $db->getQuery($query);
@@ -278,32 +282,40 @@ $app->post('/correlativo', function(){
                         factura c ON c.id = b.idfactura
                             INNER JOIN
                         moneda d ON d.id = c.idmonedafact
+                            INNER JOIN
+                        contrato e ON c.idcontrato = e.id
+                            INNER JOIN 
+                        proyecto f ON e.idproyecto = f.id
                     WHERE
                         a.fecha >= '$d->fdelstr'
                             AND a.fecha <= '$d->falstr' ";
         $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
         $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';
         $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
-        $query.= $d->idproyecto != 0 ? "AND c.idproyecto = $d->idproyecto ": '';
+        $query.= $d->idproyecto != 0 ? "AND f.id = $d->idproyecto ": '';
         $query.=" AND a.idempresa = $empresa->idempresa
                     AND c.idmonedafact = 1) AS montoempresaQ,
-            (SELECT 
-                IFNULL(CONCAT(d.simbolo, '.', FORMAT(SUM(c.total), 2)), 0.00)
-            FROM
-                recibocli a
-                    INNER JOIN
-                detcobroventa b ON b.idrecibocli = a.id
-                    INNER JOIN
-                factura c ON c.id = b.idfactura
-                    INNER JOIN
-                moneda d ON d.id = c.idmonedafact
-            WHERE
-                a.fecha >= '$d->fdelstr'
-                    AND a.fecha <= '$d->falstr' ";
+                    (SELECT 
+                        IFNULL(CONCAT(d.simbolo, '.', FORMAT(SUM(c.total), 2)), 0.00)
+                    FROM
+                        recibocli a
+                            INNER JOIN
+                        detcobroventa b ON b.idrecibocli = a.id
+                            INNER JOIN
+                        factura c ON c.id = b.idfactura
+                            INNER JOIN
+                        moneda d ON d.id = c.idmonedafact
+                            INNER JOIN
+                        contrato e ON c.idcontrato = e.id
+                            INNER JOIN 
+                        proyecto f ON e.idproyecto = f.id
+                    WHERE
+                        a.fecha >= '$d->fdelstr'
+                            AND a.fecha <= '$d->falstr' ";
         $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
         $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';
         $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
-        $query.= $d->idproyecto != 0 ? "AND c.idproyecto = $d->idproyecto ": '';
+        $query.= $d->idproyecto != 0 ? "AND f.id = $d->idproyecto ": '';
         $query.=" AND a.idempresa = $empresa->idempresa
                 AND c.idmonedafact = 2) AS montoempresa$ ";
         $empresa->totalemp = $db->getQuery($query);
@@ -321,6 +333,10 @@ $app->post('/correlativo', function(){
             factura c ON c.id = b.idfactura
                 INNER JOIN
             moneda d ON d.id = c.idmonedafact
+                INNER JOIN
+            contrato e ON c.idcontrato = e.id
+                INNER JOIN 
+            proyecto f ON e.idproyecto = f.id
         WHERE
             a.fecha >= '$d->fdelstr'
                 AND a.fecha <= '$d->falstr' ";
@@ -328,7 +344,7 @@ $app->post('/correlativo', function(){
     $query.= $d->idempresa != 0 ? "AND a.idempresa = $d->idempresa " : '';
     $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';
     $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
-    $query.= $d->idproyecto != 0 ? "AND c.idproyecto = $d->idproyecto ": '';
+    $query.= $d->idproyecto != 0 ? "AND f.id = $d->idproyecto ": '';
     $query.=" AND c.idmonedafact = 1) AS montoQ,
     (SELECT 
             IFNULL(CONCAT(d.simbolo, '.', FORMAT(SUM(c.total), 2)), 0.00)
@@ -340,6 +356,10 @@ $app->post('/correlativo', function(){
             factura c ON c.id = b.idfactura
                 INNER JOIN
             moneda d ON d.id = c.idmonedafact
+                INNER JOIN
+            contrato e ON c.idcontrato = e.id
+                INNER JOIN 
+            proyecto f ON e.idproyecto = f.id
         WHERE
             a.fecha >= '$d->fdelstr'
                 AND a.fecha <= '$d->falstr' ";
@@ -347,7 +367,7 @@ $app->post('/correlativo', function(){
     $query.= $d->idempresa != 0 ? "AND a.idempresa = $d->idempresa " : '';
     $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';
     $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
-    $query.= $d->idproyecto != 0 ? "AND c.idproyecto = $d->idproyecto ": '';
+    $query.= $d->idproyecto != 0 ? "AND f.id = $d->idproyecto ": '';
     $query.=" AND c.idmonedafact = 2) AS monto$ ";
     $totalgen = $db->getQuery($query)[0];
 
