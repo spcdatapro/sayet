@@ -188,7 +188,7 @@ $app->post('/correlativo', function(){
                                 moneda d ON c.idmonedafact = d.id
                             WHERE
                                 b.idrecibocli = a.id) AS totrecibo,
-                        i.nomproyecto AS proyecto
+                        i.nomproyecto AS proyecto, IF(g.idmonedafact = 2, 1, NULL) AS esdolares
                     FROM
                         recibocli a
                             LEFT JOIN
