@@ -213,11 +213,10 @@ $app->post('/detalle', function () use ($db) {
     // $query .= "WHERE a.id = $d->idproyecto";
     // $datos->proyecto = $db->getQuery($query)[0];
 
-    $query = "SELECT a.id, a.nomproyecto, a.referencia, a.idempresa, IF(c.usufructo = NULL, b.nomempresa, d.nomempresa) AS empresa, 
-            IF(c.usufructo = NULL, b.abreviatura, d.abreviatura) AS abreviaempresa,
-            (SELECT nombre FROM mes WHERE id = $d->mes) AS mes, $d->anio AS anio, DATE_FORMAT(NOW(), '%d/%m/%Y') AS fecha, 0.00 AS diferencia
-            FROM proyecto a INNER JOIN empresa b ON b.id = a.idempresa LEFT JOIN contrato c ON a.id = c.idproyecto LEFT JOIN empresa d ON d.id = c.idempresa
-            WHERE a.id = $d->idproyecto AND c.inactivo != 1 LIMIT 1 ";
+    $query = "SELECT id, nomproyecto, referencia, (SELECT id FROM empresa WHERE id = $d->idempresa) AS idempresa, 
+            (SELECT nomempresa FROM empresa WHERE id = $d->idempresa) AS empresa, (SELECT abreviatura FROM empresa WHERE id = $d->idempresa) AS abreviaempresa, 
+            (SELECT nombre FROM mes WHERE id = $d->mes) AS mes, $d->anio AS anio, DATE_FORMAT(NOW(), '%d/%m/%Y') AS fecha, 
+            0.00 AS diferencia FROM proyecto WHERE id = $d->idproyecto ";
     $datos->proyecto = $db->getQuery($query)[0];
 
     //Ingresos con detalle
