@@ -18,7 +18,8 @@ $app->post('/lstreciboscli', function(){
     $query = "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, 
 	IFNULL(h.abreviatura, c.tipotrans) AS tipotrans, IFNULL(g.numero, c.numero) AS notranban, IFNULL(i.nombre, e.nombre) AS nombre, 
     IFNULL(j.simbolo, f.simbolo) AS simbolo, IFNULL(g.monto, c.monto) AS monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
-    IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', k.seriea, k.serieb), a.id), 'ANULADO') AS correlativo
+    IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', k.seriea, k.serieb), a.id), IF(a.serie = 'A', CONCAT(k.seriea, ' (ANULADO)'), CONCAT(k.serieb, ' (ANULADO)'))) 
+    AS correlativo
     FROM recibocli a INNER JOIN cliente b ON b.id = a.idcliente LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
     LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda LEFT JOIN detpagorecli g ON g.idreccli = a.id LEFT JOIN pagosreccli h ON g.tipotrans = h.id
     LEFT JOIN bancopais i ON g.idbanco = i.id LEFT JOIN moneda j ON g.idmoneda = j.id LEFT JOIN serierecli k ON k.idrecibocli = a.id
@@ -36,7 +37,8 @@ $app->post('/lstreciboscli', function(){
     $query.= "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, 'Facturas contado (Clientes varios)' AS cliente, 
     IFNULL(h.abreviatura, c.tipotrans) AS tipotrans, IFNULL(g.numero, c.numero) AS notranban, IFNULL(i.nombre, e.nombre) AS nombre, 
     IFNULL(j.simbolo, f.simbolo) AS simbolo, IFNULL(g.monto, c.monto) AS monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
-    IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', k.seriea, k.serieb), a.id), 'ANULADO') AS correlativo
+    IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', k.seriea, k.serieb), a.id), IF(a.serie = 'A', CONCAT(k.seriea, ' (ANULADO)'), CONCAT(k.serieb, ' (ANULADO)'))) 
+    AS correlativo
     FROM recibocli a LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
     LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda LEFT JOIN detpagorecli g ON g.idreccli = a.id  LEFT JOIN pagosreccli h ON g.tipotrans = h.id 
     LEFT JOIN bancopais i ON g.idbanco = i.id LEFT JOIN moneda j ON g.idmoneda = j.id LEFT JOIN serierecli k ON k.idrecibocli = a.id
@@ -54,7 +56,8 @@ $app->post('/lstreciboscli', function(){
     $query.= "SELECT DISTINCT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, 
     IFNULL(h.abreviatura, c.tipotrans) AS tipotrans, IFNULL(g.numero, c.numero) AS notranban, IFNULL(i.nombre, e.nombre) AS nombre, 
     IFNULL(j.simbolo, f.simbolo) AS simbolo, IFNULL(g.monto, c.monto) AS monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
-    IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', k.seriea, k.serieb), a.id), 'ANULADO') AS correlativo
+    IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', k.seriea, k.serieb), a.id), IF(a.serie = 'A', CONCAT(k.seriea, ' (ANULADO)'), CONCAT(k.serieb, ' (ANULADO)'))) 
+    AS correlativo
     FROM recibocli a 
     INNER JOIN factura b ON a.nit = b.nit
     LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
@@ -389,8 +392,12 @@ $app->post('/prtrecibocli', function() {
     $query =
                 "SELECT 
                     a.serie,
+                    IF(a.anulado = 0,
                     IFNULL(IF(a.serie = 'A', b.seriea, b.serieb),
-                            a.id) AS numero,
+                            a.id),
+                    IF(a.serie = 'A',
+                        CONCAT(b.seriea, ' (ANULADO)'),
+                        CONCAT(b.serieb, ' (ANULADO)'))) AS numero,
                     FORMAT(SUM(c.monto), 2) AS montorecli,
                     e.simbolo AS monedarecli,
                     DAY(a.fecha) AS dia,
@@ -420,15 +427,19 @@ $app->post('/prtrecibocli', function() {
 
         $recibo[0]->montoletras = $n2l->to_word($recibo[0]->montorecli, 'GTQ');
 
+    // facturas
+
     $query = 
                 "SELECT  
                     c.serie AS seriefact,
                     c.numero AS numfact,
                     IF(b.monto < 0,
-                        CONCAT('(',
-                                SUBSTRING(FORMAT(b.monto, 2), 2, 10),
-                                ')'),
-                        FORMAT(c.total, 2)) AS montofact,
+                    CONCAT('(',
+                            SUBSTRING(FORMAT(b.monto, 2), 2, 10),
+                            ')'),
+                    IF(ABS(c.total - b.monto) < 10,
+                        FORMAT(c.total, 2),
+                        FORMAT(b.monto, 2))) AS montofact,
                     e.simbolo AS monedafact
                 FROM
                     recibocli a
@@ -441,6 +452,8 @@ $app->post('/prtrecibocli', function() {
                 WHERE
                 a.id = $d->idrecibo ";
     $facturas = $db->getQuery($query);
+
+    // cheques
 
     $query = "SELECT 
                     IFNULL(CONCAT(e.abreviatura, '-', b.numero),
