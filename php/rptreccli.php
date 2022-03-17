@@ -173,22 +173,24 @@ $app->post('/correlativo', function(){
                                 IF(a.anulado = 0,
                                     IFNULL(IF(a.serie = 'A', b.seriea, b.serieb),
                                             a.id),
-                                    'ANULADO')) AS norecibo,
+                                    IF(a.serie = 'A',
+                                        CONCAT(b.seriea, ' (ANULADO)'),
+                                        CONCAT(b.serieb, ' (ANULADO)')))) AS norecibo,
                         c.nomempresa AS empresa,
                         DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
-                        IFNULL(IFNULL(SUBSTRING(d.nombre, 1, 39), SUBSTRING(e.nombre, 1, 39)),
-                                'Cientes varios') AS cliente, 
+                        IFNULL(IFNULL(SUBSTRING(d.nombre, 1, 39),
+                                        SUBSTRING(e.nombre, 1, 39)),
+                                'Cientes varios') AS cliente,
                         (SELECT 
-                                CONCAT(d.simbolo, '.', FORMAT(SUM(b.monto), 2))
+                                CONCAT(c.simbolo, '.', FORMAT(SUM(b.monto), 2))
                             FROM
-                                detcobroventa b
+                                detpagorecli b
                                     INNER JOIN
-                                factura c ON b.idfactura = c.id
-                                    INNER JOIN
-                                moneda d ON c.idmonedafact = d.id
+                                moneda c ON c.id = b.idmoneda
                             WHERE
-                                b.idrecibocli = a.id) AS totrecibo,
-                        i.nomproyecto AS proyecto, IF(g.idmonedafact = 2, 1, NULL) AS esdolares
+                                b.idreccli = a.id) AS totrecibo,
+                        i.nomproyecto AS proyecto,
+                        IF(j.idmoneda = 2, 1, NULL) AS esdolares
                     FROM
                         recibocli a
                             LEFT JOIN
@@ -198,18 +200,20 @@ $app->post('/correlativo', function(){
                             LEFT JOIN
                         cliente d ON d.id = a.idcliente
                             LEFT JOIN
-                        factura e ON e.nit = a.nit 
-                            LEFT JOIN 
+                        factura e ON e.nit = a.nit
+                            LEFT JOIN
                         detcobroventa f ON f.idrecibocli = a.id
                             LEFT JOIN
                         factura g ON g.id = f.idfactura
                             LEFT JOIN
                         contrato h ON g.idcontrato = h.id
-                            LEFT JOIN 
+                            LEFT JOIN
                         proyecto i ON h.idproyecto = i.id
+                            LEFT JOIN
+                        detpagorecli j ON j.idreccli = a.id
                     WHERE
-                        a.fecha >= '$d->fdelstr'
-                            AND a.fecha <= '$d->falstr' 
+                        a.tipo = 1 AND a.fecha >= '$d->fdelstr'
+                            AND a.fecha <= '$d->falstr'
                             AND i.id = $proyecto->idproyecto ";
             $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';               
             $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
@@ -222,7 +226,7 @@ $app->post('/correlativo', function(){
             // suma de monto recibos por proyecto
             $query = "SELECT 
                         (SELECT 
-                            IFNULL(CONCAT(d.simbolo, '.', FORMAT(SUM(c.total), 2)), CONCAT(d.simbolo, '.', 0.00))
+                            IFNULL(CONCAT(h.simbolo, '.', FORMAT(SUM(g.monto), 2)), CONCAT('Q', '.', 0.00))
                         FROM
                             recibocli a
                                 INNER JOIN
@@ -235,6 +239,10 @@ $app->post('/correlativo', function(){
                             contrato e ON c.idcontrato = e.id
                                 INNER JOIN 
                             proyecto f ON e.idproyecto = f.id
+								INNER JOIN 
+							detpagorecli g ON g.idreccli = a.id
+								INNER JOIN 
+							moneda h ON h.id = g.idmoneda 
                         WHERE
                             a.fecha >= '$d->fdelstr'
                                 AND a.fecha <= '$d->falstr' ";
@@ -243,9 +251,9 @@ $app->post('/correlativo', function(){
             $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
             $query.= $d->idproyecto != 0 ? "AND f.id = $d->idproyecto ": '';
             $query.=" AND f.id = $proyecto->idproyecto
-                        AND c.idmonedafact = 1) AS montoempresaQ,
+                        AND g.idmoneda = 1) AS montoempresaQ,
                 (SELECT 
-                    IFNULL(CONCAT(d.simbolo, '.', FORMAT(SUM(c.total), 2)), CONCAT(d.simbolo, '.', 0.00))
+                    IFNULL(CONCAT(h.simbolo, '.', FORMAT(SUM(g.monto), 2)), CONCAT('$', '.', 0.00))
                 FROM
                     recibocli a
                         INNER JOIN
@@ -258,6 +266,10 @@ $app->post('/correlativo', function(){
                     contrato e ON c.idcontrato = e.id
                         INNER JOIN 
                     proyecto f ON e.idproyecto = f.id
+						INNER JOIN 
+					detpagorecli g ON g.idreccli = a.id
+						INNER JOIN 
+					moneda h ON h.id = g.idmoneda 
                 WHERE
                     a.fecha >= '$d->fdelstr'
                         AND a.fecha <= '$d->falstr' ";
@@ -266,14 +278,14 @@ $app->post('/correlativo', function(){
             $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
             $query.= $d->idproyecto != 0 ? "AND f.id = $d->idproyecto ": '';
             $query.=" AND f.id = $proyecto->idproyecto
-                    AND c.idmonedafact = 2) AS montoempresa$ ";
+                    AND g.idmoneda = 2) AS montoempresa$ ";
             $proyecto->totalproy = $db->getQuery($query);
         }
                    
-        // suma de monto recibos por proyecto
+        // suma de monto recibos por empresa
         $query = "SELECT 
                     (SELECT 
-                        IFNULL(CONCAT(d.simbolo, '.', FORMAT(SUM(c.total), 2)), 0.00)
+                        IFNULL(CONCAT(h.simbolo, '.', FORMAT(SUM(g.monto), 2)), CONCAT('Q', '.', 0.00))
                     FROM
                         recibocli a
                             INNER JOIN
@@ -286,6 +298,10 @@ $app->post('/correlativo', function(){
                         contrato e ON c.idcontrato = e.id
                             INNER JOIN 
                         proyecto f ON e.idproyecto = f.id
+							INNER JOIN 
+						detpagorecli g ON g.idreccli = a.id
+							INNER JOIN 
+						moneda h ON h.id = g.idmoneda 
                     WHERE
                         a.fecha >= '$d->fdelstr'
                             AND a.fecha <= '$d->falstr' ";
@@ -294,9 +310,9 @@ $app->post('/correlativo', function(){
         $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
         $query.= $d->idproyecto != 0 ? "AND f.id = $d->idproyecto ": '';
         $query.=" AND a.idempresa = $empresa->idempresa
-                    AND c.idmonedafact = 1) AS montoempresaQ,
+                    AND g.idmoneda = 1) AS montoempresaQ,
                     (SELECT 
-                        IFNULL(CONCAT(d.simbolo, '.', FORMAT(SUM(c.total), 2)), 0.00)
+                        IFNULL(CONCAT(h.simbolo, '.', FORMAT(SUM(g.monto), 2)), CONCAT('$', '.', 0.00))
                     FROM
                         recibocli a
                             INNER JOIN
@@ -309,6 +325,10 @@ $app->post('/correlativo', function(){
                         contrato e ON c.idcontrato = e.id
                             INNER JOIN 
                         proyecto f ON e.idproyecto = f.id
+							INNER JOIN 
+						detpagorecli g ON g.idreccli = a.id
+							INNER JOIN 
+						moneda h ON h.id = g.idmoneda 
                     WHERE
                         a.fecha >= '$d->fdelstr'
                             AND a.fecha <= '$d->falstr' ";
@@ -317,26 +337,30 @@ $app->post('/correlativo', function(){
         $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
         $query.= $d->idproyecto != 0 ? "AND f.id = $d->idproyecto ": '';
         $query.=" AND a.idempresa = $empresa->idempresa
-                AND c.idmonedafact = 2) AS montoempresa$ ";
+                AND g.idmoneda = 2) AS montoempresa$ ";
         $empresa->totalemp = $db->getQuery($query);
     }
 
     // suma de monto de todas las empresas
     $query = "SELECT 
-    (SELECT 
-            IFNULL(CONCAT(d.simbolo, '.', FORMAT(SUM(c.total), 2)), 0.00)
+        (SELECT 
+            IFNULL(CONCAT(h.simbolo, '.', FORMAT(SUM(g.monto), 2)), CONCAT('Q', '.', 0.00))
         FROM
             recibocli a
-                INNER JOIN
+            INNER JOIN
             detcobroventa b ON b.idrecibocli = a.id
-                INNER JOIN
+            INNER JOIN
             factura c ON c.id = b.idfactura
-                INNER JOIN
+            INNER JOIN
             moneda d ON d.id = c.idmonedafact
-                INNER JOIN
+            INNER JOIN
             contrato e ON c.idcontrato = e.id
-                INNER JOIN 
+            INNER JOIN 
             proyecto f ON e.idproyecto = f.id
+		    INNER JOIN 
+		    detpagorecli g ON g.idreccli = a.id
+		    INNER JOIN 
+		    moneda h ON h.id = g.idmoneda 
         WHERE
             a.fecha >= '$d->fdelstr'
                 AND a.fecha <= '$d->falstr' ";
@@ -345,21 +369,25 @@ $app->post('/correlativo', function(){
     $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';
     $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
     $query.= $d->idproyecto != 0 ? "AND f.id = $d->idproyecto ": '';
-    $query.=" AND c.idmonedafact = 1) AS montoQ,
+    $query.=" AND g.idmoneda = 1) AS montoQ,
     (SELECT 
-            IFNULL(CONCAT(d.simbolo, '.', FORMAT(SUM(c.total), 2)), 0.00)
+            IFNULL(CONCAT(h.simbolo, '.', FORMAT(SUM(g.monto), 2)), CONCAT('$', '.', 0.00))
         FROM
             recibocli a
-                INNER JOIN
+            INNER JOIN
             detcobroventa b ON b.idrecibocli = a.id
-                INNER JOIN
+            INNER JOIN
             factura c ON c.id = b.idfactura
-                INNER JOIN
+            INNER JOIN
             moneda d ON d.id = c.idmonedafact
-                INNER JOIN
+            INNER JOIN
             contrato e ON c.idcontrato = e.id
-                INNER JOIN 
+            INNER JOIN 
             proyecto f ON e.idproyecto = f.id
+		    INNER JOIN 
+		    detpagorecli g ON g.idreccli = a.id
+		    INNER JOIN 
+		    moneda h ON h.id = g.idmoneda 
         WHERE
             a.fecha >= '$d->fdelstr'
                 AND a.fecha <= '$d->falstr' ";
@@ -368,7 +396,7 @@ $app->post('/correlativo', function(){
     $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';
     $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
     $query.= $d->idproyecto != 0 ? "AND f.id = $d->idproyecto ": '';
-    $query.=" AND c.idmonedafact = 2) AS monto$ ";
+    $query.=" AND g.idmoneda = 2) AS monto$ ";
     $totalgen = $db->getQuery($query)[0];
 
     print json_encode(['generales' => $generales, 'empresas' => $empresas, 'totalesgen' => $totalgen]);
