@@ -82,7 +82,8 @@ $app->get('/getrecibocli/:idrecibo', function($idrecibo){
     $query = "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, 
             c.tipotrans, c.numero AS notranban, e.nombre, 
             f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
-            IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', g.seriea, g.serieb), a.id), 'ANULADO') AS correlativo
+            IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', g.seriea, g.serieb), a.id), 
+            IF(a.serie = 'A', CONCAT(g.seriea, ' (ANULADO)'), CONCAT(g.serieb, ' (ANULADO)'))) AS correlativo
             FROM recibocli a 
             INNER JOIN cliente b ON b.id = a.idcliente 
             LEFT JOIN tranban c ON c.id = a.idtranban 
@@ -232,6 +233,9 @@ $app->post('/anula', function(){
     }
 
         $query = "DELETE FROM detpagorecli WHERE idreccli = $d->id ";
+        $db->doQuery($query);
+
+        $query = "DELETE FROM detcobroventa WHERE idrecibocli = $d->id";
         $db->doQuery($query);
 
     // $query = "UPDATE detallecontable SET activada = 0, anulado = 1 WHERE origen = 8 AND idorigen = $d->id";

@@ -60,7 +60,7 @@ $app->post('/rptanticli', function(){
 
             // (a.monto-ifnull(sum(b.monto),0))
 
-            $querydet1 = "SELECT a.nombre," . $sqlfields . "
+            $querydet1 = "SELECT IF(a.id = 207, b.clientecf, a.nombre) AS nombre," . $sqlfields . "
                         round(sum(if(b.dias < 31, b.monto-b.retisr-b.retiva,0)),2) as a30,
                         round(sum(if(b.dias between 31 and 60, b.monto-b.retisr-b.retiva,0)),2) as a60,
                         round(sum(if(b.dias between 61 and 90, b.monto-b.retisr-b.retiva,0)),2) as a90,
@@ -88,10 +88,10 @@ $app->post('/rptanticli', function(){
             $querydet2 = " order by c.fecha
                         ) as a
                         left join(
-                            select orden,cliente,venta,fecha,documento,tipo,monto,codigo,tc_cambio,idpago from (
+                            select orden,cliente,venta,fecha,documento,tipo,monto,codigo,tc_cambio,idpago,clientecf from (
 
                                 SELECT 2 as orden,a.idcliente as cliente,a.id as venta,c.fecha,d.numero as documento,'R' as tipo, (b.monto) as monto,
-                                    'Q' as codigo,a.tipocambio as tc_cambio, b.id as idpago
+                                    'Q' as codigo,a.tipocambio as tc_cambio, b.id as idpago, a.nombre AS clientecf
                                 from sayet.factura a
                                     inner join sayet.detcobroventa b on a.id=b.idfactura
                                     inner join sayet.recibocli c on b.idrecibocli=c.id
