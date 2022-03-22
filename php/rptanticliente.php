@@ -68,7 +68,6 @@ $app->post('/rptanticli', function(){
                         round(sum(ifnull(b.monto-b.retisr-b.retiva,0)),2) as total,b.empresa,b.idempresa, b.contrato, b.proyecto, b.nomproyecto
                     from sayet.cliente a
                     inner join (
-
                         select a.orden,a.cliente,a.venta,a.fecha,a.factura,a.serie,
                             a.concepto,if(isnull(c.idpago) and a.pagada=1,0000000000.00,(a.monto-(ifnull(sum(b.monto),0)))) as monto,a.codigo,a.tc_cambio,a.fecpago,a.dias,a.empresa,a.idempresa,a.contrato,a.proyecto,a.nomproyecto,a.retisr,a.retiva
                         from (
