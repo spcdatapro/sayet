@@ -163,7 +163,7 @@ $app->post('/c', function(){
     }
 
     $query = "INSERT INTO recibocli(idempresa, fecha, fechacrea, idcliente, espropio, idtranban, serie, numero, usuariocrea, tipo, concepto, nit) VALUES(";
-    $query.= "$d->idempresa,'$d->fechastr', NOW(), $d->idcliente, $d->espropio, $d->idtranban, '$d->serie', $d->numero, '$d->usuariocrea', $d->tipo, '$d->concepto', $d->nit";
+    $query.= "$d->idempresa,'$d->fechastr', NOW(), $d->idcliente, $d->espropio, $d->idtranban, '$d->serie', $d->numero, '$d->usuariocrea', $d->tipo, '$d->concepto', '$d->nit'";
     $query.= ")";
     $db->doQuery($query);
 
@@ -265,7 +265,7 @@ $app->get('/docspend/:idempresa/:idcliente/:nit(/:tipo)', function($idempresa, $
     $query.= "WHERE a.anulada = 0 AND a.idempresa = $idempresa ";
     $query.= (int)$tipo < 3 ? "AND IF(a.pagada = 0, (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) > 0, (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) < 0)" : "AND (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) < 0 ";
     //$query.= "AND a.pagada = 0 AND (a.total - IF(ISNULL(d.cobrado), 0.00, d.cobrado)) > 0 ";
-    $query.= (int)$idcliente > 0 ? "AND a.idcliente = $idcliente " : "AND a.nit = $nit ";
+    $query.= (int)$idcliente > 0 ? "AND a.idcliente = $idcliente " : "AND a.nit = '$nit' ";
     $query.= "ORDER BY a.fecha";
     print $db->doSelectASJson($query);
 });
