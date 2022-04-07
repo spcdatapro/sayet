@@ -91,7 +91,7 @@
                 fecha: moment().toDate(),
                 idtranban: 0,
                 idcliente: 0,
-                nit: 0,
+                nit: undefined,
                 objTranBan: [],
                 objCliente: undefined,
                 espropio: 0,
@@ -132,7 +132,7 @@
                 d[i].idtranban = parseInt(d[i].idtranban);
                 d[i].idempresa = parseInt(d[i].idempresa);
                 d[i].idcliente = parseInt(d[i].idcliente);
-                d[i].nit = parseInt(d[i].nit);
+                // d[i].nit = parseInt(d[i].nit);
                 d[i].espropio = parseInt(d[i].espropio);
                 d[i].anulado = parseInt(d[i].anulado);
                 d[i].idrazonanulacion = parseInt(d[i].idrazonanulacion);
