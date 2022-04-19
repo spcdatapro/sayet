@@ -56,14 +56,16 @@ $app->post('/u', function(){
     $origen = "SELECT origen FROM detallecontable WHERE id = $d->id ";
     if(2 == $d->origen)
     {
-        $idorigen = "SELECT idorigen FROM detallecontabel WHERE id = $d->id ";
-        $existe = "SELECT IFNULL(id, NULL) FROM compraproyecto WHERE idcompra = $idorigen ";
+        $idorigen = "SELECT idorigen AS origen, idcuentac AS cuenta FROM detallecontable WHERE id = $d->id ";
+        $orgcuenta = "SELECT idcuentac AS cuenta FROM detallecontable WHERE id = $d->id ";
+        $existe = "SELECT IFNULL(id, NULL) AS proy FROM compraproyecto WHERE idcompra = $idorigen ";
+        $proycuenta = "SELECT idcuentac AS cuenta FROM compraproyecto WHERE idcompra = $idorigen ";
     }else {
         $existe = NULL;
     }
-    if($existe != NULL && 2 == $d->origen)
+    if($existe != NULL && $orgcuenta == $proycuenta)
     {
-        $query = "UPDATE compraproyecto SET idcuentac = $d->idcuenta WHERE idcompra = $d->idorigen ";
+        $query = "UPDATE compraproyecto SET idcuentac = $d->idcuenta WHERE idcompra = $d->idorigen AND idcuentac = $d->cuenta ";
         $db->doQuery($query);
     }
 
