@@ -447,6 +447,20 @@ $app->post('/avanceot', function(){
             ORDER BY OrdenFch , OrdenNum DESC ";
     $ordentrabajo = $db->getQuery($query);
 
+    $cntoOt = count($ordentrabajo);
+
+    for ($i = $cntoOt -1; $i > -1; $i--) { 
+        $cheque = $ordentrabajo[$i]->numero;
+        if ($i > 0) {
+        $cheque2 = $ordentrabajo[$i - 1]->numero;
+        } else {
+            $cheque2 = 0;
+        }
+        if ($cheque == $cheque2) {
+            $ordentrabajo[$i]->numero = NULL;
+        }
+    }
+
     $query = "SELECT 
                 CONCAT(a.id, '-', b.correlativo) AS ot,
                 DATE_FORMAT(a.fechasolicitud, '%d-%m-%Y') AS fechasolicitud,
@@ -1479,6 +1493,20 @@ $app->post('/avanceotm', function(){
                 ORDER BY OrdenFch , OrdenNum DESC ";
         $ot->documento = $db->getQuery($query);
     }
+
+    // $cntoOt = count($ordentrabajo);
+
+    // for ($i = $cntoOt -1; $i > -1; $i--) { 
+    //     $cheque = $ordentrabajo[$i]->numero;
+    //     if ($i > 0) {
+    //     $cheque2 = $ordentrabajo[$i - 1]->numero;
+    //     } else {
+    //         $cheque2 = 0;
+    //     }
+    //     if ($cheque == $cheque2) {
+    //         $ordentrabajo[$i]->numero = NULL;
+    //     }
+    // }
 
     $query = "SELECT DISTINCT
                 a.id AS ot,
