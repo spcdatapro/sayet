@@ -77,7 +77,7 @@
 
         clienteSrvc.lstRecCliente().then(function(d){
             d.push({
-                id: "0", nombre: "Facturas contado (Clientes varios)", nombrecorto: "FactCont", idcliente:"0", nit:"0"
+                id: "0", nombre: "Facturas contado (Clientes varios)", nombrecorto: "FactCont", idcliente:"0", nit:"CF"
                 // direntrega: "", dirplanta: null, telpbx: "", teldirecto: "", telfax: null, telcel: "", correo: "", idordencedula: "", regcedula: null, dpi: "",
                 // cargolegal: "", nomlegal: "", apellidolegal: "", nomadmon: "", mailadmon: "", nompago: "", mailcont: "", idcuentac: "", creadopor: "", fhcreacion: "", actualizadopor: "",
                 // fhactualizacion: "",contratos: ""
