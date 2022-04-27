@@ -184,10 +184,11 @@
         $scope.getRecCli = function(idreccli){
             reciboClientesSrvc.getReciboCliente(idreccli).then(function(d){
                 $scope.reccli = procDataRecs(d)[0];
-                if($scope.reccli.idcliente == 0){
+                console.log($scope.reccli.idcliente == 0 && $scope.reccli.nit != 'CF');
+                if ($scope.reccli.idcliente == 0 && $scope.reccli.nit != 'CF') {
                     $scope.reccli.objCliente = $filter('getById')($scope.clientes, $scope.reccli.nit);
                 }
-                else{
+                else {
                     $scope.reccli.objCliente = $filter('getById')($scope.clientes, $scope.reccli.idcliente);
                 };
                 $scope.reccli.objTranBan = [$filter('getById')($scope.tranban, $scope.reccli.idtranban)];
