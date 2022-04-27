@@ -73,7 +73,7 @@ $app->post('/lstreciboscli', function(){
         $query.= $d->ban_numerostr != '' ? "AND c.numero = '$d->ban_numerostr' " : "" ;
         $query.= $d->ban_cuentastr != '' ? "AND a.idcliente != 0 " : "" ;
         $query.= $d->correstr != '' ? "AND a.id = $d->correstr " : "" ;
-    $query.="ORDER BY 1, 18, 19";
+    $query.="ORDER BY 1 DESC";
     print $db->doSelectASJson($query);
 });
 //Fin modificacion
@@ -103,7 +103,7 @@ $app->get('/getrecibocli/:idrecibo', function($idrecibo){
             LEFT JOIN banco e ON e.id = c.idbanco 
             LEFT JOIN moneda f ON f.id = e.idmoneda
             LEFT JOIN serierecli g ON a.id = g.idrecibocli 
-            WHERE a.id = $idrecibo AND (a.nit = 0 or a.nit IS NULL) AND (a.idcliente = 0 or a.idcliente IS NULL)
+            WHERE a.id = $idrecibo AND (a.nit = 0 or a.nit IS NULL) AND (a.idcliente = 0 or a.idcliente IS NULL OR a.nit = 'CF')
             UNION ALL
             SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, 
             c.tipotrans, c.numero AS notranban, e.nombre, 
@@ -116,7 +116,7 @@ $app->get('/getrecibocli/:idrecibo', function($idrecibo){
             LEFT JOIN banco e ON e.id = c.idbanco 
             LEFT JOIN moneda f ON f.id = e.idmoneda 
             LEFT JOIN serierecli g ON a.id = g.idrecibocli
-            WHERE a.id = $idrecibo AND a.idcliente = 0 ";
+            WHERE a.id = $idrecibo AND a.idcliente = 0 AND a.nit != 'CF' ";
     print $db->doSelectASJson($query);
 });
 
