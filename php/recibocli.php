@@ -42,7 +42,7 @@ $app->post('/lstreciboscli', function(){
     FROM recibocli a LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
     LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda LEFT JOIN detpagorecli g ON g.idreccli = a.id  LEFT JOIN pagosreccli h ON g.tipotrans = h.id 
     LEFT JOIN bancopais i ON g.idbanco = i.id LEFT JOIN moneda j ON g.idmoneda = j.id LEFT JOIN serierecli k ON k.idrecibocli = a.id
-    WHERE a.idempresa = $d->idempresa AND a.tipo = $d->tipo AND (a.idcliente = 0 OR a.idcliente IS NULL) AND (a.nit = 0 OR a.nit IS NULL)";
+    WHERE a.idempresa = $d->idempresa AND a.tipo = $d->tipo AND (a.idcliente = 0 OR a.idcliente IS NULL) AND (a.nit = 0 OR a.nit IS NULL OR a.nit = 'CF')";
     $query.= $d->fdelstr != '' ? "AND a.fecha >= '$d->fdelstr' " : "" ;
     $query.= $d->falstr != '' ? "AND a.fecha <= '$d->falstr' " : "" ;
     $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : "" ;
@@ -63,7 +63,7 @@ $app->post('/lstreciboscli', function(){
     LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
     LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda LEFT JOIN detpagorecli g ON g.idreccli = a.id LEFT JOIN pagosreccli h ON g.tipotrans = h.id 
     LEFT JOIN bancopais i ON g.idbanco = i.id LEFT JOIN moneda j ON g.idmoneda = j.id LEFT JOIN serierecli k ON k.idrecibocli = a.id
-    WHERE a.idempresa = $d->idempresa AND a.tipo = $d->tipo AND (a.idcliente = 0 OR a.idcliente IS NULL)";
+    WHERE a.idempresa = $d->idempresa AND a.tipo = $d->tipo AND (a.idcliente = 0 OR a.idcliente IS NULL) AND a.nit != 'CF'";
         $query.= $d->fdelstr != '' ? "AND a.fecha >= '$d->fdelstr' " : "" ;
         $query.= $d->falstr != '' ? "AND a.fecha <= '$d->falstr' " : "" ;
         $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : "" ;
