@@ -73,7 +73,7 @@ $app->post('/lstreciboscli', function(){
         $query.= $d->ban_numerostr != '' ? "AND c.numero = '$d->ban_numerostr' " : "" ;
         $query.= $d->ban_cuentastr != '' ? "AND a.idcliente != 0 " : "" ;
         $query.= $d->correstr != '' ? "AND a.id = $d->correstr " : "" ;
-    $query.="ORDER BY 1, 18, 19";
+    $query.="ORDER BY 1 DESC";
     print $db->doSelectASJson($query);
 });
 //Fin modificacion
