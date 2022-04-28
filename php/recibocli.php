@@ -407,7 +407,7 @@ $app->post('/prtrecibocli', function() {
                     DAY(a.fecha) AS dia,
                     MONTH(a.fecha) AS mes,
                     YEAR(a.fecha) AS anio,
-                    IFNULL(f.nombre, d.nombre) AS cliente,
+                    IFNULL(f.nombre, IFNULL(d.nombre, 'Clientes Varios')) AS cliente,
                     NULL AS montoletras,
                     a.concepto,
                     g.nomempresa AS empresa
@@ -422,7 +422,7 @@ $app->post('/prtrecibocli', function() {
                         LEFT JOIN
                     moneda e ON d.idmoneda = e.id
                         LEFT JOIN
-                    cliente f ON a.idcliente = f.id
+                    cliente f ON a.idcliente = f.id AND a.nit != 'CF'
                         INNER JOIN
                     empresa g ON a.idempresa = g.id
                 WHERE
@@ -495,6 +495,14 @@ $app->post('/dp', function(){
     $db->doQuery("DELETE FROM detpagorecli WHERE id = $d->id");
 });
 
+$app->post('/up', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $query = "UPDATE detpagorecli SET numero = $d->numero, idbanco = $d->idbanco, idmoneda = $d->idmoneda, 
+            monto = $d->monto, tipotrans = $d->idtipotrans WHERE id = $d->id ";
+    $db->doQuery($query);
+});
+
 $app->get('/getpagorecli/:idrecibo', function($idrecibo){
     $db = new dbcpm();
     $query = "SELECT 
@@ -503,7 +511,7 @@ $app->get('/getpagorecli/:idrecibo', function($idrecibo){
                 IFNULL(b.numero, e.descripcion) AS numero,
                 IFNULL(c.nombre, '') AS banco,
                 d.simbolo AS moneda,
-                b.monto, 
+                FORMAT(b.monto, 2) AS monto, 
                 e.abreviatura AS tipotrans
             FROM
                 recibocli a
@@ -534,7 +542,7 @@ $app->get('/getlstrecpend/:idempresa', function($idempresa){
                             detcobroventa b
                         WHERE
                             a.id = b.idrecibocli) AS montorec,
-                    IFNULL(b.nombre, c.nombre) AS cliente,
+                    IFNULL(b.nombre, IFNULL(c.nombre, 'Clientes Varios')) AS cliente,
                     a.concepto,
                     (SELECT 
                             GROUP_CONCAT(c.serie, '-', c.numero
@@ -550,7 +558,7 @@ $app->get('/getlstrecpend/:idempresa', function($idempresa){
                         LEFT JOIN
                     cliente b ON a.idcliente = b.id
                         LEFT JOIN
-                    factura c ON a.nit = c.nit
+                    factura c ON a.nit = c.nit AND a.nit != 'CF'
                         LEFT JOIN
                     serierecli d ON d.idrecibocli = a.id
             WHERE
@@ -575,14 +583,14 @@ $app->get('/getlstrec/:idempresa', function($idempresa){
                         detcobroventa b
                     WHERE
                         a.id = b.idrecibocli) AS montorec,
-                IFNULL(b.nombre, c.nombre) AS cliente,
+                IFNULL(b.nombre, IFNULL(c.nombre, 'Clientes Varios')) AS cliente,
                 a.concepto
             FROM
                 recibocli a
                     LEFT JOIN
                 cliente b ON a.idcliente = b.id
                     LEFT JOIN
-                factura c ON a.nit = c.nit
+                factura c ON a.nit = c.nit AND a.nit != 'CF'
                     LEFT JOIN
                 serierecli d ON d.idrecibocli = a.id
             WHERE
@@ -590,6 +598,17 @@ $app->get('/getlstrec/:idempresa', function($idempresa){
                     AND a.tipo = 1
                     AND a.anulado = 0
                     AND a.idempresa = $idempresa ";
+    print $db->doSelectASJson($query);
+});
+
+$app->get('/getpago/:idpago', function($idpago){
+    $db = new dbcpm();
+    $query = "SELECT 
+                id, numero, idbanco, idmoneda, ROUND(monto, 2) AS monto, tipotrans AS idtipotrans
+            FROM
+                detpagorecli
+            WHERE
+                id = $idpago ";
     print $db->doSelectASJson($query);
 });
 

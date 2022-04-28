@@ -36,6 +36,9 @@
             },
             getLstRec: function(idempresa){
                 return comunFact.doGET(urlBase + '/getlstrec/' + idempresa);
+            },
+            getPagoRec: function(idpago){
+                return comunFact.doGET(urlBase + '/getpago/' + idpago);
             }
         };
  
