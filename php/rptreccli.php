@@ -123,7 +123,7 @@ $app->post('/correlativo', function(){
                             LEFT JOIN
                         cliente d ON d.id = a.idcliente
                             LEFT JOIN
-                        factura e ON e.nit = a.nit AND a.nit = 'CF'
+                        factura e ON e.nit = a.nit AND a.nit != 'CF'
                             LEFT JOIN
                         detcobroventa f ON f.idrecibocli = a.id
                             LEFT JOIN
