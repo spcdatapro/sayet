@@ -164,8 +164,8 @@ $app->post('/correlativo', function(){
                             LEFT JOIN
                         proyecto i ON h.idproyecto = i.id
                     WHERE
-                        a.tipo = 1 AND a.fecha >= 20220328
-                            AND a.fecha <= 20220331
+                        a.tipo = 1 AND a.fecha >= '$d->fdelstr'
+                            AND a.fecha <= '$d->falstr'
                             AND i.id = $proyecto->idproyecto
                             AND a.anulado = 0
                     ORDER BY i.nomproyecto ASC , a.serie ASC , IFNULL(IF(a.serie = 'A', b.seriea, b.serieb),
@@ -215,8 +215,8 @@ $app->post('/correlativo', function(){
                         LEFT JOIN
                     proyecto i ON h.idproyecto = i.id
                 WHERE
-                    a.tipo = 1 AND a.fecha >= 20220328
-                        AND a.fecha <= 20220331
+                    a.tipo = 1 AND a.fecha >= '$d->fdelstr'
+                        AND a.fecha <= '$d->falstr'
                         AND a.idempresa = $empresa->idempresa
                         AND a.anulado = 0
                 ORDER BY a.id DESC ";
@@ -292,8 +292,8 @@ $app->post('/correlativo', function(){
                     LEFT JOIN
                 proyecto i ON h.idproyecto = i.id
             WHERE
-                a.tipo = 1 AND a.fecha >= 20220328
-                    AND a.fecha <= 20220331
+                a.tipo = 1 AND a.fecha >= '$d->fdelstr'
+                    AND a.fecha <= '$d->falstr'
                     AND a.idempresa IN($grparray->idempresa)
                     AND a.anulado = 0
             ORDER BY a.id DESC ";
