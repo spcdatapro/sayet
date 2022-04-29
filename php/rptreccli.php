@@ -181,14 +181,22 @@ $app->post('/correlativo', function(){
                         IFNULL(IFNULL(SUBSTRING(d.nombre, 1, 39),
                                         SUBSTRING(e.nombre, 1, 39)),
                                 'Cientes varios') AS cliente,
-                        (SELECT 
-                                CONCAT(c.simbolo, '.', FORMAT(SUM(b.monto), 2))
-                            FROM
-                                detpagorecli b
-                                    INNER JOIN
-                                moneda c ON c.id = b.idmoneda
-                            WHERE
-                                b.idreccli = a.id) AS totrecibo,
+                                (SELECT 
+                                    CONCAT(c.simbolo, '.', FORMAT(SUM(b.monto), 2))
+                                FROM
+                                    detpagorecli b
+                                        INNER JOIN
+                                    moneda c ON c.id = b.idmoneda
+                                WHERE
+                                    b.idreccli = a.id AND b.idmoneda = 1) AS totreciboqtz,
+                            (SELECT 
+                                    CONCAT(c.simbolo, '.', FORMAT(SUM(b.monto), 2))
+                                FROM
+                                    detpagorecli b
+                                        INNER JOIN
+                                    moneda c ON c.id = b.idmoneda
+                                WHERE
+                                    b.idreccli = a.id AND b.idmoneda = 2) AS totrecibodlr,
                         i.nomproyecto AS proyecto,
                         IF(j.idmoneda = 2, 1, NULL) AS esdolares
                     FROM
@@ -200,7 +208,7 @@ $app->post('/correlativo', function(){
                             LEFT JOIN
                         cliente d ON d.id = a.idcliente
                             LEFT JOIN
-                        factura e ON e.nit = a.nit
+                        factura e ON e.nit = a.nit AND a.nit = 'CF'
                             LEFT JOIN
                         detcobroventa f ON f.idrecibocli = a.id
                             LEFT JOIN
@@ -223,180 +231,181 @@ $app->post('/correlativo', function(){
             a.id) ASC ";   
             $proyecto->recibos = $db->getQuery($query);
 
+            // id de recibos por proyecto
+            $query = "SELECT DISTINCT
+                        GROUP_CONCAT(a.id) AS recibos
+                    FROM
+                        recibocli a
+                            LEFT JOIN
+                        serierecli b ON a.id = b.idrecibocli
+                            INNER JOIN
+                        empresa c ON c.id = a.idempresa
+                            LEFT JOIN
+                        detcobroventa f ON f.idrecibocli = a.id
+                            LEFT JOIN
+                        factura g ON g.id = f.idfactura
+                            LEFT JOIN
+                        contrato h ON g.idcontrato = h.id
+                            LEFT JOIN
+                        proyecto i ON h.idproyecto = i.id
+                    WHERE
+                        a.tipo = 1 AND a.fecha >= 20220328
+                            AND a.fecha <= 20220331
+                            AND i.id = $proyecto->idproyecto
+                            AND a.anulado = 0
+                    ORDER BY i.nomproyecto ASC , a.serie ASC , IFNULL(IF(a.serie = 'A', b.seriea, b.serieb),
+                            a.id) ASC ";
+            $idrecpry = $db->getQuery($query)[0];
+
             // suma de monto recibos por proyecto
             $query = "SELECT 
-                        (SELECT 
-                            IFNULL(CONCAT(h.simbolo, '.', FORMAT(SUM(g.monto), 2)), CONCAT('Q', '.', 0.00))
-                        FROM
-                            recibocli a
-                                INNER JOIN
-                            detcobroventa b ON b.idrecibocli = a.id
-                                INNER JOIN
-                            factura c ON c.id = b.idfactura
-                                INNER JOIN
-                            moneda d ON d.id = c.idmonedafact
-                                INNER JOIN
-                            contrato e ON c.idcontrato = e.id
-                                INNER JOIN 
-                            proyecto f ON e.idproyecto = f.id
-								INNER JOIN 
-							detpagorecli g ON g.idreccli = a.id
-								INNER JOIN 
-							moneda h ON h.id = g.idmoneda 
-                        WHERE
-                            a.fecha >= '$d->fdelstr'
-                                AND a.fecha <= '$d->falstr' ";
-            $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
-            $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';
-            $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
-            $query.= $d->idproyecto != 0 ? "AND f.id = $d->idproyecto ": '';
-            $query.=" AND f.id = $proyecto->idproyecto
-                        AND g.idmoneda = 1) AS montoempresaQ,
-                (SELECT 
-                    IFNULL(CONCAT(h.simbolo, '.', FORMAT(SUM(g.monto), 2)), CONCAT('$', '.', 0.00))
+            (SELECT 
+                    IFNULL(CONCAT(b.simbolo, FORMAT(SUM(a.monto), 2)),
+                                CONCAT('Q', 0.00))
                 FROM
-                    recibocli a
+                    detpagorecli a
                         INNER JOIN
-                    detcobroventa b ON b.idrecibocli = a.id
-                        INNER JOIN
-                    factura c ON c.id = b.idfactura
-                        INNER JOIN
-                    moneda d ON d.id = c.idmonedafact
-                        INNER JOIN
-                    contrato e ON c.idcontrato = e.id
-                        INNER JOIN 
-                    proyecto f ON e.idproyecto = f.id
-						INNER JOIN 
-					detpagorecli g ON g.idreccli = a.id
-						INNER JOIN 
-					moneda h ON h.id = g.idmoneda 
+                    moneda b ON b.id = a.idmoneda
                 WHERE
-                    a.fecha >= '$d->fdelstr'
-                        AND a.fecha <= '$d->falstr' ";
-            $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
-            $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';
-            $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
-            $query.= $d->idproyecto != 0 ? "AND f.id = $d->idproyecto ": '';
-            $query.=" AND f.id = $proyecto->idproyecto
-                    AND g.idmoneda = 2) AS montoempresa$ ";
+                    a.idreccli IN ($idrecpry->recibos)
+                        AND a.idmoneda = 1) AS montopryqtz,
+            (SELECT 
+                    IFNULL(CONCAT(b.simbolo, FORMAT(SUM(a.monto), 2)),
+                                CONCAT('$', 0.00))
+                FROM
+                    detpagorecli a
+                        INNER JOIN
+                    moneda b ON b.id = a.idmoneda
+                WHERE
+                    a.idreccli IN ($idrecpry->recibos)
+                        AND a.idmoneda = 2) AS montoprydls ";
             $proyecto->totalproy = $db->getQuery($query);
         }
-                   
+         
+        // id de recibos por empresa
+        $query = "SELECT DISTINCT
+                    GROUP_CONCAT(a.id) AS recibos
+                FROM
+                    recibocli a
+                        LEFT JOIN
+                    serierecli b ON a.id = b.idrecibocli
+                        INNER JOIN
+                    empresa c ON c.id = a.idempresa
+                        LEFT JOIN
+                    detcobroventa f ON f.idrecibocli = a.id
+                        LEFT JOIN
+                    factura g ON g.id = f.idfactura
+                        LEFT JOIN
+                    contrato h ON g.idcontrato = h.id
+                        LEFT JOIN
+                    proyecto i ON h.idproyecto = i.id
+                WHERE
+                    a.tipo = 1 AND a.fecha >= 20220328
+                        AND a.fecha <= 20220331
+                        AND a.idempresa = $empresa->idempresa
+                        AND a.anulado = 0
+                ORDER BY a.id DESC ";
+        $idrecemp = $db->getQuery($query)[0];
+        
         // suma de monto recibos por empresa
         $query = "SELECT 
-                    (SELECT 
-                        IFNULL(CONCAT(h.simbolo, '.', FORMAT(SUM(g.monto), 2)), CONCAT('Q', '.', 0.00))
-                    FROM
-                        recibocli a
-                            INNER JOIN
-                        detcobroventa b ON b.idrecibocli = a.id
-                            INNER JOIN
-                        factura c ON c.id = b.idfactura
-                            INNER JOIN
-                        moneda d ON d.id = c.idmonedafact
-                            INNER JOIN
-                        contrato e ON c.idcontrato = e.id
-                            INNER JOIN 
-                        proyecto f ON e.idproyecto = f.id
-							INNER JOIN 
-						detpagorecli g ON g.idreccli = a.id
-							INNER JOIN 
-						moneda h ON h.id = g.idmoneda 
-                    WHERE
-                        a.fecha >= '$d->fdelstr'
-                            AND a.fecha <= '$d->falstr' ";
-        $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
-        $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';
-        $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
-        $query.= $d->idproyecto != 0 ? "AND f.id = $d->idproyecto ": '';
-        $query.=" AND a.idempresa = $empresa->idempresa
-                    AND g.idmoneda = 1) AS montoempresaQ,
-                    (SELECT 
-                        IFNULL(CONCAT(h.simbolo, '.', FORMAT(SUM(g.monto), 2)), CONCAT('$', '.', 0.00))
-                    FROM
-                        recibocli a
-                            INNER JOIN
-                        detcobroventa b ON b.idrecibocli = a.id
-                            INNER JOIN
-                        factura c ON c.id = b.idfactura
-                            INNER JOIN
-                        moneda d ON d.id = c.idmonedafact
-                            INNER JOIN
-                        contrato e ON c.idcontrato = e.id
-                            INNER JOIN 
-                        proyecto f ON e.idproyecto = f.id
-							INNER JOIN 
-						detpagorecli g ON g.idreccli = a.id
-							INNER JOIN 
-						moneda h ON h.id = g.idmoneda 
-                    WHERE
-                        a.fecha >= '$d->fdelstr'
-                            AND a.fecha <= '$d->falstr' ";
-        $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
-        $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';
-        $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
-        $query.= $d->idproyecto != 0 ? "AND f.id = $d->idproyecto ": '';
-        $query.=" AND a.idempresa = $empresa->idempresa
-                AND g.idmoneda = 2) AS montoempresa$ ";
+        (SELECT 
+                IFNULL(CONCAT(b.simbolo, FORMAT(SUM(a.monto), 2)),
+                            CONCAT('Q', 0.00))
+            FROM
+                detpagorecli a
+                    INNER JOIN
+                moneda b ON b.id = a.idmoneda
+            WHERE
+                a.idreccli IN ($idrecemp->recibos)
+                    AND a.idmoneda = 1) AS montoempqtz,
+        (SELECT 
+                IFNULL(CONCAT(b.simbolo, FORMAT(SUM(a.monto), 2)),
+                            CONCAT('$', 0.00))
+            FROM
+                detpagorecli a
+                    INNER JOIN
+                moneda b ON b.id = a.idmoneda
+            WHERE
+                a.idreccli IN ($idrecemp->recibos)
+                    AND a.idmoneda = 2) AS montoempdls ";
         $empresa->totalemp = $db->getQuery($query);
     }
 
+    // idempresas
+    $query = "SELECT DISTINCT
+                GROUP_CONCAT(a.idempresa) AS idempresa            
+            FROM
+                recibocli a
+                    INNER JOIN
+                empresa b ON b.id = a.idempresa
+                    LEFT JOIN 
+                detcobroventa c ON a.id = c.idrecibocli
+                    LEFT JOIN 
+                factura d ON d.id = c.idfactura
+                    LEFT JOIN
+                contrato e ON d.idcontrato = e.id
+                    LEFT JOIN
+                proyecto f ON e.idproyecto = f.id
+            WHERE
+                a.fecha >= '$d->fdelstr'
+                    AND a.fecha <= '$d->falstr' ";
+            $query.= $d->idempresa != 0 ? "AND a.idempresa = $d->idempresa " : '';
+            $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';               
+            $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
+            $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
+            $query.= $d->idproyecto != 0 ? "AND f.id = $d->idproyecto ": '';
+            $query.="ORDER BY b.id ASC ";
+            $grparray = $db->getQuery($query)[0];
+
+
+    // idrecibo de todas las empresas
+    $query = "SELECT DISTINCT
+                GROUP_CONCAT(a.id) AS recibos
+            FROM
+                recibocli a
+                    LEFT JOIN
+                serierecli b ON a.id = b.idrecibocli
+                    INNER JOIN
+                empresa c ON c.id = a.idempresa
+                    LEFT JOIN
+                detcobroventa f ON f.idrecibocli = a.id
+                    LEFT JOIN
+                factura g ON g.id = f.idfactura
+                    LEFT JOIN
+                contrato h ON g.idcontrato = h.id
+                    LEFT JOIN
+                proyecto i ON h.idproyecto = i.id
+            WHERE
+                a.tipo = 1 AND a.fecha >= 20220328
+                    AND a.fecha <= 20220331
+                    AND a.idempresa IN($grparray->idempresa)
+                    AND a.anulado = 0
+            ORDER BY a.id DESC ";
+    $idrectod = $db->getQuery($query)[0];
+
     // suma de monto de todas las empresas
     $query = "SELECT 
-        (SELECT 
-            IFNULL(CONCAT(h.simbolo, '.', FORMAT(SUM(g.monto), 2)), CONCAT('Q', '.', 0.00))
-        FROM
-            recibocli a
-            INNER JOIN
-            detcobroventa b ON b.idrecibocli = a.id
-            INNER JOIN
-            factura c ON c.id = b.idfactura
-            INNER JOIN
-            moneda d ON d.id = c.idmonedafact
-            INNER JOIN
-            contrato e ON c.idcontrato = e.id
-            INNER JOIN 
-            proyecto f ON e.idproyecto = f.id
-		    INNER JOIN 
-		    detpagorecli g ON g.idreccli = a.id
-		    INNER JOIN 
-		    moneda h ON h.id = g.idmoneda 
-        WHERE
-            a.fecha >= '$d->fdelstr'
-                AND a.fecha <= '$d->falstr' ";
-    $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
-    $query.= $d->idempresa != 0 ? "AND a.idempresa = $d->idempresa " : '';
-    $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';
-    $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
-    $query.= $d->idproyecto != 0 ? "AND f.id = $d->idproyecto ": '';
-    $query.=" AND g.idmoneda = 1) AS montoQ,
     (SELECT 
-            IFNULL(CONCAT(h.simbolo, '.', FORMAT(SUM(g.monto), 2)), CONCAT('$', '.', 0.00))
+            IFNULL(CONCAT(b.simbolo, FORMAT(SUM(a.monto), 2)),
+                        CONCAT('Q', 0.00))
         FROM
-            recibocli a
-            INNER JOIN
-            detcobroventa b ON b.idrecibocli = a.id
-            INNER JOIN
-            factura c ON c.id = b.idfactura
-            INNER JOIN
-            moneda d ON d.id = c.idmonedafact
-            INNER JOIN
-            contrato e ON c.idcontrato = e.id
-            INNER JOIN 
-            proyecto f ON e.idproyecto = f.id
-		    INNER JOIN 
-		    detpagorecli g ON g.idreccli = a.id
-		    INNER JOIN 
-		    moneda h ON h.id = g.idmoneda 
+            detpagorecli a
+                INNER JOIN
+            moneda b ON b.id = a.idmoneda
         WHERE
-            a.fecha >= '$d->fdelstr'
-                AND a.fecha <= '$d->falstr' ";
-    $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
-    $query.= $d->idempresa != 0 ? "AND a.idempresa = $d->idempresa " : '';
-    $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';
-    $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
-    $query.= $d->idproyecto != 0 ? "AND f.id = $d->idproyecto ": '';
-    $query.=" AND g.idmoneda = 2) AS monto$ ";
+            a.idreccli IN ($idrectod->recibos)
+                AND a.idmoneda = 1) AS montoempqtz,
+    (SELECT 
+            IFNULL(CONCAT(b.simbolo, FORMAT(SUM(a.monto), 2)),
+                        CONCAT('$', 0.00))
+        FROM
+            detpagorecli a
+                INNER JOIN
+            moneda b ON b.id = a.idmoneda
+        WHERE
+            a.idreccli IN ($idrectod->recibos)
+                AND a.idmoneda = 2) AS montoempdls ";
     $totalgen = $db->getQuery($query)[0];
 
     print json_encode(['generales' => $generales, 'empresas' => $empresas, 'totalesgen' => $totalgen]);
