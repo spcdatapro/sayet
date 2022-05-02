@@ -204,11 +204,12 @@ $app->post('/rptecuentacli', function(){
 										 ifnull(d.tipotrans, IF(c.tipo = 1, 'P', c.serie)) as tipotrans,
 
 										 round((b.monto*if(a.idmoneda=1,1,a.tipocambio)),2) as monto,
-										 concat(c.serie,IFNULL(c.numero, c.id)) as recibo
+										 concat(c.serie, IFNULL(IF(c.serie = 'A', e.seriea, e.serieb ), c.id)) as recibo
 									from sayet.factura a
 										inner join sayet.detcobroventa b on a.id=b.idfactura
 										inner join sayet.recibocli c on b.idrecibocli=c.id
 										left join sayet.tranban d on c.idtranban=d.id
+										LEFT JOIN sayet.serierecli e ON e.idrecibocli = c.id 
 									where a.idtipofactura <> 9 and c.anulado=0 
 										and c.fecha<='" . $d->falstr . "' and a.id=" . $hac->venta . " and a.idmoneda = " . $dmon->idmoneda . "";
 							$qdetpago.= (int)$d->idcontrato == 0 ? '' : " AND a.idcontrato = $d->idcontrato ";
