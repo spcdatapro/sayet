@@ -116,11 +116,12 @@
             }
         });
 
-        $scope.$watch('elDocSop.fechadoc', function (newValue, oldValue) {
-            if (newValue != null && newValue != undefined) {
-                $scope.chkFechaEnPeriodo(newValue, 'd');
-            }
-        });
+        // error en validacion
+        // $scope.$watch('elDocSop.fechadoc', function (newValue, oldValue) {
+        //     if (newValue != null && newValue != undefined) {
+        //         $scope.chkFechaEnPeriodo(newValue, 'd');
+        //     }
+        // });
 
         $scope.getTranInicial = function () {
             var idtranbanini = localStorageSrvc.get('idtranban');
