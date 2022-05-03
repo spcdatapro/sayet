@@ -58,6 +58,7 @@
         $scope.periodoCerrado = false;
         $scope.presupuesto = {};
         $scope.ot = {};
+        $scope.cargando = false;
 
 
         //Infinite Scroll Magic
@@ -153,6 +154,7 @@
 
         $scope.getLstTran = function () {
             if ($scope.laTran.objBanco != null && $scope.laTran.objBanco !== undefined) {
+                $scope.cargando = true;
                 $scope.laTran.tipocambio = parseFloat($scope.laTran.objBanco.tipocambio).toFixed($scope.dectc);
                 $scope.cleanInfo();
                 $scope.fltrtran.idbanco = $scope.laTran.objBanco.id;
@@ -175,6 +177,7 @@
                         tranBancSrvc.lstTranFiltr($scope.fltrtran).then(function (y){
                             $scope.lstchq = prepareTranBan(y);
                             $scope.fltrtran.tipotrans = '';
+                            $scope.cargando = false;
                         });
                     });
                 });
@@ -505,6 +508,7 @@
         $scope.getDataTran = function (idtran) {
             $scope.editando = true;
             $scope.liquidacion = [];
+            $scope.cargando = true;
             presupuestoSrvc.lstPagosOt($scope.laEmpresa.id).then(function (d) { $scope.ots = d; });
             tranBancSrvc.getTransaccion(parseInt(idtran)).then(function (d) {
                 $scope.laTran = processData(d)[0];
@@ -540,11 +544,13 @@
 
                 cuentacSrvc.getByTipo($scope.laEmpresa.id, 0).then(function (ctas) {
                     $scope.lasCuentasMov = ctas;
+                    $scope.cargando = false;
                 });
 
                 $scope.getDetCont(parseInt(idtran));
 
             });
+
         };
 
         $scope.gcprint = function (obj) {
