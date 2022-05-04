@@ -58,15 +58,13 @@
                             <div class="col-md-3" ng-show="laTran.objTipotrans.abreviatura === 'R'">
                                 <div class="form-group">
                                     <label>Cheque al que se atar&aacute;</label>
-                                    <ui-select ng-model="laTran.iddocliquida"
-                                        title="Seleccione un cheque..." theme="bootstrap"
-                                        autofocus="false" on-select="fillDataOnDocLiq($item, $model)">
-                                        <ui-select-match placeholder="Buscar cheque..."
-                                            allow-clear="true">
-                                            <span ng-bind="($select.selected.tipotrans + ' ' + $select.selected.numero)"></span>
+                                    <ui-select ng-model="laTran.iddocliquida" title="Seleccione un cheque..."
+                                        theme="bootstrap" autofocus="false" on-select="fillDataOnDocLiq($item, $model)">
+                                        <ui-select-match placeholder="Buscar cheque..." allow-clear="true">
+                                            <span
+                                                ng-bind="($select.selected.tipotrans + ' ' + $select.selected.numero)"></span>
                                         </ui-select-match>
-                                        <ui-select-choices 
-                                            repeat="item.id as item in lstchq | filter:$select.search"
+                                        <ui-select-choices repeat="item.id as item in lstchq | filter:$select.search"
                                             group-by="'grupo'">
                                             <div
                                                 ng-bind-html="(item.tipotrans + ' ' + item.numero) | highlight: $select.search">
@@ -98,18 +96,14 @@
                             <div class="col-md-6">
                                 <div class="form-group" ng-show="laTran.objTipotrans.abreviatura === 'D'">
                                     <label>Recibo a cliente</label>
-                                    <ui-select ng-model="laTran.recibocli"
-                                        title="Seleccione un recibo..." theme="bootstrap"
-                                        autofocus="false" on-select="fillDataOnRecli($item, $model)">
-                                        <ui-select-match placeholder="Buscar recibo..."
-                                            allow-clear="true">
+                                    <ui-select ng-model="laTran.recibocli" title="Seleccione un recibo..."
+                                        theme="bootstrap" autofocus="false" on-select="fillDataOnRecli($item, $model)">
+                                        <ui-select-match placeholder="Buscar recibo..." allow-clear="true">
                                             <span ng-bind="($select.selected.reccli)"></span>
                                         </ui-select-match>
-                                        <ui-select-choices 
-                                            repeat="item.id as item in recibos | filter:$select.search"
+                                        <ui-select-choices repeat="item.id as item in recibos | filter:$select.search"
                                             group-by="'grupo'">
-                                            <div
-                                                ng-bind-html="(item.reccli) | highlight: $select.search">
+                                            <div ng-bind-html="(item.reccli) | highlight: $select.search">
                                             </div>
                                         </ui-select-choices>
                                         <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
@@ -121,9 +115,8 @@
                                 <div class="form-group"
                                     ng-show="['C', 'R', 'B'].indexOf(laTran.objTipotrans.abreviatura) > -1 || ['C', 'R', 'B'].indexOf(laTran.tipotrans) > -1">
                                     <label>Orden de trabajo:</label>
-                                    <ui-select ng-model="laTran.iddetpresup"
-                                        title="Seleccione una orden de trabajo..." theme="bootstrap" autofocus="false"
-                                        on-select="fillData($item, $model)">
+                                    <ui-select ng-model="laTran.iddetpresup" title="Seleccione una orden de trabajo..."
+                                        theme="bootstrap" autofocus="false" on-select="fillData($item, $model)">
                                         <ui-select-match placeholder="Buscar orden de trabajo..." allow-clear="true">
                                             <span ng-bind="($select.selected.ot)"></span>
                                         </ui-select-match>
@@ -185,17 +178,25 @@
                                     <label for="txtMonto" class="control-label">Monto:</label>
                                     <input name="txtMonto" id="txtMonto" type="text" class="form-control"
                                         ng-model="laTran.monto" min="0" placeholder="Monto de la transacci&oacute;n"
-                                        required fcsa-number="{ maxDecimals: 2 }" ng-disabled="+laTran.retisr === 1"/>
-                                        <!--ng-change="montoMaximo()"-->
+                                        required fcsa-number="{ maxDecimals: 2 }" ng-disabled="+laTran.retisr === 1" />
+                                    <!--ng-change="montoMaximo()"-->
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group required"
                                     ng-class="{'has-error':frmTranBan.txtTC.$invalid && !frmTranBan.txtTC.$pristine}">
                                     <label for="txtTC" class="control-label">Tipo de cambio:</label>
-                                    <input name="txtTC" id="txtTC" type="text" class="form-control"
-                                        ng-model="laTran.tipocambio" min="1.0000000000" placeholder="Tipo de cambio"
-                                        required fcsa-number="{ min:1, maxDecimals: dectc }" />
+                                    <div class="input-group">
+                                        <input name="txtTC" id="txtTC" type="text" class="form-control"
+                                            ng-model="laTran.tipocambio" min="1.0000000000" placeholder="Tipo de cambio"
+                                            required fcsa-number="{ min:1, maxDecimals: dectc }" />
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-primary"
+                                                ng-click="laTran.tipocambio = tipoCambioHoy;">
+                                                <span>TC</span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -248,10 +249,12 @@
                                     <div class="form-group">
                                         <label for="txtMontoOri">Monto original del cheque:</label>
                                         <div class="input-group">
-                                        <input name="txtMontoOri" id="txtMontoOri" type="number" class="form-control"
-                                            ng-model="laTran.montooriginal" ng-disabled="+laTran.retisr === 0" />
+                                            <input name="txtMontoOri" id="txtMontoOri" type="number"
+                                                class="form-control" ng-model="laTran.montooriginal"
+                                                ng-disabled="+laTran.retisr === 0" />
                                             <div class="input-group-btn">
-                                                <button type="button" class="btn btn-primary" ng-click="calcIsr(laTran)" ng-disabled="(!laTran.montooriginal)">
+                                                <button type="button" class="btn btn-primary" ng-click="calcIsr(laTran)"
+                                                    ng-disabled="(!laTran.montooriginal)">
                                                     <!--<span class="glyphicon glyphicon-ok"></span>-->
                                                     <span>ISR</span>
                                                 </button>
@@ -294,18 +297,14 @@
                             <div class="col-md-6">
                                 <div class="form-group" ng-show="laTran.objTipotrans.abreviatura === 'R'">
                                     <label>Recibo a cliente</label>
-                                    <ui-select ng-model="laTran.recibocli"
-                                        title="Seleccione un recibo..." theme="bootstrap"
-                                        autofocus="false" on-select="fillDataOnRecli($item, $model)">
-                                        <ui-select-match placeholder="Buscar recibo..."
-                                            allow-clear="true">
+                                    <ui-select ng-model="laTran.recibocli" title="Seleccione un recibo..."
+                                        theme="bootstrap" autofocus="false" on-select="fillDataOnRecli($item, $model)">
+                                        <ui-select-match placeholder="Buscar recibo..." allow-clear="true">
                                             <span ng-bind="($select.selected.reccli)"></span>
                                         </ui-select-match>
-                                        <ui-select-choices 
-                                            repeat="item.id as item in recibos | filter:$select.search"
+                                        <ui-select-choices repeat="item.id as item in recibos | filter:$select.search"
                                             group-by="'grupo'">
-                                            <div
-                                                ng-bind-html="(item.reccli) | highlight: $select.search">
+                                            <div ng-bind-html="(item.reccli) | highlight: $select.search">
                                             </div>
                                         </ui-select-choices>
                                         <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
@@ -346,21 +345,21 @@
                         </div>
                         <div class="btn-group" role="group" aria-label="...">
                             <button type="submit" class="btn btn-primary"
-                                ng-disabled="frmTranBan.$invalid || periodoCerrado" ng-hide="editando">
+                                ng-disabled="frmTranBan.$invalid || periodoCerrado || cargando" ng-hide="editando">
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                             </button>
                             <button type="button" class="btn btn-primary"
-                                ng-disabled="frmTranBan.$invalid || laTran.anulado === 1 || periodoCerrado"
+                                ng-disabled="frmTranBan.$invalid || laTran.anulado === 1 || periodoCerrado || cargando"
                                 ng-show="editando" ng-click="updTran(laTran, laTran.id)">
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                             </button>
                             <button type="button" class="btn btn-warning"
-                                ng-disabled="frmTranBan.$invalid || laTran.anulado === 1 || periodoCerrado"
+                                ng-disabled="frmTranBan.$invalid || laTran.anulado === 1 || periodoCerrado || cargando"
                                 ng-show="editando && laTran.tipotrans === 'C'" ng-click="anular(laTran)">
                                 <span class="glyphicon glyphicon-ban-circle"></span>
                             </button>
                             <button type="button" class="btn btn-primary"
-                                ng-disabled="frmTranBan.$invalid || periodoCerrado"
+                                ng-disabled="frmTranBan.$invalid || periodoCerrado || cargando"
                                 ng-show="editando && laTran.tipotrans === 'C'" ng-click="updTranAnul(laTran)">
                                 <span class="glyphicon glyphicon-pencil"></span>
                             </button>
@@ -385,30 +384,33 @@
                     -->
 
                             <button type="button" class="btn btn-default" ng-click="printCheque(+laTran.id)"
-                                ng-show="editando && laTran.tipotrans === 'C'">
+                                ng-show="editando && laTran.tipotrans === 'C'" ng-disabled="cargando">
                                 <span class="glyphicon glyphicon-print"></span> Cheque
                             </button>
 
                             <button type="button" class="btn btn-primary" ng-click="modalPRINT(losBancos)"
-                                ng-hide="editando">
+                                ng-hide="editando" ng-disabled="cargando">
                                 <span class="glyphicon glyphicon-print"></span> &nbsp;Cheques continuos
                             </button>
                             <button type="button" class="btn btn-danger" ng-show="editando"
-                                ng-disabled="laTran.anulado === 1 || periodoCerrado" ng-click="delTran(laTran)">
+                                ng-disabled="frmTranBan.$invalid || laTran.anulado === 1 || periodoCerrado || cargando"
+                                ng-click="delTran(laTran)">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </button>
-                            <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printVersion()">
+                            <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printVersion()"
+                                ng-disabled="cargando">
                                 <span class="glyphicon glyphicon-print"></span>
                             </button>
-                            <button type="button" class="btn btn-primary" ng-show="editando"
+                            <button type="button" class="btn btn-primary" ng-show="editando" ng-disabled="cargando"
                                 ng-click="printSelloFactura(laTran.id)">
                                 <span>Sello factura</span>
                             </button>
-                            <button type="button" class="btn btn-primary" ng-show="editando"
+                            <button type="button" class="btn btn-primary" ng-show="editando" ng-disabled="cargando"
                                 ng-click="printSelloNotaCredito(laTran.id)">
                                 <span>Sello NC</span>
                             </button>
-                            <button type="button" class="btn btn-primary" ng-show="editando" ng-click="resetLaTran()">
+                            <button type="button" class="btn btn-primary" ng-show="editando" ng-disabled="cargando"
+                                ng-click="resetLaTran()">
                                 <span class="glyphicon glyphicon-plus"></span>
                             </button>
                         </div>
@@ -536,7 +538,7 @@
                         </div>
                         <div class="btn-group" role="group" aria-label="...">
                             <button type="submit" class="btn btn-success"
-                                ng-disabled="frmDocSop.$invalid || laTran.anulado === 1 || periodoCerrado">
+                                ng-disabled="frmDocSop.$invalid || laTran.anulado === 1 || periodoCerrado || cargando">
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                             </button>
                         </div>
@@ -587,10 +589,10 @@
                         <td ng-show="showme" style="text-align: right"><input type="text" name="editmonto" id="editmonto" value="{{lds.monto | number:2}}" ></td>
 
                         <td>
-                            <button type="button" class="btn btn-primary btn-sm" ng-click="editDetRecCli(lds)" ng-disabled="periodoCerrado">
+                            <button type="button" class="btn btn-primary btn-sm" ng-click="editDetRecCli(lds)" ng-disabled="periodoCerrado || cargando">
                                 <span class="glyphicon glyphicon-edit"></span>
                             </button>
-                            <button type="button" class="btn btn-danger btn-sm" ng-click="delDetRecCli(lds)" ng-disabled="periodoCerrado">
+                            <button type="button" class="btn btn-danger btn-sm" ng-click="delDetRecCli(lds)" ng-disabled="periodoCerrado || cargando">
                                 <span class="glyphicon glyphicon-trash"></span></button>
                         </td>
                     </script>
@@ -608,10 +610,10 @@
                         </td>
 
                         <td>
-                            <button type="button" class="btn btn-success btn-sm" ng-click="updateDetRecCli(lds)">
+                            <button type="button" class="btn btn-success btn-sm" ng-click="updateDetRecCli(lds)" ng-disabled="cargando">
                                 <span class="glyphicon glyphicon-check"></span>
                             </button>
-                            <button type="button" class="btn btn-danger btn-sm" ng-click="reset(lds)">
+                            <button type="button" class="btn btn-danger btn-sm" ng-click="reset(lds)" ng-disabled="cargando">
                             <span class="glyphicon glyphicon-share"></span>
                             </button>
                         </td>
@@ -741,7 +743,7 @@
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
                                     <button type="submit" class="btn btn-info"
-                                        ng-disabled="frmDetContTB.$invalid || laTran.anulado === 1 || periodoCerrado">
+                                        ng-disabled="frmDetContTB.$invalid || laTran.anulado === 1 || periodoCerrado || cargando">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
                                 </div>
@@ -805,13 +807,14 @@
                                         <div class="btn-group" role="group" aria-label="...">
                                             <button type="button" class="btn btn-info btn-sm" ng-click="updDetCont(dc)"
                                                 ng-hide="dc.id == 0" data-toggle="tooltip" data-placement="auto"
-                                                title="Modificar este detalle contable..." ng-disabled="periodoCerrado">
+                                                title="Modificar este detalle contable..."
+                                                ng-disabled="periodoCerrado || cargando">
                                                 <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                                             </button>
                                             <button type="button" class="btn btn-danger btn-sm"
                                                 ng-click="delDetCont(dc)" ng-hide="dc.id == 0" data-toggle="tooltip"
                                                 data-placement="auto" title="Eliminar este detalle contable..."
-                                                ng-disabled="periodoCerrado">
+                                                ng-disabled="periodoCerrado || cargando">
                                                 <span class="glyphicon glyphicon-trash"></span>
                                             </button>
                                         </div>
@@ -851,13 +854,14 @@
                                         <div class="btn-group" role="group" aria-label="...">
                                             <button type="button" class="btn btn-info btn-sm" ng-click="updDetCont(dc)"
                                                 ng-hide="dc.id == 0" data-toggle="tooltip" data-placement="auto"
-                                                title="Modificar este detalle contable..." ng-disabled="periodoCerrado">
+                                                title="Modificar este detalle contable..."
+                                                ng-disabled="periodoCerrado || cargando">
                                                 <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                                             </button>
                                             <button type="button" class="btn btn-danger btn-sm"
                                                 ng-click="delDetCont(dc)" ng-hide="dc.id == 0" data-toggle="tooltip"
                                                 data-placement="auto" title="Eliminar este detalle contable..."
-                                                ng-disabled="periodoCerrado">
+                                                ng-disabled="periodoCerrado || cargando">
                                                 <span class="glyphicon glyphicon-trash"></span>
                                             </button>
                                         </div>
@@ -1052,4 +1056,3 @@
         });
     });
 </script>
-
