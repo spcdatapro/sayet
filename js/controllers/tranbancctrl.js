@@ -2,9 +2,9 @@
 
     var tranbancctrl = angular.module('cpm.tranbancctrl', ['cpm.tranbacsrvc']);
 
-    tranbancctrl.controller('tranBancCtrl', ['$scope', 'tranBancSrvc', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'tipoDocSopTBSrvc', 'tipoMovTranBanSrvc', 'periodoContableSrvc', 'toaster', 'detContSrvc', 'cuentacSrvc', '$confirm', '$filter', '$uibModal', 'razonAnulacionSrvc', 'presupuestoSrvc', 'jsReportSrvc', '$window', 'localStorageSrvc', 'proyectoSrvc', 'socketIOSrvc', 'reciboClientesSrvc', function ($scope, tranBancSrvc, authSrvc, bancoSrvc, empresaSrvc, DTOptionsBuilder, tipoDocSopTBSrvc, tipoMovTranBanSrvc, periodoContableSrvc, toaster, detContSrvc, cuentacSrvc, $confirm, $filter, $uibModal, razonAnulacionSrvc, presupuestoSrvc, jsReportSrvc, $window, localStorageSrvc, proyectoSrvc, socketIOSrvc, reciboClientesSrvc) {
+    tranbancctrl.controller('tranBancCtrl', ['$scope', 'tranBancSrvc', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'tipoDocSopTBSrvc', 'tipoMovTranBanSrvc', 'periodoContableSrvc', 'toaster', 'detContSrvc', 'cuentacSrvc', '$confirm', '$filter', '$uibModal', 'razonAnulacionSrvc', 'presupuestoSrvc', 'jsReportSrvc', '$window', 'localStorageSrvc', 'proyectoSrvc', 'socketIOSrvc', 'reciboClientesSrvc', 'tipoCambioSrvc', function ($scope, tranBancSrvc, authSrvc, bancoSrvc, empresaSrvc, DTOptionsBuilder, tipoDocSopTBSrvc, tipoMovTranBanSrvc, periodoContableSrvc, toaster, detContSrvc, cuentacSrvc, $confirm, $filter, $uibModal, razonAnulacionSrvc, presupuestoSrvc, jsReportSrvc, $window, localStorageSrvc, proyectoSrvc, socketIOSrvc, reciboClientesSrvc, tipoCambioSrvc) {
 
-        $scope.laTran = { fecha: new Date(), concepto: '', anticipo: 0, idbeneficiario: 0, tipocambio: parseFloat('1.00').toFixed($scope.dectc), esnegociable: 0 };
+        $scope.laTran = { fecha: new Date(), concepto: '', anticipo: 0, idbeneficiario: 0, tipocambio: parseFloat('1.00000'), esnegociable: 0 };
         $scope.laEmpresa = {};
         $scope.lasEmpresas = [];
         $scope.losBancos = [];
@@ -25,7 +25,7 @@
         $scope.beneficiarios = [];
         $scope.compraspendientes = [];
         $scope.razonesanula = [];
-        $scope.dectc = 2;
+        $scope.dectc = 5;
         $scope.ots = [];
         $scope.compras = [];
         $scope.hayDescuadre = false;
@@ -38,6 +38,7 @@
         //$scope.tipotrans = [{value: 'C', text: 'C'}, {value: 'D', text: 'D'}, {value: 'B', text: 'B'}, {value: 'R', text: 'R'}];
         $scope.tipotrans = [];
         $scope.lstndc = [];
+        $scope.tipoCambioHoy = {};
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true);
         $scope.dtOptionsDetCont = DTOptionsBuilder.newOptions().withBootstrap()
             .withBootstrapOptions({
@@ -81,6 +82,10 @@
             $scope.lasEmpresas = d;
         });
 
+        tipoCambioSrvc.getLastTC().then(function (d) {
+            $scope.tipoCambioHoy = +d.lasttc;
+        });
+
         tipoMovTranBanSrvc.lstTiposMovTB().then(function (d) { $scope.tipotrans = d; });
         tranBancSrvc.lstBeneficiarios().then(function (d) { $scope.beneficiarios = d; });
         razonAnulacionSrvc.lstRazones().then(function (d) { $scope.razonesanula = d; });
@@ -97,8 +102,8 @@
                     $scope.getLstBancos();
                     presupuestoSrvc.lstPagosOt($scope.laEmpresa.id, ($scope.ot.id || 0)).then(function (d) { $scope.ots = d; });
                     proyectoSrvc.lstProyectosPorEmpresa($scope.laEmpresa.id).then(function (d) { $scope.proyectos = d; });
-                    reciboClientesSrvc.lstRecPend($scope.laEmpresa.id).then(function (d){ $scope.recibos = d; });
-                    reciboClientesSrvc.getLstRec($scope.laEmpresa.id).then(function(d){ $scope.recibo = d; });
+                    reciboClientesSrvc.lstRecPend($scope.laEmpresa.id).then(function (d) { $scope.recibos = d; });
+                    reciboClientesSrvc.getLstRec($scope.laEmpresa.id).then(function (d) { $scope.recibo = d; });
                 });
             }
         });
@@ -155,10 +160,10 @@
         $scope.getLstTran = function () {
             if ($scope.laTran.objBanco != null && $scope.laTran.objBanco !== undefined) {
                 $scope.cargando = true;
-                $scope.laTran.tipocambio = parseFloat($scope.laTran.objBanco.tipocambio).toFixed($scope.dectc);
+                $scope.laTran.tipocambio = parseFloat($scope.laTran.objBanco.tipocambio);
                 $scope.cleanInfo();
                 $scope.fltrtran.idbanco = $scope.laTran.objBanco.id;
-                 //console.log($scope.ot);
+                //console.log($scope.ot);
                 if (+$scope.ot.id > 0) {
                     $scope.fltrtran.fdelstr = '';
                     $scope.fltrtran.falstr = '';
@@ -174,7 +179,7 @@
                     tranBancSrvc.lstTranFiltr($scope.fltrtran).then(function (dr) {
                         $scope.lstndc = prepareTranBan(dr);
                         $scope.fltrtran.tipotrans = 'C';
-                        tranBancSrvc.lstTranFiltr($scope.fltrtran).then(function (y){
+                        tranBancSrvc.lstTranFiltr($scope.fltrtran).then(function (y) {
                             $scope.lstchq = prepareTranBan(y);
                             $scope.fltrtran.tipotrans = '';
                             $scope.cargando = false;
@@ -212,7 +217,7 @@
                 concepto: '',
                 anticipo: 0,
                 idbeneficiario: 0,
-                tipocambio: parseFloat('1').toFixed($scope.dectc),
+                tipocambio: parseFloat('1'),
                 esnegociable: 0,
                 iddetpresup: undefined,
                 iddetpagopresup: undefined,
@@ -322,22 +327,22 @@
             $scope.laTran.objBeneficiario = tmpObjBene.length > 0 ? tmpObjBene[0] : undefined;
             $scope.setNombreBene($scope.laTran.objBeneficiario);
             tranBancSrvc.getMontoOt(item.id).then(d => {
-                $scope.montoMax = d.monto; 
+                $scope.montoMax = d.monto;
             });
 
-            if ( !$scope.laTran.concepto ) {
+            if (!$scope.laTran.concepto) {
                 $scope.laTran.concepto = 'Orden de trabajo ' + item.ot + ' [' + item.notas + ']';
             } else {
-                    $scope.laTran.concepto = $scope.laTran.concepto + ' / ' + 'Orden de trabajo ' + item.ot + ' [' + item.notas + ']';    
-                }
-            
+                $scope.laTran.concepto = $scope.laTran.concepto + ' / ' + 'Orden de trabajo ' + item.ot + ' [' + item.notas + ']';
+            }
+
 
             /*if ($scope.laTran.concepto.length > 0) {
                 $scope.laTran.concepto = $scope.laTran.concepto + ' / ' + 'Orden de trabajo ' + item.ot + ' [' + item.notas + ']'; 
             } 
                 else ( $scope.laTran.concepto.length = undefined ) 
                     $scope.laTran.concepto =  'Orden de trabajo ' + item.ot + ' [' + item.notas + ']';*/
-             
+
 
             /*if (item && item.notas && item.notas.trim() !== '') {
                 if (!$scope.laTran.concepto || $scope.laTran.concepto.trim() == '') {
@@ -349,12 +354,12 @@
 
             //$scope.laTran.idproyecto = item.idproyecto;
 
-            $scope.laTran.tipocambio = parseFloat(item.tipocambio).toFixed($scope.dectc);
+            $scope.laTran.tipocambio = parseFloat(item.tipocambio);
             //$scope.laTran.monto = (+$scope.laTran.objBanco.idmoneda != +item.idmoneda) ? parseFloat(parseFloat(item.valor) * parseFloat($scope.laTran.tipocambio)).toFixed(2) : parseFloat(item.valor).toFixed(2);
             //$scope.laTran.iddetpresup = item.id;
         };
 
-        
+
         $scope.fillDataOnDocLiq = function (item, model) {
             var tmpObjBene = $filter('filter')($scope.beneficiarios, { id: item.idbeneficiario, dedonde: item.origenbene }, true);
             $scope.laTran.objBeneficiario = tmpObjBene.length > 0 ? tmpObjBene[0] : undefined;
@@ -420,7 +425,7 @@
                 //data[i].origenbene = parseInt(data[i].origenbene);
                 data[i].anulado = parseInt(data[i].anulado);
                 data[i].fechaanula = moment(data[i].fechaanula).toDate();
-                data[i].tipocambio = parseFloat(parseFloat(data[i].tipocambio).toFixed($scope.dectc));
+                data[i].tipocambio = parseFloat(parseFloat(data[i].tipocambio));
                 data[i].impreso = parseInt(data[i].impreso);
                 data[i].fechaliquida = moment(data[i].fechaliquida).isValid() ? moment(data[i].fechaliquida).toDate() : null;
                 data[i].iddetpagopresup = data[i].iddetpagopresup === 0 ? (+data[i].iddetpresup === 0 ? undefined : data[i].iddetpresup) : data[i].iddetpagopresup;
@@ -429,7 +434,7 @@
                 data[i].retisr = parseInt(data[i].retisr);
                 data[i].montooriginal = parseFloat(parseFloat(data[i].montooriginal).toFixed(2));
                 data[i].isr = parseFloat(parseFloat(data[i].isr).toFixed(2));
-                data[i].montocalcisr = parseFloat(parseFloat(data[i].montocalcisr).toFixed(2)); 
+                data[i].montocalcisr = parseFloat(parseFloat(data[i].montocalcisr).toFixed(2));
                 //data[i].iddetpresup = data[i].iddetpresup; 
                 //data[i].iddetpresup = +data[i].ot;            
             }
@@ -787,7 +792,7 @@
             */
         };
 
-        $scope.updTranAnul = (obj) => {            
+        $scope.updTranAnul = (obj) => {
             const modalInstance = $uibModal.open({
                 animation: true,
                 templateUrl: 'editarAnulacion.html',
@@ -802,26 +807,26 @@
                 $scope.getDataTran(+obj.id);
             }, () => { });
         };
-        
+
         $scope.printSelloFactura = (idtranban) => jsReportSrvc.getPDFReport('S1Uc-8wYv', { idtranban: idtranban }).then((pdf) => $window.open(pdf));
 
         $scope.printSelloNotaCredito = (idtranban) => jsReportSrvc.getPDFReport('S1H3T8uFw', { idtranban: idtranban }).then((pdf) => $window.open(pdf));
 
-        $scope.calcIsr = function(obj) {
+        $scope.calcIsr = function (obj) {
             //console.log(obj); return;
-            tranBancSrvc.calcIsr(obj).then(function(d) {
+            tranBancSrvc.calcIsr(obj).then(function (d) {
                 $scope.laTran.isr = d.isr,
-                $scope.laTran.monto = d.monto
+                    $scope.laTran.monto = d.monto
             });
-        };    
+        };
     }]);
 
     //------------------------------------------------------------------------------------------------------------------------------------------------//
     tranbancctrl.controller('ModalUpdAnulaCtrl', ['$scope', '$uibModalInstance', 'transaccion', 'tranBancSrvc', function ($scope, $uibModalInstance, transaccion, tranBancSrvc) {
-        $scope.transaccion = transaccion;        
+        $scope.transaccion = transaccion;
         $scope.params = { id: $scope.transaccion.id, fechaanula: moment().toDate(), fechaanulastr: undefined };
 
-        $scope.ok = function () {            
+        $scope.ok = function () {
             $scope.params.fechaanulastr = moment($scope.params.fechaanula).isValid() ? moment($scope.params.fechaanula).format('YYYY-MM-DD') : '';
             tranBancSrvc.editRow($scope.params, 'uda').then(() => $uibModalInstance.close());
         };
