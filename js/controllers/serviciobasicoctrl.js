@@ -2,7 +2,7 @@
 
     var serviciobasicoctrl = angular.module('cpm.serviciobasicoctrl', []);
 
-    serviciobasicoctrl.controller('servicioBasicoCtrl', ['$scope', 'servicioBasicoSrvc', 'tipoServicioVentaSrvc', 'empresaSrvc', '$filter', '$confirm', 'DTOptionsBuilder', 'proveedorSrvc', 'toaster', '$uibModal', 'authSrvc', function ($scope, servicioBasicoSrvc, tipoServicioVentaSrvc, empresaSrvc, $filter, $confirm, DTOptionsBuilder, proveedorSrvc, toaster, $uibModal, authSrvc) {
+    serviciobasicoctrl.controller('servicioBasicoCtrl', ['$scope', 'servicioBasicoSrvc', 'tipoServicioVentaSrvc', 'empresaSrvc', '$filter', '$confirm', 'DTOptionsBuilder', 'proveedorSrvc', 'toaster', '$uibModal', 'authSrvc', 'unidadSrvc', function ($scope, servicioBasicoSrvc, tipoServicioVentaSrvc, empresaSrvc, $filter, $confirm, DTOptionsBuilder, proveedorSrvc, toaster, $uibModal, authSrvc, unidadSrvc) {
 
         $scope.tipos = [];
         $scope.empresas = [];
@@ -13,6 +13,7 @@
         $scope.histocantbase = [];
         $scope.losProyectos = [];
         $scope.lasUnidades = [];
+        $scope.unidades = [];
         $scope.meses = [
             {id: 1, mes: 'Enero'}, {id: 2, mes: 'Febrero'}, {id: 3, mes: 'Marzo'}, {id: 4, mes: 'Abril'}, {id: 5, mes: 'Mayo'}, {id: 6, mes: 'Junio'},
             {id: 7, mes: 'Julio'}, {id: 8, mes: 'Agosto'}, {id: 9, mes: 'Septiembre'}, {id: 10, mes: 'Octubre'}, {id: 11, mes: 'Noviembre'}, {id: 12, mes: 'Diciembre'}
@@ -20,6 +21,7 @@
         $scope.anio = [moment().year()]
         $scope.showForm = { servbas: false };
         $scope.usrdata = {};
+        $scope.uid = 0;
 
         authSrvc.getSession().then(function (usrLogged) { $scope.usrdata = usrLogged; });
 
@@ -38,6 +40,20 @@
         empresaSrvc.lstEmpresas().then(function (d) { $scope.empresas = d; });
         proveedorSrvc.lstProveedores().then(function (d) { $scope.proveedores = d });
 
+        //empresa en que trabjan para unidad de serivicio
+        authSrvc.getSession().then(async function (usrLogged) {
+            $scope.uid = +usrLogged.uid;
+            usrLogged.workingon = usrLogged.workingon;
+            // console.log(usrLogged.workingon);
+            if (parseInt(usrLogged.workingon) > 0) {
+                empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function (d) {
+                    $scope.laEmpresa = d[0];
+                    $scope.dectc = parseInt(d[0].dectc);
+                    unidadSrvc.getUnidades($scope.laEmpresa.id).then(function (d) { $scope.unidades = d });
+                });
+            }
+        });
+
         function procDataServ(d) {
             for (var i = 0; i < d.length; i++) {
                 d[i].id = parseInt(d[i].id);
@@ -52,6 +68,8 @@
                 d[i].fechabaja = moment(d[i].fechabaja).isValid() ? moment(d[i].fechabaja).toDate() : undefined;
                 d[i].nivel = parseInt(d[i].nivel);
                 d[i].cobrar = parseInt(d[i].cobrar);
+                d[i].fechapre = parseInt(d[i].fechapre);
+                d[i].fechaemi = parseInt(d[i].fechaemi);
             }
             return d;
         }
@@ -64,10 +82,12 @@
 
         $scope.getServicio = function (idservicio) {
             servicioBasicoSrvc.getServicioBasico(idservicio).then(function (d) {
+                console.log($scope.servicio.idunidad);
                 $scope.servicio = procDataServ(d)[0];
                 $scope.servicio.objTipo = $filter('getById')($scope.tipos, $scope.servicio.idtiposervicio);
                 $scope.servicio.objProveedor = $filter('getById')($scope.proveedores, $scope.servicio.idproveedor);
                 $scope.servicio.objEmpresa = $filter('getById')($scope.empresas, $scope.servicio.idempresa);
+                $scope.servicio.unidad = $filter('getById')($scope.unidades, $scope.servicio.idunidad);
                 servicioBasicoSrvc.historico(idservicio).then(function (d) { $scope.historico = d; });
                 servicioBasicoSrvc.historicoCantBase(idservicio).then(function (d) {
                     for (var i = 0; i < d.length; i++) { d[i].fechacambio = moment(d[i].fechacambio).toDate(); }
@@ -78,7 +98,7 @@
             });
         };
 
-        $scope.resetservicio = function () { $scope.servicio = { pagacliente: 0, preciomcubsug: 0.00, mcubsug: 0.00, espropio: '1', debaja: 0, fechabaja: undefined, notas: undefined, idpadre: undefined }; };
+        $scope.resetservicio = function () { $scope.servicio = { pagacliente: 0, preciomcubsug: 0.00, mcubsug: 0.00, espropio: '1', debaja: 0, fechabaja: undefined, notas: undefined, idpadre: undefined, unidad: undefined, idunidad: 0 }; };
 
         function setObjSend(obj) {
             obj.idtiposervicio = obj.objTipo.id;
@@ -94,7 +114,10 @@
             obj.cobrar = obj.cobrar != null && obj.cobrar != undefined ? obj.cobrar : 0;
             obj.notas = obj.notas != null && obj.notas != undefined ? obj.notas : '';
             obj.idpadre = obj.idpadre != null && obj.idpadre != undefined ? obj.idpadre : 0;
-
+            obj.fechapre = obj.fechapre != null && obj.fechapre != undefined ? obj.fechapre : 0;
+            obj.fechaemi = obj.fechaemi != null && obj.fechaemi != undefined ? obj.fechaemi : 0;
+            obj.idunidad = obj.unidad != null && obj.unidad != undefined ? +obj.unidad: 0;
+            // console.log(obj); return;
             return obj;
         }
 

@@ -199,7 +199,7 @@
             <div class="panel panel-success">
                 <div class="panel-heading">Servicio(s)&nbsp;<span class="badge">{{unidadStr}}</span></div>
                 <div class="panel-body">
-                    <form name="frmServicios" id="frmServicios" ng-submit="frmServicios.$valid && addServicio(serviciounidad)" novalidate>
+                    <!-- <form name="frmServicios" id="frmServicios" ng-submit="frmServicios.$valid && addServicio(serviciounidad)" novalidate>
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group" ng-class="{'has-error':frmServicios.selServicio.$invalid && !frmServicios.selServicio.$pristine}">
@@ -221,25 +221,26 @@
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                             </button>
                         </div>
-                    </form>
+                    </form> -->
                     <hr/>
                     <table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover table-condensed">
                         <thead>
                         <tr>
-                            <th>Servicio</th>
-                            <th>Descripcion</th>
-                            <th>&nbsp;</th>
+                            <th style="text-align: center;">Servicio</th>
+                            <th style="text-align: center;">No. Indentificacion</th>
+                            <th style="text-align: center;">No. Referencia</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr ng-repeat="s in serviciosunidades">
-                            <td>{{s.tiposervicio}}</td>
-                            <td>{{s.descripcion}}</td>
-                            <td>
+                            <td style="text-align: center;">{{s.tiposervicio}}</td>
+                            <td style="text-align: center;">{{s.numidentificacion}}</td>
+                            <td style="text-align: center;">{{s.numreferencia}}</td>
+                            <!-- <td>
                                 <button type="button" class="btn btn-danger" ng-click="delServicio(s.id)">
                                     <span class="glyphicon glyphicon-trash"></span>
                                 </button>
-                            </td>
+                            </td> -->
                         </tr>
                         </tbody>
                     </table>

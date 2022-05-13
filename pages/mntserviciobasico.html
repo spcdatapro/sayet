@@ -107,7 +107,35 @@
                                         ng-model="servicio.pagacliente" ng-true-value="1" ng-false-value="0" />
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                            <div class="col-md-6" ng-hide="+servicio.espropio === 1">
+                                <div class="form-group">
+                                    <label for="selPadre">Unidad que pertenece:</label>
+                                    <ui-select name="selUnidad" id="selUnidad" ng-model="servicio.unidad"
+                                        title="Seleccione una unidad..." theme="bootstrap" append-to-body="true"
+                                        ng-required="false">
+                                        <ui-select-match placeholder="Buscar unidad..." allow-clear="true">
+                                            <span ng-bind="$select.selected.unidad"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices
+                                            repeat="item.id as item in unidades | filter:$select.search">
+                                            <div ng-bind-html="item.nombre | highlight: $select.search">
+                                            </div>
+                                            <small>
+                                                <strong>Empresa:</strong>&nbsp;<span
+                                                    ng-bind-html="item.empresa | highlight: $select.search"></span><br />
+                                                <strong>Proyecto:</strong>&nbsp;<span
+                                                    ng-bind-html="item.proyecto | highlight: $select.search"></span><br />
+                                                <!-- <strong>Unidad:</strong>&nbsp;<span
+                                                    ng-bind-html="item.nombre | highlight: $select.search"></span><br /> -->
+                                            </small>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>
+                                            No hay resultados...
+                                        </ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="col-md-5" ng-hide="servicio.espropio == 0">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmSrvc.selPadre.$invalid && !frmSrvc.selPadre.$pristine}">
                                     <label for="selPadre">Contador padre:</label>
@@ -136,7 +164,7 @@
                                     </ui-select>
                                 </div>
                             </div>
-                            <div class="col-md-1">
+                            <div class="col-md-1" ng-hide="+servicio.espropio == 0">
                                 <div class="form-group">
                                     <label for="chkCobrar">¿Cobrar?</label>
                                     <input name="chkCobrar" id="chkCobrar" type="checkbox" class="form-control"
@@ -168,6 +196,22 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row" ng-hide="+servicio.espropio == 1">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fhcrepre">D&iacute;a de presentaci&oacute;n de factura:</label>
+                                    <input name="fhcrepre" id="fhcrepre" type="number" class="form-control" placeholder="D&iacute;a de presentaci&oacute;n" 
+                                    ng-model="servicio.fechapre"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fhcemicion">D&iacute;a de emisi&oacute;n:</label>
+                                    <input name="fhcemicion" id="fhcemicion" type="number" class="form-control" placeholder="D&iacute;a de emisi&oacute;n"
+                                        ng-model="servicio.fechaemi" />
+                                </div>
+                            </div>    
+                        </div>
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -183,7 +227,7 @@
                                 ng-hide="servicio.id > 0">
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                             </button>
-                            <button type="button" class="btn btn-info" ng-disabled="frmSrvc.$invalid"
+                            <button type="button" class="btn btn-info" ng-disabled=""
                                 ng-show="servicio.id > 0" ng-click="updServicio(servicio)">
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                             </button>

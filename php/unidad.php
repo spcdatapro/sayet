@@ -74,10 +74,20 @@ $app->post('/d', function(){
 $app->get('/servicios/:idunidad', function($idunidad){
     $db = new dbcpm();
     $conn = $db->getConn();
-    $query = "SELECT a.id, a.idunidad, a.idtiposervicio, b.descripcion AS tiposervicio, a.descripcion ";
-    $query.= "FROM unidadservicio a INNER JOIN tiposervicio b ON b.id = a.idtiposervicio ";
-    $query.= "WHERE a.idunidad = ".$idunidad." ";
-    $query.= "ORDER BY b.descripcion, a.descripcion";
+    $query = "SELECT 
+                a.id,
+                a.idunidad,
+                a.idtiposervicio,
+                b.desctiposervventa AS tiposervicio,
+                a.numidentificacion,
+                a.numreferencia
+            FROM
+                serviciobasico a
+                    INNER JOIN
+                tiposervicioventa b ON b.id = a.idtiposervicio
+            WHERE
+                a.idunidad = $idunidad
+            ORDER BY b.desctiposervventa";
     $data = $conn->query($query)->fetchAll(5);
     print json_encode($data);
 });
@@ -162,6 +172,26 @@ $app->post('/dd', function(){
     $conn = $db->getConn();
     $query = "DELETE FROM detunidacont WHERE id = ".$d->id;
     $del = $conn->query($query);
+});
+
+$app->get('/getunidades/:idempresa', function($idempresa){
+    $db = new dbcpm();
+    $query = "SELECT
+                a.id, 
+                a.nombre,
+                b.nomempresa AS empresa,
+                c.nomproyecto AS proyecto,
+                CONCAT(c.nomproyecto, ': ', a.nombre) AS unidad
+            FROM
+                unidad a
+                    INNER JOIN
+                empresa b ON b.id = a.idempresa
+                    INNER JOIN
+                proyecto c ON c.id = a.idproyecto
+            WHERE
+                a.idempresa = $idempresa
+            ORDER BY a.nombre ASC ";
+    print $db->doSelectASJson($query);
 });
 
 $app->run();

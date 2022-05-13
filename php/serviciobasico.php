@@ -10,7 +10,7 @@ $app->get('/lstservicios/:idempresa', function($idempresa){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idtiposervicio, b.desctiposervventa AS tiposervicio, a.idproveedor, c.nombre AS proveedor, ";
     $query.= "a.numidentificacion, a.numreferencia, a.idempresa, d.nomempresa AS empresa, a.pagacliente, a.preciomcubsug, a.mcubsug, a.espropio, a.ubicadoen, a.debaja, a.fechabaja, ";
-    $query.= "a.idpadre, a.nivel, a.cobrar, e.numidentificacion AS contadorpadre, a.notas, a.asignado ";
+    $query.= "a.idpadre, a.nivel, a.cobrar, e.numidentificacion AS contadorpadre, a.notas, a.asignado, a.diapre, a.diaemi ";
     $query.= "FROM serviciobasico a LEFT JOIN tiposervicioventa b ON b.id = a.idtiposervicio LEFT JOIN proveedor c ON c.id = a.idproveedor ";
     $query.= "LEFT JOIN empresa d ON d.id = a.idempresa LEFT JOIN serviciobasico e ON e.id = a.idpadre ";
     $query.= (int)$idempresa > 0 ? "WHERE d.id = $idempresa " : "";
@@ -22,7 +22,7 @@ $app->get('/getservicio/:idservicio', function($idservicio){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idtiposervicio, b.desctiposervventa AS tiposervicio, a.idproveedor, c.nombre AS proveedor, ";
     $query.= "a.numidentificacion, a.numreferencia, a.idempresa, d.nomempresa AS empresa, a.pagacliente, a.preciomcubsug, a.mcubsug, a.espropio, a.ubicadoen, a.debaja, a.fechabaja, ";
-    $query.= "a.idpadre, a.nivel, a.cobrar, e.numidentificacion AS contadorpadre, a.notas, a.asignado ";
+    $query.= "a.idpadre, a.nivel, a.cobrar, e.numidentificacion AS contadorpadre, a.notas, a.asignado, a.diapre AS fechapre, a.diaemi AS fechaemi, a.idunidad ";
     $query.= "FROM serviciobasico a LEFT JOIN tiposervicioventa b ON b.id = a.idtiposervicio LEFT JOIN proveedor c ON c.id = a.idproveedor ";
     $query.= "LEFT JOIN empresa d ON d.id = a.idempresa LEFT JOIN serviciobasico e ON e.id = a.idpadre ";
     $query.= "WHERE a.id = $idservicio";
@@ -79,10 +79,10 @@ $app->post('/c', function(){
 	$d->idpadre = (int)$d->idpadre > 0 ? $d->idpadre : 0;
     $notas = $d->notas = '' ? 'NULL' : "'$d->notas'";
     $query = "INSERT INTO serviciobasico(idtiposervicio, idproveedor, numidentificacion, numreferencia, idempresa, ";
-    $query.= "pagacliente, preciomcubsug, mcubsug, espropio, ubicadoen, idpadre, nivel, cobrar, notas) VALUES(";
+    $query.= "pagacliente, preciomcubsug, mcubsug, espropio, ubicadoen, idpadre, nivel, cobrar, notas, diapre, diaemi, idunidad) VALUES(";
     $query.= "$d->idtiposervicio, $d->idproveedor, '$d->numidentificacion', '$d->numreferencia', $d->idempresa, ";
-    $query.= "$d->pagacliente, $d->preciomcubsug, $d->mcubsug, $d->espropio, '$d->ubicadoen', $d->idpadre, $nivel, $d->cobrar, $notas";
-    $query.= ")";
+    $query.= "$d->pagacliente, $d->preciomcubsug, $d->mcubsug, $d->espropio, '$d->ubicadoen', $d->idpadre, $nivel, $d->cobrar, $notas, ";
+    $query.= "$d->fechapre, $d->fechaemi, $d->idunidad) ";
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
 });
@@ -97,7 +97,8 @@ $app->post('/u', function(){
     $query.= "idtiposervicio = $d->idtiposervicio, idproveedor = $d->idproveedor, numidentificacion = '$d->numidentificacion', ";
     $query.= "numreferencia = '$d->numreferencia', idempresa = $d->idempresa, pagacliente = $d->pagacliente, ";
     $query.= "preciomcubsug = $d->preciomcubsug, mcubsug = $d->mcubsug, espropio = $d->espropio, ubicadoen = '$d->ubicadoen', ";
-    $query.= "debaja = $d->debaja, fechabaja = $d->fechabajastr, idpadre = $d->idpadre, nivel = $nivel, cobrar = $d->cobrar, notas = $notas ";
+    $query.= "debaja = $d->debaja, fechabaja = $d->fechabajastr, idpadre = $d->idpadre, nivel = $nivel, cobrar = $d->cobrar, notas = $notas, ";
+    $query.= "diapre = $d->fechapre, diaemi = $d->fechaemi, idunidad = $d->idunidad ";
     $query.= "WHERE id = $d->id";
     $db->doQuery($query);
 
