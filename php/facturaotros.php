@@ -65,7 +65,7 @@ function actualizaContratoClienteCF($db, $idfactura)
         $fac = $factura[0];
         $query = "SELECT id FROM contrato WHERE inactivo = 0 AND idempresa = $fac->idempresa AND idcliente = 207 AND idproyecto = $fac->idproyecto LIMIT 1";
         $idcontrato = (int)$db->getOneField($query);
-        if ($idcontrato === NULL)
+        if ($idcontrato == 0)
         {
             $query = "INSERT INTO contrato(idcliente, idempresa, idproyecto, inactivo, nocontrato, idunidad, idcuentac, idusuariocopia) VALUES(";
             $query.= "207, $fac->idempresa, $fac->idproyecto, 0, 'CF".$fac->idempresa.$fac->idproyecto."', '', '', 0";

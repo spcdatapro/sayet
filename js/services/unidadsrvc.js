@@ -26,6 +26,9 @@
             },
             editRow: function(obj, op){
                 return comunFact.doPOST(urlBase + '/' + op, obj);
+            },
+            getUnidades: function(idempresa){
+                return comunFact.doGET(urlBase + '/getunidades/' + idempresa);
             }
         };
         return unidadSrvc;
