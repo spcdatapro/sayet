@@ -151,7 +151,7 @@ $app->post('/resumen', function () use ($db) {
             $query = "SELECT ";
             $query .= "(SUM(a.descigss) + SUM(a.descisr) + ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * 0.1267), 2) + SUM(a.descanticipo + a.liquido + a.descprestamo)) AS totplanilla ";
             $query .= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado ";
-            $query .= "WHERE a.esbonocatorce <> 1 AND a.fecha > '$d->anio-$d->mes-15' AND MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio AND b.idproyecto = $d->idproyecto";
+            $query .= "WHERE a.esbonocatorce <> 1 AND a.fecha > '$d->anio-$d->mes-15' AND MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio AND b.idproyecto = $d->idproyecto AND a.idempresa = $d->idempresa ";
             $datosPlanilla = $db->getQuery($query);
             if (count($datosPlanilla) > 0) {
                 $pln = $datosPlanilla[0];
