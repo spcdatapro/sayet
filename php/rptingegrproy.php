@@ -151,7 +151,7 @@ $app->post('/resumen', function () use ($db) {
             $query = "SELECT ";
             $query .= "(SUM(a.descigss) + SUM(a.descisr) + ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * 0.1267), 2) + SUM(a.descanticipo + a.liquido + a.descprestamo)) AS totplanilla ";
             $query .= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado ";
-            $query .= "WHERE a.esbonocatorce <> 1 AND a.fecha > '$d->anio-$d->mes-15' AND MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio AND b.idproyecto = $d->idproyecto AND b.idempresaactual = $d->idempresa ";
+            $query .= "WHERE a.esbonocatorce <> 1 AND a.fecha > '$d->anio-$d->mes-15' AND MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio AND b.idproyecto = $d->idproyecto AND a.idempresa = $d->idempresa ";
             $datosPlanilla = $db->getQuery($query);
             if (count($datosPlanilla) > 0) {
                 $pln = $datosPlanilla[0];
@@ -387,7 +387,7 @@ $app->post('/detalle', function () use ($db) {
         $query .= "(SUM(a.descigss) + SUM(a.descisr) + ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * 0.1267), 2) + SUM(a.descanticipo + a.liquido + a.descprestamo)) AS totplanilla, SUM(a.devengado) AS devengado, ";
         $query .= "SUM(a.bonocatorce) AS bonocatorce, SUM(a.aguinaldo) AS aguinaldo ";
         $query .= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado ";
-        $query .= "WHERE a.esbonocatorce <> 1 AND a.fecha > '$d->anio-$d->mes-15' AND MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio AND b.idproyecto = $d->idproyecto";
+        $query .= "WHERE a.esbonocatorce <> 1 AND a.fecha > '$d->anio-$d->mes-15' AND MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio AND b.idproyecto = $d->idproyecto AND a.idempresa = $d->idempresa ";
         $datosPlanilla = $db->getQuery($query);
         if (count($datosPlanilla) > 0 || count($datosPlanillaEspecial) > 0) {
             $pln = $datosPlanilla[0];
@@ -690,7 +690,7 @@ function getEgresosPlanilla($db, $d, $mes, $anio, $solosuma = true)
         $query .= "(SUM(a.descigss) + SUM(a.descisr) + ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * 0.1267), 2) + SUM(a.descanticipo + a.liquido + a.descprestamo)) AS totplanilla, SUM(a.devengado) AS devengado, ";
         $query .= "SUM(a.bonocatorce) AS bonocatorce, SUM(a.aguinaldo) AS aguinaldo ";
         $query .= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado ";
-        $query .= "WHERE a.esbonocatorce <> 1 AND a.fecha > '$anio-$mes-15' AND MONTH(a.fecha) = $mes AND YEAR(a.fecha) = $anio AND b.idproyecto = $d->idproyecto";
+        $query .= "WHERE a.esbonocatorce <> 1 AND a.fecha > '$anio-$mes-15' AND MONTH(a.fecha) = $mes AND YEAR(a.fecha) = $anio AND b.idproyecto = $d->idproyecto AND a.idempresa = $d->idempresa ";
         $datosPlanilla = $db->getQuery($query);
         if (count($datosPlanilla) > 0 || count($datosPlanillaEspecial) > 0) {
             $pln = $datosPlanilla[0];
