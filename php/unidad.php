@@ -185,11 +185,11 @@ $app->get('/getunidades/:idempresa', function($idempresa){
             FROM
                 unidad a
                     INNER JOIN
-                empresa b ON b.id = a.idempresa
-                    INNER JOIN
                 proyecto c ON c.id = a.idproyecto
+					INNER JOIN 
+				empresa b ON c.idempresa = b.id
             WHERE
-                a.idempresa = $idempresa
+                c.idempresa = $idempresa
             ORDER BY a.nombre ASC ";
     print $db->doSelectASJson($query);
 });
