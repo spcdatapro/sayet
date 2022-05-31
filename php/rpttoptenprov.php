@@ -12,7 +12,7 @@ $app->post('/rpttopten', function(){
     // Top diez proveedores 
     $query = "SELECT 
                 a.id,
-                a.nombre,
+                SUBSTRING(a.nombre, 1, 19) AS nombre,
                 a.nit,
                 (SELECT 
                         FORMAT(IF(b.idtipocompra = 3,
@@ -69,6 +69,16 @@ $app->post('/rpttopten', function(){
                             AND b.idempresa = $d->idempresa
                             AND b.idreembolso = 0) AS totiva,
                 (SELECT 
+                        ROUND(SUM(b.iva), 2)
+                    FROM
+                        compra b
+                    WHERE
+                        b.idproveedor = a.id AND b.mesiva = $d->mes
+                            AND YEAR(b.fechafactura) = $d->anio
+                            AND b.idtipofactura != 5
+                            AND b.idempresa = $d->idempresa
+                            AND b.idreembolso = 0) AS sumiva,
+                (SELECT 
                         ROUND(SUM((b.subtotal + IF(b.idtipocompra = 3, 0.00, b.noafecto)) * b.tipocambio),
                                     2)
                     FROM
@@ -78,7 +88,17 @@ $app->post('/rpttopten', function(){
                             AND YEAR(b.fechafactura) = $d->anio
                             AND b.idtipofactura != 5
                             AND b.idempresa = $d->idempresa
-                            AND b.idreembolso = 0) AS total
+                            AND b.idreembolso = 0) AS total,
+                (SELECT 
+                        COUNT(b.id)
+                    FROM
+                        compra b
+                    WHERE
+                        b.idproveedor = a.id AND b.mesiva = 01
+                            AND YEAR(b.fechafactura) = 2022
+                            AND b.idtipofactura != 5
+                            AND b.idempresa = 4
+                            AND b.idreembolso = 0) AS cuantas
             FROM
                 proveedor a
             WHERE
@@ -122,9 +142,50 @@ $app->post('/rpttopten', function(){
                         AND idempresa = $d->idempresa
                         AND idreembolso = 0 "; 
         $proveedor->facturas = $db->getQuery($query);
+
     }
 
-    print json_encode(['proveedores' => $proveedores]);
+    $query = "SELECT 
+                    a.id,
+                    (SELECT 
+                            ROUND(SUM((b.subtotal + IF(b.idtipocompra = 3, 0.00, b.noafecto)) * b.tipocambio),
+                                        2)
+                        FROM
+                            compra b
+                        WHERE
+                            b.idproveedor = a.id AND b.mesiva = 01
+                                AND YEAR(b.fechafactura) = 2022
+                                AND b.idtipofactura != 5
+                                AND b.idempresa = 4
+                                AND b.idreembolso = 0) AS total
+                FROM
+                    proveedor a
+                WHERE
+                    a.pequeniocont = 0
+                ORDER BY total DESC
+                LIMIT 10 ";
+    $idproveedor = $db->getQueryAsArray($query);
+
+    $id = $idproveedor[0][0];
+
+    for ($i = 1; $i < 10; $i++) {
+        $id .= ',';
+        $id .= $idproveedor[$i][0];
+    }
+
+    $query = "SELECT 
+                    FORMAT(SUM(iva), 2) AS iva
+                FROM
+                    compra
+                WHERE
+                    idproveedor IN($id) AND mesiva = $d->mes
+                        AND YEAR(fechafactura) = $d->anio
+                        AND idtipofactura != 5
+                        AND idempresa = $d->idempresa
+                        AND idreembolso = 0 ";
+    $sumas = $db->getQuery($query)[0];
+
+    print json_encode(['proveedores' => $proveedores, 'sumas' => $sumas]);
 });
 
 $app->run();
