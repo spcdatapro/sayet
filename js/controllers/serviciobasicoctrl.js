@@ -68,8 +68,6 @@
                 d[i].fechabaja = moment(d[i].fechabaja).isValid() ? moment(d[i].fechabaja).toDate() : undefined;
                 d[i].nivel = parseInt(d[i].nivel);
                 d[i].cobrar = parseInt(d[i].cobrar);
-                d[i].fechapre = parseInt(d[i].fechapre);
-                d[i].fechaemi = parseInt(d[i].fechaemi);
             }
             return d;
         }
@@ -82,7 +80,7 @@
 
         $scope.getServicio = function (idservicio) {
             servicioBasicoSrvc.getServicioBasico(idservicio).then(function (d) {
-                console.log($scope.servicio.idunidad);
+                // console.log($scope.servicio.idunidad);
                 $scope.servicio = procDataServ(d)[0];
                 $scope.servicio.objTipo = $filter('getById')($scope.tipos, $scope.servicio.idtiposervicio);
                 $scope.servicio.objProveedor = $filter('getById')($scope.proveedores, $scope.servicio.idproveedor);
