@@ -31,7 +31,7 @@
             $scope.elActivo = {
                 id : 0, idempresa : 0, departamento : 0, finca : '', folio : '', libro : '', horizontal : 0, direccion_cat : '', direccion_mun : '', iusi : parseFloat(0.0), por_iusi : parseFloat(0.0), valor_registro : parseFloat(0.0),
                 metros_registro : parseFloat(0.0), valor_dicabi : parseFloat(0.0), metros_dicabi : parseFloat(0.0), valor_muni : parseFloat(0.0), metros_muni : parseFloat(0.0), observaciones : '', tipo_activo : 0, nombre_corto : '',
-                nombre_largo : '', zona : 0, nomclienteajeno: '', debaja: 0, fechabaja: undefined
+                nombre_largo : '', zona : 0, nomclienteajeno: '', debaja: 0, fechabaja: undefined, arbitrio: ''
             };
             $scope.lasBitacoras = [];
             $scope.laBitacora = {};
@@ -200,6 +200,7 @@
             obj.fechacomprastr = obj.fechacompra != null && obj.fechacompra !== undefined ? moment(obj.fechacompra).format('YYYY-MM-DD') : '';
             obj.debaja = obj.debaja != null && obj.debaja !== undefined ? obj.debaja : 0;
             obj.fechabajastr = obj.fechabaja != null && obj.fechabaja !== undefined ? moment(obj.fechabaja).format('YYYY-MM-DD') : '';
+            obj.arbitrio = obj.arbitrio != null && obj.arbitrio !== undefined ? obj.arbitrio : '';
             activoSrvc.editRow(obj, 'c').then(function(d){
                 $scope.getLstActivos();
                 $scope.resetElActivo();
@@ -218,6 +219,7 @@
             data.fechacomprastr = data.fechacompra != null && data.fechacompra !== undefined ? moment(data.fechacompra).format('YYYY-MM-DD') : '';
             data.debaja = data.debaja != null && data.debaja !== undefined ? data.debaja : 0;
             data.fechabajastr = data.fechabaja != null && data.fechabaja !== undefined ? moment(data.fechabaja).format('YYYY-MM-DD') : '';
+            data.arbitrio = data.arbitrio != null && data.arbitrio !== undefined ? data.arbitrio : ''; 
             //console.log(data); //return;
             activoSrvc.editRow(data, 'u').then(function(d){
                 $scope.getLstActivos();

@@ -29,7 +29,7 @@ $app->get('/getactivo/:idactivo', function($idactivo){
     $db = new dbcpm();
     $query = "SELECT id, idempresa, nomclienteajeno, departamento, finca, folio, libro, horizontal, direccion_cat, direccion_mun, direcciondos, iusi, por_iusi, valor_registro, metros_registro, ";
     $query.= "valor_dicabi, metros_dicabi, valor_muni, metros_muni, solvencia_muni, actualizadopor, actualiza_info, observaciones, tipo_activo, nombre_corto, nombre_largo, zona, ";
-    $query.= "creadopor, fhcreacion, multilotes, fechacompra, debaja, fechabaja ";
+    $query.= "creadopor, fhcreacion, multilotes, fechacompra, debaja, fechabaja, arbitrio ";
     $query.= "FROM activo ";
     $query.= "WHERE id = $idactivo";
     $activo = $db->getQuery($query);
@@ -43,13 +43,13 @@ $app->post('/c', function(){
     $query = "INSERT INTO activo(idempresa,departamento, finca, folio, libro, horizontal, direccion_mun,";
     $query.= "iusi, por_iusi, valor_registro, metros_registro, valor_dicabi, metros_dicabi, valor_muni, metros_muni,";
     $query.= "observaciones, tipo_activo, nombre_corto, nombre_largo, zona, fhcreacion, creadopor, nomclienteajeno, ";
-    $query.= "multilotes, direcciondos, fechacompra";
+    $query.= "multilotes, direcciondos, fechacompra, arbitrio ";
     $query.= ") ";
     $query.= "VALUES(".$d->idempresa.",".$d->departamento.", '".$d->finca."', '".$d->folio."', '".$d->libro."', ".$d->horizontal;
     $query.= ", '".$d->direccion_mun."', ".$d->iusi.", ".$d->por_iusi.", ".$d->valor_registro.", ";
     $query.= $d->metros_registro.", ".$d->valor_dicabi.", ".$d->metros_dicabi.", ".$d->valor_muni.", ".$d->metros_muni;
     $query.= ", '".$d->observaciones."', ".$d->tipo_activo.", '".$d->nombre_corto."', '".$d->nombre_largo."', ".$d->zona.", NOW(), '".$d->usuario."', ";
-    $query.= "'".$d->nomclienteajeno."', ".$d->multilotes.", '".$d->direcciondos."', $d->fechacomprastr)";
+    $query.= "'".$d->nomclienteajeno."', ".$d->multilotes.", '".$d->direcciondos."', $d->fechacomprastr, '$d->arbitrio')";
     $db->doQuery($query);
     $lastid = $db->getLastId();
     print json_encode(['lastid' => $lastid]);
@@ -68,7 +68,7 @@ $app->post('/u', function(){
     $query.= ", observaciones = '".$d->observaciones."', tipo_activo = ".$d->tipo_activo.", nombre_corto = '".$d->nombre_corto;
     $query.= "', nombre_largo = '".$d->nombre_largo."', zona = ".$d->zona.", actualiza_info = NOW(), actualizadopor = '".$d->usuario."', ";
     $query.= "nomclienteajeno = '".$d->nomclienteajeno."', multilotes = ".$d->multilotes.", direcciondos = '".$d->direcciondos."', fechacompra = $d->fechacomprastr, ";
-    $query.= "debaja = $d->debaja, fechabaja = $d->fechabajastr ";
+    $query.= "debaja = $d->debaja, fechabaja = $d->fechabajastr, arbitrio = '$d->arbitrio' ";
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
     print json_encode(['lastid' => $d->id]);
