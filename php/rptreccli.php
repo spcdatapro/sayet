@@ -221,6 +221,10 @@ $app->post('/correlativo', function(){
         $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
         $idrecemp = $db->getQuery($query)[0];
         
+        if ($idrecemp->recibos == NULL) {
+            $idrecemp->recibos = 0;
+        }
+
         // suma de monto recibos por empresa
         $query = "SELECT 
         (SELECT 
