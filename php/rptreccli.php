@@ -5,6 +5,87 @@ require_once 'db.php';
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
 
+$app->post('/mensual', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $query = "SELECT DATE_FORMAT('$d->fdelstr', '%d/%m/%Y') AS del,  DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS al, DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy ";
+    $fechas = $db->getQuery($query)[0];
+
+    $query = "SELECT DISTINCT
+                a.id,
+                CONCAT(a.serie,
+                        '-',
+                        IF(a.anulado = 0,
+                            IF(a.serie = 'A', b.seriea, b.serieb),
+                            IF(a.serie = 'A',
+                                CONCAT(b.seriea, '(ANULADO)'),
+                                CONCAT(b.serieb, '(ANULADO)')))) AS recibo,
+                DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
+                IFNULL(IFNULL(c.nombre, d.nombre),
+                        'Clientes Varios') AS cliente,
+                (SELECT 
+                        CONCAT('Q', FORMAT(SUM(b.monto), 2))
+                    FROM
+                        detpagorecli b
+                    WHERE
+                        b.idreccli = a.id AND b.idmoneda = 1) AS montoqtz,
+                (SELECT 
+                        CONCAT('$', FORMAT(SUM(b.monto), 2))
+                    FROM
+                        detpagorecli b
+                    WHERE
+                        b.idreccli = a.id AND b.idmoneda = 2) AS montodlr,
+                NULL AS total
+            FROM
+                recibocli a
+                    INNER JOIN
+                serierecli b ON b.idrecibocli = a.id
+                    LEFT JOIN
+                cliente c ON a.idcliente = c.id
+                    LEFT JOIN
+                factura d ON a.nit = d.nit AND d.nit != NULL
+            WHERE
+                a.fecha >= '$d->fdelstr'
+                    AND a.fecha <= '$d->falstr'
+            ORDER BY a.fecha ASC, a.serie ASC, b.seriea ASC, b.serieb ASC ";
+    $recibos = $db->getQuery($query);
+
+    $cntRecibos = count($recibos); 
+
+    for ($i = 0; $i < $cntRecibos; $i++) {
+        $fecharec = $recibos[$i]->fecha;
+        if($fecharec[$i + 1] == $fecharec[$i]) {
+    
+        } else {
+            $query = "SELECT 
+                        (SELECT 
+                                CONCAT('Q',
+                                            '.',
+                                            IFNULL(FORMAT(SUM(b.monto), 2), 0.00))
+                            FROM
+                                recibocli a
+                                    INNER JOIN
+                                detpagorecli b ON b.idreccli = a.id
+                            WHERE
+                                a.fecha = '$fecharec' AND b.idmoneda = 1) AS monedaqtz,
+                        (SELECT 
+                                CONCAT('$',
+                                            '.',
+                                            IFNULL(FORMAT(SUM(b.monto), 2), 0.00))
+                            FROM
+                                recibocli a
+                                    INNER JOIN
+                                detpagorecli b ON b.idreccli = a.id
+                            WHERE
+                                a.fecha = '$fecharec' AND b.idmoneda = 2) AS monedadlr "; 
+            $recibos->total = $db->getQuery($query);
+        }
+    }
+
+    print json_encode(['fechas' => $fechas, 'recibos' => $recibos]);
+
+});
+
 $app->post('/correlativo', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();

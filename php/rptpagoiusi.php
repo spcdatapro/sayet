@@ -29,7 +29,7 @@ $app->post('/pagosiusi', function(){
         if($cntDep > 0){
             for($j = 0; $j < $cntDep; $j++){
                 $depto = $activo->deptos[$j];
-                $query = "SELECT CONCAT(a.finca, '-', a.folio, '-', a.libro) AS finca, ";
+                $query = "SELECT CONCAT(a.finca, '-', a.folio, '-', a.libro) AS finca, a.arbitrio, ";
                 $query.= "IF(a.horizontal = 0, '', 'Sí') AS eshorizontal, a.iusi, ROUND((a.iusi * (a.por_iusi / 1000)), 2) AS apagar, a.por_iusi, ROUND((a.iusi * (a.por_iusi / 1000)) / 4, 2) AS trimestral ";
                 $query.= "FROM activo a LEFT JOIN municipio b ON b.id = a.departamento LEFT JOIN empresa c ON c.id = a.idempresa ";
                 $query.= "WHERE a.debaja = 0 AND a.idempresa = $activo->idempresa AND a.departamento = $depto->iddepto ";
