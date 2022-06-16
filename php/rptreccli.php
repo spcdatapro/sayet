@@ -71,7 +71,7 @@ $app->post('/mensual', function(){
                         INNER JOIN
                     detpagorecli b ON b.idreccli = a.id
                 WHERE
-                    a.fecha = '$fecharec' AND b.idmoneda = 1) AS monedaqtz,
+                    a.fecha = '$fecharec' AND b.idmoneda = 1) AS montoqtz,
             (SELECT 
                     CONCAT('$',
                                 '.',
@@ -81,7 +81,7 @@ $app->post('/mensual', function(){
                         INNER JOIN
                     detpagorecli b ON b.idreccli = a.id
                 WHERE
-                    a.fecha = '$fecharec' AND b.idmoneda = 2) AS monedadlr "; 
+                    a.fecha = '$fecharec' AND b.idmoneda = 2) AS montodlr "; 
             $total = $db->getQuery($query);
 
             $recibos[$i]->total = $total;
@@ -89,7 +89,34 @@ $app->post('/mensual', function(){
         } 
     }
 
-    print json_encode(['fechas' => $fechas, 'recibos' => $recibos]);
+    $query = "SELECT 
+                (SELECT 
+                        CONCAT('Q',
+                                    '.',
+                                    IFNULL(FORMAT(SUM(b.monto), 2), 0.00))
+                    FROM
+                        recibocli a
+                            INNER JOIN
+                        detpagorecli b ON b.idreccli = a.id
+                    WHERE
+                        a.fecha >= '$d->fdelstr'
+                            AND a.fecha <= '$d->falstr'
+                            AND b.idmoneda = 1) AS montoqtz,
+                (SELECT 
+                        CONCAT('$',
+                                    '.',
+                                    IFNULL(FORMAT(SUM(b.monto), 2), 0.00))
+                    FROM
+                        recibocli a
+                            INNER JOIN
+                        detpagorecli b ON b.idreccli = a.id
+                    WHERE
+                        a.fecha >= '$d->fdelstr'
+                            AND a.fecha <= '$d->falstr'
+                            AND b.idmoneda = 2) AS montodlr ";
+    $totgen = $db->getQuery($query)[0];
+
+    print json_encode(['fechas' => $fechas, 'recibos' => $recibos, 'total' => $totgen]);
 
 });
 
