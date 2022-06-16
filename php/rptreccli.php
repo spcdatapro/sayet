@@ -35,7 +35,7 @@ $app->post('/mensual', function(){
                         detpagorecli b
                     WHERE
                         b.idreccli = a.id AND b.idmoneda = 2) AS montodlr,
-                NULL AS total
+                NULL AS total, a.fecha AS fecharec
             FROM
                 recibocli a
                     INNER JOIN
@@ -53,33 +53,40 @@ $app->post('/mensual', function(){
     $cntRecibos = count($recibos); 
 
     for ($i = 0; $i < $cntRecibos; $i++) {
-        $fecharec = $recibos[$i]->fecha;
-        if($fecharec[$i + 1] == $fecharec[$i]) {
-    
+        $fecharec = $recibos[$i]->fecharec;
+        if ($i + 1 < $cntRecibos) {
+            $fecahcomp = $recibos[$i + 1]->fecharec;
         } else {
-            $query = "SELECT 
-                        (SELECT 
-                                CONCAT('Q',
-                                            '.',
-                                            IFNULL(FORMAT(SUM(b.monto), 2), 0.00))
-                            FROM
-                                recibocli a
-                                    INNER JOIN
-                                detpagorecli b ON b.idreccli = a.id
-                            WHERE
-                                a.fecha = '$fecharec' AND b.idmoneda = 1) AS monedaqtz,
-                        (SELECT 
-                                CONCAT('$',
-                                            '.',
-                                            IFNULL(FORMAT(SUM(b.monto), 2), 0.00))
-                            FROM
-                                recibocli a
-                                    INNER JOIN
-                                detpagorecli b ON b.idreccli = a.id
-                            WHERE
-                                a.fecha = '$fecharec' AND b.idmoneda = 2) AS monedadlr "; 
-            $recibos->total = $db->getQuery($query);
+            $fecahcomp = 0;
         }
+
+        if($fecharec != $fecahcomp) {
+            $query = "SELECT 
+            (SELECT 
+                    CONCAT('Q',
+                                '.',
+                                IFNULL(FORMAT(SUM(b.monto), 2), 0.00))
+                FROM
+                    recibocli a
+                        INNER JOIN
+                    detpagorecli b ON b.idreccli = a.id
+                WHERE
+                    a.fecha = '$fecharec' AND b.idmoneda = 1) AS monedaqtz,
+            (SELECT 
+                    CONCAT('$',
+                                '.',
+                                IFNULL(FORMAT(SUM(b.monto), 2), 0.00))
+                FROM
+                    recibocli a
+                        INNER JOIN
+                    detpagorecli b ON b.idreccli = a.id
+                WHERE
+                    a.fecha = '$fecharec' AND b.idmoneda = 2) AS monedadlr "; 
+            $total = $db->getQuery($query);
+
+            $recibos[$i]->total = $total;
+            
+        } 
     }
 
     print json_encode(['fechas' => $fechas, 'recibos' => $recibos]);
