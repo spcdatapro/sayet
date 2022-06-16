@@ -830,70 +830,12 @@ $app->get('/lstot/:idpresupuesto', function ($idpresupuesto) {
     $db = new dbcpm();
     $query = "SELECT a.id, a.idpresupuesto, a.correlativo, a.idproveedor, b.nombre AS proveedor, a.idsubtipogasto, c.descripcion AS subtipogasto, a.coniva, a.escontado, a.monto AS monto, f.simbolo AS moneda, d.total, a.tipocambio, a.excedente, a.notas, a.origenprov, ";
     $query .= "a.idmoneda, a.idestatuspresupuesto ";
-    // $query .= "CONCAT(ROUND((IFNULL((SELECT SUM(b.monto) 
-    // FROM tranban b
-    // INNER JOIN banco c ON c.id = b.idbanco 
-    // WHERE c.idmoneda = a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
-    // AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1 AND b.liquidado != 1), 0.00)
-    // +
-    // IFNULL(IF(f.eslocal = 1, (SELECT SUM(b.monto * b.tipocambio)
-    // FROM tranban b 
-    // INNER JOIN banco c ON c.id = b.idbanco
-    // WHERE b.idmoneda != a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
-    // AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1 AND b.liquidado != 1), 
-    // (SELECT SUM(b.monto / b.tipocambio) 
-    // FROM tranban b 
-    // INNER JOIN banco c ON  c.id = b.idbanco
-    // WHERE b.idmoneda != a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
-    // AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1 AND b.liquidado != 1)), 0.00)
-    // +
-    // IFNULL((SELECT SUM(b.isr) 
-    // FROM compra b 
-    // WHERE b.idmoneda = a.idmoneda AND b.ordentrabajo = a.id), 0.00)
-    // +
-    // IFNULL(IF(f.eslocal = 1, (SELECT SUM(b.isr * b.tipocambio)
-    // FROM compra b 
-    // WHERE b.idmoneda != a.idmoneda AND b.ordentrabajo = a.id), 
-    // (SELECT SUM(b.isr / b.tipocambio) 
-    // FROM compra b 
-    // WHERE b.idmoneda != a.idmoneda AND b.ordentrabajo = a.id)), 0.00))
-    // * 100
-    // / IF(a.id = j.iddetpresupuesto, a.monto + j.monto, a.monto), 2), '%') AS avanceot ";
     $query .= "FROM detpresupuesto a INNER JOIN proveedor b ON b.id = a.idproveedor INNER JOIN subtipogasto c ON c.id = a.idsubtipogasto INNER JOIN presupuesto d ON d.id = a.idpresupuesto ";
     $query .= "INNER JOIN moneda e ON e.id = d.idmoneda LEFT JOIN moneda f ON f.id = a.idmoneda LEFT JOIN ampliapresupuesto j ON j.iddetpresupuesto = a.id ";
     $query .= "WHERE a.origenprov = 1 AND a.idpresupuesto = $idpresupuesto ";
     $query .= "UNION ";
     $query .= "SELECT a.id, a.idpresupuesto, a.correlativo, a.idproveedor, b.nombre AS proveedor, a.idsubtipogasto, c.descripcion AS subtipogasto, a.coniva, a.escontado, FORMAT(a.monto, 2) AS monto, f.simbolo AS moneda, d.total, a.tipocambio, a.excedente, a.notas, a.origenprov, ";
     $query .= "a.idmoneda, a.idestatuspresupuesto ";
-    // $query .= "CONCAT(ROUND((IFNULL((SELECT SUM(b.monto) 
-    // FROM tranban b
-    // INNER JOIN banco c ON c.id = b.idbanco 
-    // WHERE c.idmoneda = a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
-    // AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1 AND b.liquidado != 1), 0.00)
-    // +
-    // IFNULL(IF(f.eslocal = 1, (SELECT SUM(b.monto * b.tipocambio)
-    // FROM tranban b 
-    // INNER JOIN banco c ON c.id = b.idbanco
-    // WHERE b.idmoneda != a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
-    // AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1 AND b.liquidado != 1), 
-    // (SELECT SUM(b.monto / b.tipocambio) 
-    // FROM tranban b 
-    // INNER JOIN banco c ON  c.id = b.idbanco
-    // WHERE b.idmoneda != a.idmoneda AND b.iddetpresup = a.id AND b.beneficiario NOT LIKE '%anula%' AND b.beneficiario NOT LIKE '%REINGRESO%' 
-    // AND b.beneficiario NOT LIKE '%REINGRESADO%' AND b.anulado != 1 AND b.liquidado != 1)), 0.00)
-    // +
-    // IFNULL((SELECT SUM(b.isr) 
-    // FROM compra b 
-    // WHERE b.idmoneda = a.idmoneda AND b.ordentrabajo = a.id), 0.00)
-    // +
-    // IFNULL(IF(f.eslocal = 1, (SELECT SUM(b.isr * b.tipocambio)
-    // FROM compra b 
-    // WHERE b.idmoneda != a.idmoneda AND b.ordentrabajo = a.id), 
-    // (SELECT SUM(b.isr / b.tipocambio) 
-    // FROM compra b 
-    // WHERE b.idmoneda != a.idmoneda AND b.ordentrabajo = a.id)), 0.00))
-    // * 100
-    // / IF(a.id = j.iddetpresupuesto, a.monto + j.monto, a.monto), 2), '%') AS avanceot ";
     $query .= "FROM detpresupuesto a INNER JOIN beneficiario b ON b.id = a.idproveedor INNER JOIN subtipogasto c ON c.id = a.idsubtipogasto INNER JOIN presupuesto d ON d.id = a.idpresupuesto ";
     $query .= "INNER JOIN moneda e ON e.id = d.idmoneda LEFT JOIN moneda f ON f.id = a.idmoneda LEFT JOIN ampliapresupuesto j ON j.iddetpresupuesto = a.id ";
     $query .= "WHERE a.origenprov = 2 AND a.idpresupuesto = $idpresupuesto ";
