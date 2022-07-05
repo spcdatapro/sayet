@@ -179,7 +179,7 @@ $app->get('/getunidades/:idempresa', function($idempresa){
     $query = "SELECT
                 a.id, 
                 a.nombre,
-                b.nomempresa AS empresa,
+                IF(a.multiunidad = 1, CONCAT(b.nomempresa, '(MULTI EMPRESA)'), b.nomempresa) AS empresa,
                 c.nomproyecto AS proyecto,
                 CONCAT(c.nomproyecto, ': ', a.nombre) AS unidad
             FROM
@@ -189,7 +189,7 @@ $app->get('/getunidades/:idempresa', function($idempresa){
 					INNER JOIN 
 				empresa b ON c.idempresa = b.id
             WHERE
-                c.idempresa = $idempresa
+                IF(a.multiunidad = 0, c.idempresa = $idempresa, 1 = 1)
             ORDER BY a.nombre ASC ";
     print $db->doSelectASJson($query);
 });
