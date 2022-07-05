@@ -220,7 +220,7 @@
             data.debaja = data.debaja != null && data.debaja !== undefined ? data.debaja : 0;
             data.fechabajastr = data.fechabaja != null && data.fechabaja !== undefined ? moment(data.fechabaja).format('YYYY-MM-DD') : '';
             data.arbitrio = data.arbitrio != null && data.arbitrio !== undefined ? data.arbitrio : ''; 
-            //console.log(data); //return;
+            console.log(data); //return;
             activoSrvc.editRow(data, 'u').then(function(d){
                 $scope.getLstActivos();
                 $scope.getActivo(parseInt(d.lastid));
