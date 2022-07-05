@@ -23,7 +23,7 @@ class Prestamo extends Principal
 	{
 		$this->pre = (object)$this->db->get(
 			$this->tabla, 
-			['*'], 
+			'*', 
 			['id' => $id]
 		);
     }
@@ -175,7 +175,7 @@ class Prestamo extends Principal
 
 				$antes = $this->db->get(
 					"plnpresabono", 
-					['*'], 
+					'*', 
 					$where
 				);
 
@@ -188,7 +188,7 @@ class Prestamo extends Principal
 				if ($lid) {
 					$despues = $this->db->get(
 						"plnpresabono", 
-						['*'], 
+						'*', 
 						$where
 					);
 

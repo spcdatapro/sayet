@@ -128,7 +128,7 @@ class Nomina extends Principal
 
 		$tmp = $this->db->select(
 			'plnempleado', 
-			['*'],
+			'*',
 			['AND' => $condicion]
 		);
 
@@ -152,11 +152,7 @@ class Nomina extends Principal
 					'fecha'         => $fecha
 				];
 
-				$ex = $this->db->get(
-					'plnnomina', 
-					['*'], 
-					['AND' => $where]
-				);
+				$ex = $this->db->get('plnnomina', '*', ['AND' => $where]);
 
 				if ($ex === false) {
 					$datos = [
@@ -343,7 +339,7 @@ class Nomina extends Principal
 	 */
 	public function verificar_planilla_cerrada($args=[])
 	{
-		$periodo = $this->db->get("plnperiodo", ['*'], ['fin' => $args['fecha']]);
+		$periodo = $this->db->get("plnperiodo", '*', ['fin' => $args['fecha']]);
 
 		if ($periodo) {
 			if (isset($periodo['scalar'])) {
@@ -435,7 +431,7 @@ class Nomina extends Principal
 					# Pago cada quincena
 					if ($dia == 15) {
 						if ($e->emp->formapago == 1) {
-							$datos['anticipo']  = $e->get_anticipo();
+							$datos['anticipo'] = $e->get_anticipo();
 						}
 					} else {
 						$datos['descanticipo'] = $e->get_descanticipo();

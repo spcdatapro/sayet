@@ -44,7 +44,7 @@ class Empleado extends Principal
 	{
 		$this->emp = (object)$this->db->get(
 			$this->tabla, 
-			['*'], 
+			'*', 
 			['id[=]' => $id]
 		);
 	}
@@ -53,7 +53,7 @@ class Empleado extends Principal
 	{
 		return (object)$this->db->get(
 			'proyecto', 
-			['*'], 
+			'*', 
 			['id[=]' => $this->emp->idproyecto]
 		);
 	}
@@ -62,7 +62,7 @@ class Empleado extends Principal
 	{
 		return (object)$this->db->get(
 			'plnpuesto', 
-			['*'], 
+			'*', 
 			['id[=]' => $this->emp->idplnpuesto]
 		);
 	}
@@ -392,7 +392,7 @@ class Empleado extends Principal
 	{
 		return $this->db->select(
 			'plnarchivo', 
-			['*'], 
+			'*', 
 			['idplnempleado[=]' => $this->emp->id]
 		);
 	}
@@ -439,8 +439,10 @@ class Empleado extends Principal
 
 	public function set_sueldo()
 	{
-		if ($this->dtrabajados == 15 || $this->dtrabajados == 30) {
+		if ($this->dtrabajados == 30) {
 			$this->sueldo = $this->emp->sueldo;
+		} else if ($this->dtrabajados == 15) {
+			$this->sueldo = round($this->emp->sueldo / 2, 2);
 		} else {
 			$this->sueldo = $this->get_gana_dia() * $this->dtrabajados;
 		}
@@ -485,30 +487,40 @@ class Empleado extends Principal
 
 	public function set_dias_trabajados()
 	{
-		$istr  = strtotime($this->getFechaIngreso());
-		$idia  = date('d', $istr);
-		$imes  = date('m', $istr);
-		$ianio = date('Y', $istr);
+		$pago = new DateTime($this->nfecha);
+		$ingreso = new DateTime($this->getFechaIngreso());
+		$ipago = new DateTime($pago->format('Y-m-01'));
 
-		if ($ianio == $this->nanio && $imes == $this->nmes) {
-			if ($this->ndia >= $idia) {
-				if (intval($idia) === 1) {
-					$this->dtrabajados = $this->ndia == 15 ? 15 : 30;
-				} else {
-					$this->dtrabajados = ($this->ndia-$idia)+1;
-				}
-			}
-		} else {
+		if ($ipago >= $ingreso) {
 			if (empty($this->emp->baja)) {
-				if ($this->nanio >= $ianio) {
-					$this->dtrabajados = $this->ndia == 15 ? 15 : 30;
-				}
+				$this->dtrabajados = $pago->format('d') == 15 ? 15 : 30;
 			} else {
 				$baja = new DateTime($this->emp->baja);
 
-				if ($baja->format('Y') == $this->nanio && $baja->format('m') == $this->nmes) {
-					$dia = $baja->format('d');
-					$this->dtrabajados = $dia < $this->ndia ? $dia : $this->ndia;
+				if ($baja >= $pago) {
+					$this->dtrabajados = $pago->format('d') == 15 ? 15 : 30;
+				} else  {
+					if ($baja < $ipago) {
+						$this->dtrabajados = 0;
+					} else {
+						$interval = $baja->diff($ipago);
+						$this->dtrabajados = ($interval->days + 1);
+					}
+				}
+			}
+		} else {
+			if ($ingreso > $pago) {
+				$this->dtrabajados = 0;
+			} else {
+				if (empty($this->emp->baja)) {
+					$interval = $pago->diff($ingreso);
+					$this->dtrabajados = ($interval->days + 1);
+				} else {
+					$baja = new DateTime($this->emp->baja);
+					$fin = $baja < $pago ? $baja : $pago;
+					
+					$interval = $fin->diff($ingreso);
+					$this->dtrabajados = ($interval->days + 1);
 				}
 			}
 		}
@@ -530,12 +542,15 @@ class Empleado extends Principal
 
 	public function get_descuento_isr()
 	{
-		if ($this->dtrabajados == 30) {
-			return $this->emp->descuentoisr;
+		if (empty($this->emp->descuentoisr)) {
+			return 0;
 		} else {
-			return round(($this->emp->descuentoisr/30)*$this->dtrabajados, 2);
+			if ($this->dtrabajados == 30) {
+				return $this->emp->descuentoisr;
+			} else {
+				return round(($this->emp->descuentoisr/30)*$this->dtrabajados, 2);
+			}
 		}
-		
 	}
 
 	public function get_bono_ley()
@@ -547,6 +562,7 @@ class Empleado extends Principal
 				return round($this->get_bono_dia()*$this->dtrabajados, 2);
 			}
 		}
+
 		return 0;
 	}
 
@@ -556,21 +572,31 @@ class Empleado extends Principal
 	 */
 	public function get_anticipo()
 	{
+		$anticipo = 0;
 
 		if ($this->emp->formapago == 1 && $this->ndia == 15) {
-			if ($this->dtrabajados == 15) {
-				return (($this->emp->sueldo+$this->emp->bonificacionley)/2);
-			} else {
-				$sueldo = $this->dtrabajados * $this->get_gana_dia();
-				$bono = $this->dtrabajados * $this->get_bono_dia();
-				$isr = $this->get_descuento_isr();
-				$igss = ($sueldo * ($this->emp->porcentajeigss/100));
 
-				return round(($sueldo-$igss)+$bono-$isr, 2);
+			if ($this->dtrabajados > 0) {
+				if ($this->dtrabajados == 15) {
+					$sueldo = round($this->emp->sueldo/2, 2);
+					$bono = round($this->emp->bonificacionley/2, 2);
+				} else {
+					$sueldo = round($this->get_gana_dia()*$this->dtrabajados, 2);
+					$bono = round($this->get_bono_dia()*$this->dtrabajados, 2);
+				}
+
+				if (empty($this->emp->baja)) {
+					$anticipo = round($sueldo + $bono, 2);
+				} else {
+					$isr = $this->get_descuento_isr();
+					$igss = ($sueldo * ($this->emp->porcentajeigss/100));
+
+					$anticipo = round(($sueldo-$igss-$isr)+$bono, 2);
+				}
 			}
 		}
 
-		return 0;
+		return $anticipo;
 	}
 
 	public function get_descanticipo()
@@ -615,7 +641,7 @@ class Empleado extends Principal
 				foreach ($prestamos as $row) {
 					$ant = $this->db->get(
 						"plnpresnodesc",
-						['*'],
+						'*',
 						[
 							'AND' => [
 								"fecha" => $this->nfecha,
@@ -1362,7 +1388,7 @@ EOT;
 
 			$tmp = $this->db->get(
 				'plnextra', 
-				['*'], 
+				'*', 
 				['anio' => $anio]
 			);
 
@@ -1377,7 +1403,7 @@ EOT;
 
 			$test = $this->db->get(
 				'plnextradetalle', 
-				['*'], 
+				'*', 
 				[
 					"AND" => [
 						'idplnextra' => $idExtra,

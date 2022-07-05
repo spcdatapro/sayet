@@ -16,7 +16,7 @@ class Frecibo extends Principal
 	{
 		return (object)$this->db->get(
 			$this->tabla, 
-			['*'], 
+			'*', 
 			['campo' => $campo]
 		);
 	}

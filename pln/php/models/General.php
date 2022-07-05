@@ -79,7 +79,7 @@ class General extends Principal
 
 		return $this->db->select(
 			'plnempleado', 
-			['*'], 
+			'*', 
 			$condicion
 		);
 	}
@@ -98,7 +98,7 @@ class General extends Principal
 
 		return $this->db->select(
 			'plnpuesto', 
-			['*'], 
+			'*', 
 			$condicion
 		);
 	}
@@ -130,7 +130,7 @@ class General extends Principal
 
 		return $this->db->select(
 			'plnperiodo', 
-			['*'], 
+			'*', 
 			$condicion
 		);
 	}
@@ -139,7 +139,7 @@ class General extends Principal
 	{
 		return $this->db->select(
 			'plnarchivotipo', 
-			['*']
+			'*'
 		);
 	}
 
@@ -157,7 +157,7 @@ class General extends Principal
 
 		$tmp = $this->db->select(
 			'empresa', 
-			['*'],
+			'*',
 			$where
 		);
 
@@ -188,7 +188,7 @@ class General extends Principal
 
 		$tmp = $this->db->select(
 			'plnempresa', 
-			['*'],
+			'*',
 			$where
 		);
 
@@ -249,7 +249,7 @@ class General extends Principal
 	{
 		return (object)$this->db->get(
 			"fimpresion", 
-			['*'], 
+			'*', 
 			[
 				'AND' => [
 					'campo' => $campo, 

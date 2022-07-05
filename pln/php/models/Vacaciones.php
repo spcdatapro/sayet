@@ -37,7 +37,7 @@ class Vacaciones extends Empleado
 
 		return $this->db->select(
 			'plnvacaciones', 
-			['*'], 
+			'*', 
 			$condicion
 		);
     }
