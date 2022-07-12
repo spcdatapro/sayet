@@ -200,8 +200,8 @@ $app->post('/finiquito', function(){
 		$emp->set_sueldo_promedio();
 		$emp->set_finiquito_indemnizacion($_POST);
 		$emp->set_finiquito_vacaciones($_POST);
-		$emp->set_finiquito_aguinaldo();
-		$emp->set_finiquito_bono14();
+		$emp->set_finiquito_aguinaldo($_POST);
+		$emp->set_finiquito_bono14($_POST);
 		$emp->set_finiquito_sueldo($_POST);
 
 		foreach ($emp->get_datos_finiquito($_POST) as $campo => $valor) {

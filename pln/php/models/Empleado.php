@@ -811,27 +811,36 @@ class Empleado extends Principal
 		];
 	}
 
-	public function set_finiquito_aguinaldo()
+	public function set_finiquito_aguinaldo($args = [])
 	{
-		$sql = "SELECT IF(
-					b.reingreso > DATE_FORMAT(a.fecha,'%Y-%m-01'), 
-					b.reingreso, 
-					DATE_FORMAT(a.fecha,'%Y-%m-01')
-				) as ultimo
-				FROM plnnomina a 
-				INNER JOIN plnempleado b on b.id = a.idplnempleado
-				WHERE a.idplnempleado = {$this->emp->id} 
-				AND a.aguinaldo > 0
-				ORDER BY a.fecha DESC
-				LIMIT 1";
-		
-		$tmp      = $this->db->query($sql)->fetchAll();
-		$fecha    = count($tmp)>0?$tmp[0]['ultimo']:$this->getFechaIngreso();
-		$inicio   = new DateTime($fecha);
-		$fin      = new DateTime($this->emp->baja);
-		$interval = $inicio->diff($fin);
-		$dias     = ($interval->format('%a')+1);
-		$monto    = ($dias*($this->sueldoPromedio/365));
+		if (isset($args["sin_aguinaldo"])) {
+			$dias  = 0;
+			$monto = 0;
+			$fecha = $this->getFechaIngreso();
+		} else {
+			$egreso = $args["fecha_egreso"];
+
+			$sql = "SELECT IF(
+						ifnull(b.reingreso, b.ingreso) > DATE_FORMAT(a.fecha,'%Y-%m-01'), 
+						ifnull(b.reingreso, b.ingreso), 
+						DATE_FORMAT(a.fecha,'%Y-%m-01')
+					) as ultimo
+					FROM plnnomina a 
+					INNER JOIN plnempleado b on b.id = a.idplnempleado
+					WHERE a.idplnempleado = {$this->emp->id} 
+					AND a.aguinaldo > 0
+					AND a.fecha < '{$egreso}'
+					ORDER BY a.fecha DESC
+					LIMIT 1";
+			
+			$tmp      = $this->db->query($sql)->fetchAll();
+			$fecha    = count($tmp)>0?$tmp[0]['ultimo']:$this->getFechaIngreso();
+			$inicio   = new DateTime($fecha);
+			$fin      = new DateTime($this->emp->baja);
+			$interval = $inicio->diff($fin);
+			$dias     = ($interval->format('%a')+1);
+			$monto    = ($dias*($this->sueldoPromedio/365));
+		}
 		
 		$this->finiquitoAguinaldo = (object)[
 			'dias'   => $dias,
@@ -840,27 +849,36 @@ class Empleado extends Principal
 		];
 	}
 
-	public function set_finiquito_bono14()
+	public function set_finiquito_bono14($args = [])
 	{
-		$sql = "SELECT IF(
-					b.reingreso > DATE_FORMAT(a.fecha,'%Y-%m-01'), 
-					b.reingreso, 
-					DATE_FORMAT(a.fecha,'%Y-%m-01')
-				) as ultimo
-				FROM plnnomina a 
-				INNER JOIN plnempleado b on b.id = a.idplnempleado
-				WHERE a.idplnempleado = {$this->emp->id} 
-				AND a.bonocatorce > 0
-				ORDER BY a.fecha DESC
-				LIMIT 1";
-		
-		$tmp      = $this->db->query($sql)->fetchAll();
-		$fecha    = count($tmp)>0?$tmp[0]['ultimo']:$this->getFechaIngreso();
-		$inicio   = new DateTime($fecha);
-		$fin      = new DateTime($this->emp->baja);
-		$interval = $inicio->diff($fin);
-		$dias     = ($interval->format('%a')+1);
-		$monto    = ($dias*($this->sueldoPromedio/365));
+		if (isset($args["sin_bono14"])) {
+			$dias  = 0;
+			$monto = 0;
+			$fecha = $this->getFechaIngreso();
+		} else {
+			$egreso = $args["fecha_egreso"];
+
+			$sql = "SELECT IF(
+						ifnull(b.reingreso, b.ingreso) > DATE_FORMAT(a.fecha,'%Y-%m-01'), 
+						ifnull(b.reingreso, b.ingreso), 
+						DATE_FORMAT(a.fecha,'%Y-%m-01')
+					) as ultimo
+					FROM plnnomina a 
+					INNER JOIN plnempleado b on b.id = a.idplnempleado
+					WHERE a.idplnempleado = {$this->emp->id} 
+					AND a.bonocatorce > 0
+					AND a.fecha < '{$egreso}'
+					ORDER BY a.fecha DESC
+					LIMIT 1";
+			
+			$tmp      = $this->db->query($sql)->fetchAll();
+			$fecha    = count($tmp)>0?$tmp[0]['ultimo']:$this->getFechaIngreso();
+			$inicio   = new DateTime($fecha);
+			$fin      = new DateTime($this->emp->baja);
+			$interval = $inicio->diff($fin);
+			$dias     = ($interval->format('%a')+1);
+			$monto    = ($dias*($this->sueldoPromedio/365));
+		}
 		
 		# Arreglo de datos para finiquito bono 14
 		$this->finiquitoBono = (object)[
