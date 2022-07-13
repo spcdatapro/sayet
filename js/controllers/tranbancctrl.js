@@ -29,6 +29,7 @@
         $scope.ots = [];
         $scope.compras = [];
         $scope.hayDescuadre = false;
+        $scope.noCuadra = false;
         $scope.uid = 0;
         $scope.proyectos = [];
         $scope.recibos = [];
@@ -310,6 +311,7 @@
             $scope.elDocSop.monto = parseFloat(ds.saldo);
 
             if (parseFloat($scope.laTran.monto) != parseFloat($scope.elDocSop.monto)) {
+                $scope.noCuadra = true;
                 toaster.pop({
                     type: 'warning',
                     title: 'Advertencia.',

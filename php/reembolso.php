@@ -417,16 +417,36 @@ $app->post('/gentranban', function(){
 
 $app->get('/tranban/:idreembolso', function($idreembolso){
     $db = new dbcpm();
-    $query = "SELECT a.idtranban, CONCAT('(', d.abreviatura, ') ', d.descripcion) AS tipodoc, b.numero, CONCAT(c.nombre, ' (', e.simbolo, ')') AS banco, b.monto, 1 AS origen ";
-    $query.= "FROM reembolso a INNER JOIN tranban b ON b.id = a.idtranban INNER JOIN banco c ON c.id = b.idbanco INNER JOIN tipomovtranban d ON d.abreviatura = b.tipotrans ";
-    $query.= "INNER JOIN moneda e ON e.id = c.idmoneda ";
-    $query.= "WHERE a.id = ".$idreembolso." AND esrecprov = 0 ";
-    $query.= "UNION ALL ";
-    $query.= "SELECT a.idtranban, 'Recibo' AS tipodoc, LPAD(b.id, 5, '0') AS numero, '' AS banco, c.arebajar AS monto, 7 AS origen ";
-    $query.= "FROM reembolso a INNER JOIN reciboprov b ON b.id = a.idtranban INNER JOIN detrecprov c ON b.id = c.idrecprov ";
-    $query.= "WHERE a.id = $idreembolso AND esrecprov = 1 AND c.origen = 5 AND c.idorigen = $idreembolso ";
-    $query.= "ORDER BY 2, 3";
+    $query = "SELECT 
+                b.id,
+                CONCAT('(', b.tipotrans, ') ', d.descripcion) AS tipodoc,
+                b.numero,
+                CONCAT(c.nombre, ' (', e.simbolo, ')') AS banco,
+                b.monto,
+                1 AS origen
+            FROM
+                doctotranban a
+                    INNER JOIN
+                tranban b ON a.idtranban = b.id
+                    INNER JOIN
+                banco c ON b.idbanco = c.id
+                    INNER JOIN
+                tipomovtranban d ON d.abreviatura = b.tipotrans
+                    INNER JOIN
+                moneda e ON c.idmoneda = e.id
+            WHERE
+                a.iddocto = 1823 AND a.idtipodoc = 2 ";
     print $db->doSelectASJson($query);
+
+    // $query = "SELECT a.idtranban, CONCAT('(', d.abreviatura, ') ', d.descripcion) AS tipodoc, b.numero, CONCAT(c.nombre, ' (', e.simbolo, ')') AS banco, b.monto, 1 AS origen ";
+    // $query.= "FROM reembolso a INNER JOIN tranban b ON b.id = a.idtranban INNER JOIN banco c ON c.id = b.idbanco INNER JOIN tipomovtranban d ON d.abreviatura = b.tipotrans ";
+    // $query.= "INNER JOIN moneda e ON e.id = c.idmoneda ";
+    // $query.= "WHERE a.id = ".$idreembolso." AND esrecprov = 0 ";
+    // $query.= "UNION ALL ";
+    // $query.= "SELECT a.idtranban, 'Recibo' AS tipodoc, LPAD(b.id, 5, '0') AS numero, '' AS banco, c.arebajar AS monto, 7 AS origen ";
+    // $query.= "FROM reembolso a INNER JOIN reciboprov b ON b.id = a.idtranban INNER JOIN detrecprov c ON b.id = c.idrecprov ";
+    // $query.= "WHERE a.id = $idreembolso AND esrecprov = 1 AND c.origen = 5 AND c.idorigen = $idreembolso ";
+    // $query.= "ORDER BY 2, 3";
 });
 
 //API reportes

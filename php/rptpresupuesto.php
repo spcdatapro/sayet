@@ -302,10 +302,13 @@ $app->post('/avanceot', function(){
                 moneda d ON c.idmoneda = d.id
                     LEFT JOIN
                 detpagocompra e ON e.idtranban = b.id
+                    LEFT JOIN
+				doctotranban f ON f.idtranban = b.id
             WHERE
                 a.id = $d->idot AND b.idfact IS NULL
                     AND e.id IS NULL
                     AND b.idreembolso IS NULL 
+                    AND f.id IS NULL 
             UNION SELECT 
                 f.fechafactura AS OrdenFch,
                 b.numero AS OrdenNum,
@@ -359,89 +362,55 @@ $app->post('/avanceot', function(){
                 a.id = $d->idot AND b.idreembolso IS NULL
                     AND f.idreembolso = 0 
             UNION SELECT 
-                b.fechafactura AS OrdenFch,
-                NULL AS OrdenNum,
-                DATE_FORMAT(b.fechafactura, '%d-%m-%Y') AS fechafactura,
-                NULL AS datosbanco,
-                NULL AS monedacheq,
-                NULL AS montocheq,
-                NULL AS numero,
-                c.simbolo AS monedafact,
-                FORMAT(b.totfact, 2) AS montofac,
-                FORMAT(b.isr, 2) AS isr,
-                CONCAT(b.serie, '-', b.documento) AS fact,
-                ROUND(b.tipocambio, 2) AS tipocambio,
-                SUBSTRING(b.conceptomayor, 1, 90) AS conceptomayor,
-                d.nombre AS beneficiario,
-                NULL AS anulado,
-                NULL AS esreingreso,
-                NULL AS reingresado,
-                NULL AS resta,
-                NULL AS reembolso
-            FROM
-                detpresupuesto a
-                    INNER JOIN
-                compra b ON b.ordentrabajo = a.id
-                    INNER JOIN
-                moneda c ON b.idmoneda = c.id
-                    INNER JOIN
-                proveedor d ON b.idproveedor = d.id
-                    LEFT JOIN
-                detpagocompra e ON e.idcompra = b.id
-            WHERE
-                a.id = $d->idot AND e.id IS NULL 
-            UNION SELECT 
-                f.fechafactura AS OrdenFch,
-                b.numero AS OrdenNum,
-                DATE_FORMAT(f.fechafactura, '%d-%m-%Y') AS fechafactura,
-                CONCAT(SUBSTRING(c.siglas, 1, 2),
-                        '-',
-                        b.tipotrans,
-                        '-',
-                        SUBSTRING(c.siglas, 4, 5),
-                        '-',
-                        b.numero) AS datosbanco,
-                d.simbolo AS monedacheq,
-                FORMAT(b.monto, 2) AS montocheq,
-                b.numero,
-                g.simbolo AS monedafact,
-                FORMAT(f.totfact, 2) AS montofac,
-                FORMAT(f.isr, 2) AS isr,
-                CONCAT(f.serie, '-', f.documento) AS fact,
-                ROUND(f.tipocambio, 2) AS tipocambio,
-                SUBSTRING(f.conceptomayor, 1, 90) AS conceptomayor,
-                IFNULL(h.nombre, f.proveedor) AS beneficiario,
-                IF((b.anulado = 1
-                        OR (b.anulado = 0
-                        AND (b.beneficiario LIKE '%anula%'
-                        OR b.concepto LIKE '%anula%'))),
-                    1,
-                    NULL) AS anulado,
-                NULL AS esreingreso,
-                NULL AS reingreso,
-                IF(b.tipotrans = 'R' AND b.iddocliquida = 0,
-                    1,
-                    NULL) AS resta,
-                IF(b.idreembolso IS NOT NULL
-                        OR f.idreembolso > 0,
-                    1,
-                    NULL) AS reembolso
-            FROM
-                detpresupuesto a
-                    INNER JOIN
-                tranban b ON b.iddetpresup = a.id
-                    INNER JOIN
-                banco c ON b.idbanco = c.id
-                    INNER JOIN
-                moneda d ON c.idmoneda = d.id
-                    INNER JOIN
-                reembolso e ON b.idreembolso = e.id
-                    INNER JOIN
-                compra f ON f.idreembolso = e.id
-                    INNER JOIN
-                moneda g ON f.idmoneda = g.id
-                    LEFT JOIN
-                proveedor h ON f.idproveedor = h.id
+                    d.finicio AS OrdenFch,
+                    b.numero AS OrdenNum,
+                    DATE_FORMAT(d.finicio, '%d-%m-%Y') AS fechafactura,
+                    CONCAT(SUBSTRING(e.siglas, 1, 2),
+                            '-',
+                            b.tipotrans,
+                            '-',
+                            SUBSTRING(e.siglas, 4, 5),
+                            '-',
+                            b.numero) AS datosbanco,
+                    f.simbolo AS monedacheq,
+                    FORMAT(c.monto, 2) AS montocheq,
+                    b.numero,
+                    'Q' AS monedafact,
+                    (SELECT 
+                            FORMAT(SUM(h.totfact), 2)
+                        FROM
+                            compra h
+                        WHERE
+                            h.idreembolso = d.id) AS montofac,
+                    0.00 AS isr,
+                    CONCAT('REE-', LPAD(d.id, '5', '0')) AS fact,
+                    1.00 AS tipocambio,
+                    '' concepto,
+                    g.nombre AS beneficiario,
+                    IF((b.anulado = 1
+                            OR (b.anulado = 0
+                            AND (b.beneficiario LIKE '%anula%'
+                            OR b.concepto LIKE '%anula%'))),
+                        1,
+                        NULL) AS anulado,
+                    NULL AS esreingreso,
+                    NULL AS reingreso,
+                    NULL AS resta,
+                    NULL AS reembolso
+                FROM
+                    detpresupuesto a
+                        INNER JOIN
+                    tranban b ON b.iddetpresup = a.id
+                        INNER JOIN
+                    doctotranban c ON c.idtranban = b.id AND c.idtipodoc = 2
+                        JOIN
+                    reembolso d ON c.iddocto = d.id
+                        INNER JOIN
+                    banco e ON b.idbanco = e.id
+                        INNER JOIN
+                    moneda f ON e.idmoneda = f.id
+                        INNER JOIN
+                    beneficiario g ON d.idbeneficiario = g.id
             WHERE
                 a.id = $d->idot
             ORDER BY OrdenFch , OrdenNum DESC ";
@@ -458,6 +427,7 @@ $app->post('/avanceot', function(){
         }
         if ($cheque == $cheque2) {
             $ordentrabajo[$i]->numero = NULL;
+            $ordentrabajo[$i]->montochq = NULL;
         }
     }
 
@@ -1348,10 +1318,13 @@ $app->post('/avanceotm', function(){
                     moneda d ON c.idmoneda = d.id
                         LEFT JOIN
                     detpagocompra e ON e.idtranban = b.id
+                        LEFT JOIN
+				    doctotranban f ON f.idtranban = b.id
                 WHERE
                     a.id = $ot->id AND b.idfact IS NULL
                         AND e.id IS NULL
                         AND b.idreembolso IS NULL 
+                        AND f.id IS NULL
                 UNION SELECT 
                     f.fechafactura AS OrdenFch,
                     b.numero AS OrdenNum,
@@ -1436,27 +1409,33 @@ $app->post('/avanceotm', function(){
                     detpagocompra e ON e.idcompra = b.id
                 WHERE
                     a.id = $ot->id AND e.id IS NULL 
+                    -- reembolsos
                 UNION SELECT 
-                    f.fechafactura AS OrdenFch,
+                    d.finicio AS OrdenFch,
                     b.numero AS OrdenNum,
-                    DATE_FORMAT(f.fechafactura, '%d-%m-%Y') AS fechafactura,
-                    CONCAT(SUBSTRING(c.siglas, 1, 2),
+                    DATE_FORMAT(d.finicio, '%d-%m-%Y') AS fechafactura,
+                    CONCAT(SUBSTRING(e.siglas, 1, 2),
                             '-',
                             b.tipotrans,
                             '-',
-                            SUBSTRING(c.siglas, 4, 5),
+                            SUBSTRING(e.siglas, 4, 5),
                             '-',
                             b.numero) AS datosbanco,
-                    d.simbolo AS monedacheq,
-                    FORMAT(b.monto, 2) AS montocheq,
+                    f.simbolo AS monedacheq,
+                    FORMAT(c.monto, 2) AS montocheq,
                     b.numero,
-                    g.simbolo AS monedafact,
-                    FORMAT(f.totfact, 2) AS montofac,
-                    FORMAT(f.isr, 2) AS isr,
-                    CONCAT(f.serie, '-', f.documento) AS fact,
-                    ROUND(f.tipocambio, 2) AS tipocambio,
-                    SUBSTRING(f.conceptomayor, 1, 90) AS conceptomayor,
-                    IFNULL(h.nombre, f.proveedor) AS beneficiario,
+                    'Q' AS monedafact,
+                    (SELECT 
+                            FORMAT(SUM(h.totfact), 2)
+                        FROM
+                            compra h
+                        WHERE
+                            h.idreembolso = d.id) AS montofac,
+                    0.00 AS isr,
+                    CONCAT('REE-', LPAD(d.id, '5', '0')) AS fact,
+                    1.00 AS tipocambio,
+                    '' concepto,
+                    g.nombre AS beneficiario,
                     IF((b.anulado = 1
                             OR (b.anulado = 0
                             AND (b.beneficiario LIKE '%anula%'
@@ -1465,29 +1444,22 @@ $app->post('/avanceotm', function(){
                         NULL) AS anulado,
                     NULL AS esreingreso,
                     NULL AS reingreso,
-                    IF(b.tipotrans = 'R' AND b.iddocliquida = 0,
-                        1,
-                        NULL) AS resta,
-                    IF(b.idreembolso IS NOT NULL
-                            OR f.idreembolso > 0,
-                        1,
-                        NULL) AS reembolso
+                    NULL AS resta,
+                    NULL AS reembolso
                 FROM
                     detpresupuesto a
                         INNER JOIN
                     tranban b ON b.iddetpresup = a.id
                         INNER JOIN
-                    banco c ON b.idbanco = c.id
+                    doctotranban c ON c.idtranban = b.id AND c.idtipodoc = 2
+                        JOIN
+                    reembolso d ON c.iddocto = d.id
                         INNER JOIN
-                    moneda d ON c.idmoneda = d.id
+                    banco e ON b.idbanco = e.id
                         INNER JOIN
-                    reembolso e ON b.idreembolso = e.id
+                    moneda f ON e.idmoneda = f.id
                         INNER JOIN
-                    compra f ON f.idreembolso = e.id
-                        INNER JOIN
-                    moneda g ON f.idmoneda = g.id
-                        LEFT JOIN
-                    proveedor h ON f.idproveedor = h.id
+                    beneficiario g ON d.idbeneficiario = g.id
                 WHERE
                     a.id = $ot->id
                 ORDER BY OrdenFch , OrdenNum DESC ";

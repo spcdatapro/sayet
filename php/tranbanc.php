@@ -428,15 +428,61 @@ $app->get('/factcomp/:idproveedor/:idtranban', function($idproveedor, $idtranban
 
 $app->get('/reem/:idbene', function($idbene){
     $db = new dbcpm();
-    $query = "SELECT a.id, ";
-    $query.= "CONCAT(b.desctiporeembolso,' - No. ',LPAD(a.id, 5, '0'), ' - ', DATE_FORMAT(a.finicio, '%d/%m/%Y'),  ' - ', c.nombre, ' - Q ', ";
-    $query.= "IF(ISNULL(d.totreembolso), 0.00, d.totreembolso)) AS cadena, a.finicio AS fechafactura, 'REE' AS serie, a.id AS documento, ";
-    $query.= "IF(ISNULL(d.totreembolso), 0.00, d.totreembolso) AS totfact, IF(ISNULL(d.totreembolso), 0.00, d.totreembolso) AS saldo ";
-    $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso INNER JOIN beneficiario c ON c.id = a.idbeneficiario LEFT JOIN (";
-    $query.= "SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) d ON a.id = d.idreembolso ";
-    $query.= "WHERE a.idtranban = 0 AND a.idbeneficiario = ".$idbene." ";
-    $query.= "ORDER BY a.id";
+    $query = "SELECT 
+                a.id,
+                CONCAT(b.desctiporeembolso,
+                        ' No.',
+                        LPAD(a.id, 5, '0'),
+                        ' - ',
+                        DATE_FORMAT(a.finicio, '%d/%m/%Y'),
+                        ' - ',
+                        c.nombre,
+                        ' - Total: Q.',
+                        IFNULL(FORMAT(d.totreembolso, 2), 0.00),
+                        ' - Pendiente: ',
+                        FORMAT(IFNULL(d.totreembolso, 0.00) - IFNULL(e.pagado, 0.00),
+                            2)) AS cadena,
+                a.finicio AS fechafactura,
+                'REE' AS serie,
+                a.id AS documento,
+                IFNULL(d.totreembolso, 0.00) AS totfact,
+                IFNULL(d.totreembolso, 0.00) - IFNULL(e.pagado, 0.00) AS saldo
+            FROM
+                reembolso a
+                    INNER JOIN
+                tiporeembolso b ON b.id = a.idtiporeembolso
+                    INNER JOIN
+                beneficiario c ON c.id = a.idbeneficiario
+                    LEFT JOIN
+                (SELECT 
+                    idreembolso, SUM(totfact) AS totreembolso
+                FROM
+                    compra
+                WHERE
+                    idreembolso > 0
+                GROUP BY idreembolso) d ON a.id = d.idreembolso
+                    LEFT JOIN
+                (SELECT 
+                    iddocto, SUM(monto) AS pagado
+                FROM
+                    doctotranban
+                WHERE
+                    idtipodoc = 2
+                GROUP BY iddocto) e ON e.iddocto = a.id
+            WHERE
+                a.idbeneficiario = $idbene
+                    AND IFNULL(d.totreembolso, 0.00) - IFNULL(e.pagado, 0.00) > 0
+            ORDER BY a.id ";
     print $db->doSelectASJson($query);
+    
+    // $query = "SELECT a.id, ";
+    // $query.= "CONCAT(b.desctiporeembolso,' - No. ',LPAD(a.id, 5, '0'), ' - ', DATE_FORMAT(a.finicio, '%d/%m/%Y'),  ' - ', c.nombre, ' - Q ', ";
+    // $query.= "IF(ISNULL(d.totreembolso), 0.00, d.totreembolso)) AS cadena, a.finicio AS fechafactura, 'REE' AS serie, a.id AS documento, ";
+    // $query.= "IF(ISNULL(d.totreembolso), 0.00, d.totreembolso) AS totfact, IF(ISNULL(d.totreembolso), 0.00, d.totreembolso) AS saldo ";
+    // $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso INNER JOIN beneficiario c ON c.id = a.idbeneficiario LEFT JOIN (";
+    // $query.= "SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) d ON a.id = d.idreembolso ";
+    // $query.= "WHERE a.idtranban = 0 AND a.idbeneficiario = ".$idbene." ";
+    // $query.= "ORDER BY a.id";
 });
 
 //API Documentos de soporte
