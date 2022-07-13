@@ -435,7 +435,7 @@ $app->get('/tranban/:idreembolso', function($idreembolso){
                     INNER JOIN
                 moneda e ON c.idmoneda = e.id
             WHERE
-                a.iddocto = 1823 AND a.idtipodoc = 2 ";
+                a.iddocto = $idreembolso AND a.idtipodoc = 2 ";
     print $db->doSelectASJson($query);
 
     // $query = "SELECT a.idtranban, CONCAT('(', d.abreviatura, ') ', d.descripcion) AS tipodoc, b.numero, CONCAT(c.nombre, ' (', e.simbolo, ')') AS banco, b.monto, 1 AS origen ";
