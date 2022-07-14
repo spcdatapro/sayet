@@ -420,7 +420,7 @@ $app->get('/factcomp/:idproveedor/:idtranban', function($idproveedor, $idtranban
     $query.= "a.fechafactura ";
     $query.= "FROM compra a LEFT JOIN proveedor b ON b.id = a.idproveedor LEFT JOIN (";
     $query.= "SELECT idcompra, SUM(monto) AS montopagado FROM detpagocompra GROUP BY idcompra) c ON a.id = c.idcompra ";
-    $query.= "WHERE (a.totfact - (a.isr + IFNULL(c.montopagado, 0.00))) > 0.00 AND a.idempresa = $idempresa AND a.idproveedor = ".$idproveedor." AND a.idmoneda = $idmoneda ";
+    $query.= "WHERE (a.totfact - (a.isr + IFNULL(c.montopagado, 0.00))) > 0.00 AND a.idempresa = $idempresa AND a.idproveedor = ".$idproveedor." AND a.idmoneda = $idmoneda AND a.alcontado = 0 ";
     $query.= "ORDER BY a.serie, a.documento";
     //echo $query;
     print $db->doSelectASJson($query);

@@ -114,7 +114,7 @@
                     fechaingreso: new Date(), mesiva: hoy.getMonth() + 1, fechafactura: new Date(), creditofiscal: 0, extraordinario: 0, noafecto: 0.0,
                     objEmpresa: $scope.laCompra.objEmpresa, objMoneda: {}, tipocambio: 1, isr: 0.00, galones: 0.00, idp: 0.00, objTipoCombustible: {},
                     totfact: 0.00, subtotal: 0.00, iva: 0.00, ordentrabajo: undefined, idproyecto: undefined, idunidad: undefined, nombrerecibo: undefined,
-                    idcheque: undefined
+                    idcheque: undefined, alcontado: 0
                 };
                 $scope.search = "";
                 $scope.facturastr = '';
@@ -338,6 +338,7 @@
                     data[i].galones = parseFloat(parseFloat(data[i].galones).toFixed(2));
                     data[i].galones = parseFloat(parseFloat(data[i].galones).toFixed(2));
                     data[i].idp = parseFloat(parseFloat(data[i].idp).toFixed(2));
+                    data[i].alcontado = +data[i].alcontado;
                     data[i].fecpagoformisr = moment(data[i].fecpagoformisr).isValid() ? moment(data[i].fecpagoformisr).toDate() : null;
                 }
                 return data;
@@ -497,6 +498,7 @@
                 if (obj.nombrerecibo == null || obj.nombrerecibo == undefined) {
                     delete obj.nombrerecibo;
                 }
+                obj.alcontado = obj.alcontado != null && obj.alcontado !== undefined ? +obj.alcontado : 0;
                 //obj.idtipocombustible = 0;
                 //obj.idproyecto = 0;
                 return obj;

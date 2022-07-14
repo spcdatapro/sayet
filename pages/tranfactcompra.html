@@ -76,13 +76,20 @@
                                         ng-change="chkExisteCompra()" required />
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="form-group required"
                                     ng-class="{'has-error':frmCompra.txtDocu.$invalid && !frmCompra.txtDocu.$pristine}">
                                     <label for="txtDocu" class="control-label">Documento:</label>
                                     <input name="txtDocu" id="txtDocu" type="number" class="form-control"
                                         ng-model="laCompra.documento" ng-change="chkExisteCompra()"
                                         placeholder="Documento" required />
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="form-group" ng-class="{'has-error':frmCompra.txtDocu.$invalid && !frmCompra.txtDocu.$pristine}">
+                                    <label for="chkPagada">Contado:</label>
+                                    <input name="chkPagada" id="chkPagada" type="checkbox" class="form-control"
+                                           ng-model="laCompra.alcontado" ng-true-value="1" ng-false-value="0"/>
                                 </div>
                             </div>
                         </div>
