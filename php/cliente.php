@@ -288,7 +288,7 @@ $app->get('/lstcontemp/:idcliente/:idempresa', function($idcliente, $idempresa){
     $query.= "h.simbolo AS monedadep, a.reciboprov, a.idperiodicidad, a.idtipoipc, a.cobro, a.plazofdel, a.plazofal, a.prescision, a.usufructo, a.idcatclie ";
     $query.= "FROM contrato a LEFT JOIN moneda b ON b.id = a.idmoneda LEFT JOIN empresa c ON c.id = a.idempresa LEFT JOIN proyecto d ON d.id = a.idproyecto ";
     $query.= "LEFT JOIN tipocliente f ON f.id = a.idtipocliente LEFT JOIN moneda h ON h.id = a.idmonedadep ";
-    $query.= "WHERE a.idcliente = $idcliente AND a.idempresa = $idempresa ";
+    $query.= "WHERE a.idcliente = $idcliente AND a.idempresa = $idempresa AND a.inactivo = 0 ";
     print $db->doSelectASJson($query);
 });
 
