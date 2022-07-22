@@ -223,7 +223,7 @@ $app->post('/detalle', function () use ($db) {
     $query = "SELECT DISTINCT b.idtiposervicio, d.desctiposervventa AS concepto ";
     $query .= "FROM factura a INNER JOIN detfact b ON a.id = b.idfactura INNER JOIN contrato c ON c.id = a.idcontrato ";
     $query .= "INNER JOIN tiposervicioventa d ON d.id = b.idtiposervicio ";
-    $query .= "WHERE a.anulada = 0 AND MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio AND c.idproyecto = $d->idproyecto AND b.idtiposervicio NOT IN(1) AND a.idempresa = $d->idempresa ";
+    $query .= "WHERE a.anulada = 0 AND MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio AND c.idproyecto = $d->idproyecto AND b.idtiposervicio NOT IN(1, 16) AND a.idempresa = $d->idempresa ";
     $query .= "ORDER BY 1";
     $conceptos = $db->getQuery($query);
     $cntConceptos = count($conceptos);
