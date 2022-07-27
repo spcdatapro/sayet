@@ -132,6 +132,7 @@ $app->post('/rpttopten', function(){
         // obtener proveedor
         $proveedor = $proveedores[$i]; 
 
+        // facturas por cada proveedor
         $query = "SELECT 
                     fechafactura,
                     CONCAT(serie, '-', documento) AS factura,
@@ -165,6 +166,7 @@ $app->post('/rpttopten', function(){
 
     }
 
+    // id del proveedor para la suma
     $query = "SELECT 
                     a.id,
                     (SELECT 
@@ -173,26 +175,42 @@ $app->post('/rpttopten', function(){
                         FROM
                             compra b
                         WHERE
-                            b.idproveedor = a.id AND b.mesiva = 01
-                                AND YEAR(b.fechafactura) = 2022
-                                AND b.idtipofactura != 5
-                                AND b.idempresa = 4
-                                AND b.idreembolso = 0) AS total
+                            b.idproveedor = a.id AND b.mesiva = $d->mes
+                                AND YEAR(b.fechafactura) = $d->anio
+                                AND b.idtipofactura NOT IN (5, 3)
+                                AND b.idempresa = $d->idempresa
+                                AND b.idreembolso = 0
+                                AND b.iva != 0.00) AS total
                 FROM
                     proveedor a
                 WHERE
                     a.pequeniocont = 0
+                        AND (SELECT 
+                            COUNT(b.id)
+                        FROM
+                            compra b
+                        WHERE
+                            b.idproveedor = a.id AND b.mesiva = $d->mes
+                                AND YEAR(b.fechafactura) = $d->anio
+                                AND b.idtipofactura NOT IN(5, 3)
+                                AND b.idempresa = $d->idempresa
+                                AND b.idreembolso = 0
+                                AND b.iva != 0.00) != 0
                 ORDER BY total DESC
                 LIMIT 10 ";
     $idproveedor = $db->getQueryAsArray($query);
 
     $id = $idproveedor[0][0];
 
-    for ($i = 1; $i < 10; $i++) {
+    $cntosId = count($idproveedor);
+
+    // agrupar los proveedores por coma
+    for ($i = 1; $i < $cntosId; $i++) {
         $id .= ',';
         $id .= $idproveedor[$i][0];
     }
 
+    // suma iva
     $query = "SELECT 
                     FORMAT(SUM(iva), 2) AS iva
                 FROM
