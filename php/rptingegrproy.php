@@ -287,7 +287,7 @@ $app->post('/detalle', function () use ($db) {
                 INNER JOIN compra b ON b.id = a.idcompra
                 INNER JOIN cuentac c ON c.id = a.idcuentac
                 WHERE a.idproyecto = $d->idproyecto AND MONTH(b.fechafactura) = $d->mes AND YEAR(b.fechafactura) = $d->anio AND b.idempresa = $d->idempresa AND 
-                b.idreembolso = 0 AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%' OR TRIM(c.codigo) = '1120299') AND a.debe > 0 ";
+                b.idreembolso = 0 AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%' OR TRIM(c.codigo) = '1120299') ";
     $query .= (int) $d->idunidad == 0 ? '' : "AND a.idunidad = $d->idunidad ";
     $query .= "UNION ";
     $query .= "SELECT DISTINCT a.idcuenta, c.nombrecta AS concepto
