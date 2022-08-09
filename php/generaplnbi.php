@@ -58,7 +58,7 @@ function genDetContDoc($db, $d, $idtranban, $concepto, $idctabanco, $mediopago, 
     $query.= "SUM(a.descigss) AS desc_igss, SUM(a.descisr) AS desc_isr, SUM(a.descanticipo) AS desc_anti, SUM(a.descprestamo) AS desc_prest, SUM(a.descotros) AS otros_desc, SUM(a.liquido) AS liquido, ";
     $query.= "ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * c.patronaligss), 2) AS cuotapatronaligss ";
     $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnempresa c ON c.id = b.idempresaactual ";
-    $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido > 0 ";
+    $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' ";
     $query.= $mediopago == 3 ? "AND b.cuentabanco IS NOT NULL AND LENGTH(TRIM(b.cuentabanco)) > 0 " : '';
     $query.= "AND b.mediopago = $mediopago AND a.idempresa = $d->idempresa ";
     $query.= $idempleado == 0 ? '' : "AND a.idplnempleado = $idempleado ";
