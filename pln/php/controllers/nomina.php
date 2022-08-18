@@ -94,139 +94,200 @@ $app->get('/imprimir', function(){
 	$g = new General();
 
 	if (elemento($_GET, 'fdel') && elemento($_GET, 'fal')) {
-		$s = [215.9, 330.2]; # Oficio mm
+		if (!elemento($_GET, 'excel')) {
+			$s = [215.9, 330.2]; # Oficio mm
 
-		$pdf = new TCPDF('L', 'mm', $s);
-		$pdf->SetAutoPageBreak(TRUE, 0);
-		$pdf->AddPage();
+			$pdf = new TCPDF('L', 'mm', $s);
+			$pdf->SetAutoPageBreak(TRUE, 0);
+			$pdf->AddPage();
 
-		$todos = $b->get_datos_recibo($_GET);
+			$todos = $b->get_datos_recibo($_GET);
 
-		if (count($todos) > 0) {
-			$registros = 0;
-			$datos = [];
+			if (count($todos) > 0) {
+				$registros = 0;
+				$datos = [];
 
-			foreach ($todos as $fila) {
-				if (isset($datos[$fila['vidempresa']])) {
-					$datos[$fila['vidempresa']]['empleados'][] = $fila;
-				} else {
-					$datos[$fila['vidempresa']] = [
-						'nombre'    => $fila['vempresa'], 
-						'conf'      => $g->get_campo_impresion('vidempresa', 2), 
-						'empleados' => [$fila]
-					];
-				}
-			}
-
-			$hojas = 1;
-			$rpag = 30; # Registros por página
-
-			$mes  = date('m', strtotime($_GET['fal']));
-			$anio = date('Y', strtotime($_GET['fal']));
-			$dia  = date('d', strtotime($_GET['fal']));
-
-			$cabecera = $b->get_cabecera([
-				'dia'  => $dia, 
-				'mes'  => $mes, 
-				'anio' => $anio
-			]);
-
-			$pagina  = 1;
-			$espacio = 0;
-			$totales = [];
-
-			foreach ($datos as $key => $empresa) {
-				$registros++;
-
-				if ($registros == $rpag) {
-					$espacio   = 0;
-					$registros = 0;
-					$pdf->AddPage();
-				}
-				
-				$confe      = $g->get_campo_impresion('idempresa', 2);
-				$confe->psy = ($confe->psy+$espacio);
-				$espacio    += $confe->espacio;
-				$pdf        = generar_fimpresion($pdf, "{$key} {$empresa['nombre']}", $confe);
-
-				$etotales = [];
-
-				foreach ($empresa['empleados'] as $empleado) {
-					$registros++;
-
-					foreach ($empleado as $campo => $valor) {
-						$conf = $g->get_campo_impresion($campo, 2);
-
-						if (!isset($conf->scalar) && $conf->visible == 1) {
-							$conf->psy = ($conf->psy+$espacio);
-
-							$sintotal = ['vdiastrabajados', 'vcodigo'];
-
-							if (is_numeric($valor) && !in_array($campo, $sintotal)) {
-								$etotales = totalesIndice($etotales, $campo, $valor);
-								$totales  = totalesPagina($totales, $pdf, $campo, $valor);
-								$valor    = number_format($valor, 2);
-							}
-
-							$pdf = generar_fimpresion($pdf, $valor, $conf);
-						}
+				foreach ($todos as $fila) {
+					if (isset($datos[$fila['vidempresa']])) {
+						$datos[$fila['vidempresa']]['empleados'][] = $fila;
+					} else {
+						$datos[$fila['vidempresa']] = [
+							'nombre'    => $fila['vempresa'], 
+							'conf'      => $g->get_campo_impresion('vidempresa', 2), 
+							'empleados' => [$fila]
+						];
 					}
+				}
 
-					$espacio += $confe->espacio;
+				$hojas = 1;
+				$rpag = 30; # Registros por página
+
+				$mes  = date('m', strtotime($_GET['fal']));
+				$anio = date('Y', strtotime($_GET['fal']));
+				$dia  = date('d', strtotime($_GET['fal']));
+
+				$cabecera = $b->get_cabecera([
+					'dia'  => $dia, 
+					'mes'  => $mes, 
+					'anio' => $anio
+				]);
+
+				$pagina  = 1;
+				$espacio = 0;
+				$totales = [];
+
+				foreach ($datos as $key => $empresa) {
+					$registros++;
 
 					if ($registros == $rpag) {
 						$espacio   = 0;
 						$registros = 0;
 						$pdf->AddPage();
 					}
+
+					$confe      = $g->get_campo_impresion('idempresa', 2);
+					$confe->psy = ($confe->psy+$espacio);
+					$espacio    += $confe->espacio;
+					$pdf        = generar_fimpresion($pdf, "{$key} {$empresa['nombre']}", $confe);
+
+					$etotales = [];
+
+					foreach ($empresa['empleados'] as $empleado) {
+						$registros++;
+
+						foreach ($empleado as $campo => $valor) {
+							$conf = $g->get_campo_impresion($campo, 2);
+
+							if (!isset($conf->scalar) && $conf->visible == 1) {
+								$conf->psy = ($conf->psy+$espacio);
+
+								$sintotal = ['vdiastrabajados', 'vcodigo'];
+
+								if (is_numeric($valor) && !in_array($campo, $sintotal)) {
+									$etotales = totalesIndice($etotales, $campo, $valor);
+									$totales  = totalesPagina($totales, $pdf, $campo, $valor);
+									$valor    = number_format($valor, 2);
+								}
+
+								$pdf = generar_fimpresion($pdf, $valor, $conf);
+							}
+						}
+
+						$espacio += $confe->espacio;
+
+						if ($registros == $rpag) {
+							$espacio   = 0;
+							$registros = 0;
+							$pdf->AddPage();
+						}
+					}
+
+					$registros++;
+
+					if ($registros == $rpag) {
+						$espacio   = 0;
+						$registros = 0;
+						$pdf->AddPage();
+					}
+
+					$pdf->SetLineStyle(array(
+						'width' => 0.2, 
+						'cap' => 'butt', 
+						'join' => 'miter', 
+						'dash' => 0, 
+						'color' => array(0, 0, 0)
+					));
+
+					$pdf = imprimirTotalesEmpresa($pdf, $g, 2, $etotales, $espacio);
+
+					$espacio += $confe->espacio;	
 				}
 
-				$registros++;
-
-				if ($registros == $rpag) {
-					$espacio   = 0;
-					$registros = 0;
-					$pdf->AddPage();
-				}
-
-				$pdf->SetLineStyle(array(
-					'width' => 0.2, 
-					'cap' => 'butt', 
-					'join' => 'miter', 
-					'dash' => 0, 
-					'color' => array(0, 0, 0)
-				));
-
-				$pdf = imprimirTotalesEmpresa($pdf, $g, 2, $etotales, $espacio);
-
-				$espacio += $confe->espacio;	
-			}
-
-			# Para mostrar el resumen de cantidad de empleados
-			$espacio += 5;
-			$conf = $g->get_campo_impresion('resumen', 2);
-			if (!isset($conf->scalar) && $conf->visible == 1) {
-				$conf->psy = ($conf->psy+$espacio);
-				$pdf = generar_fimpresion($pdf, "Total de Empleados: " . count($todos), $conf);
-			}
-
-			$espacio += 20;
-
-			foreach ($b->get_firmas() as $campo => $valor) {
-				$conf = $g->get_campo_impresion($campo, 2);
-
+				# Para mostrar el resumen de cantidad de empleados
+				$espacio += 5;
+				$conf = $g->get_campo_impresion('resumen', 2);
 				if (!isset($conf->scalar) && $conf->visible == 1) {
-					$pdf = generar_fimpresion($pdf, $valor, $conf);
+					$conf->psy = ($conf->psy+$espacio);
+					$pdf = generar_fimpresion($pdf, "Total de Empleados: " . count($todos), $conf);
 				}
+
+				$espacio += 20;
+
+				foreach ($b->get_firmas() as $campo => $valor) {
+					$conf = $g->get_campo_impresion($campo, 2);
+
+					if (!isset($conf->scalar) && $conf->visible == 1) {
+						$pdf = generar_fimpresion($pdf, $valor, $conf);
+					}
+				}
+
+				$pdf = imprimirTotalesPagina($pdf, $g, 2, $totales);
+				$pdf = imprimirEncabezado($pdf, $g, 2, $cabecera);
+
+				$pdf->Output("nomina" . time() . ".pdf", 'I');
+				die();
+			} else {
+				echo "Nada que mostrar";
 			}
-
-			$pdf = imprimirTotalesPagina($pdf, $g, 2, $totales);
-			$pdf = imprimirEncabezado($pdf, $g, 2, $cabecera);
-
-			$pdf->Output("nomina" . time() . ".pdf", 'I');
-			die();
 		} else {
-			echo "Nada que mostrar";
+			$nombre = "planilla.csv";
+			header("Content-type: text/csv");
+			header("Content-Disposition: attachment; filename={$nombre}");
+			header("Pragma: no-cache");
+			header("Expires: 0");
+	
+			$out = fopen('php://output', 'w');
+			$datos = []; # set de datos
+			$datos = $b->get_datos_recibo($_GET); #llenar set de datos
+	
+			fputcsv($out, array(
+				"Código",
+				"Nombre",
+				"Días trabajados",
+				"Sueldo O.",
+				"Sueldo E.",
+				"Sueldo T.",
+				"Bonifica.",
+				"Anticipos",
+				"Vacaciones",
+				"Bono 14",
+				"Aguinaldo",
+				"Devengado",
+				"IGSS",
+				"ISR",
+				"Prestamos",
+				"Otros",
+				"Anticipo",
+				"Deducido", 
+				"Líquido"
+			));
+	
+			foreach ($datos AS $key => $row) {
+				fputcsv($out, array(
+					$row['vcodigo'],
+					$row['vempleado'],
+					$row['vdiastrabajados'],
+					$row['vsueldoordinario'],
+					$row['vsueldoextra'],
+					$row['vsueldototal'],
+					$row['vbonificacion'],
+					$row['votrosingresos'],
+					$row['vvacaciones'],
+					$row['vbono14'],
+					$row['vaguinaldo'],
+					$row['vdevengado'],
+					$row['vigss'],
+					$row['visr'],
+					$row['vprestamo'],
+					$row['vdescotros'],
+					$row['vanticipo'],
+					$row['vdeducido'],
+					$row['vliquido']
+				));
+			}
+	
+			fclose($out);
+			exit();
 		}
 	} else {
 		echo "Faltan datos obligatorios";
