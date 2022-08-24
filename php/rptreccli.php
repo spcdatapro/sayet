@@ -21,7 +21,14 @@ $app->post('/mensual', function(){
                                 CONCAT(b.seriea, '(ANULADO)'),
                                 CONCAT(b.serieb, '(ANULADO)')))) AS recibo,
                 DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
-                IFNULL(IFNULL(c.nombre, d.nombre),
+                IFNULL(IFNULL(c.nombre,
+                                (SELECT 
+                                        b.nombre
+                                    FROM
+                                        factura b
+                                    WHERE
+                                        a.nit = b.nit
+                                    LIMIT 1)),
                         'Clientes Varios') AS cliente,
                 (SELECT 
                         CONCAT('Q', FORMAT(SUM(b.monto), 2))
