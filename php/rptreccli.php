@@ -28,6 +28,8 @@ $app->post('/mensual', function(){
                                         factura b
                                     WHERE
                                         a.nit = b.nit
+                                    AND 
+										b.nit != 'CF'
                                     LIMIT 1)),
                         'Clientes Varios') AS cliente,
                 (SELECT 
