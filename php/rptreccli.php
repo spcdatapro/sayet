@@ -21,16 +21,7 @@ $app->post('/mensual', function(){
                                 CONCAT(b.seriea, '(ANULADO)'),
                                 CONCAT(b.serieb, '(ANULADO)')))) AS recibo,
                 DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
-                IFNULL(IFNULL(c.nombre,
-                                (SELECT 
-                                        b.nombre
-                                    FROM
-                                        factura b
-                                    WHERE
-                                        a.nit = b.nit
-                                    AND 
-										b.nit != 'CF'
-                                    LIMIT 1)),
+                IFNULL(IFNULL(c.nombre, e.nombre)),
                         'Clientes Varios') AS cliente,
                 (SELECT 
                         CONCAT('Q', FORMAT(SUM(b.monto), 2))
@@ -51,8 +42,10 @@ $app->post('/mensual', function(){
                 serierecli b ON b.idrecibocli = a.id
                     LEFT JOIN
                 cliente c ON a.idcliente = c.id
+                    LEFT JOIN 
+				detcobroventa d ON d.idrecibocli = a.id
                     LEFT JOIN
-                factura d ON a.nit = d.nit AND d.nit != NULL
+                factura e ON d.idfactura = e.id
             WHERE
                 a.fecha >= '$d->fdelstr'
                     AND a.fecha <= '$d->falstr'
