@@ -63,7 +63,7 @@
                     <label for="selProy">Cliente:</label>
                     <div class="input-group">
                         <select name="selClt" id="selClt" class="form-control" ng-model="params.cliente"
-                                ng-options="obj.id as (obj.nombrecorto + ' (' + obj.nombre + ')') for obj in lstClientes">
+                                ng-options="obj.id as (obj.nombre + ' (' + obj.nombrecorto + ')') for obj in lstClientes">
                         </select>
                         <span class="input-group-btn">
                             <button class="btn btn-primary" type="button" ng-click="params.cliente = undefined;"
