@@ -80,6 +80,7 @@
 			$scope.params.resumen = 1;
 			$scope.params.sinret = 0;
             $scope.params.cliente = $scope.params.cliente != null && $scope.params.cliente != undefined ? $scope.params.cliente : '';
+            $scope.params.fdelstr = $scope.params.fdel != null && $scope.params.fdel != undefined && moment($scope.params.fdel).isValid() ? moment($scope.params.fdel).format('YYYY-MM-DD') : '';
 			
 			jsReportSrvc.libroisrres($scope.params).then(function (result) {
                     var file = new Blob([result.data], {type: 'application/pdf'});
