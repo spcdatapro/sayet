@@ -73,24 +73,8 @@
                                         ng-model="reccli.fecha" required />
                                 </div>
                             </div>
-                            <!--
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label for="chkEsPropio">Propio:</label>
-                                    <input name="chkEsPropio" id="chkEsPropio" type="checkbox" class="form-control" ng-model="reccli.espropio" ng-true-value="1" ng-false-value="0" />
-                                </div>
-                            </div>
-                            -->
                         </div>
                         <div class="row">
-                            <!--
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="selCliente">Cliente:</label>
-                                    <input type="text" class="form-control" ng-model="queryCli" placeholder="Buscar cliente..."/>
-                                </div>
-                            </div>
-                            -->
                             <div class="col-md-9">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmRecCli.selCliente.$invalid && !frmRecCli.selCliente.$pristine}">
@@ -122,28 +106,16 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- <div class="row" ng-hide="+fltrre.tipo == 2">
-                            <div class="col-md-3">
+                        <div class="row" ng-show="+fltrre.tipo == 1">
+                            <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="selTranBan" ng-show="+fltrre.tipo == 1">Dep&oacute;sito / Nota de
-                                        cr&eacute;dito:</label>
-                                    <label for="selTranBan" ng-show="+fltrre.tipo == 3">Cheque / Nota de
-                                        d&eacute;bito:</label>
-                                    <input type="text" class="form-control" ng-model="query"
-                                        placeholder="Buscar transacci&oacute;n bancaria..." />
+                                    <label for="notasTxt">Notas ext.:</label>
+                                    <textarea class="form-control" ng-model="reccli.notas"
+                                        placeholder="Notas adicionales que apareceran en la impresion del recibo." rows="1">
+                                    </textarea>
                                 </div>
                             </div>
-                            <div class="col-md-9">
-                                <div class="form-group"
-                                    ng-class="{'has-error':frmRecCli.selTranBan.$invalid && !frmRecCli.selTranBan.$pristine}">
-                                    <label for="selTranBan">&nbsp;</label>
-                                    <select name="selTranBan" id="selTranBan" class="form-control"
-                                        ng-model="reccli.objTranBan" ng-options="(tb.fecha | date:'dd/MM/yyyy') + ' - ' + tb.nombre + ' - ' + tb.tipotrans + ' - ' + tb.numero + ' - ' + tb.simbolo + ' ' + (tb.monto | number:2)
-                                        for tb in tranban | filter: filtrar" multiple>
-                                    </select>
-                                </div>
-                            </div>
-                        </div> -->
+                        </div>
                         <div class="row ">
                             <div class="col-md-12 ">
                                 <div class="form-group">

@@ -98,7 +98,8 @@
                 serie: undefined,
                 numero: undefined,
                 usuariocrea: '',
-                concepto: undefined
+                concepto: undefined,
+                notas: undefined
             };
             goTop();
         };
@@ -184,7 +185,6 @@
         $scope.getRecCli = function(idreccli){
             reciboClientesSrvc.getReciboCliente(idreccli).then(function(d){
                 $scope.reccli = procDataRecs(d)[0];
-                console.log($scope.reccli.idcliente == 0 && $scope.reccli.nit != 'CF');
                 if ($scope.reccli.idcliente == 0 && $scope.reccli.nit != 'CF') {
                     $scope.reccli.objCliente = $filter('getById')($scope.clientes, $scope.reccli.nit);
                 }
@@ -225,6 +225,7 @@
             obj.usuariocrea = $scope.usr.usuario;
             obj.tipo = +$scope.fltrre.tipo;
             obj.concepto = obj.concepto != null && obj.concepto != undefined ? obj.concepto : '';
+            obj.notas = obj.notas != null && obj.notas != undefined ? obj.notas : '';
 
             return obj;
         }
@@ -235,7 +236,6 @@
             reciboClientesSrvc.editRow(obj, 'c').then(function(d){
                 //Inicio Modificacion
                 //$scope.getLstRecibosCli(obj.idempresa);
-                console.log(d.lastid);
                 $scope.getLstRecibosCli();
                 //Fin modificacion
                 $scope.getRecCli(parseInt(d.lastid));

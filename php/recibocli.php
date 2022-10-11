@@ -83,7 +83,8 @@ $app->get('/getrecibocli/:idrecibo', function($idrecibo){
             c.tipotrans, c.numero AS notranban, e.nombre, 
             f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
             IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', g.seriea, g.serieb), a.id), 
-            IF(a.serie = 'A', CONCAT(g.seriea, ' (ANULADO)'), CONCAT(g.serieb, ' (ANULADO)'))) AS correlativo
+            IF(a.serie = 'A', CONCAT(g.seriea, ' (ANULADO)'), CONCAT(g.serieb, ' (ANULADO)'))) AS correlativo,
+            a.notas
             FROM recibocli a 
             INNER JOIN cliente b ON b.id = a.idcliente 
             LEFT JOIN tranban c ON c.id = a.idtranban 
@@ -96,7 +97,8 @@ $app->get('/getrecibocli/:idrecibo', function($idrecibo){
             SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, 
             'Facturas contado (Clientes varios)' AS cliente, c.tipotrans, c.numero AS notranban, e.nombre, 
             f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
-            IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', g.seriea, g.serieb), a.id), 'ANULADO') AS correlativo
+            IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', g.seriea, g.serieb), a.id), 'ANULADO') AS correlativo,
+            a.notas
             FROM recibocli a 
             LEFT JOIN tranban c ON c.id = a.idtranban 
             LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
@@ -108,7 +110,8 @@ $app->get('/getrecibocli/:idrecibo', function($idrecibo){
             SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, 
             c.tipotrans, c.numero AS notranban, e.nombre, 
             f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
-            IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', g.seriea, g.serieb), a.id), 'ANULADO') AS correlativo
+            IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', g.seriea, g.serieb), a.id), 'ANULADO') AS correlativo,
+            a.notas
             FROM recibocli a 
             INNER JOIN factura b ON a.nit = b.nit 
             LEFT JOIN tranban c ON c.id = a.idtranban 
@@ -162,9 +165,9 @@ $app->post('/c', function(){
         $d->numero = 0;
     }
 
-    $query = "INSERT INTO recibocli(idempresa, fecha, fechacrea, idcliente, espropio, idtranban, serie, numero, usuariocrea, tipo, concepto, nit) VALUES(";
-    $query.= "$d->idempresa,'$d->fechastr', NOW(), $d->idcliente, $d->espropio, $d->idtranban, '$d->serie', $d->numero, '$d->usuariocrea', $d->tipo, '$d->concepto', '$d->nit'";
-    $query.= ")";
+    $query = "INSERT INTO recibocli(idempresa, fecha, fechacrea, idcliente, espropio, idtranban, serie, numero, usuariocrea, tipo, concepto, nit, notas) VALUES(";
+    $query.= "$d->idempresa,'$d->fechastr', NOW(), $d->idcliente, $d->espropio, $d->idtranban, '$d->serie', $d->numero, '$d->usuariocrea', $d->tipo, '$d->concepto', '$d->nit',";
+    $query.= "'$d->notas')";
     $db->doQuery($query);
 
     $lastid = $db->getLastId();
@@ -183,7 +186,7 @@ $app->post('/u', function(){
     $query = "UPDATE recibocli SET ";
     $query.= "fecha = '$d->fechastr', idcliente = $d->idcliente, espropio = $d->espropio, idtranban = $d->idtranban, ";
     $query.= "serie = '$d->serie', concepto = '$d->concepto', ";
-    $query.= "usuariocrea = '$d->usuariocrea', nit = $d->nit ";
+    $query.= "usuariocrea = '$d->usuariocrea', nit = $d->nit, notas = '$d->notas' ";
     $query.= "WHERE id = $d->id";
     $db->doQuery($query);
 });
@@ -410,7 +413,8 @@ $app->post('/prtrecibocli', function() {
                     IFNULL(f.nombre, IFNULL(d.nombre, 'Clientes Varios')) AS cliente,
                     NULL AS montoletras,
                     a.concepto,
-                    g.nomempresa AS empresa
+                    g.nomempresa AS empresa,
+                    a.notas
                 FROM
                     recibocli a
                         LEFT JOIN
@@ -429,7 +433,7 @@ $app->post('/prtrecibocli', function() {
                 a.id = $d->idrecibo ";
     $recibo = $db->getQuery($query);
 
-        $recibo[0]->montoletras = $n2l->to_word($recibo[0]->montorecli, 'GTQ');
+    $recibo[0]->montoletras = $n2l->to_word($recibo[0]->montorecli, 'GTQ');
 
     // facturas
 
