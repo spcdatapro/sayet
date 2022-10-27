@@ -422,7 +422,7 @@ $app->get('/tranban/:idreembolso', function($idreembolso){
                 CONCAT('(', b.tipotrans, ') ', d.descripcion) AS tipodoc,
                 b.numero,
                 CONCAT(c.nombre, ' (', e.simbolo, ')') AS banco,
-                b.monto,
+                a.monto,
                 1 AS origen
             FROM
                 doctotranban a

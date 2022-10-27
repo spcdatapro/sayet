@@ -39,7 +39,9 @@
             getMontoOt: (idot) => comunFact.doGET(`${urlBase}/montoots/${idot}`),
             getCheques: (idot) => comunFact.doGET(`${urlBase}/selcheques/${idot}`),
             getChequesProveedor: (obj) => comunFact.doPOST(urlBase + '/lstchq', obj),
-            getOtsProveedor: (idproveedor, idempresa) => comunFact.doGET(`${urlBase}/selots/${idproveedor}/${idempresa}`)
+            getOtsProveedor: (idproveedor, idempresa) => comunFact.doGET(`${urlBase}/selots/${idproveedor}/${idempresa}`),
+            getFacturas: (idproveedor, idempresa) => comunFact.doGET(`${urlBase}/selfacturas/${idproveedor}/${idempresa}`),
+            getDocLiquida: (idnota) => comunFact.doGET(`${urlBase}/docliquida/${idnota}`)
         };
     }]);
 

@@ -35,4 +35,9 @@ $app->post('/d', function(){
     $db->doQuery("DELETE FROM tipofactura WHERE id = ".$d->id);
 });
 
+$app->get('/lsttiposfyn', function(){
+    $db = new dbcpm();
+    print $db->doSelectASJson("SELECT id, desctipofact, generaiva, paracompra, paraventa, notas, siglas, IF(notas = 1, 'Notas', 'Facturas') AS grupo FROM tipofactura ORDER BY desctipofact ");
+});
+
 $app->run();

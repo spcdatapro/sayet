@@ -9,6 +9,9 @@
             lstTiposFactura: function(){
                 return comunFact.doGET(urlBase + '/lsttiposfact');
             },
+            lstTiposFyN: function(){
+                return comunFact.doGET(urlBase + '/lsttiposfyn');
+            },
             getTipoFactura: function(idtipofact){
                 return comunFact.doGET(urlBase + '/gettipofact/' + idtipofact);
             },

@@ -170,36 +170,68 @@ function insertaDetalleContable($d, $idorigen){
     $d->conceptoprov.= ", ".$d->serie." - ".$d->documento;
     $d->idp = (float)$d->idp;
 
-    if($ctagastoprov > 0){
-        $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
-        $query.= $origen.", ".$idorigen.", ".$ctagastoprov.", ".round((((float)$d->subtotal - $d->idp) * (float)$d->tipocambio), 2).", 0.00, '".$d->conceptomayor."')";
-        $db->doQuery($query);
-    };
+    if ($d->idtipofactura <= 8) {
+        
+        if($ctagastoprov > 0){
+            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
+            $query.= $origen.", ".$idorigen.", ".$ctagastoprov.", ".round((((float)$d->subtotal - $d->idp) * (float)$d->tipocambio), 2).", 0.00, '".$d->conceptomayor."')";
+            $db->doQuery($query);
+        }
 
-    if($ctaivaporpagar > 0 && (float)$d->iva > 0){
-        $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
-        $query.= $origen.", ".$idorigen.", ".$ctaivaporpagar.", ".round(((float)$d->iva * (float)$d->tipocambio), 2).", 0.00, '".$d->conceptomayor."')";
-        $db->doQuery($query);
-    };
+        if($ctaivaporpagar > 0 && (float)$d->iva > 0){
+            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
+            $query.= $origen.", ".$idorigen.", ".$ctaivaporpagar.", ".round(((float)$d->iva * (float)$d->tipocambio), 2).", 0.00, '".$d->conceptomayor."')";
+            $db->doQuery($query);
+        }
 
-    if($ctaisrretenido > 0 && $d->isr > 0){
-        $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
-        $query.= $origen.", ".$idorigen.", ".$ctaisrretenido.", 0.00, ".round(((float)$d->isr * (float)$d->tipocambio), 2).", '".$d->conceptomayor."')";
-        $db->doQuery($query);
+        if($ctaisrretenido > 0 && $d->isr > 0){
+            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
+            $query.= $origen.", ".$idorigen.", ".$ctaisrretenido.", 0.00, ".round(((float)$d->isr * (float)$d->tipocambio), 2).", '".$d->conceptomayor."')";
+            $db->doQuery($query);
+        }
+
+        if($ctaidp > 0 && $d->idp > 0){
+            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
+            $query.= $origen.", ".$idorigen.", ".$ctaidp.", ".round(((float)$d->idp * (float)$d->tipocambio), 2).", 0.00, '".$d->conceptomayor."')";
+            $db->doQuery($query);
+        }
+
+        if($ctaproveedores > 0){
+            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
+            $query.= $origen.", ".$idorigen.", ".$ctaproveedores.", 0.00, ".round((((float)$d->totfact - $d->isr) * (float)$d->tipocambio), 2).", '".$d->conceptomayor."')";
+            $db->doQuery($query);
+        }
+    } else {
+        if($ctagastoprov > 0){
+            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, haber, debe, conceptomayor) VALUES(";
+            $query.= $origen.", ".$idorigen.", ".$ctagastoprov.", ".round((((float)$d->subtotal - $d->idp) * (float)$d->tipocambio), 2).", 0.00, '".$d->conceptomayor."')";
+            $db->doQuery($query);
+        }
+    
+        if($ctaivaporpagar > 0 && (float)$d->iva > 0){
+            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, haber, debe, conceptomayor) VALUES(";
+            $query.= $origen.", ".$idorigen.", ".$ctaivaporpagar.", ".round(((float)$d->iva * (float)$d->tipocambio), 2).", 0.00, '".$d->conceptomayor."')";
+            $db->doQuery($query);
+        }
+    
+        if($ctaisrretenido > 0 && $d->isr > 0){
+            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, haber, debe, conceptomayor) VALUES(";
+            $query.= $origen.", ".$idorigen.", ".$ctaisrretenido.", 0.00, ".round(((float)$d->isr * (float)$d->tipocambio), 2).", '".$d->conceptomayor."')";
+            $db->doQuery($query);
+        }
+    
+        if($ctaidp > 0 && $d->idp > 0){
+            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, haber, debe, conceptomayor) VALUES(";
+            $query.= $origen.", ".$idorigen.", ".$ctaidp.", ".round(((float)$d->idp * (float)$d->tipocambio), 2).", 0.00, '".$d->conceptomayor."')";
+            $db->doQuery($query);
+        }
+    
+        if($ctaproveedores > 0){
+            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, haber, debe, conceptomayor) VALUES(";
+            $query.= $origen.", ".$idorigen.", ".$ctaproveedores.", 0.00, ".round((((float)$d->totfact - $d->isr) * (float)$d->tipocambio), 2).", '".$d->conceptomayor."')";
+            $db->doQuery($query); 
+        }
     }
-
-    if($ctaidp > 0 && $d->idp > 0){
-        $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
-        $query.= $origen.", ".$idorigen.", ".$ctaidp.", ".round(((float)$d->idp * (float)$d->tipocambio), 2).", 0.00, '".$d->conceptomayor."')";
-        $db->doQuery($query);
-    }
-
-    if($ctaproveedores > 0){
-        $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
-        $query.= $origen.", ".$idorigen.", ".$ctaproveedores.", 0.00, ".round((((float)$d->totfact - $d->isr) * (float)$d->tipocambio), 2).", '".$d->conceptomayor."')";
-        $db->doQuery($query);
-    };
-
     //Agregado para la tasa municipal EEGSA. Solo va a funcionar con el nit 32644-5
     $nit = $db->getOneField("SELECT TRIM(nit) FROM proveedor WHERE id = $d->idproveedor");
     if(trim($nit) == '32644-5' && (float)$d->noafecto != 0){
@@ -302,6 +334,9 @@ $app->post('/c', function(){
         //Fin de inserción automática de detalle contable de la factura
         generaDetalleProyecto($db, $lastid);
         atarChequeAFactura($db, $d, $lastid);
+        if ($d->iddocliquida != NULL) {
+            generarDetalleNota($db, $d, $lastid);
+        }
     }
 
     print json_encode(['lastid' => $lastid]);
@@ -341,6 +376,13 @@ $app->post('/u', function(){
     $idorigen = (int)$d->id;
     $query = "DELETE FROM detallecontable WHERE origen = ".$origen." AND idorigen = ".$idorigen;
     $db->doQuery($query);
+
+    if ($d->iddocliquida != NULL) {
+        $query = "DELETE FROM detnotacompra WHERE idnota = $d->id ";
+        $db->doQuery($query);
+        $lastid = $d->id;
+        generarDetalleNota($db, $d, $lastid);
+    }
 
     //Inicia inserción automática de detalle contable de la factura
     insertaDetalleContable($d, $d->id);
@@ -692,4 +734,68 @@ $app->get('/selcheques/:idot', function($idot){
     print $db->doSelectASJson($query);
 });
 
+$app->get('/selfacturas/:idproveedor/:idempresa', function($idproveedor, $idempresa){
+    $db =new dbcpm();
+
+    $query = "SELECT 
+                a.id,
+                CONCAT(a.serie, '-', a.documento) AS factura,
+                DATE_FORMAT(a.fechafactura, '%d/%m/%Y') AS fecha,
+                FORMAT(a.totfact, 2) AS monto,
+                b.simbolo AS moneda,
+                FORMAT(a.totfact - IFNULL(c.monto, 0.00) - IFNULL(d.monto, 0.00) - IFNULL(a.isr, 0.00),
+                    2) AS saldo,
+                a.idmoneda,
+                a.idproyecto,
+                a.tipocambio,
+                a.ordentrabajo
+            FROM
+                compra a
+                    INNER JOIN
+                moneda b ON a.idmoneda = b.id
+                    LEFT JOIN
+                (SELECT 
+                idcompra, SUM(monto) AS monto
+            FROM
+                    detpagocompra
+                GROUP BY idcompra) c ON c.idcompra = a.id
+                    LEFT JOIN
+                (SELECT 
+                    idcompra, SUM(monto) AS monto
+            FROM
+                    detnotacompra
+                GROUP BY idcompra) d ON d.idcompra = a.id
+            WHERE
+                idtipofactura < 9 AND alcontado = 0
+                    AND a.idempresa = $idempresa
+                    AND a.idproveedor = $idproveedor
+                    AND ((IFNULL(a.totfact, 0.00) - IFNULL(c.monto, 0.00) - IFNULL(d.monto, 0.00) - IFNULL(a.isr, 0.00)) > 0)
+                    AND a.fechafactura >= 20210101
+            ORDER BY a.fechafactura DESC ";
+    print $db->doSelectASJson($query);    
+});
+
+function generarDetalleNota ($db, $d, $lastid) {
+    $query = "INSERT INTO detnotacompra(idcompra, idnota, monto) VALUES ($d->iddocliquida, $lastid, $d->totfact)"; 
+    $db->doQuery($query);
+};
+
+$app->get('/docliquida/:idnota', function($idnota){
+    $db =new dbcpm();
+    $query = "SELECT 
+                a.idcompra,
+                a.idnota,
+                CONCAT(b.serie, '-', b.documento) AS factura,
+                ROUND(a.monto, 2) AS monto,
+                c.simbolo AS moneda
+            FROM
+                detnotacompra a
+                    INNER JOIN
+                compra b ON a.idcompra = b.id
+                    INNER JOIN
+                moneda c ON b.idmoneda = c.id
+            WHERE
+                a.idnota = $idnota ";
+    print $db->doSelectASJson($query); 
+});
 $app->run();

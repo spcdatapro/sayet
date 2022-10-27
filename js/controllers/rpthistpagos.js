@@ -85,7 +85,9 @@
                         idprov: parseInt($scope.losPagos[x].idprov),
                         idcompra: parseInt($scope.losPagos[x].idcompra),
                         documento: $scope.losPagos[x].documento,
-                        totfact: parseFloat($scope.losPagos[x].totfact)
+                        totfact: parseFloat($scope.losPagos[x].totfact),
+                        docnota: $scope.losPagos[x].docnota,
+                        totnota: parseFloat($scope.losPagos[x].totnota)
                     });
                 };
             };
@@ -97,7 +99,7 @@
             var qProvs = getProvs();
             var qCompras = getCompras();
             var tmp = {};
-            var sumas = {totPagado: 0.0};
+            var sumas = { totPagado: 0.00, totResta: 0.00 };
 
             for(var i = 0; i < qProvs.length; i++){
                 $scope.data.push({
@@ -114,15 +116,18 @@
                             idcompra: qCompras[j].idcompra,
                             documento: qCompras[j].documento,
                             totfact: parseFloat(qCompras[j].totfact),
+                            docnota: qCompras[j].docnota,
+                            totnota: qCompras[j].totnota,
                             detpago: []
                         });
+                        sumas.totResta += parseFloat(qCompras[j].totnota);
                     };
                 };
             };
 
             for(var i = 0; i < $scope.data.length; i++){
                 for(var j = 0; j < $scope.data[i].facturas.length; j++){
-                    var sumas = {totPagado: 0.0};
+                    var sumas = {totPagado: 0.00};
                     for(var k = 0; k < $scope.losPagos.length; k++){
                         tmp = $scope.losPagos[k];
                         if(parseInt(tmp.idcompra) === $scope.data[i].facturas[j].idcompra){
@@ -145,14 +150,14 @@
                         beneficiario: '--->',
                         monto: sumas.totPagado
                     });
-                    if(($scope.data[i].facturas[j].totfact - sumas.totPagado) > 0){
+                    if(($scope.data[i].facturas[j].totfact - sumas.totPagado - sumas.totResta) > 0){
                         $scope.data[i].facturas[j].detpago.push({
                             tipotranban: '',
                             numero: '',
                             banco: 'Saldo',
                             fecha: '',
                             beneficiario: '--->',
-                            monto: $scope.data[i].facturas[j].totfact - sumas.totPagado
+                            monto: $scope.data[i].facturas[j].totfact - (sumas.totPagado + sumas.totResta)
                         });
                     };
                 };

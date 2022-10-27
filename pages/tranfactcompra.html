@@ -1,3 +1,11 @@
+<style>
+    .ui-select-choices-group-label {
+        font-size: 14px;
+        font-weight: bold;
+        color: black;
+    }
+</style>
+
 <div class="container" ng-controller="compraCtrl">
     <ul class="nav nav-tabs">
         <li class="active">
@@ -29,12 +37,15 @@
                                         theme="bootstrap" autofocus="true" ng-required="true"
                                         on-select="getConcepto($item)">
                                         <ui-select-match placeholder="Buscar proveedor..." allow-clear="false">
-                                            <span ng-bind="$select.selected.nit + ' (' + $select.selected.nombre + ')'"></span>
+                                            <span
+                                                ng-bind="$select.selected.nit + ' (' + $select.selected.nombre + ')'"></span>
                                         </ui-select-match>
                                         <ui-select-choices refresh="fetch($select)"
                                             repeat="item in losProvs | filter:$select.search | limitTo:itemsLimit"
                                             scroll-detector="loadDataProvs()">
-                                            <div ng-bind-html="(item.nit + ' (' + item.nombre + ')') | highlight: $select.search"></div>
+                                            <div
+                                                ng-bind-html="(item.nit + ' (' + item.nombre + ')') | highlight: $select.search">
+                                            </div>
                                             <!--<small>
                                                 <strong>N.I.T.:</strong>&nbsp;<span
                                                     ng-bind-html="item.nit | highlight: $select.search"></span>
@@ -48,23 +59,31 @@
                                 <div class="form-group required"
                                     ng-class="{'has-error':frmCompra.selTipoFact.$invalid && !frmCompra.selTipoFact.$pristine}">
                                     <label class="control-label">Tipo:</label>
-                                    <ui-select ng-model="laCompra.objTipoFactura"
-                                        title="Seleccione un tipo de factura..." theme="bootstrap" autofocus="false"
-                                        ng-required="true" on-select="calcular()">
-                                        <ui-select-match placeholder="Buscar..." allow-clear="false">
-                                            <span ng-bind="$select.selected.siglas"></span>
-                                        </ui-select-match>
-                                        <ui-select-choices
-                                            repeat="item in lsttiposfact | filter:{desctipofact: $select.search, siglas: $select.search, paracompra: 1}">
-                                            <div ng-bind-html="item.siglas | highlight: $select.search"></div>
-                                            <small>
-                                                <span
-                                                    ng-bind-html="item.desctipofact | highlight: $select.search"></span>
-                                            </small>
-                                        </ui-select-choices>
-                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
-                                    </ui-select>
-
+                                    <div class="input-group">
+                                        <ui-select ng-model="laCompra.objTipoFactura"
+                                            title="Seleccione un tipo de factura..." theme="bootstrap" autofocus="false"
+                                            ng-required="true" on-select="calcular()">
+                                            <ui-select-match placeholder="Buscar..." allow-clear="false">
+                                                <span ng-bind="$select.selected.siglas"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices
+                                                repeat="item in lsttiposfact | filter:{desctipofact: $select.search, siglas: $select.search, paracompra: 1}"
+                                                group-by="'grupo'">
+                                                <div ng-bind-html="item.siglas | highlight: $select.search"></div>
+                                                <small>
+                                                    <span
+                                                        ng-bind-html="item.desctipofact | highlight: $select.search"></span>
+                                                </small>
+                                            </ui-select-choices>
+                                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                        </ui-select>
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-primary"
+                                                ng-click="printFacturas()" ng-disabled="laCompra.objTipoFactura.id < 9 || !laCompra.objTipoFactura">
+                                                <span class="glyphicon glyphicon-paste"></span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -86,10 +105,12 @@
                                 </div>
                             </div>
                             <div class="col-md-1">
-                                <div class="form-group" ng-class="{'has-error':frmCompra.txtDocu.$invalid && !frmCompra.txtDocu.$pristine}">
+                                <div class="form-group"
+                                    ng-class="{'has-error':frmCompra.txtDocu.$invalid && !frmCompra.txtDocu.$pristine}"
+                                    ng-show="laCompra.objTipoFactura.id < 9">
                                     <label for="chkPagada">Contado:</label>
                                     <input name="chkPagada" id="chkPagada" type="checkbox" class="form-control"
-                                           ng-model="laCompra.alcontado" ng-true-value="1" ng-false-value="0"/>
+                                        ng-model="laCompra.alcontado" ng-true-value="1" ng-false-value="0" />
                                 </div>
                             </div>
                         </div>
@@ -127,7 +148,10 @@
                             <div class="col-md-3">
                                 <div class="form-group required"
                                     ng-class="{'has-error':frmCompra.txtFechaFact.$invalid && !frmCompra.txtFechaFact.$pristine}">
-                                    <label for="txtFechaFact" class="control-label">Fecha de factura:</label>
+                                    <label for="txtFechaFact" class="control-label"
+                                        ng-hide="laCompra.objTipoFactura.id > 8">Fecha de factura:</label>
+                                    <label for="txtFechaFact" class="control-label"
+                                        ng-show="laCompra.objTipoFactura.id > 8">Fecha de nota:</label>
                                     <input name="txtFechaFact" id="txtFechaFact" type="date" class="form-control"
                                         ng-model="laCompra.fechafactura" required />
                                 </div>
@@ -135,7 +159,10 @@
                             <div class="col-md-4">
                                 <div class="form-group required"
                                     ng-class="{'has-error':frmCompra.selTipoCompra.$invalid && !frmCompra.selTipoCompra.$pristine}">
-                                    <label for="selTipoCompra" class="control-label">Tipo de compra:</label>
+                                    <label for="selTipoCompra" class="control-label"
+                                        ng-hide="laCompra.objTipoFactura.id > 8">Tipo de compra:</label>
+                                    <label for="selTipoCompra" class="control-label"
+                                        ng-show="laCompra.objTipoFactura.id > 8">Tipo de nota:</label>
                                     <select name="selTipoCompra" id="selTipoCompra" class="form-control"
                                         ng-model="laCompra.objTipoCompra"
                                         ng-options="obj.desctipocompra for obj in losTiposCompra track by obj.id"
@@ -170,16 +197,18 @@
                         <!-- Fin de cuando el tipo de compra es combustible -->
                         <div class="row">
                             <div class="col-md-4">
-                                <div class="form-group" ng-class="{'required': +laCompra.objProveedor.recurrente === 1}">
+                                <div class="form-group"
+                                    ng-class="{'required': +laCompra.objProveedor.recurrente === 1}">
                                     <label>Orden de trabajo:</label>
                                     <div class="input-group">
                                         <select name="selOTProv" id="selOTProv" class="form-control"
-                                        ng-model="laCompra.ordentrabajo" ng-options="obj.id as obj.ot for obj in ots"
-                                        ng-required="false" ng-change="fillDataCompraOt(laCompra.ordentrabajo)">
+                                            ng-model="laCompra.ordentrabajo"
+                                            ng-options="obj.id as obj.ot for obj in ots" ng-required="false"
+                                            ng-change="fillDataCompraOt(laCompra.ordentrabajo)">
                                         </select>
                                         <div class="input-group-btn">
-                                            <button type="button" class="btn btn-primary" ng-click="printChequesSinFact()" 
-                                                ng-disabled="losCheques.length === 0">
+                                            <button type="button" class="btn btn-primary"
+                                                ng-click="printChequesSinFact()" ng-disabled="losCheques.length === 0">
                                                 <span class="glyphicon glyphicon-paste"></span>
                                             </button>
                                         </div>
@@ -298,7 +327,10 @@
                             <div class="col-md-2">
                                 <div class="form-group required"
                                     ng-class="{'has-error':frmCompra.txtFechaPago.$invalid && !frmCompra.txtFechaPago.$pristine}">
-                                    <label for="txtFechaPago" class="control-label">Fecha de pago:</label>
+                                    <label for="txtFechaPago" class="control-label"
+                                        ng-hide="laCompra.objTipoFactura.id > 8">Fecha de pago:</label>
+                                    <label for="txtFechaPago" class="control-label"
+                                        ng-show="laCompra.objTipoFactura.id > 8">Fecha a aplicar:</label>
                                     <input name="txtFechaPago" id="txtFechaPago" type="date" class="form-control"
                                         ng-model="laCompra.fechapago" required />
                                 </div>
@@ -319,11 +351,12 @@
                                     ng-class="{'has-error':frmCompra.txtCambio.$invalid && !frmCompra.txtCambio.$pristine}">
                                     <label for="txtTCambioSug" class="control-label">Tipo de cambio:</label>
                                     <div class="input-group">
-                                    <input name="txtTCambioSug" id="txtTCambioSug" class="form-control"
-                                        ng-model="laCompra.tipocambio" type="text" min="1"
-                                        fcsa-number="{ min:1, maxDecimals:dectc }" required />
+                                        <input name="txtTCambioSug" id="txtTCambioSug" class="form-control"
+                                            ng-model="laCompra.tipocambio" type="text" min="1"
+                                            fcsa-number="{ min:1, maxDecimals:dectc }" required />
                                         <div class="input-group-btn">
-                                            <button type="button" class="btn btn-primary" ng-click="laCompra.tipocambio = tipocambiogt;">
+                                            <button type="button" class="btn btn-primary"
+                                                ng-click="laCompra.tipocambio = tipocambiogt;">
                                                 <span>TC</span>
                                             </button>
                                         </div>
@@ -363,6 +396,27 @@
                                             <td style="text-align: right">{{t.numero}}</td>
                                             <td>{{t.banco}}</td>
                                             <td style="text-align: right">{{t.monto | number:2}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row" ng-show="liquida">
+                            <div class="col-md-6 col-md-offset-3" style="background-color: whitesmoke">
+                                <table class="table table-responsive table-condensed table-hover">
+                                    <caption style="font-weight: bold; color: #0c0c0c">
+                                        Facturas rebajadas
+                                    </caption>
+                                    <thead>
+                                        <tr>
+                                            <th>Factura</th>
+                                            <th style="text-align: right">Monto</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="fact in docsLiquida">
+                                            <td>{{fact.factura}}</td>
+                                            <td style="text-align: right">{{fact.moneda}}.{{fact.monto | number:2}}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -766,7 +820,8 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <h3>{{laCompra.nomproveedor}}</h3>
-                        <h4>{{laCompra.objTipoFactura.siglas}}&nbsp;{{laCompra.serie}}&nbsp;-&nbsp;{{laCompra.documento}},&nbsp;{{laCompra.moneda}}&nbsp;{{laCompra.totfact | number:2}}
+                        <h4>{{laCompra.objTipoFactura.siglas}}&nbsp;{{laCompra.serie}}&nbsp;-&nbsp;{{laCompra.documento}},&nbsp;{{laCompra.moneda}}&nbsp;{{laCompra.totfact
+                            | number:2}}
                         </h4>
                         <h4>{{laCompra.conceptomayor}}</h4>
                     </div>
@@ -986,6 +1041,36 @@
                             <td>{{cq.tipocambio}}</td>
                             <td>{{cq.tipo}}</td>
                             <td>{{cq.concepto}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
+        </div>
+    </script>
+    <script type="text/ng-template" id="modalNotasCredito.html">
+        <div class="modal-header">
+            <h3>Listado de facturas</h3>
+        </div>
+        <div class="modal-body">
+            <div class="table-responsive">
+                <table class="table table-responsive table-hover table-condensed">
+                    <thead>
+                        <tr>
+                            <th> No. Factura </th>
+                            <th> Fecha </th>
+                            <th> Monto </th>
+                            <th> Saldo </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="fact in facturas" ng-click="ok(fact)">
+                            <td>{{fact.factura}}</td>
+                            <td>{{fact.fecha}}</td>
+                            <td>{{fact.moneda}}.{{fact.monto}}</td>
+                            <td>{{fact.moneda}}.{{fact.saldo}}</td>
                         </tr>
                     </tbody>
                 </table>

@@ -188,20 +188,24 @@ $app->post('/rpthistpagos', function(){
     $fAl = "AND d.fecha <= '".$d->falstr."' ";
 
     $query = "SELECT c.nit, c.nombre AS proveedor, CONCAT(b.serie,'-',b.documento) AS documento, f.descripcion AS tipotranban, d.numero, e.nombre AS banco, ";
-    $query.= "d.fecha, d.beneficiario,  a.monto, c.id AS idprov, b.id AS idcompra, b.totfact ";
+    $query.= "d.fecha, d.beneficiario,  a.monto, c.id AS idprov, b.id AS idcompra, b.totfact, ";
+    $query.= "k.id AS idnota, CONCAT(k.serie, '-', k.documento) AS docnota, k.totfact AS totnota ";
     $query.= "FROM detpagocompra a INNER JOIN compra b ON b.id = a.idcompra INNER JOIN proveedor c ON c.id = b.idproveedor ";
     $query.= "INNER JOIN tranban d ON d.id = a.idtranban INNER JOIN banco e ON e.id = d.idbanco ";
     $query.= "INNER JOIN tipomovtranban f ON f.abreviatura = d.tipotrans INNER JOIN empresa g ON g.id = e.idempresa ";
+    $query.= "LEFT JOIN detnotacompra h ON h.idcompra = b.id LEFT JOIN compra k ON h.idnota = k.id ";
     $query.= "WHERE a.esrecprov = 0 AND g.id = ".$d->idempresa." ";
     $query.= (int)$d->idprov > 0 ? $fProveedor : "";
     $query.= $d->fdelstr !== "" ? $fDel : "";
     $query.= $d->falstr !== "" ? $fAl: "";
     $query.= "UNION ALL ";
     $query.= "SELECT c.nit, c.nombre AS proveedor, CONCAT(b.serie,'-',b.documento) AS documento, f.descripcion AS tipotranban, d.numero, e.nombre AS banco, ";
-    $query.= "d.fecha, d.beneficiario,  a.monto, c.id AS idprov, b.id AS idcompra, b.totfact ";
+    $query.= "d.fecha, d.beneficiario,  a.monto, c.id AS idprov, b.id AS idcompra, b.totfact, ";
+    $query.= "k.id AS idnota, CONCAT(k.serie, '-', k.documento) AS docnota, k.totfact AS totnota ";
     $query.= "FROM detpagocompra a INNER JOIN compra b ON b.id = a.idcompra INNER JOIN proveedor c ON c.id = b.idproveedor INNER JOIN detrecprov h ON b.id = h.idorigen ";
     $query.= "INNER JOIN reciboprov i ON i.id = h.idrecprov LEFT JOIN tranban d ON d.id = i.idtranban LEFT JOIN banco e ON e.id = d.idbanco ";
     $query.= "LEFT JOIN tipomovtranban f ON f.abreviatura = d.tipotrans LEFT JOIN empresa g ON g.id = e.idempresa ";
+    $query.= "LEFT JOIN detnotacompra j ON j.idcompra = b.id LEFT JOIN compra k ON j.idnota = k.id ";
     $query.= "WHERE a.esrecprov = 1 AND h.origen = 2 AND i.idempresa = $d->idempresa ";
     $query.= (int)$d->idprov > 0 ? $fProveedor : "";
     $fDel = "AND i.fecha >= '".$d->fdelstr."' ";

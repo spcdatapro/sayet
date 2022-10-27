@@ -41,13 +41,16 @@
             $scope.montoMax = 999999999;
             $scope.losCheques = [];
             $scope.tipocambiobgt = {};
+            $scope.lasFacturas = [];
+            $scope.docsLiquida = [];
+            $scope.liquida = false;
 
             $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
 
             empresaSrvc.lstEmpresas().then(function (d) { $scope.lasEmpresas = d; });
-            tipoCambioSrvc.getLastTC().then(function (d) {$scope.tipocambiogt = +d.lasttc;});
+            tipoCambioSrvc.getLastTC().then(function (d) { $scope.tipocambiogt = +d.lasttc; });
 
-            tipoFacturaSrvc.lstTiposFactura().then(function (d) {
+            tipoFacturaSrvc.lstTiposFyN().then(function (d) {
                 for (var i = 0; i < d.length; i++) { d[i].id = parseInt(d[i].id); d[i].paracompra = parseInt(d[i].paracompra); }
                 $scope.lsttiposfact = d;
             });
@@ -85,6 +88,8 @@
 
             $scope.loadPresupuestosProveedor = (idproveedor) => compraSrvc.getOtsProveedor(idproveedor, (!!$scope.laCompra.objEmpresa ? $scope.laCompra.objEmpresa.id : $scope.laCompra.idempresa)).then((d) => $scope.ots = d);
 
+            $scope.loadFacturas = (idproveedor) => compraSrvc.getFacturas(idproveedor, (!!$scope.laCompra.objEmpresa ? $scope.laCompra.objEmpresa.id : $scope.laCompra.idempresa)).then((d) => $scope.lasFacturas = d);
+
             $scope.loadDataProvs = () => $scope.itemsLimit = $scope.itemsLimit + 10;
 
             $scope.fetch = function ($select) { };
@@ -114,14 +119,16 @@
                     fechaingreso: new Date(), mesiva: hoy.getMonth() + 1, fechafactura: new Date(), creditofiscal: 0, extraordinario: 0, noafecto: 0.0,
                     objEmpresa: $scope.laCompra.objEmpresa, objMoneda: {}, tipocambio: 1, isr: 0.00, galones: 0.00, idp: 0.00, objTipoCombustible: {},
                     totfact: 0.00, subtotal: 0.00, iva: 0.00, ordentrabajo: undefined, idproyecto: undefined, idunidad: undefined, nombrerecibo: undefined,
-                    idcheque: undefined, alcontado: 0
+                    idcheque: undefined, alcontado: 0, iddocliquida: undefined
                 };
                 $scope.search = "";
                 $scope.facturastr = '';
                 $scope.losDetCont = [];
                 $scope.tranpago = [];
+                $scope.docsLiquida = [];
                 $scope.yaPagada = false;
                 $scope.editando = false;
+                $scope.liquida = false;
                 monedaSrvc.getMoneda(parseInt($scope.laCompra.objEmpresa.idmoneda)).then(function (m) {
                     $scope.laCompra.objMoneda = m[0];
                     $scope.laCompra.tipocambio = parseFloat(m[0].tipocambio).toFixed($scope.dectc);
@@ -246,28 +253,21 @@
                 exento = parseFloat($scope.laCompra.idp) + noAfecto;
                 subtotal = totFact - exento;
 
-                // if (totFact > $scope.montoMax) {
-                //     toaster.pop({
-                //         type: 'error', title: 'Error en el Total.',
-                //         body: 'El monto de la factura no puede ser mayor al monto de la orden de trabajo, solicite un aumento.', timeout: 7000
-                //     });
-                //     $scope.laCompra.totfact = undefined;
-                // }
                 if ($scope.laCompra.objProveedor.pequeniocont == 1) {
                     $scope.laCompra.subtotal = totFact;
                     $scope.laCompra.iva = 0.00;
                 } else {
                     if (noAfecto <= totFact) {
-                    $scope.laCompra.subtotal = geniva ? parseFloat(subtotal / 1.12).toFixed(2) : totFact;
-                    $scope.laCompra.iva = geniva ? parseFloat($scope.laCompra.subtotal * 0.12).toFixed(2) : 0.00;
-                        } else {
+                        $scope.laCompra.subtotal = geniva ? parseFloat(subtotal / 1.12).toFixed(2) : totFact;
+                        $scope.laCompra.iva = geniva ? parseFloat($scope.laCompra.subtotal * 0.12).toFixed(2) : 0.00;
+                    } else {
                         $scope.laCompra.noafecto = 0;
                         toaster.pop({
                             type: 'error', title: 'Error en el monto de No afecto.',
                             body: 'El monto de No afecto no puede ser mayor al total de la factura.', timeout: 7000
                         });
                     }
-                }    
+                }
             };
 
             $scope.esDePresupuesto = async () => {
@@ -292,6 +292,7 @@
             $scope.getConcepto = (qProv) => {
                 $scope.chkExisteCompra();
                 $scope.loadPresupuestosProveedor(qProv.id);
+                $scope.loadFacturas(qProv.id);
                 if (!$scope.laCompra.id > 0) {
                     if (!!qProv) {
                         $scope.laCompra.conceptomayor = qProv.concepto;
@@ -391,6 +392,7 @@
                     if (d.length > 0) {
                         $scope.laCompra = procDataCompras(d)[0];
                         $scope.laCompra.objProveedor = $filter('getById')($scope.losProvs, $scope.laCompra.idproveedor);
+                        $scope.loadFacturas($scope.laCompra.idproveedor);
                         $scope.laCompra.objMoneda = $filter('getById')($scope.monedas, $scope.laCompra.idmoneda);
                         $scope.laCompra.objTipoFactura = $filter('getById')($scope.lsttiposfact, $scope.laCompra.idtipofactura);
                         $scope.laCompra.objTipoCombustible = $filter('getById')($scope.combustibles, $scope.laCompra.idtipocombustible);
@@ -411,6 +413,16 @@
                             }
                             $scope.tranpago = d;
                             $scope.yaPagada = $scope.tranpago.length > 0;
+                        });
+
+                        compraSrvc.getDocLiquida($scope.laCompra.id).then(function(d) {
+                            for (var i = 0; i < d.length; i++) {
+                                d[i].factura = d[i].factura;
+                                d[i].monto = parseFloat(d[i].monto);
+                                d[i].moneda = d[i].moneda;
+                            }
+                            $scope.docsLiquida = d;
+                            $scope.liquida = $scope.docsLiquida.length > 0;
                         });
 
                         if ($scope.laCompra.isr > 0) {
@@ -499,6 +511,7 @@
                     delete obj.nombrerecibo;
                 }
                 obj.alcontado = obj.alcontado != null && obj.alcontado !== undefined ? +obj.alcontado : 0;
+                obj.iddocliquida = obj.iddocliquida != null && obj.iddocliquida !== undefined ? obj.iddocliquida : null;
                 //obj.idtipocombustible = 0;
                 //obj.idproyecto = 0;
                 return obj;
@@ -512,11 +525,11 @@
                         case $scope.ctasGastoProv.length == 0:
                             proveedorSrvc.lstCuentacProv(obj.idproveedor, obj.idempresa).then((lstCtas) => {
                                 $scope.ctasGastoProv = lstCtas;
-                                if($scope.ctasGastoProv.length == 1){
+                                if ($scope.ctasGastoProv.length == 1) {
                                     obj.ctagastoprov = parseInt($scope.ctasGastoProv[0].idcuentac);
                                     execCreate(obj);
                                 }
-                                else{
+                                else {
                                     toaster.pop({
                                         type: 'error', title: 'Error en la creación de la factura.',
                                         body: 'La factura de este proveedor no pudo ser creada. Favor verifique que el proveedor tenga una cuenta contable.', timeout: 9000
@@ -639,7 +652,6 @@
                 });
 
                 modalInstance.result.then(function (obj) {
-                    console.log(obj);
                     $scope.laCompra.idcheque = obj.id;
                     $scope.laCompra.totfact = obj.monto.toString().replace(',', '');
                     $scope.laCompra.objMoneda = $scope.monedas.find(m => +m.id === +obj.idmoneda);
@@ -647,6 +659,27 @@
                     $scope.laCompra.tipocambio = obj.tipocambio;
                     $scope.calcular();
                 }, function () { return 0; });
+            };
+
+            $scope.printFacturas = () => {
+                var modalInstance = $uibModal.open({
+                    animation: true,
+                    templateUrl: 'modalNotasCredito.html',
+                    controller: 'ModalListFacturasCtrl',
+                    windowClass: 'app-modal-window',
+                    resolve: {
+                        facturas: () => $scope.lasFacturas
+                    }
+                });
+
+                modalInstance.result.then(function (obj) {
+                    $scope.laCompra.iddocliquida = obj.id;
+                    $scope.laCompra.totfact = obj.saldo.toString().replace(',', '');
+                    $scope.laCompra.objMoneda = $scope.monedas.find(m => +m.id === +obj.idmoneda);
+                    $scope.laCompra.idproyecto = obj.idproyecto;
+                    $scope.laCompra.tipocambio = obj.tipocambio;
+                    $scope.laCompra.ordentrabajo = obj.ordentrabajo;
+                });
             };
 
             $scope.zeroDebe = function (valor) { $scope.elDetCont.debe = parseFloat(valor) > 0 ? 0.0 : $scope.elDetCont.debe; };
@@ -808,6 +841,18 @@
         $scope.cancel = () => $uibModalInstance.dismiss('cancel');
 
         $scope.ok = (chq) => $uibModalInstance.close(chq);
+
+
+    }]);
+
+    //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    compractrl.controller('ModalListFacturasCtrl', ['$scope', '$uibModalInstance', 'facturas', function ($scope, $uibModalInstance, facturas) {
+        $scope.facturas = facturas;
+
+
+        $scope.cancel = () => $uibModalInstance.dismiss('cancel');
+
+        $scope.ok = (fact) => $uibModalInstance.close(fact);
 
 
     }]);
