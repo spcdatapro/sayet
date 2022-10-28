@@ -173,18 +173,138 @@ function getSelect($cual, $d, $enrango){
     return $query;
 }
 
-$app->post('/balancesaldos', function(){
+// version anterior
+
+// $app->post('/balancesaldos', function(){
+//     $d = json_decode(file_get_contents('php://input'));
+//     if(!isset($d->vercierre)){ $d->vercierre = 0; }
+//     if(!isset($d->nivel)){ $d->nivel = 10; }
+//     if(!isset($d->solomov)){ $d->solomov = 1; }
+//     $db = new dbcpm();
+
+//     $query = "SELECT nomempresa, abreviatura, DATE_FORMAT('$d->fdelstr', '$db->_formatoFecha') AS del, DATE_FORMAT('$d->falstr', '$db->_formatoFecha') AS al, DATE_FORMAT(NOW(), '$db->_formatoFechaHora') AS hoy, ";
+//     $query.= "0.00 AS anterior, 0.00 AS debe, 0.00 AS haber, 0.00 AS actual, ";
+//     $query.= "0.00 AS anteriorstr, 0.00 AS debestr, 0.00 AS haberstr, 0.00 AS actualstr ";
+//     $query.= "FROM empresa ";
+//     $query.= "WHERE id = $d->idempresa";
+//     $empresa = $db->getQuery($query)[0];
+
+//     $conta = new contabilidad($d->fdelstr, $d->falstr, $d->idempresa, (int)$d->vercierre);
+//     $queryRawData = $conta->getDatosEnCrudo();
+//     $queryRawDataAnterior = $conta->getDatosEnCrudoAnterior();
+
+//     $query = "SELECT j.id, j.codigo, j.nombrecta, j.tipocuenta, 
+//                 IFNULL(l.anterior, 0.00) AS anterior, IFNULL(l.anteriorstr, 0.00) AS anteriorstr, IFNULL(k.debe, 0.00) AS debe, FORMAT(IFNULL(k.debe, 0.00), 2) AS debestr, IFNULL(k.haber, 0.00) AS haber, FORMAT(IFNULL(k.haber, 0.00), 2) AS haberstr, 
+//                 (IFNULL(l.anterior, 0.00) + IFNULL(k.debe, 0.00) - IFNULL(k.haber, 0.00)) AS actual, FORMAT((IFNULL(l.anterior, 0.00) + IFNULL(k.debe, 0.00) - IFNULL(k.haber, 0.00)), 2) AS actualstr, 1 AS mostrar
+//                 FROM cuentac j
+//                 LEFT JOIN (
+//                     SELECT idcuentac, SUM(debe) AS debe, SUM(haber) AS haber
+//                     FROM ($queryRawData) w
+//                     WHERE idcuentac IS NOT NULL
+//                     GROUP BY idcuentac
+//                 ) k ON j.id = k.idcuentac
+//                 LEFT JOIN(
+//                     SELECT idcuentac, (SUM(debe) - SUM(haber)) AS anterior, FORMAT((SUM(debe) - SUM(haber)), 2) AS anteriorstr
+//                     FROM ($queryRawDataAnterior) w
+//                     WHERE idcuentac IS NOT NULL 
+//                     GROUP BY idcuentac
+//                 ) l ON j.id = l.idcuentac
+//                 WHERE j.idempresa = $d->idempresa ";
+//     $query.= "ORDER BY j.codigo";
+
+//     $cuentas = $db->getQuery($query);
+//     $cntCuentas = count($cuentas);
+//     for($i = 0; $i < $cntCuentas; $i++){
+//         $cuenta = $cuentas[$i];
+//         if((int)$cuenta->tipocuenta === 1){
+//             $query = "SELECT SUM(debe) AS debe, FORMAT(SUM(debe), 2) AS debestr, SUM(haber) AS haber, FORMAT(SUM(haber), 2) AS haberstr ";
+//             $query.= "FROM ($queryRawData) w ";
+//             $query.= "WHERE codigo LIKE '$cuenta->codigo%'";
+//             $sumas = $db->getQuery($query);
+//             if(count($sumas) > 0){
+//                 $cuenta->debe = $sumas[0]->debe;
+//                 $cuenta->debestr = $sumas[0]->debestr;
+//                 $cuenta->haber = $sumas[0]->haber;
+//                 $cuenta->haberstr = $sumas[0]->haberstr;
+//             }
+
+//             $query = "SELECT (SUM(w.debe) - SUM(w.haber)) AS anterior, FORMAT(SUM(w.debe) - SUM(w.haber), 2) AS anteriorstr ";
+//             $query.= "FROM ($queryRawDataAnterior) w ";
+//             $query.= "WHERE w.codigo LIKE '$cuenta->codigo%'";
+//             $anterior = $db->getQuery($query);
+//             if(count($anterior) > 0){
+//                 $cuenta->anterior = $anterior[0]->anterior;
+//                 $cuenta->anteriorstr = $anterior[0]->anteriorstr;
+//                 $cuenta->actual = (float)$anterior[0]->anterior + (float)$sumas[0]->debe - (float)$sumas[0]->haber;
+//                 $cuenta->actualstr = number_format($cuenta->actual, 2);
+//             }
+//         }
+
+//         if(((float)$cuenta->anterior === 0.00 && (float)$cuenta->debe === 0.00 && (float)$cuenta->haber === 0.00 && (float)$cuenta->actual === 0.00) || strlen(trim($cuenta->codigo)) > (int)$d->nivel){
+//             $cuenta->mostrar = false;
+//         }
+
+//         if($cuenta->mostrar && (int)$cuenta->tipocuenta === 0){
+//             $empresa->anterior += (float)$cuenta->anterior;
+//             $empresa->debe += (float)$cuenta->debe;
+//             $empresa->haber += (float)$cuenta->haber;
+//             $empresa->actual += (float)$cuenta->actual;
+//         }
+//     }
+
+//     $empresa->anteriorstr = number_format($empresa->anterior, 2);
+//     $empresa->debestr = number_format($empresa->debe, 2);
+//     $empresa->haberstr = number_format($empresa->haber, 2);
+//     $empresa->actualstr = number_format($empresa->actual, 2);
+
+//     print json_encode(['parametros' => $d, 'empresa' => $empresa, 'datos' => $cuentas, 'rawant' => $queryRawDataAnterior, 'raw' => $queryRawData]);
+// });
+
+function getSumaCuentaTotales($lista, $cuenta, $actual = true)
+{
+    $datos = new stdClass();
+    $datos->debe = 0.0;
+    $datos->haber = 0.0;
+    $datos->anterior = 0.0;
+    $cuenta = $cuenta && is_string($cuenta) ? trim($cuenta) : '';
+    $tamanio = strlen($cuenta);
+    if ($tamanio > 0 && count($lista) > 0) {
+        foreach ($lista as $item) {
+            $iniciaCon = substr($item->codigo, 0, $tamanio);
+            if (strcasecmp($cuenta, $iniciaCon) === 0) {
+                if ($actual) {
+                    $datos->debe += (float)$item->debe;
+                    $datos->haber += (float)$item->haber;
+                } else {
+                    $datos->anterior += (float)$item->anterior;
+                }
+            }
+        }
+        return $datos;
+    }
+    return false;
+}
+
+$app->post('/balancesaldos', function () {
+    set_time_limit(0);
+    ini_set('memory_limit', '-1');
     $d = json_decode(file_get_contents('php://input'));
-    if(!isset($d->vercierre)){ $d->vercierre = 0; }
-    if(!isset($d->nivel)){ $d->nivel = 10; }
-    if(!isset($d->solomov)){ $d->solomov = 1; }
+    if (!isset($d->vercierre)) {
+        $d->vercierre = 0;
+    }
+    if (!isset($d->nivel)) {
+        $d->nivel = 10;
+    }
+    if (!isset($d->solomov)) {
+        $d->solomov = 1;
+    }
     $db = new dbcpm();
 
     $query = "SELECT nomempresa, abreviatura, DATE_FORMAT('$d->fdelstr', '$db->_formatoFecha') AS del, DATE_FORMAT('$d->falstr', '$db->_formatoFecha') AS al, DATE_FORMAT(NOW(), '$db->_formatoFechaHora') AS hoy, ";
-    $query.= "0.00 AS anterior, 0.00 AS debe, 0.00 AS haber, 0.00 AS actual, ";
-    $query.= "0.00 AS anteriorstr, 0.00 AS debestr, 0.00 AS haberstr, 0.00 AS actualstr ";
-    $query.= "FROM empresa ";
-    $query.= "WHERE id = $d->idempresa";
+    $query .= "0.00 AS anterior, 0.00 AS debe, 0.00 AS haber, 0.00 AS actual, ";
+    $query .= "0.00 AS anteriorstr, 0.00 AS debestr, 0.00 AS haberstr, 0.00 AS actualstr ";
+    $query .= "FROM empresa ";
+    $query .= "WHERE id = $d->idempresa";
     $empresa = $db->getQuery($query)[0];
 
     $conta = new contabilidad($d->fdelstr, $d->falstr, $d->idempresa, (int)$d->vercierre);
@@ -208,41 +328,47 @@ $app->post('/balancesaldos', function(){
                     GROUP BY idcuentac
                 ) l ON j.id = l.idcuentac
                 WHERE j.idempresa = $d->idempresa ";
-    $query.= "ORDER BY j.codigo";
-
+    $query .= "ORDER BY j.codigo";
     $cuentas = $db->getQuery($query);
     $cntCuentas = count($cuentas);
-    for($i = 0; $i < $cntCuentas; $i++){
-        $cuenta = $cuentas[$i];
-        if((int)$cuenta->tipocuenta === 1){
-            $query = "SELECT SUM(debe) AS debe, FORMAT(SUM(debe), 2) AS debestr, SUM(haber) AS haber, FORMAT(SUM(haber), 2) AS haberstr ";
-            $query.= "FROM ($queryRawData) w ";
-            $query.= "WHERE codigo LIKE '$cuenta->codigo%'";
-            $sumas = $db->getQuery($query);
-            if(count($sumas) > 0){
-                $cuenta->debe = $sumas[0]->debe;
-                $cuenta->debestr = $sumas[0]->debestr;
-                $cuenta->haber = $sumas[0]->haber;
-                $cuenta->haberstr = $sumas[0]->haberstr;
-            }
 
-            $query = "SELECT (SUM(w.debe) - SUM(w.haber)) AS anterior, FORMAT(SUM(w.debe) - SUM(w.haber), 2) AS anteriorstr ";
-            $query.= "FROM ($queryRawDataAnterior) w ";
-            $query.= "WHERE w.codigo LIKE '$cuenta->codigo%'";
-            $anterior = $db->getQuery($query);
-            if(count($anterior) > 0){
-                $cuenta->anterior = $anterior[0]->anterior;
-                $cuenta->anteriorstr = $anterior[0]->anteriorstr;
-                $cuenta->actual = (float)$anterior[0]->anterior + (float)$sumas[0]->debe - (float)$sumas[0]->haber;
+    $query = 'SELECT TRIM(w.codigo) AS codigo, SUM(debe) AS debe, FORMAT(SUM(debe), 2) AS debestr, SUM(haber) AS haber, FORMAT(SUM(haber), 2) AS haberstr ';
+    $query .= "FROM ($queryRawData) w ";
+    $query .= 'WHERE w.codigo IS NOT NULL ';
+    $query .= 'GROUP BY w.codigo';
+    $sumasActual = $db->getQuery($query);
+
+    $query = "SELECT TRIM(w.codigo) AS codigo, (SUM(w.debe) - SUM(w.haber)) AS anterior, FORMAT(SUM(w.debe) - SUM(w.haber), 2) AS anteriorstr ";
+    $query .= "FROM ($queryRawDataAnterior) w ";
+    $query .= 'WHERE w.codigo IS NOT NULL ';
+    $query .= 'GROUP BY w.codigo';
+    $sumasAnterior = $db->getQuery($query);
+
+    for ($i = 0; $i < $cntCuentas; $i++) {
+        $cuenta = $cuentas[$i];
+        if ((int)$cuenta->tipocuenta === 1) {            
+            $sumas = getSumaCuentaTotales($sumasActual, $cuenta->codigo);
+            if ($sumas) {
+                $cuenta->debe = $sumas->debe;
+                $cuenta->debestr = number_format($sumas->debe, 2);
+                $cuenta->haber = $sumas->haber;
+                $cuenta->haberstr = number_format($sumas->haber, 2);
+            }
+            
+            $anterior = getSumaCuentaTotales($sumasAnterior, $cuenta->codigo, false);
+            if ($anterior) {
+                $cuenta->anterior = $anterior->anterior;
+                $cuenta->anteriorstr = number_format($anterior->anterior, 2);
+                $cuenta->actual = (float)$anterior->anterior + (float)$sumas->debe - (float)$sumas->haber;
                 $cuenta->actualstr = number_format($cuenta->actual, 2);
             }
         }
 
-        if(((float)$cuenta->anterior === 0.00 && (float)$cuenta->debe === 0.00 && (float)$cuenta->haber === 0.00 && (float)$cuenta->actual === 0.00) || strlen(trim($cuenta->codigo)) > (int)$d->nivel){
+        if (((float)$cuenta->anterior === 0.00 && (float)$cuenta->debe === 0.00 && (float)$cuenta->haber === 0.00 && (float)$cuenta->actual === 0.00) || strlen(trim($cuenta->codigo)) > (int)$d->nivel) {
             $cuenta->mostrar = false;
         }
 
-        if($cuenta->mostrar && (int)$cuenta->tipocuenta === 0){
+        if ($cuenta->mostrar && (int)$cuenta->tipocuenta === 0) {
             $empresa->anterior += (float)$cuenta->anterior;
             $empresa->debe += (float)$cuenta->debe;
             $empresa->haber += (float)$cuenta->haber;
@@ -257,5 +383,4 @@ $app->post('/balancesaldos', function(){
 
     print json_encode(['parametros' => $d, 'empresa' => $empresa, 'datos' => $cuentas, 'rawant' => $queryRawDataAnterior, 'raw' => $queryRawData]);
 });
-
 $app->run();
