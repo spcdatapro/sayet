@@ -342,7 +342,7 @@
                                     <label for="txtDoc">Documento:</label>
                                     <input name="txtDoc" id="txtDoc" type="number"
                                         class="form-control form-control-sm input-sm" ng-model="compra.documento"
-                                        min="1" required />
+                                        min="1" ng-change="ingresoDocumento()" required  />
                                 </div>
                             </div>
                             <div class="col-md-2">

@@ -5,10 +5,10 @@
     reembolsoctrl.controller('reembolsoCtrl', [
         '$scope', 'reembolsoSrvc', 'monedaSrvc', 'authSrvc', 'empresaSrvc', '$route', '$confirm', 'tipoReembolsoSrvc', 'DTOptionsBuilder', '$filter', 'tipoFacturaSrvc', 'tipoCompraSrvc', 'detContSrvc', 'cuentacSrvc',
         'toaster', '$uibModal', 'tipoMovTranBanSrvc', 'bancoSrvc', 'beneficiarioSrvc', 'tipoCombustibleSrvc', 'proveedorSrvc', 'localStorageSrvc', '$location', 'proyectoSrvc', 'tipogastoSrvc', 'periodoContableSrvc',
-        'presupuestoSrvc',
+        'presupuestoSrvc', 'compraSrvc',
         ($scope, reembolsoSrvc, monedaSrvc, authSrvc, empresaSrvc, $route, $confirm, tipoReembolsoSrvc, DTOptionsBuilder, $filter, tipoFacturaSrvc, tipoCompraSrvc, detContSrvc, cuentacSrvc,
             toaster, $uibModal, tipoMovTranBanSrvc, bancoSrvc, beneficiarioSrvc, tipoCombustibleSrvc, proveedorSrvc, localStorageSrvc, $location, proyectoSrvc, tipogastoSrvc, periodoContableSrvc,
-            presupuestoSrvc
+            presupuestoSrvc, compraSrvc
         ) => {
 
             $scope.monedas = [];
@@ -47,6 +47,7 @@
             };
             $scope.presupuesto = {};
             $scope.ot = {};
+            var prov = { id: 0, concepto: null, retensionisr: 0 };
 
             $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap()
                 .withBootstrapOptions({
@@ -490,9 +491,8 @@
                             $scope.compra.nit = item.originalObject.nit;
                             $scope.compra.proveedor = item.originalObject.proveedor;
                             proveedorSrvc.getProveedorByNit($scope.compra.nit).then(function (d) {
-                                var prov = { id: 0, concepto: null, retensionisr: 0 };
+                                prov = { id: 0, concepto: null, retensionisr: 0 };
                                 if (d.length > 0) { prov = d[0]; }
-
                                 if ($scope.compra.conceptomayor != null && $scope.compra.conceptomayor != undefined) {
                                     if ($scope.compra.conceptomayor.length == 0) { $scope.compra.conceptomayor = prov.concepto; }
                                 }
@@ -589,6 +589,37 @@
                             }
                         });
                     }
+                }
+            };
+
+            $scope.ingresoDocumento = function () {
+                $scope.chkExisteCompra(prov);
+            }
+
+            $scope.chkExisteCompra = function (prov) {
+                //console.log($scope.laCompra); return;
+                var params = { idproveedor: 0, nit: '', serie: '', documento: 0 };
+                if (prov != null && prov != undefined) {
+                    params.idproveedor = prov.id;
+                    params.nit = prov.nit != null && prov.nit != undefined ? prov.nit.trim() : '';
+                }
+
+                if ($scope.compra.serie != null && $scope.compra.serie != undefined) { params.serie = $scope.compra.serie.trim(); }
+
+                if ($scope.compra.documento != null && $scope.compra.documento != undefined) { params.documento = +$scope.compra.documento; }
+
+                if (params.documento > 0) {
+                    compraSrvc.existeCompra(params).then(function (d) {
+                        if (+d.existe == 1) {
+                            var mensaje = 'La factura ' + d.serie + '-' + d.documento + ' del proveedor ' + d.proveedor + ' (' + d.nit + ') ';
+                            mensaje += 'ya existe en la empresa ' + d.empresa + ' (' + d.abreviaempresa + '). Favor revisar.';
+                            toaster.pop({
+                                type: 'error', title: 'Esta factura ya existe',
+                                body: mensaje, timeout: 5000
+                            });
+                            return;
+                        }
+                    });
                 }
             };
 
