@@ -4,16 +4,37 @@
             <div class="panel-heading">Recibos de cliente</div>
             <div class="panel-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="txtDel">Del:</label>
                             <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.fdel" placeholder="Del"/>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <label for="txtAl">Al:</label>
                             <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fal" placeholder="Al"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Empresa: </label>
+                            <ui-select ng-model="params.idempresa"
+                                title="Seleccione una empresa..." theme="bootstrap"
+                                autofocus="false" on-select="getDataEmpresa($item)">
+                                <ui-select-match placeholder="Buscar empresa..."
+                                    allow-clear="true">
+                                    <span ng-bind="($select.selected.nomempresa)"></span>
+                                </ui-select-match>
+                                <ui-select-choices 
+                                    repeat="item.id as item in empresas | filter:$select.search"
+                                    group-by="'grupo'">
+                                    <div
+                                        ng-bind-html="(item.nomempresa) | highlight: $select.search">
+                                    </div>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
                         </div>
                     </div>
                 </div>

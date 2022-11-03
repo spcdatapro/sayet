@@ -8,6 +8,8 @@ $app->response->headers->set('Content-Type', 'application/json');
 $app->post('/mensual', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+
+    if(!isset($d->idempresa)) { $d->idempresa = 0; }
     $query = "SELECT DATE_FORMAT('$d->fdelstr', '%d/%m/%Y') AS del,  DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS al, DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy ";
     $fechas = $db->getQuery($query)[0];
 
@@ -48,8 +50,9 @@ $app->post('/mensual', function(){
                 factura e ON d.idfactura = e.id
             WHERE
                 a.fecha >= '$d->fdelstr'
-                    AND a.fecha <= '$d->falstr'
-            ORDER BY a.fecha ASC, a.serie ASC, b.seriea ASC, b.serieb ASC ";
+                    AND a.fecha <= '$d->falstr' ";
+    $query.= $d->idempresa !== 0 ? "AND a.idempresa = $d->idempresa " : '';
+    $query.= "ORDER BY a.fecha ASC, a.serie ASC, b.seriea ASC, b.serieb ASC ";
     $recibos = $db->getQuery($query);
 
     $cntRecibos = count($recibos); 
@@ -73,7 +76,9 @@ $app->post('/mensual', function(){
                         INNER JOIN
                     detpagorecli b ON b.idreccli = a.id
                 WHERE
-                    a.fecha = '$fecharec' AND b.idmoneda = 1) AS montoqtz,
+                    a.fecha = '$fecharec' AND b.idmoneda = 1 "; 
+            $query.= $d->idempresa !== 0 ? "AND a.idempresa = $d->idempresa " : '';
+            $query.= ") AS montoqtz,
             (SELECT 
                     CONCAT('$',
                                 '.',
@@ -83,7 +88,9 @@ $app->post('/mensual', function(){
                         INNER JOIN
                     detpagorecli b ON b.idreccli = a.id
                 WHERE
-                    a.fecha = '$fecharec' AND b.idmoneda = 2) AS montodlr "; 
+                    a.fecha = '$fecharec' AND b.idmoneda = 2 ";
+            $query.= $d->idempresa !== 0 ? "AND a.idempresa = $d->idempresa " : '';
+            $query.= ") AS montodlr "; 
             $total = $db->getQuery($query);
 
             $recibos[$i]->total = $total;
@@ -92,6 +99,11 @@ $app->post('/mensual', function(){
     }
 
     $query = "SELECT 
+                (SELECT nomempresa
+                    FROM
+                        empresa 
+                    WHERE 
+                        id = $d->idempresa) AS empresa,
                 (SELECT 
                         CONCAT('Q',
                                     '.',
@@ -102,8 +114,9 @@ $app->post('/mensual', function(){
                         detpagorecli b ON b.idreccli = a.id
                     WHERE
                         a.fecha >= '$d->fdelstr'
-                            AND a.fecha <= '$d->falstr'
-                            AND b.idmoneda = 1) AS montoqtz,
+                            AND a.fecha <= '$d->falstr' ";
+    $query.= $d->idempresa !== 0 ? "AND a.idempresa = $d->idempresa " : '';
+    $query.= "                 AND b.idmoneda = 1) AS montoqtz,
                 (SELECT 
                         CONCAT('$',
                                     '.',
@@ -114,8 +127,9 @@ $app->post('/mensual', function(){
                         detpagorecli b ON b.idreccli = a.id
                     WHERE
                         a.fecha >= '$d->fdelstr'
-                            AND a.fecha <= '$d->falstr'
-                            AND b.idmoneda = 2) AS montodlr ";
+                            AND a.fecha <= '$d->falstr' ";
+    $query.= $d->idempresa !== 0 ? "AND a.idempresa = $d->idempresa " : '';
+    $query.= "                 AND b.idmoneda = 2) AS montodlr ";
     $totgen = $db->getQuery($query)[0];
 
     print json_encode(['fechas' => $fechas, 'recibos' => $recibos, 'total' => $totgen]);
