@@ -1,0 +1,42 @@
+<div class="container" ng-controller="rptContratosCreados">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">Cat&aacute;logo de clientes</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="txtAnio">A&ntilde;o:</label>
+                        <input name="txtAnio" id="txtAnio" type="number" class="form-control" ng-model="params.anio" min="2015"/>                    
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Empresa: </label>
+                            <ui-select ng-model="params.idempresa"
+                                title="Seleccione una empresa..." theme="bootstrap"
+                                autofocus="false" on-select="getDataEmpresa($item)">
+                                <ui-select-match placeholder="Buscar empresa..."
+                                    allow-clear="true">
+                                    <span ng-bind="($select.selected.nomempresa)"></span>
+                                </ui-select-match>
+                                <ui-select-choices 
+                                    repeat="item.id as item in empresas | filter:$select.search"
+                                    group-by="'grupo'">
+                                    <div
+                                        ng-bind-html="(item.nomempresa) | highlight: $select.search">
+                                    </div>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer text-right">
+                <button type="button" class="btn btn-primary" ng-click="getRptContratos()" ng-disabled="!params.anio || !params.idempresa">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <rpt-viewer contenido="content"></rpt-viewer>
+</div>

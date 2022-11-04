@@ -55,5 +55,40 @@ $app->get('/contratotoprint/:idcontrato/:del/:al/:idtiposervicio', function($idc
     print json_encode($contrato);
 });
 
+$app->post('/contratoscrea', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "SELECT $d->anio AS anio, nomempresa AS empresa FROM empresa WHERE id = $d->idempresa";
+    $encabezado = $db->getQuery($query);
+
+    $query = "SELECT 
+                a.id,
+                SUBSTRING(b.nombre, 1, 40) AS cliente,
+                c.nomproyecto AS proyecto,
+                d.nomempresa AS empresa,
+                e.nombre AS unidad,
+                DATE_FORMAT(a.fechainicia, '%d/%m/%Y') AS fechainicia,
+                DATE_FORMAT(a.fechavence, '%d/%m/%Y') AS fechavence,
+                a.nocontrato,
+                SUBSTRING(a.abogado, 1, 40) AS abogado
+            FROM
+                contrato a
+                    INNER JOIN
+                cliente b ON a.idcliente = b.id
+                    INNER JOIN
+                proyecto c ON a.idproyecto = c.id
+                    INNER JOIN
+                empresa d ON a.idempresa = d.id
+                    INNER JOIN
+                unidad e ON a.idunidad = e.id
+            WHERE
+                YEAR(a.fechacopia) = $d->anio
+                    AND a.idempresa = $d->idempresa";
+    $contratos = $db->getQuery($query);
+
+    print json_encode(['encabezado' => $encabezado[0], 'contratos' => $contratos]);
+});
+
 
 $app->run();
