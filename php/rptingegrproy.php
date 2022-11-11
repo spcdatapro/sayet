@@ -524,7 +524,7 @@ $app->post('/detalle', function () use ($db) {
     print json_encode($datos);
 });
 
-function getQueryDepreciaciones($idempresa, $idproyecto, $mes, $anio, $sinDetalle = true, $soloDepre = true)
+function getQueryDepreciaciones($idempresa, $idproyecto, $mes, $anio, $sinDetalle = true, $soloDepre)
 {
     $query = "SELECT c.nombrecta AS cuenta, SUM(b.debe) AS debe, a.fecha AS fechaOrd, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha ";
     $query .= "FROM directa a INNER JOIN detallecontable b ON a.id = b.idorigen INNER JOIN cuentac c ON c.id = b.idcuenta ";
