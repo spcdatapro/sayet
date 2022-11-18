@@ -21,6 +21,7 @@ $app->post('/rptdetcontventas', function(){
     $query.= "AND a.anulada = 0 ";
 
     $query.= (int)$d->tipo === 2 ? 'AND a.idtipofactura != 9 ' : ((int)$d->tipo === 3 ? 'AND a.idtipofactura = 9 ' : '');
+    $query.= $d->idcliente > 0 ? "AND a.idcliente = $d->idcliente " : '';
 
     /*switch((int)$d->tipo) {
         case 2: $query.= 'AND a.idtipofactura != 9 '; break;
