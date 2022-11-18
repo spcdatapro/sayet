@@ -10,12 +10,12 @@ $app = new \Slim\Slim();
 $app->get('/lstpagos/:idempresa/:flimite(/:idmoneda)', function($idempresa, $flimite, $idmoneda = 0){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idempresa, a.idproveedor, b.nombre AS proveedor, a.serie, a.documento, a.fechapago, a.conceptomayor, a.subtotal, a.totfact, ";
-    $query.= "IFNULL(c.montopagado, 0.00) AS montopagado, 0 AS retenisr, 1 AS pagatodo, (a.totfact - (a.isr + IFNULL(c.montopagado, 0.00))) AS montoapagar, ";
-    $query.= "(a.totfact - (a.isr + IFNULL(c.montopagado, 0.00))) AS saldo, 0 AS pagar, d.simbolo AS moneda, a.tipocambio, a.idmoneda, a.isr, b.chequesa, a.ordentrabajo, CONCAT(c.idpresupuesto, '-', c.correlativo) AS ot, c.notas ";
+    $query.= "IFNULL(c.montopagado, 0.00) AS montopagado, IFNULL(e.rebajado, 0.00) AS rebajado, 0 AS retenisr, 1 AS pagatodo, (a.totfact - (a.isr + IFNULL(c.montopagado, 0.00) + IFNULL(e.rebajado, 0.00))) AS montoapagar, ";
+    $query.= "(a.totfact - (a.isr + IFNULL(c.montopagado, 0.00) + IFNULL(e.rebajado, 0.00))) AS saldo, 0 AS pagar, d.simbolo AS moneda, a.tipocambio, a.idmoneda, a.isr, b.chequesa, a.ordentrabajo, CONCAT(c.idpresupuesto, '-', c.correlativo) AS ot, c.notas ";
     $query.= "FROM compra a LEFT JOIN proveedor b ON b.id = a.idproveedor LEFT JOIN detpresupuesto c ON c.id = a.ordentrabajo LEFT JOIN (";
     $query.= "SELECT idcompra, SUM(monto) AS montopagado FROM detpagocompra GROUP BY idcompra) c ON a.id = c.idcompra ";
-    $query.= "LEFT JOIN moneda d ON d.id = a.idmoneda ";
-    $query.= "WHERE (a.totfact - (a.isr + IFNULL(c.montopagado, 0.00))) > 0.00 AND a.idempresa = $idempresa AND YEAR(a.fechapago) >= 2022 AND a.alcontado = 0 ";
+    $query.= "LEFT JOIN moneda d ON d.id = a.idmoneda LEFT JOIN (SELECT idcompra, IFNULL(SUM(monto), 0.00) AS rebajado FROM detnotacompra GROUP BY idcompra) e ON a.id = e.idcompra ";
+    $query.= "WHERE (a.totfact - (a.isr + IFNULL(c.montopagado, 0.00) + IFNULL(e.rebajado, 0.00))) > 0.00 AND a.idempresa = 4 AND YEAR(a.fechapago) >= 2022 AND a.alcontado = 0 AND a.idtipofactura < 7 ";
     $query.= $flimite !== "" ? ("AND a.fechapago <= '$flimite' ") : "";
     $query.= (int)$idmoneda > 0 ? ("AND a.idmoneda = $idmoneda ") : "";
     $query.= "ORDER BY b.nombre, a.fechapago";
