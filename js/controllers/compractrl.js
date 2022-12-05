@@ -75,6 +75,7 @@
                                 $scope.proyectos = d;
                                 $scope.resetCompra();
                             });
+                            $scope.loadServicios(+$scope.laCompra.objEmpresa.id);
                         });
                     });
                 }
@@ -97,11 +98,9 @@
 
             $scope.loadUnidadesProyecto = (idproyecto) => proyectoSrvc.lstUnidadesProyecto(+idproyecto).then((d) => $scope.unidades = d);
 
-            $scope.loadServicios = (idunidad) => servicioBasicoSrvc.getContadores(+idunidad).then((d) => $scope.servicios = d);
+            $scope.loadServicios = (idempresa) => servicioBasicoSrvc.getContadores(+idempresa).then((d) => $scope.servicios = d);
 
             $scope.proyectoSelected = (item) => $scope.loadUnidadesProyecto(item.id);
-
-            $scope.unidadSelected = (item) =>$scope.loadServicios(item.id);
 
             $scope.fillDataCompraOt = (idot) => {
                 const idx = $scope.ots.findIndex(i => +i.id === +idot);
@@ -410,7 +409,7 @@
                         $scope.editando = true;
                         cuentacSrvc.getByTipo($scope.laCompra.idempresa, 0).then(function (d) { $scope.lasCtasMov = d; });
                         $scope.loadUnidadesProyecto($scope.laCompra.idproyecto);
-                        $scope.loadServicios($scope.laCompra.idunidad);
+                        $scope.loadServicios(+$scope.laCompra.idempresa);
                         $scope.getDetCont($scope.laCompra.id);
                         $scope.loadProyectosCompra($scope.laCompra.id);
                         $scope.resetProyectoCompra();

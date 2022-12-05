@@ -153,7 +153,7 @@ $app->post('/lecturainicial', function(){
     $db->doQuery($query);
 });
 
-$app->get('/getcontadores/:idunidad', function ($idunidad) {
+$app->get('/getcontadores/:idempresa', function ($idempresa) {
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();  
 
@@ -170,7 +170,7 @@ $app->get('/getcontadores/:idunidad', function ($idunidad) {
                     INNER JOIN
                 tiposervicioventa c ON a.idtiposervicio = c.id
             WHERE
-                a.espropio = 0 AND a.idunidad = $idunidad
+                a.espropio = 0 AND a.idempresa = $idempresa
                     AND pagacliente = 0";
     print $db->doSelectASJson($query);
 });

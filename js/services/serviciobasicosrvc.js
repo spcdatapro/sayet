@@ -28,7 +28,7 @@
                 return comunFact.doPOST(urlBase + '/' + op, obj);
             },
             getAsignacion: (idservicio) => comunFact.doGET(`${urlBase}/asignacion/${idservicio}`),
-            getContadores: (idunidad) => comunFact.doGET(`${urlBase}/getcontadores/${idunidad}`)
+            getContadores: (idempresa) => comunFact.doGET(`${urlBase}/getcontadores/${idempresa}`)
         };
     }]);
 
