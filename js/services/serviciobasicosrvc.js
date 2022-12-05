@@ -27,7 +27,8 @@
             editRow: function(obj, op){
                 return comunFact.doPOST(urlBase + '/' + op, obj);
             },
-            getAsignacion: (idservicio) => comunFact.doGET(`${urlBase}/asignacion/${idservicio}`)
+            getAsignacion: (idservicio) => comunFact.doGET(`${urlBase}/asignacion/${idservicio}`),
+            getContadores: (idunidad) => comunFact.doGET(`${urlBase}/getcontadores/${idunidad}`)
         };
     }]);
 

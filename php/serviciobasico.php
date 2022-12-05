@@ -153,4 +153,26 @@ $app->post('/lecturainicial', function(){
     $db->doQuery($query);
 });
 
+$app->get('/getcontadores/:idunidad', function ($idunidad) {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();  
+
+    $query = "SELECT 
+                a.id,
+                b.nombre AS proveedor,
+                c.desctiposervventa AS tipo,
+                a.numidentificacion AS identificacion,
+                a.numreferencia AS referencia
+            FROM
+                serviciobasico a
+                    INNER JOIN
+                proveedor b ON a.idproveedor = b.id
+                    INNER JOIN
+                tiposervicioventa c ON a.idtiposervicio = c.id
+            WHERE
+                a.espropio = 0 AND a.idunidad = $idunidad
+                    AND pagacliente = 0";
+    print $db->doSelectASJson($query);
+});
+
 $app->run();

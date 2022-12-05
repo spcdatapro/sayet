@@ -60,10 +60,11 @@ $app->get('/getcompra/:idcompra(/:idot)', function($idcompra, $idot = 0){
     $query.= "a.mesiva, a.fechafactura, a.idtipocompra, c.desctipocompra, a.conceptomayor, a.creditofiscal, a.extraordinario, a.fechapago, ";
     $query.= "a.ordentrabajo, a.totfact, a.noafecto, a.subtotal, a.iva, a.idmoneda, a.tipocambio, f.simbolo AS moneda, ";
     $query.= "a.idtipofactura, g.desctipofact AS tipofactura, a.isr, a.idtipocombustible, h.descripcion AS tipocombustible, a.galones, a.idp, ";
-    $query.= "a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, g.siglas, a.idproyecto, a.idunidad, a.nombrerecibo, a.alcontado ";
+    $query.= "a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, g.siglas, a.idproyecto, a.idunidad, a.nombrerecibo, a.alcontado, ";
+    $query.= "i.idservicio, i.preciouni, i.lecturaini, i.lecturafin, i.fechafin, i.fechaini ";
     $query.= "FROM compra a INNER JOIN proveedor b ON b.id = a.idproveedor INNER JOIN tipocompra c ON c.id = a.idtipocompra ";
     $query.= "INNER JOIN empresa d ON d.id = a.idempresa LEFT JOIN moneda f ON f.id = a.idmoneda LEFT JOIN tipofactura g ON g.id = a.idtipofactura ";
-    $query.= "LEFT JOIN tipocombustible h ON h.id = a.idtipocombustible ";
+    $query.= "LEFT JOIN tipocombustible h ON h.id = a.idtipocombustible LEFT JOIN compserv i ON i.idcompra = a.id ";
     $query.= "WHERE ";
 
     if($idcompra > 0 && $idot == 0) {
@@ -334,8 +335,11 @@ $app->post('/c', function(){
         //Fin de inserción automática de detalle contable de la factura
         generaDetalleProyecto($db, $lastid);
         atarChequeAFactura($db, $d, $lastid);
-        if ($d->iddocliquida != NULL) {
+        if ($d->iddocliquida != null) {
             generarDetalleNota($db, $d, $lastid);
+        }
+        if (isset($d->idservicio)) {
+            generarDetalleServicio($db, $d, $lastid);
         }
     }
 
@@ -383,6 +387,12 @@ $app->post('/u', function(){
         $lastid = $d->id;
         generarDetalleNota($db, $d, $lastid);
     }
+
+    if ($d->idservicio != null) {
+        $query = "DELETE FROM compserv WHERE idcompra = $d->id ";
+        $db->doQuery($query);
+        generarDetalleServicio($db, $d, $d->id);
+    } 
 
     //Inicia inserción automática de detalle contable de la factura
     insertaDetalleContable($d, $d->id);
@@ -798,4 +808,10 @@ $app->get('/docliquida/:idnota', function($idnota){
                 a.idnota = $idnota ";
     print $db->doSelectASJson($query); 
 });
+
+function generarDetalleServicio ($db, $d, $lastid) {
+    $query = "INSERT INTO compserv(idservicio, lecturaini, lecturafin, preciouni, idcompra, fechafin, fechaini) VALUES 
+    ($d->idservicio, $d->lecturaini, $d->lecturafin, $d->preciouni, $lastid, '$d->ffin', '$d->fini')"; 
+    $db->doQuery($query);
+};
 $app->run();

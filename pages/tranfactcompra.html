@@ -78,8 +78,8 @@
                                             <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
                                         </ui-select>
                                         <div class="input-group-btn">
-                                            <button type="button" class="btn btn-primary"
-                                                ng-click="printFacturas()" ng-disabled="laCompra.objTipoFactura.id < 9 || !laCompra.objTipoFactura">
+                                            <button type="button" class="btn btn-primary" ng-click="printFacturas()"
+                                                ng-disabled="laCompra.objTipoFactura.id < 9 || !laCompra.objTipoFactura">
                                                 <span class="glyphicon glyphicon-paste"></span>
                                             </button>
                                         </div>
@@ -241,10 +241,26 @@
                                 <div class="form-group"
                                     ng-class="{'has-error':frmCompra.selUnidad.$invalid && !frmCompra.selUnidad.$pristine}">
                                     <label for="selUnidad" class="control-label">Unidad (si aplica):</label>
-                                    <select name="selUnidad" id="selUnidad" class="form-control"
-                                        ng-model="laCompra.idunidad"
-                                        ng-options="obj.id as obj.nombre for obj in unidades">
-                                    </select>
+                                    <div class="input-group">
+                                        <ui-select ng-model="laCompra.idunidad" title="Seleccione una unidad..."
+                                            theme="bootstrap" autofocus="false" ng-required="false"
+                                            on-select="unidadSelected($item)">
+                                            <ui-select-match placeholder="Buscar unidad..." allow-clear="true">
+                                                <span ng-bind="$select.selected.nombre"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices
+                                                repeat="item.id as item in unidades | filter:$select.search">
+                                                <div ng-bind-html="item.nombre | highlight: $select.search"></div>
+                                            </ui-select-choices>
+                                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                        </ui-select>
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-primary" ng-click="setInfoContador()"
+                                                ng-disabled="laCompra.objTipoCompra.id != 2 || !laCompra.idunidad">
+                                                <span class="glyphicon glyphicon-paste"></span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1078,6 +1094,79 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
+        </div>
+    </script>
+    <script type="text/ng-template" id="modalContadores.html">
+        <div class="modal-header">
+            <h3>Servicios de Terceros</h3>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="selUnidad" class="control-label">Servicios:</label>
+                        <ui-select ng-model="obj.idservicio" title="Seleccione un servicio..."
+                            theme="bootstrap" autofocus="false" ng-required="false">
+                            <ui-select-match placeholder="Buscar servicio..." allow-clear="true">
+                                <span ng-bind="$select.selected.identificacion"></span>
+                            </ui-select-match>
+                            <ui-select-choices
+                                repeat="item.id as item in servicios | filter:$select.search">
+                                <div ng-bind-html="item.identificacion | highlight: $select.search"></div>
+                            <small>
+                                <strong>Referencia:</strong>&nbsp;<span
+                                    ng-bind-html="item.referencia | highlight: $select.search"></span>
+                                <strong>Tipo:</strong>&nbsp;<span
+                                    ng-bind-html="item.tipo | highlight: $select.search"></span>
+                            </small>
+                            </ui-select-choices>
+                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                        </ui-select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="txtLecturaIni" class="control-label">Lectura inicial:</label>
+                            <input name="txtLecturaIni" id="txtLecturaIni" type="number" class="form-control"
+                            ng-model="obj.lecturaini" placeholder="Lectura inicial" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="txtLecturaFin" class="control-label">Lectura final:</label>
+                            <input name="txtLecturaFin" id="txtLecturaFin" type="number" class="form-control"
+                            ng-model="obj.lecturafin" placeholder="Lectura final" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="txtPrecio" class="control-label">Precio unitario:</label>
+                            <input name="txtPrecio" id="txtPrecio" type="text" class="form-control"
+                            ng-model="obj.precio" placeholder="Precio unitario" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="fhIni" class="control-label">Fecha inicio:</label>
+                            <input name="fhIni" id="fhIni" type="date" class="form-control"
+                            ng-model="obj.fini" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="fhFin" class="control-label">Fecha corte:</label>
+                            <input name="fhFin" id="fhFin" type="date" class="form-control"
+                            ng-model="obj.ffin" />
+                    </div>
+                </div>
+            </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok(obj)">Aceptar</button>
+            <button class="btn btn-info" type="button" ng-click="cancel()">Cancelar</button>
         </div>
     </script>
 </div>
