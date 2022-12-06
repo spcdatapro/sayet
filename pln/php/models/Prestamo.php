@@ -416,6 +416,51 @@ class Prestamo extends Principal
 		];
 	}
 
+	public function get_datos_impresion_abono($abono)
+	{
+		$gen = new General();
+		$ltr = new NumberToLetterConverter();
+		
+		$empleado = $this->get_empleado();
+		$empresa  = $gen->get_empresa([
+			'id'  => $empleado->idempresadebito, 
+			'uno' => TRUE
+		]);
+
+		$tmp = [
+			't_empresa'         => 'EMPRESA: ',
+			'v_empresa'         => $empresa['nomempresa'],
+			'ln_empresa'        => str_repeat('_', 90),
+			'titulo'            => 'CANCELACIÓN PRÉSTAMO',
+			'numero'            => "No. {$this->pre->id}",
+			't_abono_por'       => 'ABONO POR:',
+			'ln_principal'      => str_repeat('_', 96),
+			't_cantidad_letras' => '(Cantidad en letras)',
+			't_en_numero'       => '(En números)',
+			't_de'              => 'DE: ',
+			't_fecha'           => 'FECHA: ',
+			'v_de'              => $empleado->nombre.' '.$empleado->apellidos,
+			't_firma'           => $empleado->nombre.' '.$empleado->apellidos,
+			't_vobo'            => 'Vo.Bo.',
+			'ln_vobo'           => str_repeat('_', 27),
+			'ln_firma'          => str_repeat('_', 27),
+			't_nota'            => 'OBSERVACIONES:'
+		];
+
+		$tst = $this->get_abonos(["id" => $abono]);
+
+		if (count($tst) > 0) {
+			$abn = $tst[0];
+
+			$tmp['v_cantidad_letras'] = $ltr->to_word($abn["monto"], 'GTQ');
+			$tmp['v_en_numero'] = 'Q. ' . number_format($abn["monto"], 2);
+			$tmp['v_fecha'] = formatoFecha($abn["fecha"], 1);
+			$tmp['v_nota'] = $abn["concepto"];
+		}
+
+		return $tmp;
+	}
+
 	/**
 	 * Es necesario asegurarse que el archivo ayuda.php haya sido cargado 
 	 * desde donde se esté llamando la función.

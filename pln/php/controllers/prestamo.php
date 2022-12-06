@@ -1,8 +1,8 @@
 <?php 
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+#ini_set('display_errors', 1);
+#ini_set('display_startup_errors', 1);
+#error_reporting(E_ALL);
 
 define('BASEPATH', dirname(dirname(dirname(__DIR__))));
 define('PLNPATH', BASEPATH . '/pln/php');
@@ -106,42 +106,20 @@ $app->get('/ver_abonos/:prestamo', function($prestamo){
 });
 
 $app->get('/imprimir_abono/:prestamo/:abono', function($prestamo, $abono){
+	$gen = new General();
 	$pre = new Prestamo($prestamo);
-	$abo = $pre->get_abonos(["id" => $abono]);
 
 	$s = [215.9, 279.4]; # Carta mm
 
 	$pdf = new TCPDF('P', 'mm', $s);
 	$pdf->AddPage();
 
-	/* Imprime hora y fecha actual (impresión) */
-	$pdf->SetFont("courier", "", "8");
-	$pdf->Cell(0, 5, date("d/m/Y H:i"), 0, 0, "R");
+	foreach ($pre->get_datos_impresion_abono($abono) as $campo => $valor) {
+		$conf = $gen->get_campo_impresion($campo, 22);
 
-	if (count($abo) > 0) {
-		$abo = $abo[0];
-		$emp = $pre->get_empleado();
-
-		$pdf->SetY(15);
-
-		$pdf->SetFont("helvetica", "B", 14);
-		$pdf->Cell(150, 5, "ABONO DIRECTO", 0, 1, "L");
-
-		$pdf->SetFont("helvetica", "", 11);
-		$pdf->Cell(150, 5, "Nombre: {$emp->nombre} {$emp->apellidos}", 0, 1, "L");
-		$pdf->Cell(150, 5, "Préstamos # {$prestamo}", 0, 1, "L");
-		$pdf->Cell(150, 5, "Fecha: " . formatoFecha($abo["fecha"], 1), 0, 1, "L");
-		$pdf->Cell(150, 5, "Monto: " . number_format($abo["monto"], 2), 0, 1, "L");
-
-		if (!empty($abo["concepto"])) {
-			$pdf->Cell(150, 5, "Concepto: ", 0, 1, "L");
-			$pdf->Cell(150, 5, $abo["concepto"], 0, 1, "L");
+		if (!isset($conf->scalar) && $conf->visible == 1) {
+			$pdf = generar_fimpresion($pdf, $valor, $conf);
 		}
-	} else {
-		$pdf->SetY(15);
-
-		$pdf->SetFont("helvetica", "B", 14);
-		$pdf->Cell(150, 5, "Nada que imprimir, por favor verifique los datos.", 0, 1, "L");
 	}
 
 	$pdf->Output("prestamo_abono{$abono}.pdf", "D");
