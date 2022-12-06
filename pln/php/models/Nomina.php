@@ -120,17 +120,16 @@ class Nomina extends Principal
 
 		$this->limpiar_nomina($args);
 
-		$condicion = [];
-
 		if (elemento($args, 'empresa')) {
-			$condicion["idempresadebito"] = $args['empresa'];
+			$condicion = ["AND" => [
+				"idempresadebito" => $args['empresa'],
+				"activo" => 1
+			]];
+		} else {
+			$condicion = ['activo' => 1];
 		}
 
-		$tmp = $this->db->select(
-			'plnempleado', 
-			'*',
-			['AND' => $condicion]
-		);
+		$tmp = $this->db->select('plnempleado', ['*'], $condicion);
 
 		foreach ($tmp as $row) {
 			$insertar = FALSE;
