@@ -39,4 +39,38 @@ $app->post('/correlativo', function(){
     print json_encode($correlativo);
 });
 
+$app->post('/correlativoger', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $correlativo = new stdClass();
+
+    //Datos del banco
+    $query = "SELECT a.nombre, b.simbolo, a.nocuenta, DATE_FORMAT('$d->fdelstr', '%d/%m/%Y') AS del, DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS al, c.nomempresa AS empresa 
+    FROM banco a INNER JOIN moneda b ON b.id = a.idmoneda INNER JOIN empresa c ON c.id = a.idempresa 
+    WHERE a.id = $d->idbanco";
+    $correlativo->banco = $db->getQuery($query)[0];
+
+    //Documentos
+    $query = "SELECT DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, CONCAT(a.tipotrans, a.numero) AS documento, 
+    IF(b.suma = 1, IF(a.anulado = 0, FORMAT(a.monto, 2), NULL), NULL) AS credito, 
+    IF(b.suma = 0, IF(a.anulado = 0, FORMAT(a.monto, 2), NULL), NULL) AS debito, a.beneficiario, 
+    IFNULL(d.conceptomayor, a.concepto) AS concepto FROM tranban a INNER JOIN tipomovtranban b ON b.abreviatura = a.tipotrans 
+    LEFT JOIN detpagocompra c ON c.idtranban = a.id LEFT JOIN compra d ON c.idcompra = d.id
+    WHERE a.idbanco = $d->idbanco AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' ";
+    $query.= $d->tipo != '' ? "AND a.tipotrans = '$d->tipo' " : "AND a.tipotrans IN('B', 'C') ";
+    $query.= $d->beneficiario != '' ? "AND a.beneficiario LIKE '%$d->beneficiario%' " : '';
+    $query.= "ORDER BY a.fecha, a.numero ";
+    $correlativo->docs = $db->getQuery($query);
+
+    //Sumatorias
+    $query = "SELECT FORMAT(SUM(IF(b.suma = 0, a.monto, 0.00)), 2) AS debito FROM tranban a 
+    INNER JOIN tipomovtranban b ON b.abreviatura = a.tipotrans 
+    WHERE a.idbanco = $d->idbanco AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' ";
+    $query.= $d->tipo != '' ? "AND a.tipotrans = '$d->tipo' " : "AND a.tipotrans IN('B', 'C')";
+    $query.= $d->beneficiario != '' ? "AND a.beneficiario LIKE '%$d->beneficiario%' " : '';
+    $correlativo->sumas = $db->getQuery($query)[0];
+
+    print json_encode($correlativo);
+});
+
 $app->run();

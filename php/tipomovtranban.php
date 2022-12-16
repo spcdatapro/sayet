@@ -70,4 +70,12 @@ $app->get('/lstmovreccli', function(){
     print json_encode($data);
 });
 
+$app->get('/lsttiposmovgasto', function(){
+    $db = new dbcpm();
+    $conn = $db->getConn();
+    $query = "SELECT id, abreviatura, descripcion, CONCAT('(', abreviatura, ') ', descripcion) AS abreviadesc FROM tipomovtranban WHERE suma = 0";
+    $data = $conn->query($query)->fetchAll(5);
+    print json_encode($data);
+});
+
 $app->run();

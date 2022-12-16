@@ -23,6 +23,9 @@
             },
             lstTipoMovRec: function(){
                 return comunFact.doGET(urlBase + '/lstmovreccli');
+            },
+            lstTiposMovGT: function(){
+                return comunFact.doGET(urlBase + '/lsttiposmovgasto');
             }
         };
         return tipoMovTranBanSrvc;
