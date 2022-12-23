@@ -4,34 +4,22 @@
 
     rptcorrchctrl.controller('rptCorrelaGeren', ['$scope', 'tranBancSrvc', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'jsReportSrvc', 'tipoMovTranBanSrvc', function($scope, tranBancSrvc, authSrvc, bancoSrvc, empresaSrvc, jsReportSrvc, tipoMovTranBanSrvc){
 
-        $scope.objEmpresa = {};
         $scope.losBancos = [];
-        $scope.params = { idempresa: 0, fDel: moment().startOf('month').toDate(), fAl: moment().endOf('month').toDate(), idbanco: 0, fdelstr: '', falstr:'', tipo: undefined, beneficiario: undefined };
+        $scope.params = { idempresa: undefined, fDel: moment().startOf('month').toDate(), fAl: moment().endOf('month').toDate(), fdelstr: '', falstr:'' };
         $scope.objBanco = undefined;
         $scope.content = `${window.location.origin}/sayet/blank.html`;
         $scope.tipos = [];
+        $scope.empresas = [];
 
         tipoMovTranBanSrvc.lstTiposMovGT().then(function(d){ $scope.tipos = d; });
 
-        authSrvc.getSession().then(function(usrLogged){
-            if(parseInt(usrLogged.workingon) > 0){
-                empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function(d){
-                    $scope.objEmpresa = d[0];
-                    $scope.params.idempresa = parseInt($scope.objEmpresa.id);
-                    bancoSrvc.lstBancos($scope.params.idempresa).then(function(d) {
-                        $scope.losBancos = d;
-                    });
-                });
-            }
-        });
+        empresaSrvc.lstEmpresas().then(function(d) { $scope.empresas = d; });
 
         var test = false;
         $scope.getCorrelativosCheques = function(){
-            $scope.params.idbanco = $scope.objBanco.id;
+            $scope.params.idempresa = $scope.params.empresa != null && $scope.params.empresa !== undefined ? $scope.params.empresa : 0;
             $scope.params.fdelstr = moment($scope.params.fDel).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.fAl).format('YYYY-MM-DD');
-            $scope.params.tipo = $scope.params.tipo != null && $scope.params.tipo !== undefined ? $scope.params.tipo : '';
-            $scope.params.beneficiario = $scope.params.beneficiario != null && $scope.params.beneficiario !== undefined ? $scope.params.beneficiario : '';
             jsReportSrvc.getPDFReport(test ? 'SyuL_N5bZ' : 'HJVdFHq_i', $scope.params).then(function(pdf){ $scope.content = pdf; });
         };
 

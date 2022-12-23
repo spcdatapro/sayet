@@ -6,39 +6,40 @@
                 <div class="row" style="text-align: left">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="selBanco">Banco:</label>
-                            <select name="selBanco" id="selBanco" class="form-control input-sm" ng-model="objBanco" ng-options="obj.bancomoneda for obj in losBancos"></select>
+                            <label>Empresa: </label>
+                            <ui-select ng-model="params.idempresa"
+                                title="Seleccione una empresa..." theme="bootstrap"
+                                autofocus="false" on-select="getDataEmpresa($item)">
+                                <ui-select-match placeholder="Buscar empresa..."
+                                    allow-clear="true">
+                                    <span ng-bind="($select.selected.nomempresa)"></span>
+                                </ui-select-match>
+                                <ui-select-choices 
+                                    repeat="item.id as item in empresas | filter:$select.search"
+                                    group-by="'grupo'">
+                                    <div
+                                        ng-bind-html="(item.nomempresa) | highlight: $select.search">
+                                    </div>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
                         </div>
                     </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="selTipo">Tipo:</label>
-                            <select name="selTipo" id="selTipo" class="form-control input-sm" ng-model="params.tipo" ng-options="obj.abreviatura as obj.abreviatura for obj in tipos"></select>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="txtDel">Fecha del:</label>
-                            <input name="txtDel" id="txtDel" type="date" class="form-control input-sm" ng-model="params.fDel" placeholder="Del"/>
+                            <input name="txtDel" id="txtDel" type="date" class="form-control input-md" ng-model="params.fDel" placeholder="Del"/>
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="txtAl">Al:</label>
-                            <input name="txtAl" id="txtAl" type="date" class="form-control input-sm" ng-model="params.fAl" placeholder="Al"/>
-                        </div>
-                    </div>
-                </div>
-                <div class="row" style="text-align: left">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label for="txtBene">Beneficiario:</label>
-                            <input name="txtBene" id="txtBene" type="text" class="form-control input-sm" ng-model="params.beneficiario" placeholder="Beneficiario"/>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control input-md" ng-model="params.fAl" placeholder="Al"/>
                         </div>
                     </div>
                 </div>
                 <div class="btn-group" role="group" aria-label="...">
-                    <button type="button" class="btn btn-primary btn-sm" ng-click="getCorrelativosCheques()" ng-disabled="objBanco == null || objBanco == undefined">
+                    <button type="button" class="btn btn-primary btn-sm" ng-click="getCorrelativosCheques()">
                         <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                     </button>
                     <button type="button" class="btn btn-primary btn-sm" ng-click="getCorrelativosChequesExcel()" ng-disabled="objBanco == null || objBanco == undefined">
