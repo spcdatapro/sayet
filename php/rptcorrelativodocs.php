@@ -76,9 +76,9 @@ $app->post('/correlativoger', function(){
                         DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
                         CONCAT(a.tipotrans, ' ', a.numero) AS documento,
                         a.monto,
-                        a.beneficiario,
+                        SUBSTRING(a.beneficiario, 1, 25) AS beneficiario,
                         IFNULL(c.conceptomayor, a.concepto) AS concepto,
-                        IFNULL(d.nomproyecto, 'N/A') AS proyecto,
+                        IFNULL(SUBSTRING(d.nomproyecto, 1, 25), 'N/A') AS proyecto,
                         NULL AS simbolo
                     FROM
                         tranban a
