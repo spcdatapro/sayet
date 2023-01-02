@@ -43,7 +43,7 @@ $app->post('/correlativoger', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $query = "SELECT DATE_FORMAT($d->fdelstr, '%d/%m/%Y') AS del, DATE_FORMAT($d->falstr, '%d/%m/%Y') AS al";
+    $query = "SELECT DATE_FORMAT('$d->fdelstr', '%d/%m/%Y') AS del, DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS al";
     $general = $db->getQuery($query)[0];
 
     //Empresas
