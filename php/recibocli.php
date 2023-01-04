@@ -84,7 +84,7 @@ $app->get('/getrecibocli/:idrecibo', function($idrecibo){
             f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
             IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', g.seriea, g.serieb), a.id), 
             IF(a.serie = 'A', CONCAT(g.seriea, ' (ANULADO)'), CONCAT(g.serieb, ' (ANULADO)'))) AS correlativo,
-            a.notas
+            a.notas, a.impreso
             FROM recibocli a 
             INNER JOIN cliente b ON b.id = a.idcliente 
             LEFT JOIN tranban c ON c.id = a.idtranban 
@@ -98,7 +98,7 @@ $app->get('/getrecibocli/:idrecibo', function($idrecibo){
             'Facturas contado (Clientes varios)' AS cliente, c.tipotrans, c.numero AS notranban, e.nombre, 
             f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
             IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', g.seriea, g.serieb), a.id), 'ANULADO') AS correlativo,
-            a.notas
+            a.notas, a.impreso
             FROM recibocli a 
             LEFT JOIN tranban c ON c.id = a.idtranban 
             LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
@@ -111,7 +111,7 @@ $app->get('/getrecibocli/:idrecibo', function($idrecibo){
             c.tipotrans, c.numero AS notranban, e.nombre, 
             f.simbolo, c.monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
             IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', g.seriea, g.serieb), a.id), 'ANULADO') AS correlativo,
-            a.notas
+            a.notas, a.impreso
             FROM recibocli a 
             INNER JOIN factura b ON a.nit = b.nit 
             LEFT JOIN tranban c ON c.id = a.idtranban 
@@ -483,6 +483,8 @@ $app->post('/prtrecibocli', function() {
                     b.idreccli = $d->idrecibo ";
     $cheques = $db->getQuery($query);
 
+    setImpreso($d->idrecibo, $db);
+
     print json_encode(['recibo' => $recibo[0], 'facturas' => $facturas, 'cheques' => $cheques]);
 });
 
@@ -615,5 +617,9 @@ $app->get('/getpago/:idpago', function($idpago){
                 id = $idpago ";
     print $db->doSelectASJson($query);
 });
+
+function setImpreso ($id, $db) {
+    $db->doQuery("UPDATE recibocli SET impreso = 1 WHERE id = $id ");
+}
 
 $app->run();

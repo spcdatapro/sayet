@@ -137,7 +137,7 @@
                                 ng-hide="reccli.id > 0">
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                             </button>
-                            <button type="button" class="btn btn-primary" ng-disabled="frmRecCli.$invalid || !permiso.m"
+                            <button type="button" class="btn btn-primary" ng-disabled="frmRecCli.$invalid || (!permiso.m && reccli.impreso == 1)"
                                 ng-show="reccli.id > 0" ng-click="updRecCli(reccli)">
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                             </button>
