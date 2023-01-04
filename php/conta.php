@@ -154,7 +154,7 @@ class contabilidad{
         $query = "SELECT w.poliza, w.fecha, DATE_FORMAT(w.fecha, '$this->_formatoFechaConta') AS fechastr, w.referencia, w.concepto, w.id, w.origen, ";
         $query.= "SUM(w.debe) AS debe, FORMAT(SUM(w.debe), $this->_decimales) AS debestr, SUM(w.haber) AS haber, FORMAT(SUM(w.haber), $this->_decimales) AS haberstr ";
         $query.= "FROM ($this->_datosEnCrudo) w ";
-        $query.= "GROUP BY w.id ";
+        $query.= "GROUP BY w.origen, w.id ";
         $query.= "ORDER BY w.fecha, w.poliza";
         return $query;
     }
@@ -162,7 +162,8 @@ class contabilidad{
     public function getDetallePoliza($origen, $idorigen){
         $query = "SELECT w.idorigen AS id, w.origen, w.codigo, w.nombrecta, w.debe, FORMAT(w.debe, $this->_decimales) AS debestr, w.haber, FORMAT(w.haber, $this->_decimales) AS haberstr ";
         $query.= "FROM (".$this->detalleContable($origen, (int)$idorigen).") w ";
-        $query.= "WHERE w.origen = $origen AND w.idorigen = $idorigen ";
+        $query.= "WHERE w.origen = ".($origen != 5 ? $origen : 2)." ";
+        $query.= "AND w.idorigen = $idorigen ";
         $query.= "ORDER BY w.debe DESC, w.nombrecta";
         return $query;
     }
