@@ -548,6 +548,7 @@
             obj.direccion = obj.direccion != null && obj.direccion != undefined ? obj.direccion : '';
             obj.conceptomayor = obj.conceptomayor != null && obj.conceptomayor != undefined ? obj.conceptomayor : '';
             obj.idproyecto = obj.idproyecto != null && obj.idproyecto != undefined ? obj.idproyecto : 0;
+            obj.idtiporec = obj.idtiporec != null && obj.idtiporec != undefined ? obj.idtiporec : 4;
             return obj;
         }
 

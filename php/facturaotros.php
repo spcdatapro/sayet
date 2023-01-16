@@ -90,17 +90,18 @@ $app->post('/c', function(){
 
     $query = "SELECT IFNULL(seriefel, 'A') AS seriefel FROM empresa WHERE id = $d->idempresa";
     $datosFel = $db->getQuery($query)[0];
-    // $datosFel->correlativofel = (int)$datosFel->correlativofel;
-    // $datosFel->correlativofel++;
 
-    $tipoidreceptor = $db->getOneField("SELECT TipoIdReceptor($d->idcliente)");
+    if ($d->idtiporec == '1') {
+        $d->idtiporec = 'NULL';
+    }
 
     $query = "INSERT INTO factura(";
     $query.= "idempresa, idtipofactura, idcontrato, idcliente, nit, nombre, fechaingreso, mesiva, fecha, idtipoventa, idmoneda, tipocambio, esinsertada,";
     $query.= "reteneriva, retenerisr, mesafecta, anioafecta, direccion, idproyecto, porretiva, serieadmin, numeroadmin, exentoiva, tipoidreceptor) VALUES(";
     $query.= "$d->idempresa, $d->idtipofactura, $d->idcontrato, $d->idcliente, $d->nit, $d->nombre, '$d->fechaingresostr', $d->mesiva, '$d->fechastr', $d->idtipoventa, 1, $d->tipocambio, 1,";
-    $query.= "$d->reteneriva, $d->retenerisr, $d->mesafecta, $d->anioafecta, $d->direccion, $d->idproyecto, $d->porretiva, '$datosFel->seriefel', NULL, $d->exentoiva, $tipoidreceptor";
+    $query.= "$d->reteneriva, $d->retenerisr, $d->mesafecta, $d->anioafecta, $d->direccion, $d->idproyecto, $d->porretiva, '$datosFel->seriefel', NULL, $d->exentoiva, $d->idtiporec ";
     $query.= ")";
+    // print $query;
     $db->doQuery($query);
     $lastid = $db->getLastId();
     // if((int)$lastid > 0) {
@@ -122,12 +123,15 @@ $app->post('/u', function(){
     $d->nit = trim($d->nit) == '' ? 'NULL' : ("'".(strtoupper(preg_replace("/[^a-zA-Z0-9]+/", "", $d->nit)))."'");
     $d->nombre = trim($d->nombre) == '' ? 'NULL' : ("'".trim($d->nombre)."'");
     $d->direccion = trim($d->direccion) == '' ? 'Ciudad' : ("'".trim($d->direccion)."'");
+    if ($d->idtiporec == '1') {
+        $d->idtiporec = null;
+    }
 
     $query = "UPDATE factura SET ";
     $query.= "idempresa = $d->idempresa, idtipofactura = $d->idtipofactura, idcontrato = $d->idcontrato, idcliente = $d->idcliente, nit = $d->nit, ";
     $query.= "nombre = $d->nombre, fechaingreso = '$d->fechaingresostr', mesiva = $d->mesiva, fecha = '$d->fechastr', idtipoventa = $d->idtipoventa, tipocambio = $d->tipocambio, ";
     $query.= "reteneriva = $d->reteneriva, retenerisr = $d->retenerisr, mesafecta = $d->mesafecta, anioafecta = $d->anioafecta, direccion = $d->direccion, ";
-    $query.= "idproyecto = $d->idproyecto, porretiva = $d->porretiva, exentoiva = $d->exentoiva ";
+    $query.= "idproyecto = $d->idproyecto, porretiva = $d->porretiva, exentoiva = $d->exentoiva, tipoidreceptor = $d->tiporec ";
     $query.= "WHERE id = $d->id";
     //print $query;
     $db->doQuery($query);
