@@ -142,7 +142,7 @@ function getQueryCargos($d) {
     CONCAT(e.desctiposervventa, ' ', DATE_FORMAT(a.fechacobro, '%m/%Y')) AS tipo, e.id as idtipo, j.nomproyecto AS proyecto, 
     UnidadesPorContrato(a.idcontrato) AS unidades, RetISR(c.idcliente, b.idtipoventa) AS retenerisr, RetIVA(c.idcliente, b.idtipoventa) AS reteneriva, c.idtipocliente, 
     PorcentajeRetIVA(c.idcliente, b.idtipoventa) AS porcentajeretiva, a.conceptoadicional, MONTH(a.fechacobro) AS mes, YEAR(a.fechacobro) AS anio, 
-    NitFacturarA(c.idcliente, b.idtipoventa) AS nit, DirFacturarA(c.idcliente, b.idtipoventa) AS direccion, ExentoIVA(c.idcliente, b.idtipoventa) AS exentoiva, 1 AS facturar
+    NitFacturarA(c.idcliente, b.idtipoventa) AS nit, DirFacturarA(c.idcliente, b.idtipoventa) AS direccion, ExentoIVA(c.idcliente, b.idtipoventa) AS exentoiva, TIPOIDRECEPTOR(c.idcliente) AS tipoidreceptor, 1 AS facturar
     FROM cargo a INNER JOIN detfactcontrato b ON b.id = a.iddetcont INNER JOIN contrato c ON c.id = b.idcontrato INNER JOIN cliente d ON d.id = c.idcliente 
     INNER JOIN tiposervicioventa e ON e.id = b.idtipoventa INNER JOIN tipocliente g ON g.id = c.idtipocliente 
     INNER JOIN moneda h ON h.id = b.idmoneda INNER JOIN empresa i ON i.id = c.idempresa 
@@ -168,7 +168,7 @@ $app->post('/pendientesfel', function() {
         SUM(z.montoconivacnv) AS montoconivacnv, SUM(z.montosinivacnv) AS montosinivacnv, SUM(z.ivacnv) AS ivacnv,
         GROUP_CONCAT(DISTINCT z.tipo ORDER BY z.tipo SEPARATOR ', ') AS tipo, GROUP_CONCAT(DISTINCT z.idtipo SEPARATOR ', ') AS idtipo, $d->tc AS tc, z.proyecto, z.unidades, 
         z.retenerisr, z.reteneriva, z.porcentajeretiva, z.idtipocliente, 0.00 AS isrporretener, 0.00 AS isrporretenercnv, 0.00 AS ivaporretener, 0.00 AS ivaporretenercnv, 
-        0.00 AS totapagar, 0.00 AS totapagarcnv, z.nit, z.direccion, z.exentoiva,
+        0.00 AS totapagar, 0.00 AS totapagarcnv, z.nit, z.tipoidreceptor, z.direccion, z.exentoiva,
 
         SUM(z.descuentoconiva) AS descuentoconiva, SUM(z.descuentosiniva) AS descuentosiniva, SUM(z.descuentoiva) AS descuentoiva,
         SUM(z.descuentoconivacnv) AS descuentoconivacnv, SUM(z.descuentosinivacnv) AS descuentosinivacnv, SUM(z.descuentoivacnv) AS descuentoivacnv,
@@ -176,11 +176,12 @@ $app->post('/pendientesfel', function() {
         SUM(z.importebrutocnv) AS importebrutocnv, SUM(z.importenetocnv) AS importenetocnv, SUM(z.importeivacnv) AS importeivacnv, SUM(z.importetotalcnv) AS importetotalcnv,
         SUM(z.importeexento) AS importeexento, SUM(z.importeexentocnv) AS importeexentocnv,
 
-        1 AS facturar
+        IF(SUM(z.montoconiva) > 2500, 0, 1) AS cf, 1 AS facturar
         FROM ($queryCargos) z
         GROUP BY z.idcontrato, z.idcliente, z.facturara, z.idmonedafact
         ORDER BY z.facturara, z.clientecorto, z.tipo
     ";
+    // print $query;
     $pendientes = $db->getQuery($query);
     $cntPendientes = count($pendientes);
     for($i = 0; $i < $cntPendientes; $i++) {
@@ -438,77 +439,82 @@ $app->post('/genfactfel', function() {
 
         // $datosFel->correlativofel++;
 
-        $p = revisaMontos($db, $p);
-        $montoletras = (int)$p->idmonedafact == 1 ? $n2l->to_word($p->totapagar, 'GTQ') : $n2l->to_word($p->totapagarcnv, 'USD');        
-        $p->nit = strtoupper(preg_replace("/[^a-zA-Z0-9]+/", "", $p->nit));        
+        if (($p->cf == 1) || ($p->cf == 0 && $p->nit != 'CF')) {
 
-        $query = "INSERT INTO factura(";
-        $query.= "idempresa, idtipofactura, idcontrato, idcliente, ";
-        $query.= "fechaingreso, mesiva, fecha, idtipoventa, conceptomayor, iva, ";
-        $query.= "total, subtotal, totalletras, idmoneda, tipocambio, ";
-        $query.= "retisr, retiva, totdescuento, nit, nombre, direccion, idmonedafact,";
-        $query.= "subtotalcnv, totalcnv, retivacnv, retisrcnv, totdescuentocnv,";
-        $query.= "importebruto, importeneto, importeiva, importetotal, descuentosiniva, descuentoiva, ";
-        $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv, ";
-        $query.= "serieadmin, numeroadmin, porretiva, importeexento, importeexentocnv, exentoiva";
-        $query.= ") VALUES (";
-        $query.= "$params->idempresa, 1, $p->idcontrato, $p->idcliente, ";
-        $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '". str_replace(',', ', ', strip_tags($p->tipo))."', $p->iva, ";
-        $query.= "$p->totapagar, $p->montoconiva, '$montoletras', 1, $p->tc, ";
-        $query.= "$p->isrporretener, $p->ivaporretener, $p->descuentoconiva, '$p->nit', '$p->facturara', '$p->direccion', $p->idmonedafact, ";
-        $query.= "$p->montoconivacnv, $p->totapagarcnv, $p->ivaporretenercnv, $p->isrporretenercnv, $p->descuentoconivacnv, ";
-        $query.= "$p->importebruto, $p->importeneto, $p->importeiva, $p->importetotal, $p->descuentosiniva, $p->descuentoiva, ";
-        $query.= "$p->importebrutocnv, $p->importenetocnv, $p->importeivacnv, $p->importetotalcnv, $p->descuentosinivacnv, $p->descuentoivacnv, ";
-        $query.= "'$datosFel->seriefel', NULL, $p->porcentajeretiva, $p->importeexento, $p->importeexentocnv, $p->exentoiva";
-        $query.= ")";
-        //print $query;
-        //die();
-        $lastid = 0;
-        if((float)$p->montoconiva != 0){
-            $db->doQuery($query);
-            $lastid = $db->getLastId();
-        }
-        if((int)$lastid > 0) {
-            // $query = "UPDATE empresa SET correlativofel = $datosFel->correlativofel WHERE id = $params->idempresa";
-            // $db->doQuery($query);
-            foreach($p->detalle as $det) {
-                if($det->facturar == 1){
-                    $conceptoAdicional = 'NULL';
-                    if(isset($det->conceptoadicional)){
-                        if(trim($det->conceptoadicional) !== ''){
-                            $conceptoAdicional = "'".trim($det->conceptoadicional)."'";
+            $p = revisaMontos($db, $p);
+            $montoletras = (int)$p->idmonedafact == 1 ? $n2l->to_word($p->totapagar, 'GTQ') : $n2l->to_word($p->totapagarcnv, 'USD');        
+            $p->nit = strtoupper(preg_replace("/[^a-zA-Z0-9]+/", "", $p->nit));        
+
+            $query = "INSERT INTO factura(";
+            $query.= "idempresa, idtipofactura, idcontrato, idcliente, ";
+            $query.= "fechaingreso, mesiva, fecha, idtipoventa, conceptomayor, iva, ";
+            $query.= "total, subtotal, totalletras, idmoneda, tipocambio, ";
+            $query.= "retisr, retiva, totdescuento, nit, nombre, direccion, idmonedafact,";
+            $query.= "subtotalcnv, totalcnv, retivacnv, retisrcnv, totdescuentocnv,";
+            $query.= "importebruto, importeneto, importeiva, importetotal, descuentosiniva, descuentoiva, ";
+            $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv, ";
+            $query.= "serieadmin, numeroadmin, porretiva, importeexento, importeexentocnv, exentoiva, tipoidreceptor";
+            $query.= ") VALUES (";
+            $query.= "$params->idempresa, 1, $p->idcontrato, $p->idcliente, ";
+            $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '". str_replace(',', ', ', strip_tags($p->tipo))."', $p->iva, ";
+            $query.= "$p->totapagar, $p->montoconiva, '$montoletras', 1, $p->tc, ";
+            $query.= "$p->isrporretener, $p->ivaporretener, $p->descuentoconiva, '$p->nit', '$p->facturara', '$p->direccion', $p->idmonedafact, ";
+            $query.= "$p->montoconivacnv, $p->totapagarcnv, $p->ivaporretenercnv, $p->isrporretenercnv, $p->descuentoconivacnv, ";
+            $query.= "$p->importebruto, $p->importeneto, $p->importeiva, $p->importetotal, $p->descuentosiniva, $p->descuentoiva, ";
+            $query.= "$p->importebrutocnv, $p->importenetocnv, $p->importeivacnv, $p->importetotalcnv, $p->descuentosinivacnv, $p->descuentoivacnv, ";
+            $query.= "'$datosFel->seriefel', NULL, $p->porcentajeretiva, $p->importeexento, $p->importeexentocnv, $p->exentoiva, $p->tipoidreceptor";
+            $query.= ")";
+            //print $query;
+            //die();
+            $lastid = 0;
+            if((float)$p->montoconiva != 0){
+                $db->doQuery($query);
+                $lastid = $db->getLastId();
+            }
+            if((int)$lastid > 0) {
+                // $query = "UPDATE empresa SET correlativofel = $datosFel->correlativofel WHERE id = $params->idempresa";
+                // $db->doQuery($query);
+                foreach($p->detalle as $det) {
+                    if($det->facturar == 1){
+                        $conceptoAdicional = 'NULL';
+                        if(isset($det->conceptoadicional)){
+                            if(trim($det->conceptoadicional) !== ''){
+                                $conceptoAdicional = "'".trim($det->conceptoadicional)."'";
+                            }
+                        }                   
+
+                        $query = "INSERT INTO detfact(";
+                        $query.= "idfactura, cantidad, descripcion, preciounitario, preciounitariocnv, preciotot, idtiposervicio, mes, anio, descuento, ";
+                        $query.= "conceptoadicional, descuentocnv, ";
+                        $query.= "importebruto, importeneto, importeiva, importetotal, descuentosiniva, descuentoiva, ";
+                        $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv, porcentajedescuento, ";
+                        $query.= "precio, preciocnv, importeexento, importeexentocnv";
+                        $query.= ") VALUES(";
+                        $query.= "$lastid, 1, '$det->tipo', $det->montoconiva, $det->importebrutocnv, $det->montoconiva, $det->idtipo, $det->mes, $det->anio, $det->descuentoconiva, ";
+                        $query.= "$conceptoAdicional, $det->descuentoconivacnv, ";
+                        $query.= "$det->importebruto, $det->importeneto, $det->importeiva, $det->importetotal, $det->descuentosiniva, $det->descuentoiva, ";
+                        $query.= "$det->importebrutocnv, $det->importenetocnv, $det->importeivacnv, $det->importetotalcnv, $det->descuentosinivacnv, $det->descuentoivacnv, $det->porcentajedescuento,";
+                        $query.= "$det->precio, $det->preciocnv, $det->importeexento, $det->importeexentocnv";
+                        $query.= ")";
+                        //print $query;
+                        if((float)$det->montoconiva != 0){
+                            $db->doQuery($query);
+                            $lastidDetalle = $db->getLastId();
+                            $descripcionLarga = getDescripcionLarga($lastid, $lastidDetalle);
+                            $query = "UPDATE detfact SET descripcionlarga = '$descripcionLarga' WHERE id = $lastidDetalle";
+                            $db->doQuery($query);
                         }
-                    }                   
-
-                    $query = "INSERT INTO detfact(";
-                    $query.= "idfactura, cantidad, descripcion, preciounitario, preciounitariocnv, preciotot, idtiposervicio, mes, anio, descuento, ";
-                    $query.= "conceptoadicional, descuentocnv, ";
-                    $query.= "importebruto, importeneto, importeiva, importetotal, descuentosiniva, descuentoiva, ";
-                    $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv, porcentajedescuento, ";
-                    $query.= "precio, preciocnv, importeexento, importeexentocnv";
-                    $query.= ") VALUES(";
-                    $query.= "$lastid, 1, '$det->tipo', $det->montoconiva, $det->importebrutocnv, $det->montoconiva, $det->idtipo, $det->mes, $det->anio, $det->descuentoconiva, ";
-                    $query.= "$conceptoAdicional, $det->descuentoconivacnv, ";
-                    $query.= "$det->importebruto, $det->importeneto, $det->importeiva, $det->importetotal, $det->descuentosiniva, $det->descuentoiva, ";
-                    $query.= "$det->importebrutocnv, $det->importenetocnv, $det->importeivacnv, $det->importetotalcnv, $det->descuentosinivacnv, $det->descuentoivacnv, $det->porcentajedescuento,";
-                    $query.= "$det->precio, $det->preciocnv, $det->importeexento, $det->importeexentocnv";
-                    $query.= ")";
-                    //print $query;
-                    if((float)$det->montoconiva != 0){
-                        $db->doQuery($query);
-                        $lastidDetalle = $db->getLastId();
-                        $descripcionLarga = getDescripcionLarga($lastid, $lastidDetalle);
-                        $query = "UPDATE detfact SET descripcionlarga = '$descripcionLarga' WHERE id = $lastidDetalle";
+                        $query = "UPDATE cargo SET facturado = 1, idfactura = $lastid WHERE id = $det->idcargo";
                         $db->doQuery($query);
                     }
-                    $query = "UPDATE cargo SET facturado = 1, idfactura = $lastid WHERE id = $det->idcargo";
-                    $db->doQuery($query);
                 }
+                $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
+                $data = ['ids' => $lastid, 'idcontrato' => 1];
+                $db->CallJSReportAPI('POST', $url, json_encode($data));
             }
-            $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
-            $data = ['ids' => $lastid, 'idcontrato' => 1];
-            $db->CallJSReportAPI('POST', $url, json_encode($data));
-        }
+        } else {
+            print json_encode("Factura a nombre de $p->facturara no puede ser CF");
+    }
     }
 });
 
@@ -752,7 +758,7 @@ $app->post('/genfel', function() use($app) {
     '' AS numeroacceso, IFNULL(a.serieadmin, 'A') AS serieadmin, a.numeroadmin, c.nombrecorto, FORMAT(a.importetotalcnv, 2) AS montodol, ROUND(a.tipocambio, 4) AS tipocambio, FORMAT(TRUNCATE(a.totalcnv, 2), 2) AS pagonetodol, 
     FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2), 2) AS pagoneto, FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2), 2) AS retiva, 
     FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.retisr, a.retisrcnv), 2), 2) AS retisr, FORMAT(IF(a.idmonedafact = 1, a.importetotal, a.importetotalcnv), 2) AS monto, 
-    DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.nombre, d.simbolo AS monedafact, 1 AS descargar, a.idfacturaafecta, a.id
+    DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.nombre, d.simbolo AS monedafact, 1 AS descargar, a.idfacturaafecta, a.id, a.tipoidreceptor
     FROM factura a
     INNER JOIN tipofactura b ON b.id = a.idtipofactura
     LEFT JOIN cliente c ON c.id = a.idcliente

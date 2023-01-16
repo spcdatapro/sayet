@@ -102,7 +102,7 @@ $app->get('/clientetoprint/:idcliente', function($idcliente){
     $query.= "WHERE a.idcliente = ".$idcliente;
     $cliente->contratos = $db->getQuery($query);
 
-    $query = "SELECT facturara, emailfactura, direccion, nit FROM detclientefact WHERE idcliente = ".$idcliente." AND ISNULL(fal) ORDER BY fdel DESC LIMIT 1";
+    $query = "SELECT facturara, emailfactura, direccion, nit, cui, pasaporte FROM detclientefact WHERE idcliente = ".$idcliente." AND ISNULL(fal) ORDER BY fdel DESC LIMIT 1";
     $df = $db->getQuery($query);
     $cliente->datafact = count($df) > 0 ? $df[0] : [];
 
@@ -119,7 +119,7 @@ $app->get('/lstdatosfact/:idcliente', function($idcliente){
     $query = "SELECT a.id, a.idcliente, a.facturara, a.direccion, a.nit, a.fdel, a.fal, a.emailfactura, a.exentoiva, ";
     $query.= "(SELECT IF(GROUP_CONCAT(DISTINCT c.desctiposervventa ORDER BY c.desctiposervventa SEPARATOR ', ') IS NULL, 'Todos', GROUP_CONCAT(DISTINCT c.desctiposervventa ORDER BY c.desctiposervventa SEPARATOR ', ')) ";
     $query.= "FROM detclienteserv b INNER JOIN tiposervicioventa c ON c.id = b.idservicioventa ";
-    $query.= "WHERE b.iddetclientefact = a.id) AS serviciosafact, a.retisr, a.retiva, a.porretiva ";
+    $query.= "WHERE b.iddetclientefact = a.id) AS serviciosafact, a.retisr, a.retiva, a.porretiva, a.cui, a.pasaporte ";
     $query.= "FROM detclientefact a ";
     $query.= "WHERE a.idcliente = $idcliente ";
     $query.= "ORDER BY a.facturara";
@@ -131,7 +131,7 @@ $app->get('/getfacturara/:iddetfact', function($iddetfact){
     $query = "SELECT a.id, a.idcliente, a.facturara, a.direccion, a.nit, a.fdel, a.fal, a.emailfactura, a.exentoiva, ";
     $query.= "(SELECT IF(GROUP_CONCAT(DISTINCT c.desctiposervventa ORDER BY c.desctiposervventa SEPARATOR ', ') IS NULL, 'Todos', GROUP_CONCAT(DISTINCT c.desctiposervventa ORDER BY c.desctiposervventa SEPARATOR ', ')) ";
     $query.= "FROM detclienteserv b INNER JOIN tiposervicioventa c ON c.id = b.idservicioventa ";
-    $query.= "WHERE b.iddetclientefact = a.id) AS serviciosafact, a.retisr, a.retiva, a.porretiva ";
+    $query.= "WHERE b.iddetclientefact = a.id) AS serviciosafact, a.retisr, a.retiva, a.porretiva, a.cui, a.pasaporte ";
     $query.= "FROM detclientefact a ";
     $query.= "WHERE a.id = $iddetfact";
     print $db->doSelectASJson($query);
@@ -142,13 +142,16 @@ $app->post('/cdf', function(){
     $db = new dbcpm();
     $d->fdelstr = $d->fdelstr != '' ? "'".$d->fdelstr."'" : 'NULL';
     $d->falstr = $d->falstr != '' ? "'".$d->falstr."'" : 'NULL';
+    $d->pasaporte = $d->pasaporte != '' ? "'".$d->pasaporte."'" : 'NULL';
+    $d->cui = $d->cui != '' ? "'".$d->cui."'" : 'NULL';
     if(!isset($d->porretiva)){ $d->porretiva = 0.00; }
     if(!isset($d->exentoiva)){ $d->exentoiva = 0; }
     $query = "INSERT INTO detclientefact(";
-    $query.= "idcliente, facturara, direccion, nit, fdel, fal, emailfactura, retisr, retiva, porretiva, exentoiva";
+    $query.= "idcliente, facturara, direccion, nit, fdel, fal, emailfactura, retisr, retiva, porretiva, exentoiva, cui, pasaporte";
     $query.= ") VALUES(";
-    $query.= "$d->idcliente, '$d->facturara', '$d->direccion', '$d->nit', $d->fdelstr, $d->falstr, '$d->emailfactura', $d->retisr, $d->retiva, $d->porretiva, $d->exentoiva";
+    $query.= "$d->idcliente, '$d->facturara', '$d->direccion', '$d->nit', $d->fdelstr, $d->falstr, '$d->emailfactura', $d->retisr, $d->retiva, $d->porretiva, $d->exentoiva, $d->cui, $d->pasaporte ";
     $query.= ")";
+    // print $query;
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
 });
@@ -161,9 +164,11 @@ $app->post('/udf', function(){
     $d->falstr = $d->falstr != '' ? "'".$d->falstr."'" : 'NULL';
     if(!isset($d->porretiva)){ $d->porretiva = 0.00; }
     if(!isset($d->exentoiva)){ $d->exentoiva = 0; }
+    $d->pasaporte = $d->pasaporte != '' ? "'".$d->pasaporte."'" : 'NULL';
+    $d->cui = $d->cui != '' ? "'".$d->cui."'" : 'NULL';
     $query = "UPDATE detclientefact SET ";
     $query.= "facturara = '$d->facturara', direccion = '$d->direccion', nit = '$d->nit', fdel = $d->fdelstr, fal = $d->falstr, emailfactura = '$d->emailfactura', retisr = $d->retisr, ";
-    $query.= "retiva = $d->retiva, porretiva = $d->porretiva, exentoiva = $d->exentoiva ";
+    $query.= "retiva = $d->retiva, porretiva = $d->porretiva, exentoiva = $d->exentoiva, cui = $d->cui, pasaporte = $d->pasaporte ";
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
 });

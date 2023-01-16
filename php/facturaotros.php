@@ -93,11 +93,13 @@ $app->post('/c', function(){
     // $datosFel->correlativofel = (int)$datosFel->correlativofel;
     // $datosFel->correlativofel++;
 
+    $tipoidreceptor = $db->getOneField("SELECT TipoIdReceptor($d->idcliente)");
+
     $query = "INSERT INTO factura(";
     $query.= "idempresa, idtipofactura, idcontrato, idcliente, nit, nombre, fechaingreso, mesiva, fecha, idtipoventa, idmoneda, tipocambio, esinsertada,";
-    $query.= "reteneriva, retenerisr, mesafecta, anioafecta, direccion, idproyecto, porretiva, serieadmin, numeroadmin, exentoiva) VALUES(";
+    $query.= "reteneriva, retenerisr, mesafecta, anioafecta, direccion, idproyecto, porretiva, serieadmin, numeroadmin, exentoiva, tipoidreceptor) VALUES(";
     $query.= "$d->idempresa, $d->idtipofactura, $d->idcontrato, $d->idcliente, $d->nit, $d->nombre, '$d->fechaingresostr', $d->mesiva, '$d->fechastr', $d->idtipoventa, 1, $d->tipocambio, 1,";
-    $query.= "$d->reteneriva, $d->retenerisr, $d->mesafecta, $d->anioafecta, $d->direccion, $d->idproyecto, $d->porretiva, '$datosFel->seriefel', NULL, $d->exentoiva";
+    $query.= "$d->reteneriva, $d->retenerisr, $d->mesafecta, $d->anioafecta, $d->direccion, $d->idproyecto, $d->porretiva, '$datosFel->seriefel', NULL, $d->exentoiva, $tipoidreceptor";
     $query.= ")";
     $db->doQuery($query);
     $lastid = $db->getLastId();

@@ -59,6 +59,7 @@
         $scope.lsttipoipc = [];
         $scope.grabando = false;
         $scope.categoriaclie = [];
+        $scope.req = { nit: true, cui: true, pasaporte: true };
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('paging', false);
         $scope.dtOptionsDetCont = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('ordering', false).withOption('paging', false);
@@ -171,14 +172,14 @@
 
         $scope.resetDetFact = function () {
             $scope.detfact = {
-                idcliente: $scope.cliente.id != null && $scope.cliente.id != undefined ? $scope.cliente.id : 0, facturara: '', direccion: '', nit: '', fdel: '', fal: '', retiva: 0, retisr: 0, porretiva: 0.00, exentoiva: 0
+                idcliente: $scope.cliente.id != null && $scope.cliente.id != undefined ? $scope.cliente.id : 0, facturara: '', direccion: '', nit: undefined, fdel: '', fal: '', retiva: 0, retisr: 0, porretiva: 0.00, exentoiva: 0, cui: undefined, pasaporte: undefined
             };
             $scope.grpBtnDataFact = { i: false, u: false, d: false, a: true, e: false, c: false };
         };
 
         $scope.esExentoIva = () => {
             if ($scope.detfact.exentoiva === 1) {
-                $scope.detfact.retiva = 0;                
+                $scope.detfact.retiva = 0;
                 $scope.detfact.porretiva = 0.00;
             }
         }
@@ -189,7 +190,7 @@
                 fechainicia: null, fechavence: null, nuevarenta: 0, nuevomantenimiento: 0, idmoneda: 0, idempresa: 0,
                 deposito: 0, idproyecto: 0, idunidad: 0, retiva: 0, prorrogable: 1, retisr: 0, documento: 0, adelantado: 0, subarrendado: 0, idtipocliente: 0, idcuentac: '', observaciones: '',
                 objMoneda: null, objEmpresa: null, objProyecto: null, objUnidad: [], objTipoCliente: null, reciboprov: '', objPeriodicidad: null, fechainactivo: undefined, objCategoriaClie: null,
-                idcatclie:0
+                idcatclie: 0
             };
             $scope.contratoStr = '';
             $scope.unidadesStr = '';
@@ -251,7 +252,7 @@
         };
 
         $scope.loadEmpresas = () => empresaSrvc.lstEmpresas().then((d) => $scope.empresas = d);
-        
+
         $scope.loadEmpresas();
 
         $scope.getCliente = function (idcliente) {
@@ -309,7 +310,7 @@
                 controller: 'ModalListClientesCtrl',
                 windowClass: 'app-modal-window',
                 resolve: {
-                    empresas:  () => $scope.empresas,
+                    empresas: () => $scope.empresas,
                 }
             });
 
@@ -410,6 +411,47 @@
             })
         };
 
+        $scope.$watch('detfact.nit', function (newVal, oldVal) {
+            if (newVal == 'CF') {
+                actulizarRequerridos(4);
+            } else if (newVal !== undefined && newVal !== '') { 
+                actulizarRequerridos(1);
+            }
+        });
+        $scope.$watch('detfact.cui', function (newVal, oldVal) {
+            if (newVal !== '' && newVal !== undefined) {
+                actulizarRequerridos(2);
+            }
+        });
+        $scope.$watch('detfact.pasaporte', function (newVal, oldVal) {
+            if (newVal !== '' && newVal !== undefined) {
+                actulizarRequerridos(3);
+            }
+        });
+
+        function actulizarRequerridos(campo) {
+            console.log(campo);
+            switch (campo) {
+                case 1:
+                    $scope.req.cui = false;
+                    $scope.req.pasaporte = false;
+                    break;
+                case 2:
+                    $scope.req.cui = true;
+                    $scope.req.pasaporte = false;
+                    break;
+                case 3:
+                    $scope.req.cui = false;
+                    $scope.req.pasaporte = true;
+                    break;
+                case 4: 
+                    $scope.req.cui = true;
+                    $scope.req.pasaporte = true;
+                    break;
+            }
+            campo = 0;
+        }
+
         $scope.addDetFact = function (obj) {
             obj.idcliente = $scope.cliente.id;
             obj.fdelstr = obj.fdel != null && obj.fdel != undefined ? moment(obj.fdel).format('YYYY-MM-DD') : '';
@@ -417,6 +459,8 @@
             obj.emailfactura = obj.emailfactura != null && obj.emailfactura != undefined ? obj.emailfactura : '';
             obj.retisr = obj.retisr != null && obj.retisr != undefined ? obj.retisr : 0;
             obj.retiva = obj.retiva != null && obj.retiva != undefined ? obj.retiva : 0;
+            obj.cui = obj.cui != '' && obj.cui != undefined ? obj.cui : null;
+            obj.pasaporte = obj.pasaporte != '' && obj.pasaporte != undefined ? obj.pasaporte : null;
             clienteSrvc.editRow(obj, 'cdf').then(function (d) {
                 $scope.getLstDetFact(obj.idcliente);
                 $scope.btnCDF();
@@ -430,6 +474,8 @@
             obj.emailfactura = obj.emailfactura != null && obj.emailfactura != undefined ? obj.emailfactura : '';
             obj.retisr = obj.retisr != null && obj.retisr != undefined ? obj.retisr : 0;
             obj.retiva = obj.retiva != null && obj.retiva != undefined ? obj.retiva : 0;
+            obj.cui = obj.cui != '' && obj.cui != undefined ? obj.cui : null;
+            obj.pasaporte = obj.pasaporte != '' && obj.pasaporte != undefined ? obj.pasaporte : null;
             clienteSrvc.editRow(obj, 'udf').then(function () {
                 $scope.getLstDetFact(obj.idcliente);
                 $scope.btnCDF();
@@ -564,8 +610,9 @@
                 // empresaSrvc.lstEmpresas().then(function (d) { $scope.empresas = d; });
                 proyectoSrvc.lstProyecto().then(function (d) { $scope.proyectos = d; });
                 tipoClienteSrvc.lstTiposCliente().then(function (d) { $scope.tiposcliente = d; });
-                clienteSrvc.lstCatClie().then(function(d){ 
-                    $scope.categoriaclie = d;});
+                clienteSrvc.lstCatClie().then(function (d) {
+                    $scope.categoriaclie = d;
+                });
                 periodicidadSrvc.lstPeriodicidad().then(function (d) { $scope.periodicidad = d; });
                 clienteSrvc.lstContratos(parseInt(idcliente)).then(function (d) {
                     $scope.contratos = procDataContratos(d);
@@ -815,12 +862,12 @@
                 clienteSrvc.chkDetFContratoFacturado(iddet).then((d) => {
                     if (+d.facturado != 0) {
                         $scope.detcontfacturado = true;
-                        $scope.facturasperiodo = +d.facturado;                        
-                    }                    
+                        $scope.facturasperiodo = +d.facturado;
+                    }
                 });
 
                 clienteSrvc.chkDetFContratoAnulado(iddet).then((d) => {
-                    if(d.length > 0) {
+                    if (d.length > 0) {
                         $scope.detcontfacturado = true;
                         $scope.dataanula = d[0];
                     }
@@ -829,7 +876,7 @@
                 goTop();
             });
         };
-        
+
         $scope.chkFechaRango = (fecha, fechacomp, via) => {
             if (moment(fecha).isValid()) {
                 const hayError = via ? moment(fecha).isAfter(fechacomp) : moment(fecha).isBefore(fechacomp);
@@ -839,7 +886,7 @@
                         'Error en fechas',
                         `La fecha de este período (${moment(fecha).format('DD/MM/YYYY')}) esta fuera del rango de validez del contrato. Favor revisar.`,
                         'timeout:10000'
-                    );                    
+                    );
                 }
             }
         }
@@ -1007,7 +1054,7 @@
                     empresas: () => $scope.empresas
                 }
             });
-            modalInstance.result.then(() => { 
+            modalInstance.result.then(() => {
                 $scope.getContrato(obj.id);
                 $scope.getLstContratos(obj.idcliente);
             }, () => { });
@@ -1191,7 +1238,7 @@
         });
         $scope.params = {
             usufructo: undefined, idempresa: undefined, fechainicia: moment().toDate(), idcuentac: undefined, idusuario: $scope.usr.uid, idcontrato: $scope.contrato.id
-        };        
+        };
 
         $scope.ok = () => {
             $scope.params.fechainiciastr = moment($scope.params.fechainicia).format('YYYY-MM-DD');
@@ -1212,7 +1259,7 @@
         $scope.empresas = empresas;
         $scope.content = `${window.location.origin}/sayet/blank.html`;
 
-        $scope.resetParams = () => $scope.params = { idempresa: undefined};        
+        $scope.resetParams = () => $scope.params = { idempresa: undefined };
 
         $scope.ok = () => {
             $scope.params.idempresa = !!$scope.params.idempresa ? $scope.params.idempresa : '';
@@ -1222,8 +1269,8 @@
         };
 
         $scope.cancel = () => $uibModalInstance.dismiss('cancel');
-        
+
         $scope.resetParams();
 
-    }]);    
+    }]);
 }());

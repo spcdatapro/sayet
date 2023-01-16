@@ -342,20 +342,20 @@
                                         </div>
                                     </div>
                                     <div class="col-md-2 nopadding">
-                                        <div class="form-group required"
-                                            ng-class="{'has-error':frmDetFact.txtNITDF.$invalid && !frmDetFact.txtNITDF.$pristine}">
+                                        <div class="form-group">
                                             <label for="txtNITDF" class="control-label">N.I.T.:</label>
                                             <input name="txtNITDF" id="txtNITDF" type="text"
                                                 class="form-control input-sm" ng-model="detfact.nit" maxlength="25"
                                                 placeholder="N.I.T. de facturaci&oacute;n" ng-disabled="sldatafact"
-                                                required />
+                                                ng-required="req.nit" required/>
                                         </div>
                                     </div>
                                     <div class="col-md-2 nopadding">
                                         <div class="form-group"
                                             ng-class="{'has-error':frmDetFact.chkExeIvaCli.$invalid && !frmDetFact.chkExeIvaCli.$pristine}">
                                             <label for="chkExeIvaCli">Exento I.V.A.:</label>
-                                            <input name="chkExeIvaCli" id="chkExeIvaCli" type="checkbox" class="form-control input-sm" ng-model="detfact.exentoiva"
+                                            <input name="chkExeIvaCli" id="chkExeIvaCli" type="checkbox"
+                                                class="form-control input-sm" ng-model="detfact.exentoiva"
                                                 ng-true-value="1" ng-false-value="0" ng-disabled="sldatafact"
                                                 ng-change="esExentoIva()" />
                                         </div>
@@ -375,7 +375,8 @@
                                             <label for="chkRetIVACli">Ret. I.V.A.:</label>
                                             <input name="chkRetIVACli" id="chkRetIVACli" type="checkbox"
                                                 class="form-control input-sm" ng-model="detfact.retiva"
-                                                ng-true-value="1" ng-false-value="0" ng-disabled="sldatafact || +detfact.exentoiva === 1"
+                                                ng-true-value="1" ng-false-value="0"
+                                                ng-disabled="sldatafact || +detfact.exentoiva === 1"
                                                 ng-change="detfact.porretiva = +detfact.retiva == 0 ? 0.00 : detfact.porretiva;" />
                                         </div>
                                     </div>
@@ -419,6 +420,20 @@
                                                 class="form-control input-sm" ng-model="detfact.fal"
                                                 ng-disabled="sldatafact" />
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 nopadding">
+                                        <div class="form-group"><label for="cuiTxt">CUI:</label><input type="text"
+                                                class="form-control input-sm" id="cuiTxt" ng-model="detfact.cui"
+                                                ng-disabled="sldatafact" 
+                                                ng-required="req.cui"></div>
+                                    </div>
+                                    <div class="col-md-6 nopadding">
+                                        <div class="form-group"><label for="pasTxt">Pasaporte:</label><input type="text"
+                                                class="form-control input-sm" id="pasTxt" ng-model="detfact.pasaporte"
+                                                ng-disabled="sldatafact"
+                                                ng-required="req.pasaporte"></div>
                                     </div>
                                 </div>
                                 <div class="btn-group" role="group" aria-label="...">
@@ -685,9 +700,9 @@
                                         <div class="form-group">
                                             <label for="selCatClie">Categoria:</label>
                                             <select name="selCatClie" id="selCatClie" class="form-control input-sm"
-                                            ng-model="contrato.objCategoriaClie"
-                                            ng-options="obj.nombre for obj in categoriaclie track by obj.id"
-                                            ng-disabled="slcont"></select>
+                                                ng-model="contrato.objCategoriaClie"
+                                                ng-options="obj.nombre for obj in categoriaclie track by obj.id"
+                                                ng-disabled="slcont"></select>
                                         </div>
                                     </div>
                                 </div>
@@ -735,7 +750,7 @@
                                                 </ui-select-no-choice>
                                             </ui-select>
                                         </div>
-                                    </div>                                    
+                                    </div>
                                     <div class="col-md-4 nopadding" ng-hide="slcont || +contrato.inactivo === 1">
                                         <div class="form-group"
                                             ng-class="{'has-error':frmCont.selUniCont.$invalid && !frmCont.selUniCont.$pristine}">
@@ -745,13 +760,13 @@
                                                 ng-options="obj.nombre for obj in unidadesdisponibles track by obj.id"
                                                 multiple ng-disabled="slcont"></select>
                                         </div>
-                                    </div>                                    
+                                    </div>
                                     <div class="col-md-4 nopadding" ng-show="slcont || +contrato.inactivo === 1">
                                         <div class="form-group">
                                             <label for="divUnidadesStr">Unidades:</label>
-                                            <div id="divUnidadesStr" class="well well-sm" style="font-size: x-small">                                                
-                                                <p ng-show="+contrato.inactivo === 0">{{unidadesStr}}</p>                                                
-                                                <p ng-show="+contrato.inactivo === 1">{{contrato.unidad}}</p>                                                
+                                            <div id="divUnidadesStr" class="well well-sm" style="font-size: x-small">
+                                                <p ng-show="+contrato.inactivo === 0">{{unidadesStr}}</p>
+                                                <p ng-show="+contrato.inactivo === 1">{{contrato.unidad}}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -807,7 +822,7 @@
                                     <div class="col-md-12 nopadding">
                                         <div class="form-group">
                                             <span><strong>No. Usufructo:</strong> {{contrato.usufructo}}</span>
-                                        </div>                                        
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -831,8 +846,8 @@
                                                 <a href="" ng-click="showModInactivo()" ng-hide="slcont">
                                                     {{contrato.fechainactivo | date:'dd/MM/yyyy'}}
                                                 </a>
-                                                <span
-                                                    ng-show="slcont">{{contrato.fechainactivo | date:'dd/MM/yyyy'}}</span>&nbsp;
+                                                <span ng-show="slcont">{{contrato.fechainactivo |
+                                                    date:'dd/MM/yyyy'}}</span>&nbsp;
                                                 <button type="button" class="btn btn-info btn-sm"
                                                     ng-click="printContratoInactivo(contrato.id)"
                                                     ng-show="contrato.id > 0">
@@ -939,7 +954,7 @@
                                             <label for="txtDFDel" class="control-label">Del:</label>
                                             <input name="txtDFDel" id="txtDFDel" type="date"
                                                 class="form-control  input-sm" ng-model="detfcontrato.fdel" required
-                                                ng-disabled="sldetcont || detcontfacturado" 
+                                                ng-disabled="sldetcont || detcontfacturado"
                                                 ng-blur="chkFechaRango(detfcontrato.fdel, contrato.fechainicia, false)" />
                                         </div>
                                     </div>
@@ -986,13 +1001,15 @@
                                         </div>
                                     </div>
                                     <div class="col-md-2 nopadding">
-                                        <div class="form-group required" ng-class="{'has-error':frmDFC.selDFMonFact.$invalid && !frmDFC.selDFMonFact.$pristine}">
+                                        <div class="form-group required"
+                                            ng-class="{'has-error':frmDFC.selDFMonFact.$invalid && !frmDFC.selDFMonFact.$pristine}">
                                             <label for="selDFMonFact" class="control-label">Facturar en:</label>
                                             <select name="selDFMonFact" id="selDFMonFact" class="form-control  input-sm"
                                                 ng-model="detfcontrato.idmonedafact"
-                                                ng-options="obj.id as (obj.nommoneda + ' (' + obj.simbolo + ')') for obj in monedas" required ng-disabled="sldetcont || detcontfacturado"></select>
+                                                ng-options="obj.id as (obj.nommoneda + ' (' + obj.simbolo + ')') for obj in monedas"
+                                                required ng-disabled="sldetcont || detcontfacturado"></select>
                                         </div>
-                                    </div>                                    
+                                    </div>
                                 </div>
                                 <div class="row" ng-show="+detfcontrato.id > 0">
                                     <div class="col-md-11">
@@ -1002,16 +1019,25 @@
                                                 <p>
                                                     <strong>
                                                         <strong ng-show="+facturasperiodo > 0">
-                                                            Este per&iacute;odo ya tiene {{facturasperiodo | number:0}} facturas realizadas. No se puede modificar ni eliminar.
+                                                            Este per&iacute;odo ya tiene {{facturasperiodo | number:0}}
+                                                            facturas realizadas. No se puede modificar ni eliminar.
                                                         </strong>
-                                                        <span ng-show="(dataanula.usuario == '' || dataanula.usuario == undefined || dataanula.usuario == null) && +facturasperiodo > 0">                                                            
-                                                            Debe <a href="" ng-click="anulaPeriodo(detfcontrato.id)">anular</a> lo que queda del per&iacute;odo y crear uno nuevo
+                                                        <span
+                                                            ng-show="(dataanula.usuario == '' || dataanula.usuario == undefined || dataanula.usuario == null) && +facturasperiodo > 0">
+                                                            Debe <a href=""
+                                                                ng-click="anulaPeriodo(detfcontrato.id)">anular</a> lo
+                                                            que queda del per&iacute;odo y crear uno nuevo
                                                         </span>
-                                                        <span ng-hide="dataanula.usuario == '' || dataanula.usuario == undefined || dataanula.usuario == null">
-                                                            Los cargos ya fueron anulados por 
-                                                            <span class="label label-primary">{{dataanula.usuario}}</span> el 
-                                                            <span class="label label-primary">{{dataanula.fechaanula | date:'dd/MM/yyyy'}}</span> por 
-                                                            <span class="label label-primary">{{dataanula.razon}}</span>.
+                                                        <span
+                                                            ng-hide="dataanula.usuario == '' || dataanula.usuario == undefined || dataanula.usuario == null">
+                                                            Los cargos ya fueron anulados por
+                                                            <span
+                                                                class="label label-primary">{{dataanula.usuario}}</span>
+                                                            el
+                                                            <span class="label label-primary">{{dataanula.fechaanula |
+                                                                date:'dd/MM/yyyy'}}</span> por
+                                                            <span
+                                                                class="label label-primary">{{dataanula.razon}}</span>.
                                                         </span>
                                                     </strong>
                                                 </p>
@@ -1263,8 +1289,8 @@
                                                 ngf-pattern="'image/*,application/pdf,.xls,.xlsx,.doc,.docx,.txt'"
                                                 ngf-accept="'image/*,application/pdf,.xls,.xlsx,.doc,.docx,.txt'"
                                                 ngf-max-size="200MB" style="width: 100%">
-                                                {{(file.name | textCleaner) || 'Seleccionar documento para subir'}}&nbsp;<span
-                                                    class="glyphicon glyphicon-upload"></span>
+                                                {{(file.name | textCleaner) || 'Seleccionar documento para
+                                                subir'}}&nbsp;<span class="glyphicon glyphicon-upload"></span>
                                             </button>
                                         </div>
                                     </div>

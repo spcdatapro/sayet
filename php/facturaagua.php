@@ -377,6 +377,8 @@ $app->post('/genfactfel', function() {
             $descripcion = $p->tipo.' DE '.$p->proyecto.' '.$p->unidad.', Contador: '.$p->numidentificacion.', Consumo(m3): '.$p->consumoafacturar.' Mes de '.$p->nommes.' '.$p->anio;
             $p->nit = strtoupper(preg_replace("/[^a-zA-Z0-9]+/", "", $p->nit));
 
+            $tipoidreceptor = $db->getOneField("SELECT TipoIdReceptor($p->idcliente)");
+
             $query = "INSERT INTO factura(";
             $query.= "idempresa, idtipofactura, idcontrato, idcliente, ";
             $query.= "fechaingreso, mesiva, fecha, idtipoventa, conceptomayor, iva, ";
@@ -384,7 +386,7 @@ $app->post('/genfactfel', function() {
             $query.= "retisr, retiva, totdescuento, nit, nombre, direccion, montocargoiva, montocargoflat, ";
             $query.= "importebruto, importeneto, importeiva, importetotal, descuentosiniva, descuentoiva, ";
             $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv, ";
-            $query.= "serieadmin, numeroadmin, totalcnv, importeexento, importeexentocnv, exentoiva";
+            $query.= "serieadmin, numeroadmin, totalcnv, importeexento, importeexentocnv, exentoiva, tipoidreceptor ";
             $query.= ") VALUES (";
             $query.= "$params->idempresa, 1, $p->idcontrato, $p->idcliente, ";
             $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '$descripcion', $p->iva, ";
@@ -392,7 +394,7 @@ $app->post('/genfactfel', function() {
             $query.= "$p->isrporretener, $p->ivaporretener, $p->descuento, '$p->nit', '$p->facturara', '$p->direccion', $p->montoconiva, $p->montoconiva, ";
             $query.= "$p->importebruto, $p->importeneto, $p->importeiva, $p->importetotal, $p->descuentosiniva, $p->descuentoiva, ";
             $query.= "$p->importebrutocnv, $p->importenetocnv, $p->importeivacnv, $p->importetotalcnv, $p->descuentosinivacnv, $p->descuentoivacnv, ";
-            $query.= "'$datosFel->seriefel', NULL, $p->totapagarcnv, $p->importeexento, $p->importeexentocnv, $p->exentoiva";
+            $query.= "'$datosFel->seriefel', NULL, $p->totapagarcnv, $p->importeexento, $p->importeexentocnv, $p->exentoiva, $tipoidreceptor";
             $query.= ")";
             //echo $query.'<br/>';
 
