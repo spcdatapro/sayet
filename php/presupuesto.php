@@ -834,7 +834,7 @@ $app->get('/lstot/:idpresupuesto', function ($idpresupuesto) {
     $query .= "INNER JOIN moneda e ON e.id = d.idmoneda LEFT JOIN moneda f ON f.id = a.idmoneda LEFT JOIN ampliapresupuesto j ON j.iddetpresupuesto = a.id ";
     $query .= "WHERE a.origenprov = 1 AND a.idpresupuesto = $idpresupuesto ";
     $query .= "UNION ";
-    $query .= "SELECT a.id, a.idpresupuesto, a.correlativo, a.idproveedor, b.nombre AS proveedor, a.idsubtipogasto, c.descripcion AS subtipogasto, a.coniva, a.escontado, FORMAT(a.monto, 2) AS monto, f.simbolo AS moneda, d.total, a.tipocambio, a.excedente, a.notas, a.origenprov, ";
+    $query .= "SELECT a.id, a.idpresupuesto, a.correlativo, a.idproveedor, b.nombre AS proveedor, a.idsubtipogasto, c.descripcion AS subtipogasto, a.coniva, a.escontado, a.monto AS monto, f.simbolo AS moneda, d.total, a.tipocambio, a.excedente, a.notas, a.origenprov, ";
     $query .= "a.idmoneda, a.idestatuspresupuesto ";
     $query .= "FROM detpresupuesto a INNER JOIN beneficiario b ON b.id = a.idproveedor INNER JOIN subtipogasto c ON c.id = a.idsubtipogasto INNER JOIN presupuesto d ON d.id = a.idpresupuesto ";
     $query .= "INNER JOIN moneda e ON e.id = d.idmoneda LEFT JOIN moneda f ON f.id = a.idmoneda LEFT JOIN ampliapresupuesto j ON j.iddetpresupuesto = a.id ";
