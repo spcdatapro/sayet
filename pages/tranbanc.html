@@ -294,10 +294,10 @@
                             <div class="col-md-6">
                                 <div class="form-group" ng-show="laTran.objTipotrans.abreviatura === 'R'">
                                     <label>Recibo a cliente</label>
-                                    <ui-select ng-model="laTran.recibocli" title="Seleccione un recibo..."
-                                        theme="bootstrap" autofocus="false" on-select="fillDataOnRecli($item, $model)">
+                                    <ui-select ng-model="laTran.recibocli" multiple title="Seleccione un recibo..."
+                                        theme="bootstrap" autofocus="false" on-select="fillDataOnRecli($item)">
                                         <ui-select-match placeholder="Buscar recibo..." allow-clear="true">
-                                            <span ng-bind="($select.selected.reccli)"></span>
+                                            <span>{{$item.reccli}}</span>
                                         </ui-select-match>
                                         <ui-select-choices repeat="item.id as item in recibos | filter:$select.search"
                                             group-by="'grupo'">
