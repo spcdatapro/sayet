@@ -575,7 +575,7 @@ $app->get('/getlstrecpend/:idempresa', function($idempresa){
     print $db->doSelectASJson($query);
 });
 
-$app->get('/getlstrec/:idempresa', function($idempresa){
+$app->get('/getlstrec/:idtran', function($idtran) {
     $db = new dbcpm();
     $query = "SELECT DISTINCT
                 a.id,
@@ -600,10 +600,7 @@ $app->get('/getlstrec/:idempresa', function($idempresa){
                     LEFT JOIN
                 serierecli d ON d.idrecibocli = a.id
             WHERE
-                    a.fecha >= 20210101
-                    AND a.tipo = 1
-                    AND a.anulado = 0
-                    AND a.idempresa = $idempresa ";
+                    a.idtranban = $idtran ";
     print $db->doSelectASJson($query);
 });
 

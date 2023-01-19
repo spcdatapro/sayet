@@ -1044,31 +1044,19 @@ $app->get('/getdetpago/:iddetpago', function ($iddetpago) {
     print $db->doSelectASJson($query);
 });
 
-$app->get('/lstpagos/:idempresa(/:idpresupuesto)', function ($idempresa, $idpresupuesto = 0) {
-    $idpresupuesto = (int)$idpresupuesto;
+$app->get('/lstpagos/:idempresa', function ($idempresa) {
     $db = new dbcpm();
-    $query = "SELECT a.idpresupuesto, a.id, b.idproyecto, c.nomproyecto AS proyecto, b.fhaprobacion, a.idproveedor, e.nombre AS proveedor, b.idmoneda, d.simbolo AS moneda, a.monto, ";
-    $query .= "b.fechasolicitud, f.nomempresa AS empresa, g.desctipogast AS tipogasto, h.descripcion AS subtipogasto, IF(a.coniva = 1, 'I.V.A. incluido', 'I.V.A. NO incluido') AS coniva, a.correlativo, ";
-    $query .= "CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, b.idempresa, i.nopago, i.porcentaje, i.monto AS valor, a.notas, i.id AS iddetpagopresup, i.pagado, ";
-    $query .= "IF(i.pagado = 0, NULL, 'Pagado') AS estatuspagado, b.total, a.tipocambio, a.origenprov, i.isr, i.quitarisr ";
-    $query .= "FROM detpresupuesto a INNER JOIN presupuesto b ON b.id = a.idpresupuesto INNER JOIN proyecto c ON c.id = b.idproyecto INNER JOIN moneda d ON d.id = b.idmoneda ";
-    $query .= "INNER JOIN proveedor e ON e.id = a.idproveedor INNER JOIN empresa f ON f.id = b.idempresa INNER JOIN tipogasto g ON g.id = b.idtipogasto ";
-    $query .= "INNER JOIN subtipogasto h ON h.id = a.idsubtipogasto LEFT JOIN detpagopresup i ON a.id = i.iddetpresup ";
-    $query .= "WHERE a.origenprov = 1 AND a.idestatuspresupuesto IN(3, 5) ";
-    $query .= (int)$idempresa > 0 ? "AND f.id = $idempresa " : "";
-    $query .= $idpresupuesto > 0 ? "AND a.id = $idpresupuesto " : '';
-    $query .= "UNION ";
-    $query .= "SELECT a.idpresupuesto, a.id, b.idproyecto, c.nomproyecto AS proyecto, b.fhaprobacion, a.idproveedor, e.nombre AS proveedor, b.idmoneda, d.simbolo AS moneda, a.monto, ";
-    $query .= "b.fechasolicitud, f.nomempresa AS empresa, g.desctipogast AS tipogasto, h.descripcion AS subtipogasto, IF(a.coniva = 1, 'I.V.A. incluido', 'I.V.A. NO incluido') AS coniva, a.correlativo, ";
-    $query .= "CONCAT(a.idpresupuesto, '-', a.correlativo) AS ot, b.idempresa, i.nopago, i.porcentaje, i.monto AS valor, a.notas, i.id AS iddetpagopresup, i.pagado, ";
-    $query .= "IF(i.pagado = 0, NULL, 'Pagado') AS estatuspagado, b.total, a.tipocambio, a.origenprov, i.isr, i.quitarisr ";
-    $query .= "FROM detpresupuesto a INNER JOIN presupuesto b ON b.id = a.idpresupuesto INNER JOIN proyecto c ON c.id = b.idproyecto INNER JOIN moneda d ON d.id = b.idmoneda ";
-    $query .= "INNER JOIN beneficiario e ON e.id = a.idproveedor INNER JOIN empresa f ON f.id = b.idempresa INNER JOIN tipogasto g ON g.id = b.idtipogasto ";
-    $query .= "INNER JOIN subtipogasto h ON h.id = a.idsubtipogasto LEFT JOIN detpagopresup i ON a.id = i.iddetpresup ";
-    $query .= "WHERE a.origenprov = 2 AND a.idestatuspresupuesto IN(3, 5) ";
-    $query .= (int)$idempresa > 0 ? "AND f.id = $idempresa " : "";
-    $query .= $idpresupuesto > 0 ? "AND a.id = $idpresupuesto " : '';
-    $query .= "ORDER BY 1, 2, 5, 19";
+    $query = "SELECT a.id, b.id AS idpresupuesto, CONCAT(b.id, '-', a.correlativo) AS ot, c.nombre AS proveedor, 
+    d.nomempresa AS empresa, a.monto, e.simbolo AS moneda, ROUND(a.tipocambio, 2) AS tipocambio, a.notas, b.fechacreacion 
+    FROM detpresupuesto a INNER JOIN presupuesto b ON a.idpresupuesto = b.id INNER JOIN proveedor c ON a.idproveedor = c.id 
+    INNER JOIN empresa d ON b.idempresa = d.id INNER JOIN moneda e ON a.idmoneda = e.id 
+    WHERE a.origenprov = 1 AND a.idestatuspresupuesto = 3 AND b.idempresa = $idempresa
+    UNION 
+    SELECT a.id, b.id AS idpresupuesto, CONCAT(b.id, '-', a.correlativo) AS ot, c.nombre AS proveedor, d.nomempresa AS empresa, 
+    a.monto, e.simbolo AS moneda, ROUND(a.tipocambio, 2) AS tipocambio, a.notas, b.fechacreacion FROM detpresupuesto a 
+    INNER JOIN presupuesto b ON a.idpresupuesto = b.id INNER JOIN beneficiario c ON a.idproveedor = c.id 
+    INNER JOIN empresa d ON b.idempresa = d.id INNER JOIN moneda e ON a.idmoneda = e.id 
+    WHERE a.origenprov = 2 AND a.idestatuspresupuesto = 3 AND b.idempresa = $idempresa ORDER BY 10 ";
     // print $query;
     print $db->doSelectASJson($query);
 });

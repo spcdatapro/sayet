@@ -34,8 +34,8 @@
             lstRecPend: function(idempresa){
                 return comunFact.doGET(urlBase + '/getlstrecpend/' + idempresa);
             },
-            getLstRec: function(idempresa){
-                return comunFact.doGET(urlBase + '/getlstrec/' + idempresa);
+            getLstRec: function(idtran){
+                return comunFact.doGET(urlBase + '/getlstrec/' + idtran);
             },
             getPagoRec: function(idpago){
                 return comunFact.doGET(urlBase + '/getpago/' + idpago);
