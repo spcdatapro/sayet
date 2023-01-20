@@ -131,8 +131,7 @@ class General extends Principal
 		return $this->db->select(
 			'plnperiodo', 
 			'*', 
-			$condicion,
-			'order by inicio desc'
+			$condicion .= "ORDER BY inicio DESC"
 		);
 	}
 
