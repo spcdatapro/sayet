@@ -107,7 +107,6 @@ class General extends Principal
 	{
 		$condicion = [];
 		$where = [];
-		$orden = "ORDER BY inicio DESC ";
 		
 		if (elemento($args, 'inicio')) {
 			$where["inicio"] = $args['inicio'];
@@ -129,12 +128,10 @@ class General extends Principal
 			$condicion["LIMIT"] = [elemento($args, 'inicio', 0), get_limite()];
 		}
 
-
 		return $this->db->select(
 			'plnperiodo', 
 			'*', 
-			$condicion,
-			$orden
+			$condicion
 		);
 	}
 
