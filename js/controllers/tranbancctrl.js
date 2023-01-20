@@ -117,8 +117,25 @@
         };
 
         $scope.$watch('laTran.fecha', function (newValue, oldValue) {
-            if (newValue != null && newValue != undefined) {
-                $scope.chkFechaEnPeriodo(newValue, 't');
+            var fecha = newValue;
+            if (angular.isDate(fecha)) {
+                if (fecha.getFullYear() >= 2000) {
+                    fecha = moment(fecha).format('YYYY-MM-DD');
+                    periodoContableSrvc.validaFecha(fecha).then(function (d) {
+                        var fechaValida = parseInt(d.valida) === 1;
+                        if (!fechaValida) {
+                            $scope.periodoCerrado = true;
+                            toaster.pop({
+                                type: 'error', title: 'Fecha de ingreso es inválida.',
+                                body: 'No está dentro de ningún período contable abierto.', timeout: 7000
+                            });
+                        } else {
+                            $scope.periodoCerrado = false;
+                        }
+                    });
+                } else {
+                    $scope.periodoCerrado = true;
+                }
             }
         });
 
@@ -243,43 +260,6 @@
             }
         };
 
-        $scope.chkFechaEnPeriodo = function (qFecha, deDonde) {
-            if (angular.isDate(qFecha)) {
-                if (qFecha.getFullYear() >= 2000) {
-                    //console.log(qFecha);
-                    periodoContableSrvc.validaFecha(moment(qFecha).format('YYYY-MM-DD')).then(function (d) {
-                        var fechaValida = parseInt(d.valida) === 1;
-                        if (!fechaValida) {
-                            var cualFecha = '';
-                            var tipo = '';
-                            switch (deDonde) {
-                                case 't':
-                                    $scope.periodoCerrado = true;
-                                    //$scope.laTran.fecha = null;
-                                    cualFecha = 'de la transacción';
-                                    tipo = 'error';
-                                    break;
-                                case 'd':
-                                    //$scope.periodoCerrado = true;
-                                    //$scope.elDocSop.fechadoc = null;
-                                    cualFecha = 'del documento de soporte';
-                                    tipo = 'warning';
-                                    break;
-                            }
-                            toaster.pop({
-                                type: '' + tipo + '', title: 'Fecha ' + cualFecha + ' es inválida.',
-                                body: 'No está dentro de ningún período contable abierto.', timeout: 7000
-                            });
-
-
-                        } else {
-                            $scope.periodoCerrado = false;
-                        }
-                    });
-                }
-            }
-        };
-
         $scope.setNombreBene = function (bene) {
             if (!$scope.laTran.beneficiario || $scope.laTran.beneficiario.trim() == '') {
                 $scope.laTran.beneficiario = bene != null && bene != undefined ? bene.chequesa : '';
@@ -319,9 +299,9 @@
             $scope.laTran.anticipo = 1;
             $scope.laTran.objBeneficiario = tmpObjBene.length > 0 ? tmpObjBene[0] : undefined;
             $scope.setNombreBene($scope.laTran.objBeneficiario);
-            tranBancSrvc.getMontoOt(item.id).then(d => {
-                $scope.montoMax = d.monto;
-            });
+            // tranBancSrvc.getMontoOt(item.id).then(d => {
+            // $scope.montoMax = d.monto;
+            // });
 
             if (!$scope.laTran.concepto) {
                 $scope.laTran.concepto = 'Orden de trabajo ' + item.ot + ' [' + item.notas + ']';
@@ -354,7 +334,7 @@
             } else {
                 var monto = undefined;
                 monto = +$scope.laTran.monto;
-                $scope.laTran.monto = +item.montorec + monto; 
+                $scope.laTran.monto = +item.montorec + monto;
                 var concepto = $scope.laTran.concepto;
                 $scope.laTran.concepto = concepto.substring(0, 24) + item.reccli + ',' + concepto.substring(23) + ', ' + item.facturas;
             }
@@ -414,7 +394,7 @@
                 data[i].retisr = parseInt(data[i].retisr);
                 data[i].montooriginal = parseFloat(parseFloat(data[i].montooriginal).toFixed(2));
                 data[i].isr = parseFloat(parseFloat(data[i].isr).toFixed(2));
-                data[i].montocalcisr = parseFloat(parseFloat(data[i].montocalcisr).toFixed(2));         
+                data[i].montocalcisr = parseFloat(parseFloat(data[i].montocalcisr).toFixed(2));
             }
             return data;
         }
@@ -530,16 +510,19 @@
 
                 $scope.getDetCont(parseInt(idtran));
 
-                $scope.laTran.recibocli = [];
-                reciboClientesSrvc.getLstRec($scope.laTran.id).then(function (d) { 
-                    $scope.recibo = d; 
+                if ($scope.laTran.idrecibocli != null) {
+                    // traer uno o mas recibos
+                    $scope.laTran.recibocli = [];
+                    reciboClientesSrvc.getLstRec($scope.laTran.id).then(function (d) {
+                        $scope.recibo = d;
 
-                    var lstRecTmp = $scope.laTran.idrecibocli.split(',');
+                        var lstRecTmp = $scope.laTran.idrecibocli.split(',');
 
-                    for (var i = 0; i < lstRecTmp.length; i++) {
-                        $scope.laTran.recibocli.push($filter('getById')($scope.recibo, +lstRecTmp[i]));
-                    }
-                });
+                        for (var i = 0; i < lstRecTmp.length; i++) {
+                            $scope.laTran.recibocli.push($filter('getById')($scope.recibo, +lstRecTmp[i]));
+                        }
+                    });
+                }
             });
 
         };

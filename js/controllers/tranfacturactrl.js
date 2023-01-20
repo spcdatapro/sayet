@@ -51,42 +51,73 @@
         $scope.$on('epups', function (ngRepeatFinishedEvent) { enablePopOvers(); });
 
         $scope.$watch('params.ffactura', function (newValue, oldValue) {
-            if (newValue != null && newValue !== undefined) {
-                $scope.chkFechaEnPeriodo(newValue, 1);
-            }
-        });
-
-        $scope.$watch('paramsh2o.ffactura', function (newValue, oldValue) {
-            if (newValue != null && newValue !== undefined) {
-                $scope.chkFechaEnPeriodo(newValue, 2);
-            }
-        });
-
-        $scope.$watch('factura.fecha', function (newValue, oldValue) {
-            if (newValue != null && newValue !== undefined) {
-                $scope.chkFechaEnPeriodo(newValue, 1);
-            }
-        });
-
-        $scope.chkFechaEnPeriodo = function (qFecha, cual) {
-            if (angular.isDate(qFecha)) {
-                if (qFecha.getFullYear() >= 2000) {
-                    periodoContableSrvc.validaFecha(moment(qFecha).format('YYYY-MM-DD')).then(function (d) {
+            var fecha = newValue;
+            if (angular.isDate(fecha)) {
+                if (fecha.getFullYear() >= 2000) {
+                    fecha = moment(fecha).format('YYYY-MM-DD');
+                    periodoContableSrvc.validaFecha(fecha).then(function (d) {
                         var fechaValida = parseInt(d.valida) === 1;
                         if (!fechaValida) {
                             $scope.periodoCerrado = true;
-                            var qFactura = +cual !== 2 ? '' : ' de agua';
                             toaster.pop({
-                                type: 'error', title: 'Fecha de factura' + qFactura + ' es inválida.',
+                                type: 'error', title: 'Fecha de ingreso es inválida.',
                                 body: 'No está dentro de ningún período contable abierto.', timeout: 7000
                             });
                         } else {
                             $scope.periodoCerrado = false;
                         }
                     });
+                } else {
+                    $scope.periodoCerrado = true;
                 }
             }
-        };
+        });
+
+        $scope.$watch('paramsh2o.ffactura', function (newValue, oldValue) {
+            var fecha = newValue;
+            if (angular.isDate(fecha)) {
+                if (fecha.getFullYear() >= 2000) {
+                    fecha = moment(fecha).format('YYYY-MM-DD');
+                    periodoContableSrvc.validaFecha(fecha).then(function (d) {
+                        var fechaValida = parseInt(d.valida) === 1;
+                        if (!fechaValida) {
+                            $scope.periodoCerrado = true;
+                            toaster.pop({
+                                type: 'error', title: 'Fecha de ingreso es inválida.',
+                                body: 'No está dentro de ningún período contable abierto.', timeout: 7000
+                            });
+                        } else {
+                            $scope.periodoCerrado = false;
+                        }
+                    });
+                } else {
+                    $scope.periodoCerrado = true;
+                }
+            }
+        });
+
+        $scope.$watch('factura.fecha', function (newValue, oldValue) {
+            var fecha = newValue;
+            if (angular.isDate(fecha)) {
+                if (fecha.getFullYear() >= 2000) {
+                    fecha = moment(fecha).format('YYYY-MM-DD');
+                    periodoContableSrvc.validaFecha(fecha).then(function (d) {
+                        var fechaValida = parseInt(d.valida) === 1;
+                        if (!fechaValida) {
+                            $scope.periodoCerrado = true;
+                            toaster.pop({
+                                type: 'error', title: 'Fecha de ingreso es inválida.',
+                                body: 'No está dentro de ningún período contable abierto.', timeout: 7000
+                            });
+                        } else {
+                            $scope.periodoCerrado = false;
+                        }
+                    });
+                } else {
+                    $scope.periodoCerrado = true;
+                }
+            }
+        });
 
         function procesaPendientes(d) {
             for (var i = 0; i < d.length; i++) {

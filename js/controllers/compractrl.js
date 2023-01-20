@@ -123,7 +123,7 @@
                     fechaingreso: new Date(), mesiva: hoy.getMonth() + 1, fechafactura: new Date(), creditofiscal: 0, extraordinario: 0, noafecto: 0.0,
                     objEmpresa: $scope.laCompra.objEmpresa, objMoneda: {}, tipocambio: 1, isr: 0.00, galones: 0.00, idp: 0.00, objTipoCombustible: {},
                     totfact: 0.00, subtotal: 0.00, iva: 0.00, ordentrabajo: undefined, idproyecto: undefined, idunidad: undefined, nombrerecibo: undefined,
-                    idcheque: undefined, alcontado: 0, iddocliquida: undefined, idservicio: undefined, lecturaini: undefined, 
+                    idcheque: undefined, alcontado: 0, iddocliquida: undefined, idservicio: undefined, lecturaini: undefined,
                     lecturafin: undefined, preciouni: undefined, ffin: new Date(), fini: moment().startOf('month').toDate()
                 };
                 $scope.search = "";
@@ -165,19 +165,37 @@
             };
 
             $scope.$watch('laCompra.fechaingreso', function (newValue, oldValue) {
-                if (newValue != null && newValue !== undefined) {
-                    $scope.chkFechaEnPeriodo(newValue);
-                }
-            });
-
-            $scope.chkFechaEnPeriodo = function (qFecha) {
-                if (angular.isDate(qFecha)) {
-                    if (qFecha.getFullYear() >= 2000) {
-                        periodoContableSrvc.validaFecha(moment(qFecha).format('YYYY-MM-DD')).then(function (d) {
+                var fecha = newValue;
+                if (angular.isDate(fecha)) {
+                    if (fecha.getFullYear() >= 2000) {
+                        fecha = moment(fecha).format('YYYY-MM-DD');
+                        periodoContableSrvc.validaFecha(fecha).then(function (d) {
                             var fechaValida = parseInt(d.valida) === 1;
                             if (!fechaValida) {
                                 $scope.periodoCerrado = true;
-                                //$scope.laCompra.fechaingreso = null;
+                                toaster.pop({
+                                    type: 'error', title: 'Fecha de ingreso es inválida.',
+                                    body: 'No está dentro de ningún período contable abierto.', timeout: 7000
+                                });
+                            } else {
+                                $scope.periodoCerrado = false;
+                            }
+                        });
+                    } else {
+                        $scope.periodoCerrado = true;
+                    }
+                }
+            });
+
+            $scope.$watch('laCompra.fechafactura', function (newValue, oldValue) {
+                var fecha = newValue;
+                if (angular.isDate(fecha)) {
+                    if (fecha.getFullYear() >= 2000) {
+                        fecha = moment(fecha).format('YYYY-MM-DD');
+                        periodoContableSrvc.validaFecha(fecha).then(function (d) {
+                            var fechaValida = parseInt(d.valida) === 1;
+                            if (!fechaValida) {
+                                $scope.periodoCerrado = true;
                                 toaster.pop({
                                     type: 'error', title: 'Fecha de ingreso es inválida.',
                                     body: 'No está dentro de ningún período contable abierto.', timeout: 7000
@@ -187,8 +205,9 @@
                             }
                         });
                     }
+                    $scope.periodoCerrado = true;
                 }
-            };
+            });
 
             $scope.chkExisteCompra = function () {
                 //console.log($scope.laCompra); return;
@@ -242,6 +261,7 @@
             }
 
             $scope.calcular = function () {
+                console.log($scope.laCompra.objTipoFactura);
                 let geniva = true;
                 const genidp = esCombustible();
                 //var totFact = $scope.laCompra.totfact != null && $scope.laCompra.totfact != undefined ? parseFloat($scope.laCompra.totfact) : 0;
@@ -305,6 +325,16 @@
                         $scope.laCompra.objMoneda = $filter('getById')($scope.monedas, parseInt(qProv.idmoneda));
                         $scope.laCompra.tipocambio = parseFloat(qProv.tipocambioprov).toFixed($scope.dectc);
                     }
+                }
+                $scope.laCompra.objTipoFactura = {
+                    "id": 1,
+                    "desctipofact": "Electrónica",
+                    "generaiva": "1",
+                    "paracompra": 1,
+                    "paraventa": "1",
+                    "notas": "0",
+                    "siglas": "FCE",
+                    "grupo": "Facturas",
                 }
             };
 
@@ -425,7 +455,7 @@
                             $scope.yaPagada = $scope.tranpago.length > 0;
                         });
 
-                        compraSrvc.getDocLiquida($scope.laCompra.id).then(function(d) {
+                        compraSrvc.getDocLiquida($scope.laCompra.id).then(function (d) {
                             for (var i = 0; i < d.length; i++) {
                                 d[i].factura = d[i].factura;
                                 d[i].monto = parseFloat(d[i].monto);
@@ -710,7 +740,7 @@
                         laCompra: () => $scope.laCompra
                     }
                 });
-                
+
                 modalInstance.result.then(function (obj) {
                     $scope.laCompra.idservicio = obj.idservicio;
                     $scope.laCompra.lecturaini = obj.lecturaini;
@@ -900,7 +930,7 @@
     compractrl.controller('ModalContadoresCtrl', ['$scope', '$uibModalInstance', 'servicios', 'laCompra', function ($scope, $uibModalInstance, servicios, laCompra) {
         $scope.servicios = servicios;
         $scope.compra = laCompra;
-        $scope.obj = { idservicio: undefined, lecturaini: undefined, lecturafin: undefined, precio: undefined }; 
+        $scope.obj = { idservicio: undefined, lecturaini: undefined, lecturafin: undefined, precio: undefined };
 
         $scope.obj.idservicio = $scope.compra.idservicio !== null && $scope.compra.idservicio !== undefined ? $scope.compra.idservicio : undefined;
         $scope.obj.lecturaini = $scope.compra.lecturaini !== null && $scope.compra.lecturaini !== undefined ? $scope.compra.lecturaini : undefined;
