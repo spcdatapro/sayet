@@ -380,7 +380,7 @@ $app->post('/detalle', function () use ($db) {
     } else {
         $query = "SELECT b.idproyecto, SUM(a.bonocatorce) AS bonocatorce, SUM(a.aguinaldo) AS aguinaldo ";
         $query .= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado ";
-        $query .= "WHERE a.fecha >= '$d->anio-$d->mes-15' AND MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio AND b.idproyecto = $d->idproyecto";
+        $query .= "WHERE a.fecha >= '$d->anio-$d->mes-15' AND MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio AND b.idproyecto = $d->idproyecto AND a.idempresa = $d->idempresa ";
         $datosPlanillaEspecial = $db->getQuery($query);
 
         $query = "SELECT b.idproyecto, SUM(a.descigss) AS descigss, SUM(a.descisr) AS descisr, ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * 0.1267), 2) AS cuotapatronal, SUM(a.descanticipo + a.liquido + a.descprestamo) AS liquido, ";
