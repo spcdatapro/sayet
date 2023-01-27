@@ -133,7 +133,7 @@ $app->post('/factspend', function(){
     $cntEmpresas = count($info->pendientes);
     for($i = 0; $i < $cntEmpresas; $i++){
         $empresa = $info->pendientes[$i];
-        $query = "SELECT z.cliente, z.abreviacliente, z.tipo, FORMAT(z.montoconiva, 2) AS montoconiva, z.fechacobro ";
+        $query = "SELECT z.id, z.cliente, z.abreviacliente, z.tipo, FORMAT(z.montoconiva, 2) AS montoconiva, z.fechacobro ";
         $query.= "FROM ($qGen) z ";
         $query.= "WHERE z.idempresa = $empresa->idempresa ";
         $query.= "ORDER BY z.cliente, z.tipo";
