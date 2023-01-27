@@ -101,7 +101,7 @@ $app->post('/factspend', function(){
     $query = "SELECT DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS fal, 0.00 AS totpendiente, DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy ";
     $info->generales = $db->getQuery($query)[0];
 
-    $qGen = "SELECT d.nombre AS cliente, d.nombrecorto AS abreviacliente, e.desctiposervventa AS tipo, (((a.monto - a.descuento) * IF(f.eslocal = 0, $d->tc, 1)) * 1.12) AS montoconiva, DATE_FORMAT(a.fechacobro, '%d/%m/%Y') AS fechacobro, c.idempresa 
+    $qGen = "SELECT a.id, d.nombre AS cliente, d.nombrecorto AS abreviacliente, e.desctiposervventa AS tipo, (((a.monto - a.descuento) * IF(f.eslocal = 0, $d->tc, 1)) * 1.12) AS montoconiva, DATE_FORMAT(a.fechacobro, '%d/%m/%Y') AS fechacobro, c.idempresa 
         FROM cargo a
         INNER JOIN detfactcontrato b ON b.id = a.iddetcont
         INNER JOIN contrato c ON c.id = b.idcontrato
@@ -114,7 +114,7 @@ $app->post('/factspend', function(){
     $qGen.= (int)$d->idtsventa > 0 ? "AND b.idtipoventa = $d->idtsventa " : '';
     $qGen.= "
         UNION ALL
-        SELECT d.nombre AS cliente, d.nombrecorto AS abreviacliente, 'Agua' AS tipo,
+        SELECT a.id, d.nombre AS cliente, d.nombrecorto AS abreviacliente, 'Agua' AS tipo,
         IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, (((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) * b.preciomcubsug) - IFNULL(a.descuento, 0.00), 0.00) AS montoconiva,
         DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechacobro, b.idempresa 
         FROM lecturaservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico INNER JOIN contrato c ON c.id = (SELECT b.id FROM contrato b WHERE FIND_IN_SET(a.idunidad, b.idunidad) LIMIT 1)
