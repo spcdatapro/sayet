@@ -33,7 +33,7 @@ function generaArbol($nivel, $idpadre, $mes, $anio){
         $query.= "LecturaAnterior(x.idserviciobasico, $mes, $anio) AS lecturainicial ";
         $query.= "FROM lecturaservicio x WHERE x.mes = $mes AND x.anio = $anio) d ON a.id = d.idserviciobasico ";
 
-        $query.= "WHERE a.nivel = $nivel AND debaja = 0 ";
+        $query.= "WHERE a.nivel = $nivel ";
         $query.= $nivel > 0 ? "": "AND a.id IN (SELECT z.id FROM serviciobasico z INNER JOIN serviciobasico y ON z.id = y.idpadre GROUP BY z.id HAVING COUNT(y.idpadre) > 0) ";
         $query.= "AND a.idempresa = $rama->idempresa ";
 
