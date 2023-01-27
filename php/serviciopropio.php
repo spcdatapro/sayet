@@ -189,7 +189,6 @@ WHERE a.mes = $d->mes AND a.anio = $d->anio AND a.idserviciobasico IN
     INNER JOIN usuarioproyecto d ON d.idproyecto = c.idproyecto
     WHERE d.idusuario = $d->idusuario
 )
-WHERE a.debaja = 0
 ORDER BY b.nomproyecto, CAST(digits(c.nombre) AS UNSIGNED), c.nombre";
 
     print $db->doSelectASJson($query);

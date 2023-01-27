@@ -470,7 +470,7 @@ $app->post('/rptagua', function(){
     $qEnding.= ") ";
     $qEnding.= "LEFT JOIN cliente d ON d.id = c.idcliente LEFT JOIN detclientefact e ON d.id = e.idcliente LEFT JOIN tiposervicioventa f ON f.id = b.idtiposervicio LEFT JOIN proyecto g ON g.id = a.idproyecto ";
     $qEnding.= "LEFT JOIN unidad h ON h.id = a.idunidad LEFT JOIN empresa i ON i.id = b.idempresa ";
-    $qEnding.= "WHERE a.estatus IN(2, 3) AND b.pagacliente = 0 AND (c.inactivo = 0 OR c.inactivo IS NULL) AND b.cobrar = 1 AND e.fal IS NULL AND a.mes = MONTH('$d->fvencestr') AND a.anio = YEAR('$d->fvencestr') ";
+    $qEnding.= "WHERE a.estatus IN(2, 3) AND b.pagacliente = 0 AND (c.inactivo = 0 OR c.inactivo IS NULL) AND b.cobrar = 1 AND e.fal IS NULL AND a.mes = MONTH('$d->fvencestr') AND a.anio = YEAR('$d->fvencestr') AND b.debaja = 0 ";
     $qEnding.= $d->idempresa != '' ? "AND b.idempresa IN($d->idempresa) " : "";
 	$qEnding.= $d->idproyecto != '' ? "AND a.idproyecto IN ($d->idproyecto) " : "";
 
