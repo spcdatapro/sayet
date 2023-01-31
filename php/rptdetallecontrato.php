@@ -9,10 +9,10 @@ $app->get('/contratotoprint/:idcontrato/:del/:al/:idtiposervicio', function($idc
     $db = new dbcpm();
     $query = "SELECT a.id, a.idcliente, a.nocontrato, a.fechainicia, a.fechavence, ";
     $query.= "a.idempresa, c.nomempresa AS empresa, a.idproyecto, d.nomproyecto AS proyecto, ";
-    $query.= "i.unidades, a.reciboprov, j.descperiodicidad AS periodicidad, IFNULL(a.usufructo, '') AS usufructo ";
+    $query.= "i.unidades, a.reciboprov, j.descperiodicidad AS periodicidad, IFNULL(a.usufructo, '') AS usufructo, i.mcuad ";
     $query.= "FROM contrato a LEFT JOIN moneda b ON b.id = a.idmoneda LEFT JOIN empresa c ON c.id = a.idempresa LEFT JOIN proyecto d ON d.id = a.idproyecto ";
     $query.= "LEFT JOIN tipocliente f ON f.id = a.idtipocliente LEFT JOIN moneda h ON h.id = a.idmonedadep LEFT JOIN (";
-    $query.= "SELECT c.idcontrato, GROUP_CONCAT(DISTINCT c.nombre ORDER BY c.nombre SEPARATOR ', ') AS unidades FROM (SELECT b.id AS idcontrato, a.nombre ";
+    $query.= "SELECT c.idcontrato, GROUP_CONCAT(DISTINCT c.nombre ORDER BY c.nombre SEPARATOR ', ') AS unidades, c.mcuad FROM (SELECT b.id AS idcontrato, a.nombre, a.mcuad ";
     $query.= "FROM unidad a, contrato b WHERE FIND_IN_SET(a.id, b.idunidad)) c GROUP BY c.idcontrato";
     $query.= ") i ON a.id = i.idcontrato LEFT JOIN periodicidad j ON j.id = a.idperiodicidad ";
     $query.= "WHERE a.id = ".$idcontrato;
