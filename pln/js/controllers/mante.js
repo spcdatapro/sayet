@@ -297,7 +297,6 @@ angular.module('cpm')
 	        	$scope.puestos = $scope.puestos.concat(data.resultados);
 
 	    		$scope.ocultarbtn(data.cantidad, data.maximo);
-	    		$scope.$digest();
         	});
         }
 
@@ -355,7 +354,7 @@ angular.module('cpm')
             $scope.formulario = false;
 
             if (datos) {
-                $scope.datosbuscar = {'inicio':0};
+                $scope.datosbuscar = {'inicio':0, 'cerrado': 0};
 
                 if (datos.fecinicio) {
                     $scope.datosbuscar.inicio = $scope.formatoFecha(datos.fecinicio)
@@ -366,17 +365,16 @@ angular.module('cpm')
                 }
 
                 if (datos.cerrado == 1) {
-                    $scope.datosbuscar.cerrado = 1
+                    $scope.datosbuscar.cerrado = 1;
                 }
             } else {
-                $scope.datosbuscar = {'inicio':0};
+                $scope.datosbuscar = {'inicio':0, 'cerrado': 1};
             }
-            
+
             periodoServicios.buscar($scope.datosbuscar).then(function(data){
                 $scope.datosbuscar.inicio = data.cantidad;
                 $scope.periodos  = data.resultados;
                 $scope.resultados = true;
-
                 $scope.ocultarbtn(data.cantidad, data.maximo);
             });
         };
@@ -384,9 +382,7 @@ angular.module('cpm')
         $scope.mas = function() {
             periodoServicios.buscar($scope.datosbuscar).then(function(data){
                 $scope.datosbuscar.inicio += parseInt(data.cantidad);
-
                 $scope.periodos = $scope.periodos.concat(data.resultados);
-
                 $scope.ocultarbtn(data.cantidad, data.maximo);
                 $scope.$digest();
             });
