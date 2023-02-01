@@ -117,14 +117,16 @@ $app->post('/c', function(){
             $db->doQuery("UPDATE tranban SET anticipo = WHERE id = $d->iddocliquida");
         };
 
-        $recibos = count($d->idrecibocli);
-        if ($recibos > 0) {
-            $i = 0;
-            while ($recibos > $i) {
-                $recibo = $d->idrecibocli[$i];
-                $db->doQuery("UPDATE recibocli SET idtranban = $lastid WHERE id = $recibo");
-                $i++;
-            }
+        if ($d->idrecibocli > 0) {
+            $recibos = count($d->idrecibocli);
+            if ($recibos > 0) {
+                $i = 0;
+                while ($recibos > $i) {
+                    $recibo = $d->idrecibocli[$i];
+                    $db->doQuery("UPDATE recibocli SET idtranban = $lastid WHERE id = $recibo");
+                    $i++;
+                }
+            };
         };
     }
     if(in_array($d->tipotrans, $ttsalida)){
