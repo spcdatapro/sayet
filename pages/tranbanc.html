@@ -127,15 +127,9 @@
                                             <small>
                                                 <strong>Proveedor:</strong>&nbsp;<span
                                                     ng-bind-html="item.proveedor | highlight: $select.search"></span><br />
-                                                <strong>Empresa:</strong>&nbsp;<span
-                                                    ng-bind-html="item.empresa | highlight: $select.search"></span><br />
                                                 <strong>Monto OT:</strong>&nbsp;<span
-                                                    ng-bind-html="item.moneda | highlight: $select.search"></span>&nbsp;<span
-                                                    ng-bind-html="item.monto | highlight: $select.search"></span><br />
-                                                <strong>TC:</strong>&nbsp;<span
-                                                    ng-bind-html="item.tipocambio | highlight: $select.search"></span><br />
-                                                <strong>Notas:</strong>&nbsp;<span
-                                                    ng-bind-html="item.notas | highlight: $select.search"></span>
+                                                    ng-bind-html="item.moneda"></span>&nbsp;<span
+                                                    ng-bind-html="item.monto"></span>
                                             </small>
                                         </ui-select-choices>
                                         <ui-select-no-choice>No hay resultados...</ui-select-no-choice>

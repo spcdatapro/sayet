@@ -302,7 +302,6 @@
             // tranBancSrvc.getMontoOt(item.id).then(d => {
             // $scope.montoMax = d.monto;
             // });
-
             if (!$scope.laTran.concepto) {
                 $scope.laTran.concepto = 'Orden de trabajo ' + item.ot + ' [' + item.notas + ']';
             } else {
