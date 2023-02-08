@@ -1046,17 +1046,37 @@ $app->get('/getdetpago/:iddetpago', function ($iddetpago) {
 
 $app->get('/lstpagos/:idempresa', function ($idempresa) {
     $db = new dbcpm();
-    $query = "SELECT a.id, b.id AS idpresupuesto, CONCAT(b.id, '-', a.correlativo) AS ot, c.nombre AS proveedor, 
-    d.nomempresa AS empresa, a.monto, e.simbolo AS moneda, ROUND(a.tipocambio, 2) AS tipocambio, a.notas, b.fechacreacion 
-    FROM detpresupuesto a INNER JOIN presupuesto b ON a.idpresupuesto = b.id INNER JOIN proveedor c ON a.idproveedor = c.id 
-    INNER JOIN empresa d ON b.idempresa = d.id INNER JOIN moneda e ON a.idmoneda = e.id 
-    WHERE a.origenprov = 1 AND a.idestatuspresupuesto = 3 AND b.idempresa = $idempresa
-    UNION 
-    SELECT a.id, b.id AS idpresupuesto, CONCAT(b.id, '-', a.correlativo) AS ot, c.nombre AS proveedor, d.nomempresa AS empresa, 
-    a.monto, e.simbolo AS moneda, ROUND(a.tipocambio, 2) AS tipocambio, a.notas, b.fechacreacion FROM detpresupuesto a 
-    INNER JOIN presupuesto b ON a.idpresupuesto = b.id INNER JOIN beneficiario c ON a.idproveedor = c.id 
-    INNER JOIN empresa d ON b.idempresa = d.id INNER JOIN moneda e ON a.idmoneda = e.id 
-    WHERE a.origenprov = 2 AND a.idestatuspresupuesto = 3 AND b.idempresa = $idempresa ORDER BY 10 ";
+    $query = "SELECT 
+                a.id,
+                b.id AS idpresupuesto,
+                CONCAT(b.id, '-', a.correlativo) AS ot,
+                IFNULL(c.nombre, f.nombre) AS proveedor,
+                IFNULL(c.id, f.id) AS idproveedor,
+                a.origenprov,
+                d.nomempresa AS empresa,
+                a.monto,
+                e.simbolo AS moneda,
+                ROUND(a.tipocambio, 2) AS tipocambio,
+                a.notas,
+                b.fechacreacion
+            FROM
+                detpresupuesto a
+                    INNER JOIN
+                presupuesto b ON a.idpresupuesto = b.id
+                    LEFT JOIN
+                proveedor c ON a.idproveedor = c.id
+                    AND a.origenprov = 1
+                    INNER JOIN
+                empresa d ON b.idempresa = d.id
+                    INNER JOIN
+                moneda e ON a.idmoneda = e.id
+                    LEFT JOIN
+                beneficiario f ON a.idproveedor = c.id
+                    AND a.origenprov = 2
+            WHERE
+                a.idestatuspresupuesto = 3
+                    AND b.idempresa = $idempresa
+            ORDER BY fechacreacion ";
     // print $query;
     print $db->doSelectASJson($query);
 });
