@@ -78,7 +78,8 @@ $app->post('/correlativoger', function(){
                         a.monto,
                         SUBSTRING(a.beneficiario, 1, 25) AS beneficiario,
                         IFNULL(c.conceptomayor, a.concepto) AS concepto,
-                        IFNULL(SUBSTRING(d.nomproyecto, 1, 25), 'N/A') AS proyecto,
+                        IFNULL(GROUP_CONCAT(DISTINCT ' ', d.nomproyecto), 
+                                    'N/A') AS proyecto,
                         NULL AS simbolo
                     FROM
                         tranban a
@@ -92,6 +93,7 @@ $app->post('/correlativoger', function(){
                         a.idbanco = $banco->id AND a.fecha >= '$d->fdelstr'
                             AND a.fecha <= '$d->falstr'
                             AND a.tipotrans IN('C', 'B')
+                    GROUP BY a.id
                     ORDER BY a.fecha, a.numero ";
             $banco->trans = $db->getQuery($query);
             
