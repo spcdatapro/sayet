@@ -1105,7 +1105,7 @@
                 <div class="col-md-12">
                     <div class="form-group">
                         <label for="selUnidad" class="control-label">Servicios:</label>
-                        <ui-select ng-model="obj.idservicio" title="Seleccione un servicio..."
+                        <ui-select ng-model="obj.idservicio" ng-change="setProy($select.selected.idproyecto, $select.selected.idunidad)" title="Seleccione un servicio..."
                             theme="bootstrap" autofocus="false" ng-required="false">
                             <ui-select-match placeholder="Buscar servicio..." allow-clear="true">
                                 <span ng-bind="$select.selected.identificacion"></span>

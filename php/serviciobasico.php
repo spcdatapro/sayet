@@ -162,13 +162,19 @@ $app->get('/getcontadores/:idempresa', function ($idempresa) {
                 b.nombre AS proveedor,
                 c.desctiposervventa AS tipo,
                 a.numidentificacion AS identificacion,
-                a.numreferencia AS referencia
+                a.numreferencia AS referencia,
+                a.idunidad,
+                d.idproyecto
             FROM
                 serviciobasico a
                     INNER JOIN
                 proveedor b ON a.idproveedor = b.id
                     INNER JOIN
                 tiposervicioventa c ON a.idtiposervicio = c.id
+					INNER JOIN
+				unidad d ON a.idunidad = d.id
+					INNER JOIN
+				proyecto e ON d.idproyecto = e.id
             WHERE
                 a.espropio = 0 AND a.idempresa = $idempresa
                     AND pagacliente = 0";

@@ -261,7 +261,7 @@
             }
 
             $scope.calcular = function () {
-                console.log($scope.laCompra.objTipoFactura);
+                // console.log($scope.laCompra.objTipoFactura);
                 let geniva = true;
                 const genidp = esCombustible();
                 //var totFact = $scope.laCompra.totfact != null && $scope.laCompra.totfact != undefined ? parseFloat($scope.laCompra.totfact) : 0;
@@ -564,7 +564,7 @@
             }
 
             $scope.addCompra = (obj) => {
-                console.log(obj);
+                // console.log(obj);
                 obj = setObjCompra(obj);
                 proveedorSrvc.getLstCuentasCont(obj.idproveedor, obj.idempresa).then((lstCtas) => {
                     $scope.ctasGastoProv = lstCtas;
@@ -742,12 +742,16 @@
                 });
 
                 modalInstance.result.then(function (obj) {
+                    // console.log(obj);
                     $scope.laCompra.idservicio = obj.idservicio;
                     $scope.laCompra.lecturaini = obj.lecturaini;
                     $scope.laCompra.lecturafin = obj.lecturafin;
                     $scope.laCompra.preciouni = obj.precio;
                     $scope.laCompra.fini = obj.fini;
                     $scope.laCompra.ffin = obj.ffin;
+                    $scope.laCompra.idproyecto = obj.idproyecto;
+                    $scope.loadUnidadesProyecto($scope.laCompra.idproyecto);
+                    $scope.laCompra.idunidad = obj.idunidad;
                 });
             };
 
@@ -930,7 +934,7 @@
     compractrl.controller('ModalContadoresCtrl', ['$scope', '$uibModalInstance', 'servicios', 'laCompra', function ($scope, $uibModalInstance, servicios, laCompra) {
         $scope.servicios = servicios;
         $scope.compra = laCompra;
-        $scope.obj = { idservicio: undefined, lecturaini: undefined, lecturafin: undefined, precio: undefined };
+        $scope.obj = { idservicio: undefined, lecturaini: undefined, lecturafin: undefined, precio: undefined, idproyecto: undefined, idunidad: undefined };
 
         $scope.obj.idservicio = $scope.compra.idservicio !== null && $scope.compra.idservicio !== undefined ? $scope.compra.idservicio : undefined;
         $scope.obj.lecturaini = $scope.compra.lecturaini !== null && $scope.compra.lecturaini !== undefined ? $scope.compra.lecturaini : undefined;
@@ -938,6 +942,12 @@
         $scope.obj.precio = $scope.compra.preciouni !== null && $scope.compra.preciouni !== undefined ? $scope.compra.preciouni : undefined;
         $scope.obj.ffin = $scope.compra.ffin !== null && $scope.compra.ffin !== undefined ? $scope.compra.ffin : undefined;
         $scope.obj.fini = $scope.compra.fini !== null && $scope.compra.fini !== undefined ? $scope.compra.fini : undefined;
+
+        $scope.setProy = function(idproyecto, idunidad) {
+            $scope.obj.idproyecto = idproyecto;
+            console.log(idunidad);
+            $scope.obj.idunidad = idunidad;
+        }
 
         $scope.cancel = () => $uibModalInstance.dismiss('cancel');
 
