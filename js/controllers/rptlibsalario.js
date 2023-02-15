@@ -23,7 +23,7 @@
                 $scope.params.fdelstr = moment($scope.params.fdel).isValid() ? moment($scope.params.fdel).format('YYYY-MM-DD') : '';
                 $scope.params.falstr = moment($scope.params.fal).isValid() ? moment($scope.params.fal).format('YYYY-MM-DD') : '';
                 $scope.params.idempleado = $scope.params.idempleado != null && $scope.params.idempleado != undefined ? $scope.params.idempleado : 0;
-                var rpttest = 'SytFjFr3j', rpt = 'SytFjFr3j';
+                var rpttest = 'BydmBd9To', rpt = 'BydmBd9To';
 
 
                 jsReportSrvc.getPDFReport(test ? rpttest : rpt, $scope.params).then(function (pdf) { $scope.content = pdf; });
