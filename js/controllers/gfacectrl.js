@@ -90,11 +90,11 @@
                     let abreviatura = $filter('getById')($scope.empresas, $scope.params.idempresa).abreviatura;
                     abreviatura = !!abreviatura ? abreviatura : '';
                     d.forEach(f => {
-                        var idtiporeceptor = `|${f.tipoidreceptor}`;
+                        var idtiporeceptor = `${f.tipoidreceptor}`;
                         if (f.serieadmin == 'BI') {
                             idtiporeceptor = '';
                         }
-                        facturas += `${f.tiporegistro}|${f.fechadocumento}|${f.tipodocumento}|${f.nitcomprador}|${f.codigomoneda}|${f.tasacambio}|${f.ordenexterno}|${f.tipoventa}|${f.destinoventa}|${f.enviarcorreo}|${f.nombrecomprador}|${f.direccion}|${f.nombrecorto}|$ ${f.montodol}|${f.tipocambio}|$ ${f.pagonetodol}|${f.monedafact} ${f.pagoneto}|${f.monedafact} ${f.retiva}|${f.monedafact} ${f.retisr}|${f.monedafact} ${f.monto}|${f.numeroacceso}|${f.serieadmin}|${f.numeroadmin}${idtiporeceptor}\n`;
+                        facturas += `${f.tiporegistro}|${f.fechadocumento}|${f.tipodocumento}|${f.nitcomprador}|${f.codigomoneda}|${f.tasacambio}|${f.ordenexterno}|${f.tipoventa}|${f.destinoventa}|${f.enviarcorreo}|${f.nombrecomprador}|${f.direccion}|${f.nombrecorto}|$ ${f.montodol}|${f.tipocambio}|$ ${f.pagonetodol}|${f.monedafact} ${f.pagoneto}|${f.monedafact} ${f.retiva}|${f.monedafact} ${f.retisr}|${f.monedafact} ${f.monto}|${f.numeroacceso}|${f.serieadmin}|${f.numeroadmin}|${idtiporeceptor}\n`;
                         f.detalle.forEach(d => {
                             facturas += `${d.tiporegistro}|${d.cantidad}|${d.unidadmedida}|${d.precio}|${d.porcentajedescuento}|${d.importedescuento}|${d.importebruto}|${d.importeexento}|${d.importeneto}|${d.importeiva}|${d.importeotros}|${d.importetotal}|${d.producto}|${d.descripcion}|${d.tipoventa}\n`;
                         });
