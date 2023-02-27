@@ -1,0 +1,41 @@
+<div class="container" ng-controller="rptEmpleados">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">Reporte Empleados</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Empresa: </label>
+                            <ui-select ng-model="params.idempresa" title="Seleccione una empresa..." theme="bootstrap"
+                                autofocus="false">
+                                <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
+                                    <span ng-bind="($select.selected.nomempresa)"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="item.id as item in empresas | filter:$select.search"
+                                    group-by="'grupo'">
+                                    <div ng-bind-html="(item.nomempresa) | highlight: $select.search">
+                                    </div>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <div class="form-group">
+                            <label for="chkInactivos">Baja:</label>
+                            <input name="chkInactivos" id="chkInactivos" type="checkbox" class="form-control"
+                                ng-model="params.inactivos" ng-true-value="1" ng-false-value="0" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer text-right">
+                <button type="button" class="btn btn-primary" ng-click="getLibSalarios()">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <rpt-viewer contenido="content"></rpt-viewer>
+</div>
