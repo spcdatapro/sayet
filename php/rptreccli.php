@@ -161,7 +161,7 @@ $app->post('/correlativo', function(){
                 proyecto f ON e.idproyecto = f.id
             WHERE
                 a.fecha >= '$d->fdelstr'
-                    AND a.fecha <= '$d->falstr' ";
+                    AND a.fecha <= '$d->falstr' AND a.tipo = 1 ";
     $query.= $d->idempresa != 0 ? "AND a.idempresa = $d->idempresa " : '';
     $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';               
     $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
@@ -195,7 +195,7 @@ $app->post('/correlativo', function(){
                 WHERE
                     a.fecha >= '$d->fdelstr'
                         AND a.fecha <= '$d->falstr' 
-                        AND a.idempresa = $empresa->idempresa ";
+                        AND a.idempresa = $empresa->idempresa AND a.tipo = 1 ";
         $query.= $d->anulados != 1 ? "AND a.anulado = 0 " : '';               
         $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : '';
         $query.= $d->idcliente != 0 ? "AND a.idcliente = $d->idcliente " : '';
