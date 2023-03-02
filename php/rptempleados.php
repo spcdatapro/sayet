@@ -44,6 +44,7 @@ $app->post('/rptempelados', function(){
                 WHERE
                     a.idempresadebito = $empresa->id ";
         $query.= $d->inactivos == 0 ? "AND a.baja IS NULL " : "";
+        $query.= "ORDER BY a.nombre ASC ";
         $empresa->empleados = $db->getQuery($query);
     }
     print json_encode([ 'empresa' => $empresas ]);
