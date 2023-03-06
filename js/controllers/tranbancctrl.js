@@ -714,7 +714,7 @@
         $scope.updateDetRecCli = function (obj) {
             $confirm({ text: '¿Seguro(a) de actualizar monto aplicado de este documento?', title: 'Modificación', ok: 'Sí', cancel: 'No' }).then(function () {
 
-                tranBancSrvc.editRow({ idtipodoc: obj.idtipodoc, documento: obj.documento, fechadocstr: obj.fechadoc, serie: obj.serie, iddocto: obj.iddocto, id: obj.id, monto: obj.monto }, 'ud').then(function () {
+                tranBancSrvc.editRow({ idtipodoc: obj.idtipodoc, documento: obj.documento, fechadocstr: obj.fechadoc, serie: obj.serie, iddocto: obj.iddocto, id: obj.id, monto: obj.monto, idtranban: $scope.laTran.id }, 'ud').then(function () {
                     getLstDocsSoporte($scope.laTran.id);
                     /*
                     tranBancSrvc.lstDocsSoporte(parseInt($scope.laTran.id)).then(function(det){
@@ -728,7 +728,7 @@
 
         $scope.delDetRecCli = function (obj) {
             $confirm({ text: '¿Seguro(a) de eliminar este documento? (Esto dejará como pendiente el documento)', title: 'Eliminar documento rebajado', ok: 'Sí', cancel: 'No' }).then(function () {
-                tranBancSrvc.editRow({ id: obj.id, iddocto: obj.iddocto }, 'dd').then(function () {
+                tranBancSrvc.editRow({ id: obj.id, iddocto: obj.iddocto, idtranban: $scope.laTran.id }, 'dd').then(function () {
                     getLstDocsSoporte($scope.laTran.id);
                     /*
                     tranBancSrvc.lstDocsSoporte(parseInt($scope.laTran.id)).then(function(det){

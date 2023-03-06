@@ -49,8 +49,8 @@
                             <div class="col-md-3" ng-show="reembolso.estatus == 2">
                                 <div class="form-group">
                                     <label for="txtFFin">Finaliza el:</label>
-                                    <span name="txtFFin" id="txtFFin"
-                                        class="form-control">{{reembolso.ffin | date:'dd/MM/yyyy'}}</span>
+                                    <span name="txtFFin" id="txtFFin" class="form-control">{{reembolso.ffin |
+                                        date:'dd/MM/yyyy'}}</span>
                                 </div>
                             </div>
                             <div class="col-md-3" ng-show="+reembolso.objTipoReembolso.id == 2">
@@ -142,9 +142,33 @@
                                 <div class="form-group required">
                                     <label for="selProyecto"> Proyecto:</label>
                                     <select name="selProyecto" id="selProyecto" class="form-control"
-                                    ng-model="reembolso.idproyecto"
-                                    ng-options="obj.id as obj.nomproyecto for obj in proyectos">
+                                        ng-model="reembolso.idproyecto"
+                                        ng-options="obj.id as obj.nomproyecto for obj in proyectos">
                                     </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Orden de trabajo:</label>
+                                    <ui-select ng-model="reembolso.ordentrabajo" title="Seleccione una orden de trabajo..."
+                                        theme="bootstrap" autofocus="false" on-select="fillData($item, $model)">
+                                        <ui-select-match placeholder="Buscar orden de trabajo..." allow-clear="true">
+                                            <span ng-bind="($select.selected.ot)"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices
+                                            repeat="item.id as item in ots | filter:$select.search">
+                                            <div ng-bind-html="(item.ot) | highlight: $select.search">
+                                            </div>
+                                            <small>
+                                                <strong>Proveedor:</strong>&nbsp;<span
+                                                    ng-bind-html="item.proveedor | highlight: $select.search"></span><br />
+                                                <strong>Monto OT:</strong>&nbsp;<span
+                                                    ng-bind-html="item.moneda"></span>&nbsp;<span
+                                                    ng-bind-html="item.monto"></span>
+                                            </small>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
                                 </div>
                             </div>
                         </div>
@@ -190,7 +214,7 @@
                                 <span class="glyphicon glyphicon-lock"></span>
                             </button>
                             <button type="button" class="btn btn-primary"
-                                ng-disabled="frmReembolso.$invalid || !permiso.m || tranban.length > 0 || periodoCerrado"
+                                ng-disabled="frmReembolso.$invalid || !permiso.m || periodoCerrado || reembolso.pagado == 1"
                                 ng-show="reembolso.id > 0 && reembolso.estatus == 2"
                                 ng-click="genChequeReembolso(reembolso)">
                                 <span class="glyphicon glyphicon-credit-card"></span>
@@ -226,7 +250,20 @@
                     <table class="table table-responsive table-hover table-condensed">
                         <caption>
                             <div class="row">
+                                <div class="col-md-2">
+                                    <label for="srchFechDel">Del:</label>
+                                    <input name="srchFechDel" id="srchFechDel" type="date"
+                                    class="form-control input-sm" ng-model="params.fdel" ng-change="getLstReembolsos()"/>
+                                </div>
+                                <div class="col-md-2">
+                                    <label for="srchFechAl">Al:</label>
+                                    <input name="srchFechAl" id="srchFechAl" type="date"
+                                    class="form-control input-sm" ng-model="params.fal" ng-change="getLstReembolsos()"/>
+                                </div>
                                 <div class="col-md-3 text-center">
+                                    <div>
+                                        <label for="button"> </label>
+                                    </div>
                                     <div class="btn-group" role="group" aria-label="...">
                                         <button type="button" class="btn btn-default btn-sm"
                                             ng-click="params.estatus = 1; getLstReembolsos();">
@@ -243,13 +280,15 @@
                                     </div>
                                 </div>
                                 <div class="col-md-2">
+                                    <label for="Tipo"> </label>
                                     <select name="selTipoRSrch" id="selTipoRSrch" class="form-control input-sm"
                                         ng-model="params.tipo"
                                         ng-options="obj.id as obj.desctiporeembolso for obj in tiposreembolsosrch"
                                         ng-change="getLstReembolsos();">
                                     </select>
                                 </div>
-                                <div class="col-md-7">
+                                <div class="col-md-3">
+                                    <label for="Txt"> </label>
                                     <input name="srchTxt" id="srchTxt" type="text" class="form-control input-sm"
                                         ng-model="lookFor.$" placeholder="Buscar..." />
                                 </div>
@@ -342,7 +381,7 @@
                                     <label for="txtDoc">Documento:</label>
                                     <input name="txtDoc" id="txtDoc" type="number"
                                         class="form-control form-control-sm input-sm" ng-model="compra.documento"
-                                        min="1" ng-change="ingresoDocumento()" required  />
+                                        min="1" ng-change="ingresoDocumento()" required />
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -623,9 +662,11 @@
                         <div class="row">
                             <!--<div class="col-xs-12 nopadding">-->
                             <h3>{{reembolso.beneficiario}}</h3>
-                            <h4>{{reembolso.finicio | date:'dd/MM/yyyy'}}&nbsp;-&nbsp;{{(reembolso.ffin | date:'dd/MM/yyyy') || 'a la fecha'}}
+                            <h4>{{reembolso.finicio | date:'dd/MM/yyyy'}}&nbsp;-&nbsp;{{(reembolso.ffin |
+                                date:'dd/MM/yyyy') || 'a la fecha'}}
                             </h4>
-                            <h4>{{reembolso.tipo}}&nbsp;No.&nbsp;{{reembolso.id | padNumber:5}}&nbsp;por:&nbsp;Q&nbsp;{{reembolso.totreembolso | number:2}}
+                            <h4>{{reembolso.tipo}}&nbsp;No.&nbsp;{{reembolso.id |
+                                padNumber:5}}&nbsp;por:&nbsp;Q&nbsp;{{reembolso.totreembolso | number:2}}
                             </h4>
                             <!--</div>-->
                         </div>
@@ -733,9 +774,23 @@
                     <input name="txtFTrans" id="txtFTrans" class="form-control" ng-model="fechatrans" type="date"/>
                 </div>
             </div>
+            <div class="row"> 
+                <div class="col-md-6">
+                    <label for="selTipoMonto">Monto:</label>
+                    <select name="selTipoMonto" id="selTipoMonto" class="form-control" ng-model="selTipoMonto">
+                        <option value="1">Total</option>
+                        <option value="2">Parcial</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="txtMonto"> </label>
+                    <input type="number" class="form-control" name="txtMonto" id="txtMonto" ng-model="monto" ng-disabled="selTipoMonto == 1 || selTipoMonto == undefined"
+                    placeholder="Ingresar el monto de la transaccci&oacute;n"/>
+                </div>
+            </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" type="button" ng-click="ok()" ng-disabled="selectedBanco == undefined || selectedTipoMov == undefined">
+            <button class="btn btn-primary" type="button" ng-click="ok()" ng-disabled="selectedBanco == undefined || selectedTipoMov == undefined || reqMonto">
                 Aceptar
             </button>
             <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>

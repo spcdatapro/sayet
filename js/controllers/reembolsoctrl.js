@@ -43,11 +43,13 @@
             $scope.subtiposgasto = [];
             $scope.periodoCerrado = false;
             $scope.params = {
-                idemp: undefined, estatus: 1, tipo: undefined
+                idemp: undefined, estatus: 1, tipo: undefined, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(),
+                fdelstr: undefined, falstr:undefined
             };
             $scope.presupuesto = {};
             $scope.ot = {};
             var prov = { id: 0, concepto: null, retensionisr: 0 };
+            $scope.ots = [];
 
             $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap()
                 .withBootstrapOptions({
@@ -85,26 +87,15 @@
                     authSrvc.gpr({ idusuario: parseInt(usrLogged.uid), ruta: $route.current.params.name }).then((d) => {
                         $scope.permiso = d;
                         empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then((d) => {
-                            //$scope.reembolso.objEmpresa = d[0];
                             $scope.reembolso.idempresa = parseInt(d[0].id);
                             $scope.dectc = parseInt(d[0].dectc);
                             if(!$scope.presupuesto.id) {
                                 $scope.resetReembolso();
                                 $scope.resetCompra();
                             }
-                            // await $scope.esDePresupuesto();
                             $scope.getLstReembolsos();
                             $scope.loadProyectos();
-                            /*
-                            proyectoSrvc.lstProyectosPorEmpresa($scope.reembolso.idempresa).then(async function (d) {
-                                $scope.proyectos = d;
-                                $scope.resetReembolso();
-                                $scope.resetCompra();
-                                await $scope.esDePresupuesto();                                
-                                $scope.getLstReembolsos();
-                                $scope.loadProyectos();
-                            });
-                            */
+                            presupuestoSrvc.lstPagosOt($scope.reembolso.idempresa).then(function (d) { $scope.ots = d; });
                             cuentacSrvc.getByTipo($scope.reembolso.idempresa, 0).then(function (d) { $scope.cuentasc = d; });
                         });
                     });
@@ -256,7 +247,7 @@
                     idproyecto: !$scope.presupuesto.idproyecto ? undefined : $scope.presupuesto.idproyecto,
                     idunidad: undefined,
                     idsubtipogasto: $scope.reembolso ? ($scope.reembolso.objTipoReembolso && +$scope.reembolso.objTipoReembolso.id == 1 ? $scope.reembolso.idsubtipogasto : undefined) : undefined,
-                    ordentrabajo: !$scope.presupuesto.id ? 0 : $scope.presupuesto.id
+                    ordentrabajo: undefined
                 };
                 //console.log($scope.compra);
                 if(!!$scope.reembolso.objTipoReembolso && !!$scope.reembolso.objTipoReembolso.id) {
@@ -274,6 +265,8 @@
 
             $scope.getLstReembolsos = function () {
                 // console.log($scope.params);
+                $scope.params.fdelstr = moment($scope.params.fdel).format('YYYY-MM-DD');
+                $scope.params.falstr = moment($scope.params.fal).format('YYYY-MM-DD');
                 reembolsoSrvc.lstReembolsosPost($scope.params).then((d) => $scope.reembolsos = procDataReemb(d));
             };
 
@@ -336,7 +329,7 @@
                 obj.fondoasignado = obj.fondoasignado != null && obj.fondoasignado != undefined && +obj.idtiporeembolso == 2 ? obj.fondoasignado : 0.00;
                 obj.idsubtipogasto = obj.idsubtipogasto != null && obj.idsubtipogasto != undefined && +obj.idtiporeembolso == 1 ? obj.idsubtipogasto : 0;
                 obj.idcuentaliq = !!obj.idcuentaliq ? obj.idcuentaliq : 0;
-                obj.ordentrabajo = !$scope.presupuesto.id ? 0 : $scope.presupuesto.id;
+                obj.ordentrabajo = obj.ordentrabajo != null && obj.ordentrabajo != undefined ? obj.ordentrabajo : 0;
                 reembolsoSrvc.editRow(obj, 'c').then(function (d) {
                     $scope.getLstReembolsos();
                     $scope.getReembolso(parseInt(d.lastid));
@@ -352,7 +345,7 @@
                 obj.fondoasignado = obj.fondoasignado != null && obj.fondoasignado != undefined && +obj.idtiporeembolso == 2 ? obj.fondoasignado : 0.00;
                 obj.idsubtipogasto = obj.idsubtipogasto != null && obj.idsubtipogasto != undefined && +obj.idtiporeembolso == 1 ? obj.idsubtipogasto : 0;
                 obj.idcuentaliq = !!obj.idcuentaliq ? obj.idcuentaliq : 0;
-                obj.ordentrabajo = !$scope.presupuesto.id ? 0 : $scope.presupuesto.id;
+                obj.ordentrabajo = obj.ordentrabajo != null && obj.ordentrabajo != undefined ? obj.ordentrabajo : 0;
                 reembolsoSrvc.editRow(obj, 'u').then(function () {
                     $scope.getLstReembolsos();
                 });
@@ -648,6 +641,7 @@
                 obj.idtipocompra = parseInt(obj.objTipoCompra.id);
                 obj.idtipocombustible = obj.objTipoCombustible != null && obj.objTipoCombustible != undefined ? (obj.objTipoCombustible.id != null && obj.objTipoCombustible.id != undefined ? parseInt(obj.objTipoCombustible.id) : 0) : 0;
                 obj.retenerisr = obj.retenerisr != null && obj.retenerisr != undefined ? obj.retenerisr : 0;
+                obj.ordentrabajo = $scope.reembolso.ordentrabajo;
                 $scope.existeProveedor(obj.nit, obj.proveedor);
                 getCuentaGastoProv(obj, 'cd');
                 /*
@@ -663,6 +657,7 @@
                 obj.fechaingresostr = moment(obj.fechaingreso).format('YYYY-MM-DD');
                 obj.fechafacturastr = moment(obj.fechafactura).format('YYYY-MM-DD');
                 obj.idtipocompra = parseInt(obj.objTipoCompra.id);
+                obj.ordentrabajo = $scope.reembolso.ordentrabajo;
                 obj.idtipocombustible = obj.objTipoCombustible != null && obj.objTipoCombustible != undefined ? (obj.objTipoCombustible.id != null && obj.objTipoCombustible.id != undefined ? parseInt(obj.objTipoCombustible.id) : 0) : 0;
                 obj.retenerisr = obj.retenerisr != null && obj.retenerisr != undefined ? obj.retenerisr : 0;
                 $scope.existeProveedor(obj.nit, obj.proveedor);
@@ -806,6 +801,8 @@
                     obj.tipotrans = seleccionados[1].abreviatura;
                     obj.numero = seleccionados[2].numero;
                     obj.fechatrans = seleccionados[2].fechatrans;
+                    obj.tipoMonto = seleccionados[3].tipo;
+                    obj.monto = seleccionados[3].monto;
                     reembolsoSrvc.editRow(obj, 'gentranban').then(function () {
                         $scope.getLstReembolsos();
                         $scope.getReembolso(obj.id);
@@ -948,12 +945,43 @@
         $scope.fechatrans = moment().toDate();
         $scope.selectedBanco = {};
         $scope.selectedTipoMov = {};
+        $scope.monto = undefined;
+        $scope.selTipoMonto = 1;
+        $scope.reqMonto = false;
 
         $scope.resetParams = function () {
             $scope.selectedTipoMov = {};
             $scope.numerotranban = 0;
             $scope.fechatrans = moment().toDate();
+            $scope.monto = undefined;
+            $scope.selTipoMonto = 1;
         };
+
+        $scope.$watch('selTipoMonto', function (newVal, oldVal) {
+            if (newVal == 1) {
+                actulizarRequerridos(1);
+            } else if (newVal == 2) { 
+                actulizarRequerridos(2);
+            }
+        });
+
+        
+        function actulizarRequerridos(campo) {
+            switch (campo) {
+                case 1:
+                    $scope.reqMonto = false;
+                    break;
+                case 2:
+                    $scope.reqMonto = true;
+                    break;
+            }
+        }
+
+        $scope.$watch('monto', function (newVal, oldVal) {
+            if ($scope.reqMonto && newVal != undefined) {
+                $scope.reqMonto = false;
+            }
+        });
 
         $scope.getNumCheque = function (tipoTran) {
             if ($scope.selectedBanco.id != null && $scope.selectedBanco.id != undefined) {
@@ -991,6 +1019,7 @@
             $scope.seleccionados.push($scope.selectedBanco);
             $scope.seleccionados.push($scope.selectedTipoMov);
             $scope.seleccionados.push({ numero: parseInt($scope.numerotranban), fechatrans: moment($scope.fechatrans).format('YYYY-MM-DD') });
+            $scope.seleccionados.push({ tipo: $scope.selTipoMonto, monto: $scope.monto });
 
             if ($scope.selectedTipoMov.abreviatura == 'B') {
                 if (parseInt($scope.numerotranban) > 0) {

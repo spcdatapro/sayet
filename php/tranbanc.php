@@ -440,22 +440,24 @@ $app->get('/reem/:idbene', function($idbene){
     $query = "SELECT 
                 a.id,
                 CONCAT(b.desctiporeembolso,
-                        ' No.',
+                        ' - No. ',
                         LPAD(a.id, 5, '0'),
                         ' - ',
                         DATE_FORMAT(a.finicio, '%d/%m/%Y'),
                         ' - ',
                         c.nombre,
-                        ' - Total: Q.',
-                        IFNULL(FORMAT(d.totreembolso, 2), 0.00),
-                        ' - Pendiente: ',
-                        FORMAT(IFNULL(d.totreembolso, 0.00) - IFNULL(e.pagado, 0.00),
-                            2)) AS cadena,
+                        ' - Q ',
+                        IF(ISNULL(d.totreembolso),
+                            0.00,
+                            d.totreembolso), ' SALDO - Q ',
+                IFNULL(d.totreembolso, 0.00) - IFNULL(e.totpagado, 0.00)) AS cadena,
                 a.finicio AS fechafactura,
                 'REE' AS serie,
                 a.id AS documento,
-                IFNULL(d.totreembolso, 0.00) AS totfact,
-                IFNULL(d.totreembolso, 0.00) - IFNULL(e.pagado, 0.00) AS saldo
+                IF(ISNULL(d.totreembolso),
+                    0.00,
+                    d.totreembolso) AS totfact,
+                IFNULL(d.totreembolso, 0.00) - IFNULL(e.totpagado, 0.00) AS saldo
             FROM
                 reembolso a
                     INNER JOIN
@@ -472,26 +474,15 @@ $app->get('/reem/:idbene', function($idbene){
                 GROUP BY idreembolso) d ON a.id = d.idreembolso
                     LEFT JOIN
                 (SELECT 
-                    iddocto, SUM(monto) AS pagado
+                    idreembolso, SUM(monto) AS totpagado
                 FROM
-                    doctotranban
-                WHERE
-                    idtipodoc = 2
-                GROUP BY iddocto) e ON e.iddocto = a.id
+                    dettranreem
+                GROUP BY idreembolso) e ON a.id = e.idreembolso
             WHERE
-                a.idbeneficiario = $idbene
-                    AND IFNULL(d.totreembolso, 0.00) - IFNULL(e.pagado, 0.00) > 0
-            ORDER BY a.id ";
+                (a.idtranban = 0 AND pagado = 0)
+                    AND a.idbeneficiario = $idbene
+            ORDER BY a.id";
     print $db->doSelectASJson($query);
-    
-    // $query = "SELECT a.id, ";
-    // $query.= "CONCAT(b.desctiporeembolso,' - No. ',LPAD(a.id, 5, '0'), ' - ', DATE_FORMAT(a.finicio, '%d/%m/%Y'),  ' - ', c.nombre, ' - Q ', ";
-    // $query.= "IF(ISNULL(d.totreembolso), 0.00, d.totreembolso)) AS cadena, a.finicio AS fechafactura, 'REE' AS serie, a.id AS documento, ";
-    // $query.= "IF(ISNULL(d.totreembolso), 0.00, d.totreembolso) AS totfact, IF(ISNULL(d.totreembolso), 0.00, d.totreembolso) AS saldo ";
-    // $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso INNER JOIN beneficiario c ON c.id = a.idbeneficiario LEFT JOIN (";
-    // $query.= "SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) d ON a.id = d.idreembolso ";
-    // $query.= "WHERE a.idtranban = 0 AND a.idbeneficiario = ".$idbene." ";
-    // $query.= "ORDER BY a.id";
 });
 
 //API Documentos de soporte
@@ -526,31 +517,13 @@ $app->get('/getsumdocssop/:idtranban', function($idtranban){
 
 function cierreReembolso($db, $d){
     $estatus = (int)$db->getOneField("SELECT estatus FROM reembolso WHERE id = ".$d->iddocto);
+    $total = (int) $db->getOneField("SELECT SUM(totfact) FROM compra WHERE idreembolso = $d->iddocto");
     if($estatus == 2){
-        $query = "UPDATE reembolso SET idtranban = ".$d->idtranban." WHERE id = ".$d->iddocto;
+        $query = "INSERT INTO dettranreem (idtranban, idreembolso, monto) VALUES ($d->idtranban, $d->iddocto, $d->monto)";
         $db->doQuery($query);
     }else{
         $query = "UPDATE reembolso SET estatus = 2, idtranban = ".$d->idtranban.", ffin = NOW() WHERE id = ".$d->iddocto;
         $db->doQuery($query);
-        //Generación del detalle contable del reembolso Origen = 5
-        /*
-        $query = "INSERT INTO detallecontable (origen, idorigen, idcuenta, debe, haber, conceptomayor) ";
-        $query.= "SELECT 5 AS origen, a.idreembolso AS idorigen, b.idcuenta, SUM(b.debe) AS debe, 0.00 AS haber, GROUP_CONCAT(b.conceptomayor SEPARATOR ', ') AS conceptomayor ";
-        $query.= "FROM compra a INNER JOIN detallecontable b ON a.id = b.idorigen AND b.origen = 2 INNER JOIN cuentac d ON d.id = b.idcuenta ";
-        $query.= "WHERE a.idreembolso = ".$d->iddocto." ";
-        $query.= "GROUP BY b.idcuenta ";
-        $query.= "ORDER BY d.precedencia DESC, d.nombrecta";
-        $db->doQuery($query);
-        $ctaporliquidar = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 5");
-        if($ctaporliquidar > 0){
-            $query = "SELECT SUM(b.debe) AS debe FROM compra a INNER JOIN detallecontable b ON a.id = b.idorigen AND b.origen = 2 WHERE a.idreembolso = ".$d->iddocto;
-            $haber = (float)$db->getOneField($query);
-            $query = "INSERT INTO detallecontable (origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
-            $query.= "5, ".$d->iddocto.", ".$ctaporliquidar.", 0.00, ".$haber.", 'Reembolso No. ".$d->iddocto."'";
-            $query.= ")";
-            $db->doQuery($query);
-        }
-        */
         $query = "INSERT INTO detallecontable (origen, idorigen, idcuenta, debe, haber, conceptomayor) ";
         $query.= "SELECT 5 AS origen, a.idreembolso AS idorigen, b.idcuenta, b.debe, b.haber, b.conceptomayor ";
         $query.= "FROM compra a INNER JOIN detallecontable b ON a.id = b.idorigen AND b.origen = 2 INNER JOIN cuentac d ON d.id = b.idcuenta WHERE a.idreembolso = ".$d->iddocto." ";
@@ -569,6 +542,18 @@ function cierreReembolso($db, $d){
         }
 
     }
+
+    if($total - getTotPagado($d->iddocto, $db) <= 0.00) {
+        $query = "UPDATE reembolso SET pagado = 1 WHERE id = $d->iddocto";
+        $db->doQuery($query);
+    }
+
+}
+
+function getTotPagado ($idreembolso, $db) {
+    $query = "SELECT IFNULL(SUM(monto), 0.00) AS monto FROM dettranreem WHERE idreembolso = $idreembolso";
+    $pagado = (float)$db->getOneField($query);
+    return $pagado;
 }
 
 function setFacturaPagada($db, $d){
@@ -657,8 +642,9 @@ $app->post('/cd', function(){
 $app->post('/ud', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    $db->doQuery("UPDATE dettranreem SET monto = $d->monto WHERE idtranban = $d->idtranban");
     $db->doQuery("UPDATE doctotranban SET monto = $d->monto WHERE id = ".$d->id);
-    $db->doQuery("UPDATE detpagocompra SET monto = $d->monto WHERE idcompra = $d->iddocto");
+    $db->doQuery("UPDATE dettranreem SET monto = $d->monto WHERE id = ".$d->id);
 
     $query = "SELECT (a.totfact - IF(ISNULL(c.montopagado), 0.00, c.montopagado)) AS saldo FROM compra a ";
     $query.= "LEFT JOIN (SELECT idcompra, SUM(monto) AS montopagado FROM detpagocompra GROUP BY idcompra) c ON a.id = c.idcompra ";
@@ -676,6 +662,7 @@ $app->post('/ud', function(){
 $app->post('/dd', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    $db->doQuery("DELETE FROM dettranreem WHERE idtranban = $d->idtranban");
     $db->doQuery("DELETE FROM doctotranban WHERE id = ".$d->id);
     $db->doQuery("DELETE FROM detpagocompra WHERE idcompra = ".$d->iddocto);
 

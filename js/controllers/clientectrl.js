@@ -411,47 +411,6 @@
             })
         };
 
-        $scope.$watch('detfact.nit', function (newVal, oldVal) {
-            if (newVal == 'CF') {
-                actulizarRequerridos(4);
-            } else if (newVal !== undefined && newVal !== '') { 
-                actulizarRequerridos(1);
-            }
-        });
-        $scope.$watch('detfact.cui', function (newVal, oldVal) {
-            if (newVal !== '' && newVal !== undefined) {
-                actulizarRequerridos(2);
-            }
-        });
-        $scope.$watch('detfact.pasaporte', function (newVal, oldVal) {
-            if (newVal !== '' && newVal !== undefined) {
-                actulizarRequerridos(3);
-            }
-        });
-
-        function actulizarRequerridos(campo) {
-            console.log(campo);
-            switch (campo) {
-                case 1:
-                    $scope.req.cui = false;
-                    $scope.req.pasaporte = false;
-                    break;
-                case 2:
-                    $scope.req.cui = true;
-                    $scope.req.pasaporte = false;
-                    break;
-                case 3:
-                    $scope.req.cui = false;
-                    $scope.req.pasaporte = true;
-                    break;
-                case 4: 
-                    $scope.req.cui = true;
-                    $scope.req.pasaporte = true;
-                    break;
-            }
-            campo = 0;
-        }
-
         $scope.addDetFact = function (obj) {
             obj.idcliente = $scope.cliente.id;
             obj.fdelstr = obj.fdel != null && obj.fdel != undefined ? moment(obj.fdel).format('YYYY-MM-DD') : '';

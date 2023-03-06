@@ -32,7 +32,7 @@ $app->post('/lstreembolsos', function(){
     $query.= "a.idproyecto ";
     $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso ";
     $query.= "LEFT JOIN (SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) c ON a.id = c.idreembolso ";
-    $query.= "WHERE a.idempresa = $d->idemp ";
+    $query.= "WHERE a.idempresa = $d->idemp AND a.finicio >= '$d->fdel' AND a.finicio <= '$d->fal' ";
     $query.= (int)$d->estatus > 0 ? "AND a.estatus = $d->estatus " : '';
     $query.= (int)$d->tipo > 0 ? "AND a.idtiporeembolso = $d->tipo " : '';
     $query.= (int)$d->idot > 0 ? "AND a.ordentrabajo = $d->idot " : '';
@@ -46,7 +46,7 @@ $app->get('/getreembolso/:idreembolso(/:idot)', function($idreembolso, $idot = 0
     $idot = (int)$idot;
     $query = "SELECT a.id, a.idempresa, a.idtiporeembolso, b.desctiporeembolso AS tipo, a.finicio, a.ffin, a.beneficiario, ";
     $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto, a.idcuentaliq, a.ordentrabajo, ";
-    $query.= "a.idproyecto ";
+    $query.= "a.idproyecto, a.pagado ";
     $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso ";
     $query.= "LEFT JOIN (SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) c ON a.id = c.idreembolso ";
     $query.= "WHERE ";
@@ -289,12 +289,12 @@ $app->post('/cd', function(){
     $query.= "idempresa, idreembolso, idtipofactura, idproveedor, proveedor, ";
     $query.= "nit, serie, documento, fechaingreso, mesiva, ";
     $query.= "fechafactura, idtipocompra, totfact, noafecto, subtotal, iva, ";
-    $query.= "idmoneda, tipocambio, conceptomayor, retenerisr, isr, idp, galones, idtipocombustible, idproyecto, idsubtipogasto, idunidad";
+    $query.= "idmoneda, tipocambio, conceptomayor, retenerisr, isr, idp, galones, idtipocombustible, idproyecto, idsubtipogasto, idunidad, ordentrabajo";
     $query.= ") VALUES(";
     $query.= $d->idempresa.", ".$d->idreembolso.", ".$d->idtipofactura.", ".$d->idproveedor.", '".$d->proveedor."', ";
     $query.= "'".$d->nit."', '".$d->serie."', ".$d->documento.", '".$d->fechaingresostr."', ".$d->mesiva.", ";
     $query.= "'".$d->fechafacturastr."', ".$d->idtipocompra.", ".$d->totfact.", ".$d->noafecto.", ".$d->subtotal.", ".$d->iva.", ";
-    $query.= $d->idmoneda.", ".$d->tipocambio.", '".$d->conceptomayor."', ".$d->retenerisr.", ".$d->isr.", $d->idp, $d->galones, $d->idtipocombustible, $d->idproyecto, $d->idsubtipogasto, $d->idunidad";
+    $query.= $d->idmoneda.", ".$d->tipocambio.", '".$d->conceptomayor."', ".$d->retenerisr.", ".$d->isr.", $d->idp, $d->galones, $d->idtipocombustible, $d->idproyecto, $d->idsubtipogasto, $d->idunidad, $d->ordentrabajo";
     $query.= ")";
     $db->doQuery($query);
     $lastid = $db->getLastId();
@@ -316,6 +316,7 @@ $app->post('/ud', function(){
     $query.= "totfact = ".$d->totfact.", subtotal = ".$d->subtotal.", noafecto = ".$d->noafecto.", iva = ".$d->iva.", ";
     $query.= "idmoneda = ".$d->idmoneda.", tipocambio = ".$d->tipocambio.", conceptomayor = '".$d->conceptomayor."', idp = $d->idp, galones = $d->galones, ";
     $query.= "idtipocombustible = $d->idtipocombustible, idproyecto = $d->idproyecto, retenerisr = $d->retenerisr, isr = $d->isr, idsubtipogasto = $d->idsubtipogasto, idunidad = $d->idunidad ";
+    $query.= "ordentrabajo = $d->ordentrabajo ";
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
 
@@ -371,20 +372,19 @@ $app->post('/gentranban', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    /*
-    $query = "SELECT SUM(b.debe) AS debe FROM compra a INNER JOIN detallecontable b ON a.id = b.idorigen AND b.origen = 2 WHERE a.idreembolso = ".$d->id;
-    $haber = (float)$db->getOneField($query);
-    $query = "SELECT SUM(b.haber) AS haber FROM compra a INNER JOIN detallecontable b ON a.id = b.idorigen AND b.origen = 2 WHERE a.idreembolso = ".$d->id;
-    $restar = (float)$db->getOneField($query);
-    $haber = round(($haber - $restar), 2);
-    */
     $query = "SELECT SUM(totfact) FROM compra WHERE idreembolso = $d->id";
-    $haber = (float)$db->getOneField($query);
+    $total = (float)$db->getOneField($query);
+
+    if ($d->tipoMonto == 1) {
+        $haber = $total - getTotPagado($d->id, $db);
+    } else {
+        $haber = $d->monto;
+    }
     //Generación del cheque/nota de débito para pagar el reembolso
     $getCorrela = $d->numero;
-    $query = "INSERT INTO tranban(idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, origenbene, idbeneficiario, idreembolso) ";
+    $query = "INSERT INTO tranban(idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, origenbene, idbeneficiario, idreembolso, iddetpresup) ";
     $query.= "VALUES(".$d->objBanco->id.", '".$d->tipotrans."', '".$d->fechatrans."', ".$haber.", '".$d->beneficiario."', ";
-    $query.= "'Pago de reembolso No. ".$d->id."', ".$getCorrela.", 2, $d->idbeneficiario, ".$d->id.")";
+    $query.= "'Pago de reembolso No. ".$d->id."', ".$getCorrela.", 2, $d->idbeneficiario, ".$d->id.", $d->ordentrabajo)";
     $db->doQuery($query);
     $lastid = $db->getLastId();
     if($d->tipotrans == 'C') { $db->doQuery("UPDATE banco SET correlativo = correlativo + 1 WHERE id = " . $d->objBanco->id); }
@@ -411,9 +411,21 @@ $app->post('/gentranban', function(){
         $db->doQuery($query);
     }
 
-    $query = "UPDATE reembolso SET idtranban = ".$lastid." WHERE estatus = 2 AND id = ".$d->id;
+    $query = "INSERT INTO dettranreem(idtranban, idreembolso, monto) VALUES($lastid, $d->id, $haber)";
     $db->doQuery($query);
+
+    if ($total - getTotPagado($d->id, $db) <= 0.00) {
+        $query = "UPDATE reembolso SET pagado = 1 WHERE id = $d->id";
+        $db->doQuery($query);
+    }
+
 });
+
+function getTotPagado ($idreembolso, $db) {
+    $query = "SELECT IFNULL(SUM(monto), 0.00) AS monto FROM dettranreem WHERE idreembolso = $idreembolso";
+    $pagado = (float)$db->getOneField($query);
+    return $pagado;
+}
 
 $app->get('/tranban/:idreembolso', function($idreembolso){
     $db = new dbcpm();
@@ -425,7 +437,7 @@ $app->get('/tranban/:idreembolso', function($idreembolso){
                 a.monto,
                 1 AS origen
             FROM
-                doctotranban a
+                dettranreem a
                     INNER JOIN
                 tranban b ON a.idtranban = b.id
                     INNER JOIN
@@ -435,18 +447,8 @@ $app->get('/tranban/:idreembolso', function($idreembolso){
                     INNER JOIN
                 moneda e ON c.idmoneda = e.id
             WHERE
-                a.iddocto = $idreembolso AND a.idtipodoc = 2 ";
+                a.idreembolso = $idreembolso";
     print $db->doSelectASJson($query);
-
-    // $query = "SELECT a.idtranban, CONCAT('(', d.abreviatura, ') ', d.descripcion) AS tipodoc, b.numero, CONCAT(c.nombre, ' (', e.simbolo, ')') AS banco, b.monto, 1 AS origen ";
-    // $query.= "FROM reembolso a INNER JOIN tranban b ON b.id = a.idtranban INNER JOIN banco c ON c.id = b.idbanco INNER JOIN tipomovtranban d ON d.abreviatura = b.tipotrans ";
-    // $query.= "INNER JOIN moneda e ON e.id = c.idmoneda ";
-    // $query.= "WHERE a.id = ".$idreembolso." AND esrecprov = 0 ";
-    // $query.= "UNION ALL ";
-    // $query.= "SELECT a.idtranban, 'Recibo' AS tipodoc, LPAD(b.id, 5, '0') AS numero, '' AS banco, c.arebajar AS monto, 7 AS origen ";
-    // $query.= "FROM reembolso a INNER JOIN reciboprov b ON b.id = a.idtranban INNER JOIN detrecprov c ON b.id = c.idrecprov ";
-    // $query.= "WHERE a.id = $idreembolso AND esrecprov = 1 AND c.origen = 5 AND c.idorigen = $idreembolso ";
-    // $query.= "ORDER BY 2, 3";
 });
 
 //API reportes
