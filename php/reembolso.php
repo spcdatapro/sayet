@@ -315,7 +315,7 @@ $app->post('/ud', function(){
     $query.= "fechafactura = '".$d->fechafacturastr."', idtipocompra = ".$d->idtipocompra.", ";
     $query.= "totfact = ".$d->totfact.", subtotal = ".$d->subtotal.", noafecto = ".$d->noafecto.", iva = ".$d->iva.", ";
     $query.= "idmoneda = ".$d->idmoneda.", tipocambio = ".$d->tipocambio.", conceptomayor = '".$d->conceptomayor."', idp = $d->idp, galones = $d->galones, ";
-    $query.= "idtipocombustible = $d->idtipocombustible, idproyecto = $d->idproyecto, retenerisr = $d->retenerisr, isr = $d->isr, idsubtipogasto = $d->idsubtipogasto, idunidad = $d->idunidad ";
+    $query.= "idtipocombustible = $d->idtipocombustible, idproyecto = $d->idproyecto, retenerisr = $d->retenerisr, isr = $d->isr, idsubtipogasto = $d->idsubtipogasto, idunidad = $d->idunidad, ";
     $query.= "ordentrabajo = $d->ordentrabajo ";
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
