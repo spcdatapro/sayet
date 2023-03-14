@@ -464,10 +464,10 @@ $app->post('/avanceot', function(){
                                     IFNULL(SUM(d.monto), SUM(c.totfact))
                                 FROM
                                     reembolso a
-                                        INNER JOIN 
-									dettranreem d 
-                                        INNER JOIN
-                                    compra c ON a.id = c.id AND c.idreembolso > 0
+                                        LEFT JOIN 
+									dettranreem d ON d.idreembolso = a.id
+                                        LEFT JOIN
+                                    compra c ON a.id = c.idreembolso AND c.idreembolso > 0
                                 -- FROM
                                 --     tranban a
                                 --         INNER JOIN
