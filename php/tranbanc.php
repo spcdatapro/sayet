@@ -114,7 +114,10 @@ $app->post('/c', function(){
             $db->doQuery("UPDATE tranban SET liquidado = 1 where id = $d->iddocliquida"); 
             $db->doQuery("DELETE FROM detpagocompra WHERE idtranban = $d->iddocliquida");
             $db->doQuery("UPDATE tranban SET idfact = NULL where id = $d->iddocliquida");
-            $db->doQuery("UPDATE tranban SET anticipo = WHERE id = $d->iddocliquida");
+            // $db->doQuery("UPDATE tranban SET anticipo = WHERE id = $d->iddocliquida");
+            $idreembolso = (int)$db->getOneField("SELECT a.id FROM reembolso a INNER JOIN dettranreem b ON b.idreembolso = a.id WHERE b.idtranban = $d->iddocliquida");
+            $db->doQuery("DELETE FROM dettranreem WHERE idtranban = $d->iddocliquida");
+            $db->doQuery("UPDATE reembolso SET pagado = 0 WHERE id = $idreembolso");
         };
 
         if ($d->idrecibocli > 0) {
