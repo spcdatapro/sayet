@@ -376,12 +376,7 @@ $app->post('/avanceot', function(){
                     FORMAT(c.monto, 2) AS montocheq,
                     b.numero,
                     'Q' AS monedafact,
-                    (SELECT 
-                            FORMAT(SUM(h.totfact), 2)
-                        FROM
-                            compra h
-                        WHERE
-                            h.idreembolso = d.id) AS montofac,
+                    IFNULL(c.monto, (SELECT SUM(totfact + isr) FROM compra WHERE idreembolso = d.id)) AS montofac,
                     0.00 AS isr,
                     CONCAT('REE-', LPAD(d.id, '5', '0')) AS fact,
                     1.00 AS tipocambio,
@@ -400,16 +395,16 @@ $app->post('/avanceot', function(){
                 FROM
                     detpresupuesto a
                         INNER JOIN
-                    tranban b ON b.iddetpresup = a.id
-                        INNER JOIN
-                    doctotranban c ON c.idtranban = b.id AND c.idtipodoc = 2
-                        JOIN
-                    reembolso d ON c.iddocto = d.id
-                        INNER JOIN
+                    reembolso d ON d.ordentrabajo = a.id
+                        LEFT JOIN
+                    dettranreem c ON c.idreembolso = d.id
+                        LEFT JOIN
+                    tranban b ON c.idtranban = b.id
+                        LEFT JOIN
                     banco e ON b.idbanco = e.id
-                        INNER JOIN
+                        LEFT JOIN
                     moneda f ON e.idmoneda = f.id
-                        INNER JOIN
+                        LEFT JOIN
                     beneficiario g ON d.idbeneficiario = g.id
             WHERE
                 a.id = $d->idot
@@ -461,7 +456,7 @@ $app->post('/avanceot', function(){
                                         AND a.ordentrabajo = b.id
                                         AND a.idreembolso = 0),
                             0.00) + IFNULL((SELECT 
-                                    IFNULL(SUM(d.monto), SUM(c.totfact))
+                                    IFNULL(SUM(d.monto), SUM(c.totfact + c.isr))
                                 FROM
                                     reembolso a
                                         LEFT JOIN 
@@ -482,7 +477,8 @@ $app->post('/avanceot', function(){
                                         compra a
                                     WHERE
                                         a.idmoneda != b.idmoneda
-                                            AND a.ordentrabajo = b.id),
+                                            AND a.ordentrabajo = b.id
+                                            AND a.idreembolso = 0),
                                 0.00),
                         IFNULL((SELECT 
                                         SUM(a.totfact) / a.tipocambio
@@ -490,27 +486,8 @@ $app->post('/avanceot', function(){
                                         compra a
                                     WHERE
                                         a.idmoneda != b.idmoneda
-                                            AND a.ordentrabajo = b.id),
-                                0.00)) + IF(i.eslocal = 1,
-                        IFNULL((SELECT 
-                                        SUM(c.totfact) * a.tipocambio
-                                    FROM
-                                        tranban a
-                                            INNER JOIN
-                                        compra c ON a.idreembolso = c.idreembolso
-                                    WHERE
-                                        c.idmoneda != b.idmoneda
-                                            AND a.iddetpresup = b.id),
-                                0.00),
-                        IFNULL((SELECT 
-                                        SUM(c.totfact) / a.tipocambio
-                                    FROM
-                                        tranban a
-                                            INNER JOIN
-                                        compra c ON a.idreembolso = c.idreembolso
-                                    WHERE
-                                        c.idmoneda != b.idmoneda
-                                            AND a.iddetpresup = b.id),
+                                            AND a.ordentrabajo = b.id
+                                            AND a.idreembolso = 0),
                                 0.00)),
                     2) AS totfact,
                 FORMAT(IFNULL((SELECT 
