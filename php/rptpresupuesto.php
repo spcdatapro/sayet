@@ -376,8 +376,8 @@ $app->post('/avanceot', function(){
                     FORMAT(c.monto, 2) AS montocheq,
                     b.numero,
                     'Q' AS monedafact,
-                    IFNULL(c.monto, (SELECT SUM(totfact + isr) FROM compra WHERE idreembolso = d.id)) AS montofac,
-                    0.00 AS isr,
+                    IFNULL(c.monto, (SELECT SUM(totfact) FROM compra WHERE idreembolso = d.id)) AS montofac,
+                    (SELECT SUM(isr) FROM compra WHERE idreembolso = d.id) AS isr,
                     CONCAT('REE-', LPAD(d.id, '5', '0')) AS fact,
                     1.00 AS tipocambio,
                     '' concepto,
@@ -456,7 +456,7 @@ $app->post('/avanceot', function(){
                                         AND a.ordentrabajo = b.id
                                         AND a.idreembolso = 0),
                             0.00) + IFNULL((SELECT 
-                                    IFNULL(SUM(d.monto), SUM(c.totfact + c.isr))
+                                    IFNULL(SUM(d.monto), SUM(c.totfact))
                                 FROM
                                     reembolso a
                                         LEFT JOIN 
@@ -583,16 +583,17 @@ $app->post('/avanceot', function(){
                                     compra a
                                 WHERE
                                     a.idmoneda = b.idmoneda
-                                        AND a.ordentrabajo = b.id),
+                                        AND a.ordentrabajo = b.id
+                                        AND a.idreembolso = 0),
                             0.00) + IFNULL((SELECT 
                                     SUM(c.isr)
                                 FROM
-                                    tranban a
+                                    reembolso a
                                         INNER JOIN
-                                    compra c ON a.idreembolso = c.idreembolso
+                                    compra c ON a.id = c.idreembolso
                                 WHERE
                                     c.idmoneda = b.idmoneda
-                                        AND a.iddetpresup = b.id),
+                                        AND a.ordentrabajo = b.id),
                             0.00) + IF(i.eslocal = 1,
                         IFNULL((SELECT 
                                         SUM(a.isr) * a.tipocambio
@@ -600,7 +601,8 @@ $app->post('/avanceot', function(){
                                         compra a
                                     WHERE
                                         a.idmoneda != b.idmoneda
-                                            AND a.ordentrabajo = b.id),
+                                            AND a.ordentrabajo = b.id
+                                            AND a.idreembolso = 0),
                                 0.00),
                         IFNULL((SELECT 
                                         SUM(a.isr) / a.tipocambio
@@ -608,7 +610,8 @@ $app->post('/avanceot', function(){
                                         compra a
                                     WHERE
                                         a.idmoneda != b.idmoneda
-                                            AND a.ordentrabajo = b.id),
+                                            AND a.ordentrabajo = b.id
+                                            AND a.idreembolso = 0),
                                 0.00)) + IF(i.eslocal = 1,
                         IFNULL((SELECT 
                                         SUM(c.isr) * a.tipocambio
@@ -722,16 +725,17 @@ $app->post('/avanceot', function(){
                                     compra a
                                 WHERE
                                     a.idmoneda = b.idmoneda
-                                        AND a.ordentrabajo = b.id),
+                                        AND a.ordentrabajo = b.id
+                                        AND a.idreembolso = 0),
                             0.00) + IFNULL((SELECT 
                                     SUM(c.isr)
                                 FROM
-                                    tranban a
+                                    reembolso a
                                         INNER JOIN
-                                    compra c ON a.idreembolso = c.idreembolso
+                                    compra c ON a.id = c.idreembolso
                                 WHERE
                                     c.idmoneda = b.idmoneda
-                                        AND a.iddetpresup = b.id),
+                                        AND a.ordentrabajo = b.id),
                             0.00) + IF(i.eslocal = 1,
                         IFNULL((SELECT 
                                         SUM(a.isr) * a.tipocambio
@@ -739,7 +743,8 @@ $app->post('/avanceot', function(){
                                         compra a
                                     WHERE
                                         a.idmoneda != b.idmoneda
-                                            AND a.ordentrabajo = b.id),
+                                            AND a.ordentrabajo = b.id
+                                            AND a.idreembolso = 0),
                                 0.00),
                         IFNULL((SELECT 
                                         SUM(a.isr) / a.tipocambio
@@ -747,7 +752,8 @@ $app->post('/avanceot', function(){
                                         compra a
                                     WHERE
                                         a.idmoneda != b.idmoneda
-                                            AND a.ordentrabajo = b.id),
+                                            AND a.ordentrabajo = b.id
+                                            AND a.idreembolso = 0),
                                 0.00)) + IF(i.eslocal = 1,
                         IFNULL((SELECT 
                                         SUM(c.isr) * a.tipocambio
