@@ -429,7 +429,7 @@ $app->post('/antiguedad', function(){
                 $query = "SELECT SUM(j.saldo) FROM ($qFacts) j WHERE j.idempresa = $antiguedad->idempresa $andProyecto $andCliente";
                 $cliente->saldo = (float)$db->getOneField($query);
                 $tieneSaldo = $cliente->saldo != 0;
-                if($tieneSaldo){
+                // if($tieneSaldo){
                     if($cliente->saldo >= 0){
                         $cliente->saldo = number_format($cliente->saldo, 2);
                     } else {
@@ -464,9 +464,9 @@ $app->post('/antiguedad', function(){
                     $cliente->r3160 = $sumasCliente->r3160;
                     $cliente->r6190 = $sumasCliente->r6190;
                     $cliente->r90 = $sumasCliente->r90;
-                } else {
-                    $cliente->saldo = null;
-                }
+                // } else {
+                    // $cliente->saldo = null;
+                // }
             }
         }
 
