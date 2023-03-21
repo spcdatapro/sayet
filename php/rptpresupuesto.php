@@ -456,7 +456,7 @@ $app->post('/avanceot', function(){
                                         AND a.ordentrabajo = b.id
                                         AND a.idreembolso = 0),
                             0.00) + IFNULL((SELECT 
-                                    IFNULL(SUM(c.totfact))
+                                    SUM(c.totfact)
                                 FROM
                                     reembolso a
                                         INNER JOIN
