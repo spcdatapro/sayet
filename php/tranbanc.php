@@ -237,6 +237,9 @@ $app->post('/d', function(){
     $db->doQuery("DELETE FROM doctotranban WHERE idtranban = $d->id");
     $db->doQuery("DELETE FROM detpagocompra WHERE idtranban = $d->id");
     $db->doQuery("DELETE FROM detallecontable WHERE origen = 1 AND idorigen = $d->id");
+    $idreembolso = (int)$db->getOneField("SELECT a.id FROM reembolso a INNER JOIN dettranreem b ON b.idreembolso = a.id WHERE b.idtranban = $d->id");
+    $db->doQuery("DELETE FROM dettranreem WHERE idtranban = $d->id");
+    $db->doQuery("UPDATE reembolso SET pagado = 0 WHERE id = $idreembolso");
     $db->doQuery("DELETE FROM tranban WHERE id = $d->id");
 
     if((int)$tran->iddetpresup > 0 && (int)$tran->iddetpagopresup > 0){

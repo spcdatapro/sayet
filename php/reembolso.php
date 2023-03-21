@@ -375,6 +375,11 @@ $app->post('/gentranban', function(){
     $query = "SELECT SUM(totfact) FROM compra WHERE idreembolso = $d->id";
     $total = (float)$db->getOneField($query);
 
+    $query = "SELECT SUM(isr) FROM compra WHERE idreembolso = $d->id";
+    $isr = (float)$db->getOneField($query);
+
+    $monto = $total - $isr;
+
     if ($d->tipoMonto == 1) {
         $haber = $total - getTotPagado($d->id, $db);
     } else {
@@ -383,7 +388,7 @@ $app->post('/gentranban', function(){
     //Generación del cheque/nota de débito para pagar el reembolso
     $getCorrela = $d->numero;
     $query = "INSERT INTO tranban(idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, origenbene, idbeneficiario, idreembolso, iddetpresup) ";
-    $query.= "VALUES(".$d->objBanco->id.", '".$d->tipotrans."', '".$d->fechatrans."', ".$haber.", '".$d->beneficiario."', ";
+    $query.= "VALUES(".$d->objBanco->id.", '".$d->tipotrans."', '".$d->fechatrans."', ".$monto.", '".$d->beneficiario."', ";
     $query.= "'Pago de reembolso No. ".$d->id."', ".$getCorrela.", 2, $d->idbeneficiario, ".$d->id.", $d->ordentrabajo)";
     $db->doQuery($query);
     $lastid = $db->getLastId();
@@ -414,7 +419,7 @@ $app->post('/gentranban', function(){
     $query = "INSERT INTO dettranreem(idtranban, idreembolso, monto) VALUES($lastid, $d->id, $haber)";
     $db->doQuery($query);
 
-    if ($total - getTotPagado($d->id, $db) <= 0.00) {
+    if ($monto - getTotPagado($d->id, $db) <= 0.00) {
         $query = "UPDATE reembolso SET pagado = 1 WHERE id = $d->id";
         $db->doQuery($query);
     }
