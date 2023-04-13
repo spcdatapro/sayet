@@ -525,7 +525,7 @@ function cierreReembolso($db, $d){
     $estatus = (int)$db->getOneField("SELECT estatus FROM reembolso WHERE id = ".$d->iddocto);
     $total = (int) $db->getOneField("SELECT SUM(totfact) FROM compra WHERE idreembolso = $d->iddocto");
     if($estatus == 2){
-        $query = "INSERT INTO dettranreem (idtranban, idreembolso, monto) VALUES ($d->idtranban, $d->iddocto, $d->monto)";
+        $query = "UPDATE reembolso SET idtranban = ".$d->idtranban." WHERE id = ".$d->iddocto;
         $db->doQuery($query);
     }else{
         $query = "UPDATE reembolso SET estatus = 2, idtranban = ".$d->idtranban.", ffin = NOW() WHERE id = ".$d->iddocto;
@@ -640,6 +640,10 @@ $app->post('/cd', function(){
                 $query = "UPDATE tranban SET fechaliquida = '$d->fechaliquidastr' WHERE id = $d->idtranban";                
                 $db->doQuery($query);
             }
+
+            $query = "INSERT INTO dettranreem (idtranban, idreembolso, monto) VALUES ($d->idtranban, $d->iddocto, $d->monto)";
+            $db->doQuery($query);
+
             cierreReembolso($db, $d);
             break;
     };

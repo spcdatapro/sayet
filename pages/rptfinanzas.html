@@ -1,0 +1,50 @@
+<div class="container" ng-controller="rptFinanzas">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">Repote de finanzas</div>
+            <!-- <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="txtDel">Del:</label>
+                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.fdel" placeholder="Del"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="txtAl">Al:</label>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fal" placeholder="Al"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Empleado: </label>
+                            <ui-select ng-model="params.idempleado"
+                                title="Seleccione un empleado..." theme="bootstrap"
+                                autofocus="false">
+                                <ui-select-match placeholder="Buscar empleado..."
+                                    allow-clear="true">
+                                    <span ng-bind="($select.selected.nombre)"></span>
+                                </ui-select-match>
+                                <ui-select-choices 
+                                    repeat="item.id as item in empleados | filter:$select.search"
+                                    group-by="'grupo'">
+                                    <div
+                                        ng-bind-html="(item.nombre) | highlight: $select.search">
+                                    </div>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+            <div class="panel-footer text-right">
+                <button type="button" class="btn btn-primary" ng-click="getPDF()" ng-disabled="!params.fdel || !params.fal">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <rpt-viewer contenido="content"></rpt-viewer>
+</div>
