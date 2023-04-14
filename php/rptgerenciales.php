@@ -77,7 +77,7 @@ $app->post('/finanzas', function(){
             $cuenta = $empresas->proyecto->ingresos[$i];
 
             // empujar los nombres para grafica
-            array_push($nombres, substr($cuenta->cuenta, 0, 3));
+            array_push($nombres, substr($cuenta->cuenta, 0, 5));
 
             // empujar los montos para grafica
             array_push($montos, $cuenta->total);
@@ -168,7 +168,7 @@ $app->post('/finanzas', function(){
             $cuenta = $empresas->proyecto->egresos[$i];
 
             // empujar nombre de cuentas egresos
-            array_push($nombres, substr($cuenta->cuenta, 0, 3));
+            array_push($nombres, substr($cuenta->cuenta, 0, 5));
 
             // empujar montos de egresos y multiplicar para ser negativos
             array_push($montos, $cuenta->total * -1);
