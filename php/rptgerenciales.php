@@ -16,6 +16,7 @@ $app->post('/finanzas', function(){
     $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
     $nombres = array();
     $montos = array();
+    $colores = array();
 
     if ($aniodel == $anioal) {
         $aniodel = '';
@@ -76,7 +77,7 @@ $app->post('/finanzas', function(){
             $cuenta = $empresas->proyecto->ingresos[$i];
 
             // empujar los nombres para grafica
-            array_push($nombres, $cuenta->cuenta);
+            array_push($nombres, substr($cuenta->cuenta, 0, 3));
 
             // empujar los montos para grafica
             array_push($montos, $cuenta->total);
@@ -166,7 +167,10 @@ $app->post('/finanzas', function(){
         for ($i = 0; $i < $cntCuentas; $i++) {
             $cuenta = $empresas->proyecto->egresos[$i];
 
-            array_push($nombres, $cuenta->cuenta);
+            // empujar nombre de cuentas egresos
+            array_push($nombres, substr($cuenta->cuenta, 0, 3));
+
+            // empujar montos de egresos y multiplicar para ser negativos
             array_push($montos, $cuenta->total * -1);
 
             // si es con detalle insertar compras que respalden los movimientos de egresos
@@ -279,10 +283,26 @@ $app->post('/finanzas', function(){
 
         $grafica->nombres = $nombres;
         $grafica->montos = $montos;
+
+        $cntNombres = count($nombres);
+
+        for ($i = 0; $i < $cntNombres; $i++) {
+            $color = random_hex_color();
+            array_push($colores, $color);
+        }
+
+        $grafica->colores = $colores;
     }
 
     print json_encode([ 'general' => $letra, 'empresa' => $empresas, 'grafica' => $grafica ]);
 });
 
+
+function random_hex_color () {
+    $r = rand (0, 255);
+    $g = rand (0, 255);
+    $b = rand (0, 255);
+    return sprintf ('#%02x%02x%02x', $r, $g, $b);
+}
 
 $app->run();
