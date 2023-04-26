@@ -154,386 +154,204 @@ $app->post('/lstpresupuestosm', function () {
 
 $app->get('/getpresupuesto/:idpresupuesto', function ($idpresupuesto) {
     $db = new dbcpm();
+    $ids = array();
     $query = "SELECT 
                 a.id,
-                a.fechasolicitud,
-                a.idproyecto,
-                b.nomproyecto AS proyecto,
-                a.idempresa,
-                c.nomempresa AS empresa,
-                a.idtipogasto,
-                d.desctipogast AS tipogasto,
-                a.idmoneda,
-                e.simbolo,
-                FORMAT(a.total, 2) AS montoot,
-                a.notas,
-                a.idusuario,
-                f.nombre AS usuario,
-                a.idestatuspresupuesto,
-                g.descestatuspresup AS estatus,
-                a.fechacreacion,
-                a.fhenvioaprobacion,
-                a.fhaprobacion,
-                a.idusuarioaprueba,
-                h.nombre AS aprobadopor,
                 a.tipo,
-                a.idproveedor,
-                a.idsubtipogasto,
-                a.coniva,
-                a.monto,
-                a.escontado,
-                a.tipocambio,
-                a.excedente,
-                TRIM(c.abreviatura) AS abreviaempre,
+                DATE_FORMAT(a.fechacreacion, '%d/%m/%Y') AS fecha,
+                b.id AS idproyecto,
+                b.nomproyecto,
+                c.id AS idempresa,
+                c.nomempresa,
+                e.id AS idtipogasto,
+                e.desctipogast,
+                f.id AS idmoneda,
+                f.simbolo,
+                a.total,
+                a.notas,
                 a.origenprov,
-                a.tipodocumento,
-                FORMAT(IFNULL((SELECT 
-                                    SUM(c.monto)
-                                FROM
-                                    detpresupuesto b
-                                        INNER JOIN
-                                    tranban c ON b.id = c.iddetpresup
-                                        INNER JOIN
-                                    banco d ON d.id = c.idbanco
-                                WHERE
-                                    d.idmoneda = a.idmoneda
-                                        AND b.idpresupuesto = a.id
-                                        AND c.anulado = 0
-                                        AND c.beneficiario NOT LIKE '%ANULA%'
-                                        AND c.concepto NOT LIKE '%ANULA%'
-                                        AND c.liquidado = 0
-                                        AND c.tipotrans != 'R'
-                                        AND c.beneficiario NOT LIKE '%REINGRE%'
-                                        AND c.iddocliquida = 0),
-                            0.00) - IFNULL((SELECT 
-                                    SUM(c.monto)
-                                FROM
-                                    detpresupuesto b
-                                        INNER JOIN
-                                    tranban c ON b.id = c.iddetpresup
-                                        INNER JOIN
-                                    banco d ON d.id = c.idbanco
-                                WHERE
-                                    d.idmoneda = a.idmoneda
-                                        AND b.idpresupuesto = a.id
-                                        AND c.tipotrans = 'R'
-                                        AND c.iddocliquida = 0),
-                            0.00) + IF(e.eslocal = 1,
-                        IFNULL((SELECT 
-                                        SUM(c.monto) * c.tipocambio
-                                    FROM
-                                        detpresupuesto b
-                                            INNER JOIN
-                                        tranban c ON b.id = c.iddetpresup
-                                            INNER JOIN
-                                        banco d ON d.id = c.idbanco
-                                    WHERE
-                                        d.idmoneda != a.idmoneda
-                                            AND b.idpresupuesto = a.id
-                                            AND c.anulado = 0
-                                            AND c.beneficiario NOT LIKE '%ANULA%'
-                                            AND c.concepto NOT LIKE '%ANULA%'
-                                            AND c.liquidado = 0
-                                            AND c.tipotrans != 'R'
-                                            AND c.beneficiario NOT LIKE '%REINGRE%'
-                                            AND c.iddocliquida = 0),
-                                0.00),
-                        IFNULL((SELECT 
-                                        SUM(c.monto) / c.tipocambio
-                                    FROM
-                                        detpresupuesto b
-                                            INNER JOIN
-                                        tranban c ON b.id = c.iddetpresup
-                                            INNER JOIN
-                                        banco d ON d.id = c.idbanco
-                                    WHERE
-                                        d.idmoneda != a.idmoneda
-                                            AND b.idpresupuesto = a.id
-                                            AND c.anulado = 0
-                                            AND c.beneficiario NOT LIKE '%ANULA%'
-                                            AND c.concepto NOT LIKE '%ANULA%'
-                                            AND c.liquidado = 0
-                                            AND c.tipotrans != 'R'
-                                            AND c.beneficiario NOT LIKE '%REINGRE%'
-                                            AND c.iddocliquida = 0),
-                                0.00)) - IF(e.eslocal = 1,
-                        IFNULL((SELECT 
-                                        SUM(c.monto) * c.tipocambio
-                                    FROM
-                                        detpresupuesto b
-                                            INNER JOIN
-                                        tranban c ON b.id = c.iddetpresup
-                                            INNER JOIN
-                                        banco d ON d.id = c.idbanco
-                                    WHERE
-                                        d.idmoneda != a.idmoneda
-                                            AND b.idpresupuesto = a.id
-                                            AND c.tipotrans = 'R'
-                                            AND c.iddocliquida = 0),
-                                0.00),
-                        IFNULL((SELECT 
-                                        SUM(c.monto) / c.tipocambio
-                                    FROM
-                                        detpresupuesto b
-                                            INNER JOIN
-                                        tranban c ON b.id = c.iddetpresup
-                                            INNER JOIN
-                                        banco d ON d.id = c.idbanco
-                                    WHERE
-                                        d.idmoneda != a.idmoneda
-                                            AND b.idpresupuesto = b.id
-                                            AND c.tipotrans = 'R'
-                                            AND c.iddocliquida = 0),
-                                0.00)) + IFNULL((SELECT 
-                                    SUM(c.isr)
-                                FROM
-                                    detpresupuesto b
-                                        INNER JOIN
-                                    compra c ON b.id = c.ordentrabajo
-                                WHERE
-                                    c.idmoneda = a.idmoneda
-                                        AND b.idpresupuesto = a.id),
-                            0.00) + IF(e.eslocal = 1,
-                        IFNULL((SELECT 
-                                        SUM(c.isr) * c.tipocambio
-                                    FROM
-                                        detpresupuesto b
-                                            INNER JOIN
-                                        compra c ON b.id = c.ordentrabajo
-                                    WHERE
-                                        c.idmoneda != a.idmoneda
-                                            AND b.idpresupuesto = a.id),
-                                0.00),
-                        IFNULL((SELECT 
-                                        SUM(c.isr) / c.tipocambio
-                                    FROM
-                                        detpresupuesto b
-                                            INNER JOIN
-                                        compra c ON b.id = c.ordentrabajo
-                                    WHERE
-                                        c.idmoneda != a.idmoneda
-                                            AND b.idpresupuesto = a.id),
-                                0.00)) + IFNULL((SELECT 
-                                    SUM(d.isr)
-                                FROM
-                                    detpresupuesto b
-                                        INNER JOIN
-                                    tranban c ON c.iddetpresup = b.id
-                                        INNER JOIN
-                                    compra d ON c.idreembolso = d.idreembolso
-                                WHERE
-                                    d.idmoneda = a.idmoneda
-                                        AND b.idpresupuesto = a.id),
-                            0.00) + IF(e.eslocal = 1,
-                        IFNULL((SELECT 
-                                        SUM(d.isr) * d.tipocambio
-                                    FROM
-                                        detpresupuesto b
-                                            INNER JOIN
-                                        tranban c ON c.iddetpresup = b.id
-                                            INNER JOIN
-                                        compra d ON c.idreembolso = d.idreembolso
-                                    WHERE
-                                        d.idmoneda = a.idmoneda
-                                            AND b.idpresupuesto = a.id),
-                                0.00),
-                        IFNULL((SELECT 
-                                        SUM(d.isr) / d.tipocambio
-                                    FROM
-                                        detpresupuesto b
-                                            INNER JOIN
-                                        tranban c ON c.iddetpresup = b.id
-                                            INNER JOIN
-                                        compra d ON c.idreembolso = d.idreembolso
-                                    WHERE
-                                        d.idmoneda = a.idmoneda
-                                            AND b.idpresupuesto = a.id),
-                                0.00)),
-                    2) AS montogastado,
-                CONCAT(ROUND((IFNULL((SELECT 
-                                                SUM(c.monto)
-                                            FROM
-                                                detpresupuesto b
-                                                    INNER JOIN
-                                                tranban c ON b.id = c.iddetpresup
-                                                    INNER JOIN
-                                                banco d ON d.id = c.idbanco
-                                            WHERE
-                                                d.idmoneda = a.idmoneda
-                                                    AND b.idpresupuesto = a.id
-                                                    AND c.anulado = 0
-                                                    AND c.beneficiario NOT LIKE '%ANULA%'
-                                                    AND c.concepto NOT LIKE '%ANULA%'
-                                                    AND c.liquidado = 0
-                                                    AND c.tipotrans != 'R'
-                                                    AND c.beneficiario NOT LIKE '%REINGRE%'
-                                                    AND c.iddocliquida = 0),
-                                        0.00) - IFNULL((SELECT 
-                                                SUM(c.monto)
-                                            FROM
-                                                detpresupuesto b
-                                                    INNER JOIN
-                                                tranban c ON b.id = c.iddetpresup
-                                                    INNER JOIN
-                                                banco d ON d.id = c.idbanco
-                                            WHERE
-                                                d.idmoneda = a.idmoneda
-                                                    AND b.idpresupuesto = a.id
-                                                    AND c.tipotrans = 'R'
-                                                    AND c.iddocliquida = 0),
-                                        0.00) + IF(e.eslocal = 1,
-                                    IFNULL((SELECT 
-                                                    SUM(c.monto) * c.tipocambio
-                                                FROM
-                                                    detpresupuesto b
-                                                        INNER JOIN
-                                                    tranban c ON b.id = c.iddetpresup
-                                                        INNER JOIN
-                                                    banco d ON d.id = c.idbanco
-                                                WHERE
-                                                    d.idmoneda != a.idmoneda
-                                                        AND b.idpresupuesto = a.id
-                                                        AND c.anulado = 0
-                                                        AND c.beneficiario NOT LIKE '%ANULA%'
-                                                        AND c.concepto NOT LIKE '%ANULA%'
-                                                        AND c.liquidado = 0
-                                                        AND c.tipotrans != 'R'
-                                                        AND c.beneficiario NOT LIKE '%REINGRE%'
-                                                        AND c.iddocliquida = 0),
-                                            0.00),
-                                    IFNULL((SELECT 
-                                                    SUM(c.monto) / c.tipocambio
-                                                FROM
-                                                    detpresupuesto b
-                                                        INNER JOIN
-                                                    tranban c ON b.id = c.iddetpresup
-                                                        INNER JOIN
-                                                    banco d ON d.id = c.idbanco
-                                                WHERE
-                                                    d.idmoneda != a.idmoneda
-                                                        AND b.idpresupuesto = a.id
-                                                        AND c.anulado = 0
-                                                        AND c.beneficiario NOT LIKE '%ANULA%'
-                                                        AND c.concepto NOT LIKE '%ANULA%'
-                                                        AND c.liquidado = 0
-                                                        AND c.tipotrans != 'R'
-                                                        AND c.beneficiario NOT LIKE '%REINGRE%'
-                                                        AND c.iddocliquida = 0),
-                                            0.00)) - IF(e.eslocal = 1,
-                                    IFNULL((SELECT 
-                                                    SUM(c.monto) * c.tipocambio
-                                                FROM
-                                                    detpresupuesto b
-                                                        INNER JOIN
-                                                    tranban c ON b.id = c.iddetpresup
-                                                        INNER JOIN
-                                                    banco d ON d.id = c.idbanco
-                                                WHERE
-                                                    d.idmoneda != a.idmoneda
-                                                        AND b.idpresupuesto = a.id
-                                                        AND c.tipotrans = 'R'
-                                                        AND c.iddocliquida = 0),
-                                            0.00),
-                                    IFNULL((SELECT 
-                                                    SUM(c.monto) / c.tipocambio
-                                                FROM
-                                                    detpresupuesto b
-                                                        INNER JOIN
-                                                    tranban c ON b.id = c.iddetpresup
-                                                        INNER JOIN
-                                                    banco d ON d.id = c.idbanco
-                                                WHERE
-                                                    d.idmoneda != a.idmoneda
-                                                        AND b.idpresupuesto = b.id
-                                                        AND c.tipotrans = 'R'
-                                                        AND c.iddocliquida = 0),
-                                            0.00)) + IFNULL((SELECT 
-                                                SUM(c.isr)
-                                            FROM
-                                                detpresupuesto b
-                                                    INNER JOIN
-                                                compra c ON b.id = c.ordentrabajo
-                                            WHERE
-                                                c.idmoneda = a.idmoneda
-                                                    AND b.idpresupuesto = a.id),
-                                        0.00) + IF(e.eslocal = 1,
-                                    IFNULL((SELECT 
-                                                    SUM(c.isr) * c.tipocambio
-                                                FROM
-                                                    detpresupuesto b
-                                                        INNER JOIN
-                                                    compra c ON b.id = c.ordentrabajo
-                                                WHERE
-                                                    c.idmoneda != a.idmoneda
-                                                        AND b.idpresupuesto = a.id),
-                                            0.00),
-                                    IFNULL((SELECT 
-                                                    SUM(c.isr) / c.tipocambio
-                                                FROM
-                                                    detpresupuesto b
-                                                        INNER JOIN
-                                                    compra c ON b.id = c.ordentrabajo
-                                                WHERE
-                                                    c.idmoneda != a.idmoneda
-                                                        AND b.idpresupuesto = a.id),
-                                            0.00)) + IFNULL((SELECT 
-                                                SUM(d.isr)
-                                            FROM
-                                                detpresupuesto b
-                                                    INNER JOIN
-                                                tranban c ON c.iddetpresup = b.id
-                                                    INNER JOIN
-                                                compra d ON c.idreembolso = d.idreembolso
-                                            WHERE
-                                                d.idmoneda = a.idmoneda
-                                                    AND b.idpresupuesto = a.id),
-                                        0.00) + IF(e.eslocal = 1,
-                                    IFNULL((SELECT 
-                                                    SUM(d.isr) * d.tipocambio
-                                                FROM
-                                                    detpresupuesto b
-                                                        INNER JOIN
-                                                    tranban c ON c.iddetpresup = b.id
-                                                        INNER JOIN
-                                                    compra d ON c.idreembolso = d.idreembolso
-                                                WHERE
-                                                    d.idmoneda = a.idmoneda
-                                                        AND b.idpresupuesto = a.id),
-                                            0.00),
-                                    IFNULL((SELECT 
-                                                    SUM(d.isr) / d.tipocambio
-                                                FROM
-                                                    detpresupuesto b
-                                                        INNER JOIN
-                                                    tranban c ON c.iddetpresup = b.id
-                                                        INNER JOIN
-                                                    compra d ON c.idreembolso = d.idreembolso
-                                                WHERE
-                                                    d.idmoneda = a.idmoneda
-                                                        AND b.idpresupuesto = a.id),
-                                            0.00))) * 100 / a.total,
-                                2),
-                        '%') AS avanceot
+                IFNULL(g.id, h.id) AS idproveedor,
+                IFNULL(g.nombre, h.nombre) AS proveedor,
+                i.id AS idsubtipogasto,
+                i.descripcion AS subtipogasto,
+                a.coniva,
+                a.total,
+                a.tipocambio
             FROM
                 presupuesto a
                     INNER JOIN
-                proyecto b ON b.id = a.idproyecto
+                proyecto b ON a.idproyecto = b.id
                     INNER JOIN
-                empresa c ON c.id = a.idempresa
+                empresa c ON a.idempresa = c.id
                     INNER JOIN
-                tipogasto d ON d.id = a.idtipogasto
+                tipogasto e ON a.idtipogasto = e.id
                     INNER JOIN
-                moneda e ON e.id = a.idmoneda
-                    INNER JOIN
-                usuario f ON f.id = a.idusuario
-                    INNER JOIN
-                estatuspresupuesto g ON g.id = a.idestatuspresupuesto
+                moneda f ON a.idmoneda = f.id
                     LEFT JOIN
-                usuario h ON h.id = a.idusuarioaprueba
+                proveedor g ON a.idproveedor = g.id
+                    AND a.origenprov = 1
+                    LEFT JOIN
+                beneficiario h ON a.idproveedor = h.id AND origenprov = 2
+                    LEFT JOIN
+                subtipogasto i ON a.idsubtipogasto = i.id
             WHERE
-                a.id = $idpresupuesto ";
-    print $db->doSelectASJson($query);
+                a.id = $idpresupuesto";
+    $orden = $db->getQuery($query)[0];
+
+    $query = "SELECT 
+                a.id,
+                a.correlativo,
+                a.origenprov,
+                IFNULL(b.id, c.id) AS idproveedor,
+                IFNULL(b.nombre, c.nombre) AS proveedor,
+                d.id AS idsubtipogasto,
+                d.descripcion AS subtipogasto,
+                a.coniva,
+                e.id AS idmoneda,
+                e.simbolo AS moneda,
+                a.monto,
+                a.tipocambio,
+                a.notas
+            FROM
+                detpresupuesto a
+                    LEFT JOIN
+                proveedor b ON a.idproveedor = b.id
+                    AND a.origenprov = 1
+                    LEFT JOIN
+                beneficiario c ON a.idproveedor = c.id
+                    AND a.origenprov = 2
+                    INNER JOIN
+                subtipogasto d ON a.idsubtipogasto = d.id
+                    INNER JOIN
+                moneda e ON a.idmoneda = e.id
+            WHERE
+                a.idpresupuesto = $idpresupuesto";
+    $orden->ots = $db->getQuery($query);
+
+    $cntsOts = count($orden->ots);
+
+    for ($i = 0; $i < $cntsOts; $i++) {
+        $ot = $orden->ots[$i];
+        array_push($ids, $ot->id);
+    }
+
+    getTotales($orden, $ids, $db);
+
+    print json_encode([$orden]);
 });
+
+function getTotales($orden, $ids, $db) {
+
+    $sgastado = array();
+    $sisr = array();
+    $stran = array();
+    $sot = array();
+
+    $ids_str = implode(',', $ids);
+
+    $tipocambioprov = $orden->tipocambio;
+
+    $query = "SELECT monto, idmoneda, tipocambio FROM detpresupuesto WHERE id IN($ids_str)";
+    $montots = $db->getQuery($query);
+
+    $cntsMontos = count($montots);
+
+    for ($i = 0; $i < $cntsMontos; $i++) {
+        $montot = $montots[$i];
+    if ($montot->idmoneda !== $orden->idmoneda) {
+        // si moneda es local multiplicar 
+        if ($orden->idmoneda == 1) {
+            $monto = $montot->monto * $montot->tipocambio;
+        // si moneda no es local divir
+        } else {
+            $monto = $montot->monto / $montot->tipocambio;
+        }
+        // insertar monto
+        } else {
+            $monto = $montot->monto;
+        }
+        // empujar montos a un array
+        array_push($sot, $monto);
+    }
+
+    $montog = array_sum($sot);
+
+    $query = "SELECT idmoneda, tipocambio, isr FROM compra WHERE ordentrabajo IN($ids_str) AND idreembolso = 0 UNION ALL 
+    SELECT b.tipocambio, b.isr, b.idmoneda FROM reembolso a 
+            INNER JOIN compra b ON b.idreembolso = a.id WHERE a.ordentrabajo IN($ids_str)";
+    $tcompras = $db->getQuery($query);
+
+    $cntCompras = count($tcompras);
+        
+    for ($j = 0; $j < $cntCompras; $j++){
+        $compra = $tcompras[$j];
+        // si moneda de ot diferente a moneda de compra usar t.c
+        if ($orden->idmoneda != $compra->idmoneda) {
+            // si moneda es local multiplicar 
+            if ($orden->idmoneda == 1) {
+                $montoisr = $compra->isr * $tipocambioprov;
+            // si moneda no es local divir
+            } else {
+                $montoisr = $compra->isr / $tipocambioprov;
+            }
+        // insertar monto
+        } else {
+            $montoisr = $compra->isr;
+        }
+        // empujar montos a un array
+        array_push($sisr, $montoisr);
+    }
+    
+    // sumar montos de array
+    $tisr = array_sum($sisr);
+
+    // traer monto y tipocambio de transaccion bancaria
+    $query = "SELECT a.monto, a.tipocambio, b.idmoneda FROM tranban a INNER JOIN banco b ON a.idbanco = b.id 
+    WHERE iddetpresup IN($ids_str) AND (SELECT COUNT(b.id) FROM doctotranban b WHERE b.idtranban = a.id AND b.idtipodoc = 2) = 0 
+    AND a.liquidado = 0 AND a.iddocliquida = 0 AND a.anulado = 0 UNION ALL 
+    SELECT b.monto, a.tipocambio, c.idmoneda FROM tranban a INNER JOIN dettranreem b ON b.idtranban = a.id 
+    INNER JOIN banco c ON a.idbanco = c.id WHERE a.iddetpresup IN($ids_str)";
+    $trans = $db->getQuery($query);
+
+    $cntTranas = count($trans);
+        
+    for ($j = 0; $j < $cntTranas; $j++){
+        $tran = $trans[$j];
+        // si moneda de ot diferente a moneda de cheque usar t.c
+        if ($orden->idmoneda != $tran->idmoneda) {
+            // si moneda es local multiplicar 
+            if ($orden->idmoneda == 1) {
+                $monto = $tran->monto * $tipocambioprov;
+            // si moneda no es local divir
+            } else {
+                $monto = $tran->monto / $tipocambioprov;
+            }
+        // insertar monto
+        } else {
+            $monto = $tran->monto;
+        }
+        // empujar montos a un array
+        array_push($stran, $monto);
+    }
+
+    // sumar array de transacciones
+    $ttran = array_sum($stran);
+
+    // operacion para total gasto en OT
+    $gastado = $ttran + $tisr;
+
+    // opracion para proventaje de avance en OT
+    $avance = (($ttran + $tisr) * 100) / $orden->total;
+
+    // operacion diferencia
+    $diferencia = $orden->total - $gastado;
+
+    // insertar valores
+    $orden->gastado = number_format($gastado, 2, '.', ',');
+    $orden->avance = number_format($avance, 2, '.', ',');
+    $orden->diferencia = number_format($diferencia, 2, '.', ',');
+    $orden->monto = number_format($montog, 2, '.', ',');
+}
 
 function updTotPresupuesto($idpresupuesto)
 {

@@ -66,7 +66,7 @@
                 data[i].idestatuspresupuesto = parseInt(data[i].idestatuspresupuesto);
                 data[i].idusuarioaprueba = parseInt(data[i].idusuarioaprueba);
                 data[i].total = parseFloat(parseFloat(data[i].total).toFixed(2));
-                data[i].gastado = parseFloat(parseFloat(data[i].gastado).toFixed(2));
+                // data[i].gastado = parseFloat(parseFloat(data[i].gastado).toFixed(2));
                 data[i].fechasolicitud = moment(data[i].fechasolicitud).toDate();
                 data[i].fechacreacion = moment(data[i].fechacreacion).toDate();
                 data[i].fhenvioaprobacion = moment(data[i].fhenvioaprobacion).isValid() ? moment(data[i].fhenvioaprobacion).toDate() : null;
@@ -129,6 +129,7 @@
             $scope.ot = {};
             $scope.lstot = [];
             presupuestoSrvc.getPresupuesto(idpresupuesto).then(function (d) {
+                console.log(d);
                 $scope.presupuesto = procDataPresup(d)[0];
                 $scope.presupuesto.proyecto = $scope.presupuesto.idproyecto;
                 $scope.presupuesto.empresa = $scope.presupuesto.idempresa;
@@ -138,12 +139,13 @@
                 $scope.lbl.id = $scope.presupuesto.id ;
                 $scope.lbl.proyecto = ' ' + ($filter('getById')($scope.proyectos, $scope.presupuesto.idproyecto)).nomproyecto;
                 $scope.lbl.empresa = ' ' + ($filter('getById')($scope.empresas, $scope.presupuesto.idempresa)).nomempresa;
-                $scope.lbl.notas = ' ' + $scope.presupuesto.notas.substring(0,20);
+                // $scope.lbl.notas = ' ' + $scope.presupuesto.notas.substring(0,20);
                 $scope.lbl.tipgasto = ' ' + ($filter('getById')($scope.tiposgasto, $scope.presupuesto.idtipogasto)).desctipogast;
-                $scope.lbl.montopres = ' ' + ($filter('getById')($scope.monedas, $scope.presupuesto.idmoneda)).simbolo + $scope.presupuesto.montoot;
-                $scope.lbl.montogas = ' ' + ($filter('getById')($scope.monedas, $scope.presupuesto.idmoneda)).simbolo + $scope.presupuesto.montogastado;
-                $scope.lbl.avance = ' ' + $scope.presupuesto.avanceot;
+                $scope.lbl.montopres = ' ' + ($filter('getById')($scope.monedas, $scope.presupuesto.idmoneda)).simbolo + $scope.presupuesto.monto;
+                $scope.lbl.montogas = ' ' + ($filter('getById')($scope.monedas, $scope.presupuesto.idmoneda)).simbolo + $scope.presupuesto.gastado;
+                $scope.lbl.avance = ' ' + $scope.presupuesto.avance;
                 $scope.lbl.desc = ' ' + $scope.presupuesto.notas;
+                $scope.lbl.diferencia = ' ' + ($filter('getById')($scope.monedas, $scope.presupuesto.idmoneda)).simbolo + $scope.presupuesto.diferencia;
                 $scope.confGrpBtn('grpBtnPresupuesto', false, false, true, true, true, false, false);
                 $scope.sl.presupuesto = true;
                 if (movertab) {

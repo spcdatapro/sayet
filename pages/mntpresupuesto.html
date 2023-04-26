@@ -539,12 +539,13 @@
                                     <!--<li><h3>{{lbl.id}}</h3></li>-->
                                     <li style="color: black; font-size: 120%;"><p><b>Proyecto: </b>{{lbl.proyecto}}</p></li>
                                     <li style="color: black; font-size: 120%;"><p><b>Empresa: </b>{{lbl.empresa}}</p></li>
-                                    <li style="color: black; font-size: 120%;"><p><b>Concepto: </b>{{lbl.notas}}</p></li>
+                                    <!-- <li style="color: black; font-size: 120%;"><p><b>Concepto: </b>{{lbl.notas}}</p></li> -->
                                     <li style="color: black; font-size: 120%;"><p><b>Descripci&oacute;n: </b>{{lbl.desc}}</p>
                                     <li style="color: black; font-size: 120%;"><p><b>Tipo gasto: </b>{{lbl.tipgasto}}</p></li>
                                     <li style="color: black; font-size: 120%;"><p><b>Monto Presupuestado: </b>{{lbl.montopres}}</p></li>
                                     <li style="color: black; font-size: 120%;"><p><b>Monto Gastado: </b>{{lbl.montogas}}</p></li>
-                                    <li style="color: black; font-size: 120%;"><p style="float: left;"><b>Avance: </b>{{lbl.avance}}</p>
+                                    <li style="color: black; font-size: 120%;"><p><b>Diferencia: </b>{{lbl.diferencia}}</p></li>
+                                    <li style="color: black; font-size: 120%;"><p style="float: left;"><b>Avance: </b>{{lbl.avance}}%</p>
                                         <button ng-hide="+presupuesto.tipo == 1" style="float: right;" type="button" class="btn btn-primary btn-sm tipo"
                                         ng-click="printPrespuestoNueD(lbl.id)" data-toggle="tooltip"
                                         data-placement="auto" title="Imprimir con avances nuevo">
