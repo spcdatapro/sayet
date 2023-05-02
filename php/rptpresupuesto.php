@@ -1620,7 +1620,7 @@ function getPagos($ots, $db, $esmultiple) {
                     // si moneda de ot diferente a moneda de cheque usar t.c
                     if ($ot->idmoneda != $tran->idmoneda) {
                         // si moneda es local multiplicar 
-                        if ($ot->idmoneda == 1) {
+                        if ($ot->idmoneda === 1) {
                             $monto = $tran->monto * $tipocambioprov;
                         // si moneda no es local divir
                         } else {

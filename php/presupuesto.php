@@ -176,7 +176,10 @@ $app->get('/getpresupuesto/:idpresupuesto', function ($idpresupuesto) {
                 i.descripcion AS subtipogasto,
                 a.coniva,
                 a.total,
-                a.tipocambio
+                a.tipocambio,
+                a.idestatuspresupuesto,
+                a.idusuario,
+                a.idusuarioaprueba
             FROM
                 presupuesto a
                     INNER JOIN
@@ -322,7 +325,7 @@ function getTotales($orden, $ids, $db) {
         // si moneda de ot diferente a moneda de cheque usar t.c
         if ($orden->idmoneda != $tran->idmoneda) {
             // si moneda es local multiplicar 
-            if ($orden->idmoneda == 1) {
+            if ($orden->idmoneda === 1) {
                 $monto = $tran->monto * $tipocambioprov;
             // si moneda no es local divir
             } else {
