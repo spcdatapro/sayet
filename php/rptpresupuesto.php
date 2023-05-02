@@ -1570,7 +1570,7 @@ function getPagos($ots, $db, $esmultiple) {
                 // traer monto, moneda y tipocambio de compra
                 $query = "SELECT id, totfact, idmoneda, tipocambio, isr FROM compra WHERE ordentrabajo = $ot->id AND idreembolso = 0 AND id NOT IN(SELECT idcompra FROM detnotacompra) AND idtipofactura < 8
                 UNION ALL
-                SELECT b.id, b.totfact, b.tipocambio, b.isr, b.idmoneda FROM reembolso a 
+                SELECT b.id, b.totfact, b.idmoneda, b.tipocambio, b.isr FROM reembolso a 
                             INNER JOIN compra b ON b.idreembolso = a.id WHERE a.ordentrabajo = $ot->id";
                 $tcompras = $db->getQuery($query);
         
