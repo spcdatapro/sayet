@@ -1320,7 +1320,7 @@ function getPagos($ots, $db, $esmultiple) {
         $query = "SELECT 
                 a.id,
                 DATE_FORMAT(a.finicio, '%d/%m/%y') AS fecha,
-                SUBSTRING(a.beneficiario, 1, 24) AS proveedor,
+                SUBSTRING(a.beneficiario, 1, 20) AS proveedor,
                 CONCAT('REE-', LPAD(a.id, 5, '0')) AS factura,
                 ROUND(SUM(b.totfact), 2) AS monto,
                 ROUND(SUM(b.isr), 2) AS isr,
@@ -1342,7 +1342,7 @@ function getPagos($ots, $db, $esmultiple) {
         // traer compras individuales
         $query = "SELECT 
             DATE_FORMAT(a.fechafactura, '%d/%m/%y') AS fecha,
-            c.nombre AS proveedor,
+            SUBSTRING(c.nombre, 1, 20) AS proveedor,
             a.documento AS factura,
             ROUND(a.totfact, 2) AS monto,
             ROUND(a.isr, 2) AS isr,
@@ -1387,7 +1387,7 @@ function getPagos($ots, $db, $esmultiple) {
                                 SUBSTRING(b.siglas, 4, 5),
                                 '-',
                                 a.numero) AS datosbanco,
-                        SUBSTRING(a.beneficiario, 1, 24) AS beneficiario,
+                        SUBSTRING(a.beneficiario, 1, 20) AS beneficiario,
                         c.monto,
                         ROUND(a.tipocambio, 2) AS tipocambio,
                         a.anticipo,
@@ -1423,7 +1423,7 @@ function getPagos($ots, $db, $esmultiple) {
                     SUBSTRING(b.siglas, 4, 5),
                     '-',
                     a.numero) AS datosbanco,
-            IF(iddocliquida > 0, SUBSTRING(a.beneficiario, 9, 24), SUBSTRING(a.beneficiario, 1, 24)) AS beneficiario,
+            IF(iddocliquida > 0, SUBSTRING(a.beneficiario, 9, 20), SUBSTRING(a.beneficiario, 1, 24)) AS beneficiario,
             a.monto,
             ROUND(a.tipocambio, 2) AS tipocambio,
             a.anticipo,
@@ -1506,7 +1506,7 @@ function getPagos($ots, $db, $esmultiple) {
         // facturas por medio de id de cheques
         $query = "SELECT 
                 DATE_FORMAT(a.fechafactura, '%d/%m/%y') AS fecha,
-                SUBSTRING(CONCAT(c.nombre), 1, 24) AS proveedor,
+                SUBSTRING(c.nombre, 1, 20) AS proveedor,
                 a.documento AS factura,
                 ROUND(a.totfact, 2) AS monto,
                 ROUND(a.isr, 2) AS isr,
