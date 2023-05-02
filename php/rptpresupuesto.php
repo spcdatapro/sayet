@@ -271,6 +271,7 @@ $app->post('/avanceot', function(){
                 g.desctipogast AS tipogasto,
                 h.descripcion AS subtipogasto,
                 a.notas,
+                b.notas AS descripcion, 
                 SUBSTRING(a.notas, 1, 90) AS concepto,
                 b.notas AS notag,
                 i.simbolo AS moneda,
@@ -752,7 +753,7 @@ $app->post('/avanceotm', function(){
                     NULL AS isr,
                     NULL AS fact,
                     ROUND(b.tipocambio, 2) AS tipocambio,
-                    SUBSTRING(b.concepto, 1, 90) AS conceptomayor,
+                    SUBSTRING(b.concepto, 1, 70) AS conceptomayor,
                     b.beneficiario,
                     IF((b.anulado = 1
                             OR (b.anulado = 0
@@ -802,7 +803,7 @@ $app->post('/avanceotm', function(){
                     FORMAT(f.isr, 2) AS isr,
                     CONCAT(f.serie, '-', f.documento) AS fact,
                     ROUND(f.tipocambio, 2) AS tipocambio,
-                    SUBSTRING(f.conceptomayor, 1, 90) AS conceptomayor,
+                    SUBSTRING(f.conceptomayor, 1, 70) AS conceptomayor,
                     h.nombre AS beneficiario,
                     IF((b.anulado = 1
                             OR (b.anulado = 0
@@ -848,7 +849,7 @@ $app->post('/avanceotm', function(){
                     FORMAT(b.isr, 2) AS isr,
                     CONCAT(b.serie, '-', b.documento) AS fact,
                     ROUND(b.tipocambio, 2) AS tipocambio,
-                    SUBSTRING(b.conceptomayor, 1, 90) AS conceptomayor,
+                    SUBSTRING(b.conceptomayor, 1, 70) AS conceptomayor,
                     d.nombre AS beneficiario,
                     NULL AS anulado,
                     NULL AS esreingreso,
@@ -945,7 +946,7 @@ $app->post('/avanceotm', function(){
                 d.nomempresa AS empresa,
                 e.desctipogast AS tipogasto,
                 f.simbolo AS moneda,
-                SUBSTRING(a.notas, 1, 20) AS concepto,
+                SUBSTRING(a.notas, 1, 70) AS concepto,
                 a.notas,
                 FORMAT(a.total, 2) AS montoot,
                 FORMAT(IFNULL((SELECT 
@@ -1315,6 +1316,29 @@ function getPagos($ots, $db, $esmultiple) {
             $ot = $ots;
         }
 
+        // reembolsos atados a la orden
+        $query = "SELECT 
+                a.id,
+                DATE_FORMAT(a.finicio, '%d/%m/%y') AS fecha,
+                SUBSTRING(a.beneficiario, 1, 24) AS proveedor,
+                CONCAT('REE-', LPAD(a.id, 5, '0')) AS factura,
+                ROUND(SUM(b.totfact), 2) AS monto,
+                ROUND(SUM(b.isr), 2) AS isr,
+                SUBSTRING(b.conceptomayor, 1, 70) AS concepto,
+                e.simbolo AS moneda,
+                e.id AS idmoneda,
+                ROUND(b.tipocambio, 2) AS tipocambio
+            FROM
+                reembolso a
+                    INNER JOIN
+                compra b ON b.idreembolso = a.id
+                    INNER JOIN
+                moneda e ON b.idmoneda = e.id
+            WHERE
+                a.ordentrabajo = $ot->id
+                ORDER BY a.finicio";
+        $reembolsos = $db->getQuery($query);
+
         // traer compras individuales
         $query = "SELECT 
             DATE_FORMAT(a.fechafactura, '%d/%m/%y') AS fecha,
@@ -1323,9 +1347,10 @@ function getPagos($ots, $db, $esmultiple) {
             ROUND(a.totfact, 2) AS monto,
             ROUND(a.isr, 2) AS isr,
             ROUND(a.tipocambio, 2) AS tipocambio,
-            SUBSTRING(a.conceptomayor, 1, 45) AS concepto,
+            SUBSTRING(a.conceptomayor, 1, 70) AS concepto,
             d.simbolo AS moneda,
-            d.id AS idmoneda
+            d.id AS idmoneda,
+            IF(a.idtipofactura > 8, TRUE, NULL) AS nc
         FROM
             compra a
                 INNER JOIN
@@ -1342,8 +1367,51 @@ function getPagos($ots, $db, $esmultiple) {
                     detpagocompra b
                 WHERE
                     b.idcompra = a.id) = 0
-                        AND a.idreembolso = 0";
+                ORDER BY fechafactura ";
         $compras = $db->getQuery($query);
+
+        $cntRee = count($reembolsos); 
+
+        for ($j = 0; $j < $cntRee; $j++) {
+            $reembolso = $reembolsos[$j];
+
+            if ($reembolso->id > 0) {
+                // cheques que cancelan el reembolso
+                $query = "SELECT 
+                        a.id,
+                        DATE_FORMAT(a.fecha, '%d/%m/%y') AS fecha,
+                        CONCAT(SUBSTRING(b.siglas, 1, 2),
+                                '-',
+                                a.tipotrans,
+                                '-',
+                                SUBSTRING(b.siglas, 4, 5),
+                                '-',
+                                a.numero) AS datosbanco,
+                        SUBSTRING(a.beneficiario, 1, 24) AS beneficiario,
+                        c.monto,
+                        ROUND(a.tipocambio, 2) AS tipocambio,
+                        a.anticipo,
+                        SUBSTRING(a.concepto, 1, 70) AS concepto,
+                        d.simbolo AS moneda,
+                        d.id AS idmoneda,
+                        NULL AS compras
+                    FROM
+                        tranban a
+                            INNER JOIN
+                        banco b ON a.idbanco = b.id
+                            INNER JOIN
+                        dettranreem c ON c.idtranban = a.id
+                            INNER JOIN
+                        moneda d ON b.idmoneda = d.id
+                    WHERE
+                        a.iddetpresup = $ot->id
+                            AND c.idreembolso = $reembolso->id";
+                $reembolso->cheques = $db->getQuery($query);
+                
+                // empujar cheques con reembolso a array de cheques
+                array_push($compras, $reembolso);
+            }   
+        }
 
         // traer cheques individuales
         $query = "SELECT 
@@ -1359,7 +1427,7 @@ function getPagos($ots, $db, $esmultiple) {
             a.monto,
             ROUND(a.tipocambio, 2) AS tipocambio,
             a.anticipo,
-            SUBSTRING(a.concepto, 1, 45) AS concepto,
+            SUBSTRING(a.concepto, 1, 70) AS concepto,
             c.simbolo AS moneda,
             c.id AS idmoneda,
             IF(a.anulado = 1 OR liquidado = 1, TRUE, NULL) AS anulado,
@@ -1383,7 +1451,8 @@ function getPagos($ots, $db, $esmultiple) {
                 FROM
                     doctotranban b
                 WHERE
-                    b.idtranban = a.id) = 0";
+                    b.idtranban = a.id) = 0
+            ORDER BY fecha ";
         $cheques = $db->getQuery($query);
 
         // cheques con factura
@@ -1401,7 +1470,7 @@ function getPagos($ots, $db, $esmultiple) {
             a.monto,
             ROUND(a.tipocambio, 2) AS tipocambio,
             a.anticipo,
-            SUBSTRING(a.concepto, 1, 45) AS concepto,
+            SUBSTRING(a.concepto, 1, 70) AS concepto,
             c.simbolo AS moneda,
             c.id AS idmoneda,
             NULL AS compras
@@ -1425,7 +1494,8 @@ function getPagos($ots, $db, $esmultiple) {
                 FROM 
                     detpagocompra b 
                 WHERE 
-                    b.idtranban = a.id) > 0";
+                    b.idtranban = a.id) > 0
+                    ORDER BY fecha";
         $chequesfac = $db->getQuery($query);
 
         $cntChq = count($chequesfac);
@@ -1441,9 +1511,10 @@ function getPagos($ots, $db, $esmultiple) {
                 ROUND(a.totfact, 2) AS monto,
                 ROUND(a.isr, 2) AS isr,
                 ROUND(a.tipocambio, 2) AS tipocambio,
-                SUBSTRING(a.conceptomayor, 1, 45) AS concepto,
+                SUBSTRING(a.conceptomayor, 1, 70) AS concepto,
                 e.simbolo AS moneda,
-                e.id AS idmoneda
+                e.id AS idmoneda,
+                IF(a.idtipofactura > 8, TRUE, NULL) AS nc
             FROM
                 compra a
                     INNER JOIN
@@ -1456,77 +1527,13 @@ function getPagos($ots, $db, $esmultiple) {
                 moneda e ON a.idmoneda = e.id
             WHERE
                 a.ordentrabajo = $ot->id
-                    AND d.idtranban = $cheque->id";
+                    AND d.idtranban = $cheque->id
+                    ORDER BY a.fechafactura ";
         $cheque->compras = $db->getQuery($query);
         
         // empujar cheques con factura a array de cheques
         array_push($cheques, $cheque);
         }
-
-        // reembolsos atados a la orden
-        $query = "SELECT 
-                a.id,
-                DATE_FORMAT(a.finicio, '%d/%m/%y') AS fecha,
-                SUBSTRING(a.beneficiario, 1, 24) AS proveedor,
-                CONCAT('REE-', LPAD(a.id, 5, '0')) AS factura,
-                ROUND(SUM(b.totfact), 2) AS monto,
-                ROUND(SUM(b.isr), 2) AS isr,
-                SUBSTRING(b.conceptomayor, 1, 45) AS concepto,
-                e.simbolo AS moneda,
-                e.id AS idmoneda,
-                b.tipocambio AS tipocambio
-            FROM
-                reembolso a
-                    INNER JOIN
-                compra b ON b.idreembolso = a.id
-                    INNER JOIN
-                moneda e ON b.idmoneda = e.id
-            WHERE
-                a.ordentrabajo = $ot->id";
-        $reembolsos = $db->getQuery($query);
-
-        $cntRee = count($reembolsos);
-
-        for ($j = 0; $j < $cntRee; $j++) {
-            $reembolso = $reembolsos[$j];
-
-            if ($reembolso->id > 0) {
-                // cheques que cancelan el reembolso
-                $query = "SELECT 
-                        a.id,
-                        DATE_FORMAT(a.fecha, '%d/%m/%y') AS fecha,
-                        CONCAT(SUBSTRING(b.siglas, 1, 2),
-                                '-',
-                                a.tipotrans,
-                                '-',
-                                SUBSTRING(b.siglas, 4, 5),
-                                '-',
-                                a.numero) AS datosbanco,
-                        SUBSTRING(a.beneficiario, 1, 24) AS beneficiario,
-                        c.monto,
-                        ROUND(a.tipocambio, 2) AS tipocambio,
-                        a.anticipo,
-                        SUBSTRING(a.concepto, 1, 45) AS concepto,
-                        d.simbolo AS moneda,
-                        d.id AS idmoneda,
-                        NULL AS compras
-                    FROM
-                        tranban a
-                            INNER JOIN
-                        banco b ON a.idbanco = b.id
-                            INNER JOIN
-                        dettranreem c ON c.idtranban = a.id
-                            INNER JOIN
-                        moneda d ON b.idmoneda = d.id
-                    WHERE
-                        a.iddetpresup = $ot->id
-                            AND c.idreembolso = $reembolso->id";
-                $reembolso->cheques = $db->getQuery($query);
-                
-                // empujar cheques con reembolso a array de cheques
-                array_push($compras, $reembolso);
-            }   
-        } 
 
         // insertar en cada ot sus cheques y compras
         $ot->cheques = $cheques;
@@ -1551,8 +1558,9 @@ function getPagos($ots, $db, $esmultiple) {
                     $ot = $orden;
                 }
 
-                $tipocambioprov = $db->getOneField("SELECT IFNULL((SELECT tipocambio FROM compra WHERE ordentrabajo = $ot->id AND tipocambio > 1),
-                (SELECT tipocambio FROM tranban WHERE iddetpresup = $ot->id AND tipocambio > 1))");
+                $tipocambioprov = $db->getOneField("SELECT IFNULL(IFNULL((SELECT tipocambio FROM compra WHERE ordentrabajo = $ot->id AND tipocambio > 1),
+                (SELECT tipocambio FROM tranban WHERE iddetpresup = $ot->id AND tipocambio > 1)), 
+                (SELECT tipocambio FROM detpresupuesto WHERE id = $ot->id))");
 
                 // crear array para sumas
                 $scompra = array();
@@ -1560,9 +1568,9 @@ function getPagos($ots, $db, $esmultiple) {
                 $stran = array();
                 
                 // traer monto, moneda y tipocambio de compra
-                $query = "SELECT totfact, idmoneda, tipocambio, isr FROM compra WHERE ordentrabajo = $ot->id AND idreembolso = 0
+                $query = "SELECT id, totfact, idmoneda, tipocambio, isr FROM compra WHERE ordentrabajo = $ot->id AND idreembolso = 0 AND id NOT IN(SELECT idcompra FROM detnotacompra) AND idtipofactura < 8
                 UNION ALL
-                SELECT b.totfact, b.tipocambio, b.isr, b.idmoneda FROM reembolso a 
+                SELECT b.id, b.totfact, b.tipocambio, b.isr, b.idmoneda FROM reembolso a 
                             INNER JOIN compra b ON b.idreembolso = a.id WHERE a.ordentrabajo = $ot->id";
                 $tcompras = $db->getQuery($query);
         
