@@ -277,7 +277,7 @@ function getTotales($orden, $ids, $db) {
     $montog = array_sum($sot);
 
     $query = "SELECT idmoneda, tipocambio, isr FROM compra WHERE ordentrabajo IN($ids_str) AND idreembolso = 0 UNION ALL 
-    SELECT b.tipocambio, b.isr, b.idmoneda FROM reembolso a 
+    SELECT b.idmoneda, b.tipocambio, b.isr FROM reembolso a 
             INNER JOIN compra b ON b.idreembolso = a.id WHERE a.ordentrabajo IN($ids_str)";
     $tcompras = $db->getQuery($query);
 
