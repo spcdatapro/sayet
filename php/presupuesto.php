@@ -249,9 +249,9 @@ function getTotales($orden, $ids, $db) {
 
     $ids_str = implode(',', $ids);
 
-    $tipocambioprov = $db->getOneField("SELECT IFNULL(IFNULL((SELECT tipocambio FROM compra WHERE ordentrabajo = $ot->id AND tipocambio > 1),
-    (SELECT tipocambio FROM tranban WHERE iddetpresup = $ot->id AND tipocambio > 1)), 
-    (SELECT tipocambio FROM detpresupuesto WHERE id = $ot->id))");
+    $tipocambioprov = $db->getOneField("SELECT IFNULL(IFNULL((SELECT tipocambio FROM compra WHERE ordentrabajo = $orden->id AND tipocambio > 1),
+    (SELECT tipocambio FROM tranban WHERE iddetpresup = $orden->id AND tipocambio > 1)), 
+    (SELECT tipocambio FROM detpresupuesto WHERE id = $orden->id))");
 
     $query = "SELECT monto, idmoneda, tipocambio FROM detpresupuesto WHERE id IN($ids_str)";
     $montots = $db->getQuery($query);
