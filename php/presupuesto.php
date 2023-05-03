@@ -233,12 +233,21 @@ $app->get('/getpresupuesto/:idpresupuesto', function ($idpresupuesto) {
 
     $cntsOts = count($orden->ots);
 
-    for ($i = 0; $i < $cntsOts; $i++) {
-        $ot = $orden->ots[$i];
-        array_push($ids, $ot->id);
-    }
+    if ($cntsOts > 0) {
 
-    getTotales($orden, $ids, $db);
+        for ($i = 0; $i < $cntsOts; $i++) {
+            $ot = $orden->ots[$i];
+            array_push($ids, $ot->id);
+        }
+
+        getTotales($orden, $ids, $db);
+
+    } else {
+        $orden->gastado = 0.00;
+        $orden->avance = 0.00;
+        $orden->diferencia = 0.00;
+        $orden->monto = 0.00;
+    }
 
     print json_encode([$orden]);
 });
