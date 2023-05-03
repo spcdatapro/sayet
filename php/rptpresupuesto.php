@@ -1558,8 +1558,8 @@ function getPagos($ots, $db, $esmultiple) {
                     $ot = $orden;
                 }
 
-                $tipocambioprov = $db->getOneField("SELECT IFNULL(IFNULL((SELECT tipocambio FROM compra WHERE ordentrabajo = $ot->id AND tipocambio > 1),
-                (SELECT tipocambio FROM tranban WHERE iddetpresup = $ot->id AND tipocambio > 1)), 
+                $tipocambioprov = $db->getOneField("SELECT IFNULL(IFNULL((SELECT tipocambio FROM compra WHERE ordentrabajo = $ot->id AND tipocambio > 1 LIMIT 1),
+                (SELECT tipocambio FROM tranban WHERE iddetpresup = $ot->id AND tipocambio > 1 LIMIT 1)), 
                 (SELECT tipocambio FROM detpresupuesto WHERE id = $ot->id))");
 
                 // crear array para sumas
