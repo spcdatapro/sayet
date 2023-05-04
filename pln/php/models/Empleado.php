@@ -945,8 +945,7 @@ class Empleado extends Principal
 
 		$texto_motivo = <<<EOT
 Desde la presente fecha se dan por terminadas las relaciones de trabajo entre el señor(a) {$this->emp->nombre} {$this->emp->apellidos} y {$empresa->nomempresa}.\n
-Por motivo: {$args['motivo']}.\n
-Puesto: $puesto->descripcion. \n
+Por motivo: {$args['motivo']}.    Puesto: $puesto->descripcion. \n
 Recibe en esta misma fecha todas las prestaciones a que tiene derecho según el CÓDIGO DE TRABAJO VIGENTE, como se detalla a continuación:
 EOT;
 
