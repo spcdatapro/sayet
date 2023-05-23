@@ -11,7 +11,7 @@ $app->get('/lstempresas', function(){
     $query = "SELECT a.id, IF(a.propia = 1, a.nomempresa, CONCAT(a.nomempresa, ' (Ajena)')) AS nomempresa, a.idmoneda, b.nommoneda, b.simbolo, a.propia, a.dectc, ";
     $query.= "a.retisr, a.abreviatura, TRIM(a.nit) AS nit, TRIM(a.formatofactura) AS formatofactura, a.congface, TRIM(a.seriefact) AS seriefact, a.correlafact, a.sifactura, a.fechavencefact, a.ultimocorrelativofact, a.direccion, ";
     $query.= "IF(a.congface = 0 AND a.sifactura = 1, (a.ultimocorrelativofact - a.correlafact), NULL) AS formspend, IF(a.congface = 0 AND a.sifactura = 1,TIMESTAMPDIFF(MONTH, DATE(NOW()), a.fechavencefact), NULL) AS mesesfaltan, ";
-    $query.= "a.ndplanilla ";
+    $query.= "a.ndplanilla, a.retenedora ";
     $query.= "FROM empresa a INNER JOIN moneda b ON b.id = a.idmoneda ";
     $query.= "ORDER BY a.propia DESC, a.nomempresa, b.nommoneda";
     print $db->doSelectASJson($query);
@@ -22,7 +22,7 @@ $app->get('/getemp/:idemp', function($idemp){
     $query = "SELECT a.id, IF(a.propia = 1, a.nomempresa, CONCAT(a.nomempresa, ' (Ajena)')) AS nomempresa, a.idmoneda, b.nommoneda, b.simbolo, a.propia, a.dectc, ";
     $query.= "a.retisr, a.abreviatura, TRIM(a.nit) AS nit, TRIM(a.formatofactura) AS formatofactura, a.congface, TRIM(a.seriefact) AS seriefact, a.correlafact, a.sifactura, a.fechavencefact, a.ultimocorrelativofact, a.direccion, ";
     $query.= "IF(a.congface = 0 AND a.sifactura = 1, (a.ultimocorrelativofact - a.correlafact), NULL) AS formspend, IF(a.congface = 0 AND a.sifactura = 1,TIMESTAMPDIFF(MONTH, DATE(NOW()), a.fechavencefact), NULL) AS mesesfaltan, ";
-    $query.= "a.ndplanilla ";
+    $query.= "a.ndplanilla, a.retenedora ";
     $query.= "FROM empresa a INNER JOIN moneda b ON b.id = a.idmoneda ";
     $query.= "WHERE a.id = ".$idemp;
     print $db->doSelectASJson($query);
@@ -33,8 +33,8 @@ $app->post('/c', function(){
     $db = new dbcpm();
     $d->seriefact = $d->seriefact != '' ? "'$d->seriefact'" : 'NULL';
     $d->fechavencefactstr = $d->fechavencefactstr != '' ? "'$d->fechavencefactstr'" : 'NULL';
-    $query = "INSERT INTO empresa(nomempresa, idmoneda, propia, abreviatura, nit, seriefact, correlafact, fechavencefact, ultimocorrelativofact, direccion, ndplanilla) VALUES(";
-    $query.= "'$d->nomempresa', $d->idmoneda, $d->propia, '$d->abreviatura', '$d->nit', $d->seriefact, $d->correlafact, $d->fechavencefactstr, $d->ultimocorrelativofact, '$d->direccion', $d->ndplanilla";
+    $query = "INSERT INTO empresa(nomempresa, idmoneda, propia, abreviatura, nit, seriefact, correlafact, fechavencefact, ultimocorrelativofact, direccion, ndplanilla, retenedora) VALUES(";
+    $query.= "'$d->nomempresa', $d->idmoneda, $d->propia, '$d->abreviatura', '$d->nit', $d->seriefact, $d->correlafact, $d->fechavencefactstr, $d->ultimocorrelativofact, '$d->direccion', $d->ndplanilla, $d->retenedora";
     $query.= ")";
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
@@ -47,7 +47,7 @@ $app->post('/u', function(){
     $d->fechavencefactstr = $d->fechavencefactstr != '' ? "'$d->fechavencefactstr'" : 'NULL';
     $query = "UPDATE empresa SET ";
     $query.= "nomempresa = '$d->nomempresa' , idmoneda = $d->idmoneda, propia = $d->propia, abreviatura = '$d->abreviatura', nit = '$d->nit', seriefact = $d->seriefact, correlafact = $d->correlafact, ";
-    $query.= "fechavencefact = $d->fechavencefactstr, ultimocorrelativofact = $d->ultimocorrelativofact, direccion = '$d->direccion', ndplanilla = $d->ndplanilla ";
+    $query.= "fechavencefact = $d->fechavencefactstr, ultimocorrelativofact = $d->ultimocorrelativofact, direccion = '$d->direccion', ndplanilla = $d->ndplanilla, retenedora = $d->retenedora ";
     $query.= "WHERE id = $d->id";
     $db->doQuery($query);
 });

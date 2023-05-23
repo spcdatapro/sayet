@@ -194,10 +194,11 @@ $app->post('/pendientesfel', function() {
 });
 
 function calculaImpuestosYTotal($db, $d, $factura) {
+    $empresaRetenedora = empresaRetenedora($db, $d->idempresa);
     $noEsExentoIVA = (int)$factura->exentoiva === 0;
     $factura->isrporretener = (int)$factura->retenerisr > 0 ? $db->calculaISR((float)$factura->montosiniva) : 0.00;
     $factura->isrporretenercnv = round($factura->isrporretener / (float)$d->tc, 2);
-    $factura->ivaporretener = $noEsExentoIVA ? ((int)$factura->reteneriva > 0 ? $db->calculaRetIVA((float)$factura->montosiniva, ((int)$factura->idtipocliente == 1 ? true : false), (float)$factura->montoconiva, ((int)$factura->idtipocliente == 2 ? true : false), (float)$factura->iva, (float)$factura->porcentajeretiva) : 0.00) : 0.00;
+    $factura->ivaporretener = $noEsExentoIVA ? ((int)$factura->reteneriva > 0 && !$empresaRetenedora ? $db->calculaRetIVA((float)$factura->montosiniva, ((int)$factura->idtipocliente == 1 ? true : false), (float)$factura->montoconiva, ((int)$factura->idtipocliente == 2 ? true : false), (float)$factura->iva, (float)$factura->porcentajeretiva) : 0.00) : 0.00;
     $factura->ivaporretenercnv = round($factura->ivaporretener / (float)$d->tc, 2);
     $factura->totapagar = round((float)$factura->montoconiva - ($factura->isrporretener + $factura->ivaporretener), 2);
     $factura->totapagarcnv = round($factura->totapagar / (float)$d->tc, 2);
@@ -959,5 +960,10 @@ $app->post('/prntfact', function(){
 
     print json_encode($facturas);
 });
+
+function empresaRetenedora ($db, $idempresa) {
+    $esRetenedora = $db->getOneField("SELECT retenedora FROM empresa WHERE id = $idempresa") == 1;
+    return $esRetenedora;
+}
 
 $app->run();
