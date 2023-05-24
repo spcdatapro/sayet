@@ -1618,11 +1618,11 @@ function getPagos($ots, $db, $esmultiple) {
         
                 for ($j = 0; $j < $cntTranas; $j++){
                     $tran = $trans[$j];
-                    $tc = $tran->tipocambio > 0 ? $tran->tipocambio : $tipocambioprov;
+                    $tc = $tran->tipocambio > 1 ? $tran->tipocambio : $tipocambioprov;
                     // si moneda de ot diferente a moneda de cheque usar t.c
-                    if ($ot->idmoneda != $tran->idmoneda) {
+                    if ($ot->idmoneda !== $tran->idmoneda) {
                         // si moneda es local multiplicar 
-                        if ($ot->idmoneda === 1) {
+                        if ($ot->idmoneda == 1) {
                             $monto = $tran->monto * $tc;
                         // si moneda no es local divir
                         } else {

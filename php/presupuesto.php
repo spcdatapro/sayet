@@ -334,7 +334,7 @@ function getTotales($orden, $ids, $db) {
         
     for ($j = 0; $j < $cntTranas; $j++){
         $tran = $trans[$j];
-        $tc = $tran->monto * $tran->tipocambio > 0 ? $tran->tipocambio : $tipocambioprov;
+        $tc = $tran->monto * $tran->tipocambio > 1 ? $tran->tipocambio : $tipocambioprov;
         // si moneda de ot diferente a moneda de cheque usar t.c
         if ($orden->idmoneda !== $tran->idmoneda) {
             // si moneda es local multiplicar 
