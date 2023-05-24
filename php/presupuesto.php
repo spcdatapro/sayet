@@ -273,13 +273,14 @@ function getTotales($orden, $ids, $db) {
 
     for ($i = 0; $i < $cntsMontos; $i++) {
         $montot = $montots[$i];
+        $tc = $montot->tipocambio > 1 ? $montot->tipocambio : $tipocambioprov;
     if ($montot->idmoneda !== $orden->idmoneda) {
         // si moneda es local multiplicar 
         if ($orden->idmoneda == 1) {
-            $monto = $montot->monto * $montot->tipocambio;
+            $monto = $montot->monto * $tc;
         // si moneda no es local divir
         } else {
-            $monto = $montot->monto / $montot->tipocambio;
+            $monto = $montot->monto / $tc;
         }
         // insertar monto
         } else {
@@ -300,14 +301,15 @@ function getTotales($orden, $ids, $db) {
         
     for ($j = 0; $j < $cntCompras; $j++){
         $compra = $tcompras[$j];
+        $tc = $compra->tipocambio > 1 ? $compra->tipocambio : $tipocambioprov;
         // si moneda de ot diferente a moneda de compra usar t.c
-        if ($orden->idmoneda != $compra->idmoneda) {
+        if ($orden->idmoneda !== $compra->idmoneda) {
             // si moneda es local multiplicar 
             if ($orden->idmoneda == 1) {
-                $montoisr = $compra->isr * $tipocambioprov;
+                $montoisr = $compra->isr * $tc;
             // si moneda no es local divir
             } else {
-                $montoisr = $compra->isr / $tipocambioprov;
+                $montoisr = $compra->isr / $tc;
             }
         // insertar monto
         } else {
@@ -332,14 +334,15 @@ function getTotales($orden, $ids, $db) {
         
     for ($j = 0; $j < $cntTranas; $j++){
         $tran = $trans[$j];
+        $tc = $tran->monto * $tran->tipocambio > 0 ? $tran->tipocambio : $tipocambioprov;
         // si moneda de ot diferente a moneda de cheque usar t.c
-        if ($orden->idmoneda != $tran->idmoneda) {
+        if ($orden->idmoneda !== $tran->idmoneda) {
             // si moneda es local multiplicar 
-            if ($orden->idmoneda === 1) {
-                $monto = $tran->monto * $tipocambioprov;
+            if ($orden->idmoneda == 1) {
+                $monto = $tran->monto * $tc;
             // si moneda no es local divir
             } else {
-                $monto = $tran->monto / $tipocambioprov;
+                $monto = $tran->monto * $tc;
             }
         // insertar monto
         } else {
@@ -356,10 +359,10 @@ function getTotales($orden, $ids, $db) {
     $gastado = $ttran + $tisr;
 
     // opracion para proventaje de avance en OT
-    $avance = (($ttran + $tisr) * 100) / $orden->total;
+    $avance = (($gastado) * 100) / $montog;
 
     // operacion diferencia
-    $diferencia = $orden->total - $gastado;
+    $diferencia = $montog - $gastado;
 
     // insertar valores
     $orden->gastado = number_format($gastado, 2, '.', ',');

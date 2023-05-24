@@ -1568,26 +1568,27 @@ function getPagos($ots, $db, $esmultiple) {
                 $stran = array();
                 
                 // traer monto, moneda y tipocambio de compra
-                $query = "SELECT id, totfact, idmoneda, tipocambio, isr FROM compra WHERE ordentrabajo = $ot->id AND idreembolso = 0 AND id NOT IN(SELECT idcompra FROM detnotacompra) AND idtipofactura < 8
-                UNION ALL
-                SELECT b.id, b.totfact, b.idmoneda, b.tipocambio, b.isr FROM reembolso a 
-                            INNER JOIN compra b ON b.idreembolso = a.id WHERE a.ordentrabajo = $ot->id";
+                $query = "SELECT id, totfact, idmoneda, tipocambio, isr FROM compra WHERE ordentrabajo = $ot->id AND idreembolso = 0 
+                AND id NOT IN(SELECT idcompra FROM detnotacompra) AND idtipofactura < 8
+                UNION ALL SELECT b.id, b.totfact, b.idmoneda, b.tipocambio, b.isr FROM reembolso a 
+                INNER JOIN compra b ON b.idreembolso = a.id WHERE a.ordentrabajo = $ot->id";
                 $tcompras = $db->getQuery($query);
         
                 $cntCompras = count($tcompras);
         
                 for ($j = 0; $j < $cntCompras; $j++){
                     $compra = $tcompras[$j];
+                    $tc = $compra->tipocambio > 1 ? $compra->tipocambio : $tipocambioprov;
                     // si moneda de ot diferente a moneda de compra usar t.c
                     if ($ot->idmoneda != $compra->idmoneda) {
                         // si moneda es local multiplicar 
                         if ($ot->idmoneda == 1) {
-                            $monto = $compra->totfact * $tipocambioprov;
-                            $montoisr = $compra->isr * $tipocambioprov;
+                            $monto = $compra->totfact * $tc;
+                            $montoisr = $compra->isr * $tc;
                         // si moneda no es local divir
                         } else {
-                            $monto = $compra->totfact / $tipocambioprov;
-                            $montoisr = $compra->isr / $tipocambioprov;
+                            $monto = $compra->totfact / $tc;
+                            $montoisr = $compra->isr / $tc;
                         }
                     // insertar monto
                     } else {
@@ -1617,14 +1618,15 @@ function getPagos($ots, $db, $esmultiple) {
         
                 for ($j = 0; $j < $cntTranas; $j++){
                     $tran = $trans[$j];
+                    $tc = $tran->tipocambio > 0 ? $tran->tipocambio : $tipocambioprov;
                     // si moneda de ot diferente a moneda de cheque usar t.c
                     if ($ot->idmoneda != $tran->idmoneda) {
                         // si moneda es local multiplicar 
                         if ($ot->idmoneda === 1) {
-                            $monto = $tran->monto * $tipocambioprov;
+                            $monto = $tran->monto * $tc;
                         // si moneda no es local divir
                         } else {
-                            $monto = $tran->monto / $tipocambioprov;
+                            $monto = $tran->monto / $tc;
                         }
                     // insertar monto
                     } else {
