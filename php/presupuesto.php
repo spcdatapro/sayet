@@ -228,7 +228,8 @@ $app->get('/getpresupuesto/:idpresupuesto', function ($idpresupuesto) {
                     INNER JOIN
                 moneda e ON a.idmoneda = e.id
             WHERE
-                a.idpresupuesto = $idpresupuesto";
+                a.idpresupuesto = $idpresupuesto
+                AND a.idestatuspresupuesto IN(1, 2, 3, 5)";
     $orden->ots = $db->getQuery($query);
 
     $cntsOts = count($orden->ots);
