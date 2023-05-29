@@ -87,7 +87,7 @@ $app->post('/finanzas', function(){
                         c.cuentac AS codigo,
                         c.desctiposervventa AS cuenta,
                         IFNULL(e.nombrecorto, e.nombre) AS cliente,
-                        IFNULL(SUBSTRING(UnidadesPorContrato(d.id), 1, 20), 'N/A') AS unidad,
+                        IFNULL(SUBSTRING(UnidadesPorContrato(d.id), 1, 15), 'N/A') AS unidad,
                         CONCAT(a.serie, '-', a.numero) AS factura,
                         IFNULL(ROUND(MCuadPorContrato(d.id), 2), 0.00) AS mcuad,
                         IFNULL(ROUND(ROUND((b.preciotot * IF(a.idtipofactura <> 9, 1, -1)) / 1.12, 2) / IFNULL(ROUND(MCuadPorContrato(d.id), 2), 0.00),
@@ -116,7 +116,7 @@ $app->post('/finanzas', function(){
 
         // traer cuentas con movimiento de egresos
         $query = "SELECT 
-                    c.id, c.codigo, SUBSTRING(REPLACE(c.nombrecta, 'Ñ', 'N'), 1, 25) AS cuenta, ROUND(SUM(b.subtotal), 2) AS total
+                    c.id, c.codigo, SUBSTRING(REPLACE(c.nombrecta, 'Ñ', 'N'), 1, 18) AS cuenta, ROUND(SUM(b.subtotal), 2) AS total
                 FROM
                     compraproyecto a
                         INNER JOIN
@@ -129,7 +129,7 @@ $app->post('/finanzas', function(){
                         AND b.fechafactura <= $d->fal
                 GROUP BY c.id 
                 UNION SELECT 
-                    c.id, c.codigo, SUBSTRING(REPLACE(c.nombrecta, 'Ñ', 'N'), 1, 25) AS cuenta, ROUND(SUM(b.subtotal), 2) AS total
+                    c.id, c.codigo, SUBSTRING(REPLACE(c.nombrecta, 'Ñ', 'N'), 1, 18) AS cuenta, ROUND(SUM(b.subtotal), 2) AS total
                 FROM
                     detallecontable a
                         INNER JOIN
@@ -183,7 +183,7 @@ $app->post('/finanzas', function(){
                             SUBSTRING(REPLACE(e.beneficiario, 'Ñ', 'N'), 1, 30) AS beneficiario,
                             IFNULL(CONCAT(f.idpresupuesto, '-', f.correlativo),
                                     '') AS orden,
-                            SUBSTRING(b.conceptomayor, 1, 30) AS concepto,
+                            SUBSTRING(b.conceptomayor, 1, 50) AS concepto,
                             DATE_FORMAT(b.fechafactura, '%d/%m/%Y') AS fechafact,
                             b.documento,
                             ROUND(b.subtotal, 2) AS total
@@ -209,7 +209,7 @@ $app->post('/finanzas', function(){
                             c.nombrecta,
                             DATE_FORMAT(IFNULL(e.fecha, g.fecha), '%d/%m/%Y') AS fechatran,
                             IFNULL(CONCAT(e.tipotrans, ' ', e.numero), CONCAT(g.tipotrans, ' ', g.numero)) AS cheque,
-                            SUBSTRING(IFNULL(SUBSTRING(REPLACE(e.beneficiario, 'Ñ', 'N'), 1, 20), SUBSTRING(REPLACE(g.beneficiario, 'Ñ', 'N'), 1, 17)), 1, 17) AS beneficiario,
+                            SUBSTRING(IFNULL(SUBSTRING(REPLACE(e.beneficiario, 'Ñ', 'N'), 1, 30), SUBSTRING(REPLACE(g.beneficiario, 'Ñ', 'N'), 1, 17)), 1, 17) AS beneficiario,
                             IFNULL(CONCAT(f.idpresupuesto, '-', f.correlativo),
                                     '') AS orden,
                             SUBSTRING(b.conceptomayor, 1, 50) AS concepto,
