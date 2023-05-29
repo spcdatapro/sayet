@@ -268,8 +268,7 @@ $app->post('/finanzas', function(){
                                 NULL AS conceptomayor,
                                 NULL AS fechafact,
                                 'Cuota patronal' AS documento,
-                                ROUND(a.sueldoordinario + a.sueldoextra * 0.1267,
-                                        2) AS total
+                                ROUND((a.sueldoordinario + a.sueldoextra) * 0.1267, 2) AS total
                             FROM
                                 plnnomina a
                                     INNER JOIN
