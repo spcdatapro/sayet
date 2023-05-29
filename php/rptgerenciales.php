@@ -209,7 +209,7 @@ $app->post('/finanzas', function(){
                             c.nombrecta,
                             DATE_FORMAT(IFNULL(e.fecha, g.fecha), '%d/%m/%Y') AS fechatran,
                             IFNULL(CONCAT(e.tipotrans, ' ', e.numero), CONCAT(g.tipotrans, ' ', g.numero)) AS cheque,
-                            SUBSTRING(IFNULL(SUBSTRING(REPLACE(e.beneficiario, 'Ñ', 'N'), 1, 30), SUBSTRING(REPLACE(g.beneficiario, 'Ñ', 'N'), 1, 17)), 1, 17) AS beneficiario,
+                            SUBSTRING(IFNULL(SUBSTRING(REPLACE(e.beneficiario, 'Ñ', 'N'), 1, 30), SUBSTRING(REPLACE(g.beneficiario, 'Ñ', 'N'), 1, 30)), 1, 30) AS beneficiario,
                             IFNULL(CONCAT(f.idpresupuesto, '-', f.correlativo),
                                     '') AS orden,
                             SUBSTRING(b.conceptomayor, 1, 50) AS concepto,
@@ -248,6 +248,7 @@ $app->post('/finanzas', function(){
                                 NULL AS orden,
                                 NULL AS concepto,
                                 NULL AS fechafact,
+                                'Devengado' AS documento,
                                 ROUND(a.descanticipo + a.liquido + a.descprestamo, 2) AS total
                             FROM
                                 plnnomina a
@@ -262,11 +263,12 @@ $app->post('/finanzas', function(){
                                 'PLANILLA' AS nombrecta,
                                 DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fechatran,
                                 NULL AS cheque,
-                                'CUOTA PATRONAL' AS beneficiario,
+                                SUBSTRING(CONCAT(b.nombre, ' ', IFNULL(b.apellidos, '')), 1, 30) AS beneficiario,
                                 NULL AS orden,
                                 NULL AS conceptomayor,
                                 NULL AS fechafact,
-                                ROUND(SUM(a.sueldoordinario + a.sueldoextra) * 0.1267,
+                                'Cuota patronal' AS documento,
+                                ROUND(a.sueldoordinario + a.sueldoextra * 0.1267,
                                         2) AS total
                             FROM
                                 plnnomina a
