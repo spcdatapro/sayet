@@ -25,7 +25,12 @@ $app->post('/finanzas', function(){
     $letra = new stdClass();
 
     $letra->del = $meses[$mesdel-1].$aniodel;
-    $letra->al = $meses[$mesal-1].$anioal;
+
+    if ($mesal != $mesdel) {
+        $letra->al = 'a '.$meses[$mesal-1].$anioal;
+    } else {
+        $letra->al = '';
+    }
 
     // traer empresas empresas con movimiento
     $query = "SELECT id, nomempresa AS nombre FROM empresa WHERE ";
