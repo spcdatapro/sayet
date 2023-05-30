@@ -29,7 +29,7 @@ $app->post('/finanzas', function(){
     if ($mesal != $mesdel) {
         $letra->al = 'a '.$meses[$mesal-1].$anioal;
     } else {
-        $letra->al = '';
+        $letra->al = $anioal;
     }
 
     // traer empresas empresas con movimiento
