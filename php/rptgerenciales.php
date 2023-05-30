@@ -251,9 +251,9 @@ $app->post('/finanzas', function(){
                                 NULL AS cheque,
                                 SUBSTRING(CONCAT(b.nombre, ' ', IFNULL(b.apellidos, '')), 1, 30) AS beneficiario,
                                 NULL AS orden,
-                                NULL AS concepto,
+                                'Devengado' AS concepto,
                                 NULL AS fechafact,
-                                'Devengado' AS documento,
+                                NULL AS documento,
                                 ROUND(a.descanticipo + a.liquido + a.descprestamo, 2) AS total
                             FROM
                                 plnnomina a
@@ -270,9 +270,9 @@ $app->post('/finanzas', function(){
                                 NULL AS cheque,
                                 SUBSTRING(CONCAT(b.nombre, ' ', IFNULL(b.apellidos, '')), 1, 30) AS beneficiario,
                                 NULL AS orden,
-                                NULL AS conceptomayor,
+                                'Cuota patronal' AS conceptomayor,
                                 NULL AS fechafact,
-                                'Cuota patronal' AS documento,
+                                NULL AS documento,
                                 ROUND((a.sueldoordinario + a.sueldoextra) * 0.1267, 2) AS total
                             FROM
                                 plnnomina a
