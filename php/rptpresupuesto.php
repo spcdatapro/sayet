@@ -1342,7 +1342,7 @@ function getPagos($ots, $db, $esmultiple) {
         // traer compras individuales
         $query = "SELECT 
             DATE_FORMAT(a.fechafactura, '%d/%m/%y') AS fecha,
-            SUBSTRING(c.nombre, 1, 20) AS proveedor,
+            SUBSTRING(IFNULL(c.nombre, a.proveedor), 1, 20) AS proveedor,
             a.documento AS factura,
             ROUND(a.totfact, 2) AS monto,
             ROUND(a.isr, 2) AS isr,
@@ -1355,7 +1355,7 @@ function getPagos($ots, $db, $esmultiple) {
             compra a
                 INNER JOIN
             tipofactura b ON a.idtipofactura = b.id
-                INNER JOIN
+                LEFT JOIN
             proveedor c ON a.idproveedor = c.id
                 INNER JOIN
             moneda d ON a.idmoneda = d.id
