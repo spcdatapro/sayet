@@ -105,8 +105,9 @@ class contabilidad{
         $query.= "UNION ALL ";
         $query.= "SELECT CONCAT('P', YEAR(b.fechaingreso), LPAD(MONTH(b.fechaingreso), 2, '0'), LPAD(DAY(b.fechaingreso), 2, '0'), LPAD(5, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fechaingreso AS fecha, ";
         $query.= "CONCAT('Compra', ' ', b.serie, '-', b.documento, ' ', IFNULL(b.proveedor, '')) AS referencia, b.conceptomayor AS concepto, b.id, 5 AS origen, ";
-        $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber, CONCAT(d.tipotrans, d.numero) AS transaccion ";
+        $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber, IFNULL(CONCAT(d.tipotrans, d.numero), CONCAT(f.tipotrans, f.numero)) AS transaccion ";
         $query.= "FROM compra b INNER JOIN reembolso c ON c.id = b.idreembolso LEFT JOIN tranban d ON d.id = c.idtranban ";
+        $query.= "LEFT JOIN dettranreem e ON e.idreembolso = c.id LEFT JOIN tranban f ON e.idtranban = f.id ";
         $query.= "LEFT JOIN(".$this->detalleContable(5).") x ON b.id = x.idorigen ";
         $query.= "WHERE b.idreembolso > 0 AND ";
         $query.= !$anterior ? "b.fechaingreso >= '$this->_fdel' AND b.fechaingreso <= '$this->_fal' " : "b.fechaingreso < '$this->_fdel' ";
