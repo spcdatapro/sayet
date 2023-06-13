@@ -19,7 +19,7 @@ $app->get('/lstprovs(/:todos)', function($todos = 0){
 $app->get('/getprov/:idprov', function($idprov){
     $db = new dbcpm();
     $query = "SELECT a.id, a.nit, a.nombre, a.direccion, a.telefono, a.correo, a.concepto, a.chequesa, a.retensionisr, a.diascred, a.limitecred, a.idbancopais, ";
-    $query.= "a.pequeniocont, CONCAT('(', a.nit, ') ', a.nombre, ' (', b.simbolo, ')') AS nitnombre, a.tipcuenta, a.idmoneda, b.nommoneda AS moneda, a.tipocambioprov, a.debaja, a.cuentabanco, a.recurrente, a.identificacion ";
+    $query.= "a.pequeniocont, CONCAT('(', a.nit, ') ', a.nombre, ' (', b.simbolo, ')') AS nitnombre, a.tipcuenta, a.idmoneda, b.nommoneda AS moneda, a.tipocambioprov, a.debaja, a.cuentabanco, a.recurrente, a.identificacion, a.retensioniva ";
     $query.= "FROM proveedor a INNER JOIN moneda b ON b.id = a.idmoneda ";
     $query.= "WHERE a.id = ".$idprov;
     print $db->doSelectASJson($query);
@@ -28,7 +28,7 @@ $app->get('/getprov/:idprov', function($idprov){
 $app->get('/getprovbynit/:nit', function($nit){
     $db = new dbcpm();
     $query = "SELECT a.id, a.nit, a.nombre, a.direccion, a.telefono, a.correo, a.concepto, a.chequesa, a.retensionisr, a.diascred, a.limitecred, a.idbancopais, ";
-    $query.= "a.pequeniocont, CONCAT('(', a.nit, ') ', a.nombre, ' (', b.simbolo, ')') AS nitnombre, a.tipcuenta, a.idmoneda, b.nommoneda AS moneda, a.tipocambioprov, a.debaja, a.cuentabanco, a.recurrente, a.identificacion ";
+    $query.= "a.pequeniocont, CONCAT('(', a.nit, ') ', a.nombre, ' (', b.simbolo, ')') AS nitnombre, a.tipcuenta, a.idmoneda, b.nommoneda AS moneda, a.tipocambioprov, a.debaja, a.cuentabanco, a.recurrente, a.identificacion, a.retensioniva ";
     $query.= "FROM proveedor a INNER JOIN moneda b ON b.id = a.idmoneda ";
     $query.= "WHERE TRIM(a.nit) = '".trim($nit)."' LIMIT 1";
     print $db->doSelectASJson($query);
@@ -53,9 +53,10 @@ $app->post('/c', function(){
     if (!isset($d->tipcuenta)) { $d->tipcuenta = 'NULL'; }
 
     $query = "INSERT INTO proveedor(nit, nombre, direccion, telefono, correo, concepto, chequesa, ";
-    $query.= "retensionisr, diascred, limitecred, pequeniocont, idmoneda, tipocambioprov, debaja, cuentabanco, recurrente, idbancopais, tipcuenta, identificacion) ";
+    $query.= "retensionisr, diascred, limitecred, pequeniocont, idmoneda, tipocambioprov, debaja, cuentabanco, recurrente, idbancopais, tipcuenta, identificacion, retensioniva) ";
     $query.= "VALUES('$d->nit', '$d->nombre', '$d->direccion', '$d->telefono', '$d->correo', '$d->concepto', '$d->chequesa', ";
-    $query.= "$d->retensionisr, $d->diascred, $d->limitecred, $d->pequeniocont, $d->idmoneda, $d->tipocambioprov, $d->debaja, $d->cuentabanco, $d->recurrente, $d->idbancopais, $d->tipcuenta, $d->identificacion)";
+    $query.= "$d->retensionisr, $d->diascred, $d->limitecred, $d->pequeniocont, $d->idmoneda, $d->tipocambioprov, $d->debaja, $d->cuentabanco, $d->recurrente, $d->idbancopais, $d->tipcuenta, $d->identificacion ";
+    $query.= "$d->retensioniva)";
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
 });
@@ -81,7 +82,7 @@ $app->post('/u', function(){
     $query = "UPDATE proveedor SET nit = '$d->nit', nombre = '$d->nombre', direccion = '$d->direccion', telefono = '$d->telefono', correo = '$d->correo', concepto = '$d->concepto', ";
     $query.= "chequesa = '$d->chequesa', retensionisr = $d->retensionisr, diascred = $d->diascred, limitecred = $d->limitecred, pequeniocont = $d->pequeniocont, ";
     $query.= "idmoneda = $d->idmoneda, tipocambioprov = $d->tipocambioprov, debaja = $d->debaja, cuentabanco = $d->cuentabanco, "; 
-    $query.= "idbancopais = $d->idbancopais, recurrente = $d->recurrente, tipcuenta = $d->tipcuenta, identificacion = $d->identificacion ";
+    $query.= "idbancopais = $d->idbancopais, recurrente = $d->recurrente, tipcuenta = $d->tipcuenta, identificacion = $d->identificacion, retensioniva = $d->retensioniva ";
     $query.= "WHERE id = $d->id";
     // print $query;
     $db->doQuery($query);

@@ -45,6 +45,8 @@
             $scope.docsLiquida = [];
             $scope.liquida = false;
             $scope.servicios = [];
+            $scope.formulario = { idcompra: undefined, noform: undefined, noacceso: undefined, fecha: new Date(),
+                mes: undefined, anio: undefined, fechastr: undefined };
 
             $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
 
@@ -124,7 +126,7 @@
                     objEmpresa: $scope.laCompra.objEmpresa, objMoneda: {}, tipocambio: 1, isr: 0.00, galones: 0.00, idp: 0.00, objTipoCombustible: {},
                     totfact: 0.00, subtotal: 0.00, iva: 0.00, ordentrabajo: undefined, idproyecto: undefined, idunidad: undefined, nombrerecibo: undefined,
                     idcheque: undefined, alcontado: 0, iddocliquida: undefined, idservicio: undefined, lecturaini: undefined,
-                    lecturafin: undefined, preciouni: undefined, ffin: new Date(), fini: moment().startOf('month').toDate()
+                    lecturafin: undefined, preciouni: undefined, ffin: new Date(), fini: moment().startOf('month').toDate(), retiva: '0.00'
                 };
                 $scope.search = "";
                 $scope.facturastr = '';
@@ -380,6 +382,7 @@
                     data[i].lecturafin = +data[i].lecturafin;
                     data[i].fini = moment(data[i].fechaini).toDate();
                     data[i].ffin = moment(data[i].fechafin).toDate();
+                    data[i].retiva = +data[i].retiva;
                 }
                 return data;
             }
@@ -411,6 +414,26 @@
                     resolve: {
                         compra: function () {
                             return $scope.laCompra;
+                        }
+                    }
+                });
+
+                modalInstance.result.then(function (idcompra) {
+                    $scope.getCompra(parseInt(idcompra));
+                }, function () { return 0; });
+            };
+
+            $scope.modalIVA = function () {
+                var modalInstance = $uibModal.open({
+                    animation: true,
+                    templateUrl: 'modalIVA.html',
+                    controller: 'ModalIVA',
+                    resolve: {
+                        compra: function () {
+                            return $scope.laCompra;
+                        },
+                        formulario: function () {
+                            return $scope.formulario;
                         }
                     }
                 });
@@ -454,6 +477,13 @@
                             $scope.tranpago = d;
                             $scope.yaPagada = $scope.tranpago.length > 0;
                         });
+
+                        $scope.formulario.idcompra = d[0].idcompra;
+                        $scope.formulario.noform = d[0].noform;
+                        $scope.formulario.noacceso = d[0].noacceso;
+                        $scope.formulario.fecha = moment(d[0].fecha).toDate();
+                        $scope.formulario.mes = d[0].mes;
+                        $scope.formulario.anio = d[0].anio;
 
                         compraSrvc.getDocLiquida($scope.laCompra.id).then(function (d) {
                             for (var i = 0; i < d.length; i++) {
@@ -953,6 +983,35 @@
 
         $scope.ok = (obj) => $uibModalInstance.close(obj);
 
+
+    }]);
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------//
+    compractrl.controller('ModalIVA', ['$scope', '$uibModalInstance', 'compra', 'compraSrvc', 'formulario', function (
+        $scope, $uibModalInstance, compra, compraSrvc, formulario) {
+        $scope.compra = compra;
+        $scope.formulario = formulario;
+
+        $scope.formulario.mes = moment($scope.formulario.fecha).month() + 1;
+        $scope.formulario.anio = moment($scope.formulario.fecha).year();
+
+        $scope.setMesAnio = function () {
+            if (moment($scope.formulario.fecha).isValid()) {
+                $scope.formulario.mes = moment($scope.formulario.fecha).month() + 1;
+                $scope.formulario.anio = moment($scope.formulario.fecha).year();
+                $scope.formulario.fechastr = moment($scope.formulario.fecha).format('YYYY-MM-DD');
+            };
+        }
+
+        $scope.formulario.idcompra = compra.id;
+
+        $scope.ok = function () {
+            compraSrvc.editRow($scope.formulario, 'civa').then(function () { $uibModalInstance.close($scope.compra.id); });
+        };
+
+        $scope.cancel = function () {
+            $uibModalInstance.dismiss('cancel');
+        };
 
     }]);
 

@@ -61,10 +61,12 @@ $app->get('/getcompra/:idcompra(/:idot)', function($idcompra, $idot = 0){
     $query.= "a.ordentrabajo, a.totfact, a.noafecto, a.subtotal, a.iva, a.idmoneda, a.tipocambio, f.simbolo AS moneda, ";
     $query.= "a.idtipofactura, g.desctipofact AS tipofactura, a.isr, a.idtipocombustible, h.descripcion AS tipocombustible, a.galones, a.idp, ";
     $query.= "a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, g.siglas, a.idproyecto, a.idunidad, a.nombrerecibo, a.alcontado, ";
-    $query.= "i.idservicio, i.preciouni, i.lecturaini, i.lecturafin, i.fechafin, i.fechaini ";
+    $query.= "i.idservicio, i.preciouni, i.lecturaini, i.lecturafin, i.fechafin, i.fechaini, a.retiva, ";
+    $query.= "j.idcompra, j.noform, j.noacceso, j.fecha, j.mes, j.anio ";
     $query.= "FROM compra a INNER JOIN proveedor b ON b.id = a.idproveedor INNER JOIN tipocompra c ON c.id = a.idtipocompra ";
     $query.= "INNER JOIN empresa d ON d.id = a.idempresa LEFT JOIN moneda f ON f.id = a.idmoneda LEFT JOIN tipofactura g ON g.id = a.idtipofactura ";
     $query.= "LEFT JOIN tipocombustible h ON h.id = a.idtipocombustible LEFT JOIN compserv i ON i.idcompra = a.id ";
+    $query.= "LEFT JOIN formiva j ON j.idcompra = a.id ";
     $query.= "WHERE ";
 
     if($idcompra > 0 && $idot == 0) {
@@ -168,6 +170,7 @@ function insertaDetalleContable($d, $idorigen){
 
     $ctaisrretenido = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 8");
     $ctaidp = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 9");
+    $ctaivaretener = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 28");
     $d->conceptoprov.= ", ".$d->serie." - ".$d->documento;
     $d->idp = (float)$d->idp;
 
@@ -191,6 +194,12 @@ function insertaDetalleContable($d, $idorigen){
             $db->doQuery($query);
         }
 
+        if($ctaivaretener > 0 && $d->retIva > 0){
+            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
+            $query.= $origen.", ".$idorigen.", ".$ctaivaretener.", 0.00, ".round(((float)$d->retIva * (float)$d->tipocambio), 2).", '".$d->conceptomayor."')";
+            $db->doQuery($query);
+        }
+
         if($ctaidp > 0 && $d->idp > 0){
             $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
             $query.= $origen.", ".$idorigen.", ".$ctaidp.", ".round(((float)$d->idp * (float)$d->tipocambio), 2).", 0.00, '".$d->conceptomayor."')";
@@ -199,7 +208,7 @@ function insertaDetalleContable($d, $idorigen){
 
         if($ctaproveedores > 0){
             $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
-            $query.= $origen.", ".$idorigen.", ".$ctaproveedores.", 0.00, ".round((((float)$d->totfact - $d->isr) * (float)$d->tipocambio), 2).", '".$d->conceptomayor."')";
+            $query.= $origen.", ".$idorigen.", ".$ctaproveedores.", 0.00, ".round((((float)$d->totfact - $d->isr - $d->retIva) * (float)$d->tipocambio), 2).", '".$d->conceptomayor."')";
             $db->doQuery($query);
         }
     } else {
@@ -220,6 +229,12 @@ function insertaDetalleContable($d, $idorigen){
             $query.= $origen.", ".$idorigen.", ".$ctaisrretenido.", 0.00, ".round(((float)$d->isr * (float)$d->tipocambio), 2).", '".$d->conceptomayor."')";
             $db->doQuery($query);
         }
+
+        if($ctaisrretenido > 0 && $d->isr > 0){
+            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, haber, debe, conceptomayor) VALUES(";
+            $query.= $origen.", ".$idorigen.", ".$ctaivaretener.", 0.00, ".round(((float)$d->retIva * (float)$d->tipocambio), 2).", '".$d->conceptomayor."')";
+            $db->doQuery($query);
+        }
     
         if($ctaidp > 0 && $d->idp > 0){
             $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, haber, debe, conceptomayor) VALUES(";
@@ -229,7 +244,7 @@ function insertaDetalleContable($d, $idorigen){
     
         if($ctaproveedores > 0){
             $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, haber, debe, conceptomayor) VALUES(";
-            $query.= $origen.", ".$idorigen.", ".$ctaproveedores.", 0.00, ".round((((float)$d->totfact - $d->isr) * (float)$d->tipocambio), 2).", '".$d->conceptomayor."')";
+            $query.= $origen.", ".$idorigen.", ".$ctaproveedores.", 0.00, ".round((((float)$d->totfact - $d->isr - $d->retIva) * (float)$d->tipocambio), 2).", '".$d->conceptomayor."')";
             $db->doQuery($query); 
         }
     }
@@ -304,13 +319,29 @@ $app->post('/c', function(){
     if(!isset($d->nombrerecibo)){ $d->nombrerecibo = 'NULL'; } else { $d->nombrerecibo = "'$d->nombrerecibo'"; }
     if(!isset($d->idcheque)){ $d->idcheque = 0; }
 
+    $calcisr = false;
+    $d->retIva = 0.00;
+
+    // ver si empresa es retenedora
+    $empresaRet = (int)$db->getOneField("SELECT retenedora FROM empresa WHERE id = $d->idempresa") === 1;
+    // ver si proveedor es peque cont.
+    $esPeque = (int)$db->getOneField("SELECT pequeniocont FROM proveedor WHERE id = $d->idproveedor") === 1;
+    // ver si el proveedor esta marcado como retenedor
+    $esRet = (int)$db->getOneField("SELECT retensioniva FROM proveedor WHERE id = $d->idproveedor ") === 1;
+    $esLocalMonedaFact = (int)$db->getOneField("SELECT eslocal FROM moneda WHERE id = $d->idmoneda") === 1;
+
     if((int)$d->idtipofactura !== 5) {
         $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
-    } else {
-        $calcisr = false;
+
+        // si la empresa es retenedora y el proveedor no es retenedor retener iva
+        if (($empresaRet && !$esRet) && $d->totfact >= 2500) {
+            // si es pequeno enviar 5%
+            $d->retIva = $esPeque ? $db->retIVA((float)$d->totfact, 0.05, $d->tipocambio, $esLocalMonedaFact) :
+            // si no 15%
+            $db->retIVA((float)$d->iva, 0.15, $d->tipocambio, $esLocalMonedaFact);
+        }
     }
-    
-    $esLocalMonedaFact = (int)$db->getOneField("SELECT eslocal FROM moneda WHERE id = $d->idmoneda") === 1;
+
     
     if ($esLocalMonedaFact) {
         $d->isr = !$calcisr ? 0.00 : $db->calculaISR((float)$d->subtotal);
@@ -319,11 +350,11 @@ $app->post('/c', function(){
     }
 
     $query = "INSERT INTO compra(idempresa, idproveedor, serie, documento, fechaingreso, mesiva, fechafactura, idtipocompra, ";
-    $query.= "conceptomayor, creditofiscal, extraordinario, fechapago, ordentrabajo, totfact, noafecto, subtotal, iva, idmoneda, tipocambio, ";
+    $query.= "conceptomayor, creditofiscal, extraordinario, fechapago, ordentrabajo, totfact, noafecto, subtotal, iva, retiva, idmoneda, tipocambio, ";
     $query.= "idtipofactura, isr, idtipocombustible, galones, idp, idproyecto, idunidad, nombrerecibo, alcontado) ";
     $query.= "VALUES(".$d->idempresa.", ".$d->idproveedor.", '".$d->serie."', ".$d->documento.", '".$d->fechaingresostr."', ".$d->mesiva.", '".$d->fechafacturastr."', ";
     $query.= $d->idtipocompra.", '".$d->conceptomayor."', ".$d->creditofiscal.", ".$d->extraordinario.", '".$d->fechapagostr."', ".$d->ordentrabajo.", ";
-    $query.= $d->totfact.", ".$d->noafecto.", ".$d->subtotal.", ".$d->iva.", ".$d->idmoneda.", ".$d->tipocambio.", ".$d->idtipofactura.", ".$d->isr.", ";
+    $query.= $d->totfact.", ".$d->noafecto.", ".$d->subtotal.", ".$d->iva.", ".$d->retIva.", ".$d->idmoneda.", ".$d->tipocambio.", ".$d->idtipofactura.", ".$d->isr.", ";
     $query.= $d->idtipocombustible.", ".$d->galones.", ".$d->idp.", $d->idproyecto, $d->idunidad, $d->nombrerecibo, $d->alcontado";
     $query.= ")";
     $db->doQuery($query);
@@ -814,4 +845,17 @@ function generarDetalleServicio ($db, $d, $lastid) {
     ($d->idservicio, $d->lecturaini, $d->lecturafin, $d->preciouni, $lastid, '$d->ffin', '$d->fini')"; 
     $db->doQuery($query);
 };
+
+// formulario retencion de iva
+$app->post('/civa', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    if (!isset($d->noform)) { $d->noform == 'null'; }
+    if (!isset($d->noacceso)) { $d->noacceso == 'null'; }
+
+    $query = "INSERT INTO formiva (idcompra, noform, noacceso, fecha, mes, anio) VALUES ($d->idcompra, '$d->noform', '$d->noacceso', 
+    '$d->fechastr', $d->mes, $d->anio)";
+    $db->doQuery($query);
+});
 $app->run();

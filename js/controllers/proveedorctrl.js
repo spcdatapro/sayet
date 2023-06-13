@@ -50,7 +50,7 @@
         $scope.resetElProv = function(){
             $scope.elProv = { direccion: '', telefono: '', correo: '', concepto: '', chequesa: '', retensionisr: 0, diascred: 0, objBancoPais: undefined,
                 limitecred: parseFloat(0.0), pequeniocont: 0, tipocambioprov: 1, objMoneda: {}, debaja: '0', cuentabanco: undefined, 
-                recurrente: '0', tipcuenta: 0, identificacion: undefined };
+                recurrente: '0', tipcuenta: 0, identificacion: undefined, retensioniva: 0 };
             $scope.editando = false;
             $scope.strProveedor = '';
             monedaSrvc.getMoneda(parseInt($scope.objEmpresa.idmoneda)).then(function(d){
@@ -80,7 +80,8 @@
             data.pequeniocont = parseInt(data.pequeniocont);
             data.idmoneda = parseInt(data.idmoneda);
             data.tipocambioprov = parseFloat(data.tipocambioprov).toFixed($scope.dectc);
-            data.idbancopais = parseInt(data.idbancopais)
+            data.idbancopais = parseInt(data.idbancopais);
+            data.retensioniva = +data.retensioniva;
             return data;
         }
 
@@ -118,6 +119,7 @@
                 $scope.elProv.objMoneda = $filter('getById')($scope.monedas, $scope.elProv.idmoneda);
                 $scope.elProv.objBancoPais = $filter('getById')($scope.losBancosPais, $scope.elProv.idbancopais);
                 $scope.strProveedor = `No. ${pad($scope.elProv.id, 4)}, ${$scope.elProv.nitnombre}`;
+                // $scope.elProv.retensioniva = +d.retensioniva;
                 $scope.editando = true;
                 $scope.getLstDetCuentaC(idprov);
             });

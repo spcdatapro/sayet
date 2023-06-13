@@ -351,7 +351,7 @@
                                         ng-model="laCompra.fechapago" required />
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="form-group required"
                                     ng-class="{'has-error':frmCompra.selMoneda.$invalid && !frmCompra.selMoneda.$pristine}">
                                     <label for="selMoneda" class="control-label">Moneda:</label>
@@ -362,7 +362,15 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
+                                <div class="form-group"
+                                ng-class="{'has-error':frmCompra.selMoneda.$invalid && !frmCompra.selMoneda.$pristine}">
+                                <label for="retIVA">Ret. IVA</label>
+                                <input name="retIVA" id="retIVA" type="text" class="form-control" ng-model="laCompra.retiva"
+                                fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
                                 <div class="form-group required"
                                     ng-class="{'has-error':frmCompra.txtCambio.$invalid && !frmCompra.txtCambio.$pristine}">
                                     <label for="txtTCambioSug" class="control-label">Tipo de cambio:</label>
@@ -455,6 +463,27 @@
                                     <span style="font-weight: bold">
                                         FORMULARIO DE RETENCI&Oacute;N DE I.S.R. NO REGISTRADO.&nbsp;
                                         <button type="button" class="btn" ng-click="modalISR()">Registrar</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" ng-show="laCompra.retiva > 0">
+                            <div class="col-md-6 col-md-offset-3"
+                                ng-show="formulario.idcompra > 0 && formulario.idcompra != undefined">
+                                <div class="well well-sm" style="text-align: center">
+                                    <h4>Formulario de retenci&oacute;n de IVA</h4>
+                                    <h5>No. formulario: {{formulario.noform}}&nbsp;--&nbsp;No. acceso:
+                                        {{formulario.noacceso}}</h5>
+                                    <h5>Fecha de pago: {{formulario.fecha | date:'dd/MM/yyyy'}}&nbsp;--&nbsp;Mes:
+                                        {{formulario.mes}}&nbsp;--&nbsp;A&ntilde;o: {{formulario.anio}}</h5>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-md-offset-3" 
+                                ng-hide="formulario.idcompra > 0 && formulario.idcompra != undefined">
+                                <div class="well well-sm" style="text-align: center;">
+                                    <span style="font-weight: bold;">
+                                        FORMULARIO DE RETENCI&Oacute;N DE IVA NO REGISTRADO
+                                        <button type="button" class="btn" ng-click="modalIVA()">Registrar</button>
                                     </span>
                                 </div>
                             </div>
@@ -998,10 +1027,10 @@
                         <div class="form-group">
                             <label for="selChq">Cheque:</label>
                             <ui-select id="selChq" ng-model="chqbind.idtranban"
-                                       title="Seleccione un cheque..."
-                                       theme="bootstrap"
-                                       autofocus="true"
-                                       ng-required="true">
+                                        title="Seleccione un cheque..."
+                                        theme="bootstrap"
+                                        autofocus="true"
+                                        ng-required="true">
                                 <ui-select-match placeholder="Buscar proveedor..." allow-clear="false">
                                     <span ng-bind="$select.selected.tipotrans + $select.selected.numero"></span>
                                 </ui-select-match>
@@ -1167,6 +1196,40 @@
         <div class="modal-footer">
             <button class="btn btn-primary" type="button" ng-click="ok(obj)">Aceptar</button>
             <button class="btn btn-info" type="button" ng-click="cancel()">Cancelar</button>
+        </div>
+    </script>
+    <!-- RETENCION DE IVA -->
+    <script type="text/ng-template" id="modalIVA.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Formulario de retenci&oacute;n IVA</h3>
+            <h4 class="modal-title">{{compra.nomproveedor}}</h4>
+            <h4 class="modal-title">Factura {{compra.serie}}&nbsp;{{compra.documento}}&nbsp;por&nbsp;{{compra.moneda}}&nbsp;{{compra.totfact | number:2}}</h4>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="txtNoFormISR">No. de formulario:</label>
+                <input name="txtNoFormISR" id="txtNoFormISR" type="text" class="form-control" ng-model="formulario.noform" maxlength="30"/>
+            </div>
+            <div class="form-group">
+                <label for="txtNoAccISR">No. de acceso:</label>
+                <input name="txtNoAccISR" id="txtNoAccISR" type="text" class="form-control" ng-model="formulario.noacceso" maxlength="30"/>
+            </div>
+            <div class="form-group">
+                <label for="txtFecPagoISR">Fecha de pago:</label>
+                <input name="txtFecPagoISR" id="txtFecPagoISR" type="date" class="form-control" ng-model="formulario.fecha" ng-change="setMesAnio()"/>
+            </div>
+            <div class="form-group">
+                <label for="txtMesISR">Mes:</label>
+                <input name="txtMesISR" id="txtMesISR" type="number" class="form-control" ng-model="formulario.mes" min="0" max="12" ng-disabled="true"/>
+            </div>
+            <div class="form-group">
+                <label for="txtAnioISR">A&ntilde;o:</label>
+                <input name="txtAnioISR" id="txtAnioISR" type="number" class="form-control" ng-model="formulario.anio" min="2000" max="3000" ng-disabled="true"/>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">Aceptar</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancelar</button>
         </div>
     </script>
 </div>
