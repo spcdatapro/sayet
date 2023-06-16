@@ -55,7 +55,7 @@ $app->post('/c', function(){
     $query = "INSERT INTO proveedor(nit, nombre, direccion, telefono, correo, concepto, chequesa, ";
     $query.= "retensionisr, diascred, limitecred, pequeniocont, idmoneda, tipocambioprov, debaja, cuentabanco, recurrente, idbancopais, tipcuenta, identificacion, retensioniva) ";
     $query.= "VALUES('$d->nit', '$d->nombre', '$d->direccion', '$d->telefono', '$d->correo', '$d->concepto', '$d->chequesa', ";
-    $query.= "$d->retensionisr, $d->diascred, $d->limitecred, $d->pequeniocont, $d->idmoneda, $d->tipocambioprov, $d->debaja, $d->cuentabanco, $d->recurrente, $d->idbancopais, $d->tipcuenta, $d->identificacion ";
+    $query.= "$d->retensionisr, $d->diascred, $d->limitecred, $d->pequeniocont, $d->idmoneda, $d->tipocambioprov, $d->debaja, $d->cuentabanco, $d->recurrente, $d->idbancopais, $d->tipcuenta, $d->identificacion, ";
     $query.= "$d->retensioniva)";
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
