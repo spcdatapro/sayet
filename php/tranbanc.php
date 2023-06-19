@@ -425,6 +425,13 @@ $app->get('/lstbeneficiarios', function(){
     print $db->doSelectASJson($query);
 });
 
+$app->get('/lstproveedores', function(){
+    $db = new dbcpm();
+    $query = "SELECT id, CONCAT(nit, ' (', nombre, ')') AS beneficiario, chequesa, 1 AS dedonde, concepto, CONVERT(retensionisr, UNSIGNED) AS retieneisr, nit, 'Proveedor(es)' AS grupo FROM proveedor ";
+    $query.= "ORDER BY 2";
+    print $db->doSelectASJson($query);
+});
+
 $app->get('/factcomp/:idproveedor/:idtranban', function($idproveedor, $idtranban){
     $db = new dbcpm();
     $idmoneda = (int)$db->getOneField("SELECT b.idmoneda FROM tranban a INNER JOIN banco b ON b.id = a.idbanco WHERE a.id = $idtranban");

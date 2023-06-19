@@ -37,8 +37,9 @@
         tipogastoSrvc.lstTipogastos().then(function (d) { $scope.tiposgasto = d; });
         monedaSrvc.lstMonedas().then(function (d) { $scope.monedas = d; });
         tipoCambioSrvc.getLastTC().then(function (d) {$scope.tipocambiogt = +d.lasttc;});
-        //proveedorSrvc.lstProveedores().then(function(d){ $scope.proveedores = d; });
-        tranBancSrvc.lstBeneficiarios().then(function (d) { $scope.proveedores = d; });
+        // proveedorSrvc.lstProveedores().then(function(d){ $scope.proveedores = d; });
+        // tranBancSrvc.lstBeneficiarios().then(function (d) { $scope.proveedores = d; });
+        tranBancSrvc.lstProveedores().then(function (d) { $scope.proveedores = d; });
 
         authSrvc.getSession().then(function (usrLogged) {
             $scope.usrdata = usrLogged;

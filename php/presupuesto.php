@@ -459,9 +459,10 @@ $app->post('/u', function () {
     $query = "UPDATE presupuesto SET ";
     $query .= "fechasolicitud = '$d->fechasolicitudstr', idproyecto = $d->idproyecto, idempresa = $d->idempresa, idtipogasto = $d->idtipogasto, ";
     $query .= "idmoneda = $d->idmoneda, notas = '$d->notas', fechamodificacion = NOW(), lastuser = $d->idusuario, ";
-    $query .= "idproveedor = $d->idproveedor, idsubtipogasto = $d->idsubtipogasto, coniva = $d->coniva, escontado = 0, monto = $d->monto, tipocambio = $d->tipocambio, origenprov = $d->origenprov, ";
+    $query .= "idproveedor = $d->idproveedor, idsubtipogasto = $d->idsubtipogasto, coniva = $d->coniva, escontado = 0, monto = '$d->monto', tipocambio = $d->tipocambio, origenprov = $d->origenprov, ";
     $query .= "tipodocumento = $d->tipodocumento ";
     $query .= "WHERE id = " . $d->id;
+    // echo $query; return;
     $db->doQuery($query);
 
     $obj = new stdClass();

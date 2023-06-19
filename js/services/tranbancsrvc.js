@@ -62,7 +62,10 @@
             },
             calcIsr: function(obj){
                 return comunFact.doPOST(urlBase + '/calcisr', obj);
-            }
+            },
+            lstProveedores: function(){
+                return comunFact.doGET(urlBase + '/lstproveedores');
+            },
         };
     }]);
 
