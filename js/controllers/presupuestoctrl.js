@@ -38,8 +38,8 @@
         monedaSrvc.lstMonedas().then(function (d) { $scope.monedas = d; });
         tipoCambioSrvc.getLastTC().then(function (d) {$scope.tipocambiogt = +d.lasttc;});
         // proveedorSrvc.lstProveedores().then(function(d){ $scope.proveedores = d; });
-        // tranBancSrvc.lstBeneficiarios().then(function (d) { $scope.proveedores = d; });
-        tranBancSrvc.lstProveedores().then(function (d) { $scope.proveedores = d; });
+        tranBancSrvc.lstBeneficiarios().then(function (d) { $scope.proveedores = d; });
+        // tranBancSrvc.lstProveedores().then(function (d) { $scope.proveedores = d; });
 
         authSrvc.getSession().then(function (usrLogged) {
             $scope.usrdata = usrLogged;
@@ -102,7 +102,12 @@
             $scope.lbl.montopres = '';
             $scope.lbl.montogas = '';
             $scope.lbl.avance = '';
+            $scope.resetBene();
         };
+
+        $scope.resetBene = function () {
+            tranBancSrvc.lstBeneficiarios().then(function (d) { $scope.proveedores = d; });
+        }
 
         function setPresupuesto(obj) {
             obj.idproyecto = obj.proyecto;
@@ -130,13 +135,16 @@
             $scope.ot = {};
             $scope.lstot = [];
             presupuestoSrvc.getPresupuesto(idpresupuesto).then(function (d) {
-                console.log(d);
+                // console.log(d);
                 $scope.presupuesto = procDataPresup(d)[0];
+                $scope.proveedores = $filter('filter')($scope.proveedores, { dedonde: d[0].origenprov });
+                $scope.presupuesto.idproveedor = d[0].idproveedor;
                 $scope.presupuesto.proyecto = $scope.presupuesto.idproyecto;
                 $scope.presupuesto.empresa = $scope.presupuesto.idempresa;
                 $scope.loadSubtTiposGasto($scope.presupuesto.idtipogasto);
                 $scope.getLstOts(idpresupuesto);
                 $scope.loadOTAdjuntos(idpresupuesto, 1);
+                
                 $scope.lbl.id = $scope.presupuesto.id ;
                 $scope.lbl.proyecto = ' ' + ($filter('getById')($scope.proyectos, $scope.presupuesto.idproyecto)).nomproyecto;
                 $scope.lbl.empresa = ' ' + ($filter('getById')($scope.empresas, $scope.presupuesto.idempresa)).nomempresa;
