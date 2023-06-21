@@ -416,6 +416,9 @@
         $scope.getOt = function (idot) {
             presupuestoSrvc.getOt(idot).then(function (d) {
                 $scope.ot = procDataOts(d)[0];
+                $scope.resetBene();
+                $scope.proveedores = $filter('filter')($scope.proveedores, { dedonde: d[0].origenprov });
+                $scope.ot.idproveedor = d[0].idproveedor;
                 $scope.confGrpBtn('grpBtnOt', false, false, true, true, true, false, false);
                 $scope.sl.ot = true;
                 $scope.showForm.ot = true;
@@ -451,6 +454,7 @@
             $scope.sl.ot = false;
             $scope.resetOt();
             $scope.confGrpBtn('grpBtnOt', true, false, false, false, false, true, false);
+            $scope.resetBene();
         };
 
         $scope.tryNotify = function () {

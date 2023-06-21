@@ -682,14 +682,14 @@ $app->get('/lstot/:idpresupuesto', function ($idpresupuesto) {
 
 $app->get('/getot/:idot', function ($idot) {
     $db = new dbcpm();
-    $query = "SELECT a.id, a.idpresupuesto, a.correlativo, a.idproveedor, b.nombre AS proveedor, a.idsubtipogasto, c.descripcion AS subtipogasto, a.coniva, a.escontado, a.monto, i.simbolo AS moneda, d.total, a.tipocambio, a.excedente, ";
+    $query = "SELECT a.id, a.idpresupuesto, a.correlativo, a.idproveedor, a.origenprov, b.nombre AS proveedor, a.idsubtipogasto, c.descripcion AS subtipogasto, a.coniva, a.escontado, a.monto, i.simbolo AS moneda, d.total, a.tipocambio, a.excedente, ";
     $query .= "f.nomproyecto AS proyecto, g.desctipogast AS tipogasto, d.fechasolicitud, h.abreviatura AS empresa, a.notas, a.origenprov, a.idmoneda, a.idestatuspresupuesto, a.tipodocumento ";
     $query .= "FROM detpresupuesto a INNER JOIN proveedor b ON b.id = a.idproveedor INNER JOIN subtipogasto c ON c.id = a.idsubtipogasto INNER JOIN presupuesto d ON d.id = a.idpresupuesto ";
     $query .= "INNER JOIN moneda e ON e.id = d.idmoneda INNER JOIN proyecto f ON f.id = d.idproyecto INNER JOIN tipogasto g ON g.id = d.idtipogasto INNER JOIN empresa h ON h.id = d.idempresa ";
     $query .= "LEFT JOIN moneda i ON i.id = a.idmoneda ";
     $query .= "WHERE a.origenprov = 1 AND a.id = $idot ";
     $query .= "UNION ";
-    $query .= "SELECT a.id, a.idpresupuesto, a.correlativo, a.idproveedor, b.nombre AS proveedor, a.idsubtipogasto, c.descripcion AS subtipogasto, a.coniva, a.escontado, a.monto, i.simbolo AS moneda, d.total, a.tipocambio, a.excedente, ";
+    $query .= "SELECT a.id, a.idpresupuesto, a.correlativo, a.idproveedor, a.origenprov, b.nombre AS proveedor, a.idsubtipogasto, c.descripcion AS subtipogasto, a.coniva, a.escontado, a.monto, i.simbolo AS moneda, d.total, a.tipocambio, a.excedente, ";
     $query .= "f.nomproyecto AS proyecto, g.desctipogast AS tipogasto, d.fechasolicitud, h.abreviatura AS empresa, a.notas, a.origenprov, a.idmoneda, a.idestatuspresupuesto, a.tipodocumento ";
     $query .= "FROM detpresupuesto a INNER JOIN beneficiario b ON b.id = a.idproveedor INNER JOIN subtipogasto c ON c.id = a.idsubtipogasto INNER JOIN presupuesto d ON d.id = a.idpresupuesto ";
     $query .= "INNER JOIN moneda e ON e.id = d.idmoneda INNER JOIN proyecto f ON f.id = d.idproyecto INNER JOIN tipogasto g ON g.id = d.idtipogasto INNER JOIN empresa h ON h.id = d.idempresa ";
