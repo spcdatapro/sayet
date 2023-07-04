@@ -1,0 +1,48 @@
+<div class="container" ng-controller="rptServTerceros">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">Repote servicios de terceros</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Servicios: </label>
+                            <ui-select ng-model="params.idservicio" title="Seleccione un servicio..."
+                            theme="bootstrap" ng-required="true">
+                            <ui-select-match placeholder="Buscar servicio..." allow-clear="true">
+                                <span ng-bind="$select.selected.identificacion"></span>
+                            </ui-select-match>
+                            <ui-select-choices
+                                repeat="item.id as item in servicios | filter:$select.search">
+                                <div ng-bind-html="item.identificacion | highlight: $select.search"></div>
+                            <small>
+                                <strong>Referencia:</strong>&nbsp;<span
+                                    ng-bind-html="item.referencia | highlight: $select.search"></span>
+                                <strong>Tipo:</strong>&nbsp;<span
+                                    ng-bind-html="item.tipo | highlight: $select.search"></span>
+                            </small>
+                            </ui-select-choices>
+                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                        </ui-select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="txtAnio">A&ntilde;o:</label>
+                            <input name="txtAnio" id="txtAnio" type="number" class="form-control" ng-model="params.anio" min="2015"/> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer text-right">
+                <button type="button" class="btn btn-primary" ng-click="getPDF()" ng-disabled="!params.idservicio">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-primary" ng-click="resetParams()">
+                    <i class="glyphicon glyphicon-refresh" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <rpt-viewer contenido="content"></rpt-viewer>
+</div>
