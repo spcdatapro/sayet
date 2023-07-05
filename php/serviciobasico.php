@@ -344,6 +344,7 @@ $app->post('/rptservicios', function(){
 $app->post('/rptservicio', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();  
+    date_default_timezone_set('America/Guatemala');
 
     if (!isset($d->anio)) { $d->anio = false; };
 
