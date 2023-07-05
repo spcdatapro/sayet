@@ -381,9 +381,9 @@ $app->post('/gentranban', function(){
     $monto = $total - $isr;
 
     if ($d->tipoMonto == 1) {
-        $haber = $total - getTotPagado($d->id, $db);
+        $haber = $monto - getTotPagado($d->id, $db);
     } else {
-        $haber = $d->monto;
+        $haber = $monto;
     }
     //Generación del cheque/nota de débito para pagar el reembolso
     $getCorrela = $d->numero;
