@@ -108,7 +108,8 @@ $app->post('/g', function(){
         */
         $query = "INSERT INTO tranban(idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, origenbene, idbeneficiario, iddetpresup, idfact, tipocambio) ";
         $query.= "VALUES($objBanco->idbanco, '$objBanco->tipo', '$objBanco->fechatranstr', $totAPagar, '$nombreProveedor', ";
-        $query.= "'Pago de factura(s) $qFacturas / Orden de trabajo $ot [$not]', ($getCorrela), 1, $idprovs[$y], $ots, $idfac, $tpcambio)";
+        $query.= strlen($ot) > 0 ? "'Pago de factura(s) $qFacturas / Orden de trabajo $ot [$not]'," : "'Pago de factura(s) $qFacturas',";
+        $query.= "($getCorrela), 1, $idprovs[$y], $ots, $idfac, $tpcambio)";
         //echo $query.'<br/><br/>';
         $db->doQuery($query);
         $lastid = $db->getLastId();
