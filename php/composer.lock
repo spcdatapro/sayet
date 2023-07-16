@@ -1,43 +1,43 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "hash": "01685bf8fd24b1fd11a120201f334d6b",
     "content-hash": "eb836b5fbb4fc460c1a78378e7a36d31",
     "packages": [
         {
             "name": "catfan/medoo",
-            "version": "v1.0",
+            "version": "v1.7.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/catfan/Medoo.git",
-                "reference": "634bcef389e4eaa40d10e6d66a9eecc0f7638cc7"
+                "reference": "2d675f73e23f63bbaeb9a8aa33318659a3d3c32f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/catfan/Medoo/zipball/634bcef389e4eaa40d10e6d66a9eecc0f7638cc7",
-                "reference": "634bcef389e4eaa40d10e6d66a9eecc0f7638cc7",
+                "url": "https://api.github.com/repos/catfan/Medoo/zipball/2d675f73e23f63bbaeb9a8aa33318659a3d3c32f",
+                "reference": "2d675f73e23f63bbaeb9a8aa33318659a3d3c32f",
                 "shasum": ""
             },
             "require": {
                 "ext-pdo": "*",
-                "php": ">=5.1"
+                "php": ">=5.4"
             },
             "suggest": {
-                "ext-pdo_dblib": "For MSSQL or Sybase databases on Linux/UNIX platform",
-                "ext-pdo_mysql": "For MySQL or MariaDB databases",
-                "ext-pdo_oci": "For Oracle databases",
-                "ext-pdo_pqsql": "For PostgreSQL databases",
-                "ext-pdo_sqlite": "For SQLite databases",
-                "ext-pdo_sqlsrv": "For MSSQL databases on Windows platform"
+                "ext-pdo_dblib": "For MSSQL or Sybase database on Linux/UNIX platform",
+                "ext-pdo_mysql": "For MySQL or MariaDB database",
+                "ext-pdo_oci": "For Oracle database",
+                "ext-pdo_oci8": "For Oracle version 8 database",
+                "ext-pdo_pqsql": "For PostgreSQL database",
+                "ext-pdo_sqlite": "For SQLite database",
+                "ext-pdo_sqlsrv": "For MSSQL database on both Window/Liunx platform"
             },
             "type": "framework",
             "autoload": {
-                "files": [
-                    "medoo.php"
-                ]
+                "psr-4": {
+                    "Medoo\\": "/src"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -49,18 +49,22 @@
                     "email": "angel@catfan.me"
                 }
             ],
-            "description": "The Lightest PHP database framework to accelerate development",
-            "homepage": "http://medoo.in",
+            "description": "The lightweight PHP database framework to accelerate development",
+            "homepage": "https://medoo.in",
             "keywords": [
                 "database",
+                "database library",
                 "lightweight",
+                "mariadb",
                 "mssql",
                 "mysql",
+                "oracle",
                 "php framework",
+                "postgresql",
                 "sql",
                 "sqlite"
             ],
-            "time": "2015-10-05 07:26:17"
+            "time": "2020-02-11T08:20:42+00:00"
         },
         {
             "name": "slim/slim",
@@ -106,7 +110,7 @@
                 "rest",
                 "router"
             ],
-            "time": "2015-03-08 18:41:17"
+            "time": "2015-03-08T18:41:17+00:00"
         }
     ],
     "packages-dev": [],
@@ -116,5 +120,6 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "1.1.0"
 }
