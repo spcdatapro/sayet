@@ -19,7 +19,7 @@ angular.module('cpm')
         $scope.unidades = [];
 
 		$scope.mostrarForm = function() {
-			$scope.emp = {};
+			$scope.emp = { };
 			$scope.formulario = true;
             $scope.hay = false;
 		};
@@ -48,7 +48,6 @@ angular.module('cpm')
             } else {
                 $scope.emp.baja = 0
             }
-
 			empServicios.guardar(emp).then(function(data){
 				alert(data.mensaje);
                 $scope.hay = true;
@@ -91,43 +90,43 @@ angular.module('cpm')
         }
 
         $scope.ocultarbtn = function(cantidad, maximo) {
-        	if ( parseInt(cantidad) < parseInt(maximo) ) {
-    			$scope.buscarmas = false;
-    		} else {
-    			$scope.buscarmas = true;
-    		}
+            if (parseInt(cantidad) < parseInt(maximo)) {
+    	    	$scope.buscarmas = false;
+    	    } else {
+    	    	$scope.buscarmas = true;
+    	    }
         }
 
         $scope.getEmpleado = function(index){
-             $scope.emp = $scope.empleados[index];
-             $scope.emp.descuentoisr = parseFloat($scope.emp.descuentoisr);
-             $scope.emp.bonificacionley = parseFloat($scope.emp.bonificacionley);
-             $scope.emp.sueldo = parseFloat($scope.emp.sueldo);
-             $scope.emp.porcentajeigss = parseFloat($scope.emp.porcentajeigss); 
-             $scope.emp.activo = parseInt($scope.emp.activo);
+            $scope.emp = $scope.empleados[index];
+            $scope.emp.descuentoisr = parseFloat($scope.emp.descuentoisr);
+            $scope.emp.bonificacionley = parseFloat($scope.emp.bonificacionley);
+            $scope.emp.sueldo = parseFloat($scope.emp.sueldo);
+            $scope.emp.porcentajeigss = parseFloat($scope.emp.porcentajeigss); 
+            $scope.emp.activo = parseInt($scope.emp.activo);
 
-             if ($scope.emp.fechanacimiento) {
+            if ($scope.emp.fechanacimiento) {
                 $scope.emp.fchnac = $scope.formatoFechajs($scope.emp.fechanacimiento);
-             }
+            }
 
-             if ($scope.emp.ingreso) {
+            if ($scope.emp.ingreso) {
                 $scope.emp.fching = $scope.formatoFechajs($scope.emp.ingreso);
-             }
-             
-             if ($scope.emp.reingreso) {
+            }
+
+            if ($scope.emp.reingreso) {
                 $scope.emp.fchrei = $scope.formatoFechajs($scope.emp.reingreso);
-             }
+            }
 
-             if ($scope.emp.baja) {
+            if ($scope.emp.baja) {
                 $scope.emp.fchbaj = $scope.formatoFechajs($scope.emp.baja);
-             }
+            }
 
-             $scope.formulario = true
-             $scope.hay = true
-             $scope.getArchivos()
-             $scope.getBitacora($scope.emp.id)
+            $scope.formulario = true
+            $scope.hay = true
+            $scope.getArchivos()
+            $scope.getBitacora($scope.emp.id)
 
-             goTop();
+            goTop();
         }
 
         $scope.editarMovimiento = function(index) {
