@@ -194,4 +194,27 @@ $app->get('/getunidades/:idempresa', function($idempresa){
     print $db->doSelectASJson($query);
 });
 
+// API unidades por proyecto
+$app->get('/lstunidades/:idproy', function($idproy){
+    $db = new dbcpm();
+
+    $query = "SELECT 
+            a.id AS idunidad,
+            a.idproyecto,
+            b.nomproyecto AS proyecto,
+            a.idempresa,
+            c.nomempresa AS empresa,
+            a.nombre AS unidad,
+            a.descripcion
+        FROM
+            unidad a
+                INNER JOIN
+            proyecto b ON a.idproyecto = b.id
+                INNER JOIN
+            empresa c ON b.idempresa = c.id
+        WHERE
+            a.idproyecto = $idproy";
+    print $db->doSelectASJson($query);
+});
+
 $app->run();

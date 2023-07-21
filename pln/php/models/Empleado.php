@@ -242,6 +242,10 @@ class Empleado extends Principal
 			if (isset($args['vacasusados'])) {
 				$this->set_dato('vacasusados', $args['vacasusados']);
 			}
+
+			if (isset($argc['idunidad'])) {
+				$this->set_dato('idunidad', $args['idunidad']);
+			}
 		}
 
 		$dbita = [];
