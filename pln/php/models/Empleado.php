@@ -243,7 +243,7 @@ class Empleado extends Principal
 				$this->set_dato('vacasusados', $args['vacasusados']);
 			}
 
-			if (isset($argc['idunidad'])) {
+			if (isset($args['idunidad'])) {
 				$this->set_dato('idunidad', $args['idunidad']);
 			}
 		}
