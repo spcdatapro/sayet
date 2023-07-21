@@ -29,6 +29,9 @@
             },
             getUnidades: function(idempresa){
                 return comunFact.doGET(urlBase + '/getunidades/' + idempresa);
+            },
+            lstUnidadesProy: function(idproyecto) {
+                return comunFact.doGET(urlBase + '/lstunidades/' + idproyecto);
             }
         };
         return unidadSrvc;

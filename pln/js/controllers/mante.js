@@ -1,6 +1,6 @@
 angular.module('cpm')
-.controller('MntEmpleadoController', ['$scope', '$http', 'empServicios', 'empresaSrvc', 'proyectoSrvc', 'cuentacSrvc', 'pstServicios', 
-	function($scope, $http, empServicios, empresaSrvc, proyectoSrvc, cuentacSrvc, pstServicios){
+.controller('MntEmpleadoController', ['$scope', '$http', 'empServicios', 'empresaSrvc', 'proyectoSrvc', 'cuentacSrvc', 'pstServicios', 'unidadSrvc',
+	function($scope, $http, empServicios, empresaSrvc, proyectoSrvc, cuentacSrvc, pstServicios, unidadSrvc){
 		$scope.formulario  = false;
 		$scope.resultados  = false;
 		$scope.empleados   = [];
@@ -14,8 +14,9 @@ angular.module('cpm')
         $scope.cuentas   = [];
         $scope.puestos   = [];
         $scope.archivotipo = [];
-        $scope.empresasPlanilla = []
-        $scope.bitacora = []
+        $scope.empresasPlanilla = [];
+        $scope.bitacora = [];
+        $scope.unidades = [];
 
 		$scope.mostrarForm = function() {
 			$scope.emp = {};
@@ -35,7 +36,7 @@ angular.module('cpm')
             } else {
                 $scope.emp.ingreso = 0
             }
-             
+
             if ($scope.emp.fchrei) {
                 $scope.emp.reingreso = $scope.formatoFecha($scope.emp.fchrei);
             } else {
@@ -195,6 +196,12 @@ angular.module('cpm')
         proyectoSrvc.lstProyecto().then(function(d){
             $scope.proyectos = d;
         });
+
+        $scope.setUnidades = function (idproyecto) {
+            unidadSrvc.lstUnidadesProy(idproyecto).then(function(d){
+                $scope.unidades = d;
+            });
+        }
 
         pstServicios.lista().then(function(d){
             $scope.puestos = d;
