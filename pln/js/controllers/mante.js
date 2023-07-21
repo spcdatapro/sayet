@@ -126,6 +126,8 @@ angular.module('cpm')
             $scope.getArchivos()
             $scope.getBitacora($scope.emp.id)
 
+            $scope.setUnidades($scope.emp.idproyecto);
+
             goTop();
         }
 
