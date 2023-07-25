@@ -1243,4 +1243,58 @@ $app->get('/imprimir_aguinaldo', function(){
 	}
 });
 
+$app->response->headers->set('Content-Type', 'application/json');
+$app->post('/generar_proyeccion', function(){
+	$req = json_decode(file_get_contents('php://input'), true);
+	$tipo = elemento($req, "bono", 0);
+	$data = [];
+	$total = 0;
+
+	if (in_array($tipo, [1,2])) {
+		$req["activo"] = 1;
+		$req["con_sueldo"] = true;
+
+		$emp = new Empleado();
+		$lista = $emp->buscar($req);
+		$cantidad = count($lista);
+
+		if ($cantidad > 0) {
+			for ($i=0; $i < $cantidad; $i++) { 
+				$obj = $lista[$i];
+
+				$emp->cargar_empleado($obj["id"]);
+				$emp->set_proyeccion(true);
+				$emp->set_fecha($req["fal"]);
+
+				$tmp = new stdClass();
+				$tmp->id = $emp->emp->id;
+				$tmp->nombre = $emp->emp->nombre;
+				$tmp->apellidos = $emp->emp->apellidos;
+				$tmp->ingreso = formatoFecha($emp->getFechaIngreso(), 1);
+				$tmp->sueldo = round($emp->emp->sueldo, 2);
+				$tmp->empresa = $obj["nomempresa"];
+
+				if ($tipo == 1) {
+					$emp->set_bonocatorce($req);
+					$tmp->bono = $emp->get_bonocatorce();
+					$tmp->dias = $emp->get_bonocatorce_dias();
+				} else {
+					$emp->set_aguinaldo($req);
+					$tmp->bono = $emp->aguinaldoMonto;
+					$tmp->dias = $emp->aguinaldoDias;
+				}
+
+				$total += $tmp->bono;
+
+				$data[] = $tmp;
+			}
+		}
+	}
+	
+	echo json_encode([
+		"lista" => $data, 
+		"total" => number_format($total, 2)
+	]);
+});
+
 $app->run();
