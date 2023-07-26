@@ -1662,9 +1662,10 @@ function getPagos($ots, $db, $esmultiple) {
                 }
         
                 // insertar valores a ot
-                $ot->totgastado = number_format($gastado, 2, '.', ',');
+                $ot->negativo = $gastado < 0 ? true : null;
+                $ot->totgastado = number_format(abs($gastado), 2, '.', ',');
                 $ot->avance = number_format($avance, 2, '.', ',');
-                $ot->tcheques = number_format($ttran, 2, '.', ',');
+                $ot->tcheques = number_format(abs($ttran), 2, '.', ',');
                 $ot->tcompras = number_format($tcompra, 2, '.', ',');
                 $ot->isr = number_format($tisr, 2, '.', ',');
                 $ot->diferencia = number_format($diferencia, 2, '.', ',');
