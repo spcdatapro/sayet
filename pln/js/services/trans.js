@@ -35,6 +35,9 @@ angular.module('cpm')
         },
         terminarPlanilla: function(obj) {
             return comunFact.doPOSTFiles(urlBase + '/terminar_planilla', obj)
+        },
+        generarProyeccion (args) {
+            return comunFact.doPOST(urlBase + '/generar_proyeccion', args);
         }
     };
 }])
