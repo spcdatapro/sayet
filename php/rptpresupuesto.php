@@ -1431,7 +1431,7 @@ function getPagos($ots, $db, $esmultiple) {
             c.simbolo AS moneda,
             c.id AS idmoneda,
             IF(a.anulado = 1 OR liquidado = 1, TRUE, NULL) AS anulado,
-            IF(iddocliquida > 0, TRUE, NULL) AS reintegro
+            IF(a.iddocliquida > 0 OR a.tipotrans = 'R', TRUE, NULL) AS reintegro
         FROM
             tranban a
                 INNER JOIN
@@ -1605,7 +1605,7 @@ function getPagos($ots, $db, $esmultiple) {
                 $tisr = array_sum($sisr);
         
                 // traer monto y tipocambio de transaccion bancaria
-                $query = "SELECT a.monto, a.tipocambio, b.idmoneda FROM tranban a INNER JOIN banco b ON a.idbanco = b.id 
+                $query = "SELECT a.monto * IF(a.tipotrans = 'R', -1, 1) AS monto, a.tipocambio, b.idmoneda FROM tranban a INNER JOIN banco b ON a.idbanco = b.id 
                 WHERE iddetpresup = $ot->id AND (SELECT COUNT(b.id) FROM doctotranban b WHERE b.idtranban = a.id AND b.idtipodoc = 2) = 0 
                 AND a.liquidado = 0 AND a.iddocliquida = 0 AND a.anulado = 0 
                 UNION ALL 
