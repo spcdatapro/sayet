@@ -25,6 +25,7 @@ class Empleado extends Principal
 	protected $finiquitoIndenmizacion = null;
 	protected $finiquitoVacaciones    = null;
 	protected $finiquitoSueldo        = null;
+	private $proyeccion = false;
 
 	public $aguinaldoDias  = 0;
 	public $aguinaldoMonto = 0;
@@ -47,6 +48,11 @@ class Empleado extends Principal
 			'*', 
 			['id[=]' => $id]
 		);
+	}
+
+	public function set_proyeccion($value)
+	{
+		$this->proyeccion = $value;
 	}
 
 	public function get_proyecto()
@@ -1119,60 +1125,80 @@ EOT;
 		return $tmp;
 	}
 
-	public function set_bonocatorce()
+	public function set_bonocatorce($args = [])
 	{
-		if ($this->nmes == 7 && $this->ndia == 15) {
+		if ($this->proyeccion || ($this->nmes == 7 && $this->ndia == 15)) {
 			$this->set_meses_calculo(6);
 
-			if ($this->ndia == 15) {
-				$fecha = date('Y-m-t', strtotime('-1 months', strtotime($this->nfecha))); 
-			} else {
+			if ($this->proyeccion) {
+				$inicio = $args["fdel"];
 				$fecha = $this->nfecha;
-			}
+			} else {
+				if ($this->ndia == 15) {
+					$fecha = date('Y-m-t', strtotime('-1 months', strtotime($this->nfecha))); 
+				} else {
+					$fecha = $this->nfecha;
+				}
 
-			$pasado  = date('Y-m-t', strtotime('-1 year', strtotime($fecha)));
-			$inicio  = date('Y-m-d', strtotime('+1 days', strtotime($pasado)));
+				$pasado  = date('Y-m-t', strtotime('-1 year', strtotime($fecha)));
+				$inicio  = date('Y-m-d', strtotime('+1 days', strtotime($pasado)));
+			}
+				
 			$uno     = new DateTime($inicio);
 			$ingreso = new DateTime($this->getFechaIngreso());
 			$actual  = new DateTime($fecha);
 
 			if ($ingreso <= $uno) {
-				$this->bonocatorcedias = 365;
-				$this->bonocatorce     = $this->emp->sueldo;
+				$interval = $uno->diff($actual);
+				$this->bonocatorcedias = ($interval->format('%a')+1);
 			} else if ($ingreso <= $actual) {
-				$actual = new DateTime($fecha);
 				$interval = $ingreso->diff($actual);
 				$this->bonocatorcedias = ($interval->format('%a')+1);
-				$this->bonocatorce     = (($this->emp->sueldo/365)*$this->bonocatorcedias);
+			}
+
+			if ($this->bonocatorcedias > 0) {
+				$this->bonocatorce = $this->bonocatorcedias == 365 
+				? round($this->emp->sueldo, 2)
+				: round((($this->emp->sueldo/365)*$this->bonocatorcedias), 2);
 			}
 		}
 	}
 
-	public function set_aguinaldo()
+	public function set_aguinaldo($args = [])
 	{
-		if ($this->nmes == 12 && $this->ndia == 15) {
+		if ($this->proyeccion || ($this->nmes == 12 && $this->ndia == 15)) {
 			$this->set_meses_calculo(6);
 
-			if ($this->ndia == 15) {
-				$fecha = date('Y-m-t', strtotime('-1 months', strtotime($this->nfecha))); 
-			} else {
+			if ($this->proyeccion) {
+				$inicio = $args["fdel"];
 				$fecha = $this->nfecha;
+			} else {
+				if ($this->ndia == 15) {
+					$fecha = date('Y-m-t', strtotime('-1 months', strtotime($this->nfecha))); 
+				} else {
+					$fecha = $this->nfecha;
+				}
+
+				$pasado  = date('Y-m-t', strtotime('-1 year', strtotime($fecha)));
+				$inicio  = date('Y-m-d', strtotime('+1 days', strtotime($pasado)));
 			}
 
-			$pasado  = date('Y-m-t', strtotime('-1 year', strtotime($fecha)));
-			$inicio  = date('Y-m-d', strtotime('+1 days', strtotime($pasado)));
 			$uno     = new DateTime($inicio);
 			$ingreso = new DateTime($this->getFechaIngreso());
 			$actual  = new DateTime($fecha);
 
 			if ($ingreso <= $uno) {
-				$this->aguinaldoDias  = 365;
-				$this->aguinaldoMonto = $this->emp->sueldo;
+				$interval = $uno->diff($actual);
+				$this->aguinaldoDias  = ($interval->format('%a')+1);
 			} else if ($ingreso <= $actual) {
 				$interval = $ingreso->diff($actual);
-				
-				$this->aguinaldoDias  = ($interval->format('%a')+1);
-				$this->aguinaldoMonto = (($this->emp->sueldo/365)*$this->aguinaldoDias);
+				$this->aguinaldoDias = ($interval->format('%a')+1);
+			}
+
+			if ($this->aguinaldoDias > 0) {
+				$this->aguinaldoMonto = $this->aguinaldoDias == 365 
+				? round($this->emp->sueldo, 2) 
+				: round((($this->emp->sueldo/365)*$this->aguinaldoDias), 2);
 			}
 		}
 	}
@@ -1453,5 +1479,50 @@ EOT;
 			
 			return TRUE;
 		}
+	}
+
+	public function buscar($args=[])
+	{
+		$filtro = null;
+
+		if (count($args) > 0) {
+			$tmp = [];
+
+			if (isset($args["activo"])) {
+				$tmp["activo"] = $args["activo"];
+			}
+
+			if (isset($args["con_sueldo"])) {
+				$tmp["sueldo[>]"] = 0;
+			}
+
+			if (isset($args["sin_baja"])) {
+				$tmp["baja"] = null;
+			}
+
+			if (elemento($args, "empleado") !== null) {
+				$tmp["id"] = $args["empleado"];
+			}
+
+			if (elemento($args, "empresa") !== null) {
+				$tmp["idempresadebito"] = $args["empresa"];
+			}
+
+			if (count($tmp) > 0) {
+				$filtro = (count($tmp) > 1 ? ["AND" => $tmp] : $tmp);
+			}
+		}
+
+		return $this->db->select(
+			"plnempleado", 
+			[
+				'[>]empresa(b)' => ['plnempleado.idempresadebito' => 'id']
+			],
+			[
+				"plnempleado.*",
+				"b.nomempresa"
+			],
+			$filtro
+		);
 	}
 }

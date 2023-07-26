@@ -62,4 +62,62 @@ angular.module('cpm')
             setTimeout(function() { $("#selectEmpresaActual").chosen({width:'100%'}) }, 3)
         })
     }
+])
+.controller('repProyeccionController', ['$scope', '$http', 'nominaServicios', 'empresaSrvc', 'empServicios', 'proyectoSrvc',
+    function($scope, $http, nominaServicios, empresaSrvc, empServicios, proyectoSrvc){
+        $scope.empresas = []
+        $scope.empleados = []
+        $scope.fdel = ''
+        $scope.fal = ''
+        $scope.params = {
+            empresa: '',
+            empleado: '',
+            fdel: '',
+            fal: '',
+            bono: '1'
+        }
+        $scope.lista = []
+        $scope.total = ''
+
+        empresaSrvc.lstEmpresas().then(function(d){
+            $scope.empresas = d;
+            setTimeout(function() { $("#selectEmpresa").chosen({width:'100%'}) }, 3)
+        })
+
+        empServicios.buscar({sin_limite:1}).then(function(res){
+            console.log(res)
+
+            $scope.empleados = res.resultados
+            setTimeout(function() { $("#selectEmpleado").chosen({width:'100%'}) }, 3)
+        })
+
+        $scope.formatoFecha = function(fecha) {
+            return fecha.getFullYear()+'-'+(fecha.getMonth()+1)+'-'+fecha.getDate()
+        }
+
+        $scope.generar = () => {
+            $('#proyeccion-lista').DataTable().destroy()
+
+            $scope.lista = []
+            $scope.total = ''
+            $scope.params.fdel = $scope.formatoFecha($scope.fdel)
+            $scope.params.fal = $scope.formatoFecha($scope.fal)
+
+            const btn = $('#btn-generar-proyeccion').button('loading')
+
+            nominaServicios.generarProyeccion($scope.params)
+            .then(res => {
+                $scope.lista = res.lista
+                $scope.total = res.total
+                btn.button('reset')
+
+                setTimeout(() => {
+                    $('#proyeccion-lista').DataTable({
+                        dom: 'Bfrtip',
+                        buttons: ['excelHtml5','csv','pdf']
+                    })
+                })
+            });
+        }
+    }
 ]);
