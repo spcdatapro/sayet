@@ -43,13 +43,32 @@ $app->post('/correlativoger', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $query = "SELECT DATE_FORMAT('$d->fdelstr', '%d/%m/%Y') AS del, DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS al";
-    $general = $db->getQuery($query)[0];
+    $mesdel = date("m", strtotime($d->fdelstr));
+    $mesal = date("m", strtotime($d->falstr));
+    $aniodel = ' '.date("Y", strtotime($d->fdelstr));
+    $anioal = ' '.date("Y", strtotime($d->falstr));
+
+    $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+
+    if ($aniodel == $anioal) {
+        $aniodel = '';
+    }
+
+    $letra = new stdClass();
+
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y');
+
+    $letra->del = 'De ' .$meses[$mesdel-1].$aniodel;
+
+    $mesal != $mesdel ? $letra->al = 'a '.$meses[$mesal-1].$anioal : $letra->al = $anioal;
+
+    $ids = array();
 
     //Empresas
-    $query = "SELECT DISTINCT a.id, a.nomempresa AS empresa, NULL AS bancos FROM empresa a 
-    INNER JOIN banco b ON b.idempresa = a.id INNER JOIN tranban c ON c.idbanco = b.id WHERE c.fecha >= '$d->fdelstr' AND fecha <= '$d->falstr' ";
-    $query.= $d->idempresa != 0 ? "AND a.id = $d->idempresa " : '';
+    $query = "SELECT DISTINCT a.id, a.nomempresa AS empresa FROM empresa a INNER JOIN banco b ON b.idempresa = a.id 
+    INNER JOIN tranban c ON c.idbanco = b.id WHERE c.fecha >= '$d->fdelstr' AND fecha <= '$d->falstr'";
+    $query.= $d->idempresa != 0 ? " AND a.id = $d->idempresa " : ' ';
     $query.= "ORDER BY a.nomempresa ";
     $empresas = $db->getQuery($query);
 
@@ -57,69 +76,92 @@ $app->post('/correlativoger', function(){
 
     for ($i = 0; $i < $cntEmpresas; $i++) {
         $empresa = $empresas[$i]; 
-        // Bancos
-        $query = "SELECT a.id, CONCAT(a.nombre, ' (', a.nocuenta, ') ', b.simbolo) AS banco, a.idmoneda, b.simbolo, NULL AS trans, NULL AS total, NULL AS mostrar
-        FROM banco a INNER JOIN moneda b ON a.idmoneda = b.id WHERE a.idempresa = $empresa->id ORDER BY a.nombre ";
-        $empresa->bancos = $db->getQuery($query);
 
-        $cntBancos = count($empresa->bancos);
-
-        for ($j = 0; $j < $cntBancos; $j++){
-            // Banco
-            $banco = $empresa->bancos[$j];
-            
-            // Array de montos
-            $sbanco = array();
-
-            // Transacciones
-            $query = "SELECT 
-                        DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
-                        CONCAT(a.tipotrans, ' ', a.numero) AS documento,
-                        a.monto,
-                        SUBSTRING(a.beneficiario, 1, 25) AS beneficiario,
-                        IFNULL(c.conceptomayor, a.concepto) AS concepto,
-                        IFNULL(GROUP_CONCAT(DISTINCT ' ', d.nomproyecto), 
-                                    'N/A') AS proyecto,
-                        NULL AS simbolo
-                    FROM
-                        tranban a
-                            LEFT JOIN
-                        detpagocompra b ON b.idtranban = a.id
-                            LEFT JOIN
-                        compra c ON b.idcompra = c.id
-                            LEFT JOIN
-                        proyecto d ON c.idproyecto = d.id
-                    WHERE
-                        a.idbanco = $banco->id AND a.fecha >= '$d->fdelstr'
-                            AND a.fecha <= '$d->falstr'
-                            AND a.tipotrans IN('C', 'B')
-                    GROUP BY a.id
-                    ORDER BY a.fecha, a.numero ";
-            $banco->trans = $db->getQuery($query);
-            
-            $cntTrans = count($banco->trans);
-
-            if ($cntTrans > 0) {
-                $banco->mostrar = true;
-            }
-
-            for ($k = 0; $k < $cntTrans; $k++) {
-                $tran = $banco->trans[$k];
-                if ($banco->idmoneda == 1) {
-                    $tran->simbolo = 'Q.';
-                } else {
-                    $tran->simbolo = '$.';
-                }
-                array_push($sbanco, $tran->monto);
-            }
-            $tbanco = array_sum($sbanco);
-            $banco->total = number_format($tbanco, 2, '.', ',');
-        }
+        array_push($ids, $empresa->id);
     }
 
-    //Sumatorias
+    $ids_str = implode(',', $ids);
 
-    print json_encode(['general' => $general, 'debitos' => $empresas]);
+    // Bancos
+    $query = "SELECT a.id, CONCAT(a.nombre, ' (', a.nocuenta, ') ', b.simbolo) AS banco, a.idmoneda, b.simbolo, a.idempresa
+    FROM banco a INNER JOIN moneda b ON a.idmoneda = b.id WHERE a.idempresa IN($ids_str) ORDER BY a.nombre";
+    $bancos = $db->getQuery($query);
+
+    $cntBancos = count($bancos);
+
+    $ids = array();
+
+    for ($i = 0; $i < $cntBancos; $i++) {
+        $banco = $bancos[$i];
+
+        array_push($ids, $banco->id);
+    }
+
+    $ids_str = implode(',', $ids);
+
+    // Transacciones
+    $query = "SELECT 
+                DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
+                CONCAT(a.tipotrans, ' ', a.numero) AS documento,
+                a.monto,
+                SUBSTRING(a.beneficiario, 1, 25) AS beneficiario,
+                IFNULL(c.conceptomayor, a.concepto) AS concepto,
+                IFNULL(GROUP_CONCAT(DISTINCT ' ', d.nomproyecto), 
+                            'N/A') AS proyecto,
+                a.idbanco, 
+                f.simbolo
+            FROM
+                tranban a
+                    LEFT JOIN
+                detpagocompra b ON b.idtranban = a.id
+                    LEFT JOIN
+                compra c ON b.idcompra = c.id
+                    LEFT JOIN
+                proyecto d ON c.idproyecto = d.id
+                    INNER JOIN
+                banco e ON a.idbanco = e.id
+                    INNER JOIN 
+                moneda f ON e.idmoneda = f.id
+            WHERE
+                a.idbanco IN($ids_str) AND a.fecha >= '$d->fdelstr'
+                    AND a.fecha <= '$d->falstr'
+                    AND a.tipotrans IN('C', 'B')
+            GROUP BY a.id
+            ORDER BY a.fecha, a.numero";
+    $trans = $db->getQuery($query);
+
+    $cntTrans = count($trans);
+
+    for ($i = 0; $i < $cntEmpresas; $i++) {
+        $empresa = $empresas[$i];
+
+        $banempresa = array();
+        for ($j = 0; $j < $cntBancos; $j++) {
+            $banco = $bancos[$j];
+
+            $tranbanco = array();
+            $totbanco = array();
+
+            for ($k = 0; $k < $cntTrans; $k++) {
+                $tran = $trans[$k];
+
+                if ($tran->idbanco == $banco->id) {
+                    array_push($tranbanco, $tran);
+                    array_push($totbanco, $tran->monto);
+                }
+            }
+
+            $banco->total = number_format(array_sum($totbanco), 2, ".", ",");
+            $banco->trans = $tranbanco;
+
+            if ($banco->idempresa == $empresa->id && count($banco->trans) > 0) {
+                array_push($banempresa, $banco);
+            }
+        }
+        $empresa->bancos = $banempresa;
+    }
+
+    print json_encode(['fechas' => $letra, 'debitos' => $empresas]);
 });
 
 $app->run();
