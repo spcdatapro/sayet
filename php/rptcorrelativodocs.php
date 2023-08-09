@@ -47,6 +47,8 @@ $app->post('/correlativoger', function(){
     $mesal = date("m", strtotime($d->falstr));
     $aniodel = ' '.date("Y", strtotime($d->fdelstr));
     $anioal = ' '.date("Y", strtotime($d->falstr));
+    $diadel = date("d", strtotime($d->fdelstr));
+    $diaal = date("d", strtotime($d->falstr));
 
     $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
 
@@ -59,9 +61,10 @@ $app->post('/correlativoger', function(){
     $letra->estampa = new DateTime();
     $letra->estampa = $letra->estampa->format('d-m-Y');
 
-    $letra->del = 'De ' .$meses[$mesdel-1].$aniodel;
 
-    $mesal != $mesdel ? $letra->al = 'a '.$meses[$mesal-1].$anioal : $letra->al = $anioal;
+    $letra->del = $mesal != $mesdel ? 'Del '.$diadel.' de '.$meses[$mesdel-1].$aniodel : 'Del '.$diadel.$aniodel;
+
+    $letra->al = 'al '.$diaal.' de '.$meses[$mesal-1].$anioal;
 
     $ids = array();
 
