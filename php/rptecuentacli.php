@@ -57,7 +57,7 @@ $app->post('/rptecuentacli', function(){
             $idarraymnd++;
             $msumsaldo = 0.00;
 
-            $querydet1 = "SELECT a.nombre,b.venta,b.factura,b.serie,b.fecha,
+            $querydet1 = "SELECT a.nombre,b.venta,b.factura,b.serie,b.fecha,b.codigo,
                     round(b.monto,2) as saldo,round(b.totalfac,2) as totalfac, round(b.retisr,2) as retisr, substr(b.concepto,1,31) as concepto, b.contrato, b.proyecto, b.nomproyecto, round(b.apagar,2) as apagar,b.empresa,
 					b.idempresa,round(b.retiva,2) as retiva, b.serieadmin, b.numeroadmin, a.nombrecorto
                 from sayet.cliente a
@@ -168,7 +168,7 @@ $app->post('/rptecuentacli', function(){
 					
 					$query = $querydet1.$queryproy.$queryemp1.$querydet2.$queryemp2.$querydet3;
 					
-					//echo $query;
+					// echo $query; return;
 
 					$ancl = $db->getQuery($query);
 
@@ -199,17 +199,17 @@ $app->post('/rptecuentacli', function(){
 
 							$qdetpago = "SELECT a.idcliente as cliente,c.id as venta,c.fecha,
 
-										 ifnull(d.numero, IF(c.tipo = 1, c.id, c.numero)) as documento,
-
-										 ifnull(d.tipotrans, IF(c.tipo = 1, 'P', c.serie)) as tipotrans,
-
-										 round((b.monto*if(a.idmoneda=1,1,a.tipocambio)),2) as monto,
-										 concat(c.serie, IFNULL(IF(c.serie = 'A', e.seriea, e.serieb ), c.id)) as recibo
+										ifnull(d.numero, IF(c.tipo = 1, c.id, c.numero)) as documento,
+										ifnull(d.tipotrans, IF(c.tipo = 1, 'P', c.serie)) as tipotrans,
+										round((b.monto*if(a.idmoneda=1,1,a.tipocambio)),2) as monto,
+										concat(c.serie, IFNULL(IF(c.serie = 'A', e.seriea, e.serieb ), c.id)) as recibo, 
+										f.simbolo
 									from sayet.factura a
 										inner join sayet.detcobroventa b on a.id=b.idfactura
 										inner join sayet.recibocli c on b.idrecibocli=c.id
 										left join sayet.tranban d on c.idtranban=d.id
 										LEFT JOIN sayet.serierecli e ON e.idrecibocli = c.id 
+										LEFT JOIN sayet.moneda f ON f.id = a.idmoneda
 									where a.idtipofactura <> 9 and c.anulado=0 
 										and c.fecha<='" . $d->falstr . "' and a.id=" . $hac->venta . " and a.idmoneda = " . $dmon->idmoneda . "";
 							$qdetpago.= (int)$d->idcontrato == 0 ? '' : " AND a.idcontrato = $d->idcontrato ";
@@ -232,7 +232,8 @@ $app->post('/rptecuentacli', function(){
 										'tipotrans' => $row->tipotrans,
 										'documento' => $row->documento,
 										'fecha' => $row->fecha,
-										'recibo' => $row->recibo
+										'recibo' => $row->recibo,
+										'simbolo' => $row->simbolo
 									)
 								);
 							}
@@ -253,7 +254,8 @@ $app->post('/rptecuentacli', function(){
 								'empresa' => $hac->empresa,
 								'retiva' => $hac->retiva,
 								'serieadmin' => $hac->serieadmin,
-								'numeroadmin' => $hac->numeroadmin
+								'numeroadmin' => $hac->numeroadmin,
+								'codigo' => $hac->codigo
 							)
 						);
 						//
@@ -261,7 +263,8 @@ $app->post('/rptecuentacli', function(){
 							$detrepo[$idarray] = [
 								'nombre' => $hac->nombre,
 								'tsaldo' => $sumasaldo,
-								'dec' => $det
+								'dec' => $det, 
+								'moneda' => $hac->codigo
 							];
 						}
 					}
@@ -289,7 +292,8 @@ $app->post('/rptecuentacli', function(){
 							'idempresa' => $ecli->idempresa,
 						'empresa' => $ecli->empresa,
 						'saldo' => round($esumsaldo, 2),
-						'demp' => $detpry
+						'demp' => $detpry,
+						'moneda' => $hac->codigo
 						)
 					);
 				}
