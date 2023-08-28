@@ -214,8 +214,9 @@ $app->post('/rptecuentacli', function(){
 										and c.fecha<='" . $d->falstr . "' and a.id=" . $hac->venta . " and a.idmoneda = " . $dmon->idmoneda . "";
 							$qdetpago.= (int)$d->idcontrato == 0 ? '' : " AND a.idcontrato = $d->idcontrato ";
 							$qdetpago.= " UNION SELECT a.idcliente as cliente, a.idfacturaafecta as venta, a.fecha, CONCAT(a.serie, '-', a.numero, ' (', a.serieadmin, '-', a.numeroadmin, ')') as documento, 'NC' as tipotrans, 
-							a.total as monto,  CONCAT(a.serie, '-', a.numero, ' (', a.serieadmin, '-', a.numeroadmin, ')') as recibo
+							a.total as monto,  CONCAT(a.serie, '-', a.numero, ' (', a.serieadmin, '-', a.numeroadmin, ')') as recibo, b.simbolo
 							from sayet.factura a
+							left join sayet.moneda b on a.idmoneda = b.id
 							where a.idtipofactura = 9 and a.anulada = 0 and a.fecha <= '$d->falstr' and a.idfacturaafecta = $hac->venta and a.idmoneda = $dmon->idmoneda ";
 							$qdetpago.= (int)$d->idcontrato == 0 ? '' : " AND a.idcontrato = $d->idcontrato ";
 							
