@@ -217,7 +217,7 @@
                 qOt = await presupuestoSrvc.lstOts(idot);
             }
             var test = false;
-            jsReportSrvc.getPDFReport(test ? 'BJdOgyV2W' : 'rJPo84G0w', { idot: esPresupuesto ? +qOt[0].id : idot }).then(function (pdf) { $window.open(pdf); });
+            jsReportSrvc.getPDFReport(test ? 'BJdOgyV2W' : 'rJPo84G0w', { idot: esPresupuesto ? +qOt[0].id : idot }).then(function (pdf) { console.log(pdf); $window.open(pdf); });
         };
 
         $scope.nuevoPresupuesto = function () {

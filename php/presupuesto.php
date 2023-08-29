@@ -46,7 +46,6 @@ $app->post('/lstpresupuestos', function () {
     $query .= trim($proyectos) != '' ? "AND a.idproyecto IN ($proyectos) " : '';
     $query .= $d->idestatuspresup != '' ? "AND a.idestatuspresupuesto IN($d->idestatuspresup) " : '';
     $query .= 'ORDER BY a.id DESC';
-    //print $query;
     print $db->doSelectASJson($query);
 });
 
@@ -254,115 +253,119 @@ $app->get('/getpresupuesto/:idpresupuesto', function ($idpresupuesto) {
 });
 
 function getTotales($orden, $ids, $db) {
+    // variables generales para OTM
+    $gastos_ot = array();
+    $montos_ot = array();
 
-    $sgastado = array();
-    $sisr = array();
-    $stran = array();
-    $sot = array();
-
+    // convertir arrahy de ids en string 
     $ids_str = implode(',', $ids);
 
+    // contar cuantas ots tiene otm si no es multiple usar 1
+    $cntsOts = count($orden->ots);
+
+    // traer tipo cambio proveedor, primero de compra, transaccion y por ultimo de orden
     $tipocambioprov = $db->getOneField("SELECT IFNULL(IFNULL((SELECT tipocambio FROM compra WHERE ordentrabajo IN($ids_str) AND tipocambio > 1 LIMIT 1),
     (SELECT tipocambio FROM tranban WHERE iddetpresup IN($ids_str) AND tipocambio > 1 LIMIT 1)), 
-    (SELECT tipocambio FROM detpresupuesto WHERE id = $orden->id))");
+    (SELECT tipocambio FROM detpresupuesto WHERE id IN($ids_str)))");
 
-    $query = "SELECT monto, idmoneda, tipocambio FROM detpresupuesto WHERE id IN($ids_str)";
-    $montots = $db->getQuery($query);
-
-    $cntsMontos = count($montots);
-
-    for ($i = 0; $i < $cntsMontos; $i++) {
-        $montot = $montots[$i];
-        $tc = $montot->tipocambio > 1 ? $montot->tipocambio : $tipocambioprov;
-    if ($montot->idmoneda !== $orden->idmoneda) {
-        // si moneda es local multiplicar 
-        if ($orden->idmoneda == 1) {
-            $monto = $montot->monto * $tc;
-        // si moneda no es local divir
-        } else {
-            $monto = $montot->monto / $tc;
-        }
-        // insertar monto
-        } else {
-            $monto = $montot->monto;
-        }
-        // empujar montos a un array
-        array_push($sot, $monto);
-    }
-
-    $montog = array_sum($sot);
-
-    $query = "SELECT idmoneda, tipocambio, isr FROM compra WHERE ordentrabajo IN($ids_str) AND idreembolso = 0 UNION ALL 
-    SELECT b.idmoneda, b.tipocambio, b.isr FROM reembolso a 
-            INNER JOIN compra b ON b.idreembolso = a.id WHERE a.ordentrabajo IN($ids_str)";
+    // traer monto, moneda, idordentrabajo y tipocambio de compra
+    $query = "SELECT id, totfact, idmoneda, tipocambio, isr, ordentrabajo AS ot FROM compra WHERE ordentrabajo IN($ids_str) AND idreembolso = 0 
+    AND id NOT IN(SELECT idcompra FROM detnotacompra) AND idtipofactura < 8
+    UNION ALL SELECT b.id, b.totfact, b.idmoneda, b.tipocambio, b.isr, a.ordentrabajo AS ot FROM reembolso a 
+    INNER JOIN compra b ON b.idreembolso = a.id WHERE a.ordentrabajo IN($ids_str)";
     $tcompras = $db->getQuery($query);
 
     $cntCompras = count($tcompras);
-        
-    for ($j = 0; $j < $cntCompras; $j++){
-        $compra = $tcompras[$j];
-        $tc = $compra->tipocambio > 1 ? $compra->tipocambio : $tipocambioprov;
-        // si moneda de ot diferente a moneda de compra usar t.c
-        if ($orden->idmoneda !== $compra->idmoneda) {
-            // si moneda es local multiplicar 
-            if ($orden->idmoneda == 1) {
-                $montoisr = $compra->isr * $tc;
-            // si moneda no es local divir
-            } else {
-                $montoisr = $compra->isr / $tc;
-            }
-        // insertar monto
-        } else {
-            $montoisr = $compra->isr;
-        }
-        // empujar montos a un array
-        array_push($sisr, $montoisr);
-    }
-    
-    // sumar montos de array
-    $tisr = array_sum($sisr);
 
     // traer monto y tipocambio de transaccion bancaria
-    $query = "SELECT a.monto, a.tipocambio, b.idmoneda FROM tranban a INNER JOIN banco b ON a.idbanco = b.id 
-    WHERE iddetpresup IN($ids_str) AND (SELECT COUNT(b.id) FROM doctotranban b WHERE b.idtranban = a.id AND b.idtipodoc = 2) = 0 
-    AND a.liquidado = 0 AND a.iddocliquida = 0 AND a.anulado = 0 UNION ALL 
-    SELECT b.monto, a.tipocambio, c.idmoneda FROM tranban a INNER JOIN dettranreem b ON b.idtranban = a.id 
+    $query = "SELECT a.monto, a.tipocambio, b.idmoneda, a.iddetpresup AS ot FROM tranban a INNER JOIN banco b ON a.idbanco = b.id 
+    WHERE a.iddetpresup IN($ids_str) AND (SELECT COUNT(b.id) FROM doctotranban b WHERE b.idtranban = a.id AND b.idtipodoc = 2) = 0 
+    AND a.liquidado = 0 AND a.iddocliquida = 0 AND a.anulado = 0 
+    UNION ALL 
+    SELECT b.monto, a.tipocambio, c.idmoneda, a.iddetpresup AS ot FROM tranban a INNER JOIN dettranreem b ON b.idtranban = a.id 
     INNER JOIN banco c ON a.idbanco = c.id WHERE a.iddetpresup IN($ids_str)";
     $trans = $db->getQuery($query);
 
     $cntTranas = count($trans);
-        
-    for ($j = 0; $j < $cntTranas; $j++){
-        $tran = $trans[$j];
-        $tc = $tran->monto * $tran->tipocambio > 1 ? $tran->tipocambio : $tipocambioprov;
-        // si moneda de ot diferente a moneda de cheque usar t.c
-        if ($orden->idmoneda !== $tran->idmoneda) {
-            // si moneda es local multiplicar 
-            if ($orden->idmoneda == 1) {
-                $monto = $tran->monto * $tc;
-            // si moneda no es local divir
-            } else {
-                $monto = $tran->monto * $tc;
+
+    for ($i = 0; $i < $cntsOts; $i++) {
+        // crear array total de OT[$i]
+        $sisr = array();
+        $stran = array();
+
+        $ot = $orden->ots[$i];
+
+        // loop de compras
+        for ($j = 0; $j < $cntCompras; $j++) {
+            $compra = $tcompras[$j];
+            $tc = $compra->tipocambio > 1 ? $compra->tipocambio : $tipocambioprov;
+
+            // validar si la orden de la compra y la orden son iguales
+            if ($ot->id == $compra->ot) {
+                if ($ot->idmoneda != $compra->idmoneda) {
+                    if ($ot->idmoneda == 1) {
+                        $montoisr = $compra->isr * $tc;
+                    } else {
+                        $montoisr = $compra->isr / $tc;
+                    }
+                } else {
+                    $montoisr = $compra->isr;
+                }
+                array_push($sisr, $montoisr);
             }
-        // insertar monto
-        } else {
-            $monto = $tran->monto;
         }
-        // empujar montos a un array
-        array_push($stran, $monto);
+        // sumas compras
+        $tisr = array_sum($sisr);
+
+        // loop transacciones bancarias
+        for ($j = 0; $j < $cntTranas; $j++) {
+            $tran = $trans[$j];
+            $tc = $tran->tipocambio > 1 ? $tran->tipocambio : $tipocambioprov;
+
+            if ($ot->id == $tran->ot) {
+                if ($ot->idmoneda !== $tran->idmoneda) {
+                    if ($ot->idmoneda == 1) {
+                        $monto = $tran->monto * $tc;
+                    } else {
+                        $monto = $tran->monto / $tc;
+                    }
+                } else {
+                    $monto = $tran->monto;
+                }
+                array_push($stran, $monto);
+            }
+        }
+        // sumas transacciones bancarias
+        $ttran = array_sum($stran);
+
+        $gastado = $ttran + $tisr;
+
+        $tc = $ot->tipocambio > 1 ? $ot->tipocambio : $tipocambioprov;
+
+        // efectos de cada OTS en la OTM
+        if ($ot->idmoneda == $orden->idmoneda) {
+            $monto = $ot->monto;
+            $gasto = $gastado;
+        } else {
+            if ($orden->idmoneda == 1) {
+                $monto = $ot->monto * $tc;
+                $gasto = $gastado * $tc;
+            } else {
+                $monto = $ot->monto * $tc;
+                $gasto = $gastado / $tc;
+            }
+        }
+
+        array_push($montos_ot, $monto);
+        array_push($gastos_ot, $gasto);
     }
 
-    // sumar array de transacciones
-    $ttran = array_sum($stran);
+    $montog = array_sum($montos_ot);
+    $gastado = array_sum($gastos_ot);
 
-    // operacion para total gasto en OT
-    $gastado = $ttran + $tisr;
-
-    // opracion para proventaje de avance en OT
-    $avance = (($gastado) * 100) / $montog;
-
-    // operacion diferencia
+    // calculos otm
     $diferencia = $montog - $gastado;
+    $avance = ($gastado * 100) / $montog;
 
     // insertar valores
     $orden->gastado = number_format($gastado, 2, '.', ',');
