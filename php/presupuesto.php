@@ -266,7 +266,7 @@ function getTotales($orden, $ids, $db) {
     // traer tipo cambio proveedor, primero de compra, transaccion y por ultimo de orden
     $tipocambioprov = $db->getOneField("SELECT IFNULL(IFNULL((SELECT tipocambio FROM compra WHERE ordentrabajo IN($ids_str) AND tipocambio > 1 LIMIT 1),
     (SELECT tipocambio FROM tranban WHERE iddetpresup IN($ids_str) AND tipocambio > 1 LIMIT 1)), 
-    (SELECT tipocambio FROM detpresupuesto WHERE id IN($ids_str)))");
+    (SELECT tipocambio FROM detpresupuesto WHERE id IN($ids_str) AND tipocambio > 1 LIMIT 1))");
 
     // traer monto, moneda, idordentrabajo y tipocambio de compra
     $query = "SELECT id, totfact, idmoneda, tipocambio, isr, ordentrabajo AS ot FROM compra WHERE ordentrabajo IN($ids_str) AND idreembolso = 0 
