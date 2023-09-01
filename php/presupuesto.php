@@ -278,7 +278,7 @@ function getTotales($orden, $ids, $db) {
     $cntCompras = count($tcompras);
 
     // traer monto y tipocambio de transaccion bancaria
-    $query = "SELECT a.monto, a.tipocambio, b.idmoneda, a.iddetpresup AS ot FROM tranban a INNER JOIN banco b ON a.idbanco = b.id 
+    $query = "SELECT a.monto * IF(a.tipotrans = 'R', -1, 1) AS monto, a.tipocambio, b.idmoneda, a.iddetpresup AS ot FROM tranban a INNER JOIN banco b ON a.idbanco = b.id 
     WHERE a.iddetpresup IN($ids_str) AND (SELECT COUNT(b.id) FROM doctotranban b WHERE b.idtranban = a.id AND b.idtipodoc = 2) = 0 
     AND a.liquidado = 0 AND a.iddocliquida = 0 AND a.anulado = 0 
     UNION ALL 
