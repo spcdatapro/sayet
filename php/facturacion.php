@@ -778,7 +778,7 @@ $app->post('/genfel', function() use($app) {
         IF(b.idmonedafact = 1, a.importeexento, a.importeexentocnv) AS importeexento,
         IF(b.exentoiva = 0, IF(b.idmonedafact = 1, a.importeneto, a.importenetocnv), 0.00) AS importeneto,
         IF(b.idmonedafact = 1, a.importeiva, a.importeivacnv) AS importeiva, 0 AS importeotros, 
-        IF(b.idmonedafact = 1, a.importetotal, a.importetotalcnv) AS importetotal, IF(b.exentoiva = 0, a.idtiposervicio, 5) AS producto, TRIM(a.descripcionlarga) AS descripcion, 'S' AS tipoventa
+        IF(b.idmonedafact = 1, a.importetotal, a.importetotalcnv) AS importetotal, IF(b.exentoiva = 0, a.idtiposervicio, 5) AS producto, TRIM(a.descripcionlarga) AS descripcion, IF(b.idtipoventa = 1, 'B', 'S') AS tipoventa
         FROM detfact a INNER JOIN factura b ON b.id = a.idfactura
         WHERE a.idfactura = $factura->id";
         // print $query;
