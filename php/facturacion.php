@@ -754,7 +754,7 @@ $app->post('/genfel', function() use($app) {
     //Encabezado //CONCAT(TRIM(a.serieadmin), '-', LPAD(a.numeroadmin, 10, '0')) AS ordenexterno
     $query = "SELECT 1 AS tiporegistro, DATE_FORMAT(a.fecha, '%Y%m%d') AS fechadocumento, b.siglasfel AS tipodocumento, a.nit AS nitcomprador, a.idmonedafact AS codigomoneda, 
     IF(a.idmonedafact = 1, 1, ROUND(a.tipocambio, 4)) AS tasacambio, CONCAT(TRIM(a.serieadmin), '-', LPAD(a.numeroadmin, 10, '0'), IF(a.idtipofactura = 1, '', CONCAT('-', b.siglasfel))) AS ordenexterno,
-    'S' AS tipoventa, 1 AS destinoventa, 'S' AS enviarcorreo, 
+    IF(a.idtipoventa = 1, 'B', 'S') AS tipoventa, 1 AS destinoventa, 'S' AS enviarcorreo, 
     IF(a.nit <> 'CF', '', IF(LENGTH(a.nombre) > 0, a.nombre, 'Consumidor final')) AS nombrecomprador, IF(LENGTH(a.direccion) > 0, a.direccion, 'Ciudad') AS direccion, 
     '' AS numeroacceso, IFNULL(a.serieadmin, 'A') AS serieadmin, a.numeroadmin, c.nombrecorto, FORMAT(a.importetotalcnv, 2) AS montodol, ROUND(a.tipocambio, 4) AS tipocambio, FORMAT(TRUNCATE(a.totalcnv, 2), 2) AS pagonetodol, 
     FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2), 2) AS pagoneto, FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2), 2) AS retiva, 
