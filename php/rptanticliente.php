@@ -366,12 +366,12 @@ function queryFacturas($d){
                 UNION    
                 SELECT z.idfacturaafecta AS idfactura, SUM(z.total) AS montopagado
                 FROM factura z 
-                WHERE z.idtipofactura = 9 AND z.fecha <= '$d->falstr' AND (z.anulada = 0 OR (z.anulada = 1 AND z.fechaanula > '$d->falstr'))
+                WHERE z.idtipofactura IN(9, 13) AND z.fecha <= '$d->falstr' AND (z.anulada = 0 OR (z.anulada = 1 AND z.fechaanula > '$d->falstr'))
                 GROUP BY z.idfacturaafecta
             ) x
             GROUP BY x.idfactura
         ) g ON a.id = g.idfactura
-        WHERE a.idtipofactura <> 9 AND a.fecha <= '$d->falstr' AND a.idfox IS NULL AND (a.anulada = 0 OR (a.anulada = 1 AND a.fechaanula > '$d->falstr')) AND ROUND(a.total, 2) - IFNULL(g.montopagado, 0.00) <> 0 AND 
+        WHERE a.idtipofactura NOT IN(9, 13) AND a.fecha <= '$d->falstr' AND a.idfox IS NULL AND (a.anulada = 0 OR (a.anulada = 1 AND a.fechaanula > '$d->falstr')) AND ROUND(a.total, 2) - IFNULL(g.montopagado, 0.00) <> 0 AND 
         IF(ISNULL(g.idfactura) AND a.pagada = 1 AND a.forzada = 1, 1 = 0, 1 = 1) ";
     // $qFacts.= (int)$d->abreviado === 0 ? '' : "AND DATEDIFF('$d->falstr', a.fecha) > 60 ";
     $qFacts.= (int)$d->vernegativos === 1 ? '' : ('AND (ROUND(a.total, 2) - IFNULL(g.montopagado, 0.00)) '.((int)$d->pagoextra == 0 ? '>= 0 ' : '< 0 '));
