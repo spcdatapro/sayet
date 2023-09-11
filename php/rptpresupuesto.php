@@ -434,26 +434,25 @@ function getPagos($orden, $db, $esmultiple, $ids = null) {
 
     // reembolsos atados a la orden
     $query = "SELECT 
-                a.id,
-                DATE_FORMAT(a.finicio, '%d/%m/%y') AS fecha,
-                SUBSTRING(a.beneficiario, 1, 22) AS proveedor,
-                CONCAT('REE-', LPAD(a.id, 5, '0')) AS factura,
-                ROUND(SUM(b.totfact), 2) AS monto,
-                ROUND(SUM(b.isr), 2) AS isr,
-                SUBSTRING(b.conceptomayor, 1, 48) AS concepto,
-                e.simbolo AS moneda,
-                e.id AS idmoneda,
-                ROUND(b.tipocambio, 2) AS tipocambio,
+                b.id,
+                DATE_FORMAT(b.finicio, '%d/%m/%y') AS fecha,
+                SUBSTRING(b.beneficiario, 1, 22) AS proveedor,
+                CONCAT('REE-', LPAD(b.id, 5, '0')) AS factura,
+                ROUND(SUM(a.totfact), 2) AS monto,
+                ROUND(SUM(a.isr), 2) AS isr,
+                SUBSTRING(a.conceptomayor, 1, 48) AS concepto,
+                c.simbolo AS moneda,
+                ROUND(a.tipocambio, 2) AS tipocambio,
                 a.ordentrabajo AS ot
             FROM
-                reembolso a
+                compra a
                     INNER JOIN
-                compra b ON b.idreembolso = a.id
+                reembolso b ON a.idreembolso = b.id
                     INNER JOIN
-                moneda e ON b.idmoneda = e.id
+                moneda c ON a.idmoneda = c.id
             WHERE
                 a.ordentrabajo IN($ids_str)
-                ORDER BY a.finicio";
+                GROUP BY a.idreembolso";
     $reembolsos = $db->getQuery($query);
 
     // traer compras individuales
