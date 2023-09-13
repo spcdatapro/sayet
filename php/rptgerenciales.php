@@ -34,11 +34,11 @@ $app->post('/finanzas', function(){
     // clase para fechas
     $letra = new stdClass();
 
-    $letra->del = $meses[$mesdel-1].$aniodel;
+    $letra->del = strtoupper($meses[$mesdel-1]).$aniodel;
 
     // validar si solo estan obteniendo un mes
     if ($mesal != $mesdel) {
-        $letra->al = 'a '.$meses[$mesal-1].$anioal;
+        $letra->al = 'a '.strtoupper($meses[$mesal-1]).$anioal;
     } else {
         $letra->al = $anioal;
     }
@@ -192,7 +192,7 @@ $app->post('/finanzas', function(){
                 UNION ALL SELECT 
                     NULL AS id, 
                     NULL AS codigo,
-                    'PLANILLA' AS cuenta,
+                    'SALARIOS' AS cuenta,
                     ROUND(SUM(a.descanticipo + a.liquido + a.descprestamo) + SUM(a.sueldoordinario + a.sueldoextra) * 0.1267,
                             2) AS total
                 FROM
@@ -295,31 +295,33 @@ $app->post('/finanzas', function(){
                         AND c.id IN($idcuenta_str)
                 UNION ALL SELECT 
                         NULL AS id,
-                        NULL AS codigo,
-                        'PLANILLA' AS nombrecta,
+                        b.id AS codigo,
+                        'SALARIOS' AS nombrecta,
                         DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fechatran,
                         NULL AS cheque,
                         SUBSTRING(CONCAT(b.nombre, ' ', IFNULL(b.apellidos, '')), 1, 30) AS beneficiario,
                         NULL AS orden,
                         'Devengado' AS concepto,
                         NULL AS fechafact,
-                        NULL AS documento,
+                        IFNULL(c.nombre, '') AS documento,
                         ROUND(a.descanticipo + a.liquido + a.descprestamo, 2) AS total
                     FROM
                         plnnomina a
                             INNER JOIN
                         plnempleado b ON a.idplnempleado = b.id
+                            LEFT JOIN 
+                        unidad c ON b.idunidad = c.id
                     WHERE
                         a.idempresa = $d->idempresa AND b.idproyecto = $d->idproyecto
                             AND a.fecha >= 20230116
                             AND a.fecha <= $d->fal
                     UNION ALL SELECT 
                         NULL AS id,
-                        NULL AS codigo,
-                        'PLANILLA' AS nombrecta,
-                        DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fechatran,
+                        b.id AS codigo,
+                        'SALARIOS' AS nombrecta,
+                        NULL AS fechatran,
                         NULL AS cheque,
-                        SUBSTRING(CONCAT(b.nombre, ' ', IFNULL(b.apellidos, '')), 1, 30) AS beneficiario,
+                        NULL AS beneficiario,
                         NULL AS orden,
                         'Cuota patronal' AS conceptomayor,
                         NULL AS fechafact,
@@ -329,6 +331,8 @@ $app->post('/finanzas', function(){
                         plnnomina a
                             INNER JOIN
                         plnempleado b ON a.idplnempleado = b.id
+                            LEFT JOIN
+                        unidad c ON b.idunidad = c.id
                     WHERE
                         a.idempresa = $d->idempresa AND b.idproyecto = $d->idproyecto
                             AND a.fecha >= 20230116
@@ -348,6 +352,10 @@ $app->post('/finanzas', function(){
                 if ($cuenta->id == $compra->id) {
                     array_push($compras_cuenta, $compra);
                 }
+            }
+
+            if ($cuenta->id == null) {
+                usort($compras_cuenta, 'comparar_nombres');
             }
 
             $cuenta->compras = $compras_cuenta;
@@ -380,6 +388,11 @@ function random_hex_color () {
     $g = rand (0, 255);
     $b = rand (0, 255);
     return sprintf ('#%02x%02x%02x', $r, $g, $b);
+}
+
+function comparar_nombres ($a, $b) {
+    if ($a->codigo == $b->codigo) return 0;
+    return 1;
 }
 
 $app->run();
