@@ -140,7 +140,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="col-sm-4 text-right">
+                    <div class="col-sm-4 text-right input-group-btn">
                         <a class="btn btn-default btn-sm" ng-href="pln/php/controllers/prestamo.php/imprimir/{{pre.id}}"
                             ng-show="hay" target="_blank" title="Imprimir préstamo">
                             <i class="glyphicon glyphicon-print"></i>
@@ -154,7 +154,7 @@
                             <i class="glyphicon glyphicon-ban-circle"></i> No Descontar
                         </button>
                         <button type="submit" class="btn btn-primary btn-sm">
-                            <i class="glyphicon glyphicon-floppy-disk"></i> Guardar
+                            <i class="glyphicon glyphicon-floppy-disk"></i>
                         </button>
                         <button type="button" class="btn btn-danger btn-sm" ng-show="pre.id > 0" ng-click="anularPrestamo(pre)">
                             <i class="glyphicon glyphicon-remove-circle"></i> Anular
