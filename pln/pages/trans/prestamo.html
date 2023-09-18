@@ -1,32 +1,33 @@
 <div class="container-fluid" ng-controller="transPrestamoController">
     <nav class="navbar navbar-default">
-      <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#/pln/mnt/prestamo">Préstamo</a>
-        </div>
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <form class="navbar-form navbar-left" ng-submit="buscar(bus)">
-            <div class="form-group">
-              <input type="text" ng-model="bus.termino" class="form-control" placeholder="Buscar">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#/pln/mnt/prestamo">Préstamo</a>
             </div>
-            <button type="submit" class="btn btn-default">
-                <i class="glyphicon glyphicon-search"></i>
-            </button>
-          </form>
-          <button type="button" class="btn btn-xs btn-default navbar-btn" ng-click="mostrarForm()">
-              <i class="glyphicon glyphicon-plus"></i> Nuevo
-          </button>
-        </div><!-- /.navbar-collapse -->
-      </div><!-- /.container-fluid -->
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <form class="navbar-form navbar-left" ng-submit="buscar(bus)">
+                    <div class="form-group">
+                        <input type="text" ng-model="bus.termino" class="form-control" placeholder="Buscar">
+                    </div>
+                    <button type="submit" class="btn btn-default">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </button>
+                </form>
+                <button type="button" class="btn btn-xs btn-default navbar-btn" ng-click="mostrarForm()">
+                    <i class="glyphicon glyphicon-plus"></i> Nuevo
+                </button>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
     </nav>
 
     <div class="panel panel-primary" ng-show="formulario">
@@ -45,7 +46,8 @@
                     <div class="col-sm-10">
                         <select class="form-control" name="empleado" ng-model="pre.idplnempleado" id="selectEmpleado">
                             <option value="">------</option>
-                            <option ng-repeat="empleado in empleados" value="{{empleado.id}}">{{empleado.nombre}} {{empleado.apellidos}}</option>
+                            <option ng-repeat="empleado in empleados" value="{{empleado.id}}">{{empleado.nombre}}
+                                {{empleado.apellidos}}</option>
                         </select>
                     </div>
                 </div>
@@ -53,33 +55,40 @@
                 <div class="form-group form-group-sm">
                     <label for="inputMonto" class="col-sm-2 control-label">Monto Q:</label>
                     <div class="col-sm-4">
-                        <input type="number" step="0.01" class="form-control" id="inputMonto" name="monto" ng-model="pre.monto" required="required">
+                        <input type="number" step="0.01" class="form-control" id="inputMonto" name="monto"
+                            ng-model="pre.monto" required="required">
                     </div>
                     <label for="inputCuotaMensual" class="col-sm-2 control-label">Cuota Mensual:</label>
                     <div class="col-sm-4">
-                        <input type="number" step="0.01" class="form-control" id="inputCuotaMensual" name="cuotamensual" ng-model="pre.cuotamensual" required="required">
+                        <input type="number" step="0.01" class="form-control" id="inputCuotaMensual" name="cuotamensual"
+                            ng-model="pre.cuotamensual" required="required">
                     </div>
                 </div>
 
                 <div class="form-group form-group-sm">
                     <label for="inputInicioPago" class="col-sm-2 control-label">Inicio de Pago:</label>
                     <div class="col-sm-4">
-                        <input type="date" class="form-control" id="inputInicioPago" name="fechainicio" ng-model="pre.fechainicio" required="required">
+                        <input type="date" class="form-control" id="inputInicioPago" name="fechainicio"
+                            ng-model="pre.fechainicio" required="required">
                     </div>
-                    <label for="inputFechaLiquidacion" class="col-sm-2 control-label" title="Cancelación por Liquidación">Cancelación:</label>
-                    <div class="col-sm-4" data-toggle="tooltip" data-placement="top" title="Al ingresar esta fecha el préstamos queda como finalizado.">
-                        <input type="date" class="form-control" id="inputFechaLiquidacion" name="fechafin" ng-model="pre.fechafin">
+                    <label for="inputFechaLiquidacion" class="col-sm-2 control-label"
+                        title="Cancelación por Liquidación">Cancelación:</label>
+                    <div class="col-sm-4" data-toggle="tooltip" data-placement="top"
+                        title="Al ingresar esta fecha el préstamos queda como finalizado.">
+                        <input type="date" class="form-control" id="inputFechaLiquidacion" name="fechafin"
+                            ng-model="pre.fechafin">
                     </div>
                 </div>
 
                 <div class="form-group form-group-sm">
                     <label for="areaConcepto" class="col-sm-2 control-label">Concepto:</label>
                     <div class="col-sm-10">
-                        <textarea name="concepto" ng-model="pre.concepto" class="form-control" id="areaConcepto" required="required" rows="3" placeholder="Concepto de préstamo"></textarea>
+                        <textarea name="concepto" ng-model="pre.concepto" class="form-control" id="areaConcepto"
+                            required="required" rows="3" placeholder="Concepto de préstamo"></textarea>
                     </div>
                 </div>
-                
-        
+
+
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-6" ng-show="omisiones">
                         <table class="table table-condensed table-hover table-bordered">
@@ -116,19 +125,14 @@
                             <tbody ng-cloak="">
                                 <tr ng-repeat="a in abonos track by $index">
                                     <td>
-                                        <a
-                                            href="javascript:;" 
-                                            ng-click="editarAbono($index)"
-                                            ng-show="hay"
-                                        >{{ a.fecha | date:'dd/MM/yyyy' }}</a>
+                                        <a href="javascript:;" ng-click="editarAbono($index)" ng-show="hay">{{ a.fecha |
+                                            date:'dd/MM/yyyy' }}</a>
                                     </td>
                                     <th><small>{{ a.concepto }}</small></th>
                                     <td class="text-right">{{ a.monto | number }}</td>
                                     <td class="text-center">
-                                        <a
-                                            ng-href="pln/php/controllers/prestamo.php/imprimir_abono/{{ a.idplnprestamo }}/{{ a.id }}"
-                                            title="Imprimir abono"
-                                        >
+                                        <a ng-href="pln/php/controllers/prestamo.php/imprimir_abono/{{ a.idplnprestamo }}/{{ a.id }}"
+                                            title="Imprimir abono">
                                             <i class="glyphicon glyphicon-print"></i>
                                         </a>
                                     </td>
@@ -137,22 +141,23 @@
                         </table>
                     </div>
                     <div class="col-sm-4 text-right">
-                        <a class="btn btn-default btn-sm" ng-href="pln/php/controllers/prestamo.php/imprimir/{{pre.id}}" ng-show="hay" target="_blank" title="Imprimir préstamo">
+                        <a class="btn btn-default btn-sm" ng-href="pln/php/controllers/prestamo.php/imprimir/{{pre.id}}"
+                            ng-show="hay" target="_blank" title="Imprimir préstamo">
                             <i class="glyphicon glyphicon-print"></i>
                         </a>
-                        <button
-                            type="button"
-                            class="btn btn-success btn-sm"
-                            ng-show="pre.finalizado == 0"
-                            ng-click="formAbono()"
-                        >
+                        <button type="button" class="btn btn-success btn-sm" ng-show="pre.finalizado == 0"
+                            ng-click="formAbono()">
                             <i class="glyphicon glyphicon-plus"></i> Abono Directo
                         </button>
-                        <button type="button" class="btn btn-warning btn-sm" ng-show="pre.finalizado == 0" data-toggle="modal" data-target="#myModal">
+                        <button type="button" class="btn btn-warning btn-sm" ng-show="pre.finalizado == 0"
+                            data-toggle="modal" data-target="#myModal">
                             <i class="glyphicon glyphicon-ban-circle"></i> No Descontar
                         </button>
                         <button type="submit" class="btn btn-primary btn-sm">
                             <i class="glyphicon glyphicon-floppy-disk"></i> Guardar
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm" ng-show="pre.id > 0" ng-click="anularPrestamo(pre)">
+                            <i class="glyphicon glyphicon-remove-circle"></i> Anular
                         </button>
                     </div>
                 </div>
@@ -203,82 +208,79 @@
             </table>
         </div>
     </div>
-      
-      <!-- Modal -->
-      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title" id="myModalLabel">Ingrese Fecha de Omisión</h4>
-            </div>
-            <div class="modal-body">
-              <form class="form-horizontal" role="form" ng-submit="false">
-                    <div class="form-group form-group-sm">
-                        <label for="inputFechaOmision" class="col-sm-3 control-label">Fecha:</label>
-                        <div class="col-sm-9">
-                            <input type="date" ng-model="omi.fecha_omision" class="form-control" id="inputFechaOmision" required>
-                            <span id="helpBlock" class="help-block">Debe ser el último día del mes.</span>
-                        </div>
-                    </div>
-              </form>
-              
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Cerrar</button>
-                <button 
-                    type="button" 
-                    class="btn btn-sm btn-primary" 
-                    ng-click="guardarOmision(omi)" 
-                    id="btnGuardarOmision" 
-                    data-loading-text="Guardando..."
-                >Guardar</button>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Modal para los abonos directos -->
-      <div class="modal fade" id="mdlAbono" tabindex="-1" role="dialog" aria-labelledby="mdlAbonoLabel">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
                 <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                  <h4 class="modal-title" id="mdlAbonoLabel">Abono Directo</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Ingrese Fecha de Omisión</h4>
                 </div>
                 <div class="modal-body">
-                  <form class="form-horizontal" role="form" ng-submit="guardarAbono()">
+                    <form class="form-horizontal" role="form" ng-submit="false">
+                        <div class="form-group form-group-sm">
+                            <label for="inputFechaOmision" class="col-sm-3 control-label">Fecha:</label>
+                            <div class="col-sm-9">
+                                <input type="date" ng-model="omi.fecha_omision" class="form-control"
+                                    id="inputFechaOmision" required>
+                                <span id="helpBlock" class="help-block">Debe ser el último día del mes.</span>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-sm btn-primary" ng-click="guardarOmision(omi)"
+                        id="btnGuardarOmision" data-loading-text="Guardando...">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para los abonos directos -->
+    <div class="modal fade" id="mdlAbono" tabindex="-1" role="dialog" aria-labelledby="mdlAbonoLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="mdlAbonoLabel">Abono Directo</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" role="form" ng-submit="guardarAbono()">
                         <div class="form-group form-group-sm">
                             <label for="inputAbonoFecha" class="col-sm-2 control-label">Fecha:</label>
                             <div class="col-sm-4">
-                                <input type="date" ng-model="abono.fecha_abono" class="form-control" id="inputAbonoFecha" required>
+                                <input type="date" ng-model="abono.fecha_abono" class="form-control"
+                                    id="inputAbonoFecha" required>
                             </div>
                             <label for="inputAbonoMonto" class="col-sm-2 control-label">Monto:</label>
                             <div class="col-sm-4">
-                                <input type="number" step="0.01" ng-model="abono.monto" class="form-control" id="inputAbonoMonto" required>
+                                <input type="number" step="0.01" ng-model="abono.monto" class="form-control"
+                                    id="inputAbonoMonto" required>
                             </div>
                         </div>
                         <div class="form-group form-group-sm">
                             <label for="areaConcepto" class="col-sm-2 control-label">Concepto:</label>
                             <div class="col-sm-10">
-                                <textarea ng-model="abono.concepto" class="form-control" id="areaConcepto" rows="3" required></textarea>
+                                <textarea ng-model="abono.concepto" class="form-control" id="areaConcepto" rows="3"
+                                    required></textarea>
                             </div>
                         </div>
                         <div class="form-group form-group-sm">
                             <div class="col-sm-12 text-right">
-                                <button 
-                                    type="submit" 
-                                    class="btn btn-sm btn-primary" 
-                                    id="btnGuardarAbono" 
-                                    data-loading-text="Guardando..."
-                                >
+                                <button type="submit" class="btn btn-sm btn-primary" id="btnGuardarAbono"
+                                    data-loading-text="Guardando...">
                                     <i class="glyphicon glyphicon-floppy-disk"></i> Guardar
                                 </button>
                             </div>
                         </div>
-                  </form>
+                    </form>
                 </div>
-              </div>
             </div>
-          </div>
+        </div>
+    </div>
 </div>

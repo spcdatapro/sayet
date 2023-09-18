@@ -163,24 +163,24 @@ angular.module('cpm')
         })
     }
 ])
-.controller('transPrestamoController', ['$scope', '$http', 'preServicios', 'empServicios',  
-    function($scope, $http, preServicios, empServicios){
-        $scope.formulario  = false
-        $scope.resultados  = false
-        $scope.prestamos   = []
-        $scope.inicio      = 0
-        $scope.datosbuscar = []
-        $scope.buscarmas   = true
-        $scope.hay         = false
-        $scope.empleados   = []
-        $scope.omisiones   = []
-        $scope.abonos      = []
-        $scope.abono       = {}
+.controller('transPrestamoController', ['$scope', '$http', 'preServicios', 'empServicios', '$confirm', 
+    function($scope, $http, preServicios, empServicios, $confirm){
+        $scope.formulario  = false;
+        $scope.resultados  = false;
+        $scope.prestamos   = [];
+        $scope.inicio      = 0;
+        $scope.datosbuscar = [];
+        $scope.buscarmas   = true;
+        $scope.hay         = false;
+        $scope.empleados   = [];
+        $scope.omisiones   = [];
+        $scope.abonos      = [];
+        $scope.abono       = {};
         
         $scope.mostrarForm = function() {
-            $scope.pre = {}
-            $scope.formulario = true
-            $scope.hay = false
+            $scope.pre = {};
+            $scope.formulario = true;
+            $scope.hay = false;
         };
 
         $scope.guardar = function(pre){
@@ -241,18 +241,19 @@ angular.module('cpm')
         }
 
         $scope.getPrestamo = function(index){
-             $scope.pre = $scope.prestamos[index]
+             $scope.pre = $scope.prestamos[index];
 
              if ($scope.pre.iniciopago) {
-                $scope.pre.fechainicio = $scope.formatoFechajs($scope.pre.iniciopago)
+                $scope.pre.fechainicio = $scope.formatoFechajs($scope.pre.iniciopago);
              }
 
              if ($scope.pre.liquidacion) {
-                $scope.pre.fechafin = $scope.formatoFechajs($scope.pre.liquidacion)
+                $scope.pre.fechafin = $scope.formatoFechajs($scope.pre.liquidacion);
              }
              
              $scope.pre.monto = parseFloat($scope.pre.monto)
              $scope.pre.cuotamensual = parseFloat($scope.pre.cuotamensual)
+             $scope.pre.id = $scope.pre.id;
              $scope.verOmisiones($scope.pre.id)
              $scope.verAbonos($scope.pre.id)
              $scope.formulario = true
@@ -331,6 +332,10 @@ angular.module('cpm')
             preServicios.getAbonos(pre).then(function(d){
                 $scope.abonos = d.abonos
             })
+        }
+
+        $scope.anularPrestamo = function(pre) {
+            $confirm({text: '¿Seguro desea anular el prestamo?', title: 'Anulación de prestamo', ok: 'Sí', cancel: 'No'}).then(function() { console.log(pre.id); return; });
         }
 
         $scope.buscar({})
