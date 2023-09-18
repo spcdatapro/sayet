@@ -65,6 +65,21 @@ $app->post('/guardar', function(){
     enviar_json($data);
 });
 
+$app->get('/anular/:idprestamo', function($idprestamo){
+	$data = ['exito' => 0, 'up' => 1];
+
+	$p = new Prestamo($prestamo);
+
+	$p->cargar_prestamo($idprestamo);
+
+	if ($p->anular($idprestamo)) {
+		$data['exito']    = 1;
+		$data['mensaje']  = 'Se ha anulado con exito.';
+		$data['prestamo'] = $p->pre;
+	}
+});
+
+
 $app->post('/guardar_omision/:prestamo', function($prestamo){
 	$data = ['exito' => 0];
 

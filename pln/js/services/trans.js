@@ -101,6 +101,9 @@ angular.module('cpm')
         },
         getAbonos: function(pre) {
             return comunFact.doGET(urlBase + '/ver_abonos/' + pre)
+        },
+        anular: function(id) {
+            return comunFact.doGET(urlBase + '/anular/' + id);
         }
     };
 }]);

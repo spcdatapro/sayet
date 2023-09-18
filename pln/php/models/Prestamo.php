@@ -110,6 +110,16 @@ class Prestamo extends Principal
 		return FALSE;
 	}
 
+	public function anular($idprestamo) {
+		$this->set_dato('anulado', true);
+
+		if (!empty($this->datos)) {
+			if ($this->db->update($this->tabla, $this->datos, ["id" => $idprestamo])) {
+				return true;
+			}
+		}
+	}
+
 	public function guardar_omision($args = [])
 	{
 		if (elemento($args, 'fecha', FALSE)) {
