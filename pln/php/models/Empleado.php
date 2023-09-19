@@ -642,7 +642,8 @@ class Empleado extends Principal
 				[
 					'AND' => [
 						'idplnempleado[=]' => $this->emp->id,
-						"iniciopago[<=]" => $this->nfecha
+						"iniciopago[<=]" => $this->nfecha,
+						'anulado[=]' => 0
 					]
 				]
 			);
