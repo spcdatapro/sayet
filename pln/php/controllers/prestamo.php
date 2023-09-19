@@ -68,7 +68,7 @@ $app->post('/guardar', function(){
 $app->get('/anular/:idprestamo', function($idprestamo){
 	$data = ['exito' => 0, 'up' => 1];
 
-	$p = new Prestamo($prestamo);
+	$p = new Prestamo();
 
 	$p->cargar_prestamo($idprestamo);
 
