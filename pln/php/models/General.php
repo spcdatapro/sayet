@@ -355,7 +355,8 @@ class General extends Principal
 				"plnprestamo.saldo", 
 				"b.nombre", 
 				"b.apellidos",
-				"b.idempresaactual"
+				"b.idempresaactual",
+				"plnprestamo.anulado"
 			],
 			$condicion
 		);
