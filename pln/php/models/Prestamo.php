@@ -75,7 +75,7 @@ class Prestamo extends Principal
 
 		if (!empty($this->datos)) {
 			if ($this->pre) {
-				if ($this->pre->finalizado == 0) {
+				// if ($this->pre->finalizado == 0) {
 					if ($this->db->update($this->tabla, $this->datos, ["id" => $this->pre->id])) {
 						$this->cargar_prestamo($this->pre->id);
 
@@ -87,9 +87,9 @@ class Prestamo extends Principal
 							$this->set_mensaje('Error en la base de datos al actualizar: ' . $this->db->error()[2]);
 						}
 					}
-				} else {
-					$this->set_mensaje("Préstamo finalizado, no puedo continuar.");
-				}
+				// } else {
+					// $this->set_mensaje("Préstamo finalizado, no puedo continuar.");
+				// }
 			} else {
 				$this->set_dato('saldo', elemento($args, 'monto', 0));
 
