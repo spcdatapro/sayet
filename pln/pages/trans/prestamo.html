@@ -44,7 +44,7 @@
                 <div class="form-group form-group-sm">
                     <label for="selectEmpleado" class="col-sm-2 control-label">Empleado:</label>
                     <div class="col-sm-10">
-                        <select class="form-control" name="empleado" ng-model="pre.idplnempleado" id="selectEmpleado">
+                        <select class="form-control" name="empleado" ng-model="pre.idplnempleado" id="selectEmpleado" ng-disabled="pre.anulado == 1">
                             <option value="">------</option>
                             <option ng-repeat="empleado in empleados" value="{{empleado.id}}">{{empleado.nombre}}
                                 {{empleado.apellidos}}</option>
@@ -56,12 +56,12 @@
                     <label for="inputMonto" class="col-sm-2 control-label">Monto Q:</label>
                     <div class="col-sm-4">
                         <input type="number" step="0.01" class="form-control" id="inputMonto" name="monto"
-                            ng-model="pre.monto" required="required">
+                            ng-model="pre.monto" required="required" ng-disabled="pre.anulado == 1">
                     </div>
                     <label for="inputCuotaMensual" class="col-sm-2 control-label">Cuota Mensual:</label>
                     <div class="col-sm-4">
                         <input type="number" step="0.01" class="form-control" id="inputCuotaMensual" name="cuotamensual"
-                            ng-model="pre.cuotamensual" required="required">
+                            ng-model="pre.cuotamensual" required="required" ng-disabled="pre.anulado == 1">
                     </div>
                 </div>
 
@@ -69,14 +69,14 @@
                     <label for="inputInicioPago" class="col-sm-2 control-label">Inicio de Pago:</label>
                     <div class="col-sm-4">
                         <input type="date" class="form-control" id="inputInicioPago" name="fechainicio"
-                            ng-model="pre.fechainicio" required="required">
+                            ng-model="pre.fechainicio" required="required" ng-disabled="pre.anulado == 1">
                     </div>
                     <label for="inputFechaLiquidacion" class="col-sm-2 control-label"
                         title="Cancelación por Liquidación">Cancelación:</label>
                     <div class="col-sm-4" data-toggle="tooltip" data-placement="top"
                         title="Al ingresar esta fecha el préstamos queda como finalizado.">
                         <input type="date" class="form-control" id="inputFechaLiquidacion" name="fechafin"
-                            ng-model="pre.fechafin">
+                            ng-model="pre.fechafin" ng-disabled="pre.anulado == 1">
                     </div>
                 </div>
 
@@ -84,7 +84,7 @@
                     <label for="areaConcepto" class="col-sm-2 control-label">Concepto:</label>
                     <div class="col-sm-10">
                         <textarea name="concepto" ng-model="pre.concepto" class="form-control" id="areaConcepto"
-                            required="required" rows="3" placeholder="Concepto de préstamo"></textarea>
+                            required="required" rows="3" placeholder="Concepto de préstamo" ng-disabled="pre.anulado == 1"></textarea>
                     </div>
                 </div>
 
@@ -142,18 +142,18 @@
                     </div>
                     <div class="col-sm-4 text-right input-group-btn">
                         <a class="btn btn-default btn-sm" ng-href="pln/php/controllers/prestamo.php/imprimir/{{pre.id}}"
-                            ng-show="hay" target="_blank" title="Imprimir préstamo">
+                            ng-show="hay && pre.anulado == 0" target="_blank" title="Imprimir préstamo">
                             <i class="glyphicon glyphicon-print"></i>
                         </a>
-                        <button type="button" class="btn btn-success btn-sm" ng-show="pre.finalizado == 0"
+                        <button type="button" class="btn btn-success btn-sm" ng-show="pre.finalizado == 0 && pre.anulado == 0"
                             ng-click="formAbono()">
                             <i class="glyphicon glyphicon-plus"></i> Abono Directo
                         </button>
-                        <button type="button" class="btn btn-warning btn-sm" ng-show="pre.finalizado == 0"
+                        <button type="button" class="btn btn-warning btn-sm" ng-show="pre.finalizado == 0 && pre.anulado == 0"
                             data-toggle="modal" data-target="#myModal">
                             <i class="glyphicon glyphicon-ban-circle"></i> No Descontar
                         </button>
-                        <button type="submit" class="btn btn-primary btn-sm">
+                        <button type="submit" class="btn btn-primary btn-sm" ng-disabled="pre.anulado == 0">
                             <i class="glyphicon glyphicon-floppy-disk"></i>
                         </button>
                         <button type="button" class="btn btn-danger btn-sm" ng-show="pre.id > 0 && pre.anulado == 0" ng-click="anularPrestamo(pre)">

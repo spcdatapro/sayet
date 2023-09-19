@@ -336,7 +336,9 @@ angular.module('cpm')
 
         $scope.anularPrestamo = function(pre) {
             $confirm({text: '¿Seguro desea anular el prestamo?', title: 'Anulación de prestamo', ok: 'Sí', cancel: 'No'}).then(function() { 
-                console.log(pre.id); preServicios.anular(pre.id); });
+                preServicios.anular(pre.id);
+                pre.anulado = 1;
+            });
         }
 
         $scope.buscar({})
