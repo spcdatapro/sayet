@@ -841,8 +841,11 @@ $app->get('/docliquida/:idnota', function($idnota){
 });
 
 function generarDetalleServicio ($db, $d, $lastid) {
-    $query = "INSERT INTO compserv(idservicio, lecturaini, lecturafin, preciouni, idcompra, fechafin, fechaini) VALUES 
-    ($d->idservicio, $d->lecturaini, $d->lecturafin, $d->preciouni, $lastid, '$d->ffin', '$d->fini')"; 
+
+    $unitario = ROUND(($d->totfact - $d->iva) / ($d->lecturafin - $d->lecturaini));
+
+    $query = "INSERT INTO compserv(idservicio, lecturaini, lecturafin, preciouni, idcompra, fechafin, fechaini, fechaven) VALUES 
+    ($d->idservicio, $d->lecturaini, $d->lecturafin, $unitario, $lastid, '$d->ffin', '$d->fini', '$d->fven')"; 
     $db->doQuery($query);
 };
 

@@ -490,4 +490,18 @@ $app->post('/rptservicio', function(){
     print json_encode(['fechas' => $letra, 'servicio' => $encabezado]);
 });
 
+$app->get('/getlectura/:idservicio', function($idservicio){
+    $db = new dbcpm();
+
+    $query = "SELECT lecturafin AS lectura, fechafin AS fechaini, DATE_ADD(fechafin, INTERVAL 1 MONTH) AS fechafin FROM compserv WHERE idservicio = $idservicio ORDER BY fechafin DESC LIMIT 1";
+    print $db->doSelectASJson($query);
+});
+
+$app->get('/getnombre/:idservicio', function($idservicio){
+    $db = new dbcpm();
+
+    $query = "SELECT numidentificacion AS nombre FROM serviciobasico WHERE id = $idservicio";
+    print $db->doSelectASJson($query);
+});
+
 $app->run();

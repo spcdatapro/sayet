@@ -45,8 +45,10 @@
             $scope.docsLiquida = [];
             $scope.liquida = false;
             $scope.servicios = [];
-            $scope.formulario = { idcompra: undefined, noform: undefined, noacceso: undefined, fecha: new Date(),
-                mes: undefined, anio: undefined, fechastr: undefined };
+            $scope.formulario = {
+                idcompra: undefined, noform: undefined, noacceso: undefined, fecha: new Date(),
+                mes: undefined, anio: undefined, fechastr: undefined
+            };
 
             $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
 
@@ -126,7 +128,7 @@
                     objEmpresa: $scope.laCompra.objEmpresa, objMoneda: {}, tipocambio: 1, isr: 0.00, galones: 0.00, idp: 0.00, objTipoCombustible: {},
                     totfact: 0.00, subtotal: 0.00, iva: 0.00, ordentrabajo: undefined, idproyecto: undefined, idunidad: undefined, nombrerecibo: undefined,
                     idcheque: undefined, alcontado: 0, iddocliquida: undefined, idservicio: undefined, lecturaini: undefined,
-                    lecturafin: undefined, preciouni: undefined, ffin: new Date(), fini: moment().startOf('month').toDate(), retiva: '0.00'
+                    lecturafin: undefined, preciouni: undefined, ffin: new Date(), fini: moment().startOf('month').toDate(), retiva: '0.00', fven: new Date()
                 };
                 $scope.search = "";
                 $scope.facturastr = '';
@@ -328,16 +330,16 @@
                         $scope.laCompra.tipocambio = parseFloat(qProv.tipocambioprov).toFixed($scope.dectc);
                     }
                 }
-                $scope.laCompra.objTipoFactura = {
-                    "id": 1,
-                    "desctipofact": "Electrónica",
-                    "generaiva": "1",
-                    "paracompra": 1,
-                    "paraventa": "1",
-                    "notas": "0",
-                    "siglas": "FCE",
-                    "grupo": "Facturas",
-                }
+
+                $scope.laCompra.objTipoFactura = qProv.pequeniocont == 1 ? {
+                    "id": 3, "desctipofact": "ElectrónicaPequeño contribuyente",
+                    "generaiva": "0", "paracompra": 1, "paraventa": "0", "notas": "0", "siglas": "FPC", "grupo": "Facturas"
+                } :
+                    {
+                        "id": 1, "desctipofact": "Electrónica", "generaiva": "1", "paracompra": 1, "paraventa": "1", "notas": "0",
+                        "siglas": "FCE", "grupo": "Facturas"
+                    }
+
             };
 
             $scope.setTipoCambio = function (qmoneda) {
@@ -382,6 +384,7 @@
                     data[i].lecturafin = +data[i].lecturafin;
                     data[i].fini = moment(data[i].fechaini).toDate();
                     data[i].ffin = moment(data[i].fechafin).toDate();
+                    data[i].fven = moment(data[i].fechaven).toDate();
                     data[i].retiva = +data[i].retiva;
                 }
                 return data;
@@ -519,6 +522,7 @@
             };
 
             function execCreate(obj) {
+                console.log(obj);
                 compraSrvc.editRow(obj, 'c').then(function (d) {
                     if (+d.lastid > 0) {
                         $scope.getLstCompras();
@@ -530,6 +534,31 @@
                         });
                     }
                 });
+            }
+
+            $scope.revisar = function(obj) {
+                if (obj.idservicio > 0) {
+                    servicioBasicoSrvc.getNombreServ(obj.idservicio).then(function (d) {
+                        const resp = d[0];
+                        obj.servicio = resp.nombre;
+                    });
+
+                    var modal = $uibModal.open({
+                        animation: true,
+                        templateUrl: 'modalConfirm.html',
+                        controller: 'modalConfirmCtrl',
+                        windowClass: 'app-modal-window',
+                        resolve: {
+                            factura: obj
+                        }
+                    });
+
+                    modal.result.then(function () {
+                        addCompra(obj);
+                    });
+                } else {
+                        addCompra(obj);
+                }
             }
 
             function execUpdate(obj) {
@@ -590,10 +619,11 @@
                 obj.preciouni = obj.preciouni !== null && obj.preciouni !== undefined ? obj.preciouni : null;
                 obj.ffin = obj.ffin !== null && obj.ffin !== undefined ? dateToStr(obj.ffin) : null;
                 obj.fini = obj.fini !== null && obj.fini !== undefined ? dateToStr(obj.fini) : null;
+                obj.fven = obj.fven !== null && obj.fven !== undefined ? dateToStr(obj.fven) : null;
                 return obj;
             }
 
-            $scope.addCompra = (obj) => {
+            function addCompra (obj) {
                 // console.log(obj);
                 obj = setObjCompra(obj);
                 proveedorSrvc.getLstCuentasCont(obj.idproveedor, obj.idempresa).then((lstCtas) => {
@@ -772,16 +802,16 @@
                 });
 
                 modalInstance.result.then(function (obj) {
-                    // console.log(obj);
-                    $scope.laCompra.idservicio = obj.idservicio;
-                    $scope.laCompra.lecturaini = obj.lecturaini;
-                    $scope.laCompra.lecturafin = obj.lecturafin;
-                    $scope.laCompra.preciouni = obj.precio;
-                    $scope.laCompra.fini = obj.fini;
-                    $scope.laCompra.ffin = obj.ffin;
-                    $scope.laCompra.idproyecto = obj.idproyecto;
+                    console.log(obj);
+                    $scope.laCompra.idservicio = obj.idservicio > 0 ? obj.idservicio : $scope.laCompra.idservicio;
+                    $scope.laCompra.lecturaini = obj.lecturaini > 0 ? obj.lecturaini : $scope.laCompra.lecturaini;
+                    $scope.laCompra.lecturafin = obj.lecturafin > 0 ? obj.lecturafin : $scope.laCompra.lecturafin;
+                    $scope.laCompra.fini = obj.fini > 0 ? obj.fini : $scope.laCompra.fini;
+                    $scope.laCompra.ffin = obj.ffin > 0 ? obj.ffin : $scope.laCompra.ffin;
+                    $scope.laCompra.fven = obj.fven > 0 ? obj.fven : $scope.laCompra.fven;
+                    $scope.laCompra.idproyecto = obj.idproyecto > 0 ? obj.idproyecto : $scope.laCompra.idproyecto;
                     $scope.loadUnidadesProyecto($scope.laCompra.idproyecto);
-                    $scope.laCompra.idunidad = obj.idunidad;
+                    $scope.laCompra.idunidad = obj.idunidad > 0 ? obj.idunidad : $scope.laCompra.idunidad;
                 });
             };
 
@@ -961,30 +991,39 @@
     }]);
 
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
-    compractrl.controller('ModalContadoresCtrl', ['$scope', '$uibModalInstance', 'servicios', 'laCompra', function ($scope, $uibModalInstance, servicios, laCompra) {
-        $scope.servicios = servicios;
-        $scope.compra = laCompra;
-        $scope.obj = { idservicio: undefined, lecturaini: undefined, lecturafin: undefined, precio: undefined, idproyecto: undefined, idunidad: undefined };
+    compractrl.controller('ModalContadoresCtrl', ['$scope', '$uibModalInstance', 'servicios', 'laCompra', 'servicioBasicoSrvc',
+        function ($scope, $uibModalInstance, servicios, laCompra, servicioBasicoSrvc) {
+            $scope.servicios = servicios;
+            $scope.compra = laCompra;
+            $scope.obj = { idservicio: undefined, lecturaini: undefined, lecturafin: undefined, precio: undefined };
 
-        $scope.obj.idservicio = $scope.compra.idservicio !== null && $scope.compra.idservicio !== undefined ? $scope.compra.idservicio : undefined;
-        $scope.obj.lecturaini = $scope.compra.lecturaini !== null && $scope.compra.lecturaini !== undefined ? $scope.compra.lecturaini : undefined;
-        $scope.obj.lecturafin = $scope.compra.lecturafin !== null && $scope.compra.lecturafin !== undefined ? $scope.compra.lecturafin : undefined;
-        $scope.obj.precio = $scope.compra.preciouni !== null && $scope.compra.preciouni !== undefined ? $scope.compra.preciouni : undefined;
-        $scope.obj.ffin = $scope.compra.ffin !== null && $scope.compra.ffin !== undefined ? $scope.compra.ffin : undefined;
-        $scope.obj.fini = $scope.compra.fini !== null && $scope.compra.fini !== undefined ? $scope.compra.fini : undefined;
+            $scope.obj.idservicio = $scope.compra.idservicio !== null && $scope.compra.idservicio !== undefined ? $scope.compra.idservicio : undefined;
+            $scope.obj.lecturaini = $scope.compra.lecturaini !== null && $scope.compra.lecturaini !== undefined ? $scope.compra.lecturaini : undefined;
+            $scope.obj.lecturafin = $scope.compra.lecturafin !== null && $scope.compra.lecturafin !== undefined ? $scope.compra.lecturafin : undefined;
+            $scope.obj.precio = $scope.compra.preciouni !== null && $scope.compra.preciouni !== undefined ? $scope.compra.preciouni : undefined;
+            $scope.obj.ffin = $scope.compra.ffin !== null && $scope.compra.ffin !== undefined ? $scope.compra.ffin : undefined;
+            $scope.obj.fini = $scope.compra.fini !== null && $scope.compra.fini !== undefined ? $scope.compra.fini : undefined;
+            $scope.obj.fven = $scope.compra.fven !== null && $scope.compra.fven !== undefined ? $scope.compra.fven : undefined;
 
-        $scope.setProy = function(idproyecto, idunidad) {
-            $scope.obj.idproyecto = idproyecto;
-            console.log(idunidad);
-            $scope.obj.idunidad = idunidad;
-        }
+            $scope.setProy = function (idproyecto, idunidad, idservicio) {
+                $scope.obj.idproyecto = idproyecto;
+                $scope.obj.idunidad = idunidad;
 
-        $scope.cancel = () => $uibModalInstance.dismiss('cancel');
+                servicioBasicoSrvc.getLecturaCompra(idservicio).then(function (d) {
+                    var respuesta = d[0];
+                    $scope.obj.lecturaini = +respuesta.lectura;
+                    $scope.obj.fini = moment(respuesta.fechaini).toDate();
+                    $scope.obj.ffin = moment(respuesta.fechafin).toDate();
+                });
 
-        $scope.ok = (obj) => $uibModalInstance.close(obj);
+            }
+
+            $scope.cancel = () => $uibModalInstance.dismiss('cancel');
+
+            $scope.ok = (obj) => $uibModalInstance.close(obj);
 
 
-    }]);
+        }]);
 
     //------------------------------------------------------------------------------------------------------------------------------------------------//
     compractrl.controller('ModalIVA', ['$scope', '$uibModalInstance', 'compra', 'compraSrvc', 'formulario', function (
@@ -1015,4 +1054,23 @@
 
     }]);
 
+    // -------------------------------------------- confirmacion -----------------------------------------------------------------
+    compractrl.controller('modalConfirmCtrl', ['$scope', '$uibModalInstance', 'factura', function ($scope, $uibModalInstance, factura) {
+        factura.lecturasrv = parseInt(factura.lecturafin);
+        factura.inicial = parseInt(factura.lecturaini); 
+        factura.fechasrv = moment(factura.ffin).toDate();
+        factura.fechasrv = moment(factura.fechasrv).format('DD/MM/YYYY');
+        factura.fechainicial = moment(factura.fini).toDate();
+        factura.fechainicial = moment(factura.fechainicial).format('DD/MM/YYYY');
+        $scope.factura = factura;
+
+        $scope.ok = function () {
+            $uibModalInstance.close(true);
+        };
+
+        $scope.cancel = function () {
+            $uibModalInstance.dismiss('cancel');
+        };
+
+    }]);
 }());
