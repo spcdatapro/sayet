@@ -698,9 +698,18 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
     $cntsOts = $esmultiple ? count($orden->ots) : 1;
 
     // traer tipo cambio proveedor, primero de compra, transaccion y por ultimo de orden
-    $tipocambioprov = $db->getOneField("SELECT IFNULL(IFNULL((SELECT tipocambio FROM compra WHERE ordentrabajo IN($ids_str) AND tipocambio > 1 LIMIT 1),
-    (SELECT tipocambio FROM tranban WHERE iddetpresup IN($ids_str) AND tipocambio > 1 LIMIT 1)), 
-    (SELECT tipocambio FROM detpresupuesto WHERE id IN($ids_str) AND tipocambio > 1 LIMIT 1))");
+    $query = "SELECT tipocambio FROM tranban WHERE iddetpresup IN($ids_str) AND tipocambio > 1";
+    $tiposcambio = $db->getQuery($query);
+
+    $cntsTipos = count($tiposcambio) > 0 ? count($tiposcambio) : 1;
+    $sumtipos = array();
+
+    for ($i = 0; $i < $cntsTipos; $i++) {
+        $tc = $tiposcambio[$i];
+        array_push($sumtipos, $tc->tipocambio);
+    }
+
+    $tipocambioprov = array_sum($sumtipos) / $cntsTipos;
 
     // traer monto, moneda, idordentrabajo y tipocambio de compra
     $query = "SELECT id, totfact, idmoneda, tipocambio, isr, ordentrabajo AS ot FROM compra WHERE ordentrabajo IN($ids_str) AND idreembolso = 0 
@@ -727,6 +736,7 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
         $scompra = array();
         $sisr = array();
         $stran = array();
+        $tc_pro = array();
 
         $ot = $esmultiple ? $orden->ots[$i] : $orden;
 
@@ -773,6 +783,9 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
                     $monto = $tran->monto;
                 }
                 array_push($stran, $monto);
+                if ($tran->tipocambio > 1) {
+                    array_push($tc_pro, $tran->tipocambio);
+                }    
             }
         }
         // sumas transacciones bancarias
@@ -784,7 +797,12 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
         $diferencia = $ot->monto - $gastado;
         $gasto = $gastado;
 
+        $conteo_promedio = count($tc_pro) > 0 ? count($tc_pro) : 1;
+        $sum_promedio = array_sum($tc_pro) > 0 ? array_sum($tc_pro) : 1;
+        $tc_prom = $sum_promedio / $conteo_promedio;
+
         if ($esmultiple) {
+            $tc_gasto = $tc_prom > 1 ? round($tc_prom, 5) : $ot->tipocambio;
             $tc = $ot->tipocambio > 1 ? $ot->tipocambio : $tipocambioprov;
 
             // efectos de cada OTS en la OTM
@@ -794,10 +812,10 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
             } else {
                 if ($orden->idmoneda == 1) {
                     $monto = $ot->monto * $tc;
-                    $gasto = $gastado * $tc;
+                    $gasto = $gastado * $tc_gasto;
                 } else {
-                    $monto = $ot->monto * $tc;
-                    $gasto = $gastado / $tc;
+                    $monto = $ot->monto / $tc;
+                    $gasto = $gastado / $tc_gasto;
                 }
             }
 
@@ -812,6 +830,7 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
         $ot->diferencia = number_format($diferencia, 2, '.', ',');
         $ot->afecta = number_format($gasto, 2, '.', ',');
         $ot->isr = number_format($tisr, 2, '.', ',');
+        $ot->tcprom = round($tc_prom, 5);
     }
 
     if ($esmultiple) {

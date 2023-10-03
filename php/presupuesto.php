@@ -264,9 +264,18 @@ function getTotales($orden, $ids, $db) {
     $cntsOts = count($orden->ots);
 
     // traer tipo cambio proveedor, primero de compra, transaccion y por ultimo de orden
-    $tipocambioprov = $db->getOneField("SELECT IFNULL(IFNULL((SELECT tipocambio FROM compra WHERE ordentrabajo IN($ids_str) AND tipocambio > 1 LIMIT 1),
-    (SELECT tipocambio FROM tranban WHERE iddetpresup IN($ids_str) AND tipocambio > 1 LIMIT 1)), 
-    (SELECT tipocambio FROM detpresupuesto WHERE id IN($ids_str) AND tipocambio > 1 LIMIT 1))");
+    $query = "SELECT tipocambio FROM tranban WHERE iddetpresup IN($ids_str) AND tipocambio > 1";
+    $tiposcambio = $db->getQuery($query);
+
+    $cntsTipos = count($tiposcambio) > 0 ? count($tiposcambio) : 1;
+    $sumtipos = array();
+
+    for ($i = 0; $i < $cntsTipos; $i++) {
+        $tc = $tiposcambio[$i];
+        array_push($sumtipos, $tc->tipocambio);
+    }
+
+    $tipocambioprov = array_sum($sumtipos) / $cntsTipos;
 
     // traer monto, moneda, idordentrabajo y tipocambio de compra
     $query = "SELECT id, totfact, idmoneda, tipocambio, isr, ordentrabajo AS ot FROM compra WHERE ordentrabajo IN($ids_str) AND idreembolso = 0 
@@ -292,6 +301,7 @@ function getTotales($orden, $ids, $db) {
         // crear array total de OT[$i]
         $sisr = array();
         $stran = array();
+        $tc_pro = array();
 
         $ot = $orden->ots[$i];
 
@@ -333,6 +343,9 @@ function getTotales($orden, $ids, $db) {
                     $monto = $tran->monto;
                 }
                 array_push($stran, $monto);
+                if ($tran->tipocambio > 1) {
+                    array_push($tc_pro, $tran->tipocambio);
+                }
             }
         }
         // sumas transacciones bancarias
@@ -340,7 +353,12 @@ function getTotales($orden, $ids, $db) {
 
         $gastado = $ttran + $tisr;
 
+        $conteo_promedio = count($tc_pro) > 0 ? count($tc_pro) : 1; 
+        $sum_promedio = array_sum($tc_pro) > 0 ? array_sum($tc_pro) : 1;
+        $tc_prom = $sum_promedio / $conteo_promedio;
+
         $tc = $ot->tipocambio > 1 ? $ot->tipocambio : $tipocambioprov;
+        $tc_gasto = $tc_prom > 1 ? $tc_prom : $ot->tipocambio;
 
         // efectos de cada OTS en la OTM
         if ($ot->idmoneda == $orden->idmoneda) {
@@ -349,10 +367,10 @@ function getTotales($orden, $ids, $db) {
         } else {
             if ($orden->idmoneda == 1) {
                 $monto = $ot->monto * $tc;
-                $gasto = $gastado * $tc;
+                $gasto = $gastado * $tc_gasto;
             } else {
-                $monto = $ot->monto * $tc;
-                $gasto = $gastado / $tc;
+                $monto = $ot->monto / $tc;
+                $gasto = $gastado / $tc_gasto;
             }
         }
 
@@ -439,7 +457,7 @@ function actualizaDetallePresupuesto($d)
 {
     $db = new dbcpm();
     $query = "UPDATE detpresupuesto SET ";
-    $query .= "idproveedor = $d->idproveedor, idsubtipogasto = $d->idsubtipogasto, coniva = $d->coniva, escontado = 0, monto = $d->monto, tipocambio = $d->tipocambio, notas = '$d->notas', origenprov = $d->origenprov, ";
+    $query .= "idproveedor = $d->idproveedor, idsubtipogasto = $d->idsubtipogasto, coniva = $d->coniva, escontado = 0, monto = $d->total, tipocambio = $d->tipocambio, notas = '$d->notas', origenprov = $d->origenprov, ";
     $query .= "idmoneda = $d->idmoneda, tipodocumento = $d->tipodocumento ";
     $query .= "WHERE idpresupuesto = " . $d->id;
     $db->doQuery($query);
@@ -590,7 +608,7 @@ $app->post('/tp', function () {
     } else {
         $query = "UPDATE presupuesto SET idestatuspresupuesto = 5, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE id = $d->id";
         $db->getQuery($query);
-        $query = "UPDATE detpresupuesto SET idestatuspresupuesto = 5, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE idpresupuesto = $d->id";
+        $query = "UPDATE detpresupuesto SET idestatuspresupuesto = 5, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE idpresupuesto = $d->id AND idestatuspresupuesto !=6 ";
         $db->getQuery($query);
         $obj->origen = 1;
         $obj->idpresupuesto = $d->id;
@@ -1428,6 +1446,50 @@ $app->post('/rechamp', function () {
     $query = "UPDATE ampliapresupuesto SET idestatuspresupuesto = 4 
     WHERE id = $d->idamplia ";
     $db->doQuery($query);
+});
+
+$app->post('/prtaprobacion', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "SELECT 
+                d.id,
+                IF(b.tipo = 2, 'MULTIPLE', 'SIMPLE') AS tipo,
+                DATE_FORMAT(IFNULL(a.fhenvioaprobacion, NOW()),
+                        '%d/%m/%Y') AS fecha,
+                CONCAT(a.idpresupuesto, '-', a.correlativo) AS numero,
+                c.nomempresa AS empresa,
+                IFNULL(d.nombre, e.nombre) AS proveedor,
+                IFNULL(d.nit, e.nit) AS nit,
+                FORMAT(a.monto, 2) AS monto,
+                a.notas AS concepto,
+                GROUP_CONCAT(f.nomadjunto
+                    SEPARATOR ', ') AS adjuntos,
+                DATE_FORMAT(DATE_ADD(IFNULL(a.fhenvioaprobacion, NOW()),
+                            INTERVAL d.diascred DAY),
+                        '%d/%m/%Y') AS fpago,
+                IF(b.idtipogasto = 1, TRUE, NULL) AS cep,
+                IF(b.idtipogasto = 5, TRUE, NULL) AS af,
+                IF(b.idtipogasto = 6, TRUE, NULL) AS m
+            FROM
+                detpresupuesto a
+                    INNER JOIN
+                presupuesto b ON a.idpresupuesto = b.id
+                    INNER JOIN
+                empresa c ON b.idempresa = c.id
+                    LEFT JOIN
+                proveedor d ON a.idproveedor = d.id
+                    AND a.origenprov = 1
+                    LEFT JOIN
+                beneficiario e ON a.idproveedor = e.id
+                    AND a.origenprov = 2
+                    LEFT JOIN
+                ot_adjunto f ON f.idot = a.id
+            WHERE
+                a.id = 5140";
+    $datos = $db->getQuery($query)[0];
+
+    print json_encode([ 'datos' => $datos ]);
 });
 
 $app->run();
