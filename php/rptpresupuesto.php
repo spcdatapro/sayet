@@ -699,17 +699,22 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
 
     // traer tipo cambio proveedor, primero de compra, transaccion y por ultimo de orden
     $query = "SELECT tipocambio FROM tranban WHERE iddetpresup IN($ids_str) AND tipocambio > 1";
-    $tiposcambio = $db->getQuery($query);
+    $tiposcambio = $db->getQuery($query);$cntsTipos = count($tiposcambio) > 0 ? count($tiposcambio) : 1;
 
-    $cntsTipos = count($tiposcambio) > 0 ? count($tiposcambio) : 1;
-    $sumtipos = array();
+    $cntsTipos = count($tiposcambio);
 
-    for ($i = 0; $i < $cntsTipos; $i++) {
-        $tc = $tiposcambio[$i];
-        array_push($sumtipos, $tc->tipocambio);
+    if ($cntsTipos > 0) {
+        $sumtipos = array();
+
+        for ($i = 0; $i < $cntsTipos; $i++) {
+            $tc = $tiposcambio[$i];
+            array_push($sumtipos, $tc->tipocambio);
+        }
+
+        $tipocambioprov = array_sum($sumtipos) / $cntsTipos;
+    } else {
+        $tipocambioprov = 7.8;
     }
-
-    $tipocambioprov = array_sum($sumtipos) / $cntsTipos;
 
     // traer monto, moneda, idordentrabajo y tipocambio de compra
     $query = "SELECT id, totfact, idmoneda, tipocambio, isr, ordentrabajo AS ot FROM compra WHERE ordentrabajo IN($ids_str) AND idreembolso = 0 
