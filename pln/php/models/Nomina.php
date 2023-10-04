@@ -117,7 +117,7 @@ class Nomina extends Principal
 	{
 		$fecha = $args['fecha'];
 		$tmpFecha = new DateTime($fecha);
-		$baja = $fecha->format('Y-m-01');
+		// $baja = $fecha->format('Y-m-01');
 
 		$this->limpiar_nomina($args);
 
