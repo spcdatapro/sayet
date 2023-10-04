@@ -121,32 +121,32 @@ class Nomina extends Principal
 
 		$this->limpiar_nomina($args);
 
-		// if (elemento($args, 'empresa')) {
-		// 	$condicion = ["AND" => [
-		// 		"idempresadebito" => $args['empresa'],
-		// 		"activo" => 1
-		// 	]];
-		// } else {
-		// 	$condicion = ['activo' => 1];
-		// }
-
-		// $tmp = $this->db->select('plnempleado', ['*'], $condicion);
-
-		$where = "";
-		
 		if (elemento($args, 'empresa')) {
-			$where .= "AND idempresadebito = {$args['empresa']} ";
+			$condicion = ["AND" => [
+				"idempresadebito" => $args['empresa'],
+				"activo" => 1
+			]];
+		} else {
+			$condicion = ['activo' => 1];
 		}
 
-		$sql = <<<EOT
-		SELECT 
-			*
-		FROM
-			plnempleado
-		WHERE (activo = 1 OR baja >= $baja) {$where}
-		EOT;
-		
-		$tmp = $this->db->query($sql)->fetchAll();
+		$tmp = $this->db->select('plnempleado', ['*'], $condicion);
+
+		// $where = "";
+		// 
+		// if (elemento($args, 'empresa')) {
+			// $where .= "AND idempresadebito = {$args['empresa']} ";
+		// }
+
+		// $sql = <<<EOT
+		// SELECT 
+			// *
+		// FROM
+			// plnempleado
+		// WHERE (activo = 1 OR baja >= $baja) {$where}
+		// EOT;
+		// 
+		// $tmp = $this->db->query($sql)->fetchAll();
 
 		foreach ($tmp as $row) {
 			$insertar = FALSE;
