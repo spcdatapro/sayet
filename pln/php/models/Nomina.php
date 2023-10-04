@@ -124,11 +124,12 @@ class Nomina extends Principal
 		if (elemento($args, 'empresa')) {
 			$condicion = ["AND" => [
 				"idempresadebito" => $args['empresa'],
-				"activo" => 1
+				// "activo" => 1
 			]];
-		} else {
-			$condicion = ['activo' => 1];
-		}
+		} 
+		// else {
+			// $condicion = ['activo' => 1];
+		// }
 
 		$tmp = $this->db->select('plnempleado', ['*'], $condicion);
 
