@@ -127,9 +127,10 @@ class Nomina extends Principal
 				// "activo" => 1
 			]];
 		} 
-		// else {
+		else {
 			// $condicion = ['activo' => 1];
-		// }
+			$condicion = "";
+		}
 
 		$tmp = $this->db->select('plnempleado', ['*'], $condicion);
 
