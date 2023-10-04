@@ -264,7 +264,7 @@ function getTotales($orden, $ids, $db) {
     $cntsOts = count($orden->ots);
 
     // traer tipo cambio proveedor, primero de compra, transaccion y por ultimo de orden
-    $query = "SELECT IFNULL(tipocambio, 1) FROM tranban WHERE iddetpresup IN($ids_str) AND tipocambio > 1";
+    $query = "SELECT tipocambio FROM tranban WHERE iddetpresup IN($ids_str) AND tipocambio > 1";
     $tiposcambio = $db->getQuery($query);
 
     $cntsTipos = count($tiposcambio);
