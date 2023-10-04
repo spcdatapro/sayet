@@ -362,7 +362,7 @@ function getTotales($orden, $ids, $db) {
         $tc_prom = $sum_promedio / $conteo_promedio;
 
         $tc = $ot->tipocambio > 1 ? $ot->tipocambio : $tipocambioprov;
-        $tc_gasto = $tc_prom > 1 ? $tc_prom : $ot->tipocambio;
+        $tc_gasto = $tc_prom > 1 ? round($tc_prom, 5) : $ot->tipocambio;
 
         // efectos de cada OTS en la OTM
         if ($ot->idmoneda == $orden->idmoneda) {
