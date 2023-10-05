@@ -117,14 +117,12 @@ class Nomina extends Principal
 	{
 		$fecha = $args['fecha'];
 		$tmpFecha = new DateTime($fecha);
-		// $baja = $fecha->format('Y-m-01');
 
 		$this->limpiar_nomina($args);
 
 		if (elemento($args, 'empresa')) {
 			$condicion = ["AND" => [
 				"idempresadebito" => $args['empresa'],
-				// "activo" => 1
 			]];
 		} 
 		else {
@@ -133,22 +131,6 @@ class Nomina extends Principal
 		}
 
 		$tmp = $this->db->select('plnempleado', ['*'], $condicion);
-
-		// $where = "";
-		// 
-		// if (elemento($args, 'empresa')) {
-			// $where .= "AND idempresadebito = {$args['empresa']} ";
-		// }
-
-		// $sql = <<<EOT
-		// SELECT 
-			// *
-		// FROM
-			// plnempleado
-		// WHERE (activo = 1 OR baja >= $baja) {$where}
-		// EOT;
-		// 
-		// $tmp = $this->db->query($sql)->fetchAll();
 
 		foreach ($tmp as $row) {
 			$insertar = FALSE;
