@@ -528,8 +528,7 @@ class Nomina extends Principal
 			foreach ($tmp as $row) {
 				$eliminar = false;
 
-				if (
-					($row['activo'] == 0) || 
+				if ( 
 					($row["idempresa"] != $row["idempresadebito"]) || 
 					($row["idproyecto"] != $row["proyecto"])
 				) {
