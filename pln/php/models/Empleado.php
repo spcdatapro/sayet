@@ -953,11 +953,13 @@ class Empleado extends Principal
 		$lugarFecha = "Guatemala, ".formatoFecha($args['fecha_egreso'],2)." de ".get_meses(formatoFecha($args['fecha_egreso'], 3))." de ".formatoFecha($args['fecha_egreso'],4);
 		$empresa    = $this->get_empresa_debito();
 		$puesto = $this->get_puesto();
+		$proyecto = $this->get_proyecto();
 
 		$texto_motivo = <<<EOT
 Desde la presente fecha se dan por terminadas las relaciones de trabajo entre el señor(a) {$this->emp->nombre} {$this->emp->apellidos} y {$empresa->nomempresa}.\n
 Por motivo: {$args['motivo']}.  \n 
 Puesto: $puesto->descripcion. \n
+Ubicación: $proyecto->nomproyecto. \n
 Recibe en esta misma fecha todas las prestaciones a que tiene derecho según el CÓDIGO DE TRABAJO VIGENTE, como se detalla a continuación:
 EOT;
 
