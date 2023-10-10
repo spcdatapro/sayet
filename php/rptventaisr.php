@@ -51,7 +51,7 @@ $app->post('/rptisr', function(){
     $query.= "IF(a.anulada = 0, a.total, 0.00) AS totfact, '$retenido' as retenido, '$parqueo' as parqueo, a.idtipofactura ";
     $query.= "FROM factura a LEFT JOIN contrato b ON b.id = a.idcontrato LEFT JOIN tipofactura c ON c.id = a.idtipofactura LEFT JOIN cliente d ON d.id = a.idcliente ";
 	$query.= "WHERE a.anulada = 0 and a.idtipoventa <> 5 AND c.id <> 5 AND a.idempresa = $idempresa ";
-	$query.= (int)$resumen === 1 ? '' : 'AND a.idtipofactura <> 9 ';
+	$query.= (int)$resumen === 1 ? '' : 'AND a.idtipofactura NOT IN(9, 13) ';
 	$query.= $d->fdelstr == '' || $d->falstr == '' ? "AND a.mesiva = $mes AND YEAR(a.fecha) = $anio " : '';
 	$query.= $d->fdelstr != '' && $d->falstr != '' ? "AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' " : '';
 	$query.= $qrret;
@@ -84,9 +84,9 @@ $app->post('/rptisr', function(){
 				'nit' => $dlbi->nit,
 				'cliente' => $dlbi->cliente,
 				'serie' => $dlbi->serie,
-				'subtotal' => (float)$dlbi->subtotal * ((int)$dlbi->idtipofactura !== 9 ? 1 : -1),
+				'subtotal' => (float)$dlbi->subtotal * ((int)$dlbi->idtipofactura == 9 || (int)$dlbi->idtipofactura == 13 ? -1 : 1),
 				'tipodocumento' => $dlbi->tipodocumento,
-				'totfact' => (float)$dlbi->totfact * ((int)$dlbi->idtipofactura !== 9 ? 1 : -1),
+				'totfact' => (float)$dlbi->totfact * ((int)$dlbi->idtipofactura == 9 || (int)$dlbi->idtipofactura == 13 ? -1 : 1),
 				'retencion' => $dlbi->retencion,
 				'retenido' => $dlbi->retenido,
 				'parqueo' => $dlbi->parqueo
