@@ -25,7 +25,7 @@ $app->post('/rptlibventas', function(){
     $query.= "IF(a.anulada = 0, IF(a.idtipoventa = 1, IF(a.exentoiva = 0 AND a.idtipofactura IN (1, 2, 3, 4, 5, 7, 8, 9, 13) AND a.importeexento = 0, ROUND((a.total - a.noafecto - a.importeiva), 2), 0.00), 0.00), 0.00) AS bien, ";    	
 	$query.= "IF(a.anulada = 0, IF(a.idtipoventa = 2, IF(a.exentoiva = 0 AND a.idtipofactura IN (1, 2, 3, 4, 5, 7, 8, 9, 13) AND a.importeexento = 0, ROUND(a.subtotal - a.importeiva, 2), 0.00), 0.00), 0.00) AS servicio, ";	
 	$query.= "IF(a.anulada = 0, ROUND(a.importeiva, 2), 0.00) AS iva, IF(a.anulada = 0, ROUND(a.subtotal, 2), 0.00) AS totfact, a.idtipofactura, IF(a.anulada = 0, a.importeexento, 0.00) AS importeexento, ";
-	$query.= "IF(a.idtipofactura != 9, null, 1) AS negativo, IF(a.idtipofactura != 9, 1, null) AS venta, IF(a.idtipofactura = 13, 1, null) AS nb ";
+	$query.= "IF(a.idtipofactura = 9, 1, null) AS negativo, IF(a.idtipofactura IN(9, 13), null, 1) AS venta, IF(a.idtipofactura = 13, 1, null) AS nb ";
     $query.= "FROM factura a LEFT JOIN contrato b ON b.id = a.idcontrato LEFT JOIN tipofactura c ON c.id = a.idtipofactura LEFT JOIN cliente d ON d.id = a.idcliente ";
     $query.= "WHERE a.idtipoventa <> 5 AND c.id <> 5 AND a.idempresa = $idempresa AND a.mesiva = $mes AND YEAR(a.fecha) = $anio AND LENGTH(a.serie) > 0 AND LENGTH(a.numero) > 0 ";
 	$query.= "ORDER BY ".((int)$d->alfa > 0 ? "8, 1, 3, 4, 5, 6" : "1, 3, 4, 5, 6, 8");	
