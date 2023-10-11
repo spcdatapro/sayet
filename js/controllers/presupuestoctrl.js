@@ -294,6 +294,7 @@
                 }
             });
             modal.result.then(function (params) {
+                console.log(params);
                 var rpt = 'ByZxeQixp';
                 jsReportSrvc.getPDFReport(rpt, params).then(function (pdf) { $window.open(pdf); });
             });
@@ -1013,7 +1014,7 @@
     presupuestoctrl.controller('prntAprobacionCtrl', ['$scope', '$uibModalInstance', 'id', 'presupuesto', 'correlativo', 
     function ($scope, $uibModalInstance, id, presupuesto, correlativo) {
         $scope.ot = {correlativo: correlativo, presupuesto: presupuesto};
-        $scope.params = { id: id, monto: undefined, correlativo: correlativo, idmoneda: undefined };
+        $scope.params = { id: id, monto: undefined, correlativo: correlativo, idmoneda: undefined, idpresupuesto: presupuesto };
 
         $scope.ok = () => { $uibModalInstance.close($scope.params) };
 

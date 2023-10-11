@@ -1471,7 +1471,7 @@ $app->post('/prtaprobacion', function() {
                 GROUP_CONCAT(g.nomadjunto
                     SEPARATOR ', ') AS adjuntos,
                 DATE_FORMAT(DATE_ADD(IFNULL(a.fhenvioaprobacion, NOW()),
-                            INTERVAL d.diascred DAY),
+                            INTERVAL IFNULL(d.diascred, 1) DAY),
                         '%d/%m/%Y') AS fpago,
                 IF(b.idtipogasto = 1, i.descripcion, NULL) AS cep,
                 IF(b.idtipogasto = 5, i.descripcion, NULL) AS af,
@@ -1498,7 +1498,7 @@ $app->post('/prtaprobacion', function() {
                     INNER JOIN
                 subtipogasto i ON a.idsubtipogasto = i.id
             WHERE
-                a.idpresupuesto = $d->id
+                a.idpresupuesto = $d->idpresupuesto
                 AND a.correlativo = $d->correlativo";
     $datos = $db->getQuery($query)[0];
 

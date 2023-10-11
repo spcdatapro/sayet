@@ -661,7 +661,7 @@
                                 <li><a ng-click="enviar(ot, +ot.idpresupuesto, +ot.correlativo)"
                                         ng-hide="+ot.idestatuspresupuesto == 2">Enviar &nbsp;&nbsp;&nbsp; <span
                                             class="glyphicon glyphicon-send"></span></a></li>
-                                <li><a ng-click="prntAprobacion(presupuesto)">Imprimir &nbsp; <span
+                                <li><a ng-click="prntAprobacion(ot.id, ot.idpresupuesto, ot.correlativo)">Imprimir &nbsp; <span
                                             class="glyphicon glyphicon-print"></span></a></li>
                             </ul>
                         </div>
