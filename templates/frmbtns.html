@@ -2,22 +2,22 @@
     <button type="submit" class="btn btn-info" ng-disabled="btnDis" ng-show="vis.i">
         <span class="glyphicon glyphicon-floppy-save"></span>
     </button>
-    <button type="button" class="btn btn-info" ng-show="vis.p" ng-click="pf({obj:obj})">
-        <span class="glyphicon glyphicon-print"></span>
-    </button>
-    <button type="button" class="btn btn-info" ng-click="ef()" ng-show="vis.e">
+    <button type="button" class="btn btn-info" ng-click="ef()" ng-show="vis.e" title="Editar">
         <span class="glyphicon glyphicon-edit"></span>
+    </button>
+    <button type="button" class="btn btn-primary" ng-show="vis.p" ng-click="pf({obj:obj})" title="Imprimir">
+        <span class="glyphicon glyphicon-print"></span>
     </button>
     <button type="button" class="btn btn-info" ng-disabled="btnDis" ng-click="uf({obj:obj})" ng-show="vis.u">
         <span class="glyphicon glyphicon-floppy-save"></span>
     </button>
-    <button type="button" class="btn btn-warning" ng-click="cf()" ng-show="vis.c">
+    <button type="button" class="btn btn-warning" ng-click="cf()" ng-show="vis.c" title="Cancelar">
         <span class="glyphicon glyphicon-remove-circle"></span>
     </button>
-    <button type="button" class="btn btn-danger" ng-click="df({obj:obj})" ng-show="vis.d">
-        <span class="glyphicon glyphicon-trash"></span>
+    <button type="button" class="btn btn-danger" ng-click="df({obj:obj})" ng-show="vis.d" title="Anular">
+        <span class="glyphicon glyphicon-remove-sign"></span>
     </button>
-    <button type="button" class="btn btn-info" ng-click="nf()" ng-show="vis.a">
+    <button type="button" class="btn btn-info" ng-click="nf()" ng-show="vis.a" title="Crear">
         <span class="glyphicon glyphicon-plus"></span>
     </button>
 </div>

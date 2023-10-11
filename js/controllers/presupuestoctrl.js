@@ -56,6 +56,9 @@
         estatusPresupuestoSrvc.lstEstatusPresupuesto().then(function (d) { $scope.lstestatuspresup = d; });
 
         $scope.confGrpBtn = function (grp, i, u, d, a, e, c, p) {
+            // Funcion de confGrpBtn
+            // 1. Guardar no se para que funciona 2. Otro guardar no se para que funciona 3. Eliminar
+            // 4. Agregar 5. Editar 6. Cancelar edit 7. Imprimir
             var instruccion = "$scope." + grp + ".i = i; $scope." + grp + ".u = u; $scope." + grp + ".d = d; $scope." + grp + ".a = a; $scope." + grp + ".e = e; $scope." + grp + ".c = c; $scope." + grp + ".p = p;";
             eval(instruccion);
         };
@@ -155,7 +158,22 @@
                 $scope.lbl.avance = ' ' + $scope.presupuesto.avance;
                 $scope.lbl.desc = ' ' + $scope.presupuesto.notas;
                 $scope.lbl.diferencia = ' ' + ($filter('getById')($scope.monedas, $scope.presupuesto.idmoneda)).simbolo + $scope.presupuesto.diferencia;
-                $scope.confGrpBtn('grpBtnPresupuesto', false, false, true, true, true, false, false);
+                let crear = $scope.permiso.c ? true : false;
+                let editar = $scope.permiso.m ? true : false;
+                let anular = $scope.permiso.e ? true : false;
+                if ($scope.presupuesto.tipo == 1) {
+                    if ($scope.presupuesto.idestatuspresupuesto != 5 && $scope.presupuesto.idestatuspresupuesto != 6) {
+                        $scope.confGrpBtn('grpBtnPresupuesto', false, false, anular, crear, editar, false, true);
+                    } else {
+                        $scope.confGrpBtn('grpBtnPresupuesto', false, false, false, crear, false, false, true);
+                    }
+                } else {
+                    if ($scope.presupuesto.idestatuspresupuesto != 5 && $scope.presupuesto.idestatuspresupuesto != 6) {
+                        $scope.confGrpBtn('grpBtnPresupuesto', false, false, false, crear, editar, false, true);
+                    } else {
+                        $scope.confGrpBtn('grpBtnPresupuesto', false, false, false, crear, false, false, true);
+                    }
+                }
                 $scope.sl.presupuesto = true;
                 if (movertab) {
                     moveToTab('divLstPresup', 'divFrmPresup');
@@ -177,7 +195,7 @@
 
         $scope.startEditPresup = function () {
             $scope.sl.presupuesto = false;
-            $scope.confGrpBtn('grpBtnPresupuesto', false, true, true, false, false, true, false);
+            $scope.confGrpBtn('grpBtnPresupuesto', false, true, false, false, false, true, false);
             goTop();
         };
 
@@ -222,6 +240,8 @@
         $scope.nuevoPresupuesto = function () {
             $scope.sl.presupuesto = false;
             $scope.resetPresupuesto();
+            // 1. Guardar no se para que funciona 2. Otro guardar no se para que funciona 3. Eliminar
+            // 4. Agregar 5. Editar 6. Cancelar 7. Imprimir
             $scope.confGrpBtn('grpBtnPresupuesto', true, false, false, false, false, true, false);
         };
 
@@ -261,6 +281,24 @@
             });
         };
 
+        $scope.prntAprobacion = function (id, presupuesto = null, correlativo = null) {
+            var modal = $uibModal.open({
+                animation: true,
+                templateUrl: 'prntAprobacion.html',
+                controller: 'prntAprobacionCtrl',
+                windowClass: 'app-modal-window',
+                resolve: {
+                    id: id,
+                    presupuesto: presupuesto != null ? presupuesto : id,
+                    correlativo: correlativo != null ? correlativo : 1
+                }
+            });
+            modal.result.then(function (params) {
+                var rpt = 'ByZxeQixp';
+                jsReportSrvc.getPDFReport(rpt, params).then(function (pdf) { $window.open(pdf); });
+            });
+        }
+
         $scope.enviar = (obj, idpresupuesto, correlativo) => {
             let numpresup = obj.id;
             obj.esot = 0;
@@ -292,9 +330,11 @@
                 obj.idusuario = $scope.usrdata.uid;
                 presupuestoSrvc.editRow(obj, '/tp').then(function () {
                     $scope.getLstPresupuestos('1,2,3');
-                    $scope.getPresupuesto(obj.id, true);
                     if (obj.esot === 1) {
+                        $scope.getOt(obj.id);
                         $scope.getLstOts(idpresupuesto);
+                    } else {
+                        $scope.getPresupuesto(obj.id, true);
                     }
                     toaster.pop('info', 'Terminar presupuesto', `Presupuesto No. ${numpresup} terminado...`, 'timeout:1500');
                 });
@@ -343,9 +383,11 @@
                 obj.idusuario = $scope.usrdata.uid;
                 presupuestoSrvc.editRow(obj, '/rp').then(function () {
                     $scope.getLstPresupuestos('1,2,3');
-                    $scope.getPresupuesto(obj.id, true);
                     if (obj.esot === 1) {
+                        $scope.getOt(obj.id);
                         $scope.getLstOts(idpresupuesto);
+                    } else {
+                        $scope.getPresupuesto(obj.id, true);
                     }
                     toaster.pop('info', 'Re-abrir presupuesto', `Presupuesto No. ${numpresup} reaperturado...`, 'timeout:1500');
                 });
@@ -414,11 +456,18 @@
 
         $scope.getOt = function (idot) {
             presupuestoSrvc.getOt(idot).then(function (d) {
+                let crear = $scope.permiso.c ? true : false;
+                let editar = $scope.permiso.m ? true : false;
+                let anular = $scope.permiso.e ? true : false;
                 $scope.ot = procDataOts(d)[0];
                 $scope.resetBene();
                 $scope.proveedores = $filter('filter')($scope.proveedores, { dedonde: d[0].origenprov });
                 $scope.ot.idproveedor = d[0].idproveedor;
-                $scope.confGrpBtn('grpBtnOt', false, false, true, true, true, false, false);
+                if ($scope.ot.idestatuspresupuesto != 5 && $scope.ot.idestatuspresupuesto != 6) {
+                    $scope.confGrpBtn('grpBtnOt', false, false, anular, crear, editar, false, true);
+                } else {
+                    $scope.confGrpBtn('grpBtnOt', false, false, false, crear, false, false, true);
+                }
                 $scope.sl.ot = true;
                 $scope.showForm.ot = true;
                 $scope.loadPaginasComplemento($scope.ot.correlativo, $scope.ot.id);
@@ -437,7 +486,7 @@
             } else {
                 $scope.resetOt();
             }
-            $scope.confGrpBtn('grpBtnOt', false, false, false, true, false, false, false);
+            $scope.confGrpBtn('grpBtnOt', false, false, false, true, false, true, false);
             $scope.sl.ot = true;
         };
 
@@ -955,6 +1004,18 @@
                 });
             });
         };
+
+        $scope.cancel = () => $uibModalInstance.dismiss('cancel');
+
+    }]);
+
+    // _______________________________________________________________________________________________________________________
+    presupuestoctrl.controller('prntAprobacionCtrl', ['$scope', '$uibModalInstance', 'id', 'presupuesto', 'correlativo', 
+    function ($scope, $uibModalInstance, id, presupuesto, correlativo) {
+        $scope.ot = {correlativo: correlativo, presupuesto: presupuesto};
+        $scope.params = { id: id, monto: undefined, correlativo: correlativo, idmoneda: undefined };
+
+        $scope.ok = () => { $uibModalInstance.close($scope.params) };
 
         $scope.cancel = () => $uibModalInstance.dismiss('cancel');
 

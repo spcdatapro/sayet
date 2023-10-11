@@ -1465,16 +1465,18 @@ $app->post('/prtaprobacion', function() {
                 c.nomempresa AS empresa,
                 IFNULL(d.nombre, e.nombre) AS proveedor,
                 IFNULL(d.nit, e.nit) AS nit,
-                FORMAT(a.monto, 2) AS monto,
+                f.nomproyecto AS proyecto,
+                ROUND(a.monto, 2) AS monto,
                 a.notas AS concepto,
-                GROUP_CONCAT(f.nomadjunto
+                GROUP_CONCAT(g.nomadjunto
                     SEPARATOR ', ') AS adjuntos,
                 DATE_FORMAT(DATE_ADD(IFNULL(a.fhenvioaprobacion, NOW()),
                             INTERVAL d.diascred DAY),
                         '%d/%m/%Y') AS fpago,
-                IF(b.idtipogasto = 1, TRUE, NULL) AS cep,
-                IF(b.idtipogasto = 5, TRUE, NULL) AS af,
-                IF(b.idtipogasto = 6, TRUE, NULL) AS m
+                IF(b.idtipogasto = 1, i.descripcion, NULL) AS cep,
+                IF(b.idtipogasto = 5, i.descripcion, NULL) AS af,
+                IF(b.idtipogasto = 6, i.descripcion, NULL) AS m,
+                h.simbolo AS moneda
             FROM
                 detpresupuesto a
                     INNER JOIN
@@ -1487,11 +1489,24 @@ $app->post('/prtaprobacion', function() {
                     LEFT JOIN
                 beneficiario e ON a.idproveedor = e.id
                     AND a.origenprov = 2
+                    INNER JOIN 
+                proyecto f ON b.idproyecto = f.id
                     LEFT JOIN
-                ot_adjunto f ON f.idot = a.id
+                ot_adjunto g ON g.idot = a.id
+                    INNER JOIN 
+                moneda h ON a.idmoneda = h.id
+                    INNER JOIN
+                subtipogasto i ON a.idsubtipogasto = i.id
             WHERE
-                a.id = 5140";
+                a.idpresupuesto = $d->id
+                AND a.correlativo = $d->correlativo";
     $datos = $db->getQuery($query)[0];
+
+    $datos->anticipo = $d->monto;
+
+    $datos->avance = round(($d->monto * 100) / $datos->monto, 2); 
+    
+    $datos->moneda_ant = $d->idmoneda == 1 ? 'Q' : '$';
 
     print json_encode([ 'datos' => $datos ]);
 });
