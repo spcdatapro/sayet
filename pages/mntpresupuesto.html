@@ -436,6 +436,8 @@
                                             class="glyphicon glyphicon-paste"></span></a></li>
                                 <li><a ng-click="terminaPresupuesto(presupuesto)">Cerrar &nbsp;&nbsp; <span
                                             class="glyphicon glyphicon-folder-close"></span></a></li>
+                                <li><a ng-click="prntAprobacion(presupuesto.id)">Aprob. &nbsp;&nbsp; <span
+                                            class="glyphicon glyphicon-print"></span></a></li>
                             </ul>
                         </div>
                         <button type="button" class="btn btn-default" ng-click="reabrirPresupuesto(presupuesto)"
@@ -661,14 +663,29 @@
                                 <li><a ng-click="enviar(ot, +ot.idpresupuesto, +ot.correlativo)"
                                         ng-hide="+ot.idestatuspresupuesto == 2">Enviar &nbsp;&nbsp;&nbsp; <span
                                             class="glyphicon glyphicon-send"></span></a></li>
-                                <li><a ng-click="prntAprobacion(ot.id, ot.idpresupuesto, ot.correlativo)">Imprimir &nbsp; <span
-                                            class="glyphicon glyphicon-print"></span></a></li>
+                                <li><a ng-click="prntAprobacion(ot.id, ot.idpresupuesto, ot.correlativo)">Imprimir
+                                        &nbsp; <span class="glyphicon glyphicon-print"></span></a></li>
                             </ul>
                         </div>
-                        <button type="button" class="btn btn-default" ng-show="+ot.idestatuspresupuesto == 3"
-                            ng-click="terminaPresupuesto(ot, +ot.idpresupuesto, +ot.correlativo)" title="Cerrar">
-                            <span class="glyphicon glyphicon-folder-close"></span>
-                        </button>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                title="Opciones" ng-show="+ot.idestatuspresupuesto == 3 && permiso.m"
+                                ng-disabled="!sl.presupuesto">
+                                <span class="glyphicon glyphicon-cog"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a ng-click="terminaPresupuesto(ot, +ot.idpresupuesto, +ot.correlativo)">
+                                        Cerrar &nbsp;&nbsp;
+                                        <span class="glyphicon glyphicon-folder-close"></span>
+                                    </a>
+                                </li>
+                                <li><a ng-click="prntAprobacion(ot.id, ot.idpresupuesto, ot.correlativo)">
+                                        Aprob. &nbsp;&nbsp;
+                                        <span class="glyphicon glyphicon-print"></span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                         <button type="button" class="btn btn-default" ng-show="+ot.idestatuspresupuesto == 5"
                             ng-click="reabrirPresupuesto(ot, +ot.idpresupuesto, +ot.correlativo)" title="Re-abrir">
                             <span class="glyphicon glyphicon-folder-open"></span>
@@ -1069,26 +1086,52 @@
         </div>
         <div class="modal-body" style="overflow-y: auto;">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="form-group">
-                        <label for="txtMonto">Ingrese el monto del anticipo:</label>
+                        <label for="txtMonto">Monto:</label>
                         <input name="txtMonto" id="txtMonto" type="number" class="form-control input-md" ng-model="params.monto" 
                         step=".01" required />
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="form-group">
-                        <label for="selMonedaAnt">Seleccione la moneda del anticipo:</label>
+                        <label for="selMonedaAnt">Moneda:</label>
                         <select name="selMonedaAnt" id="selMonedaAnt" class="form-control" ng-model="params.idmoneda">
                             <option value="1">Quetzal (Q)</option>
                             <option value="2">Dolar ($)</option>
                         </select>
                     </div>
                 </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="selMonedaAnt">Tasa de cambio:</label>
+                        <div class="input-group">
+                            <input name="txtMonto" id="txtMonto" type="number" class="form-control input-md" ng-model="params.tc" 
+                            step=".00001" placeholder="Si aplica" />
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-primary"
+                                    ng-click="params.tc = tipocambiogt;">
+                                    <span>TC</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="txtObs">Observaci&oacute;nes:</label>
+                        <textarea name="txtObs" id="txtObs" class="form-control" ng-model="params.notas" rows="2"
+                        placeholder="Si aplica">
+                        </textarea>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-info" type="button" ng-click="ok()" ng-disabled="!params.monto">Aceptar</button>
+            <button class="btn btn-info" type="button" ng-click="ok()" 
+            ng-disabled="!params.monto || !params.idmoneda">Aceptar</button>
             <button class="btn btn-info" type="button" ng-click="cancel()">Cancelar</button>
         </div>
     </script>

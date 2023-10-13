@@ -36,7 +36,7 @@
         empresaSrvc.lstEmpresas().then(function (d) { $scope.empresas = d; });
         tipogastoSrvc.lstTipogastos().then(function (d) { $scope.tiposgasto = d; });
         monedaSrvc.lstMonedas().then(function (d) { $scope.monedas = d; });
-        tipoCambioSrvc.getLastTC().then(function (d) {$scope.tipocambiogt = +d.lasttc;});
+        tipoCambioSrvc.getLastTC().then(function (d) { $scope.tipocambiogt = +d.lasttc; });
         // proveedorSrvc.lstProveedores().then(function(d){ $scope.proveedores = d; });
         tranBancSrvc.lstBeneficiarios().then(function (d) { $scope.proveedores = d; });
         // tranBancSrvc.lstProveedores().then(function (d) { $scope.proveedores = d; });
@@ -147,8 +147,8 @@
                 $scope.loadSubtTiposGasto($scope.presupuesto.idtipogasto);
                 $scope.getLstOts(idpresupuesto);
                 $scope.loadOTAdjuntos(idpresupuesto, 1);
-                
-                $scope.lbl.id = $scope.presupuesto.id ;
+
+                $scope.lbl.id = $scope.presupuesto.id;
                 $scope.lbl.proyecto = ' ' + ($filter('getById')($scope.proyectos, $scope.presupuesto.idproyecto)).nomproyecto;
                 $scope.lbl.empresa = ' ' + ($filter('getById')($scope.empresas, $scope.presupuesto.idempresa)).nomempresa;
                 // $scope.lbl.notas = ' ' + $scope.presupuesto.notas.substring(0,20);
@@ -290,7 +290,8 @@
                 resolve: {
                     id: id,
                     presupuesto: presupuesto != null ? presupuesto : id,
-                    correlativo: correlativo != null ? correlativo : 1
+                    correlativo: correlativo != null ? correlativo : 1,
+                    tipocambiogt: $scope.tipocambiogt
                 }
             });
             modal.result.then(function (params) {
@@ -345,8 +346,8 @@
         $scope.cerrarOtm = (obj, idpresupuesto) => {
             let numpresup = obj.id;
             obj.esot = 3;
-            $confirm({text: `¿Esta seguro(a) de terminar la OTM No. ${numpresup}? Si lo termina, ya no podrá modificarlo a menos que lo reaperturen.`, title: 'Terminar OTM', ok: 'Sí', cancel: 'No' }).then(function(){
-                presupuestoSrvc.editRow(obj, '/tp').then(function(){
+            $confirm({ text: `¿Esta seguro(a) de terminar la OTM No. ${numpresup}? Si lo termina, ya no podrá modificarlo a menos que lo reaperturen.`, title: 'Terminar OTM', ok: 'Sí', cancel: 'No' }).then(function () {
+                presupuestoSrvc.editRow(obj, '/tp').then(function () {
                     $scope.getLstPresupuestos('1,2,3');
                     $scope.getPresupuesto(obj.id, true);
                     if (obj.esot === 3) {
@@ -493,7 +494,7 @@
 
         $scope.startEditOt = function () {
             $scope.sl.ot = false;
-            $scope.confGrpBtn('grpBtnOt', false, true, true, false, false, true, false);
+            $scope.confGrpBtn('grpBtnOt', false, true, false, false, false, true, false);
             goTop();
         };
 
@@ -645,14 +646,14 @@
                 templateUrl: 'modalGroupPrint.html',
                 controller: 'ModalGroupPrintCtrl',
                 resolve: {
-                    nuevoFormato: function() { return nvoformato; }
+                    nuevoFormato: function () { return nvoformato; }
                 }
             });
 
             modalInstance.result.then(() => { }, () => { });
         };
 
-        $scope.otAdjunto = { };
+        $scope.otAdjunto = {};
         $scope.lstotadjuntos = [];
 
         $scope.loadOTAdjuntos = (id, multiple) => {
@@ -660,8 +661,8 @@
             //else {id = $scope.presupuesto.id};
             //if($scope.ot.id > 0) {multiple = 0}
             //else {multiple = 1};
-            if(!id) { id = $scope.ot.id; }
-            if(!multiple) { multiple = 0; }
+            if (!id) { id = $scope.ot.id; }
+            if (!multiple) { multiple = 0; }
             presupuestoSrvc.lstOtsAdjuntos(id, multiple).then((d) => $scope.lstotadjuntos = d);
         };
 
@@ -672,7 +673,7 @@
         $scope.upload = () => {
             const file = $scope.file;
             console.log(file);
-            if (file){
+            if (file) {
                 Upload.upload({
                     url: 'php/upload.php',
                     method: 'POST',
@@ -690,7 +691,7 @@
                     (evt) => $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total)
                 );
             }
-        };        
+        };
 
         $scope.addOTAdjunto = () => {
             $scope.upload();
@@ -699,14 +700,14 @@
             } else {
                 $scope.otAdjunto.idot = $scope.presupuesto.id
             };
-            $scope.otAdjunto.ubicacion = "ots_adjunto/"+'OT_'+(($scope.ot && $scope.ot.id) ? $scope.ot.id : (`${$scope.presupuesto.id}_1`))+'_'+ $filter('textCleaner')($scope.file.name);
+            $scope.otAdjunto.ubicacion = "ots_adjunto/" + 'OT_' + (($scope.ot && $scope.ot.id) ? $scope.ot.id : (`${$scope.presupuesto.id}_1`)) + '_' + $filter('textCleaner')($scope.file.name);
             if ($scope.ot.id > 0) {
                 $scope.otAdjunto.esmultiple = 0
             } else {
                 $scope.otAdjunto.esmultiple = 1
             };
-            presupuestoSrvc.editRow($scope.otAdjunto, 'aaot').then(() => {                
-                if($scope.ot && $scope.ot.id){
+            presupuestoSrvc.editRow($scope.otAdjunto, 'aaot').then(() => {
+                if ($scope.ot && $scope.ot.id) {
                     $scope.loadOTAdjuntos();
                 } else {
                     $scope.loadOTAdjuntos($scope.presupuesto.id, 1);
@@ -717,38 +718,39 @@
         $scope.delOTAdjunto = (id) => {
             $confirm({
                 text: '¿Seguro(a) de eliminar este adjunto? (Esto también eliminará físicamente el documento)',
-                title: 'Eliminar adjunto de OT', ok: 'Sí', cancel: 'No'}).then(() => presupuestoSrvc.editRow({ id: id }, 'daot').then(() => {
-                    if($scope.ot && $scope.ot.id){
-                        $scope.loadOTAdjuntos();
-                    } else {
-                        $scope.loadOTAdjuntos($scope.presupuesto.id, 1);
-                    }
-                }));
+                title: 'Eliminar adjunto de OT', ok: 'Sí', cancel: 'No'
+            }).then(() => presupuestoSrvc.editRow({ id: id }, 'daot').then(() => {
+                if ($scope.ot && $scope.ot.id) {
+                    $scope.loadOTAdjuntos();
+                } else {
+                    $scope.loadOTAdjuntos($scope.presupuesto.id, 1);
+                }
+            }));
         };
 
         // $scope.setTC = () => $scope.presupuesto.tipocambio = $scope.tipocambiogt;        
     }]);
 
-        //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
-        presupuestoctrl.controller('ModalAttachToCtrl', ['$scope', '$uibModalInstance', '$filter', 'toaster', '$confirm', 'presupuestoSrvc', 'ot', 'permiso', function ($scope, $uibModalInstance, $filter, toaster, $confirm, presupuestoSrvc, ot, permiso) {
-            $scope.ot = ot;
-            $scope.otms = [];
-            $scope.params = {
-                id: $scope.ot.id, idpresupuesto: undefined
-            };            
+    //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    presupuestoctrl.controller('ModalAttachToCtrl', ['$scope', '$uibModalInstance', '$filter', 'toaster', '$confirm', 'presupuestoSrvc', 'ot', 'permiso', function ($scope, $uibModalInstance, $filter, toaster, $confirm, presupuestoSrvc, ot, permiso) {
+        $scope.ot = ot;
+        $scope.otms = [];
+        $scope.params = {
+            id: $scope.ot.id, idpresupuesto: undefined
+        };
 
-            $scope.loadListaOTMs = () => { presupuestoSrvc.lstOTMs().then((d) => $scope.otms = d); };
+        $scope.loadListaOTMs = () => { presupuestoSrvc.lstOTMs().then((d) => $scope.otms = d); };
 
-            $scope.ok = function () {                
-                $confirm({ text: '¿Esta seguro(a) de continuar?', title: 'Adherir OT a OTM', ok: 'Sí', cancel: 'No' }).then(() => {
-                    presupuestoSrvc.editRow($scope.params, 'attachto').then((d) => { $uibModalInstance.close(d); });
-                });
-            };
+        $scope.ok = function () {
+            $confirm({ text: '¿Esta seguro(a) de continuar?', title: 'Adherir OT a OTM', ok: 'Sí', cancel: 'No' }).then(() => {
+                presupuestoSrvc.editRow($scope.params, 'attachto').then((d) => { $uibModalInstance.close(d); });
+            });
+        };
 
-            $scope.cancel = () => $uibModalInstance.dismiss('cancel');
+        $scope.cancel = () => $uibModalInstance.dismiss('cancel');
 
-            $scope.loadListaOTMs();
-        }]);
+        $scope.loadListaOTMs();
+    }]);
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
     presupuestoctrl.controller('ModalDetPagosOtCtrl', ['$scope', '$uibModalInstance', '$filter', 'toaster', '$confirm', 'presupuestoSrvc', 'ot', 'permiso', 'monedaSrvc', function ($scope, $uibModalInstance, $filter, toaster, $confirm, presupuestoSrvc, ot, permiso, monedaSrvc) {
         $scope.ot = ot;
@@ -949,7 +951,7 @@
         };
 
         $scope.enviarRevision = function (obj) {
-            $confirm({ text: '¿Esta seguro(a) de enviar a revisión la ampliación No. ' + obj.correlativoamplia + '?', title: 'Enviar a revisión', ok: 'Sí', cancel: 'No'}).then(function () {
+            $confirm({ text: '¿Esta seguro(a) de enviar a revisión la ampliación No. ' + obj.correlativoamplia + '?', title: 'Enviar a revisión', ok: 'Sí', cancel: 'No' }).then(function () {
                 presupuestoSrvc.editRow({ idamplia: obj.id }, 'revap').then(function () { $scope.loadData(); $scope.resetAmpliacion(); });
             });
         };
@@ -1011,16 +1013,20 @@
     }]);
 
     // _______________________________________________________________________________________________________________________
-    presupuestoctrl.controller('prntAprobacionCtrl', ['$scope', '$uibModalInstance', 'id', 'presupuesto', 'correlativo', 
-    function ($scope, $uibModalInstance, id, presupuesto, correlativo) {
-        $scope.ot = {correlativo: correlativo, presupuesto: presupuesto};
-        $scope.params = { id: id, monto: undefined, correlativo: correlativo, idmoneda: undefined, idpresupuesto: presupuesto };
+    presupuestoctrl.controller('prntAprobacionCtrl', ['$scope', '$uibModalInstance', 'id', 'presupuesto', 'correlativo',
+        'tipocambiogt', function ($scope, $uibModalInstance, id, presupuesto, correlativo, tipocambiogt) {
+            $scope.ot = { correlativo: correlativo, presupuesto: presupuesto };
+            $scope.params = {
+                id: id, monto: undefined, correlativo: correlativo, idmoneda: undefined, idpresupuesto: presupuesto,
+                tc: undefined, notas: undefined
+            };
+            $scope.tipocambiogt = tipocambiogt;
 
-        $scope.ok = () => { $uibModalInstance.close($scope.params) };
+            $scope.ok = () => { $uibModalInstance.close($scope.params) };
 
-        $scope.cancel = () => $uibModalInstance.dismiss('cancel');
+            $scope.cancel = () => $uibModalInstance.dismiss('cancel');
 
-    }]);
+        }]);
 
 
 }());
