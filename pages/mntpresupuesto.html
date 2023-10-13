@@ -448,15 +448,19 @@
                         <div class="btn-group">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                                 ng-show="[1, 2].indexOf(+presupuesto.idestatuspresupuesto) > -1 && +presupuesto.tipo === 1"
-                                title="Opciones de envio" ng-disabled="!sl.presupuesto || lstotadjuntos.length == 0">
+                                title="Opciones de envio" ng-disabled="!sl.presupuesto">
                                 <span class="glyphicon glyphicon-share-alt"></span>
                             </button>
                             <ul class="dropdown-menu">
                                 <li><a ng-click="enviar(presupuesto)"
                                         ng-hide="+presupuesto.idestatuspresupuesto == 2">Enviar &nbsp;&nbsp;&nbsp; <span
-                                            class="glyphicon glyphicon-send"></span></a></li>
-                                <li><a ng-click="prntAprobacion(presupuesto.id)">Imprimir &nbsp; <span
-                                            class="glyphicon glyphicon-print"></span></a></li>
+                                            class="glyphicon glyphicon-send"></span>
+                                    </a>
+                                </li>
+                                <li><a ng-click="prntAprobacion(presupuesto.id)">Imprimir &nbsp; 
+                                        <span class="glyphicon glyphicon-print"></span>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                         <!-- botones de otm -->
@@ -656,7 +660,7 @@
                         <div class="btn-group">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                                 ng-show="[1, 2].indexOf(+ot.idestatuspresupuesto) > -1 && +presupuesto.tipo != 1"
-                                title="Opciones de envio" ng-disabled="!sl.presupuesto || lstotadjuntos.length == 0">
+                                title="Opciones de envio" ng-disabled="!sl.presupuesto">
                                 <span class="glyphicon glyphicon-share-alt"></span>
                             </button>
                             <ul class="dropdown-menu">

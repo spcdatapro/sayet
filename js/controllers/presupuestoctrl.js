@@ -308,17 +308,22 @@
                 numpresup = `${idpresupuesto}-${correlativo}`;
                 obj.esot = 1;
             }
-            $confirm({ text: `¿Esta seguro(a) de enviar el presupuesto No. ${numpresup} para aprobación?`, title: 'Envio de presupuesto', ok: 'Sí', cancel: 'No' }).then(() => {
-                obj.idusuario = $scope.usrdata.uid;
-                presupuestoSrvc.editRow(obj, '/ep').then(() => {
-                    $scope.getLstPresupuestos('1,2,3');
-                    if (obj.esot === 1) {
-                        $scope.getLstOts(idpresupuesto);
-                    }
-                    toaster.pop('info', 'Envio de presupuesto', `Presupuesto No. ${numpresup} enviado a aprobación...`, 'timeout:1500');
+            if ($scope.lstotadjuntos.length > 0) {
+                $confirm({ text: `¿Esta seguro(a) de enviar el presupuesto No. ${numpresup} para aprobación?`, title: 'Envio de presupuesto', ok: 'Sí', cancel: 'No' }).then(() => {
+                    obj.idusuario = $scope.usrdata.uid;
+                    presupuestoSrvc.editRow(obj, '/ep').then(() => {
+                        $scope.getLstPresupuestos('1,2,3');
+                        if (obj.esot === 1) {
+                            $scope.getLstOts(idpresupuesto);
+                        }
+                        toaster.pop('info', 'Envio de presupuesto', `Presupuesto No. ${numpresup} enviado a aprobación...`, 'timeout:1500');
+                    });
                 });
+            } else {
+                toaster.pop('error', 'No tiene adjuntos atados', 
+                `Favor atar un adjunto al presupuesto ${numpresup} para poder enviar a aprobación`, 'timeout:1500');
+            }
 
-            });
         };
 
         $scope.terminaPresupuesto = (obj, idpresupuesto, correlativo) => {
