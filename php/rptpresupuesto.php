@@ -683,6 +683,9 @@ function getPagos($orden, $db, $esmultiple, $ids = null) {
         $ot->cheques = $transacciones_ot;
     }
 
+    usort($ot->compras, 'compararFechas');
+    usort($ot->cheques, 'compararFechas');
+
     return;
 }
 
@@ -853,6 +856,12 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
     }
 
     return;
+}
+
+function compararFechas($a, $b) {
+    $fechaA = strtotime($a->fecha);
+    $fechaB = strtotime($b->fecha);
+    return $fechaA - $fechaB;
 }
 
 $app->run();
