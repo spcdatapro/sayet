@@ -1466,8 +1466,7 @@ $app->post('/prtaprobacion', function() {
     $query = "SELECT 
                 a.id,
                 IF(b.tipo = 2, 'MULTIPLE', 'SIMPLE') AS tipo,
-                DATE_FORMAT(IFNULL(a.fhenvioaprobacion, NOW()),
-                        '%d/%m/%Y') AS fecha,
+                DATE_FORMAT(NOW(), '%d/%m/%Y') AS fecha,
                 CONCAT(a.idpresupuesto, '-', a.correlativo) AS numero,
                 c.nomempresa AS empresa,
                 IFNULL(d.nombre, e.nombre) AS proveedor,
@@ -1477,7 +1476,7 @@ $app->post('/prtaprobacion', function() {
                 a.notas AS concepto,
                 GROUP_CONCAT(g.nomadjunto
                     SEPARATOR ', ') AS adjuntos,
-                DATE_FORMAT(DATE_ADD(IFNULL(a.fhenvioaprobacion, NOW()),
+                DATE_FORMAT(DATE_ADD(NOW(),
                             INTERVAL IFNULL(d.diascred, 1) DAY),
                         '%d/%m/%Y') AS fpago,
                 IF(b.idtipogasto = 1, i.descripcion, NULL) AS cep,
