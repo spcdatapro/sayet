@@ -1343,7 +1343,7 @@ SELECT
     sum(ifnull(a.descisr,0)) as descisr,
     sum(ifnull(a.descprestamo,0)) as descprestamo,
     sum(ifnull(a.descotros,0)) as descotros,
-    sum(ifnull(if(day(a.fecha) > 15, a.devengado, 0),0)) as devengado,
+    sum(if(day(a.fecha) > 15, a.devengado, 0)) + if(a.fecha_baja > 0, a.devengado, 0) as devengado,
     sum(ifnull(a.deducido,0)) as deducido,
     sum(ifnull(a.liquido,0)) as liquido,
     sum(ifnull(a.horasmes,0)) as horasmes,
