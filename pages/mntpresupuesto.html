@@ -427,14 +427,14 @@
                         </form-buttons>
                         <div class="btn-group">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                                title="Opciones" ng-show="+presupuesto.idestatuspresupuesto == 3 && permiso.m"
+                                title="Opciones" ng-show="+presupuesto.idestatuspresupuesto == 3"
                                 ng-disabled="!sl.presupuesto">
                                 <span class="glyphicon glyphicon-cog"></span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a ng-click="adherirAOTM(presupuesto, true)">Adherir &nbsp; <span
+                                <li><a ng-click="adherirAOTM(presupuesto, true)" ng-hide="!permiso.m">Adherir &nbsp; <span
                                             class="glyphicon glyphicon-paste"></span></a></li>
-                                <li><a ng-click="terminaPresupuesto(presupuesto)">Cerrar &nbsp;&nbsp; <span
+                                <li><a ng-click="terminaPresupuesto(presupuesto)" ng-hide="!permiso.m">Cerrar &nbsp;&nbsp; <span
                                             class="glyphicon glyphicon-folder-close"></span></a></li>
                                 <li><a ng-click="prntAprobacion(presupuesto.id)">Aprob. &nbsp;&nbsp; <span
                                             class="glyphicon glyphicon-print"></span></a></li>
