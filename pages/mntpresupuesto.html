@@ -436,7 +436,7 @@
                                             class="glyphicon glyphicon-paste"></span></a></li>
                                 <li><a ng-click="terminaPresupuesto(presupuesto)" ng-hide="!permiso.m">Cerrar &nbsp;&nbsp; <span
                                             class="glyphicon glyphicon-folder-close"></span></a></li>
-                                <li><a ng-click="prntAprobacion(presupuesto.id)">Aprob. &nbsp;&nbsp; <span
+                                <li><a ng-click="prntAprobacion(presupuesto.id)">Solicitud &nbsp;&nbsp; <span
                                             class="glyphicon glyphicon-print"></span></a></li>
                             </ul>
                         </div>
@@ -457,7 +457,7 @@
                                             class="glyphicon glyphicon-send"></span>
                                     </a>
                                 </li>
-                                <li><a ng-click="prntAprobacion(presupuesto.id)">Imprimir &nbsp; 
+                                <li><a ng-click="prntAprobacion(presupuesto.id)">Solicitud &nbsp; 
                                         <span class="glyphicon glyphicon-print"></span>
                                     </a>
                                 </li>
@@ -667,24 +667,24 @@
                                 <li><a ng-click="enviar(ot, +ot.idpresupuesto, +ot.correlativo)"
                                         ng-hide="+ot.idestatuspresupuesto == 2">Enviar &nbsp;&nbsp;&nbsp; <span
                                             class="glyphicon glyphicon-send"></span></a></li>
-                                <li><a ng-click="prntAprobacion(ot.id, ot.idpresupuesto, ot.correlativo)">Imprimir
+                                <li><a ng-click="prntAprobacion(ot.id, ot.idpresupuesto, ot.correlativo)">Solicitud
                                         &nbsp; <span class="glyphicon glyphicon-print"></span></a></li>
                             </ul>
                         </div>
                         <div class="btn-group">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                                title="Opciones" ng-show="+ot.idestatuspresupuesto == 3 && permiso.m"
+                                title="Opciones" ng-show="+ot.idestatuspresupuesto == 3"
                                 ng-disabled="!sl.presupuesto">
                                 <span class="glyphicon glyphicon-cog"></span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a ng-click="terminaPresupuesto(ot, +ot.idpresupuesto, +ot.correlativo)">
+                                <li><a ng-click="terminaPresupuesto(ot, +ot.idpresupuesto, +ot.correlativo)" ng-hide="permiso.m">
                                         Cerrar &nbsp;&nbsp;
                                         <span class="glyphicon glyphicon-folder-close"></span>
                                     </a>
                                 </li>
                                 <li><a ng-click="prntAprobacion(ot.id, ot.idpresupuesto, ot.correlativo)">
-                                        Aprob. &nbsp;&nbsp;
+                                        Solicitud &nbsp;&nbsp;
                                         <span class="glyphicon glyphicon-print"></span>
                                     </a>
                                 </li>
