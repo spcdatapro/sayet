@@ -457,7 +457,7 @@
                                             class="glyphicon glyphicon-send"></span>
                                     </a>
                                 </li>
-                                <li><a ng-click="prntAprobacion(presupuesto.id)">Solicitud &nbsp; 
+                                <li><a ng-click="prntAprobacion(presupuesto.id)">Solicitud
                                         <span class="glyphicon glyphicon-print"></span>
                                     </a>
                                 </li>
@@ -668,7 +668,7 @@
                                         ng-hide="+ot.idestatuspresupuesto == 2">Enviar &nbsp;&nbsp;&nbsp; <span
                                             class="glyphicon glyphicon-send"></span></a></li>
                                 <li><a ng-click="prntAprobacion(ot.id, ot.idpresupuesto, ot.correlativo)">Solicitud
-                                        &nbsp; <span class="glyphicon glyphicon-print"></span></a></li>
+                                        <span class="glyphicon glyphicon-print"></span></a></li>
                             </ul>
                         </div>
                         <div class="btn-group">
@@ -678,13 +678,13 @@
                                 <span class="glyphicon glyphicon-cog"></span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a ng-click="terminaPresupuesto(ot, +ot.idpresupuesto, +ot.correlativo)" ng-hide="permiso.m">
+                                <li><a ng-click="terminaPresupuesto(ot, +ot.idpresupuesto, +ot.correlativo)" ng-hide="!permiso.m">
                                         Cerrar &nbsp;&nbsp;
                                         <span class="glyphicon glyphicon-folder-close"></span>
                                     </a>
                                 </li>
                                 <li><a ng-click="prntAprobacion(ot.id, ot.idpresupuesto, ot.correlativo)">
-                                        Solicitud &nbsp;&nbsp;
+                                        Solicitud &nbsp;
                                         <span class="glyphicon glyphicon-print"></span>
                                     </a>
                                 </li>
