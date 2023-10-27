@@ -1030,8 +1030,8 @@
             $scope.tipocambiogt = tipocambiogt;
 
             presupuestoSrvc.getMonto(presupuesto, correlativo).then(function(d) {
-                $scope.ot.monto = d.monto_int;
-                $scope.ot.gastado = d.gastado_int;
+                $scope.ot.monto = parseFloat(d.monto_int).toFixed(2);
+                $scope.ot.gastado = parseFloat(d.gastado_int).toFixed(2);
                 $scope.ot.idmoneda = d.idmoneda;
                 $scope.ot.tipocambio = d.tipocambio;
                 $scope.params.gastado = d.gastado_int;
@@ -1039,7 +1039,7 @@
 
             $scope.setMonto = function () {
                 if ($scope.params.total == 1) {
-                $scope.params.monto = $scope.ot.gastado > 0 ? $scope.ot.monto - $scope.ot.gastado : $scope.ot.monto;
+                $scope.params.monto = $scope.ot.gastado > 0 ? +$scope.ot.monto - +$scope.ot.gastado : +$scope.ot.monto;
                 $scope.params.idmoneda = $scope.ot.idmoneda;
                 $scope.params.tc = +$scope.ot.tipocambio;
                 $scope.params.notas = "PAGO FINAL ";
