@@ -390,8 +390,8 @@ function getTotales($orden, $ids, $db) {
     $avance = ($gastado * 100) / $montog;
 
     // insertar valores
-    $orden->gastado_int = $gastado;
-    $orden->monto_int = $montog;
+    $orden->gastado_int = round($gastado, 2);
+    $orden->monto_int = round($montog, 2);
     $orden->gastado = number_format($gastado, 2, '.', ',');
     $orden->avance = number_format($avance, 2, '.', ',');
     $orden->diferencia = number_format($diferencia, 2, '.', ',');
@@ -1529,7 +1529,7 @@ $app->get('/monto/:ot/:correla', function($ot, $correla) {
     $ids = array();
     $ots = array();
 
-    $query = "SELECT a.idmoneda, a.id, a.tipocambio, a.monto FROM detpresupuesto a 
+    $query = "SELECT a.idmoneda, a.id, a.tipocambio, ROUND(a.monto, 2) AS monto FROM detpresupuesto a 
     WHERE a.idpresupuesto = $ot AND a.correlativo = $correla"; 
     $orden = $db->getQuery($query)[0];
 
