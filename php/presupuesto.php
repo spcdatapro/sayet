@@ -257,7 +257,7 @@ function getTotales($orden, $ids, $db) {
     $gastos_ot = array();
     $montos_ot = array();
 
-    // convertir arrahy de ids en string 
+    // convertir array de ids en string 
     $ids_str = implode(',', $ids);
 
     // contar cuantas ots tiene otm si no es multiple usar 1
@@ -390,6 +390,8 @@ function getTotales($orden, $ids, $db) {
     $avance = ($gastado * 100) / $montog;
 
     // insertar valores
+    $orden->gastado_int = $gastado;
+    $orden->monto_int = $montog;
     $orden->gastado = number_format($gastado, 2, '.', ',');
     $orden->avance = number_format($avance, 2, '.', ',');
     $orden->diferencia = number_format($diferencia, 2, '.', ',');
@@ -1255,15 +1257,19 @@ $app->post('/ibp', function () {
 
 $app->get('/lstotadjuntos/:idot(/:multiple)', function ($idot, $multiple) {
     $db = new dbcpm();
-    $query = "SELECT id, idot, nomadjunto, ubicacion FROM ot_adjunto WHERE idot = $idot AND esmultiple = $multiple ORDER BY nomadjunto";
+    $query = "SELECT id, idot, nomadjunto, ubicacion, IFNULL(DATE_FORMAT(fecha, '%d/%m/%Y'), '') AS fecha, 
+    IFNULL(correlativo, '') AS correlativo FROM ot_adjunto WHERE idot = $idot AND esmultiple = $multiple ORDER BY correlativo, fecha ASC";
     print $db->doSelectASJson($query);
 });
 
 $app->post('/aaot', function () {
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $query = "INSERT INTO ot_adjunto(idot, nomadjunto, ubicacion, esmultiple) VALUES(";
-    $query .= "$d->idot,'$d->nomadjunto', '$d->ubicacion', '$d->esmultiple'";
+    $correlativo = $db->getOneField("SELECT correlativo FROM ot_adjunto WHERE idot = $d->idot ORDER BY correlativo DESC LIMIT 1");
+    $fecha = date('Y-m-d');
+    $numero = $correlativo >= 1 ? $correlativo + 1 : 1;
+    $query = "INSERT INTO ot_adjunto(idot, nomadjunto, ubicacion, esmultiple, fecha, correlativo) VALUES(";
+    $query .= "$d->idot,'$d->nomadjunto', '$d->ubicacion', '$d->esmultiple', '$fecha', $numero ";
     $query .= ")";
     $db->doQuery($query);
 });
@@ -1456,10 +1462,6 @@ $app->post('/prtaprobacion', function() {
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $sisr = array();
-    $stran = array();
-    $tipocambioprov = 7.8;
-
     if (!isset($d->notas)) { $d->notas = null; };
     if (!isset($d->tc)) { $d->tc = 1.00; };
 
@@ -1477,7 +1479,7 @@ $app->post('/prtaprobacion', function() {
                 GROUP_CONCAT(g.nomadjunto
                     SEPARATOR ', ') AS adjuntos,
                 DATE_FORMAT(DATE_ADD(NOW(),
-                            INTERVAL IFNULL(d.diascred, 1) DAY),
+                            INTERVAL IFNULL(d.diascred, 7) DAY),
                         '%d/%m/%Y') AS fpago,
                 IF(b.idtipogasto = 1, i.descripcion, NULL) AS cep,
                 IF(b.idtipogasto = 5, i.descripcion, NULL) AS af,
@@ -1509,84 +1511,45 @@ $app->post('/prtaprobacion', function() {
                 AND a.correlativo = $d->correlativo";
     $datos = $db->getQuery($query)[0];
 
-    // traer monto, moneda, idordentrabajo y tipocambio de compra
-    $query = "SELECT id, totfact, idmoneda, tipocambio, isr, ordentrabajo AS ot FROM compra WHERE ordentrabajo = $datos->id AND idreembolso = 0 
-    AND id NOT IN(SELECT idcompra FROM detnotacompra) AND idtipofactura < 8
-    UNION ALL SELECT b.id, b.totfact, b.idmoneda, b.tipocambio, b.isr, a.ordentrabajo AS ot FROM reembolso a 
-    INNER JOIN compra b ON b.idreembolso = a.id WHERE a.ordentrabajo = $datos->id";
-    $tcompras = $db->getQuery($query);
+    $datos->anticipo = $d->idmoneda == $datos->idmoneda ? $d->monto : $d->idmoneda == 1 ? $d->monto * $d->tipocambio : $d->monto / $d->tipocambio;  
 
-    $cntCompras = count($tcompras);
+    $afectar = $d->gastado + $datos->anticipo;
 
-    // traer monto y tipocambio de transaccion bancaria
-    $query = "SELECT a.monto * IF(a.tipotrans = 'R', -1, 1) AS monto, a.tipocambio, b.idmoneda, a.iddetpresup AS ot FROM tranban a INNER JOIN banco b ON a.idbanco = b.id 
-    WHERE a.iddetpresup = $datos->id AND (SELECT COUNT(b.id) FROM doctotranban b WHERE b.idtranban = a.id AND b.idtipodoc = 2) = 0 
-    AND a.liquidado = 0 AND a.iddocliquida = 0 AND a.anulado = 0 
-    UNION ALL 
-    SELECT b.monto, a.tipocambio, c.idmoneda, a.iddetpresup AS ot FROM tranban a INNER JOIN dettranreem b ON b.idtranban = a.id 
-    INNER JOIN banco c ON a.idbanco = c.id WHERE a.iddetpresup = $datos->id";
-    $trans = $db->getQuery($query);
-
-    $cntTranas = count($trans);
-
-    for ($j = 0; $j < $cntCompras; $j++) {
-        $compra = $tcompras[$j];
-        $tc = $compra->tipocambio > 1 ? $compra->tipocambio : $tipocambioprov;
-
-        if ($datos->idmoneda != $compra->idmoneda) {
-            if ($datos->idmoneda == 1) {
-                $montoisr = $compra->isr * $tc;
-            } else {
-                $montoisr = $compra->isr / $tc;
-            }
-        } else {
-            $montoisr = $compra->isr;
-        }
-        array_push($sisr, $montoisr);
-    }
-    // sumas compras
-    $tisr = array_sum($sisr);
-
-    // loop transacciones bancarias
-    for ($j = 0; $j < $cntTranas; $j++) {
-        $tran = $trans[$j];
-        $tc = $tran->tipocambio > 1 ? $tran->tipocambio : $tipocambioprov;
-
-        if ($datos->idmoneda !== $tran->idmoneda) {
-            if ($datos->idmoneda == 1) {
-                $monto = $tran->monto * $tc;
-            } else {
-                $monto = $tran->monto / $tc;
-            }
-        } else {
-            $monto = $tran->monto;
-        }
-        array_push($stran, $monto);
-    }
-    // sumas transacciones bancarias
-    $ttran = array_sum($stran);
-
-    $gastado = $ttran + $tisr;
-
-    $avance = ROUND(($gastado * 100) / $datos->monto, 2);
-
-    $datos->anticipo = $d->monto;
-
-    $afectar = 0.00;
-
-    if ($datos->idmoneda == 1) {
-        $afectar = $d->idmoneda == 1 ? $d->monto : $d->monto * $d->tc;
-    } else {
-        $afectar = $d->idmoneda == 1 ? $d->motno / $d->tc : $d->monto;
-    }
-
-    $datos->avance = round(($afectar * 100) / $datos->monto + $avance, 2); 
+    $datos->avance = round(($afectar * 100) / $datos->monto, 2); 
     
     $datos->moneda_ant = $d->idmoneda == 1 ? 'Q' : '$';
 
     $datos->observaciones = $d->notas;
 
     print json_encode([ 'datos' => $datos ]);
+});
+
+$app->get('/monto/:ot/:correla', function($ot, $correla) {
+    $db = new dbcpm();
+    $ids = array();
+    $ots = array();
+
+    $query = "SELECT a.idmoneda, a.id, a.tipocambio, a.monto FROM detpresupuesto a 
+    WHERE a.idpresupuesto = $ot AND a.correlativo = $correla"; 
+    $orden = $db->getQuery($query)[0];
+
+    array_push($ids, $orden->id);
+
+    $ot = new stdClass(); 
+    $ot->idmoneda = $orden->idmoneda;
+    $ot->tipocambio = $orden->tipocambio;
+    $ot->monto = $orden->monto;
+    $ot->id = $orden->id;
+
+    array_push($ots, $ot);
+
+    $orden->ots = $ots;
+
+    getTotales($orden, $ids, $db);
+
+    $orden->ots = null;
+
+    print json_encode ($orden);
 });
 
 $app->run();

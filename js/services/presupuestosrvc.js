@@ -62,6 +62,7 @@
             pagoOt: function(idempresa){
                 return comunFact.doGET(`${urlBase}/pagoot/${idempresa}`);
             },
+            getMonto: (ot, correla) => comunFact.doGET(`${urlBase}/monto/${ot}/${correla}`)
         };
     }]);
 

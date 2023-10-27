@@ -795,6 +795,8 @@
                     <table class="table table-responsive table-hover table-condensed">
                         <thead>
                             <tr>
+                                <th>No.</th>
+                                <th>Fecha</th>
                                 <th>Nombre</th>
                                 <th>&nbsp;</th>
                                 <th>&nbsp;</th>
@@ -802,6 +804,8 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="ot_adjunto in lstotadjuntos">
+                                <td>{{ot_adjunto.correlativo}}</td>
+                                <td>{{ot_adjunto.fecha}}</td>
                                 <td>{{ot_adjunto.nomadjunto}}</td>
                                 <td>
                                     <a class="btn btn-info" href="{{ot_adjunto.ubicacion}}" target="_blank">
@@ -1090,17 +1094,27 @@
         </div>
         <div class="modal-body" style="overflow-y: auto;">
             <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="esPagoTotal">Es pago final o pago por el total:</label>
+                        <input type="checkbox" name="esPagoTotal" id="esPagoTotal" ng-true-value="1" ng-false-value="0"
+                        class="form-control input-md" ng-model="params.total" ng-change="setMonto()">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="txtMonto">Monto:</label>
                         <input name="txtMonto" id="txtMonto" type="number" class="form-control input-md" ng-model="params.monto" 
-                        step=".01" required />
+                        step=".01" ng-disabled="params.total == 1" required />
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="selMonedaAnt">Moneda:</label>
-                        <select name="selMonedaAnt" id="selMonedaAnt" class="form-control" ng-model="params.idmoneda">
+                        <select name="selMonedaAnt" id="selMonedaAnt" class="form-control" ng-model="params.idmoneda" 
+                        ng-disabled="params.total == 1">
                             <option value="1">Quetzal (Q)</option>
                             <option value="2">Dolar ($)</option>
                         </select>
@@ -1111,7 +1125,7 @@
                         <label for="selMonedaAnt">Tasa de cambio:</label>
                         <div class="input-group">
                             <input name="txtMonto" id="txtMonto" type="number" class="form-control input-md" ng-model="params.tc" 
-                            step=".00001" placeholder="Si aplica" />
+                            step=".00001" placeholder="Si aplica" ng-disabled="params.total == 1"/>
                             <div class="input-group-btn">
                                 <button type="button" class="btn btn-primary"
                                     ng-click="params.tc = tipocambiogt;">

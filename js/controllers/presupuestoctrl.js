@@ -320,8 +320,8 @@
                     });
                 });
             } else {
-                toaster.pop('error', 'No tiene adjuntos atados', 
-                `Favor atar un adjunto al presupuesto ${numpresup} para poder enviar a aprobación`, 'timeout:1500');
+                toaster.pop('error', 'No tiene adjuntos atados',
+                    `Favor atar un adjunto al presupuesto ${numpresup} para poder enviar a aprobación`, 'timeout:1500');
             }
 
         };
@@ -1019,13 +1019,34 @@
 
     // _______________________________________________________________________________________________________________________
     presupuestoctrl.controller('prntAprobacionCtrl', ['$scope', '$uibModalInstance', 'id', 'presupuesto', 'correlativo',
-        'tipocambiogt', function ($scope, $uibModalInstance, id, presupuesto, correlativo, tipocambiogt) {
+        'tipocambiogt', 'presupuestoSrvc', function ($scope, $uibModalInstance, id, presupuesto, correlativo, tipocambiogt,
+            presupuestoSrvc) {
+
             $scope.ot = { correlativo: correlativo, presupuesto: presupuesto };
             $scope.params = {
-                id: id, monto: undefined, correlativo: correlativo, idmoneda: undefined, idpresupuesto: presupuesto,
-                tc: undefined, notas: undefined
+                id: id, correlativo: correlativo, idpresupuesto: presupuesto, total: 0
             };
+
             $scope.tipocambiogt = tipocambiogt;
+
+            presupuestoSrvc.getMonto(presupuesto, correlativo).then(function(d) {
+                $scope.ot.monto = d.monto_int;
+                $scope.ot.gastado = d.gastado_int;
+                $scope.ot.idmoneda = d.idmoneda;
+                $scope.ot.tipocambio = d.tipocambio;
+                $scope.params.gastado = d.gastado_int;
+            });
+
+            $scope.setMonto = function () {
+                if ($scope.params.total == 1) {
+                $scope.params.monto = $scope.ot.gastado > 0 ? $scope.ot.monto - $scope.ot.gastado : $scope.ot.monto;
+                $scope.params.idmoneda = $scope.ot.idmoneda;
+                $scope.params.tc = +$scope.ot.tipocambio;
+                $scope.params.notas = "PAGO FINAL ";
+                } else {
+                    $scope.params = { id: id, correlativo: correlativo, idpresupuesto: presupuesto };
+                }
+            }
 
             $scope.ok = () => { $uibModalInstance.close($scope.params) };
 
