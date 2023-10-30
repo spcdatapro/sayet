@@ -1464,6 +1464,7 @@ $app->post('/prtaprobacion', function() {
 
     if (!isset($d->notas)) { $d->notas = null; };
     if (!isset($d->tc)) { $d->tc = 1.00; };
+    if (!isset($d->gastado)) { $d->gastado = 0; };
 
     $query = "SELECT 
                 a.id,
@@ -1511,7 +1512,7 @@ $app->post('/prtaprobacion', function() {
                 AND a.correlativo = $d->correlativo";
     $datos = $db->getQuery($query)[0];
 
-    $datos->anticipo = $d->idmoneda == $datos->idmoneda ? $d->monto : $d->idmoneda == 1 ? $d->monto * $d->tipocambio : $d->monto / $d->tipocambio;  
+    $datos->anticipo = $d->idmoneda == $datos->idmoneda ? $d->monto : $d->idmoneda == 1 ? $d->monto * $d->tc : $d->monto / $d->tc;  
 
     $afectar = $d->gastado + $datos->anticipo;
 
