@@ -312,7 +312,8 @@
                                     ng-class="{'has-error':frmPresup.txtTotal.$invalid && !frmPresup.txtTotal.$pristine}">
                                     <label for="txtTotal">Total:</label>
                                     <input name="txtTotal" id="txtTotal" class="form-control" type="text"
-                                        ng-model="presupuesto.total" fcsa-number="{maxDecimals:2}" ng-disabled="true" />
+                                        ng-model="presupuesto.total" fcsa-number="{maxDecimals:2}" 
+                                        ng-disabled="(presupuesto.tipo == 2 || presupuesto.idestatuspresupuesto > 1) && usrdata.uid != 11 || sl.presupuesto" />
                                 </div>
                             </div>
                         </div>

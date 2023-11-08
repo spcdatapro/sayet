@@ -1512,7 +1512,12 @@ $app->post('/prtaprobacion', function() {
                 AND a.correlativo = $d->correlativo";
     $datos = $db->getQuery($query)[0];
 
-    $datos->anticipo = $d->idmoneda == $datos->idmoneda ? $d->monto : $d->idmoneda == 1 ? $d->monto * $d->tc : $d->monto / $d->tc;  
+
+    if ($d->idmoneda == $datos->idmoneda) {
+        $datos->anticipo = $d->monto;
+    } else {
+        $datos->anticipo = $d->idmoneda == 1 ? $d->monto * $d->tc : $d->monto / $d->tc;
+    } 
 
     $afectar = $d->gastado + $datos->anticipo;
 

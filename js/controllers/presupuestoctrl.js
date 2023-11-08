@@ -1024,7 +1024,7 @@
 
             $scope.ot = { correlativo: correlativo, presupuesto: presupuesto };
             $scope.params = {
-                id: id, correlativo: correlativo, idpresupuesto: presupuesto, total: 0
+                id: id, correlativo: correlativo, idpresupuesto: presupuesto, total: 0, tc: 1.00
             };
 
             $scope.tipocambiogt = tipocambiogt;
@@ -1044,7 +1044,7 @@
                 $scope.params.tc = +$scope.ot.tipocambio;
                 $scope.params.notas = "PAGO FINAL ";
                 } else {
-                    $scope.params = { id: id, correlativo: correlativo, idpresupuesto: presupuesto };
+                    $scope.params = { id: id, correlativo: correlativo, idpresupuesto: presupuesto, tc: 1.00 };
                 }
             }
 
