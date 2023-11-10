@@ -71,7 +71,7 @@ $app->post('/guardar_bitacora', function(){
 	$emp = new Empleado($datos["idplnempleado"]);
 	unset($datos["idplnempleado"]);
 
-	if (isset($datos["fechatmp"])) {
+	if (array_key_exists("fechatmp", $datos)) {
 		unset($datos["fechatmp"]);
 	}
 
@@ -86,7 +86,7 @@ $app->post('/guardar_bitacora', function(){
 			"_uno" => true
 		]);
 
-		$datos["movdescripcion"] = $mov["descripcion"];
+		$datos["movdescripcion"] = $mov->descripcion;
 	}
 
 	if ($data["up"] == 1) {
