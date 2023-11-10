@@ -281,6 +281,10 @@ class Empleado extends Principal
 			$dbita['movotros'] = $args['movotros'];
 		}
 
+		if (elemento($args, 'idplnmovimiento')) {
+			$dbita['idplnmovimiento'] = $args['idplnmovimiento'];
+		}
+
 		if (!empty($this->datos)) {
 			if ($this->emp) {
 				$dbita['antes']   = json_encode($this->emp);
@@ -1105,7 +1109,7 @@ EOT;
 		$puesto = $this->get_puesto();
 		$tmp['puesto'] = isset($puesto->scalar) ? 'S/C' : $puesto->descripcion;
 
-		$bit = $this->get_bitacora(['uno' => true]);
+		$bit = $this->get_bitacora(['_uno' => true]);
 		if ($bit) {
 			$tmp['nota'] = $bit->movobservaciones;
 		}
@@ -1218,58 +1222,16 @@ EOT;
 
 	public function get_bitacora($args=[])
 	{
-		$where = ['plnbitacora.idplnempleado' => $this->emp->id];
+		$bus = new General();
 
-		if (elemento($args, 'id')) {
-			$where['plnbitacora.id'] = $args['id'];
-		}
+		$args['idplnempleado'] = $this->emp->id;
 
-		if (isset($args['mostrar'])) {
-			$where['plnbitacora.mostrar'] = $args['mostrar'];
-		}
-
-		$condiciones = ['AND' => $where];
-
-		if (elemento($args, 'uno')) {
-			$condiciones['LIMIT'] = 1;
-		}
-
-		$condiciones['ORDER'] = "plnbitacora.fecha DESC";
-
-		$tmp = $this->db->select("plnbitacora", [
-				'[><]usuario(b)' => ['plnbitacora.usuario' => 'id']
-			], 
-			[
-				"plnbitacora.id",
-				"plnbitacora.idplnempleado",
-				"plnbitacora.fecha",
-				"plnbitacora.movgasolina",
-				"plnbitacora.movfecha",
-				"plnbitacora.movdepvehiculo",
-				"plnbitacora.movobservaciones",
-				"plnbitacora.movotros",
-				"plnbitacora.movdescripcion",
-				"plnbitacora.antes",
-				"plnbitacora.despues",
-				"b.nombre"
-			],
-			$condiciones
-		);
-
-		if (count($tmp) > 0) {
-			if (elemento($args, 'uno')) {
-				return (object)$tmp[0];
-			} else {
-				return $tmp;
-			}
-		} else {
-			return FALSE;
-		}
+		return $bus->getBitacora($args);
 	}
 
 	public function get_datos_movimiento($args=[])
 	{
-		$bit = $this->get_bitacora(['id' => $args['id'], 'uno' => true]);
+		$bit = $this->get_bitacora(['id' => $args['id'], '_uno' => true]);
 		$emp = $this->get_empresa_debito();
 
 		$tmp = [

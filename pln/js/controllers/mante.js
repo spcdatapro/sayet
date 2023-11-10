@@ -17,11 +17,19 @@ angular.module('cpm')
         $scope.empresasPlanilla = [];
         $scope.bitacora = [];
         $scope.unidades = [];
+        $scope.movimiento = [];
+        $scope.vacas = false;
+        $scope.bita = {}
+        $scope.movEditar = false;
+        $scope.movProcesando = false;
 
 		$scope.mostrarForm = function() {
 			$scope.emp = { };
 			$scope.formulario = true;
             $scope.hay = false;
+            $scope.vacas = false;
+            $scope.bita = {}
+            $scope.movEditar = false;
 		};
 
 		$scope.guardar = function(emp){
@@ -126,27 +134,42 @@ angular.module('cpm')
             $scope.hay = true
             $scope.getArchivos()
             $scope.getBitacora($scope.emp.id)
+            $scope.getCatalogo()
 
             $scope.setUnidades($scope.emp.idproyecto);
 
             goTop();
         }
 
+        $scope.nuevoMovimiento = () => {
+            $scope.vacas = false;
+            $scope.bita = {}
+            $scope.movEditar = false;
+        }
+
         $scope.editarMovimiento = function(index) {
             $scope.bita = $scope.bitacora[index]
+            $scope.movEditar = true;
 
             $scope.bita.movgasolina = parseFloat($scope.bita.movgasolina)
             $scope.bita.movdepvehiculo = parseFloat($scope.bita.movdepvehiculo)
             $scope.bita.movotros = parseFloat($scope.bita.movotros)
+            $scope.bita.movdias = parseFloat($scope.bita.movdias)
 
             if ($scope.bita.movfecha) {
                 $scope.bita.fechatmp = $scope.formatoFechajs($scope.bita.movfecha)
-            } else {
-                $scope.bita.fechatmp = null
             }
+
+            if ($scope.bita.movfechafin) {
+                $scope.bita.fintmp = $scope.formatoFechajs($scope.bita.movfechafin)
+            }
+
+            $scope.tipoMovimiento()
         }
 
         $scope.guardarMovimiento = function(datos) {
+            $scope.movProcesando = true
+            
             if (!datos.idplnempleado) {
                 datos.idplnempleado = $scope.emp.id
             }
@@ -155,16 +178,35 @@ angular.module('cpm')
                 datos.movfecha = $scope.formatoFecha(datos.fechatmp)
             }
 
+            if (datos.fintmp) {
+                datos.movfechafin = $scope.formatoFecha(datos.fintmp)
+            }
+
             empServicios.guardarBitacora(datos).then(function(res){
                 $scope.bita = {};
-
+                $scope.movEditar = false;
+                $scope.tipoMovimiento()
                 $scope.getBitacora($scope.emp.id);
+                $scope.movProcesando = false;
             });
+        }
+
+        $scope.anularMovimiento = (data) => {
+            if (confirm("Se anulará el registro, ¿Desea de continuar?")) {
+                data.mostrar = 0
+                $scope.guardarMovimiento(data)
+            }
         }
 
         $scope.getBitacora = function(emp) {
             empServicios.getBitacora(emp).then(function(data){
                 $scope.bitacora = data
+            });
+        }
+
+        $scope.getCatalogo = () => {
+            empServicios.getCatalogo().then(function(data){
+                $scope.movimiento = data.movimiento
             });
         }
 
@@ -225,6 +267,21 @@ angular.module('cpm')
             var partes = fecha.split('-');
             return new Date(partes[0], partes[1] - 1, partes[2]); 
         };
+
+        $scope.tipoMovimiento = () => {
+            $scope.vacas = false
+
+            if ($scope.bita.idplnmovimiento !== undefined) {
+                for (var i = $scope.movimiento.length - 1; i >= 0; i--) {
+                    if ($scope.movimiento[i].id == $scope.bita.idplnmovimiento) {
+                        if ($scope.movimiento[i].codigo == 'M02') {
+                            $scope.vacas = true 
+                            break
+                        }
+                    }
+                }
+            }
+        }
 
         /*cuentacSrvc.lstCuentasC().then(function(d){
             $scope.cuentas = d;

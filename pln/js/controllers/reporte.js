@@ -120,4 +120,49 @@ angular.module('cpm')
             });
         }
     }
+])
+.controller('repMovimientoController', ['$scope', '$http', 'nominaServicios', 'empresaSrvc', 'empServicios', 'proyectoSrvc',
+    function($scope, $http, nominaServicios, empresaSrvc, empServicios, proyectoSrvc){
+        $scope.lista = []
+        $scope.tipos = []
+        $scope.tipo = null
+        $scope.fdel = null
+        $scope.fal = null
+
+        empServicios.getCatalogo().then(function(data){
+            $scope.tipos = data.movimiento
+        });
+
+        $scope.formatoFecha = function(fecha) {
+            return fecha.getFullYear()+'-'+(fecha.getMonth()+1)+'-'+fecha.getDate()
+        }
+
+        $scope.generar = () => {
+            $('#movimiento-lista').DataTable().destroy()
+
+            $scope.lista = []
+
+            const params = {
+                movdel: $scope.formatoFecha($scope.fdel),
+                moval: $scope.formatoFecha($scope.fal),
+                movtipo: $scope.tipo
+            }
+
+            const btn = $('#btn-generar').button('loading')
+
+            empServicios.getMovimiento(params)
+            .then(res => {
+                $scope.lista = res
+
+                btn.button('reset')
+
+                setTimeout(() => {
+                    $('#movimiento-lista').DataTable({
+                        dom: 'Bfrtip',
+                        buttons: ['excelHtml5','csv','pdf']
+                    })
+                })
+            });
+        }
+    }
 ]);

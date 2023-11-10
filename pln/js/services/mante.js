@@ -35,6 +35,12 @@ angular.module('cpm')
         },
         guardarBitacora: function(bita) {
             return comunFact.doPOST(urlBase + '/guardar_bitacora', bita)
+        },
+        getCatalogo: function(emp){
+            return comunFact.doGET(urlBase + '/catalogo');
+        },
+        getMovimiento: function(obj){
+            return comunFact.doGETJ(urlBase + '/get_movimiento', obj)
         }
     };
 }])
