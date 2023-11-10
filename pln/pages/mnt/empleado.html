@@ -266,9 +266,14 @@
 							<div class="col-sm-4">
 								<input type="date" class="form-control" ng-model="emp.movfecha" id="inputMovFecha">
 							</div>
-							<label for="inputMovDescripcion" class="col-sm-2 control-label">Descripción:</label>
+							<label for="inputTipoMovimiento" class="col-sm-2 control-label">Tipo:</label>
 							<div class="col-sm-4">
-								<input type="text" class="form-control" ng-model="emp.movdescripcion" id="inputMovDescripcion" maxlength="150">
+								<select
+								class="form-control"
+								ng-model="emp.idplnmovimiento"
+								id="inputTipoMovimiento"
+								ng-options="item.id as item.descripcion for item in movimiento"
+								></select>
 							</div>
 						</div>
 						<div class="form-group form-group-sm">

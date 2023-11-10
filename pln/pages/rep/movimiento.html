@@ -1,0 +1,107 @@
+<div class="container-fluid" ng-controller="repMovimientoController">
+	<div class="row">
+		<div class="col-sm-offset-1 col-sm-10">
+			<nav class="navbar navbar-default">
+			  <div class="container-fluid">
+			    <!-- Brand and toggle get grouped for better mobile display -->
+			    <div class="navbar-header">
+			      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+			        <span class="sr-only">Toggle navigation</span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			        <span class="icon-bar"></span>
+			      </button>
+			      <a class="navbar-brand" href="#">Movimiento</a>
+			    </div>
+
+			    <!-- Collect the nav links, forms, and other content for toggling -->
+			    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			      	<form class="navbar-form navbar-left" ng-submit="generar()">
+				      	<div class="form-group">
+				      		<select
+								class="form-control"
+								ng-model="tipo"
+								id="inputTipoMovimiento"
+								ng-options="item.id as item.descripcion for item in tipos"
+							><option value="">- TODOS -</option></select>
+				      	</div>
+				        <div class="form-group">
+				        	<div class="input-group">
+				        		<span class="input-group-addon" id="fecha-del">Del</span>
+				        		<input
+				        			type="date"
+				        			ng-model="fdel"
+				        			class="form-control"
+				        			id="fechaDel"
+				        			aria-describedby="fecha-del"
+				        			required
+				        		>
+				        	</div>
+				        </div>
+				        <div class="form-group">
+				          <div class="input-group">
+				        		<span class="input-group-addon" id="fecha-al">Al</span>
+				        		<input
+				        			type="date"
+				        			ng-model="fal"
+				        			class="form-control"
+				        			id="fechaAl"
+				        			aria-describedby="fecha-al"
+				        			required
+				        		>
+				        	</div>
+				        </div>
+				        <button
+				        	type="submit"
+				        	class="btn btn-default"
+				        	id="btn-generar"
+				        	data-loading-text="Generando..."
+				        >
+				        	<i class="glyphicon glyphicon-search"></i> Generar
+				       	</button>
+			      	</form>
+			    </div><!-- /.navbar-collapse -->
+			  </div><!-- /.container-fluid -->
+			</nav>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+		<div class="col-sm-offset-1 col-sm-10">
+			<div class="table-responsive">
+				<table class="table table-condensed" id="movimiento-lista">
+					<thead>
+						<tr>
+							<th>DPI</th>
+							<th>Nombre</th>
+							<th>Apellido</th>
+							<th>Tipo</th>
+							<th>Fecha/Inicio</th>
+							<th>Fin</th>
+							<th>Observaciones</th>
+							<th class="text-right">Días</th>
+							<th class="text-right">Gasolina</th>
+							<th class="text-right" title="Depreciación Vehículo">Depreciación</th>
+							<th class="text-right">Otros</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="(idx, row) in lista">
+							<td>{{ row.dpi }}</td>
+							<td>{{ row.nombre }}</td>
+							<td>{{ row.apellidos }}</td>
+							<td>{{ row.movimiento }}</td>
+							<td>{{ row.movfecha }}</td>
+							<td>{{ row.movfechafin }}</td>
+							<td>{{ row.movobservaciones }}</td>
+							<td class="text-right">{{ row.movdias }}</td>
+							<td class="text-right">{{ row.movgasolina }}</td>
+							<td class="text-right">{{ row.movdepvehiculo }}</td>
+							<td class="text-right">{{ row.movotros }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

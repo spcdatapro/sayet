@@ -69,13 +69,31 @@ $app->post('/guardar_bitacora', function(){
 	$data["up"] = isset($datos["id"]) ? 1 : 0;
 
 	$emp = new Empleado($datos["idplnempleado"]);
-
-	unset($datos["fechatmp"]);
 	unset($datos["idplnempleado"]);
+
+	if (array_key_exists("fechatmp", $datos)) {
+		unset($datos["fechatmp"]);
+	}
+
+	if (array_key_exists("fintmp", $datos)) {
+		unset($datos["fintmp"]);
+	}
+
+	if (isset($datos["idplnmovimiento"])) {
+		$bus = new General();
+		$mov = $bus->tipoMovimiento([
+			"id" => $datos["idplnmovimiento"],
+			"_uno" => true
+		]);
+
+		$datos["movdescripcion"] = $mov->descripcion;
+	}
 
 	if ($data["up"] == 1) {
 		unset($datos["fecha"]);
 		unset($datos["nombre"]);
+	} else {
+		$datos["mostrar"] = 1;
 	}
 
 	$emp->guardar_bitacora($datos);
@@ -867,8 +885,26 @@ $app->get('/librosalario', function(){
 	} else {
 		die("Debe seleccionar un empleado.");
 	}
-	
-	
+});
+
+$app->response->headers->set('Content-Type', 'application/json');
+$app->get('/catalogo', function(){
+	$bus = new General();
+
+	$movs = $bus->tipoMovimiento(["anulado" => 0]);
+
+	echo json_encode(["movimiento" => $movs]);
+});
+
+$app->get('/get_movimiento', function(){
+    $bus = new General();
+    
+    $_GET['mostrar'] = 1;
+    $_GET['_reporte'] = true;
+
+    $lista = $bus->getBitacora($_GET);
+
+    echo json_encode($lista);
 });
 
 $app->run();

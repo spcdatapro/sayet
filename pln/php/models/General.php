@@ -11,6 +11,15 @@ class General extends Principal
 		parent::__construct();
 	}
 
+	public function getCatalogo($data, $args)
+	{
+		if (count($data) > 0) {
+			return (isset($args["_uno"]) ? (object)$data[0] : $data);
+		} else {
+			return (isset($args["_uno"]) ? null : []);
+		}
+	}
+
 	public function buscar_empleado($args=[])
 	{
 		$where = [];
@@ -445,5 +454,120 @@ EOT;
         }
 
         return false;
+    }
+
+    public function tipoMovimiento($args = [])
+    {
+    	$params = [];
+    	
+
+    	if (isset($args["codigo"])) {
+    		$params['plnmovimiento.codigo[=]'] = $args['codigo'];
+    	}
+
+		if (isset($args["id"])) {
+			$params['plnmovimiento.id[=]'] = $args['id'];
+		}
+
+		if (isset($args["anulado"])) {
+			$params['plnmovimiento.anulado[=]'] = $args['anulado'];
+		}
+
+		$where = ["ORDER" => "plnmovimiento.descripcion ASC"];
+
+		if (count($params) > 0) {
+			if (count($params) > 1) {
+				$where["AND"] = $params;
+			} else {
+				$where = array_merge($where, $params);
+			}
+		}
+
+		if (isset($args["_uno"])) {
+			$where["LIMIT"] = 1;
+		}
+
+    	$tmp = $this->db->select("plnmovimiento", "*", $where);
+
+    	return $this->getCatalogo($tmp, $args);
+    }
+
+    public function getBitacora($args)
+    {
+    	$params = [];
+
+    	if (elemento($args, 'idplnempleado')) {
+			$params['plnbitacora.idplnempleado'] = $args['idplnempleado'];
+		}
+
+		if (elemento($args, 'id')) {
+			$params['plnbitacora.id'] = $args['id'];
+		}
+
+		if (isset($args['mostrar'])) {
+			$params['plnbitacora.mostrar'] = $args['mostrar'];
+		}
+
+		if (elemento($args, 'movdel')) {
+			$params['plnbitacora.movfecha[>=]'] = $args['movdel'];
+		}
+
+		if (elemento($args, 'moval')) {
+			$params['plnbitacora.movfecha[<=]'] = $args['moval'];
+		}
+
+		if (elemento($args, 'movtipo')) {
+			$params['plnbitacora.idplnmovimiento'] = $args['movtipo'];
+		}
+
+		$where = ["ORDER" => "plnbitacora.fecha DESC"];
+
+		if (count($params) > 0) {
+			if (count($params) > 1) {
+				$where["AND"] = $params;
+			} else {
+				$where = array_merge($where, $params);
+			}
+		}
+
+		if (elemento($args, '_uno')) {
+			$where['LIMIT'] = 1;
+		}
+
+		$select = [
+			"plnbitacora.movgasolina",
+			"plnbitacora.movfecha",
+			"plnbitacora.movfechafin",
+			"plnbitacora.movdepvehiculo",
+			"plnbitacora.movobservaciones",
+			"plnbitacora.movotros",
+			"plnbitacora.movdescripcion",
+			"plnbitacora.movdias",
+			"b.nombre (nusuario)",
+			"c.nombre",
+			"c.apellidos",
+			"c.dpi",
+			"d.descripcion (movimiento)"
+		];
+
+		if (!isset($args["_reporte"])) {
+			$select[] = "plnbitacora.id";
+			$select[] = "plnbitacora.idplnempleado";
+			$select[] = "plnbitacora.fecha";
+			$select[] = "plnbitacora.antes";
+			$select[] = "plnbitacora.despues";
+			$select[] = "plnbitacora.idplnmovimiento";
+		}
+
+		$tmp = $this->db->select("plnbitacora", [
+				'[><]usuario(b)' => ['plnbitacora.usuario' => 'id'],
+				'[><]plnempleado(c)' => ['plnbitacora.idplnempleado' => 'id'],
+				'[>]plnmovimiento(d)' => ['plnbitacora.idplnmovimiento' => 'id']
+			],
+			$select,
+			$where
+		);
+
+		return $this->getCatalogo($tmp, $args);
     }
 }
