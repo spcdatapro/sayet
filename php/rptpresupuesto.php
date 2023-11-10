@@ -861,7 +861,7 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
 function compararFechas($a, $b) {
     $fechaA = strtotime($a->fecha);
     $fechaB = strtotime($b->fecha);
-    return $fechaA - $fechaB;
+    return $fechaB - $fechaA;
 }
 
 $app->run();
