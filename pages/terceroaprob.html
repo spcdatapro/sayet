@@ -1,0 +1,117 @@
+<div class="container-fluid" ng-controller="terceroAprob">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Aprobaci&oacute;n de Servicios Terceros</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="fdel">Fecha del:</label>
+                        <input name="fdel" id="fdel" type="date" ng-model="params.fdel" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="fal">Fecha al:</label>
+                        <input name="fal" id="fal" type="date" ng-model="params.fal" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <div class="form-group">
+                            <label>Servicios: </label>
+                            <ui-select ng-model="params.idservicio" title="Seleccione un servicio..." theme="bootstrap"
+                                ng-required="true">
+                                <ui-select-match placeholder="Buscar servicio..." allow-clear="true">
+                                    <span ng-bind="$select.selected.identificacion"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="item.id as item in servicios | filter:$select.search">
+                                    <div ng-bind-html="item.identificacion | highlight: $select.search"></div>
+                                    <small>
+                                        <strong>Referencia:</strong>&nbsp;<span
+                                            ng-bind-html="item.referencia | highlight: $select.search"></span>
+                                        <strong>Tipo:</strong>&nbsp;<span
+                                            ng-bind-html="item.tipo | highlight: $select.search"></span>
+                                    </small>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="fchAprob">Fecha de aprobaci&oacute;n:</label>
+                        <input name="fchAprob" id="fchAprob" type="date" ng-model="enviar.fecha" class="form-control"
+                            ng-disabled="revisando" />
+                    </div>
+                </div>
+                <div class="col-md-9" style="text-align: right; margin-top: 2.5%;">
+                    <div class="btn-group">
+                        <button type="button" name="btnVer" id="btnVer" class="btn btn-default dropdown-toggle"
+                            data-toggle="dropdown">
+                            Pendientes &nbsp; <span class="glyphicon glyphicon-eye-open"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a ng-click="getCompras(1)">de revisi&oacute;n</a></li>
+                            <li><a ng-click="getCompras(0)">de autorizaci&oacute;n</a></li>
+                        </ul>
+                        <button type="button" name="btnAceptar" id="btnAceptar" class="btn btn-success" title="Aceptar"
+                            ng-click="actualizar()">
+                            <span class="glyphicon glyphicon-ok"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <table class="table table-responsive table-hover table-condensed">
+                <caption>
+                    <input ng-model="search.$" class="form-control" placeholder="Buscar documento..."
+                        style="color:black; width: 100%" />
+                </caption>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Proveedor</th>
+                        <th>Factura</th>
+                        <th>Transacci&oacute;n</th>
+                        <th>Contador</th>
+                        <th style="text-align: ceneter;">Lectura</th>
+                        <th style="text-align: ceneter;">Precio Uni.</th>
+                        <th style="text-align: right;">Total</th>
+                        <th>Todos <input class="input-md" name="todos" id="todos" type="checkbox" ng-model="todos"
+                                ng-true-value="1" ng-false-value="0" ng-change="selTodos(todos)" /></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="compra in compras | filter:search:strict">
+                        <td>{{compra.fecha}}</td>
+                        <td>{{compra.proveedor}}</td>
+                        <td>{{compra.documento}}</td>
+                        <td>{{compra.cheque}}</td>
+                        <td>{{compra.servicio}}</td>
+                        <td style="text-align:center">{{compra.lectura}}</td>
+                        <td style="text-align:center">{{compra.precio}}</td>
+                        <td style="text-align:right">{{compra.moneda}}.{{compra.totfact | number:2}}</td>
+                        <td style="text-align:center">
+                            <input name="sel_{{compra.id}}" id="sel_{{compra.id}}" type="checkbox"
+                                class="form-control input-sm" ng-model="compra.revisar" ng-true-value="1"
+                                ng-false-value="0" ng-change="agregar(compra.id, compra.revisar)" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="panel-footer">
+            <div style="width: 100%">
+                <table style="width: auto; margin-right: 0px; margin-left: auto;">
+                    <tr>
+                        <th class="num">Facturas a aprobar:</th>
+                        <td class="num" style="padding-left: 0.75em;">{{totales.cuantas | number:0}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
