@@ -385,13 +385,35 @@ $app->post('/u', function(){
     if(!isset($d->nombrerecibo)){ $d->nombrerecibo = 'NULL'; } else { $d->nombrerecibo = "'$d->nombrerecibo'"; }
     if(!isset($d->idcheque)){ $d->idcheque = 0; }
 
+    $calcisr = false;
+    $d->retIva = 0.00;
+
+    // ver si empresa es retenedora
+    $empresaRet = (int)$db->getOneField("SELECT retenedora FROM empresa WHERE id = $d->idempresa") === 1;
+    // ver si proveedor es peque cont.
+    $esPeque = (int)$db->getOneField("SELECT pequeniocont FROM proveedor WHERE id = $d->idproveedor") === 1;
+    // ver si el proveedor esta marcado como retenedor
+    $esRet = (int)$db->getOneField("SELECT retensioniva FROM proveedor WHERE id = $d->idproveedor ") === 1;
+    $esLocalMonedaFact = (int)$db->getOneField("SELECT eslocal FROM moneda WHERE id = $d->idmoneda") === 1;
+
     if((int)$d->idtipofactura !== 5) {
         $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
-    } else {
-        $calcisr = false;        
+
+        // si la empresa es retenedora y el proveedor no es retenedor retener iva
+        if (($empresaRet && !$esRet) && $d->totfact >= 2500) {
+            // si es pequeno enviar 5%
+            $d->retIva = $esPeque ? $db->retIVA((float)$d->totfact, 0.05, $d->tipocambio, $esLocalMonedaFact) :
+            // si no 15%
+            $db->retIVA((float)$d->iva, 0.15, $d->tipocambio, $esLocalMonedaFact);
+        }
     }
+
     
-    $d->isr = !$calcisr ? 0.00 : $db->calculaISR((float)$d->subtotal, (float)$d->tipocambio);
+    if ($esLocalMonedaFact) {
+        $d->isr = !$calcisr ? 0.00 : $db->calculaISR((float)$d->subtotal);
+    } else {
+        $d->isr = !$calcisr ? 0.00 : round(($db->calculaISR((float)$d->subtotal * (float)$d->tipocambio)) / (float)$d->tipocambio, 2);
+    }
 
     $query = "UPDATE compra SET ";
     $query.= "idproveedor = ".$d->idproveedor.", serie = '".$d->serie."', documento = ".$d->documento.", fechaingreso = '".$d->fechaingresostr."', ";
@@ -402,9 +424,6 @@ $app->post('/u', function(){
     $query.= "idtipocombustible = ".$d->idtipocombustible.", galones = ".$d->galones.", idp = ".$d->idp.", idproyecto = $d->idproyecto, idunidad = $d->idunidad, ";
     $query.= "nombrerecibo = $d->nombrerecibo, alcontado = $d->alcontado ";
     $query.= "WHERE id = ".$d->id;
-    $db->doQuery($query);
-
-    $query = "UPDATE compraproyecto SET idproyecto = $d->idproyecto where idcompra = ".$d->id ;
     $db->doQuery($query);
 
     $origen = 2;
@@ -429,6 +448,12 @@ $app->post('/u', function(){
     insertaDetalleContable($d, $d->id);
     //Fin de inserción automática de detalle contable de la factura
     // atarChequeAFactura($db, $d, $d->id);
+
+    // actulizar detalle de proyecto, primero eliminando
+    $query = "DELETE FROM compraproyecto WHERE idcompra = $d->id";
+    $db->doQuery($query);
+
+    generaDetalleProyecto($db, $d->id);
     print json_encode(['lastid' => $idorigen]);
 });
 
@@ -842,7 +867,7 @@ $app->get('/docliquida/:idnota', function($idnota){
 
 function generarDetalleServicio ($db, $d, $lastid) {
 
-    $unitario = ROUND(($d->totfact - $d->iva) / ($d->lecturafin - $d->lecturaini));
+    $unitario = ROUND(($d->totfact - $d->iva - $d->noafecto) / ($d->lecturafin - $d->lecturaini));
 
     $query = "INSERT INTO compserv(idservicio, lecturaini, lecturafin, preciouni, idcompra, fechafin, fechaini, fechaven) VALUES 
     ($d->idservicio, $d->lecturaini, $d->lecturafin, $unitario, $lastid, '$d->ffin', '$d->fini', '$d->fven')"; 

@@ -12,7 +12,7 @@
             <a show-tab href="#divFrmCompra" data-toggle="tab">FACTURAS DE COMPRA</a>
         </li>
         <li ng-show="+laCompra.id > 0">
-            <a show-tab href="#divFrmCompraProyecto" data-toggle="tab" ng-hide="true">PROYECTOS AFECTADOS</a>
+            <a show-tab href="#divFrmCompraProyecto" data-toggle="tab">PROYECTOS AFECTADOS</a>
         </li>
         <li ng-show="editando">
             <a show-tab href="#divFrmDetContCompra" data-toggle="tab">DETALLE CONTABLE</a>
@@ -256,7 +256,7 @@
                                         </ui-select>
                                         <div class="input-group-btn">
                                             <button type="button" class="btn btn-primary" ng-click="setInfoContador()"
-                                                ng-disabled="laCompra.objTipoCompra.id != 2">
+                                                ng-disabled="laCompra.objTipoCompra.id != 2 && laCompra.objTipoCompra.id != 5">
                                                 <span class="glyphicon glyphicon-paste"></span>
                                             </button>
                                         </div>
