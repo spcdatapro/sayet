@@ -18,7 +18,7 @@ angular.module('cpm')
         $scope.bitacora = [];
         $scope.unidades = [];
         $scope.movimiento = [];
-        $scope.vacas = false;
+        $scope.movRango = false;
         $scope.bita = {}
         $scope.movEditar = false;
         $scope.movProcesando = false;
@@ -27,7 +27,7 @@ angular.module('cpm')
 			$scope.emp = { };
 			$scope.formulario = true;
             $scope.hay = false;
-            $scope.vacas = false;
+            $scope.movRango = false;
             $scope.bita = {}
             $scope.movEditar = false;
 		};
@@ -142,7 +142,7 @@ angular.module('cpm')
         }
 
         $scope.nuevoMovimiento = () => {
-            $scope.vacas = false;
+            $scope.movRango = false;
             $scope.bita = {}
             $scope.movEditar = false;
         }
@@ -269,13 +269,13 @@ angular.module('cpm')
         };
 
         $scope.tipoMovimiento = () => {
-            $scope.vacas = false
+            $scope.movRango = false
 
             if ($scope.bita.idplnmovimiento !== undefined) {
                 for (var i = $scope.movimiento.length - 1; i >= 0; i--) {
                     if ($scope.movimiento[i].id == $scope.bita.idplnmovimiento) {
-                        if ($scope.movimiento[i].codigo == 'M02') {
-                            $scope.vacas = true 
+                        if ($scope.movimiento[i].rango_fecha == 1) {
+                            $scope.movRango = true 
                             break
                         }
                     }

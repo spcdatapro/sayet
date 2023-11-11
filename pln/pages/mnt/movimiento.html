@@ -41,8 +41,8 @@
 	</div>
 	<div class="form-group form-group-sm">
 		<label for="inputMovFecha" class="col-sm-2 control-label">
-			<span ng-show="vacas">Inicio</span>
-			<span ng-show="!vacas">Fecha</span>
+			<span ng-show="movRango">Inicio</span>
+			<span ng-show="!movRango">Fecha</span>
 		</label>
 		<div class="col-sm-4">
 			<input
@@ -53,27 +53,27 @@
 				required
 			>
 		</div>
-		<label for="inputVacasFin" class="col-sm-2 control-label" ng-show="vacas">Fin:</label>
-		<div class="col-sm-4" ng-show="vacas">
+		<label for="inputMovFin" class="col-sm-2 control-label" ng-show="movRango">Fin:</label>
+		<div class="col-sm-4" ng-show="movRango">
 			<input
 				type="date"
 				class="form-control"
 				ng-model="bita.fintmp"
-				id="inputVacasFin"
-				ng-required="vacas"
+				id="inputMovFin"
+				ng-required="movRango"
 			>
 		</div>
 	</div>
-	<div class="form-group form-group-sm" ng-show="vacas">
-		<label for="inputVacasDias" class="col-sm-2 control-label">Total Días:</label>
+	<div class="form-group form-group-sm" ng-show="movRango">
+		<label for="inputMovDias" class="col-sm-2 control-label">Total Días:</label>
 		<div class="col-sm-4">
 			<input
 				type="number"
 				step="0.01"
 				class="form-control"
 				ng-model="bita.movdias"
-				id="inputVacasDias"
-				ng-required="vacas"
+				id="inputMovDias"
+				ng-required="movRango"
 			>
 		</div>
 	</div>
