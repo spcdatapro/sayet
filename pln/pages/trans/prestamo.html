@@ -188,7 +188,7 @@
                     </tr>
                 </thead>
                 <tbody ng-cloak>
-                    <tr ng-repeat="p in prestamos track by $index" ng-click="getPrestamo($index)" ng-class="'anulada': p.anulado == 1">
+                    <tr ng-repeat="p in prestamos track by $index" ng-click="getPrestamo($index)" ng-class="{'anulada': p.anulado == 1}">
                         <td>{{ p.id }}</td>
                         <td>{{ p.fecha | date:'dd/MM/yyyy HH:mm:ss' }}</td>
                         <td>{{ p.iniciopago | date:'dd/MM/yyyy' }}</td>
