@@ -1,3 +1,9 @@
+<style>
+    .anulada {
+        background-color: rgba(255, 0, 0, 0.5);
+    }
+</style>
+
 <div class="container-fluid" ng-controller="transPrestamoController">
     <nav class="navbar navbar-default">
         <div class="container-fluid">
@@ -182,7 +188,7 @@
                     </tr>
                 </thead>
                 <tbody ng-cloak>
-                    <tr ng-repeat="p in prestamos track by $index" ng-click="getPrestamo($index)">
+                    <tr ng-repeat="p in prestamos track by $index" ng-click="getPrestamo($index)" ng-class="'anulada': p.anulado == 1">
                         <td>{{ p.id }}</td>
                         <td>{{ p.fecha | date:'dd/MM/yyyy HH:mm:ss' }}</td>
                         <td>{{ p.iniciopago | date:'dd/MM/yyyy' }}</td>
