@@ -112,6 +112,10 @@ class Prestamo extends Principal
 
 	public function anular($idprestamo) {
 		$this->set_dato('anulado', true);
+		$this->set_dato('saldo', 0.00);
+		$this->set_dato('concepto', 'ANULADO');
+		$this->set_dato('monto', 0.00);
+		$this->set_dato('cuotamensual', 0.00);
 
 		if (!empty($this->datos)) {
 			if ($this->db->update($this->tabla, $this->datos, ["id" => $idprestamo])) {
