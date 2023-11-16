@@ -559,11 +559,11 @@ class Empleado extends Principal
 		if (empty($this->emp->descuentoisr)) {
 			return 0;
 		} else {
-			if ($this->dtrabajados == 30) {
+			// if ($this->dtrabajados == 30) {
 				return $this->emp->descuentoisr;
-			} else {
-				return round(($this->emp->descuentoisr/30)*$this->dtrabajados, 2);
-			}
+			// } else {
+				// return round(($this->emp->descuentoisr/30)*$this->dtrabajados, 2);
+			// }
 		}
 	}
 
