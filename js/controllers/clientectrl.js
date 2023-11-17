@@ -1224,7 +1224,14 @@
             $scope.params.idempresa = !!$scope.params.idempresa ? $scope.params.idempresa : '';
             console.log($scope.params);
             const test = false;
-            jsReportSrvc.getPDFReport(test ? 'SkV0SgWuD' : 'SkV0SgWuD', $scope.params).then((pdf) => $scope.content = pdf);
+            if (!$scope.params.excel) {
+                jsReportSrvc.getPDFReport(test ? 'SkV0SgWuD' : 'SkV0SgWuD', $scope.params).then((pdf) => $scope.content = pdf);
+            } else {
+                jsReportSrvc.getReport('rJ2tKGH4p', $scope.params).then(function(result){                
+                    var file = new Blob([result.data], {type: 'application/vnd.ms-excel'});                
+                    saveAs(file, 'Lista_clientes.xlsx');
+                });
+            }
         };
 
         $scope.cancel = () => $uibModalInstance.dismiss('cancel');
