@@ -8,6 +8,7 @@ $app->response->headers->set('Content-Type', 'application/json');
 $app->post('/mensual', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    $ids_str = count($d->idempresa) > 0 ? implode(',', $d->idempresa) : "''";
 
     if(!isset($d->idempresa)) { $d->idempresa = 0; }
     $query = "SELECT DATE_FORMAT('$d->fdelstr', '%d/%m/%Y') AS del,  DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS al, DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy ";
@@ -51,7 +52,7 @@ $app->post('/mensual', function(){
             WHERE
                 a.fecha >= '$d->fdelstr'
                     AND a.fecha <= '$d->falstr' ";
-    $query.= $d->idempresa !== 0 ? "AND a.idempresa = $d->idempresa " : '';
+    $query.= count($d->idempresa) > 0 ? "AND a.idempresa IN($ids_str) " : '';
     $query.= "ORDER BY a.fecha ASC, a.serie ASC, b.seriea ASC, b.serieb ASC ";
     $recibos = $db->getQuery($query);
 
@@ -77,7 +78,7 @@ $app->post('/mensual', function(){
                     detpagorecli b ON b.idreccli = a.id
                 WHERE
                     a.fecha = '$fecharec' AND b.idmoneda = 1 "; 
-            $query.= $d->idempresa !== 0 ? "AND a.idempresa = $d->idempresa " : '';
+            $query.= count($d->idempresa) > 0 ? "AND a.idempresa IN($ids_str) " : '';
             $query.= ") AS montoqtz,
             (SELECT 
                     CONCAT('$',
@@ -89,7 +90,7 @@ $app->post('/mensual', function(){
                     detpagorecli b ON b.idreccli = a.id
                 WHERE
                     a.fecha = '$fecharec' AND b.idmoneda = 2 ";
-            $query.= $d->idempresa !== 0 ? "AND a.idempresa = $d->idempresa " : '';
+            $query.= count($d->idempresa) > 0 ? "AND a.idempresa IN($ids_str) " : '';
             $query.= ") AS montodlr "; 
             $total = $db->getQuery($query);
 
@@ -99,11 +100,11 @@ $app->post('/mensual', function(){
     }
 
     $query = "SELECT 
-                (SELECT nomempresa
+                (SELECT GROUP_CONCAT(nomempresa SEPARATOR ', ')
                     FROM
                         empresa 
                     WHERE 
-                        id = $d->idempresa) AS empresa,
+                        id IN($ids_str)) AS empresa,
                 (SELECT 
                         CONCAT('Q',
                                     '.',
@@ -115,7 +116,7 @@ $app->post('/mensual', function(){
                     WHERE
                         a.fecha >= '$d->fdelstr'
                             AND a.fecha <= '$d->falstr' ";
-    $query.= $d->idempresa !== 0 ? "AND a.idempresa = $d->idempresa " : '';
+    $query.= count($d->idempresa) > 0 ? "AND a.idempresa IN($ids_str) " : '';
     $query.= "                 AND b.idmoneda = 1) AS montoqtz,
                 (SELECT 
                         CONCAT('$',
@@ -128,7 +129,7 @@ $app->post('/mensual', function(){
                     WHERE
                         a.fecha >= '$d->fdelstr'
                             AND a.fecha <= '$d->falstr' ";
-    $query.= $d->idempresa !== 0 ? "AND a.idempresa = $d->idempresa " : '';
+    $query.= count($d->idempresa) > 0 ? "AND a.idempresa IN($ids_str) " : '';
     $query.= "                 AND b.idmoneda = 2) AS montodlr ";
     $totgen = $db->getQuery($query)[0];
 
@@ -336,7 +337,7 @@ $app->post('/correlativo', function(){
                                     AND b.idempresa = $empresa->idempresa) AS montoprydls ";
             $proyecto->totalproy = $db->getQuery($query);
         }
-         
+
         // id de recibos por empresa
         $query = "SELECT DISTINCT
                     GROUP_CONCAT(a.id) AS recibos

@@ -21,10 +21,10 @@
                             <label>Empresa: </label>
                             <ui-select ng-model="params.idempresa"
                                 title="Seleccione una empresa..." theme="bootstrap"
-                                autofocus="false" on-select="getDataEmpresa($item)">
-                                <ui-select-match placeholder="Buscar empresa..."
+                                autofocus="false" on-select="getDataEmpresa($item)" multiple>
+                                <ui-select-match placeholder="Seleccionar empresas"
                                     allow-clear="true">
-                                    <span ng-bind="($select.selected.nomempresa)"></span>
+                                    <span>{{$item.abreviatura}}</span>
                                 </ui-select-match>
                                 <ui-select-choices 
                                     repeat="item.id as item in empresas | filter:$select.search"

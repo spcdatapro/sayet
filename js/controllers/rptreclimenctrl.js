@@ -11,7 +11,7 @@
 
             $scope.params = {
                 fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(),                
-                idempresa: undefined
+                idempresa: []
             };
 
             $scope.content = `${window.location.origin}/sayet/blank.html`;
@@ -21,7 +21,6 @@
             $scope.getRptRecibosCliente = function () {
                 $scope.params.fdelstr = moment($scope.params.fdel).isValid() ? moment($scope.params.fdel).format('YYYY-MM-DD') : '';
                 $scope.params.falstr = moment($scope.params.fal).isValid() ? moment($scope.params.fal).format('YYYY-MM-DD') : '';
-                $scope.params.idempresa = $scope.params.idempresa != null && $scope.params.idempresa != undefined ? $scope.params.idempresa : 0;
                 var rpttest = 'Sk_TXxlMQ', rpt = 'ryKtNbFFq';
 
 
