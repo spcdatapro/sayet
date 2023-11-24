@@ -181,6 +181,13 @@ angular.module('cpm')
             if (datos.fintmp) {
                 datos.movfechafin = $scope.formatoFecha(datos.fintmp)
             }
+            
+            delete datos.nusuario;
+            delete datos.apellidos;
+            delete datos.dpi;
+            delete datos.movimiento;
+
+            console.log(datos);
 
             empServicios.guardarBitacora(datos).then(function(res){
                 $scope.bita = {};
