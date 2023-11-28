@@ -1108,7 +1108,7 @@
                                         <td style="text-align: right">{{d.moneda}}&nbsp;{{d.monto | number:2}}</td>
                                         <td>
                                             <button type="button" class="btn btn-info btn-sm"
-                                                ng-click="generaCobros(d.id)" data-toggle="tooltip"
+                                                ng-click="generaCobros(d.id, d.concepto, d.idcontrato)" data-toggle="tooltip"
                                                 data-placement="auto" title="Agregar descuento al período...">
                                                 <span class="glyphicon glyphicon-list-alt"></span>
                                             </button>
@@ -1349,6 +1349,14 @@
         <h4 class="modal-title">Cargos del per&iacute;odo</h4>
     </div>
     <div class="modal-body" style="height: 600px; overflow-y: scroll">
+        <div class="row">
+            <div class="col-md-12">
+                <label for="conceptoTodos">Agregar concepto adicional a todos los cargos:</label>
+                <textarea name="conceptoTodos" id="conceptoTodos" class="form-control input-sm" ng-model="todos" rows="2" 
+                maxlength="300" placeholder="Concepto adicional que saldrá en el detalle de la factura de todos los cargos.">
+                </textarea>
+            </div>
+        </div>
         <table class="table table-hover table-condensed">
             <thead>
             <tr>
@@ -1365,12 +1373,12 @@
                 <td style="text-align: right">{{c.monto | number:2}}</td>
                 <td style="text-align: right; width: 7%;">
                     <input name="txtDesc_{{c.id}}" id="txtDesc_{{c.id}}" class="form-control input-sm" style="text-align: right" type="text"
-                           ng-model="c.descuento" ng-disabled="sldesc[c.id - restar]" fcsa-number="{ maxDecimals:2 }" />
+                        ng-model="c.descuento" ng-disabled="sldesc[c.id - restar]" fcsa-number="{ maxDecimals:2 }" />
                 </td>
                 <td style="vertical-align: top">
                     <div class="input-group" style="vertical-align: top !important;">
                         <textarea name="txtConcAd_{{c.id}}" id="txtConcAd_{{c.id}}" class="form-control input-sm" ng-model="c.conceptoadicional" ng-disabled="sldesc[c.id - restar]"
-                                  rows="2" maxlength="300" placeholder="Concepto adicional que saldrá en el detalle de la factura."></textarea>
+                                rows="2" maxlength="300" placeholder="Concepto adicional que saldrá en el detalle de la factura."></textarea>
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-info btn-secondary btn-sm" ng-click="habilitar(c.id)" ng-show="sldesc[c.id - restar]" ng-disabled="+c.facturado == 1">
                                 <span class="glyphicon glyphicon-edit"></span>
@@ -1389,12 +1397,8 @@
         </table>
     </div>
     <div class="modal-footer">
-        <!--
-        <button class="btn btn-primary" type="button" ng-click="ok()" ng-disabled="selectedBanco == undefined || selectedTipoMov == undefined">
-            Aceptar
-        </button>
-        -->
-        <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
+        <button class="btn btn-primary" type="button" ng-click="ok(cargos)" ng-show="todos.length > 0">Aceptar</button>
+        <button class="btn btn-info" type="button" ng-click="cancel()">Cerrar</button>
     </div>
 </script>
 <!--Fin de Template de la modal-->

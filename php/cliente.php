@@ -457,7 +457,7 @@ $app->post('/dc', function(){
 $app->get('/lstdetcontrato/:idcontrato', function($idcontrato){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idcontrato, a.fdel, a.fal, a.monto, a.idtipoventa, b.desctiposervventa AS tipoventa, a.idmoneda, c.simbolo AS moneda, a.cobro, a.idperiodicidad, ";
-    $query.= "d.descperiodicidad AS periodicidad, a.noperiodo, e.fechavence, IF(a.fal > e.fechavence, 1, 0) AS fuerarango, a.idmonedafact, f.simbolo AS monedafact ";
+    $query.= "d.descperiodicidad AS periodicidad, a.noperiodo, e.fechavence, IF(a.fal > e.fechavence, 1, 0) AS fuerarango, a.idmonedafact, f.simbolo AS monedafact, a.concepto ";
     $query.= "FROM detfactcontrato a INNER JOIN tiposervicioventa b ON b.id = a.idtipoventa INNER JOIN moneda c ON c.id = a.idmoneda INNER JOIN periodicidad d ON d.id = a.idperiodicidad ";
     $query.= "INNER JOIN contrato e ON e.id = a.idcontrato LEFT JOIN moneda f ON f.id = a.idmonedafact ";
     $query.= "WHERE a.idcontrato = $idcontrato ";
@@ -790,6 +790,13 @@ $app->get('/lstcatclie', function(){
     $db = new dbcpm();
     $query="SELECT id, nombre FROM catclie";
     print $db->doSelectASJson($query);
+});
+
+$app->get('/conceptog/:iddetcont/:concepto', function($iddetcont, $concepto) {
+    $db = new dbcpm();
+
+    $query = "UPDATE detfactcontrato SET concepto = '$concepto' WHERE id = $iddetcont";
+    $db->doQuery($query);
 });
 
 $app->run();

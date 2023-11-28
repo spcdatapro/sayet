@@ -916,7 +916,7 @@
             return d;
         }
 
-        $scope.generaCobros = function (iddetfcont) {
+        $scope.generaCobros = function (iddetfcont, concepto, idcontrato) {
             $scope.cargos = [];
             clienteSrvc.lstCargos(iddetfcont).then(function (d) {
                 //console.log(d); return;
@@ -929,20 +929,18 @@
                         controller: 'ModalCargosCtrl',
                         windowClass: 'app-modal-window-cargos',
                         resolve: {
+                            concepto: function () { return concepto },
                             cargos: function () { return $scope.cargos; }
                         }
                     });
 
-                    modalInstance.result.then(function () {
-                        //console.log('Modal cerrada')
-                    }, function () { return 0; });
+                    modalInstance.result.then(function (concepto) {
+                        // agregar concpeto general a detalle de contrato 
+                        clienteSrvc.conceptoGeneral(iddetfcont, concepto);
+                        $scope.getLstDetFContrato(idcontrato);
+                    });
                 } else {
                     clienteSrvc.editRow({ id: iddetfcont }, 'gencobros').then(function () { $scope.generaCobros(iddetfcont); });
-                    /*
-                    $confirm({text: '¿Seguro(a) de generar los cobros para este período?', title: 'Generación de cobros', ok: 'Sí', cancel: 'No'}).then(function() {
-                        clienteSrvc.editRow({id:iddetfcont}, 'gencobros').then(function(){ $scope.generaCobros(iddetfcont); });
-                    });
-                    */
                 }
             });
         };
@@ -1023,10 +1021,13 @@
 
     }]);
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
-    clientectrl.controller('ModalCargosCtrl', ['$scope', '$uibModalInstance', 'toaster', 'cargos', 'clienteSrvc', function ($scope, $uibModalInstance, toaster, cargos, clienteSrvc) {
+    clientectrl.controller('ModalCargosCtrl', ['$scope', '$uibModalInstance', 'toaster', 'cargos', 'clienteSrvc', '$confirm', 
+        'concepto', function ($scope, $uibModalInstance, toaster, cargos, clienteSrvc, $confirm, concepto) {
+
         $scope.cargos = cargos;
         $scope.sldesc = [];
         $scope.restar = $scope.cargos[0].id;
+        $scope.todos = concepto == 'null' ? undefined : concepto;
 
         $scope.$watch(function () { return cargos }, function (newVal, oldVal) {
             $scope.sldesc = [];
@@ -1064,8 +1065,33 @@
             });
         };
 
+        // funcion para agregar concpeto a todos los cargos
+        $scope.$watch('todos', function (newVal, oldVal) {
+            // loop que actuliza el concepto adicional de cada cargo para mostrar en pantalla
+            $scope.cargos.forEach(function (cargo) {
+                repetido = cargo.conceptoadicional.length;
+                texto = cargo.conceptoadicional == newVal ? cargo.conceptoadicional : newVal + cargo.conceptoadicional.replace(newVal, "");
+                cargo.conceptoadicional = texto;
+            });
+        });
 
-        //$scope.ok = function () { $uibModalInstance.close($scope.fcierre); };
+        // solo funciona si varible $scope.todos (concepto genral) tiene 1 o mas caracteres
+        $scope.ok = function (obj) { 
+            // confirmaciion para agregar concepto a todos
+            $confirm({ text: '¿Seguro(a) desea agregar el concepto "' + $scope.todos + '" a todos los cargos?', 
+            title: 'Concepto general', ok: 'Sí', cancel: 'No' }).then(function () {
+                // loop entre cada cargo para actualizar concepto
+                obj.forEach(function (cargo) {
+                    clienteSrvc.editRow(cargo, 'udesccargo');
+                });
+                // confirmar que los cargos se agregaron
+                toaster.pop('info', 'Concepto de los cagos', 'Se agrego el concepto de los cargos con éxito.', 'timeout:5000');
+                // ???
+                $scope.sldesc = [];
+                // cerrar modal
+                $uibModalInstance.close($scope.todos); 
+            });
+        };
 
         $scope.cancel = function () {
             $scope.sldesc = [];

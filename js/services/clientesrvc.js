@@ -77,6 +77,9 @@
             },
             lstCatClie: function(){
                 return comunFact.doGET(urlBase + '/lstcatclie');
+            },
+            conceptoGeneral: function(iddetcont, concepto) {
+                return comunFact.doGET(urlBase + '/conceptog/' + iddetcont + '/' + concepto);
             }
         };
     }]);
