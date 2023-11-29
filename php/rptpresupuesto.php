@@ -310,7 +310,7 @@ $app->post('/avanceot', function(){
                 moneda i ON a.idmoneda = i.id
                     INNER JOIN
                 usuario j ON b.idusuario = j.id
-                    INNER JOIN
+                    LEFT JOIN
                 usuario k ON a.idusuarioaprueba = k.id
                     LEFT JOIN
                 usuario l ON a.lastuser = l.id
@@ -946,6 +946,8 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
         }
         // sumas transacciones bancarias
         $ttran = array_sum($stran);
+
+        $ot->monto = $ot->monto == 0 ? 1 : $ot->monto;
 
         // operaciones para OTS
         $gastado = $ttran + $tisr;
