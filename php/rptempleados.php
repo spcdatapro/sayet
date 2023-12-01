@@ -38,8 +38,8 @@ $app->post('/rptempelados', function(){
             $query = "SELECT 
                         a.id,
                         CONCAT(a.nombre, ' ', IFNULL(a.apellidos, '')) AS nombre,
-                        DATE_FORMAT(ingreso, '%d/%m/%Y') AS fingreso,
-                        IFNULL(DATE_FORMAT(reingreso, '%d/%m/%Y'), '') AS freingreso,
+                        DATE_FORMAT(ingreso, '%d/%m/%y') AS fingreso,
+                        IFNULL(DATE_FORMAT(reingreso, '%d/%m/%y'), '') AS freingreso,
                         a.sueldo,
                         a.bonificacionley,
                         a.sueldo + a.bonificacionley AS sueldotot,
