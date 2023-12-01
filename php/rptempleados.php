@@ -9,8 +9,8 @@ $app->post('/rptempelados', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $query = "SELECT id, nombre, IFNULL(CONCAT('(', numeropat, ')'), '') AS patronal 
-    FROM plnempresa WHERE id IN (SELECT idempresadebito FROM plnempleado ";
+    $query = "SELECT DISTINCT a.id, a.nombre, IFNULL(CONCAT('(', a.numeropat, ')'), '') AS patronal 
+    FROM plnempresa a INNER JOIN proyecto b ON b.idempresa = a.id WHERE b.id IN (SELECT idproyecto FROM plnempleado ";
     $query.= $d->inactivos == 0 ? "WHERE baja IS NULL) " : ")";
     $query.= $d->idempresa == 0 ? "" : "AND id = $d->idempresa ";
     $empresas = $db->getQuery($query);
@@ -21,7 +21,8 @@ $app->post('/rptempelados', function(){
         $empresa = $empresas[$i];
 
         $query = "SELECT id, nomproyecto AS proyecto FROM proyecto WHERE idempresa = $empresa->id AND 
-        id IN (SELECT idproyecto FROM plnempleado)";
+        id IN (SELECT idproyecto FROM plnempleado ";
+        $query.= $d->inactivos == 0 ? "WHERE baja IS NULL) " : ")";
         $empresa->proyectos = $db->getQuery($query);
 
         $cntProyectos = count($empresa->proyectos);
