@@ -9,15 +9,8 @@ $app->post('/rptempelados', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $query = "SELECT 
-               id, nombre, IFNULL(CONCAT('(', numeropat, ')'), '') AS patronal
-            FROM
-                plnempresa
-            WHERE
-                id IN (SELECT 
-                        idempresadebito
-                    FROM
-                        plnempleado ";
+    $query = "SELECT id, nombre, IFNULL(CONCAT('(', numeropat, ')'), '') AS patronal 
+    FROM plnempresa WHERE id IN (SELECT idempresadebito FROM plnempleado ";
     $query.= $d->inactivos == 0 ? "WHERE baja IS NULL) " : ")";
     $query.= $d->idempresa == 0 ? "" : "AND id = $d->idempresa ";
     $empresas = $db->getQuery($query);
@@ -27,27 +20,43 @@ $app->post('/rptempelados', function(){
     for ($i = 0; $i < $cntEmpresas; $i++) {
         $empresa = $empresas[$i];
 
-        $tordinario = array();
-        $tbono = array();
-        $total = array();
+        $query = "SELECT id, nomproyecto AS proyecto FROM proyecto WHERE idempresa = $empresa->id AND 
+        id IN (SELECT idproyecto FROM plnempleado)";
+        $empresa->proyectos = $db->getQuery($query);
 
-        $query = "SELECT 
-                    a.id,
-                    CONCAT(a.nombre, ' ', IFNULL(a.apellidos, '')) AS nombre,
-                    DATE_FORMAT(ingreso, '%d/%m/%Y') AS fingreso,
-                    IFNULL(DATE_FORMAT(reingreso, '%d/%m/%Y'), '') AS freingreso,
-                    a.sueldo,
-                    a.bonificacionley,
-                    a.sueldo + a.bonificacionley AS sueldotot
-                FROM
-                    plnempleado a
-                WHERE
-                    a.idempresadebito = $empresa->id ";
-        $query.= $d->inactivos == 0 ? "AND a.baja IS NULL " : "";
-        $query.= "ORDER BY a.nombre ASC ";
-        $empresa->empleados = $db->getQuery($query);
+        $cntProyectos = count($empresa->proyectos);
+
+        if ($cntProyectos > 0) {
+            $empresa->mostrar = true;
+        } else {
+            $empresa->mostrar = null;
+        }
+
+        for ($j = 0; $j < $cntProyectos; $j++) {
+            $proyecto = $empresa->proyectos[$j];
+    
+            $query = "SELECT 
+                        a.id,
+                        CONCAT(a.nombre, ' ', IFNULL(a.apellidos, '')) AS nombre,
+                        DATE_FORMAT(ingreso, '%d/%m/%Y') AS fingreso,
+                        IFNULL(DATE_FORMAT(reingreso, '%d/%m/%Y'), '') AS freingreso,
+                        a.sueldo,
+                        a.bonificacionley,
+                        a.sueldo + a.bonificacionley AS sueldotot,
+                        b.descripcion AS puesto
+                    FROM
+                        plnempleado a
+                    INNER JOIN 
+                        plnpuesto b ON a.idplnpuesto = b.id
+                    WHERE
+                        a.idproyecto = $proyecto->id ";
+            $query.= $d->inactivos == 0 ? "AND a.baja IS NULL " : "";
+            $query.= "ORDER BY a.nombre ASC ";
+            $proyecto->empleados = $db->getQuery($query);
+        }
     }
-    print json_encode([ 'empresa' => $empresas ]);
+
+    print json_encode([ 'empresas' => $empresas ]);
 });
 
 $app->run();
