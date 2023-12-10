@@ -383,7 +383,10 @@ $app->post('/avanceotm', function(){
                 a.idmoneda AS idmoneda,
                 a.tipocambio,
                 DATE_FORMAT(a.fechamodificacion, '%d/%m/%Y') AS fecha,
-                f.iniciales AS usuario
+                f.iniciales AS usuario,
+                a.idestatuspresupuesto AS estatus,
+                g.iniciales AS anulador,
+                a.fhanulacion AS anulacion
             FROM
                 detpresupuesto a
                     LEFT JOIN
@@ -398,9 +401,10 @@ $app->post('/avanceotm', function(){
                 moneda e ON a.idmoneda = e.id
                     LEFT JOIN
                 usuario f ON a.lastuser = f.id
+                    LEFT JOIN 
+                usuario g ON a.idusuarioanula = g.id
             WHERE
                 a.idpresupuesto = $d->idot
-                    AND a.idestatuspresupuesto IN(1, 2, 3, 5)
             ORDER BY a.correlativo";
             $orden->ots = $db->getQuery($query);
 
@@ -795,43 +799,50 @@ function getPagos($orden, $db, $esmultiple, $ids = null) {
     for ($i = 0; $i < $cntsOts; $i++) {
         $ot = $esmultiple ? $orden->ots[$i] : $orden;
 
-        $compras_ot = array();
-        $transacciones_ot = array();
-        $reembolsos_ot = array();
+        if($ot->estatus != 6) { 
+            $compras_ot = array();
+            $transacciones_ot = array();
+            $reembolsos_ot = array();
 
-        // compras
-        for ($j = 0; $j < $cntsCompras; $j++) {
-            $compra = $compras[$j];
-            if ($compra->ot == $ot->id) {
-                array_push($compras_ot, $compra);
+            // compras
+            for ($j = 0; $j < $cntsCompras; $j++) {
+                $compra = $compras[$j];
+                if ($compra->ot == $ot->id) {
+                    array_push($compras_ot, $compra);
+                }
             }
-        }
 
-        // transacciones 
-        for ($j = 0; $j < $cntsChq; $j++) {
-            $tran = $cheques[$j];
-            if ($tran->ot == $ot->id) {
-                array_push($transacciones_ot, $tran);
+            // transacciones 
+            for ($j = 0; $j < $cntsChq; $j++) {
+                $tran = $cheques[$j];
+                if ($tran->ot == $ot->id) {
+                    array_push($transacciones_ot, $tran);
+                }
             }
-        }
 
-        // reembolsos
-        for ($j = 0; $j < $cntRee; $j++) {
-            $reembolso = $reembolsos[$j];
-            if ($reembolso->ot == $ot->id) {
-                array_push($reembolsos_ot, $reembolso);
+            // reembolsos
+            for ($j = 0; $j < $cntRee; $j++) {
+                $reembolso = $reembolsos[$j];
+                if ($reembolso->ot == $ot->id) {
+                    array_push($reembolsos_ot, $reembolso);
+                }
             }
+
+            // ordenar arrays
+            usort($compras_ot, 'compararFechas');
+            usort($transacciones_ot, 'compararFechas');
+            usort($reembolsos_ot, 'compararFechas');
+
+            // enviar arrays a select general
+            $ot->compras = $compras_ot;
+            $ot->cheques = $transacciones_ot;
+            $ot->reembolsos = $reembolsos_ot;
+        } else {
+            // enviar arrays a select general
+            $ot->compras = null;
+            $ot->cheques = null;
+            $ot->reembolsos = null;
         }
-
-        // ordenar arrays
-        usort($compras_ot, 'compararFechas');
-        usort($transacciones_ot, 'compararFechas');
-        usort($reembolsos_ot, 'compararFechas');
-
-        // enviar arrays a select general
-        $ot->compras = $compras_ot;
-        $ot->cheques = $transacciones_ot;
-        $ot->reembolsos = $reembolsos_ot;
     }
 
     return;
@@ -896,99 +907,112 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
 
         $ot = $esmultiple ? $orden->ots[$i] : $orden;
 
-        // loop de compras
-        for ($j = 0; $j < $cntCompras; $j++) {
-            $compra = $tcompras[$j];
-            $tc = $compra->tipocambio > 1 ? $compra->tipocambio : $tipocambioprov;
+        if ($ot->estatus != 6) { 
 
-            // validar si la orden de la compra y la orden son iguales
-            if ($ot->id == $compra->ot) {
-                if ($ot->idmoneda != $compra->idmoneda) {
-                    if ($ot->idmoneda == 1) {
-                        $monto = $compra->totfact * $tc;
-                        $montoisr = $compra->isr * $tc;
+            // loop de compras
+            for ($j = 0; $j < $cntCompras; $j++) {
+                $compra = $tcompras[$j];
+                $tc = $compra->tipocambio > 1 ? $compra->tipocambio : $tipocambioprov;
+
+                // validar si la orden de la compra y la orden son iguales
+                if ($ot->id == $compra->ot) {
+                    if ($ot->idmoneda != $compra->idmoneda) {
+                        if ($ot->idmoneda == 1) {
+                            $monto = $compra->totfact * $tc;
+                            $montoisr = $compra->isr * $tc;
+                        } else {
+                            $monto = $compra->totfact / $tc;
+                            $montoisr = $compra->isr / $tc;
+                        }
                     } else {
-                        $monto = $compra->totfact / $tc;
-                        $montoisr = $compra->isr / $tc;
+                        $monto = $compra->totfact;
+                        $montoisr = $compra->isr;
                     }
-                } else {
-                    $monto = $compra->totfact;
-                    $montoisr = $compra->isr;
+                    array_push($scompra, $monto);
+                    array_push($sisr, $montoisr);
                 }
-                array_push($scompra, $monto);
-                array_push($sisr, $montoisr);
             }
-        }
-        // sumas compra
-        $tcompra = array_sum($scompra);
-        $tisr = array_sum($sisr);
+            // sumas compra
+            $tcompra = array_sum($scompra);
+            $tisr = array_sum($sisr);
 
-        // loop transacciones bancarias
-        for ($j = 0; $j < $cntTranas; $j++) {
-            $tran = $trans[$j];
-            $tc = $tran->tipocambio > 1 ? $tran->tipocambio : $tipocambioprov;
+            // loop transacciones bancarias
+            for ($j = 0; $j < $cntTranas; $j++) {
+                $tran = $trans[$j];
+                $tc = $tran->tipocambio > 1 ? $tran->tipocambio : $tipocambioprov;
 
-            if ($ot->id == $tran->ot) {
-                if ($ot->idmoneda !== $tran->idmoneda) {
-                    if ($ot->idmoneda == 1) {
-                        $monto = $tran->monto * $tc;
+                if ($ot->id == $tran->ot) {
+                    if ($ot->idmoneda !== $tran->idmoneda) {
+                        if ($ot->idmoneda == 1) {
+                            $monto = $tran->monto * $tc;
+                        } else {
+                            $monto = $tran->monto / $tc;
+                        }
                     } else {
-                        $monto = $tran->monto / $tc;
+                        $monto = $tran->monto;
                     }
-                } else {
-                    $monto = $tran->monto;
-                }
-                array_push($stran, $monto);
-                if ($tran->tipocambio > 1) {
-                    array_push($tc_pro, $tran->tipocambio);
-                }    
-            }
-        }
-        // sumas transacciones bancarias
-        $ttran = array_sum($stran);
-
-        $ot->monto = $ot->monto == 0 ? 1 : $ot->monto;
-
-        // operaciones para OTS
-        $gastado = $ttran + $tisr;
-        $avance = (($ttran + $tisr) * 100) / $ot->monto;
-        $diferencia = $ot->monto - $gastado;
-        $gasto = $gastado;
-
-        $conteo_promedio = count($tc_pro) > 0 ? count($tc_pro) : 1;
-        $sum_promedio = array_sum($tc_pro) > 0 ? array_sum($tc_pro) : 1;
-        $tc_prom = $sum_promedio / $conteo_promedio;
-
-        if ($esmultiple) {
-            $tc_gasto = $tc_prom > 1 ? round($tc_prom, 5) : $ot->tipocambio;
-            $tc = $ot->tipocambio > 1 ? $ot->tipocambio : $tipocambioprov;
-
-            // efectos de cada OTS en la OTM
-            if ($ot->idmoneda == $orden->idmoneda) {
-                $monto = $ot->monto;
-                $gasto = $gastado;
-            } else {
-                if ($orden->idmoneda == 1) {
-                    $monto = $ot->monto * $tc;
-                    $gasto = $gastado * $tc_gasto;
-                } else {
-                    $monto = $ot->monto / $tc;
-                    $gasto = $gastado / $tc_gasto;
+                    array_push($stran, $monto);
+                    if ($tran->tipocambio > 1) {
+                        array_push($tc_pro, $tran->tipocambio);
+                    }    
                 }
             }
+            // sumas transacciones bancarias
+            $ttran = array_sum($stran);
 
-            array_push($montos_ot, $monto);
-            array_push($gastos_ot, $gasto);
+            $ot->monto = $ot->monto == 0 ? 1 : $ot->monto;
+
+            // operaciones para OTS
+            $gastado = $ttran + $tisr;
+            $avance = (($ttran + $tisr) * 100) / $ot->monto;
+            $diferencia = $ot->monto - $gastado;
+            $gasto = $gastado;
+
+            $conteo_promedio = count($tc_pro) > 0 ? count($tc_pro) : 1;
+            $sum_promedio = array_sum($tc_pro) > 0 ? array_sum($tc_pro) : 1;
+            $tc_prom = $sum_promedio / $conteo_promedio;
+
+            if ($esmultiple) {
+                $tc_gasto = $tc_prom > 1 ? round($tc_prom, 5) : $ot->tipocambio;
+                $tc = $ot->tipocambio > 1 ? $ot->tipocambio : $tipocambioprov;
+
+                // efectos de cada OTS en la OTM
+                if ($ot->idmoneda == $orden->idmoneda) {
+                    $monto = $ot->monto;
+                    $gasto = $gastado;
+                } else {
+                    if ($orden->idmoneda == 1) {
+                        $monto = $ot->monto * $tc;
+                        $gasto = $gastado * $tc_gasto;
+                    } else {
+                        $monto = $ot->monto / $tc;
+                        $gasto = $gastado / $tc_gasto;
+                    }
+                }
+
+                array_push($montos_ot, $monto);
+                array_push($gastos_ot, $gasto);
+            }
+
+            $ot->totgastado = number_format($gastado, 2, '.', ',');
+            $ot->avance = number_format($avance, 2, '.', ',');
+            $ot->tcheques = number_format($ttran, 2, '.', ',');
+            $ot->tcompras = number_format($tcompra, 2, '.', ',');
+            $ot->diferencia = number_format($diferencia, 2, '.', ',');
+            $ot->afecta = number_format($gasto, 2, '.', ',');
+            $ot->isr = number_format($tisr, 2, '.', ',');
+            $ot->tcprom = round($tc_prom, 5);
+        } else {
+            $ot->anulada = true;
+            $ot->totgastado = 0.00;
+            $ot->avance = 0.00;
+            $ot->tcheques = 0.00;
+            $ot->tcompras = 0.00;
+            $ot->diferencia = 0.00;
+            $ot->afecta = 0.00;
+            $ot->isr = 0.00;
+            $ot->tcprom = 0.00;
         }
-
-        $ot->totgastado = number_format($gastado, 2, '.', ',');
-        $ot->avance = number_format($avance, 2, '.', ',');
-        $ot->tcheques = number_format($ttran, 2, '.', ',');
-        $ot->tcompras = number_format($tcompra, 2, '.', ',');
-        $ot->diferencia = number_format($diferencia, 2, '.', ',');
-        $ot->afecta = number_format($gasto, 2, '.', ',');
-        $ot->isr = number_format($tisr, 2, '.', ',');
-        $ot->tcprom = round($tc_prom, 5);
     }
 
     if ($esmultiple) {
