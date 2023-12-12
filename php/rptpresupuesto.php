@@ -287,7 +287,8 @@ $app->post('/avanceot', function(){
                 IF(m.id = 5, TRUE, NULL) AS terminada,
                 IF(m.id = 6, TRUE, NULL) AS anulada,
                 ROUND(a.tipocambio, 2) AS tipocambio,
-                ROUND(a.monto, 2) AS monto
+                ROUND(a.monto, 2) AS monto,
+                a.idestatuspresupuesto AS estatus
             FROM
                 detpresupuesto a
                     INNER JOIN
