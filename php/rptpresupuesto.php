@@ -1013,6 +1013,7 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
             $ot->afecta = 0.00;
             $ot->isr = 0.00;
             $ot->tcprom = 0.00;
+            $ot->monto = 0.00;
         }
     }
 
