@@ -799,4 +799,24 @@ $app->get('/conceptog/:iddetcont/:concepto', function($iddetcont, $concepto) {
     $db->doQuery($query);
 });
 
+// contratos por unidad para servicios
+$app->get('/contrato_unidad/:idunidad', function($idunidad) {
+    $db = new dbcpm();
+
+    $query = "SELECT 
+                a.id,
+                a.nocontrato,
+                b.nombre AS cliente,
+                c.nomempresa AS empresa
+            FROM
+                contrato a
+                    INNER JOIN
+                cliente b ON a.idcliente = b.id
+                    INNER JOIN
+                empresa c ON a.idempresa = c.id
+            WHERE
+                idunidad LIKE '%$idunidad%'";
+    print $db->doSelectASJson($query);
+});
+
 $app->run();

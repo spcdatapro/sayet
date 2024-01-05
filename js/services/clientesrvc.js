@@ -80,6 +80,9 @@
             },
             conceptoGeneral: function(iddetcont, concepto) {
                 return comunFact.doGET(urlBase + '/conceptog/' + iddetcont + '/' + concepto);
+            },
+            contratoUnidad: function(idunidad) {
+                return comunFact.doGET(urlBase + '/contrato_unidad/' + idunidad);
             }
         };
     }]);

@@ -105,12 +105,13 @@ $app->post('/pendientesfel', function() {
     @importeexentocnv := IF(@factor = 1, @importetotalcnv, 0.00) AS importeexentocnv,
     0.00 AS isrporretener, RetISR(d.id, b.idtiposervicio) as retenerisr, 0.00 AS ivaporretener, RetIVA(d.id, b.idtiposervicio) AS reteneriva, c.idtipocliente, d.nombre, d.nombrecorto, 
     FacturarA(d.id, b.idtiposervicio) AS facturara, NitFacturarA(d.id, b.idtiposervicio) AS nit, DirFacturarA(d.id, b.idtiposervicio) AS direccion, PorcentajeRetIVA(d.id, b.idtiposervicio) AS porcentajeretiva, 
-    f.desctiposervventa AS tipo, 0.00 AS totapagar, c.id AS idcontrato, d.id AS idcliente, UPPER(f.desctiposervventa) AS tipo, UPPER(g.nomproyecto) AS proyecto, h.nombre AS unidad, 
+    f.desctiposervventa AS tipo, 0.00 AS totapagar, IFNULL(i.idcontrato, c.id) AS idcontrato, d.id AS idcliente, UPPER(f.desctiposervventa) AS tipo, UPPER(g.nomproyecto) AS proyecto, h.nombre AS unidad, 
     (SELECT nombre FROM mes WHERE id = a.mes) AS nommes, b.idtiposervicio, DATE_FORMAT(FechaLecturaAnterior(a.idserviciobasico, a.mes, a.anio), '%d/%m/%Y') AS fechaanterior, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechaactual, 
     a.fechacorte, a.conceptoadicional, 0.00 AS isrporretenercnv, 0.00 AS ivaporretenercnv, 0.00 AS totapagar, 0.00 AS totapagarcnv, ExentoIVA(d.id, b.idtiposervicio) AS exentoiva,
     1 AS facturar 
     FROM lecturaservicio a 
     INNER JOIN serviciobasico b ON b.id = a.idserviciobasico 
+    LEFT JOIN unidadservicio i ON b.id = i.idserviciobasico
     INNER JOIN contrato c ON c.id = (SELECT b.id FROM contrato b WHERE FIND_IN_SET(a.idunidad, b.idunidad) LIMIT 1) 
     INNER JOIN cliente d ON d.id = c.idcliente 
     INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio 
@@ -166,12 +167,13 @@ $app->post('/pendientesfelrevision', function() {
     @importeexentocnv := IF(@factor = 1, @importetotalcnv, 0.00) AS importeexentocnv,
     0.00 AS isrporretener, RetISR(d.id, b.idtiposervicio) as retenerisr, 0.00 AS ivaporretener, RetIVA(d.id, b.idtiposervicio) AS reteneriva, c.idtipocliente, d.nombre, d.nombrecorto, 
     FacturarA(d.id, b.idtiposervicio) AS facturara, NitFacturarA(d.id, b.idtiposervicio) AS nit, DirFacturarA(d.id, b.idtiposervicio) AS direccion, PorcentajeRetIVA(d.id, b.idtiposervicio) AS porcentajeretiva, 
-    f.desctiposervventa AS tipo, 0.00 AS totapagar, c.id AS idcontrato, d.id AS idcliente, UPPER(f.desctiposervventa) AS tipo, UPPER(g.nomproyecto) AS proyecto, h.nombre AS unidad, 
+    f.desctiposervventa AS tipo, 0.00 AS totapagar, IFNULL(i.idcontrato, c.id) AS idcontrato, d.id AS idcliente, UPPER(f.desctiposervventa) AS tipo, UPPER(g.nomproyecto) AS proyecto, h.nombre AS unidad, 
     (SELECT nombre FROM mes WHERE id = a.mes) AS nommes, b.idtiposervicio, DATE_FORMAT(FechaLecturaAnterior(a.idserviciobasico, a.mes, a.anio), '%d/%m/%Y') AS fechaanterior, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechaactual, 
     a.fechacorte, a.conceptoadicional, 0.00 AS isrporretenercnv, 0.00 AS ivaporretenercnv, 0.00 AS totapagar, 0.00 AS totapagarcnv, ExentoIVA(d.id, b.idtiposervicio) AS exentoiva,
     1 AS facturar 
     FROM lecturaservicio a 
     INNER JOIN serviciobasico b ON b.id = a.idserviciobasico 
+    LEFT JOIN unidadservicio i ON a.idserviciobasico = i.idserviciobasico
     LEFT JOIN contrato c ON c.id = (SELECT b.id FROM contrato b WHERE FIND_IN_SET(a.idunidad, b.idunidad) LIMIT 1) 
     LEFT JOIN cliente d ON d.id = c.idcliente 
     LEFT JOIN tiposervicioventa f ON f.id = b.idtiposervicio 
@@ -191,10 +193,11 @@ $app->post('/pendientesfelrevision', function() {
 });
 
 function calculaImpuestosYTotal($db, $d, $factura) {
+    $empresaRetenedora = empresaRetenedora($db, $d->idempresa);
     $noEsExentoIVA = (int)$factura->exentoiva === 0;
     $factura->isrporretener = (int)$factura->retenerisr > 0 ? $db->calculaISR((float)$factura->importeneto) : 0.00;
     $factura->isrporretenercnv = round($factura->isrporretener / (float)$d->tc, 2);
-    $factura->ivaporretener = $noEsExentoIVA ? ((int)$factura->reteneriva > 0 ? $db->calculaRetIVA((float)$factura->importeneto, ((int)$factura->idtipocliente == 1 ? true : false), (float)$factura->importetotal, ((int)$factura->idtipocliente == 2 ? true : false), (float)$factura->importeiva, (float)$factura->porcentajeretiva) : 0.00) : 0.00;
+    $factura->ivaporretener = $noEsExentoIVA ? ((int)$factura->reteneriva > 0 && !$empresaRetenedora ? $db->calculaRetIVA((float)$factura->importeneto, ((int)$factura->idtipocliente == 1 ? true : false), (float)$factura->importetotal, ((int)$factura->idtipocliente == 2 ? true : false), (float)$factura->importeiva, (float)$factura->porcentajeretiva) : 0.00) : 0.00;
     $factura->ivaporretenercnv = round($factura->ivaporretener / (float)$d->tc, 2);
     $factura->totapagar = round((float)$factura->importetotal - ($factura->isrporretener + $factura->ivaporretener), 2);
     $factura->totapagarcnv = round($factura->totapagar / (float)$d->tc, 2);
@@ -543,5 +546,9 @@ $app->post('/rptagua', function(){
 
 });
 
+function empresaRetenedora ($db, $idempresa) {
+    $esRetenedora = $db->getOneField("SELECT retenedora FROM empresa WHERE id = $idempresa") == 1;
+    return $esRetenedora;
+}
 
 $app->run();

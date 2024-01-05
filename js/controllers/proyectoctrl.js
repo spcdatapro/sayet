@@ -2,7 +2,7 @@
 
     var proyectoctrl = angular.module('cpm.proyectoctrl', ['cpm.proyectosrvc']);
 
-    proyectoctrl.controller('proyectoCtrl', ['$scope', 'proyectoSrvc', 'empresaSrvc', 'tipoProyectoSrvc', 'proyectoAdjuntoSrvc', 'tipoAdjuntoSrvc', 'Upload', 'activoSrvc', 'proyectoActivoSrvc', '$confirm', 'tipoDocProySrvc', 'unidadSrvc', 'tipoLocalSrvc', 'DTOptionsBuilder', '$filter', 'servicioBasicoSrvc', 'toaster', '$uibModal', 'jsReportSrvc', 'servicioPropioSrvc', 'authSrvc', function ($scope, proyectoSrvc, empresaSrvc, tipoProyectoSrvc, proyectoAdjuntoSrvc, tipoAdjuntoSrvc, Upload, activoSrvc, proyectoActivoSrvc, $confirm, tipoDocProySrvc, unidadSrvc, tipoLocalSrvc, DTOptionsBuilder, $filter, servicioBasicoSrvc, toaster, $uibModal, jsReportSrvc, servicioPropioSrvc, authSrvc) {
+    proyectoctrl.controller('proyectoCtrl', ['$scope', 'proyectoSrvc', 'empresaSrvc', 'tipoProyectoSrvc', 'proyectoAdjuntoSrvc', 'tipoAdjuntoSrvc', 'Upload', 'activoSrvc', 'proyectoActivoSrvc', '$confirm', 'tipoDocProySrvc', 'unidadSrvc', 'tipoLocalSrvc', 'DTOptionsBuilder', '$filter', 'servicioBasicoSrvc', 'toaster', '$uibModal', 'jsReportSrvc', 'servicioPropioSrvc', 'authSrvc', 'clienteSrvc', function ($scope, proyectoSrvc, empresaSrvc, tipoProyectoSrvc, proyectoAdjuntoSrvc, tipoAdjuntoSrvc, Upload, activoSrvc, proyectoActivoSrvc, $confirm, tipoDocProySrvc, unidadSrvc, tipoLocalSrvc, DTOptionsBuilder, $filter, servicioBasicoSrvc, toaster, $uibModal, jsReportSrvc, servicioPropioSrvc, authSrvc, clienteSrvc) {
 
         $scope.losProyectoAdjuntos = [];
         $scope.losDetActivoProy = [];
@@ -36,6 +36,7 @@
         $scope.showForm = { adjunto: false, activo: false, unidad: false, servicio: false };
         $scope.params = { idproyecto: 0 };
         $scope.usrdata = {};
+        $scope.contratos = [];
 
         $scope.totalItems = 25;
         $scope.currentPage = 1;
@@ -519,6 +520,8 @@
             if (parseInt(idunidad) > 0) {
                 $scope.servciosUnidad = [];
                 $scope.servubas = [];
+                // asignar contratos para asignar a contador
+                clienteSrvc.contratoUnidad(idunidad).then(function(d) { $scope.contratos = d; });
                 proyectoSrvc.getUnidad(idunidad).then(function (d) {
                     $scope.unidad = procDataUnidad(d)[0];
                     $scope.unidad.objTipoLocal = $filter('getById')($scope.tiposlocales, $scope.unidad.idtipolocal);

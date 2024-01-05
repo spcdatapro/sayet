@@ -54,10 +54,39 @@ $app->get('/lstsrvpadres', function(){
 
 $app->get('/histo/:idservicio', function($idservicio){
     $db = new dbcpm();
-    $query = "SELECT d.nomproyecto AS proyecto, c.descripcion AS tipolocal, b.nombre, b.descripcion, a.fini, IF(a.ffin IS NULL, 'A la fecha', a.ffin) AS ffin ";
-    $query.= "FROM unidadservicio a LEFT JOIN unidad b ON b.id = a.idunidad LEFT JOIN tipolocal c ON c.id = b.idtipolocal LEFT JOIN proyecto d ON d.id = b.idproyecto ";
-    $query.= "WHERE a.idserviciobasico = $idservicio ";
-    $query.= "ORDER BY a.ffin DESC";
+    // $query = "SELECT d.nomproyecto AS proyecto, c.descripcion AS tipolocal, b.nombre, b.descripcion, a.fini, IF(a.ffin IS NULL, 'A la fecha', a.ffin) AS ffin ";
+    // $query.= "FROM unidadservicio a LEFT JOIN unidad b ON b.id = a.idunidad LEFT JOIN tipolocal c ON c.id = b.idtipolocal LEFT JOIN proyecto d ON d.id = b.idproyecto ";
+    // $query.= "WHERE a.idserviciobasico = $idservicio ";
+    // $query.= "ORDER BY a.ffin DESC";
+    $query = "SELECT 
+                a.id,
+                c.nomempresa AS empresa,
+                e.nomproyecto AS proyecto,
+                d.nombre AS unidad,
+                IFNULL(h.nombre, i.nombre) AS cliente,
+                IFNULL(f.nocontrato, g.nocontrato) AS contrato,
+                DATE_FORMAT(b.fini, '%d/%m/%Y') AS inicio,
+                IFNULL(DATE_FORMAT(b.ffin, '%d/%m/%Y'), 'A la fecha') AS fin
+            FROM
+                serviciobasico a
+                    INNER JOIN
+                unidadservicio b ON a.id = b.idserviciobasico
+                    INNER JOIN
+                empresa c ON a.idempresa = c.id
+                    INNER JOIN
+                unidad d ON b.idunidad = d.id
+                    INNER JOIN
+                proyecto e ON d.idproyecto = e.id
+                    LEFT JOIN
+                contrato f ON f.id = b.idcontrato AND f.inactivo = 0
+                    LEFT JOIN
+                contrato g ON g.idunidad = d.id AND g.inactivo = 0
+                    LEFT JOIN
+                cliente h ON f.idcliente = h.id
+                    LEFT JOIN
+                cliente i ON g.idcliente = i.id
+            WHERE
+                a.id = $idservicio";
     print $db->doSelectASJson($query);
 });
 

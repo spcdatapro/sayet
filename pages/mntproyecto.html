@@ -536,15 +536,15 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-8">
+                                    <div class="col-md-4">
                                         <div class="form-group" ng-class="{'has-error':frmServUni.selSrvc.$invalid && !frmServUni.selSrvc.$pristine}">
                                             <label for="selSrvc">Servicio propio:</label>
                                             <ui-select id="selSrvc" ng-model="servuni.objServBasico"
-                                                       title="Seleccione un servicio propio..."
-                                                       theme="bootstrap"
-                                                       autofocus="false"
-                                                       append-to-body="true"
-                                                       ng-disabled="slservbas">
+                                                    title="Seleccione un servicio propio..."
+                                                    theme="bootstrap"
+                                                    autofocus="false"
+                                                    append-to-body="true"
+                                                    ng-disabled="slservbas">
                                                 <ui-select-match placeholder="Buscar servicio propio..." allow-clear="false">
                                                     <span ng-bind="$select.selected.contador"></span>
                                                 </ui-select-match>
@@ -552,6 +552,31 @@
                                                     <div ng-bind-html="item.contador | highlight: $select.search"></div>
                                                     <small>
                                                         <strong>Tipo:</strong>&nbsp;<span ng-bind-html="item.tipo | highlight: $select.search" ></span><br/>
+                                                        <strong>Empresa:</strong>&nbsp;<span ng-bind-html="item.empresa | highlight: $select.search" ></span>
+                                                    </small>
+                                                </ui-select-choices>
+                                                <ui-select-no-choice>
+                                                    No hay resultados...
+                                                </ui-select-no-choice>
+                                            </ui-select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="selCont">Contrato:</label>
+                                            <ui-select id="selCont" ng-model="servuni.idcontrato"
+                                                    title="Seleccione un contrato para el servicio..."
+                                                    theme="bootstrap"
+                                                    autofocus="false"
+                                                    append-to-body="true"
+                                                    ng-disabled="slservbas">
+                                                <ui-select-match placeholder="Buscar contrato..." allow-clear="false">
+                                                    <span ng-bind="$select.selected.nocontrato"></span>
+                                                </ui-select-match>
+                                                <ui-select-choices repeat="item.id as item in contratos | filter:$select.search">
+                                                    <div ng-bind-html="item.nocontrato | highlight: $select.search"></div>
+                                                    <small>
+                                                        <strong>Cliente:</strong>&nbsp;<span ng-bind-html="item.cliente | highlight: $select.search" ></span><br/>
                                                         <strong>Empresa:</strong>&nbsp;<span ng-bind-html="item.empresa | highlight: $select.search" ></span>
                                                     </small>
                                                 </ui-select-choices>
