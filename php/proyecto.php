@@ -193,6 +193,7 @@ $app->get('/servunibasico/:idunidad', function($idunidad){
 $app->post('/csu', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    if (!isset($d->idcontrato)) { $d->idcontrato = 'null'; };
     $db->doQuery("INSERT INTO unidadservicio(idunidad, idserviciobasico, idcontrato, fini) VALUES($d->idunidad, $d->idserviciobasico, $d->idcontrato, NOW())");
     $db->doQuery("UPDATE serviciobasico SET asignado = 1 WHERE id = ".$d->idserviciobasico);
 });
