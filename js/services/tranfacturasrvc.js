@@ -18,7 +18,8 @@
             printFacturas: (obj) => comunFact.doPOST(`${urlBase}/prntfact`, obj),
             factsPendGface: (obj) => comunFact.doPOST(`${urlBase}/gengface`, obj),
             factsPendFEL: (obj) => comunFact.doPOST(`${urlBase}/genfel`, obj),
-            convEncod: (obj) => comunFact.doPOST(`${urlBase}/convencod`, obj)
+            convEncod: (obj) => comunFact.doPOST(`${urlBase}/convencod`, obj),
+            revertir: (idfactura) => comunFact.doGET(`${urlBase}/revertir/${idfactura}`)
         };
     }]);
 

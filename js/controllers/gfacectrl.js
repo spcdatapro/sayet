@@ -7,8 +7,11 @@
         $scope.params = { idempresa: undefined, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate() };
         $scope.empresas = [];
         $scope.pendientes = [];
+        $scope.cargando = false;
+        $scope.idusuario = undefined;
 
         authSrvc.getSession().then(function (usrLogged) {
+            $scope.idusuario = usrLogged.uid;
             empresaSrvc.lstEmpresas().then(function (d) {
                 $scope.empresas = d;
                 $scope.params.idempresa = usrLogged.workingon.toString();
@@ -173,6 +176,19 @@
         $scope.getRptPendientes = function () {
             jsReportSrvc.getPDFReport(test ? 'S1wR9_Mif' : 'HyJCJizjf', $scope.params).then(function (pdf) { $scope.content = pdf; });
         }
+
+        $scope.revertirCargo = () => {
+            $confirm({ text: 'Esto liberará los cargos y permite generar nuevamente las facturas.', title: '¿Seguro desea reveritr las facturas?', ok: 'Sí', cancel: 'No' }).then(function () {
+                $scope.cargando = true;
+                $scope.pendientes.forEach(f => {
+                    if (f.descargar == 1) {
+                        facturacionSrvc.revertir(f.id).then(function () { $scope.getPend(); $scope.cargando = false;
+                            toaster.pop({ type: 'success', title: 'Proceso terminado', body: 'Las facturas fueron revertidas.', timeout: 9000 });
+                        });
+                    }
+                });
+            });
+        };
 
     }]);
 }());
