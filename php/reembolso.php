@@ -432,7 +432,12 @@ $app->post('/gentranban', function(){
     $query = "SELECT SUM(isr) FROM compra WHERE idreembolso = $d->id";
     $isr = (float)$db->getOneField($query);
 
-    $monto = $total - $isr;
+    $query = "SELECT SUM(retiva) FROM compra WHERE idreembolso = $d->id";
+    $retiva = (float)$db->getOneField($query);
+
+    $retiva = $retiva > 0 ? $retiva : 0.00;
+
+    $monto = $total - $isr - $retiva;
 
     if ($d->tipoMonto == 1) {
         $haber = $monto - getTotPagado($d->id, $db);
