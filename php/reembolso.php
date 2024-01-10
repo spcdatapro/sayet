@@ -183,7 +183,7 @@ $app->get('/getcomp/:idcomp', function($idcomp){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idempresa, a.idreembolso, a.idtipofactura, d.desctipofact AS tipofactura, a.proveedor, a.nit, a.serie, a.documento, ";
     $query.= "a.fechaingreso, a.mesiva, a.fechafactura, a.idtipocompra, b.desctipocompra AS tipocompra, a.totfact, a.iva, a.idmoneda, c.simbolo, a.tipocambio, ";
-    $query.= "a.idproveedor, a.subtotal, a.noafecto, a.conceptomayor, a.retenerisr, a.isr, a.idp, a.galones, a.idtipocombustible, a.revisada, a.idproyecto, a.idsubtipogasto, a.idunidad ";
+    $query.= "a.idproveedor, a.subtotal, a.noafecto, a.conceptomayor, a.retenerisr, a.isr, a.idp, a.galones, a.idtipocombustible, a.revisada, a.idproyecto, a.idsubtipogasto, a.idunidad, a.retiva ";
     $query.= "FROM compra a INNER JOIN tipocompra b ON b.id = a.idtipocompra INNER JOIN moneda c ON c.id = a.idmoneda ";
     $query.= "INNER JOIN tipofactura d ON d.id = a.idtipofactura ";
     $query.= "WHERE a.id = ".$idcomp;
@@ -240,13 +240,20 @@ function insertaDetalleContable($d, $db, $lastid){
         }
     }
 
+    $ctaivaretener = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 28");
+    if($ctaivaretener > 0 && $d->retIva > 0){
+        $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
+        $query.= "2, ".$lastid.", ".$ctaivaretener.", 0.00, ".round(((float)$d->retIva * (float)$d->tipocambio), 2).", '".$d->conceptomayor."')";
+        $db->doQuery($query);
+    }
+
     $ctaliq = (int)$db->getOneField("SELECT idcuentaliq FROM reembolso WHERE id = $d->idreembolso");
     if($ctaliq == 0){
         $ctaliq = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 5");
     }    
     if($ctaliq > 0){
         $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada) VALUES(";
-        $query.= "2, ".$lastid.", ".$ctaliq.", 0.00, ".round((($d->totfact - $d->isr) * (float)$d->tipocambio), 2).", '".$d->conceptomayor."', 0)";
+        $query.= "2, ".$lastid.", ".$ctaliq.", 0.00, ".round((($d->totfact - $d->isr - $d->retIva) * (float)$d->tipocambio), 2).", '".$d->conceptomayor."', 0)";
         $db->doQuery($query);
     }
 
@@ -280,8 +287,32 @@ $app->post('/cd', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
+    $d->retIva = 0.00;
+
     //$calcisr = (int)$d->retenerisr === 1;
     //$d->isr = !$calcisr ? 0.00 : $db->calculaISR((float)$d->subtotal, 1.00);
+
+    // ver si empresa es retenedora
+    $empresaRet = (int)$db->getOneField("SELECT retenedora FROM empresa WHERE id = $d->idempresa") === 1;
+
+    // ver si proveedor es peque cont.
+    $esPeque = (int)$db->getOneField("SELECT pequeniocont FROM proveedor WHERE id = $d->idproveedor") === 1;
+
+    // ver si el proveedor esta marcado como retenedor
+    $esRet = (int)$db->getOneField("SELECT retensioniva FROM proveedor WHERE id = $d->idproveedor ") === 1;
+
+    $esLocalMonedaFact = (int)$db->getOneField("SELECT eslocal FROM moneda WHERE id = $d->idmoneda") === 1;
+
+    // calculo de retencion de iva
+    if((int)$d->idtipofactura !== 5) {
+        // si la empresa es retenedora y el proveedor no es retenedor retener iva
+        if (($empresaRet && !$esRet) && $d->totfact >= 2500) {
+            // si es pequeno enviar 5%
+            $d->retIva = $esPeque ? $db->retIVA((float)$d->totfact, 0.05, $d->tipocambio, $esLocalMonedaFact) :
+            // si no 15%
+            $db->retIVA((float)$d->iva, 0.15, $d->tipocambio, $esLocalMonedaFact);
+        }
+    }
 
     if(!isset($d->idunidad)){ $d->idunidad = 0; }
 
@@ -289,12 +320,12 @@ $app->post('/cd', function(){
     $query.= "idempresa, idreembolso, idtipofactura, idproveedor, proveedor, ";
     $query.= "nit, serie, documento, fechaingreso, mesiva, ";
     $query.= "fechafactura, idtipocompra, totfact, noafecto, subtotal, iva, ";
-    $query.= "idmoneda, tipocambio, conceptomayor, retenerisr, isr, idp, galones, idtipocombustible, idproyecto, idsubtipogasto, idunidad, ordentrabajo";
+    $query.= "idmoneda, tipocambio, conceptomayor, retenerisr, isr, idp, galones, idtipocombustible, idproyecto, idsubtipogasto, idunidad, ordentrabajo, retiva";
     $query.= ") VALUES(";
     $query.= $d->idempresa.", ".$d->idreembolso.", ".$d->idtipofactura.", ".$d->idproveedor.", '".$d->proveedor."', ";
     $query.= "'".$d->nit."', '".$d->serie."', ".$d->documento.", '".$d->fechaingresostr."', ".$d->mesiva.", ";
     $query.= "'".$d->fechafacturastr."', ".$d->idtipocompra.", ".$d->totfact.", ".$d->noafecto.", ".$d->subtotal.", ".$d->iva.", ";
-    $query.= $d->idmoneda.", ".$d->tipocambio.", '".$d->conceptomayor."', ".$d->retenerisr.", ".$d->isr.", $d->idp, $d->galones, $d->idtipocombustible, $d->idproyecto, $d->idsubtipogasto, $d->idunidad, $d->ordentrabajo";
+    $query.= $d->idmoneda.", ".$d->tipocambio.", '".$d->conceptomayor."', ".$d->retenerisr.", ".$d->isr.", $d->idp, $d->galones, $d->idtipocombustible, $d->idproyecto, $d->idsubtipogasto, $d->idunidad, $d->ordentrabajo, $d->retIva";
     $query.= ")";
     $db->doQuery($query);
     $lastid = $db->getLastId();
@@ -309,6 +340,29 @@ $app->post('/ud', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
     if(!isset($d->idunidad)){ $d->idunidad = 0; }
+
+    $d->retIva = 0.00;
+
+    // ver si empresa es retenedora
+    $empresaRet = (int)$db->getOneField("SELECT retenedora FROM empresa WHERE id = $d->idempresa") === 1;
+    // ver si proveedor es peque cont.
+    $esPeque = (int)$db->getOneField("SELECT pequeniocont FROM proveedor WHERE id = $d->idproveedor") === 1;
+    // ver si el proveedor esta marcado como retenedor
+    $esRet = (int)$db->getOneField("SELECT retensioniva FROM proveedor WHERE id = $d->idproveedor ") === 1;
+    $esLocalMonedaFact = (int)$db->getOneField("SELECT eslocal FROM moneda WHERE id = $d->idmoneda") === 1;
+
+    if((int)$d->idtipofactura !== 5) {
+        $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
+
+        // si la empresa es retenedora y el proveedor no es retenedor retener iva
+        if (($empresaRet && !$esRet) && $d->totfact >= 2500) {
+            // si es pequeno enviar 5%
+            $d->retIva = $esPeque ? $db->retIVA((float)$d->totfact, 0.05, $d->tipocambio, $esLocalMonedaFact) :
+            // si no 15%
+            $db->retIVA((float)$d->iva, 0.15, $d->tipocambio, $esLocalMonedaFact);
+        }
+    }
+
     $query = "UPDATE compra SET ";
     $query.= "idtipofactura = ".$d->idtipofactura.", idproveedor = ".$d->idproveedor.", proveedor = '".$d->proveedor."', ";
     $query.= "nit = '".$d->nit."', serie = '".$d->serie."', documento = ".$d->documento.", fechaingreso = '".$d->fechaingresostr."', mesiva = ".$d->mesiva.", ";
@@ -316,7 +370,7 @@ $app->post('/ud', function(){
     $query.= "totfact = ".$d->totfact.", subtotal = ".$d->subtotal.", noafecto = ".$d->noafecto.", iva = ".$d->iva.", ";
     $query.= "idmoneda = ".$d->idmoneda.", tipocambio = ".$d->tipocambio.", conceptomayor = '".$d->conceptomayor."', idp = $d->idp, galones = $d->galones, ";
     $query.= "idtipocombustible = $d->idtipocombustible, idproyecto = $d->idproyecto, retenerisr = $d->retenerisr, isr = $d->isr, idsubtipogasto = $d->idsubtipogasto, idunidad = $d->idunidad, ";
-    $query.= "ordentrabajo = $d->ordentrabajo ";
+    $query.= "ordentrabajo = $d->ordentrabajo, retiva = $d->retIva ";
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
 

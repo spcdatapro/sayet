@@ -193,6 +193,7 @@
                     d[i].idp = parseFloat(d[i].idp).toFixed(2);
                     d[i].galones = parseFloat(d[i].galones).toFixed(2);
                     d[i].detcont = [];
+                    d[i].retiva = +d[i].retiva;
                 }
                 return d;
             }
@@ -247,7 +248,8 @@
                     idproyecto: !$scope.presupuesto.idproyecto ? undefined : $scope.presupuesto.idproyecto,
                     idunidad: undefined,
                     idsubtipogasto: $scope.reembolso ? ($scope.reembolso.objTipoReembolso && +$scope.reembolso.objTipoReembolso.id == 1 ? $scope.reembolso.idsubtipogasto : undefined) : undefined,
-                    ordentrabajo: undefined
+                    ordentrabajo: undefined,
+                    retiva: 0.00
                 };
                 //console.log($scope.compra);
                 if(!!$scope.reembolso.objTipoReembolso && !!$scope.reembolso.objTipoReembolso.id) {

@@ -61,8 +61,8 @@ $app->get('/getcompra/:idcompra(/:idot)', function($idcompra, $idot = 0){
     $query.= "a.ordentrabajo, a.totfact, a.noafecto, a.subtotal, a.iva, a.idmoneda, a.tipocambio, f.simbolo AS moneda, ";
     $query.= "a.idtipofactura, g.desctipofact AS tipofactura, a.isr, a.idtipocombustible, h.descripcion AS tipocombustible, a.galones, a.idp, ";
     $query.= "a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, g.siglas, a.idproyecto, a.idunidad, a.nombrerecibo, a.alcontado, ";
-    $query.= "i.idservicio, i.preciouni, i.lecturaini, i.lecturafin, i.fechafin, i.fechaini, a.retiva, ";
-    $query.= "j.idcompra, j.noform, j.noacceso, j.fecha, j.mes, j.anio ";
+    $query.= "i.idservicio, i.preciouni, i.lecturaini, i.lecturafin, i.fechafin, i.fechaini, a.retiva, j.idformiva, ";
+    $query.= "j.idcompra AS idcompraiva, j.noform AS noformiva, j.noacceso AS noaccesoiva, j.fecha AS fechaiva, j.mes AS mesiva, j.anio AS anioiva ";
     $query.= "FROM compra a INNER JOIN proveedor b ON b.id = a.idproveedor INNER JOIN tipocompra c ON c.id = a.idtipocompra ";
     $query.= "INNER JOIN empresa d ON d.id = a.idempresa LEFT JOIN moneda f ON f.id = a.idmoneda LEFT JOIN tipofactura g ON g.id = a.idtipofactura ";
     $query.= "LEFT JOIN tipocombustible h ON h.id = a.idtipocombustible LEFT JOIN compserv i ON i.idcompra = a.id ";
@@ -422,7 +422,7 @@ $app->post('/u', function(){
     $query.= "totfact = ".$d->totfact.", noafecto = ".$d->noafecto.", subtotal = ".$d->subtotal.", iva = ".$d->iva.", ";
     $query.= "idmoneda = ".$d->idmoneda.", tipocambio = ".$d->tipocambio.", idtipofactura = ".$d->idtipofactura.", isr = ".$d->isr.", ";
     $query.= "idtipocombustible = ".$d->idtipocombustible.", galones = ".$d->galones.", idp = ".$d->idp.", idproyecto = $d->idproyecto, idunidad = $d->idunidad, ";
-    $query.= "nombrerecibo = $d->nombrerecibo, alcontado = $d->alcontado ";
+    $query.= "nombrerecibo = $d->nombrerecibo, alcontado = $d->alcontado, retiva = $d->retIva ";
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
 
@@ -879,11 +879,86 @@ $app->post('/civa', function() {
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    if (!isset($d->noform)) { $d->noform == 'null'; }
-    if (!isset($d->noacceso)) { $d->noacceso == 'null'; }
-
-    $query = "INSERT INTO formiva (idcompra, noform, noacceso, fecha, mes, anio) VALUES ($d->idcompra, '$d->noform', '$d->noacceso', 
-    '$d->fechastr', $d->mes, $d->anio)";
+    $query = "INSERT INTO formiva (idcompra, noform, noacceso, fecha, mes, anio) VALUES ($d->idcompraiva, '$d->noformiva', '$d->noaccesoiva', 
+    '$d->fechastriva', $d->mesiva, $d->anioiva)";
     $db->doQuery($query);
 });
+
+$app->post('/uiva', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "UPDATE formiva SET noform = '$d->noformiva', noacceso = '$d->noaccesoiva', fecha = '$d->fechastriva', 
+    mes = $d->mesiva, anio = $d->anioiva WHERE idformiva = $d->idformiva";
+    $db->doQuery($query);
+});
+
+$app->get('/compiva/:fdel/:fal/:cuales/:idempresa', function($fdel, $fal, $cuales, $idempresa) {
+    $db = new dbcpm();
+
+    $query = "SELECT 
+                a.id,
+                a.fechafactura AS fecha,
+                a.documento AS numero,
+                b.nit,
+                b.nombre AS proveedor,
+                a.subtotal,
+                a.iva,
+                a.totfact AS total,
+                a.retiva,
+                IFNULL(c.noform, 'No registrado') AS form,
+                d.simbolo AS moneda,
+                c.noacceso, 
+                c.fecha AS fform, 
+                c.mes, 
+                c.anio
+            FROM
+                compra a
+                    INNER JOIN
+                proveedor b ON a.idproveedor = b.id
+                    LEFT JOIN
+                formiva c ON c.idcompra = a.id
+                    INNER JOIN
+                moneda d ON a.idmoneda = d.id
+            WHERE
+                a.fechafactura >= '$fdel'
+                    AND a.fechafactura <= '$fal'
+                    AND a.idreembolso = 0
+                    AND a.retiva > 0 
+                    AND a.idempresa = $idempresa ";
+    $query.= $cuales == 0 ? 'UNION ALL' : ($cuales == 1 ? 'AND c.idformiva > 0 UNION ALL' : 'AND c.idformiva IS NULL UNION ALL');
+    $query.= "  SELECT 
+                a.id,
+                a.fechafactura AS fecha,
+                a.documento AS numero,
+                b.nit,
+                b.nombre AS proveedor,
+                a.subtotal,
+                a.iva,
+                a.totfact AS total,
+                a.retiva,
+                IFNULL(c.noform, 'No registrado') AS form,
+                d.simbolo AS moneda,
+                c.noacceso, 
+                c.fecha AS fform, 
+                c.mes, 
+                c.anio
+            FROM
+                compra a
+                    INNER JOIN
+                proveedor b ON a.idproveedor = b.id
+                    LEFT JOIN
+                formiva c ON c.idcompra = a.id
+                    INNER JOIN
+                moneda d ON a.idmoneda = d.id
+            WHERE
+                a.fechafactura >= '$fdel'
+                    AND a.fechafactura <= '$fal'
+                    AND a.idreembolso > 0
+                    AND a.retiva > 0 
+                    AND a.idempresa = $idempresa ";
+    $query.= $cuales == 0 ? 'ORDER BY 2' : ($cuales == 1 ? 'AND c.idformiva > 0 ORDER BY 2' : 'AND c.idformiva IS NULL ORDER BY 2');
+    print $db->doSelectASJson($query);
+});
+
 $app->run();

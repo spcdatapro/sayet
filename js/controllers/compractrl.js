@@ -45,11 +45,6 @@
             $scope.docsLiquida = [];
             $scope.liquida = false;
             $scope.servicios = [];
-            $scope.formulario = {
-                idcompra: undefined, noform: undefined, noacceso: undefined, fecha: new Date(),
-                mes: undefined, anio: undefined, fechastr: undefined
-            };
-
             $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
 
             empresaSrvc.lstEmpresas().then(function (d) { $scope.lasEmpresas = d; });
@@ -434,16 +429,13 @@
                     resolve: {
                         compra: function () {
                             return $scope.laCompra;
-                        },
-                        formulario: function () {
-                            return $scope.formulario;
                         }
                     }
                 });
 
                 modalInstance.result.then(function (idcompra) {
                     $scope.getCompra(parseInt(idcompra));
-                }, function () { return 0; });
+                });
             };
 
             formatoNumero = (numero, decimales) => $filter('number')(numero, decimales);
@@ -480,13 +472,6 @@
                             $scope.tranpago = d;
                             $scope.yaPagada = $scope.tranpago.length > 0;
                         });
-
-                        $scope.formulario.idcompra = d[0].idcompra;
-                        $scope.formulario.noform = d[0].noform;
-                        $scope.formulario.noacceso = d[0].noacceso;
-                        $scope.formulario.fecha = moment(d[0].fecha).toDate();
-                        $scope.formulario.mes = d[0].mes;
-                        $scope.formulario.anio = d[0].anio;
 
                         compraSrvc.getDocLiquida($scope.laCompra.id).then(function (d) {
                             for (var i = 0; i < d.length; i++) {
@@ -1026,26 +1011,34 @@
         }]);
 
     //------------------------------------------------------------------------------------------------------------------------------------------------//
-    compractrl.controller('ModalIVA', ['$scope', '$uibModalInstance', 'compra', 'compraSrvc', 'formulario', function (
-        $scope, $uibModalInstance, compra, compraSrvc, formulario) {
+    compractrl.controller('ModalIVA', ['$scope', '$uibModalInstance', 'compra', 'compraSrvc',  function (
+        $scope, $uibModalInstance, compra, compraSrvc) {
+
+        // procesar datos
+        compra.fechaiva = moment(compra.fechaiva).isValid ? moment(compra.fechaiva).toDate() : undefined;
+        compra.mesiva = compra.mesiva > 0 ? +compra.mesiva : undefined; 
+        compra.anioiva = compra.anioiva > 0 ? +compra.anioiva : undefined;
+
         $scope.compra = compra;
-        $scope.formulario = formulario;
 
-        $scope.formulario.mes = moment($scope.formulario.fecha).month() + 1;
-        $scope.formulario.anio = moment($scope.formulario.fecha).year();
+        // asignar compra global igual a copmra
+        $scope.compra = compra;
 
+        // cuando se modifique la fecha modifiacar anio y mes
         $scope.setMesAnio = function () {
-            if (moment($scope.formulario.fecha).isValid()) {
-                $scope.formulario.mes = moment($scope.formulario.fecha).month() + 1;
-                $scope.formulario.anio = moment($scope.formulario.fecha).year();
-                $scope.formulario.fechastr = moment($scope.formulario.fecha).format('YYYY-MM-DD');
+            if (moment($scope.compra.fechaiva).isValid()) {
+                $scope.compra.mesiva = moment($scope.compra.fechaiva).month() + 1;
+                $scope.compra.anioiva = moment($scope.compra.fechaiva).year();
+                $scope.compra.fechastriva = moment($scope.compra.fechaiva).format('YYYY-MM-DD');
             };
         }
 
-        $scope.formulario.idcompra = compra.id;
+        // asiganar id de compra
+        $scope.compra.idcompraiva = compra.id;
 
         $scope.ok = function () {
-            compraSrvc.editRow($scope.formulario, 'civa').then(function () { $uibModalInstance.close($scope.compra.id); });
+            // generar formulario de iva y cerrar
+            compraSrvc.editRow($scope.compra, 'civa').then(function () { $uibModalInstance.close($scope.compra.id); });
         };
 
         $scope.cancel = function () {
