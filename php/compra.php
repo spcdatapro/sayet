@@ -400,7 +400,7 @@ $app->post('/u', function(){
         $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
 
         // si la empresa es retenedora y el proveedor no es retenedor retener iva
-        if (($empresaRet && !$esRet) && $d->totfact >= 2500) {
+        if (($empresaRet && !$esRet) && ($d->totfact - $d->noafecto) >= 2500) {
             // si es pequeno enviar 5%
             $d->retIva = $esPeque ? $db->retIVA((float)$d->totfact, 0.05, $d->tipocambio, $esLocalMonedaFact) :
             // si no 15%
