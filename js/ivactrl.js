@@ -70,7 +70,7 @@
 
         // procesar datos
         compra.fechaiva = moment(compra.fechaiva).isValid ? moment(compra.fechaiva).toDate() : undefined;
-        compra.mesiva = compra.mesiva > 0 ? +compra.mesiva : undefined; 
+        compra.formmesiva = compra.formmesiva > 0 ? +compra.formmesiva : undefined; 
         compra.anioiva = compra.anioiva > 0 ? +compra.anioiva : undefined;
         compra.fechastriva = moment(compra.fechaiva).isValid ? moment(compra.fechaiva).format('YYYY-MM-DD') : undefined;
 
@@ -83,7 +83,7 @@
         // cuando se modifique la fecha modifiacar anio y mes
         $scope.setMesAnio = function () {
             if (moment($scope.compra.fechaiva).isValid()) {
-                $scope.compra.mesiva = moment($scope.compra.fechaiva).month() + 1;
+                $scope.compra.formmesiva = moment($scope.compra.fechaiva).month() + 1;
                 $scope.compra.anioiva = moment($scope.compra.fechaiva).year();
                 $scope.compra.fechastriva = moment($scope.compra.fechaiva).format('YYYY-MM-DD');
             };
@@ -94,7 +94,7 @@
 
         $scope.ok = function () {
             // generar formulario de iva y cerrar
-            compraSrvc.editRow($scope.compra, accion).then(function () { $uibModalInstance.close(); });
+            compraSrvc.editRow($scope.compra, accion).then(function () { $uibModalInstance.close(compra.id); });
         };
 
         $scope.cancel = function () {

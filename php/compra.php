@@ -62,7 +62,7 @@ $app->get('/getcompra/:idcompra(/:idot)', function($idcompra, $idot = 0){
     $query.= "a.idtipofactura, g.desctipofact AS tipofactura, a.isr, a.idtipocombustible, h.descripcion AS tipocombustible, a.galones, a.idp, ";
     $query.= "a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, g.siglas, a.idproyecto, a.idunidad, a.nombrerecibo, a.alcontado, ";
     $query.= "i.idservicio, i.preciouni, i.lecturaini, i.lecturafin, i.fechafin, i.fechaini, a.retiva, j.idformiva, ";
-    $query.= "j.idcompra AS idcompraiva, j.noform AS noformiva, j.noacceso AS noaccesoiva, j.fecha AS fechaiva, j.mes AS mesiva, j.anio AS anioiva ";
+    $query.= "j.idcompra AS idcompraiva, j.noform AS noformiva, j.noacceso AS noaccesoiva, j.fecha AS fechaiva, j.mes AS formmesiva, j.anio AS anioiva ";
     $query.= "FROM compra a INNER JOIN proveedor b ON b.id = a.idproveedor INNER JOIN tipocompra c ON c.id = a.idtipocompra ";
     $query.= "INNER JOIN empresa d ON d.id = a.idempresa LEFT JOIN moneda f ON f.id = a.idmoneda LEFT JOIN tipofactura g ON g.id = a.idtipofactura ";
     $query.= "LEFT JOIN tipocombustible h ON h.id = a.idtipocombustible LEFT JOIN compserv i ON i.idcompra = a.id ";
@@ -334,7 +334,7 @@ $app->post('/c', function(){
         $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
 
         // si la empresa es retenedora y el proveedor no es retenedor retener iva
-        if (($empresaRet && !$esRet) && $d->totfact >= 2500) {
+        if (($empresaRet && !$esRet) && ($d->totfact - $d->noafecto) >= 2500) {
             // si es pequeno enviar 5%
             $d->retIva = $esPeque ? $db->retIVA((float)$d->totfact, 0.05, $d->tipocambio, $esLocalMonedaFact) :
             // si no 15%
@@ -880,7 +880,7 @@ $app->post('/civa', function() {
     $db = new dbcpm();
 
     $query = "INSERT INTO formiva (idcompra, noform, noacceso, fecha, mes, anio) VALUES ($d->idcompraiva, '$d->noformiva', '$d->noaccesoiva', 
-    '$d->fechastriva', $d->mesiva, $d->anioiva)";
+    '$d->fechastriva', $d->formmesiva, $d->anioiva)";
     $db->doQuery($query);
 });
 
@@ -889,7 +889,7 @@ $app->post('/uiva', function() {
     $db = new dbcpm();
 
     $query = "UPDATE formiva SET noform = '$d->noformiva', noacceso = '$d->noaccesoiva', fecha = '$d->fechastriva', 
-    mes = $d->mesiva, anio = $d->anioiva WHERE idformiva = $d->idformiva";
+    mes = $d->formmesiva, anio = $d->anioiva WHERE idformiva = $d->idformiva";
     $db->doQuery($query);
 });
 

@@ -306,7 +306,7 @@ $app->post('/cd', function(){
     // calculo de retencion de iva
     if((int)$d->idtipofactura !== 5) {
         // si la empresa es retenedora y el proveedor no es retenedor retener iva
-        if (($empresaRet && !$esRet) && $d->totfact >= 2500) {
+        if (($empresaRet && !$esRet) && ($d->totfact - $d->noafecto) >= 2500) {
             // si es pequeno enviar 5%
             $d->retIva = $esPeque ? $db->retIVA((float)$d->totfact, 0.05, $d->tipocambio, $esLocalMonedaFact) :
             // si no 15%
