@@ -596,6 +596,8 @@ $app->post('/tp', function () {
     if ($d->esot == 0) {
         $query = "UPDATE presupuesto SET idestatuspresupuesto = 5, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE id = $d->id";
         $db->getQuery($query);
+        $query = "UPDATE detpresupuesto SET idestatuspresupuesto = 5, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE idpresupuesto = $d->id";
+        $db->doQuery($query);
         $query = "SELECT id FROM detpresupuesto WHERE idpresupuesto = $d->id LIMIT 1";
         $idot = $db->getOneField($query);
         $obj->origen = 1;
@@ -635,6 +637,8 @@ $app->post('/rp', function () {
     if ($d->esot == 0) {
         $query = "UPDATE presupuesto SET idestatuspresupuesto = 3, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE id = $d->id";
         $db->getQuery($query);
+        $query = "UPDATE detpresupuesto SET idestatuspresupuesto = 3, fechamodificacion = NOW(), lastuser = $d->idusuario WHERE idpresupuesto = $d->id";
+        $db->doQuery($query);
         $query = "SELECT id FROM detpresupuesto WHERE idpresupuesto = $d->id LIMIT 1";
         $idot = $db->getOneField($query);
         $obj->origen = 1;
