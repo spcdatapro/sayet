@@ -361,11 +361,11 @@ $app->post('/prntrecint', function() {
     $d = json_decode(file_get_contents('php://input'));
     $n2l = new NumberToLetterConverter();
     $db = new dbcpm();
-    $query = "SELECT a.serie, a.numero, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, b.nombre AS cliente, b.nombrecorto AS abreviacliente, ";
+    $query = "SELECT a.serie, a.numero, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, IFNULL(IFNULL(b.nombre, c.nombre), 'Clientes Varios') AS cliente, IFNULL(b.nombrecorto, SUBSTRING(c.nombre, 1, 5)) AS abreviacliente, ";
     $query .= "a.concepto, a.usuariocrea AS hechopor, (SELECT FORMAT(IFNULL(SUM(monto), 0.00), 2) FROM detcobroventa WHERE idrecibocli = a.id) AS monto, ";
     $query .= "(SELECT IFNULL(SUM(monto), 0.00) FROM detcobroventa WHERE idrecibocli = a.id) AS total, NULL as montoletras ";
-    $query .= "FROM recibocli a INNER JOIN cliente b ON b.id = a.idcliente ";
-    $query .= "WHERE a.id = $d->id";
+    $query .= "FROM recibocli a LEFT JOIN cliente b ON b.id = a.idcliente LEFT JOIN factura c ON c.nit = a.nit ";
+    $query .= "WHERE a.id = $d->id LIMIT 1";
 
     $recibo = $db->getQuery($query);
 
