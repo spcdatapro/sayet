@@ -38,13 +38,13 @@
                             <label for="txtCod">Cuentas:</label>
                             <!--<input name="txtCod" id="txtCod" type="text" class="form-control" ng-model="params.codigo" placeholder="Ej.: 100001 &oacute; 100502,100503,200402 &oacute; 400004-400010"/>-->
                             <ui-select multiple
-                                       id="txtCod"
-                                       ng-model="params.cuentasSel"
-                                       title="Seleccione las cuentas..."
-                                       theme="bootstrap"
-                                       autofocus="false"
-                                       append-to-body="true"
-                                       sortable="true">
+                                    id="txtCod"
+                                    ng-model="params.cuentasSel"
+                                    title="Seleccione las cuentas..."
+                                    theme="bootstrap"
+                                    autofocus="false"
+                                    append-to-body="true"
+                                    sortable="true">
                                 <ui-select-match placeholder="Buscar cuentas..." allow-clear="true">
                                     <span>{{$item.codigo}}</span>
                                 </ui-select-match>
@@ -65,7 +65,7 @@
                             <label for="selCtaDel">Del:</label>
                             <ui-select
                                     id="selCtaDel"
-                                    ng-model="params.codigo"
+                                    ng-model="params.codigojs"
                                     title="Seleccione una cuenta contable..."
                                     theme="bootstrap"
                                     autofocus="false"
@@ -88,7 +88,7 @@
                             <label for="selCtaAl">Al:</label>
                             <ui-select
                                     id="selCtaAl"
-                                    ng-model="params.codigoal"
+                                    ng-model="params.codigoaljs"
                                     title="Seleccione una cuenta contable..."
                                     theme="bootstrap"
                                     autofocus="false"

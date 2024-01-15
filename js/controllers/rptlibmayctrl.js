@@ -5,7 +5,7 @@
     rptlibmayctrl.controller('rptLibroMayorCtrl', ['$scope', 'rptLibroMayorSrvc', 'empresaSrvc', 'authSrvc', 'jsReportSrvc', '$sce', 'cuentacSrvc', function($scope, rptLibroMayorSrvc, empresaSrvc, authSrvc, jsReportSrvc, $sce, cuentacSrvc){
 
         $scope.params = {
-            del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), idempresa: 0, codigo: undefined, constproc: 0, filtro: '1', codigoal: undefined,
+            del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), idempresa: 0, constproc: 0, filtro: '1',
             cuentasSel: undefined, vercierre: 1, nofolio: undefined, noheader: 0
         };
         $scope.libromayor = [];
@@ -32,8 +32,8 @@
 
         $scope.resetParams = function(){
             $scope.params.cuentasSel = undefined;
-            $scope.params.codigo = undefined;
-            $scope.params.codigoal = undefined;
+            $scope.params.codigojs = undefined;
+            $scope.params.codigoaljs = undefined;
         };
 
         var test = false;
@@ -48,8 +48,8 @@
                 $scope.params.codigo = $scope.params.cuentasSel ? setCodigos($scope.params.cuentasSel) : '';
                 $scope.params.codigoal = '';
             }else{
-                $scope.params.codigo = $scope.params.codigo != null && $scope.params.codigo !== undefined ? ("'" + $scope.params.codigo.trim() + "'") : '';
-                $scope.params.codigoal = $scope.params.codigoal != null && $scope.params.codigoal !== undefined ? ("'" + $scope.params.codigoal.trim() + "'") : '';
+                $scope.params.codigo = $scope.params.codigojs != null && $scope.params.codigojs !== undefined ? ("'" + $scope.params.codigojs.trim() + "'") : '';
+                $scope.params.codigoal = $scope.params.codigoaljs != null && $scope.params.codigoaljs !== undefined ? ("'" + $scope.params.codigoaljs.trim() + "'") : '';
             }
 
             //console.log($scope.params); return;
@@ -73,8 +73,8 @@
                 $scope.params.codigo = $scope.params.cuentasSel ? setCodigos($scope.params.cuentasSel) : '';
                 $scope.params.codigoal = '';
             }else{
-                $scope.params.codigo = $scope.params.codigo != null && $scope.params.codigo !== undefined ? ("'" + $scope.params.codigo.trim() + "'") : '';
-                $scope.params.codigoal = $scope.params.codigoal != null && $scope.params.codigoal !== undefined ? ("'" + $scope.params.codigoal.trim() + "'") : '';
+                $scope.params.codigo = $scope.params.codigojs != null && $scope.params.codigojs !== undefined ? ("'" + $scope.params.codigojs.trim() + "'") : '';
+                $scope.params.codigoal = $scope.params.codigoaljs != null && $scope.params.codigoaljs !== undefined ? ("'" + $scope.params.codigoaljs.trim() + "'") : '';
             }
 
             if(+$scope.params.constproc === 0){
@@ -108,8 +108,8 @@
                 $scope.params.codigo = $scope.params.cuentasSel ? setCodigos($scope.params.cuentasSel) : '';
                 $scope.params.codigoal = '';
             }else{
-                $scope.params.codigo = $scope.params.codigo != null && $scope.params.codigo !== undefined ? ("'" + $scope.params.codigo.trim() + "'") : '';
-                $scope.params.codigoal = $scope.params.codigoal != null && $scope.params.codigoal !== undefined ? ("'" + $scope.params.codigoal.trim() + "'") : '';
+                $scope.params.codigo = $scope.params.codigojs != null && $scope.params.codigojs !== undefined ? ("'" + $scope.params.codigojs.trim() + "'") : '';
+                $scope.params.codigoal = $scope.params.codigoaljs != null && $scope.params.codigoaljs !== undefined ? ("'" + $scope.params.codigoaljs.trim() + "'") : '';
             }
 
             var url = '/sayet/php/rptlibmay.php/rptlibmay'
