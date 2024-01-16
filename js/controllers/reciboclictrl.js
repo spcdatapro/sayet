@@ -2,7 +2,7 @@
 
     var reciboclictrl = angular.module('cpm.reciboclictrl', []);
 
-    reciboclictrl.controller('reciboClientesCtrl',  ['$scope' , 'reciboClientesSrvc' , 'authSrvc' , '$route' , '$confirm' , '$filter'  , 'DTOptionsBuilder' , 'detContSrvc' , 'cuentacSrvc' , 'clienteSrvc', '$location', 'jsReportSrvc', '$window', 'empresaSrvc', '$uibModal', 'bancoSrvc', 'monedaSrvc', 'tipoMovTranBanSrvc', function($scope , reciboClientesSrvc , authSrvc , $route , $confirm , $filter , DTOptionsBuilder , detContSrvc , cuentacSrvc , clienteSrvc, $location, jsReportSrvc, $window, empresaSrvc, $uibModal, bancoSrvc, monedaSrvc, tipoMovTranBanSrvc){
+    reciboclictrl.controller('reciboClientesCtrl',  ['$scope' , 'reciboClientesSrvc' , 'authSrvc' , '$route' , '$confirm' , '$filter'  , 'DTOptionsBuilder' , 'detContSrvc' , 'cuentacSrvc' , 'clienteSrvc', '$location', 'jsReportSrvc', '$window', 'empresaSrvc', '$uibModal', 'bancoSrvc', 'monedaSrvc', 'tipoMovTranBanSrvc', 'tipoCambioSrvc', function($scope , reciboClientesSrvc , authSrvc , $route , $confirm , $filter , DTOptionsBuilder , detContSrvc , cuentacSrvc , clienteSrvc, $location, jsReportSrvc, $window, empresaSrvc, $uibModal, bancoSrvc, monedaSrvc, tipoMovTranBanSrvc, tipoCambioSrvc){
 
         $scope.reccli = {idempresa: 0};
         $scope.reciboscli = [];
@@ -32,8 +32,12 @@
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
         $scope.selected = {}; //Rony 2017-11-16 Editar monto abono
+        $scope.tipocambiogt = {};
 
         //console.log(`TIPO = `, $location.search());
+
+        // traer tipo de cambio del dia 
+        tipoCambioSrvc.getLastTC().then(function (d) { $scope.tipocambiogt = +d.lasttc; });
 
         authSrvc.getSession().then(function(usrLogged){
             $scope.setTipoRecibo();
@@ -446,7 +450,8 @@
                 idmoneda: 0,
                 objTipotrans: null,
                 idtipotrans: 0,
-                monto: undefined
+                monto: undefined,
+                tipocambio: 1.00
             };
             goTop();
         };
@@ -454,6 +459,7 @@
         function procDetaPagoRec(d){
             for(var i = 0; i < d.length; i++){
                 d[i].numero = +d[i].numero;
+                d[i].tipocambio = +d[i].tipocambio;
             }
             return d;
         };
@@ -519,7 +525,6 @@
                 $scope.pagoreccli.objBancoPais = $filter('getById')($scope.losBancoPais, $scope.pagoreccli.idbanco);
                 $scope.pagoreccli.objMoneda = $filter('getById')($scope.lasMonedas, $scope.pagoreccli.idmoneda);
                 $scope.pagoreccli.objTipotrans = $filter('getById')($scope.tipotran, $scope.pagoreccli.idtipotrans);
-                // console.log(d)
             });
         };  
 
