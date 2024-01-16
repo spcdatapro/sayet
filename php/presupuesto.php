@@ -178,7 +178,8 @@ $app->get('/getpresupuesto/:idpresupuesto', function ($idpresupuesto) {
                 a.tipocambio,
                 a.idestatuspresupuesto,
                 a.idusuario,
-                a.idusuarioaprueba
+                a.idusuarioaprueba,
+                IF(c.retenedora = 1, TRUE, NULL) AS retenedora
             FROM
                 presupuesto a
                     INNER JOIN
@@ -282,9 +283,9 @@ function getTotales($orden, $ids, $db) {
     }
 
     // traer monto, moneda, idordentrabajo y tipocambio de compra
-    $query = "SELECT id, totfact, idmoneda, tipocambio, isr, ordentrabajo AS ot FROM compra WHERE ordentrabajo IN($ids_str) AND idreembolso = 0 
+    $query = "SELECT id, totfact, idmoneda, tipocambio, isr, ordentrabajo AS ot, retiva FROM compra WHERE ordentrabajo IN($ids_str) AND idreembolso = 0 
     AND id NOT IN(SELECT idcompra FROM detnotacompra) AND idtipofactura < 8
-    UNION ALL SELECT b.id, b.totfact, b.idmoneda, b.tipocambio, b.isr, a.ordentrabajo AS ot FROM reembolso a 
+    UNION ALL SELECT b.id, b.totfact, b.idmoneda, b.tipocambio, b.isr, a.ordentrabajo AS ot, b.retiva FROM reembolso a 
     INNER JOIN compra b ON b.idreembolso = a.id WHERE a.ordentrabajo IN($ids_str)";
     $tcompras = $db->getQuery($query);
 
@@ -304,6 +305,7 @@ function getTotales($orden, $ids, $db) {
     for ($i = 0; $i < $cntsOts; $i++) {
         // crear array total de OT[$i]
         $sisr = array();
+        $siva = array();
         $stran = array();
         $tc_pro = array();
 
@@ -319,17 +321,22 @@ function getTotales($orden, $ids, $db) {
                 if ($ot->idmoneda != $compra->idmoneda) {
                     if ($ot->idmoneda == 1) {
                         $montoisr = $compra->isr * $tc;
+                        $montoiva = $compra->retiva * $tc;
                     } else {
                         $montoisr = $compra->isr / $tc;
+                        $montoiva = $compra->retiva / $tc;
                     }
                 } else {
                     $montoisr = $compra->isr;
+                    $montoiva = $compra->retiva;
                 }
                 array_push($sisr, $montoisr);
+                array_push($siva, $montoiva);
             }
         }
         // sumas compras
         $tisr = array_sum($sisr);
+        $tiva = array_sum($siva);
 
         // loop transacciones bancarias
         for ($j = 0; $j < $cntTranas; $j++) {
@@ -355,7 +362,7 @@ function getTotales($orden, $ids, $db) {
         // sumas transacciones bancarias
         $ttran = array_sum($stran);
 
-        $gastado = $ttran + $tisr;
+        $gastado = $ttran + $tisr + $tiva;
 
         $conteo_promedio = count($tc_pro) > 0 ? count($tc_pro) : 1; 
         $sum_promedio = array_sum($tc_pro) > 0 ? array_sum($tc_pro) : 1;

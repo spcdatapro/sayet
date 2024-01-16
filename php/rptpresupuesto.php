@@ -288,7 +288,8 @@ $app->post('/avanceot', function(){
                 IF(m.id = 6, TRUE, NULL) AS anulada,
                 ROUND(a.tipocambio, 2) AS tipocambio,
                 ROUND(a.monto, 2) AS monto,
-                a.idestatuspresupuesto AS estatus
+                a.idestatuspresupuesto AS estatus,
+                IF(f.retenedora = 1, TRUE, NULL) AS retenedora
             FROM
                 detpresupuesto a
                     INNER JOIN
@@ -354,7 +355,8 @@ $app->post('/avanceotm', function(){
                 f.iniciales AS creador,
                 IF(a.idestatuspresupuesto = 5, true, null) AS terminada,
                 g.iniciales AS modificador,
-                DATE_FORMAT(a.fechamodificacion, '%d/%m/%Y') AS modificacion
+                DATE_FORMAT(a.fechamodificacion, '%d/%m/%Y') AS modificacion,
+                IF(c.retenedora = 1, TRUE, NULL) AS retenedora
             FROM
                 presupuesto a
                     INNER JOIN
@@ -593,7 +595,7 @@ function getPagos($orden, $db, $esmultiple, $ids = null) {
         $query = "SELECT 
                     a.id,
                     DATE_FORMAT(a.fechafactura, '%d/%m/%y') AS fecha,
-                    SUBSTRING(c.nombre, 1, 22) AS proveedor,
+                    SUBSTRING(c.nombre, 1, 18) AS proveedor,
                     a.documento AS factura,
                     ROUND(a.totfact, 2) AS monto,
                     ROUND(a.isr, 2) AS isr,
@@ -602,7 +604,8 @@ function getPagos($orden, $db, $esmultiple, $ids = null) {
                     e.simbolo AS moneda,
                     e.id AS idmoneda,
                     IF(a.idtipofactura > 8, TRUE, NULL) AS nc,
-                    a.ordentrabajo AS ot
+                    a.ordentrabajo AS ot,
+                    a.retiva
                 FROM
                     compra a
                         INNER JOIN
@@ -622,7 +625,7 @@ function getPagos($orden, $db, $esmultiple, $ids = null) {
         $query = "SELECT 
                     b.id,
                     DATE_FORMAT(b.finicio, '%d/%m/%y') AS fecha,
-                    SUBSTRING(b.beneficiario, 1, 22) AS proveedor,
+                    SUBSTRING(b.beneficiario, 1, 18) AS proveedor,
                     CONCAT('REE-', LPAD(b.id, 5, '0')) AS factura,
                     ROUND(SUM(a.totfact), 2) AS monto,
                     ROUND(SUM(a.isr), 2) AS isr,
@@ -652,7 +655,7 @@ function getPagos($orden, $db, $esmultiple, $ids = null) {
                 $query = "SELECT 
                             a.id,
                             DATE_FORMAT(a.fechafactura, '%d/%m/%y') AS fecha,
-                            SUBSTRING(IFNULL(c.nombre, a.proveedor), 1, 22) AS proveedor,
+                            SUBSTRING(IFNULL(c.nombre, a.proveedor), 1, 18) AS proveedor,
                             a.documento AS factura,
                             ROUND(a.totfact, 2) AS monto,
                             ROUND(a.isr, 2) AS isr,
@@ -661,7 +664,8 @@ function getPagos($orden, $db, $esmultiple, $ids = null) {
                             d.simbolo AS moneda,
                             d.id AS idmoneda,
                             IF(a.idtipofactura > 8, TRUE, NULL) AS nc,
-                            a.ordentrabajo AS ot
+                            a.ordentrabajo AS ot,
+                            a.retiva
                         FROM
                             compra a
                                 INNER JOIN
@@ -689,7 +693,7 @@ function getPagos($orden, $db, $esmultiple, $ids = null) {
                 a.id, 
                 a.fechafactura AS fechaOrd,
                 DATE_FORMAT(a.fechafactura, '%d/%m/%y') AS fecha,
-                SUBSTRING(IFNULL(c.nombre, a.proveedor), 1, 22) AS proveedor,
+                SUBSTRING(IFNULL(c.nombre, a.proveedor), 1, 18) AS proveedor,
                 a.documento AS factura,
                 ROUND(a.totfact, 2) AS monto,
                 ROUND(a.isr, 2) AS isr,
@@ -698,7 +702,8 @@ function getPagos($orden, $db, $esmultiple, $ids = null) {
                 d.simbolo AS moneda,
                 d.id AS idmoneda,
                 IF(a.idtipofactura > 8, TRUE, NULL) AS nc,
-                a.ordentrabajo AS ot
+                a.ordentrabajo AS ot,
+                a.retiva
             FROM
                 compra a
                     INNER JOIN
@@ -731,7 +736,7 @@ function getPagos($orden, $db, $esmultiple, $ids = null) {
                 b.id,
                 b.finicio AS fechaOrd,
                 DATE_FORMAT(b.finicio, '%d/%m/%y') AS fecha,
-                SUBSTRING(b.beneficiario, 1, 22) AS proveedor,
+                SUBSTRING(b.beneficiario, 1, 18) AS proveedor,
                 CONCAT('REE-', LPAD(b.id, 5, '0')) AS factura,
                 ROUND(SUM(a.totfact), 2) AS monto,
                 ROUND(SUM(a.isr), 2) AS isr,
@@ -765,7 +770,7 @@ function getPagos($orden, $db, $esmultiple, $ids = null) {
         $query = "SELECT 
                     a.id, 
                     DATE_FORMAT(a.fechafactura, '%d/%m/%y') AS fecha,
-                    SUBSTRING(IFNULL(c.nombre, a.proveedor), 1, 22) AS proveedor,
+                    SUBSTRING(IFNULL(c.nombre, a.proveedor), 1, 18) AS proveedor,
                     a.documento AS factura,
                     ROUND(a.totfact, 2) AS monto,
                     ROUND(a.isr, 2) AS isr,
@@ -774,7 +779,8 @@ function getPagos($orden, $db, $esmultiple, $ids = null) {
                     d.simbolo AS moneda,
                     d.id AS idmoneda,
                     IF(a.idtipofactura > 8, TRUE, NULL) AS nc,
-                    a.ordentrabajo AS ot
+                    a.ordentrabajo AS ot,
+                    a.retiva
                 FROM
                     compra a
                         INNER JOIN
@@ -880,9 +886,9 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
     }
 
     // traer monto, moneda, idordentrabajo y tipocambio de compra
-    $query = "SELECT id, totfact, idmoneda, tipocambio, isr, ordentrabajo AS ot FROM compra WHERE ordentrabajo IN($ids_str) AND idreembolso = 0 
+    $query = "SELECT id, totfact, idmoneda, tipocambio, isr, ordentrabajo AS ot, retiva FROM compra WHERE ordentrabajo IN($ids_str) AND idreembolso = 0 
     AND id NOT IN(SELECT idcompra FROM detnotacompra) AND idtipofactura < 8
-    UNION ALL SELECT b.id, b.totfact, b.idmoneda, b.tipocambio, b.isr, a.ordentrabajo AS ot FROM reembolso a 
+    UNION ALL SELECT b.id, b.totfact, b.idmoneda, b.tipocambio, b.isr, a.ordentrabajo, b.retiva AS ot FROM reembolso a 
     INNER JOIN compra b ON b.idreembolso = a.id WHERE a.ordentrabajo IN($ids_str)";
     $tcompras = $db->getQuery($query);
 
@@ -905,11 +911,11 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
         $sisr = array();
         $stran = array();
         $tc_pro = array();
+        $siva = array();
 
         $ot = $esmultiple ? $orden->ots[$i] : $orden;
 
         if ($ot->estatus != 6) { 
-
             // loop de compras
             for ($j = 0; $j < $cntCompras; $j++) {
                 $compra = $tcompras[$j];
@@ -921,21 +927,26 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
                         if ($ot->idmoneda == 1) {
                             $monto = $compra->totfact * $tc;
                             $montoisr = $compra->isr * $tc;
+                            $montoiva = $compra->retiva * $tc;
                         } else {
                             $monto = $compra->totfact / $tc;
                             $montoisr = $compra->isr / $tc;
+                            $montoiva = $compra->retiva / $tc;
                         }
                     } else {
                         $monto = $compra->totfact;
                         $montoisr = $compra->isr;
+                        $montoiva = $compra->retiva;
                     }
                     array_push($scompra, $monto);
                     array_push($sisr, $montoisr);
+                    array_push($siva, $montoiva);
                 }
             }
             // sumas compra
             $tcompra = array_sum($scompra);
             $tisr = array_sum($sisr);
+            $tiva = array_sum($siva);
 
             // loop transacciones bancarias
             for ($j = 0; $j < $cntTranas; $j++) {
@@ -964,8 +975,8 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
             $ot->monto = $ot->monto == 0 ? 1 : $ot->monto;
 
             // operaciones para OTS
-            $gastado = $ttran + $tisr;
-            $avance = (($ttran + $tisr) * 100) / $ot->monto;
+            $gastado = $ttran + $tisr + $tiva;
+            $avance = (($ttran + $tisr + $tiva) * 100) / $ot->monto;
             $diferencia = $ot->monto - $gastado;
             $gasto = $gastado;
 
@@ -1003,6 +1014,7 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
             $ot->afecta = number_format($gasto, 2, '.', ',');
             $ot->isr = number_format($tisr, 2, '.', ',');
             $ot->tcprom = round($tc_prom, 5);
+            $ot->iva = number_format($tiva, 2, '.', ',');
         } else {
             $ot->anulada = true;
             $ot->totgastado = 0.00;
@@ -1014,6 +1026,7 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
             $ot->isr = 0.00;
             $ot->tcprom = 0.00;
             $ot->monto = 0.00;
+            $ot->iva = 0.00;
         }
     }
 
