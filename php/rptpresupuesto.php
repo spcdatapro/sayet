@@ -632,7 +632,8 @@ function getPagos($orden, $db, $esmultiple, $ids = null) {
                     SUBSTRING(a.conceptomayor, 1, 48) AS concepto,
                     c.simbolo AS moneda,
                     ROUND(a.tipocambio, 2) AS tipocambio,
-                    a.ordentrabajo AS ot
+                    a.ordentrabajo AS ot,
+                    ROUND(SUM(a.retiva), 2) AS retiva
                 FROM
                     compra a
                         INNER JOIN
@@ -743,7 +744,8 @@ function getPagos($orden, $db, $esmultiple, $ids = null) {
                 SUBSTRING(a.conceptomayor, 1, 48) AS concepto,
                 c.simbolo AS moneda,
                 ROUND(a.tipocambio, 2) AS tipocambio,
-                a.ordentrabajo AS ot
+                a.ordentrabajo AS ot,
+                ROUND(SUM(a.retiva), 2) AS retiva
             FROM
                 compra a
                     INNER JOIN
