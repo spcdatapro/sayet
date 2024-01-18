@@ -22,6 +22,7 @@ angular.module('cpm')
         $scope.bita = {}
         $scope.movEditar = false;
         $scope.movProcesando = false;
+        $scope.index = undefined;
 
 		$scope.mostrarForm = function() {
 			$scope.emp = { };
@@ -65,7 +66,7 @@ angular.module('cpm')
                     $scope.empleados.push(data.emp);
                 }
 
-                $scope.getEmpleado(data.emp.id);
+                $scope.getEmpleado($scope.index);
                 // $scope.getBitacora($scope.emp.id);
 			});
         };
@@ -107,8 +108,9 @@ angular.module('cpm')
         }
 
         $scope.getEmpleado = function(index){
+            $scope.index = index;
             $scope.emp = $scope.empleados[index];
-            $scope.emp.descuentoisr = parseFloat($scope.emp.descuentoisr);
+            $scope.emp.descuentoisr = +$scope.emp.descuentoisr;
             $scope.emp.bonificacionley = parseFloat($scope.emp.bonificacionley);
             $scope.emp.sueldo = parseFloat($scope.emp.sueldo);
             $scope.emp.porcentajeigss = parseFloat($scope.emp.porcentajeigss); 

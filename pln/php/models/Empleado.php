@@ -265,6 +265,16 @@ class Empleado extends Principal
 			$dbita['movdescripcion'] = $args['movdescripcion'];
 		}
 
+		if (elemento($args, 'idplnmovimiento')) {
+			$bus = new General();
+			$mov = $bus->tipoMovimiento([
+				"id" => $args["idplnmovimiento"],
+				"_uno" => true
+			]);
+	
+			$dbita["movdescripcion"] = $mov->descripcion;
+		}
+
 		if (elemento($args, 'movobservaciones')) {
 			$dbita['movobservaciones'] = $args['movobservaciones'];
 		}
