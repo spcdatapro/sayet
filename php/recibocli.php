@@ -468,7 +468,8 @@ $app->post('/prtrecibocli', function() {
                     IFNULL(c.nombre, '') AS banco,
                     d.simbolo AS moneda,
                     ROUND(b.monto, 2) AS monto,
-                    d.id AS idmoneda
+                    d.id AS idmoneda,
+                    b.tipocambio
                 FROM
                     recibocli a
                         INNER JOIN
