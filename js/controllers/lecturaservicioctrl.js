@@ -74,7 +74,6 @@
                         $scope.params.idservicio += item.id;
                     }
                 });
-                //console.log($scope.params);
                 servicioPropioSrvc.editRow($scope.params, 'enviofact').then(function(){ $scope.getLecturas(); });
             });
         };
