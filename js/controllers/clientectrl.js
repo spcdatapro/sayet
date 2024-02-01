@@ -1065,16 +1065,6 @@
             });
         };
 
-        // funcion para agregar concpeto a todos los cargos
-        $scope.$watch('todos', function (newVal, oldVal) {
-            // loop que actuliza el concepto adicional de cada cargo para mostrar en pantalla
-            $scope.cargos.forEach(function (cargo) {
-                repetido = cargo.conceptoadicional.length;
-                texto = cargo.conceptoadicional == newVal ? cargo.conceptoadicional : newVal + cargo.conceptoadicional.replace(newVal, "");
-                cargo.conceptoadicional = texto;
-            });
-        });
-
         // solo funciona si varible $scope.todos (concepto genral) tiene 1 o mas caracteres
         $scope.ok = function (obj) { 
             // confirmaciion para agregar concepto a todos
@@ -1082,6 +1072,8 @@
             title: 'Concepto general', ok: 'Sí', cancel: 'No' }).then(function () {
                 // loop entre cada cargo para actualizar concepto
                 obj.forEach(function (cargo) {
+                    cargo.conceptoadicional = cargo.conceptoadicional == null ? '' : cargo.conceptoadicional; 
+                    cargo.conceptoadicional += $scope.todos;
                     clienteSrvc.editRow(cargo, 'udesccargo');
                 });
                 // confirmar que los cargos se agregaron

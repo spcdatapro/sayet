@@ -1,0 +1,170 @@
+<div class="container" ng-controller="solVacasCtrl">
+    <div class="row">
+        <div class="panel panel-primary">
+            <div class="panel-heading">Solicitud de vacaciones</div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group required">
+                            <label for="selEmpleado" class="control-label">Empleado: &nbsp;</label>
+                            <ui-select ng-model="solicitud.idempleado" theme="bootstrap" autofocus="true"
+                                skip-focusser="true"
+                                ng-change="getRegistros(solicitud.idempleado, solicitud.periodo, false)" required>
+                                <ui-select-match placeholder="Buscar un empleado..." allow-clear="true"
+                                    id="selEmpleado">
+                                    <span ng-bind="$select.selected.nombre"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="item.id as item in empleados | filter:$select.search">
+                                    <div ng-bind-html="item.nombre | highlight: $select.search"></div>
+                                </ui-select-choices>
+                                <ui-select-no-choice>
+                                    No hay resultados...
+                                </ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group required">
+                            <label for="periodo" class="control-label">P&eacute;riodo: &nbsp;</label>
+                            <input type="number" name="periodo" id="periodo" class="form-control"
+                                ng-model="solicitud.periodo"
+                                ng-change="getRegistros(solicitud.idempleado, solicitud.periodo, false)" required>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="sabados" class="control-label">Medio d&iacute;a:</label>
+                            <input type="checkbox" name="medio" id="medio" class="form-control"
+                                ng-model="solicitud.medio" ng-true-value="1" ng-false-value="0"
+                                ng-change="setCantidad(solicitud.fechaini, solicitud.fechafin, solicitud.sabado, solicitud.medio)"/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="sabados" class="control-label">Contar s&aacute;bado:</label>
+                            <input type="checkbox" name="sabados" id="sabados" class="form-control"
+                                ng-model="solicitud.sabado" ng-true-value="1" ng-false-value="0"
+                                ng-change="setCantidad(solicitud.fechaini, solicitud.fechafin, solicitud.sabado, solicitud.medio)"/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group required">
+                            <label for="dias" class="control-label">Cuantos d&iacute;as: &nbsp;</label>
+                            <input type="number" name="cantidad" id="cantidad" class="form-control" ng-disabled="true"
+                                min="1" ng-model="solicitud.cantidad" step="0.1" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group required">
+                            <label for="fechaIni" class="control-label">Inicia vacaciones: &nbsp;</label>
+                            <input type="date" name="fechaIni" id="fechaIni" class="form-control"
+                                ng-model="solicitud.fechaini"
+                                ng-change="setCantidad(solicitud.fechaini, solicitud.fechafin, solicitud.sabado, solicitud.medio)" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="fechaIni">Finaliza vacaciones:</label>
+                            <input type="date" name="fechaFin" id="fechaFin" class="form-control"
+                                ng-model="solicitud.fechafin"
+                                ng-change="setCantidad(solicitud.fechaini, solicitud.fechafin, solicitud.sabado, solicitud.medio)">
+                        </div>
+                    </div>
+                    <!-- selector de fechas que empuja fecha de un asueto a selector de asuetos -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="fechaAsu">Asuetos:</label>
+                            <div class="input-group">
+                                <input type="date" name="fechaAsu" id="fechaAsu" class="form-control" ng-model="fasueto">
+                                <div class="input-group-btn">
+                                    <button type="button" class="btn btn-success" ng-click="agregarAsueto(fasueto)"
+                                    title="Guardar asueto" ng-disabled="!solicitud.fechaini || !solicitud.fechafin">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- solo funciona para mostrar fechas de asuetos y poder eliminarlas -->
+                <div class="row" ng-show="solicitud.asuetos.length > 0">
+                    <div class="col-md-12">
+                        <div class="form-group required">
+                            <ui-select ng-model="solicitud.asuetos" theme="bootstrap" multiple ng-change="setCantidad(solicitud.fechaini, solicitud.fechafin, solicitud.sabado, solicitud.medio)">
+                                <ui-select-match allow-clear="true" id="asuetos">
+                                    <span>{{$item.fechastr}}</span>
+                                </ui-select-match>
+                                <ui-select-choices ui-disable-choice="item.fechastr > 0" 
+                                    repeat="item.fechastr as item in asuetos | filter:$select.search">
+                                </ui-select-choices>
+                            </ui-select>
+                        </div>
+                    </div>
+                </div>
+                </br>
+                <table class="table table-responsive table-hover table-condensed"
+                    ng-show="registros.ver && registros.cuantos > 0">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>&nbsp;</th>
+                            <th class="text-center">Per&iacute;odo</th>
+                            <th>Asuetos</th>
+                            <th class="text-center">Cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="v in registros.data" ng-click="getRegistro(v.id)">
+                            <td>{{v.fechaini | date: 'dd/MM/yyyy'}}</td>
+                            <td>{{v.fechafin | date: 'dd/MM/yyyy'}}</td>
+                            <td class="text-center">{{v.periodo}}</td>
+                            <td>{{v.asuetos}}</td>
+                            <td class="text-center">{{v.cantidad}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="panel-footer">
+                <div class="row">
+                    <div class="col-md-6">
+                        <a ng-show="solicitud.idempleado" ng-click="registros.ver = !registros.ver">
+                            {{registros.nombre}} <span class="badge"> {{registros.cuantos}}</span>
+                        </a>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-primary" ng-click="reiniciar(solicitud.idempleado, solicitud.periodo)"
+                                ng-disabled="!solicitud.idempleado" title="Limpiar informaci&oacute;n">
+                                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                            </button>
+                            <button type="button" class="btn btn-info" ng-click="guardar(solicitud)"
+                                title="Agregar registro"
+                                ng-disabled="!solicitud.idempleado || !solicitud.periodo || !solicitud.fechaini || !solicitud.cantidad"
+                                ng-show="!solicitud.id">
+                                <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
+                            </button>
+                            <button type="button" class="btn btn-info" ng-click="guardar(solicitud, true)"
+                                title="Actualizar registro"
+                                ng-disabled="!solicitud.idempleado || !solicitud.periodo || !solicitud.fechaini || !solicitud.cantidad"
+                                ng-show="solicitud.id">
+                                <span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span>
+                            </button>
+                            <button type="button" class="btn btn-danger" ng-click="eliminar(solicitud)"
+                                ng-hide="!solicitud.id" title="Eliminar registro">
+                                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                            </button>
+                            <button type="button" class="btn btn-default" ng-click="pdf(solicitud)"
+                                ng-hide="!solicitud.idempleado" ng-disabled="registros.cuantos == 0"
+                                title="Imprimir registro">
+                                <span class="fa fa-file-pdf" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <rpt-viewer contenido="content"></rpt-viewer>
+</div>
