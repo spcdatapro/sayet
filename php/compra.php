@@ -335,7 +335,7 @@ $app->post('/c', function(){
 
         // si la empresa es retenedora y el proveedor no es retenedor retener iva
         if (($empresaRet && !$esRet) && ($d->totfact - $d->noafecto) >= 2500 && !$esPeque) {
-            $db->retIVA((float)$d->iva, 0.15, 1, $esLocalMonedaFact);
+            $d->retIva = $db->retIVA((float)$d->iva, 0.15, 1, $esLocalMonedaFact);
         }
     }
 
@@ -398,7 +398,7 @@ $app->post('/u', function(){
 
         // si la empresa es retenedora y el proveedor no es retenedor retener iva
         if (($empresaRet && !$esRet) && ($d->totfact - $d->noafecto) >= 2500 && !$esPeque) {
-            $db->retIVA((float)$d->iva, 0.15, 1, $esLocalMonedaFact);
+            $d->retIva = $db->retIVA((float)$d->iva, 0.15, 1, $esLocalMonedaFact);
         }
     }
 
