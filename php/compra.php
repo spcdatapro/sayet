@@ -334,11 +334,8 @@ $app->post('/c', function(){
         $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
 
         // si la empresa es retenedora y el proveedor no es retenedor retener iva
-        if (($empresaRet && !$esRet) && ($d->totfact - $d->noafecto) >= 2500) {
-            // si es pequeno enviar 5%
-            $d->retIva = $esPeque ? $db->retIVA((float)$d->totfact, 0.05, $d->tipocambio, $esLocalMonedaFact) :
-            // si no 15%
-            $db->retIVA((float)$d->iva, 0.15, $d->tipocambio, $esLocalMonedaFact);
+        if (($empresaRet && !$esRet) && ($d->totfact - $d->noafecto) >= 2500 && $esPeque) {
+            $db->retIVA((float)$d->iva, 0.15, 1, $esLocalMonedaFact);
         }
     }
 
@@ -400,11 +397,8 @@ $app->post('/u', function(){
         $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
 
         // si la empresa es retenedora y el proveedor no es retenedor retener iva
-        if (($empresaRet && !$esRet) && ($d->totfact - $d->noafecto) >= 2500) {
-            // si es pequeno enviar 5%
-            $d->retIva = $esPeque ? $db->retIVA((float)$d->totfact, 0.05, $d->tipocambio, $esLocalMonedaFact) :
-            // si no 15%
-            $db->retIVA((float)$d->iva, 0.15, $d->tipocambio, $esLocalMonedaFact);
+        if (($empresaRet && !$esRet) && ($d->totfact - $d->noafecto) >= 2500 && $esPeque) {
+            $db->retIVA((float)$d->iva, 0.15, 1, $esLocalMonedaFact);
         }
     }
 
