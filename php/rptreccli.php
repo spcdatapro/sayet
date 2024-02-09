@@ -8,132 +8,151 @@ $app->response->headers->set('Content-Type', 'application/json');
 $app->post('/mensual', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+
+    // convertir array a str separado por comas si existe mas de una empresa
     $ids_str = count($d->idempresa) > 0 ? implode(',', $d->idempresa) : "''";
+    // variables iniciales
+    $primero = true;
+    $separador = new StdClass;
+    $totales = new StdClass;
+    $recibos = array();
+    $montos_dia_gtq = array();
+    $montos_dia_dlr = array();
+    $mesdel = date("m", strtotime($d->fdelstr));
+    $mesal = date("m", strtotime($d->falstr));
+    $aniodel = ' '.date("Y", strtotime($d->fdelstr));
+    $anioal = ' '.date("Y", strtotime($d->falstr));
+    $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
 
-    if(!isset($d->idempresa)) { $d->idempresa = 0; }
-    $query = "SELECT DATE_FORMAT('$d->fdelstr', '%d/%m/%Y') AS del,  DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS al, DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy ";
-    $fechas = $db->getQuery($query)[0];
+    // validar si solo estan obteniendo un anio
+    if ($aniodel == $anioal) {
+        $aniodel = '';
+    }
 
-    $query = "SELECT DISTINCT
+    // clase para fechas
+    $letra = new stdClass();
+
+    $letra->del = $meses[$mesdel-1].$aniodel;
+
+    // validar si solo estan obteniendo un mes
+    if ($mesal != $mesdel) {
+        $letra->al = 'a '.$meses[$mesal-1].$anioal;
+    } else {
+        $letra->al = $anioal;
+    }
+
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y');
+
+    $letra->empresas = $db->getOneField("SELECT GROUP_CONCAT(nomempresa SEPARATOR ', ') FROM empresa WHERE id IN($ids_str)");
+
+    $query = "SELECT 
                 a.id,
-                CONCAT(a.serie,
-                        '-',
-                        IF(a.anulado = 0,
-                            IF(a.serie = 'A', b.seriea, b.serieb),
-                            IF(a.serie = 'A',
-                                CONCAT(b.seriea, '(ANULADO)'),
-                                CONCAT(b.serieb, '(ANULADO)')))) AS recibo,
+                IF(a.anulado = 0,
+                    CONCAT(a.serie, '-', IFNULL(b.seriea, b.serieb)),
+                    'ANULADO') AS recibo,
                 DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
-                IFNULL(IFNULL(c.nombre, e.nombre),
+                IFNULL(IFNULL(c.nombre, d.nombre),
                         'Clientes Varios') AS cliente,
-                (SELECT 
-                        CONCAT('Q', FORMAT(SUM(b.monto), 2))
-                    FROM
-                        detpagorecli b
-                    WHERE
-                        b.idreccli = a.id AND b.idmoneda = 1) AS montoqtz,
-                (SELECT 
-                        CONCAT('$', FORMAT(SUM(b.monto), 2))
-                    FROM
-                        detpagorecli b
-                    WHERE
-                        b.idreccli = a.id AND b.idmoneda = 2) AS montodlr,
-                NULL AS total, a.fecha AS fecharec
+                IF(e.idmoneda = 1 AND a.anulado = 0,
+                    ROUND(SUM(e.monto), 2),
+                    NULL) AS montogtq,
+                IF(e.idmoneda = 2 AND a.anulado = 0,
+                    ROUND(SUM(e.monto), 2),
+                    NULL) AS montodlr,
+                f.simbolo AS moneda,
+                a.fecha AS fecharec,
+                g.idproyecto,
+                IFNULL(h.nomproyecto, 'SIN PROYECTO') AS proyecto,
+                MONTH(a.fecha) AS idmes,
+                DAY(a.fecha) AS dia
             FROM
                 recibocli a
                     INNER JOIN
                 serierecli b ON b.idrecibocli = a.id
                     LEFT JOIN
                 cliente c ON a.idcliente = c.id
-                    LEFT JOIN 
-				detcobroventa d ON d.idrecibocli = a.id
                     LEFT JOIN
-                factura e ON d.idfactura = e.id
+                (SELECT 
+                    d.nit, d.nombre
+                FROM
+                    factura d
+                LIMIT 1) d ON d.nit = a.nit
+                    LEFT JOIN
+                detpagorecli e ON e.idreccli = a.id
+                    LEFT JOIN
+                moneda f ON e.idmoneda = f.id
+                    LEFT JOIN
+                (SELECT 
+                    e.idrecibocli AS idrecibo,
+                        IF(g.idproyecto = 0, d.idproyecto, g.idproyecto) AS idproyecto
+                FROM
+                    detcobroventa e
+                INNER JOIN factura g ON e.idfactura = g.id
+                INNER JOIN contrato d ON g.idcontrato = d.id) g ON g.idrecibo = a.id
+                    LEFT JOIN
+                proyecto h ON g.idproyecto = h.id
             WHERE
                 a.fecha >= '$d->fdelstr'
                     AND a.fecha <= '$d->falstr' ";
     $query.= count($d->idempresa) > 0 ? "AND a.idempresa IN($ids_str) " : '';
-    $query.= "ORDER BY a.fecha ASC, a.serie ASC, b.seriea ASC, b.serieb ASC ";
-    $recibos = $db->getQuery($query);
+    $query.= "GROUP BY a.id ";
+    $query.= $d->tipo == 1 ? "ORDER BY a.fecha ASC, " : "ORDER BY h.nomproyecto ASC, ";
+    $query.= "a.serie ASC, b.seriea ASC, b.serieb ASC";
+    $data = $db->getQuery($query);
 
-    $cntRecibos = count($recibos); 
-
-    for ($i = 0; $i < $cntRecibos; $i++) {
-        $fecharec = $recibos[$i]->fecharec;
-        if ($i + 1 < $cntRecibos) {
-            $fecahcomp = $recibos[$i + 1]->fecharec;
-        } else {
-            $fecahcomp = 0;
-        }
-
-        if($fecharec != $fecahcomp) {
-            $query = "SELECT 
-            (SELECT 
-                    CONCAT('Q',
-                                '.',
-                                IFNULL(FORMAT(SUM(b.monto), 2), 0.00))
-                FROM
-                    recibocli a
-                        INNER JOIN
-                    detpagorecli b ON b.idreccli = a.id
-                WHERE
-                    a.fecha = '$fecharec' AND b.idmoneda = 1 "; 
-            $query.= count($d->idempresa) > 0 ? "AND a.idempresa IN($ids_str) " : '';
-            $query.= ") AS montoqtz,
-            (SELECT 
-                    CONCAT('$',
-                                '.',
-                                IFNULL(FORMAT(SUM(b.monto), 2), 0.00))
-                FROM
-                    recibocli a
-                        INNER JOIN
-                    detpagorecli b ON b.idreccli = a.id
-                WHERE
-                    a.fecha = '$fecharec' AND b.idmoneda = 2 ";
-            $query.= count($d->idempresa) > 0 ? "AND a.idempresa IN($ids_str) " : '';
-            $query.= ") AS montodlr "; 
-            $total = $db->getQuery($query);
-
-            $recibos[$i]->total = $total;
-            
-        } 
+    foreach($data AS $rec) {
+        $rec->nombre = $rec->dia.' de '.$meses[$rec->idmes-1];
     }
 
-    $query = "SELECT 
-                (SELECT GROUP_CONCAT(nomempresa SEPARATOR ', ')
-                    FROM
-                        empresa 
-                    WHERE 
-                        id IN($ids_str)) AS empresa,
-                (SELECT 
-                        CONCAT('Q',
-                                    '.',
-                                    IFNULL(FORMAT(SUM(b.monto), 2), 0.00))
-                    FROM
-                        recibocli a
-                            INNER JOIN
-                        detpagorecli b ON b.idreccli = a.id
-                    WHERE
-                        a.fecha >= '$d->fdelstr'
-                            AND a.fecha <= '$d->falstr' ";
-    $query.= count($d->idempresa) > 0 ? "AND a.idempresa IN($ids_str) " : '';
-    $query.= "                 AND b.idmoneda = 1) AS montoqtz,
-                (SELECT 
-                        CONCAT('$',
-                                    '.',
-                                    IFNULL(FORMAT(SUM(b.monto), 2), 0.00))
-                    FROM
-                        recibocli a
-                            INNER JOIN
-                        detpagorecli b ON b.idreccli = a.id
-                    WHERE
-                        a.fecha >= '$d->fdelstr'
-                            AND a.fecha <= '$d->falstr' ";
-    $query.= count($d->idempresa) > 0 ? "AND a.idempresa IN($ids_str) " : '';
-    $query.= "                 AND b.idmoneda = 2) AS montodlr ";
-    $totgen = $db->getQuery($query)[0];
+    $cntsRecibos = count($data);
 
-    print json_encode(['fechas' => $fechas, 'recibos' => $recibos, 'total' => $totgen]);
+    for ($i = 1; $i < $cntsRecibos; $i++) {
+        // traer valor actual y anterior
+        $actual = $data[$i];
+        $anterior = $data[$i-1];
+        // separar por
+        $por_ant = $d->tipo == 1 ? $anterior->nombre : $anterior->proyecto;
+        $por_act = $d->tipo == 1 ? $actual->nombre : $actual->proyecto;
+        // si es el primero insertar nombre del separador y crear array de recibos
+        if ($primero) {
+            $separador->nombre = $por_ant;
+            $separador->recibos = array();
+            $primero = false;
+        }
+        // si tienen el mismo proyecto empujar montos anteriores
+        array_push($montos_dia_gtq, $anterior->montogtq);
+        array_push($montos_dia_dlr, $anterior->montodlr);
+        array_push($separador->recibos, $anterior);
+        // si no tienen el mismo proyecto 
+        if ($por_ant != $por_act) {
+            // generar variable de totales
+            $totales->quetzales = round(array_sum($montos_dia_gtq), 2);
+            $totales->dolares = round(array_sum($montos_dia_dlr), 2);
+            $separador->totales = $totales;
+            // empujar a array global de recibo los recibos separados
+            array_push($recibos, $separador);
+            // limpiar variables 
+            $totales = new StdClass;
+            $montos_dia_gtq = array();
+            $montos_dia_dlr = array();
+            $separador = new StdClass;
+            $separador->nombre = $por_act;
+            $separador->recibos = array();
+        }
+        // para empujar la ultima variable
+        if ($i+1 == $cntsRecibos) {
+            array_push($montos_dia_gtq, $actual->montogtq);
+            array_push($montos_dia_dlr, $actual->montodlr);
+            array_push($separador->recibos, $actual);
+            $totales->quetzales = round(array_sum($montos_dia_gtq), 2);
+            $totales->dolares = round(array_sum($montos_dia_dlr), 2);
+            $separador->totales = $totales;
+            array_push($recibos, $separador);
+        }
+    }
+
+    print json_encode(['fechas' => $letra, 'recibos' => $recibos]);
 
 });
 

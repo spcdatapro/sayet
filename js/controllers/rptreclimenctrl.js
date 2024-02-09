@@ -11,7 +11,7 @@
 
             $scope.params = {
                 fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(),                
-                idempresa: []
+                idempresa: [], tipo: '1'
             };
 
             $scope.content = `${window.location.origin}/sayet/blank.html`;

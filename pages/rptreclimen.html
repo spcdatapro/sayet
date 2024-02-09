@@ -4,13 +4,13 @@
             <div class="panel-heading">Recibos de cliente</div>
             <div class="panel-body">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="txtDel">Del:</label>
                             <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.fdel" placeholder="Del"/>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label for="txtAl">Al:</label>
                             <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fal" placeholder="Al"/>
@@ -35,6 +35,15 @@
                                 </ui-select-choices>
                                 <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
                             </ui-select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="selTipo" class="control-label">Ver por:</label>
+                            <select name="selTipo" id="selTipo" class="form-control" ng-model="params.tipo">
+                                <option value="1">Fecha</option>
+                                <option value="2">Proyecto</option>
+                            </select>
                         </div>
                     </div>
                 </div>
