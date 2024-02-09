@@ -89,7 +89,7 @@ $app->post('/mensual', function(){
                 FROM
                     detcobroventa e
                 INNER JOIN factura g ON e.idfactura = g.id
-                INNER JOIN contrato d ON g.idcontrato = d.id LIMIT 1) g ON g.idrecibo = a.id
+                INNER JOIN contrato d ON g.idcontrato = d.id GROUP BY e.idrecibocli) g ON g.idrecibo = a.id
                     LEFT JOIN
                 proyecto h ON g.idproyecto = h.id
             WHERE
