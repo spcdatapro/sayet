@@ -89,7 +89,7 @@ $app->post('/mensual', function(){
                 FROM
                     detcobroventa e
                 INNER JOIN factura g ON e.idfactura = g.id
-                INNER JOIN contrato d ON g.idcontrato = d.id) g ON g.idrecibo = a.id
+                INNER JOIN contrato d ON g.idcontrato = d.id LIMIT 1) g ON g.idrecibo = a.id
                     LEFT JOIN
                 proyecto h ON g.idproyecto = h.id
             WHERE
@@ -140,7 +140,7 @@ $app->post('/mensual', function(){
             $separador->nombre = $por_act;
             $separador->recibos = array();
         }
-        // para empujar la ultima variable
+        // para empujar el ultimo dato
         if ($i+1 == $cntsRecibos) {
             array_push($montos_dia_gtq, $actual->montogtq);
             array_push($montos_dia_dlr, $actual->montodlr);
