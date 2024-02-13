@@ -54,14 +54,13 @@
             });
         };
 
-        // $scope.printPDF = function () {
-        //     var test = false;
-        //     $scope.params.fdelstr = moment($scope.params.fdel).isValid() ? moment($scope.params.fdel).format('YYYY-MM-DD') : '';
-        //     $scope.params.falstr = moment($scope.params.fal).isValid() ? moment($scope.params.fal).format('YYYY-MM-DD') : '';
-        //     $scope.params.isrempleados = $scope.params.isrempleados != null && $scope.params.isrempleados != undefined ? $scope.params.isrempleados : 0.00;
-        //     $scope.params.isrcapital = $scope.params.isrcapital != null && $scope.params.isrcapital != undefined ? $scope.params.isrcapital : 0.00;
-        //     jsReportSrvc.getPDFReport(test ? '' : 'Syl1vw2K-', $scope.params).then(function (pdf) { $window.open(pdf); });
-        // };
+        $scope.printPDF = function () {
+            var test = false;
+            $scope.params.fdelstr = moment($scope.params.fdel).isValid() ? moment($scope.params.fdel).format('YYYY-MM-DD') : '';
+            $scope.params.falstr = moment($scope.params.fal).isValid() ? moment($scope.params.fal).format('YYYY-MM-DD') : '';
+            console.log($scope.params);
+            jsReportSrvc.getPDFReport(test ? '' : 'SJR863Dop', $scope.params).then(function (pdf) { $window.open(pdf); });
+        };
 
     }]);
     //------------------------------------------------------------------------------------------------------------------------------------------------//

@@ -891,16 +891,17 @@ $app->get('/compiva/:fdel/:fal/:cuales/:idempresa', function($fdel, $fal, $cuale
     $db = new dbcpm();
 
     $query = "SELECT 
+                a.fechaingreso,
                 a.id,
                 a.fechafactura AS fecha,
                 a.documento AS numero,
                 b.nit,
-                b.nombre AS proveedor,
+                SUBSTRING(b.nombre, 1, 35) AS proveedor,
                 a.subtotal,
                 a.iva,
                 a.totfact AS total,
                 a.retiva,
-                IFNULL(c.noform, 'No registrado') AS form,
+                IFNULL(c.noform, '') AS form,
                 d.simbolo AS moneda,
                 c.noacceso, 
                 c.fecha AS fform, 
@@ -921,17 +922,18 @@ $app->get('/compiva/:fdel/:fal/:cuales/:idempresa', function($fdel, $fal, $cuale
                     AND a.retiva > 0 
                     AND a.idempresa = $idempresa ";
     $query.= $cuales == 0 ? 'UNION ALL' : ($cuales == 1 ? 'AND c.idformiva > 0 UNION ALL' : 'AND c.idformiva IS NULL UNION ALL');
-    $query.= "  SELECT 
+    $query.= "  SELECT
+                a.fechaingreso, 
                 a.id,
                 a.fechafactura AS fecha,
                 a.documento AS numero,
                 b.nit,
-                b.nombre AS proveedor,
+                SUBSTRING(b.nombre, 1, 35) AS proveedor,
                 a.subtotal,
                 a.iva,
                 a.totfact AS total,
                 a.retiva,
-                IFNULL(c.noform, 'No registrado') AS form,
+                IFNULL(c.noform, '') AS form,
                 d.simbolo AS moneda,
                 c.noacceso, 
                 c.fecha AS fform, 
@@ -951,8 +953,119 @@ $app->get('/compiva/:fdel/:fal/:cuales/:idempresa', function($fdel, $fal, $cuale
                     AND a.idreembolso > 0
                     AND a.retiva > 0 
                     AND a.idempresa = $idempresa ";
-    $query.= $cuales == 0 ? 'ORDER BY 2' : ($cuales == 1 ? 'AND c.idformiva > 0 ORDER BY 2' : 'AND c.idformiva IS NULL ORDER BY 2');
+    $query.= $cuales == 0 ? 'ORDER BY 1 ' : ($cuales == 1 ? 'AND c.idformiva > 0 ORDER BY 2' : 'AND c.idformiva IS NULL ORDER BY 2');
     print $db->doSelectASJson($query);
+});
+
+$app->post('/rptiva', function() {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    // meses
+    $mesdel = date("m", strtotime($d->fdelstr));
+    $mesal = date("m", strtotime($d->falstr));
+
+    // anios
+    $aniodel = ' '.date("Y", strtotime($d->fdelstr));
+    $anioal = ' '.date("Y", strtotime($d->falstr));
+
+    // dias
+    $diadel = date("d", strtotime($d->fdelstr)).' ';
+    $dial = date("d", strtotime($d->falstr)).' ';
+
+    // array de nombre de meses
+    $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+
+    // validar si solo estan obteniendo un anio
+    if ($aniodel == $anioal) {
+        $aniodel = '';
+    }
+
+    // clase para fechas
+    $letra = new stdClass();
+
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y');
+
+    $letra->del = $diadel.strtoupper($meses[$mesdel-1]).$aniodel;
+
+    // validar si solo estan obteniendo un mes
+    if ($diadel != $dial || $mesal != $mesdel) {
+        $letra->al = 'a '.$dial.strtoupper($meses[$mesal-1]).$anioal;
+    } else {
+        $letra->al = $anioal;
+    }
+    $letra->empresa = $db->getOneField("SELECT nomempresa FROM empresa WHERE id = $d->idempresa");
+
+    $query = "SELECT 
+                a.fechaingreso,
+                a.id,
+                DATE_FORMAT(a.fechafactura, '%d/%m/%Y') AS fecha,
+                a.documento AS numero,
+                a.serie,
+                b.nit,
+                b.nombre AS proveedor,
+                a.subtotal,
+                a.iva,
+                a.totfact AS total,
+                a.retiva,
+                IFNULL(c.noform, '') AS form,
+                d.simbolo AS moneda,
+                c.noacceso, 
+                c.fecha AS fform, 
+                c.mes, 
+                c.anio
+            FROM
+                compra a
+                    INNER JOIN
+                proveedor b ON a.idproveedor = b.id
+                    LEFT JOIN
+                formiva c ON c.idcompra = a.id
+                    INNER JOIN
+                moneda d ON a.idmoneda = d.id
+            WHERE
+                a.fechafactura >= '$d->fdelstr'
+                    AND a.fechafactura <= '$d->falstr'
+                    AND a.idreembolso = 0
+                    AND a.retiva > 0 
+                    AND a.idempresa = $d->idempresa ";
+    $query.= $d->cuales == 0 ? 'UNION ALL' : ($d->cuales == 1 ? 'AND c.idformiva > 0 UNION ALL' : 'AND c.idformiva IS NULL UNION ALL');
+    $query.= "  SELECT
+                a.fechaingreso, 
+                a.id,
+                DATE_FORMAT(a.fechafactura, '%d/%m/%Y') AS fecha,
+                a.documento AS numero,
+                a.serie,
+                b.nit,
+                b.nombre AS proveedor,
+                a.subtotal,
+                a.iva,
+                a.totfact AS total,
+                a.retiva,
+                IFNULL(c.noform, '') AS form,
+                d.simbolo AS moneda,
+                c.noacceso, 
+                c.fecha AS fform, 
+                c.mes, 
+                c.anio
+            FROM
+                compra a
+                    INNER JOIN
+                proveedor b ON a.idproveedor = b.id
+                    LEFT JOIN
+                formiva c ON c.idcompra = a.id
+                    INNER JOIN
+                moneda d ON a.idmoneda = d.id
+            WHERE
+                a.fechafactura >= '$d->fdelstr'
+                    AND a.fechafactura <= '$d->falstr'
+                    AND a.idreembolso > 0
+                    AND a.retiva > 0 
+                    AND a.idempresa = $d->idempresa ";
+    $query.= $d->cuales == 0 ? 'ORDER BY 1' : ($d->cuales == 1 ? 'AND c.idformiva > 0 ORDER BY 2' : 'AND c.idformiva IS NULL ORDER BY 2');
+    $compra = $db->getQuery($query);
+
+    print json_encode([ 'encabezado' => $letra, 'cuerpo' => $compra ]);
 });
 
 $app->run();
