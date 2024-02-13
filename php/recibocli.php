@@ -394,12 +394,8 @@ $app->post('/prntrecint', function() {
 
 $app->post('/prtrecibocli', function() {
     $d = json_decode(file_get_contents('php://input'));
-    $db = new dbcpm();
-
-    // extencion para numero a letras
     $n2l = new NumberToLetterConverter();
-
-    // traer data del recibo
+    $db = new dbcpm();
     $query =
                 "SELECT 
                     a.serie,
@@ -409,6 +405,7 @@ $app->post('/prtrecibocli', function() {
                     IF(a.serie = 'A',
                         CONCAT(b.seriea, ' (ANULADO)'),
                         CONCAT(b.serieb, ' (ANULADO)'))) AS numero,
+                    FORMAT(SUM(c.monto), 2) AS montorecli,
                     e.simbolo AS monedarecli,
                     DAY(a.fecha) AS dia,
                     MONTH(a.fecha) AS mes,
@@ -434,9 +431,12 @@ $app->post('/prtrecibocli', function() {
                     empresa g ON a.idempresa = g.id
                 WHERE
                 a.id = $d->idrecibo ";
-    $recibo = $db->getQuery($query)[0];
+    $recibo = $db->getQuery($query);
 
-    // traer facturas
+    $recibo[0]->montoletras = $n2l->to_word($recibo[0]->montorecli, 'GTQ');
+
+    // facturas
+
     $query = 
                 "SELECT  
                     c.serie AS seriefact,
@@ -461,15 +461,14 @@ $app->post('/prtrecibocli', function() {
                 a.id = $d->idrecibo ";
     $facturas = $db->getQuery($query);
 
-    // traer cheques
+    // cheques
+
     $query = "SELECT 
                     IFNULL(CONCAT(e.abreviatura, '-', b.numero),
                             CONCAT('(', e.abreviatura, ') ', e.descripcion)) AS numero,
                     IFNULL(c.nombre, '') AS banco,
                     d.simbolo AS moneda,
-                    ROUND(b.monto, 2) AS monto,
-                    d.id AS idmoneda,
-                    b.tipocambio
+                    FORMAT(b.monto, 2) AS monto
                 FROM
                     recibocli a
                         INNER JOIN
@@ -484,32 +483,15 @@ $app->post('/prtrecibocli', function() {
                     b.idreccli = $d->idrecibo ";
     $cheques = $db->getQuery($query);
 
-    // monto del recibo, ahora se traer por medio de los cheques
-    $suma = array();
-    $cntsCheques = count($cheques);
-
-    for ($i = 0; $i < $cntsCheques; $i++) {
-        $cheque = $cheques[$i];
-
-        // validar que el monto sea en quetzales
-        $monto = $cheque->idmoneda == 1 ? $cheque->monto : $cheque->monto * $cheque->tipocambio;
-
-        array_push($suma, $monto);
-    }
-
-    $recibo->montoletras = $n2l->to_word(round(array_sum($suma), 2), 'GTQ');
-    $recibo->montorecli = number_format(array_sum($suma), 2, '.', ',');
-
     setImpreso($d->idrecibo, $db);
 
-    print json_encode(['recibo' => $recibo, 'facturas' => $facturas, 'cheques' => $cheques]);
+    print json_encode(['recibo' => $recibo[0], 'facturas' => $facturas, 'cheques' => $cheques]);
 });
 
 $app->post('/cp', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $query = "INSERT INTO detpagorecli(idreccli, numero, idbanco, idmoneda, monto, tipotrans, tipocambio) 
-    VALUES($d->idrecibocli, $d->numero, $d->idbanco, $d->idmoneda, $d->monto, $d->idtipotrans, $d->tipocambio)";
+    $query = "INSERT INTO detpagorecli(idreccli, numero, idbanco, idmoneda, monto, tipotrans) VALUES($d->idrecibocli, $d->numero, $d->idbanco, $d->idmoneda, $d->monto, $d->idtipotrans)";
     $db->doQuery($query);
 });
 
@@ -523,7 +505,7 @@ $app->post('/up', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
     $query = "UPDATE detpagorecli SET numero = $d->numero, idbanco = $d->idbanco, idmoneda = $d->idmoneda, 
-            monto = $d->monto, tipotrans = $d->idtipotrans, tipocambio = $d->tipocambio WHERE id = $d->id ";
+            monto = $d->monto, tipotrans = $d->idtipotrans WHERE id = $d->id ";
     $db->doQuery($query);
 });
 
@@ -536,8 +518,7 @@ $app->get('/getpagorecli/:idrecibo', function($idrecibo){
                 IFNULL(c.nombre, '') AS banco,
                 d.simbolo AS moneda,
                 FORMAT(b.monto, 2) AS monto, 
-                e.abreviatura AS tipotrans,
-                b.tipocambio
+                e.abreviatura AS tipotrans
             FROM
                 recibocli a
                     INNER JOIN
@@ -626,7 +607,7 @@ $app->get('/getlstrec/:idtran', function($idtran) {
 $app->get('/getpago/:idpago', function($idpago){
     $db = new dbcpm();
     $query = "SELECT 
-                id, numero, idbanco, idmoneda, ROUND(monto, 2) AS monto, tipotrans AS idtipotrans, tipocambio
+                id, numero, idbanco, idmoneda, ROUND(monto, 2) AS monto, tipotrans AS idtipotrans
             FROM
                 detpagorecli
             WHERE

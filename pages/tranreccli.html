@@ -389,7 +389,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="selMon" class="control-label">Moneda:</label>
                                             <select name="selMon" id="selMon" class="form-control" ng-model="pagoreccli.objMoneda" 
@@ -397,22 +397,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label for="tipoCambio">Tipo de cambio:</label>
-                                            <div class="input-group">
-                                                <input type="number" class="form-control" ng-model="pagoreccli.tipocambio" name="tipoCambio" 
-                                                id="tipoCambio" step=".00001" />
-                                                <div class="input-group-btn">
-                                                    <button type="button" class="btn btn-primary"
-                                                        ng-click="pagoreccli.tipocambio = tipocambiogt">
-                                                        <span>TC</span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="intValor">Monto:</label>
                                             <input type="text" class="form-control" ng-model="pagoreccli.monto" placeholder="4503.01"/>
@@ -432,14 +417,12 @@
                                     <tr>
                                         <th style="text-align: center; border-top: 0px;">Numero</th>
                                         <th style="text-align: center; border-top: 0px;">Banco</th>
-                                        <th style="text-align: center; border-top: 0px;">Tipo de cambio</th>
                                         <th style="text-align: center; border-top: 0px;">Monto</th>
                                     </tr>
                                     <tr ng-repeat="tr in lstpagorecli" ng-click="getPagoRecli(tr.id)">
                                         <tb style="text-align: center;"></tb>
                                         <td style="text-align: center;">{{tr.tipotrans}} {{tr.numero}}</td>
                                         <td style="text-align: center;">{{tr.banco}}</td>
-                                        <td style="text-align: center;">{{tr.tipocambio}}</td>
                                         <td style="text-align: center;">{{tr.moneda}}.{{tr.monto}}</td>
                                         <td style="text-align: right;">
                                             <button type="button" class="btn btn-danger btn-sm tipo" data-toggle="tooltip" data-placement="auto" 
