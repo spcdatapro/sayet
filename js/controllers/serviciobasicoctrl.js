@@ -85,7 +85,7 @@
                 $scope.servicio.objTipo = $filter('getById')($scope.tipos, $scope.servicio.idtiposervicio);
                 $scope.servicio.objProveedor = $filter('getById')($scope.proveedores, $scope.servicio.idproveedor);
                 $scope.servicio.objEmpresa = $filter('getById')($scope.empresas, $scope.servicio.idempresa);
-                $scope.servicio.unidad = $filter('getById')($scope.unidades, $scope.servicio.idunidad);
+                $scope.servicio.idunidad = $scope.servicio.idunidad;
                 servicioBasicoSrvc.historico(idservicio).then(function (d) { $scope.historico = d; });
                 servicioBasicoSrvc.historicoCantBase(idservicio).then(function (d) {
                     for (var i = 0; i < d.length; i++) { d[i].fechacambio = moment(d[i].fechacambio).toDate(); }
@@ -114,13 +114,13 @@
             obj.idpadre = obj.idpadre != null && obj.idpadre != undefined ? obj.idpadre : 0;
             obj.fechapre = obj.fechapre != null && obj.fechapre != undefined ? obj.fechapre : 0;
             obj.fechaemi = obj.fechaemi != null && obj.fechaemi != undefined ? obj.fechaemi : 0;
-            obj.idunidad = obj.unidad != null && obj.unidad != undefined ? +obj.unidad: 0;
+            obj.idunidad = obj.idunidad != null && obj.idunidad != undefined ? +obj.idunidad: 0;
             // console.log(obj); return;
             return obj;
         }
 
         $scope.addServicio = function (obj) {
-            //console.log(obj); return;
+            // console.log(obj); return;
             obj = setObjSend(obj);
             servicioBasicoSrvc.editRow(obj, 'c').then(function (d) {
                 $scope.getLstServicios();
