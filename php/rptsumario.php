@@ -152,7 +152,8 @@ $app->post('/sumarioold', function(){
 
 });
 
-$app->post('/sumario', function(){
+// anterior
+$app->post('/sumarioant', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
@@ -179,6 +180,197 @@ $app->post('/sumario', function(){
     }
 
     print json_encode($sumario);
+});
+
+// nuevo
+$app->post('/sumario', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $separador = new StdClass;
+    $totales = new StdClass;
+    $monto_anterior = array();
+    $monto_depositos = array();
+    $monto_girados = array();
+    $monto_credito = array();
+    $monto_debito = array();
+    $monto_actual = array();
+    $primero = true;
+    $sumario = array();
+
+    $encabezado = new StdClass;
+    $encabezado->moneda = $d->idmoneda == 3 ? 'Todas' : $db->getOneField("SELECT CONCAT(nommoneda, ' (', simbolo, ')') FROM moneda WHERE id = $d->idmoneda");
+    // $encabezado->tipo = $d->tipo == 1 ? 'EMPRESA' : $d->tipo == 2 ? 'PERSONAL' : 'GENERAL';
+
+    if ($d->tipo == 1) {
+        $grupos = '1, 4';
+        $encabezado->tipo = 'POR EMPRESA';
+    } else if ($d->tipo == 2) {
+        $grupos = '2, 3';
+        $encabezado->tipo = 'PERSONAL';
+    } else {
+        $query = "SELECT GROUP_CONCAT(DISTINCT gruposumario) FROM banco WHERE gruposumario > 0 ";
+        $query.= $d->idmoneda != 3 ?  "AND idmoneda = $d->idmoneda" : '';
+        $grupos = $db->getOneField($query);
+        $encabezado->tipo = 'GENERAL';
+    }
+
+    $query = "SELECT 
+                a.id,
+                a.gruposumario AS grupo,
+                a.idmoneda, 
+                CONCAT(IF(a.gruposumario = 3, 'Financiera Personal ', IF(a.gruposumario = 1, 'Empresarial ', IF(a.gruposumario = 4, 'Financiera ', 'Personal '))), c.nombre, ' (', c.simbolo, ')') AS nombre,
+                CONCAT(a.siglas, ' / ', a.nocuenta) AS empresa,
+                c.simbolo AS moneda,
+                c.eslocal,
+                SUM(IF(d.tipotrans IN ('D' , 'R')
+                        AND d.fecha < '$d->fechastr',
+                    d.monto,
+                    IF(d.fecha < '$d->fechastr',
+                        d.monto * - 1, 
+                        NULL))) AS saldoanterior,
+                SUM(IF(d.fecha = '$d->fechastr' AND d.tipotrans = 'D',
+                    d.monto,
+                    NULL)) AS depositos,
+                SUM(IF(d.fecha = '$d->fechastr' AND d.tipotrans = 'C',
+                    d.monto,
+                    NULL)) AS girados,
+                SUM(IF(d.fecha = '$d->fechastr' AND d.tipotrans = 'R',
+                    d.monto,
+                    NULL)) AS credito,
+                SUM(IF(d.fecha = '$d->fechastr' AND d.tipotrans = 'B',
+                    d.monto,
+                    NULL)) AS debito,
+                SUM(IF(d.tipotrans IN ('D' , 'R') 
+                        AND d.fecha <= '$d->fechastr',
+                    d.monto,
+                    IF(d.fecha <= '$d->fechastr',
+                        d.monto * - 1, 
+                        NULL))) AS saldoactual
+            FROM
+                banco a
+                    INNER JOIN
+                (SELECT 
+                    b.id, b.propia
+                FROM
+                    empresa b) b ON b.id = a.idempresa
+                    INNER JOIN
+                (SELECT 
+                    c.id, c.simbolo, c.eslocal, c.nommoneda AS nombre
+                FROM
+                    moneda c) c ON c.id = a.idmoneda
+                    INNER JOIN
+                (SELECT 
+                    d.idbanco, d.monto, d.tipotrans, d.fecha
+                FROM
+                    tranban d) d ON d.idbanco = a.id
+            WHERE
+                a.debaja = 0
+                    AND a.gruposumario IN ($grupos)
+                    AND b.propia = 1 ";
+    $query.= $d->solomov == 1 ? "AND (SELECT count(id) FROM tranban WHERE idbanco = a.id AND fecha = '$d->fechastr') > 0 " : '';
+    $query.= $d->idmoneda != 3 ? "AND a.idmoneda = $d->idmoneda GROUP BY a.id ORDER BY a.gruposumario, a.idmoneda, a.ordensumario" : "GROUP BY a.id ORDER BY a.gruposumario, a.idmoneda, a.ordensumario";
+    // echo $query; return;
+    $data = $db->getQuery($query);
+    
+    $cntsCuentas = count($data);
+
+    for ($i = 1; $i < $cntsCuentas; $i++) {
+        // traer valor actual y anterior
+        $actual = $data[$i];
+        $anterior = $data[$i-1];
+
+        // si es el primero insertar nombre del separador y crear array de recibos
+        if ($primero) {
+            $separador->grupo = $anterior->grupo;
+            $separador->moneda = $anterior->nombre;
+            $separador->idmoneda = $anterior->idmoneda;
+            $separador->bancos = array();
+            $primero = false;
+        }
+        // siempre empujar el monto anterior ya que fue validado anteriormente
+        array_push($monto_anterior, $anterior->saldoanterior);
+        array_push($monto_depositos, $anterior->depositos);
+        array_push($monto_girados, $anterior->girados);
+        array_push($monto_credito, $anterior->credito);
+        array_push($monto_debito, $anterior->debito);
+        array_push($monto_actual, $anterior->saldoactual);
+        array_push($separador->bancos, $anterior);
+
+        // si no tienen el mismo separador
+        if ($actual->idmoneda != $anterior->idmoneda || $actual->grupo != $anterior->grupo) {
+            // generar variable de totales
+            $totales->saldoanterior = round(array_sum($monto_anterior), 2);
+            $totales->depositos = round(array_sum($monto_depositos), 2);
+            $totales->girados = round(array_sum($monto_girados), 2);
+            $totales->credito = round(array_sum($monto_credito), 2);
+            $totales->debito = round(array_sum($monto_debito), 2);
+            $totales->saldoactual = round(array_sum($monto_actual), 2);
+            $separador->totales = $totales;
+
+            // empujar a array global de recibo los recibos separados
+            array_push($sumario, $separador);
+            // limpiar variables 
+            $totales = new StdClass;
+            $monto_anterior = array();
+            $monto_depositos = array();
+            $monto_girados = array();
+            $monto_credito = array();
+            $monto_debito = array();
+            $monto_actual = array();
+            $separador = new StdClass;
+            $separador->grupo = $actual->grupo;
+            $separador->moneda = $actual->nombre;
+            $separador->idmoneda = $actual->idmoneda;
+            $separador->bancos = array();
+        }
+        // para empujar el ultimo dato
+        if ($i+1 == $cntsCuentas) {
+            array_push($monto_anterior, $actual->saldoanterior);
+            array_push($monto_depositos, $actual->depositos);
+            array_push($monto_girados, $actual->girados);
+            array_push($monto_credito, $actual->credito);
+            array_push($monto_debito, $actual->debito);
+            array_push($monto_actual, $actual->saldoactual);
+            array_push($separador->bancos, $actual);
+            $totales->saldoanterior = round(array_sum($monto_anterior), 2);
+            $totales->depositos = round(array_sum($monto_depositos), 2);
+            $totales->girados = round(array_sum($monto_girados), 2);
+            $totales->credito = round(array_sum($monto_credito), 2);
+            $totales->debito = round(array_sum($monto_debito), 2);
+            $totales->saldoactual = round(array_sum($monto_actual), 2);
+            $separador->totales = $totales;
+            array_push($sumario, $separador);
+
+            // limpiar 
+            $monto_anterior = array();
+            $monto_depositos = array();
+            $monto_girados = array();
+            $monto_credito = array();
+            $monto_debito = array();
+            $monto_actual = array();
+        }
+    }
+
+    $encabezado->tc = $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio ORDER BY fecha DESC LIMIT 1");
+
+    foreach ($sumario as $sum) {
+        $tc = $sum->idmoneda == 1 ? 1.00 : $encabezado->tc;
+        array_push($monto_anterior, $sum->totales->saldoanterior * $tc);
+        array_push($monto_depositos, $sum->totales->depositos * $tc);
+        array_push($monto_girados, $sum->totales->girados * $tc);
+        array_push($monto_credito, $sum->totales->credito * $tc);
+        array_push($monto_debito, $sum->totales->debito * $tc);
+        array_push($monto_actual, $sum->totales->saldoactual * $tc);
+    }
+
+    $encabezado->saldoanterior = number_format(array_sum($monto_anterior), 2, '.', ',');
+    $encabezado->depositos = number_format(array_sum($monto_depositos), 2, '.', ',');
+    $encabezado->girados = number_format(array_sum($monto_girados), 2, '.', ',');
+    $encabezado->credito = number_format(array_sum($monto_credito), 2, '.', ',');
+    $encabezado->debito = number_format(array_sum($monto_debito), 2, '.', ',');
+    $encabezado->saldoactual = number_format(array_sum($monto_actual), 2, '.', ',');
+
+    print json_encode(['encabezado' => $encabezado, 'sumario' => $sumario]);
 });
 
 $app->run();

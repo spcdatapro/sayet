@@ -969,7 +969,7 @@ function empresaRetenedora ($db, $idempresa) {
 $app->get('/revertir/:idfactura', function($idfactura){
     $db = new dbcpm();
 
-    $query = "UPDATE cargo SET facaturado = 0 AND idfactura = 0 WHERE idfactura = $idfactura";
+    $query = "UPDATE cargo SET facturado = 0 AND idfactura = 0 WHERE idfactura = $idfactura";
     $db->doQuery($query);
 
     $query = "DELETE FROM detfact WHERE idfactura = $idfactura";

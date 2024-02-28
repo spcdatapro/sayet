@@ -2,29 +2,46 @@
     <div class="panel panel-default">
         <div class="panel-body">
             <div class="row">
-                <div class="col-xs-3 col-md-3">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label>Fecha:</label>
-                        <input type="date" ng-model="params.fecha" class="form-control"/>
+                        <input type="date" ng-model="params.fecha" class="form-control" />
                     </div>
                 </div>
-                <div class="col-xs-2 col-md-2">
+                <div class="col-md-2">
                     <div class="form-group">
                         <label>Moneda:</label>
-                        <select name="selMon" id="selMon" class="form-control" ng-model="params.idmoneda" ng-options="obj.id as obj.simbolo for obj in monedas"></select>
+                        <select name="selMoneda" id="selMoneda" class="form-control" ng-model="params.idmoneda">
+                            <option value="1">Quetzales (Q)</option>
+                            <option value="2">D&oacute;lares ($)</option>
+                            <option value="3">Todas</option>
+                        </select>
                     </div>
                 </div>
-                <div class="col-xs-3 col-md-3">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label>Ver solo con movimiento:</label>
-                        <input type="checkbox" ng-model="params.solomov" class="form-control" ng-true-value="1" ng-false-value="0"/>
+                        <input type="checkbox" ng-model="params.solomov" class="form-control" ng-true-value="1"
+                            ng-false-value="0" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label" for="selTipo">Agrupar por:</label>
+                        <select name="selTipo" id="selTipo" class="form-control" ng-model="params.tipo">
+                            <option value="1">Empresa</option>
+                            <option value="2">Personal</option>
+                            <option value="3">Todas</option>
+                        </select>
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn btn-primary btn-sm" ng-disabled="params.fecha == null || params.fecha == undefined" ng-click="getRptSumario()">
+            <button type="button" class="btn btn-primary btn-sm"
+                ng-disabled="params.fecha == null || params.fecha == undefined" ng-click="getRptSumario()">
                 <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
             </button>
-            <button type="button" class="btn btn-primary btn-sm" ng-disabled="params.fecha == null || params.fecha == undefined" ng-click="getSumarioGeneral()">
+            <button type="button" class="btn btn-primary btn-sm"
+                ng-disabled="params.fecha == null || params.fecha == undefined" ng-click="getSumarioGeneral()">
                 <i class="fa fa-globe" aria-hidden="true"></i>
             </button>
             <button type="button" class="btn btn-primary btn-sm" ng-click="resetParams()">
@@ -35,8 +52,8 @@
     <div class="row" ng-show="estaGenerando">
         <div class="col-md-6 col-md-offset-3">
             <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
-                <span class="label label-primary">Se está generando el sumario y su detalle, por favor espere...</span>
-                <img ng-src="img/generando.gif" alt="Generando PDF..." style="width: 25px; height: 25px;"/>
+                <span class="label label-primary">Se está generando el sumario, por favor espere...</span>
+                <img ng-src="img/generando.gif" alt="Generando PDF..." style="width: 25px; height: 25px;" />
             </div>
         </div>
     </div>
