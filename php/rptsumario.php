@@ -230,16 +230,16 @@ $app->post('/sumario', function(){
                         NULL))) AS saldoanterior,
                 SUM(IF(d.fecha = '$d->fechastr' AND d.tipotrans = 'D',
                     d.monto,
-                    NULL)) AS depositos,
+                    0)) AS depositos,
                 SUM(IF(d.fecha = '$d->fechastr' AND d.tipotrans = 'C',
                     d.monto,
-                    NULL)) AS girados,
+                    0)) AS girados,
                 SUM(IF(d.fecha = '$d->fechastr' AND d.tipotrans = 'R',
                     d.monto,
-                    NULL)) AS credito,
+                    0)) AS credito,
                 SUM(IF(d.fecha = '$d->fechastr' AND d.tipotrans = 'B',
                     d.monto,
-                    NULL)) AS debito,
+                    0)) AS debito,
                 SUM(IF(d.tipotrans IN ('D' , 'R') 
                         AND d.fecha <= '$d->fechastr',
                     d.monto,
@@ -267,9 +267,7 @@ $app->post('/sumario', function(){
                 a.debaja = 0
                     AND a.gruposumario IN ($grupos)
                     AND b.propia = 1 ";
-    $query.= $d->solomov == 1 ? "AND (SELECT count(id) FROM tranban WHERE idbanco = a.id AND fecha = '$d->fechastr') > 0 " : '';
     $query.= $d->idmoneda != 3 ? "AND a.idmoneda = $d->idmoneda GROUP BY a.id ORDER BY a.gruposumario, a.idmoneda, a.ordensumario" : "GROUP BY a.id ORDER BY a.gruposumario, a.idmoneda, a.ordensumario";
-    // echo $query; return;
     $data = $db->getQuery($query);
     
     $cntsCuentas = count($data);
@@ -294,7 +292,9 @@ $app->post('/sumario', function(){
         array_push($monto_credito, $anterior->credito);
         array_push($monto_debito, $anterior->debito);
         array_push($monto_actual, $anterior->saldoactual);
-        array_push($separador->bancos, $anterior);
+        if ($d->solomov == 0 || $anterior->saldoactual > 0) {
+            array_push($separador->bancos, $anterior);
+        }
 
         // si no tienen el mismo separador
         if ($actual->idmoneda != $anterior->idmoneda || $actual->grupo != $anterior->grupo) {
@@ -331,7 +331,9 @@ $app->post('/sumario', function(){
             array_push($monto_credito, $actual->credito);
             array_push($monto_debito, $actual->debito);
             array_push($monto_actual, $actual->saldoactual);
-            array_push($separador->bancos, $actual);
+            if ($d->solomov == 0 || $actual->saldoactual > 0) {
+                array_push($separador->bancos, $actual);
+            }
             $totales->saldoanterior = round(array_sum($monto_anterior), 2);
             $totales->depositos = round(array_sum($monto_depositos), 2);
             $totales->girados = round(array_sum($monto_girados), 2);
