@@ -440,9 +440,6 @@ $app->post('/genfactfel', function() {
 
         // $datosFel->correlativofel++;
 
-        // concepto solo para panifresh
-        $panifresh = $p->idcliente == 53 ? ' De Km 19.5 Bárcenas Villa Nueva, complejo Unisur, Bodega D5, Villa Nueva, Guatemala.' : '';
-
         if (($p->cf == 1) || ($p->cf == 0 && $p->nit != 'CF')) {
 
             $p = revisaMontos($db, $p);
@@ -460,7 +457,7 @@ $app->post('/genfactfel', function() {
             $query.= "serieadmin, numeroadmin, porretiva, importeexento, importeexentocnv, exentoiva, tipoidreceptor";
             $query.= ") VALUES (";
             $query.= "$params->idempresa, 1, $p->idcontrato, $p->idcliente, ";
-            $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '". str_replace(',', ', ', strip_tags($p->tipo)).$panifresh."', $p->iva, ";
+            $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '". str_replace(',', ', ', strip_tags($p->tipo))."', $p->iva, ";
             $query.= "$p->totapagar, $p->montoconiva, '$montoletras', 1, $p->tc, ";
             $query.= "$p->isrporretener, $p->ivaporretener, $p->descuentoconiva, '$p->nit', '$p->facturara', '$p->direccion', $p->idmonedafact, ";
             $query.= "$p->montoconivacnv, $p->totapagarcnv, $p->ivaporretenercnv, $p->isrporretenercnv, $p->descuentoconivacnv, ";
@@ -504,7 +501,7 @@ $app->post('/genfactfel', function() {
                         if((float)$det->montoconiva != 0){
                             $db->doQuery($query);
                             $lastidDetalle = $db->getLastId();
-                            $descripcionLarga = getDescripcionLarga($lastid, $lastidDetalle);
+                            $descripcionLarga = getDescripcionLarga($lastid, $lastidDetalle, $p->idcliente);
                             $query = "UPDATE detfact SET descripcionlarga = '$descripcionLarga' WHERE id = $lastidDetalle";
                             $db->doQuery($query);
                         }
@@ -522,7 +519,7 @@ $app->post('/genfactfel', function() {
     }
 });
 
-function getDescripcionLarga($idfactura, $iddetallefactura) {
+function getDescripcionLarga($idfactura, $iddetallefactura, $idcliente = null) {
     $db = new dbcpm();
     $meses = [2 => 2, 3 => 5, 4 => 1];
     $periodo = '';
@@ -557,7 +554,10 @@ function getDescripcionLarga($idfactura, $iddetallefactura) {
         }
     }
 
-    $query = "SELECT DISTINCT TRIM(CONCAT(IF(b.esinsertada = 0, IF(a.idtiposervicio <> 4, CONCAT(UPPER(TRIM(e.desctiposervventa)), ', ', TRIM(d.nomproyecto), ', ', 
+    // concepto solo para panifresh
+    $panifresh = $idcliente == 53 ? 'KM 19.5 BÁRCENAS VILLA NUEVA, COMPLEJO ' : '';
+
+    $query = "SELECT DISTINCT TRIM(CONCAT(IF(b.esinsertada = 0, IF(a.idtiposervicio <> 4, CONCAT(UPPER(TRIM(e.desctiposervventa)), ', ', '$panifresh', TRIM(d.nomproyecto), ', ',
     TRIM(UnidadesPorContrato(c.id)), ', Mes de ', ".($periodo == '' ? "f.nombre, ' del año ', a.anio" : ("'".$periodo."'"))."), TRIM(a.descripcion)), TRIM(a.descripcion)), ' ', 
     IFNULL(a.conceptoadicional, ''))) AS descripcion 
     FROM detfact a INNER JOIN factura b ON b.id = a.idfactura LEFT JOIN contrato c ON c.id = b.idcontrato LEFT JOIN proyecto d ON d.id = c.idproyecto 
