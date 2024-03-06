@@ -435,10 +435,13 @@ $app->post('/genfactfel', function() {
     $query = "SELECT IFNULL(seriefel, 'A') AS seriefel, NULL AS correlativofel FROM empresa WHERE id = $params->idempresa";
     $datosFel = $db->getQuery($query)[0];
     // $datosFel->correlativofel = (int)$datosFel->correlativofel;
-    
+
     foreach($pendientes as $p) {
 
         // $datosFel->correlativofel++;
+
+        // concepto solo para panifresh
+        $panifresh = $p->idcliente == 53 ? ' De Km 19.5 Bárcenas Villa Nueva, complejo Unisur, Bodega D5, Villa Nueva, Guatemala.' : '';
 
         if (($p->cf == 1) || ($p->cf == 0 && $p->nit != 'CF')) {
 
@@ -457,7 +460,7 @@ $app->post('/genfactfel', function() {
             $query.= "serieadmin, numeroadmin, porretiva, importeexento, importeexentocnv, exentoiva, tipoidreceptor";
             $query.= ") VALUES (";
             $query.= "$params->idempresa, 1, $p->idcontrato, $p->idcliente, ";
-            $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '". str_replace(',', ', ', strip_tags($p->tipo))."', $p->iva, ";
+            $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '". str_replace(',', ', ', strip_tags($p->tipo)).$panifresh."', $p->iva, ";
             $query.= "$p->totapagar, $p->montoconiva, '$montoletras', 1, $p->tc, ";
             $query.= "$p->isrporretener, $p->ivaporretener, $p->descuentoconiva, '$p->nit', '$p->facturara', '$p->direccion', $p->idmonedafact, ";
             $query.= "$p->montoconivacnv, $p->totapagarcnv, $p->ivaporretenercnv, $p->isrporretenercnv, $p->descuentoconivacnv, ";
