@@ -295,8 +295,11 @@ $app->post('/genfact', function(){
                 $p->numfact = "NULL";
                 $p->tipofact = "1";
             }
+            
+            // solo para cliente panifresh
+            $panifresh = $d->idcliente == 53 ? 'Km 19.5 Bárcenas Villa Nueva, complejo ' : '';
 
-            $descripcion = $p->tipo.' DE '.$p->proyecto.' '.$p->unidad.', Contador: '.$p->numidentificacion.', Consumo(m3): '.$p->consumoafacturar.' Mes de '.$p->nommes.' '.$p->anio;
+            $descripcion = $p->tipo.' DE '.$panifresh.$p->proyecto.' '.$p->unidad.', Contador: '.$p->numidentificacion.', Consumo(m3): '.$p->consumoafacturar.' Mes de '.$p->nommes.' '.$p->anio;
             $qiva = ((float)$p->montoconiva - (float)$p->descuento) - (((float)$p->montoconiva - (float)$p->descuento) / 1.12);
             $query = "INSERT INTO factura(";
             $query.= "idempresa, idtipofactura, idcontrato, idcliente, serie, numero, ";
