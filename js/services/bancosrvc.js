@@ -13,7 +13,7 @@
             getBanco: (idbanco) => comunFact.doGET(urlBase + '/getbco/' + idbanco),
             getCorrelativoBco: (idbanco) => comunFact.doGET(urlBase + '/getcorrelabco/' + idbanco),
             checkTranExists: (idbanco, tipotrans, numero) => comunFact.doGET(urlBase + '/chkexists/' + idbanco + '/' + tipotrans + '/' + numero),
-            getCuentasSumario: (idmoneda, fdelstr, falstr)=> comunFact.doGET(urlBase + '/ctassumario/' + idmoneda + '/' + fdelstr + '/' + falstr),
+            getCuentasSumario: (idmoneda, fdelstr, falstr, tipo)=> comunFact.doGET(urlBase + '/ctassumario/' + idmoneda + '/' + fdelstr + '/' + falstr + '/' + tipo),
             editRow: (obj, op) => comunFact.doPOST(urlBase + '/' + op, obj),
             rptEstadoCta: (obj) => comunFact.doPOST(urlBase + '/rptestcta', obj),
             lstNombreBancosActivos: (idempresa) => comunFact.doGET(`${urlBase}/lstnombrebcosactivos` + (idempresa ? `/${idempresa}` : ''))

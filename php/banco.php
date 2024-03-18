@@ -115,13 +115,24 @@ function conmovs($idbanco, $fdelstr, $falstr){
     return ((int)$db->getOneField("SELECT COUNT(id) AS cuantos FROM tranban WHERE idbanco = $idbanco AND fecha >= '$fdelstr' AND fecha <= '$falstr' AND anulado = 0") > 0);
 };
 
-$app->get('/ctassumario/:idmoneda/:fdelstr/:falstr', function($idmoneda, $fdelstr, $falstr){
+$app->get('/ctassumario/:idmoneda/:fdelstr/:falstr/:tipo', function($idmoneda, $fdelstr, $falstr, $tipo){
     $db = new dbcpm();
+
+    if ($tipo == 1) {
+        $grupos = '1, 4';
+    } else if ($tipo == 2) {
+        $grupos = '2, 3';
+    } else {
+        $query = "SELECT GROUP_CONCAT(DISTINCT gruposumario) FROM banco WHERE gruposumario > 0 ";
+        $query.= $d->idmoneda != 3 ?  "AND idmoneda = $d->idmoneda" : '';
+        $grupos = $db->getOneField($query);
+    }
 
     $enviar = [];
     $query = "SELECT a.id, CONCAT(a.siglas, ' / ', a.nocuenta) AS empresa, c.simbolo AS moneda, c.eslocal ";
     $query.= "FROM banco a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN moneda c ON c.id = a.idmoneda ";
     $query.= "WHERE a.debaja = 0 AND b.propia = 1 AND c.id = $idmoneda ";
+    $query.= isset($grupos) ? "AND a.gruposumario IN($grupos) " : "";
     $query.= "ORDER BY a.gruposumario, a.ordensumario";
     $cuentas = $db->getQuery($query);
     $cntCuentas = count($cuentas);

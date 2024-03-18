@@ -33,10 +33,10 @@
             $scope.params.idbanco = 0;
             $scope.params.resumen = 1;
 
-            bancoSrvc.getCuentasSumario(+$scope.params.idmoneda, $scope.params.fdelstr, $scope.params.falstr).then(function (d) {
+            bancoSrvc.getCuentasSumario(+$scope.params.idmoneda, $scope.params.fdelstr, $scope.params.falstr, $scope.params.tipo).then(function (d) {
                 var url = window.location.origin + ':5489/api/report', props = {}, file, formData = new FormData();
 
-                props = { 'template': { 'shortid': 'Sy5fg9vy-' }, 'data': $scope.params };
+                props = { 'template': { 'shortid': 'By_inM6jp' }, 'data': $scope.params };
                 $http.post(url, props, { responseType: 'arraybuffer' }).then(function (response) {
                     file = new Blob([response.data], { type: 'application/pdf' });
                     formData.append('sumario', file);
