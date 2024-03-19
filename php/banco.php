@@ -124,14 +124,15 @@ $app->get('/ctassumario/:idmoneda/:fdelstr/:falstr/:tipo', function($idmoneda, $
         $grupos = '2, 3';
     } else {
         $query = "SELECT GROUP_CONCAT(DISTINCT gruposumario) FROM banco WHERE gruposumario > 0 ";
-        $query.= $d->idmoneda != 3 ?  "AND idmoneda = $d->idmoneda" : '';
+        $query.= $idmoneda != 3 ?  "AND idmoneda = $idmoneda" : '';
         $grupos = $db->getOneField($query);
     }
 
     $enviar = [];
     $query = "SELECT a.id, CONCAT(a.siglas, ' / ', a.nocuenta) AS empresa, c.simbolo AS moneda, c.eslocal ";
     $query.= "FROM banco a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN moneda c ON c.id = a.idmoneda ";
-    $query.= "WHERE a.debaja = 0 AND b.propia = 1 AND c.id = $idmoneda ";
+    $query.= "WHERE a.debaja = 0 AND b.propia = 1 ";
+    $query.= $idmoneda != 3 ? "AND c.id = $idmoneda " : "";
     $query.= isset($grupos) ? "AND a.gruposumario IN($grupos) " : "";
     $query.= "ORDER BY a.gruposumario, a.ordensumario";
     $cuentas = $db->getQuery($query);
