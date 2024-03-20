@@ -353,7 +353,7 @@ $app->post('/sumario', function(){
         }
     }
 
-    $encabezado->tc = $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio ORDER BY fecha DESC LIMIT 1");
+    $encabezado->tc = $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio WHERE fecha = '$d->fechastr' LIMIT 1");
 
     foreach ($sumario as $sum) {
         $tc = $sum->idmoneda == 1 ? 1.00 : $encabezado->tc;
