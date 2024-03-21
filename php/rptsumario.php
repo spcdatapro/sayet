@@ -353,11 +353,15 @@ $app->post('/sumario', function(){
         }
     }
 
+    $fecha_ant = date("Y-m-d", strtotime($d->fechastr . " -1 day"));
+
     $encabezado->tc = $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio WHERE fecha = '$d->fechastr' LIMIT 1");
+    $encabezado->tcant = $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio WHERE fecha = '$fecha_ant' LIMIT 1");
 
     foreach ($sumario as $sum) {
         $tc = $sum->idmoneda == 1 ? 1.00 : $encabezado->tc;
-        array_push($monto_anterior, $sum->totales->saldoanterior * $tc);
+        $tc_ant = $sum->idmoneda == 1 ? 1.00 : $encabezado->tcant;
+        array_push($monto_anterior, $sum->totales->saldoanterior * $tc_ant);
         array_push($monto_depositos, $sum->totales->depositos * $tc);
         array_push($monto_girados, $sum->totales->girados * $tc);
         array_push($monto_credito, $sum->totales->credito * $tc);
