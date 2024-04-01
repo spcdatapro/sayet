@@ -69,7 +69,7 @@
         $scope.envioFacturacion = function(){
             $confirm({text: '¿Seguro(a) de enviar a facturación? (Una vez enviado, no podrá modificar los datos)', title: 'Envío a facturación', ok: 'Sí', cancel: 'No'}).then(function() {
                 $scope.lecturas.forEach(function(item){
-                    if(+item.estatus == 1){
+                    if(+item.estatus == 1 && item.lectura > 0){
                         if($scope.params.idservicio != ''){ $scope.params.idservicio += ','; }
                         $scope.params.idservicio += item.id;
                     }
