@@ -26,8 +26,7 @@
             <div class="panel panel-primary">
                 <div class="panel-heading">Facturas de compra&nbsp;<span class="badge">{{facturastr}}</span></div>
                 <div class="panel-body">
-                    <form name="frmCompra" id="frmCompra" ng-submit="frmCompra.$valid && revisar(laCompra)"
-                        novalidate>
+                    <form name="frmCompra" id="frmCompra" ng-submit="frmCompra.$valid && revisar(laCompra)" novalidate>
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="form-group required"
@@ -317,9 +316,21 @@
                                 <div class="form-group"
                                     ng-class="{'has-error':frmCompra.txtISR.$invalid && !frmCompra.txtISR.$pristine}">
                                     <label for="txtISR">I.S.R.:</label>
-                                    <input name="txtISR" id="txtISR" type="text" class="form-control"
-                                        ng-model="laCompra.isr" placeholder="I.S.R."
-                                        fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true" />
+                                    <div class="input-group">
+                                        <div class="input-group-btn btn-group">
+                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                                ng-disabled="periodoCerrado || !laCompra.isr">
+                                                <span class="glyphicon glyphicon-pencil"></span>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a ng-click="modISR(true)"><span class="glyphicon glyphicon-arrow-up"></span></a></li>
+                                                <li><a ng-click="modISR(false)"><span class="glyphicon glyphicon-arrow-down"></span></a></li>
+                                            </ul>
+                                        </div>
+                                        <input name="txtISR" id="txtISR" type="text" class="form-control"
+                                            ng-model="laCompra.isr" placeholder="I.S.R."
+                                            fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -364,10 +375,23 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group"
-                                ng-class="{'has-error':frmCompra.selMoneda.$invalid && !frmCompra.selMoneda.$pristine}">
-                                <label for="retIVA">Ret. IVA</label>
-                                <input name="retIVA" id="retIVA" type="text" class="form-control" ng-model="laCompra.retiva"
-                                fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true">
+                                    ng-class="{'has-error':frmCompra.selMoneda.$invalid && !frmCompra.selMoneda.$pristine}">
+                                    <label for="retIVA">Ret. IVA</label>
+                                    <div class="input-group">
+                                        <div class="input-group-btn btn-group">
+                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                                ng-disabled="periodoCerrado || !laCompra.retiva">
+                                                <span class="glyphicon glyphicon-pencil"></span>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a ng-click="modRIVA(true)"><span class="glyphicon glyphicon-arrow-up"></span></a></li>
+                                                <li><a ng-click="modRIVA(false)"><span class="glyphicon glyphicon-arrow-down"></span></a></li>
+                                            </ul>
+                                        </div>
+                                        <input name="retIVA" id="retIVA" type="text" class="form-control"
+                                            ng-model="laCompra.retiva" fcsa-number="{ min:0, maxDecimals: 2 }" required
+                                            ng-disabled="true">
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -468,8 +492,7 @@
                             </div>
                         </div>
                         <div class="row" ng-show="laCompra.retiva > 0">
-                            <div class="col-md-6 col-md-offset-3"
-                                ng-show="laCompra.noformiva > 0">
+                            <div class="col-md-6 col-md-offset-3" ng-show="laCompra.noformiva > 0">
                                 <div class="well well-sm" style="text-align: center">
                                     <h4>Formulario de retenci&oacute;n de IVA</h4>
                                     <h5>No. formulario: {{laCompra.noformiva}}&nbsp;--&nbsp;No. acceso:
@@ -478,8 +501,7 @@
                                         {{laCompra.mesiva}}&nbsp;--&nbsp;A&ntilde;o: {{laCompra.anioiva}}</h5>
                                 </div>
                             </div>
-                            <div class="col-md-6 col-md-offset-3" 
-                                ng-hide="laCompra.noformiva > 0">
+                            <div class="col-md-6 col-md-offset-3" ng-hide="laCompra.noformiva > 0">
                                 <div class="well well-sm" style="text-align: center;">
                                     <span style="font-weight: bold;">
                                         FORMULARIO DE RETENCI&Oacute;N DE IVA NO REGISTRADO

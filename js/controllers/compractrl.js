@@ -858,6 +858,42 @@
 
             };
 
+            $scope.modISR = function (agregar) {
+                if (agregar) {
+                    $scope.laCompra.isr = (+$scope.laCompra.isr + 0.01).toFixed(2);
+                } else {
+                    $scope.laCompra.isr = (+$scope.laCompra.isr - 0.01).toFixed(2);
+                }
+
+                var suma = agregar ? 0 : 1;
+
+                compraSrvc.modificarISR($scope.laCompra.id, $scope.laCompra.isr, $scope.laCompra.idempresa, suma).then(function (d){
+                    $scope.getCompra($scope.laCompra.id);
+                    toaster.pop({
+                        type: d.tipo, title: 'Modificación de ISR.',
+                        body: d.mensaje, timeout: 9000
+                    });
+                });
+            }
+
+            $scope.modRIVA = function (agregar) {
+                if (agregar) {
+                    $scope.laCompra.retiva = (+$scope.laCompra.retiva + 0.01).toFixed(2);
+                } else {
+                    $scope.laCompra.retiva = (+$scope.laCompra.retiva - 0.01).toFixed(2);
+                }
+
+                var suma = agregar ? 0 : 1;
+
+                compraSrvc.modificarRIVA($scope.laCompra.id, $scope.laCompra.retiva, $scope.laCompra.idempresa, suma).then(function (d){
+                    $scope.getCompra($scope.laCompra.id);
+                    toaster.pop({
+                        type: d.tipo, title: 'Modificación de retención de IVA.',
+                        body: d.mensaje, timeout: 9000
+                    });
+                });
+            }
+
         }]);
     //------------------------------------------------------------------------------------------------------------------------------------------------//
     compractrl.controller('ModalCtasGastoProvCtrl', ['$scope', '$uibModalInstance', 'lstctasgasto', function ($scope, $uibModalInstance, lstctasgasto) {
