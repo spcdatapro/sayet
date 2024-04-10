@@ -131,10 +131,9 @@ $app->get('/ctassumario/:idmoneda/:fdelstr/:falstr/:tipo', function($idmoneda, $
     $enviar = [];
     $query = "SELECT a.id, CONCAT(a.siglas, ' / ', a.nocuenta) AS empresa, c.simbolo AS moneda, c.eslocal ";
     $query.= "FROM banco a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN moneda c ON c.id = a.idmoneda ";
-    $query.= "WHERE a.debaja = 0 AND b.propia = 1 ";
-    $query.= $idmoneda != 3 ? "AND c.id = $idmoneda " : "";
-    $query.= isset($grupos) ? "AND a.gruposumario IN($grupos) " : "";
-    $query.= "ORDER BY a.gruposumario, a.ordensumario";
+    $query.= "WHERE a.debaja = 0 AND b.propia = 1 AND a.gruposumario IN($grupos) ";
+    $query.= $idmoneda != 3 ? "AND a.idmoneda = $idmoneda GROUP BY a.id ORDER BY a.gruposumario, a.idmoneda, a.ordensumario" : 
+    "GROUP BY a.id ORDER BY a.gruposumario, a.idmoneda, a.ordensumario";
     $cuentas = $db->getQuery($query);
     $cntCuentas = count($cuentas);
     for($i = 0; $i < $cntCuentas; $i++){
