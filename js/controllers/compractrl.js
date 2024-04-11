@@ -867,7 +867,7 @@
 
                 var suma = agregar ? 0 : 1;
 
-                compraSrvc.modificarISR($scope.laCompra.id, $scope.laCompra.isr, $scope.laCompra.idempresa, suma).then(function (d){
+                compraSrvc.modificarISR($scope.laCompra.id, $scope.laCompra.isr, $scope.laCompra.idempresa, suma, $scope.laCompra.tipocambio).then(function (d){
                     $scope.getCompra($scope.laCompra.id);
                     toaster.pop({
                         type: d.tipo, title: 'Modificación de ISR.',
@@ -885,7 +885,7 @@
 
                 var suma = agregar ? 0 : 1;
 
-                compraSrvc.modificarRIVA($scope.laCompra.id, $scope.laCompra.retiva, $scope.laCompra.idempresa, suma).then(function (d){
+                compraSrvc.modificarRIVA($scope.laCompra.id, $scope.laCompra.retiva, $scope.laCompra.idempresa, suma, $scope.laCompra.tipocambio).then(function (d){
                     $scope.getCompra($scope.laCompra.id);
                     toaster.pop({
                         type: d.tipo, title: 'Modificación de retención de IVA.',

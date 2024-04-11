@@ -44,8 +44,8 @@
             getDocLiquida: (idnota) => comunFact.doGET(`${urlBase}/docliquida/${idnota}`),
             getComprasIVA: (fdel, fal, cuales, idempresa) => 
             comunFact.doGET(`${urlBase}/compiva/${fdel}/${fal}/${cuales}/${idempresa}`),
-            modificarISR: (idcompra, monto, idempresa, suma) => comunFact.doGET(`${urlBase}/uisr/${idcompra}/${monto}/${idempresa}/${suma}`), 
-            modificarRIVA: (idcompra, monto, idempresa, suma) => comunFact.doGET(`${urlBase}/uriva/${idcompra}/${monto}/${idempresa}/${suma}`)
+            modificarISR: (idcompra, monto, idempresa, suma, tc) => comunFact.doGET(`${urlBase}/uisr/${idcompra}/${monto}/${idempresa}/${suma}/${tc}`), 
+            modificarRIVA: (idcompra, monto, idempresa, suma, tc) => comunFact.doGET(`${urlBase}/uriva/${idcompra}/${monto}/${idempresa}/${suma}/${tc}`)
         };
     }]);
 
