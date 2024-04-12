@@ -958,7 +958,7 @@ $app->post('/notaban', function () {
             a.id,
             CONCAT('P', YEAR(a.fecha), LPAD(MONTH(a.fecha), 2, '0'), LPAD(DAY(a.fecha), 2, '0'), LPAD(1, 2, '0'), LPAD(a.id, 7, '0')) AS poliza,
             IF(a.tipotrans = 'C', 'CHEQUE', 
-                IF(a.tipotrans = 'D', 'DÉBITO', 
+                IF(a.tipotrans = 'D', 'DEPÓSITO', 
                     IF(a.tipotrans = 'R', 'NOTA DE CRÉDITO BANCARIA', 
                         ' NOTA DE DÉBITO BANCARIA'))) AS nombre,
             c.nomempresa AS empresa,
