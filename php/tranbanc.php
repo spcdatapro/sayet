@@ -43,7 +43,7 @@ $app->get('/gettran/:idtran', function($idtran){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idbanco, CONCAT(b.nombre, ' (', b.nocuenta, ')') AS nombanco, a.tipotrans, a.numero, a.fecha, a.monto,  a.retisr, a.montooriginal, a.isr, a.montocalcisr, ";
     $query.= "a.beneficiario, a.concepto, a.operado, a.anticipo, a.idbeneficiario, a.origenbene, a.anulado, c.razon, a.fechaanula, a.tipocambio, d.simbolo AS moneda, a.impreso, a.fechaliquida, a.esnegociable, ";
-    $query.= "CONCAT('OT: ', e.idpresupuesto, '-', e.correlativo, ' (', g.nombre,')') AS ot, a.iddetpresup, a.iddetpagopresup, a.idproyecto, a.iddocliquida, group_concat(h.id) AS idrecibocli ";
+    $query.= "CONCAT('OT: ', e.idpresupuesto, '-', e.correlativo, ' (', g.nombre,')') AS ot, a.iddetpresup, a.iddetpagopresup, a.idproyecto, a.iddocliquida, group_concat(h.id) AS idrecibocli, a.numban ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco LEFT JOIN razonanulacion c ON c.id = a.idrazonanulacion LEFT JOIN moneda d ON d.id = b.idmoneda ";
     $query.= "LEFT JOIN detpresupuesto e ON e.id = a.iddetpresup LEFT JOIN presupuesto f ON f.id = e.idpresupuesto LEFT JOIN proveedor g ON g.id = e.idproveedor LEFT JOIN recibocli h ON a.id = h.idtranban ";
     $query.= "WHERE a.id = ".$idtran;
@@ -103,10 +103,12 @@ $app->post('/c', function(){
     $db = new dbcpm();
     $ttsalida = ['C', 'B'];
     $tentrada = ['D', 'R'];
+    $d->numban = !isset($d->numban) ? 'null' : $d->numban;
     $query = "INSERT INTO tranban(idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, anticipo, idbeneficiario, origenbene, tipocambio, esnegociable, iddetpresup, ";
-    $query.= "iddetpagopresup, idproyecto, iddocliquida, retisr, montooriginal, isr, montocalcisr) ";
+    $query.= "iddetpagopresup, idproyecto, iddocliquida, retisr, montooriginal, isr, montocalcisr, numban) ";
     $query.= "VALUES(".$d->idbanco.", '".$d->tipotrans."', '".$d->fechastr."', ".$d->monto.", '".$d->beneficiario."', '".$d->concepto."', ";
-    $query.= $d->numero.", ".$d->anticipo.", ".$d->idbeneficiario.", ".$d->origenbene.", ".$d->tipocambio.", $d->esnegociable, $d->iddetpresup, $d->iddetpagopresup, $d->idproyecto, $d->iddocliquida, $d->retisr, $d->montooriginal, $d->isr, $d->montocalcisr)";
+    $query.= $d->numero.", ".$d->anticipo.", ".$d->idbeneficiario.", ".$d->origenbene.", ".$d->tipocambio.", $d->esnegociable, $d->iddetpresup, ";
+    $query.= "$d->iddetpagopresup, $d->idproyecto, $d->iddocliquida, $d->retisr, $d->montooriginal, $d->isr, $d->montocalcisr, $d->numban)";
     $db->doQuery($query);
     $lastid = $db->getLastId();
     if(in_array($d->tipotrans, $tentrada)){
@@ -156,11 +158,12 @@ $app->post('/c', function(){
 $app->post('/u', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    $d->numban = !isset($d->numban) ? 'null' : $d->numban;
     $query = "UPDATE tranban SET tipotrans = '".$d->tipotrans."', ";
     $query.= "fecha = '$d->fechastr', monto = $d->monto, beneficiario = '$d->beneficiario', concepto = '$d->concepto', ";
     $query.= "operado = $d->operado, numero = $d->numero, anticipo = $d->anticipo, idbeneficiario = $d->idbeneficiario, ";
     $query.= "origenbene = $d->origenbene, tipocambio = $d->tipocambio, esnegociable = $d->esnegociable, iddetpresup = $d->iddetpresup, ";
-    $query.= "iddetpagopresup = $d->iddetpagopresup, idproyecto = $d->idproyecto, iddocliquida = $d->iddocliquida ";
+    $query.= "iddetpagopresup = $d->iddetpagopresup, idproyecto = $d->idproyecto, iddocliquida = $d->iddocliquida, numban = $d->numban ";
     $query.= "WHERE id = $d->id";
     $db->doQuery($query);
 
@@ -937,6 +940,81 @@ $app->post('/calcisr', function(){
         'isr' => $d->isr,
         'monto' => $d->monto
     ]);
+});
+
+$app->post('/notaban', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $debe = array();
+    $haber = array();
+
+    // clase para fechas
+    $letra = new stdClass();
+
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y');
+
+    $query = "SELECT 
+            a.id,
+            CONCAT('P', YEAR(a.fecha), LPAD(MONTH(a.fecha), 2, '0'), LPAD(DAY(a.fecha), 2, '0'), LPAD(1, 2, '0'), LPAD(a.id, 7, '0')) AS poliza,
+            IF(a.tipotrans = 'C', 'CHEQUE', 
+                IF(a.tipotrans = 'D', 'DÉBITO', 
+                    IF(a.tipotrans = 'R', 'NOTA DE CRÉDITO BANCARIA', 
+                        ' NOTA DE DÉBITO BANCARIA'))) AS nombre,
+            c.nomempresa AS empresa,
+            b.nombre AS banco,
+            d.simbolo AS moneda,
+            a.numero,
+            DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
+            a.beneficiario,
+            FORMAT(a.monto, 2) AS monto,
+            a.concepto,
+            a.tipocambio,
+            'D.A' AS creado
+        FROM
+            tranban a
+                INNER JOIN
+            banco b ON a.idbanco = b.id
+                INNER JOIN
+            empresa c ON b.idempresa = c.id
+                INNER JOIN
+            moneda d ON b.idmoneda = d.id
+        WHERE
+            a.id = $d->idtran";
+    $datos = $db->getQuery($query)[0];
+
+    $query = "SELECT 
+                a.id,
+                b.codigo,
+                SUBSTR(b.nombrecta, 1, 60) AS cuenta,
+                a.debe,
+                a.haber
+            FROM
+                detallecontable a
+                    INNER JOIN
+                cuentac b ON a.idcuenta = b.id
+            WHERE
+                a.idorigen = $d->idtran AND a.origen = 1";
+    $polizas = $db->getQuery($query);
+
+    $cntsPolizas = count($polizas);
+
+    for ($i = 0; $i < $cntsPolizas; $i++) {
+        $poliza = $polizas[$i];
+        array_push($debe, $poliza->debe);
+        array_push($haber, $poliza->haber);
+    }
+
+    $total = new StdClass;
+
+    $total->id = '';
+    $total->codigo = '';
+    $total->cuenta = 'Totales';
+    $total->debe = round(array_sum($debe), 2);
+    $total->haber = round(array_sum($haber), 2);
+    array_push($polizas, $total);
+
+    print json_encode(['fechas' => $letra, 'datos' => $datos, 'poliza' => $polizas]);
 });
 
 $app->run();

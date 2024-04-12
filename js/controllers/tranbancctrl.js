@@ -234,7 +234,8 @@
                 idproyecto: undefined,
                 iddocliquida: undefined,
                 recibocli: undefined,
-                idrecibocli: undefined
+                idrecibocli: undefined,
+                numban: undefined
             };
             $scope.lasTran = [];
             $scope.lstndc = [];
@@ -394,6 +395,7 @@
                 data[i].montooriginal = parseFloat(parseFloat(data[i].montooriginal).toFixed(2));
                 data[i].isr = parseFloat(parseFloat(data[i].isr).toFixed(2));
                 data[i].montocalcisr = parseFloat(parseFloat(data[i].montocalcisr).toFixed(2));
+                data[i].numban = +data[i].numban;
             }
             return data;
         }
@@ -787,6 +789,9 @@
                     $scope.laTran.monto = d.monto
             });
         };
+
+        $scope.printNota = (idtranban) => jsReportSrvc.getPDFReport('HJOc0ctkC', { idtran: idtranban }).then((pdf) => $window.open(pdf));
+
     }]);
 
     //------------------------------------------------------------------------------------------------------------------------------------------------//

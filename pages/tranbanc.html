@@ -120,8 +120,7 @@
                                         <ui-select-match placeholder="Buscar orden de trabajo..." allow-clear="true">
                                             <span ng-bind="($select.selected.ot)"></span>
                                         </ui-select-match>
-                                        <ui-select-choices
-                                            repeat="item.id as item in ots | filter:$select.search">
+                                        <ui-select-choices repeat="item.id as item in ots | filter:$select.search">
                                             <div ng-bind-html="(item.ot) | highlight: $select.search">
                                             </div>
                                             <small>
@@ -302,6 +301,15 @@
                                     </ui-select>
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="form-group"
+                                    ng-show="laTran.objTipotrans.abreviatura === 'R' || laTran.objTipotrans.abreviatura === 'B'">
+                                    <label class="control-label">N&uacute;mero bancario:</label>
+                                    <input name="txtNumero" id="txtNumero" type="number" class="form-control"
+                                        ng-model="laTran.numban" min="1"
+                                        placeholder="N&uacute;mero de transacci&oacute;n del banco" />
+                                </div>
+                            </div>
                         </div>
                         <!-- <div class="row" ng-show="laTran.objTipotrans.abreviatura === 'C' || laTran.tipotrans === 'C'">
                             <div class="col-md-6">
@@ -388,7 +396,7 @@
                                 ng-click="delTran(laTran)">
                                 <span class="glyphicon glyphicon-trash"></span>
                             </button>
-                            <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printVersion()"
+                            <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printNota(laTran.id)"
                                 ng-disabled="cargando">
                                 <span class="glyphicon glyphicon-print"></span>
                             </button>
@@ -400,6 +408,11 @@
                                 ng-click="printSelloNotaCredito(laTran.id)">
                                 <span>Sello NC</span>
                             </button>
+                            <!-- <button type="button" class="btn btn-primary"
+                                ng-show="editando"
+                                ng-disabled="cargando" ng-click="printVersion()">
+                                <span>Imprimir nota</span>
+                            </button> -->
                             <button type="button" class="btn btn-primary" ng-show="editando" ng-disabled="cargando"
                                 ng-click="resetLaTran()">
                                 <span class="glyphicon glyphicon-plus"></span>
