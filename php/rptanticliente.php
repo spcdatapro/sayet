@@ -373,9 +373,9 @@ function queryFacturas($d){
         ) g ON a.id = g.idfactura
         WHERE a.idtipofactura NOT IN (9, 13) AND a.fecha <= '$d->falstr' AND a.idfox IS NULL AND (a.anulada = 0 OR (a.anulada = 1 AND a.fechaanula > '$d->falstr')) AND ROUND(a.total, 2) - IFNULL(g.montopagado, 0.00) <> 0 AND 
         IF(ISNULL(g.idfactura) AND a.pagada = 1 AND a.forzada = 1, 1 = 0, 1 = 1) ";
-    // $qFacts.= (int)$d->abreviado === 0 ? '' : "AND DATEDIFF('$d->falstr', a.fecha) > 60 ";
+    $qFacts.= (int)$d->abreviado === 0 ? '' : "AND DATEDIFF('$d->falstr', a.fecha) > 60 ";
     $qFacts.= (int)$d->vernegativos === 1 ? '' : ('AND (ROUND(a.total, 2) - IFNULL(g.montopagado, 0.00)) '.((int)$d->pagoextra == 0 ? '>= 0 ' : '< 0 '));
-    $qFacts.= (int)$d->idempresa > 0 ? "AND a.idempresa = $d->idempresa " : '';
+    $qFacts.= (int)$d->idempresa > 0 ? "AND a.idempresa IN($d->idempresa) " : '';
     $qFacts.= (int)$d->idproyecto > 0 ? "AND IF(a.idproyecto = 0, d.id = $d->idproyecto, a.idproyecto = $d->idproyecto) " : '';
     $qFacts.= $cliente != '' ? "AND IF(a.idcliente = 0, a.nombre LIKE '%$cliente%', f.nombre LIKE '%$cliente%') " : '';
     return $qFacts;
@@ -384,7 +384,7 @@ function queryFacturas($d){
 $app->post('/antiguedad', function(){
     $d = json_decode(file_get_contents('php://input'));
     if(!isset($d->falstr)) { $d->falstr = date('Y-m-d'); }
-    if(!isset($d->idempresa)) { $d->idempresa = 0; }
+    $d->idempresa = count($d->idempresa) > 0 ? implode(',', $d->idempresa) : '0';
     if(!isset($d->idproyecto)) { $d->idproyecto = 0; }
     if(!isset($d->detallada)){ $d->detallada = 0; }
     if(!isset($d->orderalfa)){ $d->orderalfa = 1; }

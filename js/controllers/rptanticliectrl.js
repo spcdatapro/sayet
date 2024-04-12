@@ -5,7 +5,7 @@
     rptanticlictrl.controller('rptAntiClientesCtrl', ['$scope',  'authSrvc', 'jsReportSrvc', '$sce','clienteSrvc','empresaSrvc', 'proyectoSrvc', ($scope, authSrvc, jsReportSrvc, $sce, clienteSrvc, empresaSrvc, proyectoSrvc) => {
 
         $scope.params = {
-            al: moment().toDate(), idempresa: undefined, idproyecto: undefined, detallada: 1, orderalfa: 1, cliente: undefined, pagoextra: 0, vernegativos: 1, abreviado: 0
+            al: moment().toDate(), idempresa: [], idproyecto: undefined, detallada: 1, orderalfa: 1, cliente: undefined, pagoextra: 0, vernegativos: 1, abreviado: 0
         };
         $scope.content = `${window.location.origin}/sayet/blank.html`;
         //$scope.clientes = [];
@@ -16,11 +16,11 @@
 
         //clienteSrvc.lstCliente().then((d) => $scope.clientes = d);
 
-        $scope.loadProyectos = (idempresa) => proyectoSrvc.lstProyectosPorEmpresa(+idempresa).then((d) => $scope.proyectos = d);
+        $scope.loadProyectos = (idempresa) => proyectoSrvc.lstProyectosPorEmpresa(+idempresa[0]).then((d) => $scope.proyectos = d);
 
         $scope.resetParams = () => {
             $scope.params = {
-                al: moment().toDate(), idempresa: undefined, idproyecto: undefined, detallada: 1, orderalfa: 1, cliente: undefined, pagoextra: 0, vernegativos: 1
+                al: moment().toDate(), idempresa: [], idproyecto: undefined, detallada: 1, orderalfa: 1, cliente: undefined, pagoextra: 0, vernegativos: 1
             };
             $scope.$broadcast('angucomplete-alt:clearInput', 'txtCliente');
         };
@@ -40,7 +40,6 @@
 
         setParams = () => {
             $scope.params.falstr = moment($scope.params.al).format('YYYY-MM-DD');
-            $scope.params.idempresa = $scope.params.idempresa != null && $scope.params.idempresa !== undefined ? $scope.params.idempresa : 0;
             $scope.params.idproyecto = $scope.params.idproyecto != null && $scope.params.idproyecto !== undefined ? $scope.params.idproyecto : 0;
             $scope.params.detallada = $scope.params.detallada != null && $scope.params.detallada !== undefined ? +$scope.params.detallada : 0;
             $scope.params.orderalfa = $scope.params.orderalfa != null && $scope.params.orderalfa !== undefined ? +$scope.params.orderalfa : 0;

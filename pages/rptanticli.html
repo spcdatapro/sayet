@@ -6,33 +6,41 @@
                 <div class="row">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="selEmpre">Empresa:</label>
-                            <select name="selEmpre" id="selEmpre" class="form-control input-sm" ng-model="params.idempresa" ng-options="obj.id as obj.nomempresa for obj in empresas" ng-change="loadProyectos(params.idempresa)"></select>
+                            <label class="control-label">Empresa: </label>
+                            <ui-select ng-model="params.idempresa"
+                                title="Seleccione una empresa..." theme="bootstrap"
+                                autofocus="false" on-select="loadProyectos(params.idempresa)" multiple>
+                                <ui-select-match placeholder="Seleccionar empresas"
+                                    allow-clear="true">
+                                    <span>{{$item.abreviatura}}</span>
+                                </ui-select-match>
+                                <ui-select-choices 
+                                    repeat="item.id as item in empresas | filter:$select.search"
+                                    group-by="'grupo'">
+                                    <div
+                                        ng-bind-html="(item.nomempresa) | highlight: $select.search">
+                                    </div>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="selProy">Proyecto:</label>
-                            <select name="selProy" id="selProy" class="form-control input-sm" ng-model="params.idproyecto" ng-options="obj.id as obj.nomproyecto for obj in proyectos"></select>
+                            <select name="selProy" id="selProy" class="form-control input-sm"
+                                ng-model="params.idproyecto"
+                                ng-options="obj.id as obj.nomproyecto for obj in proyectos"></select>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="txtCliente" class="control-label">Cliente:</label>
-                            <div angucomplete-alt id="txtCliente"
-                                 placeholder="Buscar cliente..."
-                                 pause="400"
-                                 selected-object="clienteSelected"
-                                 remote-url="php/rptanticliente.php/listaclientes/"
-                                 remote-url-error-callback="errorSearch"
-                                 remote-url-data-field="results"
-                                 title-field="nombre"
-                                 input-class="form-control input-sm"
-                                 match-class="highlight"
-                                 minlength="1"
-                                 field-required="true"
-                                 input-name="txtCliente"
-                                 override-suggestions="true">
+                            <div angucomplete-alt id="txtCliente" placeholder="Buscar cliente..." pause="400"
+                                selected-object="clienteSelected" remote-url="php/rptanticliente.php/listaclientes/"
+                                remote-url-error-callback="errorSearch" remote-url-data-field="results"
+                                title-field="nombre" input-class="form-control input-sm" match-class="highlight"
+                                minlength="1" field-required="true" input-name="txtCliente" override-suggestions="true">
                             </div>
                         </div>
                     </div>
@@ -41,37 +49,44 @@
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="txtAl">Al:</label>
-                            <input name="txtAl" id="txtAl" type="date" class="form-control input-sm" ng-model="params.al" placeholder="Al"/>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control input-sm"
+                                ng-model="params.al" placeholder="Al" />
                         </div>
                     </div>
                     <div class="col-md-1">
                         <div class="form-group">
                             <label for="chkDet">Detallado</label>
-                            <input name="chkDet" id="chkDet" type="checkbox" class="form-control input-sm" ng-model="params.detallada" ng-true-value="1" ng-false-value="0" />
+                            <input name="chkDet" id="chkDet" type="checkbox" class="form-control input-sm"
+                                ng-model="params.detallada" ng-true-value="1" ng-false-value="0" />
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="chkAlfa">Orden alfabético</label>
-                            <input name="chkAlfa" id="chkAlfa" type="checkbox" class="form-control input-sm" ng-model="params.orderalfa" ng-true-value="1" ng-false-value="0" />
+                            <input name="chkAlfa" id="chkAlfa" type="checkbox" class="form-control input-sm"
+                                ng-model="params.orderalfa" ng-true-value="1" ng-false-value="0" />
                         </div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
                             <label for="chkVerNegs">Ver negativos</label>
-                            <input name="chkVerNegs" id="chkVerNegs" type="checkbox" class="form-control input-sm" ng-model="params.vernegativos" ng-true-value="1" ng-false-value="0" />
+                            <input name="chkVerNegs" id="chkVerNegs" type="checkbox" class="form-control input-sm"
+                                ng-model="params.vernegativos" ng-true-value="1" ng-false-value="0" />
                         </div>
                     </div>
                     <div class="col-md-1">
                         <div class="form-group">
                             <label for="chkAbreviado">Abreviado</label>
-                            <input name="chkAbreviado" id="chkAbreviado" type="checkbox" class="form-control input-sm" ng-model="params.abreviado" ng-true-value="1" ng-false-value="0" ng-change="params.pagoextra = 0" />
+                            <input name="chkAbreviado" id="chkAbreviado" type="checkbox" class="form-control input-sm"
+                                ng-model="params.abreviado" ng-true-value="1" ng-false-value="0"
+                                ng-change="params.pagoextra = 0" />
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="chkExt">Ver solo saldos a favor del cliente</label>
-                            <input name="chkExt" id="chkExt" type="checkbox" class="form-control input-sm" ng-model="params.pagoextra" ng-true-value="1" ng-false-value="0" />
+                            <input name="chkExt" id="chkExt" type="checkbox" class="form-control input-sm"
+                                ng-model="params.pagoextra" ng-true-value="1" ng-false-value="0" />
                         </div>
                     </div>
                 </div>
