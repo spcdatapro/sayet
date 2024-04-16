@@ -150,13 +150,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Orden de trabajo:</label>
-                                    <ui-select ng-model="reembolso.ordentrabajo" title="Seleccione una orden de trabajo..."
-                                        theme="bootstrap" autofocus="false" on-select="fillData($item, $model)">
+                                    <ui-select ng-model="reembolso.ordentrabajo"
+                                        title="Seleccione una orden de trabajo..." theme="bootstrap" autofocus="false"
+                                        on-select="fillData($item, $model)">
                                         <ui-select-match placeholder="Buscar orden de trabajo..." allow-clear="true">
                                             <span ng-bind="($select.selected.ot)"></span>
                                         </ui-select-match>
-                                        <ui-select-choices
-                                            repeat="item.id as item in ots | filter:$select.search">
+                                        <ui-select-choices repeat="item.id as item in ots | filter:$select.search">
                                             <div ng-bind-html="(item.ot) | highlight: $select.search">
                                             </div>
                                             <small>
@@ -252,13 +252,13 @@
                             <div class="row">
                                 <div class="col-md-2">
                                     <label for="srchFechDel">Del:</label>
-                                    <input name="srchFechDel" id="srchFechDel" type="date"
-                                    class="form-control input-sm" ng-model="params.fdel" ng-change="getLstReembolsos()"/>
+                                    <input name="srchFechDel" id="srchFechDel" type="date" class="form-control input-sm"
+                                        ng-model="params.fdel" ng-change="getLstReembolsos()" />
                                 </div>
                                 <div class="col-md-2">
                                     <label for="srchFechAl">Al:</label>
-                                    <input name="srchFechAl" id="srchFechAl" type="date"
-                                    class="form-control input-sm" ng-model="params.fal" ng-change="getLstReembolsos()"/>
+                                    <input name="srchFechAl" id="srchFechAl" type="date" class="form-control input-sm"
+                                        ng-model="params.fal" ng-change="getLstReembolsos()" />
                                 </div>
                                 <div class="col-md-3 text-center">
                                     <div>
@@ -560,29 +560,57 @@
                                         required />
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-1">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmCompra.chkRetISR.$invalid && !frmCompra.chkRetISR.$pristine}">
-                                    <label for="chkRetISR">Retener I.S.R.:</label>
+                                    <label for="chkRetISR">Ret. ISR:</label>
                                     <input name="chkRetISR" id="chkRetISR" type="checkbox" class="form-control input-sm"
                                         ng-model="compra.retenerisr" ng-change="calcISR()" ng-true-value="1"
                                         ng-false-value="0" />
                                 </div>
                             </div>
-                            <div class="col-md-1">
+                            <div class="col-md-2">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmCompra.txtISR.$invalid && !frmCompra.txtISR.$pristine}">
-                                    <label for="txtISR">I.S.R.:</label>
-                                    <input name="txtISR" id="txtISR" type="text" class="form-control input-sm"
-                                        ng-model="compra.isr" fcsa-number="{ min:0, maxDecimals:2 }" ng-disabled="true"
-                                        required />
+                                    <label for="txtISR" class="control-label">I.S.R.:</label>
+                                    <div class="input-group">
+                                        <div class="input-group-btn btn-group">
+                                            <button type="button" class="btn btn-sm btn-default dropdown-toggle"
+                                                data-toggle="dropdown"
+                                                ng-disabled="periodoCerrado || compra.isr == 0 || reembolso.estatus == 2">
+                                                <span class="glyphicon glyphicon-pencil"></span>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a ng-click="modISR(true)"><span
+                                                            class="glyphicon glyphicon-arrow-up"></span></a></li>
+                                                <li><a ng-click="modISR(false)"><span
+                                                            class="glyphicon glyphicon-arrow-down"></span></a></li>
+                                            </ul>
+                                        </div>
+                                        <input name="txtISR" id="txtISR" type="text" class="form-control input-sm"
+                                            ng-model="compra.isr" fcsa-number="{ min:0, maxDecimals:2 }"
+                                            ng-disabled="true" required />
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label for="txtRiva">Ret. IVA:</label>
-                                    <input name="txtRiva" id="txtRiva" type="number" class="form-control input-sm"
-                                        ng-model="compra.retiva" ng-disabled="true" step=".01"/>
+                                    <label for="txtRiva" class="control-label">Ret. IVA:</label>
+                                    <div class="input-group">
+                                        <div class="input-group-btn btn-group">
+                                            <button type="button" class="btn btn-sm btn-default dropdown-toggle"
+                                                data-toggle="dropdown"
+                                                ng-disabled="periodoCerrado || compra.retiva == 0 || reembolso.estatus == 2">
+                                                <span class="glyphicon glyphicon-pencil"></span>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a ng-click="modRIVA(true)"><span class="glyphicon glyphicon-arrow-up"></span></a></li>
+                                                <li><a ng-click="modRIVA(false)"><span class="glyphicon glyphicon-arrow-down"></span></a></li>
+                                            </ul>
+                                        </div>
+                                        <input name="txtRiva" id="txtRiva" type="number" class="form-control input-sm"
+                                            ng-model="compra.retiva" ng-disabled="true" step=".01" />
+                                    </div>
                                 </div>
                             </div>
                         </div>

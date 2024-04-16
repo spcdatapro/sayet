@@ -544,4 +544,48 @@ $app->post('/rptpendliquida', function(){
     print json_encode($pendientes);
 });
 
+$app->get('/uisr/:idcompra/:monto/:idempresa/:suma/:idreembolso', function ($idcompra, $monto, $idempresa, $suma, $idreembolso) {
+    $db = new dbcpm();
+
+    $ctaisr = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $idempresa AND idtipoconfig = 8");
+    $ctaliq = (int)$db->getOneField("SELECT idcuentaliq FROM reembolso WHERE id = $idreembolso");
+    if($ctaliq == 0){
+        $ctaliq = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $idempresa AND idtipoconfig = 5");
+    } 
+
+    if ($suma) {
+        $monto_prov = $db->getOneField("SELECT ROUND(haber + 0.01, 2) FROM detallecontable WHERE idorigen = $idcompra AND origen = 2 AND idcuenta = $ctaliq");
+    } else {
+        $monto_prov = $db->getOneField("SELECT ROUND(haber - 0.01, 2) FROM detallecontable WHERE idorigen = $idcompra AND origen = 2 AND idcuenta = $ctaliq");
+    }
+
+    $db->doQuery("UPDATE compra SET isr = $monto WHERE id = $idcompra");
+    $db->doQuery("UPDATE detallecontable SET haber = $monto WHERE idorigen = $idcompra AND origen = 2 AND idcuenta = $ctaisr");
+    $db->doQuery("UPDATE detallecontable SET haber = $monto_prov WHERE idorigen = $idcompra AND origen = 2 AND idcuenta = $ctaliq");
+
+    print json_encode(['tipo' => 'success', 'mensaje' => 'Se ha modificado correctamente.']);;
+});
+
+$app->get('/uriva/:idcompra/:monto/:idempresa/:suma/:idreembolso', function ($idcompra, $monto, $idempresa, $suma, $idreembolso) {
+    $db = new dbcpm();
+
+    $ctaiva = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $idempresa AND idtipoconfig = 28");
+    $ctaliq = (int)$db->getOneField("SELECT idcuentaliq FROM reembolso WHERE id = $idreembolso");
+    if($ctaliq == 0){
+        $ctaliq = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $idempresa AND idtipoconfig = 5");
+    } 
+
+    if ($suma) {
+        $monto_prov = $db->getOneField("SELECT ROUND(haber + 0.01, 2) FROM detallecontable WHERE idorigen = $idcompra AND origen = 2 AND idcuenta = $ctaliq");
+    } else {
+        $monto_prov = $db->getOneField("SELECT ROUND(haber - 0.01, 2) FROM detallecontable WHERE idorigen = $idcompra AND origen = 2 AND idcuenta = $ctaliq");
+    }
+
+    $db->doQuery("UPDATE compra SET retiva = $monto WHERE id = $idcompra");
+    $db->doQuery("UPDATE detallecontable SET haber = $monto WHERE idorigen = $idcompra AND origen = 2 AND idcuenta = $ctaiva");
+    $db->doQuery("UPDATE detallecontable SET haber = $monto_prov WHERE idorigen = $idcompra AND origen = 2 AND idcuenta = $ctaliq");
+
+    print json_encode(['tipo' => 'success', 'mensaje' => 'Se ha modificado correctamente.']);;
+});
+
 $app->run();

@@ -44,7 +44,7 @@
             $scope.periodoCerrado = false;
             $scope.params = {
                 idemp: undefined, estatus: 1, tipo: undefined, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(),
-                fdelstr: undefined, falstr:undefined
+                fdelstr: undefined, falstr: undefined
             };
             $scope.presupuesto = {};
             $scope.ot = {};
@@ -89,7 +89,7 @@
                         empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then((d) => {
                             $scope.reembolso.idempresa = parseInt(d[0].id);
                             $scope.dectc = parseInt(d[0].dectc);
-                            if(!$scope.presupuesto.id) {
+                            if (!$scope.presupuesto.id) {
                                 $scope.resetReembolso();
                                 $scope.resetCompra();
                             }
@@ -102,7 +102,7 @@
                 }
             });
 
-            $scope.esDePresupuesto = async () => {                
+            $scope.esDePresupuesto = async () => {
                 if (+$scope.idot > 0 && !$scope.ot.id) {
                     // console.log('ID OT DESDE REEMBOLSO = ', +$scope.idot);
                     $scope.params.idot = +$scope.idot;
@@ -136,9 +136,9 @@
 
             $scope.loadProyectos = () => {
                 // console.log('REEMBOLSO = ', $scope.reembolso);
-                if(+$scope.reembolso.idempresa){
+                if (+$scope.reembolso.idempresa) {
                     proyectoSrvc.lstProyectosPorEmpresa($scope.reembolso.idempresa).then(d => $scope.proyectos = d);
-                }                
+                }
             }
 
             $scope.proyectoSelected = (item) => $scope.loadUnidadesProyecto(item.id);
@@ -252,7 +252,7 @@
                     retiva: 0.00
                 };
                 //console.log($scope.compra);
-                if(!!$scope.reembolso.objTipoReembolso && !!$scope.reembolso.objTipoReembolso.id) {
+                if (!!$scope.reembolso.objTipoReembolso && !!$scope.reembolso.objTipoReembolso.id) {
                     if (+$scope.reembolso.objTipoReembolso.id === 1) {
                         $scope.compra.idproyecto = $scope.reembolso.idproyecto;
                     }
@@ -274,7 +274,7 @@
 
             $scope.getDetReem = function (idreem) {
                 reembolsoSrvc.lstCompras(idreem).then(function (d) {
-                    $scope.compras = procDataCompras(d);                    
+                    $scope.compras = procDataCompras(d);
 
                     $scope.infocompras.cantidad = $scope.compras.length;
                     $scope.infocompras.sumtotfact = 0.00;
@@ -285,7 +285,7 @@
                     $scope.infocompras.sumtotfact = parseFloat(parseFloat($scope.infocompras.sumtotfact).toFixed(2));
 
                 });
-            };            
+            };
 
             $scope.getReembolso = function (idreembolso, idot) {
                 $scope.resetCompra();
@@ -308,8 +308,8 @@
                             $scope.detcontreem = d;
                         });
                     } else {
-                        if(!$scope.presupuesto.id) {
-                            $scope.resetReembolso();                            
+                        if (!$scope.presupuesto.id) {
+                            $scope.resetReembolso();
                         }
                         $scope.reembolso.objBeneficiario = [$filter('getById')($scope.beneficiarios, $scope.presupuesto.idproveedor)];
                         $scope.reembolso.idempresa = $scope.presupuesto.idempresa;
@@ -571,8 +571,9 @@
                             if (!fechaValida) {
                                 $scope.periodoCerrado = true;
                                 toaster.pop({
-                                type: 'error', title: 'Fecha de ingreso es inválida.',
-                                body: 'No está dentro de ningún período contable abierto.', timeout: 7000});
+                                    type: 'error', title: 'Fecha de ingreso es inválida.',
+                                    body: 'No está dentro de ningún período contable abierto.', timeout: 7000
+                                });
                             } else {
                                 $scope.periodoCerrado = false;
                             }
@@ -593,8 +594,9 @@
                             if (!fechaValida) {
                                 $scope.periodoCerrado = true;
                                 toaster.pop({
-                                type: 'error', title: 'Fecha de ingreso es inválida.',
-                                body: 'No está dentro de ningún período contable abierto.', timeout: 7000});
+                                    type: 'error', title: 'Fecha de ingreso es inválida.',
+                                    body: 'No está dentro de ningún período contable abierto.', timeout: 7000
+                                });
                             } else {
                                 $scope.periodoCerrado = false;
                             }
@@ -921,6 +923,42 @@
                 }
 
             ];
+
+            $scope.modISR = function (agregar) {
+                if (agregar) {
+                    $scope.compra.isr = (+$scope.compra.isr + 0.01).toFixed(2);
+                } else {
+                    $scope.compra.isr = (+$scope.compra.isr - 0.01).toFixed(2);
+                }
+
+                var suma = agregar ? 0 : 1;
+
+                reembolsoSrvc.modificarISR($scope.compra.id, $scope.compra.isr, $scope.compra.idempresa, suma, $scope.compra.idreembolso).then(function (d) {
+                    $scope.rowFacturaExpanded($scope.compra);
+                    toaster.pop({
+                        type: d.tipo, title: 'Modificación de ISR.',
+                        body: d.mensaje, timeout: 9000
+                    });
+                });
+            }
+
+            $scope.modRIVA = function (agregar) {
+                if (agregar) {
+                    $scope.compra.retiva = +(+$scope.compra.retiva + 0.01).toFixed(2);
+                } else {
+                    $scope.compra.retiva = +(+$scope.compra.retiva - 0.01).toFixed(2);
+                }
+
+                var suma = agregar ? 0 : 1;
+
+                reembolsoSrvc.modificarRIVA($scope.compra.id, $scope.compra.retiva, $scope.compra.idempresa, suma, $scope.compra.idreembolso).then(function (d) {
+                    $scope.rowFacturaExpanded($scope.compra);
+                    toaster.pop({
+                        type: d.tipo, title: 'Modificación de retención de IVA.',
+                        body: d.mensaje, timeout: 9000
+                    });
+                });
+            }
         }]);
 
     //------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -962,12 +1000,12 @@
         $scope.$watch('selTipoMonto', function (newVal, oldVal) {
             if (newVal == 1) {
                 actulizarRequerridos(1);
-            } else if (newVal == 2) { 
+            } else if (newVal == 2) {
                 actulizarRequerridos(2);
             }
         });
 
-        
+
         function actulizarRequerridos(campo) {
             switch (campo) {
                 case 1:
