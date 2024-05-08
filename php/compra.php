@@ -897,12 +897,12 @@ $app->get('/compiva/:fdel/:fal/:cuales/:idempresa', function($fdel, $fal, $cuale
                 a.documento AS numero,
                 b.nit,
                 SUBSTRING(b.nombre, 1, 35) AS proveedor,
-                a.subtotal,
-                a.iva,
-                a.totfact AS total,
-                a.retiva,
+                IF(a.idmoneda = 1, a.subtotal, a.subtotal * a.tipocambio) AS subtotal,
+                IF(a.idmoneda = 1, a.iva, a.iva * a.tipocambio) AS iva,
+                IF(a.idmoneda = 1, a.totfact, a.totfact * a.tipocambio) AS total,
+                IF(a.idmoneda = 1, a.retiva, a.retiva * a.tipocambio) AS retiva,
                 IFNULL(c.noform, '') AS form,
-                d.simbolo AS moneda,
+                'Q' AS moneda,
                 c.noacceso, 
                 c.fecha AS fform, 
                 c.mes, 
@@ -929,12 +929,12 @@ $app->get('/compiva/:fdel/:fal/:cuales/:idempresa', function($fdel, $fal, $cuale
                 a.documento AS numero,
                 b.nit,
                 SUBSTRING(b.nombre, 1, 35) AS proveedor,
-                a.subtotal,
-                a.iva,
-                a.totfact AS total,
-                a.retiva,
+                IF(a.idmoneda = 1, a.subtotal, a.subtotal * a.tipocambio) AS subtotal,
+                IF(a.idmoneda = 1, a.iva, a.iva * a.tipocambio) AS iva,
+                IF(a.idmoneda = 1, a.totfact, a.totfact * a.tipocambio) AS total,
+                IF(a.idmoneda = 1, a.retiva, a.retiva * a.tipocambio) AS retiva,
                 IFNULL(c.noform, '') AS form,
-                d.simbolo AS moneda,
+                'Q' AS moneda,
                 c.noacceso, 
                 c.fecha AS fform, 
                 c.mes, 
@@ -953,7 +953,7 @@ $app->get('/compiva/:fdel/:fal/:cuales/:idempresa', function($fdel, $fal, $cuale
                     AND a.idreembolso > 0
                     AND a.retiva > 0 
                     AND a.idempresa = $idempresa ";
-    $query.= $cuales == 0 ? 'ORDER BY 1 ' : ($cuales == 1 ? 'AND c.idformiva > 0 ORDER BY 2' : 'AND c.idformiva IS NULL ORDER BY 2');
+    $query.= $cuales == 0 ? 'ORDER BY 1, 6 ' : ($cuales == 1 ? 'AND c.idformiva > 0 ORDER BY 2' : 'AND c.idformiva IS NULL ORDER BY 2');
     print $db->doSelectASJson($query);
 });
 
@@ -1005,12 +1005,12 @@ $app->post('/rptiva', function() {
                 a.serie,
                 b.nit,
                 b.nombre AS proveedor,
-                a.subtotal,
-                a.iva,
-                a.totfact AS total,
-                a.retiva,
+                IF(a.idmoneda = 1, a.subtotal, a.subtotal * a.tipocambio) AS subtotal,
+                IF(a.idmoneda = 1, a.iva, a.iva * a.tipocambio) AS iva,
+                IF(a.idmoneda = 1, a.totfact, a.totfact * a.tipocambio) AS total,
+                IF(a.idmoneda = 1, a.retiva, a.retiva * a.tipocambio) AS retiva,
                 IFNULL(c.noform, '') AS form,
-                d.simbolo AS moneda,
+                'Q' AS moneda,
                 c.noacceso, 
                 c.fecha AS fform, 
                 c.mes, 
@@ -1038,12 +1038,12 @@ $app->post('/rptiva', function() {
                 a.serie,
                 b.nit,
                 b.nombre AS proveedor,
-                a.subtotal,
-                a.iva,
-                a.totfact AS total,
-                a.retiva,
+                IF(a.idmoneda = 1, a.subtotal, a.subtotal * a.tipocambio) AS subtotal,
+                IF(a.idmoneda = 1, a.iva, a.iva * a.tipocambio) AS iva,
+                IF(a.idmoneda = 1, a.totfact, a.totfact * a.tipocambio) AS total,
+                IF(a.idmoneda = 1, a.retiva, a.retiva * a.tipocambio) AS retiva,
                 IFNULL(c.noform, '') AS form,
-                d.simbolo AS moneda,
+                'Q' AS moneda,
                 c.noacceso, 
                 c.fecha AS fform, 
                 c.mes, 
@@ -1062,7 +1062,7 @@ $app->post('/rptiva', function() {
                     AND a.idreembolso > 0
                     AND a.retiva > 0 
                     AND a.idempresa = $d->idempresa ";
-    $query.= $d->cuales == 0 ? 'ORDER BY 1' : ($d->cuales == 1 ? 'AND c.idformiva > 0 ORDER BY 2' : 'AND c.idformiva IS NULL ORDER BY 2');
+    $query.= $d->cuales == 0 ? 'ORDER BY 1, 7' : ($d->cuales == 1 ? 'AND c.idformiva > 0 ORDER BY 2' : 'AND c.idformiva IS NULL ORDER BY 2');
     $compra = $db->getQuery($query);
 
     print json_encode([ 'encabezado' => $letra, 'cuerpo' => $compra ]);
