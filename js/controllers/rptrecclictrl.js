@@ -5,8 +5,8 @@
     rptrecclictrl.controller('rptRecibosClienteCtrl', ['$scope', 'jsReportSrvc', 'empresaSrvc', 'monedaSrvc', 'clienteSrvc', 'proyectoSrvc', function($scope, jsReportSrvc, empresaSrvc, monedaSrvc, clienteSrvc, proyectoSrvc){
 
         $scope.params = {
-            fdel: moment().startOf('month').toDate(), fal:moment().endOf('month').toDate(), serie: undefined, idempresa: 0, anulados: 0, 
-            idcliente: undefined, idproyecto: undefined
+            fdel: moment().startOf('month').toDate(), fal:moment().endOf('month').toDate(), serie: undefined, idempresa: 0, porempresa: 1, 
+            idcliente: undefined, idproyecto: undefined, tipo: 2
         };
 
         $scope.empresas = [];
@@ -42,6 +42,7 @@
 
 
             jsReportSrvc.getPDFReport(test ? rpttest : rpt, $scope.params).then(function(pdf){ $scope.content = pdf; });
+            $scope.loadProyectos($scope.params.idempresa);
         };
 
     }]);
