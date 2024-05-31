@@ -90,7 +90,7 @@ $app->post('/finanzas', function(){
                     AND MONTH(a.fecha) <= $d->mesal
                     AND YEAR(a.fecha) = $d->anio
                     AND b.idtiposervicio != 1
-            ORDER BY 2";
+            ORDER BY 2, 4";
     $data = $db->getQuery($query);
 
     $ventas = array();
@@ -164,8 +164,8 @@ $app->post('/finanzas', function(){
                         '') AS orden,
                 SUBSTRING(b.conceptomayor, 1, 50) AS concepto,
                 DATE_FORMAT(b.fechafactura, '%d/%m/%Y') AS fechafact,
-                b.documento,
-                ROUND(b.subtotal, 2) AS total
+                CONCAT(g.siglas, '(', b.documento, ')') AS documento,
+                ROUND(IF(b.idtipofactura = 10, b.subtotal * -1, b.subtotal), 2) AS total
             FROM
                 compraproyecto a
                     INNER JOIN
@@ -178,6 +178,8 @@ $app->post('/finanzas', function(){
                 tranban e ON d.idtranban = e.id
                     LEFT JOIN
                 detpresupuesto f ON b.ordentrabajo = f.id
+                    INNER JOIN
+                tipofactura g ON b.idtipofactura = g.id
             WHERE
                 b.idempresa = 4 AND b.idproyecto = 3
                     AND MONTH(b.fechaingreso) >= $d->mesdel
@@ -199,8 +201,8 @@ $app->post('/finanzas', function(){
                         '') AS orden,
                 SUBSTRING(b.conceptomayor, 1, 50) AS concepto,
                 DATE_FORMAT(b.fechafactura, '%d/%m/%Y') AS fechafact,
-                b.documento,
-                ROUND(b.subtotal, 2) AS total
+                CONCAT(h.siglas, '(', b.documento, ')') AS documento,
+                ROUND(IF(b.idtipofactura = 10, b.subtotal * -1, b.subtotal), 2) AS total
             FROM
                 detallecontable a
                     INNER JOIN
@@ -215,6 +217,8 @@ $app->post('/finanzas', function(){
                 detpresupuesto f ON b.ordentrabajo = f.id
                     LEFT JOIN
                 tranban g ON g.idreembolso = b.idreembolso
+                    INNER JOIN
+                tipofactura h ON b.idtipofactura = h.id
             WHERE
                 b.idempresa = 4 AND b.idproyecto = 3
                 AND MONTH(b.fechaingreso) >= $d->mesdel
@@ -234,11 +238,11 @@ $app->post('/finanzas', function(){
                     1,
                     30) AS beneficiario,
                 a.idplnempleado AS orden,
-                'Devengado' AS concepto,
+                'Devengado y cuota patronal' AS concepto,
                 NULL AS fechafact,
                 IFNULL(c.nombre, '') AS documento,
-                ROUND(SUM(a.descanticipo) + SUM(a.liquido) + SUM(a.descprestamo),
-                        2) AS total
+                ROUND(SUM(a.descanticipo) + SUM(a.liquido) + SUM(a.descprestamo)
+                 + (SUM(a.sueldoordinario) + SUM(a.sueldoextra)) * 0.1267, 2) AS total
             FROM
                 plnnomina a
                     INNER JOIN
@@ -252,33 +256,33 @@ $app->post('/finanzas', function(){
                     AND DAY(a.fecha) >= 16
                     AND YEAR(a.fecha) = $d->anio
             GROUP BY a.idplnempleado
-            UNION ALL SELECT 
-                9999 AS id,
-                5120101 AS codigo,
-                'SALARIOS' AS nombrecta,
-                NULL AS fechatran,
-                NULL AS cheque,
-                NULL AS beneficiario,
-                a.idplnempleado AS orden,
-                'Cuota patronal' AS conceptomayor,
-                NULL AS fechafact,
-                NULL AS documento,
-                ROUND((SUM(a.sueldoordinario) + SUM(a.sueldoextra)) * 0.1267,
-                        2) AS total
-            FROM
-                plnnomina a
-                    INNER JOIN
-                plnempleado b ON a.idplnempleado = b.id
-                    LEFT JOIN
-                unidad c ON b.idunidad = c.id
-            WHERE
-                a.idempresa = 4 AND b.idproyecto = 3
-                    AND MONTH(a.fecha) >= $d->mesdel
-                    AND MONTH(a.fecha) <= $d->mesal
-                    AND DAY(a.fecha) >= 16
-                    AND YEAR(a.fecha) = $d->anio
-            GROUP BY a.idplnempleado
-            ORDER BY 3, 7, 4 DESC";
+            -- UNION ALL SELECT 
+            --     9999 AS id,
+            --     5120101 AS codigo,
+            --     'SALARIOS' AS nombrecta,
+            --     NULL AS fechatran,
+            --     NULL AS cheque,
+            --     NULL AS beneficiario,
+            --     a.idplnempleado AS orden,
+            --     'Cuota patronal' AS conceptomayor,
+            --     NULL AS fechafact,
+            --     NULL AS documento,
+            --     ROUND((SUM(a.sueldoordinario) + SUM(a.sueldoextra)) * 0.1267,
+            --             2) AS total
+            -- FROM
+            --     plnnomina a
+            --         INNER JOIN
+            --     plnempleado b ON a.idplnempleado = b.id
+            --         LEFT JOIN
+            --     unidad c ON b.idunidad = c.id
+            -- WHERE
+            --     a.idempresa = 4 AND b.idproyecto = 3
+            --         AND MONTH(a.fecha) >= $d->mesdel
+            --         AND MONTH(a.fecha) <= $d->mesal
+            --         AND DAY(a.fecha) >= 16
+            --         AND YEAR(a.fecha) = $d->anio
+            -- GROUP BY a.idplnempleado
+            ORDER BY 3 DESC, 11 ASC, 7 DESC, 4 DESC";
     $data = $db->getQuery($query);
 
     foreach($data AS $comp) {
