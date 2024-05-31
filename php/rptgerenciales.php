@@ -162,7 +162,7 @@ $app->post('/finanzas', function(){
                 SUBSTRING(e.beneficiario, 1, 30) AS beneficiario,
                 IFNULL(CONCAT(f.idpresupuesto, '-', f.correlativo),
                         '') AS orden,
-                SUBSTRING(LOWER(b.conceptomayor), 1, 50) AS concepto,
+                SUBSTRING(LOWER(b.conceptomayor), 1, 48) AS concepto,
                 DATE_FORMAT(b.fechafactura, '%d/%m/%Y') AS fechafact,
                 CONCAT(g.siglas, '(', b.documento, ')') AS documento,
                 ROUND(IF(b.idtipofactura = 10, b.subtotal * -1, b.subtotal), 2) AS total
@@ -199,7 +199,7 @@ $app->post('/finanzas', function(){
                     30) AS beneficiario,
                 IFNULL(CONCAT(f.idpresupuesto, '-', f.correlativo),
                         '') AS orden,
-                SUBSTRING(LOWER(b.conceptomayor), 1, 50) AS concepto,
+                SUBSTRING(LOWER(b.conceptomayor), 1, 48) AS concepto,
                 DATE_FORMAT(b.fechafactura, '%d/%m/%Y') AS fechafact,
                 CONCAT(h.siglas, '(', b.documento, ')') AS documento,
                 ROUND(IF(b.idtipofactura = 10, b.subtotal * -1, b.subtotal), 2) AS total
