@@ -119,7 +119,8 @@ $app->post('/finanzas', function(){
         if ($actual->idtiposervicio != $anterior->idtiposervicio) {
             // generar variable de totales
             $totales->total = round(array_sum($suma_montos), 2);
-            $separador->totales = $totales;
+            $separador->total = round(array_sum($suma_montos), 2);
+            // $separador->totales = $totales;
 
             // total general
             array_push($suma_ventas, $totales->total);
@@ -142,7 +143,7 @@ $app->post('/finanzas', function(){
             array_push($separador->facturas, $actual);
             $totales->total = round(array_sum($suma_montos), 2);
             array_push($suma_ventas, $totales->total);
-            $separador->totales = $totales;
+            $separador->total = round(array_sum($suma_montos), 2);
             array_push($ventas, $separador);
 
             // limpiar 
@@ -152,6 +153,8 @@ $app->post('/finanzas', function(){
             $primero = true;
         }
     }
+
+    usort($ventas, "compararPorTotal");
 
     $query = "SELECT 
                 c.id,
@@ -232,17 +235,14 @@ $app->post('/finanzas', function(){
                 9999 AS id,
                 5120101 AS codigo,
                 'SALARIOS' AS nombrecta,
-                DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fechatran,
+                NULL AS fechatran,
                 NULL AS cheque,
-                SUBSTRING(CONCAT(b.nombre, ' ', IFNULL(b.apellidos, '')),
-                    1,
-                    30) AS beneficiario,
+                NULL AS beneficiario,
                 a.idplnempleado AS orden,
                 'Devengado y cuota patronal' AS concepto,
                 NULL AS fechafact,
                 IFNULL(c.nombre, '') AS documento,
-                ROUND(SUM(a.descanticipo) + SUM(a.liquido) + SUM(a.descprestamo)
-                 + (SUM(a.sueldoordinario) + SUM(a.sueldoextra)) * 0.1267, 2) AS total
+                ROUND(SUM(a.descanticipo) + SUM(a.liquido) + SUM(a.descprestamo), 2) AS total
             FROM
                 plnnomina a
                     INNER JOIN
@@ -256,33 +256,37 @@ $app->post('/finanzas', function(){
                     AND DAY(a.fecha) >= 16
                     AND YEAR(a.fecha) = $d->anio
             GROUP BY a.idplnempleado
-            -- UNION ALL SELECT 
-            --     9999 AS id,
-            --     5120101 AS codigo,
-            --     'SALARIOS' AS nombrecta,
-            --     NULL AS fechatran,
-            --     NULL AS cheque,
-            --     NULL AS beneficiario,
-            --     a.idplnempleado AS orden,
-            --     'Cuota patronal' AS conceptomayor,
-            --     NULL AS fechafact,
-            --     NULL AS documento,
-            --     ROUND((SUM(a.sueldoordinario) + SUM(a.sueldoextra)) * 0.1267,
-            --             2) AS total
-            -- FROM
-            --     plnnomina a
-            --         INNER JOIN
-            --     plnempleado b ON a.idplnempleado = b.id
-            --         LEFT JOIN
-            --     unidad c ON b.idunidad = c.id
-            -- WHERE
-            --     a.idempresa = 4 AND b.idproyecto = 3
-            --         AND MONTH(a.fecha) >= $d->mesdel
-            --         AND MONTH(a.fecha) <= $d->mesal
-            --         AND DAY(a.fecha) >= 16
-            --         AND YEAR(a.fecha) = $d->anio
-            -- GROUP BY a.idplnempleado
-            ORDER BY 3 DESC, 11 ASC, 7 DESC, 4 DESC";
+            UNION ALL SELECT 
+                9999 AS id,
+                5120101 AS codigo,
+                'SALARIOS' AS nombrecta,
+                DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fechatran,
+                CONCAT(d.tipotrans, '-', d.numero) AS cheque,
+                SUBSTRING(CONCAT(b.nombre, ' ', IFNULL(b.apellidos, '')),
+                    1,
+                    30) AS beneficiario,
+                a.idplnempleado AS orden,
+                'Cuota patronal' AS conceptomayor,
+                NULL AS fechafact,
+                NULL AS documento,
+                ROUND((SUM(a.sueldoordinario) + SUM(a.sueldoextra)) * 0.1267,
+                        2) AS total
+            FROM
+                plnnomina a
+                    INNER JOIN
+                plnempleado b ON a.idplnempleado = b.id
+                    LEFT JOIN
+                unidad c ON b.idunidad = c.id
+                    LEFT JOIN
+                tranban d ON b.id = d.idempleado
+            WHERE
+                a.idempresa = 4 AND b.idproyecto = 3
+                    AND MONTH(a.fecha) >= $d->mesdel
+                    AND MONTH(a.fecha) <= $d->mesal
+                    AND DAY(a.fecha) >= 16
+                    AND YEAR(a.fecha) = $d->anio
+            GROUP BY a.idplnempleado
+            ORDER BY 3 DESC, 7 ASC, 11 ASC, 4 DESC";
     $data = $db->getQuery($query);
 
     foreach($data AS $comp) {
@@ -318,7 +322,8 @@ $app->post('/finanzas', function(){
         if ($actual->id != $anterior->id) {
             // generar variable de totales
             $totales->total = round(array_sum($suma_montos), 2);
-            $separador->totales = $totales;
+            $separador->total = round(array_sum($suma_montos), 2);
+            // $separador->totales = $totales;
 
             // para graficas
             array_push($montos, $totales->total);
@@ -343,7 +348,8 @@ $app->post('/finanzas', function(){
             array_push($separador->facturas, $actual);
             $totales->total = round(array_sum($suma_montos), 2);
             array_push($suma_compras, $totales->total);
-            $separador->totales = $totales;
+            $separador->total = round(array_sum($suma_montos), 2);
+            // $separador->totales = $totales;
             array_push($compras, $separador);
 
             // para graficas
@@ -355,6 +361,8 @@ $app->post('/finanzas', function(){
             $totales = new StdClass;
         }
     }
+
+    usort($compras, "compararPorTotal");
 
     // nombres y montos de todas las cuentas
     $grafica->nombres = $nombres;
@@ -398,6 +406,10 @@ function gradient_colors($num_colors) {
         $colors[] = $hex_color;
     }
     return $colors;
+}
+
+function compararPorTotal($a, $b) {
+    return $b->total - $a->total;
 }
 
 $app->run();
