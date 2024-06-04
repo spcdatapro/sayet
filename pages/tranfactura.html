@@ -681,7 +681,7 @@
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
                                     <button type="button" class="btn btn-danger"
-                                        ng-disabled="frmFact.$invalid || periodoCerrado" ng-show="factura.id > 0"
+                                        ng-disabled="frmFact.$invalid || periodoCerrado || factura.numero.length > 0" ng-show="factura.id > 0"
                                         ng-click="delFactura(factura)">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </button>
@@ -741,7 +741,7 @@
                                         <td class="num">{{det.descuento | number:2}}</td>
                                         <th>
                                             <button type="button" class="btn btn-danger btn-sm" ng-show="factura.id > 0"
-                                                ng-click="delDetFact(det)">
+                                                ng-click="delDetFact(det)" ng-disabled="factura.numero.length > 0">
                                                 <span class="glyphicon glyphicon-trash"></span>
                                             </button>
                                         </th>
