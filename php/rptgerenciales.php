@@ -168,7 +168,8 @@ $app->post('/finanzas', function(){
                 SUBSTRING(LOWER(b.conceptomayor), 1, 48) AS concepto,
                 DATE_FORMAT(b.fechafactura, '%d/%m/%Y') AS fechafact,
                 CONCAT(g.siglas, '(', b.documento, ')') AS documento,
-                ROUND(IF(b.idtipofactura = 10, b.subtotal * -1, b.subtotal), 2) AS total
+                ROUND(IF(b.idtipofactura = 10, b.subtotal * -1, b.subtotal), 2) AS total,
+                e.fecha AS ord
             FROM
                 compraproyecto a
                     INNER JOIN
@@ -205,7 +206,8 @@ $app->post('/finanzas', function(){
                 SUBSTRING(LOWER(b.conceptomayor), 1, 48) AS concepto,
                 DATE_FORMAT(b.fechafactura, '%d/%m/%Y') AS fechafact,
                 CONCAT(h.siglas, '(', b.documento, ')') AS documento,
-                ROUND(IF(b.idtipofactura = 10, b.subtotal * -1, b.subtotal), 2) AS total
+                ROUND(IF(b.idtipofactura = 10, b.subtotal * -1, b.subtotal), 2) AS total,
+                IFNULL(e.fecha, g.fecha) AS ord
             FROM
                 detallecontable a
                     INNER JOIN
@@ -235,20 +237,32 @@ $app->post('/finanzas', function(){
                 9999 AS id,
                 5120101 AS codigo,
                 'SALARIOS' AS nombrecta,
-                NULL AS fechatran,
-                NULL AS cheque,
-                NULL AS beneficiario,
+                DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fechatran,
+                CONCAT(d.tipotrans, '-', d.numero) AS cheque,
+                SUBSTRING(CONCAT(b.nombre, ' ', IFNULL(b.apellidos, '')),
+                    1,
+                    30) AS beneficiario,
                 a.idplnempleado AS orden,
                 'Devengado y cuota patronal' AS concepto,
                 NULL AS fechafact,
                 IFNULL(c.nombre, '') AS documento,
-                ROUND(SUM(a.descanticipo) + SUM(a.liquido) + SUM(a.descprestamo), 2) AS total
+                ROUND(SUM(a.descanticipo) + SUM(a.liquido) + SUM(a.descprestamo), 2) AS total,
+                a.idplnempleado AS ord
             FROM
                 plnnomina a
                     INNER JOIN
                 plnempleado b ON a.idplnempleado = b.id
                     LEFT JOIN
                 unidad c ON b.idunidad = c.id
+                    LEFT JOIN
+                (SELECT 
+                    id, 
+                    tipotrans, 
+                    numero, 
+                    idempleado 
+                FROM tranban WHERE MONTH(fecha) >= $d->mesdel 
+                    AND MONTH(fecha) <= $d->mesal 
+                    AND DAY(fecha) >= 16 AND YEAR(fecha) = $d->anio GROUP BY idempleado) d ON d.idempleado = a.idplnempleado
             WHERE
                 a.idempresa = 4 AND b.idproyecto = 3
                     AND MONTH(a.fecha) >= $d->mesdel
@@ -260,25 +274,24 @@ $app->post('/finanzas', function(){
                 9999 AS id,
                 5120101 AS codigo,
                 'SALARIOS' AS nombrecta,
-                DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fechatran,
-                CONCAT(d.tipotrans, '-', d.numero) AS cheque,
-                SUBSTRING(CONCAT(b.nombre, ' ', IFNULL(b.apellidos, '')),
-                    1,
-                    30) AS beneficiario,
+                NULL AS fechatran,
+                NULL AS cheque,
+                NULL AS beneficiario,
                 a.idplnempleado AS orden,
                 'Cuota patronal' AS conceptomayor,
                 NULL AS fechafact,
                 NULL AS documento,
                 ROUND((SUM(a.sueldoordinario) + SUM(a.sueldoextra)) * 0.1267,
-                        2) AS total
+                        2) AS total,
+                a.idplnempleado AS ord
             FROM
                 plnnomina a
                     INNER JOIN
                 plnempleado b ON a.idplnempleado = b.id
                     LEFT JOIN
                 unidad c ON b.idunidad = c.id
-                    LEFT JOIN
-                tranban d ON b.id = d.idempleado
+                --     LEFT JOIN
+                -- tranban d ON b.id = d.idempleado
             WHERE
                 a.idempresa = 4 AND b.idproyecto = 3
                     AND MONTH(a.fecha) >= $d->mesdel
@@ -286,7 +299,7 @@ $app->post('/finanzas', function(){
                     AND DAY(a.fecha) >= 16
                     AND YEAR(a.fecha) = $d->anio
             GROUP BY a.idplnempleado
-            ORDER BY 3 DESC, 7 ASC, 11 ASC, 4 DESC";
+            ORDER BY 1 ASC, 12 DESC, 4 DESC, 6 ASC";
     $data = $db->getQuery($query);
 
     foreach($data AS $comp) {
