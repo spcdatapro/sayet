@@ -165,9 +165,9 @@ $app->post('/finanzas', function(){
                 SUBSTRING(e.beneficiario, 1, 30) AS beneficiario,
                 IFNULL(CONCAT(f.idpresupuesto, '-', f.correlativo),
                         '') AS orden,
-                SUBSTRING(LOWER(b.conceptomayor), 1, 48) AS concepto,
+                SUBSTRING(LOWER(b.conceptomayor), 1, 55) AS concepto,
                 DATE_FORMAT(b.fechafactura, '%d/%m/%Y') AS fechafact,
-                CONCAT(g.siglas, '(', b.documento, ')') AS documento,
+                CONCAT(g.siglas, ' (', b.documento, ')') AS documento,
                 ROUND(IF(b.idtipofactura = 10, b.subtotal * -1, b.subtotal), 2) AS total,
                 e.fecha AS ord
             FROM
@@ -203,9 +203,9 @@ $app->post('/finanzas', function(){
                     30) AS beneficiario,
                 IFNULL(CONCAT(f.idpresupuesto, '-', f.correlativo),
                         '') AS orden,
-                SUBSTRING(LOWER(b.conceptomayor), 1, 48) AS concepto,
+                SUBSTRING(LOWER(b.conceptomayor), 1, 55) AS concepto,
                 DATE_FORMAT(b.fechafactura, '%d/%m/%Y') AS fechafact,
-                CONCAT(h.siglas, '(', b.documento, ')') AS documento,
+                CONCAT(h.siglas, ' (', b.documento, ')') AS documento,
                 ROUND(IF(b.idtipofactura = 10, b.subtotal * -1, b.subtotal), 2) AS total,
                 IFNULL(e.fecha, g.fecha) AS ord
             FROM
@@ -243,7 +243,7 @@ $app->post('/finanzas', function(){
                     1,
                     30) AS beneficiario,
                 a.idplnempleado AS orden,
-                'Devengado y cuota patronal' AS concepto,
+                'Devengado' AS concepto,
                 NULL AS fechafact,
                 IFNULL(c.nombre, '') AS documento,
                 ROUND(SUM(a.descanticipo) + SUM(a.liquido) + SUM(a.descprestamo), 2) AS total,
@@ -278,7 +278,7 @@ $app->post('/finanzas', function(){
                 NULL AS cheque,
                 NULL AS beneficiario,
                 a.idplnempleado AS orden,
-                'Cuota patronal' AS conceptomayor,
+                'Cuota patronal' AS concepto,
                 NULL AS fechafact,
                 NULL AS documento,
                 ROUND((SUM(a.sueldoordinario) + SUM(a.sueldoextra)) * 0.1267,
