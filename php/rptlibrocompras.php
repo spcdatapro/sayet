@@ -153,6 +153,11 @@ $app->get('/detgastact/:idempresa/:mes/:anio', function($idempresa, $mes, $anio)
 			$compras[] = [
 				'id' => '', 'fechaingreso' => '', 'serie' => '', 'documento' => '', 'proveedor' => '', 'codigo' => '', 'cuenta' => 'Total:', 'debe' => number_format((float)$suma, 2), 'conceptomayor' => ''
 			];
+			if ($cuenta == '12102') {
+				$generales->tcep = number_format($suma, 2);
+			} else {
+				$generales->tact = number_format($suma, 2);
+			}
 			$activos[] = [
 				'codigo' => $ctaActivo->codigo,
 				'cuenta' => $ctaActivo->cuenta,
