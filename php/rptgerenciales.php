@@ -299,7 +299,7 @@ $app->post('/finanzas', function(){
                     AND DAY(a.fecha) >= 16
                     AND YEAR(a.fecha) = $d->anio
             GROUP BY a.idplnempleado
-            ORDER BY 1 ASC, 12 DESC, 4 DESC, 6 ASC";
+            ORDER BY 1 ASC, 12 ASC, 4 DESC, 6 ASC";
     $data = $db->getQuery($query);
 
     foreach($data AS $comp) {
