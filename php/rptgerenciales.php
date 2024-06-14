@@ -169,7 +169,7 @@ $app->post('/finanzas', function(){
                 DATE_FORMAT(b.fechafactura, '%d/%m/%Y') AS fechafact,
                 CONCAT(g.siglas, ' (', b.documento, ')') AS documento,
                 ROUND(IF(b.idtipofactura = 10, b.subtotal * -1, b.subtotal), 2) AS total,
-                e.fecha AS ord
+                b.fechafactura AS ord
             FROM
                 compraproyecto a
                     INNER JOIN
@@ -207,7 +207,7 @@ $app->post('/finanzas', function(){
                 DATE_FORMAT(b.fechafactura, '%d/%m/%Y') AS fechafact,
                 CONCAT(h.siglas, ' (', b.documento, ')') AS documento,
                 ROUND(IF(b.idtipofactura = 10, b.subtotal * -1, b.subtotal), 2) AS total,
-                IFNULL(e.fecha, g.fecha) AS ord
+                b.fechafactura AS ord
             FROM
                 detallecontable a
                     INNER JOIN
