@@ -390,6 +390,7 @@ $app->post('/finanzas', function(){
 
     $letra->total_ventas = $tot_ventas;
     $letra->total_compras = $tot_compras;
+    $letra->deficit = $diferencia < 0 ? true : null;
     $letra->diferencia = $diferencia;
 
     print json_encode([ 'encabezado' => $letra, 'ventas' => $ventas, 'compras' => $compras, 'grafica' => $grafica ]);
