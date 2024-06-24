@@ -2,7 +2,7 @@
 
     var ventactrl = angular.module('cpm.ventactrl', []);
 
-    ventactrl.controller('ventaCtrl', ['$scope', '$filter', 'ventaSrvc', 'authSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'clienteSrvc', 'tipoCompraSrvc', 'toaster', 'cuentacSrvc', 'detContSrvc', '$uibModal', '$confirm', 'monedaSrvc', 'tipoFacturaSrvc', 'razonAnulacionSrvc', 'periodoContableSrvc', function ($scope, $filter, ventaSrvc, authSrvc, empresaSrvc, DTOptionsBuilder, clienteSrvc, tipoCompraSrvc, toaster, cuentacSrvc, detContSrvc, $uibModal, $confirm, monedaSrvc, tipoFacturaSrvc, razonAnulacionSrvc, periodoContableSrvc) {
+    ventactrl.controller('ventaCtrl', ['$scope', '$filter', 'ventaSrvc', 'authSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'clienteSrvc', 'tipoCompraSrvc', 'toaster', 'cuentacSrvc', 'detContSrvc', '$uibModal', '$confirm', 'monedaSrvc', 'tipoFacturaSrvc', 'razonAnulacionSrvc', 'periodoContableSrvc', 'localStorageSrvc', function ($scope, $filter, ventaSrvc, authSrvc, empresaSrvc, DTOptionsBuilder, clienteSrvc, tipoCompraSrvc, toaster, cuentacSrvc, detContSrvc, $uibModal, $confirm, monedaSrvc, tipoFacturaSrvc, razonAnulacionSrvc, periodoContableSrvc, localStorageSrvc) {
 
         $scope.idempresa = 0;
         $scope.ventas = [];
@@ -40,6 +40,14 @@
                 });
             }
         });
+
+        function getVentaInicial () {
+            let idventa = localStorageSrvc.get('idfactura');
+            if (idventa != null && idventa != undefined) {
+                localStorageSrvc.clear('idfactura');
+                $scope.getVenta(+idventa);
+            }
+        };
 
         tipoFacturaSrvc.lstTiposFactura().then(function (d) {
             for (var i = 0; i < d.length; i++) { d[i].id = parseInt(d[i].id); d[i].paraventa = parseInt(d[i].paraventa); }
@@ -169,6 +177,7 @@
             ventaSrvc.lstVentasPost($scope.params).then(function (d) {
                 $scope.ventas = procDataVenta(d);
             });
+            getVentaInicial();
         };
         //modal para el isr
         $scope.modalISR = function () {

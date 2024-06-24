@@ -4,9 +4,9 @@
 
     compractrl.controller('compraCtrl', [
         '$scope', '$filter', 'compraSrvc', 'authSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'proveedorSrvc', 'tipoCompraSrvc', 'toaster', 'cuentacSrvc', 'detContSrvc', '$uibModal', '$confirm', 'monedaSrvc', 'tipoFacturaSrvc',
-        'tipoCombustibleSrvc', 'presupuestoSrvc', 'proyectoSrvc', 'jsReportSrvc', '$window', 'periodoContableSrvc', 'tipoCambioSrvc', 'servicioBasicoSrvc',
+        'tipoCombustibleSrvc', 'presupuestoSrvc', 'proyectoSrvc', 'jsReportSrvc', '$window', 'periodoContableSrvc', 'tipoCambioSrvc', 'servicioBasicoSrvc', 'localStorageSrvc',
         ($scope, $filter, compraSrvc, authSrvc, empresaSrvc, DTOptionsBuilder, proveedorSrvc, tipoCompraSrvc, toaster, cuentacSrvc, detContSrvc, $uibModal, $confirm, monedaSrvc, tipoFacturaSrvc,
-            tipoCombustibleSrvc, presupuestoSrvc, proyectoSrvc, jsReportSrvc, $window, periodoContableSrvc, tipoCambioSrvc, servicioBasicoSrvc
+            tipoCombustibleSrvc, presupuestoSrvc, proyectoSrvc, jsReportSrvc, $window, periodoContableSrvc, tipoCambioSrvc, servicioBasicoSrvc, localStorageSrvc
         ) => {
 
             $scope.lasEmpresas = [];
@@ -79,6 +79,16 @@
                     });
                 }
             });
+
+            
+            function getCompraInicial () {
+                let idcompra = localStorageSrvc.get('idfactura');
+                if (idcompra != null && idcompra != undefined) {
+                    localStorageSrvc.clear('idfactura');
+                    $scope.getCompra(+idcompra);
+                }
+            };
+
 
             proveedorSrvc.lstProveedores().then(function (d) { $scope.losProvs = d; });
 
@@ -399,6 +409,7 @@
                 $scope.fltrcomp.idempresa = +$scope.laCompra.objEmpresa.id;
                 compraSrvc.lstComprasFltr($scope.fltrcomp).then(function (d) {
                     $scope.lasCompras = procDataCompras(d);
+                    getCompraInicial();
                 });
             };
 

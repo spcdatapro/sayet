@@ -1,50 +1,258 @@
+<style>
+    .amarillo {
+        background-color: #F7EB89;
+        text-align: center;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .celeste {
+        background-color: #B4E2E8;
+        border-radius: 5px;
+    }
+
+    .gris {
+        background-color: #E8E8E8;
+        border-radius: 5px;
+    }
+
+    .blanco {
+        background-color: white;
+    }
+</style>
 <div class="container" ng-controller="rptFinanzas">
     <div class="row">
         <div class="panel panel-default">
-            <div class="panel-heading">Repote de finanzas</div>
-            <!-- <div class="panel-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="txtDel">Del:</label>
-                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.fdel" placeholder="Del"/>
+            <div class="panel-heading">Repote de ingresos y egresos</div>
+            <div class="panel-body">
+                <form name="paramsRep" id="paramsRep" novalidate>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group required">
+                                <label class="control-label">Empresa:</label>
+                                <ui-select ng-model="params.idempresa" title="Seleccione una empresa..."
+                                    theme="bootstrap" autofocus="false" ng-change="getProyectos(params.idempresa)"
+                                    required>
+                                    <ui-select-match placeholder="Buscar empresa..." allow-clear="false">
+                                        <span ng-bind="($select.selected.nomempresa)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+                                        <div ng-bind-html="(item.nomempresa) | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group required">
+                                <label class="control-label">Proyecto:</label>
+                                <ui-select ng-model="params.idproyecto" title="Seleccione un proyecto..."
+                                    theme="bootstrap" autofocus="true" ng-change="getUnidades(params.idproyecto)"
+                                    required>
+                                    <ui-select-match placeholder="Buscar proyecto..." allow-clear="false">
+                                        <span ng-bind="($select.selected.nomproyecto)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in proyectos | filter:$select.search">
+                                        <div ng-bind-html="(item.nomproyecto) | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Unidad:</label>
+                                <ui-select ng-model="params.idunidad" title="Seleccione una unidad..." theme="bootstrap"
+                                    autofocus="false">
+                                    <ui-select-match placeholder="Buscar unidad..." allow-clear="true">
+                                        <span ng-bind="($select.selected.unidad)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices
+                                        repeat="item.idunidad as item in unidades | filter:$select.search">
+                                        <div ng-bind-html="(item.unidad) | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="txtAl">Al:</label>
-                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fal" placeholder="Al"/>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group required">
+                                <label for="selDel" class="control-label">Mes del:</label>
+                                <select name="selDel" id="selDel" class="form-control" ng-model="params.mesdel"
+                                    required>
+                                    <option value="0">Enero</option>
+                                    <option value="1">Febrero</option>
+                                    <option value="2">Marzo</option>
+                                    <option value="3">Abril</option>
+                                    <option value="4">Mayo</option>
+                                    <option value="5">Junio</option>
+                                    <option value="6">Julio</option>
+                                    <option value="7">Agosto</option>
+                                    <option value="8">Septiembre</option>
+                                    <option value="9">Octubre</option>
+                                    <option value="10">Noviembre</option>
+                                    <option value="11">Diciembre</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group required">
+                                <label for="selAl" class="control-label">Mes al:</label>
+                                <select name="selAl" id="selAl" class="form-control" ng-model="params.mesal" required>
+                                    <option value="0">Enero</option>
+                                    <option value="1">Febrero</option>
+                                    <option value="2">Marzo</option>
+                                    <option value="3">Abril</option>
+                                    <option value="4">Mayo</option>
+                                    <option value="5">Junio</option>
+                                    <option value="6">Julio</option>
+                                    <option value="7">Agosto</option>
+                                    <option value="8">Septiembre</option>
+                                    <option value="9">Octubre</option>
+                                    <option value="10">Noviembre</option>
+                                    <option value="11">Diciembre</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group required">
+                                <label for="numAnio" class="control-label">A&ntilde;o</label>
+                                <input name="numAnio" id="numAnio" type="number" class="form-control"
+                                    ng-model="params.anio" required>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label>Empleado: </label>
-                            <ui-select ng-model="params.idempleado"
-                                title="Seleccione un empleado..." theme="bootstrap"
-                                autofocus="false">
-                                <ui-select-match placeholder="Buscar empleado..."
-                                    allow-clear="true">
-                                    <span ng-bind="($select.selected.nombre)"></span>
-                                </ui-select-match>
-                                <ui-select-choices 
-                                    repeat="item.id as item in empleados | filter:$select.search"
-                                    group-by="'grupo'">
-                                    <div
-                                        ng-bind-html="(item.nombre) | highlight: $select.search">
-                                    </div>
-                                </ui-select-choices>
-                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
-                            </ui-select>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
+                </form>
+            </div>
             <div class="panel-footer text-right">
-                <button type="button" class="btn btn-primary" ng-click="getPDF()" ng-disabled="false">
-                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-danger" ng-click="getPDF(params)"
+                        ng-disabled="paramsRep.$invalid || cargando">
+                        <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="btn btn-success" ng-click="getXML(params)"
+                        ng-disabled="paramsRep.$invalid || cargando">
+                        <span class="fa fa-file-excel-o" aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-click="getResumen(params)"
+                    ng-disabled="paramsRep.$invalid || cargando">
+                    <span class="glyphicon glyphicon-eye-open"></span>
                 </button>
+                </div>
             </div>
         </div>
+    </div>
+    </hr>
+    <div class="row" ng-show="cargando">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                <span class="label label-primary">Generando reporte, por favor espere...</span>
+                <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
+            </div>
+        </div>
+    </div>
+    <div id="tblResumen" ng-show="ver.resumen">
+        <div class="amarillo">
+            <div>REPORTE DE INGRESOS Y EGRESOS MANTENIMIENTO</div>
+            <div>{{proyecto}}</div>
+            <div>{{empresa}}</div>
+        </div>
+        <br>
+        <table class="table table-responsive table-hover">
+            <tbody ng-repeat="r in reporte">
+                <tr ng-click="r.detalle = !r.detalle">
+                    <td style="text-align: left; width: 50%;">{{r.nombre}}</td>
+                    <td style="text-align: right; width: 50%;">{{r.diferencia | number:2}}</td>
+                </tr>
+                <tr ng-show="r.detalle">
+                    <td colspan="2">
+                        <table class="table table-hover table-responsive" style="border-radius: 5px !important;">
+                            <thead class="celeste">
+                                <tr>
+                                    <td style="text-align: left; width: 50%;">INGRESOS</td>
+                                    <td style="text-align: right; width: 50%;">{{r.total_ventas | number:2}}</td>
+                                </tr>
+                            </thead>
+                            <tbody class="gris" ng-repeat="v in r.ventas" ng-click="v.detalle = !v.detalle">
+                                <tr>
+                                    <td style="text-align: left; width: 50%;">{{v.nombre}}</td>
+                                    <td style="text-align: right; width: 50%;">{{v.total | number:2}}</td>
+                                </tr>
+                                <tr ng-show="v.detalle">
+                                    <td colspan="2" class="blanco">
+                                        <table class="table table-responsive table-hover"
+                                            style="width: 98%; margin-left: auto; margin-right: auto;">
+                                            <thead>
+                                                <th>Cliente</th>
+                                                <th>Unidades</th>
+                                                <th>Documento</th>
+                                                <th>M<sup>2</sup></th>
+                                                <th>Monto/M<sup>2</sup></th>
+                                                <th>Monto</th>
+                                            </thead>
+                                            <tbody ng-repeat="f in v.facturas" ng-click="verFactura(f.id, 1)">
+                                                <td>{{f.cliente}}</td>
+                                                <td>{{f.unidad}}</td>
+                                                <td>{{f.factura}}</td>
+                                                <td>{{f.mcuad}}</td>
+                                                <td>{{f.unitario}}</td>
+                                                <td style="text-align: right;">{{f.total | number:2}}</td>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <thead class="celeste">
+                                <tr>
+                                    <td style="text-align: left; width: 50%;">EGRESOS</td>
+                                    <td style="text-align: right; width: 50%;">{{r.total_compras | number:2}}</td>
+                                </tr>
+                            </thead>
+                            <tbody class="gris" ng-repeat="c in r.compras" ng-click="c.detalle = !c.detalle">
+                                <tr>
+                                    <td style="text-align: left; width: 50%;">{{c.nombre}}</td>
+                                    <td style="text-align: right; width: 50%;">{{c.total | number:2}}</td>
+                                </tr>
+                                <tr ng-show="c.detalle">
+                                    <td colspan="2" class="blanco">
+                                        <table class="table table-responsive table-hover"
+                                            style="width: 98%; margin-left: auto; margin-right: auto;">
+                                            <thead>
+                                                <th>Beneficiario</th>
+                                                <th>Chque</th>
+                                                <th>Fecha</th>
+                                                <th>Documento</th>
+                                                <th>Concepto</th>
+                                                <th>Monto</th>
+                                            </thead>
+                                            <tbody ng-repeat="f in c.facturas" ng-click="verFactura(f.idcompra, 2)">
+                                                <td>{{f.beneficiario}}</td>
+                                                <td>{{f.cheque}}</td>
+                                                <td>{{f.fechafact}}</td>
+                                                <td>{{f.documento}}</td>
+                                                <td>{{f.concepto}}</td>
+                                                <td style="text-align: right;">{{f.total | number:2}}</td>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="celeste">
+                                <tr>
+                                    <td style="text-align: left; width: 50%;">D&Eacute;FICIT/SUPER&Aacute;VIT</td>
+                                    <td style="text-align: right; width: 50%;">{{r.diferencia | number:2}}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <!-- <table class="celeste table table-responsive">
+
+                        </table> -->
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     <rpt-viewer contenido="content"></rpt-viewer>
 </div>
