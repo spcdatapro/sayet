@@ -6,13 +6,15 @@
                 <div class="col-md-2">
                     <div class="form-group">
                         <label for="txtFDel">Fecha de factura del:</label>
-                        <input name="txtFDel" id="txtFDel" type="date" class="form-control input-sm" ng-model="params.fdel"/>
+                        <input name="txtFDel" id="txtFDel" type="date" class="form-control input-sm"
+                            ng-model="params.fdel" />
                     </div>
                 </div>
                 <div class="col-md-2">
                     <div class="form-group">
                         <label for="txtFAl">al:</label>
-                        <input name="txtFAl" id="txtFAl" type="date" class="form-control input-sm" ng-model="params.fal"/>
+                        <input name="txtFAl" id="txtFAl" type="date" class="form-control input-sm"
+                            ng-model="params.fal" />
                     </div>
                 </div>
                 <div class="col-md-2">
@@ -28,54 +30,59 @@
                 <div class="col-md-2">
                     <div class="form-group">
                         <label for="txtISREmple">I.S.R. Empleados:</label>
-                        <input name="txtISREmple" id="txtISREmple" type="number" class="form-control input-sm" ng-model="params.isrempleados" step="0.01"/>
-                    </div>
-                </div>
-				<div class="col-md-2">
-                    <div class="form-group">
-                        <label for="txtISRCapital">Rentas de Capital:</label>
-                        <input name="txtISRCapital" id="txtISRCapital" type="number" class="form-control input-sm" ng-model="params.isrcapital" step="0.01"/>
+                        <input name="txtISREmple" id="txtISREmple" type="number" class="form-control input-sm"
+                            ng-model="params.isrempleados" step="0.01" />
                     </div>
                 </div>
                 <div class="col-md-2">
                     <div class="form-group">
+                        <label for="txtISRCapital">Rentas de Capital:</label>
+                        <input name="txtISRCapital" id="txtISRCapital" type="number" class="form-control input-sm"
+                            ng-model="params.isrcapital" step="0.01" />
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="btn-group">
                         <label for="btnGen">&nbsp;</label><br/>
+                        <button name="btnGenPDF" id="btnGenPDF" class="btn btn-danger btn-sm" ng-click="printPDF()">
+                            <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="btn btn-success btn-sm" ng-click="getXML()">
+                            <span class="fa fa-file-excel-o" aria-hidden="true"></span>
+                        </button>
                         <button name="btnGen" id="btnGen" class="btn btn-primary btn-sm" ng-click="lstIsr()">
                             <span class="glyphicon glyphicon-ok"></span>
-                        </button>
-                        <button name="btnGenPDF" id="btnGenPDF" class="btn btn-primary btn-sm" ng-click="printPDF()">
-                            <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
             </div>
-            <hr/>
+            <hr />
             <div class="row">
                 <div class="col-md-12">
                     <table datatable="ng" dt-options="dtOptions" class="table table-condensed table-hover">
                         <thead>
-                        <tr>                            
-                            <th>Fecha</th>
-                            <th>Documento</th>
-                            <th>Proveedor</th>                            
-                            <th>Total</th>
-                            <th>I.V.A.</th>
-                            <th>Base</th>
-                            <th style="white-space: nowrap">I.S.R.</th>
-                            <th style="white-space: nowrap">Retenci&oacute;n</th>
-                        </tr>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Documento</th>
+                                <th>Proveedor</th>
+                                <th>Total</th>
+                                <th>I.V.A.</th>
+                                <th>Base</th>
+                                <th style="white-space: nowrap">I.S.R.</th>
+                                <th style="white-space: nowrap">Retenci&oacute;n</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="c in compras" ng-click="getCompra(c.id)">
-                            <td>{{c.fechafactura | date:'dd/MM/yyyy'}}</td>
-                            <td style="text-align: right">{{c.serie}}&nbsp;{{c.documento}}</td>
-                            <td style="white-space: nowrap">{{c.nit}} - {{c.nomproveedor}}</td>
-                            <td style="text-align: right">{{c.totfactlocal | number:2}}</td>
-                            <td style="text-align: right">{{c.iva | number:2}}</td>
-                            <td style="text-align: right">{{c.montobase | number:2}}</td>
-                            <td style="text-align: right">{{c.isrlocal | number:2}}</td>
-                            <td style="text-align: center">{{c.noaccisr}}</td>
-                        </tr>
+                            <tr ng-repeat="c in compras" ng-click="getCompra(c.id)">
+                                <td>{{c.fechafactura | date:'dd/MM/yyyy'}}</td>
+                                <td style="text-align: right">{{c.serie}}&nbsp;{{c.documento}}</td>
+                                <td style="white-space: nowrap">{{c.nit}} - {{c.nomproveedor}}</td>
+                                <td style="text-align: right">{{c.totfactlocal | number:2}}</td>
+                                <td style="text-align: right">{{c.iva | number:2}}</td>
+                                <td style="text-align: right">{{c.montobase | number:2}}</td>
+                                <td style="text-align: right">{{c.isrlocal | number:2}}</td>
+                                <td style="text-align: center">{{c.noaccisr}}</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

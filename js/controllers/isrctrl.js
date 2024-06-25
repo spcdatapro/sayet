@@ -60,6 +60,37 @@
             jsReportSrvc.getPDFReport(test ? '' : 'Syl1vw2K-', $scope.params).then(function(pdf){ $window.open(pdf); });
         };
 
+        $scope.printPDF = function(){
+            var test = false;
+            $scope.params.fdelstr = moment($scope.params.fdel).isValid() ? moment($scope.params.fdel).format('YYYY-MM-DD') : '';
+            $scope.params.falstr = moment($scope.params.fal).isValid() ? moment($scope.params.fal).format('YYYY-MM-DD') : '';
+            $scope.params.isrempleados = $scope.params.isrempleados != null && $scope.params.isrempleados != undefined ? $scope.params.isrempleados : 0.00;
+			$scope.params.isrcapital = $scope.params.isrcapital != null && $scope.params.isrcapital != undefined ? $scope.params.isrcapital : 0.00;
+            jsReportSrvc.getPDFReport(test ? '' : 'Syl1vw2K-', $scope.params).then(function(pdf){ $window.open(pdf); });
+        };
+
+        $scope.getXML = function(){
+            $scope.params.fdelstr = moment($scope.params.fdel).isValid() ? moment($scope.params.fdel).format('YYYY-MM-DD') : '';
+            $scope.params.falstr = moment($scope.params.fal).isValid() ? moment($scope.params.fal).format('YYYY-MM-DD') : '';
+            $scope.params.isrempleados = $scope.params.isrempleados != null && $scope.params.isrempleados != undefined ? $scope.params.isrempleados : 0.00;
+			$scope.params.isrcapital = $scope.params.isrcapital != null && $scope.params.isrcapital != undefined ? $scope.params.isrcapital : 0.00;
+
+            jsReportSrvc.getReport('S1HKFddU0', $scope.params).then(function(result){
+                var file = new Blob([result.data], {type: 'application/vnd.ms-excel'});
+                let rango = undefined;
+
+                if (moment($scope.params.fdel).month() == moment($scope.params.fal).month()) {
+                    rango = (moment($scope.params.fdel).month() + 1) + '_' + moment($scope.params.fdel).year();
+                } else {
+                    rango = (moment($scope.params.fdel).month() + 1) + '_' + (moment($scope.params.fal).month() + 1) + '_' + moment($scope.params.fdel).year();
+                }
+
+                saveAs(file, 'Compras_Retenciones_' + rango + '.xlsx');
+
+                $scope.cargando = false;
+            });
+        };
+
         function procDataCompras(data){
             for(var i = 0; i < data.length; i++){
                 data[i].documento = parseInt(data[i].documento);
