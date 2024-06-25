@@ -525,16 +525,16 @@ $app->post('/lstcompisr', function(){
     }
 
     $query = "SELECT a.id, b.nit, b.nombre AS nomproveedor, a.serie, a.documento, a.fechafactura, c.desctipocompra, a.tipocambio, f.simbolo AS moneda, g.desctipofact AS tipofactura, ";
-    $query.= "a.totfact, a.isr, a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, ROUND((a.isr * a.tipocambio), 2) AS isrlocal, ";
-    $query.= "ROUND(a.totfact * a.tipocambio, 2) AS totfactlocal, ROUND(a.subtotal * a.tipocambio, 2) AS montobase, ROUND(a.iva * a.tipocambio, 2) AS iva ";
+    $query.= "a.totfact, a.isr, a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, ROUND((a.isr * IF(a.idmoneda != 1, a.tipocambio, 1)), 2) AS isrlocal, ";
+    $query.= "ROUND(a.totfact * IF(a.idmoneda != 1, a.tipocambio, 1), 2) AS totfactlocal, ROUND(a.subtotal * IF(a.idmoneda != 1, a.tipocambio, 1), 2) AS montobase, ROUND(a.iva * IF(a.idmoneda != 1, a.tipocambio, 1), 2) AS iva ";
     $query.= "FROM compra a INNER JOIN proveedor b ON b.id = a.idproveedor INNER JOIN tipocompra c ON c.id = a.idtipocompra INNER JOIN empresa d ON d.id = a.idempresa INNER JOIN moneda f ON f.id = a.idmoneda ";
     $query.= "INNER JOIN tipofactura g ON g.id = a.idtipofactura ";
     $query.= "WHERE a.idempresa = ".$d->idempresa." AND a.idreembolso = 0 AND a.isr > 0 ";
     $query.= $where;
     $query.= "UNION ";
     $query.= "SELECT a.id, a.nit, a.proveedor, a.serie, a.documento, a.fechafactura, c.desctipocompra, a.tipocambio, f.simbolo AS moneda, g.desctipofact AS tipofactura, ";
-    $query.= "a.totfact, a.isr, a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, ROUND((a.isr * a.tipocambio), 2) AS isrlocal, ";
-    $query.= "ROUND(a.totfact * a.tipocambio, 2) AS totfactlocal, ROUND(a.subtotal * a.tipocambio, 2) AS montobase, ROUND(a.iva * a.tipocambio, 2) AS iva ";
+    $query.= "a.totfact, a.isr, a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, ROUND((a.isr * IF(a.idmoneda != 1, a.tipocambio, 1)), 2) AS isrlocal, ";
+    $query.= "ROUND(a.totfact * IF(a.idmoneda != 1, a.tipocambio, 1), 2) AS totfactlocal, ROUND(a.subtotal * IF(a.idmoneda != 1, a.tipocambio, 1), 2) AS montobase, ROUND(a.iva * IF(a.idmoneda != 1, a.tipocambio, 1), 2) AS iva ";
     $query.= "FROM compra a INNER JOIN tipocompra c ON c.id = a.idtipocompra INNER JOIN empresa d ON d.id = a.idempresa INNER JOIN moneda f ON f.id = a.idmoneda INNER JOIN tipofactura g ON g.id = a.idtipofactura ";
     $query.= "WHERE a.idempresa = ".$d->idempresa." AND a.idreembolso > 0 AND a.isr > 0 ";
     $query.= $where;
@@ -545,13 +545,13 @@ $app->post('/lstcompisr', function(){
 $app->get('/getcompisr/:idcomp', function($idcomp){
     $db = new dbcpm();
     $query = "SELECT a.id, b.nit, b.nombre AS nomproveedor, a.serie, a.documento, a.fechafactura, c.desctipocompra, a.tipocambio, f.simbolo AS moneda, g.desctipofact AS tipofactura, ";
-    $query.= "a.totfact, a.isr, a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, ROUND((a.isr * a.tipocambio), 2) AS isrlocal ";
+    $query.= "a.totfact, a.isr, a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, ROUND((a.isr * IF(a.idmoneda != 1, a.tipocambio, 1)), 2) AS isrlocal ";
     $query.= "FROM compra a INNER JOIN proveedor b ON b.id = a.idproveedor INNER JOIN tipocompra c ON c.id = a.idtipocompra INNER JOIN empresa d ON d.id = a.idempresa INNER JOIN moneda f ON f.id = a.idmoneda ";
     $query.= "INNER JOIN tipofactura g ON g.id = a.idtipofactura ";
     $query.= "WHERE a.id = ".$idcomp." AND a.idreembolso = 0 AND a.isr > 0 ";
     $query.= "UNION ";
     $query.= "SELECT a.id, a.nit, a.proveedor, a.serie, a.documento, a.fechafactura, c.desctipocompra, a.tipocambio, f.simbolo AS moneda, g.desctipofact AS tipofactura, ";
-    $query.= "a.totfact, a.isr, a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, ROUND((a.isr * a.tipocambio), 2) AS isrlocal ";
+    $query.= "a.totfact, a.isr, a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, ROUND((a.isr * IF(a.idmoneda != 1, a.tipocambio, 1)), 2) AS isrlocal ";
     $query.= "FROM compra a INNER JOIN tipocompra c ON c.id = a.idtipocompra INNER JOIN empresa d ON d.id = a.idempresa INNER JOIN moneda f ON f.id = a.idmoneda INNER JOIN tipofactura g ON g.id = a.idtipofactura ";
     $query.= "WHERE a.id = ".$idcomp." AND a.idreembolso > 0 AND a.isr > 0 ";
     $query.= "ORDER BY 13, 3, 6";
@@ -586,18 +586,18 @@ $app->post('/rptcompisr', function(){
     }
 
     $query = "SELECT a.id, b.nit, b.nombre AS nomproveedor, a.serie, a.documento, DATE_FORMAT(a.fechafactura, '%d/%m/%Y') AS fechafactura, c.desctipocompra, a.tipocambio, f.simbolo AS moneda, g.desctipofact AS tipofactura, ";
-    $query.= "a.totfact, FORMAT(a.isr, 2) AS isr, a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, FORMAT(ROUND((a.isr * a.tipocambio), 2), 2) AS isrlocal, ";
-    $query.= "FORMAT(ROUND(a.totfact * a.tipocambio, 2), 2) AS totfactlocal, FORMAT(ROUND(a.subtotal * a.tipocambio, 2), 2) AS montobase, ";
-    $query.= "FORMAT(ROUND(a.iva * a.tipocambio, 2), 2) AS iva ";
+    $query.= "a.totfact, FORMAT(a.isr, 2) AS isr, a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, FORMAT(ROUND((a.isr * IF(a.idmoneda != 1, a.tipocambio, 1)), 2), 2) AS isrlocal, ";
+    $query.= "FORMAT(ROUND(a.totfact * IF(a.idmoneda != 1, a.tipocambio, 1), 2), 2) AS totfactlocal, FORMAT(ROUND(a.subtotal * IF(a.idmoneda != 1, a.tipocambio, 1), 2), 2) AS montobase, ";
+    $query.= "FORMAT(ROUND(a.iva * IF(a.idmoneda != 1, a.tipocambio, 1), 2), 2) AS iva ";
     $query.= "FROM compra a INNER JOIN proveedor b ON b.id = a.idproveedor INNER JOIN tipocompra c ON c.id = a.idtipocompra INNER JOIN empresa d ON d.id = a.idempresa INNER JOIN moneda f ON f.id = a.idmoneda ";
     $query.= "INNER JOIN tipofactura g ON g.id = a.idtipofactura ";
     $query.= "WHERE a.idempresa = ".$d->idempresa." AND a.idreembolso = 0 AND a.isr > 0 ";
     $query.= $where;
     $query.= "UNION ";
     $query.= "SELECT a.id, a.nit, a.proveedor, a.serie, a.documento, DATE_FORMAT(a.fechafactura, '%d/%m/%Y') AS fechafactura, c.desctipocompra, a.tipocambio, f.simbolo AS moneda, g.desctipofact AS tipofactura, ";
-    $query.= "a.totfact, FORMAT(a.isr, 2) AS isr, a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, FORMAT(ROUND((a.isr * a.tipocambio), 2), 2) AS isrlocal, ";
-    $query.= "FORMAT(ROUND(a.totfact * a.tipocambio, 2), 2) AS totfactlocal, FORMAT(ROUND(a.subtotal * a.tipocambio, 2), 2) AS montobase, ";
-    $query.= "FORMAT(ROUND(a.iva * a.tipocambio, 2), 2) AS iva ";
+    $query.= "a.totfact, FORMAT(a.isr, 2) AS isr, a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, FORMAT(ROUND((a.isr * IF(a.idmoneda != 1, a.tipocambio, 1)), 2), 2) AS isrlocal, ";
+    $query.= "FORMAT(ROUND(a.totfact * IF(a.idmoneda != 1, a.tipocambio, 1), 2), 2) AS totfactlocal, FORMAT(ROUND(a.subtotal * IF(a.idmoneda != 1, a.tipocambio, 1), 2), 2) AS montobase, ";
+    $query.= "FORMAT(ROUND(a.iva * IF(a.idmoneda != 1, a.tipocambio, 1), 2), 2) AS iva ";
     $query.= "FROM compra a INNER JOIN tipocompra c ON c.id = a.idtipocompra INNER JOIN empresa d ON d.id = a.idempresa INNER JOIN moneda f ON f.id = a.idmoneda INNER JOIN tipofactura g ON g.id = a.idtipofactura ";
     $query.= "WHERE a.idempresa = ".$d->idempresa." AND a.idreembolso > 0 AND a.isr > 0 ";
     $query.= $where;
@@ -606,15 +606,15 @@ $app->post('/rptcompisr', function(){
 
     $query = "SELECT SUM(isrlocal) AS totisrlocal, FORMAT(SUM(totfactlocal), 2) AS totfactlocal, FORMAT(SUM(montobase), 2) AS montobase, ";
     $query.= "FORMAT(SUM(totiva), 2) AS totiva ";
-    $query.= "FROM (SELECT ROUND(SUM(a.isr * a.tipocambio), 2) AS isrlocal, ";
-    $query.= "ROUND(SUM(a.totfact * a.tipocambio), 2) AS totfactlocal, ROUND(SUM(a.subtotal * a.tipocambio), 2) AS montobase, ROUND(SUM(a.iva * a.tipocambio), 2) AS totiva ";
+    $query.= "FROM (SELECT ROUND(SUM(a.isr * IF(a.idmoneda != 1, a.tipocambio, 1)), 2) AS isrlocal, ";
+    $query.= "ROUND(SUM(a.totfact * IF(a.idmoneda != 1, IF(a.idmoneda != 1, a.tipocambio, 1), 1)), 2) AS totfactlocal, ROUND(SUM(a.subtotal * IF(a.idmoneda != 1, a.tipocambio, 1)), 2) AS montobase, ROUND(SUM(a.iva * IF(a.idmoneda != 1, a.tipocambio, 1)), 2) AS totiva ";
     $query.= "FROM compra a INNER JOIN proveedor b ON b.id = a.idproveedor INNER JOIN tipocompra c ON c.id = a.idtipocompra INNER JOIN empresa d ON d.id = a.idempresa INNER JOIN moneda f ON f.id = a.idmoneda ";
     $query.= "INNER JOIN tipofactura g ON g.id = a.idtipofactura ";
     $query.= "WHERE a.idempresa = ".$d->idempresa." AND a.idreembolso = 0 AND a.isr > 0 ";
     $query.= $where;
     $query.= "UNION ";
-    $query.= "SELECT ROUND(SUM(a.isr * a.tipocambio), 2) AS isrlocal, ";
-    $query.= "ROUND(SUM(a.totfact * a.tipocambio), 2) AS totfactlocal, ROUND(SUM(a.subtotal * a.tipocambio), 2) AS montobase, ROUND(SUM(a.iva * a.tipocambio), 2) AS totiva ";
+    $query.= "SELECT ROUND(SUM(a.isr * IF(a.idmoneda != 1, a.tipocambio, 1)), 2) AS isrlocal, ";
+    $query.= "ROUND(SUM(a.totfact * IF(a.idmoneda != 1, a.tipocambio, 1)), 2) AS totfactlocal, ROUND(SUM(a.subtotal * IF(a.idmoneda != 1, a.tipocambio, 1)), 2) AS montobase, ROUND(SUM(a.iva * IF(a.idmoneda != 1, a.tipocambio, 1)), 2) AS totiva ";
     $query.= "FROM compra a INNER JOIN tipocompra c ON c.id = a.idtipocompra INNER JOIN empresa d ON d.id = a.idempresa INNER JOIN moneda f ON f.id = a.idmoneda INNER JOIN tipofactura g ON g.id = a.idtipofactura ";
     $query.= "WHERE a.idempresa = ".$d->idempresa." AND a.idreembolso > 0 AND a.isr > 0 ";
     $query.= $where;
