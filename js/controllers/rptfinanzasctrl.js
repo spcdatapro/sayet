@@ -7,44 +7,61 @@
         function ($scope, jsReportSrvc, authSrvc, empresaSrvc, proyectoSrvc, unidadSrvc, $filter, gerencialSrvc,localStorageSrvc, 
             $location, $window) {
 
+            // variables para selectores
             $scope.empresas = [];
             $scope.proyectos = [];
             $scope.unidades = [];
             $scope.meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre',
                 'Noviembre', 'Diciembre'];
-            $scope.cargando = false;
 
+            // estatus de carga
+            $scope.cargando = false;
+            
+            // parametros para reporte
             $scope.params = {
-                // mesdel: moment().toDate().getMonth().toString(), mesal: moment().toDate().getMonth().toString(),
-                mesdel: '0', mesal: '0',
-                anio: 2024
+                mesdel: moment().toDate().getMonth().toString(), mesal: moment().toDate().getMonth().toString(),
+                anio: +moment().toDate().getFullYear()
             };
+
+            // variable que guarda el reporte para mostrar en pantalla
             $scope.reporte = [];
+
+            // para visualizaciones en pantalla
             $scope.ver = { resumen: false };
             $scope.content = `${window.location.origin}/sayet/blank.html`;
 
             // asignar la empresa en la que el usuario se encuentra
             authSrvc.getSession().then(function (usuario) {
+                // asignar empresa
                 $scope.params.idempresa = usuario.workingon.toString();
+                // traer proyectos con la empresa del usuario
                 $scope.getProyectos(usuario.workingon.toString());
             });
+
             // traer empresas
             empresaSrvc.lstEmpresas().then(function (d) { $scope.empresas = d; });
+
             // traer proyectos al cambiar empresa
             $scope.getProyectos = function (idempresa) {
                 proyectoSrvc.lstProyectosPorEmpresa(idempresa).then(function (d) { $scope.proyectos = d; });
                 $scope.params.idproyecto = undefined;
                 $scope.params.idunidad = undefined;
             };
+
             // traer unidades al cambiar proyecto
             $scope.getUnidades = function (idproyecto) {
                 unidadSrvc.lstUnidadesProy(idproyecto).then(function (d) { $scope.unidades = d; });
                 $scope.params.idunidad = undefined;
             };
 
+            // reporte en pantalla
             $scope.getResumen = function (params) {
+                // estatus de carga
                 $scope.cargando = true;
+                // reinciar cualquier visualizacion
                 resetVer();
+
+                // para nombres en pantalla
                 $scope.proyecto = $filter('getById')($scope.proyectos, params.idproyecto).nomproyecto;
                 $scope.empresa = $filter('getById')($scope.empresas, params.idempresa).nomempresa;
 
@@ -55,8 +72,11 @@
                 });
             }
 
+            // pdf
             $scope.getPDF = function (params) {
+                // estatus de carga
                 $scope.cargando = true;
+                // reinciar visualizacion
                 resetVer();
 
                 jsReportSrvc.getPDFReport('BkiHRn_g3', params).then(function (pdf) {
@@ -65,7 +85,9 @@
                 });
             };
 
+            // excel
             $scope.getXML = function(params){
+                // estatus de carga
                 $scope.cargando = true;
 
                 jsReportSrvc.getReport('r11kFGvUA', params).then(function(result){
@@ -84,7 +106,9 @@
                 });
             };
 
+            // para ver la factura que seleccionen
             $scope.verFactura = function (idfactura, origen) {
+                // 1 = factura de venta 1 = factura de compra
                 if (origen == 1) {
                     localStorageSrvc.set('idfactura', idfactura);
                     $location.path('tranventa');
@@ -96,6 +120,7 @@
                 }
             };
 
+            // reinicar visualizacion
             function resetVer() {
                 $scope.ver = { resumen: false };
                 $scope.content = `${window.location.origin}/sayet/blank.html`;
