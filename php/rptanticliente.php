@@ -547,4 +547,327 @@ $app->post('/pagoextra', function(){
     print json_encode(['generales' => $generales, 'facturas' => $antiguedades]);
 });
 
+// nuevo reporte de antiguedad de saldos cliente
+$app->post('/anticliente', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $primero = true;
+    $ids_str = count($d->idempresa) > 0 ? implode(',', $d->idempresa) : "''";
+
+    // separadores
+    $separador_empresa = new StdClass;
+    $separador_proyecto = new StdClass;
+    $separador_cliente = new StdClass;
+
+    // sumadores
+    // empresa
+    $sumas_empresa = new StdClass;
+    $sumas_empresa->a30 = array();
+    $sumas_empresa->a60 = array();
+    $sumas_empresa->a90 = array();
+    $sumas_empresa->aMas = array();
+    $sumas_empresa->saldo = array();
+    // proyecto
+    $sumas_proyecto = new StdClass;
+    $sumas_proyecto->a30 = array();
+    $sumas_proyecto->a60 = array();
+    $sumas_proyecto->a90 = array();
+    $sumas_proyecto->aMas = array();
+    $sumas_proyecto->saldo = array();
+    // clientes
+    $sumas_cliente = new StdClass;
+    $sumas_cliente->a30 = array();
+    $sumas_cliente->a60 = array();
+    $sumas_cliente->a90 = array();
+    $sumas_cliente->aMas = array();
+    $sumas_cliente->saldo = array();
+
+    // array de nombre de meses
+    $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+
+    // clase para fechas
+    $letra = new stdClass();
+
+    $letra->al = new DateTime($d->falstr);
+    $letra->al = $letra->al->format('d/m/Y');
+
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y');
+    $letra->detallado = $d->detallada ? 'Detallado' : null;
+
+    // array de facturas
+    $facturas = array();
+
+    $query = "SELECT 
+                a.id,
+                a.idempresa,
+                b.idproyecto,
+                a.idcliente,
+                c.nomempresa AS empresa,
+                d.nomproyecto AS proyecto,
+                e.nombre AS cliente,
+                e.nombrecorto AS cliente_corto,
+                a.fecha AS orden,
+                CONCAT(a.serie, '-', a.numero) AS factura,
+                CONCAT(a.serieadmin, '-', a.numeroadmin) AS interno,
+                DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
+                DATEDIFF('$d->falstr', a.fecha) AS dias,
+                ROUND(a.total, 2) AS monto,
+                f.monto AS resta,
+                ROUND(a.total - IFNULL(f.monto, 0.00), 2) AS saldo,
+                c.abreviatura
+            FROM
+                factura a
+                    INNER JOIN
+                contrato b ON a.idcontrato = b.id
+                    INNER JOIN
+                empresa c ON a.idempresa = c.id
+                    INNER JOIN
+                proyecto d ON b.idproyecto = d.id
+                    INNER JOIN
+                cliente e ON a.idcliente = e.id
+                    LEFT JOIN
+                (SELECT 
+                    a.idfactura, SUM(a.monto) AS monto
+                FROM
+                    detcobroventa a
+                        INNER JOIN 
+                    recibocli b ON a.idrecibocli = b.id
+                WHERE 
+                    b.fecha <= '$d->falstr'
+                GROUP BY idfactura) f ON f.idfactura = a.id
+                    LEFT JOIN
+                (SELECT 
+                    idfactura, id
+                FROM
+                    detcobroventa
+                GROUP BY idfactura) g ON g.idfactura = a.id
+            WHERE
+                a.anulada = 0
+                    AND (ROUND(a.total - IFNULL(f.monto, 0.00), 2) != 0.00
+                    OR (a.total - f.monto) IS NULL) ";
+    $query.= $d->vernegativos ? "AND IF(ISNULL(g.id) OR a.idfox > 0, a.pagada = 0, ((a.total - IFNULL(f.monto, 0.00)) < -0.5 OR (a.total - IFNULL(f.monto, 0.00)) > 0.5)) " : 
+    "AND IF(ISNULL(g.id) OR a.idfox > 0, a.pagada = 0, (a.total - IFNULL(f.monto, 0.00)) > 0.5) ";
+    $query.= count($d->idempresa) > 0 ? "AND a.idempresa IN($ids_str) " : "";
+    $query.= isset($d->idproyecto) ? "AND a.idproyecto = $d->idempresa " : "";
+    $query.= isset($d->idcliente) > 0 ? "AND a.idcliente = $d->idcliente " : "";
+    $query.= $d->abreviado ? "AND DATEDIFF('$d->falstr', a.fecha) > 60 " : "";
+    $query.=       "AND a.idtipofactura NOT IN (9 , 13) 
+                    AND a.fecha <= '$d->falstr'
+                    AND a.id NOT IN (SELECT 
+                        idfacturaafecta
+                    FROM
+                        factura
+                    WHERE
+                        idtipofactura IN (9 , 13))
+            ORDER BY 5 ASC , 6 ASC , 7 ASC , 9 ASC";
+    $data = $db->getQuery($query);
+
+    foreach($data as $dat) {
+        asignarMonto($dat);
+    }
+
+    $cntsFacturas = count($data);
+
+    for ($i = 1; $i < $cntsFacturas; $i++)  {
+        // traer valor actual y anterior
+        $actual = $data[$i];
+        $anterior = $data[$i-1];
+
+        // si es el primero insertar nombre del separador y crear array de recibos
+        if ($primero) {
+            $separador_empresa->nombre = $anterior->empresa;
+            $separador_empresa->abreviatura = $anterior->abreviatura;
+            $separador_empresa->proyectos = array();
+            // proyecto
+            $separador_proyecto->nombre = $anterior->proyecto;
+            $separador_proyecto->clientes = array();
+            // cliente
+            $separador_cliente->nombre = $anterior->cliente;
+            $separador_cliente->corto = $anterior->cliente_corto;
+            $separador_cliente->detallado = $d->detallada ? true : null; 
+            $separador_cliente->facturas = array();
+            $primero = false;
+        }
+
+        // empujar anteriores para sumas
+        // cliente
+        array_push($sumas_cliente->a30, $anterior->a30);
+        array_push($sumas_cliente->a60, $anterior->a60);
+        array_push($sumas_cliente->a90, $anterior->a90);
+        array_push($sumas_cliente->aMas, $anterior->amas);
+        array_push($sumas_cliente->saldo, $anterior->saldo);
+        // proyecto
+        array_push($sumas_proyecto->a30, $anterior->a30);
+        array_push($sumas_proyecto->a60, $anterior->a60);
+        array_push($sumas_proyecto->a90, $anterior->a90);
+        array_push($sumas_proyecto->aMas, $anterior->amas);
+        array_push($sumas_proyecto->saldo, $anterior->saldo);
+        // empresa
+        array_push($sumas_empresa->a30, $anterior->a30);
+        array_push($sumas_empresa->a60, $anterior->a60);
+        array_push($sumas_empresa->a90, $anterior->a90);
+        array_push($sumas_empresa->aMas, $anterior->amas);
+        array_push($sumas_empresa->saldo, $anterior->saldo);
+
+        array_push($separador_cliente->facturas, $anterior);
+
+        if ($anterior->idcliente !== $actual->idcliente) {
+            // generar variable de totales
+            $separador_cliente->total_a30 = round(array_sum($sumas_cliente->a30), 2);
+            $separador_cliente->total_a60 = round(array_sum($sumas_cliente->a60), 2);
+            $separador_cliente->total_a90 = round(array_sum($sumas_cliente->a90), 2);
+            $separador_cliente->total_aMas = round(array_sum($sumas_cliente->aMas), 2);
+            $separador_cliente->total_saldo = round(array_sum($sumas_cliente->saldo), 2);
+
+            // total general
+            // array_push($suma_ventas, $totales->total);
+
+            // empujar a array padre
+            array_push($separador_proyecto->clientes, $separador_cliente);
+
+            // limpiar variables 
+            $sumas_cliente->a30 = array();
+            $sumas_cliente->a60 = array();
+            $sumas_cliente->a90 = array();
+            $sumas_cliente->aMas = array();
+            $sumas_cliente->saldo = array();
+
+            $separador_cliente = new StdClass;
+            $separador_cliente->nombre = $actual->cliente;
+            $separador_cliente->corto = $actual->cliente_corto;
+            $separador_cliente->detallado = $d->detallada ? true : null; 
+            $separador_cliente->facturas = array();
+        }
+
+        if ($anterior->idproyecto !== $actual->idproyecto) {
+
+            // generar variable de totales
+            $separador_proyecto->total_a30 = round(array_sum($sumas_proyecto->a30), 2);
+            $separador_proyecto->total_a60 = round(array_sum($sumas_proyecto->a60), 2);
+            $separador_proyecto->total_a90 = round(array_sum($sumas_proyecto->a90), 2);
+            $separador_proyecto->total_aMas = round(array_sum($sumas_proyecto->aMas), 2);
+            $separador_proyecto->total_saldo = round(array_sum($sumas_proyecto->saldo), 2);
+
+            // empujar a array padre
+            array_push($separador_empresa->proyectos, $separador_proyecto);
+
+            // limpiar variables 
+            // sumas
+            $sumas_proyecto->a30 = array();
+            $sumas_proyecto->a60 = array();
+            $sumas_proyecto->a90 = array();
+            $sumas_proyecto->aMas = array();
+            $sumas_proyecto->saldo = array();
+            // separador
+            $separador_proyecto = new StdClass;
+            $separador_proyecto->nombre = $actual->proyecto;
+            $separador_proyecto->clientes = array();
+        }
+
+        if ($anterior->idempresa !== $actual->idempresa) {
+            // generar variable de totales
+            $separador_empresa->total_a30 = round(array_sum($sumas_empresa->a30), 2);
+            $separador_empresa->total_a60 = round(array_sum($sumas_empresa->a60), 2);
+            $separador_empresa->total_a90 = round(array_sum($sumas_empresa->a90), 2);
+            $separador_empresa->total_aMas = round(array_sum($sumas_empresa->aMas), 2);
+            $separador_empresa->total_saldo = round(array_sum($sumas_empresa->saldo), 2);
+
+            // empujar a array padre
+            array_push($facturas, $separador_empresa);
+
+            // limpiar variables 
+            // sumas
+            $sumas_empresa->a30 = array();
+            $sumas_empresa->a60 = array();
+            $sumas_empresa->a90 = array();
+            $sumas_empresa->aMas = array();
+            $sumas_empresa->saldo = array();
+            // separador
+            $separador_empresa = new StdClass;
+            $separador_empresa->nombre = $actual->empresa;
+            $separador_empresa->abreviatura = $actual->abreviatura;
+            $separador_empresa->proyectos = array();
+        }
+        
+        // para empujar el ultimo dato
+        if ($i+1 == $cntsFacturas) {
+            // empujar anteriores para sumas
+            // cliente
+            array_push($sumas_cliente->a30, $actual->a30);
+            array_push($sumas_cliente->a60, $actual->a60);
+            array_push($sumas_cliente->a90, $actual->a90);
+            array_push($sumas_cliente->aMas, $actual->amas);
+            array_push($sumas_cliente->saldo, $actual->saldo);
+            // proyecto
+            array_push($sumas_proyecto->a30, $actual->a30);
+            array_push($sumas_proyecto->a60, $actual->a60);
+            array_push($sumas_proyecto->a90, $actual->a90);
+            array_push($sumas_proyecto->aMas, $actual->amas);
+            array_push($sumas_proyecto->saldo, $actual->saldo);
+            // empresa
+            array_push($sumas_empresa->a30, $actual->a30);
+            array_push($sumas_empresa->a60, $actual->a60);
+            array_push($sumas_empresa->a90, $actual->a90);
+            array_push($sumas_empresa->aMas, $actual->amas);
+            array_push($sumas_empresa->saldo, $actual->saldo);
+
+            // totales
+            $separador_cliente->total_a30 = round(array_sum($sumas_cliente->a30), 2);
+            $separador_cliente->total_a60 = round(array_sum($sumas_cliente->a60), 2);
+            $separador_cliente->total_a90 = round(array_sum($sumas_cliente->a90), 2);
+            $separador_cliente->total_aMas = round(array_sum($sumas_cliente->aMas), 2);
+            $separador_cliente->total_saldo = round(array_sum($sumas_cliente->saldo), 2);
+        
+            array_push($separador_proyecto->clientes, $separador_cliente);
+
+            // generar variable de totales
+            $separador_proyecto->total_a30 = round(array_sum($sumas_proyecto->a30), 2);
+            $separador_proyecto->total_a60 = round(array_sum($sumas_proyecto->a60), 2);
+            $separador_proyecto->total_a90 = round(array_sum($sumas_proyecto->a90), 2);
+            $separador_proyecto->total_aMas = round(array_sum($sumas_proyecto->aMas), 2);
+            $separador_proyecto->total_saldo = round(array_sum($sumas_proyecto->saldo), 2);
+
+            // empujar a array padre
+            array_push($separador_empresa->proyectos, $separador_proyecto);
+
+            // generar variable de totales
+            $separador_empresa->total_a30 = round(array_sum($sumas_empresa->a30), 2);
+            $separador_empresa->total_a60 = round(array_sum($sumas_empresa->a60), 2);
+            $separador_empresa->total_a90 = round(array_sum($sumas_empresa->a90), 2);
+            $separador_empresa->total_aMas = round(array_sum($sumas_empresa->aMas), 2);
+            $separador_empresa->total_saldo = round(array_sum($sumas_empresa->saldo), 2);
+            
+            // empujar a array padre
+            array_push($facturas, $separador_empresa);
+        }
+    }   
+
+    print json_encode([ 'encabezado' => $letra, 'empresas' => $facturas ]);
+});
+
+function asignarMonto($d) {
+    if ($d->dias <= 30) {
+        $d->a30 = $d->saldo;
+        $d->a60 = 0.00;
+        $d->a90 = 0.00;
+        $d->amas = 0.00;
+    } else if ($d->dias > 30 && $d->dias <= 60) {
+        $d->a30 = 0.00;
+        $d->a60 = $d->saldo;
+        $d->a90 = 0.00;
+        $d->amas = 0.00;
+    } else if ($d->dias > 60 && $d->dias <= 90) {
+        $d->a30 = 0.00;
+        $d->a60 = 0.00;
+        $d->a90 = $d->saldo;
+        $d->amas = 0.00;
+    } else {
+        $d->a30 = 0.00;
+        $d->a60 = 0.00;
+        $d->a90 = 0.00;
+        $d->amas = $d->saldo;
+    }
+}
+
 $app->run();

@@ -3,106 +3,122 @@
         <div class="panel panel-primary">
             <div class="panel-heading">Antig&uuml;edad de saldos de clientes</div>
             <div class="panel-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="control-label">Empresa: </label>
-                            <ui-select ng-model="params.idempresa"
-                                title="Seleccione una empresa..." theme="bootstrap"
-                                autofocus="false" on-select="loadProyectos(params.idempresa)" multiple>
-                                <ui-select-match placeholder="Seleccionar empresas"
-                                    allow-clear="true">
-                                    <span>{{$item.abreviatura}}</span>
-                                </ui-select-match>
-                                <ui-select-choices 
-                                    repeat="item.id as item in empresas | filter:$select.search"
-                                    group-by="'grupo'">
-                                    <div
-                                        ng-bind-html="(item.nomempresa) | highlight: $select.search">
-                                    </div>
-                                </ui-select-choices>
-                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
-                            </ui-select>
+                <form name="paramsRep" id="paramsRep" novalidate>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Empresa: </label>
+                                <ui-select ng-model="params.idempresa" title="Seleccione una empresa..."
+                                    theme="bootstrap" autofocus="false" ng-change="loadProyectos(params.idempresa)"
+                                    multiple>
+                                    <ui-select-match placeholder="Seleccionar empresas" allow-clear="true">
+                                        <span>{{$item.abreviatura}}</span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in empresas | filter:$select.search"
+                                        group-by="'grupo'">
+                                        <div ng-bind-html="(item.nomempresa) | highlight: $select.search">
+                                        </div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="selProy">Proyecto:</label>
-                            <select name="selProy" id="selProy" class="form-control input-sm"
-                                ng-model="params.idproyecto"
-                                ng-options="obj.id as obj.nomproyecto for obj in proyectos"></select>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Proyecto:</label>
+                                <ui-select ng-model="params.idproyecto" title="Seleccione un proyecto..."
+                                    theme="bootstrap">
+                                    <ui-select-match placeholder="Buscar proyecto..." allow-clear="true">
+                                        <span ng-bind="($select.selected.nomproyecto)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in proyectos | filter:$select.search">
+                                        <div ng-bind-html="(item.nomproyecto) | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="txtCliente" class="control-label">Cliente:</label>
-                            <div angucomplete-alt id="txtCliente" placeholder="Buscar cliente..." pause="400"
-                                selected-object="clienteSelected" remote-url="php/rptanticliente.php/listaclientes/"
-                                remote-url-error-callback="errorSearch" remote-url-data-field="results"
-                                title-field="nombre" input-class="form-control input-sm" match-class="highlight"
-                                minlength="1" field-required="true" input-name="txtCliente" override-suggestions="true">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="txtCliente" class="control-label">Cliente:</label>
+                                <div angucomplete-alt id="txtCliente" placeholder="Buscar cliente..." pause="400"
+                                    selected-object="clienteSelected" remote-url="php/rptanticliente.php/listaclientes/"
+                                    remote-url-error-callback="errorSearch" remote-url-data-field="results"
+                                    title-field="nombre" input-class="form-control input-sm" match-class="highlight"
+                                    minlength="1" field-required="false" input-name="txtCliente"
+                                    override-suggestions="true">
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="txtAl">Al:</label>
-                            <input name="txtAl" id="txtAl" type="date" class="form-control input-sm"
-                                ng-model="params.al" placeholder="Al" />
+                    <div class="row">
+                        <div class="col-md-4 required">
+                            <div class="form-group">
+                                <label class="control-label" for="txtAl">Al:</label>
+                                <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.al"
+                                    placeholder="Al" required />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="chkDet">Detallado:</label>
+                                <input name="chkDet" id="chkDet" type="checkbox" class="form-control input-sm"
+                                    ng-model="params.detallada" ng-true-value="1" ng-false-value="0" />
+                            </div>
+                        </div>
+                        <div class="col-md-2" ng-hide="true">
+                            <div class="form-group">
+                                <label for="chkAlfa">Orden alfabético</label>
+                                <input name="chkAlfa" id="chkAlfa" type="checkbox" class="form-control input-sm"
+                                    ng-model="params.orderalfa" ng-true-value="1" ng-false-value="0" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="chkVerNegs">Ver negativos:</label>
+                                <input name="chkVerNegs" id="chkVerNegs" type="checkbox" class="form-control input-sm"
+                                    ng-model="params.vernegativos" ng-true-value="1" ng-false-value="0" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="chkAbreviado">Abreviado:</label>
+                                <input name="chkAbreviado" id="chkAbreviado" type="checkbox"
+                                    class="form-control input-sm" ng-model="params.abreviado" ng-true-value="1"
+                                    ng-false-value="0" ng-change="params.pagoextra = 0" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="chkExt">Solo saldos a favor:</label>
+                                <input name="chkExt" id="chkExt" type="checkbox" class="form-control input-sm"
+                                    ng-model="params.pagoextra" ng-true-value="1" ng-false-value="0" />
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-1">
-                        <div class="form-group">
-                            <label for="chkDet">Detallado</label>
-                            <input name="chkDet" id="chkDet" type="checkbox" class="form-control input-sm"
-                                ng-model="params.detallada" ng-true-value="1" ng-false-value="0" />
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="chkAlfa">Orden alfabético</label>
-                            <input name="chkAlfa" id="chkAlfa" type="checkbox" class="form-control input-sm"
-                                ng-model="params.orderalfa" ng-true-value="1" ng-false-value="0" />
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="chkVerNegs">Ver negativos</label>
-                            <input name="chkVerNegs" id="chkVerNegs" type="checkbox" class="form-control input-sm"
-                                ng-model="params.vernegativos" ng-true-value="1" ng-false-value="0" />
-                        </div>
-                    </div>
-                    <div class="col-md-1">
-                        <div class="form-group">
-                            <label for="chkAbreviado">Abreviado</label>
-                            <input name="chkAbreviado" id="chkAbreviado" type="checkbox" class="form-control input-sm"
-                                ng-model="params.abreviado" ng-true-value="1" ng-false-value="0"
-                                ng-change="params.pagoextra = 0" />
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="chkExt">Ver solo saldos a favor del cliente</label>
-                            <input name="chkExt" id="chkExt" type="checkbox" class="form-control input-sm"
-                                ng-model="params.pagoextra" ng-true-value="1" ng-false-value="0" />
-                        </div>
-                    </div>
-                </div>
+                </form>
             </div>
             <div class="panel-footer" style="text-align: right !important;">
                 <div class="btn-group" role="group" aria-label="...">
-                    <button type="button" class="btn btn-primary btn-sm" ng-click="getAntiCli()">
+                    <button type="button" class="btn btn-danger" ng-click="getAntiCli(params)" ng-disabled="paramsRep.$invalid || cargando">
                         <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-primary btn-sm" ng-click="getAntiCliXLSX()">
+                    <button type="button" class="btn btn-success" ng-click="getAntiCliXLSX(params)" ng-disabled="paramsRep.$invalid || cargando">
                         <i class="fa fa-file-excel-o" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-primary btn-sm" ng-click="resetParams()">
+                    <button type="button" class="btn btn-primary" ng-click="resetParams()" ng-disabled="cargando">
                         <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+    </hr>
+    <div class="row" ng-show="cargando">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                <span class="label label-primary">Generando reporte, por favor espere...</span>
+                <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
             </div>
         </div>
     </div>
