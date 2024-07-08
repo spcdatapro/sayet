@@ -605,7 +605,7 @@ $app->post('/anticliente', function(){
                 a.idcliente,
                 c.nomempresa AS empresa,
                 d.nomproyecto AS proyecto,
-                e.nombre AS cliente,
+                SUBSTRING(e.nombre, 1, 50) AS cliente,
                 e.nombrecorto AS cliente_corto,
                 a.fecha AS orden,
                 CONCAT(a.serie, '-', a.numero) AS factura,
