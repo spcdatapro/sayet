@@ -1181,7 +1181,7 @@ EOT;
 			if ($this->bonocatorcedias > 0) {
 				$this->bonocatorce = $this->bonocatorcedias == 365 
 				? round($this->emp->sueldo, 2)
-				: round((($this->emp->sueldo/365)*($this->bonocatorcedias - 1)), 2);
+				: round((($this->emp->sueldo/365)*$this->bonocatorcedias), 2);
 			}
 		}
 	}
