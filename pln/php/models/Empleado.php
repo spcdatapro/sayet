@@ -1164,6 +1164,7 @@ EOT;
 			$uno     = new DateTime($inicio);
 			$ingreso = new DateTime($this->getFechaIngreso());
 			$actual  = new DateTime($fecha);
+			$dif_general = $uno->diff($actual);
 
 			if ($ingreso <= $uno) {
 				$interval = $uno->diff($actual);
@@ -1173,7 +1174,7 @@ EOT;
 				$this->bonocatorcedias = ($interval->format('%a')+1);
 			}
 
-			if ($uno->diff($actual) > 365) {
+			if (($dif_general->format('%a')+1) > 365) {
 				$this->bonocatorcedias = $this->bonocatorcedias - 1;
 			}
 
