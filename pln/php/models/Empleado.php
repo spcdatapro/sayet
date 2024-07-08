@@ -1173,6 +1173,10 @@ EOT;
 				$this->bonocatorcedias = ($interval->format('%a')+1);
 			}
 
+			if ($uno->diff($actual) > 365) {
+				$this->bonocatorcedias = $this->bonocatorcedias - 1;
+			}
+
 			if ($this->bonocatorcedias > 0) {
 				$this->bonocatorce = $this->bonocatorcedias == 365 
 				? round($this->emp->sueldo, 2)
