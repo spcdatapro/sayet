@@ -1167,10 +1167,10 @@ EOT;
 
 			if ($ingreso <= $uno) {
 				$interval = $uno->diff($actual);
-				$this->bonocatorcedias = ($interval->format('%a')+1);
+				$this->bonocatorcedias = 365;
 			} else if ($ingreso <= $actual) {
 				$interval = $ingreso->diff($actual);
-				$this->bonocatorcedias = ($interval->format('%a')+1);
+				$this->bonocatorcedias = 365;
 			}
 
 			if ($this->bonocatorcedias > 0) {
