@@ -1167,16 +1167,16 @@ EOT;
 
 			if ($ingreso <= $uno) {
 				$interval = $uno->diff($actual);
-				$this->bonocatorcedias = 365;
+				$this->bonocatorcedias = ($interval->format('%a')+1);
 			} else if ($ingreso <= $actual) {
 				$interval = $ingreso->diff($actual);
-				$this->bonocatorcedias = 365;
+				$this->bonocatorcedias = ($interval->format('%a')+1);
 			}
 
 			if ($this->bonocatorcedias > 0) {
 				$this->bonocatorce = $this->bonocatorcedias == 365 
 				? round($this->emp->sueldo, 2)
-				: round((($this->emp->sueldo/365)*$this->bonocatorcedias), 2);
+				: round((($this->emp->sueldo/365)*($this->bonocatorcedias - 1)), 2);
 			}
 		}
 	}
