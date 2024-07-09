@@ -649,7 +649,7 @@ $app->post('/anticliente', function(){
     $query.= $d->vernegativos ? "AND IF(ISNULL(g.id) OR a.idfox > 0, a.pagada = 0, ((a.total - IFNULL(f.monto, 0.00)) < -0.5 OR (a.total - IFNULL(f.monto, 0.00)) > 0.5)) " : 
     "AND IF(ISNULL(g.id) OR a.idfox > 0, a.pagada = 0, (a.total - IFNULL(f.monto, 0.00)) > 0.5) ";
     $query.= count($d->idempresa) > 0 ? "AND a.idempresa IN($ids_str) " : "";
-    $query.= isset($d->idproyecto) ? "AND a.idproyecto = $d->idempresa " : "";
+    $query.= isset($d->idproyecto) ? "AND a.idproyecto = $d->idproyecto " : "";
     $query.= isset($d->idcliente) > 0 ? "AND a.idcliente = $d->idcliente " : "";
     $query.= $d->abreviado ? "AND DATEDIFF('$d->falstr', a.fecha) > 60 " : "";
     $query.=       "AND a.idtipofactura NOT IN (9 , 13) 
@@ -661,6 +661,7 @@ $app->post('/anticliente', function(){
                     WHERE
                         idtipofactura IN (9 , 13))
             ORDER BY 5 ASC , 6 ASC , 7 ASC , 9 ASC";
+    // echo $query; return;
     $data = $db->getQuery($query);
 
     foreach($data as $dat) {
@@ -792,6 +793,9 @@ $app->post('/anticliente', function(){
         
         // para empujar el ultimo dato
         if ($i+1 == $cntsFacturas) {
+            // empujar ultima factura
+            array_push($separador_cliente->facturas, $actual);
+
             // empujar anteriores para sumas
             // cliente
             array_push($sumas_cliente->a30, $actual->a30);
