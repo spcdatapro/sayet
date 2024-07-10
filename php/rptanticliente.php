@@ -553,6 +553,7 @@ $app->post('/anticliente', function(){
     $db = new dbcpm();
     $primero = true;
     $ids_str = count($d->idempresa) > 0 ? implode(',', $d->idempresa) : "''";
+    date_default_timezone_set("America/Guatemala");
 
     // separadores
     $separador_empresa = new StdClass;
@@ -592,7 +593,7 @@ $app->post('/anticliente', function(){
     $letra->al = $letra->al->format('d/m/Y');
 
     $letra->estampa = new DateTime();
-    $letra->estampa = $letra->estampa->format('d-m-Y');
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
     $letra->detallado = $d->detallada ? 'Detallado' : null;
 
     // array de facturas
