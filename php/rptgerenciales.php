@@ -196,7 +196,7 @@ $app->post('/finanzas', function(){
                 'Devengado' AS concepto,
                 NULL AS fechafact,
                 IFNULL(c.nombre, '') AS documento,
-                ROUND(a.descanticipo + a.liquido + a.descprestamo, 2) AS total,
+                ROUND(a.devengado, 2) AS total,
                 a.idplnempleado AS ord
             FROM
                 plnnomina a
