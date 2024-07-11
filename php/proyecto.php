@@ -61,8 +61,10 @@ $app->get('/getdetadocsproyecto/:idproyecto', function($idproyecto){
 $app->post('/c', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    $otras_empresas = count($d->otras_empresas) > 0 ? implode(',', $d->otras_empresas) : '';
     $d->fechaaperturastr = $d->fechaaperturastr == '' ? 'NULL' : "'$d->fechaaperturastr'";
     $d->otras_empresas = count($d->otras_empresas) > 0 ? implode(',', $d->otras_empresas) : NULL;
+    $otras_empresas = $otras_empresas == '' ? 'null' : "'$otras_empresas'";
     $query = "INSERT INTO proyecto(nomproyecto, direccion, notas, metros, idempresa, metros_rentable, ";
     $query.= "tipo_proyecto, subarrendado, notas_contrato, referencia, fechaapertura, multiempresa, otras_empresas) ";
     $query.= "VALUES('".$d->nomproyecto."', '".$d->direccion."', '".$d->notas."', ".$d->metros.", ".$d->idempresa;
@@ -78,7 +80,7 @@ $app->post('/u', function(){
     $otras_empresas = count($d->otras_empresas) > 0 ? implode(',', $d->otras_empresas) : '';
     $d->fechaaperturastr = $d->fechaaperturastr == '' ? 'NULL' : "'$d->fechaaperturastr'";
     $d->fechabajastr = $d->fechabajastr == '' ? 'NULL' : "'$d->fechabajastr'";
-    $otras_empresas = $otras_empresas == '' ? 'null' : $otras_empresas;
+    $otras_empresas = $otras_empresas == '' ? 'null' : "'$otras_empresas'";
     $query = "UPDATE proyecto SET nomproyecto = '$d->nomproyecto',";
     $query.= "direccion = '$d->direccion', notas = '$d->notas', metros = $d->metros, idempresa = $d->idempresa,";
     $query.= "metros_rentable = $d->metros_rentable, tipo_proyecto = $d->tipo_proyecto, subarrendado = $d->subarrendado, ";
