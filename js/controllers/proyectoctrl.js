@@ -10,7 +10,7 @@
         $scope.servciosUnidad = [];
         $scope.servubas = [];
 
-        $scope.elProyecto = {};
+        $scope.elProyecto = { otras_empresas: [] };
         $scope.lasEmpresas = [];
         $scope.losProyectos = [];
         $scope.losTipoProyecto = [];
@@ -98,7 +98,8 @@
                 referencia: '',
                 fechaapertura: null,
                 multiempresa: 0,
-                fechabaja: null
+                fechabaja: null,
+                otras_empresas: []
             };
             $scope.proyectostr = '';
         };
@@ -245,6 +246,7 @@
             d.fechaapertura = moment(d.fechaapertura).isValid() ? moment(d.fechaapertura).toDate() : undefined;
             d.multiempresa = parseInt(d.multiempresa);
             d.fechabaja = moment(d.fechabaja).isValid() ? moment(d.fechabaja).toDate() : undefined;
+            d.otras_empresas = d.otras_empresas ? d.otras_empresas.split(",") : [];
             return d;
         }
 
@@ -274,7 +276,6 @@
                 tipoDocProySrvc.lstTiposDocProy().then(function (d) {
                     $scope.tiposDocProy = d;
                 });
-
 
                 tipoLocalSrvc.lstTiposLocal().then(function (d) { $scope.tiposlocales = d; });
 

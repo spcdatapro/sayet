@@ -20,7 +20,7 @@ $app->get('/lstproyectoporempresa/:idempresa', function($idempresa){
     $query = "SELECT a.id, a.nomproyecto, a.registro, a.direccion, a.notas, a.metros, a.idempresa, a.metros_rentable, a.tipo_proyecto, a.subarrendado, a.notas_contrato, a.referencia, a.fechaapertura, ";
     $query.= "b.nomempresa AS empresa, c.descripcion AS tipoproyecto, a.multiempresa, a.apiurlparqueo, a.fechabaja ";
     $query.= "FROM proyecto a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN tipo_proyecto c ON c.id = a.tipo_proyecto ";
-    $query.= "WHERE a.idempresa = $idempresa OR a.multiempresa = 1 ";
+    $query.= "WHERE a.idempresa = $idempresa OR IF(a.otras_empresas IS NOT NULL, a.otras_empresas LIKE '%$idempresa%', a.multiempresa = 1) ";
     $query.= "ORDER BY a.nomproyecto";
     print $db->doSelectASJson($query);
 });
@@ -29,7 +29,8 @@ $app->get('/getproyecto/:idproyecto', function($idproyecto){
     $db = new dbcpm();
     $conn = $db->getConn();
     $data = $conn->select('proyecto',['id', 'nomproyecto', 'registro', 'direccion', 'notas', 'metros', 'idempresa',
-                                'metros_rentable', 'tipo_proyecto', 'subarrendado', 'notas_contrato', 'referencia', 'fechaapertura', 'multiempresa', 'apiurlparqueo', 'fechabaja']
+                                'metros_rentable', 'tipo_proyecto', 'subarrendado', 'notas_contrato', 'referencia', 'fechaapertura', 'multiempresa', 'apiurlparqueo', 'fechabaja',
+                                'otras_empresas']
                         ,['id' => $idproyecto, 'ORDER' => 'nomproyecto']);
     print json_encode($data[0]);
 });
@@ -61,10 +62,11 @@ $app->post('/c', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
     $d->fechaaperturastr = $d->fechaaperturastr == '' ? 'NULL' : "'$d->fechaaperturastr'";
+    $d->otras_empresas = count($d->otras_empresas) > 0 ? implode(',', $d->otras_empresas) : NULL;
     $query = "INSERT INTO proyecto(nomproyecto, direccion, notas, metros, idempresa, metros_rentable, ";
-    $query.= "tipo_proyecto, subarrendado, notas_contrato, referencia, fechaapertura, multiempresa) ";
+    $query.= "tipo_proyecto, subarrendado, notas_contrato, referencia, fechaapertura, multiempresa, otras_empresas) ";
     $query.= "VALUES('".$d->nomproyecto."', '".$d->direccion."', '".$d->notas."', ".$d->metros.", ".$d->idempresa;
-    $query.= ", ".$d->metros_rentable.", ".$d->tipo_proyecto.", ".$d->subarrendado.", NULL, '".$d->referencia."', $d->fechaaperturastr, $d->multiempresa)";
+    $query.= ", ".$d->metros_rentable.", ".$d->tipo_proyecto.", ".$d->subarrendado.", NULL, '".$d->referencia."', $d->fechaaperturastr, $d->multiempresa, '$d->otras_empresas')";
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
 });
@@ -73,13 +75,15 @@ $app->post('/u', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
     $conn = $db->getConn();
+    $otras_empresas = count($d->otras_empresas) > 0 ? implode(',', $d->otras_empresas) : '';
     $d->fechaaperturastr = $d->fechaaperturastr == '' ? 'NULL' : "'$d->fechaaperturastr'";
     $d->fechabajastr = $d->fechabajastr == '' ? 'NULL' : "'$d->fechabajastr'";
+    $otras_empresas = $otras_empresas == '' ? 'null' : $otras_empresas;
     $query = "UPDATE proyecto SET nomproyecto = '$d->nomproyecto',";
     $query.= "direccion = '$d->direccion', notas = '$d->notas', metros = $d->metros, idempresa = $d->idempresa,";
     $query.= "metros_rentable = $d->metros_rentable, tipo_proyecto = $d->tipo_proyecto, subarrendado = $d->subarrendado, ";
     $query.= "notas_contrato = '$d->notas_contrato', referencia= '$d->referencia', fechaapertura = $d->fechaaperturastr, ";
-    $query.= "multiempresa = $d->multiempresa, fechabaja = $d->fechabajastr ";
+    $query.= "multiempresa = $d->multiempresa, fechabaja = $d->fechabajastr, otras_empresas = $otras_empresas ";
     $query.= "WHERE id = ".$d->id;
     //print $query;
     $upd = $conn->query($query);
