@@ -127,7 +127,6 @@ $app->post('/altasbajas', function(){
     $query.= isset($d->idempresa) ? "AND a.idempresadebito = $d->idempresa " : "";
     $query.= isset($d->idproyecto) ? "AND a.idproyecto = $d->idproyecto " : "";
     $query.= "ORDER BY 4, 5, 6, 7";
-    echo $query; return;
     $data = $db->getQuery($query);
 
     $cntsFacturas = count($data);
