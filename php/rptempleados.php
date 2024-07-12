@@ -123,8 +123,8 @@ $app->post('/altasbajas', function(){
             WHERE  1 = 1 ";
     $query.= $d->tipo == 1 ? "AND a.ingreso >= '$d->fdelstr' AND a.ingreso <= '$d->falstr' " :
     ($d->tipo == 2 ? "AND a.baja >= '$d->fdelstr' AND a.baja <= '$d->falstr' " : 
-    "AND (a.ingreso >= '$d->fdelstr' AND a.ingreso <= '$d->falstr') OR (a.baja >= '$d->fdelstr' AND a.baja <= '$d->falstr') ");
-    $query.= isset($d->idempresa) ? "AND a.idempresa = $d->idempresa " : "";
+    "AND (a.ingreso >= '$d->fdelstr' AND a.ingreso <= '$d->falstr' OR a.baja >= '$d->fdelstr' AND a.baja <= '$d->falstr') ");
+    $query.= isset($d->idempresa) ? "AND a.idempresadebito = $d->idempresa " : "";
     $query.= isset($d->idproyecto) ? "AND a.idproyecto = $d->idproyecto " : "";
     $query.= "ORDER BY 4, 5, 6, 7";
     $data = $db->getQuery($query);
@@ -182,7 +182,7 @@ $app->post('/altasbajas', function(){
             $separador_tipo->empresas = array();
         }
 
-        if ($anterior->idproyecto !== $actual->idproyecto) {
+        if ($anterior->idproyecto !== $actual->idproyecto && $anterior->tipo == $actual->tipo) {
             // empujar a array padre
             array_push($separador_empresa->proyectos, $separador_proyecto);
 
@@ -192,9 +192,9 @@ $app->post('/altasbajas', function(){
             $separador_proyecto->empleados = array();
         }
 
-        if ($anterior->idempresa !== $actual->idempresa) {
+        if ($anterior->idempresa !== $actual->idempresa && $anterior->tipo == $actual->tipo) {
             // empujar a array padre
-            array_push($empleados, $separador_empresa);
+            array_push($separador_tipo->empresas, $separador_empresa);
 
             // separador
             $separador_empresa = new StdClass;

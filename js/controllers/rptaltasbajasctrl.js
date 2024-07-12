@@ -37,9 +37,7 @@
                 params.falstr = moment(params.fal).format('YYYY-MM-DD');
                 params.fdelstr = moment(params.fdel).format('YYYY-MM-DD');
 
-                console.log(params); return;
-
-                jsReportSrvc.getPDFReport('BkiHRn_g3', params).then(function (pdf) {
+                jsReportSrvc.getPDFReport('SkGm8JJdR', params).then(function (pdf) {
                     $scope.content = pdf;
                     $scope.cargando = false;
                 });
@@ -50,17 +48,21 @@
                 // estatus de carga
                 $scope.cargando = true;
 
-                jsReportSrvc.getReport('r11kFGvUA', params).then(function (result) {
+                // ajustar fechas
+                params.falstr = moment(params.fal).format('YYYY-MM-DD');
+                params.fdelstr = moment(params.fdel).format('YYYY-MM-DD');
+
+                jsReportSrvc.getReport('B1wOhgkOC', params).then(function (result) {
                     var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
                     let rango = undefined;
 
-                    if (params.mesdel == params.mesal) {
-                        rango = (params.mesdel + 1) + '_' + params.anio;
+                    if (params.fdel == params.fal) {
+                        rango = params.fdelstr;
                     } else {
-                        rango = (params.mesdel + 1) + '_' + (params.mesal + 1) + '_' + params.anio;
+                        rango = params.fdelstr + '_' + params.falstr;
                     }
 
-                    saveAs(file, 'Reporte_Ingresos_Egresos_' + rango + '.xlsx');
+                    saveAs(file, 'Reporte_Altas_Bajas_' + rango + '.xlsx');
 
                     $scope.cargando = false;
                 });
