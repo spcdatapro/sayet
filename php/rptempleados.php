@@ -95,14 +95,14 @@ $app->post('/altasbajas', function(){
 
     $query = "SELECT 
                 a.id AS idempleado,
-                b.id AS idempresa,
+                IFNULL(b.id, '9999') AS idempresa,
                 a.idproyecto,
-                IF(a.baja, '1', '0') AS tipo,
-                b.nombre AS empresa,
+                IF(a.baja AND $d->tipo != 3, '1', '0') AS tipo,
+                IFNULL(b.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
                 c.nomproyecto AS proyecto,
                 CONCAT(a.nombre, ' ', IFNULL(a.apellidos, '')) AS nombre,
-                d.descripcion AS puesto,
-                IF(a.baja,
+                IFNULL(d.descripcion, 'N/E') AS puesto,
+                IF(a.baja AND $d->tipo != 3,
                     DATE_FORMAT(a.baja, '%d/%m/%Y'),
                     DATE_FORMAT(a.ingreso, '%d/%m/%Y')) AS fecha,
                 a.sueldo,
@@ -114,11 +114,11 @@ $app->post('/altasbajas', function(){
                 b.numeropat AS numero
             FROM
                 plnempleado a
-                    INNER JOIN
+                    LEFT JOIN
                 plnempresa b ON a.idempresadebito = b.id
                     INNER JOIN
                 proyecto c ON a.idproyecto = c.id
-                    INNER JOIN
+                    LEFT JOIN
                 plnpuesto d ON a.idplnpuesto = d.id
             WHERE  1 = 1 ";
     $query.= $d->tipo == 1 ? "AND a.ingreso >= '$d->fdelstr' AND a.ingreso <= '$d->falstr' " :
