@@ -97,12 +97,12 @@ $app->post('/altasbajas', function(){
                 a.id AS idempleado,
                 IFNULL(b.id, '9999') AS idempresa,
                 a.idproyecto,
-                IF(a.baja AND $d->tipo != 3, '1', '0') AS tipo,
+                IF(a.baja AND $d->tipo = 3, '1', '0') AS tipo,
                 IFNULL(b.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
                 c.nomproyecto AS proyecto,
                 CONCAT(a.nombre, ' ', IFNULL(a.apellidos, '')) AS nombre,
                 IFNULL(d.descripcion, 'N/E') AS puesto,
-                IF(a.baja AND $d->tipo != 3,
+                IF(a.baja AND $d->tipo = 3,
                     DATE_FORMAT(a.baja, '%d/%m/%Y'),
                     DATE_FORMAT(a.ingreso, '%d/%m/%Y')) AS fecha,
                 a.sueldo,
@@ -127,6 +127,7 @@ $app->post('/altasbajas', function(){
     $query.= isset($d->idempresa) ? "AND a.idempresadebito = $d->idempresa " : "";
     $query.= isset($d->idproyecto) ? "AND a.idproyecto = $d->idproyecto " : "";
     $query.= "ORDER BY 4, 5, 6, 7";
+    echo $query; return;
     $data = $db->getQuery($query);
 
     $cntsFacturas = count($data);
