@@ -101,7 +101,7 @@ $app->post('/altasbajas', function(){
                 IFNULL(b.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
                 c.nomproyecto AS proyecto,
                 CONCAT(a.nombre, ' ', IFNULL(a.apellidos, '')) AS nombre,
-                IFNULL(d.descripcion, 'N/E') AS puesto,
+                IFNULL(d.descripcion, 'NO ESPECIFICADO') AS puesto,
                 IF(a.baja AND $d->tipo = 3,
                     DATE_FORMAT(a.baja, '%d/%m/%Y'),
                     DATE_FORMAT(a.ingreso, '%d/%m/%Y')) AS fecha,
@@ -128,6 +128,11 @@ $app->post('/altasbajas', function(){
     $query.= isset($d->idproyecto) ? "AND a.idproyecto = $d->idproyecto " : "";
     $query.= "ORDER BY 4, 5, 6, 7";
     $data = $db->getQuery($query);
+
+    foreach($data as $dat) {
+        $dat->nombre = ucwords(strtolower($dat->nombre), ' ');
+        $dat->puesto = ucfirst(strtolower($dat->puesto));
+    }
 
     $cntsFacturas = count($data);
 
@@ -248,4 +253,164 @@ $app->post('/altasbajas', function(){
     print json_encode([ 'encabezado' => $letra, 'tipo' => $empleados ]);
 });
 
+$app->post('/bono14', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $primero = true;
+    date_default_timezone_set("America/Guatemala");
+
+    // separadores
+    $separador_empresa = new StdClass;
+    $separador_proyecto = new StdClass;
+
+    // sumadores
+    $sumas_empresa = array();
+    $sumas_proyecto = array();
+
+    // clase para fechas
+    $letra = new stdClass();
+
+    $anio_anterior = $d->anio - 1;
+    $fdel = $anio_anterior.'-07-01';
+    $fal = $d->anio.'-06-30';
+
+    $letra->al = new DateTime($fal);
+    $letra->al = $letra->al->format('d/m/Y');
+    $letra->del = new DateTime($fdel);
+    $letra->del = $letra->del->format('d/m/Y');
+
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+
+    // array de facturas
+    $empleados = array();
+
+    $query = "SELECT 
+                a.id AS idempleado,
+                IFNULL(b.id, '9999') AS idempresa,
+                a.idproyecto,
+                IFNULL(b.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
+                c.nomproyecto AS proyecto,
+                CONCAT(a.nombre, ' ', IFNULL(a.apellidos, '')) AS nombre,
+                b.numeropat AS numero,
+                IFNULL(d.descripcion, 'N/E') AS puesto,
+                DATE_FORMAT(a.ingreso, '%d/%m/%Y') AS fecha,
+                a.sueldo,
+                e.bonocatorcedias,
+                e.bonocatorce
+            FROM
+                plnempleado a
+                    LEFT JOIN
+                plnempresa b ON a.idempresadebito = b.id
+                    INNER JOIN
+                proyecto c ON a.idproyecto = c.id
+                    LEFT JOIN
+                plnpuesto d ON a.idplnpuesto = d.id
+                    INNER JOIN
+                plnnomina e ON e.idplnempleado = a.id
+            WHERE
+                e.bonocatorce > 0 AND YEAR(fecha) = $d->anio ";
+    $query.= isset($d->idempresa) ? "AND a.idempresadebito = $d->idempresa " : "";
+    $query.=   "ORDER BY 4 , 5 , 6";
+    $data = $db->getQuery($query);
+
+    $cntsDatos = count($data);
+
+    if ($cntsDatos > 1) {
+    for ($i = 1; $i < $cntsDatos; $i++)  {
+        // traer valor actual y anterior
+        $actual = $data[$i];
+        $anterior = $data[$i-1];
+
+        // si es el primero insertar nombre del separador y crear array de recibos
+        if ($primero) {
+            // empresa
+            $separador_empresa->nombre = $anterior->empresa;
+            $separador_empresa->numero = $anterior->numero;
+            $separador_empresa->proyectos = array();
+            // proyecto
+            $separador_proyecto->nombre = $anterior->proyecto;
+            $separador_proyecto->empleados = array();
+            $primero = false;
+        }
+
+        // sumas
+        array_push($sumas_empresa, $anterior->bonocatorce);
+        array_push($sumas_proyecto, $anterior->bonocatorce);
+
+        array_push($separador_proyecto->empleados, $anterior);
+
+
+        if ($anterior->idproyecto !== $actual->idproyecto) {
+            // sumar total
+            $separador_proyecto->total = round(array_sum($sumas_proyecto), 2);
+
+            // empujar a array padre
+            array_push($separador_empresa->proyectos, $separador_proyecto);
+
+            // separador
+            $separador_proyecto = new StdClass;
+            $separador_proyecto->nombre = $actual->proyecto;
+            $separador_proyecto->empleados = array();
+            $sumas_proyecto = array();
+        }
+
+        if ($anterior->idempresa !== $actual->idempresa) {
+            // sumar total 
+            $separador_empresa->total = round(array_sum($sumas_empresa), 2);
+
+            // empujar a array padre
+            array_push($empleados, $separador_empresa);
+
+            // separador
+            $separador_empresa = new StdClass;
+            $separador_empresa->nombre = $actual->empresa;
+            $separador_empresa->numero = $actual->numero;
+            $separador_empresa->proyectos = array();
+            $sumas_empresa = array();
+        }
+        
+        // para empujar el ultimo dato
+        if ($i+1 == $cntsDatos) {
+            // empujar ultimo
+            array_push($separador_proyecto->empleados, $actual);
+            array_push($sumas_empresa, $actual->bonocatorce);
+            array_push($sumas_proyecto, $actual->bonocatorce);
+
+            $separador_proyecto->total = round(array_sum($sumas_proyecto), 2);
+
+            // empujar a array padre
+            array_push($separador_empresa->proyectos, $separador_proyecto);
+
+            $separador_empresa->total = round(array_sum($sumas_empresa), 2);
+            
+            // empujar a array padre
+            array_push($empleados, $separador_empresa);
+        }
+    }
+    } else {
+        for ($i = 0; $i < $cntsDatos; $i++)  {
+            // traer valor actual y anterior
+            $actual = $data[$i];
+
+            // si es el primero insertar nombre del separador y crear array de recibos
+            if ($primero) {
+                // empresa
+                $separador_empresa->nombre = $actual->empresa;
+                $separador_empresa->numero = $actual->numero;
+                $separador_empresa->proyectos = array();
+                // proyecto
+                $separador_proyecto->nombre = $actual->proyecto;
+                $separador_proyecto->empleados = array();
+                $primero = false;
+            }
+    
+            array_push($separador_proyecto->empleados, $actual);
+            array_push($separador_empresa->proyectos, $separador_proyecto);
+            array_push($empleados, $separador_empresa);
+        }
+    } 
+
+    print json_encode([ 'encabezado' => $letra, 'tipo' => $empleados ]);
+});
 $app->run();
