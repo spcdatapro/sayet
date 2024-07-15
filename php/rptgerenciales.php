@@ -264,129 +264,192 @@ $app->post('/finanzas', function(){
         $suma_ventas = array();
         $suma_compras = array();
 
-        for ($i = 1; $i < $cntsVentas; $i++) {
-            // traer valor actual y anterior
-            $actual = $data_v[$i];
-            $anterior = $data_v[$i-1];
+        if ($cntsVentas > 1) {
+            for ($i = 1; $i < $cntsVentas; $i++) {
+                // traer valor actual y anterior
+                $actual = $data_v[$i];
+                $anterior = $data_v[$i-1];
 
-            if ($d->mesdel + $j == $anterior->mes) {
+                if ($d->mesdel + $j == $anterior->mes) {
+
+                    // si es el primero insertar nombre del separador y crear array de recibos
+                    if ($primero) {
+                        $separador->id = $anterior->idtiposervicio;
+                        $separador->nombre = $anterior->cuenta;
+                        $separador->codigo = $anterior->codigo;
+                        $separador->facturas = array();
+                        $primero = false;
+                    }
+
+                    // siempre empujar el monto anterior ya que fue validado anteriormente
+                    array_push($suma_montos, $anterior->total);
+                    array_push($separador->facturas, $anterior);
+
+                    // si no tienen el mismo separador
+                    if ($actual->idtiposervicio != $anterior->idtiposervicio) {
+                        // generar variable de totales
+                        $totales->total = round(array_sum($suma_montos), 2);
+                        $separador->total = round(array_sum($suma_montos), 2);
+                        // $separador->totales = $totales;
+
+                        // total general
+                        array_push($suma_ventas, $totales->total);
+
+                        // empujar a array global de recibo los recibos separados
+                        array_push($separador_mes->ventas, $separador);
+                        // limpiar variables 
+                        $totales = new StdClass;
+                        $suma_montos = array();
+                        $separador = new StdClass;
+                        $separador->id = $actual->idtiposervicio;
+                        $separador->nombre = $actual->cuenta;
+                        $separador->codigo = $actual->codigo;
+                        $separador->facturas = array();
+                    }
+
+                    // para empujar el ultimo dato
+                    if ($i+1 == $cntsVentas) {
+                        array_push($suma_montos, $actual->total);
+                        array_push($separador->facturas, $actual);
+                        $totales->total = round(array_sum($suma_montos), 2);
+                        array_push($suma_ventas, $totales->total);
+                        $separador->total = round(array_sum($suma_montos), 2);
+                        array_push($separador_mes->ventas, $separador);
+
+                        // limpiar 
+                        $suma_montos = array();
+                        $separador = new StdClass;
+                        $totales = new StdClass;
+                        $primero = true;
+                    }
+                }
+            } 
+        } else {
+            for ($i = 0; $i < $cntsVentas; $i++) {
+                // traer valor actual y anterior
+                $actual = $data_v[$i];
 
                 // si es el primero insertar nombre del separador y crear array de recibos
                 if ($primero) {
-                    $separador->id = $anterior->idtiposervicio;
-                    $separador->nombre = $anterior->cuenta;
-                    $separador->codigo = $anterior->codigo;
-                    $separador->facturas = array();
-                    $primero = false;
-                }
-
-                // siempre empujar el monto anterior ya que fue validado anteriormente
-                array_push($suma_montos, $anterior->total);
-                array_push($separador->facturas, $anterior);
-
-                // si no tienen el mismo separador
-                if ($actual->idtiposervicio != $anterior->idtiposervicio) {
-                    // generar variable de totales
-                    $totales->total = round(array_sum($suma_montos), 2);
-                    $separador->total = round(array_sum($suma_montos), 2);
-                    // $separador->totales = $totales;
-
-                    // total general
-                    array_push($suma_ventas, $totales->total);
-
-                    // empujar a array global de recibo los recibos separados
-                    array_push($separador_mes->ventas, $separador);
-                    // limpiar variables 
-                    $totales = new StdClass;
-                    $suma_montos = array();
-                    $separador = new StdClass;
                     $separador->id = $actual->idtiposervicio;
                     $separador->nombre = $actual->cuenta;
                     $separador->codigo = $actual->codigo;
                     $separador->facturas = array();
-                }
-
-                // para empujar el ultimo dato
-                if ($i+1 == $cntsVentas) {
-                    array_push($suma_montos, $actual->total);
-                    array_push($separador->facturas, $actual);
-                    $totales->total = round(array_sum($suma_montos), 2);
-                    array_push($suma_ventas, $totales->total);
-                    $separador->total = round(array_sum($suma_montos), 2);
-                    array_push($separador_mes->ventas, $separador);
-
-                    // limpiar 
-                    $suma_montos = array();
-                    $separador = new StdClass;
-                    $totales = new StdClass;
-                    $primero = true;
-                }
-            }
-        }
-
-        for ($i = 1; $i < $cntsCompras; $i++) {
-            // traer valor actual y anterior
-            $actual = $data_c[$i];
-            $anterior = $data_c[$i-1];
-
-            if ($d->mesdel + $j == $anterior->mes) {
-
-                // si es el primero insertar nombre del separador y crear array de recibos
-                if ($primero) {
-                    array_push($nombres, substr($anterior->nombrecta, 0, 6));
-                    $separador->id = $anterior->id;
-                    $separador->nombre = $anterior->nombrecta;
-                    $separador->codigo = $anterior->codigo;
-                    $separador->facturas = array();
                     $primero = false;
                 }
 
-                // siempre empujar el monto anterior ya que fue validado anteriormente
-                array_push($suma_montos, $anterior->total);
-                array_push($separador->facturas, $anterior);
+                array_push($suma_montos, $actual->total);
+                array_push($separador->facturas, $actual);
+                $totales->total = round(array_sum($suma_montos), 2);
+                array_push($suma_ventas, $totales->total);
+                $separador->total = round(array_sum($suma_montos), 2);
+                array_push($separador_mes->ventas, $separador);
 
-                // si no tienen el mismo separador
-                if ($actual->id != $anterior->id) {
-                    // generar variable de totales
-                    $totales->total = round(array_sum($suma_montos), 2);
-                    $separador->total = round(array_sum($suma_montos), 2);
-                    // $separador->totales = $totales;
+                // limpiar 
+                $suma_montos = array();
+                $separador = new StdClass;
+                $totales = new StdClass;
+                $primero = true;
+            }
+        } 
 
-                    // para graficas
-                    array_push($montos, $totales->total);
+        if ($cntsCompras > 1) {
+            for ($i = 1; $i < $cntsCompras; $i++) {
+                // traer valor actual y anterior
+                $actual = $data_c[$i];
+                $anterior = $data_c[$i-1];
+
+                if ($d->mesdel + $j == $anterior->mes) {
+                    // si es el primero insertar nombre del separador y crear array de recibos
+                    if ($primero) {
+                        array_push($nombres, substr($anterior->nombrecta, 0, 6));
+                        $separador->id = $anterior->id;
+                        $separador->nombre = $anterior->nombrecta;
+                        $separador->codigo = $anterior->codigo;
+                        $separador->facturas = array();
+                        $primero = false;
+                    }
+
+                    // siempre empujar el monto anterior ya que fue validado anteriormente
+                    array_push($suma_montos, $anterior->total);
+                    array_push($separador->facturas, $anterior);
+
+                    // si no tienen el mismo separador
+                    if ($actual->id != $anterior->id) {
+                        // generar variable de totales
+                        $totales->total = round(array_sum($suma_montos), 2);
+                        $separador->total = round(array_sum($suma_montos), 2);
+                        // $separador->totales = $totales;
+
+                        // para graficas
+                        array_push($montos, $totales->total);
+                        array_push($nombres, substr($actual->nombrecta, 0, 6));
+                        array_push($suma_compras, $totales->total);
+
+                        // empujar a array global de recibo los recibos separados
+                        array_push($separador_mes->compras, $separador);
+                        // limpiar variables 
+                        $totales = new StdClass;
+                        $suma_montos = array();
+                        $separador = new StdClass;
+                        $separador->id = $actual->id;
+                        $separador->nombre = $actual->nombrecta;
+                        $separador->codigo = $actual->codigo;
+                        $separador->facturas = array();
+                    }
+
+                    // para empujar el ultimo dato
+                    if ($i+1 == $cntsCompras) {
+                        array_push($suma_montos, $actual->total);
+                        array_push($separador->facturas, $actual);
+                        $totales->total = round(array_sum($suma_montos), 2);
+                        array_push($suma_compras, $totales->total);
+                        $separador->total = round(array_sum($suma_montos), 2);
+                        // $separador->totales = $totales;
+                        array_push($separador_mes->compras, $separador);
+
+                        // para graficas
+                        array_push($montos, $totales->total);
+
+                        // limpiar 
+                        $suma_montos = array();
+                        $separador = new StdClass;
+                        $totales = new StdClass;
+                        $primero = true;
+                    }
+                }
+            }
+        } else {
+            for ($i = 0; $i < $cntsCompras; $i++) {
+                // traer valor actual y anterior
+                $actual = $data_c[$i];
+
+                // si es el primero insertar nombre del separador y crear array de recibos
+                if ($primero) {
                     array_push($nombres, substr($actual->nombrecta, 0, 6));
-                    array_push($suma_compras, $totales->total);
-
-                    // empujar a array global de recibo los recibos separados
-                    array_push($separador_mes->compras, $separador);
-                    // limpiar variables 
-                    $totales = new StdClass;
-                    $suma_montos = array();
-                    $separador = new StdClass;
                     $separador->id = $actual->id;
                     $separador->nombre = $actual->nombrecta;
                     $separador->codigo = $actual->codigo;
                     $separador->facturas = array();
+                    $primero = false;
                 }
 
-                // para empujar el ultimo dato
-                if ($i+1 == $cntsCompras) {
-                    array_push($suma_montos, $actual->total);
-                    array_push($separador->facturas, $actual);
-                    $totales->total = round(array_sum($suma_montos), 2);
-                    array_push($suma_compras, $totales->total);
-                    $separador->total = round(array_sum($suma_montos), 2);
-                    // $separador->totales = $totales;
-                    array_push($separador_mes->compras, $separador);
+                array_push($suma_montos, $actual->total);
+                array_push($separador->facturas, $actual);
+                $totales->total = round(array_sum($suma_montos), 2);
+                array_push($suma_compras, $totales->total);
+                $separador->total = round(array_sum($suma_montos), 2);
+                // $separador->totales = $totales;
+                array_push($separador_mes->compras, $separador);
 
-                    // para graficas
-                    array_push($montos, $totales->total);
+                // para graficas
+                array_push($montos, $totales->total);
 
-                    // limpiar 
-                    $suma_montos = array();
-                    $separador = new StdClass;
-                    $totales = new StdClass;
-                }
+                // limpiar 
+                $suma_montos = array();
+                $separador = new StdClass;
+                $totales = new StdClass;
+                $primero = true;
             }
         }
 
@@ -686,129 +749,192 @@ $app->post('/resumen', function () {
         $suma_ventas = array();
         $suma_compras = array();
 
-        for ($i = 1; $i < $cntsVentas; $i++) {
-            // traer valor actual y anterior
-            $actual = $data_v[$i];
-            $anterior = $data_v[$i-1];
+        if ($cntsVentas > 1) {
+            for ($i = 1; $i < $cntsVentas; $i++) {
+                // traer valor actual y anterior
+                $actual = $data_v[$i];
+                $anterior = $data_v[$i-1];
 
-            if ($d->mesdel + $j == $anterior->mes) {
+                if ($d->mesdel + $j == $anterior->mes) {
+
+                    // si es el primero insertar nombre del separador y crear array de recibos
+                    if ($primero) {
+                        $separador->id = $anterior->idtiposervicio;
+                        $separador->nombre = $anterior->cuenta;
+                        $separador->codigo = $anterior->codigo;
+                        $separador->facturas = array();
+                        $primero = false;
+                    }
+
+                    // siempre empujar el monto anterior ya que fue validado anteriormente
+                    array_push($suma_montos, $anterior->total);
+                    array_push($separador->facturas, $anterior);
+
+                    // si no tienen el mismo separador
+                    if ($actual->idtiposervicio != $anterior->idtiposervicio) {
+                        // generar variable de totales
+                        $totales->total = round(array_sum($suma_montos), 2);
+                        $separador->total = round(array_sum($suma_montos), 2);
+                        // $separador->totales = $totales;
+
+                        // total general
+                        array_push($suma_ventas, $totales->total);
+
+                        // empujar a array global de recibo los recibos separados
+                        array_push($separador_mes->ventas, $separador);
+                        // limpiar variables 
+                        $totales = new StdClass;
+                        $suma_montos = array();
+                        $separador = new StdClass;
+                        $separador->id = $actual->idtiposervicio;
+                        $separador->nombre = $actual->cuenta;
+                        $separador->codigo = $actual->codigo;
+                        $separador->facturas = array();
+                    }
+
+                    // para empujar el ultimo dato
+                    if ($i+1 == $cntsVentas) {
+                        array_push($suma_montos, $actual->total);
+                        array_push($separador->facturas, $actual);
+                        $totales->total = round(array_sum($suma_montos), 2);
+                        array_push($suma_ventas, $totales->total);
+                        $separador->total = round(array_sum($suma_montos), 2);
+                        array_push($separador_mes->ventas, $separador);
+
+                        // limpiar 
+                        $suma_montos = array();
+                        $separador = new StdClass;
+                        $totales = new StdClass;
+                        $primero = true;
+                    }
+                }
+            } 
+        } else {
+            for ($i = 0; $i < $cntsVentas; $i++) {
+                // traer valor actual y anterior
+                $actual = $data_v[$i];
 
                 // si es el primero insertar nombre del separador y crear array de recibos
                 if ($primero) {
-                    $separador->id = $anterior->idtiposervicio;
-                    $separador->nombre = $anterior->cuenta;
-                    $separador->codigo = $anterior->codigo;
-                    $separador->facturas = array();
-                    $primero = false;
-                }
-
-                // siempre empujar el monto anterior ya que fue validado anteriormente
-                array_push($suma_montos, $anterior->total);
-                array_push($separador->facturas, $anterior);
-
-                // si no tienen el mismo separador
-                if ($actual->idtiposervicio != $anterior->idtiposervicio) {
-                    // generar variable de totales
-                    $totales->total = round(array_sum($suma_montos), 2);
-                    $separador->total = round(array_sum($suma_montos), 2);
-                    // $separador->totales = $totales;
-
-                    // total general
-                    array_push($suma_ventas, $totales->total);
-
-                    // empujar a array global de recibo los recibos separados
-                    array_push($separador_mes->ventas, $separador);
-                    // limpiar variables 
-                    $totales = new StdClass;
-                    $suma_montos = array();
-                    $separador = new StdClass;
                     $separador->id = $actual->idtiposervicio;
                     $separador->nombre = $actual->cuenta;
                     $separador->codigo = $actual->codigo;
                     $separador->facturas = array();
-                }
-
-                // para empujar el ultimo dato
-                if ($i+1 == $cntsVentas) {
-                    array_push($suma_montos, $actual->total);
-                    array_push($separador->facturas, $actual);
-                    $totales->total = round(array_sum($suma_montos), 2);
-                    array_push($suma_ventas, $totales->total);
-                    $separador->total = round(array_sum($suma_montos), 2);
-                    array_push($separador_mes->ventas, $separador);
-
-                    // limpiar 
-                    $suma_montos = array();
-                    $separador = new StdClass;
-                    $totales = new StdClass;
-                    $primero = true;
-                }
-            }
-        }
-
-        for ($i = 1; $i < $cntsCompras; $i++) {
-            // traer valor actual y anterior
-            $actual = $data_c[$i];
-            $anterior = $data_c[$i-1];
-
-            if ($d->mesdel + $j == $anterior->mes) {
-
-                // si es el primero insertar nombre del separador y crear array de recibos
-                if ($primero) {
-                    array_push($nombres, substr($anterior->nombrecta, 0, 6));
-                    $separador->id = $anterior->id;
-                    $separador->nombre = $anterior->nombrecta;
-                    $separador->codigo = $anterior->codigo;
-                    $separador->facturas = array();
                     $primero = false;
                 }
 
-                // siempre empujar el monto anterior ya que fue validado anteriormente
-                array_push($suma_montos, $anterior->total);
-                array_push($separador->facturas, $anterior);
+                array_push($suma_montos, $actual->total);
+                array_push($separador->facturas, $actual);
+                $totales->total = round(array_sum($suma_montos), 2);
+                array_push($suma_ventas, $totales->total);
+                $separador->total = round(array_sum($suma_montos), 2);
+                array_push($separador_mes->ventas, $separador);
 
-                // si no tienen el mismo separador
-                if ($actual->id != $anterior->id) {
-                    // generar variable de totales
-                    $totales->total = round(array_sum($suma_montos), 2);
-                    $separador->total = round(array_sum($suma_montos), 2);
-                    // $separador->totales = $totales;
+                // limpiar 
+                $suma_montos = array();
+                $separador = new StdClass;
+                $totales = new StdClass;
+                $primero = true;
+            }
+        } 
 
-                    // para graficas
-                    array_push($montos, $totales->total);
+        if ($cntsCompras > 1) {
+            for ($i = 1; $i < $cntsCompras; $i++) {
+                // traer valor actual y anterior
+                $actual = $data_c[$i];
+                $anterior = $data_c[$i-1];
+
+                if ($d->mesdel + $j == $anterior->mes) {
+                    // si es el primero insertar nombre del separador y crear array de recibos
+                    if ($primero) {
+                        array_push($nombres, substr($anterior->nombrecta, 0, 6));
+                        $separador->id = $anterior->id;
+                        $separador->nombre = $anterior->nombrecta;
+                        $separador->codigo = $anterior->codigo;
+                        $separador->facturas = array();
+                        $primero = false;
+                    }
+
+                    // siempre empujar el monto anterior ya que fue validado anteriormente
+                    array_push($suma_montos, $anterior->total);
+                    array_push($separador->facturas, $anterior);
+
+                    // si no tienen el mismo separador
+                    if ($actual->id != $anterior->id) {
+                        // generar variable de totales
+                        $totales->total = round(array_sum($suma_montos), 2);
+                        $separador->total = round(array_sum($suma_montos), 2);
+                        // $separador->totales = $totales;
+
+                        // para graficas
+                        array_push($montos, $totales->total);
+                        array_push($nombres, substr($actual->nombrecta, 0, 6));
+                        array_push($suma_compras, $totales->total);
+
+                        // empujar a array global de recibo los recibos separados
+                        array_push($separador_mes->compras, $separador);
+                        // limpiar variables 
+                        $totales = new StdClass;
+                        $suma_montos = array();
+                        $separador = new StdClass;
+                        $separador->id = $actual->id;
+                        $separador->nombre = $actual->nombrecta;
+                        $separador->codigo = $actual->codigo;
+                        $separador->facturas = array();
+                    }
+
+                    // para empujar el ultimo dato
+                    if ($i+1 == $cntsCompras) {
+                        array_push($suma_montos, $actual->total);
+                        array_push($separador->facturas, $actual);
+                        $totales->total = round(array_sum($suma_montos), 2);
+                        array_push($suma_compras, $totales->total);
+                        $separador->total = round(array_sum($suma_montos), 2);
+                        // $separador->totales = $totales;
+                        array_push($separador_mes->compras, $separador);
+
+                        // para graficas
+                        array_push($montos, $totales->total);
+
+                        // limpiar 
+                        $suma_montos = array();
+                        $separador = new StdClass;
+                        $totales = new StdClass;
+                        $primero = true;
+                    }
+                }
+            }
+        } else {
+            for ($i = 0; $i < $cntsCompras; $i++) {
+                // traer valor actual y anterior
+                $actual = $data_c[$i];
+
+                // si es el primero insertar nombre del separador y crear array de recibos
+                if ($primero) {
                     array_push($nombres, substr($actual->nombrecta, 0, 6));
-                    array_push($suma_compras, $totales->total);
-
-                    // empujar a array global de recibo los recibos separados
-                    array_push($separador_mes->compras, $separador);
-                    // limpiar variables 
-                    $totales = new StdClass;
-                    $suma_montos = array();
-                    $separador = new StdClass;
                     $separador->id = $actual->id;
                     $separador->nombre = $actual->nombrecta;
                     $separador->codigo = $actual->codigo;
                     $separador->facturas = array();
+                    $primero = false;
                 }
 
-                // para empujar el ultimo dato
-                if ($i+1 == $cntsCompras) {
-                    array_push($suma_montos, $actual->total);
-                    array_push($separador->facturas, $actual);
-                    $totales->total = round(array_sum($suma_montos), 2);
-                    array_push($suma_compras, $totales->total);
-                    $separador->total = round(array_sum($suma_montos), 2);
-                    // $separador->totales = $totales;
-                    array_push($separador_mes->compras, $separador);
+                array_push($suma_montos, $actual->total);
+                array_push($separador->facturas, $actual);
+                $totales->total = round(array_sum($suma_montos), 2);
+                array_push($suma_compras, $totales->total);
+                $separador->total = round(array_sum($suma_montos), 2);
+                // $separador->totales = $totales;
+                array_push($separador_mes->compras, $separador);
 
-                    // para graficas
-                    array_push($montos, $totales->total);
+                // para graficas
+                array_push($montos, $totales->total);
 
-                    // limpiar 
-                    $suma_montos = array();
-                    $separador = new StdClass;
-                    $totales = new StdClass;
-                }
+                // limpiar 
+                $suma_montos = array();
+                $separador = new StdClass;
+                $totales = new StdClass;
+                $primero = true;
             }
         }
 
