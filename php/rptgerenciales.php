@@ -286,7 +286,7 @@ $app->post('/finanzas', function(){
                     array_push($separador->facturas, $anterior);
 
                     // si no tienen el mismo separador
-                    if ($actual->idtiposervicio != $anterior->idtiposervicio) {
+                    if ($actual->idtiposervicio != $anterior->idtiposervicio || $actual->mes != $anterior->mes) {
                         // generar variable de totales
                         $totales->total = round(array_sum($suma_montos), 2);
                         $separador->total = round(array_sum($suma_montos), 2);
@@ -306,7 +306,8 @@ $app->post('/finanzas', function(){
                         $separador->codigo = $actual->codigo;
                         $separador->facturas = array();
                     }
-
+                }
+                if ($d->mesdel + $j == $actual->mes) {
                     // para empujar el ultimo dato
                     if ($i+1 == $cntsVentas) {
                         array_push($suma_montos, $actual->total);
@@ -315,7 +316,7 @@ $app->post('/finanzas', function(){
                         array_push($suma_ventas, $totales->total);
                         $separador->total = round(array_sum($suma_montos), 2);
                         array_push($separador_mes->ventas, $separador);
-
+                    
                         // limpiar 
                         $suma_montos = array();
                         $separador = new StdClass;
@@ -378,7 +379,7 @@ $app->post('/finanzas', function(){
                     array_push($separador->facturas, $anterior);
 
                     // si no tienen el mismo separador
-                    if ($actual->id != $anterior->id) {
+                    if ($actual->id != $anterior->id || $actual->mes != $anterior->mes) {
                         // generar variable de totales
                         $totales->total = round(array_sum($suma_montos), 2);
                         $separador->total = round(array_sum($suma_montos), 2);
@@ -400,7 +401,8 @@ $app->post('/finanzas', function(){
                         $separador->codigo = $actual->codigo;
                         $separador->facturas = array();
                     }
-
+                }
+                if ($d->mesdel + $j == $actual->mes) {
                     // para empujar el ultimo dato
                     if ($i+1 == $cntsCompras) {
                         array_push($suma_montos, $actual->total);
@@ -410,15 +412,14 @@ $app->post('/finanzas', function(){
                         $separador->total = round(array_sum($suma_montos), 2);
                         // $separador->totales = $totales;
                         array_push($separador_mes->compras, $separador);
-
+                
                         // para graficas
                         array_push($montos, $totales->total);
-
+                
                         // limpiar 
                         $suma_montos = array();
                         $separador = new StdClass;
                         $totales = new StdClass;
-                        $primero = true;
                     }
                 }
             }
@@ -447,14 +448,10 @@ $app->post('/finanzas', function(){
                     // $separador->totales = $totales;
                     array_push($separador_mes->compras, $separador);
 
-                    // para graficas
-                    array_push($montos, $totales->total);
-
                     // limpiar 
                     $suma_montos = array();
                     $separador = new StdClass;
                     $totales = new StdClass;
-                    $primero = true;
                 }
             }
         }
@@ -777,7 +774,7 @@ $app->post('/resumen', function () {
                     array_push($separador->facturas, $anterior);
 
                     // si no tienen el mismo separador
-                    if ($actual->idtiposervicio != $anterior->idtiposervicio) {
+                    if ($actual->idtiposervicio != $anterior->idtiposervicio || $actual->mes != $anterior->mes) {
                         // generar variable de totales
                         $totales->total = round(array_sum($suma_montos), 2);
                         $separador->total = round(array_sum($suma_montos), 2);
@@ -797,7 +794,8 @@ $app->post('/resumen', function () {
                         $separador->codigo = $actual->codigo;
                         $separador->facturas = array();
                     }
-
+                }
+                if ($d->mesdel + $j == $actual->mes) {
                     // para empujar el ultimo dato
                     if ($i+1 == $cntsVentas) {
                         array_push($suma_montos, $actual->total);
@@ -806,7 +804,7 @@ $app->post('/resumen', function () {
                         array_push($suma_ventas, $totales->total);
                         $separador->total = round(array_sum($suma_montos), 2);
                         array_push($separador_mes->ventas, $separador);
-
+                    
                         // limpiar 
                         $suma_montos = array();
                         $separador = new StdClass;
@@ -869,7 +867,7 @@ $app->post('/resumen', function () {
                     array_push($separador->facturas, $anterior);
 
                     // si no tienen el mismo separador
-                    if ($actual->id != $anterior->id) {
+                    if ($actual->id != $anterior->id || $actual->mes != $anterior->mes) {
                         // generar variable de totales
                         $totales->total = round(array_sum($suma_montos), 2);
                         $separador->total = round(array_sum($suma_montos), 2);
@@ -891,7 +889,8 @@ $app->post('/resumen', function () {
                         $separador->codigo = $actual->codigo;
                         $separador->facturas = array();
                     }
-
+                }
+                if ($d->mesdel + $j == $actual->mes) {
                     // para empujar el ultimo dato
                     if ($i+1 == $cntsCompras) {
                         array_push($suma_montos, $actual->total);
@@ -901,15 +900,14 @@ $app->post('/resumen', function () {
                         $separador->total = round(array_sum($suma_montos), 2);
                         // $separador->totales = $totales;
                         array_push($separador_mes->compras, $separador);
-
+                
                         // para graficas
                         array_push($montos, $totales->total);
-
+                
                         // limpiar 
                         $suma_montos = array();
                         $separador = new StdClass;
                         $totales = new StdClass;
-                        $primero = true;
                     }
                 }
             }
@@ -938,14 +936,10 @@ $app->post('/resumen', function () {
                     // $separador->totales = $totales;
                     array_push($separador_mes->compras, $separador);
 
-                    // para graficas
-                    array_push($montos, $totales->total);
-
                     // limpiar 
                     $suma_montos = array();
                     $separador = new StdClass;
                     $totales = new StdClass;
-                    $primero = true;
                 }
             }
         }
