@@ -130,8 +130,7 @@ $app->post('/altasbajas', function(){
     $data = $db->getQuery($query);
 
     foreach($data as $dat) {
-        $dat->nombre = ucwords(strtolower($dat->nombre), ' ');
-        $dat->puesto = ucfirst(strtolower($dat->puesto));
+        minusculas($dat);
     }
 
     $cntsFacturas = count($data);
@@ -266,6 +265,7 @@ $app->post('/bono14', function(){
     // sumadores
     $sumas_empresa = array();
     $sumas_proyecto = array();
+    $sumas_general = array();
 
     // clase para fechas
     $letra = new stdClass();
@@ -288,31 +288,36 @@ $app->post('/bono14', function(){
     $query = "SELECT 
                 a.id AS idempleado,
                 IFNULL(b.id, '9999') AS idempresa,
-                a.idproyecto,
+                IFNULL(a.idproyecto, '9999') AS idproyecto,
                 IFNULL(b.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
-                c.nomproyecto AS proyecto,
+                IFNULL(c.nomproyecto, 'SIN PROYECTO') AS proyecto,
                 CONCAT(a.nombre, ' ', IFNULL(a.apellidos, '')) AS nombre,
                 b.numeropat AS numero,
-                IFNULL(d.descripcion, 'N/E') AS puesto,
+                IFNULL(d.descripcion, 'NO ESPECIFICADO') AS puesto,
                 DATE_FORMAT(a.ingreso, '%d/%m/%Y') AS fecha,
                 a.sueldo,
                 e.bonocatorcedias,
-                e.bonocatorce
+                e.bonocatorce,
+                b.abreviatura
             FROM
                 plnempleado a
-                    LEFT JOIN
-                plnempresa b ON a.idempresadebito = b.id
                     INNER JOIN
+                plnnomina e ON e.idplnempleado = a.id
+                    LEFT JOIN
+                plnempresa b ON e.idempresa = b.id
+                    LEFT JOIN
                 proyecto c ON a.idproyecto = c.id
                     LEFT JOIN
                 plnpuesto d ON a.idplnpuesto = d.id
-                    INNER JOIN
-                plnnomina e ON e.idplnempleado = a.id
             WHERE
                 e.bonocatorce > 0 AND YEAR(fecha) = $d->anio ";
     $query.= isset($d->idempresa) ? "AND a.idempresadebito = $d->idempresa " : "";
     $query.=   "ORDER BY 4 , 5 , 6";
     $data = $db->getQuery($query);
+
+    foreach($data as $dat) {
+        minusculas($dat);
+    }
 
     $cntsDatos = count($data);
 
@@ -327,6 +332,7 @@ $app->post('/bono14', function(){
             // empresa
             $separador_empresa->nombre = $anterior->empresa;
             $separador_empresa->numero = $anterior->numero;
+            $separador_empresa->abreviatura = $anterior->abreviatura;
             $separador_empresa->proyectos = array();
             // proyecto
             $separador_proyecto->nombre = $anterior->proyecto;
@@ -337,6 +343,7 @@ $app->post('/bono14', function(){
         // sumas
         array_push($sumas_empresa, $anterior->bonocatorce);
         array_push($sumas_proyecto, $anterior->bonocatorce);
+        array_push($sumas_general, $anterior->bonocatorce);
 
         array_push($separador_proyecto->empleados, $anterior);
 
@@ -356,6 +363,20 @@ $app->post('/bono14', function(){
         }
 
         if ($anterior->idempresa !== $actual->idempresa) {
+            if ($anterior->idproyecto == $actual->idproyecto) {
+                // sumar total
+                $separador_proyecto->total = round(array_sum($sumas_proyecto), 2);
+
+                // empujar a array padre
+                array_push($separador_empresa->proyectos, $separador_proyecto);
+
+                // separador
+                $separador_proyecto = new StdClass;
+                $separador_proyecto->nombre = $actual->proyecto;
+                $separador_proyecto->empleados = array();
+                $sumas_proyecto = array();
+            }
+
             // sumar total 
             $separador_empresa->total = round(array_sum($sumas_empresa), 2);
 
@@ -366,6 +387,7 @@ $app->post('/bono14', function(){
             $separador_empresa = new StdClass;
             $separador_empresa->nombre = $actual->empresa;
             $separador_empresa->numero = $actual->numero;
+            $separador_empresa->abreviatura = $actual->abreviatura;
             $separador_empresa->proyectos = array();
             $sumas_empresa = array();
         }
@@ -376,6 +398,7 @@ $app->post('/bono14', function(){
             array_push($separador_proyecto->empleados, $actual);
             array_push($sumas_empresa, $actual->bonocatorce);
             array_push($sumas_proyecto, $actual->bonocatorce);
+            array_push($sumas_general, $actual->bonocatorce);
 
             $separador_proyecto->total = round(array_sum($sumas_proyecto), 2);
 
@@ -398,6 +421,7 @@ $app->post('/bono14', function(){
                 // empresa
                 $separador_empresa->nombre = $actual->empresa;
                 $separador_empresa->numero = $actual->numero;
+                $separador_empresa->abreviatura = $actual->abreviatura;
                 $separador_empresa->proyectos = array();
                 // proyecto
                 $separador_proyecto->nombre = $actual->proyecto;
@@ -411,6 +435,13 @@ $app->post('/bono14', function(){
         }
     } 
 
-    print json_encode([ 'encabezado' => $letra, 'tipo' => $empleados ]);
+    $letra->total = array_sum($sumas_general);
+
+    print json_encode([ 'encabezado' => $letra, 'empresas' => $empleados ]);
 });
+
+function minusculas ($dat) {
+    $dat->nombre = ucwords(strtolower($dat->nombre), ' ');
+    $dat->puesto = ucfirst(strtolower($dat->puesto));
+}
 $app->run();
