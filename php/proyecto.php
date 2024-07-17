@@ -17,11 +17,11 @@ $app->get('/lstproyecto', function(){
 
 $app->get('/lstproyectoporempresa/:idempresa', function($idempresa){
     $db = new dbcpm();
-    $empresas_otras = strlen($idempresa) > 1 ? substr($idempresa, 0, 1).'%'.substr($idempresa, 1, 1) : '%'.$idempresa.'%';
+    $empresas_otras = "(a.otras_empresas NOT LIKE '%$idempresa"."_' AND a.otras_empresas LIKE '%$idempresa%')";
     $query = "SELECT a.id, a.nomproyecto, a.registro, a.direccion, a.notas, a.metros, a.idempresa, a.metros_rentable, a.tipo_proyecto, a.subarrendado, a.notas_contrato, a.referencia, a.fechaapertura, ";
     $query.= "b.nomempresa AS empresa, c.descripcion AS tipoproyecto, a.multiempresa, a.apiurlparqueo, a.fechabaja ";
     $query.= "FROM proyecto a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN tipo_proyecto c ON c.id = a.tipo_proyecto ";
-    $query.= "WHERE a.idempresa = $idempresa OR IF(a.otras_empresas IS NOT NULL, a.otras_empresas LIKE '$empresas_otras', a.multiempresa = 1) ";
+    $query.= "WHERE a.idempresa = $idempresa OR IF(a.otras_empresas IS NOT NULL, $empresas_otras, a.multiempresa = 1) ";
     $query.= "ORDER BY a.nomproyecto";
     print $db->doSelectASJson($query);
 });
