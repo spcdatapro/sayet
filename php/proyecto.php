@@ -17,7 +17,7 @@ $app->get('/lstproyecto', function(){
 
 $app->get('/lstproyectoporempresa/:idempresa', function($idempresa){
     $db = new dbcpm();
-    $empresas_otras = strlen($idempresa) > 1 ? substr($idempresa, 0, 1).'%'.substr($idempresa, 1, 1) : '%'.$idempresa.'%'.$idempresa;
+    $empresas_otras = strlen($idempresa) > 1 ? substr($idempresa, 0, 1).'%'.substr($idempresa, 1, 1) : '%'.$idempresa.'%';
     $query = "SELECT a.id, a.nomproyecto, a.registro, a.direccion, a.notas, a.metros, a.idempresa, a.metros_rentable, a.tipo_proyecto, a.subarrendado, a.notas_contrato, a.referencia, a.fechaapertura, ";
     $query.= "b.nomempresa AS empresa, c.descripcion AS tipoproyecto, a.multiempresa, a.apiurlparqueo, a.fechabaja ";
     $query.= "FROM proyecto a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN tipo_proyecto c ON c.id = a.tipo_proyecto ";
