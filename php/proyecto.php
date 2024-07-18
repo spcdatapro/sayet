@@ -81,6 +81,7 @@ $app->post('/u', function(){
     $otras_empresas = count($d->otras_empresas) > 0 ? implode(',', $d->otras_empresas) : '';
     $d->fechaaperturastr = $d->fechaaperturastr == '' ? 'NULL' : "'$d->fechaaperturastr'";
     $d->fechabajastr = $d->fechabajastr == '' ? 'NULL' : "'$d->fechabajastr'";
+    $d->metros = !isset($d->metros) ? $d->metros = 'NULL' : $d->metros;
     $otras_empresas = $otras_empresas == '' ? 'null' : "'$otras_empresas'";
     $query = "UPDATE proyecto SET nomproyecto = '$d->nomproyecto',";
     $query.= "direccion = '$d->direccion', notas = '$d->notas', metros = $d->metros, idempresa = $d->idempresa,";
@@ -88,7 +89,7 @@ $app->post('/u', function(){
     $query.= "notas_contrato = '$d->notas_contrato', referencia= '$d->referencia', fechaapertura = $d->fechaaperturastr, ";
     $query.= "multiempresa = $d->multiempresa, fechabaja = $d->fechabajastr, otras_empresas = $otras_empresas ";
     $query.= "WHERE id = ".$d->id;
-    //print $query;
+    // print $query;
     $upd = $conn->query($query);
 });
 
