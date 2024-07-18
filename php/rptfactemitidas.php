@@ -228,4 +228,21 @@ print json_encode(['general' => $general, 'reporte' => $reporte]);
 
 });
 
+$app->post('/elmcargo', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    if ($d->tipo == 1) {
+        $db->doQuery("UPDATE cargo SET facturado = 1 WHERE (id = $d->id)");
+        $exito = $db->getOneField("SELECT facturado FROM cargo WHERE id = $d->id") == 1;
+    } else {
+        $db->doQuery("UPDATE lecturaservicio SET estatus = 3, facturado = 1 WHERE (id = $d->id)");
+        $exito = $db->getOneField("SELECT facturado FROM lecturaservicio WHERE id = $d->id") == 1;
+    }
+
+    $tipo = $exito == 1 ? 'success' : 'error';
+    $mensaje = $exito == 1 ? 'Cargo eliminado con éxito.' : 'Ocurrio un error por favor volver a intentar.';
+    print json_encode(['tipo' => $tipo, 'mensaje' => $mensaje]);
+});
+
 $app->run();

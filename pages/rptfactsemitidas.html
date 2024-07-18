@@ -2,6 +2,9 @@
     .ancho{ width: 100% !important; }
     .brdbtm{ border-bottom: solid 0.1em lightgrey}
     .bld{ font-weight: bold; }
+    .gris {
+        background-color: #E8E8E8;
+    }
 </style>
 <div class="container" ng-controller="rptFacturasEmitidasCtrl">
     <div class="row">
@@ -45,22 +48,22 @@
                             <label for="txtCliente">Cliente:</label>
                             <!--<input name="txtCliente" id="txtCliente" type="text" class="form-control" ng-model="params.cliente" placeholder="Nombre, nombre corto, facturar a..."/>-->
                             <div angucomplete-alt id="txtCliente"
-                                 placeholder="Buscar cliente..."
-                                 pause="400"
-                                 selected-object="clienteSelected"
-                                 remote-url="php/facturaotros.php/srchcli/{{params.idempresa}}/"
-                                 remote-url-error-callback="errorSearch"
-                                 remote-url-data-field="results"
-                                 title-field="facturara"
-                                 description-field="infocliente"
-                                 input-class="form-control form-control-sm ancho"
-                                 match-class="highlight"
-                                 minlength="1"
-                                 field-required="true"
-                                 input-name="txtCliente"
-                                 input-changed="focusOut"
-                                 override-suggestions="true"
-                                 template-url="/my-custom-template.html"
+                                placeholder="Buscar cliente..."
+                                pause="400"
+                                selected-object="clienteSelected"
+                                remote-url="php/facturaotros.php/srchcli/{{params.idempresa}}/"
+                                remote-url-error-callback="errorSearch"
+                                remote-url-data-field="results"
+                                title-field="facturara"
+                                description-field="infocliente"
+                                input-class="form-control form-control-sm ancho"
+                                match-class="highlight"
+                                minlength="1"
+                                field-required="true"
+                                input-name="txtCliente"
+                                input-changed="focusOut"
+                                override-suggestions="true"
+                                template-url="/my-custom-template.html"
                             ></div>
                         </div>
                     </div>
@@ -120,28 +123,82 @@
                         </div>
                     </div>
                 </div>
-                <button type="button" class="btn btn-primary" ng-click="getFactsEmitidas()">
+                <button type="button" class="btn btn-danger" ng-click="getFactsEmitidas()" ng-disabled="cargando">
                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-primary" ng-click="getPendientes(params)" ng-show="params.tipo == 4"
+                ng-disabled="cargando">
+                    <i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i>
                 </button>
             </div>
         </div>
+    </div>
+    <div class="row" ng-show="cargando">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                <span class="label label-primary">Generando reporte, por favor espere...</span>
+                <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
+            </div>
+        </div>
+    </div>
+    <div id="tblResumen" ng-show="ver">
+        <div class="amarillo" style="text-align: center;">
+            <div>REPORTE DE FACTURAS PENDIENTES DE EMITIR</div>
+            <div>{{generales.fal}}</div>
+        </div>
+        <br>
+        <table class="table table-responsive table-hover ">
+            <tbody ng-repeat="e in empresas">
+                <tr ng-click="e.detalle = !e.detalle">
+                    <td style="text-align: left; width: 50%;">{{e.empresa}}</td>
+                    <td style="text-align: right; width: 50%;">{{e.totpendiente}}</td>
+                </tr>
+                <tr ng-show="e.detalle">
+                    <td colspan="2" class="gris">
+                        <table class="table table-responsive"
+                            style="width: 98%; margin-left: auto; margin-right: auto;">
+                            <thead>
+                                <th colspan="2">Cliente</th>
+                                <th>Tipo</th>
+                                <th>Cobro</th>
+                                <th style="text-align: right;">Total</th>
+                                <th>&nbsp;</th>
+                            </thead>
+                            <tbody ng-repeat="p in e.pendientes">
+                                <td>{{p.cliente | shortenStr:50}}</td>
+                                <td>{{p.abreviacliente}}</td>
+                                <td>{{p.tipo}}</td>
+                                <td>{{p.fechacobro}}</td>
+                                <td style="text-align: right;">{{p.montoconiva}}</td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm" ng-click="eliminarPendiente(p.id, p.tipo)"
+                                    ng-disabled="!permisos.e">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </button>
+                                </td>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     <rpt-viewer contenido="content"></rpt-viewer>
 </div>
 <script type="text/ng-template" id="/my-custom-template.html">
     <div class="angucomplete-holder ancho" ng-class="{'angucomplete-dropdown-visible': showDropdown}">
         <input ng-model="searchStr"
-               ng-disabled="disableInput"
-               type="text"
-               placeholder="{{placeholder}}"
-               ng-focus="onFocusHandler()"
-               class="{{inputClass}}"
-               ng-focus="resetHideResults()"
-               ng-blur="hideResults($event)"
-               autocapitalize="off"
-               autocorrect="off"
-               autocomplete="off"
-               ng-change="inputChangeHandler(searchStr)"/>
+            ng-disabled="disableInput"
+            type="text"
+            placeholder="{{placeholder}}"
+            ng-focus="onFocusHandler()"
+            class="{{inputClass}}"
+            ng-focus="resetHideResults()"
+            ng-blur="hideResults($event)"
+            autocapitalize="off"
+            autocorrect="off"
+            autocomplete="off"
+            ng-change="inputChangeHandler(searchStr)"/>
         <div class="angucomplete-dropdown ancho" ng-show="showDropdown">
             <div class="angucomplete-searching ancho" ng-show="searching" ng-bind="textSearching"></div>
             <div class="angucomplete-searching ancho" ng-show="!searching && (!results || results.length == 0)" ng-bind="textNoResults"></div>

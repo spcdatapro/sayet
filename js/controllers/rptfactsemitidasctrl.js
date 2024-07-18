@@ -2,7 +2,8 @@
 
     var rptfactsemitidasctrl = angular.module('cpm.rptfactsemitidasctrl', []);
 
-    rptfactsemitidasctrl.controller('rptFacturasEmitidasCtrl', ['$scope', 'empresaSrvc', 'jsReportSrvc', 'proyectoSrvc', 'tipoServicioVentaSrvc', 'tipoCambioSrvc', function($scope, empresaSrvc, jsReportSrvc, proyectoSrvc, tipoServicioVentaSrvc, tipoCambioSrvc){
+    rptfactsemitidasctrl.controller('rptFacturasEmitidasCtrl', ['$scope', 'empresaSrvc', 'jsReportSrvc', 'proyectoSrvc', 'tipoServicioVentaSrvc', 'tipoCambioSrvc', 'factEmitidaSrvc', '$confirm',
+        'toaster', 'authSrvc', '$route', function($scope, empresaSrvc, jsReportSrvc, proyectoSrvc, tipoServicioVentaSrvc, tipoCambioSrvc, factEmitidaSrvc, $confirm, toaster, authSrvc, $route){
 
         $scope.params = { 
             idempresa: undefined, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), cliente: '', tipo: '1', idcliente: 0, idproyecto: undefined,
@@ -12,6 +13,16 @@
         $scope.content = `${window.location.origin}/sayet/blank.html`;
         $scope.proyectos = [];
         $scope.tsventa = [];
+        $scope.cargando = false;
+        $scope.pendientes = {};
+        $scope.generales = {};
+        $scope.permisos = {};
+
+        authSrvc.getSession().then(function (usuario) {
+            authSrvc.gpr({ idusuario: parseInt(usuario.uid), ruta: $route.current.params.name }).then(function (p){
+                $scope.permisos = p;
+            });
+        });
 
         empresaSrvc.lstEmpresas().then((d) => $scope.empresas = d);
 
@@ -45,6 +56,8 @@
 
         let test = false;
         $scope.getFactsEmitidas = () => {
+            $scope.cargando = true;
+            $scope.ver = false;
             let reporte = 'BJW6LWoYb';
             $scope.params.fdelstr = moment($scope.params.fdel).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.fal).format('YYYY-MM-DD');
@@ -64,8 +77,48 @@
             }
 
             //console.log($scope.params); return;
-            jsReportSrvc.getPDFReport(test ? '' : reporte, $scope.params).then((pdf) => $scope.content = pdf);
-        };       
+            jsReportSrvc.getPDFReport(test ? '' : reporte, $scope.params).then( function (pdf) { 
+                $scope.content = pdf; 
+                $scope.cargando = false;
+            });
+        };   
+        
+        $scope.getPendientes = function (params) {
+            $scope.cargando = true;
+            $scope.content = `${window.location.origin}/sayet/blank.html`;
+            params.fdelstr = moment(params.fdel).format('YYYY-MM-DD');
+            params.falstr = moment(params.fal).format('YYYY-MM-DD');
+            $scope.params.idempresa = $scope.params.idempresa != null && $scope.params.idempresa !== undefined ? $scope.params.idempresa : '';
+            $scope.params.cliente = $scope.params.cliente != null && $scope.params.cliente !== undefined ? $scope.params.cliente : '';
+            $scope.params.idcliente = $scope.params.idcliente != null && $scope.params.idcliente !== undefined ? $scope.params.idcliente : 0;
+            $scope.params.tipo = $scope.params.tipo != null && $scope.params.tipo !== undefined ? $scope.params.tipo : '1';
+            $scope.params.idproyecto = $scope.params.idproyecto != null && $scope.params.idproyecto !== undefined ? $scope.params.idproyecto : 0;
+            $scope.params.idtsventa = $scope.params.idtsventa != null && $scope.params.idtsventa !== undefined ? $scope.params.idtsventa : 0;
+            $scope.params.soloanuladas = $scope.params.soloanuladas != null && $scope.params.soloanuladas !== undefined ? $scope.params.soloanuladas : 0;
+
+            factEmitidaSrvc.pendientes(params).then(function (d) {
+                $scope.generales = d.generales;
+                $scope.empresas = d.pendientes;
+                $scope.cargando = false;
+                $scope.ver = true;
+            });
+        }
+        
+        $scope.eliminarPendiente = function (idcargo, tipo) {
+            let idtipo = tipo == 'Agua' ? 2 : 1; 
+            let fact = { id: idcargo, tipo: idtipo };
+
+            $confirm({ text: '¿Seguro desea eliminar este cargo?', 
+                title: 'Eliminar cargo pendiente', ok: 'Sí', cancel: 'No' }).then(function () {
+                    factEmitidaSrvc.eliminarCargo(fact).then(function (d) { 
+                        toaster.pop({
+                            type: d.tipo, title: 'Remover factura pendiente',
+                            body: d.mensaje, timeout: 7000
+                        }); 
+                        $scope.getPendientes($scope.params);
+                    });
+            });
+        }
 
     }]);
 
