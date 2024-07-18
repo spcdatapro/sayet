@@ -22,6 +22,7 @@ $app->get('/lstproyectoporempresa/:idempresa', function($idempresa){
     $query.= "b.nomempresa AS empresa, c.descripcion AS tipoproyecto, a.multiempresa, a.apiurlparqueo, a.fechabaja ";
     $query.= "FROM proyecto a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN tipo_proyecto c ON c.id = a.tipo_proyecto ";
     $query.= "WHERE a.idempresa = $idempresa OR IF(a.otras_empresas IS NOT NULL, $empresas_otras, a.multiempresa = 1) ";
+    $query.= "ORDER BY a.nomproyecto";
     print $db->doSelectASJson($query);
 });
 
