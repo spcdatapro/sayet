@@ -53,7 +53,16 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <div class="form-group required">
+                                <label for="selAgrupar" class="control-label">Agrupar por:</label>
+                                <select name="selAgrupar" id="selAgrupar" class="form-control" ng-model="params.agrupar" required>
+                                    <option value="1">Empresa</option>
+                                    <option value="2">Proyecto</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="control-label">Empresa D&eacute;bito:</label>
                                 <ui-select ng-model="params.idempresa" title="Seleccione una empresa..."
@@ -68,11 +77,11 @@
                                 </ui-select>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="control-label">Proyecto:</label>
                                 <ui-select ng-model="params.idproyecto" title="Seleccione un proyecto..."
-                                    theme="bootstrap" autofocus="true">
+                                    theme="bootstrap" autofocus="true" ng-disabled="params.agrupar == 1">
                                     <ui-select-match placeholder="Buscar proyecto..." allow-clear="true">
                                         <span ng-bind="($select.selected.nomproyecto)"></span>
                                     </ui-select-match>

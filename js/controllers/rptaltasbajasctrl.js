@@ -13,7 +13,9 @@
             $scope.cargando = false;
 
             // parametros para reporte
-            $scope.params = { fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), tipo: '3' };
+            $scope.params = { fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), tipo: '3',
+                agrupar: '1'
+            };
 
             // para visualizaciones en pantalla
             $scope.ver = { resumen: false };

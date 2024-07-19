@@ -126,7 +126,8 @@ $app->post('/altasbajas', function(){
     "AND (a.ingreso >= '$d->fdelstr' AND a.ingreso <= '$d->falstr' OR a.baja >= '$d->fdelstr' AND a.baja <= '$d->falstr') ");
     $query.= isset($d->idempresa) ? "AND a.idempresadebito = $d->idempresa " : "";
     $query.= isset($d->idproyecto) ? "AND a.idproyecto = $d->idproyecto " : "";
-    $query.= "ORDER BY 4, 5, 6, 7";
+    $query.=   "ORDER BY 4 , 5 ,"; 
+    $query.= $d->agrupar == 2 ? " 6 , 7" : " 7";
     $data = $db->getQuery($query);
 
     foreach($data as $dat) {
@@ -150,23 +151,34 @@ $app->post('/altasbajas', function(){
             // empresa
             $separador_empresa->nombre = $anterior->empresa;
             $separador_empresa->numero = $anterior->numero;
-            $separador_empresa->proyectos = array();
-            // proyecto
-            $separador_proyecto->nombre = $anterior->proyecto;
-            $separador_proyecto->empleados = array();
+            $separador_empresa->porproyecto = $d->agrupar == 2 ? true : null;
+            if ($d->agrupar == 2) {
+                $separador_empresa->proyectos = array();
+                // proyecto
+                $separador_proyecto->nombre = $anterior->proyecto;
+                $separador_proyecto->empleados = array();
+            } else {
+                $separador_empresa->empleados = array();
+            }
             $primero = false;
         }
 
-        array_push($separador_proyecto->empleados, $anterior);
+        if ($d->agrupar == 2) {
+            array_push($separador_proyecto->empleados, $anterior);
+        } else {
+            array_push($separador_empresa->empleados, $anterior);
+        }
 
         if ($anterior->tipo !== $actual->tipo) {
             // empujar a array padre
-            array_push($separador_empresa->proyectos, $separador_proyecto);
+            if ($d->agrupar == 2) {
+                array_push($separador_empresa->proyectos, $separador_proyecto);
 
-            // separador
-            $separador_proyecto = new StdClass;
-            $separador_proyecto->nombre = $actual->proyecto;
-            $separador_proyecto->empleados = array();
+                // separador
+                $separador_proyecto = new StdClass;
+                $separador_proyecto->nombre = $actual->proyecto;
+                $separador_proyecto->empleados = array();
+            }
 
             array_push($separador_tipo->empresas, $separador_empresa);
 
@@ -174,7 +186,12 @@ $app->post('/altasbajas', function(){
             $separador_empresa = new StdClass;
             $separador_empresa->nombre = $actual->empresa;
             $separador_empresa->numero = $actual->numero;
-            $separador_empresa->proyectos = array();
+            $separador_empresa->porproyecto = $d->agrupar == 2 ? true : null;
+            if ($d->agrupar == 2) {
+                $separador_empresa->proyectos = array();
+            } else {
+                $separador_empresa->empleados = array();
+            }
 
             // empujar a array padre
             array_push($empleados, $separador_tipo);
@@ -186,14 +203,16 @@ $app->post('/altasbajas', function(){
             $separador_tipo->empresas = array();
         }
 
-        if ($anterior->idproyecto !== $actual->idproyecto && $anterior->tipo == $actual->tipo) {
-            // empujar a array padre
-            array_push($separador_empresa->proyectos, $separador_proyecto);
+        if ($d->agrupar == 2) {
+            if ($anterior->idproyecto !== $actual->idproyecto && $anterior->tipo == $actual->tipo) {
+                // empujar a array padre
+                array_push($separador_empresa->proyectos, $separador_proyecto);
 
-            // separador
-            $separador_proyecto = new StdClass;
-            $separador_proyecto->nombre = $actual->proyecto;
-            $separador_proyecto->empleados = array();
+                // separador
+                $separador_proyecto = new StdClass;
+                $separador_proyecto->nombre = $actual->proyecto;
+                $separador_proyecto->empleados = array();
+            }
         }
 
         if ($anterior->idempresa !== $actual->idempresa && $anterior->tipo == $actual->tipo) {
@@ -204,16 +223,27 @@ $app->post('/altasbajas', function(){
             $separador_empresa = new StdClass;
             $separador_empresa->nombre = $actual->empresa;
             $separador_empresa->numero = $actual->numero;
-            $separador_empresa->proyectos = array();
+            $separador_empresa->porproyecto = $d->agrupar == 2 ? true : null;
+            if ($d->agrupar == 2) {
+                $separador_empresa->proyectos = array();
+            } else {
+                $separador_empresa->empleados = array();
+            }
         }
         
         // para empujar el ultimo dato
         if ($i+1 == $cntsFacturas) {
             // empujar ultimo
-            array_push($separador_proyecto->empleados, $actual);
+            if ($d->agrupar == 2) {
+                array_push($separador_proyecto->empleados, $actual);
+            } else {
+                array_push($separador_empresa->empleados, $actual);
+            }
 
-            // empujar a array padre
-            array_push($separador_empresa->proyectos, $separador_proyecto);
+            if ($d->agrupar == 2) {
+                // empujar a array padre
+                array_push($separador_empresa->proyectos, $separador_proyecto);
+            }
 
             array_push($separador_tipo->empresas, $separador_empresa);
             
@@ -235,14 +265,23 @@ $app->post('/altasbajas', function(){
                 // empresa
                 $separador_empresa->nombre = $actual->empresa;
                 $separador_empresa->numero = $actual->numero;
-                $separador_empresa->proyectos = array();
-                // proyecto
-                $separador_proyecto->nombre = $actual->proyecto;
-                $separador_proyecto->empleados = array();
-                $primero = false;
+                $separador_empresa->porproyecto = $d->agrupar == 2 ? true : null;
+                if ($d->agrupar == 2) {
+                    $separador_empresa->proyectos = array();
+                    // proyecto
+                    $separador_proyecto->nombre = $anterior->proyecto;
+                    $separador_proyecto->empleados = array();
+                    $primero = false;
+                } else {
+                    $separador_empresa->empleados = array();
+                }
             }
-    
-            array_push($separador_proyecto->empleados, $actual);
+
+            if ($d->agrupar == 2) {
+                array_push($separador_proyecto->empleados, $actual);
+            } else {
+                array_push($separador_empresa->empleados, $actual);
+            }
             array_push($separador_empresa->proyectos, $separador_proyecto);
             array_push($separador_tipo->empresas, $separador_empresa);
             array_push($empleados, $separador_tipo);
