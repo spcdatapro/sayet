@@ -114,7 +114,7 @@ $app->post('/finanzas', function(){
                 SUBSTRING(LOWER(b.conceptomayor), 1, 65) AS concepto,
                 DATE_FORMAT(b.fechafactura, '%d/%m/%Y') AS fechafact,
                 CONCAT(g.siglas, ' (', b.documento, ')') AS documento,
-                ROUND(IF(b.idtipofactura = 10, b.subtotal * -1, b.subtotal), 2) AS total,
+                ROUND(IF(b.idtipofactura = 10, a.monto * -1, a.monto), 2) AS total,
                 b.fechafactura AS ord
             FROM
                 compraproyecto a
@@ -154,7 +154,7 @@ $app->post('/finanzas', function(){
                 SUBSTRING(LOWER(b.conceptomayor), 1, 65) AS concepto,
                 DATE_FORMAT(b.fechafactura, '%d/%m/%Y') AS fechafact,
                 CONCAT(h.siglas, ' (', b.documento, ')') AS documento,
-                ROUND(IF(b.idtipofactura = 10, b.subtotal * -1, b.subtotal), 2) AS total,
+                ROUND(IF(b.idtipofactura = 10, a.debe + a.haber * -1, a.debe + a.haber), 2) AS total,
                 b.fechafactura AS ord
             FROM
                 detallecontable a
