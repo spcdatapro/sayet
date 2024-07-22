@@ -13,7 +13,7 @@
             $scope.cargando = false;
 
             // parametros para reporte
-            $scope.params = { anio: +moment().toDate().getFullYear().toString() };
+            $scope.params = { anio: +moment().toDate().getFullYear().toString(), agrupar: '1' };
 
             // para visualizaciones en pantalla
             $scope.content = `${window.location.origin}/sayet/blank.html`;

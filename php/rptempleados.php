@@ -351,7 +351,8 @@ $app->post('/bono14', function(){
             WHERE
                 e.bonocatorce > 0 AND YEAR(fecha) = $d->anio ";
     $query.= isset($d->idempresa) ? "AND a.idempresadebito = $d->idempresa " : "";
-    $query.=   "ORDER BY 4 , 5 , 6";
+    $query.=   "ORDER BY 4 ,";
+    $query.= $d->agrupar == 2 ? " 5 , 6" : " 6";
     $data = $db->getQuery($query);
 
     foreach($data as $dat) {
@@ -372,22 +373,31 @@ $app->post('/bono14', function(){
             $separador_empresa->nombre = $anterior->empresa;
             $separador_empresa->numero = $anterior->numero;
             $separador_empresa->abreviatura = $anterior->abreviatura;
-            $separador_empresa->proyectos = array();
-            // proyecto
-            $separador_proyecto->nombre = $anterior->proyecto;
-            $separador_proyecto->empleados = array();
+            $separador_empresa->porproyecto = $d->agrupar == 2 ? true : null;
+            if ($d->agrupar == 2) {
+                $separador_empresa->proyectos = array();
+                // proyecto
+                $separador_proyecto->nombre = $anterior->proyecto;
+                $separador_proyecto->empleados = array();
+            } else {
+                $separador_empresa->empleados = array();
+            }
             $primero = false;
         }
 
         // sumas
         array_push($sumas_empresa, $anterior->bonocatorce);
-        array_push($sumas_proyecto, $anterior->bonocatorce);
         array_push($sumas_general, $anterior->bonocatorce);
 
-        array_push($separador_proyecto->empleados, $anterior);
+        if ($d->agrupar == 2) {
+            array_push($separador_proyecto->empleados, $anterior);
+            array_push($sumas_proyecto, $anterior->bonocatorce);
+        } else {
+            array_push($separador_empresa->empleados, $anterior);
+        }
 
 
-        if ($anterior->idproyecto !== $actual->idproyecto) {
+        if ($anterior->idproyecto !== $actual->idproyecto && $d->agrupar == 2) {
             // sumar total
             $separador_proyecto->total = round(array_sum($sumas_proyecto), 2);
 
@@ -402,7 +412,7 @@ $app->post('/bono14', function(){
         }
 
         if ($anterior->idempresa !== $actual->idempresa) {
-            if ($anterior->idproyecto == $actual->idproyecto) {
+            if ($anterior->idproyecto == $actual->idproyecto && $d->agrupar == 2) {
                 // sumar total
                 $separador_proyecto->total = round(array_sum($sumas_proyecto), 2);
 
@@ -427,22 +437,30 @@ $app->post('/bono14', function(){
             $separador_empresa->nombre = $actual->empresa;
             $separador_empresa->numero = $actual->numero;
             $separador_empresa->abreviatura = $actual->abreviatura;
-            $separador_empresa->proyectos = array();
+            $separador_empresa->porproyecto = $d->agrupar == 2 ? true : null;
+            if ($d->agrupar == 2) {
+                $separador_empresa->proyectos = array();
+            } else {
+                $separador_empresa->empleados = array();
+            }
             $sumas_empresa = array();
         }
         
         // para empujar el ultimo dato
         if ($i+1 == $cntsDatos) {
             // empujar ultimo
-            array_push($separador_proyecto->empleados, $actual);
+            if ($d->agrupar == 2) {
+                array_push($separador_proyecto->empleados, $actual);
+                array_push($sumas_proyecto, $actual->bonocatorce);
+                $separador_proyecto->total = round(array_sum($sumas_proyecto), 2);
+                // empujar a array padre
+                array_push($separador_empresa->proyectos, $separador_proyecto);
+
+            } else {
+                array_push($separador_empresa->empleados, $actual);
+            }
             array_push($sumas_empresa, $actual->bonocatorce);
-            array_push($sumas_proyecto, $actual->bonocatorce);
             array_push($sumas_general, $actual->bonocatorce);
-
-            $separador_proyecto->total = round(array_sum($sumas_proyecto), 2);
-
-            // empujar a array padre
-            array_push($separador_empresa->proyectos, $separador_proyecto);
 
             $separador_empresa->total = round(array_sum($sumas_empresa), 2);
             
@@ -462,14 +480,26 @@ $app->post('/bono14', function(){
                 $separador_empresa->numero = $actual->numero;
                 $separador_empresa->abreviatura = $actual->abreviatura;
                 $separador_empresa->proyectos = array();
-                // proyecto
-                $separador_proyecto->nombre = $actual->proyecto;
-                $separador_proyecto->empleados = array();
+                $separador_empresa->porproyecto = $d->agrupar == 2 ? true : null;
+                if ($d->agrupar == 2) {
+                    $separador_empresa->proyectos = array();
+                    // proyecto
+                    $separador_proyecto->nombre = $anterior->proyecto;
+                    $separador_proyecto->empleados = array();
+                } else {
+                    $separador_empresa->empleados = array();
+                }
                 $primero = false;
             }
-    
-            array_push($separador_proyecto->empleados, $actual);
-            array_push($separador_empresa->proyectos, $separador_proyecto);
+
+            if ($d->agrupar == 2) {
+                array_push($separador_proyecto->empleados, $actual);
+                // empujar a array padre
+                array_push($separador_empresa->proyectos, $separador_proyecto);
+
+            } else {
+                array_push($separador_empresa->empleados, $actual);
+            }
             array_push($empleados, $separador_empresa);
         }
     } 
