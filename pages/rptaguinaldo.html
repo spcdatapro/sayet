@@ -1,0 +1,92 @@
+<style>
+    .amarillo {
+        background-color: #F7EB89;
+        text-align: center;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .celeste {
+        background-color: #B4E2E8;
+        border-radius: 5px;
+    }
+
+    .gris {
+        background-color: #E8E8E8;
+        border-radius: 5px;
+    }
+
+    .blanco {
+        background-color: white;
+    }
+</style>
+<div class="container" ng-controller="rptAguinaldo">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">Reporte de Aguinaldo</div>
+            <div class="panel-body">
+                <form name="paramsRep" id="paramsRep" novalidate>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Empresa D&eacute;bito:</label>
+                                <ui-select ng-model="params.idempresa" title="Seleccione una empresa..."
+                                    theme="bootstrap" autofocus="false" ng-change="getProyectos(params.idempresa)">
+                                    <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
+                                        <span ng-bind="($select.selected.nomempresa)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+                                        <div ng-bind-html="(item.nomempresa) | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group required">
+                                <label for="numAnio" class="control-label">A&ntilde;o</label>
+                                <input name="numAnio" id="numAnio" type="number" class="form-control"
+                                    ng-model="params.anio" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group required">
+                                <label for="selAgrupar" class="control-label">Agrupar por:</label>
+                                <select name="selAgrupar" id="selAgrupar" class="form-control" ng-model="params.agrupar" required>
+                                    <option value="1">Empresa</option>
+                                    <option value="2">Proyecto</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="panel-footer text-right">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-danger" ng-click="getPDF(params)"
+                        ng-disabled="paramsRep.$invalid || cargando">
+                        <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="btn btn-success" ng-click="getXML(params)"
+                        ng-disabled="paramsRep.$invalid || cargando">
+                        <span class="fa fa-file-excel-o" aria-hidden="true"></span>
+                    </button>
+                    <!-- <button type="button" class="btn btn-primary" ng-click="getResumen(params)"
+                    ng-disabled="paramsRep.$invalid || cargando">
+                    <span class="glyphicon glyphicon-eye-open"></span> -->
+                </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </hr>
+    <div class="row" ng-show="cargando">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                <span class="label label-primary">Generando reporte, por favor espere...</span>
+                <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
+            </div>
+        </div>
+    </div>
+    <rpt-viewer contenido="content"></rpt-viewer>
+</div>
