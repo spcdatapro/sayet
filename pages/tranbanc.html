@@ -81,7 +81,7 @@
                                     ng-class="{'has-error':frmTranBan.txtNumero.$invalid && !frmTranBan.txtNumero.$pristine}">
                                     <label for="txtNumero" class="control-label">N&uacute;mero:</label>
                                     <input name="txtNumero" id="txtNumero" type="number" class="form-control"
-                                        ng-model="laTran.numero" min="1"
+                                        ng-model="laTran.numero" min="1" ng-blur="existe(laTran.numero)"
                                         placeholder="N&uacute;mero de transacci&oacute;n" required />
                                 </div>
                             </div>

@@ -66,6 +66,9 @@
             lstProveedores: function(){
                 return comunFact.doGET(urlBase + '/lstproveedores');
             },
+            revisarExistencia: function (numero, idbanco, tipotrans) {
+                return comunFact.doGET(urlBase + '/revexiste/' + numero + '/' + idbanco + '/' + tipotrans);
+            }
         };
     }]);
 

@@ -1017,4 +1017,10 @@ $app->post('/notaban', function () {
     print json_encode(['fechas' => $letra, 'datos' => $datos, 'poliza' => $polizas]);
 });
 
+$app->get('/revexiste/:numero/:idbanco/:tipotrans', function($numero, $idbanco, $tipotrans) {
+    $db = new dbcpm();
+    $existe = $db->getOneField("SELECT id FROM tranban WHERE idbanco = $idbanco AND numero = $numero AND tipotrans = '$tipotrans'") > 0;
+    print json_encode($existe);
+});
+
 $app->run();

@@ -792,6 +792,24 @@
 
         $scope.printNota = (idtranban) => jsReportSrvc.getPDFReport('HJOc0ctkC', { idtran: idtranban }).then((pdf) => $window.open(pdf));
 
+        $scope.existe = function (numero) {
+            if (numero > 0) {
+                let idbanco = $scope.laTran.objBanco.id;
+                let tipotrans = $scope.laTran.objTipotrans.abreviatura;
+
+                tranBancSrvc.revisarExistencia(numero, idbanco, tipotrans).then(function (existe) {
+                    if (existe) {
+                        toaster.pop({
+                            type: 'error', title: 'Esta transacción ya existe.',
+                            body: "La transaccion " + tipotrans + "-" + numero + " del banco " + $scope.laTran.objBanco.nombre + " ya existe, favor revisar.", 
+                            timeout: 10000
+                        });
+                        $scope.laTran.numero = undefined;
+                    }
+                });
+            }
+        };
+
     }]);
 
     //------------------------------------------------------------------------------------------------------------------------------------------------//
