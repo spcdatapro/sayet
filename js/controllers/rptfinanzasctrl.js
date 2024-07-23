@@ -16,6 +16,7 @@
 
             // estatus de carga
             $scope.cargando = false;
+            $scope.usuario = undefined;
             
             // parametros para reporte
             $scope.params = {
@@ -32,6 +33,8 @@
 
             // asignar la empresa en la que el usuario se encuentra
             authSrvc.getSession().then(function (usuario) {
+                // globalizar usuario
+                $scope.usuario = usuario.uid;
                 // asignar empresa
                 $scope.params.idempresa = usuario.workingon.toString();
                 // traer proyectos con la empresa del usuario
@@ -43,7 +46,7 @@
 
             // traer proyectos al cambiar empresa
             $scope.getProyectos = function (idempresa) {
-                proyectoSrvc.lstProyectosPorEmpresa(idempresa).then(function (d) { $scope.proyectos = d; });
+                proyectoSrvc.lstProyectosPorEmpresa(idempresa, $scope.usuario).then(function (d) { $scope.proyectos = d; });
                 $scope.params.idproyecto = undefined;
                 $scope.params.idunidad = undefined;
             };

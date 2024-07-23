@@ -9,8 +9,8 @@
             lstProyecto: function(){
                 return comunFact.doGET(urlBase + '/lstproyecto');
             },
-            lstProyectosPorEmpresa: function(idempresa){
-                return comunFact.doGET(urlBase + '/lstproyectoporempresa/' + idempresa);
+            lstProyectosPorEmpresa: function(idempresa, idusuario = null) {
+                return comunFact.doGET(urlBase + '/lstproyectoporempresa/' + idempresa + '/' + idusuario);
             },
             getProyecto: function(idproyecto){
                 return comunFact.doGET(urlBase + '/getproyecto/' + idproyecto);
