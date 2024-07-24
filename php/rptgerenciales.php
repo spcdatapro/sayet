@@ -97,7 +97,8 @@ $app->post('/finanzas', function(){
     $query.="       AND MONTH(a.fecha) >= $d->mesdel
                     AND MONTH(a.fecha) <= $d->mesal
                     AND YEAR(a.fecha) = $d->anio
-                    AND b.idtiposervicio != 1
+                    AND a.anulada = 0
+                    AND b.idtiposervicio NOT IN (1, 16)
             ORDER BY 2 ASC, 1, 6";
     $data_v = $db->getQuery($query);
 
@@ -458,7 +459,7 @@ $app->post('/finanzas', function(){
 
         $separador_mes->total_compras = round(array_sum($suma_compras), 2);        
         $separador_mes->total_ventas = round(array_sum($suma_ventas), 2);
-        $separador_mes->diferencia = round($separador_mes->total_ventas - $separador_mes->total_compras);
+        $separador_mes->diferencia = round($separador_mes->total_ventas - $separador_mes->total_compras, 2);
 
         usort($separador_mes->ventas, "compararPorTotal");
         usort($separador_mes->compras, "compararPorTotal");
@@ -581,7 +582,8 @@ $app->post('/resumen', function () {
     $query.="       AND MONTH(a.fecha) >= $d->mesdel
                     AND MONTH(a.fecha) <= $d->mesal
                     AND YEAR(a.fecha) = $d->anio
-                    AND b.idtiposervicio != 1
+                    AND a.anulada = 0
+                    AND b.idtiposervicio NOT IN (1, 16)
             ORDER BY 2 ASC, 1, 6";
     $data_v = $db->getQuery($query);
 
@@ -946,7 +948,7 @@ $app->post('/resumen', function () {
 
         $separador_mes->total_compras = round(array_sum($suma_compras), 2);        
         $separador_mes->total_ventas = round(array_sum($suma_ventas), 2);
-        $separador_mes->diferencia = round($separador_mes->total_ventas - $separador_mes->total_compras);
+        $separador_mes->diferencia = round($separador_mes->total_ventas - $separador_mes->total_compras, 2);
 
         usort($separador_mes->ventas, "compararPorTotal");
         usort($separador_mes->compras, "compararPorTotal");
