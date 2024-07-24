@@ -15,65 +15,115 @@ $app->post('/lstreciboscli', function(){
     if(!isset($d->tipo)){ $d->tipo = 1; }
 
     $db = new dbcpm();
-    $query = "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, 
-	IFNULL(h.abreviatura, c.tipotrans) AS tipotrans, IFNULL(g.numero, c.numero) AS notranban, IFNULL(i.nombre, e.nombre) AS nombre, 
-    IFNULL(j.simbolo, f.simbolo) AS simbolo, IFNULL(g.monto, c.monto) AS monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
-    IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', k.seriea, k.serieb), a.id), IF(a.serie = 'A', CONCAT(k.seriea, ' (ANULADO)'), CONCAT(k.serieb, ' (ANULADO)'))) 
-    AS correlativo
-    FROM recibocli a INNER JOIN cliente b ON b.id = a.idcliente LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
-    LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda LEFT JOIN detpagorecli g ON g.idreccli = a.id LEFT JOIN pagosreccli h ON g.tipotrans = h.id
-    LEFT JOIN bancopais i ON g.idbanco = i.id LEFT JOIN moneda j ON g.idmoneda = j.id LEFT JOIN serierecli k ON k.idrecibocli = a.id
-    WHERE a.idempresa = $d->idempresa AND a.tipo = $d->tipo ";
-    $query.= $d->fdelstr != '' ? "AND a.fecha >= '$d->fdelstr' " : "" ;
-    $query.= $d->falstr != '' ? "AND a.fecha <= '$d->falstr' " : "" ;
-    $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : "" ;
-    $query.= (int)$d->recibostr != 0 ? "AND a.numero = $d->recibostr " : "" ;
-    $query.= $d->clientestr != '' ? "AND b.nombre LIKE '%$d->clientestr%' " : "" ;
-    $query.= $d->ban_numerostr != '' ? "AND c.numero = '$d->ban_numerostr' " : "" ;
-    $query.= $d->ban_cuentastr != '' ? "AND e.nombre LIKE '%$d->ban_cuentastr%' " : "" ;
-    $query.= $d->correstr != '' ? "AND a.id = $d->correstr " : "" ;
-    $query.= $d->nomcortstr != '' ? "AND b.nombrecorto LIKE '%$d->nomcortstr%' " : "";
-    $query.= " UNION ALL ";
-    $query.= "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, 'Facturas contado (Clientes varios)' AS cliente, 
-    IFNULL(h.abreviatura, c.tipotrans) AS tipotrans, IFNULL(g.numero, c.numero) AS notranban, IFNULL(i.nombre, e.nombre) AS nombre, 
-    IFNULL(j.simbolo, f.simbolo) AS simbolo, IFNULL(g.monto, c.monto) AS monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
-    IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', k.seriea, k.serieb), a.id), IF(a.serie = 'A', CONCAT(k.seriea, ' (ANULADO)'), CONCAT(k.serieb, ' (ANULADO)'))) 
-    AS correlativo
-    FROM recibocli a LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
-    LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda LEFT JOIN detpagorecli g ON g.idreccli = a.id  LEFT JOIN pagosreccli h ON g.tipotrans = h.id 
-    LEFT JOIN bancopais i ON g.idbanco = i.id LEFT JOIN moneda j ON g.idmoneda = j.id LEFT JOIN serierecli k ON k.idrecibocli = a.id
-    WHERE a.idempresa = $d->idempresa AND a.tipo = $d->tipo AND (a.idcliente = 0 OR a.idcliente IS NULL) AND (a.nit = 0 OR a.nit IS NULL OR a.nit = 'CF')";
-    $query.= $d->fdelstr != '' ? "AND a.fecha >= '$d->fdelstr' " : "" ;
-    $query.= $d->falstr != '' ? "AND a.fecha <= '$d->falstr' " : "" ;
-    $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : "" ;
-    $query.= (int)$d->recibostr != 0 ? "AND a.numero = $d->recibostr " : "" ;
-    $query.= $d->ban_numerostr != '' ? "AND c.numero = '$d->ban_numerostr' " : "" ;
-    $query.= $d->ban_cuentastr != '' ? "AND e.nombre LIKE '%$d->ban_cuentastr%' " : "" ;
-    $query.= $d->correstr != '' ? "AND a.id = $d->correstr " : "" ;
-    $query.= $d->clientestr != '' ? "AND a.idcliente != 0 " : "" ;
-    $query.= $d->nomcortstr != '' ? "AND a.nit != 0 " : "";
-    $query.= "UNION ALL ";
-    $query.= "SELECT DISTINCT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, 
-    IFNULL(h.abreviatura, c.tipotrans) AS tipotrans, IFNULL(g.numero, c.numero) AS notranban, IFNULL(i.nombre, e.nombre) AS nombre, 
-    IFNULL(j.simbolo, f.simbolo) AS simbolo, IFNULL(g.monto, c.monto) AS monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
-    IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', k.seriea, k.serieb), a.id), IF(a.serie = 'A', CONCAT(k.seriea, ' (ANULADO)'), CONCAT(k.serieb, ' (ANULADO)'))) 
-    AS correlativo
-    FROM recibocli a 
-    INNER JOIN factura b ON a.nit = b.nit
-    LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
-    LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda LEFT JOIN detpagorecli g ON g.idreccli = a.id LEFT JOIN pagosreccli h ON g.tipotrans = h.id 
-    LEFT JOIN bancopais i ON g.idbanco = i.id LEFT JOIN moneda j ON g.idmoneda = j.id LEFT JOIN serierecli k ON k.idrecibocli = a.id
-    WHERE a.idempresa = $d->idempresa AND a.tipo = $d->tipo AND (a.idcliente = 0 OR a.idcliente IS NULL) AND a.nit != 'CF'";
-        $query.= $d->fdelstr != '' ? "AND a.fecha >= '$d->fdelstr' " : "" ;
-        $query.= $d->falstr != '' ? "AND a.fecha <= '$d->falstr' " : "" ;
-        $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : "" ;
-        $query.= (int)$d->recibostr != 0 ? "AND a.numero = $d->recibostr " : "" ;
-        $query.= $d->clientestr != '' ? "AND a.idcliente != 0 " : "" ;
-        $query.= $d->nomcortstr != '' ? "AND a.idcliente != 0 " : "";
-        $query.= $d->ban_numerostr != '' ? "AND c.numero = '$d->ban_numerostr' " : "" ;
-        $query.= $d->ban_cuentastr != '' ? "AND a.idcliente != 0 " : "" ;
-        $query.= $d->correstr != '' ? "AND a.id = $d->correstr " : "" ;
-    $query.="ORDER BY 1 DESC";
+    // $query = "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, 
+	// IFNULL(h.abreviatura, c.tipotrans) AS tipotrans, IFNULL(g.numero, c.numero) AS notranban, IFNULL(i.nombre, e.nombre) AS nombre, 
+    // IFNULL(j.simbolo, f.simbolo) AS simbolo, IFNULL(g.monto, c.monto) AS monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
+    // IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', k.seriea, k.serieb), a.id), IF(a.serie = 'A', CONCAT(k.seriea, ' (ANULADO)'), CONCAT(k.serieb, ' (ANULADO)'))) 
+    // AS correlativo
+    // FROM recibocli a INNER JOIN cliente b ON b.id = a.idcliente LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
+    // LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda LEFT JOIN detpagorecli g ON g.idreccli = a.id LEFT JOIN pagosreccli h ON g.tipotrans = h.id
+    // LEFT JOIN bancopais i ON g.idbanco = i.id LEFT JOIN moneda j ON g.idmoneda = j.id LEFT JOIN serierecli k ON k.idrecibocli = a.id
+    // WHERE a.idempresa = $d->idempresa AND a.tipo = $d->tipo ";
+    // $query.= $d->fdelstr != '' ? "AND a.fecha >= '$d->fdelstr' " : "" ;
+    // $query.= $d->falstr != '' ? "AND a.fecha <= '$d->falstr' " : "" ;
+    // $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : "" ;
+    // $query.= (int)$d->recibostr != 0 ? "AND a.numero = $d->recibostr " : "" ;
+    // $query.= $d->clientestr != '' ? "AND b.nombre LIKE '%$d->clientestr%' " : "" ;
+    // $query.= $d->ban_numerostr != '' ? "AND c.numero = '$d->ban_numerostr' " : "" ;
+    // $query.= $d->ban_cuentastr != '' ? "AND e.nombre LIKE '%$d->ban_cuentastr%' " : "" ;
+    // $query.= $d->correstr != '' ? "AND a.id = $d->correstr " : "" ;
+    // $query.= $d->nomcortstr != '' ? "AND b.nombrecorto LIKE '%$d->nomcortstr%' " : "";
+    // $query.= " UNION ALL ";
+    // $query.= "SELECT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, 'Facturas contado (Clientes varios)' AS cliente, 
+    // IFNULL(h.abreviatura, c.tipotrans) AS tipotrans, IFNULL(g.numero, c.numero) AS notranban, IFNULL(i.nombre, e.nombre) AS nombre, 
+    // IFNULL(j.simbolo, f.simbolo) AS simbolo, IFNULL(g.monto, c.monto) AS monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
+    // IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', k.seriea, k.serieb), a.id), IF(a.serie = 'A', CONCAT(k.seriea, ' (ANULADO)'), CONCAT(k.serieb, ' (ANULADO)'))) 
+    // AS correlativo
+    // FROM recibocli a LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
+    // LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda LEFT JOIN detpagorecli g ON g.idreccli = a.id  LEFT JOIN pagosreccli h ON g.tipotrans = h.id 
+    // LEFT JOIN bancopais i ON g.idbanco = i.id LEFT JOIN moneda j ON g.idmoneda = j.id LEFT JOIN serierecli k ON k.idrecibocli = a.id
+    // WHERE a.idempresa = $d->idempresa AND a.tipo = $d->tipo AND (a.idcliente = 0 OR a.idcliente IS NULL) AND (a.nit = 0 OR a.nit IS NULL OR a.nit = 'CF')";
+    // $query.= $d->fdelstr != '' ? "AND a.fecha >= '$d->fdelstr' " : "" ;
+    // $query.= $d->falstr != '' ? "AND a.fecha <= '$d->falstr' " : "" ;
+    // $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : "" ;
+    // $query.= (int)$d->recibostr != 0 ? "AND a.numero = $d->recibostr " : "" ;
+    // $query.= $d->ban_numerostr != '' ? "AND c.numero = '$d->ban_numerostr' " : "" ;
+    // $query.= $d->ban_cuentastr != '' ? "AND e.nombre LIKE '%$d->ban_cuentastr%' " : "" ;
+    // $query.= $d->correstr != '' ? "AND a.id = $d->correstr " : "" ;
+    // $query.= $d->clientestr != '' ? "AND a.idcliente != 0 " : "" ;
+    // $query.= $d->nomcortstr != '' ? "AND a.nit != 0 " : "";
+    // $query.= "UNION ALL ";
+    // $query.= "SELECT DISTINCT a.id, a.fecha, a.fechacrea, a.idcliente, a.espropio, a.idtranban, a.anulado, a.idrazonanulacion, a.fechaanula, b.nombre AS cliente, 
+    // IFNULL(h.abreviatura, c.tipotrans) AS tipotrans, IFNULL(g.numero, c.numero) AS notranban, IFNULL(i.nombre, e.nombre) AS nombre, 
+    // IFNULL(j.simbolo, f.simbolo) AS simbolo, IFNULL(g.monto, c.monto) AS monto, a.idempresa, d.razon, a.serie, a.numero, a.usuariocrea, a.concepto, a.nit, 
+    // IF(a.anulado = 0, IFNULL(IF(a.serie = 'A', k.seriea, k.serieb), a.id), IF(a.serie = 'A', CONCAT(k.seriea, ' (ANULADO)'), CONCAT(k.serieb, ' (ANULADO)'))) 
+    // AS correlativo
+    // FROM recibocli a 
+    // INNER JOIN factura b ON a.nit = b.nit
+    // LEFT JOIN tranban c ON c.id = a.idtranban LEFT JOIN razonanulacion d ON d.id = a.idrazonanulacion 
+    // LEFT JOIN banco e ON e.id = c.idbanco LEFT JOIN moneda f ON f.id = e.idmoneda LEFT JOIN detpagorecli g ON g.idreccli = a.id LEFT JOIN pagosreccli h ON g.tipotrans = h.id 
+    // LEFT JOIN bancopais i ON g.idbanco = i.id LEFT JOIN moneda j ON g.idmoneda = j.id LEFT JOIN serierecli k ON k.idrecibocli = a.id
+    // WHERE a.idempresa = $d->idempresa AND a.tipo = $d->tipo AND (a.idcliente = 0 OR a.idcliente IS NULL) AND a.nit != 'CF'";
+    //     $query.= $d->fdelstr != '' ? "AND a.fecha >= '$d->fdelstr' " : "" ;
+    //     $query.= $d->falstr != '' ? "AND a.fecha <= '$d->falstr' " : "" ;
+    //     $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : "" ;
+    //     $query.= (int)$d->recibostr != 0 ? "AND a.numero = $d->recibostr " : "" ;
+    //     $query.= $d->clientestr != '' ? "AND a.idcliente != 0 " : "" ;
+    //     $query.= $d->nomcortstr != '' ? "AND a.idcliente != 0 " : "";
+    //     $query.= $d->ban_numerostr != '' ? "AND c.numero = '$d->ban_numerostr' " : "" ;
+    //     $query.= $d->ban_cuentastr != '' ? "AND a.idcliente != 0 " : "" ;
+    //     $query.= $d->correstr != '' ? "AND a.id = $d->correstr " : "" ;
+    // $query.="ORDER BY 1 DESC";
+    $query = "SELECT 
+                a.id,
+                a.fecha,
+                a.serie,
+                IFNULL(IFNULL(b.seriea, b.serieb), a.numero) AS correlativo,
+                IFNULL(IFNULL(c.nombre, d.nombre), 'Clientes Varios') AS cliente,
+                IF(a.anulado = 1, '(ANULADO)', '') AS anulado,
+                e.tranban,
+                IFNULL(e.monto, f.monto) AS monto,
+                e.simbolo AS moneda
+            FROM
+                recibocli a
+                    LEFT JOIN
+                serierecli b ON b.idrecibocli = a.id
+                    LEFT JOIN
+                cliente c ON a.idcliente = c.id
+                    LEFT JOIN
+                (SELECT 
+                    d.nit, d.nombre
+                FROM
+                    factura d
+                LIMIT 1) d ON d.nit = a.nit
+                    LEFT JOIN
+                (SELECT 
+                    a.idreccli,
+                        GROUP_CONCAT(CONCAT(IF(a.tipotrans = 1, 'C', IF(a.tipotrans = 2, 'D', IF(a.tipotrans = 3, 'R', IF(a.tipotrans = 4, 'B', 'E')))), '-', a.numero), ' ', b.nombre) AS tranban,
+                        SUM(a.monto) AS monto,
+                        CONCAT(c.simbolo, '.') AS simbolo
+                FROM
+                    detpagorecli a
+                INNER JOIN bancopais b ON a.idbanco = b.id
+                INNER JOIN moneda c ON a.idmoneda = c.id
+                GROUP BY a.idreccli) e ON e.idreccli = a.id
+                    LEFT JOIN
+                (SELECT 
+                    idrecibocli, SUM(monto) AS monto
+                FROM
+                    detcobroventa
+                GROUP BY idrecibocli) f ON f.idrecibocli = a.id
+            WHERE
+                a.fecha >= '$d->fdelstr'
+                    AND a.fecha <= '$d->falstr'
+                    AND a.idempresa = $d->idempresa
+                    AND a.tipo = $d->tipo ";
+    $query.= $d->serie != '' ? "AND a.serie = '$d->serie' " : "";
+    $query.= $d->correstr > 0  && $d->tipo == 1 ? "AND IF(a.serie = 'A', b.seriea = $d->correstr, b.serieb = $d->correstr) " : "";
+    $query.= $d->correstr > 0  && $d->tipo == 2 ? "AND a.numero = $d->correstr " : "";
+    $query.= $d->clientestr != '' ? "AND (c.nombre LIKE '%$d->clientestr%' OR d.nombre LIKE '%$d->clientestr%') " : "";
+            "ORDER BY a.id DESC";
+    // ECHO $query; return;
     print $db->doSelectASJson($query);
 });
 //Fin modificacion
@@ -517,7 +567,7 @@ $app->get('/getpagorecli/:idrecibo', function($idrecibo){
                 IFNULL(b.numero, e.descripcion) AS numero,
                 IFNULL(c.nombre, '') AS banco,
                 d.simbolo AS moneda,
-                FORMAT(b.monto, 2) AS monto, 
+                ROUND(b.monto, 2) AS monto, 
                 e.abreviatura AS tipotrans
             FROM
                 recibocli a

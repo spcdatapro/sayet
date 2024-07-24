@@ -135,7 +135,7 @@
                 d[i].idcliente = parseInt(d[i].idcliente);
                 // d[i].nit = parseInt(d[i].nit);
                 d[i].espropio = parseInt(d[i].espropio);
-                d[i].anulado = parseInt(d[i].anulado);
+                // d[i].anulado = parseInt(d[i].anulado);
                 d[i].idrazonanulacion = parseInt(d[i].idrazonanulacion);
                 d[i].fecha = moment(d[i].fecha).toDate();
                 d[i].fechaanula = moment(d[i].fecha).isValid() ? moment(d[i].fecha).toDate() : null;
@@ -460,7 +460,12 @@
 
         $scope.loadPagoRecCli = function(idreccli){
             reciboClientesSrvc.lstPagoRecCli(idreccli).then(function(d){
-                $scope.lstpagorecli = procDetaPagoRec(d);
+                if (d.length > 0) {
+                    d.forEach(datos => datos.monto = +datos.monto);
+                    let sumas = { monto: d.reduce((x, y) => x += y.monto, 0), moneda: d[0].moneda, banco: 'Total' }
+                    d.push(sumas);
+                    $scope.lstpagorecli = d;
+                }
             });
         };
 

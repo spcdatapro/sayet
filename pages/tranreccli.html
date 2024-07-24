@@ -212,12 +212,12 @@
                                         <input name="srchTxtNumb" id="srchTxtNumb" type="text"
                                             class="form-control input-sm" ng-model="fltrre.ban_numerostr" />
                                     </div> -->
-                                    <div class="col-md-6" ng-hide="+fltrre.tipo == 2">
+                                    <div class="col-md-6" ng-hide="true">
                                         <label for="srchNomCort">Nombre corto:</label>
                                         <input name="srchNomCort" id="srchNomCort" type="text"
                                         class="form-control input-sm" ng-model="fltrre.nomcortstr" />
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <label for="srchTxtcli">Cliente:</label>
                                         <div class="input-group">
                                             <input name="srchTxtcli" id="srchTxtcli" type="text"
@@ -247,22 +247,20 @@
                         <!--<label >&nbsp;</label>-->
                         <thead>
                             <tr>
-                                <th>N&uacute;mero</th>
-                                <th ng-show="+fltrre.tipo == 1">Correlativo</th>
+                                <th>Recibo</th>
                                 <th>Fecha</th>
                                 <th>Cliente</th>
-                                <th ng-hide="+fltrre.tipo == 2">Dep&oacute;sito/Nota de cr&eacute;dito</th>
-                                <th>&nbsp;</th>
+                                <th ng-hide="fltrre.tipo == 2" style="text-align: right;">Dep&oacute;sito/Nota de cr&eacute;dito</th>
+                                <th style="text-align: right;" ng-show="fltrre.tipo == 2">Monto</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="rec in reciboscli" ng-click="getRecCli(rec.id)">
-                                <td>{{rec.serie || ''}}{{rec.numero || ''}}</td>
-                                <td ng-show="+fltrre.tipo == 1">{{rec.correlativo}}</td>
+                                <td>{{rec.serie}}-{{rec.correlativo}}</td>
                                 <td>{{rec.fecha | date:'dd/MM/yyyy'}}</td>
-                                <td>{{rec.cliente}}</td>
-                                <td ng-hide="+fltrre.tipo == 2">{{rec.tipotrans}} {{rec.notranban}} {{rec.nombre}}
-                                    {{rec.simbolo}} {{rec.monto | number:2}}</td>
+                                <td>{{rec.cliente | shortenStr:50}} {{rec.anulado}}</td>
+                                <td style="text-align: right;" ng-hide="fltrre.tipo == 2">{{rec.tranban}} {{rec.moneda}}{{rec.monto | number:2}}</td>
+                                <td style="text-align: right;" ng-show="fltrre.tipo == 2">Q.{{rec.monto | number:2}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -414,23 +412,27 @@
                             </form>
                         <br>
                             <table class="table table-hover table-condensed">
+                                <thead>
                                     <tr>
                                         <th style="text-align: center; border-top: 0px;">Numero</th>
                                         <th style="text-align: center; border-top: 0px;">Banco</th>
-                                        <th style="text-align: center; border-top: 0px;">Monto</th>
+                                        <th style="text-align: right; border-top: 0px;">Monto</th>
+                                        <th>&nbsp;</th>
                                     </tr>
+                                </thead>
+                                <tbody>
                                     <tr ng-repeat="tr in lstpagorecli" ng-click="getPagoRecli(tr.id)">
-                                        <tb style="text-align: center;"></tb>
                                         <td style="text-align: center;">{{tr.tipotrans}} {{tr.numero}}</td>
-                                        <td style="text-align: center;">{{tr.banco}}</td>
-                                        <td style="text-align: center;">{{tr.moneda}}.{{tr.monto}}</td>
+                                        <td style="text-align: center;" ng-class="{'bld': $last}">{{tr.banco}}</td>
+                                        <td style="text-align: right;" ng-class="{'bld': $last}">{{tr.moneda}}.{{tr.monto | number:2}}</td>
                                         <td style="text-align: right;">
-                                            <button type="button" class="btn btn-danger btn-sm tipo" data-toggle="tooltip" data-placement="auto" 
+                                            <button ng-if="!$last" type="button" class="btn btn-danger btn-sm tipo" data-toggle="tooltip" data-placement="auto" 
                                             ng-click="delPagoRecli(tr)" title="Eliminar forma de pago">
                                             <span class="glyphicon glyphicon-trash"></span>
                                             </button>
                                         </td>
                                     </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
