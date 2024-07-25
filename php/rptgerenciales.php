@@ -69,7 +69,7 @@ $app->post('/finanzas', function(){
                 UPPER(c.desctiposervventa) AS cuenta,
                 c.cuentac AS codigo,
                 IFNULL(d.nombrecorto, SUBSTR(a.nombre, 1, 15)) AS cliente,
-                IFNULL(f.nombre, 'N/A') AS unidad,
+                IFNULL(IF(b.idtiposervicio = 4, h.nombre, f.nombre), 'N/A') AS unidad,
                 CONCAT(a.serie, '-', a.numero) AS factura,
                 IFNULL(ROUND(f.mcuad, 2), 0.00) AS mcuad,
                 IFNULL(ROUND(ROUND((b.preciotot * IF(a.idtipofactura <> 9, 1, - 1)) / 1.12,
@@ -90,6 +90,10 @@ $app->post('/finanzas', function(){
                 contrato e ON a.idcontrato = e.id
                     LEFT JOIN
                 unidad f ON e.idunidad = f.id
+                    LEFT JOIN
+                lectUraservicio g ON g.idfactura = a.id
+                    LEFT JOIN
+                unidad h ON g.idunidad = h.id
             WHERE
                 a.idempresa = $d->idempresa
                     AND (a.idproyecto = $d->idproyecto OR e.idproyecto = $d->idproyecto) ";
@@ -553,7 +557,7 @@ $app->post('/resumen', function () {
                 UPPER(c.desctiposervventa) AS cuenta,
                 c.cuentac AS codigo,
                 IFNULL(d.nombrecorto, SUBSTR(a.nombre, 1, 15)) AS cliente,
-                IFNULL(f.nombre, 'N/A') AS unidad,
+                IFNULL(IF(b.idtiposervicio = 4, h.nombre, f.nombre), 'N/A') AS unidad,
                 CONCAT(a.serie, '-', a.numero) AS factura,
                 IFNULL(ROUND(f.mcuad, 2), 0.00) AS mcuad,
                 IFNULL(ROUND(ROUND((b.preciotot * IF(a.idtipofactura <> 9, 1, - 1)) / 1.12,
@@ -575,6 +579,10 @@ $app->post('/resumen', function () {
                 contrato e ON a.idcontrato = e.id
                     LEFT JOIN
                 unidad f ON e.idunidad = f.id
+                    LEFT JOIN
+                lectUraservicio g ON g.idfactura = a.id
+                    LEFT JOIN
+                unidad h ON g.idunidad = h.id
             WHERE
                 a.idempresa = $d->idempresa
                     AND (a.idproyecto = $d->idproyecto OR e.idproyecto = $d->idproyecto) ";
