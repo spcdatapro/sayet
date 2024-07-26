@@ -465,6 +465,8 @@
                     let sumas = { monto: d.reduce((x, y) => x += y.monto, 0), moneda: d[0].moneda, banco: 'Total' }
                     d.push(sumas);
                     $scope.lstpagorecli = d;
+                } else {
+                    $scope.lstpagorecli = [];
                 }
             });
         };
