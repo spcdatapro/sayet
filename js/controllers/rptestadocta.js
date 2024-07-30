@@ -4,44 +4,52 @@
 
     rptestadoctactrl.controller('rptEstadoCtaCtrl', ['$scope', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'jsReportSrvc', function($scope, authSrvc, bancoSrvc, empresaSrvc, jsReportSrvc){
 
-        $scope.objEmpresa = {};
-        $scope.losBancos = [];
-        $scope.params = { idempresa: 0, fDel: moment().startOf('month').toDate(), fAl: moment().endOf('month').toDate(), idbanco: 0, fdelstr: '', falstr:'', resumen: 0 };
-        $scope.objBanco = [];
+        $scope.bancos = [];
+        $scope.empresas = [];
+        $scope.params = { fDel: moment().startOf('month').toDate(), fAl: moment().endOf('month').toDate(), resumen: 0 };
         $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.cargando = false;
 
         authSrvc.getSession().then(function(usrLogged){
-            if(parseInt(usrLogged.workingon) > 0){
-                empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function(d){
-                    $scope.objEmpresa = d[0];
-                    $scope.params.idempresa = parseInt($scope.objEmpresa.id);
-                    bancoSrvc.lstBancos(parseInt($scope.objEmpresa.id)).then(function(d) {
-                        $scope.losBancos = d;                        
-                    });
-                });
-            }
+            $scope.params.idempresa = usrLogged.workingon.toString();
+            $scope.getBancos(usrLogged.workingon);
         });
+
+        // traer empresas
+        empresaSrvc.lstEmpresas().then(function (d) { $scope.empresas = d; });
+
+        $scope.getBancos = function (idempresa) {
+            $scope.params.idbanco = undefined;
+            bancoSrvc.lstBancos(idempresa).then(function(d) {
+                $scope.bancos = d;                        
+            });
+        }
 
         var test = false;
 
-        prepParams = () => {
-            $scope.params.idbanco = $scope.objBanco[0].id;            
+        prepParams = () => {            
             $scope.params.fdelstr = moment($scope.params.fDel).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.fAl).format('YYYY-MM-DD');
             $scope.params.resumen = $scope.params.resumen != null && $scope.params.resumen != undefined ? $scope.params.resumen : 0;
         };
 
         $scope.getData = function(){
+            $scope.cargando = true;
             prepParams();
-            jsReportSrvc.getPDFReport(test ? 'rJAPqqWXZ' : 'SJB5nj-QW', $scope.params).then(function(pdf){ $scope.content = pdf; });
+            jsReportSrvc.getPDFReport(test ? 'rJAPqqWXZ' : 'SJB5nj-QW', $scope.params).then(function(pdf){ 
+                $scope.content = pdf; 
+                $scope.cargando = false;
+            });
 
         };
 
         $scope.getDataExcel = () => {
+            $scope.cargando = true;
             prepParams();
             jsReportSrvc.getReport(test ? 'B1LjWdaBL' : 'B1LjWdaBL', $scope.params).then((result) => {
                 const file = new Blob([result.data], {type: 'application/vnd.ms-excel'});
                 saveAs(file, 'Estado_de_Cuenta.xlsx');
+                $scope.cargando = false;
             });
         }
     }]);

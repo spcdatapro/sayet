@@ -740,7 +740,7 @@ $app->post('/rptdocscircula', function(){
     $documentos->generales = $db->getQuery($query)[0];
     
     $query = "SELECT b.id AS idbanco, b.nombre AS banco, c.abreviatura, c.descripcion, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.numero, a.beneficiario, ";
-    $query.= "a.concepto, FORMAT(a.monto, 2) AS monto ";
+    $query.= "a.concepto, FORMAT(a.monto, 2) AS monto, IFNULL(a.numban, '') AS numban ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN tipomovtranban c ON c.abreviatura = a.tipotrans ";
     $query.= "WHERE a.operado = 0 AND b.idempresa = $d->idempresa AND a.idbanco = $d->idbanco AND a.fecha <= '$d->falstr' ";
     $query.= "ORDER BY a.fecha, a.tipotrans, a.numero";

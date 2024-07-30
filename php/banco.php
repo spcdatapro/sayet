@@ -169,7 +169,7 @@ $app->post('/rptestcta', function(){
     $query.= "IF(b.anulado = 0, b.concepto, CONCAT('(ANULADO) ', b.concepto)) AS concepto, ";
     $query.= "IF(b.tipotrans IN('D', 'R'), b.monto, 0.00) AS credito, ";
     $query.= "IF(b.tipotrans IN('C', 'B'), b.monto, 0.00) AS debito, ";
-    $query.= "0.00 AS saldo, c.id AS idbanco, ";
+    $query.= "0.00 AS saldo, c.id AS idbanco, IFNULL(b.numban, '') AS numban, ";
     $query.= "c.nombre AS banco, d.abreviatura, b.id AS idtran, ".((int)$d->resumen == 0 ? "''": '1')." AS resumen ";
     $query.= "FROM tranban b INNER JOIN banco c ON c.id = b.idbanco INNER JOIN tipomovtranban d ON d.abreviatura = b.tipotrans ";
     $query.= "WHERE c.id = ".$d->idbanco." AND fecha >= '".$d->fdelstr."' AND fecha <= '".$d->falstr."' ";

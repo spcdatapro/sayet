@@ -2,8 +2,40 @@
     <div class="row">
         <div class="panel panel-default">
             <div class="panel-body" style="text-align: right">
-                <div class="row" style="text-align: left">
-                    <div class="col-md-2">
+                <form name="paramsRep" id="paramsRep" novalidate>
+                    <div class="row" style="text-align: left">
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <label class="control-label">Empresa:</label>
+                                <ui-select ng-model="params.idempresa" title="Seleccione una empresa..."
+                                    theme="bootstrap" autofocus="false" ng-change="getBancos(params.idempresa)"
+                                    required>
+                                    <ui-select-match placeholder="Buscar empresa..." allow-clear="false">
+                                        <span ng-bind="($select.selected.nomempresa)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+                                        <div ng-bind-html="(item.nomempresa) | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <label class="control-label">Banco:</label>
+                                <ui-select ng-model="params.idbanco" title="Seleccione un banco..." theme="bootstrap"
+                                    autofocus="false" required>
+                                    <ui-select-match placeholder="Buscar banco..." allow-clear="false">
+                                        <span ng-bind="($select.selected.bancomoneda)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in bancos | filter:$select.search">
+                                        <div ng-bind-html="(item.bancomoneda) | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
+                        </div>
+                        <!-- <div class="col-md-2">
                         <div class="form-group">
                             <label for="selBanco">Banco:</label>
                             <input name="txtFiltroProv" id="txtFiltroProv" type="text" class="form-control" ng-model="search" placeholder="Banco"/>
@@ -16,38 +48,68 @@
                                     ng-options="obj.bancomoneda for obj in losBancos | filter:{bancomoneda:search}" multiple required>
                             </select>
                         </div>
+                    </div> -->
                     </div>
-                </div>
-                <div class="row" style="text-align: left">
-                    <div class="col-md-3 col-sm-3">
-                        <div class="form-group">
-                            <label for="txtDel">Fecha del:</label>
-                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.fDel" placeholder="Del" required/>
+                    <div class="row" style="text-align: left">
+                        <div class="col-md-4 col-sm-3">
+                            <div class="form-group required">
+                                <label for="txtDel" class="control-label">Fecha del:</label>
+                                <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.fDel"
+                                    placeholder="Del" required />
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-3">
+                            <div class="form-group required">
+                                <label for="txtAl" class="control-label">al:</label>
+                                <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fAl"
+                                    placeholder="Al" required />
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-3">
+                            <div class="form-group">
+                                <label for="chkRes">Resumen:</label>
+                                <input name="chkRes" id="chkRes" type="checkbox" class="form-control"
+                                    ng-model="params.resumen" ng-true-value="1" ng-false-value="0" />
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-3">
-                        <div class="form-group">
-                            <label for="txtAl">al:</label>
-                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fAl" placeholder="Al" required/>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-sm-3">
-                        <div class="form-group">
-                            <label for="chkRes">Resumen:</label>
-                            <input name="chkRes" id="chkRes" type="checkbox" class="form-control" ng-model="params.resumen" ng-true-value="1" ng-false-value="0"/>
-                        </div>
-                    </div>
-                </div>
-                <button type="button" class="btn btn-primary btn-sm" ng-click="getData()" ng-disabled="objBanco.length == 0">
-                    <!--<span class="glyphicon glyphicon-ok"></span>-->
+                </form>
+                <!-- <button type="button" class="btn btn-primary btn-sm" ng-click="getData()"
+                    ng-disabled="objBanco.length == 0">
+                    <span class="glyphicon glyphicon-ok"></span>
                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                 </button>
-                <button type="button" class="btn btn-primary btn-sm" ng-click="getDataExcel()" ng-disabled="objBanco.length == 0">
+                <button type="button" class="btn btn-primary btn-sm" ng-click="getDataExcel()"
+                    ng-disabled="objBanco.length == 0">
                     <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                </button> -->
+            </div>
+            <div class="panel-footer text-right">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-danger" ng-click="getData()"
+                        ng-disabled="paramsRep.$invalid || cargando">
+                        <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="btn btn-success" ng-click="getDataExcel(params)"
+                        ng-disabled="paramsRep.$invalid || cargando">
+                        <span class="fa fa-file-excel-o" aria-hidden="true"></span>
+                    </button>
+                    <!-- <button type="button" class="btn btn-primary" ng-click="resetParams()"
+                    ng-disabled="paramsRep.$invalid || cargando">
+                    <span class="glyphicon glyphicon-refresh"></span> -->
                 </button>
+                </div>
             </div>
         </div>
     </div>
-    <hr/>
+    <hr />
+    <div class="row" ng-show="cargando">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                <span class="label label-primary">Generando reporte, por favor espere...</span>
+                <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
+            </div>
+        </div>
+    </div>
     <rpt-viewer contenido="content"></rpt-viewer>
 </div>

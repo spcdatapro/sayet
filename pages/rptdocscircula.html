@@ -2,28 +2,86 @@
     <div class="row">
         <div class="panel panel-default">
             <div class="panel-body" style="text-align: right">
-                <div class="row" style="text-align: left">
-                    <div class="col-md-6">
-                        <div class="form-group required">
-                            <label for="selBanco" class="control-label">Banco:</label>
-                            <select name="selBanco" id="selBanco" class="form-control" ng-model="params.idbanco"
+                <form name="paramsRep" id="paramsRep" novalidate>
+                    <div class="row" style="text-align: left">
+                        <div class="col-md-4">
+                            <div class="form-group required">
+                                <label class="control-label">Empresa:</label>
+                                <ui-select ng-model="params.idempresa" title="Seleccione una empresa..."
+                                    theme="bootstrap" autofocus="false" ng-change="getBancos(params.idempresa)"
+                                    required>
+                                    <ui-select-match placeholder="Buscar empresa..." allow-clear="false">
+                                        <span ng-bind="($select.selected.nomempresa)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+                                        <div ng-bind-html="(item.nomempresa) | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group required">
+                                <label class="control-label">Banco:</label>
+                                <ui-select ng-model="params.idbanco" title="Seleccione un banco..."
+                                    theme="bootstrap" autofocus="false" required>
+                                    <ui-select-match placeholder="Buscar banco..." allow-clear="false">
+                                        <span ng-bind="($select.selected.bancomoneda)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in bancos | filter:$select.search">
+                                        <div ng-bind-html="(item.bancomoneda) | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
+                        </div>
+                        <!-- <div class="col-md-4">
+                            <div class="form-group required">
+                                <label for="selBanco" class="control-label">Banco:</label>
+                                <select name="selBanco" id="selBanco" class="form-control" ng-model="params.idbanco" required
                                     ng-options="obj.id as obj.bancomoneda for obj in losBancos">
-                            </select>
+                                </select>
+                            </div>
+                        </div> -->
+                        <div class="col-md-4">
+                            <div class="form-group required">
+                                <label for="txtAl" class="control-label">A fecha:</label>
+                                <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fal"
+                                    placeholder="Al" required/>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group required">
-                            <label for="txtAl" class="control-label">A fecha:</label>
-                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fAl" placeholder="Al"/>
-                        </div>
-                    </div>
-                </div>
-                <button type="button" class="btn btn-primary btn-sm" ng-click="getDocsCirculando()">
+                </form>
+                <!-- <button type="button" class="btn btn-primary btn-sm" ng-click="getDocsCirculando()">
                     <span class="glyphicon glyphicon-ok"></span>
                 </button>
                 <button type="button" class="btn btn-primary btn-sm" ng-click="resetParams()">
                     <span class="glyphicon glyphicon-refresh"></span>
-                </button>
+                </button> -->
+            </div>
+            <div class="panel-footer text-right">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-danger" ng-click="getDocsCirculando()"
+                        ng-disabled="paramsRep.$invalid || cargando">
+                        <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="btn btn-success" ng-click="getXML(params)"
+                        ng-disabled="paramsRep.$invalid || cargando">
+                        <span class="fa fa-file-excel-o" aria-hidden="true"></span>
+                    </button>
+                    <!-- <button type="button" class="btn btn-primary" ng-click="resetParams()"
+                    ng-disabled="paramsRep.$invalid || cargando">
+                    <span class="glyphicon glyphicon-refresh"></span>
+                </button> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" ng-show="cargando">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                <span class="label label-primary">Generando reporte, por favor espere...</span>
+                <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
             </div>
         </div>
     </div>
