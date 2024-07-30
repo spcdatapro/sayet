@@ -177,11 +177,11 @@ $app->post('/dup', function(){
 $app->get('/servuni/:idunidad', function($idunidad){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idunidad, a.idserviciobasico, c.desctiposervventa AS tiposervicio, b.numidentificacion, b.numreferencia, e.nomempresa AS empresa, ";
-    $query.= "b.preciomcubsug, ";
+    $query.= "b.preciomcubsug, IFNULL(CONCAT(g.nombrecorto, ' (', f.nocontrato, ')'), 'N/E') AS cliente, ";
     $query.= "IF((SELECT cantbase FROM detunidadservicio WHERE idunidad = $idunidad ORDER BY fechacambio DESC LIMIT 1) IS NULL, 0.00, ";
     $query.= "(SELECT cantbase FROM detunidadservicio WHERE idunidad = $idunidad ORDER BY fechacambio DESC LIMIT 1)) AS mcubsug ";
     $query.= "FROM unidadservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico INNER JOIN tiposervicioventa c ON c.id = b.idtiposervicio ";
-    $query.= "INNER JOIN empresa e ON e.id = b.idempresa ";
+    $query.= "INNER JOIN empresa e ON e.id = b.idempresa LEFT JOIN contrato f ON a.idcontrato = f.id LEFT JOIN cliente g ON f.idcliente = g.id ";
     $query.= "WHERE b.asignado = 1 AND b.espropio = 1 AND a.idunidad = ".$idunidad." AND ISNULL(a.ffin) ";
     $query.= "ORDER BY c.desctiposervventa, b.numidentificacion";
     print $db->doSelectASJson($query);

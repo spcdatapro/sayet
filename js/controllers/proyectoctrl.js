@@ -511,6 +511,7 @@
                 d[i].pagacliente = parseInt(d[i].pagacliente);
                 d[i].preciomcubsug = parseFloat(parseFloat(d[i].preciomcubsug).toFixed(2));
                 d[i].mcubsug = parseFloat(parseFloat(d[i].mcubsug).toFixed(2));
+                console.log(d);
             }
             return d;
         }
