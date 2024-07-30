@@ -184,7 +184,6 @@ $app->get('/servuni/:idunidad', function($idunidad){
     $query.= "INNER JOIN empresa e ON e.id = b.idempresa ";
     $query.= "WHERE b.asignado = 1 AND b.espropio = 1 AND a.idunidad = ".$idunidad." AND ISNULL(a.ffin) ";
     $query.= "ORDER BY c.desctiposervventa, b.numidentificacion";
-    echo $query; return;
     print $db->doSelectASJson($query);
 });
 
