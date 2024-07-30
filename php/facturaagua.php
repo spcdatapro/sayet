@@ -74,6 +74,52 @@ $app->post('/pendientesfel', function() {
 
     if(!isset($d->tc)) { $d->tc = 1.00; }
 
+    // $query = "SELECT a.id, a.idserviciobasico, a.idproyecto, a.idunidad, a.mes, a.anio, a.lectura, b.numidentificacion, b.preciomcubsug, b.mcubsug,
+    // @ultimalecturafact := LecturaAnterior(a.idserviciobasico, a.mes, a.anio) AS ultimalecturafact, 
+    // @consumo := ROUND((a.lectura - @ultimalecturafact), 2) AS consumo, 
+    // b.mcubsug AS base,
+    // @consumobase := ROUND(@consumo - b.mcubsug, 2) AS consumobase,
+    // @consumoafacturar := ROUND(IF(@consumobase > 0, @consumobase, 0.00), 2) AS consumoafacturar, 
+    // @factor := IF(ExentoIVA(d.id, b.idtiposervicio) = 0, 1.12, 1) AS factor,
+    // @montosiniva := ROUND(IF(@consumoafacturar > 0, (@consumoafacturar * b.preciomcubsug) / @factor - (IF(a.descuento > 0, a.descuento / @factor, 0.00)), 0.00 ), 2) AS montosiniva, 
+    // @montoconiva := ROUND(IF(@consumoafacturar > 0, (@consumoafacturar * b.preciomcubsug), 0.00 ), 2) AS montoconiva,     
+    // @precio := ROUND(@consumoafacturar * b.preciomcubsug, 2) AS precio,
+    // @importebruto := ROUND(@precio * 1, 2) AS importebruto,
+    // @porcentajedescuento := ROUND((a.descuento * 100) / @importebruto, 4) AS porcentajedescuento,
+    // @importeneto := ROUND((@importebruto - a.descuento) / @factor, 2) AS importeneto,
+    // @importeiva := ROUND(@importebruto - a.descuento - @importeneto, 2) AS importeiva,
+    // @importeiva AS iva,
+    // @importetotal := ROUND(@importeneto + @importeiva, 2)  AS importetotal,
+    // a.descuento,
+    // @descuentosiniva := ROUND((a.descuento / @factor), 2) AS descuentosiniva,
+    // @descuentoiva := ROUND(a.descuento - @descuentosiniva, 2) AS descuentoiva,    
+    // @preciocnv := ROUND(@precio / $d->tc, 2) AS preciocnv,
+    // @importebrutocnv := ROUND(@importebruto / $d->tc, 2) AS importebrutocnv,
+    // @importenetocnv := ROUND(@importeneto / $d->tc, 2) AS importenetocnv,
+    // @importeivacnv := ROUND(@importeiva / $d->tc, 2) AS importeivacnv,
+    // @importetotalcnv := ROUND(@importetotal / $d->tc, 2)  AS importetotalcnv,
+    // @descuentocnv := ROUND(a.descuento / $d->tc, 2) AS descuentocnv,
+    // @descuentosinivacnv := ROUND(@descuentosiniva / $d->tc, 2) AS descuentosinivacnv,
+    // @descuentoivacnv := ROUND(@descuentoiva / $d->tc, 2) AS descuentoivacnv,    
+    // @importeexento := IF(@factor = 1, @importetotal, 0.00) AS importeexento,
+    // @importeexentocnv := IF(@factor = 1, @importetotalcnv, 0.00) AS importeexentocnv,
+    // 0.00 AS isrporretener, RetISR(d.id, b.idtiposervicio) as retenerisr, 0.00 AS ivaporretener, RetIVA(d.id, b.idtiposervicio) AS reteneriva, c.idtipocliente, d.nombre, d.nombrecorto, 
+    // FacturarA(d.id, b.idtiposervicio) AS facturara, NitFacturarA(d.id, b.idtiposervicio) AS nit, DirFacturarA(d.id, b.idtiposervicio) AS direccion, PorcentajeRetIVA(d.id, b.idtiposervicio) AS porcentajeretiva, 
+    // f.desctiposervventa AS tipo, 0.00 AS totapagar, i.idcontrato AS idcontrato, d.id AS idcliente, UPPER(f.desctiposervventa) AS tipo, UPPER(g.nomproyecto) AS proyecto, h.nombre AS unidad, 
+    // (SELECT nombre FROM mes WHERE id = a.mes) AS nommes, b.idtiposervicio, DATE_FORMAT(FechaLecturaAnterior(a.idserviciobasico, a.mes, a.anio), '%d/%m/%Y') AS fechaanterior, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechaactual, 
+    // a.fechacorte, a.conceptoadicional, 0.00 AS isrporretenercnv, 0.00 AS ivaporretenercnv, 0.00 AS totapagar, 0.00 AS totapagarcnv, ExentoIVA(d.id, b.idtiposervicio) AS exentoiva,
+    // 1 AS facturar 
+    // FROM lecturaservicio a 
+    // INNER JOIN serviciobasico b ON b.id = a.idserviciobasico 
+    // INNER JOIN unidadservicio i ON b.id = i.idserviciobasico
+    // INNER JOIN contrato c ON i.idcontrato = c.id
+    // INNER JOIN cliente d ON d.id = c.idcliente 
+    // INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio 
+    // INNER JOIN proyecto g ON g.id = a.idproyecto 
+    // INNER JOIN unidad h ON h.id = a.idunidad 
+    // WHERE a.estatus = 2 AND b.pagacliente = 0 AND a.mes <= MONTH('$d->fvencestr') AND a.anio <= YEAR('$d->fvencestr') AND b.idempresa = $d->idempresa AND 
+    // (c.inactivo = 0 OR (c.inactivo = 1 AND c.fechainactivo > '$d->fvencestr'))
+    // UNION
     $query = "SELECT a.id, a.idserviciobasico, a.idproyecto, a.idunidad, a.mes, a.anio, a.lectura, b.numidentificacion, b.preciomcubsug, b.mcubsug,
     @ultimalecturafact := LecturaAnterior(a.idserviciobasico, a.mes, a.anio) AS ultimalecturafact, 
     @consumo := ROUND((a.lectura - @ultimalecturafact), 2) AS consumo, 
@@ -105,53 +151,7 @@ $app->post('/pendientesfel', function() {
     @importeexentocnv := IF(@factor = 1, @importetotalcnv, 0.00) AS importeexentocnv,
     0.00 AS isrporretener, RetISR(d.id, b.idtiposervicio) as retenerisr, 0.00 AS ivaporretener, RetIVA(d.id, b.idtiposervicio) AS reteneriva, c.idtipocliente, d.nombre, d.nombrecorto, 
     FacturarA(d.id, b.idtiposervicio) AS facturara, NitFacturarA(d.id, b.idtiposervicio) AS nit, DirFacturarA(d.id, b.idtiposervicio) AS direccion, PorcentajeRetIVA(d.id, b.idtiposervicio) AS porcentajeretiva, 
-    f.desctiposervventa AS tipo, 0.00 AS totapagar, i.idcontrato AS idcontrato, d.id AS idcliente, UPPER(f.desctiposervventa) AS tipo, UPPER(g.nomproyecto) AS proyecto, h.nombre AS unidad, 
-    (SELECT nombre FROM mes WHERE id = a.mes) AS nommes, b.idtiposervicio, DATE_FORMAT(FechaLecturaAnterior(a.idserviciobasico, a.mes, a.anio), '%d/%m/%Y') AS fechaanterior, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechaactual, 
-    a.fechacorte, a.conceptoadicional, 0.00 AS isrporretenercnv, 0.00 AS ivaporretenercnv, 0.00 AS totapagar, 0.00 AS totapagarcnv, ExentoIVA(d.id, b.idtiposervicio) AS exentoiva,
-    1 AS facturar 
-    FROM lecturaservicio a 
-    INNER JOIN serviciobasico b ON b.id = a.idserviciobasico 
-    INNER JOIN unidadservicio i ON b.id = i.idserviciobasico
-    INNER JOIN contrato c ON i.idcontrato = c.id
-    INNER JOIN cliente d ON d.id = c.idcliente 
-    INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio 
-    INNER JOIN proyecto g ON g.id = a.idproyecto 
-    INNER JOIN unidad h ON h.id = a.idunidad 
-    WHERE a.estatus = 2 AND b.pagacliente = 0 AND a.mes <= MONTH('$d->fvencestr') AND a.anio <= YEAR('$d->fvencestr') AND b.idempresa = $d->idempresa AND 
-    (c.inactivo = 0 OR (c.inactivo = 1 AND c.fechainactivo > '$d->fvencestr'))
-    UNION
-    SELECT a.id, a.idserviciobasico, a.idproyecto, a.idunidad, a.mes, a.anio, a.lectura, b.numidentificacion, b.preciomcubsug, b.mcubsug,
-    @ultimalecturafact := LecturaAnterior(a.idserviciobasico, a.mes, a.anio) AS ultimalecturafact, 
-    @consumo := ROUND((a.lectura - @ultimalecturafact), 2) AS consumo, 
-    b.mcubsug AS base,
-    @consumobase := ROUND(@consumo - b.mcubsug, 2) AS consumobase,
-    @consumoafacturar := ROUND(IF(@consumobase > 0, @consumobase, 0.00), 2) AS consumoafacturar, 
-    @factor := IF(ExentoIVA(d.id, b.idtiposervicio) = 0, 1.12, 1) AS factor,
-    @montosiniva := ROUND(IF(@consumoafacturar > 0, (@consumoafacturar * b.preciomcubsug) / @factor - (IF(a.descuento > 0, a.descuento / @factor, 0.00)), 0.00 ), 2) AS montosiniva, 
-    @montoconiva := ROUND(IF(@consumoafacturar > 0, (@consumoafacturar * b.preciomcubsug), 0.00 ), 2) AS montoconiva,     
-    @precio := ROUND(@consumoafacturar * b.preciomcubsug, 2) AS precio,
-    @importebruto := ROUND(@precio * 1, 2) AS importebruto,
-    @porcentajedescuento := ROUND((a.descuento * 100) / @importebruto, 4) AS porcentajedescuento,
-    @importeneto := ROUND((@importebruto - a.descuento) / @factor, 2) AS importeneto,
-    @importeiva := ROUND(@importebruto - a.descuento - @importeneto, 2) AS importeiva,
-    @importeiva AS iva,
-    @importetotal := ROUND(@importeneto + @importeiva, 2)  AS importetotal,
-    a.descuento,
-    @descuentosiniva := ROUND((a.descuento / @factor), 2) AS descuentosiniva,
-    @descuentoiva := ROUND(a.descuento - @descuentosiniva, 2) AS descuentoiva,    
-    @preciocnv := ROUND(@precio / $d->tc, 2) AS preciocnv,
-    @importebrutocnv := ROUND(@importebruto / $d->tc, 2) AS importebrutocnv,
-    @importenetocnv := ROUND(@importeneto / $d->tc, 2) AS importenetocnv,
-    @importeivacnv := ROUND(@importeiva / $d->tc, 2) AS importeivacnv,
-    @importetotalcnv := ROUND(@importetotal / $d->tc, 2)  AS importetotalcnv,
-    @descuentocnv := ROUND(a.descuento / $d->tc, 2) AS descuentocnv,
-    @descuentosinivacnv := ROUND(@descuentosiniva / $d->tc, 2) AS descuentosinivacnv,
-    @descuentoivacnv := ROUND(@descuentoiva / $d->tc, 2) AS descuentoivacnv,    
-    @importeexento := IF(@factor = 1, @importetotal, 0.00) AS importeexento,
-    @importeexentocnv := IF(@factor = 1, @importetotalcnv, 0.00) AS importeexentocnv,
-    0.00 AS isrporretener, RetISR(d.id, b.idtiposervicio) as retenerisr, 0.00 AS ivaporretener, RetIVA(d.id, b.idtiposervicio) AS reteneriva, c.idtipocliente, d.nombre, d.nombrecorto, 
-    FacturarA(d.id, b.idtiposervicio) AS facturara, NitFacturarA(d.id, b.idtiposervicio) AS nit, DirFacturarA(d.id, b.idtiposervicio) AS direccion, PorcentajeRetIVA(d.id, b.idtiposervicio) AS porcentajeretiva, 
-    f.desctiposervventa AS tipo, 0.00 AS totapagar, c.id AS idcontrato, d.id AS idcliente, UPPER(f.desctiposervventa) AS tipo, UPPER(g.nomproyecto) AS proyecto, h.nombre AS unidad, 
+    f.desctiposervventa AS tipo, 0.00 AS totapagar, IFNULL(i.id, c.id) AS idcontrato, d.id AS idcliente, UPPER(f.desctiposervventa) AS tipo, UPPER(g.nomproyecto) AS proyecto, h.nombre AS unidad, 
     (SELECT nombre FROM mes WHERE id = a.mes) AS nommes, b.idtiposervicio, DATE_FORMAT(FechaLecturaAnterior(a.idserviciobasico, a.mes, a.anio), '%d/%m/%Y') AS fechaanterior, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechaactual, 
     a.fechacorte, a.conceptoadicional, 0.00 AS isrporretenercnv, 0.00 AS ivaporretenercnv, 0.00 AS totapagar, 0.00 AS totapagarcnv, ExentoIVA(d.id, b.idtiposervicio) AS exentoiva,
     1 AS facturar 
@@ -161,7 +161,8 @@ $app->post('/pendientesfel', function() {
     INNER JOIN cliente d ON d.id = c.idcliente 
     INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio 
     INNER JOIN proyecto g ON g.id = a.idproyecto 
-    INNER JOIN unidad h ON h.id = a.idunidad 
+    INNER JOIN unidad h ON h.id = a.idunidad
+    LEFT JOIN contrato i ON i.id = (SELECT idcontrato FROM unidadservicio WHERE id = a.idserviciobasico) 
     WHERE a.estatus = 2 AND b.pagacliente = 0 AND a.mes <= MONTH('$d->fvencestr') AND a.anio <= YEAR('$d->fvencestr') AND b.idempresa = $d->idempresa AND 
     (c.inactivo = 0 OR (c.inactivo = 1 AND c.fechainactivo > '$d->fvencestr'))
     ORDER BY 55, CAST(digits(44) AS UNSIGNED), 44";
