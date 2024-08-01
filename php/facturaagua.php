@@ -165,7 +165,7 @@ $app->post('/pendientesfel', function() {
     LEFT JOIN contrato i ON i.id = (SELECT idcontrato FROM unidadservicio WHERE id = a.idserviciobasico) 
     WHERE a.estatus = 2 AND b.pagacliente = 0 AND a.mes <= MONTH('$d->fvencestr') AND a.anio <= YEAR('$d->fvencestr') AND b.idempresa = $d->idempresa AND 
     (c.inactivo = 0 OR (c.inactivo = 1 AND c.fechainactivo > '$d->fvencestr'))
-    ORDER BY 55, CAST(digits(44) AS UNSIGNED), 44";
+    ORDER BY g.nomproyecto, CAST(digits(h.nombre) AS UNSIGNED), h.nombre, b.numidentificacion";
     $pendientes = $db->getQuery($query);
     
     $cntPendientes = count($pendientes);
