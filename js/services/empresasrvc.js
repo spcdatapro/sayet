@@ -23,6 +23,18 @@
             },
             lstEmpresasPlanilla: function(){
                 return comunFact.doGET(urlBase + '/lstplnempresas');
+            },
+            agregarPermiso: function (idusuario, idempresa) {
+                return comunFact.doGET(urlBase + '/ap/' + idusuario + '/' + idempresa);
+            },
+            getUsuarios: function (idempresa) {
+                return comunFact.doGET(urlBase + '/usrempresa/' + idempresa);
+            },
+            quitarPermiso: function (id) {
+                return comunFact.doGET(urlBase + '/qp/' + id);
+            },
+            getEmpresaUsuario: function (idusuario) {
+                return comunFact.doGET(urlBase + '/empresausr/' + idusuario);
             }
         };
     }]);

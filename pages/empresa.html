@@ -140,6 +140,10 @@
                                 ng-show="+laEmpresa.id > 0">
                                 <span class="glyphicon glyphicon-plus"></span>
                             </button>
+                            <button type="button" class="btn btn-warning" ng-click="verPermisos(e.id)"
+                                ng-show="+laEmpresa.id > 0" title="Ver permisos">
+                                <span class="glyphicon glyphicon-user"></span>
+                            </button>
                         </div>
                     </form>
                     <hr />
@@ -239,4 +243,61 @@
             </div>
         </div>
     </div>
+    <script type="text/ng-template" id="modalUsuario.html">
+        <div class="modal-header">
+            <h3 class="modal-title">{{empresa.nomempresa}}</h3>
+            <h4>Asignar usuario</h4>
+        </div>
+        <div class="modal-body">
+            <form name="frmUsr" id="frmUsr" ng-submit="frmUsr.$valid && asignarUsuario(idusuario, empresa.id)" novalidate>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group required">
+                            <label for="selUsuario">Usuario:</label>
+                            <div class="input-group">
+                                <ui-select title="Seleccione un usuario..." theme="bootstrap"
+                                    autofocus="false" ng-model="idusuario" required ng-change="setUsuario(idusuario)">
+                                    <ui-select-match placeholder="Buscar usuario..." allow-clear="true">
+                                        <span ng-bind="($select.selected.nombre)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in usuarios | filter:$select.search">
+                                        <div ng-bind-html="(item.nombre) | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                                <div class="input-group-btn">
+                                    <button type="submit" class="btn btn-info" ng-disabled="frmUsr.$invalid">
+                                        <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <hr />
+            <table class="table table-condensed table-hover">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="usr in asignados">
+                        <td>{{usr.nombre}}</td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm" ng-click="quitarUsuario(usr.id)">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <!--<button class="btn btn-info" type="button" ng-click="ok()">Aceptar</button>-->
+            <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
+        </div>
+    </script>
 </div>

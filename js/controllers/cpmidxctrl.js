@@ -12,8 +12,6 @@
         $scope.notificaciones = [];
         var intervalo;
 
-        empresaSrvc.lstEmpresas().then(function(d){ $scope.lasEmpresas = d; });
-
         function chkSolPago(){
             presupuestoSrvc.lstNotificaciones().then(function(d){
                 var notificar = '';
@@ -65,6 +63,17 @@
             authSrvc.getMenu(parseInt(usrLogged.uid)).then(function(res){
                 $scope.menuUsr = res;
                 $scope.usr = usrLogged;
+
+                empresaSrvc.lstEmpresas().then(function(d) { 
+                    empresaSrvc.getEmpresaUsuario(usrLogged.uid).then(function (autorizado) {
+                        let idempresas = [];
+                        autorizado.forEach(aut => {
+                            idempresas.push(aut.id);
+                        });
+
+                        $scope.lasEmpresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                    }); 
+                });
 
                 if(parseInt(usrLogged.workingon) === 0){
                     authSrvc.getUltimaEmpresa(+$scope.usr.uid).then(function(ue){
