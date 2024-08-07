@@ -156,7 +156,7 @@
                 authSrvc.lstPerfiles().then(function (d) {
                     let excluido = [];
                     $scope.asignados.forEach(usuario => {
-                        excluido.push(usuario.id);
+                        excluido.push(usuario.idusuario);
                     });
                     excluido.push('1');
 
