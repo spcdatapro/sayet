@@ -10,9 +10,16 @@
         $scope.empresas = [];
         $scope.objEmpresa = [];
 
-        empresaSrvc.lstEmpresas().then(function(d){ $scope.empresas = d; });
-
         authSrvc.getSession().then(function(usrLogged){
+            empresaSrvc.lstEmpresas().then(function(d) { 
+                empresaSrvc.getEmpresaUsuario(usrLogged.uid).then(function (autorizado) {
+                    let idempresas = [];
+                    autorizado.forEach(aut => {
+                        idempresas.push(aut.id);
+                    });
+                    $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                }); 
+            });
             if(parseInt(usrLogged.workingon) > 0){
                 //authSrvc.gpr({idusuario: parseInt(usrLogged.uid), ruta:$route.current.params.name}).then(function(d){ $scope.permiso = d; });
                 $scope.params.idempresa = parseInt(usrLogged.workingon);

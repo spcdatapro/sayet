@@ -12,10 +12,17 @@
         };
         
         authSrvc.getSession().then(function(usrLogged){
+            empresaSrvc.lstEmpresas().then(function(d) { 
+                empresaSrvc.getEmpresaUsuario(usrLogged.uid).then(function (autorizado) {
+                    let idempresas = [];
+                    autorizado.forEach(aut => {
+                        idempresas.push(aut.id);
+                    });
+                    $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                }); 
+            });
             $scope.params.idempresa = usrLogged.workingon.toString();
         });
-
-        empresaSrvc.lstEmpresas().then(function(d){ $scope.empresas = d; });
 
         $scope.loadFacturasConRet = function(){
             $scope.params.fdelstr = moment($scope.params.fdel).isValid() ? moment($scope.params.fdel).format('YYYY-MM-DD') : '';

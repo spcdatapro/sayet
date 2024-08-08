@@ -2,7 +2,7 @@
 
     var rptrecclictrl = angular.module('cpm.rptrecclictrl', []);
 
-    rptrecclictrl.controller('rptRecibosClienteCtrl', ['$scope', 'jsReportSrvc', 'empresaSrvc', 'monedaSrvc', 'clienteSrvc', 'proyectoSrvc', function($scope, jsReportSrvc, empresaSrvc, monedaSrvc, clienteSrvc, proyectoSrvc){
+    rptrecclictrl.controller('rptRecibosClienteCtrl', ['$scope', 'jsReportSrvc', 'empresaSrvc', 'monedaSrvc', 'clienteSrvc', 'proyectoSrvc', 'authSrvc', function($scope, jsReportSrvc, empresaSrvc, monedaSrvc, clienteSrvc, proyectoSrvc, authSrvc){
 
         $scope.params = {
             fdel: moment().startOf('month').toDate(), fal:moment().endOf('month').toDate(), serie: undefined, idempresa: 0, porempresa: 1, 
@@ -15,8 +15,18 @@
         $scope.proyectos = [];
         $scope.content = `${window.location.origin}/sayet/blank.html`;
 
-        empresaSrvc.lstEmpresas().then(function(d){ $scope.empresas = d; });
-        monedaSrvc.lstMonedas().then(function(d){ $scope.monedas = d; });
+        authSrvc.getSession().then(function (usuario) {
+            // traer empresas permitidas por el usuario
+            empresaSrvc.lstEmpresas().then(function(d) { 
+                empresaSrvc.getEmpresaUsuario(usuario.uid).then(function (autorizado) {
+                    let idempresas = [];
+                    autorizado.forEach(aut => {
+                        idempresas.push(aut.id);
+                    });
+                    $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                }); 
+            });
+        });        monedaSrvc.lstMonedas().then(function(d){ $scope.monedas = d; });
         clienteSrvc.lstCliente().then(function(d) { $scope.clientes = d; });
         $scope.loadProyectos = (idempresa) => proyectoSrvc.lstProyectosPorEmpresa(idempresa).then((d) => $scope.proyectos = d);
 
