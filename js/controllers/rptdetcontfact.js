@@ -14,6 +14,16 @@
         $scope.empresas = [];
 
         authSrvc.getSession().then(function(usrLogged){
+            // traer empresas permitidas por el usuario
+            empresaSrvc.lstEmpresas().then(function(d) { 
+                empresaSrvc.getEmpresaUsuario(usrLogged.uid).then(function (autorizado) {
+                    let idempresas = [];
+                    autorizado.forEach(aut => {
+                        idempresas.push(aut.id);
+                    });
+                    $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                }); 
+            });
             if(parseInt(usrLogged.workingon) > 0){
                 empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function(d){
                     $scope.objEmpresa = d[0];
@@ -26,8 +36,6 @@
             $scope.losProvs = d;
             //$scope.losProvs.push({id:0, nitnombre: 'Todos los proveedores'});
         });
-
-        empresaSrvc.lstEmpresas().then(function(d){ $scope.empresas = d; });
 
         $scope.getDetContFact = function(){
             //$scope.params.idprov = $scope.objProv !== null && $scope.objProv !== undefined ? $scope.objProv.id : 0;

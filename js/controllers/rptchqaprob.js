@@ -2,14 +2,26 @@
 
     var rptchqaprobctrl = angular.module('cpm.rptchqaprobctrl', []);
 
-    rptchqaprobctrl.controller('rptChequesAprobacionCtrl', ['$scope', 'empresaSrvc', 'bancoSrvc', 'monedaSrvc', '$window', function($scope, empresaSrvc, bancoSrvc, monedaSrvc, $window){
+    rptchqaprobctrl.controller('rptChequesAprobacionCtrl', ['$scope', 'empresaSrvc', 'bancoSrvc', 'monedaSrvc', '$window', 'authSrvc', function($scope, empresaSrvc, bancoSrvc, monedaSrvc, $window, authSrvc){
 
         $scope.params = { idempresa: undefined, fecha: moment().toDate(), banco: undefined, idmoneda: '1' };
         $scope.empresas = [];
         $scope.bancos = [];
         $scope.monedas = [];
 
-        empresaSrvc.lstEmpresas().then((d) => $scope.empresas = d);
+        authSrvc.getSession().then(function (usuario) {
+            // traer empresas permitidas por el usuario
+            empresaSrvc.lstEmpresas().then(function(d) { 
+                empresaSrvc.getEmpresaUsuario(usuario.uid).then(function (autorizado) {
+                    let idempresas = [];
+                    autorizado.forEach(aut => {
+                        idempresas.push(aut.id);
+                    });
+                    $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                }); 
+            });
+        });
+
         monedaSrvc.lstMonedas().then((d) => $scope.monedas = d);
         $scope.loadBancos = (idempresa) => bancoSrvc.lstBancosActivos(idempresa).then((d) => $scope.bancos = d);
         

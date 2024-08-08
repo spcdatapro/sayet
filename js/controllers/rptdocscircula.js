@@ -11,12 +11,19 @@
         $scope.cargando = false;
 
         authSrvc.getSession().then(function (usrLogged) {
+            // traer empresas permitidas por el usuario
+            empresaSrvc.lstEmpresas().then(function(d) { 
+                empresaSrvc.getEmpresaUsuario(usrLogged.uid).then(function (autorizado) {
+                    let idempresas = [];
+                    autorizado.forEach(aut => {
+                        idempresas.push(aut.id);
+                    });
+                    $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                }); 
+            });
             $scope.params.idempresa = usrLogged.workingon.toString();
             $scope.getBancos(usrLogged.workingon);
         });
-
-        // traer empresas
-        empresaSrvc.lstEmpresas().then(function (d) { $scope.empresas = d; });
 
         // traer banco al cambiar empresa
         $scope.getBancos = function (idempresa) {
