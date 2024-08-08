@@ -3,37 +3,71 @@
         <div class="panel panel-default">
             <div class="panel-heading">Reporte Empleados</div>
             <div class="panel-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Empresa: </label>
-                            <ui-select ng-model="params.idempresa" title="Seleccione una empresa..." theme="bootstrap"
-                                autofocus="false">
-                                <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
-                                    <span ng-bind="($select.selected.nomempresa)"></span>
-                                </ui-select-match>
-                                <ui-select-choices repeat="item.id as item in empresas | filter:$select.search"
-                                    group-by="'grupo'">
-                                    <div ng-bind-html="(item.nomempresa) | highlight: $select.search">
-                                    </div>
-                                </ui-select-choices>
-                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
-                            </ui-select>
+                <form name="paramsRep" id="paramsRep" novalidate>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label class="control-label">Empresa: </label>
+                                <ui-select ng-model="params.idempresa" title="Seleccione una empresa..."
+                                    theme="bootstrap" autofocus="false">
+                                    <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
+                                        <span ng-bind="($select.selected.nomempresa)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in empresas | filter:$select.search"
+                                        group-by="'grupo'">
+                                        <div ng-bind-html="(item.nomempresa) | highlight: $select.search">
+                                        </div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="chkInactivos" class="control-label">Baja:</label>
+                                <input name="chkInactivos" id="chkInactivos" type="checkbox" class="form-control"
+                                    ng-model="params.inactivos" ng-true-value="1" ng-false-value="0" />
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group required">
+                                <label for="selAgrupar" class="control-label">Agrupar por:</label>
+                                <select name="selAgrupar" id="selAgrupar" class="form-control" ng-model="params.agrupar" required>
+                                    <option value="1">Empresa</option>
+                                    <option value="2">Proyecto</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-1">
-                        <div class="form-group">
-                            <label for="chkInactivos">Baja:</label>
-                            <input name="chkInactivos" id="chkInactivos" type="checkbox" class="form-control"
-                                ng-model="params.inactivos" ng-true-value="1" ng-false-value="0" />
+                    <div class="row">
+                        <div class="col-md-3 col-md-offset-5" ng-show="params.inactivos">
+                            <div class="form-group form-group-sm required">
+                                <input type="date" name="fInactivos" id="fInactivos" class="form-control"
+                                    ng-model="params.fecha" required>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
             <div class="panel-footer text-right">
-                <button type="button" class="btn btn-primary" ng-click="getLibSalarios()">
-                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                </button>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-danger" ng-click="getLibSalarios()"
+                        ng-disabled="paramsRep.$invalid || cargando">
+                        <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="btn btn-success" ng-click="getXML(params)"
+                        ng-disabled="paramsRep.$invalid || cargando">
+                        <span class="fa fa-file-excel-o" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" ng-show="cargando">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                <span class="label label-primary">Generando reporte, por favor espere...</span>
+                <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
             </div>
         </div>
     </div>
