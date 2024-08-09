@@ -33,7 +33,7 @@
                         <span ng-bind="($select.selected.nomempresa)"></span>
                     </ui-select-match>
                     <ui-select-choices repeat="item.id as item in lasEmpresas | filter:$select.search">
-                        <div ng-bind-html="'(' + item.id + ') ' + item.nomempresa | highlight: $select.search"></div>
+                        <div ng-bind-html="item.nomempresa | highlight: $select.search"></div>
                     </ui-select-choices>
                     <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
                 </ui-select>
