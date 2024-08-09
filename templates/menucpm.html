@@ -26,7 +26,7 @@
                 <h3 class="modal-title">Selecci&oacute;n de empresa a trabajar</h3>
             </div>
             <div class="modal-body">
-                <label class="control-label">¿Qu&eacute; empresa desea trabajar?</label>
+                <!-- <label class="control-label">¿Qu&eacute; empresa desea trabajar?</label>
                 <ui-select ng-model="objEmpresa" title="Seleccione la empresa que desea trabajar..."
                     theme="bootstrap" autofocus="true" ng-change="yaSelecciono()" required>
                     <ui-select-match placeholder="Buscar empresa..." allow-clear="false">
@@ -36,11 +36,11 @@
                         <div ng-bind-html="item.nomempresa | highlight: $select.search"></div>
                     </ui-select-choices>
                     <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
-                </ui-select>
-                <!-- <label for="selEmpresa">¿Qu&eacute; empresa desea trabajar?</label>
+                </ui-select> -->
+                <label for="selEmpresa">¿Qu&eacute; empresa desea trabajar?</label>
                 <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="objEmpresa"
                         ng-options="obj.nomempresa for obj in lasEmpresas track by obj.id" ng-change="yaSelecciono()" required>
-                </select> -->
+                </select>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-primary" type="button" ng-click="ok()">Aceptar</button>
