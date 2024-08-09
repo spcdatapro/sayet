@@ -23,14 +23,22 @@
         $scope.btnFactDeshabilitado = false;
 
         authSrvc.getSession().then(function (usrLogged) {
+            // traer empresas permitidas por el usuario
             empresaSrvc.lstEmpresas().then(function (d) {
-                $scope.empresas = d;
-                $scope.params.idempresa = usrLogged.workingon.toString();
-                $scope.paramsh2o.idempresa = usrLogged.workingon.toString();
-                $scope.paramsParqueo.idempresa = usrLogged.workingon.toString();
-                $scope.empredefault = usrLogged.workingon.toString();
-                $scope.resetFactura();
+                empresaSrvc.getEmpresaUsuario(usrLogged.uid).then(function (autorizado) {
+                    let idempresas = [];
+                    autorizado.forEach(aut => {
+                        idempresas.push(aut.id);
+                    });
+                    $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                });
             });
+            $scope.params.idempresa = usrLogged.workingon.toString();
+            $scope.paramsh2o.idempresa = usrLogged.workingon.toString();
+            $scope.paramsParqueo.idempresa = usrLogged.workingon.toString();
+            $scope.empredefault = usrLogged.workingon.toString();
+            $scope.resetFactura();
+
             $scope.usrdata = usrLogged;
         });
 
@@ -451,7 +459,7 @@
         };
 
         $scope.$watch('factura.idempresa', function (newValue, oldValue) {
-            if (newValue != null && newValue != undefined) {                
+            if (newValue != null && newValue != undefined) {
                 $scope.loadProyectos(newValue);
             }
         });
@@ -516,7 +524,7 @@
 
         $scope.esExento = () => {
             if (+$scope.factura.exentoiva === 1) {
-                $scope.factura.reteneriva = 0;                
+                $scope.factura.reteneriva = 0;
                 $scope.factura.porretiva = 0.00;
             }
         }
@@ -935,8 +943,8 @@
     facturacionctrl.controller('ModalRptPreliminarCtrl', ['$scope', '$uibModalInstance', 'toaster', '$filter', 'empresas', 'proyectoSrvc', function ($scope, $uibModalInstance, toaster, $filter, empresas, proyectoSrvc) {
         $scope.empresas = empresas;
         $scope.proyectos = [];
-        $scope.params = { 
-            fdelstr: '', falstr: '', empresa: '', proyecto: '', tc: undefined, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), objEmpresa: undefined, objProyecto: undefined, coniva: 0 
+        $scope.params = {
+            fdelstr: '', falstr: '', empresa: '', proyecto: '', tc: undefined, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), objEmpresa: undefined, objProyecto: undefined, coniva: 0
         };
 
         proyectoSrvc.lstProyecto().then(function (d) { $scope.proyectos = d; });

@@ -2,8 +2,8 @@
 
     var controller = angular.module('cpm.rptaltasbajas', []);
 
-    controller.controller('rptAltasBajas', ['$scope', 'jsReportSrvc', 'empresaSrvc', 'proyectoSrvc', function ($scope, 
-        jsReportSrvc, empresaSrvc, proyectoSrvc) {
+    controller.controller('rptAltasBajas', ['$scope', 'jsReportSrvc', 'empresaSrvc', 'proyectoSrvc', 'authSrvc', function ($scope, 
+        jsReportSrvc, empresaSrvc, proyectoSrvc, authSrvc) {
 
             // variables para selectores
             $scope.empresas = [];
@@ -21,8 +21,18 @@
             $scope.ver = { resumen: false };
             $scope.content = `${window.location.origin}/sayet/blank.html`;
 
-            // traer empresas
-            empresaSrvc.lstEmpresas().then(function (d) { $scope.empresas = d; });
+            authSrvc.getSession().then(function (usuario) {
+                // traer empresas permitidas por el usuario
+                empresaSrvc.lstEmpresas().then(function(d) { 
+                    empresaSrvc.getEmpresaUsuario(usuario.uid).then(function (autorizado) {
+                        let idempresas = [];
+                        autorizado.forEach(aut => {
+                            idempresas.push(aut.id);
+                        });
+                        $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                    }); 
+                });
+            });
 
             // traer proyectos al cambiar empresa
             $scope.getProyectos = function (idempresa) {

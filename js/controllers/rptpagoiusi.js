@@ -2,7 +2,7 @@
 
     var rptpagoiusictrl = angular.module('cpm.rptpagoiusictrl', []);
 
-    rptpagoiusictrl.controller('rptPagoIusiCtrl', ['$scope', 'activoSrvc', 'municipioSrvc', 'empresaSrvc', 'jsReportSrvc', function($scope, activoSrvc, municipioSrvc, empresaSrvc, jsReportSrvc){
+    rptpagoiusictrl.controller('rptPagoIusiCtrl', ['$scope', 'activoSrvc', 'municipioSrvc', 'empresaSrvc', 'jsReportSrvc', 'authSrvc', function($scope, activoSrvc, municipioSrvc, empresaSrvc, jsReportSrvc, authSrvc){
 
         $scope.losActivos = [];
         $scope.losDeptos = [];
@@ -14,7 +14,18 @@
         $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         municipioSrvc.lstMunicipios().then(function(d){ $scope.losDeptos = d; });
-        empresaSrvc.lstEmpresas().then(function(d){ $scope.empresas = d; });
+        authSrvc.getSession().then(function (usuario) {
+            // traer empresas permitidas por el usuario
+            empresaSrvc.lstEmpresas().then(function(d) { 
+                empresaSrvc.getEmpresaUsuario(usuario.uid).then(function (autorizado) {
+                    let idempresas = [];
+                    autorizado.forEach(aut => {
+                        idempresas.push(aut.id);
+                    });
+                    $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                }); 
+            });
+        });
 
         var test = false;
         $scope.getRepPagosIusi = function(){

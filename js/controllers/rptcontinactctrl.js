@@ -2,7 +2,7 @@
 
     const rptcontinactctrl = angular.module('cpm.rptcontinactctrl', []);
 
-    rptcontinactctrl.controller('rptContInactCtrl', ['$scope', 'empresaSrvc', 'proyectoSrvc', 'clienteSrvc', 'jsReportSrvc', function ($scope, empresaSrvc, proyectoSrvc, clienteSrvc, jsReportSrvc) {
+    rptcontinactctrl.controller('rptContInactCtrl', ['$scope', 'empresaSrvc', 'proyectoSrvc', 'clienteSrvc', 'jsReportSrvc', 'authSrvc', function ($scope, empresaSrvc, proyectoSrvc, clienteSrvc, jsReportSrvc, authSrvc) {
 
         $scope.params = { idempresa: undefined, idproyecto: undefined, idcliente: undefined, idcategoria: undefined, fdel: moment().startOf('year').toDate(), fal: moment().endOf('month').toDate(), usufructo: 1 };
         $scope.content = `${window.location.origin}/sayet/blank.html`;
@@ -11,7 +11,19 @@
         $scope.lstCliente = [];
         $scope.categorias = [];
 
-        empresaSrvc.lstEmpresas().then(function (d) { $scope.empresas = d; });
+        authSrvc.getSession().then(function (usuario) {
+            // traer empresas permitidas por el usuario
+            empresaSrvc.lstEmpresas().then(function(d) { 
+                empresaSrvc.getEmpresaUsuario(usuario.uid).then(function (autorizado) {
+                    let idempresas = [];
+                    autorizado.forEach(aut => {
+                        idempresas.push(aut.id);
+                    });
+                    $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                }); 
+            });
+        });
+
         clienteSrvc.lstCliente().then(function (d) { $scope.lstClientes = d; });
         clienteSrvc.lstCatClie().then(function (d) { $scope.categorias = d; });
 

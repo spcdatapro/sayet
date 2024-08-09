@@ -33,7 +33,18 @@
         $scope.urlGenCheques = 'pages/trangenchqots.html';
 
         proyectoSrvc.lstProyecto().then(function (d) { $scope.proyectos = d; });
-        empresaSrvc.lstEmpresas().then(function (d) { $scope.empresas = d; });
+        authSrvc.getSession().then(function (usuario) {
+            // traer empresas permitidas por el usuario
+            empresaSrvc.lstEmpresas().then(function(d) { 
+                empresaSrvc.getEmpresaUsuario(usuario.uid).then(function (autorizado) {
+                    let idempresas = [];
+                    autorizado.forEach(aut => {
+                        idempresas.push(aut.id);
+                    });
+                    $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                }); 
+            });
+        });
         tipogastoSrvc.lstTipogastos().then(function (d) { $scope.tiposgasto = d; });
         monedaSrvc.lstMonedas().then(function (d) { $scope.monedas = d; });
         tipoCambioSrvc.getLastTC().then(function (d) { $scope.tipocambiogt = +d.lasttc; });

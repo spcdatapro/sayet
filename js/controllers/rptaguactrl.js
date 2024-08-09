@@ -2,14 +2,25 @@
 
     var rptaguactrl = angular.module('cpm.rptaguactrl', []);
 
-    rptaguactrl.controller('rptAguaCtrl', ['$scope', 'empresaSrvc', 'jsReportSrvc', 'proyectoSrvc', function($scope, empresaSrvc, jsReportSrvc, proyectoSrvc){
+    rptaguactrl.controller('rptAguaCtrl', ['$scope', 'empresaSrvc', 'jsReportSrvc', 'proyectoSrvc', 'authSrvc', function($scope, empresaSrvc, jsReportSrvc, proyectoSrvc, authSrvc){
 
         $scope.params = {fvence: moment().toDate(), idempresa: undefined, idproyecto: undefined};
         $scope.content = `${window.location.origin}/sayet/blank.html`;
         $scope.empresas = [];
         $scope.proyectos = [];
 
-        empresaSrvc.lstEmpresas().then(function(d){$scope.empresas = d;});
+        authSrvc.getSession().then(function (usuario) {
+            // traer empresas permitidas por el usuario
+            empresaSrvc.lstEmpresas().then(function(d) { 
+                empresaSrvc.getEmpresaUsuario(usuario.uid).then(function (autorizado) {
+                    let idempresas = [];
+                    autorizado.forEach(aut => {
+                        idempresas.push(aut.id);
+                    });
+                    $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                }); 
+            });
+        });
 
         $scope.loadProyectos = function() {
             proyectoSrvc.lstProyectosPorEmpresa($scope.params.idempresa).then(function(d){ $scope.proyectos = d; });

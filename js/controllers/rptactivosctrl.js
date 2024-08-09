@@ -2,7 +2,7 @@
 
     var rptactivosctrl = angular.module('cpm.rptactivosctrl', []);
 
-    rptactivosctrl.controller('rptActivosCtrl', ['$scope', 'activoSrvc', 'empresaSrvc','tipoactivoSrvc', 'municipioSrvc', 'localStorageSrvc', '$location', 'jsReportSrvc', function($scope, activoSrvc, empresaSrvc, tipoactivoSrvc, municipioSrvc, localStorageSrvc, $location, jsReportSrvc){
+    rptactivosctrl.controller('rptActivosCtrl', ['$scope', 'activoSrvc', 'empresaSrvc','tipoactivoSrvc', 'municipioSrvc', 'localStorageSrvc', '$location', 'jsReportSrvc', 'authSrvc', function($scope, activoSrvc, empresaSrvc, tipoactivoSrvc, municipioSrvc, localStorageSrvc, $location, jsReportSrvc, authSrvc){
 
 
         $scope.lasEmpresas = [];
@@ -19,7 +19,19 @@
         $scope.tipostr = '';
         $scope.content = `${window.location.origin}/sayet/blank.html`;
 
-        empresaSrvc.lstEmpresas().then(function(d){ $scope.lasEmpresas = d; });
+        authSrvc.getSession().then(function (usuario) {
+            // traer empresas permitidas por el usuario
+            empresaSrvc.lstEmpresas().then(function(d) { 
+                empresaSrvc.getEmpresaUsuario(usuario.uid).then(function (autorizado) {
+                    let idempresas = [];
+                    autorizado.forEach(aut => {
+                        idempresas.push(aut.id);
+                    });
+                    $scope.lasEmpresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                }); 
+            });
+        });
+
         tipoactivoSrvc.lstTipoActivo().then(function (d) { $scope.losTipoActivo = d; });
         municipioSrvc.lstMunicipios().then(function(d){ $scope.municipios = d; });
 

@@ -2,7 +2,7 @@
 
     var rptlstproyctrl = angular.module('cpm.rptlstproyctrl', []);
 
-    rptlstproyctrl.controller('rptLstProyCtrl', ['$scope', 'empresaSrvc', 'tipoProyectoSrvc', 'proyectoSrvc', 'jsReportSrvc', function($scope, empresaSrvc, tipoProyectoSrvc, proyectoSrvc, jsReportSrvc){
+    rptlstproyctrl.controller('rptLstProyCtrl', ['$scope', 'empresaSrvc', 'tipoProyectoSrvc', 'proyectoSrvc', 'jsReportSrvc', 'authSrvc', function($scope, empresaSrvc, tipoProyectoSrvc, proyectoSrvc, jsReportSrvc, authSrvc){
 
         $scope.params = {idempresa: '', idtipo: '', idproyecto: '', detallado: 1};
         $scope.lasEmpresas = [];
@@ -13,7 +13,19 @@
         $scope.proyecto = [];
         $scope.content = `${window.location.origin}/sayet/blank.html`;
 
-        empresaSrvc.lstEmpresas().then(function(d){ $scope.lasEmpresas = d; $scope.lasEmpresas.push({ id: '', nomempresa: 'Todas las empresas' }); });
+        authSrvc.getSession().then(function (usuario) {
+            // traer empresas permitidas por el usuario
+            empresaSrvc.lstEmpresas().then(function(d) { 
+                empresaSrvc.getEmpresaUsuario(usuario.uid).then(function (autorizado) {
+                    let idempresas = [];
+                    autorizado.forEach(aut => {
+                        idempresas.push(aut.id);
+                    });
+                    $scope.lasEmpresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                    $scope.lasEmpresas.push({ id: '', nomempresa: 'Todas las empresas' });
+                }); 
+            });
+        });
         tipoProyectoSrvc.lstTipoProyecto().then(function(d){ $scope.lsttipos = d; $scope.lsttipos.push({ id: '', descripcion: 'Todos los tipos' });});
         proyectoSrvc.lstProyecto().then(function(d){ $scope.proyectos = d; $scope.proyectos.push({ id:'', nomproyecto: 'Todos los proyectos' });});
 

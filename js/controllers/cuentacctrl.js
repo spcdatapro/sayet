@@ -15,11 +15,17 @@
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true);
 
-        empresaSrvc.lstEmpresas().then(function(d){
-            $scope.lasEmpresas = d;
-        });
-
         authSrvc.getSession().then(function(usrLogged){
+            // traer empresas permitidas por el usuario
+            empresaSrvc.lstEmpresas().then(function(d) { 
+                empresaSrvc.getEmpresaUsuario(usrLogged.uid).then(function (autorizado) {
+                    let idempresas = [];
+                    autorizado.forEach(aut => {
+                        idempresas.push(aut.id);
+                    });
+                    $scope.lasEmpresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                }); 
+            });
             if(parseInt(usrLogged.workingon) > 0){
                 empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function(r){
                     $scope.laCta.objEmpresa = r[0];                    

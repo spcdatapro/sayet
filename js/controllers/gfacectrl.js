@@ -12,10 +12,17 @@
 
         authSrvc.getSession().then(function (usrLogged) {
             $scope.idusuario = usrLogged.uid;
+            // traer empresas permitidas por el usuario
             empresaSrvc.lstEmpresas().then(function (d) {
-                $scope.empresas = d;
-                $scope.params.idempresa = usrLogged.workingon.toString();
+                empresaSrvc.getEmpresaUsuario(usrLogged.uid).then(function (autorizado) {
+                    let idempresas = [];
+                    autorizado.forEach(aut => {
+                        idempresas.push(aut.id);
+                    });
+                    $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                });
             });
+            $scope.params.idempresa = usrLogged.workingon.toString();
         });
 
         $scope.getPend = () => {
@@ -137,7 +144,7 @@
                 if ((qTipo.trim().toUpperCase().indexOf('FACT') > -1) || (qTipo.trim().toUpperCase().indexOf('NCRE') > -1)) {
                     facturas.push({ id: linea[8], firma: linea[7], serie: linea[2], numero: linea[3], nit: linea[4], nombre: linea[9], respuesta: cad, tipo: linea[0] });
                 }
-            });            
+            });
             // console.log(facturas); //return;
             if (facturas.length > 0) {
                 facturacionSrvc.respuestaGFACE(facturas).then(function (d) {
@@ -182,7 +189,8 @@
                 $scope.cargando = true;
                 $scope.pendientes.forEach(f => {
                     if (f.descargar == 1) {
-                        facturacionSrvc.revertir(f.id).then(function () { $scope.getPend(); $scope.cargando = false;
+                        facturacionSrvc.revertir(f.id).then(function () {
+                            $scope.getPend(); $scope.cargando = false;
                             toaster.pop({ type: 'success', title: 'Proceso terminado', body: 'Las facturas fueron revertidas.', timeout: 9000 });
                         });
                     }

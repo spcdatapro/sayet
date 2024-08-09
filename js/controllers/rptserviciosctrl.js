@@ -2,14 +2,26 @@
 
     var rptserviciosctrl = angular.module('cpm.rptserviciosctrl', []);
 
-    rptserviciosctrl.controller('rptServiciosCtrl', ['$scope', 'empresaSrvc', 'jsReportSrvc', 'tipoServicioVentaSrvc', function($scope, empresaSrvc, jsReportSrvc, tipoServicioVentaSrvc){
+    rptserviciosctrl.controller('rptServiciosCtrl', ['$scope', 'empresaSrvc', 'jsReportSrvc', 'tipoServicioVentaSrvc', 'authSrvc', function($scope, empresaSrvc, jsReportSrvc, tipoServicioVentaSrvc, authSrvc){
 
         $scope.empresas = [];
         $scope.tipos = [];
         $scope.params = {idempresa: undefined, idtipo: undefined, verbaja: 0};
         $scope.content = `${window.location.origin}/sayet/blank.html`;
 
-        empresaSrvc.lstEmpresas().then(function(d){ $scope.empresas = d; });
+        authSrvc.getSession().then(function (usuario) {
+            // traer empresas permitidas por el usuario
+            empresaSrvc.lstEmpresas().then(function(d) { 
+                empresaSrvc.getEmpresaUsuario(usuario.uid).then(function (autorizado) {
+                    let idempresas = [];
+                    autorizado.forEach(aut => {
+                        idempresas.push(aut.id);
+                    });
+                    $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                }); 
+            });
+        });
+
         tipoServicioVentaSrvc.lstTSVenta().then(function(d){ $scope.tipos = d; });
 
         var test = false;
