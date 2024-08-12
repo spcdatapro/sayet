@@ -6,11 +6,13 @@ $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
 
 //API para proyectos
-$app->get('/lstproyecto', function(){
+$app->get('/lstproyecto/:idusuario', function($idusuario){
     $db = new dbcpm();
     $query = "SELECT a.id, a.nomproyecto, a.registro, a.direccion, a.notas, a.metros, a.idempresa, a.metros_rentable, a.tipo_proyecto, a.subarrendado, a.notas_contrato, a.referencia, a.fechaapertura, ";
     $query.= "b.nomempresa AS empresa, c.descripcion AS tipoproyecto, a.multiempresa, a.apiurlparqueo, a.fechabaja ";
     $query.= "FROM proyecto a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN tipo_proyecto c ON c.id = a.tipo_proyecto ";
+    $query.= $idusuario > 0 ? "INNER JOIN usuarioproyecto d ON d.idproyecto = a.id " : "";
+    $query.= $idusuario > 0 ? "WHERE d.idusuario = $idusuario  " : "";
     $query.= "ORDER BY a.nomproyecto";
     print $db->doSelectASJson($query);
 });

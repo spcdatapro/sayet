@@ -6,8 +6,8 @@
         var urlBase = 'php/proyecto.php';
 
         return {
-            lstProyecto: function(){
-                return comunFact.doGET(urlBase + '/lstproyecto');
+            lstProyecto: function(idusuario = null){
+                return comunFact.doGET(urlBase + '/lstproyecto/' + idusuario);
             },
             lstProyectosPorEmpresa: function(idempresa, idusuario = null) {
                 return comunFact.doGET(urlBase + '/lstproyectoporempresa/' + idempresa + '/' + idusuario);

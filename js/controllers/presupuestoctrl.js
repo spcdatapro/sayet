@@ -32,7 +32,6 @@
         $scope.ngIncludeUrlTB = undefined;
         $scope.urlGenCheques = 'pages/trangenchqots.html';
 
-        proyectoSrvc.lstProyecto().then(function (d) { $scope.proyectos = d; });
         authSrvc.getSession().then(function (usuario) {
             // traer empresas permitidas por el usuario
             empresaSrvc.lstEmpresas().then(function(d) { 
@@ -44,6 +43,7 @@
                     $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
                 }); 
             });
+            proyectoSrvc.lstProyecto(usuario.uid).then(function (d) { $scope.proyectos = d; });
         });
         tipogastoSrvc.lstTipogastos().then(function (d) { $scope.tiposgasto = d; });
         monedaSrvc.lstMonedas().then(function (d) { $scope.monedas = d; });
