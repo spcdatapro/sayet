@@ -11,6 +11,7 @@
         $scope.empresas = [];
         $scope.proyectos = [];
         $scope.lstClientes = [];
+        $scope.idusuario = undefined;
 
         authSrvc.getSession().then(function (usuario) {
             // traer empresas permitidas por el usuario
@@ -23,11 +24,12 @@
                     $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
                 }); 
             });
+            $scope.idusuario = usuario.uid;
         });
         clienteSrvc.lstCliente().then(function(d){$scope.lstClientes = d;});
 
         $scope.loadProyectos = function() {
-            proyectoSrvc.lstProyectosPorEmpresa($scope.params.empresas).then(function(d){ $scope.proyectos = d; });
+            proyectoSrvc.lstProyectosPorEmpresa($scope.params.empresas, $scope.idusuario).then(function(d){ $scope.proyectos = d; });
         };
 
         var test = false;
