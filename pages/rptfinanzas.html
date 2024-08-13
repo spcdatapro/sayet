@@ -164,7 +164,7 @@
             <tbody ng-repeat="r in reporte">
                 <tr ng-click="r.detalle = !r.detalle">
                     <td style="text-align: left; width: 50%;">{{r.nombre}}</td>
-                    <td style="text-align: right; width: 50%;">{{r.diferencia | number:2}}</td>
+                    <td style="text-align: right; width: 50%;">{{r.diferencia}}</td>
                 </tr>
                 <tr ng-show="r.detalle">
                     <td colspan="2">

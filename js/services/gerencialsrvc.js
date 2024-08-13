@@ -6,10 +6,7 @@
         const urlBase = 'php/rptgerenciales.php';
 
         return {
-            resumen: (obj) => comunFact.doPOST(`${urlBase}/resumen`, obj),
-            detalle: (obj) => comunFact.doPOST(`${urlBase}/detalle`, obj),
-            ingegr: (obj) => comunFact.doPOST(`${urlBase}/ingegr`, obj),
-            getRes: (obj) => comunFact.doPOST(`${urlBase}/res`, obj)
+            finanzas: (obj) => comunFact.doPOST(`${urlBase}/finanzas`, obj)
         };
     }]);
 
