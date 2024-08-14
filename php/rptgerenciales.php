@@ -462,7 +462,7 @@ $app->post('/finanzas', function(){
         }
 
         $separador_mes->total_compras = round(array_sum($suma_compras), 2);        
-        $separador_mes->total_ventas = count($suma_ventas) > 0 ? round(array_sum($suma_ventas), 2) : 0.00;
+        $separador_mes->total_ventas = round(array_sum($suma_ventas), 2);
         $separador_mes->diferencia = round($separador_mes->total_ventas - $separador_mes->total_compras, 2);
 
         usort($separador_mes->ventas, "compararPorTotal");
