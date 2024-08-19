@@ -164,7 +164,7 @@ class General extends Principal
 		}
 
 		$tmp = $this->db->select(
-			'plnempresa', 
+			'empresa', 
 			'*',
 			$where
 		);
