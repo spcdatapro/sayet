@@ -452,7 +452,7 @@ $app->get('/imprimir_igss', function(){
 				'anio'              => $anio,
 				'razon_social'      => $emp['nomempresa'],
 				'direccion_patrono' => $emp['direccion'],
-				'numero_patronal'   => $pln_emp['numero_patronal']
+				'numero_patronal'   => $pln_emp['numeropat']
 			]);
 
 			$totales = [];
