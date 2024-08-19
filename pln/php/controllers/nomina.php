@@ -444,6 +444,7 @@ $app->get('/imprimir_igss', function(){
 			$dia  = date('d', strtotime($_GET['fal']));
 
 			$emp = $g->get_empresa(['id' => $_GET['empresa']])[0];
+			$pln_emp = $g->get_plnempresa(['id' => $_GET['empresa']])[0];
 
 			$cabecera = $b->get_cabecera_igss([
 				'dia'               => $dia, 
@@ -451,7 +452,7 @@ $app->get('/imprimir_igss', function(){
 				'anio'              => $anio,
 				'razon_social'      => $emp['nomempresa'],
 				'direccion_patrono' => $emp['direccion'],
-				'numero_patronal'   => $emp['numero_patronal']
+				'numero_patronal'   => $pln_emp['numero_patronal']
 			]);
 
 			$totales = [];
