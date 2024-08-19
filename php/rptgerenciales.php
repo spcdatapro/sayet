@@ -197,7 +197,7 @@ $app->post('/finanzas', function(){
                 SUBSTRING(CONCAT(b.nombre, ' ', IFNULL(b.apellidos, '')),
                     1,
                     30) AS beneficiario,
-                a.idplnempleado AS orden,
+                NULL AS orden,
                 'Devengado' AS concepto,
                 NULL AS fechafact,
                 IFNULL(c.nombre, '') AS documento,
@@ -233,7 +233,7 @@ $app->post('/finanzas', function(){
                 NULL AS fechatran,
                 NULL AS cheque,
                 NULL AS beneficiario,
-                a.idplnempleado AS orden,
+                NULL AS orden,
                 'Cuota patronal' AS concepto,
                 NULL AS fechafact,
                 NULL AS documento,
@@ -253,6 +253,34 @@ $app->post('/finanzas', function(){
                     AND MONTH(a.fecha) <= $d->mesal
                     AND DAY(a.fecha) >= 16
                     AND YEAR(a.fecha) = $d->anio
+            UNION ALL SELECT 
+                9999 AS id,
+                MONTH(a.fecha) AS mes,
+                5120101 AS codigo,
+                'SALARIOS' AS nombrecta,
+                NULL AS fechatran,
+                NULL AS cheque,
+                NULL AS beneficiario,
+                NULL AS orden,
+                'Bono 14' AS concepto,
+                NULL AS fechafact,
+                NULL AS documento,
+                ROUND(a.bonocatorce, 2) AS total,
+                a.idplnempleado AS ord
+            FROM
+                plnnomina a
+                    INNER JOIN
+                plnempleado b ON a.idplnempleado = b.id
+                    LEFT JOIN
+                unidad c ON b.idunidad = c.id
+            WHERE
+                a.idempresa = $d->idempresa AND b.idproyecto = $d->idproyecto ";
+    $query.= isset($d->idunidad) ? "AND b.idunidad = $d->idunidad " : "";
+    $query.="       AND MONTH(a.fecha) >= $d->mesdel
+                    AND MONTH(a.fecha) <= $d->mesal
+                    AND DAY(a.fecha) = 15
+                    AND YEAR(a.fecha) = $d->anio
+                    AND a.esbonocatorce = 1
             ORDER BY 2 ASC, 1 ASC, 13 ASC, 5 DESC, 7 ASC";
     $data_c = $db->getQuery($query);
 
