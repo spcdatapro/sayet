@@ -112,7 +112,7 @@ $app->post('/finanzas', function(){
                 c.codigo,
                 UPPER(c.nombrecta) AS nombrecta,
                 DATE_FORMAT(e.fecha, '%d/%m/%Y') AS fechatran,
-                GROUP_CONCAT(e.tipotrans, ' ', e.numero) AS cheque,
+                CONCAT(e.tipotrans, ' ', e.numero) AS cheque,
                 SUBSTRING(e.beneficiario, 1, 30) AS beneficiario,
                 IFNULL(CONCAT(f.idpresupuesto, '-', f.correlativo),
                         '') AS orden,
@@ -141,15 +141,15 @@ $app->post('/finanzas', function(){
     $query.="       AND MONTH(b.fechaingreso) >= $d->mesdel
                     AND MONTH(b.fechaingreso) <= $d->mesal
                     AND YEAR(b.fechaingreso) = $d->anio
-                    AND c.id GROUP BY b.id
+                    AND c.id
             UNION ALL SELECT 
                 c.id,
                 MONTH(b.fechaingreso) AS mes,
                 c.codigo,
                 UPPER(c.nombrecta) AS nombrecta,
                 DATE_FORMAT(IFNULL(e.fecha, g.fecha), '%d/%m/%Y') AS fechatran,
-                IFNULL(GROUP_CONCAT(e.tipotrans, ' ', e.numero),
-                        GROUP_CONCAT(g.tipotrans, ' ', g.numero)) AS cheque,
+                IFNULL(CONCAT(e.tipotrans, ' ', e.numero),
+                        CONCAT(g.tipotrans, ' ', g.numero)) AS cheque,
                 SUBSTRING(IFNULL(SUBSTRING(e.beneficiario, 1, 30),
                             SUBSTRING(g.beneficiario, 1, 30)),
                     1,
@@ -186,7 +186,7 @@ $app->post('/finanzas', function(){
                     AND b.idreembolso > 0
                     AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%'
                     OR TRIM(c.codigo) = '1120299')
-                    AND c.id GROUP BY b.id
+                    AND c.id
             UNION ALL SELECT 
                 9999 AS id,
                 MONTH(a.fecha) AS mes,
