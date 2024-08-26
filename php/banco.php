@@ -194,13 +194,13 @@ $app->post('/rptestcta', function(){
     $query.= "FROM tranban a INNER JOIN tipomovtranban b ON b.abreviatura = a.tipotrans ";
     $query.= "WHERE a.idbanco = ".$d->idbanco." AND a.fecha >= '".$d->fdelstr."' AND a.fecha <= '".$d->falstr."' ";
     $query.= "GROUP BY a.tipotrans ";
-    $query.= "ORDER BY b.orden";
+    $query.= "ORDER BY b.ordenalt";
     $resumen = $db->getQuery($query);
 
     $query = "SELECT id, CONCAT('(', abreviatura,') ', descripcion) AS tipo, 0 AS cantidad, 0.00 AS monto, ";
     $query.= "IF(abreviatura IN ('D', 'R'), '( + )', '( - )') AS operacion, orden ";
     $query.= "FROM tipomovtranban WHERE id NOT IN(SELECT b.id FROM tranban a RIGHT JOIN tipomovtranban b ON b.abreviatura = a.tipotrans ";
-    $query.= "WHERE a.idbanco = $d->idbanco AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' GROUP BY a.tipotrans) ORDER BY orden";
+    $query.= "WHERE a.idbanco = $d->idbanco AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' GROUP BY a.tipotrans) ORDER BY ordenalt";
     $faltantes = $db->getQuery($query);
 
     if(count($faltantes) > 0){
