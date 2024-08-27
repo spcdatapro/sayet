@@ -103,7 +103,7 @@ $app->post('/finanzas', function(){
                     AND YEAR(a.fecha) = $d->anio
                     AND a.anulada = 0
                     AND b.idtiposervicio NOT IN (1 ";
-    $query.= $d->idproyecto == 16 ? ", 16)" : ")"; 
+    $query.= $d->idproyecto == 16 ? ")" : ", 16)"; 
     $query.="   ORDER BY 2 ASC, 1, 6";
     $data_v = $db->getQuery($query);
 
