@@ -470,7 +470,7 @@ function actualizaDetallePresupuesto($d)
 {
     $db = new dbcpm();
     $query = "UPDATE detpresupuesto SET ";
-    $query .= "idproveedor = $d->idproveedor, idsubtipogasto = $d->idsubtipogasto, coniva = $d->coniva, escontado = 0, monto = $d->total, tipocambio = $d->tipocambio, notas = '$d->notas', origenprov = $d->origenprov, ";
+    $query .= "idproveedor = $d->idproveedor, idsubtipogasto = $d->idsubtipogasto, coniva = $d->coniva, escontado = 0, monto = $d->monto, tipocambio = $d->tipocambio, notas = '$d->notas', origenprov = $d->origenprov, ";
     $query .= "idmoneda = $d->idmoneda, tipodocumento = $d->tipodocumento ";
     $query .= "WHERE idpresupuesto = " . $d->id;
     $db->doQuery($query);
@@ -492,9 +492,9 @@ $app->post('/u', function () {
     }
     $query = "UPDATE presupuesto SET ";
     $query .= "fechasolicitud = '$d->fechasolicitudstr', idproyecto = $d->idproyecto, idempresa = $d->idempresa, idtipogasto = $d->idtipogasto, ";
-    $query .= "idmoneda = $d->idmoneda, notas = '$d->notas', fechamodificacion = NOW(), lastuser = $d->idusuario, ";
+    $query .= "idmoneda = $d->idmoneda, notas = '$d->notas', fechamodificacion = date_format(NOW(), '%Y-%m-%d'), lastuser = $d->idusuario, ";
     $query .= "idproveedor = $d->idproveedor, idsubtipogasto = $d->idsubtipogasto, coniva = $d->coniva, escontado = 0, monto = '$d->monto', tipocambio = $d->tipocambio, origenprov = $d->origenprov, ";
-    $query .= "tipodocumento = $d->tipodocumento ";
+    $query .= "tipodocumento = $d->tipodocumento, total = '$d->monto' ";
     $query .= "WHERE id = " . $d->id;
     // echo $query; return;
     $db->doQuery($query);
