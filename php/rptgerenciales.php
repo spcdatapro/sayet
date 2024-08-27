@@ -111,9 +111,9 @@ $app->post('/finanzas', function(){
                 MONTH(b.fechaingreso) AS mes,
                 c.codigo,
                 UPPER(c.nombrecta) AS nombrecta,
-                DATE_FORMAT(e.fecha, '%d/%m/%Y') AS fechatran,
-                CONCAT(e.tipotrans, ' ', e.numero) AS cheque,
-                SUBSTRING(e.beneficiario, 1, 30) AS beneficiario,
+                d.fecha AS fechatran,
+                d.cheque AS cheque,
+                SUBSTRING(d.beneficiario, 1, 30) AS beneficiario,
                 IFNULL(CONCAT(f.idpresupuesto, '-', f.correlativo),
                         '') AS orden,
                 SUBSTRING(LOWER(b.conceptomayor), 1, 65) AS concepto,
@@ -128,9 +128,11 @@ $app->post('/finanzas', function(){
                     INNER JOIN
                 cuentac c ON a.idcuentac = c.id
                     LEFT JOIN
-                detpagocompra d ON d.idcompra = b.id
-                    LEFT JOIN
-                tranban e ON d.idtranban = e.id
+                (SELECT a.idcompra, GROUP_CONCAT(b.tipotrans, '-', b.numero) AS cheque, DATE_FORMAT(b.fecha, '%d/%m/%Y') AS fecha, b.beneficiario 
+                FROM detpagocompra a INNER JOIN tranban b ON a.idtranban = b.id GROUP BY a.idcompra) d ON d.idcompra = b.id  
+                -- detpagocompra d ON d.idcompra = b.id
+                --     LEFT JOIN
+                -- tranban e ON d.idtranban = e.id
                     LEFT JOIN
                 detpresupuesto f ON b.ordentrabajo = f.id
                     INNER JOIN
@@ -253,6 +255,7 @@ $app->post('/finanzas', function(){
                     AND MONTH(a.fecha) <= $d->mesal
                     AND DAY(a.fecha) >= 16
                     AND YEAR(a.fecha) = $d->anio
+                    AND a.descigss > 0
             UNION ALL SELECT 
                 9999 AS id,
                 MONTH(a.fecha) AS mes,
@@ -281,6 +284,61 @@ $app->post('/finanzas', function(){
                     AND DAY(a.fecha) = 15
                     AND YEAR(a.fecha) = $d->anio
                     AND a.esbonocatorce = 1
+            UNION ALL SELECT 
+                9999 AS id,
+                MONTH(a.fecha) AS mes,
+                5120101 AS codigo,
+                'SALARIOS' AS nombrecta,
+                NULL AS fechatran,
+                NULL AS cheque,
+                NULL AS beneficiario,
+                NULL AS orden,
+                'Aguinaldo' AS concepto,
+                NULL AS fechafact,
+                NULL AS documento,
+                ROUND(a.aguinaldo, 2) AS total,
+                a.idplnempleado AS ord
+            FROM
+                plnnomina a
+                    INNER JOIN
+                plnempleado b ON a.idplnempleado = b.id
+                    LEFT JOIN
+                unidad c ON b.idunidad = c.id
+            WHERE
+                a.idempresa = $d->idempresa AND b.idproyecto = $d->idproyecto ";
+    $query.= isset($d->idunidad) ? "AND b.idunidad = $d->idunidad " : "";
+    $query.="       AND MONTH(a.fecha) >= $d->mesdel
+                    AND MONTH(a.fecha) <= $d->mesal
+                    AND DAY(a.fecha) = 15
+                    AND YEAR(a.fecha) = $d->anio
+                    AND a.aguinaldo > 0
+            UNION ALL SELECT
+                    c.id AS id,
+                    MONTH(a.fecha) AS mes,
+                    c.codigo, 
+                    c.nombrecta AS nombrecta,
+                    DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fechatran,
+                    NULL AS cheque,
+                    SUBSTRING(a.concepto, 1, 30) AS beneficiario,
+                    NULL AS orden,
+                    b.conceptomayor AS concepto,
+                    NULL AS fechafact,
+                    a.id AS documento,
+                    ROUND(b.debe, 2) AS total,
+                    a.fecha AS ord
+                FROM
+                    directa a
+                        INNER JOIN
+                    detallecontable b ON a.id = b.idorigen
+                        INNER JOIN
+                    cuentac c ON c.id = b.idcuenta
+                WHERE
+                    a.idempresa = $d->idempresa AND a.idproyecto = $d->idproyecto 
+                    AND MONTH(a.fecha) >= $d->mesdel
+                    AND MONTH(a.fecha) <= $d->mesal
+                    AND YEAR(a.fecha) = $d->anio
+                    AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%')
+                    AND b.debe > 0
             ORDER BY 2 ASC, 1 ASC, 13 ASC, 5 DESC, 7 ASC";
     $data_c = $db->getQuery($query);
 
