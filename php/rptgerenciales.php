@@ -333,7 +333,7 @@ $app->post('/finanzas', function(){
                         INNER JOIN
                     cuentac c ON c.id = b.idcuenta
                 WHERE
-                    a.idempresa = $d->idempresa AND a.idproyecto = $d->idproyecto 
+                    a.idempresa = $d->idempresa AND b.idproyecto = $d->idproyecto 
                     AND MONTH(a.fecha) >= $d->mesdel
                     AND MONTH(a.fecha) <= $d->mesal
                     AND YEAR(a.fecha) = $d->anio
