@@ -11,7 +11,7 @@ require(PLNPATH . '/Principal.php');
 require(PLNPATH . '/models/Empleado.php');
 require(PLNPATH . '/models/General.php');
 require(PLNPATH . '/models/Prestamo.php');
-require_once(BASEPATH . '/libs/tcpdf/tcpdf.php');
+// require_once(BASEPATH . '/libs/tcpdf/tcpdf.php');
 
 $app = new \Slim\Slim();
 
