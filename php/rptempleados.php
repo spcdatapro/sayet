@@ -1161,7 +1161,40 @@ $app->post('/prestamos', function(){
     // e = proyecto opcional (id, nombre proyecto)
     // f = plnpresabono (monto de descuentos adicionales)
     // codicion empresa = 4 | saldo > 0 
-    $query = "";
+    $query = "SELECT 
+    d.id AS idempresa,
+    IFNULL(d.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
+    d.numeropat AS numero,
+    d.abreviatura,
+    c.idproyecto,
+    IFNULL(e.nomproyecto, 'NO ESPECIFICADO') AS proyecto,
+    c.id AS idempleado,
+    CONCAT(c.nombre, ' ', IFNULL(c.apellidos, '')) AS nombre,
+    a.id AS idprestamo,
+    DATE_FORMAT(a.fecha, '%d/%m/%y') AS fecha,
+    a.cuotamensual AS cuotamensual,
+    a.monto AS saldoanterior,
+    a.saldo AS saldoactual,
+    b.monto AS descadicional,
+    IFNULL(f.descripcion, 'NO ESPECIFICADO') AS puesto
+FROM
+    plnprestamo a
+        LEFT JOIN
+    plnpresabono b ON b.idplnprestamo = a.id
+        INNER JOIN
+    plnempleado c ON a.idplnempleado = c.id
+        LEFT JOIN
+    plnempresa d ON c.idempresadebito = d.id
+        LEFT JOIN
+    proyecto e ON c.idproyecto = e.id
+        LEFT JOIN
+    plnpuesto f ON c.idplnpuesto = f.id
+WHERE
+    a.finalizado = 0 AND a.anulado = 0
+        AND a.saldo > 0
+ORDER BY 2 , 8";
+$query.= isset($d->idempresa) ? "AND c.idempresadebito = $d->idempresa " : "";
+$query.= isset($d->idempleado) ? "AND b.idplnempleado = $d->idempleado " : "";
     echo $query; return;
     $data = $db->getQuery($query);
 
