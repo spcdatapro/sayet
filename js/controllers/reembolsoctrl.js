@@ -50,6 +50,8 @@
             $scope.ot = {};
             var prov = { id: 0, concepto: null, retensionisr: 0 };
             $scope.ots = [];
+            $scope.creador_compra = undefined;
+            $scope.ultimo_compra = undefined;
 
             $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap()
                 .withBootstrapOptions({
@@ -288,11 +290,17 @@
             };
 
             $scope.getReembolso = function (idreembolso, idot) {
+                $scope.creador = undefined;
+                $scope.ultimo_usuario = undefined;
                 $scope.resetCompra();
                 $scope.detcontreem = [];
                 reembolsoSrvc.getReembolso(idreembolso, idot).then(function (d) {
                     if (d.length > 0) {
                         $scope.reembolso = procDataReemb(d)[0];
+                        authSrvc.getPerfil($scope.reembolso.idusuario).then((usr) => { $scope.creador = usr[0].iniciales });
+                        if ($scope.reembolso.ultusuario > 0) {
+                            authSrvc.getPerfil($scope.reembolso.ultusuario).then((usr) => { $scope.ultimo_usuario = usr[0].iniciales });
+                        }
                         $scope.reembolso.objTipoReembolso = $filter('getById')($scope.tiposreembolso, $scope.reembolso.idtiporeembolso);
                         $scope.reembolso.objBeneficiario = [$filter('getById')($scope.beneficiarios, $scope.reembolso.idbeneficiario)];
                         $scope.reemstr = $scope.reembolso.tipo + ', No. ' + $filter('padNumber')($scope.reembolso.id, 5) + ', Iniciando el ' + moment($scope.reembolso.finicio).format('DD/MM/YYYY') + ', ' + $scope.reembolso.beneficiario;
@@ -332,6 +340,7 @@
                 obj.idsubtipogasto = obj.idsubtipogasto != null && obj.idsubtipogasto != undefined && +obj.idtiporeembolso == 1 ? obj.idsubtipogasto : 0;
                 obj.idcuentaliq = !!obj.idcuentaliq ? obj.idcuentaliq : 0;
                 obj.ordentrabajo = obj.ordentrabajo != null && obj.ordentrabajo != undefined ? obj.ordentrabajo : 0;
+                obj.idusuario = $scope.uid;
                 reembolsoSrvc.editRow(obj, 'c').then(function (d) {
                     $scope.getLstReembolsos();
                     $scope.getReembolso(parseInt(d.lastid));
@@ -348,6 +357,7 @@
                 obj.idsubtipogasto = obj.idsubtipogasto != null && obj.idsubtipogasto != undefined && +obj.idtiporeembolso == 1 ? obj.idsubtipogasto : 0;
                 obj.idcuentaliq = !!obj.idcuentaliq ? obj.idcuentaliq : 0;
                 obj.ordentrabajo = obj.ordentrabajo != null && obj.ordentrabajo != undefined ? obj.ordentrabajo : 0;
+                obj.idusuario = $scope.uid;
                 reembolsoSrvc.editRow(obj, 'u').then(function () {
                     $scope.getLstReembolsos();
                 });
@@ -505,8 +515,14 @@
             };
 
             $scope.getCompra = function (obj, evento, subir) {
+                $scope.creador_compra = undefined;
+                $scope.ultimo_compra = undefined;
                 reembolsoSrvc.getCompra(obj.id).then(function (d) {
                     $scope.compra = procDataCompras(d)[0];
+                    authSrvc.getPerfil($scope.compra.idusuario).then((usr) => { $scope.creador_compra = usr[0].iniciales });
+                    if ($scope.compra.ultusuario > 0) {
+                        authSrvc.getPerfil($scope.compra.ultusuario).then((usr) => { $scope.ultimo_compra = usr[0].iniciales });
+                    }
                     $scope.compra.objTipoFactura = $filter('getById')($scope.tiposfactura, $scope.compra.idtipofactura);
                     $scope.compra.objTipoCompra = $filter('getById')($scope.tiposcompra, $scope.compra.idtipocompra);
                     $scope.compra.objTipoCombustible = $filter('getById')($scope.combustibles, $scope.compra.idtipocombustible);
@@ -646,6 +662,7 @@
                 obj.idtipocombustible = obj.objTipoCombustible != null && obj.objTipoCombustible != undefined ? (obj.objTipoCombustible.id != null && obj.objTipoCombustible.id != undefined ? parseInt(obj.objTipoCombustible.id) : 0) : 0;
                 obj.retenerisr = obj.retenerisr != null && obj.retenerisr != undefined ? obj.retenerisr : 0;
                 obj.ordentrabajo = $scope.reembolso.ordentrabajo;
+                obj.idusuario = $scope.uid;
                 $scope.existeProveedor(obj.nit, obj.proveedor);
                 getCuentaGastoProv(obj, 'cd');
                 /*
@@ -664,6 +681,7 @@
                 obj.ordentrabajo = $scope.reembolso.ordentrabajo;
                 obj.idtipocombustible = obj.objTipoCombustible != null && obj.objTipoCombustible != undefined ? (obj.objTipoCombustible.id != null && obj.objTipoCombustible.id != undefined ? parseInt(obj.objTipoCombustible.id) : 0) : 0;
                 obj.retenerisr = obj.retenerisr != null && obj.retenerisr != undefined ? obj.retenerisr : 0;
+                obj.idusuario = $scope.uid;
                 $scope.existeProveedor(obj.nit, obj.proveedor);
                 getCuentaGastoProv(obj, 'ud');
                 /*

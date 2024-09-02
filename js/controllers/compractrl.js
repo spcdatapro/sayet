@@ -46,6 +46,9 @@
             $scope.liquida = false;
             $scope.servicios = [];
             $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
+            $scope.usuario = undefined;
+            $scope.creador = undefined;
+            $scope.ultimo_usuario = undefined;
 
             empresaSrvc.lstEmpresas().then(function (d) { $scope.lasEmpresas = d; });
             tipoCambioSrvc.getLastTC().then(function (d) { $scope.tipocambiogt = +d.lasttc; });
@@ -64,6 +67,7 @@
             });
 
             authSrvc.getSession().then(function (usrLogged) {
+                $scope.usuario = usrLogged;
                 if (parseInt(usrLogged.workingon) > 0) {
                     empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function (d) {
                         $scope.laCompra.objEmpresa = d[0];
@@ -452,6 +456,8 @@
             formatoNumero = (numero, decimales) => $filter('number')(numero, decimales);
 
             $scope.getCompra = function (idcomp, idot) {
+                $scope.creador = undefined;
+                $scope.ultimo_usuario = undefined;
                 $scope.losDetCont = [];
                 $scope.ots = [];
                 $scope.elDetCont = { debe: 0.0, haber: 0.0, objCuenta: undefined, idcuenta: undefined };
@@ -459,6 +465,10 @@
                 compraSrvc.getCompra(idcomp, idot).then((d) => {
                     if (d.length > 0) {
                         $scope.laCompra = procDataCompras(d)[0];
+                        authSrvc.getPerfil($scope.laCompra.idusuario).then((usr) => { $scope.creador = usr[0].iniciales });
+                        if ($scope.laCompra.ultusuario > 0) { 
+                            authSrvc.getPerfil($scope.laCompra.ultusuario).then((usr) => { $scope.ultimo_usuario = usr[0].iniciales });
+                        }
                         $scope.laCompra.objProveedor = $filter('getById')($scope.losProvs, $scope.laCompra.idproveedor);
                         $scope.loadFacturas($scope.laCompra.idproveedor);
                         $scope.laCompra.objMoneda = $filter('getById')($scope.monedas, $scope.laCompra.idmoneda);
@@ -616,6 +626,7 @@
                 obj.ffin = obj.ffin !== null && obj.ffin !== undefined ? dateToStr(obj.ffin) : null;
                 obj.fini = obj.fini !== null && obj.fini !== undefined ? dateToStr(obj.fini) : null;
                 obj.fven = obj.fven !== null && obj.fven !== undefined ? dateToStr(obj.fven) : null;
+                obj.idusuario = $scope.usuario.uid;
                 return obj;
             }
 

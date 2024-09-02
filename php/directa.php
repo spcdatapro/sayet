@@ -21,7 +21,7 @@ $app->post('/lstdirectas', function(){
 
 $app->get('/getdirecta/:iddirecta', function($iddirecta){
     $db = new dbcpm();
-    $query = "SELECT id, idempresa, fecha, concepto, idproyecto FROM directa WHERE id = $iddirecta";
+    $query = "SELECT id, idempresa, fecha, concepto, idproyecto, idusuario, ultusuario FROM directa WHERE id = $iddirecta";
     print $db->doSelectASJson($query);
 });
 
@@ -30,7 +30,7 @@ $app->post('/c', function(){
     $db = new dbcpm();
     if(!isset($d->idproyecto)) { $d->idproyecto = 0; };
     $concepto = $d->concepto == '' ? "NULL" : "'$d->concepto'";
-    $query = "INSERT INTO directa(idempresa, fecha, concepto, idproyecto) VALUES($d->idempresa,'$d->fechastr', $concepto, $d->idproyecto)";
+    $query = "INSERT INTO directa(idempresa, fecha, concepto, idproyecto, idusuario) VALUES($d->idempresa,'$d->fechastr', $concepto, $d->idproyecto, $d->idusuario)";
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
 });
@@ -40,7 +40,7 @@ $app->post('/u', function(){
     $db = new dbcpm();
     if(!isset($d->idproyecto)) { $d->idproyecto = 0; };
     $concepto = $d->concepto == '' ? "NULL" : "'$d->concepto'";
-    $query = "UPDATE directa SET fecha = '$d->fechastr', concepto = $concepto, idproyecto = $d->idproyecto WHERE id = $d->id";
+    $query = "UPDATE directa SET fecha = '$d->fechastr', concepto = $concepto, idproyecto = $d->idproyecto, ultusuario = $d->idusuario WHERE id = $d->id";
     $db->doQuery($query);
 });
 
@@ -52,11 +52,13 @@ $app->post('/d', function(){
 });
 
 //API para impresion de partidas directas
-$app->get('/print/:iddirecta', function($iddirecta) {
+$app->get('/print/:iddirecta/:iniciales', function($iddirecta, $iniciales) {
     $db = new dbcpm();
 
     $query = "SELECT DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS fecha";
     $generales = $db->getQuery($query)[0];
+
+    $generales->usuario = $iniciales != 'undefined'  ? $iniciales : 'N/E';
 
     $query = "SELECT a.id, a.idempresa, b.nomempresa, b.abreviatura, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.concepto, c.nomproyecto AS proyecto ";
     $query.= "FROM directa a INNER JOIN empresa b ON b.id = a.idempresa LEFT JOIN proyecto c ON c.id = a.idproyecto ";

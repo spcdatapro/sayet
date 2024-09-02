@@ -61,6 +61,9 @@
         $scope.presupuesto = {};
         $scope.ot = {};
         $scope.cargando = false;
+        $scope.usuario = {};
+        $scope.creador = undefined;
+        $scope.ultimo_usuario = undefined;
 
 
         //Infinite Scroll Magic
@@ -92,6 +95,7 @@
         razonAnulacionSrvc.lstRazones().then(function (d) { $scope.razonesanula = d; });
 
         authSrvc.getSession().then(async function (usrLogged) {
+            $scope.usuario = usrLogged;
             $scope.uid = +usrLogged.uid;
             await $scope.esDePresupuesto();
             // console.log($scope.presupuesto);
@@ -365,6 +369,7 @@
             obj.isr = obj.isr != null && obj.isr !== undefined ? obj.isr : 0.00;
             obj.montocalcisr = obj.montocalcisr != null && obj.montocalcisr !== undefined ? obj.montocalcisr : 0.00;
             obj.idrecibocli = obj.recibocli != null && obj.recibocli !== undefined ? obj.recibocli : 0;
+            obj.idusuario = $scope.usuario.uid;
             // console.log(obj); return;
             tranBancSrvc.editRow(obj, 'c').then(function (d) {
                 $scope.getLstTran();
@@ -471,6 +476,8 @@
 
         $scope.getDataTran = function (idtran) {
             $scope.editando = true;
+            $scope.creador = undefined;
+            $scope.ultimo_usuario = undefined;
             $scope.liquidacion = [];
             $scope.cargando = true;
             tranBancSrvc.getTransaccion(parseInt(idtran)).then(function (d) {
@@ -492,6 +499,11 @@
                     $scope.laTran.objTipotrans = res[0];
                     tipoDocSopTBSrvc.lstTiposDocTB(parseInt(res[0].id)).then(function (d) { $scope.losTiposDocTB = d; });
                 });
+
+                authSrvc.getPerfil($scope.laTran.idusuario).then((usr) => { $scope.creador = usr[0].iniciales });
+                if ($scope.laTran.ultusuario > 0) { 
+                    authSrvc.getPerfil($scope.laTran.ultusuario).then((usr) => { $scope.ultimo_usuario = usr[0].iniciales });
+                }
 
                 getLstDocsSoporte(idtran);
 
@@ -578,6 +590,7 @@
             data.iddetpagopresup = data.iddetpagopresup != null && data.iddetpagopresup !== undefined ? data.iddetpagopresup : 0;
             data.idproyecto = data.idproyecto != null && data.idproyecto !== undefined ? data.idproyecto : 0;
             data.iddocliquida = data.iddocliquida != null && data.iddocliquida !== undefined ? data.iddocliquida : 0;
+            data.idusuario = $scope.usuario.uid;
             tranBancSrvc.editRow(data, 'u').then(function () {
                 $scope.laTran = {
                     objBanco: data.objBanco,
@@ -790,7 +803,7 @@
             });
         };
 
-        $scope.printNota = (idtranban) => jsReportSrvc.getPDFReport('HJOc0ctkC', { idtran: idtranban }).then((pdf) => $window.open(pdf));
+        $scope.printNota = (idtranban) => jsReportSrvc.getPDFReport('HJOc0ctkC', { idtran: idtranban, creado: $scope.creador }).then((pdf) => $window.open(pdf));
 
         $scope.existe = function (numero) {
             if (numero > 0) {

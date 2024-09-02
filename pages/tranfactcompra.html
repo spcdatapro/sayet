@@ -318,13 +318,15 @@
                                     <label for="txtISR">I.S.R.:</label>
                                     <div class="input-group">
                                         <div class="input-group-btn btn-group">
-                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                                                ng-disabled="periodoCerrado || !laCompra.isr">
+                                            <button type="button" class="btn btn-default dropdown-toggle"
+                                                data-toggle="dropdown" ng-disabled="periodoCerrado || !laCompra.isr">
                                                 <span class="glyphicon glyphicon-pencil"></span>
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li><a ng-click="modISR(true)"><span class="glyphicon glyphicon-arrow-up"></span></a></li>
-                                                <li><a ng-click="modISR(false)"><span class="glyphicon glyphicon-arrow-down"></span></a></li>
+                                                <li><a ng-click="modISR(true)"><span
+                                                            class="glyphicon glyphicon-arrow-up"></span></a></li>
+                                                <li><a ng-click="modISR(false)"><span
+                                                            class="glyphicon glyphicon-arrow-down"></span></a></li>
                                             </ul>
                                         </div>
                                         <input name="txtISR" id="txtISR" type="text" class="form-control"
@@ -379,13 +381,15 @@
                                     <label for="retIVA">Ret. IVA</label>
                                     <div class="input-group">
                                         <div class="input-group-btn btn-group">
-                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                                                ng-disabled="periodoCerrado || !laCompra.retiva">
+                                            <button type="button" class="btn btn-default dropdown-toggle"
+                                                data-toggle="dropdown" ng-disabled="periodoCerrado || !laCompra.retiva">
                                                 <span class="glyphicon glyphicon-pencil"></span>
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li><a ng-click="modRIVA(true)"><span class="glyphicon glyphicon-arrow-up"></span></a></li>
-                                                <li><a ng-click="modRIVA(false)"><span class="glyphicon glyphicon-arrow-down"></span></a></li>
+                                                <li><a ng-click="modRIVA(true)"><span
+                                                            class="glyphicon glyphicon-arrow-up"></span></a></li>
+                                                <li><a ng-click="modRIVA(false)"><span
+                                                            class="glyphicon glyphicon-arrow-down"></span></a></li>
                                             </ul>
                                         </div>
                                         <input name="retIVA" id="retIVA" type="text" class="form-control"
@@ -510,37 +514,41 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="btn-group" role="group" aria-label="...">
-                            <button type="submit" class="btn btn-primary"
-                                ng-disabled="frmCompra.$invalid || periodoCerrado" ng-hide="editando">
-                                <span class="glyphicon glyphicon-floppy-save"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary"
-                                ng-disabled="frmCompra.$invalid || periodoCerrado" ng-show="editando"
-                                ng-click="updCompra(laCompra)">
-                                <span class="glyphicon glyphicon-floppy-save"></span>
-                            </button>
-                            <!--
-                            <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printVersion(laCompra)">
-                                <span class="glyphicon glyphicon-print"></span>
-                            </button>
-                            -->
-                            <button type="button" class="btn btn-danger" ng-disabled="yaPagada || periodoCerrado"
-                                ng-show="editando" ng-click="delCompra(laCompra)">
-                                <span class="glyphicon glyphicon-trash"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary" ng-disabled="frmCompra.$invalid"
-                                ng-show="editando" ng-click="resetCompra()">
-                                <span class="glyphicon glyphicon-plus"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary" ng-show="+laCompra.id > 0"
-                                ng-click="bindCheque()">
-                                <span class="glyphicon glyphicon-list"></span>
-                            </button>
-                            <a href="/sayet/php/compra.php/comprobante/{{laCompra.id}}" target="_blank"
-                                class="btn btn-default">
-                                <span class="glyphicon glyphicon-print"></span> Comprobante
-                            </a>
+                        <div class="row">
+                            <div class="col-md-10">
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <button type="submit" class="btn btn-primary"
+                                        ng-disabled="frmCompra.$invalid || periodoCerrado" ng-hide="editando">
+                                        <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary"
+                                        ng-disabled="frmCompra.$invalid || periodoCerrado" ng-show="editando"
+                                        ng-click="updCompra(laCompra)">
+                                        <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-danger"
+                                        ng-disabled="yaPagada || periodoCerrado" ng-show="editando"
+                                        ng-click="delCompra(laCompra)">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary" ng-disabled="frmCompra.$invalid"
+                                        ng-show="editando" ng-click="resetCompra()">
+                                        <span class="glyphicon glyphicon-plus"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary" ng-show="+laCompra.id > 0"
+                                        ng-click="bindCheque()">
+                                        <span class="glyphicon glyphicon-list"></span>
+                                    </button>
+                                    <a href="/sayet/php/compra.php/comprobante/{{laCompra.id}}" target="_blank"
+                                        class="btn btn-default">
+                                        <span class="glyphicon glyphicon-print"></span> Comprobante
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-2" ng-show="creador" style="text-align: right;">
+                                <div ng-show="creador">Creado por: {{creador}}</div>
+                                <div ng-show="ultimo_usuario">Ultima modificación: {{ultimo_usuario}}</div>
+                            </div>
                         </div>
                     </form>
                     <hr />

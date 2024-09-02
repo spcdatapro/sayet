@@ -50,28 +50,37 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="btn-group" role="group" aria-label="...">
-                            <button type="submit" class="btn btn-primary"
-                                ng-disabled="frmDirecta.$invalid || periodoCerrado" ng-hide="editando">
-                                <span class="glyphicon glyphicon-floppy-save"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary"
-                                ng-disabled="frmDirecta.$invlaid || periodoCerrado" ng-show="editando"
-                                ng-click="updDirecta(laDirecta)">
-                                <span class="glyphicon glyphicon-floppy-save"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printDirecta()">
-                                <span class="glyphicon glyphicon-print"></span>
-                            </button>
-                            <button type="button" class="btn btn-danger"
-                                ng-disabled="frmDirecta.$invlaid || periodoCerrado" ng-show="editando"
-                                ng-click="delDirecta(laDirecta.id)">
-                                <span class="glyphicon glyphicon-trash"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary" ng-disabled="frmDirecta.$invalid"
-                                ng-show="editando" ng-click="resetDirecta()">
-                                <span class="glyphicon glyphicon-plus"></span>
-                            </button>
+                        <div class="row">
+                            <div class="col-md-10">
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <button type="submit" class="btn btn-primary"
+                                        ng-disabled="frmDirecta.$invalid || periodoCerrado" ng-hide="editando">
+                                        <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary"
+                                        ng-disabled="frmDirecta.$invlaid || periodoCerrado" ng-show="editando"
+                                        ng-click="updDirecta(laDirecta)">
+                                        <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary" ng-show="editando"
+                                        ng-click="printDirecta()">
+                                        <span class="glyphicon glyphicon-print"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-danger"
+                                        ng-disabled="frmDirecta.$invlaid || periodoCerrado" ng-show="editando"
+                                        ng-click="delDirecta(laDirecta.id)">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary" ng-disabled="frmDirecta.$invalid"
+                                        ng-show="editando" ng-click="resetDirecta()">
+                                        <span class="glyphicon glyphicon-plus"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-2" ng-show="creador" style="text-align: right;">
+                                <div ng-show="creador">Creado por: {{creador}}</div>
+                                <div ng-show="ultimo_usuario">Ultima modificación: {{ultimo_usuario}}</div>
+                            </div>
                         </div>
                     </form>
                     <hr />
@@ -182,7 +191,8 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="selProyecto" class="control-label">Proyecto (dejar vacío si no aplica):</label>
+                                    <label for="selProyecto" class="control-label">Proyecto (dejar vacío si no
+                                        aplica):</label>
                                     <select name="selProyecto" id="selProyecto" class="form-control"
                                         ng-model="elDetCont.idproyecto"
                                         ng-options="obj.id as obj.nomproyecto for obj in proyectos"></select>

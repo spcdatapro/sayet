@@ -88,7 +88,7 @@ $app->get('/lstpresupuestospend(/:idusr)', function ($idusr = 0) {
         INNER JOIN usuario i ON i.id = b.idusuario
         WHERE a.idestatuspresupuesto = 2 AND a.origenprov = 2 ";
     $query .= $limiteot > 0 ? "AND (a.monto * a.tipocambio) <= $limiteot " : '';
-    $query .= "ORDER BY 1, 2, 3";
+    $query .= "ORDER BY 1, 2, 3 LIMIT 10";
     print $db->doSelectASJson(trim($query));
 });
 
@@ -1537,6 +1537,7 @@ $app->post('/prtaprobacion', function() {
     $datos->moneda_ant = $d->idmoneda == 1 ? 'Q' : '$';
 
     $datos->observaciones = $d->notas;
+    $datos->usuario = $d->iniciales;
 
     print json_encode([ 'datos' => $datos ]);
 });

@@ -302,11 +302,11 @@
                     id: id,
                     presupuesto: presupuesto != null ? presupuesto : id,
                     correlativo: correlativo != null ? correlativo : 1,
-                    tipocambiogt: $scope.tipocambiogt
+                    tipocambiogt: $scope.tipocambiogt,
+                    usuario: $scope.usrdata
                 }
             });
             modal.result.then(function (params) {
-                console.log(params);
                 var rpt = 'ByZxeQixp';
                 jsReportSrvc.getPDFReport(rpt, params).then(function (pdf) { $window.open(pdf); });
             });
@@ -1028,15 +1028,12 @@
 
     }]);
 
-    // _______________________________________________________________________________________________________________________
-    presupuestoctrl.controller('prntAprobacionCtrl', ['$scope', '$uibModalInstance', 'id', 'presupuesto', 'correlativo',
-        'tipocambiogt', 'presupuestoSrvc', function ($scope, $uibModalInstance, id, presupuesto, correlativo, tipocambiogt,
-            presupuestoSrvc) {
+    // _____________________________________________________________________________________________________________________________________________________________
+    presupuestoctrl.controller('prntAprobacionCtrl', ['$scope', '$uibModalInstance', 'id', 'presupuesto', 'correlativo', 'tipocambiogt', 
+        'usuario', 'presupuestoSrvc', function ($scope, $uibModalInstance, id, presupuesto, correlativo, tipocambiogt, usuario, presupuestoSrvc) {
 
             $scope.ot = { correlativo: correlativo, presupuesto: presupuesto };
-            $scope.params = {
-                id: id, correlativo: correlativo, idpresupuesto: presupuesto, total: 0, tc: 1.00
-            };
+            $scope.params = { id: id, correlativo: correlativo, idpresupuesto: presupuesto, total: 0, tc: 1.00, iniciales: usuario.iniciales };
 
             $scope.tipocambiogt = tipocambiogt;
 
@@ -1055,7 +1052,7 @@
                 $scope.params.tc = +$scope.ot.tipocambio;
                 $scope.params.notas = "PAGO FINAL ";
                 } else {
-                    $scope.params = { id: id, correlativo: correlativo, idpresupuesto: presupuesto, tc: 1.00 };
+                    $scope.params = { id: id, correlativo: correlativo, idpresupuesto: presupuesto, tc: 1.00, iniciales: usuario.iniciales };
                 }
             }
 

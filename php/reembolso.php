@@ -46,7 +46,7 @@ $app->get('/getreembolso/:idreembolso(/:idot)', function($idreembolso, $idot = 0
     $idot = (int)$idot;
     $query = "SELECT a.id, a.idempresa, a.idtiporeembolso, b.desctiporeembolso AS tipo, a.finicio, a.ffin, a.beneficiario, ";
     $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto, a.idcuentaliq, a.ordentrabajo, ";
-    $query.= "a.idproyecto, a.pagado ";
+    $query.= "a.idproyecto, a.pagado, a.idusuario, a.ultusuario ";
     $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso ";
     $query.= "LEFT JOIN (SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) c ON a.id = c.idreembolso ";
     $query.= "WHERE ";
@@ -83,9 +83,9 @@ $app->post('/c', function(){
     if(!isset($d->idproyecto)) { $d->idproyecto = 0; }
     $db = new dbcpm();
     $fftmp = $d->ffinstr == '' ? 'NULL' : "'".$d->ffinstr."'";
-    $query = "INSERT INTO reembolso(idempresa, finicio, ffin, beneficiario, idbeneficiario, tblbeneficiario, estatus, idtiporeembolso, fondoasignado, idsubtipogasto, idcuentaliq, ordentrabajo, idproyecto) VALUES(";
+    $query = "INSERT INTO reembolso(idempresa, finicio, ffin, beneficiario, idbeneficiario, tblbeneficiario, estatus, idtiporeembolso, fondoasignado, idsubtipogasto, idcuentaliq, ordentrabajo, idproyecto, idusuario) VALUES(";
     $query.= "$d->idempresa, '$d->finiciostr', ".$fftmp.", '$d->beneficiario', $d->idbeneficiario, ";
-    $query.= "'$d->tblbeneficiario', 1, $d->idtiporeembolso, $d->fondoasignado, $d->idsubtipogasto, $d->idcuentaliq, $d->ordentrabajo, $d->idproyecto";
+    $query.= "'$d->tblbeneficiario', 1, $d->idtiporeembolso, $d->fondoasignado, $d->idsubtipogasto, $d->idcuentaliq, $d->ordentrabajo, $d->idproyecto, $d->idusuario";
     $query.=")";
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
@@ -99,7 +99,8 @@ $app->post('/u', function(){
     $fftmp = $d->ffinstr == '' ? 'NULL' : "'".$d->ffinstr."'";
     $query = "UPDATE reembolso SET finicio = '$d->finiciostr', ffin = ".$fftmp.", beneficiario = '$d->beneficiario', ";
     $query.= "idbeneficiario = $d->idbeneficiario, tblbeneficiario = '$d->tblbeneficiario', idtiporeembolso = $d->idtiporeembolso, ";
-    $query.= "fondoasignado = $d->fondoasignado, idsubtipogasto = $d->idsubtipogasto, idcuentaliq = $d->idcuentaliq, ordentrabajo = $d->ordentrabajo, idproyecto = $d->idproyecto ";
+    $query.= "fondoasignado = $d->fondoasignado, idsubtipogasto = $d->idsubtipogasto, idcuentaliq = $d->idcuentaliq, ordentrabajo = $d->ordentrabajo, idproyecto = $d->idproyecto, ";
+    $query.= "ultusuario = $d->idusuario ";
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
 });
@@ -183,7 +184,8 @@ $app->get('/getcomp/:idcomp', function($idcomp){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idempresa, a.idreembolso, a.idtipofactura, d.desctipofact AS tipofactura, a.proveedor, a.nit, a.serie, a.documento, ";
     $query.= "a.fechaingreso, a.mesiva, a.fechafactura, a.idtipocompra, b.desctipocompra AS tipocompra, a.totfact, a.iva, a.idmoneda, c.simbolo, a.tipocambio, ";
-    $query.= "a.idproveedor, a.subtotal, a.noafecto, a.conceptomayor, a.retenerisr, a.isr, a.idp, a.galones, a.idtipocombustible, a.revisada, a.idproyecto, a.idsubtipogasto, a.idunidad, a.retiva ";
+    $query.= "a.idproveedor, a.subtotal, a.noafecto, a.conceptomayor, a.retenerisr, a.isr, a.idp, a.galones, a.idtipocombustible, a.revisada, a.idproyecto, a.idsubtipogasto, a.idunidad, a.retiva, ";
+    $query.= "a.idusuario, a.ultusuario ";
     $query.= "FROM compra a INNER JOIN tipocompra b ON b.id = a.idtipocompra INNER JOIN moneda c ON c.id = a.idmoneda ";
     $query.= "INNER JOIN tipofactura d ON d.id = a.idtipofactura ";
     $query.= "WHERE a.id = ".$idcomp;
@@ -320,12 +322,13 @@ $app->post('/cd', function(){
     $query.= "idempresa, idreembolso, idtipofactura, idproveedor, proveedor, ";
     $query.= "nit, serie, documento, fechaingreso, mesiva, ";
     $query.= "fechafactura, idtipocompra, totfact, noafecto, subtotal, iva, ";
-    $query.= "idmoneda, tipocambio, conceptomayor, retenerisr, isr, idp, galones, idtipocombustible, idproyecto, idsubtipogasto, idunidad, ordentrabajo, retiva";
+    $query.= "idmoneda, tipocambio, conceptomayor, retenerisr, isr, idp, galones, idtipocombustible, idproyecto, idsubtipogasto, idunidad, ordentrabajo, retiva, idusuario";
     $query.= ") VALUES(";
     $query.= $d->idempresa.", ".$d->idreembolso.", ".$d->idtipofactura.", ".$d->idproveedor.", '".$d->proveedor."', ";
     $query.= "'".$d->nit."', '".$d->serie."', ".$d->documento.", '".$d->fechaingresostr."', ".$d->mesiva.", ";
     $query.= "'".$d->fechafacturastr."', ".$d->idtipocompra.", ".$d->totfact.", ".$d->noafecto.", ".$d->subtotal.", ".$d->iva.", ";
-    $query.= $d->idmoneda.", ".$d->tipocambio.", '".$d->conceptomayor."', ".$d->retenerisr.", ".$d->isr.", $d->idp, $d->galones, $d->idtipocombustible, $d->idproyecto, $d->idsubtipogasto, $d->idunidad, $d->ordentrabajo, $d->retIva";
+    $query.= $d->idmoneda.", ".$d->tipocambio.", '".$d->conceptomayor."', ".$d->retenerisr.", ".$d->isr.", $d->idp, $d->galones, $d->idtipocombustible, $d->idproyecto, ";
+    $query.= "$d->idsubtipogasto, $d->idunidad, $d->ordentrabajo, $d->retIva, $d->idusuario";
     $query.= ")";
     $db->doQuery($query);
     $lastid = $db->getLastId();
@@ -370,7 +373,7 @@ $app->post('/ud', function(){
     $query.= "totfact = ".$d->totfact.", subtotal = ".$d->subtotal.", noafecto = ".$d->noafecto.", iva = ".$d->iva.", ";
     $query.= "idmoneda = ".$d->idmoneda.", tipocambio = ".$d->tipocambio.", conceptomayor = '".$d->conceptomayor."', idp = $d->idp, galones = $d->galones, ";
     $query.= "idtipocombustible = $d->idtipocombustible, idproyecto = $d->idproyecto, retenerisr = $d->retenerisr, isr = $d->isr, idsubtipogasto = $d->idsubtipogasto, idunidad = $d->idunidad, ";
-    $query.= "ordentrabajo = $d->ordentrabajo, retiva = $d->retIva ";
+    $query.= "ordentrabajo = $d->ordentrabajo, retiva = $d->retIva, ultusuario = $d->idusuario ";
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
 

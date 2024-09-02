@@ -9,7 +9,7 @@ $app->post('/auth', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
     $conn = $db->getConn();
-    $data = $conn->select('usuario',['id', 'nombre', 'usuario', 'correoe'], [
+    $data = $conn->select('usuario',['id', 'nombre', 'usuario', 'correoe', 'iniciales'], [
         'AND' => [
             'usuario' => $d->usr,
             'contrasenia' => $d->pwd
@@ -108,7 +108,7 @@ $app->get('/menu/:idusr', function($idusr){
 $app->get('/perfil/:idusr', function($idusr){
     $db = new dbcpm();
     $conn = $db->getConn();
-    $data = $conn->select('usuario', ['id', 'nombre', 'usuario', 'contrasenia', 'correoe'], ['id' => $idusr]);
+    $data = $conn->select('usuario', ['id', 'nombre', 'usuario', 'contrasenia', 'correoe', 'iniciales'], ['id' => $idusr]);
     print json_encode($data);
 });
 

@@ -197,53 +197,62 @@
                                 </table>
                             </div>
                         </div>
-                        <div class="btn-group" role="group" aria-label="...">
-                            <button type="submit" class="btn btn-primary"
-                                ng-disabled="frmReembolso.$invalid || !permiso.c || periodoCerrado"
-                                ng-hide="reembolso.id > 0">
-                                <span class="glyphicon glyphicon-floppy-save"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary"
-                                ng-disabled="frmReembolso.$invalid || !permiso.m || reembolso.estatus == 2 || periodoCerrado"
-                                ng-show="reembolso.id > 0" ng-click="updReembolso(reembolso)">
-                                <span class="glyphicon glyphicon-floppy-save"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary"
-                                ng-disabled="frmReembolso.$invalid || !permiso.m || reembolso.estatus == 2 || periodoCerrado"
-                                ng-show="reembolso.id > 0" ng-click="closeReembolso(reembolso)">
-                                <span class="glyphicon glyphicon-lock"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary"
-                                ng-disabled="frmReembolso.$invalid || !permiso.m || periodoCerrado || reembolso.pagado == 1"
-                                ng-show="reembolso.id > 0 && reembolso.estatus == 2"
-                                ng-click="genChequeReembolso(reembolso)">
-                                <span class="glyphicon glyphicon-credit-card"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary"
-                                ng-disabled="frmReembolso.$invalid || !permiso.m || tranban.length > 0 || periodoCerrado"
-                                ng-show="reembolso.id > 0 && reembolso.estatus == 2" ng-click="reabrirCC(reembolso)">
-                                <span class="glyphicon glyphicon-repeat"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary" ng-show="reembolso.id > 0"
-                                ng-click="printVersion()">
-                                <span class="glyphicon glyphicon-print"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary" ng-show="+reembolso.idempresa > 0"
-                                ng-click="printPendientes()">
-                                <span class="glyphicon glyphicon-print"></span>&nbsp;Pendientes
-                            </button>
-                            <button type="button" class="btn btn-primary" ng-click="printSinCtaDeLiquidacion()">
-                                <span class="glyphicon glyphicon-print"></span>&nbsp;Sin cta. de liquidación
-                            </button>
-                            <button type="button" class="btn btn-danger"
-                                ng-disabled="!permiso.e || reembolso.estatus == 2 || periodoCerrado"
-                                ng-show="reembolso.id > 0" ng-click="delReembolso(reembolso)">
-                                <span class="glyphicon glyphicon-trash"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary" ng-disabled="!permiso.c"
-                                ng-show="reembolso.id > 0" ng-click="resetReembolso()">
-                                <span class="glyphicon glyphicon-plus"></span>
-                            </button>
+                        <div class="row">
+                            <div class="col-md-10">
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <button type="submit" class="btn btn-primary"
+                                        ng-disabled="frmReembolso.$invalid || !permiso.c || periodoCerrado"
+                                        ng-hide="reembolso.id > 0">
+                                        <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary"
+                                        ng-disabled="frmReembolso.$invalid || !permiso.m || reembolso.estatus == 2 || periodoCerrado"
+                                        ng-show="reembolso.id > 0" ng-click="updReembolso(reembolso)">
+                                        <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary"
+                                        ng-disabled="frmReembolso.$invalid || !permiso.m || reembolso.estatus == 2 || periodoCerrado"
+                                        ng-show="reembolso.id > 0" ng-click="closeReembolso(reembolso)">
+                                        <span class="glyphicon glyphicon-lock"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary"
+                                        ng-disabled="frmReembolso.$invalid || !permiso.m || periodoCerrado || reembolso.pagado == 1"
+                                        ng-show="reembolso.id > 0 && reembolso.estatus == 2"
+                                        ng-click="genChequeReembolso(reembolso)">
+                                        <span class="glyphicon glyphicon-credit-card"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary"
+                                        ng-disabled="frmReembolso.$invalid || !permiso.m || tranban.length > 0 || periodoCerrado"
+                                        ng-show="reembolso.id > 0 && reembolso.estatus == 2"
+                                        ng-click="reabrirCC(reembolso)">
+                                        <span class="glyphicon glyphicon-repeat"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary" ng-show="reembolso.id > 0"
+                                        ng-click="printVersion()">
+                                        <span class="glyphicon glyphicon-print"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary" ng-show="+reembolso.idempresa > 0"
+                                        ng-click="printPendientes()">
+                                        <span class="glyphicon glyphicon-print"></span>&nbsp;Pendientes
+                                    </button>
+                                    <button type="button" class="btn btn-primary" ng-click="printSinCtaDeLiquidacion()">
+                                        <span class="glyphicon glyphicon-print"></span>&nbsp;Sin cta. de liquidación
+                                    </button>
+                                    <button type="button" class="btn btn-danger"
+                                        ng-disabled="!permiso.e || reembolso.estatus == 2 || periodoCerrado"
+                                        ng-show="reembolso.id > 0" ng-click="delReembolso(reembolso)">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary" ng-disabled="!permiso.c"
+                                        ng-show="reembolso.id > 0" ng-click="resetReembolso()">
+                                        <span class="glyphicon glyphicon-plus"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-2" ng-show="creador" style="text-align: right;">
+                                <div ng-show="creador">Creado por: {{creador}}</div>
+                                <div ng-show="ultimo_usuario">Ultima modificación: {{ultimo_usuario}}</div>
+                            </div>
                         </div>
                     </form>
                     <hr />
@@ -604,8 +613,10 @@
                                                 <span class="glyphicon glyphicon-pencil"></span>
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li><a ng-click="modRIVA(true)"><span class="glyphicon glyphicon-arrow-up"></span></a></li>
-                                                <li><a ng-click="modRIVA(false)"><span class="glyphicon glyphicon-arrow-down"></span></a></li>
+                                                <li><a ng-click="modRIVA(true)"><span
+                                                            class="glyphicon glyphicon-arrow-up"></span></a></li>
+                                                <li><a ng-click="modRIVA(false)"><span
+                                                            class="glyphicon glyphicon-arrow-down"></span></a></li>
                                             </ul>
                                         </div>
                                         <input name="txtRiva" id="txtRiva" type="number" class="form-control input-sm"
@@ -614,30 +625,40 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="btn-group" role="group" aria-label="...">
-                            <button type="submit" class="btn btn-primary"
-                                ng-disabled="frmCompra.$invalid || !permiso.c || periodoCerrado"
-                                ng-hide="compra.id > 0">
-                                <span class="glyphicon glyphicon-floppy-save"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary"
-                                ng-disabled="frmCompra.$invalid || !permiso.m || periodoCerrado" ng-show="compra.id > 0"
-                                ng-click="updCompra(compra)">
-                                <span class="glyphicon glyphicon-floppy-save"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary"
-                                ng-disabled="frmCompra.$invalid || !permiso.m || +compra.revisada == 1 || periodoCerrado"
-                                ng-show="compra.id > 0" ng-click="revisada(compra)">
-                                <span class="glyphicon glyphicon-ok"></span>&nbsp;Revisada
-                            </button>
-                            <button type="button" class="btn btn-danger" ng-disabled="!permiso.e || periodoCerrado"
-                                ng-show="compra.id > 0" ng-click="delCompra(compra)">
-                                <span class="glyphicon glyphicon-trash"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary" ng-disabled="!permiso.c || periodoCerrado"
-                                ng-show="compra.id > 0" ng-click="resetCompra()">
-                                <span class="glyphicon glyphicon-plus"></span>
-                            </button>
+                        <div class="row">
+                            <div class="col-md-10">
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <button type="submit" class="btn btn-primary"
+                                        ng-disabled="frmCompra.$invalid || !permiso.c || periodoCerrado"
+                                        ng-hide="compra.id > 0">
+                                        <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary"
+                                        ng-disabled="frmCompra.$invalid || !permiso.m || periodoCerrado"
+                                        ng-show="compra.id > 0" ng-click="updCompra(compra)">
+                                        <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary"
+                                        ng-disabled="frmCompra.$invalid || !permiso.m || +compra.revisada == 1 || periodoCerrado"
+                                        ng-show="compra.id > 0" ng-click="revisada(compra)">
+                                        <span class="glyphicon glyphicon-ok"></span>&nbsp;Revisada
+                                    </button>
+                                    <button type="button" class="btn btn-danger"
+                                        ng-disabled="!permiso.e || periodoCerrado" ng-show="compra.id > 0"
+                                        ng-click="delCompra(compra)">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary"
+                                        ng-disabled="!permiso.c || periodoCerrado" ng-show="compra.id > 0"
+                                        ng-click="resetCompra()">
+                                        <span class="glyphicon glyphicon-plus"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-2" style="text-align: right;">
+                                <div ng-show="creador_compra">Creado por: {{creador_compra}}</div>
+                                <div ng-show="ultimo_compra">Ultima modificación: {{ultimo_compra}}</div>
+                            </div>
                         </div>
                     </form>
                     <!--<hr/>-->

@@ -62,7 +62,8 @@ $app->get('/getcompra/:idcompra(/:idot)', function($idcompra, $idot = 0){
     $query.= "a.idtipofactura, g.desctipofact AS tipofactura, a.isr, a.idtipocombustible, h.descripcion AS tipocombustible, a.galones, a.idp, ";
     $query.= "a.noformisr, a.noaccisr, a.fecpagoformisr, a.mesisr, a.anioisr, g.siglas, a.idproyecto, a.idunidad, a.nombrerecibo, a.alcontado, ";
     $query.= "i.idservicio, i.preciouni, i.lecturaini, i.lecturafin, i.fechafin, i.fechaini, a.retiva, j.idformiva, ";
-    $query.= "j.idcompra AS idcompraiva, j.noform AS noformiva, j.noacceso AS noaccesoiva, j.fecha AS fechaiva, j.mes AS formmesiva, j.anio AS anioiva ";
+    $query.= "j.idcompra AS idcompraiva, j.noform AS noformiva, j.noacceso AS noaccesoiva, j.fecha AS fechaiva, j.mes AS formmesiva, j.anio AS anioiva, ";
+    $query.= "a.idusuario, a.ultusuario ";
     $query.= "FROM compra a INNER JOIN proveedor b ON b.id = a.idproveedor INNER JOIN tipocompra c ON c.id = a.idtipocompra ";
     $query.= "INNER JOIN empresa d ON d.id = a.idempresa LEFT JOIN moneda f ON f.id = a.idmoneda LEFT JOIN tipofactura g ON g.id = a.idtipofactura ";
     $query.= "LEFT JOIN tipocombustible h ON h.id = a.idtipocombustible LEFT JOIN compserv i ON i.idcompra = a.id ";
@@ -348,11 +349,11 @@ $app->post('/c', function(){
 
     $query = "INSERT INTO compra(idempresa, idproveedor, serie, documento, fechaingreso, mesiva, fechafactura, idtipocompra, ";
     $query.= "conceptomayor, creditofiscal, extraordinario, fechapago, ordentrabajo, totfact, noafecto, subtotal, iva, retiva, idmoneda, tipocambio, ";
-    $query.= "idtipofactura, isr, idtipocombustible, galones, idp, idproyecto, idunidad, nombrerecibo, alcontado) ";
+    $query.= "idtipofactura, isr, idtipocombustible, galones, idp, idproyecto, idunidad, nombrerecibo, alcontado, idusuario) ";
     $query.= "VALUES(".$d->idempresa.", ".$d->idproveedor.", '".$d->serie."', ".$d->documento.", '".$d->fechaingresostr."', ".$d->mesiva.", '".$d->fechafacturastr."', ";
     $query.= $d->idtipocompra.", '".$d->conceptomayor."', ".$d->creditofiscal.", ".$d->extraordinario.", '".$d->fechapagostr."', ".$d->ordentrabajo.", ";
     $query.= $d->totfact.", ".$d->noafecto.", ".$d->subtotal.", ".$d->iva.", ".$d->retIva.", ".$d->idmoneda.", ".$d->tipocambio.", ".$d->idtipofactura.", ".$d->isr.", ";
-    $query.= $d->idtipocombustible.", ".$d->galones.", ".$d->idp.", $d->idproyecto, $d->idunidad, $d->nombrerecibo, $d->alcontado";
+    $query.= $d->idtipocombustible.", ".$d->galones.", ".$d->idp.", $d->idproyecto, $d->idunidad, $d->nombrerecibo, $d->alcontado, $d->idusuario";
     $query.= ")";
     $db->doQuery($query);
 
@@ -416,7 +417,7 @@ $app->post('/u', function(){
     $query.= "totfact = ".$d->totfact.", noafecto = ".$d->noafecto.", subtotal = ".$d->subtotal.", iva = ".$d->iva.", ";
     $query.= "idmoneda = ".$d->idmoneda.", tipocambio = ".$d->tipocambio.", idtipofactura = ".$d->idtipofactura.", isr = ".$d->isr.", ";
     $query.= "idtipocombustible = ".$d->idtipocombustible.", galones = ".$d->galones.", idp = ".$d->idp.", idproyecto = $d->idproyecto, idunidad = $d->idunidad, ";
-    $query.= "nombrerecibo = $d->nombrerecibo, alcontado = $d->alcontado, retiva = $d->retIva ";
+    $query.= "nombrerecibo = $d->nombrerecibo, alcontado = $d->alcontado, retiva = $d->retIva, ultusuario = $d->idusuario ";
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
 

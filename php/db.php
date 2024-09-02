@@ -293,6 +293,7 @@ class dbcpm{
         $_SESSION['nombre'] = $userdata['nombre'];
         $_SESSION['usuario'] = $userdata['usuario'];
         $_SESSION['correoe'] = $userdata['correoe'];
+        $_SESSION['iniciales'] = $userdata['iniciales'];
         $_SESSION['workingon'] = 0;
         $_SESSION['logged'] = true;
     }
@@ -307,6 +308,7 @@ class dbcpm{
             $sess['correoe'] = $_SESSION['correoe'];
             $sess['workingon'] = $_SESSION['workingon'];
             $sess['logged'] = $_SESSION['logged'];
+            $sess['iniciales'] = $_SESSION['iniciales'];
             return $sess;
         }catch(Exception $e){
             return ['Error' => $e->getMessage()];

@@ -43,7 +43,8 @@ $app->get('/gettran/:idtran', function($idtran){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idbanco, CONCAT(b.nombre, ' (', b.nocuenta, ')') AS nombanco, a.tipotrans, a.numero, a.fecha, a.monto,  a.retisr, a.montooriginal, a.isr, a.montocalcisr, ";
     $query.= "a.beneficiario, a.concepto, a.operado, a.anticipo, a.idbeneficiario, a.origenbene, a.anulado, c.razon, a.fechaanula, a.tipocambio, d.simbolo AS moneda, a.impreso, a.fechaliquida, a.esnegociable, ";
-    $query.= "CONCAT('OT: ', e.idpresupuesto, '-', e.correlativo, ' (', g.nombre,')') AS ot, a.iddetpresup, a.iddetpagopresup, a.idproyecto, a.iddocliquida, group_concat(h.id) AS idrecibocli, a.numban ";
+    $query.= "CONCAT('OT: ', e.idpresupuesto, '-', e.correlativo, ' (', g.nombre,')') AS ot, a.iddetpresup, a.iddetpagopresup, a.idproyecto, a.iddocliquida, group_concat(h.id) AS idrecibocli, a.numban, ";
+    $query.= "a.idusuario, a.ultusuario ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco LEFT JOIN razonanulacion c ON c.id = a.idrazonanulacion LEFT JOIN moneda d ON d.id = b.idmoneda ";
     $query.= "LEFT JOIN detpresupuesto e ON e.id = a.iddetpresup LEFT JOIN presupuesto f ON f.id = e.idpresupuesto LEFT JOIN proveedor g ON g.id = e.idproveedor LEFT JOIN recibocli h ON a.id = h.idtranban ";
     $query.= "WHERE a.id = ".$idtran;
@@ -105,10 +106,10 @@ $app->post('/c', function(){
     $tentrada = ['D', 'R'];
     $d->numban = !isset($d->numban) ? 'null' : $d->numban;
     $query = "INSERT INTO tranban(idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, anticipo, idbeneficiario, origenbene, tipocambio, esnegociable, iddetpresup, ";
-    $query.= "iddetpagopresup, idproyecto, iddocliquida, retisr, montooriginal, isr, montocalcisr, numban) ";
+    $query.= "iddetpagopresup, idproyecto, iddocliquida, retisr, montooriginal, isr, montocalcisr, numban, idusuario) ";
     $query.= "VALUES(".$d->idbanco.", '".$d->tipotrans."', '".$d->fechastr."', ".$d->monto.", '".$d->beneficiario."', '".$d->concepto."', ";
     $query.= $d->numero.", ".$d->anticipo.", ".$d->idbeneficiario.", ".$d->origenbene.", ".$d->tipocambio.", $d->esnegociable, $d->iddetpresup, ";
-    $query.= "$d->iddetpagopresup, $d->idproyecto, $d->iddocliquida, $d->retisr, $d->montooriginal, $d->isr, $d->montocalcisr, $d->numban)";
+    $query.= "$d->iddetpagopresup, $d->idproyecto, $d->iddocliquida, $d->retisr, $d->montooriginal, $d->isr, $d->montocalcisr, $d->numban, $d->idusuario)";
     $db->doQuery($query);
     $lastid = $db->getLastId();
     if(in_array($d->tipotrans, $tentrada)){
@@ -163,7 +164,7 @@ $app->post('/u', function(){
     $query.= "fecha = '$d->fechastr', monto = $d->monto, beneficiario = '$d->beneficiario', concepto = '$d->concepto', ";
     $query.= "operado = $d->operado, numero = $d->numero, anticipo = $d->anticipo, idbeneficiario = $d->idbeneficiario, ";
     $query.= "origenbene = $d->origenbene, tipocambio = $d->tipocambio, esnegociable = $d->esnegociable, iddetpresup = $d->iddetpresup, ";
-    $query.= "iddetpagopresup = $d->iddetpagopresup, idproyecto = $d->idproyecto, iddocliquida = $d->iddocliquida, numban = $d->numban ";
+    $query.= "iddetpagopresup = $d->iddetpagopresup, idproyecto = $d->idproyecto, iddocliquida = $d->iddocliquida, numban = $d->numban, ultusuario = $d->idusuario ";
     $query.= "WHERE id = $d->id";
     $db->doQuery($query);
 
@@ -969,8 +970,7 @@ $app->post('/notaban', function () {
             a.beneficiario,
             FORMAT(a.monto, 2) AS monto,
             a.concepto,
-            a.tipocambio,
-            'D.A' AS creado
+            a.tipocambio
         FROM
             tranban a
                 INNER JOIN
@@ -982,6 +982,9 @@ $app->post('/notaban', function () {
         WHERE
             a.id = $d->idtran";
     $datos = $db->getQuery($query)[0];
+
+    // datos usuario
+    $datos->creado = isset($d->creado) ? $d->creado : 'N/E';
 
     $query = "SELECT 
                 a.id,

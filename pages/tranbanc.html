@@ -342,81 +342,64 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="btn-group" role="group" aria-label="...">
-                            <button type="submit" class="btn btn-primary"
-                                ng-disabled="frmTranBan.$invalid || periodoCerrado || cargando" ng-hide="editando">
-                                <span class="glyphicon glyphicon-floppy-save"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary"
-                                ng-disabled="frmTranBan.$invalid || laTran.anulado === 1 || periodoCerrado || cargando"
-                                ng-show="editando" ng-click="updTran(laTran, laTran.id)">
-                                <span class="glyphicon glyphicon-floppy-save"></span>
-                            </button>
-                            <button type="button" class="btn btn-warning"
-                                ng-disabled="frmTranBan.$invalid || laTran.anulado === 1 || periodoCerrado || cargando"
-                                ng-show="editando && laTran.tipotrans === 'C'" ng-click="anular(laTran)">
-                                <span class="glyphicon glyphicon-ban-circle"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary"
-                                ng-disabled="frmTranBan.$invalid || periodoCerrado || cargando"
-                                ng-show="editando && laTran.tipotrans === 'C'" ng-click="updTranAnul(laTran)">
-                                <span class="glyphicon glyphicon-pencil"></span>
-                            </button>
-                            <!--
-                    <a download class="btn btn-primary" target="_blank" ng-href="php/{{laTran.objBanco.formato}}.php?c={{laTran.id}}" ng-show="editando && laTran.tipotrans === 'C'"
-                       ng-disabled="frmTranBan.$invalid || laTran.anulado === 1 || laTran.impreso === 1" ng-click="laTran.impreso = 1">
-                        <span class="glyphicon glyphicon-print">&nbsp;Cheque</span>
-                    </a>
-                    -->
-                            <!--
-                    <button id="btnGCPrint" type="button" class="btn btn-primary" ng-show="editando && laTran.tipotrans === 'C'"
-                            ng-disabled="frmTranBan.$invalid || laTran.anulado === 1 || periodoCerrado" ng-click="gcprint(laTran)">
-                        <span class="glyphicon glyphicon-print"></span>&nbsp;Cheque
-                    </button>
-                    -->
-                            <!--
-
-                    <a class="btn btn-default" href="/sayet/php/printchequera.php?c={{laTran.id}}&ver=1" ng-show="editando && laTran.tipotrans === 'C'"
-                            ng-disabled="frmTranBan.$invalid || laTran.anulado === 1 || periodoCerrado">
-                        <span class="glyphicon glyphicon-print"></span>&nbsp;Cheque TEST
-                    </a>
-                    -->
-
-                            <button type="button" class="btn btn-default" ng-click="printCheque(+laTran.id)"
-                                ng-show="editando && laTran.tipotrans === 'C'" ng-disabled="cargando">
-                                <span class="glyphicon glyphicon-print"></span> Cheque
-                            </button>
-
-                            <button type="button" class="btn btn-primary" ng-click="modalPRINT(losBancos)"
-                                ng-hide="editando" ng-disabled="cargando">
-                                <span class="glyphicon glyphicon-print"></span> &nbsp;Cheques continuos
-                            </button>
-                            <button type="button" class="btn btn-danger" ng-show="editando"
-                                ng-disabled="frmTranBan.$invalid || laTran.anulado === 1 || periodoCerrado || cargando"
-                                ng-click="delTran(laTran)">
-                                <span class="glyphicon glyphicon-trash"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printNota(laTran.id)"
-                                ng-disabled="cargando">
-                                <span class="glyphicon glyphicon-print"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary" ng-show="editando" ng-disabled="cargando"
-                                ng-click="printSelloFactura(laTran.id)">
-                                <span>Sello factura</span>
-                            </button>
-                            <button type="button" class="btn btn-primary" ng-show="editando" ng-disabled="cargando"
-                                ng-click="printSelloNotaCredito(laTran.id)">
-                                <span>Sello NC</span>
-                            </button>
-                            <!-- <button type="button" class="btn btn-primary"
-                                ng-show="editando"
-                                ng-disabled="cargando" ng-click="printVersion()">
-                                <span>Imprimir nota</span>
-                            </button> -->
-                            <button type="button" class="btn btn-primary" ng-show="editando" ng-disabled="cargando"
-                                ng-click="resetLaTran()">
-                                <span class="glyphicon glyphicon-plus"></span>
-                            </button>
+                        <div class="row">
+                            <div class="col-md-10">
+                                <div class="btn-group" role="group" aria-label="...">
+                                    <button type="submit" class="btn btn-primary"
+                                        ng-disabled="frmTranBan.$invalid || periodoCerrado || cargando"
+                                        ng-hide="editando">
+                                        <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary"
+                                        ng-disabled="frmTranBan.$invalid || laTran.anulado === 1 || periodoCerrado || cargando"
+                                        ng-show="editando" ng-click="updTran(laTran, laTran.id)">
+                                        <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-warning"
+                                        ng-disabled="frmTranBan.$invalid || laTran.anulado === 1 || periodoCerrado || cargando"
+                                        ng-show="editando && laTran.tipotrans === 'C'" ng-click="anular(laTran)">
+                                        <span class="glyphicon glyphicon-ban-circle"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary"
+                                        ng-disabled="frmTranBan.$invalid || periodoCerrado || cargando"
+                                        ng-show="editando && laTran.tipotrans === 'C'" ng-click="updTranAnul(laTran)">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default" ng-click="printCheque(+laTran.id)"
+                                        ng-show="editando && laTran.tipotrans === 'C'" ng-disabled="cargando">
+                                        <span class="glyphicon glyphicon-print"></span> Cheque
+                                    </button>
+                                    <button type="button" class="btn btn-primary" ng-click="modalPRINT(losBancos)"
+                                        ng-hide="editando" ng-disabled="cargando">
+                                        <span class="glyphicon glyphicon-print"></span> &nbsp;Cheques continuos
+                                    </button>
+                                    <button type="button" class="btn btn-danger" ng-show="editando"
+                                        ng-disabled="frmTranBan.$invalid || laTran.anulado === 1 || periodoCerrado || cargando"
+                                        ng-click="delTran(laTran)">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary" ng-show="editando"
+                                        ng-click="printNota(laTran.id)" ng-disabled="cargando">
+                                        <span class="glyphicon glyphicon-print"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary" ng-show="editando"
+                                        ng-disabled="cargando" ng-click="printSelloFactura(laTran.id)">
+                                        <span>Sello factura</span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary" ng-show="editando"
+                                        ng-disabled="cargando" ng-click="printSelloNotaCredito(laTran.id)">
+                                        <span>Sello NC</span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary" ng-show="editando"
+                                        ng-disabled="cargando" ng-click="resetLaTran()">
+                                        <span class="glyphicon glyphicon-plus"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-2" ng-show="creador" style="text-align: right;">
+                                <div ng-show="creador">Creado por: {{creador}}</div>
+                                <div ng-show="ultimo_usuario">Ultima modificación: {{ultimo_usuario}}</div>
+                            </div>
                         </div>
                     </form>
                     <hr />
