@@ -131,7 +131,8 @@
 
         $scope.printDirecta = function () {
             var test = false;
-            jsReportSrvc.getPDFReport((test ? 'Hkz4lAnBz' : 'Sk6jO1aBf'), { iddirecta: $scope.laDirecta.id, usuario: $scope.creador }).then(function (pdf) { $window.open(pdf); });
+            let creador = $scope.creador ? $scope.creador : 'N.E';
+            jsReportSrvc.getPDFReport((test ? 'Hkz4lAnBz' : 'Sk6jO1aBf'), { iddirecta: $scope.laDirecta.id, usuario: creador }).then(function (pdf) { $window.open(pdf); });
         };
 
         $scope.delDirecta = function (iddirecta) {

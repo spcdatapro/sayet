@@ -52,13 +52,13 @@ $app->post('/d', function(){
 });
 
 //API para impresion de partidas directas
-$app->get('/print/:iddirecta/:iniciales', function($iddirecta, $iniciales) {
+$app->get('/print/:iddirecta/:usuario', function($iddirecta, $usuario) {
     $db = new dbcpm();
 
     $query = "SELECT DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS fecha";
     $generales = $db->getQuery($query)[0];
 
-    $generales->usuario = $iniciales != 'undefined'  ? $iniciales : 'N/E';
+    $generales->usuario = $usuario;
 
     $query = "SELECT a.id, a.idempresa, b.nomempresa, b.abreviatura, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.concepto, c.nomproyecto AS proyecto ";
     $query.= "FROM directa a INNER JOIN empresa b ON b.id = a.idempresa LEFT JOIN proyecto c ON c.id = a.idproyecto ";
