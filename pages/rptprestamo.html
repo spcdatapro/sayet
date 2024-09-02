@@ -1,30 +1,27 @@
 <div class="container" ng-controller="rptVacaciones">
     <div class="row">
         <div class="panel panel-default">
-            <div class="panel-heading">Reporte vacaciones</div>
+            <div class="panel-heading">Reporte prestamos</div>
             <div class="panel-body">
                 <form name="paramsRep" id="paramsRep" novalidate>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group required">
-                                <label for="numAnio" class="control-label">A&ntilde;o:</label>
-                                <input name="numAnio" id="numAnio" type="number" class="form-control"
-                                    ng-model="params.anio" required>
+                                <label for="inpAl" class="control-label">Fecha al:</label>
+                                <input type="date" name="inpAl" id="inpAl" class="form-control" ng-model="params.fal"
+                                    required>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Empleado:</label>
-                                <ui-select ng-model="params.idempleado" title="Seleccione un empleado..."
-                                    theme="bootstrap" autofocus="false">
-                                    <ui-select-match placeholder="Buscar empleado..." allow-clear="true">
-                                        <span ng-bind="($select.selected.nombre)"></span>
-                                    </ui-select-match>
-                                    <ui-select-choices repeat="item.id as item in empleados | filter:$select.search">
-                                        <span>{{item.nombre}} {{item.apellidos}}</span>
-                                    </ui-select-choices>
-                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
-                                </ui-select>
+                            <div class="form-group required">
+                                <div class="form-group required">
+                                    <label for="selAgrupar" class="control-label">Agrupar por:</label>
+                                    <select name="selAgrupar" id="selAgrupar" class="form-control"
+                                        ng-model="params.agrupar" required>
+                                        <option value="1">Empresa</option>
+                                        <option value="2">Proyecto</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -45,13 +42,18 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group required">
-                                <label for="selAgrupar" class="control-label">Agrupar por:</label>
-                                <select name="selAgrupar" id="selAgrupar" class="form-control" ng-model="params.agrupar"
-                                    required>
-                                    <option value="1">Empresa</option>
-                                    <option value="2">Proyecto</option>
-                                </select>
+                            <div class="form-group">
+                                <label class="control-label">Proyecto:</label>
+                                <ui-select ng-model="params.idproyecto" title="Seleccione un proyecto..."
+                                    theme="bootstrap" autofocus="true" ng-disabled="params.agrupar == 1">
+                                    <ui-select-match placeholder="Buscar proyecto..." allow-clear="true">
+                                        <span ng-bind="($select.selected.nomproyecto)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in proyectos | filter:$select.search">
+                                        <div ng-bind-html="(item.nomproyecto) | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
                             </div>
                         </div>
                     </div>
@@ -68,21 +70,19 @@
                         <span class="fa fa-file-excel-o" aria-hidden="true"></span>
                     </button>
                     <!-- <button type="button" class="btn btn-primary" ng-click="getResumen(params)"
-                    ng-disabled="paramsRep.$invalid || cargando">
-                    <span class="glyphicon glyphicon-eye-open"></span> -->
-                    </button>
+                     ng-disabled="paramsRep.$invalid || cargando">
+                     <span class="glyphicon glyphicon-eye-open"></span> -->
                 </div>
             </div>
         </div>
-    </div>
-    </hr>
-    <div class="row" ng-show="cargando">
-        <div class="col-md-6 col-md-offset-3">
-            <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
-                <span class="label label-primary">Generando reporte, por favor espere...</span>
-                <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
+        <div class="row" ng-show="cargando">
+            <div class="col-md-6 col-md-offset-3">
+                <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                    <span class="label label-primary">Generando reporte, por favor espere...</span>
+                    <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
+                </div>
             </div>
         </div>
+        <rpt-viewer contenido="content"></rpt-viewer>
     </div>
-    <rpt-viewer contenido="content"></rpt-viewer>
 </div>
