@@ -1120,6 +1120,194 @@ $app->post('/vacaciones', function(){
     print json_encode([ 'encabezado' => $letra, 'empresas' => $empleados ]);
 });
 
+$app->post('/prestamos', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $primero = true;
+    date_default_timezone_set("America/Guatemala");
+
+    // separadores
+    $separador_empresa = new StdClass;
+    $separador_proyecto = new StdClass;
+
+    // sumadores
+    $sumas_empresa = array();
+    // proyecto
+    $sumas_proyecto = array();
+    // general
+    $sumas_general = array();
+
+    // para periodo
+    $fal = $d->anio.'-01-01';
+    $fdel = $d->anio.'-12-31';
+    $al= new DateTime($fal);
+    $del = new DateTime($fdel);
+
+    // clase para fechas
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+
+    // encabezado
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+    $letra->titulo = 'Período del '.$al->format('d/m/Y').' al '. $del->format('d/m/Y');
+
+    // array de facturas
+    $empleados = array();
+
+    // AGREGAR SELECT AQUI
+    // tablas a = plnprestamo (id del prestamo , valor descuento mensual slado anterior, saldo actual) 
+    // b = plnempleado (id del empleado, nombre del empleado ) unido por plnprestamp
+    // d = plnempresa (id, nombre empresa, numero patronal, abreviatura) unido por plnempelado
+    // e = proyecto opcional (id, nombre proyecto)
+    // f = plnpresabono (monto de descuentos adicionales)
+    // codicion empresa = 4 | saldo > 0 
+    $query = "";
+    echo $query; return;
+    $data = $db->getQuery($query);
+
+    foreach($data as $dat) {
+        minusculas($dat);
+    }
+
+    $cntsFacturas = count($data);
+
+    if ($cntsFacturas > 1) {
+    for ($i = 1; $i < $cntsFacturas; $i++)  {
+        // traer valor actual y anterior
+        $actual = $data[$i];
+        $anterior = $data[$i-1];
+
+        // si es el primero insertar nombre del separador y crear array de recibos
+        if ($primero) {
+            // empresa
+            $separador_empresa->nombre = $anterior->empresa;
+            $separador_empresa->abreviatura = $anterior->abreviatura;
+            $separador_empresa->numero = $anterior->numero;
+            $separador_empresa->porproyecto = $d->agrupar == 2 ? true : null;
+            if ($d->agrupar == 2) {
+                $separador_empresa->proyectos = array();
+                // proyecto
+                $separador_proyecto->nombre = $anterior->proyecto;
+                $separador_proyecto->empleados = array();
+            } else {
+                $separador_empresa->empleados = array();
+            }
+            $primero = false;
+        }
+
+        // sumas
+        array_push($sumas_empresa, $anterior->liquido);
+        // general
+        array_push($sumas_general, $anterior->liquido);
+
+        if ($d->agrupar == 2) {
+            array_push($separador_proyecto->empleados, $anterior);
+            array_push($sumas_proyecto, $anterior->liquido);
+        } else {
+            array_push($separador_empresa->empleados, $anterior);
+        }
+
+        if ($d->agrupar == 2) {
+            if ($anterior->idproyecto !== $actual->idproyecto) {
+                $separador_proyecto->total = round(array_sum($sumas_proyecto), 2);
+
+                // empujar a array padre
+                array_push($separador_empresa->proyectos, $separador_proyecto);
+
+                // separador
+                $separador_proyecto = new StdClass;
+                $separador_proyecto->nombre = $actual->proyecto;
+                $separador_proyecto->empleados = array();
+                $sumas_proyecto = array();
+            }
+        }
+
+        if ($anterior->idempresa !== $actual->idempresa) {
+            $separador_empresa->total = round(array_sum($sumas_empresa), 2);
+
+            // empujar a array padre
+            array_push($empleados, $separador_empresa);
+
+            // separador
+            $separador_empresa = new StdClass;
+            $separador_empresa->nombre = $actual->empresa;
+            $separador_empresa->abreviatura = $actual->abreviatura;
+            $separador_empresa->numero = $actual->numero;
+            $separador_empresa->porproyecto = $d->agrupar == 2 ? true : null;
+            $sumas_empresa = array();
+            if ($d->agrupar == 2) {
+                $separador_empresa->proyectos = array();
+            } else {
+                $separador_empresa->empleados = array();
+            }
+        }
+
+        // para empujar el ultimo dato
+        if ($i+1 == $cntsFacturas) {
+            // empujar ultimo
+            if ($d->agrupar == 2) {
+                array_push($separador_proyecto->empleados, $actual);
+                // sumas
+                array_push($sumas_proyecto, $actual->liquido);
+            } else {
+                array_push($separador_empresa->empleados, $actual);
+            }
+
+            // sumas
+            array_push($sumas_empresa, $actual->liquido);
+            // general
+            array_push($sumas_general, $actual->liquido);
+
+
+            if ($d->agrupar == 2) {
+                $separador_proyecto->total = round(array_sum($sumas_proyecto), 2);
+                // empujar a array padre
+                array_push($separador_empresa->proyectos, $separador_proyecto);
+            }
+
+            $separador_empresa->total = round(array_sum($sumas_empresa), 2);
+
+            array_push($empleados, $separador_empresa);
+        }
+    }
+    } else {
+        for ($i = 0; $i < $cntsFacturas; $i++)  {
+            // traer valor actual y anterior
+            $actual = $data[$i];
+
+            // si es el primero insertar nombre del separador y crear array de recibos
+            if ($primero) {
+                // empresa
+                $separador_empresa->nombre = $actual->empresa;
+                $separador_empresa->numero = $actual->numero;
+                $separador_empresa->porproyecto = $d->agrupar == 2 ? true : null;
+                if ($d->agrupar == 2) {
+                    $separador_empresa->proyectos = array();
+                    // proyecto
+                    $separador_proyecto->nombre = $anterior->proyecto;
+                    $separador_proyecto->empleados = array();
+                    $primero = false;
+                } else {
+                    $separador_empresa->empleados = array();
+                }
+            }
+
+            if ($d->agrupar == 2) {
+                array_push($separador_proyecto->empleados, $actual);
+                array_push($separador_empresa->proyectos, $separador_proyecto);
+            } else {
+                array_push($separador_empresa->empleados, $actual);
+            }
+            array_push($sumas_general, $actual->liquido);
+            array_push($empleados, $separador_empresa);
+        }
+    } 
+
+    $letra->tsueldo = round(array_sum($sumas_general), 2);
+
+    print json_encode([ 'encabezado' => $letra, 'empresas' => $empleados ]);
+});
+
 function minusculas ($dat) {
     $dat->nombre = ucwords(strtolower($dat->nombre), ' ');
     $dat->puesto = ucfirst(strtolower($dat->puesto));
