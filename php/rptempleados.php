@@ -1131,17 +1131,27 @@ $app->post('/prestamos', function(){
     $separador_proyecto = new StdClass;
 
     // sumadores
-    $sumas_empresa = array();
+    $sumas_empresa = new StdClass;
+    $sumas_empresa->monto = array();
+    $sumas_empresa->cuota = array();
+    $sumas_empresa->descuento = array();
+    $sumas_empresa->saldo = array();
     // proyecto
-    $sumas_proyecto = array();
+    $sumas_proyecto = new StdClass;
+    $sumas_proyecto->monto = array();
+    $sumas_proyecto->cuota = array();
+    $sumas_proyecto->descuento = array();
+    $sumas_proyecto->saldo = array();
     // general
-    $sumas_general = array();
+    $sumas_general = new StdClass;
+    $sumas_general->monto = array();
+    $sumas_general->cuota = array();
+    $sumas_general->descuento = array();
+    $sumas_general->saldo = array();
 
     // para periodo
-    $fal = $d->anio.'-01-01';
-    $fdel = $d->anio.'-12-31';
+    $fal = $d->falstr;
     $al= new DateTime($fal);
-    $del = new DateTime($fdel);
 
     // clase para fechas
     $letra = new stdClass();
@@ -1149,53 +1159,45 @@ $app->post('/prestamos', function(){
 
     // encabezado
     $letra->estampa = $letra->estampa->format('d-m-Y H:i');
-    $letra->titulo = 'Período del '.$al->format('d/m/Y').' al '. $del->format('d/m/Y');
+    $letra->titulo = 'Al '.$al->format('d/m/Y');
 
     // array de facturas
     $empleados = array();
 
-    // AGREGAR SELECT AQUI
-    // tablas a = plnprestamo (id del prestamo , valor descuento mensual slado anterior, saldo actual) 
-    // b = plnempleado (id del empleado, nombre del empleado ) unido por plnprestamp
-    // d = plnempresa (id, nombre empresa, numero patronal, abreviatura) unido por plnempelado
-    // e = proyecto opcional (id, nombre proyecto)
-    // f = plnpresabono (monto de descuentos adicionales)
-    // codicion empresa = 4 | saldo > 0 
     $query = "SELECT 
-    d.id AS idempresa,
-    IFNULL(d.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
-    d.numeropat AS numero,
-    d.abreviatura,
-    c.idproyecto,
-    IFNULL(e.nomproyecto, 'NO ESPECIFICADO') AS proyecto,
-    c.id AS idempleado,
-    CONCAT(c.nombre, ' ', IFNULL(c.apellidos, '')) AS nombre,
-    a.id AS idprestamo,
-    DATE_FORMAT(a.fecha, '%d/%m/%y') AS fecha,
-    a.cuotamensual AS cuotamensual,
-    a.monto AS saldoanterior,
-    a.saldo AS saldoactual,
-    b.monto AS descadicional,
-    IFNULL(f.descripcion, 'NO ESPECIFICADO') AS puesto
-FROM
-    plnprestamo a
-        LEFT JOIN
-    plnpresabono b ON b.idplnprestamo = a.id
-        INNER JOIN
-    plnempleado c ON a.idplnempleado = c.id
-        LEFT JOIN
-    plnempresa d ON c.idempresadebito = d.id
-        LEFT JOIN
-    proyecto e ON c.idproyecto = e.id
-        LEFT JOIN
-    plnpuesto f ON c.idplnpuesto = f.id
-WHERE
-    a.finalizado = 0 AND a.anulado = 0
-        AND a.saldo > 0
-ORDER BY 2 , 8";
-$query.= isset($d->idempresa) ? "AND c.idempresadebito = $d->idempresa " : "";
-$query.= isset($d->idempleado) ? "AND b.idplnempleado = $d->idempleado " : "";
-    echo $query; return;
+                d.id AS idempresa,
+                IFNULL(d.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
+                d.numeropat AS numero,
+                d.abreviatura,
+                c.idproyecto,
+                IFNULL(e.nomproyecto, 'NO ESPECIFICADO') AS proyecto,
+                c.id AS idempleado,
+                CONCAT(c.nombre, ' ', IFNULL(c.apellidos, '')) AS nombre,
+                a.id AS idprestamo,
+                DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
+                a.cuotamensual AS cuota,
+                a.monto,
+                a.saldo AS saldo,
+                b.monto AS descuento,
+                IFNULL(f.descripcion, 'NO ESPECIFICADO') AS puesto
+            FROM
+                plnprestamo a
+                    LEFT JOIN
+                plnpresabono b ON b.idplnprestamo = a.id
+                    INNER JOIN
+                plnempleado c ON a.idplnempleado = c.id
+                    LEFT JOIN
+                plnempresa d ON c.idempresadebito = d.id
+                    LEFT JOIN
+                proyecto e ON c.idproyecto = e.id
+                    LEFT JOIN
+                plnpuesto f ON c.idplnpuesto = f.id
+            WHERE
+                a.anulado = 0 AND a.finalizado = 0 ";
+    $query.= isset($d->idempresa) ? "AND c.idempresadebito = $d->idempresa " : "";
+    $query.= isset($d->idempleado) ? "AND b.idplnempleado = $d->idempleado " : "";
+    $query.= "ORDER BY  2 , ";
+    $query.= $d->agrupar == 2 ? " 6 , 8" : " 8";
     $data = $db->getQuery($query);
 
     foreach($data as $dat) {
@@ -1229,20 +1231,34 @@ $query.= isset($d->idempleado) ? "AND b.idplnempleado = $d->idempleado " : "";
         }
 
         // sumas
-        array_push($sumas_empresa, $anterior->liquido);
+        array_push($sumas_empresa->monto, $anterior->monto);
+        array_push($sumas_empresa->cuota, $anterior->cuota);
+        array_push($sumas_empresa->saldo, $anterior->saldo);
+        array_push($sumas_empresa->descuento, $anterior->descuento);
+
         // general
-        array_push($sumas_general, $anterior->liquido);
+        array_push($sumas_general->monto, $anterior->monto);
+        array_push($sumas_general->cuota, $anterior->cuota);
+        array_push($sumas_general->saldo, $anterior->saldo);
+        array_push($sumas_general->descuento, $anterior->descuento);
 
         if ($d->agrupar == 2) {
             array_push($separador_proyecto->empleados, $anterior);
-            array_push($sumas_proyecto, $anterior->liquido);
+            // proyecto
+            array_push($sumas_proyecto->monto, $anterior->monto);
+            array_push($sumas_proyecto->cuota, $anterior->cuota);
+            array_push($sumas_proyecto->saldo, $anterior->saldo);
+            array_push($sumas_proyecto->descuento, $anterior->descuento);
         } else {
             array_push($separador_empresa->empleados, $anterior);
         }
 
         if ($d->agrupar == 2) {
             if ($anterior->idproyecto !== $actual->idproyecto) {
-                $separador_proyecto->total = round(array_sum($sumas_proyecto), 2);
+                $separador_proyecto->monto = round(array_sum($sumas_proyecto->monto), 2);
+                $separador_proyecto->cuota = round(array_sum($sumas_proyecto->cuota), 2);
+                $separador_proyecto->saldo = round(array_sum($sumas_proyecto->saldo), 2);
+                $separador_proyecto->descuento = round(array_sum($sumas_proyecto->descuento), 2);
 
                 // empujar a array padre
                 array_push($separador_empresa->proyectos, $separador_proyecto);
@@ -1251,12 +1267,18 @@ $query.= isset($d->idempleado) ? "AND b.idplnempleado = $d->idempleado " : "";
                 $separador_proyecto = new StdClass;
                 $separador_proyecto->nombre = $actual->proyecto;
                 $separador_proyecto->empleados = array();
-                $sumas_proyecto = array();
+                $sumas_proyecto->monto = array();
+                $sumas_proyecto->cuota = array();
+                $sumas_proyecto->decuento = array();
+                $sumas_proyecto->saldo = array();
             }
         }
 
         if ($anterior->idempresa !== $actual->idempresa) {
-            $separador_empresa->total = round(array_sum($sumas_empresa), 2);
+            $separador_empresa->monto = round(array_sum($sumas_empresa->monto), 2);
+            $separador_empresa->cuota = round(array_sum($sumas_empresa->cuota), 2);
+            $separador_empresa->saldo = round(array_sum($sumas_empresa->saldo), 2);
+            $separador_empresa->descuento = round(array_sum($sumas_empresa->descuento), 2);
 
             // empujar a array padre
             array_push($empleados, $separador_empresa);
@@ -1267,7 +1289,10 @@ $query.= isset($d->idempleado) ? "AND b.idplnempleado = $d->idempleado " : "";
             $separador_empresa->abreviatura = $actual->abreviatura;
             $separador_empresa->numero = $actual->numero;
             $separador_empresa->porproyecto = $d->agrupar == 2 ? true : null;
-            $sumas_empresa = array();
+            $sumas_empresa->monto = array();
+            $sumas_empresa->cuota = array();
+            $sumas_empresa->decuento = array();
+            $sumas_empresa->saldo = array();
             if ($d->agrupar == 2) {
                 $separador_empresa->proyectos = array();
             } else {
@@ -1281,24 +1306,39 @@ $query.= isset($d->idempleado) ? "AND b.idplnempleado = $d->idempleado " : "";
             if ($d->agrupar == 2) {
                 array_push($separador_proyecto->empleados, $actual);
                 // sumas
-                array_push($sumas_proyecto, $actual->liquido);
+                array_push($sumas_proyecto->monto, $actual->monto);
+                array_push($sumas_proyecto->cuota, $actual->cuota);
+                array_push($sumas_proyecto->saldo, $actual->saldo);
+                array_push($sumas_proyecto->descuento, $actual->descuento);
             } else {
                 array_push($separador_empresa->empleados, $actual);
             }
 
             // sumas
-            array_push($sumas_empresa, $actual->liquido);
+            array_push($sumas_empresa->monto, $actual->monto);
+            array_push($sumas_empresa->cuota, $actual->cuota);
+            array_push($sumas_empresa->saldo, $actual->saldo);
+            array_push($sumas_empresa->descuento, $actual->descuento);
             // general
-            array_push($sumas_general, $actual->liquido);
+            array_push($sumas_general->monto, $actual->monto);
+            array_push($sumas_general->cuota, $actual->cuota);
+            array_push($sumas_general->saldo, $actual->saldo);
+            array_push($sumas_general->descuento, $actual->descuento);
 
 
             if ($d->agrupar == 2) {
-                $separador_proyecto->total = round(array_sum($sumas_proyecto), 2);
+                $separador_proyecto->monto = round(array_sum($sumas_proyecto->monto), 2);
+                $separador_proyecto->cuota = round(array_sum($sumas_proyecto->cuota), 2);
+                $separador_proyecto->saldo = round(array_sum($sumas_proyecto->saldo), 2);
+                $separador_proyecto->descuento = round(array_sum($sumas_proyecto->descuento), 2);
                 // empujar a array padre
                 array_push($separador_empresa->proyectos, $separador_proyecto);
             }
 
-            $separador_empresa->total = round(array_sum($sumas_empresa), 2);
+            $separador_empresa->monto = round(array_sum($sumas_empresa->monto), 2);
+            $separador_empresa->cuota = round(array_sum($sumas_empresa->cuota), 2);
+            $separador_empresa->saldo = round(array_sum($sumas_empresa->saldo), 2);
+            $separador_empresa->descuento = round(array_sum($sumas_empresa->descuento), 2);
 
             array_push($empleados, $separador_empresa);
         }
@@ -1331,12 +1371,20 @@ $query.= isset($d->idempleado) ? "AND b.idplnempleado = $d->idempleado " : "";
             } else {
                 array_push($separador_empresa->empleados, $actual);
             }
-            array_push($sumas_general, $actual->liquido);
+            // suma general
+            array_push($sumas_general->monto, $actual->monto);
+            array_push($sumas_general->cuota, $actual->cuota);
+            array_push($sumas_general->saldo, $actual->saldo);
+            array_push($sumas_general->descuento, $actual->descuento);
+
             array_push($empleados, $separador_empresa);
         }
     } 
 
-    $letra->tsueldo = round(array_sum($sumas_general), 2);
+    $letra->monto = round(array_sum($sumas_general->monto), 2);
+    $letra->cuota = round(array_sum($sumas_general->cuota), 2);
+    $letra->saldo = round(array_sum($sumas_general->saldo), 2);
+    $letra->descuento = round(array_sum($sumas_general->descuento), 2);
 
     print json_encode([ 'encabezado' => $letra, 'empresas' => $empleados ]);
 });
@@ -1345,4 +1393,5 @@ function minusculas ($dat) {
     $dat->nombre = ucwords(strtolower($dat->nombre), ' ');
     $dat->puesto = ucfirst(strtolower($dat->puesto));
 }
+
 $app->run();
