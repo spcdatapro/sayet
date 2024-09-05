@@ -47,37 +47,42 @@
             $scope.params.nofolio = $scope.params.nofolio != null && $scope.params.nofolio !== undefined ? $scope.params.nofolio : '';
 
             if (tipo == 1) {
-                $('#btnLibroComprasExcel').button('loading')
+                jsReportSrvc.getReport('BkzOxjw3C', $scope.params).then(function (result) {
+                    var file = new Blob([result.data], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+                    var nombre = $scope.meses[$scope.params.mes - 1] + '_' + $scope.params.anio;
+                    saveAs(file, 'LibroCompras_' + nombre + '.xlsx');
+                });
+                // $('#btnLibroComprasExcel').button('loading')
                 
-                var url = '/sayet/php/rptlibrocompras.php/rptlibcomp'
+                // var url = '/sayet/php/rptlibrocompras.php/rptlibcomp'
 
-                $.post(url, $scope.params, function(data){
-                    var tab_text='<table>'
-                    tab_text = tab_text+"<tr><td>No.</td><td>Fecha</td><td>No.NIT Proveedor</td><td>Nombre Proveedor</td><td>Documento/Factura</td><td>Bienes</td><td>Servicios</td><td>Exento</td><td>Iva</td><td>TOTAL</td></tr>"
+                // $.post(url, $scope.params, function(data){
+                //     var tab_text='<table>'
+                //     tab_text = tab_text+"<tr><td>No.</td><td>Fecha</td><td>No.NIT Proveedor</td><td>Nombre Proveedor</td><td>Documento/Factura</td><td>Bienes</td><td>Servicios</td><td>Exento</td><td>Iva</td><td>TOTAL</td></tr>"
 
-                    data.lbcompra.forEach(function(e){
-                        tab_text = tab_text+'<tr><td>'+e.nolinea+'</td>'
-                        tab_text = tab_text+'<td>'+e.fechafactura+'</td>'
-                        tab_text = tab_text+'<td>'+e.nit+'</td>'
-                        tab_text = tab_text+'<td>'+e.proveedor+'</td>'
-                        tab_text = tab_text+'<td>'+e.serie+' '+e.documento+'</td>'
-                        tab_text = tab_text+'<td>'+e.bien+'</td>'
-                        tab_text = tab_text+'<td>'+e.servicio+'</td>'
-                        tab_text = tab_text+'<td>'+e.exento+'</td>'
-                        tab_text = tab_text+'<td>'+e.iva+'</td>'
-                        tab_text = tab_text+'<td>'+e.totfact+'</td></tr>'
-                    })
+                //     data.lbcompra.forEach(function(e){
+                //         tab_text = tab_text+'<tr><td>'+e.nolinea+'</td>'
+                //         tab_text = tab_text+'<td>'+e.fechafactura+'</td>'
+                //         tab_text = tab_text+'<td>'+e.nit+'</td>'
+                //         tab_text = tab_text+'<td>'+e.proveedor+'</td>'
+                //         tab_text = tab_text+'<td>'+e.serie+' '+e.documento+'</td>'
+                //         tab_text = tab_text+'<td>'+e.bien+'</td>'
+                //         tab_text = tab_text+'<td>'+e.servicio+'</td>'
+                //         tab_text = tab_text+'<td>'+e.exento+'</td>'
+                //         tab_text = tab_text+'<td>'+e.iva+'</td>'
+                //         tab_text = tab_text+'<td>'+e.totfact+'</td></tr>'
+                //     })
 
-                    tab_text = tab_text+'</table>'
+                //     tab_text = tab_text+'</table>'
 
-                    var a = document.createElement('a')
-                    document.body.appendChild(a)
-                    a.href = 'data:application/vnd.oasis.opendocument.spreadsheet,' + encodeURIComponent(tab_text)
-                    a.download = 'libroCompras.xls'
-                    a.click()
+                //     var a = document.createElement('a')
+                //     document.body.appendChild(a)
+                //     a.href = 'data:application/vnd.oasis.opendocument.spreadsheet,' + encodeURIComponent(tab_text)
+                //     a.download = 'libroCompras.xls'
+                //     a.click()
 
-                    $('#btnLibroComprasExcel').button('reset')
-                })
+                //     $('#btnLibroComprasExcel').button('reset')
+                // })
             } else {
                 jsReportSrvc.librocompras($scope.params).then(function (result) {
                     var file = new Blob([result.data], {type: 'application/pdf'});
