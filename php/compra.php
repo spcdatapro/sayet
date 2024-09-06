@@ -249,6 +249,7 @@ function insertaDetalleContable($d, $idorigen){
             $db->doQuery($query); 
         }
     }
+
     //Agregado para la tasa municipal EEGSA. Solo va a funcionar con el nit 32644-5
     $nit = $db->getOneField("SELECT TRIM(nit) FROM proveedor WHERE id = $d->idproveedor");
     if(trim($nit) == '32644-5' && (float)$d->noafecto != 0){
@@ -261,6 +262,15 @@ function insertaDetalleContable($d, $idorigen){
     }
 
     // NIT 330651-8 EMPAGUGA alcatarillado empeagua
+    $esempagua = $db->getOneField("SELECT TRIM(nit) FROM proveedor WHERE id = $d->idproveedor") == trim('330651-8');
+    if ($esempagua && $d->noafecto > 0 ) {
+        $ctaempagua = $db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 29");
+        if ($ctaempagua > 0) {
+            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
+            $query.= $origen.", ".$idorigen.", ".$ctaempagua.", ".round(((float)$d->noafecto * (float)$d->tipocambio), 2).", 0.00, '".$d->conceptomayor."')";
+            $db->doQuery($query);
+        }
+    }
 
     $url = 'http://localhost/sayet/php/fixdescuadrecompra.php/fix';
     $dataa = ['idfactura' => $idorigen];
