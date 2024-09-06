@@ -56,11 +56,11 @@ $app->post('/u', function(){
     $existe = false;
 
     if(2 == $d->origen) {
-        $existe = $db->getOneField("SELECT IFNULL(TRUE, FALSE) FROM compraproyecto WHERE idcompra = $d->idorigen");
+        $existe = $db->getOneField("SELECT id FROM compraproyecto WHERE idcompra = $d->idorigen AND idcuentac = $d->anterior");
     }
 
-    if($existe) {
-        $query = "UPDATE compraproyecto SET idcuentac = $d->idcuenta, monto = $d->debe WHERE idcompra = $d->idorigen AND idcuentac = $d->idcuenta";
+    if($existe > 0) {
+        $query = "UPDATE compraproyecto SET idcuentac = $d->idcuenta, monto = $d->debe WHERE id = $existe";
         $db->doQuery($query);
     }
 

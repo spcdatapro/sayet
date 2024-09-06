@@ -501,6 +501,7 @@
         detalle.idcuenta = detalle.idcuenta.toString();
         $scope.detcont = detalle;
         $scope.cuentas = [];
+        var anterior = detalle.idcuenta;
 
         cuentacSrvc.getByTipo(idempresa, 0).then(function (d) { $scope.cuentas = d; });
 
@@ -511,6 +512,7 @@
         $scope.zeroHaber = function (valor) { $scope.detcont.haber = parseFloat(valor) > 0 ? 0.0 : $scope.detcont.haber; };
 
         $scope.actualizar = function (obj) {
+            obj.anterior = anterior;
             $confirm({ text: '¿Seguro(a) de guardar los cambios?', title: 'Modificar detalle contable', ok: 'Sí', cancel: 'No' }).then(function () {
                 detContSrvc.editRow(obj, 'u').then(function () { $scope.ok(); });
             });
