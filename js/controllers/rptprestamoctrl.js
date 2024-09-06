@@ -9,12 +9,13 @@
         $scope.proyectos = [];
         $scope.empleados = [];
         $scope.usuario = {};
+        $scope.meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
         // estatus de carga
         $scope.cargando = false;
 
         // parametros para reporte
-        $scope.params = { agrupar: '1', fal: moment().toDate() };
+        $scope.params = { agrupar: '1', anio: +moment().toDate().getFullYear(), mes: moment().toDate().getMonth().toString() };
 
         // para visualizaciones en pantalla
         $scope.content = `${window.location.origin}/sayet/blank.html`;
@@ -55,9 +56,9 @@
                 var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
                 let rango = undefined;
 
-                rango = moment(params.fal).format('YYYY-MM-DD');
+                rango = $scope.meses[params.mes] + ' ' + params.anio;
 
-                saveAs(file, 'Reporte_Prestamos_al' + rango + '.xlsx');
+                saveAs(file, 'Reporte_Prestamos_de_' + rango + '.xlsx');
 
                 $scope.cargando = false;
             });

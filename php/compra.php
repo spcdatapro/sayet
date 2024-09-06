@@ -260,6 +260,8 @@ function insertaDetalleContable($d, $idorigen){
         }
     }
 
+    // NIT 330651-8 EMPAGUGA alcatarillado empeagua
+
     $url = 'http://localhost/sayet/php/fixdescuadrecompra.php/fix';
     $dataa = ['idfactura' => $idorigen];
     $db->CallJSReportAPI('POST', $url, json_encode($dataa));

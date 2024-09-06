@@ -5,14 +5,34 @@
             <div class="panel-body">
                 <form name="paramsRep" id="paramsRep" novalidate>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group required">
-                                <label for="inpAl" class="control-label">Fecha al:</label>
-                                <input type="date" name="inpAl" id="inpAl" class="form-control" ng-model="params.fal"
-                                    required>
+                                <label for="numAnio" class="control-label">A&ntilde;o</label>
+                                <input name="numAnio" id="numAnio" type="number" class="form-control"
+                                    ng-model="params.anio" required>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <div class="form-group required">
+                                <label for="selMes" class="control-label">Mes del:</label>
+                                <select name="selMes" id="selMes" class="form-control" ng-model="params.mes"
+                                    required>
+                                    <option value="0">Enero</option>
+                                    <option value="1">Febrero</option>
+                                    <option value="2">Marzo</option>
+                                    <option value="3">Abril</option>
+                                    <option value="4">Mayo</option>
+                                    <option value="5">Junio</option>
+                                    <option value="6">Julio</option>
+                                    <option value="7">Agosto</option>
+                                    <option value="8">Septiembre</option>
+                                    <option value="9">Octubre</option>
+                                    <option value="10">Noviembre</option>
+                                    <option value="11">Diciembre</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
                             <div class="form-group required">
                                 <div class="form-group required">
                                     <label for="selAgrupar" class="control-label">Agrupar por:</label>

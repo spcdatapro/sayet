@@ -1126,6 +1126,9 @@ $app->post('/prestamos', function(){
     $primero = true;
     date_default_timezone_set("America/Guatemala");
 
+    // array de nombre de meses
+    $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+
     // separadores
     $separador_empresa = new StdClass;
     $separador_proyecto = new StdClass;
@@ -1136,22 +1139,33 @@ $app->post('/prestamos', function(){
     $sumas_empresa->cuota = array();
     $sumas_empresa->descuento = array();
     $sumas_empresa->saldo = array();
+    $sumas_empresa->saldoant = array();
+    $sumas_empresa->nuevo = array();
+    $sumas_empresa->descnomina = array();
+    $sumas_empresa->totdesc = array();
     // proyecto
     $sumas_proyecto = new StdClass;
     $sumas_proyecto->monto = array();
     $sumas_proyecto->cuota = array();
     $sumas_proyecto->descuento = array();
     $sumas_proyecto->saldo = array();
+    $sumas_proyecto->saldoant = array();
+    $sumas_proyecto->nuevo = array();
+    $sumas_proyecto->descnomina = array();
+    $sumas_proyecto->totdesc = array();
     // general
     $sumas_general = new StdClass;
     $sumas_general->monto = array();
     $sumas_general->cuota = array();
     $sumas_general->descuento = array();
     $sumas_general->saldo = array();
+    $sumas_general->saldoant = array();
+    $sumas_general->nuevo = array();
+    $sumas_general->descnomina = array();
+    $sumas_general->totdesc = array();
 
     // para periodo
-    $fal = $d->falstr;
-    $al= new DateTime($fal);
+    $mes = $d->mes;
 
     // clase para fechas
     $letra = new stdClass();
@@ -1159,7 +1173,10 @@ $app->post('/prestamos', function(){
 
     // encabezado
     $letra->estampa = $letra->estampa->format('d-m-Y H:i');
-    $letra->titulo = 'Al '.$al->format('d/m/Y');
+    $letra->titulo = $meses[$mes].' de '.$d->anio;
+
+    // parametros 
+    $d->mes = $d->mes + 1;
 
     // array de facturas
     $empleados = array();
@@ -1173,17 +1190,32 @@ $app->post('/prestamos', function(){
                 IFNULL(e.nomproyecto, 'NO ESPECIFICADO') AS proyecto,
                 c.id AS idempleado,
                 CONCAT(c.nombre, ' ', IFNULL(c.apellidos, '')) AS nombre,
+                IFNULL(f.descripcion, 'NO ESPECIFICADO') AS puesto,
                 a.id AS idprestamo,
                 DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
+                IF(MONTH(a.fecha) = $d->mes
+                        AND YEAR(a.fecha) = $d->anio,
+                    0.00,
+                    a.monto) AS monto,
                 a.cuotamensual AS cuota,
-                a.monto,
-                a.saldo AS saldo,
+                (a.saldo + IFNULL(g.descprestamo, 0) + IFNULL(b.monto, 0)) AS saldoant,
+                IF(MONTH(a.fecha) = $d->mes
+                        AND YEAR(a.fecha) = $d->anio,
+                    a.monto,
+                    0.00) AS nuevo,
+                g.descprestamo AS descnomina,
                 b.monto AS descuento,
-                IFNULL(f.descripcion, 'NO ESPECIFICADO') AS puesto
+                (IFNULL(b.monto, 0.00) + IFNULL(g.descprestamo, 0.00)) AS totdesc,
+                a.saldo AS saldo
             FROM
                 plnprestamo a
                     LEFT JOIN
-                plnpresabono b ON b.idplnprestamo = a.id
+                (SELECT 
+                    idplnprestamo, monto
+                FROM
+                    plnpresabono
+                WHERE
+                    MONTH(fecha) = $d->mes AND YEAR(fecha) = $d->anio) b ON b.idplnprestamo = a.id
                     INNER JOIN
                 plnempleado c ON a.idplnempleado = c.id
                     LEFT JOIN
@@ -1192,6 +1224,14 @@ $app->post('/prestamos', function(){
                 proyecto e ON c.idproyecto = e.id
                     LEFT JOIN
                 plnpuesto f ON c.idplnpuesto = f.id
+                    LEFT JOIN
+                (SELECT 
+                    descprestamo, idplnempleado
+                FROM
+                    plnnomina
+                WHERE
+                    DAY(fecha) > 16 AND MONTH(fecha) = $d->mes
+                        AND YEAR(fecha) = $d->anio) g ON g.idplnempleado = a.idplnempleado
             WHERE
                 a.anulado = 0 AND a.finalizado = 0 ";
     $query.= isset($d->idempresa) ? "AND c.idempresadebito = $d->idempresa " : "";
@@ -1235,12 +1275,20 @@ $app->post('/prestamos', function(){
         array_push($sumas_empresa->cuota, $anterior->cuota);
         array_push($sumas_empresa->saldo, $anterior->saldo);
         array_push($sumas_empresa->descuento, $anterior->descuento);
+        array_push($sumas_empresa->saldoant, $anterior->monto);
+        array_push($sumas_empresa->nuevo, $anterior->cuota);
+        array_push($sumas_empresa->descnomina, $anterior->saldo);
+        array_push($sumas_empresa->totdesc, $anterior->totdesc);
 
         // general
         array_push($sumas_general->monto, $anterior->monto);
         array_push($sumas_general->cuota, $anterior->cuota);
         array_push($sumas_general->saldo, $anterior->saldo);
         array_push($sumas_general->descuento, $anterior->descuento);
+        array_push($sumas_general->saldoant, $anterior->monto);
+        array_push($sumas_general->nuevo, $anterior->cuota);
+        array_push($sumas_general->descnomina, $anterior->saldo);
+        array_push($sumas_general->totdesc, $anterior->totdesc);
 
         if ($d->agrupar == 2) {
             array_push($separador_proyecto->empleados, $anterior);
@@ -1249,6 +1297,10 @@ $app->post('/prestamos', function(){
             array_push($sumas_proyecto->cuota, $anterior->cuota);
             array_push($sumas_proyecto->saldo, $anterior->saldo);
             array_push($sumas_proyecto->descuento, $anterior->descuento);
+            array_push($sumas_proyecto->saldoant, $anterior->monto);
+            array_push($sumas_proyecto->nuevo, $anterior->cuota);
+            array_push($sumas_proyecto->descnomina, $anterior->saldo);
+            array_push($sumas_proyecto->totdesc, $anterior->totdesc);
         } else {
             array_push($separador_empresa->empleados, $anterior);
         }
@@ -1259,6 +1311,10 @@ $app->post('/prestamos', function(){
                 $separador_proyecto->cuota = round(array_sum($sumas_proyecto->cuota), 2);
                 $separador_proyecto->saldo = round(array_sum($sumas_proyecto->saldo), 2);
                 $separador_proyecto->descuento = round(array_sum($sumas_proyecto->descuento), 2);
+                $separador_proyecto->saldoant = round(array_sum($sumas_proyecto->saldoant), 2);
+                $separador_proyecto->nuevo = round(array_sum($sumas_proyecto->nuevo), 2);
+                $separador_proyecto->descnomina = round(array_sum($sumas_proyecto->descnomina), 2);
+                $separador_proyecto->totdesc = round(array_sum($sumas_proyecto->totdesc), 2);
 
                 // empujar a array padre
                 array_push($separador_empresa->proyectos, $separador_proyecto);
@@ -1271,6 +1327,10 @@ $app->post('/prestamos', function(){
                 $sumas_proyecto->cuota = array();
                 $sumas_proyecto->decuento = array();
                 $sumas_proyecto->saldo = array();
+                $sumas_proyecto->saldoant = array();
+                $sumas_proyecto->nuevo = array();
+                $sumas_proyecto->descnomina = array();
+                $sumas_proyecto->totdesc = array();
             }
         }
 
@@ -1279,6 +1339,10 @@ $app->post('/prestamos', function(){
             $separador_empresa->cuota = round(array_sum($sumas_empresa->cuota), 2);
             $separador_empresa->saldo = round(array_sum($sumas_empresa->saldo), 2);
             $separador_empresa->descuento = round(array_sum($sumas_empresa->descuento), 2);
+            $separador_empresa->saldoant = round(array_sum($sumas_empresa->saldoant), 2);
+            $separador_empresa->nuevo = round(array_sum($sumas_empresa->nuevo), 2);
+            $separador_empresa->descnomina = round(array_sum($sumas_empresa->descnomina), 2);
+            $separador_empresa->totdesc = round(array_sum($sumas_empresa->totdesc), 2);
 
             // empujar a array padre
             array_push($empleados, $separador_empresa);
@@ -1293,6 +1357,10 @@ $app->post('/prestamos', function(){
             $sumas_empresa->cuota = array();
             $sumas_empresa->decuento = array();
             $sumas_empresa->saldo = array();
+            $sumas_empresa->saldoant = array();
+            $sumas_empresa->nuevo = array();
+            $sumas_empresa->descnomina = array();
+            $sumas_empresa->totdesc = array();
             if ($d->agrupar == 2) {
                 $separador_empresa->proyectos = array();
             } else {
@@ -1310,6 +1378,10 @@ $app->post('/prestamos', function(){
                 array_push($sumas_proyecto->cuota, $actual->cuota);
                 array_push($sumas_proyecto->saldo, $actual->saldo);
                 array_push($sumas_proyecto->descuento, $actual->descuento);
+                array_push($sumas_proyecto->saldoant, $actual->monto);
+                array_push($sumas_proyecto->nuevo, $actual->cuota);
+                array_push($sumas_proyecto->descnomina, $actual->saldo);
+                array_push($sumas_proyecto->totdesc, $actual->totdesc);
             } else {
                 array_push($separador_empresa->empleados, $actual);
             }
@@ -1319,11 +1391,19 @@ $app->post('/prestamos', function(){
             array_push($sumas_empresa->cuota, $actual->cuota);
             array_push($sumas_empresa->saldo, $actual->saldo);
             array_push($sumas_empresa->descuento, $actual->descuento);
+            array_push($sumas_empresa->saldoant, $actual->monto);
+            array_push($sumas_empresa->nuevo, $actual->cuota);
+            array_push($sumas_empresa->descnomina, $actual->saldo);
+            array_push($sumas_empresa->totdesc, $actual->totdesc);
             // general
             array_push($sumas_general->monto, $actual->monto);
             array_push($sumas_general->cuota, $actual->cuota);
             array_push($sumas_general->saldo, $actual->saldo);
             array_push($sumas_general->descuento, $actual->descuento);
+            array_push($sumas_general->saldoant, $actual->monto);
+            array_push($sumas_general->nuevo, $actual->cuota);
+            array_push($sumas_general->descnomina, $actual->saldo);
+            array_push($sumas_general->totdesc, $actual->totdesc);
 
 
             if ($d->agrupar == 2) {
@@ -1331,6 +1411,10 @@ $app->post('/prestamos', function(){
                 $separador_proyecto->cuota = round(array_sum($sumas_proyecto->cuota), 2);
                 $separador_proyecto->saldo = round(array_sum($sumas_proyecto->saldo), 2);
                 $separador_proyecto->descuento = round(array_sum($sumas_proyecto->descuento), 2);
+                $separador_proyecto->saldoant = round(array_sum($sumas_proyecto->saldoant), 2);
+                $separador_proyecto->nuevo = round(array_sum($sumas_proyecto->nuevo), 2);
+                $separador_proyecto->descnomina = round(array_sum($sumas_proyecto->descnomina), 2);
+                $separador_proyecto->totdesc = round(array_sum($sumas_proyecto->totdesc), 2);
                 // empujar a array padre
                 array_push($separador_empresa->proyectos, $separador_proyecto);
             }
@@ -1339,6 +1423,10 @@ $app->post('/prestamos', function(){
             $separador_empresa->cuota = round(array_sum($sumas_empresa->cuota), 2);
             $separador_empresa->saldo = round(array_sum($sumas_empresa->saldo), 2);
             $separador_empresa->descuento = round(array_sum($sumas_empresa->descuento), 2);
+            $separador_empresa->saldoant = round(array_sum($sumas_empresa->saldoant), 2);
+            $separador_empresa->nuevo = round(array_sum($sumas_empresa->nuevo), 2);
+            $separador_empresa->descnomina = round(array_sum($sumas_empresa->descnomina), 2);
+            $separador_empresa->totdesc = round(array_sum($sumas_empresa->totdesc), 2);
 
             array_push($empleados, $separador_empresa);
         }
@@ -1376,6 +1464,10 @@ $app->post('/prestamos', function(){
             array_push($sumas_general->cuota, $actual->cuota);
             array_push($sumas_general->saldo, $actual->saldo);
             array_push($sumas_general->descuento, $actual->descuento);
+            array_push($sumas_general->saldoant, $actual->monto);
+            array_push($sumas_general->nuevo, $actual->cuota);
+            array_push($sumas_general->descnomina, $actual->saldo);
+            array_push($sumas_general->totdesc, $actual->totdesc);
 
             array_push($empleados, $separador_empresa);
         }
@@ -1385,6 +1477,10 @@ $app->post('/prestamos', function(){
     $letra->cuota = round(array_sum($sumas_general->cuota), 2);
     $letra->saldo = round(array_sum($sumas_general->saldo), 2);
     $letra->descuento = round(array_sum($sumas_general->descuento), 2);
+    $letra->saldoant = round(array_sum($sumas_general->saldoant), 2);
+    $letra->nuevo = round(array_sum($sumas_general->nuevo), 2);
+    $letra->descnomina = round(array_sum($sumas_general->descnomina), 2);
+    $letra->totdesc = round(array_sum($sumas_general->totdesc), 2);
 
     print json_encode([ 'encabezado' => $letra, 'empresas' => $empleados ]);
 });
