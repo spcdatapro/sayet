@@ -162,7 +162,7 @@ $app->post('/finanzas', function(){
                 SUBSTRING(LOWER(b.conceptomayor), 1, 65) AS concepto,
                 DATE_FORMAT(b.fechafactura, '%d/%m/%Y') AS fechafact,
                 CONCAT(h.siglas, ' (', b.documento, ')') AS documento,
-                ROUND(IF(b.idtipofactura = 10, a.debe + a.haber * -1, a.debe + a.haber), 2) AS total,
+                ROUND(IF(a.debe = 0, a.haber * -1, IF(b.idtipofactura = 10, a.debe * -1, a.debe)), 2) AS total,
                 b.fechafactura AS ord
             FROM
                 detallecontable a

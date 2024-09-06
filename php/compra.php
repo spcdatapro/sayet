@@ -212,6 +212,17 @@ function insertaDetalleContable($d, $idorigen){
             $query.= $origen.", ".$idorigen.", ".$ctaproveedores.", 0.00, ".round((((float)$d->totfact - $d->isr - $d->retIva) * (float)$d->tipocambio), 2).", '".$d->conceptomayor."')";
             $db->doQuery($query);
         }
+
+        // NIT 330651-8 EMPAGUGA alcatarillado empeagua
+        $esempagua = $db->getOneField("SELECT TRIM(nit) FROM proveedor WHERE id = $d->idproveedor") == trim('330651-8');
+        if ($esempagua && $d->noafecto > 0 ) {
+            $ctaempagua = $db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 29");
+            if ($ctaempagua > 0) {
+                $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
+                $query.= $origen.", ".$idorigen.", ".$ctaempagua.", ".round(((float)$d->noafecto * (float)$d->tipocambio), 2).", 0.00, '".$d->conceptomayor."')";
+                $db->doQuery($query);
+            }
+        }
     } else {
         if($ctagastoprov > 0){
             $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, haber, debe, conceptomayor) VALUES(";
@@ -248,6 +259,17 @@ function insertaDetalleContable($d, $idorigen){
             $query.= $origen.", ".$idorigen.", ".$ctaproveedores.", 0.00, ".round((((float)$d->totfact - $d->isr - $d->retIva) * (float)$d->tipocambio), 2).", '".$d->conceptomayor."')";
             $db->doQuery($query); 
         }
+
+        // NIT 330651-8 EMPAGUGA alcatarillado empeagua
+        $esempagua = $db->getOneField("SELECT TRIM(nit) FROM proveedor WHERE id = $d->idproveedor") == trim('330651-8');
+        if ($esempagua && $d->noafecto > 0 ) {
+            $ctaempagua = $db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 29");
+            if ($ctaempagua > 0) {
+                $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, haber, debe, conceptomayor) VALUES(";
+                $query.= $origen.", ".$idorigen.", ".$ctaempagua.", ".round(((float)$d->noafecto * (float)$d->tipocambio), 2).", 0.00, '".$d->conceptomayor."')";
+                $db->doQuery($query);
+            }
+        }
     }
 
     //Agregado para la tasa municipal EEGSA. Solo va a funcionar con el nit 32644-5
@@ -257,17 +279,6 @@ function insertaDetalleContable($d, $idorigen){
         if($ctaeegsa > 0){
             $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
             $query.= $origen.", ".$idorigen.", ".$ctaeegsa.", ".round(((float)$d->noafecto * (float)$d->tipocambio), 2).", 0.00, '".$d->conceptomayor."')";
-            $db->doQuery($query);
-        }
-    }
-
-    // NIT 330651-8 EMPAGUGA alcatarillado empeagua
-    $esempagua = $db->getOneField("SELECT TRIM(nit) FROM proveedor WHERE id = $d->idproveedor") == trim('330651-8');
-    if ($esempagua && $d->noafecto > 0 ) {
-        $ctaempagua = $db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 29");
-        if ($ctaempagua > 0) {
-            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
-            $query.= $origen.", ".$idorigen.", ".$ctaempagua.", ".round(((float)$d->noafecto * (float)$d->tipocambio), 2).", 0.00, '".$d->conceptomayor."')";
             $db->doQuery($query);
         }
     }
@@ -282,7 +293,7 @@ function generaDetalleProyecto($db, $lastid){
     $idproyecto = (int)$db->getOneField($query);
     $query = "SELECT idunidad FROM compra WHERE id = $lastid";
     $idunidad = (int)$db->getOneField($query);
-    $query = "SELECT a.idcuenta, a.debe FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta 
+    $query = "SELECT a.idcuenta, IF(a.debe = 0.00, a.haber, a.debe) AS debe FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta 
     WHERE a.origen = 2 AND a.idorigen = $lastid AND (b.codigo LIKE '5%' OR b.codigo LIKE '6%')";
     $gastos = $db->getQuery($query);
     $cntGastos = count($gastos);
