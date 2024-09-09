@@ -1230,7 +1230,7 @@ $app->post('/prestamos', function(){
                     DAY(fecha) > 16 AND MONTH(fecha) = $d->mes
                         AND YEAR(fecha) = $d->anio) g ON g.idplnempleado = a.idplnempleado
             WHERE
-                a.anulado = 0 AND a.finalizado = 0 ";
+                a.anulado = 0 AND (a.finalizado = 0 OR (YEAR(a.liquidacion) = $d->anio AND MONTH(a.liquidacion) = $d->mes)) ";
     $query.= isset($d->idempresa) ? "AND c.idempresadebito = $d->idempresa " : "";
     $query.= isset($d->idempleado) ? "AND b.idplnempleado = $d->idempleado " : "";
     $query.= "ORDER BY  2 , ";
