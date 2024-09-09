@@ -1173,7 +1173,7 @@ $app->post('/prestamos', function(){
 
     // encabezado
     $letra->estampa = $letra->estampa->format('d-m-Y H:i');
-    $letra->titulo = $meses[$mes].' de '.$d->anio;
+    $letra->titulo = $meses[$mes].' '.$d->anio;
 
     // parametros 
     $d->mes = $d->mes + 1;
@@ -1193,12 +1193,9 @@ $app->post('/prestamos', function(){
                 IFNULL(f.descripcion, 'NO ESPECIFICADO') AS puesto,
                 a.id AS idprestamo,
                 DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
-                IF(MONTH(a.fecha) = $d->mes
-                        AND YEAR(a.fecha) = $d->anio,
-                    0.00,
-                    a.monto) AS monto,
+                a.monto AS monto,
                 a.cuotamensual AS cuota,
-                (a.saldo + IFNULL(g.descprestamo, 0) + IFNULL(b.monto, 0)) AS saldoant,
+                IF(MONTH(a.fecha) = $d->mes AND YEAR(a.fecha), 0.00, (a.saldo + IFNULL(g.descprestamo, 0) + IFNULL(b.monto, 0))) AS saldoant,
                 IF(MONTH(a.fecha) = $d->mes
                         AND YEAR(a.fecha) = $d->anio,
                     a.monto,
@@ -1275,9 +1272,9 @@ $app->post('/prestamos', function(){
         array_push($sumas_empresa->cuota, $anterior->cuota);
         array_push($sumas_empresa->saldo, $anterior->saldo);
         array_push($sumas_empresa->descuento, $anterior->descuento);
-        array_push($sumas_empresa->saldoant, $anterior->monto);
-        array_push($sumas_empresa->nuevo, $anterior->cuota);
-        array_push($sumas_empresa->descnomina, $anterior->saldo);
+        array_push($sumas_empresa->saldoant, $anterior->saldoant);
+        array_push($sumas_empresa->nuevo, $anterior->nuevo);
+        array_push($sumas_empresa->descnomina, $anterior->descnomina);
         array_push($sumas_empresa->totdesc, $anterior->totdesc);
 
         // general
@@ -1285,9 +1282,9 @@ $app->post('/prestamos', function(){
         array_push($sumas_general->cuota, $anterior->cuota);
         array_push($sumas_general->saldo, $anterior->saldo);
         array_push($sumas_general->descuento, $anterior->descuento);
-        array_push($sumas_general->saldoant, $anterior->monto);
-        array_push($sumas_general->nuevo, $anterior->cuota);
-        array_push($sumas_general->descnomina, $anterior->saldo);
+        array_push($sumas_general->saldoant, $anterior->saldoant);
+        array_push($sumas_general->nuevo, $anterior->nuevo);
+        array_push($sumas_general->descnomina, $anterior->descnomina);
         array_push($sumas_general->totdesc, $anterior->totdesc);
 
         if ($d->agrupar == 2) {
@@ -1297,9 +1294,9 @@ $app->post('/prestamos', function(){
             array_push($sumas_proyecto->cuota, $anterior->cuota);
             array_push($sumas_proyecto->saldo, $anterior->saldo);
             array_push($sumas_proyecto->descuento, $anterior->descuento);
-            array_push($sumas_proyecto->saldoant, $anterior->monto);
-            array_push($sumas_proyecto->nuevo, $anterior->cuota);
-            array_push($sumas_proyecto->descnomina, $anterior->saldo);
+            array_push($sumas_proyecto->saldoant, $anterior->saldoant);
+            array_push($sumas_proyecto->nuevo, $anterior->nuevo);
+            array_push($sumas_proyecto->descnomina, $anterior->descnomina);
             array_push($sumas_proyecto->totdesc, $anterior->totdesc);
         } else {
             array_push($separador_empresa->empleados, $anterior);
@@ -1378,9 +1375,9 @@ $app->post('/prestamos', function(){
                 array_push($sumas_proyecto->cuota, $actual->cuota);
                 array_push($sumas_proyecto->saldo, $actual->saldo);
                 array_push($sumas_proyecto->descuento, $actual->descuento);
-                array_push($sumas_proyecto->saldoant, $actual->monto);
-                array_push($sumas_proyecto->nuevo, $actual->cuota);
-                array_push($sumas_proyecto->descnomina, $actual->saldo);
+                array_push($sumas_proyecto->saldoant, $actual->saldoant);
+                array_push($sumas_proyecto->nuevo, $actual->nuevo);
+                array_push($sumas_proyecto->descnomina, $actual->descnomina);
                 array_push($sumas_proyecto->totdesc, $actual->totdesc);
             } else {
                 array_push($separador_empresa->empleados, $actual);
@@ -1391,18 +1388,18 @@ $app->post('/prestamos', function(){
             array_push($sumas_empresa->cuota, $actual->cuota);
             array_push($sumas_empresa->saldo, $actual->saldo);
             array_push($sumas_empresa->descuento, $actual->descuento);
-            array_push($sumas_empresa->saldoant, $actual->monto);
-            array_push($sumas_empresa->nuevo, $actual->cuota);
-            array_push($sumas_empresa->descnomina, $actual->saldo);
+            array_push($sumas_empresa->saldoant, $actual->saldoant);
+            array_push($sumas_empresa->nuevo, $actual->nuevo);
+            array_push($sumas_empresa->descnomina, $actual->descnomina);
             array_push($sumas_empresa->totdesc, $actual->totdesc);
             // general
             array_push($sumas_general->monto, $actual->monto);
             array_push($sumas_general->cuota, $actual->cuota);
             array_push($sumas_general->saldo, $actual->saldo);
             array_push($sumas_general->descuento, $actual->descuento);
-            array_push($sumas_general->saldoant, $actual->monto);
-            array_push($sumas_general->nuevo, $actual->cuota);
-            array_push($sumas_general->descnomina, $actual->saldo);
+            array_push($sumas_general->saldoant, $actual->saldoant);
+            array_push($sumas_general->nuevo, $actual->nuevo);
+            array_push($sumas_general->descnomina, $actual->descnomina);
             array_push($sumas_general->totdesc, $actual->totdesc);
 
 
@@ -1464,9 +1461,9 @@ $app->post('/prestamos', function(){
             array_push($sumas_general->cuota, $actual->cuota);
             array_push($sumas_general->saldo, $actual->saldo);
             array_push($sumas_general->descuento, $actual->descuento);
-            array_push($sumas_general->saldoant, $actual->monto);
-            array_push($sumas_general->nuevo, $actual->cuota);
-            array_push($sumas_general->descnomina, $actual->saldo);
+            array_push($sumas_general->saldoant, $actual->saldoant);
+            array_push($sumas_general->nuevo, $actual->nuevo);
+            array_push($sumas_general->descnomina, $actual->descnomina);
             array_push($sumas_general->totdesc, $actual->totdesc);
 
             array_push($empleados, $separador_empresa);
