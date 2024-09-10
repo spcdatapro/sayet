@@ -1127,7 +1127,7 @@ $app->get('/uriva/:idcompra/:monto/:idempresa/:suma/:tc', function ($idcompra, $
     $db->doQuery("UPDATE detallecontable SET haber = $monto * $tc WHERE idorigen = $idcompra AND origen = 2 AND idcuenta = $ctaiva");
     $db->doQuery("UPDATE detallecontable SET haber = $monto_prov WHERE idorigen = $idcompra AND origen = 2 AND idcuenta = $ctaprov");
 
-    print json_encode(['tipo' => 'success', 'mensaje' => 'Se ha modificado correctamente.']);;
+    print json_encode(['tipo' => 'success', 'mensaje' => 'Se ha modificado correctamente.']);
 });
 
 $app->run();
