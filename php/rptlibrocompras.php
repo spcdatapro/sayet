@@ -127,6 +127,8 @@ $app->get('/gastact/:idempresa/:mes/:anio', function($idempresa, $mes, $anio){
 $app->get('/detgastact/:idempresa/:mes/:anio', function($idempresa, $mes, $anio){
 	$db = new dbcpm();
 
+	$sumas = [];
+
 	$query = "SELECT DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy, a.nomempresa AS empresa, (SELECT UPPER(nombre) FROM mes WHERE id = $mes) AS mes, $anio AS anio, '' AS totactivos ";
 	$query.= "FROM empresa a WHERE id = $idempresa";
 	$generales = $db->getQuery($query)[0];
@@ -153,11 +155,26 @@ $app->get('/detgastact/:idempresa/:mes/:anio', function($idempresa, $mes, $anio)
 			$compras[] = [
 				'id' => '', 'fechaingreso' => '', 'serie' => '', 'documento' => '', 'proveedor' => '', 'codigo' => '', 'cuenta' => 'Total:', 'debe' => number_format((float)$suma, 2), 'conceptomayor' => ''
 			];
+
+			$query = "SELECT SUM(a.debe) ";
+			$query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta INNER JOIN compra c ON c.id = a.idorigen LEFT JOIN proveedor d ON d.id = c.idproveedor ";
+			$query.= "WHERE a.origen = 2 AND a.anulado = 0 AND c.idempresa = $idempresa AND c.mesiva = $mes AND YEAR(c.fechaingreso) = $anio AND b.codigo LIKE '$cuenta%' ";
+			$query.= "AND (c.idtipofactura != 5 OR d.pequeniocont = 0) ";
+			$query.= "ORDER BY c.fechaingreso";
+			$suma_cuadro = $db->getOneField($query);
+
+			$query = "SELECT SUM(a.debe) ";
+			$query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta INNER JOIN compra c ON c.id = a.idorigen LEFT JOIN proveedor d ON d.id = c.idproveedor ";
+			$query.= "WHERE a.origen = 2 AND a.anulado = 0 AND c.idempresa = $idempresa AND c.mesiva = $mes AND YEAR(c.fechaingreso) = $anio AND b.codigo LIKE '$cuenta%' ";
+			$query.= "AND (c.idtipofactura = 5 OR d.pequeniocont = 1) ";
+			$query.= "ORDER BY c.fechaingreso";
+			$suma_otros = $db->getOneField($query);
 			if ($cuenta == '12102') {
-				$generales->tcep = number_format($suma, 2);
+				$generales->tcep = number_format($suma_cuadro, 2);
 			} else {
-				$generales->tact = number_format($suma, 2);
+				$generales->tact = number_format($suma_cuadro, 2);
 			}
+			array_push($sumas, $suma_otros);
 			$activos[] = [
 				'codigo' => $ctaActivo->codigo,
 				'cuenta' => $ctaActivo->cuenta,
@@ -165,6 +182,8 @@ $app->get('/detgastact/:idempresa/:mes/:anio', function($idempresa, $mes, $anio)
 			];
 		}
 	}
+
+	$generales->tdoc = number_format(array_sum($sumas), 2);
 
 	$generales->totactivos = number_format($totActivos, 2);
 

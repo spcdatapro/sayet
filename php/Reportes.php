@@ -6,6 +6,7 @@ class GeneradorReportes {
     private $idproyecto;
     private $sumas_general;
 
+    // mejoras separadores opcionales
     public function __construct($data, $tipo, $montos, $porproyecto = false) {
 
         // sumadores
