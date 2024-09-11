@@ -632,6 +632,58 @@ $app->post('/prestamos', function(){
     print json_encode([ 'encabezado' => $letra, 'empresas' => $empleados ]);
 });
 
+$app->post('/antiguedad', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $primero = true;
+    date_default_timezone_set("America/Guatemala");
+
+    // array para totales si se tiene que modificar por reporte
+    $totales = ['monto', 'cuota', 'saldoant', 'nuevo', 'descnomina', 'descuento', 'totdesc', 'saldo'];
+
+    // array de nombre de meses
+    $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+
+    // para periodo
+    $mes = $d->mes;
+
+    // clase para fechas
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+
+    // encabezado
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+    $letra->titulo = $meses[$mes].' '.$d->anio;
+
+    // parametros 
+    $d->mes = $d->mes + 1;
+
+    // SELECT
+    $query = "";
+    $query.= isset($d->idempresa) ? "AND c.idempresadebito = $d->idempresa " : "";
+    $query.= isset($d->idempleado) ? "AND b.idplnempleado = $d->idempleado " : "";
+    $query.= "ORDER BY  2 , ";
+    $query.= $d->agrupar == 2 ? " 6 , 8" : " 8";
+    $data = $db->getQuery($query);
+
+    foreach($data as $dat) {
+        minusculas($dat);
+    }
+
+    $porproyecto = $d->agrupar == 2 ? true : false;
+
+    // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
+    $reporte = new GeneradorReportes($data, 'empleados', $totales, $porproyecto);
+    $empleados = $reporte->getReporte();
+    $montos_generales = $reporte->getTotalesGenerales();
+
+    foreach($totales as $t) {
+        $letra->$t = array_sum($montos_generales->$t);
+    }
+
+    print json_encode([ 'encabezado' => $letra, 'empresas' => $empleados ]);
+});
+
 function minusculas ($dat) {
     $dat->nombre = ucwords(strtolower($dat->nombre), ' ');
     $dat->puesto = ucfirst(strtolower($dat->puesto));
