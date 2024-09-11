@@ -50,7 +50,7 @@
                             <div class="form-group">
                                 <label class="control-label">Empresa:</label>
                                 <ui-select ng-model="params.idempresa" title="Seleccione una empresa..."
-                                    theme="bootstrap" autofocus="false">
+                                    theme="bootstrap" autofocus="false" ng-change="getProyectos(params.idempresa)">
                                     <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
                                         <span ng-bind="($select.selected.nomempresa)"></span>
                                     </ui-select-match>

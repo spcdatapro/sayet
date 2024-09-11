@@ -2,7 +2,7 @@
 
     var controller = angular.module('cpm.prestamos', []);
 
-    controller.controller('rptPrestamos', ['$scope', 'jsReportSrvc', 'empresaSrvc', 'authSrvc', function ($scope, jsReportSrvc, empresaSrvc, authSrvc) {
+    controller.controller('rptPrestamos', ['$scope', 'jsReportSrvc', 'empresaSrvc', 'authSrvc', 'proyectoSrvc', function ($scope, jsReportSrvc, empresaSrvc, authSrvc, proyectoSrvc) {
 
         // variables para selectores
         $scope.empresas = [];
@@ -10,6 +10,7 @@
         $scope.empleados = [];
         $scope.usuario = {};
         $scope.meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        $scope.proyectos = [];
 
         // estatus de carga
         $scope.cargando = false;
@@ -33,6 +34,13 @@
                 });
             });
         });
+
+
+        // traer proyectos al cambiar empresa
+        $scope.getProyectos = function (idempresa) {
+            proyectoSrvc.lstProyectosPorEmpresa(idempresa).then(function (d) { $scope.proyectos = d; });
+            $scope.params.idproyecto = undefined;
+        };
 
         // pdf
         $scope.getPDF = function (params) {

@@ -644,21 +644,15 @@ $app->post('/antiguedad', function(){
     // array de nombre de meses
     $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
 
-    // para periodo
-
     // clase para fechas
     $letra = new stdClass();
     $letra->estampa = new DateTime();
+    $letra->al = new DateTime($d->falstr);
 
     // encabezado
     $letra->estampa = $letra->estampa->format('d-m-Y H:i');
-    $letra->titulo = 'Al '.$d->falstr;
+    $letra->titulo = 'Al '.$letra->al->format('d/m/Y');
 
-    // parametros 
-
-    // $d->fal y $d->falstr (str si lo lee mysql)
-
-    // SELECT
     $query = "SELECT 
                 d.id AS idempresa,
                 IFNULL(d.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
