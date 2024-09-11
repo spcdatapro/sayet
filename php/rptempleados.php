@@ -639,13 +639,12 @@ $app->post('/antiguedad', function(){
     date_default_timezone_set("America/Guatemala");
 
     // array para totales si se tiene que modificar por reporte
-    $totales = ['monto', 'cuota', 'saldoant', 'nuevo', 'descnomina', 'descuento', 'totdesc', 'saldo'];
+    $totales = ['monto', 'cuota', 'saldoant', 'nuevo', 'descnomina', 'descuento', 'saldo'];
 
     // array de nombre de meses
     $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
 
     // para periodo
-    $mes = $d->mes;
 
     // clase para fechas
     $letra = new stdClass();
@@ -653,13 +652,39 @@ $app->post('/antiguedad', function(){
 
     // encabezado
     $letra->estampa = $letra->estampa->format('d-m-Y H:i');
-    $letra->titulo = $meses[$mes].' '.$d->anio;
+    $letra->titulo = 'Al '.$d->falstr;
 
     // parametros 
-    $d->mes = $d->mes + 1;
+
+    // $d->fal y $d->falstr (str si lo lee mysql)
 
     // SELECT
-    $query = "";
+    $query = "SELECT 
+                d.id AS idempresa,
+                IFNULL(d.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
+                d.numeropat AS numero,
+                d.abreviatura,
+                c.idproyecto,
+                IFNULL(e.nomproyecto, 'NO ESPECIFICADO') AS proyecto,
+                c.id AS idempleado,
+                CONCAT(c.nombre, ' ', IFNULL(c.apellidos, '')) AS nombre,
+                IFNULL(f.descripcion, 'NO ESPECIFICADO') As puesto,
+                DATE_FORMAT(ingreso, '%d/%m/%Y') AS ingreso,
+                DATEDIFF('2024-09-11', ingreso) AS dias,
+                TIMESTAMPDIFF(YEAR,
+                    ingreso,
+                    '2024-09-11') AS anios,
+                TIMESTAMPDIFF(MONTH,
+                    ingreso,
+                    '2024-09-11') AS meses
+            FROM
+                plnempleado c
+                    LEFT JOIN
+                plnempresa d ON c.idempresadebito = d.id
+                    LEFT JOIN
+                proyecto e ON c.idproyecto = e.id
+                    LEFT JOIN
+                plnpuesto f ON c.idplnpuesto = f.id ";
     $query.= isset($d->idempresa) ? "AND c.idempresadebito = $d->idempresa " : "";
     $query.= isset($d->idempleado) ? "AND b.idplnempleado = $d->idempleado " : "";
     $query.= "ORDER BY  2 , ";
@@ -673,13 +698,8 @@ $app->post('/antiguedad', function(){
     $porproyecto = $d->agrupar == 2 ? true : false;
 
     // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
-    $reporte = new GeneradorReportes($data, 'empleados', $totales, $porproyecto);
+    $reporte = new GeneradorReportes($data, 'empleados', [], $porproyecto);
     $empleados = $reporte->getReporte();
-    $montos_generales = $reporte->getTotalesGenerales();
-
-    foreach($totales as $t) {
-        $letra->$t = array_sum($montos_generales->$t);
-    }
 
     print json_encode([ 'encabezado' => $letra, 'empresas' => $empleados ]);
 });
