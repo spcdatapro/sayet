@@ -18,6 +18,7 @@
         $scope.losBancosPais = [];
         $scope.dectc = 2;
         $scope.permiso = {};
+        $scope.todos = 0;
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true);
 
@@ -61,7 +62,7 @@
         };
 
         $scope.getLstProveedores = function(){
-            proveedorSrvc.lstProveedores(true).then(function(d){
+            proveedorSrvc.lstProveedores($scope.todos).then(function(d){
                 $scope.losProvs = d;
                 for(var i = 0; i < $scope.losProvs.length; i++){
                     $scope.losProvs[i].retensionisr = parseInt($scope.losProvs[i].retensionisr);

@@ -146,14 +146,16 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <lable for="txtCtaBco" class="control-label">Cuenta para transferencias:</lable>
-                                    <input name="txtCtaBco" id="txtCtaBco" class="form-control" ng-model="elProv.cuentabanco" type="text" />
+                                    <input name="txtCtaBco" id="txtCtaBco" class="form-control"
+                                        ng-model="elProv.cuentabanco" type="text" />
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="selBcnPai" class="control-label">Banco del pais</label>
-                                    <select name="selBcnPai" id="selBcnPai" class="form-control" ng-model="elProv.objBancoPais" 
-                                    ng-options="obj.nombre for obj in losBancosPais track by obj.id">
+                                    <select name="selBcnPai" id="selBcnPai" class="form-control"
+                                        ng-model="elProv.objBancoPais"
+                                        ng-options="obj.nombre for obj in losBancosPais track by obj.id">
                                     </select>
                                 </div>
                             </div>
@@ -162,25 +164,28 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="selTipCuet" class="control-label">Tipo de cuenta:</label>
-                                    <select name="selTipCuet" id="selTipCuet" class="form-control" ng-model="elProv.tipcuenta">
-                                    <option value="1">Monetaria</option>
-                                    <option value="2">Ahorro</option>
+                                    <select name="selTipCuet" id="selTipCuet" class="form-control"
+                                        ng-model="elProv.tipcuenta">
+                                        <option value="1">Monetaria</option>
+                                        <option value="2">Ahorro</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="txtId" class="control-label">Identificacion:</label>
-                                    <input name="txId" id="txtId" class="form-control" ng-model="elProv.identificacion" type="text" />
+                                    <input name="txId" id="txtId" class="form-control" ng-model="elProv.identificacion"
+                                        type="text" />
                                 </div>
-                            </div> 
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <center>
                                         <label for="chkRecurrente">Recurrente:</label>
-                                        <input name="chkRecurrente" id="chkRecurrente" type="checkbox" class="checkbox" ng-model="elProv.recurrente" ng-true-value="'1'" ng-false-value="'0'" />
+                                        <input name="chkRecurrente" id="chkRecurrente" type="checkbox" class="checkbox"
+                                            ng-model="elProv.recurrente" ng-true-value="'1'" ng-false-value="'0'" />
                                     </center>
                                 </div>
                             </div>
@@ -188,7 +193,8 @@
                                 <div class="form-group">
                                     <center>
                                         <label for="chkDeBaja">De baja:</label>
-                                        <input name="chkDeBaja" id="chkDeBaja" type="checkbox" class="checkbox" ng-model="elProv.debaja" ng-true-value="'1'" ng-false-value="'0'" />
+                                        <input name="chkDeBaja" id="chkDeBaja" type="checkbox" class="checkbox"
+                                            ng-model="elProv.debaja" ng-true-value="'1'" ng-false-value="'0'" />
                                     </center>
                                 </div>
                             </div>
@@ -209,6 +215,17 @@
                         </div>
                     </form>
                     <hr />
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="checkbox">
+                                <label for="">
+                                    <input style="text-align: left;" name="chkActivos" id="chkActivos" type="checkbox"
+                                        class="checkbox" ng-model="todos" ng-true-value="1"
+                                        ng-false-value="0"> Todos
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                     <table datatable="ng" dt-options="dtOptions"
                         class="table table-responsive table-hover table-condensed">
                         <thead>
