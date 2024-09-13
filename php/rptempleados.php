@@ -703,4 +703,29 @@ function minusculas ($dat) {
     $dat->puesto = ucfirst(strtolower($dat->puesto));
 }
 
+$app->post('/ficha', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    date_default_timezone_set("America/Guatemala");
+
+    // array de nombre de meses
+    $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+
+    // clase para fechas
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->al = new DateTime($d->falstr);
+
+    // encabezado
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+    $letra->titulo = 'Al '.$letra->al->format('d/m/Y');
+
+    // SELECT DE FICHA DE EMPLEADO PLNEMPLEADO CONDICION EL ID DEL EMPLEADO 
+    $query = "";
+    $empleado = $db->getQuery($query)[0];
+
+    print json_encode([ 'encabezado' => $letra, 'empleado' => $empleado ]);
+});
+
 $app->run();
