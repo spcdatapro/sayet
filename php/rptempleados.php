@@ -679,7 +679,7 @@ $app->post('/antiguedad', function(){
                 proyecto e ON c.idproyecto = e.id
                     LEFT JOIN
                 plnpuesto f ON c.idplnpuesto = f.id ";
-    $query.= isset($d->idempresa) ? "AND c.idempresadebito = $d->idempresa " : "";
+    $query.= isset($d->idempresa) ? "WHERE c.idempresadebito = $d->idempresa " : "";
     $query.= isset($d->idempleado) ? "AND b.idplnempleado = $d->idempleado " : "";
     $query.= "ORDER BY  2 , ";
     $query.= $d->agrupar == 2 ? " 6 , 8" : " 8";
@@ -715,14 +715,40 @@ $app->post('/ficha', function () {
     // clase para fechas
     $letra = new stdClass();
     $letra->estampa = new DateTime();
-    $letra->al = new DateTime($d->falstr);
+    
 
     // encabezado
     $letra->estampa = $letra->estampa->format('d-m-Y H:i');
-    $letra->titulo = 'Al '.$letra->al->format('d/m/Y');
+    
 
     // SELECT DE FICHA DE EMPLEADO PLNEMPLEADO CONDICION EL ID DEL EMPLEADO 
-    $query = "";
+    $query = "SELECT 
+                a.id AS idempleado,
+                IFNULL(b.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
+                e.nomproyecto AS proyecto,
+                CONCAT(a.nombre, ' ', IFNULL(a.apellidos, '')) AS nombre,
+                IFNULL(c.descripcion, 'NO ESPECIFICADO') AS puesto,
+                DATE_FORMAT(a.ingreso, '%d/%m/%Y') AS ingreso,
+                a.dpi AS dpi,
+                a.igss AS igss,
+                a.Nit AS nit,
+                a.cuentabanco AS cuentabancaria,
+                a.direccion AS domicilio,
+                a.telefono AS telefono,
+                a.fechanacimiento AS fechadenacimiento,
+                IF(a.estadocivil = '2',
+                    'Casado',
+                    'Soltero') AS estadocivil
+            FROM
+                plnempleado a
+                    LEFT JOIN
+                plnempresa b ON a.idempresadebito = b.id
+                    LEFT JOIN
+                plnpuesto c ON a.idplnpuesto = c.id
+                    LEFT JOIN
+                proyecto e ON a.idproyecto = e.id
+            WHERE
+                a.id = $d->idempleado";
     $empleado = $db->getQuery($query)[0];
 
     print json_encode([ 'encabezado' => $letra, 'empleado' => $empleado ]);
