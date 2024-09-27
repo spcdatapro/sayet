@@ -75,7 +75,7 @@
                 <div class="panel-heading">Datos Generales&nbsp;<span class="badge"
                         style="color: white;">{{proyectostr}}</span></div>
                 <div class="panel-body">
-                    <form name="frmProyecto" id="frmProyecto" ng-submit="frmProyecto.$valid && addProyecto(elProyecto)"
+                    <form name="frmProyecto" id="frmProyecto"
                         novalidate>
                         <div class="row">
                             <div class="col-md-8">
@@ -216,7 +216,7 @@
                         </div>
                     </form>
                     <div class="btn-group" role="group" aria-label="...">
-                        <button type="submit" class="btn btn-info" ng-disabled="frmProyecto.$invalid"
+                        <button ng-click="addProyecto(elProyecto)" class="btn btn-info" ng-disabled="frmProyecto.$invalid"
                             ng-show="grpBtnProyecto.i">
                             <span class="glyphicon glyphicon-floppy-save"></span>
                         </button>
