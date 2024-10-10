@@ -190,7 +190,7 @@ $app->post('/rptestcta', function(){
     };
 
     $query = "SELECT b.id, CONCAT('(', b.abreviatura,') ', b.descripcion) AS tipo, COUNT(a.tipotrans) AS cantidad, FORMAT(SUM(a.monto), 2) AS monto, ";
-    $query.= "IF(b.abreviatura IN ('D', 'R'), '( + )', '( - )') AS operacion, b.orden ";
+    $query.= "IF(b.abreviatura IN ('D', 'R'), '( + )', '( - )') AS operacion, b.ordenalt AS orden ";
     $query.= "FROM tranban a INNER JOIN tipomovtranban b ON b.abreviatura = a.tipotrans ";
     $query.= "WHERE a.idbanco = ".$d->idbanco." AND a.fecha >= '".$d->fdelstr."' AND a.fecha <= '".$d->falstr."' ";
     $query.= "GROUP BY a.tipotrans ";

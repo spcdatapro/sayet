@@ -59,12 +59,13 @@ class contabilidad{
         //#Compras -> origen = 2
         $query.= "UNION ALL ";
         $query.= "SELECT CONCAT('P', YEAR(b.fechaingreso), LPAD(MONTH(b.fechaingreso), 2, '0'), LPAD(DAY(b.fechaingreso), 2, '0'), LPAD(2, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fechaingreso AS fecha, ";
-        $query.= "CONCAT('Compra', ' ', b.serie, '-', b.documento, ' ', IFNULL(s.nombre, '')) AS referencia, b.conceptomayor AS concepto, b.id, 2 AS origen, ";
+        $query.= "CONCAT('Compra', ' ', b.documento, ' ', p.nomproyecto, ' ', IFNULL(s.nombre, '')) AS referencia, b.conceptomayor AS concepto, b.id, 2 AS origen, ";
         $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber, r.tranban AS transaccion ";
         $query.= "FROM compra b ";
         $query.= "LEFT JOIN(".$this->detalleContable(2).") x ON b.id = x.idorigen ";
         $query.= "LEFT JOIN(SELECT z.idcompra, GROUP_CONCAT(CONCAT(y.tipotrans, y.numero) SEPARATOR ', ') AS tranban FROM detpagocompra z INNER JOIN tranban y ON y.id = z.idtranban GROUP BY z.idcompra) r ON b.id = r.idcompra ";
         $query.= "LEFT JOIN proveedor s ON s.id = b.idproveedor ";
+        $query.= "LEFT JOIN proyecto p ON b.idproyecto = p.id ";
         $query.= "WHERE b.idreembolso = 0 AND ";
         $query.= !$anterior ? "b.fechaingreso >= '$this->_fdel' AND b.fechaingreso <= '$this->_fal' " : "b.fechaingreso < '$this->_fdel' ";
         $query.= $this->_codigo && !$this->_codigoal ? "AND TRIM(x.codigo) IN ($this->_codigo) " : '';
@@ -74,14 +75,14 @@ class contabilidad{
         //#Ventas -> origen = 3
         $query.= "UNION ALL ";
         $query.= "SELECT CONCAT('P', YEAR(b.fecha), LPAD(MONTH(b.fecha), 2, '0'), LPAD(DAY(b.fecha), 2, '0'), LPAD(3, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fecha, ";
-        $query.= "CONCAT('Venta', ' ', b.serie, '-', b.numero, ' ', b.nombre) AS referencia, b.conceptomayor AS concepto, b.id, 3 AS origen, ";
+        $query.= "CONCAT('Venta', ' ', b.numero, ' ', IFNULL(t.nomproyecto, ''), ' ', b.nombre) AS referencia, b.conceptomayor AS concepto, b.id, 3 AS origen, ";
         $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber, r.tranban AS transaccion ";
         $query.= "FROM factura b ";
         $query.= "LEFT JOIN(".$this->detalleContable(3).") x ON b.id = x.idorigen ";
         $query.= "LEFT JOIN (";
         $query.= "SELECT z.idfactura, GROUP_CONCAT(CONCAT(x.tipotrans, x.numero) SEPARATOR ', ') AS tranban FROM detcobroventa z INNER JOIN recibocli y ON y.id = z.idrecibocli INNER JOIN tranban x ON x.id = y.idtranban GROUP BY z.idfactura";
         $query.= ") r ON b.id = r.idfactura ";
-        $query.= "WHERE ";
+        $query.= "LEFT JOIN contrato s ON b.idcontrato = s.id LEFT JOIN proyecto t ON s.idproyecto = t.id WHERE "; 
         $query.= !$anterior ? "b.fecha >= '$this->_fdel' AND b.fecha <= '$this->_fal' " : "b.fecha < '$this->_fdel' ";
         $query.= $this->_codigo && !$this->_codigoal ? "AND TRIM(x.codigo) IN ($this->_codigo) " : '';
         $query.= $this->_codigo && $this->_codigoal ? "AND TRIM(x.codigo) >= $this->_codigo AND TRIM(x.codigo) <= $this->_codigoal " : '';
@@ -104,11 +105,12 @@ class contabilidad{
         //#Reembolsos -> origen = 5
         $query.= "UNION ALL ";
         $query.= "SELECT CONCAT('P', YEAR(b.fechaingreso), LPAD(MONTH(b.fechaingreso), 2, '0'), LPAD(DAY(b.fechaingreso), 2, '0'), LPAD(5, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fechaingreso AS fecha, ";
-        $query.= "CONCAT('Compra', ' ', b.serie, '-', b.documento, ' ', IFNULL(b.proveedor, '')) AS referencia, b.conceptomayor AS concepto, b.id, 5 AS origen, ";
+        $query.= "CONCAT('Compra', ' ', b.documento, ' ', p.nomproyecto, ' ', IFNULL(b.proveedor, '')) AS referencia, b.conceptomayor AS concepto, b.id, 5 AS origen, ";
         $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber, IFNULL(CONCAT(d.tipotrans, d.numero), e.tran) AS transaccion ";
         $query.= "FROM compra b INNER JOIN reembolso c ON c.id = b.idreembolso LEFT JOIN tranban d ON d.id = c.idtranban ";
         $query.= "LEFT JOIN (SELECT a.idreembolso, CONCAT(b.tipotrans, b.numero) AS tran FROM dettranreem a INNER JOIN tranban b ON a.idtranban = b.id GROUP BY a.idreembolso) e ON e.idreembolso = c.id ";
         $query.= "LEFT JOIN(".$this->detalleContable(5).") x ON b.id = x.idorigen ";
+        $query.= "LEFT JOIN proyecto p ON b.idproyecto = p.id ";
         $query.= "WHERE b.idreembolso > 0 AND ";
         $query.= !$anterior ? "b.fechaingreso >= '$this->_fdel' AND b.fechaingreso <= '$this->_fal' " : "b.fechaingreso < '$this->_fdel' ";
         $query.= "AND b.idempresa = $this->_idempresa ";
