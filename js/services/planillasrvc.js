@@ -11,7 +11,13 @@
             },
             generachq: function(obj){
                 return comunFact.doPOST('php/generaplnbi.php/generachq', obj);
+            },
+            existe: function(fdel, fal, tipotrans, idbanco){
+                return comunFact.doGET( urlBase + '/existe/' + fdel + '/' + fal + '/' + tipotrans + '/' + idbanco);
             }
+        
+
+            
         };
     }]);
 

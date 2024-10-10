@@ -68,6 +68,9 @@
             },
             revisarExistencia: function (numero, idbanco, tipotrans) {
                 return comunFact.doGET(urlBase + '/revexiste/' + numero + '/' + idbanco + '/' + tipotrans);
+            },
+            revertirTranPlanilla: function (idtrans) {
+                return comunFact.doGET(urlBase + '/revertirp/' + idtrans); 
             }
         };
     }]);

@@ -7,7 +7,8 @@ $app->response->headers->set('Content-Type', 'application/json');
 
 $db = new dbcpm();
 
-$app->post('/empresas', function() use($db){
+$app->post('/empresas', function() {
+    $db = new dbcpm();
     $d = json_decode(file_get_contents('php://input'));
     $query = "SELECT DISTINCT a.idempresa, b.nomempresa AS empresa, b.ndplanilla, NULL as idbanco ";
     $query.= "FROM plnnomina a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN plnempleado c ON c.id = a.idplnempleado ";
@@ -27,6 +28,14 @@ $app->post('/empresas', function() use($db){
         $empresa->bancos = $db->getQuery($query);
     }
     print json_encode($empresas);
+});
+
+$app->get('/existe/:fdel/:fal/:tipotrans/:idbanco', function($fdel, $fal, $tipotrans, $idbanco){
+    $db = new dbcpm();
+    $query = "SELECT numero AS numero, id AS id, tipotrans AS tipotran
+    FROM tranban WHERE fecha >= '$fdel' AND fecha <= '$fal' AND tipotrans = '$tipotrans' AND idbanco = $idbanco AND esplanilla = 1 LIMIT 1";
+    $result = $db->getQuery($query)[0];
+    print json_encode($result);
 });
 
 $app->post('/generado', function() use($db){

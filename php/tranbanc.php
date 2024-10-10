@@ -43,8 +43,8 @@ $app->get('/gettran/:idtran', function($idtran){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idbanco, CONCAT(b.nombre, ' (', b.nocuenta, ')') AS nombanco, a.tipotrans, a.numero, a.fecha, a.monto,  a.retisr, a.montooriginal, a.isr, a.montocalcisr, ";
     $query.= "a.beneficiario, a.concepto, a.operado, a.anticipo, a.idbeneficiario, a.origenbene, a.anulado, c.razon, a.fechaanula, a.tipocambio, d.simbolo AS moneda, a.impreso, a.fechaliquida, a.esnegociable, ";
-    $query.= "CONCAT('OT: ', e.idpresupuesto, '-', e.correlativo, ' (', g.nombre,')') AS ot, a.iddetpresup, a.iddetpagopresup, a.idproyecto, a.iddocliquida, group_concat(h.id) AS idrecibocli, a.numban, ";
-    $query.= "a.idusuario, a.ultusuario ";
+    $query.= "CONCAT('OT: ', e.idpresupuesto, '-', e.correlativo, ' (', g.nombre,')') AS ot, a.iddetpresup, a.iddetpagopresup, a.idproyecto, a.iddocliquida, group_concat(h.id) AS idrecibocli, a.numban ";
+    // $query.= "a.idusuario, a.ultusuario ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco LEFT JOIN razonanulacion c ON c.id = a.idrazonanulacion LEFT JOIN moneda d ON d.id = b.idmoneda ";
     $query.= "LEFT JOIN detpresupuesto e ON e.id = a.iddetpresup LEFT JOIN presupuesto f ON f.id = e.idpresupuesto LEFT JOIN proveedor g ON g.id = e.idproveedor LEFT JOIN recibocli h ON a.id = h.idtranban ";
     $query.= "WHERE a.id = ".$idtran;
@@ -1025,5 +1025,37 @@ $app->get('/revexiste/:numero/:idbanco/:tipotrans', function($numero, $idbanco, 
     $existe = $db->getOneField("SELECT id FROM tranban WHERE idbanco = $idbanco AND numero = $numero AND tipotrans = '$tipotrans'") > 0;
     print json_encode($existe);
 });
+$app->get('/revertirp/:id', function($id) {
+    $db = new dbcpm(); 
 
+    $fecha = new DateTime();
+    $fechastr = $fecha->format('Y-m-d');
+
+    $query = "SELECT monto, numero, concepto, idbanco, beneficiario, tipocambio, montooriginal FROM tranban WHERE id = $id AND esplanilla = 1 LIMIT 1 ";
+    $tranban = $db->getQuery($query)[0];
+
+    $query = "SELECT origen, idorigen, idcuenta, debe, haber, conceptomayor  FROM detallecontable WHERE idorigen = $id AND origen = 1";
+    $detalles = $db->getQuery($query);
+
+    # quemarlo o generalo 
+    $concepto = "REINGRESO (DE TRANSACCION-".$tranban->numero.")";
+    $query = "INSERT INTO tranban (idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, esplanilla, anticipo, 
+                idbeneficiario, origenbene, tipocambio, esnegociable, iddetpresup, iddetpagopresup, idproyecto, iddocliquida, retisr, 
+                montooriginal, isr, montocalcisr, numban) values ($tranban->idbanco, 'R', '$fechastr',  $tranban->monto, 
+                'REINGRESO ($tranban->beneficiario)', '$concepto', $tranban->numero, 1, 0, 0, 0, $tranban->tipocambio, 0, 0, 0, 0, $id, 0, 
+                $tranban->montooriginal, 0, 0, null)";
+    $db->doQuery($query);
+    $db->getLastId();
+    $mismoid = $db->getLastId();
+
+    foreach($detalles as $detalle) {
+        $query = "INSERT INTO detallecontable (origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
+        values ( $detalle->origen, $mismoid, $detalle->idcuenta, $detalle->haber, $detalle->debe, '$detalle->conceptomayor', 1, 0, null)";
+        $db->doQuery($query);
+    }
+
+    $db->doQuery("UPDATE tranban SET liquidado = 1 WHERE id = $id");
+
+    print json_encode("Proceso realizado");
+});
 $app->run();

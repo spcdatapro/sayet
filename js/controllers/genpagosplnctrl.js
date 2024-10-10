@@ -55,16 +55,31 @@
         $scope.empresas = empresas;
         $scope.params = params;
 
-        $scope.existeND = function(idx, idbanco, numero){
-            tranBancSrvc.existe({idbanco: idbanco, tipotrans: 'B', numero: +numero}).then(function(d){
-                if(+d.existe == 1){
-                    $confirm({text: 'La nota de débito No. ' + numero + ' ya existe en este banco. ¿Desea probar otro número? (click en "No" para mostrar los datos ya generados)',
-                        title: 'Generación de notas de débito', ok: 'Sí', cancel: 'No'}).then(function() {
-                        $scope.empresas[idx].ndplanilla = null;
-                    });
-                }
-            });
-        };
+        let tipotrans = params.mediopago == 3 ? 'B' : 'C';   
+           
+        $scope.existeND = function (idbanco) {
+            planillaSrvc.existe(params.fdelstr, params.falstr, tipotrans, params.mediopago, idbanco).then(function(d){ 
+                if (d.id > 0) {
+                    $confirm({ text: 'Esta transacción ya existe (' + d.tipotran + '-' + d.numero + '), ¿Desea revertirla?', 
+                        title: 'Revertir transacción', ok: 'Sí', cancel: 'No'}).then(function () {
+                            tranBancSrvc.revertirTranPlanilla(d.id).then(function(response) { console.log(response) });
+                        });
+                        
+                    }
+                });   
+            };
+       
+
+        // $scope.existeND = function(idx, idbanco, numero){
+        //     tranBancSrvc.existe({idbanco: idbanco, tipotrans: 'B', numero: +numero}).then(function(d){
+        //         if(+d.existe == 1){
+        //             $confirm({text: 'La nota de débito No. ' + numero + ' ya existe en este banco. ¿Desea probar otro número? (click en "No" para mostrar los datos ya generados)',
+        //                 title: 'Generación de notas de débito', ok: 'Sí', cancel: 'No'}).then(function() {
+        //                 $scope.empresas[idx].ndplanilla = null;
+        //             });
+        //         }
+        //     });
+        // };
 
         $scope.ok = function () {
             $confirm({text: 'Esto generará las notas de débito con los datos seleccionados. ¿Seguro(a) de continuar?', title: 'Generación de notas de débito', ok: 'Sí', cancel: 'No'}).then(async function() {
