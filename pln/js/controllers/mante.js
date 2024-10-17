@@ -1,6 +1,6 @@
 angular.module('cpm')
-.controller('MntEmpleadoController', ['$scope', '$http', 'empServicios', 'empresaSrvc', 'proyectoSrvc', 'cuentacSrvc', 'pstServicios', 'unidadSrvc',
-	function($scope, $http, empServicios, empresaSrvc, proyectoSrvc, cuentacSrvc, pstServicios, unidadSrvc){
+.controller('MntEmpleadoController', ['$scope', '$http', 'empServicios', 'empresaSrvc', 'proyectoSrvc', 'cuentacSrvc', 'pstServicios', 'unidadSrvc', '$confirm', '$uibModal', 'planillaSrvc',
+	function($scope, $http, empServicios, empresaSrvc, proyectoSrvc, cuentacSrvc, pstServicios, unidadSrvc, $confirm, $uibModal, planillaSrvc){
 		$scope.formulario  = false;
 		$scope.resultados  = false;
 		$scope.empleados   = [];
@@ -33,7 +33,14 @@ angular.module('cpm')
             $scope.movEditar = false;
 		};
 
-		$scope.guardar = function(emp){
+		$scope.guardar = function(emp, traer = false){
+            // campos para bitacora
+            $scope.emp.idplnmovimiento = emp.idplnmovimiento > 0 ? emp.idplnmovimiento : '11';
+            $scope.emp.fechatmp = emp.fechatmp > 0 ? emp.fechatmp : moment().toDate();
+            $scope.emp.fintmp = null;
+            $scope.emp.movfecha = emp.movfecha > 0 ? emp.movfecha : $scope.formatoFecha(emp.fechatmp);
+            $scope.emp.movobservaciones = emp.movobservaciones ? emp.movobservaciones : 'Modificacion a la ficha del empleado.';
+
             if ($scope.emp.fchnac) {
                 $scope.emp.fechanacimiento = $scope.formatoFecha($scope.emp.fchnac);
             } else {
@@ -59,6 +66,7 @@ angular.module('cpm')
             }
 			empServicios.guardar(emp).then(function(data){
 				alert(data.mensaje);
+                const nombre = $scope.emp.nombre;
                 $scope.hay = true;
                 $scope.emp = {};
 
@@ -66,26 +74,35 @@ angular.module('cpm')
                     $scope.empleados.push(data.emp);
                 }
 
-                $scope.getEmpleado($scope.index);
+                if (traer) {
+                    $scope.buscar({termino: nombre}, true);
+                } else {
+                    $scope.getEmpleado($scope.index);
+                } 
+                
+                $scope.editando = false;
                 // $scope.getBitacora($scope.emp.id);
 			});
         };
 
-        $scope.buscar = function(datos) {
+        $scope.buscar = function(datos, traer = false) {
             $scope.formulario = false;
-
-        	if (datos) {
-        		$scope.datosbuscar = {'inicio':0, 'termino': datos.termino};
+            console.log(datos);
+        	if (Object.keys(datos).length > 0) {
+        		$scope.datosbuscar = {'inicio':0, 'termino': datos.termino, 'estatus': datos.activo };
         	} else {
-        		$scope.datosbuscar = {'inicio':0};
+        		$scope.datosbuscar = {'inicio':0, 'estatus': 1};
         	}
-        	
         	empServicios.buscar($scope.datosbuscar).then(function(data){
 				$scope.datosbuscar.inicio = data.cantidad;
 				$scope.empleados  = data.resultados;
 				$scope.resultados = true;
 
                 $scope.ocultarbtn(data.cantidad, data.maximo);
+
+                if (traer) {
+                    $scope.getEmpleado(0);
+                }
         	});
         };
 
@@ -189,7 +206,7 @@ angular.module('cpm')
             delete datos.dpi;
             delete datos.movimiento;
 
-            console.log(datos);
+            // console.log(datos);
 
             empServicios.guardarBitacora(datos).then(function(res){
                 $scope.bita = {};
@@ -202,14 +219,15 @@ angular.module('cpm')
 
         $scope.anularMovimiento = (data) => {
             if (confirm("Se anulará el registro, ¿Desea de continuar?")) {
-                data.mostrar = 0
-                $scope.guardarMovimiento(data)
+                data.mostrar = 0;
+                planillaSrvc.anularBitacora(data).then(() => { $scope.buscar({termino: data.nombre}, true); });
             }
         }
 
         $scope.getBitacora = function(emp) {
             empServicios.getBitacora(emp).then(function(data){
-                $scope.bitacora = data
+                data[0].primero = true;
+                $scope.bitacora = data;
             });
         }
 
@@ -292,6 +310,41 @@ angular.module('cpm')
             }
         }
 
+        $scope.editar = () => {
+            $confirm({
+                text: '¿Seguro(a) desea editar la ficha del empleado?',
+                title: 'Editar ficha del empleado', ok: 'Sí', cancel: 'No'
+            }).then(() => {
+                $scope.editando = !$scope.editando; 
+            });
+        }
+
+        $scope.darAlta = () => {
+            var modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: 'modalAlta.html',
+                controller: 'ModalAlta',
+                windowClass: 'app-modal-window',
+                resolve: {
+                    empleado: () => $scope.emp,
+                    empresas: () => $scope.empresasPlanilla
+                }
+            });
+
+            modalInstance.result.then(function (obj) {
+                obj.id = $scope.emp.id;
+                obj.idplnmovimiento = '6';
+                obj.fechatmp = moment().toDate();
+                obj.fintmp = null;
+                obj.movfecha = $scope.formatoFecha(obj.fechatmp);
+                obj.baja = 0;
+                obj.reingreso = $scope.formatoFecha(obj.fechatmp);
+                obj.activo = +1;
+
+                $scope.guardar(obj, true);
+            });
+        };
+
         /*cuentacSrvc.lstCuentasC().then(function(d){
             $scope.cuentas = d;
         });*/
@@ -299,6 +352,20 @@ angular.module('cpm')
         $scope.buscar({});
     }]
 )
+
+.controller('ModalAlta', ['$scope', '$uibModalInstance', 'empleado', 'empresas', function 
+    ($scope, $uibModalInstance, empleado, empresas) {
+    $scope.empleado = empleado;
+    $scope.empresas = empresas;
+    $scope.params = { idempresaactual: empleado.idempresaactual, idempresadebito: empleado.idempresadebito, sueldo: empleado.sueldo, bonificacionley: empleado.bonificacionley, 
+        descuentoisr: empleado.descuentoisr, porcentajeigss: empleado.porcentajeigss
+    };
+
+    $scope.ok = function () { $uibModalInstance.close($scope.params); };
+
+    $scope.cancel = () => { $uibModalInstance.dismiss('cancel'); };
+
+}])
 .controller('MntProsueldoController', ['$scope', '$http', 'empServicios', 'empresaSrvc', 
     function($scope, $http, empServicios, empresaSrvc){
         $scope.resultados = false;

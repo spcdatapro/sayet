@@ -36,4 +36,43 @@ $app->post('/generado', function() use($db){
     print json_encode(['generado' => ($generado ? 1: 0)]);
 });
 
+$app->post('/anular_bitacora', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $antes = json_decode($d->antes);
+    $antes = get_object_vars($antes);
+    unset($antes['id']);
+    $antes["ultimo"] = " WHERE id = $d->idplnempleado"; 
+    $str = "UPDATE plnempleado SET";
+    // print_r($antes); return;
+    foreach ($antes as $a => $valor) {
+        if ($a == 'ultimo') {
+            $str.= $valor;
+        } else if ($a == 'idunidad') {
+            $str .= isset($valor) ? " $a = '$valor'" : $a = " $a = null";
+        } else {
+            $str .= isset($valor) ? " $a = '$valor'," : $a = " $a = null,";
+        }
+    }
+    $fecha = new DateTime($d->fecha);
+    $fecha = $fecha->format('Y-m-d');
+    $db->doQuery("$str");
+    $db->doQuery("UPDATE plnbitacora SET mostrar = 0 WHERE id = $d->id");
+    if ($d->idplnmovimiento == 3) {
+        $query = "SELECT GROUP_CONCAT(a.id) AS abonos, a.idplnprestamo AS id, SUM(a.monto) AS monto FROM plnpresabono a INNER JOIN plnprestamo b ON a.idplnprestamo = b.id 
+        WHERE a.fecha = '$fecha' AND b.idplnempleado = $d->idplnempleado GROUP BY a.idplnprestamo";
+        $prestamos = $db->getQuery($query);
+        
+        if (count($prestamos) > 0) {
+            foreach ($prestamos AS $p) {
+                $db->doQuery("DELETE FROM plnpresabono WHERE id IN($p->abonos)"); 
+                $db->doQuery("UPDATE plnprestamo SET saldo = $p->monto, finalizado = 0, liquidacion = null WHERE id = $p->id");
+            }
+        }
+
+        $db->doQuery("DELETE FROM plnarchivo WHERE DATE_FORMAT(fecha, '%Y-%m-%d') = '$fecha' AND idplnarchivotipo = 3 AND idplnempleado = $d->idplnempleado");
+    }
+});
+
 $app->run();

@@ -1,6 +1,8 @@
 angular.module('cpm')
-.factory('empServicios', ['comunFact', function(comunFact){
+.factory('empServicios', ['comunFact', '$http', '$sce', function(comunFact, $http, $sce){
     var urlBase = 'pln/php/controllers/empleado.php';
+
+    var url = `${window.location.protocol}//${window.location.hostname}/sayet/pln/php/controllers/empleado.php/finiquito`;
 
     return {
         buscar: function(obj){
@@ -41,7 +43,19 @@ angular.module('cpm')
         },
         getMovimiento: function(obj){
             return comunFact.doGETJ(urlBase + '/get_movimiento', obj)
-        }
+        }, 
+        getFiniquito: function(obj) {
+            return $http.post(url, obj, {responseType: 'arraybuffer'}).then(function(response){
+                let enivar = {};
+                var file = new Blob([response.data], {type: 'application/pdf'});
+                var fileURL = URL.createObjectURL(file);
+                // para obtener el arhivo para descargar
+                enivar.descarga = new File([file], "Finiquito.pdf", { type: 'application/pdf' });
+                // para obtener el url del archivo y mostrarlo en pantalla
+                enivar.pantalla = $sce.trustAsResourceUrl(fileURL);
+                return enivar;
+            });
+        } 
     };
 }])
 .factory('pstServicios', ['comunFact', function(comunFact){

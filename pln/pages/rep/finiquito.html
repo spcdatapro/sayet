@@ -3,13 +3,16 @@
 		<div class="col-sm-offset-3 col-sm-6">
 			<div class="jumbotron" id="contenidoGenerar">
 				<h3 class="text-center">Cálculo de Indemnización</h3>
-				<form action="pln/php/controllers/empleado.php/finiquito" method="POST" class="form-horizontal" role="form" target="_blank">
+				<form class="form-horizontal" role="form" target="_blank" name="paramsRep" id="paramsRep">
+					<!-- <form action="" class="form-horizontal" action="pln/php/controllers/empleado.php/finiquito" method="POST"></form> -->
 					<div class="form-group form-group-sm">
 						<label for="selectEmpleado" class="col-sm-2 control-label">Empleado:</label>
 						<div class="col-sm-10">
-							<select class="form-control" name="empleado" id="selectEmpleado" required="required">
+							<select class="form-control" name="empleado" ng-model="params.empleado" id="selectEmpleado"
+								required>
 								<option value="">------</option>
-								<option ng-repeat="emp in empleados" value="{{emp.id}}">{{emp.nombre}} {{emp.apellidos}}</option>
+								<option ng-repeat="emp in empleados" value="{{emp.id}}">{{emp.nombre}} {{emp.apellidos}}
+								</option>
 							</select>
 						</div>
 					</div>
@@ -17,7 +20,8 @@
 					<div class="form-group form-group-sm">
 						<label for="inputMotivo" class="col-sm-2 control-label">Motivo:</label>
 						<div class="col-sm-10">
-							<input type="text" name="motivo" class="form-control" id="inputMotivo" required="required">
+							<input type="text" name="motivo" class="form-control" id="inputMotivo" required="required"
+								ng-model="params.motivo">
 						</div>
 					</div>
 
@@ -25,22 +29,26 @@
 						<div class="col-sm-8 col-sm-offset-2">
 							<div class="checkbox">
 								<label>
-									<input type="checkbox" name="sin_vacaciones" value="1"> Sin Vacaciones
+									<input type="checkbox" name="sin_vacaciones" value="1"
+										ng-model="params.sin_vacaciones"> Sin Vacaciones
 								</label>
 							</div>
 							<div class="checkbox">
 								<label>
-									<input type="checkbox" name="sin_indemnizacion" value="1"> Sin Indemnización
+									<input type="checkbox" name="sin_indemnizacion" value="1"
+										ng-model="params.sin_indemnizacion"> Sin Indemnización
 								</label>
 							</div>
 							<div class="checkbox">
 								<label>
-									<input type="checkbox" name="sin_bono14" value="1"> Sin Bono 14
+									<input type="checkbox" name="sin_bono14" value="1" ng-model="params.sin_bono14"> Sin
+									Bono 14
 								</label>
 							</div>
 							<div class="checkbox">
 								<label>
-									<input type="checkbox" name="sin_aguinaldo" value="1"> Sin Aguinaldo
+									<input type="checkbox" name="sin_aguinaldo" value="1"
+										ng-model="params.sin_aguinaldo"> Sin Aguinaldo
 								</label>
 							</div>
 						</div>
@@ -49,51 +57,57 @@
 					<div class="form-group form-group-sm">
 						<label for="inputDel" class="col-sm-2 control-label">Vacaciones del:</label>
 						<div class="col-sm-4">
-							<input type="date" name="vacas_del" class="form-control">
+							<input type="date" name="vacas_del" ng-model="params.vacas_del" class="form-control">
 						</div>
 						<label for="inputAl" class="col-sm-2 control-label">Al:</label>
 						<div class="col-sm-4">
-							<input type="date" name="vacas_al" class="form-control">
+							<input type="date" name="vacas_al" class="form-control" ng-model="params.vacas_al">
 						</div>
 					</div>
 
 					<div class="form-group form-group-sm">
 						<label for="inputDel" class="col-sm-5 control-label">Fecha de egreso:</label>
 						<div class="col-sm-7">
-							<input type="date" name="fecha_egreso" class="form-control" required="required">
+							<input type="date" name="fecha_egreso" class="form-control" required="required"
+								ng-model="params.fecha_egreso">
 						</div>
 					</div>
 
 					<div class="form-group form-group-sm">
 						<label for="inputDel" class="col-sm-5 control-label">Días de sueldo a pagar:</label>
 						<div class="col-sm-7">
-							<input type="number" name="dias_sueldo_pagar" class="form-control" value="0" required="required">
+							<input type="number" name="dias_sueldo_pagar" class="form-control" value="0"
+								required="required" ng-model="params.dias_sueldo_pagar">
 						</div>
 					</div>
 
 					<div class="form-group form-group-sm">
 						<label for="otrosRazon" class="col-sm-5 control-label">Otros Ingresos Razón:</label>
 						<div class="col-sm-7">
-							<input type="text" name="otros_razon" class="form-control" id="otrosRazon">
+							<input type="text" name="otros_razon" class="form-control" id="otrosRazon"
+								ng-model="params.otros_razon">
 						</div>
 					</div>
 					<div class="form-group form-group-sm">
 						<label for="otrosMonto" class="col-sm-5 control-label">Otros Ingresos Monto:</label>
 						<div class="col-sm-7">
-							<input type="number" step="0.01" name="otros_monto" class="form-control" id="otrosMonto">
+							<input type="number" step="0.01" name="otros_monto" class="form-control" id="otrosMonto"
+								ng-model="params.otros_monto">
 						</div>
 					</div>
 
 					<div class="form-group form-group-sm">
 						<label for="otrosRazon" class="col-sm-5 control-label">Otros Descuentos Razón:</label>
 						<div class="col-sm-7">
-							<input type="text" name="otrosdesc_razon" class="form-control" id="otrosRazon">
+							<input type="text" name="otrosdesc_razon" class="form-control" id="otrosRazon"
+								ng-model="params.otrosdesc_razon">
 						</div>
 					</div>
 					<div class="form-group form-group-sm">
 						<label for="otrosMonto" class="col-sm-5 control-label">Otros Descuentos Monto:</label>
 						<div class="col-sm-7">
-							<input type="number" step="0.01" name="otrosdesc_monto" class="form-control" id="otrosMonto">
+							<input type="number" step="0.01" name="otrosdesc_monto" class="form-control" id="otrosMonto"
+								ng-model="params.otrosdesc_monto">
 						</div>
 					</div>
 
@@ -101,13 +115,16 @@
 						<label for="inputDel" class="col-sm-5 control-label">Meses de cálculo:</label>
 						<div class="col-sm-7">
 							<label class="radio-inline">
-							  <input type="radio" name="meses_calculo" id="inlineRadio1" value="6" checked="checked"> 6
+								<input type="radio" name="meses_calculo" id="inlineRadio1" value="6" checked="checked"
+									ng-model="params.meses_calculo"> 6
 							</label>
 							<label class="radio-inline">
-							  <input type="radio" name="meses_calculo" id="inlineRadio2" value="12"> 12
+								<input type="radio" name="meses_calculo" id="inlineRadio2" value="12"
+									ng-model="params.meses_calculo"> 12
 							</label>
 							<label class="radio-inline">
-							  <input type="radio" name="meses_calculo" id="inlineRadio2" value="ficha"> Sueldo Base
+								<input type="radio" name="meses_calculo" id="inlineRadio2" value="ficha"
+									ng-model="params.meses_calculo"> Sueldo Base
 							</label>
 						</div>
 					</div>
@@ -116,19 +133,46 @@
 						<div class="col-sm-offset-5 col-sm-7">
 							<div class="checkbox">
 								<label>
-									<input type="checkbox" name="recibo" value="1"> Recibo
+									<input type="checkbox" name="recibo" value="1" ng-model="params.recibo"> Recibo
 								</label>
 							</div>
 						</div>
 					</div>
-				
 					<div class="form-group form-group-sm">
-						<div class="col-sm-10 col-sm-offset-2 text-right">
-							<button type="submit" class="btn btn-primary btn-sm">Aceptar</button>
+	
+						<div class="col-sm-2">
+							<img name="imgLoading" id="imgLoading" src="img/cargando.gif" alt="..."
+							ng-show="cargando" style="width: 4em; height: 4em"/>
+						</div>
+						<div class="col-sm-10 text-right">
+							<button ng-click="getFiniquito(params)" class="btn btn-primary btn-sm"
+								ng-disabled="paramsRep.$invalid">Aceptar</button>
 						</div>
 					</div>
 				</form>
 			</div>
 		</div>
 	</div>
+	<!-- confirmacion de finiquito -->
+	<script type="text/ng-template" id="modalFiniquito.html">
+		<div class="modal-header">
+			<h3 class="modal-title">Dar de baja al empleado</h3>
+		</div>
+		<div class="modal-body">
+			<p>Desea dar de baja al empleado, esto archivara el documento de liquidacion, bloqueara el empleado y limpara sus prestamos. De lo contrario solo descargara el reporte.</p>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group">
+						<label for="txtConcepto" class="control-label">Concepto adicional para la bit&aacute;cora:</label>
+						<textarea type="text" name="txtConcepto" id="txtConcepto" ng-model="params.concepto" class="form-control"
+						rows="2"> </textarea>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-primary" ng-disabled="!params.concepto" type="button" ng-click="ok()">Aceptar</button>
+			<button class="btn btn-danger" type="button" ng-click="cancel()">Cancelar</button>
+		</div>
+	</script>
 </div>

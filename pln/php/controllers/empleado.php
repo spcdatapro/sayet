@@ -198,6 +198,8 @@ $app->get('/get_empresas', function(){
 });
 
 $app->post('/finiquito', function(){
+	$_POST = (array)json_decode(file_get_contents('php://input'), TRUE);
+
 	if (elemento($_POST, 'empleado', FALSE)) {
 		$s = [215.9, 279.4]; # Carta mm
 
