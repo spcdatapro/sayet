@@ -221,6 +221,7 @@ angular.module('cpm')
             if (confirm("Se anulará el registro, ¿Desea de continuar?")) {
                 data.mostrar = 0;
                 planillaSrvc.anularBitacora(data).then(() => { $scope.buscar({termino: data.nombre}, true); });
+                $scope.bita = {};
             }
         }
 

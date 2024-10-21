@@ -173,7 +173,7 @@ $app->post('/rptestcta', function(){
     $query.= "c.nombre AS banco, d.abreviatura, b.id AS idtran, ".((int)$d->resumen == 0 ? "''": '1')." AS resumen ";
     $query.= "FROM tranban b INNER JOIN banco c ON c.id = b.idbanco INNER JOIN tipomovtranban d ON d.abreviatura = b.tipotrans ";
     $query.= "WHERE c.id = ".$d->idbanco." AND fecha >= '".$d->fdelstr."' AND fecha <= '".$d->falstr."' ";
-    $query.= "ORDER BY b.fecha, b.numero";
+    $query.= "ORDER BY b.fecha, d.ordenalt, b.numero";
     $tran = $db->getQuery($query);
 
     $cant = count($tran);
