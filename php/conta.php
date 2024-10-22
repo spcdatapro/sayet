@@ -35,7 +35,7 @@ class contabilidad{
     }
 
     private function detalleContable($origen, $idorigen = 0){
-        $query = "SELECT z.origen, z.idorigen, y.id AS idcuentac, y.codigo, y.nombrecta, z.debe, z.haber ";
+        $query = "SELECT z.origen, z.idorigen, y.id AS idcuentac, y.codigo, y.nombrecta, z.debe, z.haber, z.conceptomayor ";
         $query.= "FROM detallecontable z INNER JOIN cuentac y ON y.id = z.idcuenta ";
         $query.= "WHERE z.origen = ".($origen != 5 ? ($origen." AND z.activada = 1") : 2)." ";
         $query.= $idorigen > 0 ? "AND z.idorigen = $idorigen " : '';
@@ -91,7 +91,7 @@ class contabilidad{
         //#Directas -> origen = 4
         $query.= "UNION ALL ";
         $query.= "SELECT CONCAT('P', YEAR(b.fecha), LPAD(MONTH(b.fecha), 2, '0'), LPAD(DAY(b.fecha), 2, '0'), LPAD(4, 2, '0'), LPAD(b.id, 7, '0')) AS poliza, b.fecha, ";
-        $query.= "CONCAT('Directa No.', LPAD(b.id, 5, '0')) AS referencia, '' AS concepto, b.id, 4 AS origen, ";
+        $query.= "CONCAT('Directa No.', LPAD(b.id, 5, '0'), ' ', x.conceptomayor) AS referencia, '' AS concepto, b.id, 4 AS origen, ";
         $query.= "x.idcuentac, x.codigo, x.nombrecta, IFNULL(x.debe, 0.00) AS debe, IFNULL(x.haber, 0.00) AS haber, '' AS transaccion ";
         $query.= "FROM directa b ";
         $query.= "LEFT JOIN(".$this->detalleContable(4).") x ON b.id = x.idorigen ";
