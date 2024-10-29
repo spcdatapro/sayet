@@ -751,6 +751,34 @@ $app->post('/anticliente', function(){
             $separador_proyecto->total_aMas = round(array_sum($sumas_proyecto->aMas), 2);
             $separador_proyecto->total_saldo = round(array_sum($sumas_proyecto->saldo), 2);
 
+            if ($anterior->idcliente == $actual->idcliente) {
+                // generar variable de totales
+                $separador_cliente->total_a30 = round(array_sum($sumas_cliente->a30), 2);
+                $separador_cliente->total_a60 = round(array_sum($sumas_cliente->a60), 2);
+                $separador_cliente->total_a90 = round(array_sum($sumas_cliente->a90), 2);
+                $separador_cliente->total_aMas = round(array_sum($sumas_cliente->aMas), 2);
+                $separador_cliente->total_saldo = round(array_sum($sumas_cliente->saldo), 2);
+    
+                // total general
+                // array_push($suma_ventas, $totales->total);
+    
+                // empujar a array padre
+                array_push($separador_proyecto->clientes, $separador_cliente);
+    
+                // limpiar variables 
+                $sumas_cliente->a30 = array();
+                $sumas_cliente->a60 = array();
+                $sumas_cliente->a90 = array();
+                $sumas_cliente->aMas = array();
+                $sumas_cliente->saldo = array();
+    
+                $separador_cliente = new StdClass;
+                $separador_cliente->nombre = $actual->cliente;
+                $separador_cliente->corto = $actual->cliente_corto;
+                $separador_cliente->detallado = $d->detallada ? true : null; 
+                $separador_cliente->facturas = array();
+            }
+
             // empujar a array padre
             array_push($separador_empresa->proyectos, $separador_proyecto);
 
@@ -774,6 +802,59 @@ $app->post('/anticliente', function(){
             $separador_empresa->total_a90 = round(array_sum($sumas_empresa->a90), 2);
             $separador_empresa->total_aMas = round(array_sum($sumas_empresa->aMas), 2);
             $separador_empresa->total_saldo = round(array_sum($sumas_empresa->saldo), 2);
+
+            if ($anterior->idproyecto == $actual->idproyecto) {
+
+                // generar variable de totales
+                $separador_proyecto->total_a30 = round(array_sum($sumas_proyecto->a30), 2);
+                $separador_proyecto->total_a60 = round(array_sum($sumas_proyecto->a60), 2);
+                $separador_proyecto->total_a90 = round(array_sum($sumas_proyecto->a90), 2);
+                $separador_proyecto->total_aMas = round(array_sum($sumas_proyecto->aMas), 2);
+                $separador_proyecto->total_saldo = round(array_sum($sumas_proyecto->saldo), 2);
+    
+                // empujar a array padre
+                array_push($separador_empresa->proyectos, $separador_proyecto);
+    
+                // limpiar variables 
+                // sumas
+                $sumas_proyecto->a30 = array();
+                $sumas_proyecto->a60 = array();
+                $sumas_proyecto->a90 = array();
+                $sumas_proyecto->aMas = array();
+                $sumas_proyecto->saldo = array();
+                // separador
+                $separador_proyecto = new StdClass;
+                $separador_proyecto->nombre = $actual->proyecto;
+                $separador_proyecto->clientes = array();
+            }
+
+            if ($anterior->idcliente == $actual->idcliente) {
+                // generar variable de totales
+                $separador_cliente->total_a30 = round(array_sum($sumas_cliente->a30), 2);
+                $separador_cliente->total_a60 = round(array_sum($sumas_cliente->a60), 2);
+                $separador_cliente->total_a90 = round(array_sum($sumas_cliente->a90), 2);
+                $separador_cliente->total_aMas = round(array_sum($sumas_cliente->aMas), 2);
+                $separador_cliente->total_saldo = round(array_sum($sumas_cliente->saldo), 2);
+    
+                // total general
+                // array_push($suma_ventas, $totales->total);
+    
+                // empujar a array padre
+                array_push($separador_proyecto->clientes, $separador_cliente);
+    
+                // limpiar variables 
+                $sumas_cliente->a30 = array();
+                $sumas_cliente->a60 = array();
+                $sumas_cliente->a90 = array();
+                $sumas_cliente->aMas = array();
+                $sumas_cliente->saldo = array();
+    
+                $separador_cliente = new StdClass;
+                $separador_cliente->nombre = $actual->cliente;
+                $separador_cliente->corto = $actual->cliente_corto;
+                $separador_cliente->detallado = $d->detallada ? true : null; 
+                $separador_cliente->facturas = array();
+            }
 
             // empujar a array padre
             array_push($facturas, $separador_empresa);
