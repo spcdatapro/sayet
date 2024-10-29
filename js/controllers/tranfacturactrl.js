@@ -650,6 +650,7 @@
             obj.preciotot = parseFloat((+obj.cantidad * +obj.preciounitario).toFixed(2));
             obj.conceptomayor = obj.conceptomayor != null && obj.conceptomayor != undefined ? obj.conceptomayor : '';
             obj.tipocambio = $scope.factura.tipocambio;
+            obj.idmoneda = $scope.factura.idmoneda;
             return obj;
         }
 

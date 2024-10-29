@@ -49,7 +49,7 @@ $app->get('/lstfacturas/:idempresa/:cuales', function($idempresa, $cuales){
 
 $app->get('/getfactura/:idfactura', function($idfactura){
     $db = new dbcpm();
-    $query = "SELECT a.id, a.idcliente, a.nit, a.nombre, a.idcontrato, a.serie, a.numero, a.fechaingreso, a.fecha, a.idtipoventa, a.conceptomayor, a.idempresa, a.idtipofactura, ";
+    $query = "SELECT a.id, a.idcliente, a.nit, a.nombre, a.idcontrato, a.serie, a.numero, a.fechaingreso, a.fecha, a.idtipoventa, a.conceptomayor, a.idempresa, a.idtipofactura, a.idmonedafact AS idmoneda, ";
     $query.= "a.iva, a.total, a.noafecto, a.subtotal, a.retisr, a.retiva, a.totdescuento, a.tipocambio, a.reteneriva, a.retenerisr, a.mesafecta, a.anioafecta, a.direccion, a.idproyecto, a.porretiva, a.exentoiva ";
     $query.= "FROM factura a ";
     $query.= "WHERE a.id = $idfactura";
@@ -96,9 +96,9 @@ $app->post('/c', function(){
     }
 
     $query = "INSERT INTO factura(";
-    $query.= "idempresa, idtipofactura, idcontrato, idcliente, nit, nombre, fechaingreso, mesiva, fecha, idtipoventa, idmoneda, tipocambio, esinsertada,";
+    $query.= "idempresa, idtipofactura, idcontrato, idcliente, nit, nombre, fechaingreso, mesiva, fecha, idtipoventa, idmonedafact, tipocambio, esinsertada,";
     $query.= "reteneriva, retenerisr, mesafecta, anioafecta, direccion, idproyecto, porretiva, serieadmin, numeroadmin, exentoiva, tipoidreceptor) VALUES(";
-    $query.= "$d->idempresa, $d->idtipofactura, $d->idcontrato, $d->idcliente, $d->nit, $d->nombre, '$d->fechaingresostr', $d->mesiva, '$d->fechastr', $d->idtipoventa, 1, $d->tipocambio, 1,";
+    $query.= "$d->idempresa, $d->idtipofactura, $d->idcontrato, $d->idcliente, $d->nit, $d->nombre, '$d->fechaingresostr', $d->mesiva, '$d->fechastr', $d->idtipoventa, $d->idmoneda, $d->tipocambio, 1,";
     $query.= "$d->reteneriva, $d->retenerisr, $d->mesafecta, $d->anioafecta, $d->direccion, $d->idproyecto, $d->porretiva, '$datosFel->seriefel', NULL, $d->exentoiva, $d->idtiporec ";
     $query.= ")";
     // print $query;
@@ -131,7 +131,7 @@ $app->post('/u', function(){
     $query.= "idempresa = $d->idempresa, idtipofactura = $d->idtipofactura, idcontrato = $d->idcontrato, idcliente = $d->idcliente, nit = $d->nit, ";
     $query.= "nombre = $d->nombre, fechaingreso = '$d->fechaingresostr', mesiva = $d->mesiva, fecha = '$d->fechastr', idtipoventa = $d->idtipoventa, tipocambio = $d->tipocambio, ";
     $query.= "reteneriva = $d->reteneriva, retenerisr = $d->retenerisr, mesafecta = $d->mesafecta, anioafecta = $d->anioafecta, direccion = $d->direccion, ";
-    $query.= "idproyecto = $d->idproyecto, porretiva = $d->porretiva, exentoiva = $d->exentoiva, tipoidreceptor = $d->tiporec ";
+    $query.= "idproyecto = $d->idproyecto, porretiva = $d->porretiva, exentoiva = $d->exentoiva, tipoidreceptor = $d->tiporec, idmonedafact = $d->idmoneda ";
     $query.= "WHERE id = $d->id";
     //print $query;
     $db->doQuery($query);
@@ -265,8 +265,11 @@ function updateDatosFacturaFEL($d){
     FROM detfact WHERE idfactura = $d->idfactura";
     $importe = $db->getQuery($query)[0];
 
+    $moneda = $d->idmoneda == 1 ? 'GTQ' : 'USD';
+    $apagar = $d->idmoneda == 1 ? $calculo->totapagar : $calculo->totapagarcnv;
+
     $query = "UPDATE factura SET iva = $data->iva, total = $calculo->totapagar, subtotal = $data->montoconiva, ";
-    $query.= "retisr = $calculo->isrporretener, retiva = $calculo->ivaporretener, totdescuento = $data->totdescuento, totalletras = '".$n2l->to_word($calculo->totapagar, 'GTQ')."', conceptomayor = $conceptomayor, ";
+    $query.= "retisr = $calculo->isrporretener, retiva = $calculo->ivaporretener, totdescuento = $data->totdescuento, totalletras = '".$n2l->to_word($apagar, $moneda)."', conceptomayor = $conceptomayor, ";
     $query.= "importebruto = $importe->importebruto, importeneto = $importe->importeneto, importeiva = $importe->importeiva, importetotal = $importe->importetotal, descuentosiniva = $importe->descuentosiniva, ";
     $query.= "descuentoiva = $importe->descuentoiva, importebrutocnv = $importe->importebrutocnv, importenetocnv = $importe->importenetocnv, importeivacnv = $importe->importeivacnv, importetotalcnv = $importe->importetotalcnv, ";
     $query.= "descuentosinivacnv = $importe->descuentosinivacnv, descuentoivacnv = $importe->descuentoivacnv, totalcnv = $calculo->totapagarcnv, ";
@@ -286,8 +289,14 @@ function calcularImportes($d) {
 
     $importe = new stdClass();
 
-    $importe->preciounitario = round((float)$d->preciounitario, 2);
-    $importe->descuento = round((float)$d->descuento, 2);
+    if ($d->idmoneda == 1) {
+        $importe->preciounitario = round((float)$d->preciounitario, 2);
+        $importe->descuento = round((float)$d->descuento, 2);
+    } else {
+        $importe->preciounitario = round((float)$d->preciounitario * $d->tipocambio, 2);
+        $importe->descuento = round((float)$d->descuento * $d->tipocambio, 2);
+    }
+
     $importe->descuentosiniva = round($importe->descuento / $factor, 2);
     $importe->descuentoiva = round($importe->descuento - $importe->descuentosiniva, 2);
     $importe->preciototal = round((int)$d->cantidad * $importe->preciounitario, 2);
@@ -307,6 +316,7 @@ function calcularImportes($d) {
     $importe->totalcnv = round($importe->total / $d->tipocambio, 2);
     $importe->descuentosinivacnv = round($importe->descuentosiniva / $d->tipocambio, 2);
     $importe->descuentoivacnv = round($importe->descuentoiva / $d->tipocambio, 2);
+
 
     $importe->exento = $factor === 1 ? $importe->total : 0.00;
     $importe->exentocnv = $factor === 1 ? $importe->totalcnv : 0.00;

@@ -482,13 +482,23 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-8 nopadding">
+                                    <div class="col-md-6 nopadding">
                                         <div class="form-group">
                                             <label for="txtFDir">Direcci&oacute;n:</label>
                                             <input name="txtFDir" id="txtFDir" type="text" class="form-control"
                                                 ng-model="factura.direccion" maxlength="250"
                                                 placeholder="Direcci&oacute;n del cliente..." />
                                         </div>                                        
+                                    </div>
+                                    <div class="col-md-2 nopadding">
+                                        <div class="form-group">
+                                            <label for="selMoneda" class="control-label">Moneda:</label>
+                                            <select name="selMoneda" id="selMoneda" class="form-control"
+                                                ng-model="factura.idmoneda" required>
+                                                <option value="1">Quetzales (Q)</option>
+                                                <option value="2">Dolares ($)</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="col-md-2 nopadding">
                                         <div class="form-group required">
