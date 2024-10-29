@@ -213,21 +213,21 @@ $app->post('/pendientesfelrevision', function() {
     @importeexentocnv := IF(@factor = 1, @importetotalcnv, 0.00) AS importeexentocnv,
     0.00 AS isrporretener, RetISR(d.id, b.idtiposervicio) as retenerisr, 0.00 AS ivaporretener, RetIVA(d.id, b.idtiposervicio) AS reteneriva, c.idtipocliente, d.nombre, d.nombrecorto, 
     FacturarA(d.id, b.idtiposervicio) AS facturara, NitFacturarA(d.id, b.idtiposervicio) AS nit, DirFacturarA(d.id, b.idtiposervicio) AS direccion, PorcentajeRetIVA(d.id, b.idtiposervicio) AS porcentajeretiva, 
-    f.desctiposervventa AS tipo, 0.00 AS totapagar, IFNULL(i.idcontrato, c.id) AS idcontrato, d.id AS idcliente, UPPER(f.desctiposervventa) AS tipo, UPPER(g.nomproyecto) AS proyecto, h.nombre AS unidad, 
+    f.desctiposervventa AS tipo, 0.00 AS totapagar, IFNULL(i.id, c.id) AS idcontrato, d.id AS idcliente, UPPER(f.desctiposervventa) AS tipo, UPPER(g.nomproyecto) AS proyecto, h.nombre AS unidad, 
     (SELECT nombre FROM mes WHERE id = a.mes) AS nommes, b.idtiposervicio, DATE_FORMAT(FechaLecturaAnterior(a.idserviciobasico, a.mes, a.anio), '%d/%m/%Y') AS fechaanterior, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechaactual, 
     a.fechacorte, a.conceptoadicional, 0.00 AS isrporretenercnv, 0.00 AS ivaporretenercnv, 0.00 AS totapagar, 0.00 AS totapagarcnv, ExentoIVA(d.id, b.idtiposervicio) AS exentoiva,
     1 AS facturar 
     FROM lecturaservicio a 
     INNER JOIN serviciobasico b ON b.id = a.idserviciobasico 
-    LEFT JOIN unidadservicio i ON a.idserviciobasico = i.idserviciobasico
-    LEFT JOIN contrato c ON c.id = (SELECT b.id FROM contrato b WHERE FIND_IN_SET(a.idunidad, b.idunidad) LIMIT 1) 
-    LEFT JOIN cliente d ON d.id = c.idcliente 
-    LEFT JOIN tiposervicioventa f ON f.id = b.idtiposervicio 
-    LEFT JOIN proyecto g ON g.id = a.idproyecto 
-    LEFT JOIN unidad h ON h.id = a.idunidad 
-    WHERE a.estatus = 2 AND b.pagacliente = 0 AND a.mes = MONTH('$d->fvencestr') AND a.anio = YEAR('$d->fvencestr') AND b.idempresa = $d->idempresa 
-    AND (c.inactivo = 0 OR (c.inactivo = 1 AND c.fechainactivo > '$d->fvencestr') OR c.inactivo IS NULL)
-    ORDER BY g.nomproyecto, CAST(digits(h.nombre) AS UNSIGNED), h.nombre";
+    INNER JOIN contrato c ON c.id = (SELECT b.id FROM contrato b WHERE FIND_IN_SET(a.idunidad, b.idunidad) LIMIT 1) 
+    INNER JOIN cliente d ON d.id = c.idcliente 
+    INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio 
+    INNER JOIN proyecto g ON g.id = a.idproyecto 
+    INNER JOIN unidad h ON h.id = a.idunidad
+    LEFT JOIN contrato i ON i.id = (SELECT idcontrato FROM unidadservicio WHERE id = a.idserviciobasico) 
+    WHERE a.estatus = 2 AND b.pagacliente = 0 AND a.mes <= MONTH('$d->fvencestr') AND a.anio <= YEAR('$d->fvencestr') AND b.idempresa = $d->idempresa AND 
+    (c.inactivo = 0 OR (c.inactivo = 1 AND c.fechainactivo > '$d->fvencestr'))
+    ORDER BY g.nomproyecto, CAST(digits(h.nombre) AS UNSIGNED), h.nombre, b.numidentificacion";
     $pendientes = $db->getQuery($query);
     
     $cntPendientes = count($pendientes);
