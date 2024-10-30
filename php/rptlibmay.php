@@ -454,17 +454,19 @@ $app->post('/libromayor', function(){
             if ($anterior) {
                 $cuenta->anterior = $anterior->anterior;
                 $cuenta->anteriorstr = number_format($anterior->anterior, 2);
-                $cuenta->actual = (float)$anterior->anterior + (float)$sumas->debe - (float)$sumas->haber;
+                $cuenta->actual = $sumas ? (float)$anterior->anterior + (float)$sumas->debe - (float)$sumas->haber : (float)$anterior->anterior + (float)$anterior->debe - (float)$anterior->haber;
                 $cuenta->actualstr = number_format($cuenta->actual, 2);
             }
         } else {
             $cuenta->dlm = array();
-            for ($j = 0; $j < $cntDetalle; $j++) {
-                $detalle = $detalleCuentas[$j];
-                if ($detalle->idcuentac == $cuenta->id){
-                    array_push($cuenta->dlm, $detalle); 
-                }
-            }  
+            if ($cntDetalle > 0) {
+                for ($j = 0; $j < $cntDetalle; $j++) {
+                    $detalle = $detalleCuentas[$j];
+                    if ($detalle->idcuentac == $cuenta->id){
+                        array_push($cuenta->dlm, $detalle); 
+                    }
+                }  
+            }
         } 
 
         if((float)$cuenta->anterior === 0.00 && (float)$cuenta->debe === 0.00 && (float)$cuenta->haber === 0.00 && (float)$cuenta->actual === 0.00){
