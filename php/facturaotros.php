@@ -97,9 +97,9 @@ $app->post('/c', function(){
 
     $query = "INSERT INTO factura(";
     $query.= "idempresa, idtipofactura, idcontrato, idcliente, nit, nombre, fechaingreso, mesiva, fecha, idtipoventa, idmonedafact, tipocambio, esinsertada,";
-    $query.= "reteneriva, retenerisr, mesafecta, anioafecta, direccion, idproyecto, porretiva, serieadmin, numeroadmin, exentoiva, tipoidreceptor) VALUES(";
+    $query.= "reteneriva, retenerisr, mesafecta, anioafecta, direccion, idproyecto, porretiva, serieadmin, numeroadmin, exentoiva, tipoidreceptor, idmoneda) VALUES(";
     $query.= "$d->idempresa, $d->idtipofactura, $d->idcontrato, $d->idcliente, $d->nit, $d->nombre, '$d->fechaingresostr', $d->mesiva, '$d->fechastr', $d->idtipoventa, $d->idmoneda, $d->tipocambio, 1,";
-    $query.= "$d->reteneriva, $d->retenerisr, $d->mesafecta, $d->anioafecta, $d->direccion, $d->idproyecto, $d->porretiva, '$datosFel->seriefel', NULL, $d->exentoiva, $d->idtiporec ";
+    $query.= "$d->reteneriva, $d->retenerisr, $d->mesafecta, $d->anioafecta, $d->direccion, $d->idproyecto, $d->porretiva, '$datosFel->seriefel', NULL, $d->exentoiva, $d->idtiporec, 1 ";
     $query.= ")";
     // print $query;
     $db->doQuery($query);

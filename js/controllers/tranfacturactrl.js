@@ -438,7 +438,7 @@
         //--------------------------- Facturación de otros servicios (facturas insertadas) -----------------------------------------------------------------------------------------------------//
 
         $scope.factura = {
-            id: 0, fechaingreso: moment().toDate(), fecha: moment().toDate(), idtipoventa: '2', idmoneda: 1, tipocambio: null, conceptomayor: undefined, idempresa: $scope.empredefault,
+            id: 0, fechaingreso: moment().toDate(), fecha: moment().toDate(), idtipoventa: '2', idmoneda: '1', tipocambio: null, conceptomayor: undefined, idempresa: $scope.empredefault,
             anioafecta: null, mesafecta: null, retenerisr: 0, reteneriva: 0, idproyecto: undefined, idcontrato: undefined, direccion: undefined, porretiva: 0.00, idtipofactura: 1
         };
         $scope.contratos = [];
