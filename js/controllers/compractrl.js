@@ -133,12 +133,13 @@
 
             $scope.resetCompra = function () {
                 $scope.laCompra = {
-                    fechaingreso: new Date(), mesiva: hoy.getMonth() + 1, fechafactura: new Date(), creditofiscal: 0, extraordinario: 0, noafecto: 0.0,
+                    fechaingreso: new Date(), fechafactura: new Date(), creditofiscal: 0, extraordinario: 0, noafecto: 0.0,
                     objEmpresa: $scope.laCompra.objEmpresa, objMoneda: {}, tipocambio: 1, isr: 0.00, galones: 0.00, idp: 0.00, objTipoCombustible: {},
                     totfact: 0.00, subtotal: 0.00, iva: 0.00, ordentrabajo: undefined, idproyecto: undefined, idunidad: undefined, nombrerecibo: undefined,
                     idcheque: undefined, alcontado: 0, iddocliquida: undefined, idservicio: undefined, lecturaini: undefined,
                     lecturafin: undefined, preciouni: undefined, ffin: new Date(), fini: moment().startOf('month').toDate(), retiva: '0.00', fven: new Date()
                 };
+                $scope.laCompra.mesiva = $scope.laCompra.fechaingreso.getMonth() + 1;
                 $scope.search = "";
                 $scope.facturastr = '';
                 $scope.losDetCont = [];
