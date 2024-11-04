@@ -1,9 +1,9 @@
 (function(){
 
-    var planillasrvc = angular.module('cpm.planillasrvc', ['cpm.comunsrvc']);
+    var service = angular.module('cpm.generaplnsrvc', ['cpm.comunsrvc']);
 
-    planillasrvc.factory('planillaSrvc', ['comunFact', function(comunFact){
-        var urlBase = 'php/planilla.php';
+    service.factory('generaPlnSrvc', ['comunFact', function(comunFact){
+        var urlBase = 'php/generaplnbi.php';
 
         return {
             empresas: function(obj){
@@ -20,10 +20,7 @@
             },
             getPendientes: function () {
                 return comunFact.doGET( urlBase + '/finiquitos');
-            },
-            genera: function(obj){
-                return comunFact.doPOST('php/generaplnbi.php/generatran', obj);
-            },
+            }
         };
     }]);
 

@@ -34,7 +34,7 @@ angular.module('cpm')
 .controller('repFiniquitoController', ['$scope', '$http', 'empresaSrvc', 'empServicios',  '$confirm', '$window', '$uibModal', 'preServicios',
     function($scope, $http, empresaSrvc, empServicios, $confirm, $window, $uibModal, preServicios){
         $scope.empleados = [];
-        $scope.params = { meses_calculo: 6, dias_sueldo_pagar: 0, otrosdesc_razon: null, otros_razon: null, vacas_del: null, vacas_al: null, fecha_egreso: moment().toDate() };
+        $scope.params = { meses_calculo: 6, dias_sueldo_pagar: 0, otrosdesc_razon: null, otros_razon: null, vacas_del: null, vacas_al: null, fecha_egreso: moment().toDate(), guardar: false };
         $scope.cargando = false;
 
         empServicios.buscar({'sin_limite':1, 'estatus': 1}).then(function(res){
@@ -124,7 +124,10 @@ angular.module('cpm')
         ($scope, $uibModalInstance, params, empServicios, $window) {
         $scope.params = params;
 
-        $scope.ok = function () { $uibModalInstance.close(params); };
+        $scope.ok = function () { 
+            params.guardar = true;
+            $uibModalInstance.close(params); 
+        };
 
         $scope.cancel = function () { 
             empServicios.getFiniquito(params).then((pdf) => { $window.open(pdf.pantalla); });

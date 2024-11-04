@@ -71,8 +71,47 @@ $app->post('/anular_bitacora', function () {
             }
         }
 
+        $db->doQuery("DELETE FROM plnfiniquito WHERE idplnempleado = $d->idplnempleado AND fecha = '$fecha'");
         $db->doQuery("DELETE FROM plnarchivo WHERE DATE_FORMAT(fecha, '%Y-%m-%d') = '$fecha' AND idplnarchivotipo = 3 AND idplnempleado = $d->idplnempleado");
     }
+});
+
+$app->get('/finiquitos', function () {
+    $db = new dbcpm();
+
+    $query = "SELECT 
+                a.id,
+                a.fecha AS fecha,
+                b.id AS idempleado,
+                CONCAT(b.nombre, ' ', IFNULL(b.apellidos, 0)) AS empleado,
+                a.finiquito,
+                a.vacaciones,
+                a.aguinaldo,
+                a.bono,
+                a.ordinario,
+                a.extra,
+                a.otrosbono,
+                a.prestamos,
+                a.anticipos,
+                a.otrosdesc,
+                a.pendiente,
+                b.idempresadebito,
+                b.idproyecto,
+                c.nombre AS empresa,
+                IFNULL(d.nomproyecto, 'N/E, NO GENERARÁ DETALLE EN REP. ING. EGRE.') AS proyecto
+            FROM
+                plnfiniquito a
+                    INNER JOIN
+                plnempleado b ON a.idplnempleado = b.id
+                    INNER JOIN
+                plnempresa c ON b.idempresadebito =  c.id
+                    LEFT JOIN 
+                proyecto d ON b.idproyecto = d.id
+            WHERE
+                pendiente = 1";
+    $pendientes = $db->getQuery($query);
+
+    print json_encode($pendientes);
 });
 
 $app->run();

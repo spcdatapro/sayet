@@ -327,4 +327,142 @@ $app->post('/generachq', function() use($db){
     print json_encode(['generados' => $generados]);
 });
 
+$app->post('/generatran', function() {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+    $errores = '';
+
+    $d->total = round($d->total, 2);
+
+    $query = "INSERT INTO tranban(idbanco, tipotrans, numero, esplanilla, fechaplanilla, fecha, monto, beneficiario, concepto, tipocambio, idempresa, idempleado, idusuario) VALUES ($d->idbanco, 
+    '$d->tipo', $d->numero, 1, '$d->fecha', '$d->fechatran', $d->total, '$d->empleado', '$d->concepto', 1.00, $d->idempresadebito, $d->idempleado, $d->idusuario)";
+    $db->doQuery($query);
+
+    $lastid = $db->getLastId();
+
+    if ($lastid > 0) {
+        $db->doQuery("UPDATE plnfiniquito SET pendiente = 0 WHERE id = $d->id");
+        $db->doQuery("UPDATE banco SET correlativo = $d->numero+1 WHERE id = $d->idbanco");
+
+
+        $cnt_inde = getCuentaConfig($d->idempresadebito, 22); 
+        if ((int)$d->finiquito > 0) {
+            if ($cnt_inde > 0) {
+                $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
+                VALUES (1, $lastid, $cnt_inde, $d->finiquito, 0, '$d->concepto', 1, 0, $d->idproyecto)");
+            } else {
+                $errores .= 'sin cuenta de indeminzacion, ';
+            }
+        }
+
+        $cnt_vacas = getCuentaConfig($d->idempresadebito, 19);
+        if((int)$d->vacaciones > 0){
+            if ($cnt_vacas > 0) {
+                $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
+                VALUES (1, $lastid, $cnt_vacas, $d->vacaciones, 0, '$d->concepto', 1, 0, $d->idproyecto)");
+            } else {
+                $errores .= 'sin cuenta de vacaciones, ';
+            }
+        }
+
+        $cnt_bono14 = getCuentaConfig($d->idempresadebito, 21); 
+        if ((int)$d->bono > 0) {
+            if ($cnt_bono14 > 0) {
+                $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
+                VALUES (1, $lastid, $cnt_bono14, $d->bono, 0, '$d->concepto', 1, 0, $d->idproyecto)");
+            } else {
+                $errores .= 'sin cuenta de bono 14, ';
+            }
+        }
+
+        $cnt_aguinaldo = getCuentaConfig($d->idempresadebito, 20); 
+        if ((int)$d->aguinaldo > 0) {
+            if($cnt_aguinaldo > 0) {
+                $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
+                VALUES (1, $lastid, $cnt_aguinaldo, $d->aguinaldo, 0, '$d->concepto', 1, 0, $d->idproyecto)");
+            } else {
+                $errores .= 'sin cuenta de aguinaldo, ';
+            }
+        }
+
+        $cnt_ordinarios = getCuentaConfig($d->idempresadebito, 16); 
+        if ((int)$d->ordinario > 0) {
+            if($cnt_ordinarios > 0) {
+                $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
+                VALUES (1, $lastid, $cnt_ordinarios, $d->ordinario, 0, '$d->concepto', 1, 0, $d->idproyecto)");
+            } else {
+                $errores .= 'sin cuenta de salarios ordinarios, ';
+            }
+        }
+
+        $cnt_extra = getCuentaConfig($d->idempresadebito, 17); 
+        if ((int)$d->extra > 0) {
+            if($cnt_extra > 0) {
+                $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
+                VALUES (1, $lastid, $cnt_extra, $d->extra, 0, '$d->concepto', 1, 0, $d->idproyecto)");
+            } else {
+                $errores .= 'sin cuenta de salarios extraordinarios, ';
+            }
+        }
+
+        $cnt_bono = isset($d->idcuenta_bono) ? $d->idcuenta_bono : null; 
+        if ((int)$d->otrosbono > 0) {
+            if($cnt_bono > 0) {
+                $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
+                VALUES (1, $lastid, $cnt_bono, $d->otrosbono, 0, '$d->concepto', 1, 0, $d->idproyecto)");
+            } else {
+                $errores .= 'sin cuenta de aguinaldo, ';
+            }
+        }
+
+        $cnt_prestamo = $db->getOneField("SELECT id FROM cuentac WHERE nombrecta LIKE '%$d->empleado%' AND idempresa = $d->idempresadebito"); 
+        if ((int)$d->prestamos > 0) {
+            if($cnt_prestamo > 0) {
+                $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
+                VALUES (1, $lastid, $cnt_prestamo, 0, $d->prestamos, '$d->concepto', 1, 0, $d->idproyecto)");
+            } else {
+                $errores .= 'sin cuenta de prestamos, ';
+            }
+        }
+
+        $cnt_desc = isset($d->idcuenta_desc) ? $d->idcuenta_desc : null;
+        if ((int)$d->otrosdesc > 0) {
+            if($cnt_desc > 0) {
+                $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
+                VALUES (1, $lastid, $cnt_desc, 0, $d->otrosdesc, '$d->concepto', 1, 0, $d->idproyecto)");
+            } else {
+                $errores .= 'sin cuenta de otros descuentos, ';
+            }
+        }
+
+        $cnt_anticipo = isset($d->idcuenta_anti) ? $d->idcuenta_anti : null;
+        if ((int)$d->anticipos > 0) {
+            if($cnt_anticipo > 0) {
+                $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
+                VALUES (1, $lastid, $cnt_anticipo, 0, $d->anticipos, '$d->concepto', 1, 0, $d->idproyecto)");
+            } else {
+                $errores .= 'sin cuenta de anticipos, ';
+            }
+        }
+
+        $cnt_banco = $db->getOneField("SELECT idcuentac FROM banco WHERE id = $d->idbanco");
+        if ((int)$d->total > 0) {
+            if($cnt_banco > 0) {
+                $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
+                VALUES (1, $lastid, $cnt_banco, 0, $d->total, '$d->concepto', 1, 0, $d->idproyecto)");
+            } else {
+                $errores .= 'sin cuenta de banco. ';
+            }
+        }
+
+        if (strlen($errores) > 5) {
+            print json_encode(['tipo' => 'warning', 'mensaje' => 'No se pudo generar completamente la partida contable, favor arreglar. Errores: '.$errores]);
+        } else {
+            print json_encode(['tipo' => 'success', 'mensaje' => 'Transacción generada con éxito.']);
+        }
+    } else {
+        print json_encode(['tipo' => 'error', 'mensaje' => 'No se recibieron suficientes datos, favor volver a intentar.']);
+    }
+});
+
 $app->run();

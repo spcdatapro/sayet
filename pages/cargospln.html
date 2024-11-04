@@ -1,0 +1,340 @@
+<style>
+    .rojo {
+        color: red;
+    }
+</style>
+<div class="container-fluid" ng-controller="cargosPlnCtrl">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divInde" data-toggle="tab">INDEMNIZACI&Oacute;NES</a>
+        </li>
+        <li>
+            <a show-tab href="#divPre" data-toggle="tab" ng-hide="true">PREMIOS</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div id="divInde" class="tab-pane fade in active">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Indeminazaci&oacute;nes pendientes de pago</div>
+                <div class="panel-body">
+                    <form name="paramsBus" id="paramsBus" novalidate>
+                    </form>
+                    <table class="table table-responsive table-hover table-condensed">
+                        <caption>
+                            <input ng-model="search.$" class="form-control" placeholder="Buscar cargo..."
+                                style="color:black; width: 100%" />
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th colspan="6">&nbsp;</th>
+                                <th style="text-align:center" colspan="2">Sueldos</th>
+                                <th style="text-align:center" colspan="2">Otros</th>
+                                <th colspan="4">&nbsp;</th>
+                            </tr>
+                            <tr>
+                                <th style="text-align:center">Fecha</th>
+                                <th style="text-align:left">Empleado</th>
+                                <th style="text-align:right">Indemni.</th>
+                                <th style="text-align:right">Vacas.</th>
+                                <th style="text-align:right">Aguinaldo</th>
+                                <th style="text-align:right">Bono 14</th>
+                                <th style="text-align:right">Ord.</th>
+                                <th style="text-align:right">Extra.</th>
+                                <th style="text-align:right">Bonif.</th>
+                                <th style="text-align:right">Desc.</th>
+                                <th style="text-align:right">Prestamos</th>
+                                <th style="text-align:right">Anticipos</th>
+                                <th style="text-align:right">Total</th>
+                                <th style="text-align:center">&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-show="cargos.length > 0" ng-repeat="c in cargos | filter:search:strict">
+                                <td style="text-align:center">{{c.fecha | date:'dd/MM/yyyy'}}</td>
+                                <td style="text-align:left">{{c.empleado}}</td>
+                                <td style="text-align:right">{{c.finiquito | number:2}}</td>
+                                <td style="text-align:right">{{c.vacaciones | number:2}}</td>
+                                <td style="text-align:right">{{c.aguinaldo | number:2}}</td>
+                                <td style="text-align:right">{{c.bono | number:2}}</td>
+                                <td style="text-align:right">{{c.ordinario | number:2}}</td>
+                                <td style="text-align:right">{{c.extra | number:2}}</td>
+                                <td style="text-align:right">{{c.otrosbono | number:2}}</td>
+                                <td style="text-align:right">{{c.otrosdesc | number:2}}</td>
+                                <td style="text-align:right">{{c.prestamos | number:2}}</td>
+                                <td style="text-align:right">{{c.anticipos | number:2}}</td>
+                                <td style="text-align:right">{{c.total | number:2}}</td>
+                                <td style="text-align:center">
+                                    <button type="button" class="btn btn-default btn-sm" ng-click="genTran(c)"
+                                        ng-disabled="generando">
+                                        <span class="glyphicon glyphicon-credit-card" aria-hidden="true"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr ng-show="cargos.length == 0">
+                                <th style="text-align: center;" colspan="14">NO HAY CARGOS PENDIENTES</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- <div class="panel-footer" ng-show="generados.lenght > 0">
+                </div> -->
+            </div>
+        </div>
+        <div id="divPre" class="tab-pane fade">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Premios pendientes de pago</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="txtFechaLimite">Fecha l&iacute;mite de pago:</label>
+                                <div class="input-group">
+                                    <input name="txtFechaLimite" id="txtFechaLimite" type="date" ng-model="feclimite"
+                                        class="form-control" required />
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-secondary" type="button"
+                                            ng-click="getPagos(objEmpresa.id, null)">
+                                            <span class="glyphicon glyphicon-search"></span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label for="selBanco">Generar el/los documento(s) del banco: </label>
+                                <select name="selBanco" id="selBanco" class="form-control" ng-model="objBanco"
+                                    ng-options="obj.bancomoneda for obj in losBancos track by obj.id"
+                                    ng-change="getPagos(objEmpresa.id, objBanco)" ng-disabled="esperando" required>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="txtFechaTran">Fecha de transacci&oacute;n bancaria:</label>
+                                <input name="txtFechaTran" id="txtFechaTran" type="date" ng-model="fechatran"
+                                    class="form-control" required ng-change="chkFechaEnPeriodo(fechatran)" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <button name="btnGenerar" id="btnGenerar" type="button" class="btn btn-primary"
+                                    ng-click="generaCheques('C')"
+                                    ng-disabled="objBanco.id === null || objBanco.id === undefined || periodoCerrado"
+                                    ng-hide="esperando">Generar cheques</button>
+                                <button name="btnGenerar" id="btnGenerar" type="button" class="btn btn-primary"
+                                    ng-click="generaCheques('B')"
+                                    ng-disabled="objBanco.id === null || objBanco.id === undefined || periodoCerrado"
+                                    ng-hide="esperando">Generar notas de d&eacute;bito</button>
+                                <img name="imgLoading" id="imgLoading" src="img/loading.gif" alt="Generando cheques..."
+                                    ng-show="esperando" style="width: 4em; height: 2.5em" />
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <table class="table table-responsive table-hover table-condensed">
+                        <caption>
+                            <input ng-model="search.$" class="form-control" placeholder="Buscar documento..."
+                                style="color:black; width: 100%" />
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th>Proveedor</th>
+                                <th>No. Fact.</th>
+                                <th>A pagar</th>
+                                <th>Concepto</th>
+                                <th>Mon(TC)</th>
+                                <th>Total</th>
+                                <th>I.S.R.</th>
+                                <th>Saldo</th>
+                                <th>Pagar total</th>
+                                <th>Monto a pagar</th>
+                                <th>Pagar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="pago in losPagos | filter:search:strict">
+                                <td>{{pago.proveedor}}</td>
+                                <td>{{pago.serie}} {{pago.documento}}</td>
+                                <td>{{pago.fechapago | date:'dd/MM/yyyy'}}</td>
+                                <td>{{pago.conceptomayor}}</td>
+                                <td style="text-align:right">{{pago.moneda}}({{pago.tipocambio | number:2}})</td>
+                                <td style="text-align:right">{{pago.totfact | number:2}}</td>
+                                <td style="text-align:right">{{pago.isr | number:2}}</td>
+                                <td style="text-align:right">{{pago.saldo | number:2}}</td>
+                                <td style="text-align:center">
+                                    <input name="chkFull_{{pago.id}}" id="chkFull_{{pago.id}}" type="checkbox"
+                                        class="form-control input-sm" ng-model="pago.pagatodo" ng-true-value="1"
+                                        ng-false-value="0" ng-change="setMontoAPagar(pago); refrescarInfo()" />
+                                </td>
+                                <td style="text-align:right">
+                                    <input name="txtAPagar_{{pago.id}}" id="txtAPagar_{{pago.id}}" type="text"
+                                        class="form-control input-sm" style="text-align:right; width: 7em"
+                                        ng-model="pago.montoapagar" fcsa-number="{ maxDecimals: 2 }"
+                                        ng-disabled="pago.pagatodo === 1"
+                                        ng-change="chkMontoAPagar(pago); refrescarInfo();" required />
+                                </td>
+                                <td style="text-align:center">
+                                    <input name="chkPagar_{{pago.id}}" id="chkPagar_{{pago.id}}" type="checkbox"
+                                        class="form-control input-sm" ng-model="pago.pagar" ng-true-value="1"
+                                        ng-false-value="0" ng-change="addPagoAGenerar(pago); refrescarInfo();" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer">
+                    <div style="width: 100%">
+                        <table style="width: auto; margin-right: 0px; margin-left: auto;">
+                            <tr>
+                                <th class="num">Facturas seleccionadas:</th>
+                                <td class="num" style="padding-left: 0.75em;">{{totales.cantfacts | number:0}}</td>
+                            </tr>
+                            <tr>
+                                <th class="num">Monto total a pagar:</th>
+                                <td class="num" style="padding-left: 0.75em;">{{totales.monto | number:2}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" ng-show="generando">
+        <div class="col-md-6 col-md-offset-3">
+            <div style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                <span class="label label-primary">Generando transacci&oacute;n, por favor espere...</span>
+                <img ng-src="img/cheque.gif" alt="Generando transacción..." style="width: 100px; height: 100px;" />
+            </div>
+        </div>
+    </div>
+    <!-- confirmacion de finiquito -->
+    <script type="text/ng-template" id="modalTranban.html">
+        <div class="modal-header">
+            <h4 class="modal-title">Generar pago del finiquito a {{data.empleado}}</h4>
+            <h5>EMPRESA: {{data.empresa}}</h5>
+            <h5 ng-class="{'rojo': !data.idproyecto || data.idproyecto == 0}">PROYECTO: {{data.proyecto}}</h5>
+        </div>
+        <div class="modal-body">
+            <form name="paramsTran" id="paramsTran" novalidate>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group required">
+                            <label class="control-label">Banco:</label>
+                            <ui-select ng-model="tran.idbanco" title="Seleccione un banco..." theme="bootstrap"
+                                autofocus="false" ng-change="tran.idtipo = undefined" required>
+                                <ui-select-match placeholder="Buscar banco..." allow-clear="false">
+                                    <span ng-bind="($select.selected.bancomoneda)"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="item.id as item in bancos | filter:$select.search">
+                                    <div ng-bind-html="(item.bancomoneda) | highlight: $select.search"></div>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group required">
+                            <label for="selTipo" class="control-label">Tipo:</label>
+                            <ui-select ng-model="tran.idtipo" title="Seleccione el tipo de transacción..."
+                                theme="bootstrap" autofocus="false" ng-change="getNumCheque(tran)" required>
+                                <ui-select-match placeholder="Buscar tipo..." allow-clear="false">
+                                    <span ng-bind="($select.selected.abreviatura)"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="item.id as item in tiposmov | filter:$select.search">
+                                    <div ng-bind-html="(item.abreviadesc) | highlight: $select.search"></div>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group required">
+                            <label for="inpNum" class="control-label">N&uacute;mero</label>
+                            <input type="number" name="inpNum" id="inpNum" class="form-control" ng-model="tran.numero"
+                                min="1" placeholder="Ingresar número mayor a 0" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group required">
+                            <label for="inpFecha" class="control-label">Fecha:</label>
+                            <input name="inpFecha" id="inpFecha" class="form-control" ng-model="tran.fecha" type="date"
+                                required />
+                        </div>
+                    </div>
+                </div>
+                <div class="row" ng-show="data.otrosbono > 0">
+                    <div class="col-md-12">
+                        <div class="form-group" ng-class="{'required': data.otrosbono > 0}">
+                            <label for="selCntBono" class="control-label">Cuenta otros bonif.</label>
+                            <ui-select ng-model="tran.idcuenta_bono" title="selector de cuenta contable..."
+                                theme="bootstrap" autofocus="false" ng-required="data.otrosbono > 0">
+                                <ui-select-match placeholder="Favor ingresar los primero 3 digitos o 3 letras de la cuenta" allow-clear="false">
+                                    <span ng-bind="($select.selected.nombrecta)"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="item.id as item in cuentas | filter:$select.search | limitTo: ($select.search.length <= 2) ? 0 : undefined">
+                                    <div ng-bind-html="(item.codcta) | highlight: $select.search"></div>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" ng-show="data.otrosdesc > 0">
+                    <div class="col-md-12">
+                        <div class="form-group" ng-class="{'required': data.otrosdesc > 0}">
+                            <label for="selCntDesc" class="control-label">Cuenta otros desc.</label>
+                            <ui-select ng-model="tran.idcuenta_desc" title="selector de cuenta contable..."
+                                theme="bootstrap" autofocus="false" ng-required="data.otrosbono > 0">
+                                <ui-select-match placeholder="Favor ingresar los primero 3 digitos o 3 letras de la cuenta" allow-clear="false">
+                                    <span ng-bind="($select.selected.nombrecta)"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="item.id as item in cuentas | filter:$select.search | limitTo: ($select.search.length <= 2) ? 0 : undefined">
+                                    <div ng-bind-html="(item.codcta) | highlight: $select.search"></div>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" ng-show="data.anticipos > 0">
+                    <div class="col-md-12">
+                        <div class="form-group" ng-class="{'required': data.anticipos > 0}">
+                            <label for="selCntDesc" class="control-label">Cuenta anticipos</label>
+                            <ui-select ng-model="tran.idcuenta_anti" title="selector de cuenta contable..."
+                                theme="bootstrap" autofocus="false" ng-required="data.anticipos > 0">
+                                <ui-select-match placeholder="Favor ingresar los primero 3 digitos o 3 letras de la cuenta" allow-clear="false">
+                                    <span ng-bind="($select.selected.nombrecta)"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="item.id as item in cuentas | filter:$select.search | limitTo: ($select.search.length <= 2) ? 0 : undefined">
+                                    <div ng-bind-html="(item.codcta) | highlight: $select.search"></div>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group required">
+                            <label for="txtConcepto" class="control-label">Concepto para la transacci&oacute;n:</label>
+                            <textarea type="text" name="txtConcepto" id="txtConcepto" ng-model="tran.concepto"
+                                class="form-control" rows="2" required> </textarea>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-disabled="paramsTran.$invalid" type="button"
+                ng-click="ok(tran)">Aceptar</button>
+            <button class="btn btn-danger" type="button" ng-click="cancel()">Cancelar</button>
+        </div>
+    </script>
+</div>
