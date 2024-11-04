@@ -94,6 +94,12 @@ $app->get('/imprimir', function(){
 	$g = new General();
 
 	if (elemento($_GET, 'fdel') && elemento($_GET, 'fal')) {
+
+		// para nombre
+		$nombre_empresa = null;
+		$fal = new DateTime($_GET['fal']);
+		$fal = $fal->format('d-m-Y');
+
 		if (!elemento($_GET, 'excel')) {
 			$s = [215.9, 330.2]; # Oficio mm
 
@@ -106,6 +112,10 @@ $app->get('/imprimir', function(){
 			if (count($todos) > 0) {
 				$registros = 0;
 				$datos = [];
+
+				if(elemento($_GET, 'empresa')) {
+					$nombre_empresa = $todos[0]['vempresa'];
+				}
 
 				foreach ($todos as $fila) {
 					if (isset($datos[$fila['vidempresa']])) {
@@ -224,21 +234,28 @@ $app->get('/imprimir', function(){
 				$pdf = imprimirTotalesPagina($pdf, $g, 2, $totales);
 				$pdf = imprimirEncabezado($pdf, $g, 2, $cabecera);
 
-				$pdf->Output("nomina" . time() . ".pdf", 'I');
+				$nombre_empresa = $nombre_empresa != null ? $nombre_empresa : 'general';
+				$pdf->Output("Planilla de sueldos ". $nombre_empresa ." al ". $fal .".pdf", 'I');
 				die();
 			} else {
 				echo "Nada que mostrar";
 			}
 		} else {
-			$nombre = "planilla.csv";
+			$datos = []; # set de datos
+			$datos = $b->get_datos_recibo($_GET); #llenar set de datos
+
+			if(elemento($_GET, 'empresa')) {
+				$nombre_empresa = $datos[0]['vempresa'];
+			}
+
+			$nombre_empresa = $nombre_empresa != null ? str_replace(",", "", $nombre_empresa) : 'general';
+			$nombre = "Planilla de sueldos ". $nombre_empresa ." al ". $fal .".csv";
 			header("Content-type: text/csv");
 			header("Content-Disposition: attachment; filename={$nombre}");
 			header("Pragma: no-cache");
 			header("Expires: 0");
 	
 			$out = fopen('php://output', 'w');
-			$datos = []; # set de datos
-			$datos = $b->get_datos_recibo($_GET); #llenar set de datos
 	
 			fputcsv($out, array(
 				"Código",
