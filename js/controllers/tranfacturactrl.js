@@ -21,6 +21,7 @@
         $scope.paramsParqueo = { idempresa: undefined, idproyecto: undefined, fdel: moment().toDate(), fal: moment().toDate(), tc: 1.00 };
         $scope.periodoCerrado = false;
         $scope.btnFactDeshabilitado = false;
+        var empresa_retenedora = 0;
 
         authSrvc.getSession().then(function (usrLogged) {
             // traer empresas permitidas por el usuario
@@ -31,6 +32,7 @@
                         idempresas.push(aut.id);
                     });
                     $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                    empresa_retenedora = $filter('getById')($scope.empresas, usrLogged.workingon).retenedora;
                 });
             });
             $scope.params.idempresa = usrLogged.workingon.toString();
@@ -461,6 +463,10 @@
         $scope.$watch('factura.idempresa', function (newValue, oldValue) {
             if (newValue != null && newValue != undefined) {
                 $scope.loadProyectos(newValue);
+                if (oldValue > 0) {
+                    empresa_retenedora = $filter('getById')($scope.empresas, newValue).retenedora;
+                    $scope.reteneriva = empresa_retenedora;
+                }
             }
         });
 
@@ -502,7 +508,7 @@
                             $scope.factura.idcliente = +item.originalObject.idcliente;
                             $scope.factura.exentoiva = +item.originalObject.exentoiva;
                             $scope.factura.retenerisr = +item.originalObject.retisr;
-                            $scope.factura.reteneriva = +item.originalObject.retiva;
+                            $scope.factura.reteneriva = +empresa_retenedora != +item.originalObject.retiva ? 1 : 0;
                             $scope.factura.direccion = item.originalObject.direccion;
                             $scope.factura.porretiva = parseFloat(item.originalObject.porretiva);
                             clienteSrvc.lstContratosEmpresa(+item.originalObject.idcliente, +$scope.factura.idempresa).then(function (d) {
