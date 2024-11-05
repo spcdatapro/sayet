@@ -25,7 +25,7 @@ $app->get('/getcliente/:idcliente', function($idcliente){
     $db = new dbcpm();
     $query = "SELECT a.id, a.nombre, a.nombrecorto, a.direntrega, a.dirplanta, a.telpbx, a.teldirecto, a.telfax, a.telcel, a.correo, a.idordencedula, b.noorden, a.regcedula, ";
     $query.= "a.dpi, a.cargolegal, a.nomlegal, a.apellidolegal, a.nomadmon, a.mailadmon, a.nompago, a.mailcont, a.idcuentac, ";
-    $query.= "a.creadopor, a.fhcreacion, a.actualizadopor, a.fhactualizacion, c.contratos ";
+    $query.= "a.creadopor, a.fhcreacion, a.actualizadopor, a.fhactualizacion, c.contratos, a.concepto ";
     $query.= "FROM cliente a LEFT JOIN ordencedula b ON b.id = a.idordencedula ";
     $query.= "LEFT JOIN (SELECT idcliente, GROUP_CONCAT(CONCAT(id, '-', nocontrato) SEPARATOR ',') AS contratos FROM contrato GROUP BY idcliente) c ON a.id = c.idcliente ";
     $query.= "WHERE a.id = ".$idcliente;
@@ -44,15 +44,18 @@ $app->get('/rptdetcont', function(){
 $app->post('/c', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+
+    $d->concepto = isset($d->concepto) ? "'".$d->concepto."'" : 'null';
+
     $query = "INSERT INTO cliente(";
     $query.= "nombre, nombrecorto, direntrega, telpbx, teldirecto, telcel, correo, ";
     $query.= "dpi, cargolegal, nomlegal, apellidolegal, nomadmon, mailadmon, nompago, mailcont, idcuentac, ";
-    $query.= "creadopor, fhcreacion";
+    $query.= "creadopor, fhcreacion, concepto";
     $query.= ") VALUES(";
     $query.= "'".$d->nombre."', '".$d->nombrecorto."', '".$d->direntrega."', ";
     $query.= "'".$d->telpbx."', '".$d->teldirecto."', '".$d->telcel."', '".$d->correo."', '".$d->dpi."', ";
     $query.= "'".$d->cargolegal."', '".$d->nomlegal."', '".$d->apellidolegal."', '".$d->nomadmon."', '".$d->mailadmon."', ";
-    $query.= "'".$d->nompago."', '".$d->mailcont."', '".$d->idcuentac."', '".$d->creadopor."', NOW()";
+    $query.= "'".$d->nompago."', '".$d->mailcont."', '".$d->idcuentac."', '".$d->creadopor."', NOW(), $d->concepto";
     $query.= ")";
     //echo $query."<br/><br/>";
     $db->doQuery($query);
@@ -63,12 +66,15 @@ $app->post('/c', function(){
 $app->post('/u', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+
+    $d->concepto = isset($d->concepto) ? "'".$d->concepto."'" : 'null';
+
     $query = "UPDATE cliente SET ";
     $query.= "nombre = '".$d->nombre."', nombrecorto = '".$d->nombrecorto."', direntrega = '".$d->direntrega."', telpbx = '".$d->telpbx."', ";
     $query.= "teldirecto = '".$d->teldirecto."', telcel = '".$d->telcel."', correo = '".$d->correo."', ";
     $query.= "dpi = '".$d->dpi."', cargolegal = '".$d->cargolegal."', nomlegal = '".$d->nomlegal."', apellidolegal = '".$d->apellidolegal."', ";
     $query.= "nomadmon = '".$d->nomadmon."', mailadmon = '".$d->mailadmon."', nompago = '".$d->nompago."', mailcont = '".$d->mailcont."', idcuentac = '".$d->idcuentac."', ";
-    $query.= "actualizadopor = '".$d->actualizadopor."', fhactualizacion = NOW() ";
+    $query.= "actualizadopor = '".$d->actualizadopor."', fhactualizacion = NOW(), concepto = $d->concepto ";
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
 });

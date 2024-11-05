@@ -115,7 +115,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-12 nopadding">
+                                    <div class="col-md-8 nopadding">
                                         <div class="form-group"
                                             ng-class="{'has-error':frmCliente.txtDirEntrega.$invalid && !frmCliente.txtDirEntrega.$pristine}">
                                             <label for="txtDirEntrega">Direcci&oacute;n de entrega:</label>
@@ -123,6 +123,13 @@
                                                 class="form-control  input-sm" ng-model="cliente.direntrega"
                                                 placeholder="Direcci&oacute;n de entrega" maxlength="250"
                                                 ng-disabled="lectura" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 nopadding">
+                                        <div class="form-group">
+                                            <label for="txtCon" class="control-label">Concepto:</label>
+                                            <textarea name="txtCon" id="txtCon" class="form-control" ng-model="cliente.concepto" 
+                                            placeholder="Esto aparecera al principio del concepto en todas las facturas del cliente" ng-disabled="lectura"></textarea>
                                         </div>
                                     </div>
                                 </div>

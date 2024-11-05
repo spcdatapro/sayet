@@ -556,8 +556,9 @@ function getDescripcionLarga($idfactura, $iddetallefactura, $idcliente = null) {
 
     // concepto solo para panifresh
     $panifresh = $idcliente == 53 ? 'KM 19.5 BÁRCENAS VILLA NUEVA, COMPLEJO ' : '';
+    $concepto_incial = $db->getOneField("SELECT concepto FROM cliente WHERE id = $idcliente");
 
-    $query = "SELECT DISTINCT TRIM(CONCAT(IF(b.esinsertada = 0, IF(a.idtiposervicio <> 4, CONCAT(UPPER(TRIM(e.desctiposervventa)), ', ', '$panifresh', TRIM(d.nomproyecto), ', ',
+    $query = "SELECT DISTINCT TRIM(CONCAT(IF(b.esinsertada = 0, IF(a.idtiposervicio <> 4, CONCAT('$concepto_incial', ' ', UPPER(TRIM(e.desctiposervventa)), ', ', '$panifresh', TRIM(d.nomproyecto), ', ',
     TRIM(UnidadesPorContrato(c.id)), ', Mes de ', ".($periodo == '' ? "f.nombre, ' del año ', a.anio" : ("'".$periodo."'"))."), TRIM(a.descripcion)), TRIM(a.descripcion)), ' ', 
     IFNULL(a.conceptoadicional, ''))) AS descripcion 
     FROM detfact a INNER JOIN factura b ON b.id = a.idfactura LEFT JOIN contrato c ON c.id = b.idcontrato LEFT JOIN proyecto d ON d.id = c.idproyecto 
