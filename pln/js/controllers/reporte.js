@@ -54,6 +54,7 @@ angular.module('cpm')
             });
 
             modalInstance.result.then(function (obj) {
+                obj.fechastr = formatoFechaStr(obj.fecha_egreso);
                 $scope.cargando = true;
                 // dar de baja y agregar movimiento en bitacora
                 darBaja(obj);
@@ -100,6 +101,10 @@ angular.module('cpm')
 
         function formatoFecha (fecha) {
             return fecha.getFullYear()+'-'+(fecha.getMonth()+1)+'-'+fecha.getDate();
+        }
+
+        function formatoFechaStr (fecha) {
+            return fecha.getDate()+'-'+(fecha.getMonth()+1)+'-'+fecha.getFullYear();
         }
 
         function liquidarPrestamo (datos) {

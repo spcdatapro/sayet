@@ -50,7 +50,7 @@ angular.module('cpm')
                 var file = new Blob([response.data], {type: 'application/pdf'});
                 var fileURL = URL.createObjectURL(file);
                 // para obtener el arhivo para descargar
-                enivar.descarga = new File([file], "Finiquito.pdf", { type: 'application/pdf' });
+                enivar.descarga = new File([file], "Finiquito_" + obj.fechastr + ".pdf", { type: 'application/pdf' });
                 // para obtener el url del archivo y mostrarlo en pantalla
                 enivar.pantalla = $sce.trustAsResourceUrl(fileURL);
                 return enivar;
