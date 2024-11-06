@@ -162,7 +162,7 @@ $app->post('/pendientesfel', function() {
     INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio 
     INNER JOIN proyecto g ON g.id = a.idproyecto 
     INNER JOIN unidad h ON h.id = a.idunidad
-    LEFT JOIN contrato i ON i.id = (SELECT idcontrato FROM unidadservicio WHERE id = a.idserviciobasico) 
+    LEFT JOIN contrato i ON i.id = (SELECT idcontrato FROM unidadservicio WHERE idserviciobasico = a.idserviciobasico AND ffin IS NULL) 
     WHERE a.estatus = 2 AND b.pagacliente = 0 AND a.mes <= MONTH('$d->fvencestr') AND a.anio <= YEAR('$d->fvencestr') AND b.idempresa = $d->idempresa AND 
     (c.inactivo = 0 OR (c.inactivo = 1 AND c.fechainactivo > '$d->fvencestr'))
     ORDER BY g.nomproyecto, CAST(digits(h.nombre) AS UNSIGNED), h.nombre, b.numidentificacion";
@@ -224,7 +224,7 @@ $app->post('/pendientesfelrevision', function() {
     INNER JOIN tiposervicioventa f ON f.id = b.idtiposervicio 
     INNER JOIN proyecto g ON g.id = a.idproyecto 
     INNER JOIN unidad h ON h.id = a.idunidad
-    LEFT JOIN contrato i ON i.id = (SELECT idcontrato FROM unidadservicio WHERE id = a.idserviciobasico) 
+    LEFT JOIN contrato i ON i.id = (SELECT idcontrato FROM unidadservicio WHERE idserviciobasico = a.idserviciobasico AND ffin IS NULL) 
     WHERE a.estatus = 2 AND b.pagacliente = 0 AND a.mes <= MONTH('$d->fvencestr') AND a.anio <= YEAR('$d->fvencestr') AND b.idempresa = $d->idempresa AND 
     (c.inactivo = 0 OR (c.inactivo = 1 AND c.fechainactivo > '$d->fvencestr'))
     ORDER BY g.nomproyecto, CAST(digits(h.nombre) AS UNSIGNED), h.nombre, b.numidentificacion";
