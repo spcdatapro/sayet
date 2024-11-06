@@ -27,6 +27,7 @@ angular.module('cpm')
 
 		$scope.mostrarForm = function() {
 			$scope.emp = { };
+            $scope.emp = { idplnmovimiento: '10', movobservaciones: 'Contratación de nuevo empleado.' };
 			$scope.formulario = true;
             $scope.hay = false;
             $scope.movRango = false;
@@ -35,6 +36,7 @@ angular.module('cpm')
 		};
 
 		$scope.guardar = function(emp, traer = false){
+            console.log(traer);
             // campos para bitacora
             $scope.emp.idplnmovimiento = emp.idplnmovimiento > 0 ? emp.idplnmovimiento : '11';
             $scope.emp.fechatmp = emp.fechatmp > 0 ? emp.fechatmp : moment().toDate();

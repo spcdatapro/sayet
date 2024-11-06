@@ -387,14 +387,14 @@
 									class="btn btn-default btn-sm" ng-show="hay">
 									<i class="glyphicon glyphicon-print"></i>
 								</a>
-								<button ng-click="guardar(emp)" class="btn btn-primary btn-sm" ng-show="editando">
+								<button ng-click="guardar(emp)" class="btn btn-primary btn-sm" ng-show="editando || !hay">
 									<i class="glyphicon glyphicon-floppy-disk"></i> Guardar
 								</button>
 								<button class="btn btn-primary btn-sm" ng-show="hay && !editando && emp.activo"
 									ng-click="editar()" title="Editar">
 									<span class="glyphicon glyphicon-edit"></span>
 								</button>
-								<button class="btn btn-primary btn-sm" ng-show="!emp.activo" ng-click="darAlta()"
+								<button class="btn btn-primary btn-sm" ng-show="!emp.activo && hay" ng-click="darAlta()"
 									title="Dar de alta">
 									<span class="glyphicon glyphicon-upload"></span>
 								</button>
