@@ -23,6 +23,7 @@ angular.module('cpm')
         $scope.movEditar = false;
         $scope.movProcesando = false;
         $scope.index = undefined;
+        $scope.prueba = true;
 
 		$scope.mostrarForm = function() {
 			$scope.emp = { };
@@ -139,6 +140,9 @@ angular.module('cpm')
 
             if ($scope.emp.ingreso) {
                 $scope.emp.fching = $scope.formatoFechajs($scope.emp.ingreso);
+                let fecha_ingreso = moment($scope.emp.ingreso);
+                let fecha_actual = moment();
+                $scope.prueba = fecha_actual.diff(fecha_ingreso, 'month') <= 2 ? false : true;
             }
 
             if ($scope.emp.reingreso) {
