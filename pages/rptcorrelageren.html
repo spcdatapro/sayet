@@ -2,53 +2,76 @@
     <div class="row">
         <div class="panel panel-default">
             <div class="panel-heading">Cheques y d&eacute;bitos con concepto</div>
-            <div class="panel-body" style="text-align: right">
-                <div class="row" style="text-align: left">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Empresa: </label>
-                            <ui-select ng-model="params.idempresa"
-                                title="Seleccione una empresa..." theme="bootstrap"
-                                autofocus="false" on-select="getDataEmpresa($item)">
-                                <ui-select-match placeholder="Buscar empresa..."
-                                    allow-clear="true">
-                                    <span ng-bind="($select.selected.nomempresa)"></span>
-                                </ui-select-match>
-                                <ui-select-choices 
-                                    repeat="item.id as item in empresas | filter:$select.search"
-                                    group-by="'grupo'">
-                                    <div
-                                        ng-bind-html="(item.nomempresa) | highlight: $select.search">
-                                    </div>
-                                </ui-select-choices>
-                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
-                            </ui-select>
+            <div class="panel-body">
+                <form name="paramsRep" id="paramsRep" novalidate>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label">Empresa: </label>
+                                <ui-select ng-model="params.idempresa" title="Seleccione una empresa..."
+                                    theme="bootstrap" autofocus="false" on-select="getDataEmpresa($item)">
+                                    <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
+                                        <span ng-bind="($select.selected.nomempresa)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in empresas | filter:$select.search"
+                                        group-by="'grupo'">
+                                        <div ng-bind-html="(item.nomempresa) | highlight: $select.search">
+                                        </div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <label for="selTipo" class="control-label">Agrupar por:</label>
+                                <select name="selTipo" id="selTipo" class="form-control" ng-model="params.tipo" required>
+                                    <option value="1">Banco</option>
+                                    <option value="2">Proyecto</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="txtDel">Fecha del:</label>
-                            <input name="txtDel" id="txtDel" type="date" class="form-control input-md" ng-model="params.fDel" placeholder="Del"/>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <label for="txtDel" class="control-label">Fecha del:</label>
+                                <input name="txtDel" id="txtDel" type="date" class="form-control"
+                                    ng-model="params.fDel" placeholder="Del" required />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <label for="txtAl" class="control-label">Al:</label>
+                                <input name="txtAl" id="txtAl" type="date" class="form-control"
+                                    ng-model="params.fAl" placeholder="Al" required />
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="txtAl">Al:</label>
-                            <input name="txtAl" id="txtAl" type="date" class="form-control input-md" ng-model="params.fAl" placeholder="Al"/>
-                        </div>
-                    </div>
-                </div>
+                </form>
+            </div>
+            <div class="panel-footer text-right">
                 <div class="btn-group" role="group" aria-label="...">
-                    <button type="button" class="btn btn-primary btn-sm" ng-click="getCorrelativosCheques()">
+                    <button type="button" class="btn btn-danger" ng-click="getCorrelativosCheques(params)"
+                        ng-disabled="paramsRep.$invalid || cargando" title="Generar PDF">
                         <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-primary btn-sm" ng-click="getCorrelativosChequesExcel()" ng-disabled="objBanco == null || objBanco == undefined">
+                    <button type="button" class="btn btn-success" ng-click="getCorrelativosChequesExcel(params)"
+                        ng-disabled="paramsRep.$invalid || cargando" title="Generar Excel">
                         <i class="fa fa-file-excel-o" aria-hidden="true"></i>
                     </button>
                 </div>
             </div>
         </div>
     </div>
-    <hr/>
+    <hr />
+    <div class="row" ng-show="cargando">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="row" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                <span class="label label-primary">Generando reporte, por favor espere...</span>
+                <img ng-src="img/report.gif" alt="Generando reporte..." style="width: 100px; height: 100px;" />
+            </div>
+        </div>
+    </div>
     <rpt-viewer contenido="content"></rpt-viewer>
 </div>

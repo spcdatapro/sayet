@@ -28,12 +28,14 @@ class GeneradorReportes {
                 // traer dato
                 $d = $data[$i]; 
 
+                $tc = isset($d->tc) ? $d->tc : 1; 
+
                 // validar si es la primera vuelta para generar vairables o si se esta haciendo cambio de empresa y/o proyecto
                 if($this->primero || $d->idempresa != $this->idempresa) {
                     // si no es primera vuelta realizar sumas y empujar datos a array padre
                     if(!$this->primero) {
                         // solo se hara si el proyecto continuara siendo el mismo
-                        if($d->idproyecto == $this->idproyecto && $porproyecto) {
+                        if($porproyecto) {
                             // por cada suma que se hara generar la variable dentro de separador con el nombre de la suma
                             foreach($montos as $monto) {
                                 $separador_proyecto->$monto = round(array_sum($sumas_proyecto->$monto), 2);
@@ -121,18 +123,18 @@ class GeneradorReportes {
                 if ($porproyecto) {
                     // proyecto
                     foreach($montos as $monto) {
-                        array_push($sumas_proyecto->$monto, $d->$monto);
+                        array_push($sumas_proyecto->$monto, $d->$monto * $tc);
                     }
                 }
 
                 // empresa
                 foreach($montos as $monto) {
-                    array_push($sumas_empresa->$monto, $d->$monto);
+                    array_push($sumas_empresa->$monto, $d->$monto * $tc);
                 }
 
                 // general
                 foreach($montos as $monto) {
-                    array_push($this->sumas_general->$monto, $d->$monto);
+                    array_push($this->sumas_general->$monto, $d->$monto * $tc);
                 }
             }
         } else {
