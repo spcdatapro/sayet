@@ -12,7 +12,7 @@ $app->post('/getcheques', function(){
     $query = "SELECT a.numero, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.monto, REPLACE(b.nocuenta, '-', '') AS nocuenta, ";
     $query.= "SUBSTR(CONCAT(TRIM(limpiaString(c.abreviatura)), ' ', TRIM(limpiaString(a.beneficiario)), ' ', TRIM(limpiaString(a.concepto))), 1, 57) AS descripcion ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco INNER JOIN empresa c ON c.id = b.idempresa ";
-    $query.= "WHERE a.tipotrans = 'C' AND a.anulado = 0 AND a.fecha = '$d->fechastr' AND UPPER(TRIM(b.nombre)) LIKE '%$d->banco%' AND b.idempresa <> 16 AND b.idmoneda = $d->idmoneda ";    
+    $query.= "WHERE a.tipotrans = 'C' AND a.anulado = 0 AND a.fecha = '$d->fechastr' AND UPPER(TRIM(b.nombre)) LIKE '%$d->banco%' AND b.idmoneda = $d->idmoneda ";    
     $query.= (int)$d->idempresa == 0 ? "" : "AND b.idempresa = $d->idempresa ";
     $query.= "ORDER BY b.ordensumario, a.numero";
     // print $query;
@@ -40,6 +40,5 @@ $app->get('/gettxt/:idempresa/:fechastr/:idmoneda/:nombre(/:idbanco)', function(
     //print iconv('UTF-8','Windows-1252', preg_replace('/[^\P{C}\n]+/u', '', $respuesta));
 	print iconv('UTF-8','Windows-1252', $respuesta);
 });
-
 
 $app->run();
