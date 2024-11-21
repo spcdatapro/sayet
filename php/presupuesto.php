@@ -1269,7 +1269,7 @@ $app->post('/ibp', function () {
 $app->get('/lstotadjuntos/:idot(/:multiple)', function ($idot, $multiple) {
     $db = new dbcpm();
     $query = "SELECT id, idot, nomadjunto, ubicacion, IFNULL(DATE_FORMAT(fecha, '%d/%m/%Y'), '') AS fecha, 
-    IFNULL(correlativo, '') AS correlativo FROM ot_adjunto WHERE idot = $idot AND esmultiple = $multiple ORDER BY correlativo, fecha ASC";
+    IFNULL(correlativo, '') AS correlativo FROM ot_adjunto WHERE idot = $idot AND esmultiple = $multiple ORDER BY id, fecha ASC";
     print $db->doSelectASJson($query);
 });
 
