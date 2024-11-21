@@ -240,7 +240,7 @@ $app->post('/finanzas', function(){
                 'Cuota patronal' AS concepto,
                 NULL AS fechafact,
                 NULL AS documento,
-                ROUND((a.sueldoordinario + a.sueldoextra) * 0.1267,
+                ROUND((a.sueldoordinario + a.sueldoextra) * d.patronaligss,
                         2) AS total,
                 a.idplnempleado AS ord
             FROM
@@ -249,6 +249,8 @@ $app->post('/finanzas', function(){
                 plnempleado b ON a.idplnempleado = b.id
                     LEFT JOIN
                 unidad c ON b.idunidad = c.id
+                    INNER JOIN
+                plnempresa d ON b.idempresaactual = d.id
             WHERE
                 a.idempresa = $d->idempresa AND b.idproyecto = $d->idproyecto ";
     $query.= isset($d->idunidad) ? "AND b.idunidad = $d->idunidad " : "";
