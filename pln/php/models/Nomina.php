@@ -677,7 +677,7 @@ EOT;
 				'totrosingresos'   => 'Otros:',
 				'votrosingresos'   => $row->otrosingresos,
 				'tanticipo'        => 'Anticipos:',
-				'vanticipo'        => $row->anticipo,
+				'vanticipo'        => $args['fal'] == 15 ? $row->anticipo : $row->otrosingresos,
 				'tvacaciones'      => 'Vacacioness:',
 				'vvacaciones'      => $row->vacaciones,
 				'vbono14'          => $row->bonocatorce,
@@ -735,6 +735,7 @@ EOT;
 	{
 		$subtitulo = $args['dia'] == 15 ? 'Anticipo Quincena # ' . (int)$args['mes'] : 'Planilla General # ' . (int)$args['mes'];
 		$nmes = ucwords(get_meses($args['mes']));
+		$anticipo = $args['dia'] == 15 ? "Anticipos" : "Otros";
 		
 		return [
 			'titulon'                => 'Módulo de Planillas',
@@ -747,7 +748,7 @@ EOT;
 			'tsueldoextrat'          => "Sueldo E.",
 			'tsueldototalt'          => "Sueldo T.",
 			'tbonificaciont'         => "Bonifica",
-			'tanticipot'             => "Anticipos",
+			'tanticipot'             => $anticipo,
 			'tvacacionest'           => "Vacaciones",
 			'tbono14t'               => "Bono14",
 			'taguinaldot'            => "Aguinaldo",
