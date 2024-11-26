@@ -12,11 +12,11 @@
         <li class="active" ng-show="+fltrre.tipo === 3">
             <a show-tab href="#divFrmRecCli" data-toggle="tab">CONSTANCIA DE DEVOLUCIÓN AL CLIENTE</a>
         </li>
-        <li ng-show="+fltrre.tipo == 1 && reccli.id > 0">
-            <a show-tab href="#divPago" data-toggle="tab">DOCUMENTOS DE PAGO</a>
-        </li>
         <li ng-show="reccli.id > 0">
             <a show-tab href="#divDocs" data-toggle="tab">DOCUMENTOS A REBAJAR</a>
+        </li>
+        <li ng-show="+fltrre.tipo == 1 && reccli.id > 0">
+            <a show-tab href="#divPago" data-toggle="tab">DOCUMENTOS DE PAGO</a>
         </li>
         <li ng-show="reccli.id > 0 && (reccli.espropio == 1 || +fltrre.tipo === 2)">
             <a show-tab href="#divDetCont" data-toggle="tab">DETALLE CONTABLE</a>
@@ -45,8 +45,8 @@
                             <div class="col-md-3" ng-show="+fltrre.tipo == 1">
                                 <div class="form-group">
                                     <label for="lblNoRec">Correlativo:</label>
-                                    <span name="lblNoRec" id="lblNoRec" class="form-control">{{ reccli.id != null &&
-                                        reccli.id != undefined ? (reccli.correlativo) : ''}}</span>
+                                    <input name="lblNoRec" id="lblNoRec" class="form-control" type="text"
+                                        ng-disabled="true" ng-model="reccli.correlativo" />
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -55,7 +55,7 @@
                                     <label for="txtSerie">Serie:</label>
                                     <input name="txtSerie" id="txtSerie" type="text" maxlength="5" class="form-control"
                                         ng-model="reccli.serie" ng-required="+fltrre.tipo == 1"
-                                        ng-disabled="+fltrre.tipo > 1" />
+                                        ng-disabled="+fltrre.tipo > 1 || !editando" />
                                 </div>
                             </div>
                             <div class="col-md-4" ng-show="+fltrre.tipo == 2">
@@ -70,7 +70,7 @@
                                     ng-class="{'has-error':frmRecCli.txtFecha.$invalid && !frmRecCli.txtFecha.$pristine}">
                                     <label for="txtFecha">Fecha:</label>
                                     <input name="txtFecha" id="txtFecha" type="date" class="form-control"
-                                        ng-model="reccli.fecha" required />
+                                        ng-model="reccli.fecha" required ng-disabled="+fltrre.tipo > 1 || !editando" />
                                 </div>
                             </div>
                         </div>
@@ -80,15 +80,10 @@
                                     ng-class="{'has-error':frmRecCli.selCliente.$invalid && !frmRecCli.selCliente.$pristine}">
 
                                     <label for="selCliente">Cliente</label>
-                                    <!--
-                                    <select name="selCliente" id="selCliente" class="form-control" ng-model="reccli.objCliente"
-                                            ng-options="obj.nombre for obj in clientes | filter:{nombre:queryCli}" multiple required>
-                                    </select>
-
-                                    -->
                                     <ui-select id="selCliente" ng-model="reccli.objCliente"
                                         title="Seleccione un cliente..." theme="bootstrap" autofocus="true"
-                                        ng-required="true" append-to-body="true">
+                                        ng-required="true" append-to-body="true"
+                                        ng-disabled="+fltrre.tipo > 1 || !editando">
                                         <ui-select-match placeholder="Buscar cliente...">
                                             <span ng-bind="$select.selected.nombre"></span>
                                         </ui-select-match>
@@ -111,7 +106,8 @@
                                 <div class="form-group">
                                     <label for="notasTxt">Notas ext.:</label>
                                     <textarea class="form-control" ng-model="reccli.notas"
-                                        placeholder="Notas adicionales que apareceran en la impresion del recibo." rows="1">
+                                        placeholder="Notas adicionales que apareceran en la impresion del recibo."
+                                        rows="1" ng-disabled="!editando">
                                     </textarea>
                                 </div>
                             </div>
@@ -121,7 +117,8 @@
                                 <div class="form-group">
                                     <label for="selTranBan">Concepto:</label>
                                     <textarea class="form-control" ng-model="reccli.concepto"
-                                        placeholder="Concepto del recibo" rows="3"></textarea>
+                                        placeholder="Concepto del recibo" rows="3"
+                                        ng-disabled="+fltrre.tipo > 1 || !editando"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -134,43 +131,44 @@
                         </div>
                         <div class="btn-group" role="group" aria-label="...">
                             <button type="submit" class="btn btn-primary" ng-disabled="frmRecCli.$invalid || !permiso.c"
-                                ng-hide="reccli.id > 0">
-                                <span class="glyphicon glyphicon-floppy-save"></span>
+                                ng-hide="reccli.id > 0 || !editando" title="guardar">
+                                <i class="fi fi-br-disk"></i>
                             </button>
-                            <button type="button" class="btn btn-primary" ng-disabled="frmRecCli.$invalid || (!permiso.m && reccli.impreso == 1)"
-                                ng-show="reccli.id > 0" ng-click="updRecCli(reccli)">
-                                <span class="glyphicon glyphicon-floppy-save"></span>
+                            <button class="btn btn-default" ng-click="editando = true" type="button"
+                                ng-show="reccli.id > 0 && !editando" ng-disabled="!permiso.m && reccli.impreso == 1"
+                                title="editar">
+                                <i class="fi fi-br-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-disabled="frmRecCli.$invalid"
+                                ng-show="editando && reccli.id > 0" ng-click="updRecCli(reccli)"
+                                title="guardar cambios">
+                                <i class="fi fi-br-disk"></i>
+                            </button>
+                            <button type="button" class="btn btn-warning"
+                                ng-click="reccli.id > 0 ? getRecCli(reccli.id) : editando = false" ng-show="editando">
+                                <i class="fi fi-br-cross-circle" title="cancelar"></i>
                             </button>
                             <button type="button" class="btn btn-primary" ng-show="+reccli.id > 0 && +fltrre.tipo == 2"
                                 ng-click="print(reccli.id)">
                                 <span class="glyphicon glyphicon-print"></span>
                             </button>
                             <button type="button" class="btn btn-danger" ng-click="delRecCli(+reccli.id)"
-                                ng-disabled="!permiso.e || +reccli.id == 0">
-                                <span class="glyphicon glyphicon-trash"></span>
-                            </button>     
-                            <!--
-                            <a class="btn btn-primary" target="_blank" ng-href="php/printcheck.php?c={{laTran.id}}" ng-show="editando && laTran.tipotrans === 'C'"
-                               ng-disabled="frmRecCli.$invalid || laTran.anulado === 1 || laTran.impreso === 1" ng-click="laTran.impreso = 1">
-                                <span class="glyphicon glyphicon-print">&nbsp;Cheque</span>
-                            </a>
-                            -->
-                            <!--
-                            <button type="button" class="btn btn-primary" ng-show="editando" ng-click="printVersion()">
-                                <span class="glyphicon glyphicon-print"></span>
+                                ng-hide="editando || !permiso.e || +fltrre.tipo == 1" title="eliminar">
+                                <i class="fi fi-br-trash"></i>
                             </button>
-                            -->
+                            <button type="button" class="btn btn-primary"
+                                ng-show="reccli.id > 0 && +fltrre.tipo == 1 && !editando"
+                                ng-click="printRecCli(reccli.id)" title="imprimir">
+                                <i class="fi fi-br-print"></i>
+                            </button>
+                            <button type="button" class="btn btn-warning"
+                                ng-show="reccli.id > 0 && +fltrre.tipo == 1 && !editando && permiso.e"
+                                ng-disabled="reccli.anulado != 0" ng-click="anulRecli(reccli)" title="anular">
+                                <i class="fi fi-br-ban"></i>
+                            </button>
                             <button type="button" class="btn btn-primary" ng-show="reccli.id > 0"
-                                ng-click="resetRecCli()" ng-disabled="!permiso.c">
-                                <span class="glyphicon glyphicon-plus"></span>
-                            </button>
-                            <button type="button" class="btn btn-primary" ng-show="reccli.id > 0 && +fltrre.tipo == 1"
-                                ng-click="printRecCli(reccli.id)">
-                                <span class="glyphicon glyphicon-print"></span>
-                            </button>
-                            <button type="button" class="btn btn-warning" ng-show="reccli.id > 0 && +fltrre.tipo == 1"
-                                ng-disabled="!permiso.e || reccli.anulado != 0" ng-click="anulRecli(reccli)">
-                                <span class="glyphicon glyphicon-ban-circle"></span>
+                                ng-click="resetRecCli()" ng-disabled="!permiso.c" ng-hide="editando" title="nuevo">
+                                <span class="fi fi-br-add"></span>
                             </button>
                         </div>
                     </form>
@@ -215,7 +213,7 @@
                                     <div class="col-md-6" ng-hide="true">
                                         <label for="srchNomCort">Nombre corto:</label>
                                         <input name="srchNomCort" id="srchNomCort" type="text"
-                                        class="form-control input-sm" ng-model="fltrre.nomcortstr" />
+                                            class="form-control input-sm" ng-model="fltrre.nomcortstr" />
                                     </div>
                                     <div class="col-md-12">
                                         <label for="srchTxtcli">Cliente:</label>
@@ -224,7 +222,7 @@
                                                 class="form-control input-sm" ng-model="fltrre.clientestr" />
                                             <span class="input-group-btn">
                                                 <button type="button" class="btn btn-primary btn-sm"
-                                                    ng-click="getLstRecibosCli()"><i class="fa fa-search"
+                                                    ng-click="getLstRecibosCli()"><i class="fi fi-br-search"
                                                         aria-hidden="true"></i></button>
                                             </span>
                                         </div>
@@ -250,7 +248,8 @@
                                 <th>Recibo</th>
                                 <th>Fecha</th>
                                 <th>Cliente</th>
-                                <th ng-hide="fltrre.tipo == 2" style="text-align: right;">Dep&oacute;sito/Nota de cr&eacute;dito</th>
+                                <th ng-hide="fltrre.tipo == 2" style="text-align: right;">Dep&oacute;sito/Nota de
+                                    cr&eacute;dito</th>
                                 <th style="text-align: right;" ng-show="fltrre.tipo == 2">Monto</th>
                             </tr>
                         </thead>
@@ -259,8 +258,10 @@
                                 <td>{{rec.serie}}-{{rec.correlativo}}</td>
                                 <td>{{rec.fecha | date:'dd/MM/yyyy'}}</td>
                                 <td>{{rec.cliente | shortenStr:50}} {{rec.anulado}}</td>
-                                <td style="text-align: right;" ng-hide="fltrre.tipo == 2">{{rec.tranban}} {{rec.moneda}}{{rec.monto | number:2}}</td>
-                                <td style="text-align: right;" ng-show="fltrre.tipo == 2">Q.{{rec.monto | number:2}}</td>
+                                <td style="text-align: right;" ng-hide="fltrre.tipo == 2">{{rec.tranban}}
+                                    {{rec.moneda}}{{rec.monto | number:2}}</td>
+                                <td style="text-align: right;" ng-show="fltrre.tipo == 2">Q.{{rec.monto | number:2}}
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -356,87 +357,98 @@
         </td>
         </script>
 
-                <!-- forma de pago -->
-                <div id="divPago" class="tab-pane fade">
-                    <div class="panel panel-success">
-                        <div class="panel-heading">Documentos de pago</div>
-                        <div class="panel-body">
-                            <form name="frmDocsPag" id="frmDocsPag" ng-submit="pagoreccli.id > 0 ? updPagoRecCli(pagoreccli) : addPagoRecCli(pagoreccli)">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label for="selTipoTrans" class="control-label">Tipo de transacci&oacute;n:</label>
-                                            <select name="selTipoTrans" id="selTipoTrans" class="form-control" ng-model="pagoreccli.objTipotrans"
-                                            ng-options="obj.abreviadesc for obj in tipotran track by obj.id">
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label for="intPag">Numero:</label>
-                                            <input type="number" class="form-control" ng-model="pagoreccli.numero" placeholder="646565"/>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label for="selBcnPai" class="control-label">Banco:</label>
-                                            <select name="selBcnPai" id="selBcnPai" class="form-control" ng-model="pagoreccli.objBancoPais" 
-                                            ng-options="obj.nombre for obj in losBancoPais track by obj.id">
-                                            </select>
-                                        </div>
-                                    </div>
+        <!-- forma de pago -->
+        <div id="divPago" class="tab-pane fade">
+            <div class="panel panel-success">
+                <div class="panel-heading">Documentos de pago</div>
+                <div class="panel-body">
+                    <form name="frmDocsPag" id="frmDocsPag"
+                        ng-submit="pagoreccli.id > 0 ? updPagoRecCli(pagoreccli) : addPagoRecCli(pagoreccli)">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group required">
+                                    <label for="selTipoTrans" class="control-label">Tipo de transacci&oacute;n:</label>
+                                    <select name="selTipoTrans" id="selTipoTrans" class="form-control"
+                                        ng-model="pagoreccli.idtipotrans" ng-change="checkExiste()"
+                                        ng-options="obj.id as obj.abreviadesc for obj in tipotran" required>
+                                    </select>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="selMon" class="control-label">Moneda:</label>
-                                            <select name="selMon" id="selMon" class="form-control" ng-model="pagoreccli.objMoneda" 
-                                            ng-options="obj.simbolo for obj in lasMonedas track by obj.id">
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="intValor">Monto:</label>
-                                            <input type="text" class="form-control" ng-model="pagoreccli.monto" placeholder="4503.01"/>
-                                        </div>
-                                    </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="pagoreccli.idtipotrans != 5 ? 'required' : ''">
+                                    <label for="intPag" class="control-label">Numero:</label>
+                                    <input type="number" class="form-control" ng-model="pagoreccli.numero"
+                                        ng-change="checkExiste()" placeholder="646565"
+                                        ng-required="pagoreccli.idtipotrans != 5" />
                                 </div>
-                                <button type="submit" class="btn btn-success" data-toggle="tooltip" data-placement="auto" title="Guardar pago">
-                                <span class="glyphicon glyphicon-floppy-save"></span>
-                                </button>
-                                <!-- <button ng-click="updPagoRecCli(pagoreccli.id)" class="btn btn-info" data-toggle="tooltip" data-placement="auto" title="Guardar pago"
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group" ng-class="pagoreccli.idtipotrans != 5 ? 'required' : ''">
+                                    <label for="selBcnPai" class="control-label">Banco:</label>
+                                    <select name="selBcnPai" id="selBcnPai" class="form-control"
+                                        ng-change="checkExiste()" ng-model="pagoreccli.idbanco"
+                                        ng-required="pagoreccli.idtipotrans != 5"
+                                        ng-options="obj.id as obj.nombre for obj in losBancoPais">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label for="selMon" class="control-label">Moneda:</label>
+                                    <select name="selMon" id="selMon" class="form-control"
+                                        ng-model="pagoreccli.objMoneda" required
+                                        ng-options="obj.simbolo for obj in lasMonedas track by obj.id">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label for="intValor" class="control-label">Monto:</label>
+                                    <input type="text" class="form-control" ng-model="pagoreccli.monto"
+                                        placeholder="4503.01" required />
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success" data-toggle="tooltip" data-placement="auto"
+                            title="Guardar pago" ng-disabled="frmDocsPag.$invalid || total == 0">
+                            <span class="fi fi-br-disk"></span>
+                        </button>
+                        <!-- <button ng-click="updPagoRecCli(pagoreccli.id)" class="btn btn-info" data-toggle="tooltip" data-placement="auto" title="Guardar pago"
                                 ng-hide="!pagoreccli.id">
                                 <span class="glyphicon glyphicon-floppy-save"></span>
                                 </button> -->
-                            </form>
-                        <br>
-                            <table class="table table-hover table-condensed">
-                                <thead>
-                                    <tr>
-                                        <th style="text-align: center; border-top: 0px;">Numero</th>
-                                        <th style="text-align: center; border-top: 0px;">Banco</th>
-                                        <th style="text-align: right; border-top: 0px;">Monto</th>
-                                        <th>&nbsp;</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr ng-repeat="tr in lstpagorecli" ng-click="getPagoRecli(tr.id)">
-                                        <td style="text-align: center;">{{tr.tipotrans}} {{tr.numero}}</td>
-                                        <td style="text-align: center;" ng-class="{'bld': $last}">{{tr.banco}}</td>
-                                        <td style="text-align: right;" ng-class="{'bld': $last}">{{tr.moneda}}.{{tr.monto | number:2}}</td>
-                                        <td style="text-align: right;">
-                                            <button ng-if="!$last" type="button" class="btn btn-danger btn-sm tipo" data-toggle="tooltip" data-placement="auto" 
-                                            ng-click="delPagoRecli(tr)" title="Eliminar forma de pago">
-                                            <span class="glyphicon glyphicon-trash"></span>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    </form>
+                    <br>
+                    <table class="table table-hover table-condensed">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; border-top: 0px;">Numero</th>
+                                <th style="text-align: center; border-top: 0px;">Banco</th>
+                                <th style="text-align: right; border-top: 0px;">Monto</th>
+                                <th>&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="tr in lstpagorecli" ng-click="getPagoRecli(tr.id)">
+                                <td style="text-align: center;">{{tr.tipotrans}} {{tr.numero}}</td>
+                                <td style="text-align: center;" ng-class="{'bld': $last}">{{tr.banco}}</td>
+                                <td style="text-align: right;" ng-class="{'bld': $last}">{{tr.moneda}}.{{tr.monto |
+                                    number:2}}</td>
+                                <td style="text-align: right;">
+                                    <button ng-if="!$last" type="button" class="btn btn-danger btn-sm tipo"
+                                        data-toggle="tooltip" data-placement="auto" ng-click="delPagoRecli(tr)"
+                                        title="Eliminar forma de pago">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
+            </div>
+        </div>
 
         <!-- //Rony 2017-11-16 Editar monto abono -->
         <script type="text/ng-template" id="edit">
@@ -570,7 +582,7 @@
                     </form>
                     <hr />
                     <table datatable="ng" dt-options="dtOptions" class="table table-responsive table-hover">
-                    <!-- <table class="table table-responsive table-hover"> -->
+                        <!-- <table class="table table-responsive table-hover"> -->
                         <thead>
                             <tr>
                                 <th>Cuenta</th>

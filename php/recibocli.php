@@ -665,6 +665,21 @@ $app->get('/getpago/:idpago', function($idpago){
     print $db->doSelectASJson($query);
 });
 
+$app->post('/validar', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $existe = $db->getOneField("SELECT id FROM detpagorecli WHERE numero = $d->numero AND idbanco = $d->idbanco AND tipotrans = $d->idtipotrans");
+
+    if ($existe > 0) {
+        $respuesta = new StdClass;
+        $respuesta->tipo = 'error';
+        $respuesta->title = 'La transacción ya existe';
+        $respuesta->body = 'La trasacción '. $d->numero . ' ya existe en el banco. Favor validar.';
+        print json_encode($respuesta);
+    }
+});
+
 function setImpreso ($id, $db) {
     $db->doQuery("UPDATE recibocli SET impreso = 1 WHERE id = $id ");
 }

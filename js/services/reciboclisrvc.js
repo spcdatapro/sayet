@@ -39,9 +39,11 @@
             },
             getPagoRec: function(idpago){
                 return comunFact.doGET(urlBase + '/getpago/' + idpago);
+            },
+            checkPago: function(pago) {
+                return comunFact.doPOST(urlBase + '/validar', pago);
             }
         };
- 
     }]);
 
 }());
