@@ -132,21 +132,21 @@
                         <div class="btn-group" role="group" aria-label="...">
                             <button type="submit" class="btn btn-primary" ng-disabled="frmRecCli.$invalid || !permiso.c"
                                 ng-hide="reccli.id > 0 || !editando" title="guardar">
-                                <i class="fi fi-br-disk"></i>
+                                <i class="glyphicon glyphicon-floppy-save"></i>
                             </button>
                             <button class="btn btn-default" ng-click="editando = true" type="button"
                                 ng-show="reccli.id > 0 && !editando" ng-disabled="!permiso.m && reccli.impreso == 1"
                                 title="editar">
-                                <i class="fi fi-br-edit"></i>
+                                <i class="glyphicon glyphicon-pencil"></i>
                             </button>
                             <button type="button" class="btn btn-primary" ng-disabled="frmRecCli.$invalid"
                                 ng-show="editando && reccli.id > 0" ng-click="updRecCli(reccli)"
                                 title="guardar cambios">
-                                <i class="fi fi-br-disk"></i>
+                                <i class="glyphicon glyphicon-floppy-save"></i>
                             </button>
                             <button type="button" class="btn btn-warning"
                                 ng-click="reccli.id > 0 ? getRecCli(reccli.id) : editando = false" ng-show="editando">
-                                <i class="fi fi-br-cross-circle" title="cancelar"></i>
+                                <i class="glyphicon glyphicon-remove-circle" title="cancelar"></i>
                             </button>
                             <button type="button" class="btn btn-primary" ng-show="+reccli.id > 0 && +fltrre.tipo == 2"
                                 ng-click="print(reccli.id)">
@@ -154,21 +154,21 @@
                             </button>
                             <button type="button" class="btn btn-danger" ng-click="delRecCli(+reccli.id)"
                                 ng-hide="editando || !permiso.e || +fltrre.tipo == 1" title="eliminar">
-                                <i class="fi fi-br-trash"></i>
+                                <i class="glyphicon glyphicon-trash"></i>
                             </button>
                             <button type="button" class="btn btn-primary"
                                 ng-show="reccli.id > 0 && +fltrre.tipo == 1 && !editando"
                                 ng-click="printRecCli(reccli.id)" title="imprimir">
-                                <i class="fi fi-br-print"></i>
+                                <i class="glyphicon glyphicon-print"></i>
                             </button>
                             <button type="button" class="btn btn-warning"
                                 ng-show="reccli.id > 0 && +fltrre.tipo == 1 && !editando && permiso.e"
                                 ng-disabled="reccli.anulado != 0" ng-click="anulRecli(reccli)" title="anular">
-                                <i class="fi fi-br-ban"></i>
+                                <i class="glyphicon glyphicon-ban-circle"></i>
                             </button>
                             <button type="button" class="btn btn-primary" ng-show="reccli.id > 0"
                                 ng-click="resetRecCli()" ng-disabled="!permiso.c" ng-hide="editando" title="nuevo">
-                                <span class="fi fi-br-add"></span>
+                                <span class="glyphicon glyphicon-plus"></span>
                             </button>
                         </div>
                     </form>
@@ -222,7 +222,7 @@
                                                 class="form-control input-sm" ng-model="fltrre.clientestr" />
                                             <span class="input-group-btn">
                                                 <button type="button" class="btn btn-primary btn-sm"
-                                                    ng-click="getLstRecibosCli()"><i class="fi fi-br-search"
+                                                    ng-click="getLstRecibosCli()"><i class="glyphicon glyphicon-search"
                                                         aria-hidden="true"></i></button>
                                             </span>
                                         </div>
@@ -413,7 +413,7 @@
                         </div>
                         <button type="submit" class="btn btn-success" data-toggle="tooltip" data-placement="auto"
                             title="Guardar pago" ng-disabled="frmDocsPag.$invalid || total == 0">
-                            <span class="fi fi-br-disk"></span>
+                            <span class="glyphicon glyphicon-floppy-save"></span>
                         </button>
                         <!-- <button ng-click="updPagoRecCli(pagoreccli.id)" class="btn btn-info" data-toggle="tooltip" data-placement="auto" title="Guardar pago"
                                 ng-hide="!pagoreccli.id">
