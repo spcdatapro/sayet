@@ -580,7 +580,7 @@ $app->post('/prestamos', function(){
                 IF(g.descprestamo = 0, 0.00, a.cuotamensual) AS descnomina,
                 b.monto AS descuento,
                 (IFNULL(b.monto, 0.00) + IF(g.descprestamo = 0, 0.00, a.cuotamensual)) AS totdesc,
-                IF(MONTH(a.fecha) = $d->mes AND YEAR(a.fecha), a.saldo, (a.saldo - IFNULL(g.descprestamo, 0) - IFNULL(b.monto, 0))) AS saldo
+                IF((MONTH(a.fecha) = $d->mes AND YEAR(a.fecha)) OR a.saldo = 0, a.saldo, (a.saldo - IFNULL(g.descprestamo, 0) - IFNULL(b.monto, 0))) AS saldo
             FROM
                 plnprestamo a
                     LEFT JOIN
