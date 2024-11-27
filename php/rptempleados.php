@@ -612,7 +612,6 @@ $app->post('/prestamos', function(){
     $query.= isset($d->idempleado) ? "AND b.idplnempleado = $d->idempleado " : "";
     $query.= "ORDER BY  2 , ";
     $query.= $d->agrupar == 2 ? " 6 , 8" : " 8";
-    echo $query; return;
     $data = $db->getQuery($query);
 
     foreach($data as $dat) {
