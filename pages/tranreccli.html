@@ -12,11 +12,11 @@
         <li class="active" ng-show="+fltrre.tipo === 3">
             <a show-tab href="#divFrmRecCli" data-toggle="tab">CONSTANCIA DE DEVOLUCIÓN AL CLIENTE</a>
         </li>
-        <li ng-show="reccli.id > 0">
-            <a show-tab href="#divDocs" data-toggle="tab">DOCUMENTOS A REBAJAR</a>
-        </li>
         <li ng-show="+fltrre.tipo == 1 && reccli.id > 0">
             <a show-tab href="#divPago" data-toggle="tab">DOCUMENTOS DE PAGO</a>
+        </li>
+        <li ng-show="reccli.id > 0">
+            <a show-tab href="#divDocs" data-toggle="tab">DOCUMENTOS A REBAJAR</a>
         </li>
         <li ng-show="reccli.id > 0 && (reccli.espropio == 1 || +fltrre.tipo === 2)">
             <a show-tab href="#divDetCont" data-toggle="tab">DETALLE CONTABLE</a>

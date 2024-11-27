@@ -577,7 +577,7 @@ $app->post('/prestamos', function(){
                         AND YEAR(a.fecha) = $d->anio,
                     a.monto,
                     0.00) AS nuevo,
-                g.descprestamo AS descnomina,
+                IF(g.descprestamo = 0, 0.00, a.cuotamensual) AS descnomina,
                 b.monto AS descuento,
                 (IFNULL(b.monto, 0.00) + IFNULL(g.descprestamo, 0.00)) AS totdesc,
                 a.saldo AS saldo
@@ -612,6 +612,7 @@ $app->post('/prestamos', function(){
     $query.= isset($d->idempleado) ? "AND b.idplnempleado = $d->idempleado " : "";
     $query.= "ORDER BY  2 , ";
     $query.= $d->agrupar == 2 ? " 6 , 8" : " 8";
+    echo $query; return;
     $data = $db->getQuery($query);
 
     foreach($data as $dat) {

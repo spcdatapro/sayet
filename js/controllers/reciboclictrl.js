@@ -543,12 +543,8 @@
         };
 
         $scope.$watch('pagoreccli.monto', (newValue, oldValue) => {
-            if ($scope.total == 0) {
-                toaster.pop({ type:'error', title:'No existe documento a rebajar', body:'Favor seleccionar documentos a rebajar antes de hacer el ingreso del documento de pago.', 
-                    timeout: 10000
-                });
-            } else if (+newValue > +$scope.total) {
-                toaster.pop({ type:'warning', title:'Los montos no cuadran', body:'El monto de pago no cuadra con el monto de los documentos a rebajar.', 
+                if (+newValue > +$scope.total) {
+                    toaster.pop({ type:'warning', title:'Los montos no cuadran', body:'El monto de pago no cuadra con el monto de los documentos a rebajar.', 
                     timeout: 10000
                 });
             }
@@ -557,8 +553,9 @@
         $scope.checkExiste = function () {
             if ($scope.pagoreccli.numero > 0 && $scope.pagoreccli.idbanco > 0 && $scope.pagoreccli.idtipotrans > 0) {
                 reciboClientesSrvc.checkPago($scope.pagoreccli).then((d) => {
-                    console.log(d);
-                    toaster.pop({ title: d.title, body: d.body, type: d.tipo, timeout: 10000 })
+                    if (d) {
+                        toaster.pop({ title: d.title, body: d.body, type: d.tipo, timeout: 10000 })
+                    }
                 });
             }
         }
