@@ -572,7 +572,7 @@ $app->post('/prestamos', function(){
                 DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
                 a.monto AS monto,
                 a.cuotamensual AS cuota,
-                IF(MONTH(a.fecha) = $d->mes AND YEAR(a.fecha), 0.00, (a.saldo + IFNULL(g.descprestamo, 0) + IFNULL(b.monto, 0))) AS saldoant,
+                IF(MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio, 0.00, (a.saldo + IFNULL(a.cuotamensual, 0) + IFNULL(b.monto, 0))) AS saldoant,
                 IF(MONTH(a.fecha) = $d->mes
                         AND YEAR(a.fecha) = $d->anio,
                     a.monto,
@@ -580,7 +580,7 @@ $app->post('/prestamos', function(){
                 IF(g.descprestamo = 0, 0.00, a.cuotamensual) AS descnomina,
                 b.monto AS descuento,
                 (IFNULL(b.monto, 0.00) + IF(g.descprestamo = 0, 0.00, a.cuotamensual)) AS totdesc,
-                IF((MONTH(a.fecha) = $d->mes AND YEAR(a.fecha)) OR a.saldo = 0, a.saldo, (a.saldo - IFNULL(g.descprestamo, 0) - IFNULL(b.monto, 0))) AS saldo
+                IF((MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio) OR a.saldo = 0, a.saldo, (a.saldo - IFNULL(b.monto, 0))) AS saldo
             FROM
                 plnprestamo a
                     LEFT JOIN
