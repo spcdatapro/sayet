@@ -269,7 +269,7 @@ function updateDatosFacturaFEL($d){
     $apagar = $d->idmoneda == 1 ? $calculo->totapagar : $calculo->totapagarcnv;
 
     $query = "UPDATE factura SET iva = $data->iva, total = $calculo->totapagar, subtotal = $data->montoconiva, ";
-    $query.= "retisr = $calculo->isrporretener, retiva = $calculo->ivaporretener, totdescuento = $data->totdescuento, totalletras = '".$n2l->to_word($apagar, $moneda)."', conceptomayor = $conceptomayor, ";
+    $query.= "retisr = $calculo->isrporretener, retiva = $calculo->ivaporretener, retisrcnv = $calculo->isrporretenercnv, retivacnv = $calculo->ivaporretenercnv, totdescuento = $data->totdescuento, totalletras = '".$n2l->to_word($apagar, $moneda)."', conceptomayor = $conceptomayor, ";
     $query.= "importebruto = $importe->importebruto, importeneto = $importe->importeneto, importeiva = $importe->importeiva, importetotal = $importe->importetotal, descuentosiniva = $importe->descuentosiniva, ";
     $query.= "descuentoiva = $importe->descuentoiva, importebrutocnv = $importe->importebrutocnv, importenetocnv = $importe->importenetocnv, importeivacnv = $importe->importeivacnv, importetotalcnv = $importe->importetotalcnv, ";
     $query.= "descuentosinivacnv = $importe->descuentosinivacnv, descuentoivacnv = $importe->descuentoivacnv, totalcnv = $calculo->totapagarcnv, ";
