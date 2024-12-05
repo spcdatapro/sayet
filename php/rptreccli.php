@@ -96,50 +96,73 @@ $app->post('/mensual', function(){
 
     $cntsRecibos = count($data);
 
-    for ($i = 1; $i < $cntsRecibos; $i++) {
-        // traer valor actual y anterior
-        $actual = $data[$i];
-        $anterior = $data[$i-1];
-        // separar por
-        $por_ant = $d->tipo == 1 ? $anterior->nombre : $anterior->proyecto;
-        $por_act = $d->tipo == 1 ? $actual->nombre : $actual->proyecto;
-        // si es el primero insertar nombre del separador y crear array de recibos
-        if ($primero) {
-            $separador->nombre = $por_ant;
-            $separador->recibos = array();
-            $primero = false;
+    if ($cntsRecibos > 1) {
+        for ($i = 1; $i < $cntsRecibos; $i++) {
+            // traer valor actual y anterior
+            $actual = $data[$i];
+            $anterior = $data[$i-1];
+            // separar por
+            $por_ant = $d->tipo == 1 ? $anterior->nombre : $anterior->proyecto;
+            $por_act = $d->tipo == 1 ? $actual->nombre : $actual->proyecto;
+            // si es el primero insertar nombre del separador y crear array de recibos
+            if ($primero) {
+                $separador->nombre = $por_ant;
+                $separador->recibos = array();
+                $primero = false;
+            }
+            // si tienen el mismo proyecto empujar montos anteriores
+            array_push($montos_dia_gtq, $anterior->montogtq);
+            array_push($montos_dia_dlr, $anterior->montodlr);
+            array_push($separador->recibos, $anterior);
+            // si no tienen el mismo proyecto 
+            if ($por_ant != $por_act) {
+                // generar variable de totales
+                $totales->quetzales = round(array_sum($montos_dia_gtq), 2);
+                $totales->dolares = round(array_sum($montos_dia_dlr), 2);
+                $separador->totales = $totales;
+                // empujar a array global de recibo los recibos separados
+                array_push($recibos, $separador);
+                // limpiar variables 
+                $totales = new StdClass;
+                $montos_dia_gtq = array();
+                $montos_dia_dlr = array();
+                $separador = new StdClass;
+                $separador->nombre = $por_act;
+                $separador->recibos = array();
+            }
+            // para empujar el ultimo dato
+            if ($i+1 == $cntsRecibos) {
+                array_push($montos_dia_gtq, $actual->montogtq);
+                array_push($montos_dia_dlr, $actual->montodlr);
+                array_push($separador->recibos, $actual);
+                $totales->quetzales = round(array_sum($montos_dia_gtq), 2);
+                $totales->dolares = round(array_sum($montos_dia_dlr), 2);
+                $separador->totales = $totales;
+                array_push($recibos, $separador);
+            }
         }
-        // si tienen el mismo proyecto empujar montos anteriores
-        array_push($montos_dia_gtq, $anterior->montogtq);
-        array_push($montos_dia_dlr, $anterior->montodlr);
-        array_push($separador->recibos, $anterior);
-        // si no tienen el mismo proyecto 
-        if ($por_ant != $por_act) {
+    } else {
+            // traer valor actual y anterior
+            $actual = $data[0];
+            // separar por
+            $por_act = $d->tipo == 1 ? $actual->nombre : $actual->proyecto;
+            // si es el primero insertar nombre del separador y crear array de recibos
+            if ($primero) {
+                $separador->nombre = $por_act;
+                $separador->recibos = array();
+                $primero = false;
+            }
+            // si tienen el mismo proyecto empujar montos anteriores
+            array_push($montos_dia_gtq, $actual->montogtq);
+            array_push($montos_dia_dlr, $actual->montodlr);
+            array_push($separador->recibos, $actual);
             // generar variable de totales
             $totales->quetzales = round(array_sum($montos_dia_gtq), 2);
             $totales->dolares = round(array_sum($montos_dia_dlr), 2);
             $separador->totales = $totales;
             // empujar a array global de recibo los recibos separados
             array_push($recibos, $separador);
-            // limpiar variables 
-            $totales = new StdClass;
-            $montos_dia_gtq = array();
-            $montos_dia_dlr = array();
-            $separador = new StdClass;
-            $separador->nombre = $por_act;
-            $separador->recibos = array();
-        }
-        // para empujar el ultimo dato
-        if ($i+1 == $cntsRecibos) {
-            array_push($montos_dia_gtq, $actual->montogtq);
-            array_push($montos_dia_dlr, $actual->montodlr);
-            array_push($separador->recibos, $actual);
-            $totales->quetzales = round(array_sum($montos_dia_gtq), 2);
-            $totales->dolares = round(array_sum($montos_dia_dlr), 2);
-            $separador->totales = $totales;
-            array_push($recibos, $separador);
-        }
-    }
+        } 
 
     print json_encode(['fechas' => $letra, 'recibos' => $recibos]);
 
