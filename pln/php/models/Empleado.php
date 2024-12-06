@@ -1236,7 +1236,7 @@ EOT;
 			}
 
 			if (($dif_general->format('%a')+1) > 365) {
-				$this->bonocatorcedias = $this->bonocatorcedias - 1;
+				$this->aguinaldoDias = $this->aguinaldoDias - 1;
 			}
 
 			if ($this->aguinaldoDias > 0) {
