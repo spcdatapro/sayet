@@ -1234,6 +1234,10 @@ EOT;
 				$this->aguinaldoDias = ($interval->format('%a')+1);
 			}
 
+			if (($dif_general->format('%a')+1) > 365) {
+				$this->bonocatorcedias = $this->bonocatorcedias - 1;
+			}
+
 			if ($this->aguinaldoDias > 0) {
 				$this->aguinaldoMonto = $this->aguinaldoDias == 365 
 				? round($this->emp->sueldo, 2) 
