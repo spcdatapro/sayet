@@ -1225,6 +1225,7 @@ EOT;
 			$uno     = new DateTime($inicio);
 			$ingreso = new DateTime($this->getFechaIngreso());
 			$actual  = new DateTime($fecha);
+			$dif_general = $uno->diff($actual);
 
 			if ($ingreso <= $uno) {
 				$interval = $uno->diff($actual);
