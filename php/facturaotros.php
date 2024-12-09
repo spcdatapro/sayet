@@ -194,6 +194,7 @@ function calculaImpuestosYTotal($db, $d, $factura) {
     $factura->ivaporretener = $noEsExentoIVA ? ((int)$factura->reteneriva > 0 ? $db->calculaRetIVA((float)$factura->montosiniva, ((int)$factura->idtipocliente == 1 ? true : false), (float)$factura->montoconiva, ((int)$factura->idtipocliente == 2 ? true : false), (float)$factura->iva, (float)$factura->porcentajeretiva) : 0.00) : 0.00;
     $factura->ivaporretenercnv = round($factura->ivaporretener / (float)$d->tc, 2);
     $factura->totapagar = round((float)$factura->montoconiva - ($factura->isrporretener + $factura->ivaporretener), 2);
+    $factura->subtotalcnv = round((float)$factura->subtotal / (float)$d->tc, 2); 
     $factura->totapagarcnv = round($factura->totapagar / (float)$d->tc, 2);
     return $factura;
 }
@@ -268,7 +269,7 @@ function updateDatosFacturaFEL($d){
     $moneda = $d->idmoneda == 1 ? 'GTQ' : 'USD';
     $apagar = $d->idmoneda == 1 ? $calculo->totapagar : $calculo->totapagarcnv;
 
-    $query = "UPDATE factura SET iva = $data->iva, total = $calculo->totapagar, subtotal = $data->montoconiva, ";
+    $query = "UPDATE factura SET iva = $data->iva, total = $calculo->totapagar, subtotal = $data->montoconiva, subtotalcnv = $calculo->subtotalcnv, ";
     $query.= "retisr = $calculo->isrporretener, retiva = $calculo->ivaporretener, retisrcnv = $calculo->isrporretenercnv, retivacnv = $calculo->ivaporretenercnv, totdescuento = $data->totdescuento, totalletras = '".$n2l->to_word($apagar, $moneda)."', conceptomayor = $conceptomayor, ";
     $query.= "importebruto = $importe->importebruto, importeneto = $importe->importeneto, importeiva = $importe->importeiva, importetotal = $importe->importetotal, descuentosiniva = $importe->descuentosiniva, ";
     $query.= "descuentoiva = $importe->descuentoiva, importebrutocnv = $importe->importebrutocnv, importenetocnv = $importe->importenetocnv, importeivacnv = $importe->importeivacnv, importetotalcnv = $importe->importetotalcnv, ";
