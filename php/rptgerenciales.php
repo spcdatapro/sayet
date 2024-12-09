@@ -315,7 +315,7 @@ $app->post('/finanzas', function(){
                     AND DAY(a.fecha) = 15
                     AND YEAR(a.fecha) = $d->anio
                     AND a.aguinaldo > 0
-            UNION ALL SELECT
+            UNION ALL SELECT 
                     c.id AS id,
                     MONTH(a.fecha) AS mes,
                     c.codigo, 
@@ -342,6 +342,34 @@ $app->post('/finanzas', function(){
                     AND YEAR(a.fecha) = $d->anio
                     AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%')
                     AND b.debe > 0
+            UNION ALL SELECT
+                    c.id AS id,
+                    MONTH(a.fecha) AS mes,
+                    c.codigo, 
+                    c.nombrecta AS nombrecta,
+                    DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fechatran,
+                    CONCAT(a.tipotrans, '-', a.numero) AS cheque,
+                    SUBSTRING(a.beneficiario, 1, 30) AS beneficiario,
+                    NULL AS orden,
+                    a.concepto AS concepto,
+                    NULL AS fechafact,
+                    a.id AS documento,
+                    ROUND(a.monto, 2) AS total,
+                    a.fecha AS ord
+                FROM
+                    tranban a
+                        INNER JOIN
+                    detallecontable b ON a.id = b.idorigen AND origen = 1
+                        INNER JOIN
+                    cuentac c ON c.id = b.idcuenta
+						INNER JOIN
+					banco d ON a.idbanco = d.id
+                WHERE
+                    d.idempresa = $d->idempresa AND b.idproyecto = $d->idproyecto
+                    AND MONTH(a.fecha) >= $d->mesdel
+                    AND MONTH(a.fecha) <= $d->mesal
+                    AND YEAR(a.fecha) = $d->anio
+                    AND b.haber > 0
             ORDER BY 2 ASC, 1 ASC, 13 ASC, 5 DESC, 7 ASC";
     $data_c = $db->getQuery($query);
 

@@ -430,7 +430,6 @@ $app->post('/aguinaldo', function(){
     $query.= isset($d->idempresa) ? "AND a.idempresadebito = $d->idempresa " : "";
     $query.=   "ORDER BY 4 ,";
     $query.= $d->agrupar == 2 ? " 5 , 6" : " 6";
-    echo $query; return;
     $data = $db->getQuery($query);
 
     foreach($data as $dat) {
