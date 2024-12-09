@@ -354,7 +354,7 @@ $app->post('/finanzas', function(){
                     a.concepto AS concepto,
                     NULL AS fechafact,
                     a.id AS documento,
-                    ROUND(a.monto, 2) AS total,
+                    ROUND(b.debe, 2) AS total,
                     a.fecha AS ord
                 FROM
                     tranban a
@@ -369,7 +369,7 @@ $app->post('/finanzas', function(){
                     AND MONTH(a.fecha) >= $d->mesdel
                     AND MONTH(a.fecha) <= $d->mesal
                     AND YEAR(a.fecha) = $d->anio
-                    AND b.haber > 0
+                    AND b.debe > 0
             ORDER BY 2 ASC, 1 ASC, 13 ASC, 5 DESC, 7 ASC";
     $data_c = $db->getQuery($query);
 
