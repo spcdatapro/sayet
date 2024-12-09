@@ -420,7 +420,7 @@ $app->post('/aguinaldo', function(){
                     INNER JOIN
                 plnnomina e ON e.idplnempleado = a.id
                     LEFT JOIN
-                plnempresa b ON e.idempresa = b.id
+                plnempresa b ON a.idempresaactual = b.id
                     LEFT JOIN
                 proyecto c ON a.idproyecto = c.id
                     LEFT JOIN
