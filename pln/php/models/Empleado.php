@@ -1263,7 +1263,7 @@ EOT;
 				$this->aguinaldoDias = ($interval->format('%a')+1);
 			}
 
-			if (($dif_general->format('%a')+1) > 365) {
+			if ($this->aguinaldoDias > 365) {
 				$this->aguinaldoDias = $this->aguinaldoDias - 1;
 			}
 
