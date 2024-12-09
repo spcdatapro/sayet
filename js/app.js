@@ -79,6 +79,7 @@
         localStorageSrvc.clearAll();
         $rootScope.workingon = 0;
         $rootScope.logged = false;
+        $rootScope._ = window._;
         desktopNotification.requestPermission().then(function(){}, function(){});
         $rootScope.$on("$routeChangeStart", function (event, next, current) {
             tipoCambioSrvc.getTC();

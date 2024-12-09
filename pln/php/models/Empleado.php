@@ -6,6 +6,9 @@
 class Empleado extends Principal
 {
 	public $emp;
+	public $lab;
+	public $per;
+	public $emg;
 	protected $tabla;
 	protected $sueldo      = 0;
 	protected $horasimple  = 1.5;
@@ -48,6 +51,27 @@ class Empleado extends Principal
 			'*', 
 			['id[=]' => $id]
 		);
+		if ($this->emp->idpersonal > 0) {
+			$this->per = (object)$this->db->get (
+				'plnpersonal', 
+				'*',
+				['id[=]' => $this->emp->idpersonal]
+			);
+		}
+		if ($this->emp->idlaboral > 0) {
+			$this->lab = (object)$this->db->get (
+				'plnlaboral', 
+				'*',
+				['id[=]' => $this->emp->idlaboral]
+			);
+		}
+		if ($this->emp->idemergencia > 0) {
+			$this->emg = (object)$this->db->get (
+				'plnemergencia', 
+				'*',
+				['id[=]' => $this->emp->idemergencia]
+			);
+		}
 	}
 
 	public function set_proyeccion($value)
@@ -111,6 +135,10 @@ class Empleado extends Principal
 		if (is_array($args) && !empty($args)) {
 			if (elemento($args, 'nombre', FALSE)) {
 				$this->set_dato('nombre', $args['nombre']);
+			}
+
+			if (isset($args['observaciones'])) {
+				$this->set_dato('observaciones', $args['observaciones']);
 			}
 
 			if (isset($args['apellidos'])) {
@@ -1526,5 +1554,230 @@ EOT;
 			],
 			$filtro
 		);
+	}
+
+	public function guardarDatosPersonales($data = []) : object {
+		// validar si existen datos
+		if (count($data) > 0) {
+			// formatear datos antes de hacer insert
+			if (!isset($data['primernombre']) && !isset($data['primerapellido'])) {
+				$respuesta = new StdClass;
+				$respuesta->tipo = 'error';
+				$respuesta->mensaje = 'Error, no se recibio primer nombre o primer apellido favor ingresarlos nuevamente.';
+				return $respuesta;
+			}
+			trim($data['primernombre']);
+			$data['segundonombre'] = isset($data['segundonombre']) ? trim($data['segundonombre']) : null;
+			$data['tercernombre'] = isset($data['tercernombre']) ? trim($data['tercernombre']) : null;
+			trim($data['primerapellido']);
+			$data['segundoapellido'] = isset($data['segundoapellido']) ? trim($data['segundoapellido']) : null;
+			$data['apellidocasada'] = isset($data['apellidocasada']) ? trim($data['apellidocasada']) : null;
+			$data['direccion'] = isset($data['direccion']) ? trim($data['direccion']) : null;
+			$data['telefono'] = isset($data['telefono']) ? trim($data['telefono']) : null;
+			$data['documento'] = isset($data['documento']) ? trim($data['documento']) : null;
+			$data['nit'] = isset($data['nit']) ? trim($data['nit']) : null;
+			$data['correo'] = isset($data['correo']) ? trim($data['correo']) : null;
+			$idempleado = isset($data['idplnempleado']) ? $data['idplnempleado'] : null;
+			$idpersonal = isset($data['id']) ? $data['id'] : null;
+
+			if (isset($data['nacimiento'])) { 
+				$fecha = new DateTime($data['nacimiento']);
+				$data['nacimiento'] = $fecha->format('Y-m-d');
+			} else { 
+				unset($data['nacimiento']); 
+			}
+
+			unset($data['idplnempleado']);
+			unset($data['id']);
+
+			foreach($data as $d => $campo) {
+				$this->set_dato($d,  $campo);
+			}
+
+			if (!isset($idpersonal)) {
+				$idpersonal = $this->db->insert('plnpersonal', $this->datos);
+
+				if ($idpersonal > 0 && !isset($idempleado)) {
+					$this->datos = [];
+					$this->set_dato("nombre", $data['primernombre']);
+					$this->set_dato("idpersonal", $idpersonal);
+					$idempleado = $this->db->insert('plnempleado', $this->datos);
+				} else if ($idpersonal > 0 && isset($idempleado)) {
+					$this->datos = [];
+					$this->set_dato("idpersonal", $idpersonal);
+					$this->db->update('plnempleado', $this->datos, ["id [=]" => $idempleado]);
+				}
+
+				if ($idempleado > 0 && $idpersonal > 0) {
+					$respuesta = new StdClass;
+					$respuesta->tipo = 'success';
+					$respuesta->mensaje = 'Datos personales insertados con exito.';
+					$respuesta->id = $idempleado;
+				} else {
+					$respuesta = new StdClass;
+					$respuesta->tipo = 'error';
+					$respuesta->mensaje = 'Error en la base de datos favor comunicarse con IT.';
+				}
+			} else {
+				$upd = $this->db->update('plnpersonal', $this->datos, ["id [=]" => $idpersonal]);
+
+				if ($upd) {
+					$respuesta = new StdClass;
+					$respuesta->tipo = 'success';
+					$respuesta->mensaje = 'Datos personales actualizados con exito.';
+					$respuesta->id = $idempleado;
+				} else {
+					$respuesta = new StdClass;
+					$respuesta->tipo = 'warning';
+					$respuesta->mensaje = 'Error en la base de datos al actualizar, favor comunicarse con IT.';
+				}
+			}
+		} else {
+			$respuesta = new StdClass;
+			$respuesta->tipo = 'error';
+			$respuesta->mensaje = 'No se recibieron datos, volver a intentar.';
+		}
+
+		return $respuesta;
+	}
+
+	public function guardarDatosLaborales($data = []) : object {
+		// validar si existen datos
+		if (count($data) > 0) {
+			// formatear datos antes de hacer insert
+			$fecha = new DateTime($data['ingreso']);
+			$data['ingreso'] = $fecha->format('Y-m-d');
+			if (isset($data['reingreso'])) { 
+				$fecha = new DateTime($data['reingreso']);
+				$data['reingreso'] = $fecha->format('Y-m-d');
+			} else { 
+				unset($data['reingreso']); 
+			}
+			if (isset($data['baja'])) { 
+				$fecha = new DateTime($data['baja']);
+				$data['baja'] = $fecha->format('Y-m-d');
+			} else { 
+				unset($data['nacimiento']); 
+			}
+			$idempleado = isset($data['idplnempleado']) ? $data['idplnempleado'] : null;
+			$idlaboral = isset($data['id']) ? $data['id'] : null;
+
+			unset($data['idplnempleado']);
+			unset($data['id']);
+
+			foreach($data as $d => $campo) {
+				$this->set_dato($d,  $campo);
+			}
+
+			if (!isset($idlaboral)) {
+				$idlaboral = $this->db->insert('plnlaboral', $this->datos);
+
+				if (!isset($idempleado)) {
+					$respuesta = new StdClass;
+					$respuesta->tipo = 'error';
+					$respuesta->mensaje = 'No existe el empelado, favor ingresar datos del empleado antes de los datos laborales.';
+					return $respuesta;
+				} else if ($idlaboral > 0 && isset($idempleado)) {
+					$this->datos = [];
+					$this->set_dato("idlaboral", $idlaboral);
+					$this->db->update('plnempleado', $this->datos, ["id [=]" => $idempleado]);
+				}
+
+				if ($idempleado > 0 && $idlaboral > 0) {
+					$respuesta = new StdClass;
+					$respuesta->tipo = 'success';
+					$respuesta->mensaje = 'Datos laborales insertados con exito.';
+					$respuesta->id = $idempleado;
+				} else {
+					$respuesta = new StdClass;
+					$respuesta->tipo = 'error';
+					$respuesta->mensaje = 'Error en la base de datos favor comunicarse con IT.';
+				}
+			} else {
+				$upd = $this->db->update('plnlaboral', $this->datos, ["id [=]" => $idlaboral]);
+
+				if ($upd) {
+					$respuesta = new StdClass;
+					$respuesta->tipo = 'success';
+					$respuesta->mensaje = 'Datos laborales actualizados con exito.';
+					$respuesta->id = $idempleado;
+				} else {
+					$respuesta = new StdClass;
+					$respuesta->tipo = 'warning';
+					$respuesta->mensaje = 'Error en la base de datos al actualizar, favor comunicarse con IT.';
+				}
+			}
+		} else {
+			$respuesta = new StdClass;
+			$respuesta->tipo = 'error';
+			$respuesta->mensaje = 'No se recibieron datos, volver a intentar.';
+		}
+
+		return $respuesta;
+	}
+
+	public function guardarDatosEmergencia($data = []) : object {
+		// validar si existen datos
+		if (count($data) > 0) {
+			// formatear datos antes de hacer insert
+			$data['nombre'] = isset($data['nombre']) ? trim($data['nombre']) : null;
+			$data['telefono'] = isset($data['telefono']) ? trim($data['telefono']) : null;
+			$data['direccion'] = isset($data['direccion']) ? trim($data['direccion']) : null;
+
+			$idempleado = isset($data['idplnempleado']) ? $data['idplnempleado'] : null;
+			$idemergencia = isset($data['id']) ? $data['id'] : null;
+
+			unset($data['idplnempleado']);
+			unset($data['id']);
+
+			foreach($data as $d => $campo) {
+				$this->set_dato($d,  $campo);
+			}
+
+			if (!isset($idemergencia)) {
+				$idemergencia = $this->db->insert('plnemergencia', $this->datos);
+
+				if (!isset($idempleado)) {
+					$respuesta = new StdClass;
+					$respuesta->tipo = 'error';
+					$respuesta->mensaje = 'No existe el empelado, favor ingresar datos personales del empleado antes de los datos de emergencia.';
+					return $respuesta;
+				} else if ($idemergencia > 0 && isset($idempleado)) {
+					$this->datos = [];
+					$this->set_dato("idemergencia", $idemergencia);
+					$this->db->update('plnempleado', $this->datos, ["id [=]" => $idempleado]);
+				}
+
+				if ($idempleado > 0 && $idemergencia > 0) {
+					$respuesta = new StdClass;
+					$respuesta->tipo = 'success';
+					$respuesta->mensaje = 'Datos de emergencia insertados con exito.';
+					$respuesta->id = $idempleado;
+				} else {
+					$respuesta = new StdClass;
+					$respuesta->tipo = 'error';
+					$respuesta->mensaje = 'Error en la base de datos favor comunicarse con IT.';
+				}
+			} else {
+				$upd = $this->db->update('plnemergencia', $this->datos, ["id [=]" => $idemergencia]);
+
+				if ($upd) {
+					$respuesta = new StdClass;
+					$respuesta->tipo = 'success';
+					$respuesta->mensaje = 'Datos de emergencia actualizados con exito.';
+					$respuesta->id = $idempleado;
+				} else {
+					$respuesta = new StdClass;
+					$respuesta->tipo = 'warning';
+					$respuesta->mensaje = 'Error en la base de datos al actualizar, favor comunicarse con IT.';
+				}
+			}
+		} else {
+			$respuesta = new StdClass;
+			$respuesta->tipo = 'error';
+			$respuesta->mensaje = 'No se recibieron datos, volver a intentar.';
+		}
+
+		return $respuesta;
 	}
 }

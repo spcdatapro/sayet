@@ -55,7 +55,28 @@ angular.module('cpm')
                 enivar.pantalla = $sce.trustAsResourceUrl(fileURL);
                 return enivar;
             });
-        } 
+        },
+        getNacionalidades: function() {
+            return comunFact.doGET(urlBase + '/get_nacionalidades');
+        },
+        getDiscapacidades: function() {
+            return comunFact.doGET(urlBase + '/get_discapacidades');
+        },
+        getNivelEducacion: function() {
+            return comunFact.doGET(urlBase + '/get_educacion');
+        },
+        getCasta: function() {
+            return comunFact.doGET(urlBase + '/get_castas');
+        },
+        getLenguas: function() {
+            return comunFact.doGET(urlBase + '/get_lenguas');
+        },
+        getPuestos: function() {
+            return comunFact.doGET(urlBase + '/get_puestos');
+        },
+        editRow: function(obj, op) {
+            return comunFact.doPOST(urlBase + '/' + op, obj);
+        }
     };
 }])
 .factory('pstServicios', ['comunFact', function(comunFact){

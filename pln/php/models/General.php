@@ -25,50 +25,52 @@ class General extends Principal
 		$where = [];
 
 		if (elemento($args, 'termino')) {
-			$where["nombre[~]"] = $args['termino'];
+			$where["plnempleado.nombre[~]"] = $args['termino'];
 		}
 
 		if (elemento($args, 'proyecto')) {
-			$where['idproyecto'] = $args['proyecto'];
+			$where['plnempleado.idproyecto'] = $args['proyecto'];
 		}
 
 		if (elemento($args, 'actual')) {
-			$where['idempresaactual'] = $args['actual'];
+			$where['plnempleado.idempresaactual'] = $args['actual'];
 		}
 
 		if (elemento($args, 'debito')) {
-			$where['idempresadebito'] = $args['debito'];
+			$where['plnempleado.idempresadebito'] = $args['debito'];
 		}
 
 		if (elemento($args, 'empleado')) {
-			$where['id'] = $args['empleado'];
+			$where['plnempleado.id'] = $args['empleado'];
 		}
 
 		if (elemento($args, 'estatus')) {
 			if (elemento($args, 'fdel', false) || elemento($args, 'fal', false)) { 
 				if (elemento($args, 'fdel')) {
 					if ($args['estatus'] == 1) { # Fecha ingreso
-						$where['ingreso[>=]'] = $args['fdel'];
+						$where['plnempleado.ingreso[>=]'] = $args['fdel'];
 					} elseif ($args['estatus'] == 2) { # Fecha baja
-						$where['baja[>=]'] = $args['fdel'];
+						$where['plnempleado.baja[>=]'] = $args['fdel'];
 					}
 				}
 
 				if (elemento($args, 'fal')) {
 					if ($args['estatus'] == 1) { # Fecha ingreso
-						$where['ingreso[<=]'] = $args['fal'];
+						$where['plnempleado.ingreso[<=]'] = $args['fal'];
 					} elseif ($args['estatus'] == 2) { # Fecha baja
-						$where['baja[<=]'] = $args['fal'];
+						$where['plnempleado.baja[<=]'] = $args['fal'];
 					}
 				}
 			} else {
 				if ($args['estatus'] == 1) {
-					$where['activo'] = 1;
+					$where['plnempleado.activo'] = 1;
 				} else if ($args['estatus'] == 2) {
-					$where['activo'] = 0;
+					$where['plnempleado.activo'] = 0;
 				}
 			}
 		}
+
+		$where["plnempleado.nombre[!]"] = '';
 
 		if (count($where) > 1) {
 			$condicion = ['AND' => $where];
@@ -81,14 +83,38 @@ class General extends Principal
 		}
 
 		if (isset($args['ordenar_proyecto'])) {
-			$condicion["ORDER"] = "idproyecto ASC, nombre ASC";
+			$condicion["ORDER"] = "plnempleado.idproyecto ASC, plnempleado.nombre ASC";
 		} else {
-			$condicion["ORDER"] = "nombre ASC";
+			$condicion["ORDER"] = "plnempleado.nombre ASC";
 		}
 
 		return $this->db->select(
-			'plnempleado', 
-			'*', 
+			"plnempleado", 
+			[
+				"[>]plnpersonal(b)" => ["plnempleado.idpersonal" => "id"],
+				"[>]plnlaboral(c)" => ["plnempleado.idlaboral" => "id"]
+			],
+			[
+				"plnempleado.id",
+				"plnempleado.nombre",
+				"plnempleado.direccion",
+				"plnempleado.telefono",		
+				"plnempleado.correo",
+				"plnempleado.idplnpuesto",
+				"plnempleado.idpersonal",
+				"plnempleado.apellidos",
+				"plnempleado.idplnpuesto",
+				"b.primernombre",
+				"b.segundonombre",
+				"b.tercernombre",
+				"b.primerapellido",
+				"b.segundoapellido",
+				"b.apellidocasada",
+				"b.direccion(dir)",
+				"b.telefono(tel)",
+				"b.correo(correoe)",
+				"c.idpuesto"
+			],
 			$condicion
 		);
 	}
@@ -570,4 +596,28 @@ EOT;
 
 		return $this->getCatalogo($tmp, $args);
     }
+
+	public function getNacionalidad() : array {
+		return $this->db->select('nacionalidad', '*');
+	}
+
+	public function getDiscapacidades() : array {
+		return $this->db->select('discapacidades', '*');
+	}
+
+	public function getNivelEducacion() : array {
+		return $this->db->select('educacion', '*');
+	}
+
+	public function getCastas() : array {
+		return $this->db->select('casta', '*');
+	}
+
+	public function getLenguas() : array {
+		return $this->db->select('lenguas', '*');
+	}
+
+	public function getPuestos() : array {
+		return $this->db->select('puesto', '*');
+	}
 }

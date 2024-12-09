@@ -18,7 +18,7 @@ $app = new \Slim\Slim();
 $app->get('/get_empleado/:empleado', function($empleado){
     $e = new Empleado($empleado);
 
-    enviar_json(['emp' => $e->emp]);
+    enviar_json(['emp' => $e->emp, 'per' => $e->per, 'lab' => $e->lab, 'emg' => $e->emg]);
 });
 
 $app->get('/get_bitacora/:empleado', function($empleado){
@@ -907,6 +907,69 @@ $app->get('/get_movimiento', function(){
     $lista = $bus->getBitacora($_GET);
 
     echo json_encode($lista);
+});
+
+$app->get('/get_nacionalidades', function() {
+	$b = new General();
+
+	print json_encode($b->getNacionalidad());
+});
+
+$app->get('/get_discapacidades', function() {
+	$b = new General();
+
+	print json_encode($b->getDiscapacidades());
+});
+
+$app->get('/get_educacion', function() {
+	$b = new General();
+
+	print json_encode($b->getNivelEducacion());
+});
+
+$app->get('/get_castas', function() {
+	$b = new General();
+
+	print json_encode($b->getCastas());
+});
+
+$app->get('/get_lenguas', function() {
+	$b = new General();
+
+	print json_encode($b->getLenguas());
+});
+
+$app->get('/get_puestos', function() {
+	$b = new General();
+
+	print json_encode($b->getPuestos());
+});
+
+$app->post('/c_per', function() {
+	$data = (array)json_decode(file_get_contents('php://input'), true);
+	$e = new Empleado();
+
+	$respuesta = $e->guardarDatosPersonales($data);
+
+	print json_encode($respuesta);	
+});
+
+$app->post('/c_lab', function() {
+	$data = (array)json_decode(file_get_contents('php://input'), true);
+	$e = new Empleado();
+
+	$respuesta = $e->guardarDatosLaborales($data);
+
+	print json_encode($respuesta);	
+});
+
+$app->post('/c_emg', function() {
+	$data = (array)json_decode(file_get_contents('php://input'), true);
+	$e = new Empleado();
+
+	$respuesta = $e->guardarDatosEmergencia($data);
+
+	print json_encode($respuesta);	
 });
 
 $app->run();

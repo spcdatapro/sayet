@@ -1,7 +1,46 @@
+<head>
+	<style>
+		.panel-danger>.panel-heading {
+			background-color: #f2dede;
+			border-color: #f2dede;
+		}
+
+		.panel-success>.panel-heading {
+			background-color: #dff0d8;
+			border-color: #dff0d8;
+		}
+
+		a {
+			cursor: pointer;
+		}
+
+		.negro {
+			color: black;
+		}
+
+		.search-container {
+			position: relative;
+			display: flex;
+			align-items: center;
+		}
+
+		.search-container input {
+			padding-left: 30px;
+			/* Ajusta el padding para que no se superponga el ícono */
+		}
+
+		.search-icon {
+			position: absolute;
+			left: 10px;
+			/* Ajusta la posición del ícono */
+			color: #aaa;
+			/* Color del ícono */
+		}
+	</style>
+</head>
 <div class="container-fluid" ng-controller="MntEmpleadoController">
-	<nav class="navbar navbar-default">
+	<!-- <nav class="navbar navbar-default">
 		<div class="container-fluid">
-			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
 					data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
@@ -13,7 +52,6 @@
 				<a class="navbar-brand" href="#/pln/mnt/empleado">Empleado</a>
 			</div>
 
-			<!-- Collect the nav links, forms, and other content for toggling -->
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<form class="navbar-form navbar-left" ng-submit="buscar(bus)">
 					<div class="form-group">
@@ -31,9 +69,9 @@
 				<button type="button" class="btn btn-xs btn-default navbar-btn" ng-click="mostrarForm()">
 					<i class="glyphicon glyphicon-plus"></i> Nuevo
 				</button>
-			</div><!-- /.navbar-collapse -->
-		</div><!-- /.container-fluid -->
-	</nav>
+			</div>
+		</div>
+	</nav> -->
 
 	<div class="panel panel-primary" ng-show="formulario">
 		<div class="panel-heading">
@@ -44,10 +82,138 @@
 				</button>
 			</h3>
 		</div>
-		<div class="panel-body">
+		<div class="panel-body" style="background-color: rgb(250, 250, 250);">
+
+			<div class="col-md-4">
+				<div class="row" ng-show="hay">
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<p id="confirmTodo" style="text-align: right;"></p>
+							<span style="float: right;"><a class="negro"
+									ng-click="copiar('textCompleto', 'confirmTodo')" title="Copiar todo"><i
+										class="fi fi-br-copy"></i></a></span>
+							<div>&nbsp;</div>
+							<table id="textCompleto">
+								<tr class="container-md">
+									<td colspan="2">
+										<p id="confirmNombre"></p>
+										<h4><a ng-click="copiar('textNombre', 'confirmNombre')" id="textNombre"
+												class="negro" title="Copiar nombre">{{emp.nombre}} {{emp.apellidos}}</a>
+										</h4>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5 class="negro">Puesto:</h5>
+									</td>
+									<td>
+										<p id="confirmPuesto" style="text-align: right;"></p>
+										<h5 class="negro">{{emp.nompuesto}}</h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5 class="negro">Empresa:</h5>
+									</td>
+									<td>
+										<p id="confirmEmpresa"></p>
+										<h5 class="negro">{{emp.nomempresa}}</h5>
+									</td>
+								</tr>
+								<tr>
+									<td id="confirmCui" colspan="2"></td>
+								</tr>
+								<tr>
+									<td>
+										<h5 class="negro">CUI:</h5>
+									</td>
+									<td>
+										<h5><a ng-click="copiar('txtCui', 'confirmCui')" class="negro"
+												title="Copiar documento" id="txtCui">{{emp.dpi}}</a></h5>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2" id="confirmNit"></td>
+								</tr>
+								<tr>
+									<td>
+										<h5 class="negro">NIT:</h5>
+									</td>
+									<td>
+										<h5><a ng-click="copiar('txtNit', 'confirmNit')" class="negro"
+												title="Copiar NIT" id="txtNit">{{emp.nit}}</a></h5>
+									</td>
+								</tr>
+								<tr ng-show="emp.activo == 1">
+									<td>
+										<h5 class="negro">Ingreso:</h5>
+									</td>
+									<td>
+										<h5 class="negro">{{emp.fecha_activo | date: 'dd/MM/yyyy'}}</h5>
+									</td>
+								</tr>
+								<tr ng-show="emp.activo == 0">
+									<td>
+										<h5 class="negro">Baja</h5>
+									</td>
+									<td>
+										<h5 class="negro">{{emp.baja | date: 'dd/MM/yyyy'}}</h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5 class="negro">Estatus:</h5>
+									</td>
+									<td>
+										<h5 class="negro">{{emp.estatus}}</h5>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2" id="confirmDir"></td>
+								</tr>
+								<tr rowspan="2">
+									<td>
+										<h5 class="negro">Direcci&oacute;n:</h5>
+									</td>
+									<td>
+										<h5><a ng-click="copiar('txtDir', 'confirmDir')" class="negro"
+												title="Copiar dirección" id="txtDir">{{emp.direccion}}</a></h5>
+									</td>
+								</tr>
+							</table>
+							<!-- <a class="negro" ng-click="copiar('textNombre')" title="copiar nombre"><i class="fi fi-rr-copy">&nbsp;{{estatus}}</i></a> -->
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="panel panel-default">
+						<nav>
+							<ul class="nav nav-pills nav-stacked">
+								<li role="presentation" class="active">
+									<a show-tab href="#home" aria-controls="home" role="tab" data-toggle="tab">Datos
+										personales</a>
+								</li>
+								<li role="presentation">
+									<a show-tab href="#archivos" aria-controls="archivos" role="tab"
+										data-toggle="tab">Archivos</a>
+								</li>
+								<li role="presentation">
+									<a show-tab href="#bitacora" aria-controls="bitacora" role="tab"
+										data-toggle="tab">Movimiento de
+										Personal</a>
+								</li>
+								<li role="presentation">
+									<a show-tab href="#nuevo" aria-controls="bitacora" role="tab"
+										data-toggle="tab">Datos nuevos</a>
+								</li>
+							</ul>
+						</nav>
+					</div>
+				</div>
+			</div>
 
 			<!-- Nav tabs -->
-			<ul class="nav nav-tabs" role="tablist">
+			<!-- <ul class="nav nav-tabs" role="tablist">
 				<li role="presentation" class="active">
 					<a show-tab href="#home" aria-controls="home" role="tab" data-toggle="tab">Datos personales</a>
 				</li>
@@ -58,267 +224,282 @@
 					<a show-tab href="#bitacora" aria-controls="bitacora" role="tab" data-toggle="tab">Movimiento de
 						Personal</a>
 				</li>
-			</ul>
+				<li role="presentation">
+					<a show-tab href="#nuevo" aria-controls="bitacora" role="tab" data-toggle="tab">Nuevo</a>
+				</li>
+			</ul> -->
+
 
 			<!-- Tab panes -->
 			<div class="tab-content">
 				<div role="tabpanel" class="tab-pane active" id="home">
-					<br>
-					<form class="form-horizontal" novalidate role="form">
-						<fieldset>
-							<div class="form-group form-group-sm">
-								<label for="inputNombre" class="col-sm-2 control-label">Nombre:</label>
-								<div class="col-sm-4">
-									<input type="text" ng-model="emp.nombre" ng-disabled="!editando && hay"
-										class="form-control" id="inputNombre">
+					<div class="col-md-8">
+						<br>
+						<form class="form-horizontal" novalidate role="form">
+							<fieldset>
+								<div class="form-group form-group-sm">
+									<label for="inputNombre" class="col-sm-2 control-label">Nombre:</label>
+									<div class="col-sm-4">
+										<input type="text" ng-model="emp.nombre" ng-disabled="!editando && hay"
+											class="form-control" id="inputNombre">
+									</div>
+
+									<label for="inputApellidos" class="col-sm-2 control-label">Apellidos:</label>
+									<div class="col-sm-4">
+										<input type="text" ng-model="emp.apellidos" class="form-control"
+											ng-disabled="!editando && hay" id="inputApellidos">
+									</div>
 								</div>
 
-								<label for="inputApellidos" class="col-sm-2 control-label">Apellidos:</label>
-								<div class="col-sm-4">
-									<input type="text" ng-model="emp.apellidos" class="form-control"
-										ng-disabled="!editando && hay" id="inputApellidos">
-								</div>
-							</div>
+								<div class="form-group form-group-sm">
+									<label for="inputDireccion" class="col-sm-2 control-label">Direccìón:</label>
+									<div class="col-sm-4">
+										<input type="text" ng-model="emp.direccion" class="form-control"
+											ng-disabled="!editando && hay" id="inputDireccion">
+									</div>
 
-							<div class="form-group form-group-sm">
-								<label for="inputDireccion" class="col-sm-2 control-label">Direccìón:</label>
-								<div class="col-sm-4">
-									<input type="text" ng-model="emp.direccion" class="form-control"
-										ng-disabled="!editando && hay" id="inputDireccion">
-								</div>
-
-								<label for="inputTelefono" class="col-sm-2 control-label">Teléfeno:</label>
-								<div class="col-sm-4">
-									<input type="text" ng-model="emp.telefono" class="form-control" id="inputTelefono"
-										ng-disabled="!editando && hay">
-								</div>
-							</div>
-
-							<div class="form-group form-group-sm">
-								<label for="inputDPI" class="col-sm-2 control-label">DPI:</label>
-								<div class="col-sm-4">
-									<input type="text" ng-model="emp.dpi" class="form-control" id="inputDPI"
-										ng-disabled="!editando && hay">
-								</div>
-								<label for="inputExtentidado" class="col-sm-2 control-label">Extendido en:</label>
-								<div class="col-sm-4">
-									<input type="text" ng-model="emp.extendido" class="form-control"
-										ng-disabled="!editando && hay" id="inputExtentidado">
-								</div>
-							</div>
-
-							<div class="form-group form-group-sm">
-								<label for="inputNIT" class="col-sm-2 control-label">NIT:</label>
-								<div class="col-sm-4">
-									<input type="text" ng-model="emp.nit" class="form-control" id="inputNIT"
-										ng-disabled="!editando && hay">
-								</div>
-								<label for="inputCorreo" class="col-sm-2 control-label">Correo:</label>
-								<div class="col-sm-4">
-									<input type="email" ng-model="emp.correo" class="form-control" id="inputCorreo"
-										ng-disabled="!editando && hay">
-								</div>
-							</div>
-
-							<div class="form-group form-group-sm">
-								<label for="inputSexo" class="col-sm-2 control-label">Sexo:</label>
-								<div class="col-sm-4">
-									<label class="radio-inline">
-										<input type="radio" ng-model="emp.sexo" id="inputSexo1" value="1"
-											ng-disabled="!editando && hay"> Masculino
-									</label>
-									<label class="radio-inline">
-										<input type="radio" ng-model="emp.sexo" id="inputSexo2" value="2"
-											ng-disabled="!editando && hay"> Femenino
-									</label>
+									<label for="inputTelefono" class="col-sm-2 control-label">Teléfeno:</label>
+									<div class="col-sm-4">
+										<input type="text" ng-model="emp.telefono" class="form-control"
+											id="inputTelefono" ng-disabled="!editando && hay">
+									</div>
 								</div>
 
-								<label for="inputEstadoCivil" class="col-sm-2 control-label">Estado Civil:</label>
-								<div class="col-sm-4">
-									<label class="radio-inline">
-										<input type="radio" ng-model="emp.estadocivil" id="inputEstadoCivil1" value="1"
+								<div class="form-group form-group-sm">
+									<label for="inputDPI" class="col-sm-2 control-label">DPI:</label>
+									<div class="col-sm-4">
+										<input type="text" ng-model="emp.dpi" class="form-control" id="inputDPI"
 											ng-disabled="!editando && hay">
-										Soltero
-									</label>
-									<label class="radio-inline">
-										<input type="radio" ng-model="emp.estadocivil" id="inputEstadoCivil2" value="2"
-											ng-disabled="!editando && hay">
-										Casado
-									</label>
+									</div>
+									<label for="inputExtentidado" class="col-sm-2 control-label">Extendido en:</label>
+									<div class="col-sm-4">
+										<input type="text" ng-model="emp.extendido" class="form-control"
+											ng-disabled="!editando && hay" id="inputExtentidado">
+									</div>
 								</div>
-							</div>
 
-							<div class="form-group form-group-sm">
-								<label for="inputFechaNacimiento" class="col-sm-2 control-label">Fecha de
-									Nacimiento:</label>
-								<div class="col-sm-4">
-									<input type="date" ng-model="emp.fchnac" class="form-control"
-										id="inputFechaNacimiento" ng-disabled="!editando && hay">
+								<div class="form-group form-group-sm">
+									<label for="inputNIT" class="col-sm-2 control-label">NIT:</label>
+									<div class="col-sm-4">
+										<input type="text" ng-model="emp.nit" class="form-control" id="inputNIT"
+											ng-disabled="!editando && hay">
+									</div>
+									<label for="inputCorreo" class="col-sm-2 control-label">Correo:</label>
+									<div class="col-sm-4">
+										<input type="email" ng-model="emp.correo" class="form-control" id="inputCorreo"
+											ng-disabled="!editando && hay">
+									</div>
 								</div>
-								<label for="inputNacionalidad" class="col-sm-2 control-label">Nacionalidad:</label>
-								<div class="col-sm-4">
-									<input type="text" class="form-control" id="inputNacionalidad"
-										ng-disabled="!editando && hay">
-								</div>
-							</div>
-						</fieldset>
 
-						<fieldset>
+								<div class="form-group form-group-sm">
+									<label for="inputSexo" class="col-sm-2 control-label">Sexo:</label>
+									<div class="col-sm-4">
+										<label class="radio-inline">
+											<input type="radio" ng-model="emp.sexo" id="inputSexo1" value="1"
+												ng-disabled="!editando && hay"> Masculino
+										</label>
+										<label class="radio-inline">
+											<input type="radio" ng-model="emp.sexo" id="inputSexo2" value="2"
+												ng-disabled="!editando && hay"> Femenino
+										</label>
+									</div>
 
-							<div class="form-group form-group-sm">
-								<label for="inputIGSS" class="col-sm-2 control-label">Afiliación IGSS:</label>
-								<div class="col-sm-4">
-									<input type="text" ng-model="emp.igss" class="form-control" id="inputIGSS"
-										ng-disabled="!editando && hay">
-								</div>
-							</div>
-							<div class="form-group form-group-sm">
-								<label for="inputIngreso" class="col-sm-2 control-label">Fecha de Ingreso:</label>
-								<div class="col-sm-4">
-									<input type="date" ng-model="emp.fching" class="form-control" id="inputIngreso"
-										ng-disabled="!editando && hay">
-								</div>
-								<label for="inputReIngreso" class="col-sm-2 control-label">Reingreso:</label>
-								<div class="col-sm-4">
-									<input type="date" ng-model="emp.fchrei" class="form-control" id="inputReIngreso"
-										ng-disabled="true">
-								</div>
-							</div>
-							<div class="form-group form-group-sm">
-								<label for="inputBaja" class="col-sm-2 control-label">Fecha de Baja:</label>
-								<div class="col-sm-4">
-									<input type="date" ng-model="emp.fchbaj" class="form-control" id="inputBaja"
-										ng-disabled="prueba || !editando">
-								</div>
-								<label for="selectPuesto" class="col-sm-2 control-label">Puesto:</label>
-								<div class="col-sm-4">
-									<select class="form-control" ng-model="emp.idplnpuesto" id="selectPuesto"
-										ng-options="item.id as item.descripcion for item in puestos"
-										ng-disabled="!editando && hay">
-									</select>
-								</div>
-							</div>
-						</fieldset>
-
-						<fieldset>
-							<div class="form-group form-group-sm">
-								<label for="inputCuentaPersonal" class="col-sm-2 control-label">Cuenta Personal:</label>
-								<div class="col-sm-4">
-									<input type="text" ng-model="emp.cuentapersonal" class="form-control"
-										id="inputCuentaPersonal" ng-disabled="!editando && hay">
-								</div>
-								<label for="inputDescuentoISR" class="col-sm-2 control-label">Descuento ISR:</label>
-								<div class="col-sm-4">
-									<input type="number" step="0.01" ng-model="emp.descuentoisr" class="form-control"
-										id="inputDescuentoISR" ng-disabled="!editando && hay">
-								</div>
-							</div>
-							<div class="form-group form-group-sm">
-								<label for="selectEmpresaActual" class="col-sm-2 control-label">Empresa Actual:</label>
-								<div class="col-sm-4">
-									<select class="form-control" ng-model="emp.idempresaactual" id="selectEmpresaActual"
-										ng-options="item.id as item.nombre for item in empresasPlanilla"
-										ng-disabled="!editando && hay">
-									</select>
-								</div>
-								<label for="inputBonficacionLey" class="col-sm-2 control-label">Bonificación
-									Ley:</label>
-								<div class="col-sm-4">
-									<input type="number" step="0.01" ng-model="emp.bonificacionley" class="form-control"
-										id="inputBonficacionLey" ng-disabled="!editando && hay">
-								</div>
-							</div>
-							<div class="form-group form-group-sm">
-								<label for="inputSueldoMensual" class="col-sm-2 control-label">Sueldo Mensual:</label>
-								<div class="col-sm-4">
-									<input type="number" step="0.01" ng-model="emp.sueldo" class="form-control"
-										id="inputSueldoMensual" ng-disabled="!editando && hay">
-								</div>
-								<label for="inputPorcentajeIGSS" class="col-sm-2 control-label">Porcentaje IGSS:</label>
-								<div class="col-sm-4">
-									<input type="number" step="0.01" ng-model="emp.porcentajeigss" class="form-control"
-										id="inputPorcentajeIGSS" ng-disabled="!editando && hay">
-								</div>
-							</div>
-							<div class="form-group form-group-sm">
-								<label for="inputFormaPago" class="col-sm-2 control-label">Forma de Pago:</label>
-								<div class="col-sm-4">
-									<label class="radio-inline">
-										<input type="radio" ng-model="emp.formapago" id="inputFormaPago1" value="1"
-											ng-disabled="!editando && hay">
-										Quincenal
-									</label>
-									<label class="radio-inline">
-										<input type="radio" ng-model="emp.formapago" id="inputFormaPago2" value="2"
-											ng-disabled="!editando && hay">
-										Mensual
-									</label>
-								</div>
-								<label for="inputMedioPago" class="col-sm-2 control-label">Medio de Pago:</label>
-								<div class="col-sm-4">
-									<label class="radio-inline">
-										<input type="radio" ng-model="emp.mediopago" id="inputMedioPago1" value="1"
-											ng-disabled="!editando && hay">
-										Cheque
-									</label>
-									<label class="radio-inline">
-										<input type="radio" ng-model="emp.mediopago" id="inputMedioPago2" value="2"
-											ng-disabled="!editando && hay">
-										Efectivo
-									</label>
-									<label class="radio-inline">
-										<input type="radio" ng-model="emp.mediopago" id="inputMedioPago3" value="3"
-											ng-disabled="!editando && hay">
-										N/Débito
-									</label>
-								</div>
-							</div>
-							<div class="form-group form-group-sm">
-								<label for="inputEmpresaDebito" class="col-sm-2 control-label">Empresa Debito:</label>
-								<div class="col-sm-4">
-									<select class="form-control" ng-model="emp.idempresadebito" id="inputEmpresaDebito"
-										ng-options="item.id as item.nomempresa for item in empresas"
-										ng-disabled="!editando && hay">
-									</select>
-								</div>
-								<label for="inputCuentaBanco" class="col-sm-2 control-label">Cuenta Banco:</label>
-								<div class="col-sm-4">
-									<input type="text" ng-model="emp.cuentabanco" class="form-control"
-										id="inputCuentaBanco" ng-disabled="!editando && hay">
-								</div>
-							</div>
-							<div class="form-group form-group-sm">
-								<label for="selectProyectoAfecta" class="col-sm-2 control-label">Proyecto que
-									Afecta:</label>
-								<div class="col-sm-4">
-									<select class="form-control" ng-model="emp.idproyecto" id="selectProyectoAfecta"
-										ng-options="item.id as item.nomproyecto for item in proyectos"
-										ng-change="setUnidades(emp.idproyecto)" ng-disabled="!editando && hay">
-									</select>
-								</div>
-								<div class="col-sm-offset-2 col-sm-4">
-									<div class="checkbox">
-										<label>
-											<input type="checkbox" ng-model="emp.activo" ng-true-value="1"
-												ng-disabled="true" ng-false-value="0"> Activo
+									<label for="inputEstadoCivil" class="col-sm-2 control-label">Estado Civil:</label>
+									<div class="col-sm-4">
+										<label class="radio-inline">
+											<input type="radio" ng-model="emp.estadocivil" id="inputEstadoCivil1"
+												value="1" ng-disabled="!editando && hay">
+											Soltero
+										</label>
+										<label class="radio-inline">
+											<input type="radio" ng-model="emp.estadocivil" id="inputEstadoCivil2"
+												value="2" ng-disabled="!editando && hay">
+											Casado
 										</label>
 									</div>
 								</div>
-							</div>
-							<div class="form-group form-group-sm">
-								<label for="selectUbicacion" class="col-sm-2 control-label">Ubicaci&oacute;n:</label>
-								<div class="col-sm-4">
-									<select class="form-control" ng-model="emp.idunidad" id="selectUbicacion"
-										ng-options="item.idunidad as item.unidad for item in unidades"
-										ng-disabled="!editando && hay">
-									</select>
-								</div>
-							</div>
-						</fieldset>
 
-						<div class="well well-sm">
-							<h4 class="text-center">Datos para movimiento/bitácora.</h4>
-							<!-- <div class="form-group form-group-sm">
+								<div class="form-group form-group-sm">
+									<label for="inputFechaNacimiento" class="col-sm-2 control-label">Fecha de
+										Nacimiento:</label>
+									<div class="col-sm-4">
+										<input type="date" ng-model="emp.fchnac" class="form-control"
+											id="inputFechaNacimiento" ng-disabled="!editando && hay">
+									</div>
+									<label for="inputNacionalidad" class="col-sm-2 control-label">Nacionalidad:</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" id="inputNacionalidad"
+											ng-disabled="!editando && hay">
+									</div>
+								</div>
+							</fieldset>
+
+							<fieldset>
+
+								<div class="form-group form-group-sm">
+									<label for="inputIGSS" class="col-sm-2 control-label">Afiliación IGSS:</label>
+									<div class="col-sm-4">
+										<input type="text" ng-model="emp.igss" class="form-control" id="inputIGSS"
+											ng-disabled="!editando && hay">
+									</div>
+								</div>
+								<div class="form-group form-group-sm">
+									<label for="inputIngreso" class="col-sm-2 control-label">Fecha de Ingreso:</label>
+									<div class="col-sm-4">
+										<input type="date" ng-model="emp.fching" class="form-control" id="inputIngreso"
+											ng-disabled="!editando && hay">
+									</div>
+									<label for="inputReIngreso" class="col-sm-2 control-label">Reingreso:</label>
+									<div class="col-sm-4">
+										<input type="date" ng-model="emp.fchrei" class="form-control"
+											id="inputReIngreso" ng-disabled="true">
+									</div>
+								</div>
+								<div class="form-group form-group-sm">
+									<label for="inputBaja" class="col-sm-2 control-label">Fecha de Baja:</label>
+									<div class="col-sm-4">
+										<input type="date" ng-model="emp.fchbaj" class="form-control" id="inputBaja"
+											ng-disabled="prueba || !editando">
+									</div>
+									<label for="selectPuesto" class="col-sm-2 control-label">Puesto:</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="emp.idplnpuesto" id="selectPuesto"
+											ng-options="item.id as item.descripcion for item in puestos"
+											ng-disabled="!editando && hay">
+										</select>
+									</div>
+								</div>
+							</fieldset>
+
+							<fieldset>
+								<div class="form-group form-group-sm">
+									<label for="inputCuentaPersonal" class="col-sm-2 control-label">Cuenta
+										Personal:</label>
+									<div class="col-sm-4">
+										<input type="text" ng-model="emp.cuentapersonal" class="form-control"
+											id="inputCuentaPersonal" ng-disabled="!editando && hay">
+									</div>
+									<label for="inputDescuentoISR" class="col-sm-2 control-label">Descuento ISR:</label>
+									<div class="col-sm-4">
+										<input type="number" step="0.01" ng-model="emp.descuentoisr"
+											class="form-control" id="inputDescuentoISR" ng-disabled="!editando && hay">
+									</div>
+								</div>
+								<div class="form-group form-group-sm">
+									<label for="selectEmpresaActual" class="col-sm-2 control-label">Empresa
+										Actual:</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="emp.idempresaactual"
+											id="selectEmpresaActual"
+											ng-options="item.id as item.nombre for item in empresasPlanilla"
+											ng-disabled="!editando && hay">
+										</select>
+									</div>
+									<label for="inputBonficacionLey" class="col-sm-2 control-label">Bonificación
+										Ley:</label>
+									<div class="col-sm-4">
+										<input type="number" step="0.01" ng-model="emp.bonificacionley"
+											class="form-control" id="inputBonficacionLey"
+											ng-disabled="!editando && hay">
+									</div>
+								</div>
+								<div class="form-group form-group-sm">
+									<label for="inputSueldoMensual" class="col-sm-2 control-label">Sueldo
+										Mensual:</label>
+									<div class="col-sm-4">
+										<input type="number" step="0.01" ng-model="emp.sueldo" class="form-control"
+											id="inputSueldoMensual" ng-disabled="!editando && hay">
+									</div>
+									<label for="inputPorcentajeIGSS" class="col-sm-2 control-label">Porcentaje
+										IGSS:</label>
+									<div class="col-sm-4">
+										<input type="number" step="0.01" ng-model="emp.porcentajeigss"
+											class="form-control" id="inputPorcentajeIGSS"
+											ng-disabled="!editando && hay">
+									</div>
+								</div>
+								<div class="form-group form-group-sm">
+									<label for="inputFormaPago" class="col-sm-2 control-label">Forma de Pago:</label>
+									<div class="col-sm-4">
+										<label class="radio-inline">
+											<input type="radio" ng-model="emp.formapago" id="inputFormaPago1" value="1"
+												ng-disabled="!editando && hay">
+											Quincenal
+										</label>
+										<label class="radio-inline">
+											<input type="radio" ng-model="emp.formapago" id="inputFormaPago2" value="2"
+												ng-disabled="!editando && hay">
+											Mensual
+										</label>
+									</div>
+									<label for="inputMedioPago" class="col-sm-2 control-label">Medio de Pago:</label>
+									<div class="col-sm-4">
+										<label class="radio-inline">
+											<input type="radio" ng-model="emp.mediopago" id="inputMedioPago1" value="1"
+												ng-disabled="!editando && hay">
+											Cheque
+										</label>
+										<label class="radio-inline">
+											<input type="radio" ng-model="emp.mediopago" id="inputMedioPago2" value="2"
+												ng-disabled="!editando && hay">
+											Efectivo
+										</label>
+										<label class="radio-inline">
+											<input type="radio" ng-model="emp.mediopago" id="inputMedioPago3" value="3"
+												ng-disabled="!editando && hay">
+											N/Débito
+										</label>
+									</div>
+								</div>
+								<div class="form-group form-group-sm">
+									<label for="inputEmpresaDebito" class="col-sm-2 control-label">Empresa
+										Debito:</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="emp.idempresadebito"
+											id="inputEmpresaDebito"
+											ng-options="item.id as item.nomempresa for item in empresas"
+											ng-disabled="!editando && hay">
+										</select>
+									</div>
+									<label for="inputCuentaBanco" class="col-sm-2 control-label">Cuenta Banco:</label>
+									<div class="col-sm-4">
+										<input type="text" ng-model="emp.cuentabanco" class="form-control"
+											id="inputCuentaBanco" ng-disabled="!editando && hay">
+									</div>
+								</div>
+								<div class="form-group form-group-sm">
+									<label for="selectProyectoAfecta" class="col-sm-2 control-label">Proyecto que
+										Afecta:</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="emp.idproyecto" id="selectProyectoAfecta"
+											ng-options="item.id as item.nomproyecto for item in proyectos"
+											ng-change="setUnidades(emp.idproyecto)" ng-disabled="!editando && hay">
+										</select>
+									</div>
+									<div class="col-sm-offset-2 col-sm-4">
+										<div class="checkbox">
+											<label>
+												<input type="checkbox" ng-model="emp.activo" ng-true-value="1"
+													ng-disabled="true" ng-false-value="0"> Activo
+											</label>
+										</div>
+									</div>
+								</div>
+								<div class="form-group form-group-sm">
+									<label for="selectUbicacion"
+										class="col-sm-2 control-label">Ubicaci&oacute;n:</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="emp.idunidad" id="selectUbicacion"
+											ng-options="item.idunidad as item.unidad for item in unidades"
+											ng-disabled="!editando && hay">
+										</select>
+									</div>
+								</div>
+							</fieldset>
+
+							<div class="well well-sm">
+								<h4 class="text-center">Datos para movimiento/bitácora.</h4>
+								<!-- <div class="form-group form-group-sm">
 								<label for="inputMovFecha" class="col-sm-2 control-label">Fecha:</label>
 								<div class="col-sm-4">
 									<input type="date" class="form-control" ng-model="emp.movfecha" id="inputMovFecha">
@@ -349,114 +530,881 @@
 										id="inputMovOtros">
 								</div>
 							</div> -->
-							<div class="form-group form-group-sm">
-								<label for="inputMovObservaciones" class="col-sm-2 control-label">Observaciones:</label>
-								<div class="col-sm-10">
-									<textarea ng-model="emp.movobservaciones" class="form-control"
-										id="inputMovObservaciones" rows="3"></textarea>
+								<div class="form-group form-group-sm">
+									<label for="inputMovObservaciones"
+										class="col-sm-2 control-label">Observaciones:</label>
+									<div class="col-sm-10">
+										<textarea ng-model="emp.movobservaciones" class="form-control"
+											id="inputMovObservaciones" rows="3"></textarea>
+									</div>
 								</div>
 							</div>
-						</div>
 
-						<div class="well well-sm">
-							<h4 class="text-center">Contacto de Emergencias.</h4>
-							<div class="form-group form-group-sm">
-								<label for="inputEmenombre" class="col-sm-2 control-label">Nombre:</label>
-								<div class="col-sm-4">
-									<input type="text" class="form-control" ng-model="emp.emenombre"
-										id="inputEmenombre">
+							<div class="well well-sm" ng-hide="true">
+								<h4 class="text-center">Contacto de Emergencias.</h4>
+								<div class="form-group form-group-sm">
+									<label for="inputEmenombre" class="col-sm-2 control-label">Nombre:</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" ng-model="emp.emenombre"
+											id="inputEmenombre">
+									</div>
+									<label for="inputEmetelefono" class="col-sm-2 control-label">Teléfono:</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" ng-model="emp.emetelefono"
+											id="inputEmetelefono">
+									</div>
 								</div>
-								<label for="inputEmetelefono" class="col-sm-2 control-label">Teléfono:</label>
-								<div class="col-sm-4">
-									<input type="text" class="form-control" ng-model="emp.emetelefono"
-										id="inputEmetelefono">
+								<div class="form-group form-group-sm">
+									<label for="inputEmedireccion" class="col-sm-2 control-label">Dirección:</label>
+									<div class="col-sm-4">
+										<input type="text" class="form-control" ng-model="emp.emedireccion"
+											id="inputEmedireccion">
+									</div>
 								</div>
 							</div>
-							<div class="form-group form-group-sm">
-								<label for="inputEmedireccion" class="col-sm-2 control-label">Dirección:</label>
-								<div class="col-sm-4">
-									<input type="text" class="form-control" ng-model="emp.emedireccion"
-										id="inputEmedireccion">
-								</div>
-							</div>
-						</div>
 
-						<div class="form-group form-group-sm">
-							<div class="col-sm-10 col-sm-offset-2 text-right">
-								<a href="pln/php/controllers/empleado.php/ficha/{{emp.id}}" target="_blank"
-									class="btn btn-default btn-sm" ng-show="hay">
-									<i class="glyphicon glyphicon-print"></i>
-								</a>
-								<button ng-click="guardar(emp)" class="btn btn-primary btn-sm" ng-show="editando || !hay">
-									<i class="glyphicon glyphicon-floppy-disk"></i> Guardar
-								</button>
-								<button class="btn btn-primary btn-sm" ng-show="hay && !editando && emp.activo"
-									ng-click="editar()" title="Editar">
-									<span class="glyphicon glyphicon-edit"></span>
-								</button>
-								<button class="btn btn-primary btn-sm" ng-show="!emp.activo && hay" ng-click="darAlta()"
-									title="Dar de alta">
-									<span class="glyphicon glyphicon-upload"></span>
-								</button>
-								<button class="btn btn-warning btn-sm" ng-show="editando" ng-click="editando = false"
-									title="Cancelar">
-									<span class="glyphicon glyphicon-ban-circle"></span>
-								</button>
+							<div class="form-group form-group-sm">
+								<div class="col-sm-10 col-sm-offset-2 text-right">
+									<a href="pln/php/controllers/empleado.php/ficha/{{emp.id}}" target="_blank"
+										class="btn btn-default btn-sm" ng-show="hay">
+										<i class="glyphicon glyphicon-print"></i>
+									</a>
+									<button ng-click="guardar(emp)" class="btn btn-primary btn-sm"
+										ng-show="editando || !hay">
+										<i class="glyphicon glyphicon-floppy-disk"></i> Guardar
+									</button>
+									<button class="btn btn-primary btn-sm" ng-show="hay && !editando && emp.activo"
+										ng-click="editar()" title="Editar">
+										<span class="glyphicon glyphicon-edit"></span>
+									</button>
+									<button class="btn btn-primary btn-sm" ng-show="!emp.activo && hay"
+										ng-click="darAlta()" title="Dar de alta">
+										<span class="glyphicon glyphicon-upload"></span>
+									</button>
+									<button class="btn btn-warning btn-sm" ng-show="editando"
+										ng-click="editando = false" title="Cancelar">
+										<span class="glyphicon glyphicon-ban-circle"></span>
+									</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+				<div id="nuevo" class="tab-pane">
+					<div class="col-md-8">
+						<div class="panel" ng-class="empleadoForm.$invalid ? 'panel-danger' : 'panel-success'">
+							<div class="panel-heading">
+								<div class="row">
+									<div class="col-md-10" style="color: black;">
+										Datos personales
+									</div>
+									<div class="col-md-2" style="text-align: right;">
+										<a style="color: black;"
+											ng-class="!form_personal ? 'glyphicon glyphicon-chevron-down' : 'glyphicon glyphicon-chevron-up'"
+											ng-click="formPersonal()"></a>
+									</div>
+								</div>
+							</div>
+							<div class="panel-body" ng-show="form_personal">
+								<form novalidate role="form" id="empleadoForm" name="empleadoForm"
+									ng-submit="addDatosPersonales(per, aceptar)">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group required">
+												<label for="inputNombre" class="control-label">Primer
+													Nombre:</label>
+												<input type="text" ng-model="per.primernombre"
+													ng-disabled="!editando && hay" class="form-control" id="inputNombre"
+													placeholder="Ingresar un nombre" required>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="snombre" class="control-label">Segundo
+													nombre:</label>
+												<input type="text" ng-model="per.segundonombre" class="form-control"
+													ng-disabled="!editando && hay" id="snombre"
+													placeholder="Ingresar un nombre (opcional)">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label for="tnombre" class="control-label">Tercer
+													nombre:</label>
+												<input type="text" ng-model="per.tercernombre"
+													placeholder="Ingresar un nombre (opcional)"
+													ng-disabled="!editando && hay" class="form-control" id="tnombre">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group required">
+												<label for="inputApellidos" class="control-label">Primer
+													apellido</label>
+												<input type="text" ng-model="per.primerapellido" class="form-control"
+													placeholder="Ingresar un apellido" ng-disabled="!editando && hay"
+													id="inputApellidos" required>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="sapellido" class="control-label">Segundo
+													apellido:</label>
+												<input type="text" ng-model="per.segundoapellido" class="form-control"
+													placeholder="Ingresar un apellido" ng-disabled="!editando && hay"
+													id="sapellido">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label for="tapellido" class="control-label">Apellido de
+													casada:</label>
+												<input type="text" ng-model="per.apellidocasada"
+													placeholder="Ingresar apellido de casada (opcional)"
+													ng-disabled="!editando && hay" class="form-control" id="tapellido">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group" ng-class="hay ? 'required' : ''">
+												<label for="direccion" class="control-label">Dirección:</label>
+												<input type="text" ng-model="per.direccion"
+													placeholder="Ingresar direccion" ng-disabled="!editando && hay"
+													class="form-control" id="direccion" ng-required="hay">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group" ng-class="hay ? 'required' : ''">
+												<label for="selSexo" class="control-label">Sexo:</label>
+												<select name="selSexo" id="selSexo" class="form-control"
+													placeholder="Seleccionar un sexo..." ng-model="per.sexo"
+													ng-disabled="!editando && hay" ng-required="hay">
+													<option value="1">Hombre</option>
+													<option value="2">Mujer</option>
+												</select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group" ng-class="hay ? 'required' : ''">
+												<label for="selSexo" class="control-label">Estado civil:</label>
+												<select name="selEstadoCivil" id="selEstadoCivil" class="form-control"
+													placeholder="Seleccionar un estado civil..."
+													ng-model="per.estadocivil" ng-disabled="!editando && hay"
+													ng-required="hay">
+													<option value="1">Soltero</option>
+													<option value="2">Casado</option>
+													<option value="3">Unido</option>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group" ng-class="hay ? 'required' : ''">
+												<label for="fechaNacimiento" class="control-label">Fecha
+													nacimiento:</label>
+												<input type="date" name="fechaNacimiento" id="fechaNacimiento"
+													class="form-control" ng-model="per.nacimiento"
+													placeholder="Ingresar fecha nacimiento"
+													ng-disabled="!editando && hay" ng-required="hay">
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="telefono" class="control-label">T&eacute;lefono:</label>
+												<input type="tel" name="telefono" id="telefono" ng-model="per.telefono"
+													class="form-control" ng-disabled="!editando && hay"
+													placeholder="Ingresar teléfeno">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group" ng-class="hay ? 'required' : ''">
+												<label for="selTipoDoc" class="control-label">Tipo documento:</label>
+												<select name="selTipoDoc" id="selTipoDoc" ng-model="per.tipodoc"
+													aria-placeholder="Seleccionar un tipo..." class="form-control"
+													ng-disabled="!editando && hay" ng-required="hay">
+													<option value="1">DPI</option>
+													<option value="2">Certificado de nacimiento</option>
+													<option value="3">Pasaporte</option>
+												</select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group" ng-class="hay ? 'required' : ''">
+												<label for="numDoc" class="control-label">N&uacute;mero de
+													documento:</label>
+												<input type="text" name="numDoc" id="numDoc" ng-model="per.documento"
+													placeholder="Ingresar número" ng-disabled="!editando && hay"
+													class="form-control" ng-required="hay">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group" ng-class="hay ? 'required' : ''">
+												<label for="nit" class="control-label">NIT:</label>
+												<input type="text" name="nit" id="nit" ng-model="per.nit"
+													ng-disabled="!editando && hay" class="form-control"
+													ng-required="hay">
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="correo" class="control-label">Correo:</label>
+												<input type="email" name="correo" id="correo" ng-model="per.correo"
+													class="form-control" ng-disabled="!editando && hay">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group" ng-class="hay ? 'required' : ''">
+												<label for="selNacionalidad" class="control-label">Nacionalidad:</label>
+												<ui-select ng-model="per.idnacionalidad"
+													title="Seleccione una nacionalidad..." theme="bootstrap"
+													autofocus="false" ng-disabled="!editando && hay" ng-required="hay">
+													<ui-select-match placeholder="Buscar nacionalidad..."
+														allow-clear="false">
+														<span ng-bind="($select.selected.nacionalidad)"></span>
+													</ui-select-match>
+													<ui-select-choices
+														repeat="item.id as item in nacionalidades | filter:$select.search">
+														<div ng-bind-html="(item.pais) | highlight: $select.search">
+														</div>
+														<small>
+															<strong>C&oacute;digo:</strong>
+															<span
+																ng-bind-html="item.codigo | highlight: $select.search"></span>
+														</small>
+													</ui-select-choices>
+													<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+												</ui-select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group" ng-class="hay ? 'required' : ''">
+												<label for="selMunicipio" class="control-label">Municipio:</label>
+												<ui-select ng-model="per.idmunicipio" title="Seleccione un municipio..."
+													theme="bootstrap" autofocus="false" ng-disabled="!editando && hay"
+													ng-required="hay">
+													<ui-select-match placeholder="Buscar municipio..."
+														allow-clear="false">
+														<span ng-bind="($select.selected.nombre)"></span>
+													</ui-select-match>
+													<ui-select-choices
+														repeat="item.id as item in municipios | filter:$select.search">
+														<div ng-bind-html="(item.nombre) | highlight: $select.search">
+														</div>
+														<small>
+															<strong>Departamento:</strong>
+															<span
+																ng-bind-html="item.nomdepto | highlight: $select.search"></span>
+														</small>
+													</ui-select-choices>
+													<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+												</ui-select>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group" ng-class="hay ? 'required' : ''">
+												<label for="selDiscapacidad" class="control-label">Discapacidad:</label>
+												<ui-select ng-model="per.iddiscapacidad"
+													title="Seleccione una discapacidad..." theme="bootstrap"
+													autofocus="false" ng-disabled="!editando && hay" ng-required="hay">
+													<ui-select-match placeholder="Buscar discapacidad..."
+														allow-clear="false">
+														<span ng-bind="($select.selected.descripcion)"></span>
+													</ui-select-match>
+													<ui-select-choices
+														repeat="item.id as item in discapacidades | filter:$select.search">
+														<div
+															ng-bind-html="(item.descripcion) | highlight: $select.search">
+														</div>
+													</ui-select-choices>
+													<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+												</ui-select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group" ng-class="hay ? 'required' : ''">
+												<label for="selEducacion" class="control-label">Nivel educativo:</label>
+												<ui-select ng-model="per.ideducacion" title="Selecto educación"
+													theme="bootstrap" autofocus="false" ng-disabled="!editando && hay"
+													ng-required="hay">
+													<ui-select-match placeholder="Buscar nivel educativo..."
+														allow-clear="false">
+														<span ng-bind="($select.selected.descripcion)"></span>
+													</ui-select-match>
+													<ui-select-choices
+														repeat="item.id as item in nivel_educacion | filter:$select.search">
+														<div
+															ng-bind-html="(item.descripcion) | highlight: $select.search">
+														</div>
+													</ui-select-choices>
+													<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+												</ui-select>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="selCasta" class="control-label">Pueblo de
+													pertenencia:</label>
+												<ui-select ng-model="per.idcasta" title="Selector pueblo"
+													theme="bootstrap" autofocus="false" ng-disabled="!editando && hay">
+													<ui-select-match placeholder="Buscar pueblo..." allow-clear="false">
+														<span ng-bind="($select.selected.descripcion)"></span>
+													</ui-select-match>
+													<ui-select-choices
+														repeat="item.id as item in castas | filter:$select.search">
+														<div
+															ng-bind-html="(item.descripcion) | highlight: $select.search">
+														</div>
+													</ui-select-choices>
+													<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+												</ui-select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="selLinguistica" class="control-label">Comunidad
+													ling&uuml;&iacute;stica</label>
+												<ui-select ng-model="emp.linguistica" title="Selector lengua"
+													theme="bootstrap" autofocus="false" ng-disabled="!editando && hay">
+													<ui-select-match placeholder="Buscar lengua..." allow-clear="true">
+														<span ng-bind="($select.selected.descripcion)"></span>
+													</ui-select-match>
+													<ui-select-choices
+														repeat="item.id as item in lenguas | filter:$select.search">
+														<div
+															ng-bind-html="(item.descripcion) | highlight: $select.search">
+														</div>
+													</ui-select-choices>
+													<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+												</ui-select>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="btn-group btn-group-justified">
+												<div class="btn-group" role="group">
+													<button type="submit" class="btn btn-primary" title="Guardar">
+														Aceptar
+													</button>
+												</div>
+											</div>
+										</div>
+									</div>
+									</br>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="btn-group btn-group-justified">
+												<div class="btn-group" role="group">
+													<button type="button" class="btn btn-default" title="Cancelar"
+														ng-click="formPersonal(true)">
+														Cancelar
+													</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</form>
 							</div>
 						</div>
-					</form>
+						<div class="panel" ng-class="empleadoLaboral.$invalid ? 'panel-danger' : 'panel-success'">
+							<div class="panel-heading">
+								<div class="row">
+									<div class="col-md-10" style="color: black;">
+										Datos laborales
+									</div>
+									<div class="col-md-2" style="text-align: right;">
+										<a style="color: black;"
+											ng-class="!form_laboral ? 'glyphicon glyphicon-chevron-down' : 'glyphicon glyphicon-chevron-up'"
+											ng-click="formLaboral()"></a>
+									</div>
+								</div>
+							</div>
+							<div class="panel-body" ng-show="form_laboral">
+								<form novalidate role="form" id="empleadoLaboral" name="empleadoLaboral"
+									ng-submit="addDatosLaborales(lab, true)">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group required">
+												<label for="inputIngreso" class="control-label">Fecha ingreso:</label>
+												<input type="date" ng-model="lab.ingreso" ng-disabled="!editando && hay"
+													class="form-control" id="inputIngreso" required>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="inputReIngreso" class="control-label">Fecha
+													reingreso:</label>
+												<input type="date" ng-model="lab.reingreso" class="form-control"
+													ng-disabled="!editando && hay || !lab.ingreso" id="inputReIngreso">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="fchbaj" class="control-label">Fecha baja:</label>
+												<input type="date" ng-model="lab.baja" ng-disabled="!editando && hay"
+													class="form-control" id="fchbaj">
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group required">
+												<label class="control-label">Puesto:</label>
+												<ui-select ng-model="lab.idpuesto" title="Seleccione un puesto..."
+													theme="bootstrap" autofocus="false" ng-disabled="!editando && hay"
+													required>
+													<ui-select-match placeholder="Ingresar 3 letras"
+														allow-clear="false">
+														<span ng-bind="($select.selected.descripcion)"></span>
+													</ui-select-match>
+													<ui-select-choices
+														repeat="item.id as item in puestosnue | filter:$select.search | 
+														limitTo: lab.idpuesto > 0 ? '' : ($select.search.length <= 2) ? 0 : undefined">
+														<div
+															ng-bind-html="(item.descripcion) | highlight: $select.search">
+														</div>
+													</ui-select-choices>
+													<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+												</ui-select>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group required">
+												<label for="selEmpresaActual" class="control-label">Empresa
+													actual:</label>
+												<ui-select ng-model="lab.idempresaactual"
+													title="Seleccione una empresa..." theme="bootstrap"
+													autofocus="false" ng-disabled="!editando && hay" required>
+													<ui-select-match placeholder="Buscar empresa..."
+														allow-clear="false">
+														<span ng-bind="($select.selected.nombre)"></span>
+													</ui-select-match>
+													<ui-select-choices
+														repeat="item.id as item in empresasPlanilla | filter:$select.search">
+														<div ng-bind-html="(item.nombre) | highlight: $select.search">
+														</div>
+													</ui-select-choices>
+													<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+												</ui-select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group required">
+												<label for="selEmpresaActual" class="control-label">Empresa
+													d&eacute;bito:</label>
+												<ui-select ng-model="lab.idempresadebito"
+													title="Seleccione una empresa..." theme="bootstrap"
+													ng-change="cargoEmpresa(lab.idempresadebito)" autofocus="false"
+													ng-disabled="!editando && hay" required>
+													<ui-select-match placeholder="Buscar empresa..."
+														allow-clear="false">
+														<span ng-bind="($select.selected.nombre)"></span>
+													</ui-select-match>
+													<ui-select-choices
+														repeat="item.id as item in empresasPlanilla | filter:$select.search">
+														<div ng-bind-html="(item.nombre) | highlight: $select.search">
+														</div>
+													</ui-select-choices>
+													<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+												</ui-select>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group required">
+												<label for="selProyecto" class="control-label">Proyecto:</label>
+												<ui-select ng-model="lab.idproyecto" title="Seleccione un proyecto..."
+													theme="bootstrap" autofocus="false" ng-disabled="!editando && hay"
+													ng-change="setUnidades(lab.idproyecto)" required>
+													<ui-select-match placeholder="Buscar proyecto..."
+														allow-clear="false">
+														<span ng-bind="($select.selected.nomproyecto)"></span>
+													</ui-select-match>
+													<ui-select-choices
+														repeat="item.id as item in proyectos | filter:$select.search">
+														<div
+															ng-bind-html="(item.nomproyecto) | highlight: $select.search">
+														</div>
+													</ui-select-choices>
+													<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+												</ui-select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="selUbicacion"
+													class="control-label">Ubicaci&oacute;n:</label>
+												<ui-select ng-model="lab.idunidad" title="Seleccione una unidad..."
+													theme="bootstrap" autofocus="false" ng-disabled="!editando && hay">
+													<ui-select-match placeholder="Buscar unidad..." allow-clear="false">
+														<span ng-bind="($select.selected.unidad)"></span>
+													</ui-select-match>
+													<ui-select-choices
+														repeat="item.idunidad as item in unidades | filter:$select.search">
+														<div ng-bind-html="(item.unidad) | highlight: $select.search">
+														</div>
+													</ui-select-choices>
+													<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+												</ui-select>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group required">
+												<label for="sueldo" class="control-label">Sueldo:</label>
+												<input type="number" name="sueldo" id="sueldo" class="form-control"
+													step="0.01" ng-model="lab.sueldo" ng-disabled="!editando && hay"
+													required>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group required">
+												<label for="inputBonficacionLey"
+													class="control-label">Bonificaci&oacute;n ley:</label>
+												<input type="number" name="inputBonficacionLey" id="inputBonficacionLey"
+													class="form-control" step="0.01" ng-model="lab.bonificacionley"
+													ng-disabled="!editando && hay" required>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group required">
+												<label for="inputIGSS" class="control-label">Afiliaci&oacute;n
+													IGSS:</label>
+												<input type="text" name="inputIGSS" id="inputIGSS" class="form-control"
+													ng-model="lab.igss" ng-disabled="!editando && hay">
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group required">
+												<label for="inputPorcentajeIGSS" class="control-label">Porcentaje
+													IGSS:</label>
+												<input type="number" name="inputPorcentajeIGSS" id="inputPorcentajeIGSS"
+													class="form-control" ng-model="lab.porcentajeigss"
+													ng-disabled="!editando && hay">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="inputCuentaPersonal" class="control-label required">Cuenta
+													personal:</label>
+												<ui-select ng-model="lab.idcuenta"
+													title="selector de cuenta contable..." theme="bootstrap"
+													autofocus="false" ng-disabled="!editando && hay">
+													<ui-select-match placeholder="Favor ingresar 3 letras o digitos"
+														allow-clear="true">
+														<span ng-bind="($select.selected.nombrecta)"></span>
+													</ui-select-match>
+													<ui-select-choices
+														repeat="item.id as item in cuentas | filter:$select.search | 
+														limitTo: lab.idcuenta > 0 ? '' : ($select.search.length <= 2)">
+														<div ng-bind-html="(item.codcta) | highlight: $select.search">
+														</div>
+													</ui-select-choices>
+													<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+												</ui-select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="inputDescuentoISR" class="control-label">Descuento
+													ISR:</label>
+												<input type="number" step="0.01" ng-model="lab.descuentoisr"
+													class="form-control" id="inputDescuentoISR"
+													ng-disabled="!editando && hay" placeholder="Ingresar monto">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group required">
+												<label for="selFormaPago" class="control-label">Frecuencia de
+													pago:</label>
+												<select name="selFormaPago" id="selFormaPago" class="form-control"
+													placeholder="Seleccionar una frecuencia..."
+													ng-model="lab.frecuencia" ng-disabled="!editando && hay">
+													<option value="1">Quincenal</option>
+													<option value="2"> Mensual</option>
+												</select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group required">
+												<label for="selMedioPago" class="control-label">M&eacute;todo de
+													pago:</label>
+												<select name="selMedioPago" id="selMedioPago"
+													placeholder="Seleccionar un método..." ng-model="lab.metodo"
+													ng-disabled="!editando && hay" class="form-control">
+													<option value="1">Cheque</option>
+													<option value="2">Efectivo</option>
+													<option value="3">Nota D&eacute;bito</option>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="inputCuentaBanco" class="control-label">Cuenta
+													banco:</label>
+												<input type="text" ng-model="lab.cuentabanco" class="form-control"
+													id="inputCuentaBanco" ng-disabled="!editando && hay">
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="selJornada" class="control-label">Jornada:</label>
+												<select name="selJornada" id="selJornada" class="form-control"
+													ng-disabled="!editando && hay"
+													placeholder="Seleccione una jornada..." ng-model="lab.jornada">
+													<option value="1">Diurna</option>
+													<option value="2">Mixta</option>
+													<option value="3">Nocturna</option>
+													<option value="4">No est&aacute; sujeto a jornada</option>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="selTipoContrato" class="control-label">Tipo de
+													contrato:</label>
+												<select name="selTipoContrato" id="selTipoContrato" class="form-control"
+													ng-disabled="!editando && hay"
+													aria-placeholder="Seleccione un tipo..."
+													ng-model="lab.tipocontrato">
+													<option value="1">Verbal</option>
+													<option value="2">Escrito</option>
+												</select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="selTempContrato" class="control-label">Temporalidad del
+													contrato:</label>
+												<select name="selTempContrato" id="selTempContrato" class="form-control"
+													ng-disabled="!editando && hay"
+													placeholder="Seleccione la temporalidad..."
+													ng-model="lab.temporalidad">
+													<option value="1">Indefinido</option>
+													<option value="2">Definido</option>
+												</select>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="btn-group btn-group-justified">
+												<div class="btn-group" role="group">
+													<button type="submit" class="btn btn-primary" title="Guardar">
+														Aceptar
+													</button>
+												</div>
+											</div>
+										</div>
+									</div>
+									</br>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="btn-group btn-group-justified">
+												<div class="btn-group" role="group">
+													<button type="button" class="btn btn-default" title="Cancelar"
+														ng-click="formLaboral(true)">
+														Cancelar
+													</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+						<div class="panel" ng-class="empleadoEmergencia.$invalid ? 'panel-danger' : 'panel-success'">
+							<div class="panel-heading">
+								<div class="row">
+									<div class="col-md-10" style="color: black;">
+										Contacto de emergencia
+									</div>
+									<div class="col-md-2" style="text-align: right;">
+										<a style="color: black;"
+											ng-class="!form_emergencia ? 'glyphicon glyphicon-chevron-down' : 'glyphicon glyphicon-chevron-up'"
+											ng-click="formEmergencia()"></a>
+									</div>
+								</div>
+							</div>
+							<div class="panel-body" ng-show="form_emergencia">
+								<form novalidate role="form" id="empleadoEmergencia" name="empleadoEmergencia" ng-submit="addDatosEmergencia(emg, true)">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="inputNombreEmg" class="control-label">Nombre:</label>
+												<input type="text" ng-model="emg.nombre" ng-disabled="!editando && hay"
+													class="form-control" id="inputNombreEmg"
+													placeholder="Ingresar nombre">
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="telefonoEmg" class="control-label">T&eacute;lefono:</label>
+												<input type="tel" name="telefonoEmg" id="telefonoEmg" placeholder="Ingresar télefono"
+													ng-model="emg.telefono" class="form-control"
+													ng-disabled="!editando && hay">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label for="direccionEmg" class="control-label">Dirección:</label>
+												<input type="text" ng-model="emg.direccion"
+													placeholder="Ingresar direccion" ng-disabled="!editando && hay"
+													class="form-control" id="direccionEmg">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="btn-group btn-group-justified">
+												<div class="btn-group" role="group">
+													<button type="submit" class="btn btn-primary" title="Guardar">
+														Aceptar
+													</button>
+												</div>
+											</div>
+										</div>
+									</div>
+									</br>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="btn-group btn-group-justified">
+												<div class="btn-group" role="group">
+													<button type="button" class="btn btn-default" title="Cancelar"
+														ng-click="formEmergencia(true)">
+														Cancelar
+													</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12">
+								<div class="form-group">
+									<label class="control-label">Puesto interno:</label>
+									<ui-select ng-model="emp.idplnpuesto" title="Seleccione un puesto..."
+										theme="bootstrap" autofocus="false" ng-disabled="!hay" ng-change="guardar(emp)">
+										<ui-select-match placeholder="Seleccionar un puesto"
+											allow-clear="false">
+											<span ng-bind="($select.selected.descripcion)"></span>
+										</ui-select-match>
+										<ui-select-choices
+											repeat="item.id as item in puestos | filter:$select.search">
+											<div
+												ng-bind-html="(item.descripcion) | highlight: $select.search">
+											</div>
+										</ui-select-choices>
+										<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+									</ui-select>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12">
+								<textarea name="conceptoAdicional" id="conceptoAdicional" rows="4"
+									ng-model="emp.observaciones" class="form-control"
+									placeholder="Ingresar observaciones para el empleado" ng-blur="guardar(emp)"></textarea>
+							</div>
+						</div>
+					</div>
 				</div>
 				<div role="tabpanel" class="tab-pane" id="archivos">
 					<br>
-					<form class="form-horizontal" novalidate role="form" ng-submit="agregarArchivo(arc)" ng-show="hay">
-						<div class="form-group form-group-sm">
-							<label for="inputArchivo" class="col-sm-2 control-label">Archivo:</label>
-							<div class="col-sm-4">
-								<input type="file" file-model="arc.archivo" class="form-control" id="inputArchivo"
-									required>
-							</div>
-							<label for="selectTipo" class="col-sm-2 control-label">Tipo:</label>
-							<div class="col-sm-4">
-								<select class="form-control" ng-model="arc.idplnarchivotipo" id="selectTipo"
-									required="required">
-									<option ng-repeat="option in archivotipo" value="{{option.id}}">
-										{{option.descripcion}}</option>
-								</select>
-							</div>
-						</div>
-						<div class="form-group form-group-sm">
-							<label for="inputVence" class="col-sm-2 control-label">Vence:</label>
-							<div class="col-sm-4">
-								<input type="date" ng-model="arc.fchvence" class="form-control" id="inputVence">
-							</div>
-							<div class="col-sm-6 text-right">
-								<button type="submit" class="btn btn-primary btn-sm" data-loading-text="Subiendo..."
-									autocomplete="off" id="btnAgregarArchivo">
-									<i class="glyphicon glyphicon-upload"></i> Agregar
-								</button>
-							</div>
-						</div>
-					</form>
-					<hr>
-					<div class="row" ng-cloak>
-						<div class="col-xs-6 col-md-3" ng-repeat="i in archivos">
-							<div class="thumbnail">
-								<img ng-src="{{ i.ruta }}">
-								<div class="caption">
-									<p>{{ i.nombre }}</p>
-									<p>
-										<a ng-href="{{ i.ruta }}" class="btn btn-primary" role="button" target="_blank">
-											<i class="glyphicon glyphicon-download-alt"></i>
-										</a>
-									</p>
+					<div class="col-md-8">
+						<form class="form-horizontal" novalidate role="form" ng-submit="agregarArchivo(arc)"
+							ng-show="hay">
+							<div class="form-group form-group-sm">
+								<label for="inputArchivo" class="col-sm-2 control-label">Archivo:</label>
+								<div class="col-sm-4">
+									<input type="file" file-model="arc.archivo" class="form-control" id="inputArchivo"
+										required>
+								</div>
+								<label for="selectTipo" class="col-sm-2 control-label">Tipo:</label>
+								<div class="col-sm-4">
+									<select class="form-control" ng-model="arc.idplnarchivotipo" id="selectTipo"
+										required="required">
+										<option ng-repeat="option in archivotipo" value="{{option.id}}">
+											{{option.descripcion}}</option>
+									</select>
 								</div>
 							</div>
+							<div class="form-group form-group-sm">
+								<label for="inputVence" class="col-sm-2 control-label">Vence:</label>
+								<div class="col-sm-4">
+									<input type="date" ng-model="arc.fchvence" class="form-control" id="inputVence">
+								</div>
+								<div class="col-sm-6 text-right">
+									<button type="submit" class="btn btn-primary btn-sm" data-loading-text="Subiendo..."
+										autocomplete="off" id="btnAgregarArchivo">
+										<i class="glyphicon glyphicon-upload"></i> Agregar
+									</button>
+								</div>
+							</div>
+						</form>
+					</div>
+					<hr>
+					<div class="col-md-8">
+						<div class="row" ng-cloak>
+							<div class="col-xs-6 col-md-3" ng-repeat="i in archivos">
+								<div class="thumbnail">
+									<img ng-src="{{ i.ruta }}">
+									<div class="caption">
+										<p>{{ i.nombre }}</p>
+										<p>
+											<a ng-href="{{ i.ruta }}" class="btn btn-primary" role="button"
+												target="_blank">
+												<i class="glyphicon glyphicon-download-alt"></i>
+											</a>
+										</p>
+									</div>
+								</div>
+							</div>
+							...
 						</div>
-						...
 					</div>
 				</div>
 				<div role="tabpanel" class="tab-pane" id="bitacora">
-					<div ng-include="'pln/pages/mnt/movimiento.html'"></div>
+					<div class="col-md-8">
+						<div ng-include="'pln/pages/mnt/movimiento.html'"></div>
+					</div>
 				</div>
 			</div>
 
@@ -464,9 +1412,34 @@
 	</div>
 
 	<div class="panel panel-primary" ng-show="resultados">
-
+		<div class="panel-heading" style="font-size: large;">
+			Listado de empleados
+		</div>
 		<div class="table-responsive">
 			<table class="table table-hover">
+				<caption>
+					<form ng-submit="buscar(bus)" class="form-horizontal" role="search">
+						<div class="form-group">
+							<label for="verActivos" class="control-label col-md-1">Activos:</label>
+							<div class="col-md-1">
+								<input type="checkbox" name="verActivos" id="verActivos" class="form-control input-sm"
+									ng-true-value="1" ng-false-value="0" ng-model="ver_activos" />
+							</div>
+							<div class="col-md-9">
+								<div class="search-container">
+									<input name="srchTxt" id="srchTxt" type="text" class="form-control input-sm"
+										ng-model="lookFor.$" placeholder="Buscar empleado" />
+									<i class="fa fa-search search-icon"></i>
+								</div>
+							</div>
+							<div class="col-md-1">
+								<button type="button" class="btn btn-default btn-sm" ng-click="mostrarForm()">
+									<i class="glyphicon glyphicon-plus"></i> Nuevo
+								</button>
+							</div>
+						</div>
+					</form>
+				</caption>
 				<thead>
 					<tr>
 						<th>Nombre</th>
@@ -477,7 +1450,7 @@
 					</tr>
 				</thead>
 				<tbody ng-cloak>
-					<tr ng-repeat="e in empleados track by $index" ng-click="getEmpleado($index)">
+					<tr ng-repeat="e in empleados | filter:lookFor" ng-click="getEmpleado(e.id)">
 						<td>{{ e.nombre }} {{ e.apellidos }}</td>
 						<td>{{ e.direccion }}</td>
 						<td>{{ e.telefono }}</td>
@@ -485,13 +1458,13 @@
 						<td>{{ e.puesto }}</td>
 					</tr>
 				</tbody>
-				<tfoot ng-show="buscarmas">
+				<!-- <tfoot ng-show="buscarmas">
 					<tr>
 						<td colspan="5" class="text-center">
 							<button type="button" class="btn btn-default" ng-click="mas()">Más</button>
 						</td>
 					</tr>
-				</tfoot>
+				</tfoot> -->
 			</table>
 		</div>
 	</div>
