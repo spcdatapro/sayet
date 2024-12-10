@@ -410,7 +410,7 @@ $app->post('/aguinaldo', function(){
                 CONCAT(a.nombre, ' ', IFNULL(a.apellidos, '')) AS nombre,
                 b.numeropat AS numero,
                 IFNULL(d.descripcion, 'NO ESPECIFICADO') AS puesto,
-                DATE_FORMAT(a.ingreso, '%d/%m/%Y') AS fecha,
+                DATE_FORMAT(IFNULL(a.reingreso, a.ingreso), '%d/%m/%Y') AS fecha,
                 a.sueldo,
                 e.aguinaldodias,
                 e.aguinaldo,
