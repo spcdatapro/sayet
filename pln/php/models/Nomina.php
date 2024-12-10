@@ -677,7 +677,7 @@ EOT;
 				'totrosingresos'   => 'Otros:',
 				'votrosingresos'   => $row->otrosingresos,
 				'tanticipo'        => 'Anticipos:',
-				'vanticipo'        => isset($args['recibo']) || $args['fal'] == 15 ? $row->anticipo : $row->otrosingresos,
+				'vanticipo'        => !isset($args['recibo']) || $args['fal'] == 15 ? $row->anticipo : $row->otrosingresos,
 				'tvacaciones'      => 'Vacacioness:',
 				'vvacaciones'      => $row->vacaciones,
 				'vbono14'          => $row->bonocatorce,
