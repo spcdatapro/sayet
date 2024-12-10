@@ -194,7 +194,7 @@ function calculaImpuestosYTotal($db, $d, $factura) {
     $factura->ivaporretener = $noEsExentoIVA ? ((int)$factura->reteneriva > 0 ? $db->calculaRetIVA((float)$factura->montosiniva, ((int)$factura->idtipocliente == 1 ? true : false), (float)$factura->montoconiva, ((int)$factura->idtipocliente == 2 ? true : false), (float)$factura->iva, (float)$factura->porcentajeretiva) : 0.00) : 0.00;
     $factura->ivaporretenercnv = round($factura->ivaporretener / (float)$d->tc, 2);
     $factura->totapagar = round((float)$factura->montoconiva - ($factura->isrporretener + $factura->ivaporretener), 2);
-    $factura->subtotalcnv = round((float)$factura->subtotal / (float)$d->tc, 2); 
+    $factura->subtotalcnv = round((float)$factura->montoconiva / (float)$d->tc, 2); 
     $factura->totapagarcnv = round($factura->totapagar / (float)$d->tc, 2);
     return $factura;
 }
