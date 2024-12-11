@@ -754,4 +754,28 @@ $app->post('/ficha', function () {
     print json_encode([ 'encabezado' => $letra, 'empleado' => $empleado ]);
 });
 
+$app->get('/subir_laboral', function () {
+    $db = new dbcpm();
+
+    $cuantos = 0;
+    $id_empleados = $db->getQuery("SELECT id FROM plnempleado WHERE nombre IS NOT NULL AND idlaboral IS NULL");
+    foreach ($id_empleados as $id) {
+        $db->doQuery("INSERT INTO plnlaboral (ingreso, reingreso, baja, idempresaactual, idempresadebito, idproyecto, idunidad, sueldo, bonificacionley, igss, porcentajeigss, idcuenta, 
+        descuentoisr, frecuencia, metodo, cuentabanco) 
+        SELECT a.ingreso, a.reingreso, a.baja, a.idempresaactual, a.idempresadebito, a.idproyecto, a.idunidad, a.sueldo, a.bonificacionley, a.igss, a.porcentajeigss, b.id AS idcuenta, 
+        a.descuentoisr, a.formapago, a.mediopago, a.cuentabanco FROM plnempleado a LEFT JOIN cuentac b ON a.cuentapersonal = b.codigo AND idempresa = a.idempresadebito WHERE a.id = $id->id");
+
+        $idlaboral = $db->getLastId();
+
+        if ($idlaboral > 0) {
+            $db->doQuery("UPDATE plnempleado SET idlaboral = $idlaboral WHERE id = $id->id");
+            $cuantos++;
+        } else {
+            return "Error no se pudo generar los datos laborales";
+        }
+    }
+
+    echo "Laboral copiado con exito ". $cuantos;
+});
+
 $app->run();
