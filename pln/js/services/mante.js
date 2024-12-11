@@ -76,6 +76,9 @@ angular.module('cpm')
         },
         editRow: function(obj, op) {
             return comunFact.doPOST(urlBase + '/' + op, obj);
+        },
+        getIdLaboral: function(obj) {
+            return comunFact.doPOST(urlBase + '/get_idlaboral', obj);
         }
     };
 }])

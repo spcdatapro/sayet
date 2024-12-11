@@ -96,7 +96,12 @@ angular.module('cpm')
             bita.baja = formatoFecha(datos.fecha_egreso);
             bita.activo = '0';
 
+            lab = { baja: datos.fecha_egreso, idplnempleado: datos.empleado };
+
+            empServicios.getIdLaboral(datos).then((d) => { lab.id = d.empleado.idlaboral; });
+
             empServicios.guardar(bita);
+            empServicios.editRow(lab, 'c_lab');
         }
 
         function formatoFecha (fecha) {

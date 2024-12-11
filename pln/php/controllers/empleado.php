@@ -972,4 +972,12 @@ $app->post('/c_emg', function() {
 	print json_encode($respuesta);	
 });
 
+$app->post('/get_idlaboral', function() {
+	$data = (array)json_decode(file_get_contents('php://input'), true);
+
+	$e = new Empleado($data['empleado']);
+
+	print json_encode(['empleado' => $e->emp]);
+});
+
 $app->run();

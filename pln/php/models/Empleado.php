@@ -853,7 +853,9 @@ class Empleado extends Principal
 			$fin      = new DateTime($args['vacas_al']);
 			$interval = $inicio->diff($fin);
 
-			$dias  = (($interval->format('%a')+1)/(365/15));
+			// para anios biciestos
+			$intervalo = ($interval->format('%a')+1) > 365 ? ($interval->format('%a')) : ($interval->format('%a')+1);
+			$dias  = ($intervalo/(365/15));
 			$monto = ($dias*($this->sueldoPromedio/30));
 		}	
 		
@@ -1645,8 +1647,10 @@ EOT;
 		// validar si existen datos
 		if (count($data) > 0) {
 			// formatear datos antes de hacer insert
-			$fecha = new DateTime($data['ingreso']);
-			$data['ingreso'] = $fecha->format('Y-m-d');
+			if (isset($data['ingreso'])) {
+				$fecha = new DateTime($data['ingreso']);
+				$data['ingreso'] = $fecha->format('Y-m-d');
+			}
 			if (isset($data['reingreso'])) { 
 				$fecha = new DateTime($data['reingreso']);
 				$data['reingreso'] = $fecha->format('Y-m-d');
