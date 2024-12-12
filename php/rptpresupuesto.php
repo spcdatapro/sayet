@@ -356,7 +356,8 @@ $app->post('/avanceotm', function(){
                 IF(a.idestatuspresupuesto = 5, true, null) AS terminada,
                 g.iniciales AS modificador,
                 DATE_FORMAT(a.fechamodificacion, '%d/%m/%Y') AS modificacion,
-                IF(c.retenedora = 1, TRUE, NULL) AS retenedora
+                IF(c.retenedora = 1, TRUE, NULL) AS retenedora,
+                a.idestatuspresupuesto AS estatus
             FROM
                 presupuesto a
                     INNER JOIN
@@ -861,6 +862,8 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
     // variables generales para OTM
     $gastos_ot = array();
     $montos_ot = array();
+    $montos_pendientes = array();
+    $gastos_pendientes = array();
 
     // crear variable para id's de ot's si no es multiple usar id de orden
     $ids_str = $esmultiple ? implode(',', $ids) : $orden->id;
@@ -1006,6 +1009,11 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
 
                 array_push($montos_ot, $monto);
                 array_push($gastos_ot, $gasto);
+
+                if ($ot->estatus != 5) {
+                    array_push($montos_pendientes, $monto);
+                    array_push($gastos_pendientes, $gasto);
+                }
             }
 
             $ot->totgastado = number_format($gastado, 2, '.', ',');
@@ -1035,15 +1043,19 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
     if ($esmultiple) {
         $presupuesto_otm = array_sum($montos_ot);
         $gasto_otm = array_sum($gastos_ot);
+        $montop = array_sum($montos_pendientes);
+        $gastop = array_sum($gastos_pendientes);
 
         // calculos otm
         $diferencia_otm = $presupuesto_otm - $gasto_otm;
         $avance_otm = ($gasto_otm * 100) / $presupuesto_otm;
+        $pendiente = $montop - $gastop;
 
         $orden->avance = number_format($avance_otm, 2, '.', ',');
         $orden->diferencia = number_format($diferencia_otm, 2, '.', ',');
         $orden->monto = number_format($presupuesto_otm, 2, '.', ',');
         $orden->gastado = number_format($gasto_otm, 2, '.', ','); 
+        $orden->pendiente = number_format($pendiente, 2, '.', ',');
     }
 
     return;

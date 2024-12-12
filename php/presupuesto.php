@@ -214,7 +214,8 @@ $app->get('/getpresupuesto/:idpresupuesto', function ($idpresupuesto) {
                 e.simbolo AS moneda,
                 a.monto,
                 a.tipocambio,
-                a.notas
+                a.notas,
+                a.idestatuspresupuesto
             FROM
                 detpresupuesto a
                     LEFT JOIN
@@ -248,6 +249,7 @@ $app->get('/getpresupuesto/:idpresupuesto', function ($idpresupuesto) {
         $orden->avance = 0.00;
         $orden->diferencia = 0.00;
         $orden->monto = 0.00;
+        $orden->pendiente = 0.00;
     }
 
     print json_encode([$orden]);
@@ -257,6 +259,8 @@ function getTotales($orden, $ids, $db) {
     // variables generales para OTM
     $gastos_ot = array();
     $montos_ot = array();
+    $montos_pendientes = array();
+    $gastos_pendientes = array();
 
     // convertir array de ids en string 
     $ids_str = implode(',', $ids);
@@ -385,16 +389,24 @@ function getTotales($orden, $ids, $db) {
             }
         }
 
+        if ($ot->idestatuspresupuesto != 5) {
+            array_push($montos_pendientes, $monto);
+            array_push($gastos_pendientes, $gasto);
+        }
+
         array_push($montos_ot, $monto);
         array_push($gastos_ot, $gasto);
     }
 
     $montog = array_sum($montos_ot);
     $gastado = array_sum($gastos_ot);
+    $montop = array_sum($montos_pendientes);
+    $gastop = array_sum($gastos_pendientes);
 
     // calculos otm
     $diferencia = $montog - $gastado;
     $avance = ($gastado * 100) / $montog;
+    $pendiente = $montop - $gastop;
 
     // insertar valores
     $orden->gastado_int = round($gastado, 2);
@@ -403,6 +415,7 @@ function getTotales($orden, $ids, $db) {
     $orden->avance = number_format($avance, 2, '.', ',');
     $orden->diferencia = number_format($diferencia, 2, '.', ',');
     $orden->monto = number_format($montog, 2, '.', ',');
+    $orden->pendiente = number_format($pendiente, 2, '.', ',');
 }
 
 function updTotPresupuesto($idpresupuesto)

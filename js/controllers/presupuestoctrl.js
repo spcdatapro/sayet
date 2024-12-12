@@ -169,6 +169,7 @@
                 $scope.lbl.avance = ' ' + $scope.presupuesto.avance;
                 $scope.lbl.desc = ' ' + $scope.presupuesto.notas;
                 $scope.lbl.diferencia = ' ' + ($filter('getById')($scope.monedas, $scope.presupuesto.idmoneda)).simbolo + $scope.presupuesto.diferencia;
+                $scope.lbl.pendiente = ' ' + ($filter('getById')($scope.monedas, $scope.presupuesto.idmoneda)).simbolo + $scope.presupuesto.pendiente;
                 let crear = $scope.permiso.c ? true : false;
                 let editar = $scope.permiso.m ? true : false;
                 let anular = $scope.permiso.e ? true : false;
