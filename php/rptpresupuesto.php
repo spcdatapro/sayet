@@ -1010,7 +1010,7 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
                 array_push($montos_ot, $monto);
                 array_push($gastos_ot, $gasto);
 
-                if ($ot->estatus != 5) {
+                if ($ot->estatus == 3) {
                     array_push($montos_pendientes, $monto);
                     array_push($gastos_pendientes, $gasto);
                 }

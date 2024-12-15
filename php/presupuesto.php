@@ -389,7 +389,7 @@ function getTotales($orden, $ids, $db) {
             }
         }
 
-        if ($ot->idestatuspresupuesto != 5) {
+        if ($ot->idestatuspresupuesto == 3) {
             array_push($montos_pendientes, $monto);
             array_push($gastos_pendientes, $gasto);
         }
