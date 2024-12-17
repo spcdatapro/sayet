@@ -173,7 +173,7 @@ class ConciliacionAutomatica
                 $decryptedFileName = $gpgFilePath . '.txt';
                 if (file_exists($decryptedFileName)) {
                     $decryptedData = file_get_contents($decryptedFileName);
-                    // unlink($decryptedFileName);
+                    unlink($decryptedFileName);
                 } else {
                     throw new Exception("Decrypted file not found: " . $decryptedFileName);
                 }
@@ -260,14 +260,14 @@ class ConciliacionAutomatica
                         } catch (Exception $e) {
                             $errores[] = $e->getMessage();
                         }
-                        // unlink($localFileName);
+                        unlink($localFileName);
                     } else {
                         $errores[] = "No se pudo descargar el archivo '{$archivo}' para leerlo.";
                     }
                 }
 
                 if (count($errores) === 0) {
-                    // unset($datos['json']);
+                    unset($datos['json']);
                     $datos['exito'] = true;
                     $datos['mensaje'] = 'Lista de archivos MT940.';
                 } else {

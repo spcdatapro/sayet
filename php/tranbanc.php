@@ -1055,7 +1055,7 @@ $app->post('/conciliacion_automatica', function () use ($app) {
     $conciliacion = new ConciliacionAutomatica($src, $dest);
 
     print json_encode([
-        // 'get_mt940' => $conciliacion->get_mt940(),
+        'get_mt940' => $conciliacion->get_mt940(),
         'read_mt940' => $conciliacion->read_mt940()
     ]);
 });
