@@ -11,7 +11,6 @@ set "passphrase=%~2"
 set "filename_with_fullpath=%~3"
 set "file_to_decrypt=%~4"
 
-gpg --default-key "%fingerprint%" --passphrase %passphrase% -o "%filename_with_fullpath%.txt" --decrypt "%file_to_decrypt%"
-:: "C:\Program Files\Git\usr\bin\gpg.exe" --default-key "%fingerprint%" --passphrase %passphrase% -o "%filename_with_fullpath%.txt" --decrypt "%file_to_decrypt%"
+gpg --default-key "%fingerprint%" --pinentry-mode loopback --passphrase %passphrase% -o "%filename_with_fullpath%.txt" --decrypt "%file_to_decrypt%"
 
 endlocal
