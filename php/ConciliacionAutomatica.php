@@ -260,7 +260,7 @@ class ConciliacionAutomatica
                         } catch (Exception $e) {
                             $errores[] = $e->getMessage();
                         }
-                        unlink($localFileName);
+                        // unlink($localFileName);
                     } else {
                         $errores[] = "No se pudo descargar el archivo '{$archivo}' para leerlo.";
                     }
