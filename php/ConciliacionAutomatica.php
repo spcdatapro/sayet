@@ -137,12 +137,11 @@ class ConciliacionAutomatica
         $gpgFilePath = $fullFilePath;
         $decryptedData = null;
 
-        $fingerprint = '00E9CAAB';
-        $passphrase = '72c2RVkoLn#1';
+        $fingerprint = '248A08BA6FB9EC22CF37FC5F8F8A3BA6B9753796';
+        $passphrase = 'aq6Jh@q3kQ';
 
         $ext = 'sh';
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            $fingerprint = '2759D104D0E37CBE483537C8D3981D2C00E9CAAB';
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {            
             $ext = 'bat';
         }
 
@@ -245,8 +244,7 @@ class ConciliacionAutomatica
                     }
                     if ($descargado) {
                         try {
-                            // $parsedStatements = $parser->parse($this->get_decrypted_file($localFileName));
-                            $parsedStatements = $parser->parse(file_get_contents($localFileName));
+                            $parsedStatements = $parser->parse($this->get_decrypted_file($localFileName));                            
                             $datos['json'] = [];
                             foreach ($parsedStatements as $statement) {
                                 $datos['json'][] = $statement->jsonSerialize();
