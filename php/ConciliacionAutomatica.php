@@ -173,7 +173,7 @@ class ConciliacionAutomatica
                 $decryptedFileName = $gpgFilePath . '.txt';
                 if (file_exists($decryptedFileName)) {
                     $decryptedData = file_get_contents($decryptedFileName);
-                    unlink($decryptedFileName);
+                    // unlink($decryptedFileName);
                 } else {
                     throw new Exception("Decrypted file not found: " . $decryptedFileName);
                 }
