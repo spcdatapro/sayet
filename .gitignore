@@ -17,3 +17,4 @@ js/services/socketiosrvc.js
 ots_adjunto/
 Dockerfile
 php/db.syt
+php/libraries/php-mt940

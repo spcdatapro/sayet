@@ -1,6 +1,7 @@
 {
     "require": {
         "slim/slim": "^2.6",
-        "catfan/Medoo": "^1.0"
+        "catfan/Medoo": "^1.0",
+        "phpseclib/phpseclib": "~3.0"
     }
 }
