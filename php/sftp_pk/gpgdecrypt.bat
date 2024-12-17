@@ -13,4 +13,9 @@ set "file_to_decrypt=%~4"
 
 gpg --default-key "%fingerprint%" --pinentry-mode loopback --passphrase %passphrase% -o "%filename_with_fullpath%.txt" --decrypt "%file_to_decrypt%"
 
+if errorlevel 1 (
+    echo Decryption failed with error code %errorlevel%
+    exit /b %errorlevel%
+)
+
 endlocal
