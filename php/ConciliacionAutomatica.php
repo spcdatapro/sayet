@@ -50,8 +50,8 @@ class ConciliacionAutomatica
 {
     private $source_conn;
     private $dest_conn;
-    private $local_folder = __DIR__ . '/mt940_files/';
-    private $bac_pk_folder = __DIR__ . '/sftp_pk/';
+    private $local_folder = __DIR__ . '\\mt940_files\\';
+    private $bac_pk_folder = __DIR__ . '\\sftp_pk\\';
 
     public function __construct(SFTPConnInfo $source, SFTPConnInfo $dest)
     {
