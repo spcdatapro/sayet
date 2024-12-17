@@ -24,7 +24,7 @@ $app->post('/continact', function(){
 function getSaldoCliente($data){
     $db = new dbcpm();
 
-    $url = 'http://localhost/sayet/php/rptecuentacli.php/rptecuentacli';
+    $url = 'http://localhost/sayet_mt940/php/rptecuentacli.php/rptecuentacli';
     $data = ["clistr" => $data['idcliente'], "detalle" => 0, "falstr" => $data['falstr'], "idempresa" => $data['idempresa'], "idcontrato" => $data['idcontrato']];
     $saldoCliente = json_decode($db->CallJSReportAPI('POST', $url, json_encode($data)));
     if(is_array($saldoCliente)){

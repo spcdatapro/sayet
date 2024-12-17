@@ -12,7 +12,7 @@
         $scope.meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         $scope.totiva = {combustible: 0.0, bien: 0.0, servicio: 0.0, importaciones: 0.0};
         $scope.empresa = { nomempresa: '', nit: '' };
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
 
         $scope.getGastosActivo = function(){
             rptLibroComprasSrvc.getGastosActivo($scope.params.idempresa, $scope.params.mes, $scope.params.anio).then(function(d){
@@ -54,7 +54,7 @@
                 });
                 // $('#btnLibroComprasExcel').button('loading')
                 
-                // var url = '/sayet/php/rptlibrocompras.php/rptlibcomp'
+                // var url = '/sayet_mt940/php/rptlibrocompras.php/rptlibcomp'
 
                 // $.post(url, $scope.params, function(data){
                 //     var tab_text='<table>'

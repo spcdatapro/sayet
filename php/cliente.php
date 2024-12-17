@@ -355,7 +355,7 @@ $app->get('/lstabogados/:qstr', function($qstr){
 });
 
 function checkForPossibleNulls($d, $db) {
-    $query = "SELECT TRIM(column_name) AS columna, TRIM(data_type) AS tipo FROM information_schema.columns WHERE table_schema = 'sayet' AND table_name = 'contrato' AND IS_NULLABLE = 'YES'";
+    $query = "SELECT TRIM(column_name) AS columna, TRIM(data_type) AS tipo FROM information_schema.columns WHERE table_schema = 'sayet_mt940' AND table_name = 'contrato' AND IS_NULLABLE = 'YES'";
     $columnas = $db->getQuery($query);
     foreach($columnas as $col) {
         if(!isset($d->{$col->columna})) {

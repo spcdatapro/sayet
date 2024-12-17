@@ -24,7 +24,7 @@
                 anio: moment().year(), idempresa: undefined
             };
 
-            $scope.content = `${window.location.origin}/sayet/blank.html`;
+            $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
 
             var test = false;
 

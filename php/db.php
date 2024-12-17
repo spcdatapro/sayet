@@ -7,7 +7,7 @@ class dbcpm{
     // private $dbHost = 'mysql-local';
     private $dbUser = 'root';
     private $dbPass = 'PoChoco2016';    
-    private $dbSchema = 'sayet';    
+    private $dbSchema = 'sayet_mt940';    
     // private $sessOpts = ['cookie_samesite' => 'lax'];
 
     private $dbConn;
@@ -45,7 +45,7 @@ class dbcpm{
             $dbName = fgets($myfile);
             fclose($myfile);
         } catch (Exception $e) {
-            $dbName = 'sayet';
+            $dbName = 'sayet_mt940';
         }
         $this->dbSchema = $dbName;        
     }

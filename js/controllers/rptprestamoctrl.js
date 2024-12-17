@@ -19,7 +19,7 @@
         $scope.params = { agrupar: '1', anio: +moment().toDate().getFullYear(), mes: moment().toDate().getMonth().toString() };
 
         // para visualizaciones en pantalla
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
 
         authSrvc.getSession().then(function (usuario) {
             $scope.usuario = usuario;

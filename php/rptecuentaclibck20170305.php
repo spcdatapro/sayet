@@ -39,7 +39,7 @@ $app->post('/rptecuentacli', function(){
             $sqlh = "";
         }*/
 
-        $qrmoneda = "select distinct a.idmoneda, b.nommoneda,b.simbolo from sayet.compra a inner join sayet.moneda b on a.idmoneda=b.id";
+        $qrmoneda = "select distinct a.idmoneda, b.nommoneda,b.simbolo from sayet_mt940.compra a inner join sayet_mt940.moneda b on a.idmoneda=b.id";
 
         $mnd = $db->getQuery($qrmoneda);
         $idarraymnd = 0;
@@ -51,7 +51,7 @@ $app->post('/rptecuentacli', function(){
 
             $querydet1 = "SELECT a.nombre,b.venta,b.factura,b.serie,b.fecha,
                     round(b.monto,2) as saldo,round(b.totalfac,2) as totalfac, round(b.retisr,2) as retisr, substr(b.concepto,1,31) as concepto, b.contrato, b.proyecto, b.nomproyecto, round(b.apagar,2) as apagar,b.empresa,b.idempresa,round(b.retiva,2) as retiva
-                from sayet.cliente a
+                from sayet_mt940.cliente a
                 inner join (
 
                     select a.orden,a.cliente,a.venta,a.fecha,a.factura,a.serie,
@@ -62,11 +62,11 @@ $app->post('/rptecuentacli', function(){
                             round(c.subtotal-c.totdescuento,2) as monto,e.simbolo as codigo,c.tipocambio as tc_cambio,
                             if(c.fechapago is not null, c.fechapago,c.fecha) as fecpago,datediff('" . $d->falstr . "',if(c.fechapago is not null, c.fechapago,c.fecha)) as dias,
 							c.retisr, a.id as contrato, b.id as proyecto, b.nomproyecto, d.nomempresa as empresa,c.idempresa,c.retiva
-                        from sayet.factura c
-							inner join sayet.empresa d on c.idempresa=d.id
-                            inner join sayet.moneda e on c.idmoneda=e.id
-							left join sayet.contrato a on c.idcontrato=a.id
-                            left join sayet.proyecto b on b.id=a.idproyecto
+                        from sayet_mt940.factura c
+							inner join sayet_mt940.empresa d on c.idempresa=d.id
+                            inner join sayet_mt940.moneda e on c.idmoneda=e.id
+							left join sayet_mt940.contrato a on c.idcontrato=a.id
+                            left join sayet_mt940.proyecto b on b.id=a.idproyecto
                         where c.anulada=0 and pagada=0 
                             and c.fecha<='" . $d->falstr . "'
                             and c.idmoneda = " . $dmon->idmoneda ;
@@ -78,10 +78,10 @@ $app->post('/rptecuentacli', function(){
 
                             SELECT 2 as orden,a.idcliente as cliente,a.id as venta,c.fecha,d.numero as documento,'R' as tipo, (b.monto) as monto,
                                 'Q' as codigo,a.tipocambio as tc_cambio
-                            from sayet.factura a
-                                inner join sayet.detcobroventa b on a.id=b.idfactura
-                                inner join sayet.recibocli c on b.idrecibocli=c.id
-                                left join sayet.tranban d on c.idtranban=d.id
+                            from sayet_mt940.factura a
+                                inner join sayet_mt940.detcobroventa b on a.id=b.idfactura
+                                inner join sayet_mt940.recibocli c on b.idrecibocli=c.id
+                                left join sayet_mt940.tranban d on c.idtranban=d.id
                             where c.anulado=0 and pagada=0 
                                 and c.fecha<='" . $d->falstr . "'
                                 and a.idmoneda = " . $dmon->idmoneda;
@@ -159,10 +159,10 @@ $app->post('/rptecuentacli', function(){
 							$detfac = array();
 
 							$qdetpago = "SELECT a.idcliente as cliente,c.id as venta,c.fecha,if(d.numero is null,c.id,d.numero) as documento,if(d.tipotrans is null,'P',d.tipotrans) as tipotrans, round((b.monto*if(a.idmoneda=1,1,a.tipocambio)),2) as monto
-									from sayet.factura a
-										inner join sayet.detcobroventa b on a.id=b.idfactura
-										inner join sayet.recibocli c on b.idrecibocli=c.id
-										left join sayet.tranban d on c.idtranban=d.id
+									from sayet_mt940.factura a
+										inner join sayet_mt940.detcobroventa b on a.id=b.idfactura
+										inner join sayet_mt940.recibocli c on b.idrecibocli=c.id
+										left join sayet_mt940.tranban d on c.idtranban=d.id
 									where c.anulado=0 and pagada=0 
 										and c.fecha<='" . $d->falstr . "' and a.id=" . $hac->venta . " and a.idmoneda = " . $dmon->idmoneda . "";
 

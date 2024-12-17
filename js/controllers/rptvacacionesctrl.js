@@ -21,7 +21,7 @@
         });
 
         // para visualizaciones en pantalla
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
 
         authSrvc.getSession().then(function (usuario) {
             // traer empresas permitidas por el usuario

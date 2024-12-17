@@ -23,7 +23,7 @@ $app->post('/rptantiprov', function(){
         $sqlord = '';
         $sqlwhr = '';
 
-        $qrmoneda = "select distinct a.idmoneda, b.nommoneda,b.simbolo from sayet.compra a inner join sayet.moneda b on a.idmoneda=b.id";
+        $qrmoneda = "select distinct a.idmoneda, b.nommoneda,b.simbolo from sayet_mt940.compra a inner join sayet_mt940.moneda b on a.idmoneda=b.id";
 
         $mnd = $db->getQuery($qrmoneda);
         $idarraymnd = 0;
@@ -54,7 +54,7 @@ $app->post('/rptantiprov', function(){
                 round(sum(if(b.dias between 60 and 89, b.monto,0)),2) as a60,
                 round(sum(if(b.dias >= 90, b.monto,0)),2) as a90,
                 round(sum(ifnull(b.monto,0)),2) as total
-            from sayet.proveedor a
+            from sayet_mt940.proveedor a
             inner join (
 
                 select a.orden,a.proveedor,a.compra,a.fecha,a.factura,a.serie,
@@ -63,25 +63,25 @@ $app->post('/rptantiprov', function(){
                     SELECT 1 as orden,c.idproveedor as proveedor,c.id as compra,c.fechafactura as fecha,c.documento as factura,c.serie,c.conceptomayor as concepto,
                         ((c.totfact-c.isr)) as monto,e.simbolo as codigo,c.tipocambio as tc_cambio,
                         if(c.fechapago is not null, c.fechapago,c.fechafactura) as fecpago,datediff('" . $d->falstr . "',if(c.fechapago is not null, c.fechapago,c.fechafactura)) as dias
-                    from sayet.compra c
-                        inner join sayet.moneda e on c.idmoneda=e.id
+                    from sayet_mt940.compra c
+                        inner join sayet_mt940.moneda e on c.idmoneda=e.id
                         where c.fechafactura<='" . $d->falstr . "'
                         and c.idmoneda = " . $dmon->idmoneda . "
                     order by c.fechafactura
                 ) as a
                 left join(
                     select c.idproveedor as proveedor,sum(round(b.monto,2)) as monto,c.id as compra
-                    from sayet.tranban a
-                    inner join sayet.detpagocompra b on a.id = b.idtranban and esrecprov=0
-                    inner join sayet.compra c on b.idcompra=c.id and c.idmoneda = " . $dmon->idmoneda . "
+                    from sayet_mt940.tranban a
+                    inner join sayet_mt940.detpagocompra b on a.id = b.idtranban and esrecprov=0
+                    inner join sayet_mt940.compra c on b.idcompra=c.id and c.idmoneda = " . $dmon->idmoneda . "
                     where a.fecha <= '" . $d->falstr . "'
                     group by 1,3
                     union all
                     select d.idproveedor as proveedor,sum(round(c.monto,2)) as monto,d.id as compra
-                    from sayet.tranban a
-                    inner join  sayet.reciboprov b on a.id=b.idtranban
-                    inner join sayet.detpagocompra c on b.id = c.idtranban and esrecprov=1
-                    inner join sayet.compra d on c.idcompra=d.id
+                    from sayet_mt940.tranban a
+                    inner join  sayet_mt940.reciboprov b on a.id=b.idtranban
+                    inner join sayet_mt940.detpagocompra c on b.id = c.idtranban and esrecprov=1
+                    inner join sayet_mt940.compra d on c.idcompra=d.id
                     where a.fecha <= '" . $d->falstr . "'
                     group by 1,3
                 ) as b on a.compra=b.compra

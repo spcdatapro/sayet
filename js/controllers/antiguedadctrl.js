@@ -18,7 +18,7 @@
         $scope.params = { agrupar: '1', fal: moment().toDate() };
 
         // para visualizaciones en pantalla
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
 
         authSrvc.getSession().then(function (usuario) {
             $scope.usuario = usuario;

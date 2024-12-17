@@ -7,7 +7,7 @@
         $scope.params = { idcontrato: undefined, del: null, al: null, idtiposervicio: '0' };
         $scope.contratos = [];
         $scope.fltrtsventa = [];
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
         clienteSrvc.rptDetContrato().then(function(d){ $scope.contratos = d; });
 
         tipoServicioVentaSrvc.lstTSVenta().then(function(d){

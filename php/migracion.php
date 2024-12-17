@@ -27,7 +27,7 @@ $app->get('/bancos', function(){
 
 function chkDBCol($columna){
     $db = new dbcpm();
-    $existe = (int)$db->getOneField("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'sayet' AND TABLE_NAME = 'banco' AND COLUMN_NAME = '$columna'");
+    $existe = (int)$db->getOneField("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'sayet_mt940' AND TABLE_NAME = 'banco' AND COLUMN_NAME = '$columna'");
     //$existe = (int)$db->getOneField("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'sayetprod' AND TABLE_NAME = 'banco' AND COLUMN_NAME = '$columna'");
     return $existe <= 0 ? false : true;
 }

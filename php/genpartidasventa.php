@@ -199,7 +199,7 @@ $app->get('/regen', function(){
     }
 
     //Habilitar esto solo cuando es una factura...
-    $url = 'http://localhost/sayet/php/fixdescuadreventa.php/fix';
+    $url = 'http://localhost/sayet_mt940/php/fixdescuadreventa.php/fix';
     $dataa = ['idfactura' => $ids];
     $db->CallJSReportAPI('POST', $url, json_encode($dataa));
     //Habilitar lo anterior solo cuando es una factura...
@@ -308,7 +308,7 @@ $app->post('/genpost', function(){
         }
     }
 
-    $url = 'http://localhost/sayet/php/fixdescuadreventa.php/fix';
+    $url = 'http://localhost/sayet_mt940/php/fixdescuadreventa.php/fix';
     $dataa = ['idfactura' => $ids];
     $db->CallJSReportAPI('POST', $url, json_encode($dataa));
 
@@ -329,7 +329,7 @@ $app->get('/gencontaventa', function() {
     $query.= isset($params->fal) ? "AND a.fecha <= '$params->fal' " : '';
 
     $facturas = $db->getQuery($query);
-    $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
+    $url = 'http://localhost/sayet_mt940/php/genpartidasventa.php/genpost';
     foreach($facturas as $factura) {
             $data = ['ids' => $factura->id, 'idcontrato' => ((int)$factura->idcontrato > 0 ? 1 : 0)];
             $db->CallJSReportAPI('POST', $url, json_encode($data));

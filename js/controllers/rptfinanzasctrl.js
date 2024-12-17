@@ -28,7 +28,7 @@
 
             // para visualizaciones en pantalla
             $scope.ver = { resumen: false };
-            $scope.content = `${window.location.origin}/sayet/blank.html`;
+            $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
 
             // asignar la empresa en la que el usuario se encuentra
             authSrvc.getSession().then(function (usuario) {
@@ -138,7 +138,7 @@
             // reinicar visualizacion
             function resetVer() {
                 $scope.ver = { resumen: false };
-                $scope.content = `${window.location.origin}/sayet/blank.html`;
+                $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
             }
 
             // formatear numero negativos en parentesis

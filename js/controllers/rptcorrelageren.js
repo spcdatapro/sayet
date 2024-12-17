@@ -7,7 +7,7 @@
         $scope.losBancos = [];
         $scope.params = { fDel: moment().startOf('month').toDate(), fAl: moment().endOf('month').toDate(), tipo: '1' };
         $scope.objBanco = undefined;
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
         $scope.tipos = [];
         $scope.empresas = [];
         $scope.cargando = false;
@@ -29,7 +29,7 @@
 
         $scope.getCorrelativosCheques = function (params) {
             $scope.cargando = true;
-            $scope.content = `${window.location.origin}/sayet/blank.html`;
+            $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
             $scope.params.porproyecto = params.tipo == 1 ? false : true;
             $scope.params.fdelstr = moment($scope.params.fDel).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.fAl).format('YYYY-MM-DD');
@@ -41,7 +41,7 @@
 
         $scope.getCorrelativosChequesExcel = function (params) {
             $scope.cargando = true;
-            $scope.content = `${window.location.origin}/sayet/blank.html`;
+            $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
             $scope.params.porproyecto = params.tipo == 1 ? false : true;
             $scope.params.fdelstr = moment($scope.params.fDel).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.fAl).format('YYYY-MM-DD');

@@ -11,7 +11,7 @@
         $scope.objEmpresa = [];
         $scope.params = {depto: 0, idempresa: 0};
         $scope.data = [];
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
 
         municipioSrvc.lstMunicipios().then(function(d){ $scope.losDeptos = d; });
         authSrvc.getSession().then(function (usuario) {

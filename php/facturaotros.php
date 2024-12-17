@@ -230,7 +230,7 @@ function updateDatosFactura($d){
     $db->doQuery($query);
 
 
-    $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
+    $url = 'http://localhost/sayet_mt940/php/genpartidasventa.php/genpost';
     $dataa = ['ids' => $d->idfactura, 'idcontrato' => (int)$db->getOneField("SELECT idcontrato FROM factura WHERE id = $d->idfactura")];
     $db->CallJSReportAPI('POST', $url, json_encode($dataa));
 }
@@ -279,7 +279,7 @@ function updateDatosFacturaFEL($d){
     $db->doQuery($query);
 
 
-    $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
+    $url = 'http://localhost/sayet_mt940/php/genpartidasventa.php/genpost';
     $dataa = ['ids' => $d->idfactura, 'idcontrato' => (int)$db->getOneField("SELECT idcontrato FROM factura WHERE id = $d->idfactura")];
     $db->CallJSReportAPI('POST', $url, json_encode($dataa));
 }

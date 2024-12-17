@@ -15,7 +15,7 @@ $app->post('/rptsaldoprov', function(){
     try{
         $db = new dbcpm();
 
-        $qrmoneda = "select distinct a.idmoneda, b.nommoneda,b.simbolo from sayet.compra a inner join sayet.moneda b on a.idmoneda=b.id";
+        $qrmoneda = "select distinct a.idmoneda, b.nommoneda,b.simbolo from sayet_mt940.compra a inner join sayet_mt940.moneda b on a.idmoneda=b.id";
 
         $mnd = $db->getQuery($qrmoneda);
         $idarraymnd = 0;
@@ -29,31 +29,31 @@ $app->post('/rptsaldoprov', function(){
             $sumsaldo = 0.00;
 
             $query = "select c.nit,c.nombre,round(a.saldo,2) as anterior, round(b.cargos,2) as cargos,round(b.abonos,2) as abonos,round((a.saldo+b.cargos)-b.abonos,2) as saldo,c.id as proveedor from
-            sayet.proveedor c
+            sayet_mt940.proveedor c
             left join (
                 SELECT a.id as proveedor
                     ,ifnull(b.cargos,0) as cargos
                     ,ifnull(d.abonos,0) as abonos
                     ,ifnull(b.cargos,0) -ifnull(d.abonos,0) as saldo
-                    from sayet.proveedor a
+                    from sayet_mt940.proveedor a
                     left join
                     (
-                        select idproveedor,sum(totfact-isr) as cargos from sayet.compra where fechafactura < '" . $d->fdelstr . "' and idmoneda=" . $dmon->idmoneda . " group by idproveedor
+                        select idproveedor,sum(totfact-isr) as cargos from sayet_mt940.compra where fechafactura < '" . $d->fdelstr . "' and idmoneda=" . $dmon->idmoneda . " group by idproveedor
                     ) as b on a.id = b.idproveedor
                     left join
                     (
                         select idproveedor,sum(abonos) as abonos from (
                             select c.idproveedor as idproveedor,round(b.monto,2) as abonos
-                            from sayet.tranban a
-                            inner join sayet.detpagocompra b on a.id = b.idtranban and esrecprov=0
-                            inner join sayet.compra c on b.idcompra=c.id and c.idmoneda= " . $dmon->idmoneda . "
+                            from sayet_mt940.tranban a
+                            inner join sayet_mt940.detpagocompra b on a.id = b.idtranban and esrecprov=0
+                            inner join sayet_mt940.compra c on b.idcompra=c.id and c.idmoneda= " . $dmon->idmoneda . "
                             where a.fecha < '" . $d->fdelstr . "'
                             union all
                             select d.idproveedor as idproveedor,round(c.monto,2) as abonos
-                            from sayet.tranban a
-                            inner join  sayet.reciboprov b on a.id=b.idtranban
-                            inner join sayet.detpagocompra c on b.id = c.idtranban and esrecprov=1
-                            inner join sayet.compra d on c.idcompra=d.id  and d.idmoneda= " . $dmon->idmoneda . "
+                            from sayet_mt940.tranban a
+                            inner join  sayet_mt940.reciboprov b on a.id=b.idtranban
+                            inner join sayet_mt940.detpagocompra c on b.id = c.idtranban and esrecprov=1
+                            inner join sayet_mt940.compra d on c.idcompra=d.id  and d.idmoneda= " . $dmon->idmoneda . "
                             where a.fecha < '" . $d->fdelstr . "'
                         ) as a group by idproveedor
                     ) as d on a.id = d.idproveedor
@@ -64,25 +64,25 @@ $app->post('/rptsaldoprov', function(){
                     ,ifnull(b.cargos,0) as cargos
                     ,ifnull(d.abonos,0) as abonos
                     ,ifnull(b.cargos,0) -ifnull(d.abonos,0) as saldo
-                    from sayet.proveedor a
+                    from sayet_mt940.proveedor a
                     left join
                     (
-                        select idproveedor,sum(totfact-isr) as cargos from sayet.compra where fechafactura between '" . $d->fdelstr . "' and '" . $d->falstr . "'  and idmoneda= " . $dmon->idmoneda . " group by idproveedor
+                        select idproveedor,sum(totfact-isr) as cargos from sayet_mt940.compra where fechafactura between '" . $d->fdelstr . "' and '" . $d->falstr . "'  and idmoneda= " . $dmon->idmoneda . " group by idproveedor
                     )  as b on a.id = b.idproveedor
                     left join
                     (
                         select idproveedor,sum(abonos) as abonos from (
                             select c.idproveedor as idproveedor,round(b.monto,2) as abonos
-                            from sayet.tranban a
-                            inner join sayet.detpagocompra b on a.id = b.idtranban and esrecprov=0
-                            inner join sayet.compra c on b.idcompra=c.id  and c.idmoneda= " . $dmon->idmoneda . "
+                            from sayet_mt940.tranban a
+                            inner join sayet_mt940.detpagocompra b on a.id = b.idtranban and esrecprov=0
+                            inner join sayet_mt940.compra c on b.idcompra=c.id  and c.idmoneda= " . $dmon->idmoneda . "
                             where a.fecha between '" . $d->fdelstr . "' and '" . $d->falstr . "'
                             union all
                             select d.idproveedor as idproveedor,round(c.monto,2) as abonos
-                            from sayet.tranban a
-                            inner join  sayet.reciboprov b on a.id=b.idtranban
-                            inner join sayet.detpagocompra c on b.id = c.idtranban and esrecprov=1
-                            inner join sayet.compra d on c.idcompra=d.id and d.idmoneda= " . $dmon->idmoneda . "
+                            from sayet_mt940.tranban a
+                            inner join  sayet_mt940.reciboprov b on a.id=b.idtranban
+                            inner join sayet_mt940.detpagocompra c on b.id = c.idtranban and esrecprov=1
+                            inner join sayet_mt940.compra d on c.idcompra=d.id and d.idmoneda= " . $dmon->idmoneda . "
                             where a.fecha between '" . $d->fdelstr . "' and '" . $d->falstr . "'
                         ) as a group by idproveedor
                     )  as d on a.id = d.idproveedor

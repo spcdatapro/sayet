@@ -13,7 +13,7 @@ $app->post('/rptsaldocli', function(){
     try{
         $db = new dbcpm();
 
-        $qrmoneda = "select distinct a.idmoneda, b.nommoneda,b.simbolo from sayet.compra a inner join sayet.moneda b on a.idmoneda=b.id";
+        $qrmoneda = "select distinct a.idmoneda, b.nommoneda,b.simbolo from sayet_mt940.compra a inner join sayet_mt940.moneda b on a.idmoneda=b.id";
 
         $mnd = $db->getQuery($qrmoneda);
         $idarraymnd = 0;
@@ -28,17 +28,17 @@ $app->post('/rptsaldocli', function(){
             $sumsaldo = 0.00;
 
             $query = "select c.nombre,round(a.saldo,2) as anterior, round(b.cargos,2) as cargos,round(b.abonos,2) as abonos,round((a.saldo+b.cargos)-b.abonos,2) as saldo,c.id as cliente, c.nombrecorto from
-                    sayet.cliente c
+                    sayet_mt940.cliente c
                     left join (
                         SELECT a.id as cliente,
                             ifnull(b.cargos,0) as cargos,
                             ifnull(d.abonos,0) as abonos,
                             ifnull(b.cargos,0) -ifnull(d.abonos,0) as saldo
-                            from sayet.cliente a
+                            from sayet_mt940.cliente a
                             left join
                             (
                                 select idcliente,sum(total) as cargos 
-								from sayet.factura 
+								from sayet_mt940.factura 
 								where anulada=0 and pagada=0 
 								and fecha < '".$d->fdelstr."' 
 								and idmoneda= " . $dmon->idmoneda . " 
@@ -48,9 +48,9 @@ $app->post('/rptsaldocli', function(){
                             left join
                             (
                                 select a.idcliente,sum(b.monto) as abonos
-                                from sayet.recibocli a
-                                inner join sayet.detcobroventa b on a.id = b.idrecibocli
-                                inner join sayet.factura c on b.idfactura=c.id and c.idmoneda= " . $dmon->idmoneda . " and anulada=0 and pagada=0 
+                                from sayet_mt940.recibocli a
+                                inner join sayet_mt940.detcobroventa b on a.id = b.idrecibocli
+                                inner join sayet_mt940.factura c on b.idfactura=c.id and c.idmoneda= " . $dmon->idmoneda . " and anulada=0 and pagada=0 
                                 where a.fecha < '".$d->fdelstr."' and a.idempresa=".$d->idempresa." group by a.idcliente
                             ) as d on a.id = d.idcliente
                     ) as a on a.cliente = c.id
@@ -60,11 +60,11 @@ $app->post('/rptsaldocli', function(){
                             ifnull(b.cargos,0) as cargos,
                             ifnull(d.abonos,0) as abonos,
                             ifnull(b.cargos,0) -ifnull(d.abonos,0) as saldo
-                            from sayet.cliente a
+                            from sayet_mt940.cliente a
                             left join
                             (
                                 select idcliente,sum(total) as cargos 
-								from sayet.factura 
+								from sayet_mt940.factura 
 								where anulada=0 
 								and  fecha between '".$d->fdelstr."' and '".$d->falstr."' 
 								and idmoneda= " . $dmon->idmoneda . " 
@@ -74,9 +74,9 @@ $app->post('/rptsaldocli', function(){
                             left join
                             (
                                 select a.idcliente,sum(b.monto) as abonos
-                                from sayet.recibocli a
-                                inner join sayet.detcobroventa b on a.id = b.idrecibocli
-                                inner join sayet.factura c on b.idfactura=c.id and c.idmoneda= " . $dmon->idmoneda . " and anulada=0 
+                                from sayet_mt940.recibocli a
+                                inner join sayet_mt940.detcobroventa b on a.id = b.idrecibocli
+                                inner join sayet_mt940.factura c on b.idfactura=c.id and c.idmoneda= " . $dmon->idmoneda . " and anulada=0 
                                 where a.fecha between '".$d->fdelstr."' and '".$d->falstr."' and a.idempresa=".$d->idempresa." group by a.idcliente
                             )  as d on a.id = d.idcliente
                     ) as b on a.cliente=b.cliente

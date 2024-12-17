@@ -6,7 +6,7 @@
 
         $scope.params = { al: moment().toDate(), detallada: 1, orderalfa: 1, pagoextra: 0, vernegativos: 1, abreviado: 0, 
             idempresa: [] };
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
         $scope.empresas = [];
         $scope.proyectos = [];
         $scope.cargando = false;

@@ -6,7 +6,7 @@
 
         $scope.params = { idempleado: undefined, del: moment().startOf('year').toDate(), al: moment().endOf('month').toDate() };
         $scope.empleados = [];
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
 
         empServicios.buscar({'sin_limite':1}).then((res) => $scope.empleados = res.resultados);
 

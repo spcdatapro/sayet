@@ -257,7 +257,7 @@ $app->post('/genfact', function(){
             }
 
 
-            $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
+            $url = 'http://localhost/sayet_mt940/php/genpartidasventa.php/genpost';
             $data = ['ids' => $lastid, 'idcontrato' => 1];
             $db->CallJSReportAPI('POST', $url, json_encode($data));
         }

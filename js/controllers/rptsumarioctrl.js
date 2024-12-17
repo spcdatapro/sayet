@@ -9,7 +9,7 @@
         // variable para mostrar que esta cargando
         $scope.estaGenerando = false;
         // para mostrar reporte en pantalla
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
 
         var test = false;
         $scope.getRptSumario = function () {
@@ -61,7 +61,7 @@
                             success: function () { $scope.estaGenerando = false; },
                             error: function () { console.log("Se produjo un error al generar el sumario y su detalle..."); }
                         }).done(function () {
-                            var urlpdf = window.location.origin + '/sayet/php/pdfgenerator/SumarioDetalle.pdf';
+                            var urlpdf = window.location.origin + '/sayet_mt940/php/pdfgenerator/SumarioDetalle.pdf';
                             $window.open(urlpdf);
                         });
                     });

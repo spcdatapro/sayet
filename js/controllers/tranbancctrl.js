@@ -542,8 +542,8 @@
 
         $scope.gcprint = function (obj) {
             // var gadget = new cloudprint.Gadget();
-            //var url = "http://52.35.3.1/sayet/php/" + obj.objBanco.formato + ".php?c=" + obj.id;
-            // var url = window.location.origin + "/sayet/php/" + obj.objBanco.formato + ".php?c=" + obj.id + "&uid=" + $scope.uid;
+            //var url = "http://52.35.3.1/sayet_mt940/php/" + obj.objBanco.formato + ".php?c=" + obj.id;
+            // var url = window.location.origin + "/sayet_mt940/php/" + obj.objBanco.formato + ".php?c=" + obj.id + "&uid=" + $scope.uid;
             //console.log(url);
             // gadget.setPrintDocument("url", "C" + obj.numero, url);
             // gadget.openPrintDialog();
@@ -573,7 +573,7 @@
                     });
                 }
                 // console.log(objs); return;
-                socketIOSrvc.emit('sayet:print', JSON.stringify(objs));
+                socketIOSrvc.emit('sayet_mt940:print', JSON.stringify(objs));
             });
         };
 
@@ -900,7 +900,7 @@
                     });
                 }
                 // console.log(objs); return;
-                socketIOSrvc.emit('sayet:print', JSON.stringify(objs));
+                socketIOSrvc.emit('sayet_mt940:print', JSON.stringify(objs));
             });
         };
         $scope.cancel = function () {

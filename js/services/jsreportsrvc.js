@@ -52,7 +52,7 @@
                 return $http.post(url, props, {responseType: 'arraybuffer'}).success(function(response){return response});
             },
             ecuentaClientes: function(obj){
-				//var url = "http://localhost/sayet/php/rptecuentacli.php/rptecuentacli";
+				//var url = "http://localhost/sayet_mt940/php/rptecuentacli.php/rptecuentacli";
                 props = {'template':{'shortid': test ? 'SJaAdNzbx' : 'H1cpYwzHZ'}, 'data': obj};
                 return $http.post(url, props, {responseType: 'arraybuffer'}).success(function(response){return response});
             },

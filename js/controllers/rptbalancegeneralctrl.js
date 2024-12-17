@@ -8,7 +8,7 @@
         $scope.balancegeneral = [];
         $scope.content = '';
         $scope.empresa = {};
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
 
         authSrvc.getSession().then(function(usrLogged){
             if(parseInt(usrLogged.workingon) > 0){

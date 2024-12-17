@@ -6,7 +6,7 @@
 
         $scope.params = { del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), idempresa: 0, detalle: 0, cliente: { id: 0 } };
         $scope.ecuentacliente = [];
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
         $scope.clientes = [];
         $scope.empresas = [];
         $scope.objEmpresa = [];

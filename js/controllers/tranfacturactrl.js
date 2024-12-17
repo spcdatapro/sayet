@@ -721,11 +721,11 @@
                         datos: d[i]
                     });
                 }
-                socketIOSrvc.emit('sayet:printFactura', JSON.stringify(objs));
+                socketIOSrvc.emit('sayet_mt940:printFactura', JSON.stringify(objs));
             });
             /*
             var gadget = new cloudprint.Gadget();
-            var url = window.location.origin + "/sayet/php/" + $scope.paramsimp.formato + ".php?idfacturas=" + lstids;
+            var url = window.location.origin + "/sayet_mt940/php/" + $scope.paramsimp.formato + ".php?idfacturas=" + lstids;
             console.log(url);
             gadget.setPrintDocument("url", "Facturas", url);
             gadget.openPrintDialog();

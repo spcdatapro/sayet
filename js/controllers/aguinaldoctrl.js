@@ -16,7 +16,7 @@
             $scope.params = { anio: +moment().toDate().getFullYear().toString(), agrupar: '1' };
 
             // para visualizaciones en pantalla
-            $scope.content = `${window.location.origin}/sayet/blank.html`;
+            $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
 
             // traer empresas
             empresaSrvc.lstEmpresas().then(function (d) { $scope.empresas = d; });

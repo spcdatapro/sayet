@@ -181,7 +181,7 @@ trangenchqotscontctrl.controller('tranGenChqOtsContadoCtrl', ['$scope', 'presupu
                 success: () => { },
                 error: () => console.log("Se produjo un error al generar la impresión de OTs...")
             }).done(() => {
-                const urlpdf = window.location.origin + '/sayet/php/pdfgenerator/OTs.pdf';
+                const urlpdf = window.location.origin + '/sayet_mt940/php/pdfgenerator/OTs.pdf';
                 $window.open(urlpdf);
             });
         });

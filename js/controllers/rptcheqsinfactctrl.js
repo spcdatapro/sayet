@@ -5,7 +5,7 @@
     rptcheqsinfactctrl.controller('rptCheqSinFactCtrl', ['$scope', 'jsReportSrvc', function($scope, jsReportSrvc){
 
         $scope.params = { fdel: moment().startOf('year').toDate(), fal: moment().toDate() };
-        $scope.content = `${window.location.origin}/sayet/blank.html`;  
+        $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;  
 
         
         $scope.getLisCheqFact = function(){

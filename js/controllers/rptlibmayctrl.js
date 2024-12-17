@@ -9,7 +9,7 @@
             cuentasSel: undefined, vercierre: 1, nofolio: undefined, noheader: 0
         };
         $scope.libromayor = [];
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
         $scope.cuentas = [];
         $scope.empresa = {};
 
@@ -112,7 +112,7 @@
                 $scope.params.codigoal = $scope.params.codigoaljs != null && $scope.params.codigoaljs !== undefined ? ("'" + $scope.params.codigoaljs.trim() + "'") : '';
             }
 
-            var url = '/sayet/php/rptlibmay.php/rptlibmay'
+            var url = '/sayet_mt940/php/rptlibmay.php/rptlibmay'
 
             $.post(url, $scope.params, function(data){
                 var tab_text='<table>'

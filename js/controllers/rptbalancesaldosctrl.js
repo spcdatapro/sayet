@@ -8,7 +8,7 @@
             del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), idempresa: 0, solomov: 1, nivel: '10', nofolio: undefined, noheader: 0, vercierre: 1
         };
         $scope.balanceSaldos = [];
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
         $scope.empresa = {};
 
         authSrvc.getSession().then(function(usrLogged){

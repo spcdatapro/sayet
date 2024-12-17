@@ -14,7 +14,7 @@ $app->post('/integra', function()use($db){
 
     $cta = $db->getOneField("SELECT codigo FROM cuentac WHERE id = $d->idcuenta");
 
-    $url = 'http://localhost/sayet/php/rptlibmay.php/rptlibmay';
+    $url = 'http://localhost/sayet_mt940/php/rptlibmay.php/rptlibmay';
     //$dataa = ['idfactura' => $ids];
     $dataa = [
         "idempresa" => $d->idempresa, "codigo" => "'$cta'", "constproc"=>0, "filtro"=>"1", "codigoal"=>"", "cuentasSel"=>[$cta], "vercierre"=>1, "nofolio"=>"", "noheader"=>0, "fdelstr"=>$d->fdelstr, "falstr"=>$d->falstr

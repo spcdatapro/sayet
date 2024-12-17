@@ -219,7 +219,7 @@ $app->post('/modmontos', function(){
     $query.= ")";
     $db->doQuery($query);
 
-    $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
+    $url = 'http://localhost/sayet_mt940/php/genpartidasventa.php/genpost';
     $data = ['ids' => $d->id, 'idcontrato' => $old->concontrato];
     $db->CallJSReportAPI('POST', $url, json_encode($data));
 });
@@ -310,7 +310,7 @@ $app->post('/generandc', function() {
     $db = new dbcpm();
 
     if ((int)$d->tipo === 2) {
-        $query = "SELECT GROUP_CONCAT(COLUMN_NAME SEPARATOR ', ') FROM information_schema.columns WHERE TABLE_SCHEMA = 'sayet' AND TABLE_NAME = 'factura' AND COLUMN_NAME NOT IN('id', 'serie', 'numero', 'idtipofactura')";
+        $query = "SELECT GROUP_CONCAT(COLUMN_NAME SEPARATOR ', ') FROM information_schema.columns WHERE TABLE_SCHEMA = 'sayet_mt940' AND TABLE_NAME = 'factura' AND COLUMN_NAME NOT IN('id', 'serie', 'numero', 'idtipofactura')";
         $columnas = $db->getOneField($query);
 
         $query = "INSERT INTO factura($columnas) SELECT $columnas FROM factura WHERE id = $d->idfactura";
@@ -324,7 +324,7 @@ $app->post('/generandc', function() {
             $query.= "WHERE id = $lastid";
             $db->doQuery($query);
 
-            $query = "SELECT GROUP_CONCAT(COLUMN_NAME SEPARATOR ', ') AS columnas FROM information_schema.columns WHERE TABLE_SCHEMA = 'sayet' AND TABLE_NAME = 'detfact' AND COLUMN_NAME NOT IN('id', 'idfactura')";
+            $query = "SELECT GROUP_CONCAT(COLUMN_NAME SEPARATOR ', ') AS columnas FROM information_schema.columns WHERE TABLE_SCHEMA = 'sayet_mt940' AND TABLE_NAME = 'detfact' AND COLUMN_NAME NOT IN('id', 'idfactura')";
             $coldet = $db->getOneField($query);
 
             $query = "INSERT INTO detfact(idfactura, $coldet) SELECT $lastid, $coldet FROM detfact WHERE idfactura = $d->idfactura";

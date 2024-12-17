@@ -13,7 +13,7 @@
         $scope.totiva = {activo: 0.0, bien: 0.0, servicio: 0.0};
         $scope.empresa = { nomempresa: '', nit: '' };
         $scope.clientes = [];
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/sayet_mt940/blank.html`;
 
         authSrvc.getSession().then(function(usrLogged){
             if(parseInt(usrLogged.workingon) > 0){
