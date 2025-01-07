@@ -80,6 +80,7 @@ $app->post('/d', function(){
 
 //API de lectura de servicios
 
+// $app->get('/lectura/:idusuario/:mes/:anio/:actualizar(/:idproyecto)', function($idusuario, $mes, $anio, $actualizar, $idproyecto = 0){
 $app->get('/lectura/:idusuario/:mes/:anio(/:idproyecto)', function($idusuario, $mes, $anio, $idproyecto = 0){
     $db = new dbcpm();
 
@@ -87,12 +88,18 @@ $app->get('/lectura/:idusuario/:mes/:anio(/:idproyecto)', function($idusuario, $
     $query.= "SELECT a.id, $idusuario, e.id, c.id, $mes, $anio FROM serviciobasico a INNER JOIN unidadservicio b ON a.id = b.idserviciobasico INNER JOIN unidad c ON c.id = b.idunidad ";
     $query.= "INNER JOIN usuarioproyecto d ON d.idproyecto = c.idproyecto INNER JOIN proyecto e ON e.id = d.idproyecto ";
     $query.= "WHERE d.idusuario = $idusuario AND ISNULL(b.ffin) AND a.id NOT IN(";
-    $query.= "SELECT idserviciobasico FROM lecturaservicio WHERE mes = $mes AND anio = $anio AND idserviciobasico IN(";
-    $query.= "SELECT a.id FROM serviciobasico a	INNER JOIN unidadservicio b ON a.id = b.idserviciobasico INNER JOIN unidad c ON c.id = b.idunidad ";
-    $query.= "INNER JOIN usuarioproyecto d ON d.idproyecto = c.idproyecto INNER JOIN proyecto e ON e.id = d.idproyecto ";
-    $query.= "WHERE a.debaja = 0 AND d.idusuario = $idusuario AND ISNULL(b.ffin) ORDER BY e.nomproyecto, c.nombre, a.numidentificacion)) ";
+    $query.= "SELECT idserviciobasico FROM lecturaservicio WHERE mes = $mes AND anio = $anio) GROUP BY a.id ";
     $query.= "ORDER BY e.nomproyecto, c.nombre, a.numidentificacion";
     $db->doQuery($query);
+
+    // if ($actualizar) {
+    //     $query = "SELECT a.id, b.idunidad FROM lecturaservicio a INNER JOIN unidadservicio b ON a.idserviciobasico = b.idserviciobasico WHERE a.mes = $mes and a.anio = $anio AND a.idunidad != b.idunidad AND b.ffin IS NULL"; 
+    //     $lecturas_diferentes = $db->getQuery($query);
+
+    //     foreach ($lecturas_diferentes as $lectura) {
+    //         $db->doQuery("UPDATE lecturaservicio SET idunidad = $lectura->idunidad WHERE id = $lectura->id");
+    //     }
+    // }
 
     $query = "SELECT a.id, a.idproyecto, b.nomproyecto AS proyecto, a.idunidad, c.nombre AS unidad, a.idserviciobasico, d.numidentificacion AS servicio, a.mes, a.anio, a.lectura, a.fechaingreso, a.estatus, a.fechacorte ";
     $query.= "FROM lecturaservicio a INNER JOIN proyecto b ON b.id = a.idproyecto INNER JOIN unidad c ON c.id = a.idunidad INNER JOIN serviciobasico d ON d.id = a.idserviciobasico ";
@@ -192,6 +199,12 @@ WHERE a.mes = $d->mes AND a.anio = $d->anio AND a.idserviciobasico IN
 ORDER BY b.nomproyecto, CAST(digits(c.nombre) AS UNSIGNED), c.nombre";
 
     print $db->doSelectASJson($query);
+});
+
+$app->get('/existe/:mes/:anio', function($mes, $anio){
+    $db = new dbcpm();
+
+    print $db->getOneField("SELECT id FROM lecturaservicio WHERE mes = $mes AND anio = $anio") > 0 ? 'true' : 'false';
 });
 
 $app->run();

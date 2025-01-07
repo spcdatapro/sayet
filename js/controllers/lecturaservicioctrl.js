@@ -30,10 +30,30 @@
         }
 
         $scope.getLecturas = function(){
-            //console.log($scope.params);
+            // servicioPropioSrvc.existe($scope.params.mes, $scope.params.anio).then(respuesta => {
+            //     if (respuesta) {
+            //         $confirm({
+            //             text: '¿Desea actualizar los datos de los contadores? Esto modificara las unidades.',
+            //             title: 'Actualizar datos de contadores', ok: 'Sí', cancel: 'No'
+            //         }).then(() => {
+            //             servicioPropioSrvc.getLectura($scope.params.idusuario, $scope.params.mes, $scope.params.anio,true, $scope.params.idproyecto).then(function(d){
+            //                 $scope.lecturas = setDatalectura(d);
+            //             });
+            //         }).catch(() => {
+            //             servicioPropioSrvc.getLectura($scope.params.idusuario, $scope.params.mes, $scope.params.anio, false, $scope.params.idproyecto).then(function(d){
+            //                 $scope.lecturas = setDatalectura(d);
+            //             });
+            //         });
+            //     } else {
+            //         servicioPropioSrvc.getLectura($scope.params.idusuario, $scope.params.mes, $scope.params.anio, false, $scope.params.idproyecto).then(function(d){
+            //             $scope.lecturas = setDatalectura(d);
+            //         });
+            //     }
+            // });
             servicioPropioSrvc.getLectura($scope.params.idusuario, $scope.params.mes, $scope.params.anio, $scope.params.idproyecto).then(function(d){
                 $scope.lecturas = setDatalectura(d);
             });
+            //console.log($scope.params);
         };
 
         function setFechaCorte(fecha){
