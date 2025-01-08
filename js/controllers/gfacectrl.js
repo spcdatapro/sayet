@@ -9,6 +9,7 @@
         $scope.pendientes = [];
         $scope.cargando = false;
         $scope.idusuario = undefined;
+        $scope.selTodos = 1;
 
         authSrvc.getSession().then(function (usrLogged) {
             $scope.idusuario = usrLogged.uid;
@@ -197,6 +198,12 @@
                 });
             });
         };
+
+        $scope.$watch('selTodos', function (newVal, oldVal) {
+            if (newVal != oldVal) {
+                $scope.pendientes.forEach(f => f.descargar = +newVal);
+            }
+        });
 
     }]);
 }());
