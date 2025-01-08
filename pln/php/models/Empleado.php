@@ -1644,6 +1644,10 @@ EOT;
 	}
 
 	public function guardarDatosLaborales($data = []) : object {
+		if (isset($data['idplnempleado']) && !isset($data['id'])) {
+			$data['id'] = $this->db->select("plnempleado","idlaboral",["id [=]" => $data['idplnempleado']]);
+		}
+
 		// validar si existen datos
 		if (count($data) > 0) {
 			// formatear datos antes de hacer insert
@@ -1661,7 +1665,7 @@ EOT;
 				$fecha = new DateTime($data['baja']);
 				$data['baja'] = $fecha->format('Y-m-d');
 			} else { 
-				unset($data['nacimiento']); 
+				$data['baja'] = null;
 			}
 			$idempleado = isset($data['idplnempleado']) ? $data['idplnempleado'] : null;
 			$idlaboral = isset($data['id']) ? $data['id'] : null;

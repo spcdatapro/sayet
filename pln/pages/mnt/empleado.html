@@ -976,8 +976,7 @@
 														allow-clear="false">
 														<span ng-bind="($select.selected.descripcion)"></span>
 													</ui-select-match>
-													<ui-select-choices
-														repeat="item.id as item in puestosnue | filter:$select.search | 
+													<ui-select-choices repeat="item.id as item in puestosnue | filter:$select.search | 
 														limitTo: lab.idpuesto > 0 ? '' : ($select.search.length <= 2) ? 0 : undefined">
 														<div
 															ng-bind-html="(item.descripcion) | highlight: $select.search">
@@ -1121,8 +1120,7 @@
 														allow-clear="true">
 														<span ng-bind="($select.selected.nombrecta)"></span>
 													</ui-select-match>
-													<ui-select-choices
-														repeat="item.id as item in cuentas | filter:$select.search | 
+													<ui-select-choices repeat="item.id as item in cuentas | filter:$select.search | 
 														limitTo: lab.idcuenta > 0 ? '' : ($select.search.length <= 2)">
 														<div ng-bind-html="(item.codcta) | highlight: $select.search">
 														</div>
@@ -1260,7 +1258,8 @@
 								</div>
 							</div>
 							<div class="panel-body" ng-show="form_emergencia">
-								<form novalidate role="form" id="empleadoEmergencia" name="empleadoEmergencia" ng-submit="addDatosEmergencia(emg, true)">
+								<form novalidate role="form" id="empleadoEmergencia" name="empleadoEmergencia"
+									ng-submit="addDatosEmergencia(emg, true)">
 									<div class="row">
 										<div class="col-md-6">
 											<div class="form-group">
@@ -1273,9 +1272,9 @@
 										<div class="col-md-6">
 											<div class="form-group">
 												<label for="telefonoEmg" class="control-label">T&eacute;lefono:</label>
-												<input type="tel" name="telefonoEmg" id="telefonoEmg" placeholder="Ingresar télefono"
-													ng-model="emg.telefono" class="form-control"
-													ng-disabled="!editando && hay">
+												<input type="tel" name="telefonoEmg" id="telefonoEmg"
+													placeholder="Ingresar télefono" ng-model="emg.telefono"
+													class="form-control" ng-disabled="!editando && hay">
 											</div>
 										</div>
 									</div>
@@ -1322,14 +1321,11 @@
 									<label class="control-label">Puesto interno:</label>
 									<ui-select ng-model="emp.idplnpuesto" title="Seleccione un puesto..."
 										theme="bootstrap" autofocus="false" ng-disabled="!hay" ng-change="guardar(emp)">
-										<ui-select-match placeholder="Seleccionar un puesto"
-											allow-clear="false">
+										<ui-select-match placeholder="Seleccionar un puesto" allow-clear="false">
 											<span ng-bind="($select.selected.descripcion)"></span>
 										</ui-select-match>
-										<ui-select-choices
-											repeat="item.id as item in puestos | filter:$select.search">
-											<div
-												ng-bind-html="(item.descripcion) | highlight: $select.search">
+										<ui-select-choices repeat="item.id as item in puestos | filter:$select.search">
+											<div ng-bind-html="(item.descripcion) | highlight: $select.search">
 											</div>
 										</ui-select-choices>
 										<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
@@ -1341,7 +1337,8 @@
 							<div class="col-md-12">
 								<textarea name="conceptoAdicional" id="conceptoAdicional" rows="4"
 									ng-model="emp.observaciones" class="form-control"
-									placeholder="Ingresar observaciones para el empleado" ng-blur="guardar(emp)"></textarea>
+									placeholder="Ingresar observaciones para el empleado"
+									ng-blur="guardar(emp)"></textarea>
 							</div>
 						</div>
 					</div>
@@ -1474,6 +1471,14 @@
 		</div>
 		<div class="modal-body">
 			<form name="paramsAlta" id="paramsAlta" novalidate>
+				<div class="row">
+					<div class="col-md-12">
+					<div class="form-group required">
+						<label class="control-label">Fecha:</label>
+						<input type="date" class="form-control" ng-model="params.fecha" required>
+					</div>
+				</div>
+				</div>
 				<div class="row">
 					<div class="col-md-6">
 						<div class="form-group required">

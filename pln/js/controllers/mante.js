@@ -76,6 +76,7 @@ angular.module('cpm')
             }
 
             $scope.guardar = function (emp, traer = false) {
+                console.log(emp);
                 console.log(traer);
                 // campos para bitacora
                 // $scope.emp.idplnmovimiento = emp.idplnmovimiento > 0 ? emp.idplnmovimiento : '11';
@@ -488,16 +489,30 @@ angular.module('cpm')
                 });
 
                 modalInstance.result.then(function (obj) {
+                    lab = {};   
+
                     obj.id = $scope.emp.id;
                     obj.idplnmovimiento = '6';
                     obj.fechatmp = moment().toDate();
                     obj.fintmp = null;
                     obj.movfecha = $scope.formatoFecha(obj.fechatmp);
                     obj.baja = 0;
-                    obj.reingreso = $scope.formatoFecha(obj.fechatmp);
+                    obj.reingreso = $scope.formatoFecha(obj.fecha);
                     obj.activo = +1;
+                    $scope.guardar(obj);
 
-                    $scope.guardar(obj, true);
+                    lab.id = $scope.emp.idlaboral;
+                    lab.idplnempleado = $scope.emp.id;
+                    lab.reingreso = obj.fecha;
+                    lab.baja = undefined;
+                    lab.bonificacionley = obj.bonificacionley;
+                    lab.sueldo = obj.sueldo;
+                    lab.porcentajeigss = obj.porcentajeigss;
+                    lab.descuentoisr = obj.descuentoisr;
+                    lab.idempresaactual = obj.idempresaactual;
+                    lab.idempresadebito = obj.idempresadebito;
+
+                    empServicios.editRow(lab, 'c_lab');
                 });
             };
 
@@ -739,7 +754,7 @@ angular.module('cpm')
         $scope.empresas = empresas;
         $scope.params = {
             idempresaactual: empleado.idempresaactual, idempresadebito: empleado.idempresadebito, sueldo: empleado.sueldo, bonificacionley: empleado.bonificacionley,
-            descuentoisr: empleado.descuentoisr, porcentajeigss: empleado.porcentajeigss
+            descuentoisr: empleado.descuentoisr, porcentajeigss: empleado.porcentajeigss, fecha: moment().toDate()
         };
 
         $scope.ok = function () { $uibModalInstance.close($scope.params); };
