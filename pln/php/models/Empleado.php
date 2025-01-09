@@ -1301,11 +1301,22 @@ EOT;
 		$bit = $this->get_bitacora(['id' => $args['id'], '_uno' => true]);
 		$emp = $this->get_empresa_debito();
 
+		$antes = json_decode($bit->antes);
+		$antes = get_object_vars($antes);
+		// print_r($antes); return;
+		foreach ($antes as $a => $valor) {
+			if ($a == 'idempresadebito') {
+				$idempresa = $valor;
+			}
+		}
+
+		$nomempresa = $this->db->select("empresa","nomempresa",["id [=]" => $idempresa])[0];
+
 		$tmp = [
 			'fecha'            => 'Guatemala, ' . date('d/m/Y H:i:s'),
 			'movfecha' 		   => (empty($bit->movfecha) ? "" : formatoFecha($bit->movfecha, 1)),
 			'empleado'         => $this->emp->nombre.' '.$this->emp->apellidos,
-			'empresa'          => $emp->nomempresa,
+			'empresa'          => $nomempresa,
 			'movdescripcion'   => $bit->movdescripcion,
 			'movgasolina'      => number_format($bit->movgasolina, 2), 
 			'movdepvehiculo'   => number_format($bit->movdepvehiculo, 2), 
