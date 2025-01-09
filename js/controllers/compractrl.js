@@ -150,7 +150,7 @@
                 $scope.liquida = false;
                 monedaSrvc.getMoneda(parseInt($scope.laCompra.objEmpresa.idmoneda)).then(function (m) {
                     $scope.laCompra.objMoneda = m[0];
-                    $scope.laCompra.tipocambio = parseFloat(m[0].tipocambio).toFixed($scope.dectc);
+                    $scope.laCompra.tipocambio = parseFloat(m[0].tipocambio).toFixed(5);
                 });
                 $scope.periodoCerrado = false;
                 $scope.unidades = [];
@@ -357,9 +357,9 @@
                     if (parseInt(qmoneda.id) === parseInt($scope.laCompra.objProveedor.idmoneda)) {
                         $scope.laCompra.tipocambio = parseFloat($scope.laCompra.objProveedor.tipocambioprov);
                     } else {
-                        $scope.laCompra.tipocambio = parseFloat(qmoneda.tipocambio).toFixed($scope.dectc);
+                        $scope.laCompra.tipocambio = parseFloat(qmoneda.tipocambio).toFixed(5);
                     }
-                } else { $scope.laCompra.tipocambio = parseFloat(qmoneda.tipocambio).toFixed($scope.dectc); }
+                } else { $scope.laCompra.tipocambio = parseFloat(qmoneda.tipocambio).toFixed(5); }
             };
 
             dateToStr = (fecha) => !!fecha ? (fecha.getFullYear() + '-' + (fecha.getMonth() + 1) + '-' + fecha.getDate()) : '';
@@ -382,7 +382,7 @@
                     data[i].idtipocompra = parseInt(data[i].idtipocompra);
                     data[i].cantpagos = parseInt(data[i].cantpagos);
                     data[i].idmoneda = parseInt(data[i].idmoneda);
-                    data[i].tipocambio = parseFloat(parseFloat(data[i].tipocambio).toFixed($scope.dectc));
+                    data[i].tipocambio = parseFloat(parseFloat(data[i].tipocambio).toFixed(5));
                     data[i].idtipofactura = parseInt(data[i].idtipofactura);
                     data[i].idtipocombustible = parseInt(data[i].idtipocombustible);
                     data[i].galones = parseFloat(parseFloat(data[i].galones).toFixed(2));
@@ -934,7 +934,7 @@
     //------------------------------------------------------------------------------------------------------------------------------------------------//
     compractrl.controller('ModalISR', ['$scope', '$uibModalInstance', 'compra', 'compraSrvc', function ($scope, $uibModalInstance, compra, compraSrvc) {
         $scope.compra = compra;
-        $scope.compra.isrlocal = parseFloat(($scope.compra.isr * $scope.compra.tipocambio).toFixed(2));
+        $scope.compra.isrlocal = parseFloat(($scope.compra.isr * $scope.compra.tipocambio).toFixed(5));
         //console.log($scope.compra);
 
         $scope.setMesAnio = function () {
