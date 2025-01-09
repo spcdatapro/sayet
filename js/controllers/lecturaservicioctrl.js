@@ -13,6 +13,17 @@
         ];
         $scope.proyectos = [];
 
+        $scope.meses.forEach(mes => {
+            const actual = moment().month() + 1;
+            let ini = actual;
+            let fin = actual === 1 ? 12 : actual - 1; 
+            mes.mostrar = (mes.id === ini || mes.id === fin) ? true : false;
+        });
+
+        $scope.revisarAnio = function(mes){
+            $scope.params.anio = +mes === 12 ? moment().year() - 1 : moment().year();
+        }
+
         authSrvc.getSession().then(function(usrLogged){
             $scope.usrdata = usrLogged;
             $scope.params.idusuario = +$scope.usrdata.uid;
@@ -30,6 +41,7 @@
         }
 
         $scope.getLecturas = function(){
+            console.log($scope.meses);
             // servicioPropioSrvc.existe($scope.params.mes, $scope.params.anio).then(respuesta => {
             //     if (respuesta) {
             //         $confirm({

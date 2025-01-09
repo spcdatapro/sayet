@@ -2,70 +2,91 @@
     <div class="panel panel-info">
         <div class="panel-heading">Captura de lectura de contadores de agua</div>
         <div class="panel-body">
-            <form name="frmLectura" id="frmLectura" class="form-inline" novalidate>
+            <form name="frmLectura" id="frmLectura" class="form-horizontal" novalidate>
                 <div class="form-group">
-                    <label for="selMes">Mes:</label>
-                    <select name="selMes" id="selMes" class="form-control input-sm" ng-model="params.mes"
-                            ng-options="obj.id as obj.mes for obj in meses" ng-change="lecturas = []" required>
-                    </select>
+                    <label for="selMes" class="col-md-1 control-label">Mes:</label>
+                    <div class="col-md-2">
+                        <ui-select ng-model="params.mes" title="Seleccione un mes..." theme="bootstrap"
+                            autofocus="false" ng-change="revisarAnio(params.mes)">
+                            <ui-select-match placeholder="Buscar mes..." allow-clear="false">
+                                <span ng-bind="($select.selected.mes)"></span>
+                            </ui-select-match>
+                            <ui-select-choices repeat="item.id as item in meses | filter:$select.search"
+                                ui-disable-choice="!item.mostrar">
+                                <div ng-bind-html="(item.mes) | highlight: $select.search"></div>
+                            </ui-select-choices>
+                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                        </ui-select>
+                    </div>
+                    <label for="txtAnio" class="col-md-1 control-label">A&ntilde;o:</label>
+                    <div class="col-md-2">
+                        <input name="txtAnio" id="txtAnio" type="number" class="form-control" ng-model="params.anio"
+                            placeholder="A&ntilde;o de lectura" min="2000" ng-change="lecturas = []" required
+                            ng-disabled="true" />
+                    </div>
+                    <button type="button" class="btn btn-info btn-sm" ng-click="getLecturas()">
+                        <span class="glyphicon glyphicon-search"></span>
+                    </button>
+                    <button type="button" class="btn btn-info btn-sm" ng-click="printLectura()"
+                        ng-disabled="lecturas.length <= 0">
+                        <span class="glyphicon glyphicon-print"></span>
+                    </button>
                 </div>
-                <div class="form-group">
-                    <label for="txtAnio">A&ntilde;o:</label>
-                    <input name="txtAnio" id="txtAnio" type="number" class="form-control input-sm" ng-model="params.anio" placeholder="A&ntilde;o de lectura" min="2000" ng-change="lecturas = []" required/>
-                </div>
-                <div class="form-group" ng-show="+params.idusuario == 9">
+                <!-- <div class="form-group" ng-show="+params.idusuario == 9">
                     <label for="selProyecto">Proyecto:</label>
                     <div class="input-group">
-                        <select name="selProyecto" id="selProyecto" class="form-control input-sm" ng-model="params.idproyecto"
-                                ng-options="obj.idproyecto as obj.proyecto for obj in proyectos" ng-required="+params.idusuario == 9"></select>
+                        <select name="selProyecto" id="selProyecto" class="form-control input-sm"
+                            ng-model="params.idproyecto"
+                            ng-options="obj.idproyecto as obj.proyecto for obj in proyectos"
+                            ng-required="+params.idusuario == 9"></select>
                         <span class="input-group-btn">
-                            <button class="btn btn-info btn-sm" type="button" ng-click="params.idproyecto = undefined;" ng-disabled="params.idproyecto == undefined || params.idproyecto == null"
-                                    data-toggle="tooltip" data-placement="auto" title="Quitar filtro de proyecto...">
+                            <button class="btn btn-info btn-sm" type="button" ng-click="params.idproyecto = undefined;"
+                                ng-disabled="params.idproyecto == undefined || params.idproyecto == null"
+                                data-toggle="tooltip" data-placement="auto" title="Quitar filtro de proyecto...">
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
                         </span>
                     </div>
-                </div>
-                <button type="button" class="btn btn-info btn-sm" ng-click="getLecturas()">
-                    <span class="glyphicon glyphicon-search"></span>
-                </button>
-                <button type="button" class="btn btn-info btn-sm" ng-click="printLectura()" ng-disabled="lecturas.length <= 0">
-                    <span class="glyphicon glyphicon-print"></span>
-                </button>
+                </div> -->
             </form>
-            <hr/>
+            <hr />
             <table class="table table-condensed table-hover">
                 <caption>
-                    <input ng-model="search.$" class="form-control input-sm" placeholder="Buscar contador..." style="width: 100%"/>
+                    <input ng-model="search.$" class="form-control input-sm" placeholder="Buscar contador..."
+                        style="width: 100%" />
                 </caption>
                 <thead>
-                <tr>
-                    <th>Proyecto</th>
-                    <th>Unidad</th>
-                    <th>Contador</th>
-                    <th>
-                        Fecha de corte&nbsp;
-                        <button type="button" class="btn btn-info btn-xs" ng-click="replicaFecha()" ng-show="lecturas.length > 0">
-                            <i class="fa fa-repeat" aria-hidden="true"></i>
-                        </button>
-                    </th>
-                    <th>Lectura</th>
-                </tr>
+                    <tr>
+                        <th>Proyecto</th>
+                        <th>Unidad</th>
+                        <th>Contador</th>
+                        <th>
+                            Fecha de corte&nbsp;
+                            <button type="button" class="btn btn-info btn-xs" ng-click="replicaFecha()"
+                                ng-show="lecturas.length > 0">
+                                <i class="fa fa-repeat" aria-hidden="true"></i>
+                            </button>
+                        </th>
+                        <th>Lectura</th>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="l in lecturas | filter:search:strict">
-                    <td>{{l.proyecto}}</td>
-                    <td>{{l.unidad}}</td>
-                    <td>{{l.servicio}}</td>
-                    <td>
-                        <input name="txtFCorte_{{l.id}}" id="txtFCorte_{{l.id}}" type="date" class="form-control input-sm" style="width: 11.5em"
-                               ng-model="l.fechacorte" ng-blur="updLectura(l)" ng-disabled="+l.estatus > 1"/>
-                    </td>
-                    <td>
-                        <input name="txtLectura_{{l.id}}" id="txtLectura_{{l.id}}" type="number" class="form-control input-sm" style="width: 10em; text-align: right"
-                               ng-model="l.lectura" min="0" ng-blur="updLectura(l)" step="0.01" ng-disabled="+l.estatus > 1" data-index="{{$index}}" focus-on-control/>
-                    </td>
-                </tr>
+                    <tr ng-repeat="l in lecturas | filter:search:strict">
+                        <td>{{l.proyecto}}</td>
+                        <td>{{l.unidad}}</td>
+                        <td>{{l.servicio}}</td>
+                        <td>
+                            <input name="txtFCorte_{{l.id}}" id="txtFCorte_{{l.id}}" type="date"
+                                class="form-control input-sm" style="width: 11.5em" ng-model="l.fechacorte"
+                                ng-blur="updLectura(l)" ng-disabled="+l.estatus > 1" />
+                        </td>
+                        <td>
+                            <input name="txtLectura_{{l.id}}" id="txtLectura_{{l.id}}" type="number"
+                                class="form-control input-sm" style="width: 10em; text-align: right"
+                                ng-model="l.lectura" min="0" ng-blur="updLectura(l)" step="0.01"
+                                ng-disabled="+l.estatus > 1" data-index="{{$index}}" focus-on-control />
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
