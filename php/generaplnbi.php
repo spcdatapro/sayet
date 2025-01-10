@@ -335,7 +335,7 @@ $app->post('/generatran', function() {
     $d->total = round($d->total, 2);
 
     $query = "INSERT INTO tranban(idbanco, tipotrans, numero, esplanilla, fechaplanilla, fecha, monto, beneficiario, concepto, tipocambio, idempresa, idempleado, idusuario) VALUES ($d->idbanco, 
-    '$d->tipo', $d->numero, 1, '$d->fecha', '$d->fechatran', $d->total, '$d->empleado', '$d->concepto', 1.00, $d->idempresadebito, $d->idempleado, $d->idusuario)";
+    '$d->tipo', $d->numero, 1, '$d->fecha', '$d->fechatran', $d->total, '$d->empleado', '$d->concepto', 1.00, $d->idempresa, $d->idempleado, $d->idusuario)";
     $db->doQuery($query);
 
     $lastid = $db->getLastId();
@@ -345,7 +345,7 @@ $app->post('/generatran', function() {
         $db->doQuery("UPDATE banco SET correlativo = $d->numero+1 WHERE id = $d->idbanco");
 
 
-        $cnt_inde = getCuentaConfig($d->idempresadebito, 22); 
+        $cnt_inde = getCuentaConfig($d->idempresa, 22); 
         if ((int)$d->finiquito > 0) {
             if ($cnt_inde > 0) {
                 $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
@@ -355,7 +355,7 @@ $app->post('/generatran', function() {
             }
         }
 
-        $cnt_vacas = getCuentaConfig($d->idempresadebito, 19);
+        $cnt_vacas = getCuentaConfig($d->idempresa, 19);
         if((int)$d->vacaciones > 0){
             if ($cnt_vacas > 0) {
                 $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
@@ -365,7 +365,7 @@ $app->post('/generatran', function() {
             }
         }
 
-        $cnt_bono14 = getCuentaConfig($d->idempresadebito, 21); 
+        $cnt_bono14 = getCuentaConfig($d->idempresa, 21); 
         if ((int)$d->bono > 0) {
             if ($cnt_bono14 > 0) {
                 $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
@@ -375,7 +375,7 @@ $app->post('/generatran', function() {
             }
         }
 
-        $cnt_aguinaldo = getCuentaConfig($d->idempresadebito, 20); 
+        $cnt_aguinaldo = getCuentaConfig($d->idempresa, 20); 
         if ((int)$d->aguinaldo > 0) {
             if($cnt_aguinaldo > 0) {
                 $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
@@ -385,7 +385,7 @@ $app->post('/generatran', function() {
             }
         }
 
-        $cnt_ordinarios = getCuentaConfig($d->idempresadebito, 16); 
+        $cnt_ordinarios = getCuentaConfig($d->idempresa, 16); 
         if ((int)$d->ordinario > 0) {
             if($cnt_ordinarios > 0) {
                 $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
@@ -395,7 +395,7 @@ $app->post('/generatran', function() {
             }
         }
 
-        $cnt_extra = getCuentaConfig($d->idempresadebito, 17); 
+        $cnt_extra = getCuentaConfig($d->idempresa, 17); 
         if ((int)$d->extra > 0) {
             if($cnt_extra > 0) {
                 $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
@@ -415,7 +415,7 @@ $app->post('/generatran', function() {
             }
         }
 
-        $cnt_prestamo = $db->getOneField("SELECT id FROM cuentac WHERE nombrecta LIKE '%$d->empleado%' AND idempresa = $d->idempresadebito"); 
+        $cnt_prestamo = $db->getOneField("SELECT id FROM cuentac WHERE nombrecta LIKE '%$d->empleado%' AND idempresa = $d->idempresa"); 
         if ((int)$d->prestamos > 0) {
             if($cnt_prestamo > 0) {
                 $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
