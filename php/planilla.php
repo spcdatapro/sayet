@@ -95,8 +95,8 @@ $app->get('/finiquitos', function () {
                 a.anticipos,
                 a.otrosdesc,
                 a.pendiente,
-                b.idempresadebito,
-                b.idproyecto,
+                a.idempresa,
+                a.idproyecto,
                 c.nombre AS empresa,
                 IFNULL(d.nomproyecto, 'N/E, NO GENERARÁ DETALLE EN REP. ING. EGRE.') AS proyecto
             FROM
@@ -104,9 +104,9 @@ $app->get('/finiquitos', function () {
                     INNER JOIN
                 plnempleado b ON a.idplnempleado = b.id
                     INNER JOIN
-                plnempresa c ON b.idempresadebito =  c.id
+                plnempresa c ON a.idempresa =  c.id
                     LEFT JOIN 
-                proyecto d ON b.idproyecto = d.id
+                proyecto d ON a.idproyecto = d.id
             WHERE
                 pendiente = 1";
     $pendientes = $db->getQuery($query);
