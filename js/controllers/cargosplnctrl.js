@@ -57,9 +57,9 @@
         $scope.data = data;
         $scope.tran = { fecha: moment().toDate(), concepto: 'INDEMIIZACIÓN DEL EMPLEADO ' + data.empleado };
 
-        bancoSrvc.lstBancos(data.idempresadebito).then((d) => { $scope.bancos = d; });
+        bancoSrvc.lstBancos(data.idempresa).then((d) => { $scope.bancos = d; });
         tipoMovTranBanSrvc.getBySuma(0).then(function (d) { $scope.tiposmov = d; });
-        cuentacSrvc.getByTipo(data.idempresadebito, 0).then(function (d) { $scope.cuentas = d; });
+        cuentacSrvc.getByTipo(data.idempresa, 0).then(function (d) { $scope.cuentas = d; });
 
         $scope.getNumCheque = function (tran) {
             if (tran.idbanco > 0) {
