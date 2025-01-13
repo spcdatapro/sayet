@@ -136,13 +136,13 @@ angular.module('cpm')
                     $scope.datosbuscar.inicio = data.cantidad;
 
                     data.resultados.forEach(d => {
-                        if (d.primernombre) {
+                        if (d.primernombre && d.primerapellido) {
                             d.segundonombre = d.segundonombre ? d.segundonombre : '';
                             d.tercernombre = d.tercernombre ? d.tercernombre : '';
                             d.nombre = d.primernombre + ' ' + d.segundonombre + ' ' + d.tercernombre;
                         }
 
-                        if (d.primerapellido) {
+                        if (d.primerapellido && d.primernombre) {
                             d.apellidocasada = d.apellidocasada ? d.apellidocasada : '';
                             d.apellidos = d.primerapellido + ' ' + d.segundoapellido + d.apellidocasada;
                         }
@@ -239,9 +239,9 @@ angular.module('cpm')
                     $scope.lab = d.lab;
                     $scope.emg = d.emg;
 
-                    $scope.emp.nombre = d.per.primernombre ? d.per.primernombre + ' ' + d.per.segundonombre + ' ' + d.per.tercernombre : $scope.emp.nombre;
+                    $scope.emp.nombre = d.per.primernombre && d.per.primerapellido ? d.per.primernombre + ' ' + d.per.segundonombre + ' ' + d.per.tercernombre : $scope.emp.nombre;
 
-                    $scope.emp.apellidos = d.per.primerapellido ? d.per.primerapellido + ' ' + d.per.segundoapellido + ' ' + d.per.apellidocasada : $scope.emp.apellidos;
+                    $scope.emp.apellidos = d.per.primerapellido && d.per.primernombre ? d.per.primerapellido + ' ' + d.per.segundoapellido + ' ' + d.per.apellidocasada : $scope.emp.apellidos;
 
                     $scope.emp.dpi = d.per.documento ? d.per.documento : d.emp.dpi;
 

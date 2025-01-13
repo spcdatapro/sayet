@@ -784,23 +784,31 @@ $app->get('/subir_personal', function () {
     $cuantos = 0;
     $empleados = $db->getQuery("SELECT id, nombre, apellidos FROM plnempleado WHERE nombre IS NOT NULL AND idpersonal IS NULL");
     foreach ($empleados as $emp) {
-        
-        $db->doQuery("INSERT INTO plnlaboral (ingreso, reingreso, baja, idempresaactual, idempresadebito, idproyecto, idunidad, sueldo, bonificacionley, igss, porcentajeigss, idcuenta, 
-        descuentoisr, frecuencia, metodo, cuentabanco) 
-        SELECT a.ingreso, a.reingreso, a.baja, a.idempresaactual, a.idempresadebito, a.idproyecto, a.idunidad, a.sueldo, a.bonificacionley, a.igss, a.porcentajeigss, b.id AS idcuenta, 
-        a.descuentoisr, a.formapago, a.mediopago, a.cuentabanco FROM plnempleado a LEFT JOIN cuentac b ON a.cuentapersonal = b.codigo AND idempresa = a.idempresadebito WHERE a.id = $id->id");
+        $nombresArray = explode(' ', $emp->nombre);
+        if (isset($emp->apellidos)) {
+            $apellidosArray = explode(' ', $emp->apellidos);
+
+            $db->doQuery("INSERT INTO plnpersonal (primernombre, segundonombre, tercernombre, primerapellido, segundoapellido, apellidocasada, direccion, sexo, estadocivil, 
+            nacimiento, telefono, tipodoc, documento, nit, correo, idnacionalidad, iddiscapacidad) 
+            SELECT '" . $nombresArray[0] . "', '" . (isset($nombresArray[1]) ? $nombresArray[1] : '') . "', '" . (isset($nombresArray[2]) ? $nombresArray[2] : '') . "', '" . 
+            $apellidosArray[0] . "', '" . (isset($apellidosArray[1]) ? $apellidosArray[1] : '') .  "', '" . (isset($apellidosArray[2]) ? $apellidosArray[2] : '') ."', direccion, 
+            sexo, estadocivil, fechanacimiento, telefono, 1, dpi, nit, correo, 83, 1 FROM plnempleado WHERE id = $emp->id");
+        } else {
+            $db->doQuery("INSERT INTO plnpersonal (primernombre, direccion, sexo, estadocivil, nacimiento, telefono, tipodoc, documento, nit, correo, idnacionalidad, iddiscapacidad) 
+            SELECT '" . $nombresArray[0] . "', direccion,  sexo, estadocivil, fechanacimiento, telefono, 1, dpi, nit, correo, 83, 1 FROM plnempleado WHERE id = $emp->id");
+        }
 
         $idlaboral = $db->getLastId();
 
         if ($idlaboral > 0) {
-            $db->doQuery("UPDATE plnempleado SET idlaboral = $idlaboral WHERE id = $id->id");
+            $db->doQuery("UPDATE plnempleado SET idpersonal = $idlaboral WHERE id = $emp->id");
             $cuantos++;
         } else {
-            return "Error no se pudo generar los datos laborales";
+            die("Error no se pudo generar los datos personales");
         }
     }
 
-    echo "Laboral copiado con exito ". $cuantos;
+    echo "Personal copiado con exito ". $cuantos;
 });
 
 $app->run();
