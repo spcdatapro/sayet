@@ -50,7 +50,7 @@ $app->get('/lstfacturas/:idempresa/:cuales', function($idempresa, $cuales){
 $app->get('/getfactura/:idfactura', function($idfactura){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idcliente, a.nit, a.nombre, a.idcontrato, a.serie, a.numero, a.fechaingreso, a.fecha, a.idtipoventa, a.conceptomayor, a.idempresa, a.idtipofactura, a.idmonedafact AS idmoneda, ";
-    $query.= "a.iva, a.total, a.noafecto, a.subtotal, a.retisr, a.retiva, a.totdescuento, a.tipocambio, a.reteneriva, a.retenerisr, a.mesafecta, a.anioafecta, a.direccion, a.idproyecto, a.porretiva, a.exentoiva ";
+    $query.= "a.iva, a.total, a.noafecto, a.subtotal, a.retisr, a.retiva, a.totdescuento, a.tipocambio, a.reteneriva, a.retenerisr, a.mesafecta, a.anioafecta, a.direccion, a.idproyecto, a.porretiva, a.exentoiva, tipoidreceptor AS idtiporec ";
     $query.= "FROM factura a ";
     $query.= "WHERE a.id = $idfactura";
     print $db->doSelectASJson($query);
@@ -131,7 +131,7 @@ $app->post('/u', function(){
     $query.= "idempresa = $d->idempresa, idtipofactura = $d->idtipofactura, idcontrato = $d->idcontrato, idcliente = $d->idcliente, nit = $d->nit, ";
     $query.= "nombre = $d->nombre, fechaingreso = '$d->fechaingresostr', mesiva = $d->mesiva, fecha = '$d->fechastr', idtipoventa = $d->idtipoventa, tipocambio = $d->tipocambio, ";
     $query.= "reteneriva = $d->reteneriva, retenerisr = $d->retenerisr, mesafecta = $d->mesafecta, anioafecta = $d->anioafecta, direccion = $d->direccion, ";
-    $query.= "idproyecto = $d->idproyecto, porretiva = $d->porretiva, exentoiva = $d->exentoiva, tipoidreceptor = $d->tiporec, idmonedafact = $d->idmoneda ";
+    $query.= "idproyecto = $d->idproyecto, porretiva = $d->porretiva, exentoiva = $d->exentoiva, tipoidreceptor = $d->idtiporec, idmonedafact = $d->idmoneda ";
     $query.= "WHERE id = $d->id";
     //print $query;
     $db->doQuery($query);
