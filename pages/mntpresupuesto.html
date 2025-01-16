@@ -335,19 +335,21 @@
                                     <ui-select name="selProveedorPresup" ng-model="presupuesto.idproveedor"
                                         title="Seleccione un proveedor/beneficiario..." theme="bootstrap"
                                         autofocus="true" append-to-body="true" ng-required="+presupuesto.tipo == 1"
-                                        ng-disabled="sl.presupuesto" on-select="setOrigenProv($item, $model)">
-                                        <ui-select-match placeholder="Buscar proveedor/beneficiario..."
+                                        ng-disabled="sl.presupuesto" on-select="setOrigenProv($item, $model)" ng-focus="onFocus()" ng-blur="onBlur()">
+                                        <ui-select-match placeholder="Favor ingresar 3 caracteres (nit o nombre)"
                                             allow-clear="false">
                                             <span ng-bind="$select.selected.beneficiario"></span>
                                         </ui-select-match>
                                         <ui-select-choices
-                                            repeat="item.id as item in proveedores | filter:$select.search"
+                                            repeat="item.id as item in proveedores | filter:$select.search 
+                                            | limitTo: ($select.search.length <= 2 && (!presupuesto.idproveedor || !sl.presupuesto)) ? 0 : undefined"
                                             group-by="'grupo'">
                                             <div ng-bind-html="item.beneficiario | highlight: $select.search"></div>
                                             <!--
                                             <small>
                                                 <strong>N.I.T.:</strong>&nbsp;<span ng-bind-html="item.nit | highlight: $select.search" ></span>
                                             </small>
+                                            limitTo: ($select.search.length <= 2) ? 0 : undefined"
                                             -->
                                         </ui-select-choices>
                                         <ui-select-no-choice>
@@ -569,12 +571,13 @@
                                         title="Seleccione un proveedor/beneficiario..." theme="bootstrap"
                                         autofocus="true" append-to-body="true" ng-disabled="sl.ot"
                                         on-select="setOrigenProvOt($item, $model)">
-                                        <ui-select-match placeholder="Buscar proveedor/beneficiario..."
+                                        <ui-select-match placeholder="Favor ingresar 3 caracteres (nit o nombre)"
                                             allow-clear="false">
                                             <span ng-bind="$select.selected.beneficiario"></span>
                                         </ui-select-match>
                                         <ui-select-choices
-                                            repeat="item.id as item in proveedores | filter:$select.search"
+                                            repeat="item.id as item in proveedores | filter:$select.search | 
+                                            limitTo: ($select.search.length <= 2 && (!presupuesto.idproveedor || !sl.ot)) ? 0 : undefined"
                                             group-by="'grupo'">
                                             <div ng-bind-html="item.beneficiario | highlight: $select.search"></div>
                                         </ui-select-choices>

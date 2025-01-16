@@ -483,7 +483,7 @@ function actualizaDetallePresupuesto($d)
 {
     $db = new dbcpm();
     $query = "UPDATE detpresupuesto SET ";
-    $query .= "idproveedor = $d->idproveedor, idsubtipogasto = $d->idsubtipogasto, coniva = $d->coniva, escontado = 0, monto = $d->monto, tipocambio = $d->tipocambio, notas = '$d->notas', origenprov = $d->origenprov, ";
+    $query .= "idproveedor = $d->idproveedor, idsubtipogasto = $d->idsubtipogasto, coniva = $d->coniva, escontado = 0, monto = $d->monto_int, tipocambio = $d->tipocambio, notas = '$d->notas', origenprov = $d->origenprov, ";
     $query .= "idmoneda = $d->idmoneda, tipodocumento = $d->tipodocumento ";
     $query .= "WHERE idpresupuesto = " . $d->id;
     $db->doQuery($query);

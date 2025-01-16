@@ -732,6 +732,15 @@
             });
         };
 
+        $scope.onFocus = function() {
+            $scope.buscar = true;
+            console.log(!$scope.presupuesto.idproveedor || $scope.buscar);
+        };
+
+        $scope.onBlur = function() {
+            $scope.buscar = false;
+        };
+
         $scope.delOTAdjunto = (id) => {
             $confirm({
                 text: '¿Seguro(a) de eliminar este adjunto? (Esto también eliminará físicamente el documento)',
