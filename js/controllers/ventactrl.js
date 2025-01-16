@@ -41,7 +41,7 @@
             }
         });
 
-        function getVentaInicial () {
+        function getVentaInicial() {
             let idventa = localStorageSrvc.get('idfactura');
             if (idventa != null && idventa != undefined) {
                 localStorageSrvc.clear('idfactura');
@@ -241,7 +241,7 @@
                 $scope.getDetalleContable(parseInt(idventa));
                 // console.log('VENTA = ', $scope.venta);
 
-                if (($scope.venta.noformisr != null && $scope.venta.noformisr != undefined) || +$scope.venta.anulada === 1 || +$scope.venta.idtipofactura !== 1 ) {
+                if (($scope.venta.noformisr != null && $scope.venta.noformisr != undefined) || +$scope.venta.anulada === 1 || +$scope.venta.idtipofactura !== 1) {
                     //console.log('');
                 } else {
                     $scope.modalISR();
@@ -386,7 +386,7 @@
             var modalInstance = $uibModal.open({
                 animation: true,
                 templateUrl: 'modalRetieneIvaIsr.html',
-                controller: 'ModalRetieneIvaIsrCtrl',                
+                controller: 'ModalRetieneIvaIsrCtrl',
                 resolve: {
                     retiva: () => $scope.venta.retiva,
                     retisr: () => $scope.venta.retisr,
@@ -505,7 +505,7 @@
 
         cuentacSrvc.getByTipo(idempresa, 0).then(function (d) { $scope.cuentas = d; });
 
-        $scope.ok = function () { $uibModalInstance.close(); };
+        $scope.ok = function (respuesta) { $uibModalInstance.close(respuesta); };
         $scope.cancel = function () { $uibModalInstance.dismiss('cancel'); };
 
         $scope.zeroDebe = function (valor) { $scope.detcont.debe = parseFloat(valor) > 0 ? 0.0 : $scope.detcont.debe; };
@@ -513,9 +513,11 @@
 
         $scope.actualizar = function (obj) {
             obj.anterior = anterior;
-            $confirm({ text: '¿Seguro(a) de guardar los cambios?', title: 'Modificar detalle contable', ok: 'Sí', cancel: 'No' }).then(function () {
-                detContSrvc.editRow(obj, 'u').then(function () { $scope.ok(); });
-            });
+            $confirm({ text: '¿Seguro(a) de guardar los cambios?', title: 'Modificar detalle contable', ok: 'Sí', cancel: 'No' })
+                .then(() => {
+                    detContSrvc.editRow(obj, 'u')
+                    .then(respuesta => { $scope.ok(respuesta); });
+                });
         };
 
     }]);
@@ -537,7 +539,7 @@
 
     //------------------------------------------------------------------------------------------------------------------------------------------------//
     ventactrl.controller('ModalRetieneIvaIsrCtrl', ['$scope', '$uibModalInstance', 'retiva', 'retisr', function ($scope, $uibModalInstance, retiva, retisr) {
-        $scope.params = {};        
+        $scope.params = {};
 
         $scope.resetParams = () => $scope.params = {
             retiva: retiva, retisr: retisr
@@ -546,7 +548,7 @@
         $scope.ok = () => {
             $scope.params.retiva = !!$scope.params.retiva ? $scope.params.retiva : 0;
             $scope.params.retisr = !!$scope.params.retisr ? $scope.params.retisr : 0;
-            
+
         };
 
         $scope.cancel = () => $uibModalInstance.dismiss('cancel');
@@ -554,6 +556,6 @@
         $scope.resetParams();
 
     }]);
-    
+
 
 }());

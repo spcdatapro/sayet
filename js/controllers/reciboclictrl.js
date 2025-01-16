@@ -564,23 +564,23 @@
 
     // --------------------------------------------------------------------------------------------------------------------------------------------
 
-    reciboclictrl.controller('ModalUpdDetContCtrl', ['$scope', '$uibModalInstance', 'detalle', 'cuentacSrvc', 'idempresa', 'detContSrvc', '$confirm', ($scope, $uibModalInstance, detalle, cuentacSrvc, idempresa, detContSrvc, $confirm) => {
-        $scope.detcont = detalle;
-        $scope.cuentas = [];
+    // reciboclictrl.controller('ModalUpdDetContCtrl', ['$scope', '$uibModalInstance', 'detalle', 'cuentacSrvc', 'idempresa', 'detContSrvc', '$confirm', ($scope, $uibModalInstance, detalle, cuentacSrvc, idempresa, detContSrvc, $confirm) => {
+    //     $scope.detcont = detalle;
+    //     $scope.cuentas = [];
 
-        cuentacSrvc.getByTipo(+idempresa, 0).then(function (d) { $scope.cuentas = d; });
+    //     cuentacSrvc.getByTipo(+idempresa, 0).then(function (d) { $scope.cuentas = d; });
 
-        $scope.ok = () => { $uibModalInstance.close(); };
-        $scope.cancel = () => { $uibModalInstance.dismiss('cancel'); };
+    //     $scope.ok = () => { $uibModalInstance.close(); };
+    //     $scope.cancel = () => { $uibModalInstance.dismiss('cancel'); };
 
-        $scope.zeroDebe = (valor) => { $scope.detcont.debe = parseFloat(valor) > 0 ? 0.0 : $scope.detcont.debe; };
-        $scope.zeroHaber = (valor) => { $scope.detcont.haber = parseFloat(valor) > 0 ? 0.0 : $scope.detcont.haber; };
+    //     $scope.zeroDebe = (valor) => { $scope.detcont.debe = parseFloat(valor) > 0 ? 0.0 : $scope.detcont.debe; };
+    //     $scope.zeroHaber = (valor) => { $scope.detcont.haber = parseFloat(valor) > 0 ? 0.0 : $scope.detcont.haber; };
 
-        $scope.actualizar = (obj) => {
-            $confirm({ text: '¿Seguro(a) de guardar los cambios?', title: 'Modificar detalle contable', ok: 'Sí', cancel: 'No' }).then(() => {
-                detContSrvc.editRow(obj, 'u').then(() => { $scope.ok(); });
-            });
-        };
+    //     $scope.actualizar = (obj) => {
+    //         $confirm({ text: '¿Seguro(a) de guardar los cambios?', title: 'Modificar detalle contable', ok: 'Sí', cancel: 'No' }).then(() => {
+    //             detContSrvc.editRow(obj, 'u').then(() => { $scope.ok(); });
+    //         });
+    //     };
 
-    }]);
+    // }]);
 }());

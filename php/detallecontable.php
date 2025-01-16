@@ -57,11 +57,18 @@ $app->post('/u', function(){
 
     if(2 == $d->origen) {
         $existe = $db->getOneField("SELECT id FROM compraproyecto WHERE idcompra = $d->idorigen AND idcuentac = $d->anterior");
+        $cuenta = $db->getOneField("SELECT codigo FROM cuentac WHERE id = $d->idcuenta");   
     }
 
     if($existe > 0) {
-        $query = "UPDATE compraproyecto SET idcuentac = $d->idcuenta, monto = $d->debe WHERE id = $existe";
-        $db->doQuery($query);
+        if (preg_match('/^[56]/', $cuenta)) {
+            // La cuenta empieza con 5 o 6
+            $query = "UPDATE compraproyecto SET idcuentac = $d->idcuenta, monto = $d->debe WHERE id = $existe";
+            $db->doQuery($query);
+        } else {
+            // Si la cuenta no es de gasto matar el proceso
+            die('No se puede cambiar la cuenta contable, porque la cuenta no es cuenta de gasto y la compra ya tiene un detalle de gasto asociado.');
+        }
     }
 
     $query = "UPDATE detallecontable SET idcuenta = $d->idcuenta, debe = $d->debe, haber = $d->haber, ";

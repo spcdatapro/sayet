@@ -84,8 +84,8 @@
                 }
             });
 
-            
-            function getCompraInicial () {
+
+            function getCompraInicial() {
                 let idcompra = localStorageSrvc.get('idfactura');
                 if (idcompra != null && idcompra != undefined) {
                     localStorageSrvc.clear('idfactura');
@@ -467,7 +467,7 @@
                     if (d.length > 0) {
                         $scope.laCompra = procDataCompras(d)[0];
                         authSrvc.getPerfil($scope.laCompra.idusuario).then((usr) => { $scope.creador = usr[0].iniciales });
-                        if ($scope.laCompra.ultusuario > 0) { 
+                        if ($scope.laCompra.ultusuario > 0) {
                             authSrvc.getPerfil($scope.laCompra.ultusuario).then((usr) => { $scope.ultimo_usuario = usr[0].iniciales });
                         }
                         $scope.laCompra.objProveedor = $filter('getById')($scope.losProvs, $scope.laCompra.idproveedor);
@@ -543,7 +543,7 @@
                 });
             }
 
-            $scope.revisar = function(obj) {
+            $scope.revisar = function (obj) {
                 if (obj.idservicio > 0) {
                     servicioBasicoSrvc.getNombreServ(obj.idservicio).then(function (d) {
                         const resp = d[0];
@@ -564,7 +564,7 @@
                         addCompra(obj);
                     });
                 } else {
-                        addCompra(obj);
+                    addCompra(obj);
                 }
             }
 
@@ -631,7 +631,7 @@
                 return obj;
             }
 
-            function addCompra (obj) {
+            function addCompra(obj) {
                 // console.log(obj);
                 obj = setObjCompra(obj);
                 proveedorSrvc.getLstCuentasCont(obj.idproveedor, obj.idempresa).then((lstCtas) => {
@@ -853,6 +853,7 @@
                 var modalInstance = $uibModal.open({
                     animation: true,
                     templateUrl: 'modalUpdDetCont.html',
+                    // controlador en ventactrl (esto pasa debido a que tienen el mismo nombre)
                     controller: 'ModalUpdDetContCtrl',
                     resolve: {
                         detalle: function () { return obj; },
@@ -860,10 +861,13 @@
                     }
                 });
 
-                modalInstance.result.then(function () {
+                modalInstance.result.then(function (respuesta) {
                     $scope.loadDetaCont();
-                }, function () { $scope.loadDetaCont(); });
-            };
+                    if (respuesta) {
+                        toaster.pop({ type: 'error', title: 'Detalle de gasto por proyecto', body: respuesta, timeout: 10000 });
+                    }
+                })
+            }
 
             $scope.delDetCont = function (obj) {
                 $confirm({ text: '¿Seguro(a) de eliminar esta cuenta?', title: 'Eliminar cuenta contable', ok: 'Sí', cancel: 'No' }).then(function () {
@@ -890,7 +894,7 @@
 
                 var suma = agregar ? 0 : 1;
 
-                compraSrvc.modificarISR($scope.laCompra.id, $scope.laCompra.isr, $scope.laCompra.idempresa, suma, $scope.laCompra.tipocambio).then(function (d){
+                compraSrvc.modificarISR($scope.laCompra.id, $scope.laCompra.isr, $scope.laCompra.idempresa, suma, $scope.laCompra.tipocambio).then(function (d) {
                     $scope.getCompra($scope.laCompra.id);
                     toaster.pop({
                         type: d.tipo, title: 'Modificación de ISR.',
@@ -908,7 +912,7 @@
 
                 var suma = agregar ? 0 : 1;
 
-                compraSrvc.modificarRIVA($scope.laCompra.id, $scope.laCompra.retiva, $scope.laCompra.idempresa, suma, $scope.laCompra.tipocambio).then(function (d){
+                compraSrvc.modificarRIVA($scope.laCompra.id, $scope.laCompra.retiva, $scope.laCompra.idempresa, suma, $scope.laCompra.tipocambio).then(function (d) {
                     $scope.getCompra($scope.laCompra.id);
                     toaster.pop({
                         type: d.tipo, title: 'Modificación de retención de IVA.',
@@ -959,25 +963,30 @@
 
     }]);
     //------------------------------------------------------------------------------------------------------------------------------------------------//
-    compractrl.controller('ModalUpdDetContCtrl', ['$scope', '$uibModalInstance', 'detalle', 'cuentacSrvc', 'idempresa', 'detContSrvc', '$confirm', function ($scope, $uibModalInstance, detalle, cuentacSrvc, idempresa, detContSrvc, $confirm) {
-        $scope.detcont = detalle;
-        $scope.cuentas = [];
+    // compractrl.controller('ModalUpdDetContCompraCtrl', ['$scope', '$uibModalInstance', 'detalle', 'cuentacSrvc', 'idempresa', 'detContSrvc', '$confirm', 'toaster', function ($scope, $uibModalInstance, detalle, cuentacSrvc, idempresa, detContSrvc, $confirm, toaster) {
+    //     $scope.detcont = detalle;
+    //     $scope.cuentas = [];
 
-        cuentacSrvc.getByTipo(idempresa, 0).then(function (d) { $scope.cuentas = d; });
+    //     cuentacSrvc.getByTipo(idempresa, 0).then(function (d) { $scope.cuentas = d; });
 
-        $scope.ok = function () { $uibModalInstance.close(); };
-        $scope.cancel = function () { $uibModalInstance.dismiss('cancel'); };
+    //     $scope.ok = function (respuesta) { console.log('hola 1'); $uibModalInstance.close(respuesta); };
+    //     $scope.cancel = function () { $uibModalInstance.dismiss('cancel'); };
 
-        $scope.zeroDebe = function (valor) { $scope.detcont.debe = parseFloat(valor) > 0 ? 0.0 : $scope.detcont.debe; };
-        $scope.zeroHaber = function (valor) { $scope.detcont.haber = parseFloat(valor) > 0 ? 0.0 : $scope.detcont.haber; };
+    //     $scope.zeroDebe = function (valor) { $scope.detcont.debe = parseFloat(valor) > 0 ? 0.0 : $scope.detcont.debe; };
+    //     $scope.zeroHaber = function (valor) { $scope.detcont.haber = parseFloat(valor) > 0 ? 0.0 : $scope.detcont.haber; };
 
-        $scope.actualizar = function (obj) {
-            $confirm({ text: '¿Seguro(a) de guardar los cambios?', title: 'Modificar detalle contable', ok: 'Sí', cancel: 'No' }).then(function () {
-                detContSrvc.editRow(obj, 'u').then(function () { $scope.ok(); });
-            });
-        };
+    //     $scope.actualizar = function (obj) {
+    //         $confirm({ text: '¿Seguro(a) de guardar los cambios?', title: 'Modificar detalle contable', ok: 'Sí', cancel: 'No' })
+    //             .then(() => {
+    //                 detContSrvc.editRow(obj, 'u')
+    //             })
+    //             .then((respuesta) => { 
+    //                 console.log(respuesta); 
+    //                 $scope.ok(respuesta); 
+    //             })
+    //     }
 
-    }]);
+    // }]);
     //------------------------------------------------------------------------------------------------------------------------------------------------//
     compractrl.controller('ModalBindChq', ['$scope', '$uibModalInstance', 'compra', 'compraSrvc', function ($scope, $uibModalInstance, compra, compraSrvc) {
         $scope.compra = compra;
@@ -1070,12 +1079,12 @@
         }]);
 
     //------------------------------------------------------------------------------------------------------------------------------------------------//
-    compractrl.controller('ModalIVA', ['$scope', '$uibModalInstance', 'compra', 'compraSrvc',  function (
+    compractrl.controller('ModalIVA', ['$scope', '$uibModalInstance', 'compra', 'compraSrvc', function (
         $scope, $uibModalInstance, compra, compraSrvc) {
 
         // procesar datos
         compra.fechaiva = moment(compra.fechaiva).isValid ? moment(compra.fechaiva).toDate() : undefined;
-        compra.formmesiva = compra.formmesiva > 0 ? +compra.formmesiva : undefined; 
+        compra.formmesiva = compra.formmesiva > 0 ? +compra.formmesiva : undefined;
         compra.anioiva = compra.anioiva > 0 ? +compra.anioiva : undefined;
 
         // asignar compra global igual a copmra
@@ -1107,7 +1116,7 @@
     // -------------------------------------------- confirmacion -----------------------------------------------------------------
     compractrl.controller('modalConfirmCtrl', ['$scope', '$uibModalInstance', 'factura', function ($scope, $uibModalInstance, factura) {
         factura.lecturasrv = parseInt(factura.lecturafin);
-        factura.inicial = parseInt(factura.lecturaini); 
+        factura.inicial = parseInt(factura.lecturaini);
         factura.fechasrv = moment(factura.ffin).toDate();
         factura.fechasrv = moment(factura.fechasrv).format('DD/MM/YYYY');
         factura.fechainicial = moment(factura.fini).toDate();

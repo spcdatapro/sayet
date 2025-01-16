@@ -205,24 +205,24 @@
 
     }]);
 
-    trandirectactrl.controller('ModalUpdDetContCtrl', ['$scope', '$uibModalInstance', 'detalle', 'cuentacSrvc', 'idempresa', 'detContSrvc', '$confirm', function ($scope, $uibModalInstance, detalle, cuentacSrvc, idempresa, detContSrvc, $confirm) {
-        $scope.detcont = detalle;
-        $scope.cuentas = [];
+    // trandirectactrl.controller('ModalUpdDetContCtrl', ['$scope', '$uibModalInstance', 'detalle', 'cuentacSrvc', 'idempresa', 'detContSrvc', '$confirm', function ($scope, $uibModalInstance, detalle, cuentacSrvc, idempresa, detContSrvc, $confirm) {
+    //     $scope.detcont = detalle;
+    //     $scope.cuentas = [];
 
-        cuentacSrvc.getByTipo(idempresa, 0).then(function (d) { $scope.cuentas = d; });
+    //     cuentacSrvc.getByTipo(idempresa, 0).then(function (d) { $scope.cuentas = d; });
 
-        $scope.ok = function () { $uibModalInstance.close(); };
-        $scope.cancel = function () { $uibModalInstance.dismiss('cancel'); };
+    //     $scope.ok = function () { $uibModalInstance.close(); };
+    //     $scope.cancel = function () { $uibModalInstance.dismiss('cancel'); };
 
-        $scope.zeroDebe = function (valor) { $scope.detcont.debe = parseFloat(valor) > 0 ? 0.0 : $scope.detcont.debe; };
-        $scope.zeroHaber = function (valor) { $scope.detcont.haber = parseFloat(valor) > 0 ? 0.0 : $scope.detcont.haber; };
+    //     $scope.zeroDebe = function (valor) { $scope.detcont.debe = parseFloat(valor) > 0 ? 0.0 : $scope.detcont.debe; };
+    //     $scope.zeroHaber = function (valor) { $scope.detcont.haber = parseFloat(valor) > 0 ? 0.0 : $scope.detcont.haber; };
 
-        $scope.actualizar = function (obj) {
-            $confirm({ text: '¿Seguro(a) de guardar los cambios?', title: 'Modificar detalle contable', ok: 'Sí', cancel: 'No' }).then(function () {
-                detContSrvc.editRow(obj, 'u').then(function () { $scope.ok(); });
-            });
-        };
+    //     $scope.actualizar = function (obj) {
+    //         $confirm({ text: '¿Seguro(a) de guardar los cambios?', title: 'Modificar detalle contable', ok: 'Sí', cancel: 'No' }).then(function () {
+    //             detContSrvc.editRow(obj, 'u').then(respuesta => { $scope.ok(respuesta); });
+    //         });
+    //     };
 
-    }]);
+    // }]);
 
 }());
