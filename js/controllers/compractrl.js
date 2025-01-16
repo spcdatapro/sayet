@@ -871,7 +871,7 @@
 
             $scope.delDetCont = function (obj) {
                 $confirm({ text: '¿Seguro(a) de eliminar esta cuenta?', title: 'Eliminar cuenta contable', ok: 'Sí', cancel: 'No' }).then(function () {
-                    detContSrvc.editRow({ id: obj.id }, 'd').then(function () { $scope.getDetCont(obj.idorigen); });
+                    detContSrvc.editRow({ id: obj.id, idcompra: $scope.laCompra.id }, 'd').then(function () { $scope.getDetCont(obj.idorigen); });
                 });
             };
 
