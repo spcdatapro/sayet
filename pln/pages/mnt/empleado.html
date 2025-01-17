@@ -881,7 +881,7 @@
 										<div class="col-md-6">
 											<div class="form-group">
 												<label for="selLinguistica" class="control-label">Comunidad
-													ling&uuml;&iacute;stica</label>
+													ling&uuml;&iacute;stica:</label>
 												<ui-select ng-model="per.idlengua" title="Selector lengua"
 													theme="bootstrap" autofocus="false" ng-disabled="!editando && hay">
 													<ui-select-match placeholder="Buscar lengua..." allow-clear="true">
@@ -895,6 +895,25 @@
 													</ui-select-choices>
 													<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
 												</ui-select>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="hijos" class="control-label">Cantidad de hijos:</label>
+												<input type="text" name="hijos" id="hijos" ng-model="per.hijos"
+													placeholder="Ingresar cantidad de hijos"
+													ng-disabled="!editando && hay" class="form-control">
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="profesion" class="control-label">Titulo, diploma o
+													profesion:</label>
+												<input type="text" name="profesion" id="profesion" class="form-control"
+													ng-model="per.profesion" ng-disabled="!editando && hay"
+													placeholder="Ingresar titiulo, diboma o profesion">
 											</div>
 										</div>
 									</div>

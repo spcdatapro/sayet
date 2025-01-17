@@ -1590,6 +1590,9 @@ EOT;
 			$data['documento'] = isset($data['documento']) ? trim($data['documento']) : null;
 			$data['nit'] = isset($data['nit']) ? trim($data['nit']) : null;
 			$data['correo'] = isset($data['correo']) ? trim($data['correo']) : null;
+			$data['idlengua'] = isset($data['idlengua']) ? $data['idlengua'] : null;
+			$data['hijos'] = isset($data['hijos']) ? $data['hijos'] : null;
+			$data['profesion'] = isset($data['profesion']) ? $data['profesion'] : null;
 			$idempleado = isset($data['idplnempleado']) ? $data['idplnempleado'] : null;
 			$idpersonal = isset($data['id']) ? $data['id'] : null;
 
