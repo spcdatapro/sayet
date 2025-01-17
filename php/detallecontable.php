@@ -83,10 +83,10 @@ $app->post('/d', function(){
     if(isset($d->idcompra)) {
         $idcuenta = $db->getOneField("SELECT idcuenta FROM detallecontable WHERE id = $d->id");
         $existe = $db->getOneField("SELECT id FROM compraproyecto WHERE idcompra = $d->idcompra AND idcuentac = $idcuenta"); 
-    }
 
-    if($existe > 0) {
-        $db->doQuery("DELETE FROM compraproyecto WHERE id = $existe");
+        if($existe > 0) {
+            $db->doQuery("DELETE FROM compraproyecto WHERE id = $existe");
+        }
     }
 
     $query = "DELETE FROM detallecontable WHERE id = ".$d->id;
