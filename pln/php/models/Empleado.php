@@ -1125,6 +1125,8 @@ EOT;
 		$tmp['pie_codigo'] = "Código: {$this->emp->id}";
 		$tmp['pie_firma']  = "(f.)".str_repeat("_", 40);
 
+		$args['guardar'] = true;
+
 		if ($args['guardar']) {
 			$fini['idplnempleado'] = $this->emp->id;
 			$fini['fecha'] = $args['fecha_egreso'];
@@ -1132,8 +1134,8 @@ EOT;
 			$fini['vacaciones'] = round($this->finiquitoVacaciones->monto, 2);
 			$fini['aguinaldo'] = round($this->finiquitoAguinaldo->monto, 2);
 			$fini['bono'] =	round($this->finiquitoBono->monto, 2);
-			$fini['ordinario'] = round($this->finiquitoSueldo->sdiario, 2);
-			$fini['extra'] = round($this->finiquitoSueldo->bdiario, 2);
+			$fini['ordinario'] = round($this->finiquitoSueldo->sdiario * $this->finiquitoSueldo->dias, 2);
+			$fini['extra'] = round($this->finiquitoSueldo->bdiario * $this->finiquitoSueldo->dias, 2);
 			$fini['otrosbono'] = round(elemento($args, 'otros_monto', 0), 2);
 			$fini['prestamos'] = round($saldoPrestamos, 2);
 			$fini['anticipos'] = round($anticiposPostBaja, 2);
