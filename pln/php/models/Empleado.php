@@ -1125,8 +1125,6 @@ EOT;
 		$tmp['pie_codigo'] = "Código: {$this->emp->id}";
 		$tmp['pie_firma']  = "(f.)".str_repeat("_", 40);
 
-		$args['guardar'] = true;
-
 		if ($args['guardar']) {
 			$fini['idplnempleado'] = $this->emp->id;
 			$fini['fecha'] = $args['fecha_egreso'];
