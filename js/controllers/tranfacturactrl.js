@@ -451,6 +451,7 @@
         $scope.detfact = {};
         $scope.tsv = [];
         $scope.proyectos = [];
+        $scope.search_del = null;
 
         tipoFacturaSrvc.lstTiposFactura().then(function (d) { $scope.tiposfactura = d; });
         tipoCompraSrvc.lstTiposCompra().then(function (d) { $scope.tiposventa = d; });
@@ -558,7 +559,20 @@
         }
 
         $scope.loadFacturas = function (idempresa, cuales) {
-            facturaOtrosSrvc.lstFacturas(+idempresa, +cuales).then(function (d) { $scope.facturas = d; });
+            console.log($scope.search_del !== null);
+            let fecha = null;
+
+            if (+cuales === 1) {
+                fecha = $scope.search_del !== null ? moment($scope.search_del).format('YYYY-MM-DD') : null; 
+            } else {
+                if ($scope.search_del !== null) {
+                    fecha = moment($scope.search_del).format('YYYY-MM-DD');
+                } else {
+                    $scope.search_del = moment().startOf('month').toDate();
+                    fecha = moment($scope.search_del).format('YYYY-MM-DD');
+                }
+            }
+            facturaOtrosSrvc.lstFacturas(+idempresa, +cuales, fecha).then(function (d) { $scope.facturas = d; });
         };
 
         $scope.getFactura = function (idfactura) {

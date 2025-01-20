@@ -6,8 +6,8 @@
         var urlBase = 'php/facturaotros.php';
 
         return {
-            lstFacturas: function(idempresa, cuales){
-                return comunFact.doGET(urlBase + '/lstfacturas/' + idempresa + '/' + cuales);
+            lstFacturas: function(idempresa, cuales, fecha){
+                return comunFact.doGET(urlBase + '/lstfacturas/' + idempresa + '/' + cuales + '/' + fecha);
             },
             getFactura: function(idfactura){
                 return comunFact.doGET(urlBase + '/getfactura/' + idfactura);

@@ -338,12 +338,25 @@
                         <div id="divListaFacturacionOtros" class="tab-pane fade in active">
                             <table class="table table-hover table-condensed table-striped">
                                 <caption>
-                                    <input ng-model="search.$" class="form-control" placeholder="Buscar factura..."
-                                        style="width: 100%" /><br />
-                                    <button type="button" class="btn btn-success btn-sm"
-                                        ng-click="loadFacturas(0, 1)"><span class="badge">Pendientes</span></button>
-                                    <button type="button" class="btn btn-info btn-sm"
-                                        ng-click="loadFacturas(0, 0)"><span class="badge">Todas</span></button>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <input ng-model="search.$" class="form-control"
+                                                placeholder="Buscar factura..." style="width: 100%" /><br />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <input type="date" name="search_del" id="search_del"
+                                                class="form-control input-sm" title="fecha del" ng-model="search_del">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <button type="button" class="btn btn-success btn-sm"
+                                                ng-click="loadFacturas(0, 1)"><span
+                                                    class="badge">Pendientes</span></button>
+                                            <button type="button" class="btn btn-info btn-sm"
+                                                ng-click="loadFacturas(0, 0)"><span class="badge">Todas</span></button>
+                                        </div>
+                                    </div>
                                 </caption>
                                 <thead>
                                     <tr>

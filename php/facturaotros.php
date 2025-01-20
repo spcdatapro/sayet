@@ -32,7 +32,7 @@ $app->get('/srchcli/:idempresa/:qstra+', function($idempresa, $qstra){
     print json_encode(['results' => $db->getQuery($query)]);
 });
 
-$app->get('/lstfacturas/:idempresa/:cuales', function($idempresa, $cuales){
+$app->get('/lstfacturas/:idempresa/:cuales(/:idot)', function($idempresa, $cuales, $fecha = 0){
     $db = new dbcpm();
     $query = "SELECT DISTINCT a.id, a.fecha, a.serie, a.numero, a.idcontrato, a.idcliente, IF(a.nombre IS NULL OR TRIM(a.nombre) = '', b.facturara, a.nombre) AS cliente, ";
     $query.= "IF(a.nit IS NULL OR TRIM(a.nit) = '', b.nit, a.nit) AS nit, IF(a.idcontrato IS NULL, '', UnidadesPorContrato(a.idcontrato)) AS unidad, a.total, d.nomempresa AS empresa, ";
@@ -43,6 +43,7 @@ $app->get('/lstfacturas/:idempresa/:cuales', function($idempresa, $cuales){
     $query.= "WHERE a.esinsertada = 1 AND b.fal IS NULL AND a.anulada = 0 ";
     $query.= (int)$idempresa > 0 ? "AND a.idempresa = $idempresa " : "";
 	$query.= (int)$cuales == 1 ? "AND a.pendiente = 0 " : "";
+    $query.= $fecha > 0 ? "AND a.fecha >= '$fecha' " : "";
     $query.= "ORDER BY 2 DESC, 7";
     print $db->doSelectASJson($query);
 });
