@@ -1138,6 +1138,8 @@ EOT;
 			$fini['prestamos'] = round($saldoPrestamos, 2);
 			$fini['anticipos'] = round($anticiposPostBaja, 2);
 			$fini['otrosdesc'] = round(elemento($args, 'otrosdesc_monto', 0), 2);
+			$fini['idempresa'] = $this->emp->idempresadebito;
+			$fini['idproyecto'] = $this->emp->idproyecto;
 
 			$lid = $this->db->insert('plnfiniquito', $fini);
 		}
