@@ -676,6 +676,23 @@
             });
         };
 
+        $scope.updDetFact = obj => {
+            $uibModal.open({
+                animation: true,
+                templateUrl: 'modalEditaDetFactura.html',
+                controller: 'ModalEditaDetFacturaCtrl',
+                resolve: {
+                    detfact: () => obj,
+                    servicios: () => $scope.tsv
+                }
+            }).result.then(function (data) {
+                facturaOtrosSrvc.editRow(data, 'udet').then(d => { 
+                    $scope.getFactura(d.idfactura);
+                    toaster.pop(d.tipo, 'Detalle de factura', d.mensaje); 
+                });
+            })
+        }
+
         //--------------------------- Impresion de facturas preimpresas -----------------------------------------------------------------------------------------------------//
         $scope.paramsimp = { idempresa: $scope.factura.idempresa, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), formato: 'printfacturas' };
         $scope.lstimpfact = [];
@@ -971,5 +988,13 @@
 
     }]);
 
+    //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    facturacionctrl.controller('ModalEditaDetFacturaCtrl', ['$scope', '$uibModalInstance', 'detfact', 'servicios', function ($scope, $uibModalInstance, detfact, servicios) {
+        $scope.servicios = servicios;
+        $scope.det = { idtiposervicio: detfact.idtiposervicio, descripcion: detfact.descripcion, id: detfact.id, idfactura: detfact.idfactura }
 
+        $scope.ok = data => { $uibModalInstance.close(data) };
+
+        $scope.cancel = function () { $uibModalInstance.dismiss('cancel') };
+    }]);
 }());

@@ -85,7 +85,7 @@
                             <div class="form-group">
                                 <label for="txtTC">Tasa de cambio:</label>
                                 <input name="txtTC" id="txtTC" type="number" class="form-control input-sm"
-                                    ng-model="params.tc" step="0.01" min="1" ng-change="pendientes = [];"/>
+                                    ng-model="params.tc" step="0.01" min="1" ng-change="pendientes = [];" />
                             </div>
                         </div>
                     </div>
@@ -109,10 +109,10 @@
                         </div>
                     </div>
                     <div class="row check-element animate-show" ng-show="showparams">
-                        <div class="col-md-12 nopadding" style="text-align: right">                            
+                        <div class="col-md-12 nopadding" style="text-align: right">
                             <button type="button" class="btn btn-info" ng-click="printPreliminar()">
                                 <span>Proyecci&oacute;n</span>
-                            </button>                            
+                            </button>
                             <button type="button" class="btn btn-info" ng-click="getPendientesFEL()"
                                 ng-disabled="periodoCerrado">
                                 <span class="glyphicon glyphicon-search"></span>
@@ -130,7 +130,7 @@
                                 </caption>
                                 <thead>
                                     <th>Facturar a</th>
-                                    <th>Cliente</th>                                    
+                                    <th>Cliente</th>
                                     <th class="num">A pagar</th>
                                     <th>Tipo</th>
                                     <th>&nbsp;</th>
@@ -142,14 +142,17 @@
                                             <label for="chkAllNone">Marcar/Desmarcar todos</label>
                                         </td>
                                         <td class="text-center" style="width: 6%;">
-                                            <input name="chkAllNone" id="chkAllNone" type="checkbox" ng-model="allnone" ng-true-value="'1'" ng-false-value="'0'" ng-change="marcarDesmarcar()"/>
+                                            <input name="chkAllNone" id="chkAllNone" type="checkbox" ng-model="allnone"
+                                                ng-true-value="'1'" ng-false-value="'0'"
+                                                ng-change="marcarDesmarcar()" />
                                         </td>
                                     </tr>
                                     <tr ng-repeat="p in pendientes | filter:fltrPends">
                                         <td style="width: 34%;">{{p.facturara}}</td>
-                                        <td style="width: 14%;">{{p.clientecorto}}</td>                                        
+                                        <td style="width: 14%;">{{p.clientecorto}}</td>
                                         <td class="num" style="width: 10%;">{{p.monedafact}}
-                                            {{+p.idmonedafact === 1 ? (p.montoconiva | number:2) : (p.montoconivacnv | number:2)}}
+                                            {{+p.idmonedafact === 1 ? (p.montoconiva | number:2) : (p.montoconivacnv |
+                                            number:2)}}
                                         </td>
                                         <td style="width: 31%;">
                                             <p>{{p.tipo}}</p>
@@ -170,7 +173,9 @@
                                             <label for="chkAllNone1">Marcar/Desmarcar todos</label>
                                         </td>
                                         <td class="text-center" style="width: 6%;">
-                                            <input name="chkAllNone1" id="chkAllNone1" type="checkbox" ng-model="allnone" ng-true-value="'1'" ng-false-value="'0'" ng-change="marcarDesmarcar()"/>
+                                            <input name="chkAllNone1" id="chkAllNone1" type="checkbox"
+                                                ng-model="allnone" ng-true-value="'1'" ng-false-value="'0'"
+                                                ng-change="marcarDesmarcar()" />
                                         </td>
                                     </tr>
                                 </tbody>
@@ -197,7 +202,8 @@
                         <div class="col-md-12 text-right">
                             <!--<button type="button" class="btn btn-info" ng-show="pendientes.length > 0" ng-disabled="periodoCerrado" ng-click="factSelected()">Facturar</button>-->
                             <button type="button" class="btn btn-info" ng-show="pendientes.length > 0"
-                                ng-disabled="periodoCerrado || btnFactDeshabilitado" ng-click="factSelectedFEL()">Facturar</button>
+                                ng-disabled="periodoCerrado || btnFactDeshabilitado"
+                                ng-click="factSelectedFEL()">Facturar</button>
                         </div>
                     </div>
                 </div>
@@ -309,7 +315,8 @@
                         <div class="col-md-10"></div>
                         <div class="col-md-1">
                             <button type="button" class="btn btn-info" ng-show="pendientesh2o.length > 0"
-                                ng-click="factSelectedH2OFEL()" ng-disabled="periodoCerrado || btnFactDeshabilitado">Facturar</button>
+                                ng-click="factSelectedH2OFEL()"
+                                ng-disabled="periodoCerrado || btnFactDeshabilitado">Facturar</button>
                         </div>
                     </div>
                 </div>
@@ -488,7 +495,7 @@
                                             <input name="txtFDir" id="txtFDir" type="text" class="form-control"
                                                 ng-model="factura.direccion" maxlength="250"
                                                 placeholder="Direcci&oacute;n del cliente..." />
-                                        </div>                                        
+                                        </div>
                                     </div>
                                     <div class="col-md-2 nopadding">
                                         <div class="form-group">
@@ -559,15 +566,16 @@
                                         <div class="form-group">
                                             <label for="chkExentoIVA">Exe. IVA:</label>
                                             <input name="chkExentoIVA" id="chkExentoIVA" type="checkbox"
-                                                class="form-control" ng-model="factura.exentoiva" ng-true-value="1" ng-false-value="0" ng-change="esExento()" />
+                                                class="form-control" ng-model="factura.exentoiva" ng-true-value="1"
+                                                ng-false-value="0" ng-change="esExento()" />
                                         </div>
                                     </div>
                                     <div class="col-md-1 nopadding">
                                         <div class="form-group">
                                             <label for="chkRetenerISR">Ret. ISR:</label>
                                             <input name="chkRetenerISR" id="chkRetenerISR" type="checkbox"
-                                                class="form-control" ng-model="factura.retenerisr" ng-true-value="1" ng-disabled="+factura.exentoiva === 1"
-                                                ng-false-value="0" />
+                                                class="form-control" ng-model="factura.retenerisr" ng-true-value="1"
+                                                ng-disabled="+factura.exentoiva === 1" ng-false-value="0" />
                                         </div>
                                     </div>
                                     <div class="col-md-1 nopadding">
@@ -576,7 +584,8 @@
                                             <input name="chkRetenerIVA" id="chkRetenerIVA" type="checkbox"
                                                 class="form-control" ng-model="factura.reteneriva" ng-true-value="1"
                                                 ng-false-value="0"
-                                                ng-change="factura.porretiva = +factura.reteneriva == 0 ? 0.00 : factura.porretiva;" ng-disabled="+factura.exentoiva === 1" />
+                                                ng-change="factura.porretiva = +factura.reteneriva == 0 ? 0.00 : factura.porretiva;"
+                                                ng-disabled="+factura.exentoiva === 1" />
                                         </div>
                                     </div>
                                     <div class="col-md-2 nopadding">
@@ -586,7 +595,8 @@
                                             <input name="txtPorRetIva" id="txtPorRetIva" type="number"
                                                 class="form-control" ng-model="factura.porretiva" min="0"
                                                 placeholder="Tipo de cambio..." step="0.01"
-                                                ng-required="+factura.reteneriva == 1" ng-disabled="+factura.exentoiva === 1" />
+                                                ng-required="+factura.reteneriva == 1"
+                                                ng-disabled="+factura.exentoiva === 1" />
                                         </div>
                                     </div>
                                     <div class="col-md-1 nopadding">
@@ -691,8 +701,8 @@
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
                                     <button type="button" class="btn btn-danger"
-                                        ng-disabled="frmFact.$invalid || periodoCerrado || factura.numero.length > 0" ng-show="factura.id > 0"
-                                        ng-click="delFactura(factura)">
+                                        ng-disabled="frmFact.$invalid || periodoCerrado || factura.numero.length > 0"
+                                        ng-show="factura.id > 0" ng-click="delFactura(factura)">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </button>
                                     <button type="button" class="btn btn-primary" ng-show="factura.id > 0"
@@ -749,12 +759,21 @@
                                         <td class="num">{{det.preciounitario | number:2}}</td>
                                         <td class="num">{{det.preciotot | number:2}}</td>
                                         <td class="num">{{det.descuento | number:2}}</td>
-                                        <th>
-                                            <button type="button" class="btn btn-danger btn-sm" ng-show="factura.id > 0"
-                                                ng-click="delDetFact(det)" ng-disabled="factura.numero.length > 0">
-                                                <span class="glyphicon glyphicon-trash"></span>
-                                            </button>
-                                        </th>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-danger btn-sm"
+                                                    ng-show="factura.id > 0" ng-click="delDetFact(det)"
+                                                    ng-disabled="factura.numero.length > 0">
+                                                    <i class="glyphicon glyphicon-trash"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-primary btn-sm"
+                                                    ng-show="factura.id > 0" ng-click="updDetFact(det)"
+                                                    ng-disabled="factura.numero.length > 0"
+                                                    title="Editar detalle de factura">
+                                                    <i class="fi fi-rr-file-edit"></i>
+                                                </button>
+                                            </div>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -763,7 +782,7 @@
                 </div>
             </div>
         </div>
-        <div id="divFEL" class="tab-pane fade">            
+        <div id="divFEL" class="tab-pane fade">
             <div id="divNgIncludeGFACE" ng-include="'pages/gface.html'"></div>
         </div>
         <!--
@@ -1120,6 +1139,60 @@
     <div class="modal-footer">
         <button class="btn btn-primary" type="button" ng-click="ok()" ng-disabled="params.fdelstr == null || params.fdelstr == undefined || params.falstr == null || params.falstr == undefined">Aceptar</button>
         <button class="btn btn-info" type="button" ng-click="cancel()">Cancelar</button>
+    </div>
+</script>
+<script type="text/ng-template" id="modalEditaDetFactura.html">
+    <div class="modal-header">
+        <h3>Editar detalle de factura</h3>
+    </div>
+    <div class="modal-body">
+        <form novalidate role="form" id="editDetFact" name="editDetFact" ng-submit="ok(det)">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="selServicio" class="control-label">Servicio de venta:</label>
+                        <ui-select ng-model="det.idtiposervicio" title="Seleccione un servicio..." theme="bootstrap"
+                            autofocus="true" ng-required="true">
+                            <ui-select-match placeholder="Buscar servicio..." allow-clear="false">
+                                <span ng-bind="($select.selected.desctiposervventa)"></span>
+                            </ui-select-match>
+                            <ui-select-choices repeat="item.id as item in servicios | filter:$select.search">
+                                <div ng-bind-html="(item.desctiposervventa) | highlight: $select.search">
+                                </div>
+                                <small>
+                                    <strong>C&oacute;digo:</strong>
+                                    <span ng-bind-html="item.cuentac | highlight: $select.search"></span>
+                                </small>
+                            </ui-select-choices>
+                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                        </ui-select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="detDescripcion" class="control-label">Descripcion:</label>
+                        <textarea name="detDescripcion" id="detDescripcion" rows="3" ng-model="det.descripcion" placeholder="Ingresar descripcion"
+                        ng-required="true" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-md-offset-9">
+                    <div class="form-group">
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-success" type="submit" ng-disabled="editDetFact.$invalid" title="Aceptar">
+                                <i class="fi fi-rr-check-circle"></i>
+                            </button>
+                            <button class="btn btn-danger" type="button" ng-click="cancel()" title="Cancelar">
+                                <i class="fi fi-rr-circle-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 </script>
 <!--Fin de Template de la modal-->

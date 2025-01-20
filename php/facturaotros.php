@@ -374,5 +374,14 @@ $app->post('/dd', function(){
     updateDatosFacturaFEL($d);    
 });
 
+$app->post('/udet', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $db->doQuery("UPDATE detfact SET idtiposervicio = $d->idtiposervicio, descripcion = '$d->descripcion' WHERE id = $d->id");
+
+    print json_encode(['mensaje' => 'Actualizado con exito', 'tipo' => 'success', 'idfactura' => $d->idfactura]);
+});
+
 $app->response()->setStatus(200);
 $app->run();
