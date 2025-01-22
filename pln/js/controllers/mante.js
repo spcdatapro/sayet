@@ -378,7 +378,10 @@ angular.module('cpm')
             $scope.anularMovimiento = (data) => {
                 if (confirm("Se anulará el registro, ¿Desea de continuar?")) {
                     data.mostrar = 0;
-                    planillaSrvc.anularBitacora(data).then(() => { $scope.buscar({ termino: data.nombre }, true); });
+                    planillaSrvc.anularBitacora(data).then(d => { 
+                        $scope.getEmpleado(d.empleado);
+                        toaster.pop({ type: d.tipo, title: "Anulacion bitacora", body: d.mensaje, timeout: 10000 }) 
+                    });
                     $scope.bita = {};
                 }
             }

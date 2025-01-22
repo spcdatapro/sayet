@@ -5,9 +5,11 @@ require_once 'db.php';
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
 
-$db = new dbcpm();
+// $db = new dbcpm();
 
-$app->post('/empresas', function() use($db){
+$app->post('/empresas', function() 
+// use($db)
+{
     $d = json_decode(file_get_contents('php://input'));
     $query = "SELECT DISTINCT a.idempresa, b.nomempresa AS empresa, b.ndplanilla, NULL as idbanco ";
     $query.= "FROM plnnomina a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN plnempleado c ON c.id = a.idplnempleado ";
@@ -29,7 +31,9 @@ $app->post('/empresas', function() use($db){
     print json_encode($empresas);
 });
 
-$app->post('/generado', function() use($db){
+$app->post('/generado', function() 
+// use($db)
+{
     $d = json_decode(file_get_contents('php://input'));
     $query = "SELECT COUNT(*) FROM tranban WHERE tipotrans = '$d->tipo' AND esplanilla = 1 AND fechaplanilla = '$d->falstr' AND anulado = 0";
     $generado = (int)$db->getOneField($query) > 0;
@@ -40,6 +44,7 @@ $app->post('/anular_bitacora', function () {
     $db = new dbcpm();
     $d = json_decode(file_get_contents('php://input'));
 
+    $idempleado = $d->idplnempleado;
     $antes = json_decode($d->antes);
     $antes = get_object_vars($antes);
     unset($antes['id']);
@@ -49,7 +54,7 @@ $app->post('/anular_bitacora', function () {
     foreach ($antes as $a => $valor) {
         if ($a == 'ultimo') {
             $str.= $valor;
-        } else if ($a == 'idunidad') {
+        } else if ($a == 'observaciones') {
             $str .= isset($valor) ? " $a = '$valor'" : $a = " $a = null";
         } else {
             $str .= isset($valor) ? " $a = '$valor'," : $a = " $a = null,";
@@ -74,6 +79,18 @@ $app->post('/anular_bitacora', function () {
         $db->doQuery("DELETE FROM plnfiniquito WHERE idplnempleado = $d->idplnempleado AND fecha = '$fecha'");
         $db->doQuery("DELETE FROM plnarchivo WHERE DATE_FORMAT(fecha, '%Y-%m-%d') = '$fecha' AND idplnarchivotipo = 3 AND idplnempleado = $d->idplnempleado");
     }
+
+    $exito = $db->getOneField("SELECT mostrar FROM plnbitacora WHERE id = $d->id");
+
+    if ($exito == 0) {
+        $mensaje = "Bitacora anulada con exito"; 
+        $tipo = "success";
+    } else {
+        $mensaje = "Error al anular bitacora, favor revisar.";
+        $tipo = "error";
+    }
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "empleado" => $idempleado]);
 });
 
 $app->get('/finiquitos', function () {
