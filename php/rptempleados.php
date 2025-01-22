@@ -46,7 +46,7 @@ $app->post('/rptempelados', function(){
                     INNER JOIN
                 plnpuesto b ON a.idplnpuesto = b.id
                     LEFT JOIN
-                plnempresa c ON a.idempresadebito = c.id
+                plnempresa c ON a.idempresaactual = c.id
                     LEFT JOIN
                 proyecto d ON a.idproyecto = d.id ";
     $query.= !$d->inactivos ? "WHERE a.baja IS NULL " : "WHERE (a.baja <= $d->fechastr OR a.baja IS NULL) ";
@@ -128,7 +128,7 @@ $app->post('/altasbajas', function(){
             FROM
                 plnempleado a
                     LEFT JOIN
-                plnempresa b ON a.idempresadebito = b.id
+                plnempresa b ON a.idempresaactual = b.id
                     INNER JOIN
                 proyecto c ON a.idproyecto = c.id
                     LEFT JOIN
@@ -347,7 +347,7 @@ $app->post('/bono14', function(){
                     INNER JOIN
                 plnnomina e ON e.idplnempleado = a.id
                     LEFT JOIN
-                plnempresa b ON e.idempresa = b.id
+                plnempresa b ON a.idempresaactual = b.id
                     LEFT JOIN
                 proyecto c ON a.idproyecto = c.id
                     LEFT JOIN
@@ -500,7 +500,7 @@ $app->post('/vacaciones', function(){
                     INNER JOIN
                 plnempleado c ON b.idplnempleado = c.id
                     LEFT JOIN
-                plnempresa d ON c.idempresadebito = d.id
+                plnempresa d ON c.idempresaactual = d.id
                     LEFT JOIN
                 proyecto e ON c.idproyecto = e.id
                     LEFT JOIN 
@@ -593,7 +593,7 @@ $app->post('/prestamos', function(){
                     INNER JOIN
                 plnempleado c ON a.idplnempleado = c.id
                     LEFT JOIN
-                plnempresa d ON c.idempresadebito = d.id
+                plnempresa d ON c.idempresaactual = d.id
                     LEFT JOIN
                 proyecto e ON c.idproyecto = e.id
                     LEFT JOIN
@@ -674,7 +674,7 @@ $app->post('/antiguedad', function(){
             FROM
                 plnempleado c
                     LEFT JOIN
-                plnempresa d ON c.idempresadebito = d.id
+                plnempresa d ON c.idempresaactual = d.id
                     LEFT JOIN
                 proyecto e ON c.idproyecto = e.id
                     LEFT JOIN
