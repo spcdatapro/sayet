@@ -1156,7 +1156,7 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-info" type="button" ng-click="ok()" 
-            ng-disabled="!params.monto || !params.idmoneda">Aceptar</button>
+            ng-disabled="(params.total === 0) && (!params.monto || !params.idmoneda)">Aceptar</button>
             <button class="btn btn-info" type="button" ng-click="cancel()">Cancelar</button>
         </div>
     </script>
