@@ -921,6 +921,19 @@
                 });
             }
 
+            $scope.tercerDecimal = function (tipo) {
+                let titulo = tipo === 1 ? 'Retencion de ISR' : 'Retencion de IVA';
+                $confirm({ text: '¿Desea agregar un tercer decimal al ' + titulo + '?', title: 'Tercer decimal', ok: 'Sí', cancel: 'No' })
+                .then(() => { 
+                    if (tipo === 1) {
+                        $scope.laCompra.decimal_isr = 3;
+                    } else {
+                        $scope.laCompra.decimal_iva = 3;
+                    }
+                    $scope.updCompra($scope.laCompra);
+                })
+            }
+
         }]);
     //------------------------------------------------------------------------------------------------------------------------------------------------//
     compractrl.controller('ModalCtasGastoProvCtrl', ['$scope', '$uibModalInstance', 'lstctasgasto', function ($scope, $uibModalInstance, lstctasgasto) {
@@ -955,6 +968,23 @@
             $scope.compra.mesisr = $scope.compra.mesisr != null && $scope.compra.mesisr != undefined ? $scope.compra.mesisr : 0;
             $scope.compra.anioisr = $scope.compra.anioisr != null && $scope.compra.anioisr != undefined ? $scope.compra.anioisr : 0;
             compraSrvc.editRow($scope.compra, 'uisr').then(function () { $uibModalInstance.close($scope.compra.id); });
+        };
+
+        $scope.cancel = function () {
+            $uibModalInstance.dismiss('cancel');
+        };
+
+    }]);
+    //------------------------------------------------------------------------------------------------------------------------------------------------//
+    compractrl.controller('ModalTercerDecimal', ['$scope', '$uibModalInstance', 'compra', 'tipo', function ($scope, $uibModalInstance, compra, tipo) {
+
+        $scope.compra = compra;
+        $scope.tipo = tipo === 1 ? 'ISR' : 'IVA'; 
+        $scope.tercerDecimal = 0.001;
+
+
+        $scope.ok = function (numero) {
+            $uibModalInstance.close(numero);
         };
 
         $scope.cancel = function () {

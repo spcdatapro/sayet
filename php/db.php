@@ -76,10 +76,11 @@ class dbcpm{
         return $isr;
     }
 
-    public function retIVA($monto, $porcentaje, $tc = 1, $esLocal) {
+    public function retIVA($monto, $porcentaje, $tc = 1, $esLocal, $decimales = 2) {
         // si es local multiplicar si no divir
         $retIva = $esLocal ? ($monto * $tc) * $porcentaje : ($monto / $tc) * $porcentaje; 
-        return round($retIva, 2);
+
+        return round($retIva, $decimales);
     }
 
     public function calculaRetIVA($base, $esgubernamental, $monto, $esmaquila = false, $iva = 0, $porcentaje = 0.00){
