@@ -1304,15 +1304,21 @@ EOT;
 		$emp = $this->get_empresa_debito();
 
 		$antes = json_decode($bit->antes);
-		$antes = get_object_vars($antes);
-		// print_r($antes); return;
-		foreach ($antes as $a => $valor) {
-			if ($a == 'idempresadebito') {
-				$idempresa = $valor;
+		
+		if ($antes !== null) {
+			$antes = get_object_vars($antes);
+			// print_r($antes); return;
+			foreach ($antes as $a => $valor) {
+				if ($a == 'idempresadebito') {
+					$idempresa = $valor;
+				}
 			}
-		}
 
-		$nomempresa = $this->db->select("empresa","nomempresa",["id [=]" => $idempresa])[0];
+			$nomempresa = $this->db->select("empresa","nomempresa",["id [=]" => $idempresa])[0];
+
+		} else { 
+			$nomempresa = $emp->nomempresa;
+		}
 
 		$tmp = [
 			'fecha'            => 'Guatemala, ' . date('d/m/Y H:i:s'),
