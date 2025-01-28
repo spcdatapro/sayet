@@ -70,7 +70,7 @@
                                     ng-class="{'has-error':frmRecCli.txtFecha.$invalid && !frmRecCli.txtFecha.$pristine}">
                                     <label for="txtFecha">Fecha:</label>
                                     <input name="txtFecha" id="txtFecha" type="date" class="form-control"
-                                        ng-model="reccli.fecha" required ng-disabled="+fltrre.tipo > 1 || !editando" />
+                                        ng-model="reccli.fecha" required ng-disabled="+fltrre.tipo > 1 && !editando" />
                                 </div>
                             </div>
                         </div>
@@ -83,7 +83,7 @@
                                     <ui-select id="selCliente" ng-model="reccli.objCliente"
                                         title="Seleccione un cliente..." theme="bootstrap" autofocus="true"
                                         ng-required="true" append-to-body="true"
-                                        ng-disabled="+fltrre.tipo > 1 || !editando">
+                                        ng-disabled="+fltrre.tipo > 1 && !editando">
                                         <ui-select-match placeholder="Buscar cliente...">
                                             <span ng-bind="$select.selected.nombre"></span>
                                         </ui-select-match>
@@ -118,7 +118,7 @@
                                     <label for="selTranBan">Concepto:</label>
                                     <textarea class="form-control" ng-model="reccli.concepto"
                                         placeholder="Concepto del recibo" rows="3"
-                                        ng-disabled="+fltrre.tipo > 1 || !editando"></textarea>
+                                        ng-disabled="+fltrre.tipo > 1 && !editando"></textarea>
                                 </div>
                             </div>
                         </div>
