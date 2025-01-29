@@ -5,10 +5,9 @@ require_once 'db.php';
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
 
-// $db = new dbcpm();
+$db = new dbcpm();
 
-$app->post('/empresas', function() 
-// use($db)
+$app->post('/empresas', function() use($db)
 {
     $d = json_decode(file_get_contents('php://input'));
     $query = "SELECT DISTINCT a.idempresa, b.nomempresa AS empresa, b.ndplanilla, NULL as idbanco ";
@@ -31,8 +30,7 @@ $app->post('/empresas', function()
     print json_encode($empresas);
 });
 
-$app->post('/generado', function() 
-// use($db)
+$app->post('/generado', function() use($db)
 {
     $d = json_decode(file_get_contents('php://input'));
     $query = "SELECT COUNT(*) FROM tranban WHERE tipotrans = '$d->tipo' AND esplanilla = 1 AND fechaplanilla = '$d->falstr' AND anulado = 0";
