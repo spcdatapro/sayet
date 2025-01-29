@@ -108,6 +108,17 @@ angular.module('cpm')
                 } else {
                     $scope.emp.baja = 0
                 }
+
+                // mantener actualizada los datos laborales de nueva ficha
+                if ($scope.emp.idplnmovimiento == 7) {
+                    let lab = {};
+                    lab.idplnempleado = $scope.emp.id;  
+                    lab.sueldo = $scope.emp.sueldo;
+                    lab.bonificacionley = $scope.emp.bonificacionley;
+
+                    $scope.addDatosLaborales(lab, false);
+                }
+
                 empServicios.guardar(emp).then(function (data) {
                     alert(data.mensaje);
                     const nombre = $scope.emp.nombre;
