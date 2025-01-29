@@ -115,6 +115,7 @@ angular.module('cpm')
                     lab.idplnempleado = $scope.emp.id;  
                     lab.sueldo = $scope.emp.sueldo;
                     lab.bonificacionley = $scope.emp.bonificacionley;
+                    lab.descuentoisr = $scope.emp.descuentoisr;
 
                     $scope.addDatosLaborales(lab, false);
                 }
