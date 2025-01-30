@@ -113,7 +113,7 @@ function incdec($d, $inc){
                             'anterior' => $actual->monto,
                             'monsiguiente' => $siguiente->simbolo,
                             'actual' => $siguiente->monto,
-                            'incremento' => $siguiente->incremento,
+                            'incremento' => round((($siguiente->monto - $actual->monto) / $actual->monto) * 100, 2).'%',
                             'fechacobro' => $siguiente->fechacobro
                         ]);
                     }
@@ -134,7 +134,7 @@ function incdec($d, $inc){
                             'anterior' => $actual->monto,
                             'monsiguiente' => $siguiente->simbolo,
                             'actual' => $siguiente->monto,
-                            'incremento' => $siguiente->incremento,
+                            'incremento' => round((($siguiente->monto - $actual->monto) / $actual->monto) * 100, 2),
                             'fechacobro' => $siguiente->fechacobro
                         ]);
                     }
