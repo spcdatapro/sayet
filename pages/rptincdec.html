@@ -2,36 +2,52 @@
     <div class="panel panel-default">
         <div class="panel-heading">Reporte de incrementos/decrementos</div>
         <div class="panel-body">
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="txtFDel">Del:</label>
-                        <input name="txtFDel" id="txtFDel" type="date" class="form-control" ng-model="params.fdel"/>
+            <form name="paramsRep" id="paramsRep" novalidate>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group required">
+                            <label class="control-label" for="txtFDel">Del:</label>
+                            <input name="txtFDel" id="txtFDel" type="date" class="form-control" ng-model="params.fdel"
+                                required />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group required">
+                            <label class="control-label" for="txtFAl">Al:</label>
+                            <input name="txtFAl" id="txtFAl" type="date" class="form-control" ng-model="params.fal"
+                                required />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group required">
+                            <label for="selTipo" class="control-label">Tipo</label>
+                            <select name="selTipo" id="selTipo" class="form-control" ng-model="params.tipo" required>
+                                <option value="1">Incrementos</option>
+                                <option value="2">Decrementos</option>
+                                <option value="3">Incrementos y decrementos</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="txtFAl">Al:</label>
-                        <input name="txtFAl" id="txtFAl" type="date" class="form-control" ng-model="params.fal"/>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="selTipo">Tipo</label>
-                        <select name="selTipo" id="selTipo" class="form-control" ng-model="params.tipo">
-                            <option value="1">Incrementos</option>
-                            <option value="2">Decrementos</option>
-                            <option value="3">Incrementos y decrementos</option>
-                        </select>
-                    </div>
-                </div>
+            </form>
+        </div>
+        <div class="panel-footer text-right">
+            <div class="btn-group">
+                <button type="button" class="btn btn-danger btn-sm" ng-click="getRptIncDec()" ng-disabled="paramsRep.$invalid">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" ng-click="resetParams()">
+                    <i class="fa fa-refresh" aria-hidden="true"></i>
+                </button>
             </div>
-            <button type="button" class="btn btn-primary btn-sm" ng-click="getRptIncDec()">
-                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-            </button>
-            <button type="button" class="btn btn-primary btn-sm" ng-click="resetParams()">
-                <i class="fa fa-refresh" aria-hidden="true"></i>
-            </button>
+        </div>
+    </div>
+    <div class="row" ng-show="cargando">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                <span class="label label-primary">Generando reporte, por favor espere...</span>
+                <img ng-src="img/loading_new.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
+            </div>
         </div>
     </div>
     <rpt-viewer contenido="content"></rpt-viewer>
