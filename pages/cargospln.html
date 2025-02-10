@@ -291,7 +291,7 @@
                         <div class="form-group" ng-class="{'required': data.otrosdesc > 0}">
                             <label for="selCntDesc" class="control-label">Cuenta otros desc.</label>
                             <ui-select ng-model="tran.idcuenta_desc" title="selector de cuenta contable..."
-                                theme="bootstrap" autofocus="false" ng-required="data.otrosbono > 0">
+                                theme="bootstrap" autofocus="false" ng-required="data.otrosdesc > 0">
                                 <ui-select-match placeholder="Favor ingresar los primero 3 digitos o 3 letras de la cuenta" allow-clear="false">
                                     <span ng-bind="($select.selected.nombrecta)"></span>
                                 </ui-select-match>
