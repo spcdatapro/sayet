@@ -500,17 +500,19 @@
 							<div class="well well-sm">
 								<h4 class="text-center">Datos para movimiento/bitácora.</h4>
 								<div class="form-group form-group-sm">
-								<label for="inputMovFecha" class="col-sm-2 control-label">Fecha:</label>
-								<div class="col-sm-4">
-									<input type="date" class="form-control" ng-model="emp.movfecha" id="inputMovFecha">
+									<label for="inputMovFecha" class="col-sm-2 control-label">Fecha:</label>
+									<div class="col-sm-4">
+										<input type="date" class="form-control" ng-model="emp.movfecha"
+											id="inputMovFecha">
+									</div>
+									<label for="inputTipoMovimiento" class="col-sm-2 control-label">Tipo:</label>
+									<div class="col-sm-4">
+										<select class="form-control" ng-model="emp.idplnmovimiento"
+											id="inputTipoMovimiento"
+											ng-options="item.id as item.descripcion for item in movimiento"></select>
+									</div>
 								</div>
-								<label for="inputTipoMovimiento" class="col-sm-2 control-label">Tipo:</label>
-								<div class="col-sm-4">
-									<select class="form-control" ng-model="emp.idplnmovimiento" id="inputTipoMovimiento"
-										ng-options="item.id as item.descripcion for item in movimiento"></select>
-								</div>
-							</div>
-							<!-- <div class="form-group form-group-sm">
+								<!-- <div class="form-group form-group-sm">
 								<label for="inputMovGasolina" class="col-sm-2 control-label">Gasolina:</label>
 								<div class="col-sm-4">
 									<input type="number" step="0.01" class="form-control" ng-model="emp.movgasolina"
@@ -1441,22 +1443,31 @@
 								<input type="checkbox" name="verActivos" id="verActivos" class="form-control input-sm"
 									ng-true-value="1" ng-false-value="0" ng-model="ver_activos" />
 							</div>
-							<div class="col-md-9">
+							<div class="col-md-8">
 								<div class="search-container">
 									<input name="srchTxt" id="srchTxt" type="text" class="form-control input-sm"
 										ng-model="lookFor.$" placeholder="Buscar empleado" />
 									<i class="fa fa-search search-icon"></i>
 								</div>
 							</div>
-							<div class="col-md-1">
-								<button type="button" class="btn btn-default btn-sm" ng-click="mostrarForm()">
-									<i class="glyphicon glyphicon-plus"></i> Nuevo
-								</button>
+							<div class="col-md-2">
+								<div class="btn-group">
+									<button type="button" class="btn btn-default btn-sm" ng-click="mostrarForm()" title="Crear nuevo empleado">
+										<i class="glyphicon glyphicon-plus"></i> Nuevo
+									</button>
+									<button type="button" class="btn btn-primary btn-sm" ng-click="getRepEmpleador()" title="Descargar reporte empleador" ng-disabled="cargando">
+										<i ng-show="false" class="fa fa-file-excel-o"></i>
+										Empleador
+									</button>
+								</div>
 							</div>
 						</div>
 					</form>
 				</caption>
 				<thead>
+					<tr ng-show="cargando">
+						<th colspan="5">Descargando reporte...</th>
+					</tr>
 					<tr>
 						<th>Nombre</th>
 						<th>Dirección</th>
@@ -1576,4 +1587,25 @@
 		</div>
 	</script>
 </div>
+<!-- reporte de empleador -->
+<script type="text/ng-template" id="modalReporteEmpleador.html">
+	<div class="modal-header">
+		<h3 class="modal-title">Descargar reporte de empleador</h3>
+	</div>
+	<div class="modal-body">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="form-group">
+					<label for="selAnio_empleador" class="control-label">Selecionar a&ntilde;o:</label>
+					<input type="number" name="selAnio_empleador" id="selAnio_empleador" ng-model="anio" class="form-control"
+					min="2024"/>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" ng-disabled="!anio" type="button" ng-click="ok(anio)">Aceptar</button>
+		<button class="btn btn-danger" type="button" ng-click="cancel()">Cancelar</button>
+	</div>
+</script>
 </div>

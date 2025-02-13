@@ -754,6 +754,7 @@ $app->post('/ficha', function () {
     print json_encode([ 'encabezado' => $letra, 'empleado' => $empleado ]);
 });
 
+// funciones temporales
 $app->get('/subir_laboral', function () {
     $db = new dbcpm();
 
@@ -809,6 +810,94 @@ $app->get('/subir_personal', function () {
     }
 
     echo "Personal copiado con exito ". $cuantos;
+});
+
+$app->get('/datos_empleador/:anio', function ($anio) {
+    $db = new dbcpm();
+
+    $query = "SELECT 
+                a.id,
+                b.primernombre,
+                IFNULL(b.segundonombre, '') AS segundonombre,
+                IFNULL(b.tercernombre, '') AS tercernombre,
+                b.primerapellido,
+                IFNULL(b.segundoapellido, '') AS segundoapellido,
+                IFNULL(b.apellidocasada, '') AS apellidocasada,
+                d.codigo AS nacionalidad,
+                b.iddiscapacidad AS discapacidad,
+                FIELD(b.estadocivil,
+                        'soltero',
+                        'casado',
+                        'unido') AS estadocivil,
+                FIELD(b.tipodoc,
+                        'dpi',
+                        'certificado de nacimiento',
+                        'pasaporte') AS documento,
+                b.documento AS numdocumento,
+                d.codigo AS origen,
+                '' AS permiso,
+                IFNULL(b.idmunicipio, '') AS municipio,
+                b.nit,
+                c.igss,
+                FIELD(b.sexo, 'hombre', 'mujer') AS sexo,
+                DATE_FORMAT(b.nacimiento, '%d/%m/%Y') AS nacimiento,
+                IFNULL(b.ideducacion, '') AS educacion,
+                IFNULL(b.profesion, '') AS profesion,
+                b.idcasta AS pueblo,
+                b.idlengua AS lengua,
+                IFNULL(b.hijos, 0) AS hijos,
+                FIELD(c.temporalidad, 'indefinido', 'definido') AS temporalidad,
+                FIELD(c.tipocontrato, 'verbal', 'escrito') AS tipo,
+                DATE_FORMAT(c.ingreso, '%d/%m/%Y') AS inicio,
+                IFNULL(DATE_FORMAT(c.reingreso, '%d/%m/%Y'), '') AS reinicio,
+                IFNULL(DATE_FORMAT(c.baja, '%d/%m/%Y'), '') AS fin,
+                IFNULL(c.idpuesto, '') AS puesto,
+                FIELD(c.jornada,
+                        'diurna',
+                        'mixta',
+                        'nocturna',
+                        'no esta sujeto a jornada') AS jornada,
+                IF(e.dias > 250, 250, e.dias) AS dias,
+                c.sueldo,
+                c.sueldo * 12 AS sueldo_anual,
+                c.bonificacionley,
+                '' AS horas_extra,
+                '' AS valor_extra,
+                e.aguinaldo,
+                e.bonocatorce,
+                '' AS comision,
+                e.viaticos AS viaticos,
+                e.otrosingresos,
+                e.vacaciones,
+                e.indemnizacion,
+                IF(c.idproyecto = 16, 2, 1) AS sucursal
+            FROM
+                plnempleado a
+                    INNER JOIN
+                plnpersonal b ON a.idpersonal = b.id
+                    INNER JOIN
+                plnlaboral c ON a.idlaboral = c.id
+                    INNER JOIN
+                nacionalidad d ON b.idnacionalidad = d.id
+                    INNER JOIN
+                (SELECT 
+                    SUM(diastrabajados) AS dias,
+                        idplnempleado,
+                        SUM(aguinaldo) AS aguinaldo,
+                        SUM(bonocatorce) AS bonocatorce,
+                        SUM(otrosingresos) AS otrosingresos,
+                        SUM(viaticos) AS viaticos,
+                        SUM(vacaciones) AS vacaciones,
+                        SUM(indemnizacion) AS indemnizacion
+                FROM
+                    plnnomina
+                WHERE
+                    YEAR(fecha) = $anio
+                GROUP BY idplnempleado) e ON e.idplnempleado = a.id
+            WHERE
+                (c.baja IS NULL OR YEAR(c.baja) = $anio)
+                    AND YEAR(c.ingreso) <= $anio";
+    print json_encode(["empleados" => $db->getQuery($query)]);
 });
 
 $app->run();

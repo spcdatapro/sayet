@@ -1,6 +1,6 @@
 angular.module('cpm')
-    .controller('MntEmpleadoController', ['$scope', '$http', 'empServicios', 'empresaSrvc', 'proyectoSrvc', 'cuentacSrvc', 'pstServicios', 'unidadSrvc', '$confirm', '$uibModal', 'planillaSrvc', 'municipioSrvc', '$filter', 'toaster',
-        function ($scope, $http, empServicios, empresaSrvc, proyectoSrvc, cuentacSrvc, pstServicios, unidadSrvc, $confirm, $uibModal, planillaSrvc, municipioSrvc, $filter, toaster) {
+    .controller('MntEmpleadoController', ['$scope', '$http', 'empServicios', 'empresaSrvc', 'proyectoSrvc', 'cuentacSrvc', 'pstServicios', 'unidadSrvc', '$confirm', '$uibModal', 'planillaSrvc', 'municipioSrvc', '$filter', 'toaster', 'jsReportSrvc',
+        function ($scope, $http, empServicios, empresaSrvc, proyectoSrvc, cuentacSrvc, pstServicios, unidadSrvc, $confirm, $uibModal, planillaSrvc, municipioSrvc, $filter, toaster, jsReportSrvc) {
             $scope.formulario = false;
             $scope.resultados = false;
             $scope.empleados = [];
@@ -35,6 +35,7 @@ angular.module('cpm')
             $scope.per = { idnacionalidad: '83', iddiscapacidad: '1' }
             $scope.ver_activos = 1;
             let actuales = {};
+            $scope.cargando = false;
 
             empServicios.getNacionalidades().then((d) => { $scope.nacionalidades = d; });
             municipioSrvc.lstAllMunicipios().then((d) => { $scope.municipios = d; });
@@ -756,6 +757,25 @@ angular.module('cpm')
                 goTop();
             }
 
+            $scope.getRepEmpleador = () => {
+                $uibModal.open({
+                    animation: true,
+                    templateUrl: 'modalReporteEmpleador.html',
+                    controller: 'ModalReporteEmpleadorCtrl'
+                }).result.then(function (anio) {
+                    $scope.cargando = true;
+                    jsReportSrvc.getReport('BkA5jnjK1x', anio).then(result => { 
+                        var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
+                        saveAs(file, 'Reporte_Empleador_' + anio + '.xlsx');
+                        $scope.cargando = false;
+                    }).catch(err => {
+                        console.log(err);
+                        toaster.pop({ type: 'error', title: 'Reporte empleador', body: 'Error en la conexion con el servidor, favor comunicarse con IT.', timeout: 7000 });
+                        $scope.cargando = false;
+                    });
+                })
+            }
+
             // $scope.buscar({});
             $scope.$watch('ver_activos', function (newValue, oldValue) {
                 $scope.buscar(newValue);
@@ -871,6 +891,15 @@ angular.module('cpm')
             $scope.buscar({});
         }
     ])
+    //------------------------------------------------------------------------------------------------------------------------------------------------//
+    .controller('ModalReporteEmpleadorCtrl', ['$scope', '$uibModalInstance', function ($scope, $uibModalInstance) {
+        $scope.anio = moment().year() - 1;
+
+        $scope.ok = anio => { $uibModalInstance.close(anio) }
+
+        $scope.cancel = () => { $uibModalInstance.dismiss('cancel') }
+
+    }])
     .controller('MntPeriodoController', ['$scope', '$http', 'periodoServicios',
         function ($scope, $http, periodoServicios) {
             $scope.formulario = false;
