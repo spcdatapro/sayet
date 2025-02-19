@@ -75,8 +75,7 @@
                 <div class="panel-heading">Datos Generales&nbsp;<span class="badge"
                         style="color: white;">{{proyectostr}}</span></div>
                 <div class="panel-body">
-                    <form name="frmProyecto" id="frmProyecto"
-                        novalidate>
+                    <form name="frmProyecto" id="frmProyecto" novalidate>
                         <div class="row">
                             <div class="col-md-8">
                                 <div class="form-group"
@@ -184,7 +183,7 @@
                                         ng-model="elProyecto.fechabaja" ng-disabled="slproyecto" />
                                 </div>
                             </div>
-                            <div class="col-md-4 col-md-offset-5" ng-show="elProyecto.multiempresa">
+                            <!-- <div class="col-md-4 col-md-offset-5" ng-show="elProyecto.multiempresa">
                                 <div class="form-group">
                                     <label for="selEmpresas" class="control-label">Empresas a afectar:</label>
                                     <ui-select ng-model="elProyecto.otras_empresas"
@@ -200,7 +199,7 @@
                                         <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
                                     </ui-select>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="row">
                             <div class="col-md-12">
@@ -216,8 +215,8 @@
                         </div>
                     </form>
                     <div class="btn-group" role="group" aria-label="...">
-                        <button ng-click="addProyecto(elProyecto)" class="btn btn-info" ng-disabled="frmProyecto.$invalid"
-                            ng-show="grpBtnProyecto.i">
+                        <button ng-click="addProyecto(elProyecto)" class="btn btn-info"
+                            ng-disabled="frmProyecto.$invalid" ng-show="grpBtnProyecto.i">
                             <span class="glyphicon glyphicon-floppy-save"></span>
                         </button>
                         <button type="button" class="btn btn-info" ng-show="elProyecto.id > 0"
@@ -249,6 +248,10 @@
                         <button type="button" class="btn btn-info" ng-disabled="frmProyecto.$invalid"
                             ng-click="asignarUsuarios()" ng-show="elProyecto.id > 0">
                             <span class="glyphicon glyphicon-user"></span>
+                        </button>
+                        <button type="button" class="btn btn-info" ng-disabled="frmProyecto.$invalid"
+                            ng-click="asignarEmpresas()" ng-show="elProyecto.id > 0 && elProyecto.multiempresa" title="Asignar empresas">
+                            <i class="fi fi-rr-corporate-alt"></i>
                         </button>
                         <button type="button" class="btn btn-info" ng-disabled="frmProyecto.$invalid"
                             ng-click="asignarServicios()" ng-show="elProyecto.id > 0">
@@ -997,6 +1000,63 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-info" type="button" ng-click="ok()">Generar</button>
+            <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
+        </div>
+    </script>
+    <script type="text/ng-template" id="modalEmpresaProyecto.html">
+        <div class="modal-header">
+            <h3 class="modal-title">{{proyecto.nomproyecto}}</h3>
+            <h4>Asignar empresa</h4>
+        </div>
+        <div class="modal-body">
+            <form name="frmEmp" id="frmEmp" ng-submit="frmEmp.$valid && asignarEmpresa(idempresa, proyecto.id)" novalidate>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group required">
+                            <label for="selEmpresa">Empresa:</label>
+                            <div class="input-group">
+                                <ui-select title="Seleccione una empresa..." theme="bootstrap"
+                                    autofocus="false" ng-model="idempresa" required ng-change="setEmpresa(idempresa)">
+                                    <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
+                                        <span ng-bind="($select.selected.nomempresa)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+                                        <div ng-bind-html="(item.nomempresa) | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                                <div class="input-group-btn">
+                                    <button type="submit" class="btn btn-info" ng-disabled="frmEmp.$invalid">
+                                        <span class="glyphicon glyphicon-floppy-save"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <hr />
+            <table class="table table-condensed table-hover">
+                <thead>
+                    <tr>
+                        <th>Empresa</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="emp in asignados">
+                        <td>{{emp.empresa}}</td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm" ng-click="quitarEmpresa(emp.id)">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <!--<button class="btn btn-info" type="button" ng-click="ok()">Aceptar</button>-->
             <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
         </div>
     </script>

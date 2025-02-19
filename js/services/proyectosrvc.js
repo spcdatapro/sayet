@@ -59,6 +59,15 @@
             },
             getUsuariosDisponibles: function(idproyecto){
                 return comunFact.doGET(urlBase + '/usrdisp/' + idproyecto);
+            },
+            getEmpresas: idproyecto => {
+                return comunFact.doGET(urlBase + '/empresas/' + idproyecto);
+            },
+            agregarEmpresa: function (idempresa, idproyecto) {
+                return comunFact.doGET(urlBase + '/ap/' + idempresa + '/' + idproyecto);
+            },
+            quitarEmpresa: function (id) {
+                return comunFact.doGET(urlBase + '/qp/' + id);
             }
         };
     }]);

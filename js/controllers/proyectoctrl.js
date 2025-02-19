@@ -651,6 +651,22 @@
             });
         };
 
+        $scope.asignarEmpresas = () => {
+            $uibModal.open({
+                animation: true,
+                templateUrl: 'modalEmpresaProyecto.html',
+                controller: 'ModalEmpresaProyectoCtrl',
+                resolve: {
+                    proyecto: () => $scope.elProyecto,
+                }
+            }).result.then(function (data) {
+                facturaOtrosSrvc.editRow(data, 'udet').then(d => { 
+                    $scope.getFactura(d.idfactura);
+                    toaster.pop(d.tipo, 'Detalle de factura', d.mensaje); 
+                });
+            })
+        }
+
         $scope.getLstProyectos();
         $scope.getlstEmpresas();
         $scope.getlstTipoProyecto();
@@ -779,5 +795,64 @@
         $scope.resetParams();
 
     }]);
+
+    //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+    proyectoctrl.controller('ModalEmpresaProyectoCtrl', ['$scope', '$uibModalInstance', 'proyecto', 'proyectoSrvc', 'empresaSrvc', 'toaster',
+        function ($scope, $uibModalInstance, proyecto, proyectoSrvc, empresaSrvc, toaster) {
+            $scope.proyecto = proyecto;
+            $scope.empresas = [];
+            $scope.asignados = [];
+            $scope.idempresa = undefined;
+
+            function getAsignados(idproyecto) {
+                proyectoSrvc.getEmpresas(idproyecto).then(function (d) {
+                    $scope.asignados = d;
+                    lstEmpresas();
+                });
+            }
+
+            $scope.setEmpresa = function (id) {
+                $scope.idempresa = id;
+            }
+
+            function lstEmpresas() {
+                empresaSrvc.lstEmpresas().then(function (d) {
+                    let excluido = [];
+                    $scope.asignados.forEach(empresa => {
+                        excluido.push(empresa.idempresa);
+                    });
+
+                    $scope.empresas = d.filter(empresa => !excluido.includes(empresa.id));
+                });
+            }
+
+            $scope.asignarEmpresa = function (idempresa, idproyecto) {
+                proyectoSrvc.agregarEmpresa(idempresa, idproyecto).then(function (d) {
+                    toaster.pop({
+                        type: d.tipo, title: 'Empresa asignada',
+                        body: d.mensaje, timeout: 10000
+                    });
+                    $scope.idempresa = undefined;
+                    getAsignados(idproyecto);
+                });
+            }
+
+            $scope.quitarEmpresa = function (id) {
+                proyectoSrvc.quitarEmpresa(id).then(function (d) {
+                    toaster.pop({
+                        type: d.tipo, title: 'Empresa removida',
+                        body: d.mensaje, timeout: 10000
+                    });
+                    getAsignados(proyecto.id);
+                });
+            }
+
+            $scope.cancel = function () {
+                $uibModalInstance.dismiss('cancel');
+            };
+
+            getAsignados(proyecto.id);
+
+        }]);
 
 }());

@@ -350,4 +350,44 @@ $app->post('/rptdocsvence', function(){
     print json_encode($data);
 });
 
+$app->get('/empresas/:idproyecto', function ($idproyecto) {
+    $db = new dbcpm();
+
+    $query = "SELECT a.id, a.idempresa, b.nomempresa AS empresa FROM empresa_proyecto a INNER JOIN empresa b ON a.idempresa = b.id WHERE a.idproyecto = $idproyecto";
+    print $db->doSelectASJson($query);
+});
+
+$app->get('/ap/:idempresa/:idproyecto', function ($idempresa, $idproyecto) {
+    $db = new dbcpm();
+    $db->doQuery("INSERT INTO empresa_proyecto(idempresa, idproyecto) VALUES($idempresa, $idproyecto)");
+    $lastid = $db->getLastId();
+
+    if ($lastid > 0) {
+        $tipo = 'success';
+        $mensaje = 'Se agrego la empresa correctamente.';
+    } else {
+        $tipo = 'error';
+        $mensaje = 'Error al agregar la empresa, favor volver a intentar.';
+    }
+
+    print json_encode([ 'tipo' => $tipo, 'mensaje' => $mensaje ]);
+});
+
+$app->get('/qp/:id', function ($id) {
+    $db = new dbcpm();
+    $db->doQuery("DELETE FROM empresa_proyecto WHERE id = $id");
+
+    $existe = $db->getOneField("SELECT id FROM empresa_proyecto WHERE id = $id") > 0;
+
+    if (!$existe) {
+        $tipo = 'success';
+        $mensaje = 'Se elimino la empresa correctamente.';
+    } else {
+        $tipo = 'error';
+        $mensaje = 'Error al eliminar empresa, favor volver a intentar.';
+    }
+
+    print json_encode([ 'tipo' => $tipo, 'mensaje' => $mensaje ]);
+});
+
 $app->run();
