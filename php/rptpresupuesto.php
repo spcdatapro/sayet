@@ -767,7 +767,7 @@ function getPagos($orden, $db, $esmultiple, $ids = null) {
     $cntRee = count($reembolsos); 
 
     for ($i = 0; $i < $cntRee; $i++) {
-        $reembolso = $reembolsos[$j];
+        $reembolso = $reembolsos[$i];
 
         // traer compras de reembolso 
         $query = "SELECT 
