@@ -52,7 +52,7 @@ $app->post('/rptlibcomp', function(){
     $query.= "ROUND(a.iva * IF(a.idmoneda = 2, a.tipocambio, 1), 2) AS iva, ROUND((a.totfact + IF(a.idtipocompra = 3, 0.00, a.noafecto)) * IF(a.idmoneda = 2, a.tipocambio, 1), 2) AS totfact, ";
 	$query.= "ROUND(a.totfact * IF(a.idmoneda = 2, a.tipocambio, 1), 2) AS totfactfull, IF(c.notas = 1, 1, NULL) AS negativo, IF(c.notas = 0, 1, NULL) AS escompra ";
     $query.= "FROM compra a INNER JOIN proveedor b ON b.id = a.idproveedor INNER JOIN tipofactura c ON c.id = a.idtipofactura ";
-	$query.= "WHERE a.idtipocompra <> 5 AND c.id <> 5 AND a.idempresa = ".$idempresa." AND a.idreembolso = 0 AND a.mesiva = ".$mes." AND YEAR(a.fechafactura) = ".$anio." ";
+	$query.= "WHERE a.idtipocompra <> 5 AND c.id <> 5 AND a.idempresa = ".$idempresa." AND a.idreembolso = 0 AND a.mesiva = ".$mes." AND YEAR(a.fechaingreso) = ".$anio." ";
 	$query.= (int)$d->creditofiscal == 1 ? " AND a.iva <> 0 AND b.pequeniocont = 0 " : "";
     $query.= $wrdate;
 	$query.= "UNION ";
@@ -66,13 +66,13 @@ $app->post('/rptlibcomp', function(){
     $query.= "ROUND(a.iva * IF(a.idmoneda = 2, a.tipocambio, 1), 2) AS iva, ROUND((a.totfact - (IF(a.idp IS NULL, 0.00, a.idp) + IF(a.idtipocompra = 3, 0.00, a.noafecto))) * IF(a.idmoneda = 2, a.tipocambio, 1), 2) AS totfact, ";
 	$query.= "ROUND(a.totfact * IF(a.idmoneda = 2, a.tipocambio, 1), 2) AS totfactfull, IF(c.notas = 1, 1, NULL) AS negativo, IF(c.notas = 0, 1, NULL) AS escompra ";
     $query.= "FROM compra a INNER JOIN tipofactura c ON c.id = a.idtipofactura LEFT JOIN proveedor b ON b.id = a.idproveedor ";
-	$query.= "WHERE a.idtipocompra <> 5 AND c.id <> 5 AND a.idempresa = ".$idempresa." AND a.idreembolso > 0 AND a.mesiva = ".$mes." AND YEAR(a.fechafactura) = ".$anio." ";
+	$query.= "WHERE a.idtipocompra <> 5 AND c.id <> 5 AND a.idempresa = ".$idempresa." AND a.idreembolso > 0 AND a.mesiva = ".$mes." AND YEAR(a.fechaingreso) = ".$anio." ";
 	$query.= (int)$d->creditofiscal == 1 ? " AND a.iva <> 0 AND (b.pequeniocont = 0 OR b.pequeniocont IS NULL) " : "";
 	$query.= $wrdate;
 	$query.= $orderby;
     //$query.= "ORDER BY 6, 1, 2, 3, 4";
 	
-	//echo $query;
+	echo $query; return;
 	
 	$detlbcomp = $db->getQuery($query);
 	
