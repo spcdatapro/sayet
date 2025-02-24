@@ -72,7 +72,7 @@ $app->post('/rptlibcomp', function(){
 	$query.= $orderby;
     //$query.= "ORDER BY 6, 1, 2, 3, 4";
 	
-	echo $query; return;
+	// echo $query; return;
 	
 	$detlbcomp = $db->getQuery($query);
 	
