@@ -900,4 +900,52 @@ $app->get('/datos_empleador/:anio', function ($anio) {
     print json_encode(["empleados" => $db->getQuery($query)]);
 });
 
+$app->get('/ficha/:idempleado', function ($idempelado) {
+    $db = new dbcpm();
+
+    $query = "SELECT 
+                a.id,
+                d.nombre AS empresa,
+                CONCAT(b.primernombre,
+                        ' ',
+                        b.segundonombre,
+                        ' ',
+                        b.tercernombre,
+                        ' ',
+                        b.primerapellido,
+                        ' ',
+                        b.segundoapellido,
+                        ' ',
+                        b.apellidocasada) AS nombre,
+                e.descripcion,
+                DATE_FORMAT(c.ingreso, '%d/%m/%Y') AS ingreso,
+                b.documento,
+                c.igss,
+                b.nit,
+                c.cuentabanco,
+                b.direccion,
+                b.telefono,
+                DATE_FORMAT(b.nacimiento, '%d/%m/%Y') AS nacimiento,
+                b.estadocivil,
+                f.nombre AS nom_emergencia,
+                f.telefono AS tel_emergencia,
+                f.direccion AS dir_emergencia,
+                a.observaciones
+            FROM
+                plnempleado a
+                    INNER JOIN
+                plnpersonal b ON a.idpersonal = b.id
+                    INNER JOIN
+                plnlaboral c ON a.idlaboral = c.id
+                    INNER JOIN
+                plnempresa d ON c.idempresadebito = d.id
+                    INNER JOIN
+                plnpuesto e ON a.idplnpuesto = e.id
+                    LEFT JOIN
+                plnemergencia f ON a.idemergencia = f.id
+            WHERE
+                a.id = $idempelado";
+    print json_encode([ 'empleado' => $db->getQuery($query)[0] ]);
+});
+
 $app->run();
