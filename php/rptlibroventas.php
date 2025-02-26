@@ -25,7 +25,7 @@ $app->post('/rptlibventas', function(){
     $query.= "IF(a.anulada = 0, IF(a.idtipoventa = 1, IF(a.exentoiva = 0 AND a.idtipofactura IN (1, 2, 3, 4, 5, 7, 8, 9, 13) AND a.importeexento = 0, ROUND((a.total - a.noafecto - a.importeiva), 2), 0.00), 0.00), 0.00) AS bien, ";    	
 	$query.= "IF(a.anulada = 0, IF(a.idtipoventa = 2, IF(a.exentoiva = 0 AND a.idtipofactura IN (1, 2, 3, 4, 5, 7, 8, 9, 13) AND a.importeexento = 0, ROUND(a.subtotal - a.importeiva, 2), 0.00), 0.00), 0.00) AS servicio, ";	
 	$query.= "IF(a.anulada = 0, ROUND(a.importeiva, 2), 0.00) AS iva, IF(a.anulada = 0, ROUND(a.subtotal, 2), 0.00) AS totfact, a.idtipofactura, IF(a.anulada = 0, a.importeexento, 0.00) AS importeexento, ";
-	$query.= "IF(a.idtipofactura = 9, 1, null) AS negativo, IF(a.idtipofactura IN(9, 13), null, 1) AS venta, IF(a.idtipofactura = 13, true, false) AS nb ";
+	$query.= "IF(a.idtipofactura = 9, 1, null) AS negativo, IF(a.idtipofactura IN(9, 13), false, true) AS venta, IF(a.idtipofactura = 13, true, false) AS nb ";
     $query.= "FROM factura a LEFT JOIN contrato b ON b.id = a.idcontrato LEFT JOIN tipofactura c ON c.id = a.idtipofactura LEFT JOIN cliente d ON d.id = a.idcliente ";
     $query.= "WHERE a.idtipoventa <> 5 AND c.id <> 5 AND a.idempresa = $idempresa AND a.mesiva = $mes AND YEAR(a.fecha) = $anio AND LENGTH(a.serie) > 0 AND LENGTH(a.numero) > 0 ";
 	$query.= "ORDER BY ".((int)$d->alfa > 0 ? "8, 1, 3, 4, 5, 6" : "1, 3, 4, 5, 6, 8");	
@@ -33,38 +33,16 @@ $app->post('/rptlibventas', function(){
 	$detlbventa = $db->getQuery($query);
 	
 	$libnotas = [];
+	$libabono = [];
 	$libventas = array();
 	$idventa = 0;
 	$idnota = 0;
+	$idabono = 0;
 			
 	foreach ($detlbventa as $dlbv) {
 		$factor = (int)$dlbv->idtipofactura == 9 || (int)$dlbv->idtipofactura == 13 ? -1 : 1;
 		
-		if ($dlbv->nb) {
-			$idnota++;		
-			array_push($libnotas,
-				array(
-					'nolinea' => $idnota,
-					'bien' => $dlbv->bien,
-					'documento' => $dlbv->documento,
-					'fechafactura' => $dlbv->fechafactura,
-					'iva' => number_format($dlbv->iva * $factor, 2, '.', ''),
-					'nit' => $dlbv->nit,
-					'cliente' => $dlbv->cliente,
-					'serie' => $dlbv->serie,
-					'servicio' => number_format($dlbv->servicio * $factor, 2, '.', ''),
-					'exento' => number_format($dlbv->exento * $factor, 2, '.', ''),
-					'tipodocumento' => $dlbv->tipodocumento,
-					'totfact' => number_format($dlbv->totfact * $factor, 2, '.', ''),
-					'serieadmin' => $dlbv->serieadmin,
-					'numeroadmin' => $dlbv->numeroadmin,
-					// 'exento' => $dlbv->importeexento,
-					'negativa' => $dlbv->negativo, 
-					'venta' => $dlbv->venta,
-					'nb' => $dlbv->nb
-				)
-			);	
-		} else {
+		if ($dlbv->venta) {
 			$idventa++;		
 			array_push($libventas,
 				array(
@@ -87,7 +65,57 @@ $app->post('/rptlibventas', function(){
 					'venta' => $dlbv->venta,
 					'nb' => $dlbv->nb
 				)
-			);	
+			);		
+		} else {
+			if (!$dlbv->nb) {
+				$idnota++;		
+				array_push($libnotas,
+					array(
+						'nolinea' => $idnota,
+						'bien' => $dlbv->bien,
+						'documento' => $dlbv->documento,
+						'fechafactura' => $dlbv->fechafactura,
+						'iva' => number_format($dlbv->iva * $factor, 2, '.', ''),
+						'nit' => $dlbv->nit,
+						'cliente' => $dlbv->cliente,
+						'serie' => $dlbv->serie,
+						'servicio' => number_format($dlbv->servicio * $factor, 2, '.', ''),
+						'exento' => number_format($dlbv->exento * $factor, 2, '.', ''),
+						'tipodocumento' => $dlbv->tipodocumento,
+						'totfact' => number_format($dlbv->totfact * $factor, 2, '.', ''),
+						'serieadmin' => $dlbv->serieadmin,
+						'numeroadmin' => $dlbv->numeroadmin,
+						// 'exento' => $dlbv->importeexento,
+						'negativa' => $dlbv->negativo, 
+						'venta' => $dlbv->venta,
+						'nb' => $dlbv->nb
+					)
+				);
+			} else {
+				$idabono++;		
+				array_push($libabono,
+					array(
+						'nolinea' => $idnota,
+						'bien' => $dlbv->bien,
+						'documento' => $dlbv->documento,
+						'fechafactura' => $dlbv->fechafactura,
+						'iva' => number_format($dlbv->iva * $factor, 2, '.', ''),
+						'nit' => $dlbv->nit,
+						'cliente' => $dlbv->cliente,
+						'serie' => $dlbv->serie,
+						'servicio' => number_format($dlbv->servicio * $factor, 2, '.', ''),
+						'exento' => number_format($dlbv->exento * $factor, 2, '.', ''),
+						'tipodocumento' => $dlbv->tipodocumento,
+						'totfact' => number_format($dlbv->totfact * $factor, 2, '.', ''),
+						'serieadmin' => $dlbv->serieadmin,
+						'numeroadmin' => $dlbv->numeroadmin,
+						// 'exento' => $dlbv->importeexento,
+						'negativa' => $dlbv->negativo, 
+						'venta' => $dlbv->venta,
+						'nb' => $dlbv->nb
+					)
+				);
+			}
 		}
 	}
 
@@ -103,6 +131,7 @@ $app->post('/rptlibventas', function(){
 	$libro->nabono = $haynabono;
 	$libro->lbventa = $libventas;
 	$libro->lbnotas = $libnotas;
+	$libro->libabono = $libabono;
 
 	
 	print json_encode($libro);
