@@ -180,6 +180,10 @@ $app->post('/finanzas', function(){
                 tranban g ON g.idreembolso = b.idreembolso
                     INNER JOIN
                 tipofactura h ON b.idtipofactura = h.id
+                    INNER JOIN 
+                reembolso i ON b.idreembolso = i.id
+                    INNER JOIN 
+                subtipogasto j ON i.idsubtipogasto = j.id
             WHERE
                 b.idempresa = $d->idempresa AND b.idproyecto = $d->idproyecto ";
     $query.= isset($d->idunidad) ? "AND b.idunidad = $d->idunidad " : "";
@@ -190,6 +194,7 @@ $app->post('/finanzas', function(){
                     AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%'
                     OR TRIM(c.codigo) = '1120299')
                     AND c.id
+                    AND j.idtipogasto != 1 
             UNION ALL SELECT 
                 9999 AS id,
                 MONTH(a.fecha) AS mes,
