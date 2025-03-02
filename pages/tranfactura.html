@@ -426,7 +426,7 @@
                                         <div class="form-group required">
                                             <label for="txtNit" class="control-label">N.I.T.</label>
                                             <input name="txtNit" id="txtNit" type="text" class="form-control"
-                                                ng-model="factura.nit" maxlength="25" required />
+                                                ng-model="factura.nit" maxlength="25" ng-blur="validarNIT(factura.nit)" required />
                                         </div>
                                     </div>
                                     <div class="col-md-4 nopadding">

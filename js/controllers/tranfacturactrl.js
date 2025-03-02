@@ -707,6 +707,21 @@
             })
         }
 
+        $scope.validarNIT = function (nit) {
+            if (nit !== 'CF') {
+                let nd, add = 0;
+                if (nd = /^(\d+)\-?([\dkK])$/.exec(nit)) {
+                    nd[2] = (nd[2].toLowerCase() === 'k') ? 10 : parseInt(nd[2]);
+                    for (let i = 0; i < nd[1].length; i++) {
+                        add += (((i - nd[1].length) * -1) + 1) * nd[1][i];
+                    } 
+                } else {
+                    toaster.pop('error', 'NIT incorrecto', 'El NIT ingresado no es valido por favor revisar.');
+                    $scope.factura.nit = null;
+                }
+            }
+        }
+
         //--------------------------- Impresion de facturas preimpresas -----------------------------------------------------------------------------------------------------//
         $scope.paramsimp = { idempresa: $scope.factura.idempresa, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), formato: 'printfacturas' };
         $scope.lstimpfact = [];
