@@ -483,7 +483,7 @@ $app->post('/prtrecibocli', function() {
                 a.id = $d->idrecibo ";
     $recibo = $db->getQuery($query);
 
-    $recibo[0]->montoletras = $n2l->to_word($recibo[0]->montorecli, 'GTQ');
+    $recibo[0]->montoletras = $n2l->to_word_int($recibo[0]->montorecli, 'GTQ');
 
     // facturas
 
