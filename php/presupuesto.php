@@ -1560,7 +1560,7 @@ $app->get('/monto/:ot/:correla', function($ot, $correla) {
     $ids = array();
     $ots = array();
 
-    $query = "SELECT a.idmoneda, a.id, a.tipocambio, ROUND(a.monto, 2) AS monto FROM detpresupuesto a 
+    $query = "SELECT a.idmoneda, a.id, a.tipocambio, ROUND(a.monto, 2) AS monto, a.idestatuspresupuesto FROM detpresupuesto a 
     WHERE a.idpresupuesto = $ot AND a.correlativo = $correla"; 
     $orden = $db->getQuery($query)[0];
 
