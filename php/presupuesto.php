@@ -1570,6 +1570,7 @@ $app->get('/monto/:ot/:correla', function($ot, $correla) {
     $ot->idmoneda = $orden->idmoneda;
     $ot->tipocambio = $orden->tipocambio;
     $ot->monto = $orden->monto;
+    $ot->idestatuspresupuesto = $orden->idestatuspresupuesto;
     $ot->id = $orden->id;
 
     array_push($ots, $ot);
