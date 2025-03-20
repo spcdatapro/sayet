@@ -182,7 +182,7 @@ $app->post('/finanzas', function(){
                 tipofactura h ON b.idtipofactura = h.id
                     INNER JOIN 
                 reembolso i ON b.idreembolso = i.id
-                    INNER JOIN 
+                    LEFT JOIN 
                 subtipogasto j ON i.idsubtipogasto = j.id
             WHERE
                 b.idempresa = $d->idempresa AND b.idproyecto = $d->idproyecto ";
@@ -194,7 +194,7 @@ $app->post('/finanzas', function(){
                     AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%'
                     OR TRIM(c.codigo) = '1120299')
                     AND c.id
-                    AND j.idtipogasto != 1 
+                    AND (j.idtipogasto != 1 OR j.idtipogasto IS NULL)
             UNION ALL SELECT 
                 9999 AS id,
                 MONTH(a.fecha) AS mes,
