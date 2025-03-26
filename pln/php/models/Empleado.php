@@ -84,7 +84,7 @@ class Empleado extends Principal
 		return (object)$this->db->get(
 			'proyecto', 
 			'*', 
-			['id[=]' => $this->emp->idproyecto]
+			['id[=]' => $this->lab->idproyecto]
 		);
 	}
 
@@ -492,9 +492,9 @@ class Empleado extends Principal
 	public function set_sueldo()
 	{
 		if ($this->dtrabajados == 30) {
-			$this->sueldo = $this->emp->sueldo;
+			$this->sueldo = $this->lab->sueldo;
 		} else if ($this->dtrabajados == 15) {
-			$this->sueldo = round($this->emp->sueldo / 2, 2);
+			$this->sueldo = round($this->lab->sueldo / 2, 2);
 		} else {
 			$this->sueldo = $this->get_gana_dia() * $this->dtrabajados;
 		}
@@ -507,12 +507,12 @@ class Empleado extends Principal
 
 	public function get_gana_dia()
 	{
-		return $this->emp->sueldo/30;
+		return $this->lab->sueldo/30;
 	}
 
 	public function get_bono_dia()
 	{
-		return $this->emp->bonificacionley/30;
+		return $this->lab->bonificacionley/30;
 	}
 
 	public function get_gana_hora()
@@ -544,10 +544,10 @@ class Empleado extends Principal
 		$ipago = new DateTime($pago->format('Y-m-01'));
 
 		if ($ipago >= $ingreso) {
-			if (empty($this->emp->baja)) {
+			if (empty($this->lab->baja)) {
 				$this->dtrabajados = $pago->format('d') == 15 ? 15 : 30;
 			} else {
-				$baja = new DateTime($this->emp->baja);
+				$baja = new DateTime($this->lab->baja);
 
 				if ($baja >= $pago) {
 					$this->dtrabajados = $pago->format('d') == 15 ? 15 : 30;
@@ -564,11 +564,11 @@ class Empleado extends Principal
 			if ($ingreso > $pago) {
 				$this->dtrabajados = 0;
 			} else {
-				if (empty($this->emp->baja)) {
+				if (empty($this->lab->baja)) {
 					$interval = $pago->diff($ingreso);
 					$this->dtrabajados = ($interval->days + 1);
 				} else {
-					$baja = new DateTime($this->emp->baja);
+					$baja = new DateTime($this->lab->baja);
 					$fin = $baja < $pago ? $baja : $pago;
 					
 					$interval = $fin->diff($ingreso);
@@ -594,11 +594,11 @@ class Empleado extends Principal
 
 	public function get_descuento_isr()
 	{
-		if (empty($this->emp->descuentoisr)) {
+		if (empty($this->lab->descuentoisr)) {
 			return 0;
 		} else {
 			// if ($this->dtrabajados == 30) {
-				return $this->emp->descuentoisr;
+				return $this->lab->descuentoisr;
 			// } else {
 				// return round(($this->emp->descuentoisr/30)*$this->dtrabajados, 2);
 			// }
@@ -609,7 +609,7 @@ class Empleado extends Principal
 	{
 		if ($this->dtrabajados > 0) {
 			if ($this->dtrabajados == 30) {
-				return $this->emp->bonificacionley;
+				return $this->lab->bonificacionley;
 			} else {
 				return round($this->get_bono_dia()*$this->dtrabajados, 2);
 			}
@@ -626,22 +626,22 @@ class Empleado extends Principal
 	{
 		$anticipo = 0;
 
-		if ($this->emp->formapago == 1 && $this->ndia == 15) {
+		if ($this->lab->frecuencia == 'quincenal' && $this->ndia == 15) {
 
 			if ($this->dtrabajados > 0) {
 				if ($this->dtrabajados == 15) {
-					$sueldo = round($this->emp->sueldo/2, 2);
-					$bono = round($this->emp->bonificacionley/2, 2);
+					$sueldo = round($this->lab->sueldo/2, 2);
+					$bono = round($this->lab->bonificacionley/2, 2);
 				} else {
 					$sueldo = round($this->get_gana_dia()*$this->dtrabajados, 2);
 					$bono = round($this->get_bono_dia()*$this->dtrabajados, 2);
 				}
 
-				if (empty($this->emp->baja)) {
+				if (empty($this->lab->baja)) {
 					$anticipo = round($sueldo + $bono, 2);
 				} else {
 					$isr = $this->get_descuento_isr();
-					$igss = ($sueldo * ($this->emp->porcentajeigss/100));
+					$igss = ($sueldo * ($this->lab->porcentajeigss/100));
 
 					$anticipo = round(($sueldo-$igss-$isr)+$bono, 2);
 				}
@@ -653,7 +653,7 @@ class Empleado extends Principal
 
 	public function get_descanticipo()
 	{
-		if ($this->ndia != 15 && $this->emp->formapago == 1) {
+		if ($this->ndia != 15 && $this->lab->frecuencia == 'quincenal') {
 			$ant = $this->db->get(
 				'plnnomina', 
 				['anticipo'], 
@@ -730,7 +730,7 @@ class Empleado extends Principal
 	public function get_descingss($args = [])
 	{
 		return round(
-			($this->emp->porcentajeigss/100) * (
+			($this->lab->porcentajeigss/100) * (
 				$this->sueldo
 				+elemento($args,'sueldoextra',0)
 				+elemento($args,'vacaciones',0)
@@ -814,12 +814,17 @@ class Empleado extends Principal
 	}
 
 	public function getFechaIngreso()
-	{
-		if (empty($this->emp->reingreso)) {
-			return $this->emp->ingreso;
+	{	
+		if (empty($this->lab->reingreso)) {
+			return $this->lab->ingreso;
 		} else {
-			return $this->emp->reingreso;
+			return $this->lab->reingreso;
 		}
+		// if (empty($this->emp->reingreso)) {
+		// 	return $this->emp->ingreso;
+		// } else {
+		// 	return $this->emp->reingreso;
+		// }
 	}
 
 	public function set_finiquito_indemnizacion($args = [])
@@ -830,7 +835,7 @@ class Empleado extends Principal
 			$dias = 0;
 			$monto = 0;
 		} else {
-			$baja     = new DateTime($this->emp->baja);
+			$baja     = new DateTime($this->lab->baja);
 			$interval = $ingreso->diff($baja);
 			$dias     = ($interval->format('%a')+1);
 			$monto    = ($dias*((($this->sueldoPromedio/12)*14)/365));
@@ -876,12 +881,13 @@ class Empleado extends Principal
 			$egreso = $args["fecha_egreso"];
 
 			$sql = "SELECT IF(
-						ifnull(b.reingreso, b.ingreso) > DATE_FORMAT(a.fecha,'%Y-%m-01'), 
-						ifnull(b.reingreso, b.ingreso), 
+						ifnull(c.reingreso, c.ingreso) > DATE_FORMAT(a.fecha,'%Y-%m-01'), 
+						ifnull(c.reingreso, c.ingreso), 
 						DATE_FORMAT(a.fecha,'%Y-%m-01')
 					) as ultimo
 					FROM plnnomina a 
 					INNER JOIN plnempleado b on b.id = a.idplnempleado
+					INNER JOIN plnlaboral c ON b.idlaboral = c.id
 					WHERE a.idplnempleado = {$this->emp->id} 
 					AND a.aguinaldo > 0
 					AND a.fecha < '{$egreso}'
@@ -914,12 +920,13 @@ class Empleado extends Principal
 			$egreso = $args["fecha_egreso"];
 
 			$sql = "SELECT IF(
-						ifnull(b.reingreso, b.ingreso) > DATE_FORMAT(a.fecha,'%Y-%m-01'), 
-						ifnull(b.reingreso, b.ingreso), 
+						ifnull(c.reingreso, c.ingreso) > DATE_FORMAT(a.fecha,'%Y-%m-01'), 
+						ifnull(c.reingreso, c.ingreso), 
 						DATE_FORMAT(a.fecha,'%Y-%m-01')
 					) as ultimo
 					FROM plnnomina a 
 					INNER JOIN plnempleado b on b.id = a.idplnempleado
+					INNER JOIN plnlaboral c ON b.idlaboral = c.id
 					WHERE a.idplnempleado = {$this->emp->id} 
 					AND a.bonocatorce > 0
 					AND a.fecha < '{$egreso}'
@@ -946,8 +953,8 @@ class Empleado extends Principal
 	public function set_finiquito_sueldo($args = [])
 	{
 		$res = [
-			'sdiario' => ($this->emp->sueldo/30),
-			'bdiario' => ($this->emp->bonificacionley/30)
+			'sdiario' => ($this->lab->sueldo/30),
+			'bdiario' => ($this->lab->bonificacionley/30)
 		];
 
 		$dias = elemento($args, 'dias_sueldo_pagar', 0);
@@ -1019,19 +1026,19 @@ EOT;
 			'fecha_egreso_etiqueta'    => 'Fecha de Egreso:',
 			'fecha_egreso'             => formatoFecha($args['fecha_egreso'],1),
 			'sueldo_etiqueta'          => 'Sueldo Mensual:',
-			'sueldo'                   => number_format($this->emp->sueldo, 2),
+			'sueldo'                   => number_format($this->lab->sueldo, 2),
 			'bonificacion_etiqueta'    => 'Bonificación:',
-			'bonificacion'             => number_format($this->emp->bonificacionley, 2),
+			'bonificacion'             => number_format($this->lab->bonificacionley, 2),
 			'total_etiqueta'           => 'Total:',
 			'total_linea'              => str_repeat('_', 10),
-			'total'                    => number_format($this->emp->sueldo + $this->emp->bonificacionley, 2),
+			'total'                    => number_format($this->lab->sueldo + $this->lab->bonificacionley, 2),
 			'sueldo_promedio'          => number_format($this->sueldoPromedio, 2),
 			'linea_dos_resumen'        => str_repeat("_", 90),
 			'texto_prestaciones'       => 'Prestaciones',
 			'texto_no_dias'            => 'No. Días',
 			'texto_monto'              => 'Monto Q.',
 			'indem_texto'              => '1) Indemnización por el tiempo comprendido del:',
-			'indem_fechas'             => $fechaIngreso.' al '.formatoFecha($this->emp->baja,1),
+			'indem_fechas'             => $fechaIngreso.' al '.formatoFecha($this->lab->baja,1),
 			'indem_dias'               => $this->finiquitoIndenmizacion->dias,
 			'indem_monto'              => number_format($this->finiquitoIndenmizacion->monto,2),
 			'vacas_texto'              => '2) Vacaciones por el tiempo comprendido del:',
@@ -1062,7 +1069,7 @@ EOT;
 			'tcodigo'                  => 'Código:',
 			'vcodigo'                  => $this->emp->id,
 			'tdpi'                     => 'DPI:',
-			'vdpi'                     => $this->emp->dpi,
+			'vdpi'                     => $this->per->documento,
 			'tdevengados'              => 'DEVENGADOS',
 			'tdeducidos'               => 'DEDUCIDOS', 
 			'division'                 => 'linea',
@@ -1138,8 +1145,10 @@ EOT;
 			$fini['prestamos'] = round($saldoPrestamos, 2);
 			$fini['anticipos'] = round($anticiposPostBaja, 2);
 			$fini['otrosdesc'] = round(elemento($args, 'otrosdesc_monto', 0), 2);
-			$fini['idempresa'] = $this->emp->idempresadebito;
-			$fini['idproyecto'] = $this->emp->idproyecto;
+			$fini['idempresa'] = $this->lab->idempresadebito;
+			$fini['idproyecto'] = $this->lab->idproyecto;
+			$fini['idprestamos'] = $args['idprestamos'];
+			$fini['concepto'] = $args['concepto'];
 
 			$lid = $this->db->insert('plnfiniquito', $fini);
 		}
@@ -1152,7 +1161,7 @@ EOT;
 		$gen = new General();
 
 		return (object)$gen->get_empresa([
-			'id'  => $this->emp->idempresadebito, 
+			'id'  => $this->lab->idempresadebito, 
 			'uno' => TRUE
 		]);
 	}
@@ -1229,8 +1238,8 @@ EOT;
 
 			if ($this->bonocatorcedias > 0) {
 				$this->bonocatorce = $this->bonocatorcedias == 365 
-				? round($this->emp->sueldo, 2)
-				: round((($this->emp->sueldo/365)*$this->bonocatorcedias), 2);
+				? round($this->lab->sueldo, 2)
+				: round((($this->lab->sueldo/365)*$this->bonocatorcedias), 2);
 			}
 		}
 	}
@@ -1273,8 +1282,8 @@ EOT;
 
 			if ($this->aguinaldoDias > 0) {
 				$this->aguinaldoMonto = $this->aguinaldoDias == 365 
-				? round($this->emp->sueldo, 2) 
-				: round((($this->emp->sueldo/365)*$this->aguinaldoDias), 2);
+				? round($this->lab->sueldo, 2) 
+				: round((($this->lab->sueldo/365)*$this->aguinaldoDias), 2);
 			}
 		}
 	}
@@ -1302,10 +1311,27 @@ EOT;
 	{
 		$bit = $this->get_bitacora(['id' => $args['id'], '_uno' => true]);
 		$emp = $this->get_empresa_debito();
+		$resultado = $this->db->select("plnbitacora", [
+			"movgasolina",
+			"movdepvehiculo"
+		], [
+			"AND" => [
+				"idplnempleado" => $bit->idplnempleado,
+				"mostrar" => 1,
+				"OR" => [
+					"movdepvehiculo[>]" => 0.00,
+					"movgasolina[>]" => 0.00
+				]
+			]
+		]);
+
+		$siempre = !empty($resultado) ? $resultado[0] : null;		
 
 		$antes = json_decode($bit->antes);
-		
-		if ($antes !== null) {
+
+		if ($bit->idempresadebito > 0) {
+			$nomempresa = $this->db->select("empresa","nomempresa",["id [=]" => $bit->idempresadebito])[0];
+		} else if ($antes !== null) {
 			$antes = get_object_vars($antes);
 			// print_r($antes); return;
 			foreach ($antes as $a => $valor) {
@@ -1315,7 +1341,6 @@ EOT;
 			}
 
 			$nomempresa = $this->db->select("empresa","nomempresa",["id [=]" => $idempresa])[0];
-
 		} else { 
 			$nomempresa = $emp->nomempresa;
 		}
@@ -1326,8 +1351,8 @@ EOT;
 			'empleado'         => $this->emp->nombre.' '.$this->emp->apellidos,
 			'empresa'          => $nomempresa,
 			'movdescripcion'   => $bit->movdescripcion,
-			'movgasolina'      => number_format($bit->movgasolina, 2), 
-			'movdepvehiculo'   => number_format($bit->movdepvehiculo, 2), 
+			'movgasolina'      => isset($siempre['movgasolina']) ? number_format($siempre['movgasolina'], 2) : number_format($bit->movgasolina, 2), 
+			'movdepvehiculo'   => isset($siempre['movdepvehiculo']) ? number_format($siempre['movdepvehiculo'], 2) : number_format($bit->movdepvehiculo, 2), 
 			'movotros'         => number_format($bit->movotros, 2), 
 			'movobservaciones' => $bit->movobservaciones,
 			'numero'           => $bit->id
@@ -1581,7 +1606,7 @@ EOT;
 		// validar si existen datos
 		if (count($data) > 0) {
 			// formatear datos antes de hacer insert
-			if (!isset($data['primernombre']) && !isset($data['primerapellido'])) {
+			if (!isset($data['primernombre']) || !isset($data['primerapellido'])) {
 				$respuesta = new StdClass;
 				$respuesta->tipo = 'error';
 				$respuesta->mensaje = 'Error, no se recibio primer nombre o primer apellido favor ingresarlos nuevamente.';
@@ -1623,7 +1648,8 @@ EOT;
 
 				if ($idpersonal > 0 && !isset($idempleado)) {
 					$this->datos = [];
-					$this->set_dato("nombre", $data['primernombre']);
+					$this->set_dato("nombre", $data['primernombre'].' '.$data['segundonombre'].' '.$data['tercernombre']);
+					$this->set_dato("apellidos", $data['primerapellido'].' '.$data['segundoapellido'].' '.$data['apellidocasada']);
 					$this->set_dato("idpersonal", $idpersonal);
 					$idempleado = $this->db->insert('plnempleado', $this->datos);
 				} else if ($idpersonal > 0 && isset($idempleado)) {
@@ -1667,7 +1693,7 @@ EOT;
 
 	public function guardarDatosLaborales($data = []) : object {
 		if (isset($data['idplnempleado']) && !isset($data['id'])) {
-			$data['id'] = $this->db->select("plnempleado","idlaboral",["id [=]" => $data['idplnempleado']]);
+			$data['id'] = $this->db->select("plnempleado","idlaboral",["id [=]" => $data['idplnempleado']])[0];
 		}
 
 		// validar si existen datos
@@ -1699,7 +1725,7 @@ EOT;
 				$this->set_dato($d,  $campo);
 			}
 
-			if (!isset($idlaboral)) {
+			if (!isset($idlaboral) || $idlaboral == null) {
 				$idlaboral = $this->db->insert('plnlaboral', $this->datos);
 
 				if (!isset($idempleado)) {
@@ -1809,5 +1835,269 @@ EOT;
 		}
 
 		return $respuesta;
+	}
+
+	public function eliminar($id) : object {
+		$idemr = $this->db->select("plnempleado","idemergencia",["id [=]" => $id])[0];
+		$idper = $this->db->select("plnempleado","idpersonal",["id [=]" => $id])[0];
+		$idlab = $this->db->select("plnempleado","idlaboral",["id [=]" => $id])[0];
+
+		if ($idemr) {
+			$elm = $this->db->delete('plnemergencia', ["id [=]" => $idemr]);
+		}
+		if ($idper) {
+			$elm = $this->db->delete('plnpersonal', ["id [=]" => $idper]);
+		}
+		if ($idlab) {
+			$elm = $this->db->delete('plnlaboral', ["id [=]" => $idlab]);
+		}
+
+		$elm = $this->db->delete('plnempleado', ["id [=]" => $id]);
+		if ($elm) {
+			$respuesta = new StdClass;
+			$respuesta->tipo = 'success';
+			$respuesta->mensaje = 'Empleado eliminado con exito.';
+		} else {
+			$respuesta = new StdClass;
+			$respuesta->tipo = 'error';
+			$respuesta->mensaje = 'Error al eliminar empleado, favor comunicarse con IT.';
+		}
+		return $respuesta;
+	}
+
+	public function crear ($data) : object {
+		// control de datos
+		$fecha = new DateTime($data->fecha);
+		$data->ingreso = $fecha->format('Y-m-d');
+		$data->segundonombre = isset($data->segundonombre) ? $data->segundonombre : '';
+		$data->tercernombre = isset($data->tercernombre) ? $data->tercernombre : '';
+		$data->segundoapellido = isset($data->segundoapellido) ? $data->segundoapellido : '';
+		$data->apellidocasada = isset($data->apellidocasada) ? $data->apellidocasada : '';
+
+		// crear empleado en general
+		$this->datos = [];
+		$this->set_dato("nombre", $data->primernombre.' '.$data->segundonombre.' '.$data->tercernombre);
+		$this->set_dato("apellidos", $data->primerapellido.' '.$data->segundoapellido.' '.$data->apellidocasada);
+		$this->set_dato("ingreso", $data->ingreso);
+
+		$idempleado = $this->db->insert('plnempleado', $this->datos);
+
+		// crear datos personales
+		$this->datos = [];
+		$this->set_dato("primernombre", $data->primernombre);
+		$this->set_dato("segundonombre", $data->segundonombre);
+		$this->set_dato("tercernombre", $data->tercernombre);
+		$this->set_dato("primerapellido", $data->primerapellido);
+		$this->set_dato("segundoapellido", $data->segundoapellido);
+		$this->set_dato("apellidocasada", $data->apellidocasada);
+
+		$idpersonal = $this->db->insert('plnpersonal', $this->datos);
+
+		// crear datos laborales
+		$this->datos = [];
+		$this->set_dato("ingreso", $data->ingreso);
+		$this->set_dato("idempresaactual", $data->idempresaactual);
+		$this->set_dato("idempresadebito", $data->idempresadebito);
+		$this->set_dato("sueldo", $data->sueldo);
+		$this->set_dato("bonificacionley", $data->bonificacionley);
+		$this->set_dato("descuentoisr", $data->descuentoisr);
+		$this->set_dato("porcentajeigss", $data->porcentajeigss);
+
+		$idlaboral = $this->db->insert('plnlaboral', $this->datos);
+
+		// asignarle los datos personales y laborales al empleado
+		$this->datos = [];
+		$this->set_dato("idpersonal", $idpersonal);
+		$this->set_dato("idlaboral", $idlaboral);
+		$this->db->update('plnempleado', $this->datos, ["id [=]" => $idempleado]);
+
+		// generar bitacora de nuevo ingreso
+		$idbitacora = $this->generarBitacora($idempleado, 10, $data, 'NUEVO INGRESO');
+
+		if ($idempleado > 0) {
+			if ($idpersonal > 0) {
+				if ($idlaboral > 0) {
+					if ($idbitacora > 0) {
+						$respuesta = new StdClass;
+						$respuesta->tipo = 'success';
+						$respuesta->mensaje = 'Empleado creado con exito.';
+						$respuesta->id = $idempleado;
+					} else {
+						$respuesta = new StdClass;
+						$respuesta->tipo = 'error';
+						$respuesta->mensaje = 'Error al crear bitacora, favor comunicarse con IT.';
+					}
+				} else {
+					$respuesta = new StdClass;
+					$respuesta->tipo = 'error';
+					$respuesta->mensaje = 'Error al crear datos laborales, favor comunicarse con IT.';
+				}
+			} else {
+				$respuesta = new StdClass;
+				$respuesta->tipo = 'error';
+				$respuesta->mensaje = 'Error al crear datos personales, favor comunicarse con IT.';
+			}
+		} else {
+			$respuesta = new StdClass;
+			$respuesta->tipo = 'error';
+			$respuesta->mensaje = 'Error al crear empleado, favor volver a intentar.';
+		}
+
+		return $respuesta;
+	}
+
+	public function alta ($data) : object {
+		$fecha = new DateTime($data->reingreso);
+		$data->reingreso = $fecha->format('Y-m-d');
+
+		$data_anterior = $this->db->select("plnlaboral","*",["id" => $data->id])[0];
+		$anterior = new StdClass;
+		$anterior->movobservaciones = $data->movobservaciones;
+		$anterior->idempresadebito = $data_anterior['idempresadebito'];
+		$anterior->idempresaactual = $data_anterior['idempresaactual'];
+		$anterior->sueldo = $data_anterior['sueldo'];
+		$anterior->bonificacionley = $data_anterior['bonificacionley'];
+		$anterior->descuentoisr = $data_anterior['descuentoisr'];
+		$anterior->porcentajeigss = $data_anterior['porcentajeigss'];
+		$anterior->idcuenta = $data_anterior['idcuenta'];
+		$anterior->idproyecto = $data_anterior['idproyecto'];
+		$anterior->baja = $data_anterior['baja'];
+		$anterior->reingreso = $data_anterior['reingreso'];
+
+		$this->datos = [];
+		$this->set_dato("reingreso", $data->reingreso);
+		$this->set_dato("baja", null);
+		$this->set_dato("idempresaactual", $data->idempresaactual);
+		$this->set_dato("idempresadebito", $data->idempresadebito);
+		$this->set_dato("sueldo", $data->sueldo);
+		$this->set_dato("bonificacionley", $data->bonificacionley);
+		$this->set_dato("descuentoisr", $data->descuentoisr);
+		$this->set_dato("porcentajeigss", $data->porcentajeigss);
+		if ($data->idcuenta > 0) {
+			$this->set_dato("idcuenta", $data->idcuenta);
+		}
+		if ($data->idproyecto > 0) {
+			$this->set_dato("idproyecto", $data->idproyecto);
+		}
+
+		$upd = $this->db->update('plnlaboral', $this->datos, ["id [=]" => $data->id]);
+
+		if ($upd) {
+				$this->datos = [];
+				$this->set_dato("baja", null); 
+				$upd = $this->db->update('plnempleado', $this->datos, ["id [=]" => $data->idplnempleado]);
+			if ($upd) {
+				if ($this->generarBitacora($data->idplnempleado, 6, $anterior, 'REINGRESO', 1) > 0) {
+					$respuesta = new StdClass;
+					$respuesta->tipo = 'success';
+					$respuesta->mensaje = 'Empleado dado de alta con exito.';
+					$respuesta->id = $data->idplnempleado;
+				} else {
+					$respuesta = new StdClass;
+					$respuesta->tipo = 'error';
+					$respuesta->mensaje = 'No se pudo generar bitacora de reingreso.';
+					$respuesta->id = $data->idplnempleado;
+				}
+			} else {
+				$respuesta = new StdClass;
+				$respuesta->tipo = 'error';
+				$respuesta->mensaje = 'No se pudo dar de alta al empleado.';
+				$respuesta->id = $data->idplnempleado;
+			}
+		} else {
+			$respuesta = new StdClass;
+			$respuesta->tipo = 'error';
+			$respuesta->mensaje = 'No se pudo editar datos laborales.';
+			$respuesta->id = $data->idplnempleado;
+		}
+		return $respuesta;
+	} 
+
+	public function baja ($data) : object {
+		$idlaboral = $this->db->select("plnempleado","idlaboral",["id [=]" => $data->empleado])[0];
+
+		$data_anterior = $this->db->select("plnlaboral","*",["id" => $idlaboral])[0];
+		$anterior = new StdClass;
+		$anterior->movobservaciones = $data->concepto;
+		$anterior->baja = $data_anterior['baja'];
+		$anterior->reingreso = $data_anterior['reingreso'];
+
+		$fecha = new DateTime($data->fecha_egreso);
+		$data->baja = $fecha->format('Y-m-d');
+
+		$upd = $this->db->update('plnlaboral', ["baja" => $data->baja], ["id [=]" => $idlaboral]);
+		if ($upd) {
+			$upd = $this->db->update('plnempleado', ["baja" => $data->baja], ["id [=]" => $data->empleado]);
+			if ($upd) {
+				if ($this->generarBitacora($data->empleado, 3, $anterior, 'BAJA DE EMPLEADO', 1) > 0) {
+					$respuesta = new StdClass;
+					$respuesta->tipo = 'success';
+					$respuesta->mensaje = 'Empleado dado de baja con exito.';
+					$respuesta->id = $data->empleado;
+				} else {
+					$respuesta = new StdClass;
+					$respuesta->tipo = 'error';
+					$respuesta->mensaje = 'No se pudo generar bitacora de baja.';
+					$respuesta->id = $data->empleado;
+				}
+			} else {
+				$respuesta = new StdClass;
+				$respuesta->tipo = 'error';
+				$respuesta->mensaje = 'No se pudo dar de baja al empleado.';
+				$respuesta->id = $data->empleado;
+			}
+		} else {
+			$respuesta = new StdClass;
+			$respuesta->tipo = 'error';
+			$respuesta->mensaje = 'No se pudo dar de baja al empleado.';
+			$respuesta->id = $data->empleado;
+		}
+		return $respuesta;
+	}
+
+	private function generarBitacora ($idempleado, $tipo, $datos = [], $descripcion, $revertir = 0) : int {
+		$this->datos = [];
+		$this->set_dato("idplnempleado", $idempleado);
+		$this->set_dato("usuario", 1);
+		$this->set_dato("movfecha", date('Y-m-d'));
+		$this->set_dato("movdescripcion", $descripcion);
+		$this->set_dato("movobservaciones", $datos->movobservaciones);
+		$this->set_dato("mostrar", 1);
+		$this->set_dato("idplnmovimiento", $tipo);
+		$this->set_dato("revertir", $revertir);
+
+		if (isset($datos->idempresadebito) && $datos->idempresadebito > 0) {
+			$this->set_dato("idempresadebito", $datos->idempresadebito);
+		}
+		if (isset($datos->idempresaactual) && $datos->idempresaactual > 0) {
+			$this->set_dato("idempresaactual", $datos->idempresaactual);
+		}
+		if (isset($datos->sueldo) && $datos->sueldo > 0) {
+			$this->set_dato("sueldo", $datos->sueldo);
+		}	
+		if (isset($datos->bonificacionley) && $datos->bonificacionley > 0) {
+			$this->set_dato("bonificacionley", $datos->bonificacionley);
+		}
+		if (isset($datos->descuentoisr) && $datos->descuentoisr > 0) {
+			$this->set_dato("descuentoisr", $datos->descuentoisr);
+		}
+		if (isset($datos->porcentajeigss) && $datos->porcentajeigss > 0) {
+			$this->set_dato("porcentajeigss", $datos->porcentajeigss);
+		}
+		if (isset($datos->idcuenta) && $datos->idcuenta > 0) {
+			$this->set_dato("idcuenta", $datos->idcuenta);
+		}
+		if (isset($datos->idproyecto) && $datos->idproyecto > 0) {
+			$this->set_dato("idproyecto", $datos->idproyecto);
+		}
+		if (isset($datos->baja) && $datos->baja != null) {
+			$this->set_dato("baja", $datos->baja);
+		}
+		if (isset($datos->reingreso) && $datos->reingreso != null) {
+			$this->set_dato("reingreso", $datos->reingreso);
+		}
+
+		$idbitacora = $this->db->insert('plnbitacora', $this->datos);
+		return $idbitacora;
 	}
 }

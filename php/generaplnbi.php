@@ -9,17 +9,17 @@ $db = new dbcpm();
 
 $app->post('/generar', function() use($db){
     $d = json_decode(file_get_contents('php://input'));
-    $query = "SELECT z.tipo, z.cuenta, LPAD(@row := @row + 1, 20, ' ') AS contador, z.nombre, z.monto, ";
-    $query.= "CONCAT('PLANILLA DEL ', LPAD(DAY('$d->fdelstr'), 2, ' '), ' DE ', (SELECT nombre FROM mes WHERE id = MONTH('$d->fdelstr')), ' AL ', ";
-    $query.= "LPAD(DAY('$d->falstr'), 2, ' '), ' DE ', (SELECT nombre FROM mes WHERE id = MONTH('$d->falstr')), ' DEL ', YEAR('$d->falstr')) AS concepto ";
-    $query.= "FROM (";
-    $query.= "SELECT 1 AS tipo, LPAD(TRIM(b.cuentabanco), 10, ' ') AS cuenta, RPAD(CONCAT(TRIM(b.nombre), ' ', IFNULL(TRIM(b.apellidos), '')), 100, ' ') AS nombre, LPAD(a.liquido, 25,' ') AS monto ";
-    $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto ";
-    $query.= "WHERE a.idempresa = $d->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido <> 0 AND b.cuentabanco IS NOT NULL ";
-    $query.= "AND b.mediopago = 3 ";
-    $query.= "ORDER BY c.descripcion, b.nombre, b.apellidos, a.fecha";
-    $query.= ") z, (SELECT @row:= 0) r";
-
+    $query = "SELECT z.tipo, z.cuenta, LPAD(@row := @row + 1, 20, ' ') AS contador, z.nombre, z.monto, 
+    CONCAT('PLANILLA DEL ', LPAD(DAY('$d->fdelstr'), 2, ' '), ' DE ', 
+    (SELECT nombre FROM mes WHERE id = MONTH('$d->fdelstr')), ' AL ', LPAD(DAY('$d->falstr'), 2, ' '), ' DE ', 
+    (SELECT nombre FROM mes WHERE id = MONTH('$d->falstr')), ' DEL ', YEAR('$d->falstr')) AS concepto 
+    FROM (SELECT 1 AS tipo, LPAD(TRIM(e.cuentabanco), 10, ' ') AS cuenta, RPAD(CONCAT(d.primernombre, ' ', 
+    d.segundonombre, ' ', d.tercernombre, ' ', d.primerapellido, ' ', d.segundoapellido, ' ', d.apellidocasada), 100, ' ') AS nombre, 
+    LPAD(a.liquido, 25,' ') AS monto FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado 
+    INNER JOIN plnpersonal d ON b.idpersonal = d.id INNER JOIN plnlaboral e ON b.idlaboral = e.id 
+    LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto WHERE a.idempresa = $d->idempresa AND a.fecha >= '$d->fdelstr' 
+    AND a.fecha <= '$d->falstr' AND a.liquido <> 0 AND b.cuentabanco IS NOT NULL AND b.mediopago = 3 
+    ORDER BY c.descripcion, b.nombre, b.apellidos, a.fecha) z, (SELECT @row:= 0) r";
     print $db->doSelectASJson($query);
 });
 
@@ -57,10 +57,10 @@ function genDetContDoc($db, $d, $idtranban, $concepto, $idctabanco, $mediopago, 
     $query.= "SUM(a.viaticos) AS viaticos, SUM(a.otrosingresos) AS otros_ingr, SUM(a.vacaciones) AS vacaciones, SUM(a.aguinaldo) AS aguinaldo, SUM(a.bonocatorce) AS bono_14, SUM(a.indemnizacion) AS indemniza, ";
     $query.= "SUM(a.descigss) AS desc_igss, SUM(a.descisr) AS desc_isr, SUM(a.descanticipo) AS desc_anti, SUM(a.descprestamo) AS desc_prest, SUM(a.descotros) AS otros_desc, SUM(a.liquido) AS liquido, ";
     $query.= "ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * c.patronaligss), 2) AS cuotapatronaligss ";
-    $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnempresa c ON c.id = b.idempresaactual ";
+    $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral d ON b.idlaboral = d.id INNER JOIN plnempresa c ON c.id = d.idempresaactual ";
     $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' ";
-    $query.= $mediopago == 3 ? "AND b.cuentabanco IS NOT NULL AND LENGTH(TRIM(b.cuentabanco)) > 0 " : '';
-    $query.= "AND b.mediopago = $mediopago AND a.idempresa = $d->idempresa ";
+    $query.= $mediopago == 3 ? "AND d.cuentabanco IS NOT NULL AND d.cuentabanco > 0 " : '';
+    $query.= "AND d.mediopago = $mediopago AND a.idempresa = $d->idempresa ";
     $query.= $idempleado == 0 ? '' : "AND a.idplnempleado = $idempleado ";
     //print $query;
     $sumas = $db->getQuery($query);
@@ -165,11 +165,11 @@ function genDetContDoc($db, $d, $idtranban, $concepto, $idctabanco, $mediopago, 
 
         //Préstamos
         if((float)$suma->desc_prest != 0.00){
-            $query = "SELECT b.idempresadebito AS deptodeb, a.fecha, a.descprestamo AS desc_prest, b.cuentapersonal, CONCAT(IFNULL(TRIM(b.nombre), ''), ' ', IFNULL(TRIM(b.apellidos), '')) AS nombre ";
-            $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado ";
+            $query = "SELECT c.idempresadebito AS deptodeb, a.fecha, a.descprestamo AS desc_prest, c.idcuenta AS cuentapersonal, CONCAT(IFNULL(TRIM(b.nombre), ''), ' ', IFNULL(TRIM(b.apellidos), '')) AS nombre ";
+            $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral c ON b.idlaboral = c.id ";
             $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido > 0 ";
-            $query.= $mediopago == 3 ? "AND b.cuentabanco IS NOT NULL AND LENGTH(TRIM(b.cuentabanco)) > 0 " : '';
-            $query.= "AND a.descprestamo <> 0 AND b.mediopago = $mediopago AND ";
+            $query.= $mediopago == 3 ? "AND c.cuentabanco IS NOT NULL AND c.cuentabanco > 0 " : '';
+            $query.= "AND a.descprestamo <> 0 AND c.mediopago = $mediopago AND ";
             $query.= "a.idempresa = $d->idempresa ";
             $query.= $idempleado == 0 ? '' : "AND a.idplnempleado = $idempleado ";
             $query.= "ORDER BY b.nombre, b.apellidos";
@@ -178,10 +178,10 @@ function genDetContDoc($db, $d, $idtranban, $concepto, $idctabanco, $mediopago, 
             $cntPrestamos = count($prestamos);
             for($i = 0; $i < $cntPrestamos; $i++){
                 $prestamo = $prestamos[$i];
-                $query = "SELECT id FROM cuentac WHERE idempresa = $d->idempresa AND TRIM(codigo) = '".trim($prestamo->cuentapersonal)."'";
-                $idctaempleado = (int)$db->getOneField($query);
+                // $query = "SELECT id FROM cuentac WHERE idempresa = $d->idempresa AND TRIM(codigo) = '".trim($prestamo->cuentapersonal)."'";
+                // $idctaempleado = (int)$db->getOneField($query);
                 if($idctaempleado > 0){
-                    insertaDetalleContable($origen, $idtranban, $idctaempleado, 0.00, $prestamo->desc_prest, "PLANILLA $concepto", 1, 0);
+                    insertaDetalleContable($origen, $idtranban, $$prestamo->cuentapersonal, 0.00, $prestamo->desc_prest, "PLANILLA $concepto", 1, 0);
                 }
             }
         }
@@ -228,13 +228,13 @@ $app->post('/generand', function() use($db){
 
     $query = "SELECT z.tipo, z.cuenta, @row := @row + 1 AS contador, z.nombre, z.monto, z.cuentacontable ";
     $query.= "FROM (";
-    $query.= "SELECT 3 AS tipo, TRIM(b.cuentabanco) AS cuenta, TRIM(CONCAT(TRIM(b.nombre), ' ', IFNULL(TRIM(b.apellidos), ''))) AS nombre, a.liquido AS monto, b.cuentapersonal AS cuentacontable ";
-    $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto LEFT JOIN plnempresa d ON d.id = b.idempresaactual ";
+    $query.= "SELECT 3 AS tipo, TRIM(b.cuentabanco) AS cuenta, TRIM(CONCAT(TRIM(b.nombre), ' ', IFNULL(TRIM(b.apellidos), ''))) AS nombre, a.liquido AS monto, e.idcuenta AS cuentacontable ";
+    $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral e ON b.idlaboral = e.id LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto LEFT JOIN plnempresa d ON d.id = b.idempresaactual ";
     $query.= "WHERE a.idempresa = $d->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido <> 0 AND b.cuentabanco IS NOT NULL ";
     $query.= "AND b.mediopago = 3 ";
     $query.= "ORDER BY d.ordenreppres, b.nombre, b.apellidos";
     $query.= ") z, (SELECT @row:= 0) r";
-    //print $query;
+    // print $query;
     $empleados = $db->getQuery($query);
     $cntEmpleados = count($empleados);
 
@@ -289,15 +289,15 @@ $app->post('/generachq', function() use($db){
         $empresa = $d->empresas[$i];
         $query = "SELECT z.tipo, z.cuenta, @row := @row + 1 AS contador, z.nombre, z.monto, z.cuentacontable, z.idempleado, z.concepto ";
         $query.= "FROM (";
-        $query.= "SELECT 3 AS tipo, TRIM(b.cuentabanco) AS cuenta, TRIM(CONCAT(TRIM(b.nombre), ' ', IFNULL(TRIM(b.apellidos), ''))) AS nombre, a.liquido AS monto, b.cuentapersonal AS cuentacontable, b.id AS idempleado, ";
+        $query.= "SELECT 3 AS tipo, TRIM(e.cuentabanco) AS cuenta, TRIM(CONCAT(TRIM(b.nombre), ' ', IFNULL(TRIM(b.apellidos), ''))) AS nombre, a.liquido AS monto, e.idcuenta AS cuentacontable, b.id AS idempleado, ";
         $query.= "CONCAT('DEL ', LPAD(DAY('$d->fdelstr'), 2, ' '), ' DE ', (SELECT nombre FROM mes WHERE id = MONTH('$d->fdelstr')), ' AL ', ";
         $query.= "LPAD(DAY('$d->falstr'), 2, ' '), ' DE ', (SELECT nombre FROM mes WHERE id = MONTH('$d->falstr')), ' DEL ', YEAR('$d->falstr')) AS concepto ";
-        $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto LEFT JOIN plnempresa d ON d.id = b.idempresaactual ";
+        $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral e ON b.idlaboral = e.id LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto LEFT JOIN plnempresa d ON d.id = e.idempresaactual ";
         $query.= "WHERE a.idempresa = $empresa->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido <> 0 ";
         $query.= "AND b.mediopago = 1 ";
         $query.= "ORDER BY d.ordenreppres, b.nombre, b.apellidos";
         $query.= ") z, (SELECT @row:= 0) r";
-        //print $query;
+        // print $query;
         $empleados = $db->getQuery($query);
         $cntEmpleados = count($empleados);
 

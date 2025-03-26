@@ -91,18 +91,10 @@ class General extends Principal
 		return $this->db->select(
 			"plnempleado", 
 			[
-				"[>]plnpersonal(b)" => ["plnempleado.idpersonal" => "id"],
-				"[>]plnlaboral(c)" => ["plnempleado.idlaboral" => "id"]
+				"[>]plnpersonal(b)" => ["plnempleado.idpersonal" => "id"]
 			],
 			[
 				"plnempleado.id",
-				"plnempleado.nombre",
-				"plnempleado.direccion",
-				"plnempleado.telefono",		
-				"plnempleado.correo",
-				"plnempleado.idplnpuesto",
-				"plnempleado.idpersonal",
-				"plnempleado.apellidos",
 				"plnempleado.idplnpuesto",
 				"b.primernombre",
 				"b.segundonombre",
@@ -110,10 +102,9 @@ class General extends Principal
 				"b.primerapellido",
 				"b.segundoapellido",
 				"b.apellidocasada",
-				"b.direccion(dir)",
-				"b.telefono(tel)",
-				"b.correo(correoe)",
-				"c.idpuesto"
+				"b.direccion",
+				"b.telefono",
+				"b.correo"
 			],
 			$condicion
 		);
@@ -412,15 +403,15 @@ class General extends Principal
     	}
 
     	if (elemento($args, "empresa")) {
-    		$condiciones .= " AND c.idempresaactual = " . $args["empresa"];
+    		$condiciones .= " AND e.idempresaactual = " . $args["empresa"];
 		}
 		
 		if (elemento($args, "empresa_debito")) {
-    		$condiciones .= " AND c.idempresadebito = " . $args["empresa"];
+    		$condiciones .= " AND e.idempresadebito = " . $args["empresa"];
     	}
 
     	if (elemento($args, "actual")) {
-    		$condiciones .= " AND c.idempresaactual = " . $args["actual"];
+    		$condiciones .= " AND e.idempresaactual = " . $args["actual"];
     	}
 
     	if (isset($args["activo"])) {
@@ -460,8 +451,10 @@ class General extends Principal
                 plnextra AS b ON a.idplnextra = b.id
                 	INNER JOIN 
                 plnempleado c on c.id = a.idplnempleado
+					INNER JOIN
+				plnlaboral e ON c.idlaboral = e.id
                 	INNER JOIN 
-    			plnempresa d ON d.id = c.idempresaactual
+    			plnempresa d ON d.id = e.idempresaactual
             WHERE a.id > 0 
 			{$condiciones} 
 			
@@ -573,7 +566,8 @@ EOT;
 			"c.nombre",
 			"c.apellidos",
 			"c.dpi",
-			"d.descripcion (movimiento)"
+			"d.descripcion (movimiento)",
+			"plnbitacora.revertir"
 		];
 
 		if (!isset($args["_reporte"])) {
@@ -583,6 +577,7 @@ EOT;
 			$select[] = "plnbitacora.antes";
 			$select[] = "plnbitacora.despues";
 			$select[] = "plnbitacora.idplnmovimiento";
+			$select[] = "plnbitacora.idempresadebito";
 		}
 
 		$tmp = $this->db->select("plnbitacora", [

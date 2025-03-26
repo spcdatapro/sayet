@@ -36,6 +36,11 @@
 			color: #aaa;
 			/* Color del ícono */
 		}
+
+		/* .toolbar {
+			float: left;
+			margin-bottom: 10px;
+		} */
 	</style>
 </head>
 <div class="container-fluid" ng-controller="MntEmpleadoController">
@@ -77,7 +82,7 @@
 		<div class="panel-heading">
 			<h3 class="panel-title">
 				Formulario para empleado
-				<button class="btn btn-xs btn-danger pull-right" ng-click="formulario = false">
+				<button class="btn btn-xs btn-danger pull-right" ng-click="formulario = false" title="cerrar">
 					<i class="glyphicon glyphicon-remove"></i>
 				</button>
 			</h3>
@@ -154,10 +159,10 @@
 								</tr>
 								<tr ng-show="emp.activo == 0">
 									<td>
-										<h5 class="negro">Baja</h5>
+										<h5 class="negro">Baja:</h5>
 									</td>
 									<td>
-										<h5 class="negro">{{emp.baja | date: 'dd/MM/yyyy'}}</h5>
+										<h5 class="negro">{{emp.fecha_baja | date: 'dd/MM/yyyy'}}</h5>
 									</td>
 								</tr>
 								<tr>
@@ -189,9 +194,13 @@
 					<div class="panel panel-default">
 						<nav>
 							<ul class="nav nav-pills nav-stacked">
-								<li role="presentation" class="active">
+								<!-- <li role="presentation">
 									<a show-tab href="#home" aria-controls="home" role="tab" data-toggle="tab">Datos
 										personales</a>
+								</li> -->
+								<li role="presentation" class="active">
+									<a show-tab href="#nuevo" aria-controls="bitacora" role="tab"
+										data-toggle="tab">Datos</a>
 								</li>
 								<li role="presentation">
 									<a show-tab href="#archivos" aria-controls="archivos" role="tab"
@@ -201,10 +210,6 @@
 									<a show-tab href="#bitacora" aria-controls="bitacora" role="tab"
 										data-toggle="tab">Movimiento de
 										Personal</a>
-								</li>
-								<li role="presentation">
-									<a show-tab href="#nuevo" aria-controls="bitacora" role="tab"
-										data-toggle="tab">Datos nuevos</a>
 								</li>
 							</ul>
 						</nav>
@@ -232,8 +237,8 @@
 
 			<!-- Tab panes -->
 			<div class="tab-content">
-				<div role="tabpanel" class="tab-pane active" id="home">
-					<div class="col-md-8">
+				<!-- <div role="tabpanel" class="tab-pane" id="home"> 
+					<div class="col-md-8"> 
 						<br>
 						<form class="form-horizontal" novalidate role="form">
 							<fieldset>
@@ -511,8 +516,8 @@
 											id="inputTipoMovimiento"
 											ng-options="item.id as item.descripcion for item in movimiento"></select>
 									</div>
-								</div>
-								<!-- <div class="form-group form-group-sm">
+								</div> -->
+				<!-- <div class="form-group form-group-sm">
 								<label for="inputMovGasolina" class="col-sm-2 control-label">Gasolina:</label>
 								<div class="col-sm-4">
 									<input type="number" step="0.01" class="form-control" ng-model="emp.movgasolina"
@@ -532,7 +537,7 @@
 										id="inputMovOtros">
 								</div>
 							</div>  -->
-								<div class="form-group form-group-sm">
+				<!-- <div class="form-group form-group-sm">
 									<label for="inputMovObservaciones"
 										class="col-sm-2 control-label">Observaciones:</label>
 									<div class="col-sm-10">
@@ -589,27 +594,25 @@
 									</button>
 								</div>
 							</div>
-						</form>
-					</div>
-				</div>
-				<div id="nuevo" class="tab-pane">
+						</form> -->
+				<!-- </div> -->
+				<!-- </div> -->
+				<div id="nuevo" class="tab-pane active">
 					<div class="col-md-8">
 						<div class="panel" ng-class="empleadoForm.$invalid ? 'panel-danger' : 'panel-success'">
 							<div class="panel-heading">
 								<div class="row">
-									<div class="col-md-10" style="color: black;">
+									<div class="col-md-12" style="color: black;">
 										Datos personales
-									</div>
-									<div class="col-md-2" style="text-align: right;">
 										<a style="color: black;"
 											ng-class="!form_personal ? 'glyphicon glyphicon-chevron-down' : 'glyphicon glyphicon-chevron-up'"
-											ng-click="formPersonal()"></a>
+											ng-click="formPersonal()" class="pull-right"></a>
 									</div>
 								</div>
 							</div>
 							<div class="panel-body" ng-show="form_personal">
 								<form novalidate role="form" id="empleadoForm" name="empleadoForm"
-									ng-submit="addDatosPersonales(per, aceptar)">
+									ng-submit="addDatosPersonales(per, true)">
 									<div class="row">
 										<div class="col-md-6">
 											<div class="form-group required">
@@ -949,13 +952,11 @@
 						<div class="panel" ng-class="empleadoLaboral.$invalid ? 'panel-danger' : 'panel-success'">
 							<div class="panel-heading">
 								<div class="row">
-									<div class="col-md-10" style="color: black;">
+									<div class="col-md-12" style="color: black;">
 										Datos laborales
-									</div>
-									<div class="col-md-2" style="text-align: right;">
 										<a style="color: black;"
 											ng-class="!form_laboral ? 'glyphicon glyphicon-chevron-down' : 'glyphicon glyphicon-chevron-up'"
-											ng-click="formLaboral()"></a>
+											ng-click="formLaboral()" class="pull-right"></a>
 									</div>
 								</div>
 							</div>
@@ -1268,13 +1269,11 @@
 						<div class="panel" ng-class="empleadoEmergencia.$invalid ? 'panel-danger' : 'panel-success'">
 							<div class="panel-heading">
 								<div class="row">
-									<div class="col-md-10" style="color: black;">
+									<div class="col-md-12" style="color: black;">
 										Contacto de emergencia
-									</div>
-									<div class="col-md-2" style="text-align: right;">
 										<a style="color: black;"
 											ng-class="!form_emergencia ? 'glyphicon glyphicon-chevron-down' : 'glyphicon glyphicon-chevron-up'"
-											ng-click="formEmergencia()"></a>
+											ng-click="formEmergencia()" class="pull-right"></a>
 									</div>
 								</div>
 							</div>
@@ -1339,10 +1338,10 @@
 						<div class="row">
 							<div class="col-md-12">
 								<div class="form-group">
-									<label class="control-label">Puesto interno:</label>
 									<ui-select ng-model="emp.idplnpuesto" title="Seleccione un puesto..."
 										theme="bootstrap" autofocus="false" ng-disabled="!hay" ng-change="guardar(emp)">
-										<ui-select-match placeholder="Seleccionar un puesto" allow-clear="false">
+										<ui-select-match placeholder="Seleccionar un puesto interno"
+											allow-clear="false">
 											<span ng-bind="($select.selected.descripcion)"></span>
 										</ui-select-match>
 										<ui-select-choices repeat="item.id as item in puestos | filter:$select.search">
@@ -1356,12 +1355,57 @@
 						</div>
 						<div class="row">
 							<div class="col-md-12">
-								<textarea name="conceptoAdicional" id="conceptoAdicional" rows="4"
-									ng-model="emp.observaciones" class="form-control"
-									placeholder="Ingresar observaciones para el empleado"
-									ng-blur="guardar(emp)"></textarea>
+								<div class="form-group">
+									<textarea name="conceptoAdicional" id="conceptoAdicional"
+										ng-model="emp.observaciones" class="form-control"
+										placeholder="Ingresar observaciones para el empleado"
+										ng-blur="guardar(emp)"></textarea>
+								</div>
 							</div>
 						</div>
+						<div class="row" ng-show="hay">
+							<div class="col-md-12">
+								<div class="form-group">
+									<div class="btn-group btn-group-justified" role="group">
+										<div class="btn-group" role="group">
+											<button class="btn"
+												ng-class="emp.activo == 0 ? 'btn-default' : 'btn-primary'"
+												title="Imprimir ficha" type="button" ng-click="imprimirFicha(emp)">
+												<i class="fi fi-sr-print"></i> Imprimir
+											</button>
+										</div>
+										<div class="btn-group" role="group" ng-show="emp.activo == 0" ng-click="darAlta()">
+											<button class="btn btn-primary" title="Dar de alta" type="button">
+												<i class="fi fi-sr-up"></i> Dar de alta
+											</button>
+										</div>
+										<div class="btn-group" role="group" ng-show="eliminable"><button
+												class="btn btn-danger" title="Eliminar" type="button"
+												ng-click="eliminar(emp.id)">
+												<i class="fi fi-sr-delete-user"></i> Eliminar
+											</button></div>
+										<div class="btn-group" role="group">
+											<button class="btn btn-default" title="Crear nuevo empleado" type="button"
+												ng-click="mostrarForm()">
+												<i class="fi fi-sr-user-add"></i> Nuevo
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- <div class="row">
+							<div class="col-md-12">
+								<div class="btn-group btn-group-justified">
+									<div class="btn-group" role="group">
+										<button type="button" class="btn btn-default" title="Cancelar"
+											ng-click="cancelar()">
+											Cancelar
+										</button>
+									</div>
+								</div>
+							</div>
+						</div> -->
 					</div>
 				</div>
 				<div role="tabpanel" class="tab-pane" id="archivos">
@@ -1429,70 +1473,97 @@
 		</div>
 	</div>
 
-	<div class="panel panel-primary" ng-show="resultados">
+	<div class="panel panel-primary" ng-show="empleados.length > 0 && !formulario">
 		<div class="panel-heading" style="font-size: large;">
 			Listado de empleados
 		</div>
-		<div class="table-responsive">
-			<table class="table table-hover">
-				<caption>
-					<form ng-submit="buscar(bus)" class="form-horizontal" role="search">
-						<div class="form-group">
-							<label for="verActivos" class="control-label col-md-1">Activos:</label>
-							<div class="col-md-1">
-								<input type="checkbox" name="verActivos" id="verActivos" class="form-control input-sm"
-									ng-true-value="1" ng-false-value="0" ng-model="ver_activos" />
+		<div class="panel-body">
+			<div class="table-responsive">
+				<table class="table table-hover table-responsive">
+					<caption>
+						<div class="row">
+							<div class="col-md-3 form-inline">
+								<label>Ver
+									<select class="form-control input-sm" ng-model="ver_activos">
+										<option value="1">Activos</option>
+										<option value="2">Inactivos</option>
+										<option value="null">Todos</option>
+									</select>
+								</label>
 							</div>
-							<div class="col-md-8">
+							<div class="col-md-6">
 								<div class="search-container">
-									<input name="srchTxt" id="srchTxt" type="text" class="form-control input-sm"
-										ng-model="lookFor.$" placeholder="Buscar empleado" />
+									<input name="srchTxt" id="srchTxt" type="search" class="form-control input-sm"
+										placeholder="Buscar empleado" ng-model="lookFor" />
 									<i class="fa fa-search search-icon"></i>
 								</div>
 							</div>
-							<div class="col-md-2">
+							<div class="col-md-2 col-md-offset-1">
 								<div class="btn-group">
-									<button type="button" class="btn btn-default btn-sm" ng-click="mostrarForm()" title="Crear nuevo empleado">
-										<i class="glyphicon glyphicon-plus"></i> Nuevo
+									<button type="button" class="btn btn-default btn-sm" ng-click="mostrarForm()"
+										title="Crear nuevo empleado">
+										<i class="fi fi-sr-user-add"></i> Nuevo
 									</button>
-									<button type="button" class="btn btn-primary btn-sm" ng-click="getRepEmpleador()" title="Descargar reporte empleador" ng-disabled="cargando">
-										<i ng-show="false" class="fa fa-file-excel-o"></i>
-										Empleador
+									<button type="button" class="btn btn-success btn-sm" ng-click="getRepEmpleador()"
+										title="Descargar reporte empleador" ng-disabled="cargando">
+										<i class="fa fa-file-excel-o"></i> Empleador
 									</button>
 								</div>
 							</div>
 						</div>
-					</form>
-				</caption>
-				<thead>
-					<tr ng-show="cargando">
-						<th colspan="5">Descargando reporte...</th>
-					</tr>
-					<tr>
-						<th>Nombre</th>
-						<th>Dirección</th>
-						<th>Teléfono</th>
-						<th>Correo</th>
-						<th>Puesto</th>
-					</tr>
-				</thead>
-				<tbody ng-cloak>
-					<tr ng-repeat="e in empleados | filter:lookFor" ng-click="getEmpleado(e.id)">
-						<td>{{ e.nombre }} {{ e.apellidos }}</td>
-						<td>{{ e.direccion }}</td>
-						<td>{{ e.telefono }}</td>
-						<td>{{ e.correo }}</td>
-						<td>{{ e.puesto }}</td>
-					</tr>
-				</tbody>
-				<!-- <tfoot ng-show="buscarmas">
-					<tr>
-						<td colspan="5" class="text-center">
-							<button type="button" class="btn btn-default" ng-click="mas()">Más</button>
-						</td>
-					</tr>
-				</tfoot> -->
-			</table>
+					</caption>
+					<thead>
+						<tr>
+							<th>Código</th>
+							<th>Nombre</th>
+							<th>Dirección</th>
+							<th>Teléfono</th>
+							<th>Puesto</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="e in paginatedEmpleados()" ng-click="getEmpleado(e.id)">
+							<td>{{ e.id }}</td>
+							<td>{{ e.nombre }} {{ e.apellidos }}</td>
+							<td>{{ e.direccion }}</td>
+							<td>{{ e.telefono }}</td>
+							<td>{{ e.puesto }}</td>
+						</tr>
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="5">
+								<div class="pull-right">
+									<button class="btn btn-sm btn-default" ng-click="setPage(currentPage - 1)"
+										ng-disabled="currentPage == 1">Anterior</button>
+									<span>Página {{currentPage}} de {{totalPages}}</span>
+									<button class="btn btn-sm btn-default" ng-click="setPage(currentPage + 1)"
+										ng-disabled="currentPage == totalPages">Siguiente</button>
+								</div>
+							</td>
+						</tr>
+					</tfoot>
+				</table>
+				<div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div ng-show="empleados.length === 0">
+		<div class="row">
+			<div class="col-md-12">
+				Cargando por favor espere...
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="progress">
+					<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45"
+						style="width: 100%">
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 	<script type="text/ng-template" id="modalAlta.html">
@@ -1504,8 +1575,8 @@
 				<div class="row">
 					<div class="col-md-12">
 					<div class="form-group required">
-						<label class="control-label">Fecha:</label>
-						<input type="date" class="form-control" ng-model="params.fecha" required>
+						<label class="control-label">Fecha reingreso:</label>
+						<input type="date" class="form-control" ng-model="params.reingreso" required>
 					</div>
 				</div>
 				</div>
@@ -1535,6 +1606,39 @@
 								</ui-select-match>
 								<ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
 									<div ng-bind-html="(item.nombre) | highlight: $select.search"></div>
+								</ui-select-choices>
+								<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+							</ui-select>
+						</div>
+					</div>
+				</div>
+				<div class="row" ng-show="cambio_empresa">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label class="control-label">Proyecto:</label>
+							<ui-select ng-model="params.idproyecto" title="Seleccione un proyecto..." theme="bootstrap"
+								autofocus="false">
+								<ui-select-match placeholder="Buscar proyecto..." allow-clear="false">
+									<span ng-bind="($select.selected.nomproyecto)"></span>
+								</ui-select-match>
+								<ui-select-choices repeat="item.id as item in proyectos | filter:$select.search">
+									<div ng-bind-html="(item.nomproyecto) | highlight: $select.search"></div>
+								</ui-select-choices>
+								<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+							</ui-select>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group" ng-class="cambio_empresa ? 'required' : ''">
+							<label class="control-label">Cuenta contable:</label>
+							<ui-select ng-model="params.idcuenta" title="Seleccione una cuenta contable..." theme="bootstrap"
+							autofocus="false" ng-required="cambio_empresa">
+								<ui-select-match placeholder="Favor ingresar 3 letras o digitos" allow-clear="true">
+									<span ng-bind="($select.selected.nombrecta)"></span>
+								</ui-select-match>
+								<ui-select-choices repeat="item.id as item in cuentas | filter:$select.search | 
+									limitTo: params.idcuenta > 0 ? '' : ($select.search.length <= 2)">
+									<div ng-bind-html="(item.codcta) | highlight: $select.search"></div>
 								</ui-select-choices>
 								<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
 							</ui-select>
@@ -1583,6 +1687,157 @@
 		</div>
 		<div class="modal-footer">
 			<button class="btn btn-primary" ng-disabled="paramsAlta.$invalid" type="button" ng-click="ok()">Aceptar</button>
+			<button class="btn btn-danger" type="button" ng-click="cancel()">Cancelar</button>
+		</div>
+	</script>
+	<script type="text/ng-template" id="modalCreacion.html">
+		<div class="modal-header">
+			<h3 class="modal-title">Crear empleado</h3>
+		</div>
+		<div class="modal-body">
+			<form name="paramsCreacion" id="paramsCreacion" novalidate>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group required">
+							<label for="inputNombre" class="control-label">Primer
+								Nombre:</label>
+							<input type="text" ng-model="empleado.primernombre"
+								ng-disabled="!editando && hay" class="form-control" id="inputNombre"
+								placeholder="Ingresar un nombre" required>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="snombre" class="control-label">Segundo
+								nombre:</label>
+							<input type="text" ng-model="empleado.segundonombre" class="form-control"
+								ng-disabled="!editando && hay" id="snombre"
+								placeholder="Ingresar un nombre (opcional)">
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="tnombre" class="control-label">Tercer
+								nombre:</label>
+							<input type="text" ng-model="empleado.tercernombre"
+								placeholder="Ingresar un nombre (opcional)"
+								ng-disabled="!editando && hay" class="form-control" id="tnombre">
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group required">
+							<label for="inputApellidos" class="control-label">Primer
+								apellido</label>
+							<input type="text" ng-model="empleado.primerapellido" class="form-control"
+								placeholder="Ingresar un apellido" ng-disabled="!editando && hay"
+								id="inputApellidos" required>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="sapellido" class="control-label">Segundo
+								apellido:</label>
+							<input type="text" ng-model="empleado.segundoapellido" class="form-control"
+								placeholder="Ingresar un apellido" ng-disabled="!editando && hay"
+								id="sapellido">
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="tapellido" class="control-label">Apellido de
+								casada:</label>
+							<input type="text" ng-model="empleado.apellidocasada"
+								placeholder="Ingresar apellido de casada (opcional)"
+								ng-disabled="!editando && hay" class="form-control" id="tapellido">
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+					<div class="form-group required">
+						<label class="control-label">Fecha ingreso:</label>
+						<input type="date" class="form-control" ng-model="empleado.fecha" required>
+					</div>
+				</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group required">
+							<label class="control-label">Empresa D&eacute;bito:</label>
+							<ui-select ng-model="empleado.idempresadebito" title="Seleccione una empresa..."
+								theme="bootstrap" autofocus="false" required>
+								<ui-select-match placeholder="Buscar empresa..." allow-clear="false">
+									<span ng-bind="($select.selected.nombre)"></span>
+								</ui-select-match>
+								<ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+									<div ng-bind-html="(item.nombre) | highlight: $select.search"></div>
+								</ui-select-choices>
+								<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+							</ui-select>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group required">
+							<label class="control-label">Empresa Actual:</label>
+							<ui-select ng-model="empleado.idempresaactual" title="Seleccione una empresa..."
+								theme="bootstrap" autofocus="false" required>
+								<ui-select-match placeholder="Buscar empresa..." allow-clear="false">
+									<span ng-bind="($select.selected.nombre)"></span>
+								</ui-select-match>
+								<ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+									<div ng-bind-html="(item.nombre) | highlight: $select.search"></div>
+								</ui-select-choices>
+								<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+							</ui-select>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group required">
+							<label for="fltSueldo" class="control-label">Sueldo Mensual:</label>
+							<input type="number" name="fltSueldo" id="fltSueldo" class="form-control" step="0.01" ng-model="empleado.sueldo" required>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group required">
+							<label for="fltBono" class="control-label">Bonificaci&oacute;n Ley:</label>
+							<input type="number" name="fltBono" id="fltBono" class="form-control" step="0.01" ng-model="empleado.bonificacionley" required>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group required">
+							<label for="fltIsr" class="control-label">Descuento ISR:</label>
+							<input type="number" name="fltIsr" id="fltIsr" class="form-control" step="0.01" ng-model="empleado.descuentoisr" required>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group required">
+							<label for="porIgss" class="control-label">Porcentaje IGSS:</label>
+							<input type="number" name="porIgss" id="porIgss" class="form-control" step="0.01" ng-model="empleado.porcentajeigss" required>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="form-group required">
+							<label for="txtConcepto" class="control-label">Concepto adicional para la
+								bit&aacute;cora:</label>
+							<textarea type="text" name="txtConcepto" id="txtConcepto" ng-model="empleado.movobservaciones"
+								class="form-control" rows="2" required> </textarea>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-primary" ng-disabled="paramsCreacion.$invalid" type="button" ng-click="ok()">Aceptar</button>
 			<button class="btn btn-danger" type="button" ng-click="cancel()">Cancelar</button>
 		</div>
 	</script>

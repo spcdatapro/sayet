@@ -2,11 +2,8 @@ angular.module('cpm')
     .controller('MntEmpleadoController', ['$scope', '$http', 'empServicios', 'empresaSrvc', 'proyectoSrvc', 'cuentacSrvc', 'pstServicios', 'unidadSrvc', '$confirm', '$uibModal', 'planillaSrvc', 'municipioSrvc', '$filter', 'toaster', 'jsReportSrvc',
         function ($scope, $http, empServicios, empresaSrvc, proyectoSrvc, cuentacSrvc, pstServicios, unidadSrvc, $confirm, $uibModal, planillaSrvc, municipioSrvc, $filter, toaster, jsReportSrvc) {
             $scope.formulario = false;
-            $scope.resultados = false;
             $scope.empleados = [];
             $scope.inicio = 0;
-            $scope.datosbuscar = [];
-            $scope.buscarmas = true;
             $scope.hay = false;
             $scope.archivos = [];
             $scope.empresas = [];
@@ -36,25 +33,77 @@ angular.module('cpm')
             $scope.ver_activos = 1;
             let actuales = {};
             $scope.cargando = false;
+            // variables para paginas
+            $scope.currentPage = 1; // Página actual
+            $scope.itemsPerPage = 10; // Número de elementos por página
+            $scope.lookFor = ''; // Busqueda
+            $scope.ver_activos = '1';
+            $scope.eliminable = false;
+            $scope.form_bitacora = false;
 
-            empServicios.getNacionalidades().then((d) => { $scope.nacionalidades = d; });
-            municipioSrvc.lstAllMunicipios().then((d) => { $scope.municipios = d; });
-            empServicios.getDiscapacidades().then((d) => { $scope.discapacidades = d; });
-            empServicios.getNivelEducacion().then((d) => { $scope.nivel_educacion = d; });
-            empServicios.getCasta().then((d) => { $scope.castas = d; });
-            empServicios.getLenguas().then((d) => { $scope.lenguas = d; });
-            empServicios.getPuestos().then((d) => { $scope.puestosnue = d; });
+            // para pginas de resultados
+            $scope.$watch('empleados.length', function () {
+                $scope.totalPages = Math.ceil($scope.empleados.length / $scope.itemsPerPage);
+            });
+
+            $scope.$watch('lookFor', function () {
+                // Calcula el número total de páginas después del filtro
+                $scope.totalPages = Math.ceil($scope.filteredEmpleados().length / $scope.itemsPerPage);
+                // Reinicia la página actual a la primera después del filtro
+                $scope.currentPage = 1;
+            });
+
+            $scope.setPage = function (page) {
+                if (page >= 1 && page <= $scope.totalPages) {
+                    $scope.currentPage = page;
+                }
+            };
+
+            $scope.paginatedEmpleados = function () {
+                var filtered = $scope.filteredEmpleados();
+                var start = ($scope.currentPage - 1) * $scope.itemsPerPage;
+                return filtered.slice(start, start + $scope.itemsPerPage);
+            };
+
+            $scope.filteredEmpleados = function () {
+                return $scope.empleados.filter(function (e) {
+                    return !$scope.lookFor || Object.keys(e).some(function (key) {
+                        return String(e[key]).toLowerCase().includes($scope.lookFor.toLowerCase());
+                    });
+                });
+            };
+
+            $scope.totalPages = Math.ceil($scope.empleados.length / $scope.itemsPerPage);
+            // fin de paginas
+
+            empServicios.getNacionalidades().then(d => { $scope.nacionalidades = d; });
+            municipioSrvc.lstAllMunicipios().then(d => { $scope.municipios = d; });
+            empServicios.getDiscapacidades().then(d => { $scope.discapacidades = d; });
+            empServicios.getNivelEducacion().then(d => { $scope.nivel_educacion = d; });
+            empServicios.getCasta().then(d => { $scope.castas = d; });
+            empServicios.getLenguas().then(d => { $scope.lenguas = d; });
+            empServicios.getPuestos().then(d => { $scope.puestosnue = d; });
+            empServicios.getCatalogo().then(data => { $scope.movimiento = data.movimiento });
 
             $scope.mostrarForm = function () {
-                $scope.emp = {};
-                $scope.per = {};
-                $scope.form_personal = false;
-                $scope.emp = { idplnmovimiento: '10', movobservaciones: 'Contratación de nuevo empleado.' };
-                $scope.formulario = true;
-                $scope.hay = false;
-                $scope.movRango = false;
-                $scope.bita = {}
-                $scope.movEditar = false;
+                $uibModal.open({
+                    animation: true,
+                    templateUrl: 'modalCreacion.html',
+                    controller: 'ModalCreacionCtrl',
+                    resolve: {
+                        empresas: () => $scope.empresasPlanilla
+                    }
+                }).result.then(function (data) {
+                    $scope.cargando = true;
+                    console.log(data);
+                    empServicios.nuevoEmpleado(data).then(d => {
+                        toaster.pop({ type: d.tipo, title: 'Nuevo empleado', body: d.mensaje, timeout: 10000 });
+                        $scope.cargando = false;
+                        $scope.buscar(1);
+                        $scope.getEmpleado(d.id);
+                    })
+                })
+                goTop();
             };
 
             $scope.cargoEmpresa = function (idempresa) {
@@ -113,7 +162,7 @@ angular.module('cpm')
                 // mantener actualizada los datos laborales de nueva ficha
                 if ($scope.emp.idplnmovimiento == 7) {
                     let lab = {};
-                    lab.idplnempleado = $scope.emp.id;  
+                    lab.idplnempleado = $scope.emp.id;
                     lab.sueldo = $scope.emp.sueldo;
                     lab.bonificacionley = $scope.emp.bonificacionley;
                     lab.descuentoisr = $scope.emp.descuentoisr;
@@ -138,98 +187,46 @@ angular.module('cpm')
                 });
             };
 
-            $scope.buscar = function (activo, traer = false) {
-                // nuevo
+            $scope.buscar = function (activo) {
+                // datos para buscar
+                let datos = { 'sin_limite': true, 'estatus': activo };
 
-                $scope.datosbuscar = { 'sin_limite': true, 'estatus': activo };
-
-                // antes
-
-                empServicios.buscar($scope.datosbuscar).then(function (data) {
-                    $scope.datosbuscar.inicio = data.cantidad;
-
+                empServicios.buscar(datos).then(function (data) {
                     data.resultados.forEach(d => {
-                        if (d.primernombre && d.primerapellido) {
-                            d.segundonombre = d.segundonombre ? d.segundonombre : '';
-                            d.tercernombre = d.tercernombre ? d.tercernombre : '';
-                            d.nombre = d.primernombre + ' ' + d.segundonombre + ' ' + d.tercernombre;
-                        }
+                        d.primernombre = d.primernombre ? d.primernombre : '';
+                        d.segundonombre = d.segundonombre ? d.segundonombre : '';
+                        d.tercernombre = d.tercernombre ? d.tercernombre : '';
+                        d.nombre = d.primernombre + ' ' + d.segundonombre + ' ' + d.tercernombre;
 
-                        if (d.primerapellido && d.primernombre) {
-                            d.apellidocasada = d.apellidocasada ? d.apellidocasada : '';
-                            d.apellidos = d.primerapellido + ' ' + d.segundoapellido + d.apellidocasada;
-                        }
+                        d.apellidocasada = d.apellidocasada ? d.apellidocasada : '';
+                        d.primerapellido = d.primerapellido ? d.primerapellido : '';
+                        d.segundoapellido = d.segundoapellido ? d.segundoapellido : '';
+                        d.apellidos = d.primerapellido + ' ' + d.segundoapellido + d.apellidocasada;
 
-                        if (d.dir) {
-                            d.direccion = d.dir;
-                        }
-
-                        if (d.tel) {
-                            d.telefono = d.tel;
-                        }
-
-                        if (d.correoe) {
-                            d.correo = d.correoe;
-                        }
-
-                        d.puesto =
-                            d.idpuesto ? $filter('getById')($scope.puestosnue, d.idpuesto).descripcion :
-                                d.idplnpuesto ? $filter('getById')($scope.puestos, d.idplnpuesto).descripcion : undefined;
+                        d.puesto = d.idplnpuesto ? $filter('getById')($scope.puestos, d.idplnpuesto).descripcion : undefined;
                     });
+
                     $scope.empleados = data.resultados;
-                    $scope.resultados = true;
-
-                    $scope.ocultarbtn(data.cantidad, data.maximo);
-
-                    if (traer) {
-                        $scope.getEmpleado(0);
-                    }
                 });
             };
 
-            $scope.mas = function () {
-                empServicios.buscar($scope.datosbuscar).then(function (data) {
-                    $scope.datosbuscar.inicio += parseInt(data.cantidad);
-
-                    $scope.empleados = $scope.empleados.concat(data.resultados);
-
-                    $scope.ocultarbtn(data.cantidad, data.maximo);
-                });
-            }
-
-            $scope.ocultarbtn = function (cantidad, maximo) {
-                if (parseInt(cantidad) < parseInt(maximo)) {
-                    $scope.buscarmas = false;
-                } else {
-                    $scope.buscarmas = true;
-                }
-            }
-
-            $scope.getEmpleado = function (idempleado, mismo) {
-                $scope.form_personal = false;
+            $scope.getEmpleado = function (idempleado) {
                 // nuevo 
+                $scope.form_laboral = false;
+                $scope.form_personal = false;
+                $scope.form_emergencia = false;
+
                 empServicios.getEmpleado(idempleado).then((d) => {
-                    console.log(d);
+
+                    d.lab = !d.lab ? {} : d.lab;
+
                     // formatear datos personales
-                    d.per = d.per ? d.per : {};
                     d.per.nacimiento = d.per.nacimiento ? moment(d.per.nacimiento).toDate() : undefined;
-                    d.per.segundonombre = d.per.segundonombre ? d.per.segundonombre : '';
-                    d.per.tercernombre = d.per.tercernombre ? d.per.tercernombre : '';
-                    d.per.primerapellido = d.per.primerapellido ? d.per.primerapellido : '';
-                    d.per.segundoapellido = d.per.segundoapellido ? d.per.segundoapellido : '';
-                    d.per.apellidocasada = d.per.apellidocasada ? d.per.apellidocasada : '';
-                    if (d.per.sexo) {
-                        d.per.sexo = d.per.sexo == 'hombre' ? '1' : '2';
-                    }
-                    if (d.per.estadocivil) {
-                        d.per.estadocivil = d.per.estadocivil == 'soltero' ? '1' : d.per.estadocivil == 'casado' ? '2' : '3';
-                    }
-                    if (d.per.tipodoc) {
-                        d.per.tipodoc = d.per.tipodoc == 'dpi' ? '1' : d.per.estadocivil == 'certificado de nacimiento' ? '2' : '3';
-                    }
+                    d.per.sexo = d.per.sexo === 'hombre' ? '1' : d.per.sexo === 'mujer' ? '2' : undefined;
+                    d.per.estadocivil = d.per.estadocivil === 'soltero' ? '1' : d.per.estadocivil === 'casado' ? '2' : d.per.estadocivil === 'unido' ? '3' : undefined;
+                    d.per.tipodoc = d.per.tipodoc === 'dpi' ? '1' : d.per.tipodoc === 'certificado de nacimiento' ? '2' : d.per.tipodoc === 'pasaporte' ? '3': undefined;
 
                     // formatear datos laborales 
-                    d.lab = d.lab ? d.lab : {};
                     d.lab.ingreso = d.lab.ingreso ? moment(d.lab.ingreso).toDate() : undefined;
                     d.lab.reingreso = d.lab.reingreso ? moment(d.lab.reingreso).toDate() : undefined;
                     d.lab.baja = d.lab.baja ? moment(d.lab.baja).toDate() : undefined;
@@ -238,97 +235,44 @@ angular.module('cpm')
                     d.lab.porcentajeigss = d.lab.porcentajeigss ? +d.lab.porcentajeigss : undefined;
                     d.lab.descuentoisr = d.lab.descuentoisr ? +d.lab.descuentoisr : undefined;
                     d.lab.frecuencia = d.lab.frecuencia == 'quincenal' ? '1' : d.lab.frecuencia == 'mensual' ? '2' : undefined;
-                    d.lab.metodo = d.lab.metodo == 'cheque' ? '1' : d.lab.metodo == 'efectivo' ? '2'
-                        : d.lab.metodo == 'nota debito' ? '3' : undefined;
-                    d.lab.jornada = d.lab.jornada == 'diurna' ? '1' : d.lab.jornada == 'mixta' ? '2' :
-                        d.lab.jornada == 'noctura' ? '3' : d.lab.jornada == 'no esta sujeto a jornada' ? '4' : undefined;
-                    d.lab.tipocontrato = d.lab.tipocontrato == 'verbal' ? '1' : d.lab.tipocontrato == 'escrito' ? '2' :
-                        undefined;
-                    d.lab.temporalidad = d.lab.temporalidad == 'indefinido' ? '1' : d.lab.temporalidad == 'definido' ? '2' :
-                        undefined;
+                    d.lab.metodo = d.lab.metodo == 'cheque' ? '1' : d.lab.metodo == 'efectivo' ? '2' : d.lab.metodo == 'nota debito' ? '3' : undefined;
+                    d.lab.jornada = d.lab.jornada == 'diurna' ? '1' : d.lab.jornada == 'mixta' ? '2' : d.lab.jornada == 'noctura' ? '3' : d.lab.jornada == 'no esta sujeto a jornada' ? '4' : undefined;
+                    d.lab.tipocontrato = d.lab.tipocontrato == 'verbal' ? '1' : d.lab.tipocontrato == 'escrito' ? '2' : undefined;
+                    d.lab.temporalidad = d.lab.temporalidad == 'indefinido' ? '1' : d.lab.temporalidad == 'definido' ? '2' : undefined;
 
+                    // globalizar las variables
                     $scope.per = d.per;
                     $scope.emp = d.emp;
                     $scope.lab = d.lab;
                     $scope.emg = d.emg;
 
-                    $scope.emp.nombre = d.per.primernombre && d.per.primerapellido ? d.per.primernombre + ' ' + d.per.segundonombre + ' ' + d.per.tercernombre : $scope.emp.nombre;
-
-                    $scope.emp.apellidos = d.per.primerapellido && d.per.primernombre ? d.per.primerapellido + ' ' + d.per.segundoapellido + ' ' + d.per.apellidocasada : $scope.emp.apellidos;
-
-                    $scope.emp.dpi = d.per.documento ? d.per.documento : d.emp.dpi;
-
-                    $scope.emp.nit = d.per.nit ? d.per.nit : d.emp.nit;
-
-                    $scope.emp.direccion = d.per.direccion ? d.per.direccion : d.emp.direccion;
-
-                    $scope.emp.nompuesto = d.lab.idpuesto > 0 ? $filter('getById')($scope.puestosnue, $scope.lab.idpuesto).descripcion :
-                        $scope.emp.idplnpuesto ? $filter('getById')($scope.puestos, $scope.emp.idplnpuesto).descripcion : undefined;
-
-                    $scope.emp.nomempresa = d.lab.idempresadebito > 0 ? $filter('getById')($scope.empresas, $scope.lab.idempresadebito).nomempresa :
-                        $scope.emp.idempresa ? $filter('getById')($scope.empresas, $scope.emp.idempresadebito).nomempresa : undefined;
-
+                    // Para resumen de empleado
+                    $scope.emp.dpi = d.emp.dpi;
+                    $scope.emp.nit = d.emp.nit;
+                    $scope.emp.direccion = d.emp.direccion;
+                    $scope.emp.nompuesto = $scope.emp.idplnpuesto ? $filter('getById')($scope.puestos, $scope.emp.idplnpuesto).descripcion : null;
+                    $scope.emp.nomempresa = $scope.lab.idempresadebito ? $filter('getById')($scope.empresas, $scope.lab.idempresadebito).nomempresa : null;
                     $scope.emp.estatus = $scope.emp.activo == 1 ? 'Activo' : 'Inactivo';
+                    $scope.emp.fecha_activo = $scope.lab.reingreso != null ? $scope.lab.reingreso : $scope.lab.ingreso;
+                    $scope.emp.fecha_baja = $scope.lab.baja != null ? $scope.lab.baja : null;
 
-                    $scope.emp.descuentoisr = d.emp.descuentoisr > 0 ? +$scope.emp.descuentoisr : 0.00;
-                    $scope.emp.bonificacionley = d.emp.bonificacionley > 0 ? parseFloat($scope.emp.bonificacionley) : 0.00;
-                    $scope.emp.sueldo = d.emp.sueldo > 0 ? parseFloat($scope.emp.sueldo) : 0.00;
-                    $scope.emp.porcentajeigss = d.emp.porcentajeigss > 0 ? parseFloat($scope.emp.porcentajeigss) : 0.00;
-                    $scope.emp.activo = d.emp.baja ? 0 : 1;
-                    if ($scope.lab.ingreso) {
-                        $scope.emp.fecha_activo = $scope.lab.reingreso != null ? $scope.lab.reingreso : $scope.lab.ingreso;
-                    } else {
-                        $scope.emp.fecha_activo = $scope.emp.reingreso != null ? $scope.emp.reingreso : $scope.emp.ingreso;
+                    // para permitir eliminar el empleado cuando esta en tiempo de prueba
+                    const hoy = moment().toDate();
+                    $scope.eliminable = moment(d.lab.ingreso).diff(hoy, 'months') <= 2 ? true : false;
+
+                    $scope.formulario = true;
+                    $scope.hay = true;
+                    $scope.getArchivos($scope.emp.id);
+                    $scope.getBitacora($scope.emp.id);
+                    if ($scope.lab.idproyecto) {    
+                    $scope.setUnidades($scope.lab.idproyecto);
                     }
-
-                    if ($scope.emp.fechanacimiento) {
-                        $scope.emp.fchnac = $scope.formatoFechajs($scope.emp.fechanacimiento);
-                    }
-
-                    if ($scope.emp.ingreso) {
-                        $scope.emp.fching = $scope.formatoFechajs($scope.emp.ingreso);
-                        let fecha_ingreso = moment($scope.emp.ingreso);
-                        let fecha_actual = moment();
-                        $scope.prueba = fecha_actual.diff(fecha_ingreso, 'month') <= 2 ? false : true;
-                    }
-
-                    if ($scope.emp.reingreso) {
-                        $scope.emp.fchrei = $scope.formatoFechajs($scope.emp.reingreso);
-                    }
-
-                    if ($scope.emp.baja) {
-                        $scope.emp.fchbaj = $scope.formatoFechajs($scope.emp.baja);
-                    }
-
-                    if (!mismo) {
-                        $scope.form_emergencia = false;
-                        $scope.form_laboral = false;
-                        $scope.form_personal = false;
-                    }
-
-                    $scope.formulario = true
-                    $scope.hay = true
-                    $scope.getArchivos()
-                    $scope.getBitacora($scope.emp.id)
-                    $scope.getCatalogo()
-
-                    if ($scope.lab.idproyecto) {
-                        $scope.setUnidades($scope.lab.idproyecto);
-                    } else {
-                        $scope.setUnidades($scope.emp.idproyecto);
-                    }
-
-                    if ($scope.lab.idempresadebito > 0) {
-                        $scope.cargoEmpresa($scope.lab.idempresadebito);
-                    } else {
-                        $scope.cargoEmpresa($scope.emp.idempresadebito);
+                    if ($scope.lab.idempresadebito) {
+                    $scope.cargoEmpresa($scope.lab.idempresadebito);
                     }
 
                     goTop();
                 });
-                // antes
-                // $scope.index = index;
-                // $scope.emp = $scope.empleados[index];
             }
 
             $scope.nuevoMovimiento = () => {
@@ -338,7 +282,8 @@ angular.module('cpm')
             }
 
             $scope.editarMovimiento = function (index) {
-                $scope.bita = $scope.bitacora[index]
+                $scope.form_bitacora = true;
+                $scope.bita = $scope.bitacora[index];
                 $scope.movEditar = true;
 
                 $scope.bita.movgasolina = parseFloat($scope.bita.movgasolina)
@@ -354,7 +299,7 @@ angular.module('cpm')
                     $scope.bita.fintmp = $scope.formatoFechajs($scope.bita.movfechafin)
                 }
 
-                $scope.tipoMovimiento()
+                $scope.tipoMovimiento();
             }
 
             $scope.guardarMovimiento = function (datos) {
@@ -389,28 +334,42 @@ angular.module('cpm')
             }
 
             $scope.anularMovimiento = (data) => {
-                if (confirm("Se anulará el registro, ¿Desea de continuar?")) {
+                let confirmText = '¿Seguro(a) desea eliminar el movimiento?';
+                let confirmTitle = 'Eliminar movimiento';
+
+                if (+data.idplnmovimiento === 12) {
+                    confirmText += ' Esto eliminará la depreciación/gasolina de todos los movimientos.';
+                } else if (+data.revertir === 1) {
+                    confirmText += ' Esto revertirá algunos cambios.';
+                }
+
+                $confirm({
+                    text: confirmText,
+                    title: confirmTitle, ok: 'Sí', cancel: 'No'
+                }).then(() => {
                     data.mostrar = 0;
-                    planillaSrvc.anularBitacora(data).then(d => { 
+                    planillaSrvc.anularBitacora(data).then(d => {
                         $scope.getEmpleado(d.empleado);
-                        toaster.pop({ type: d.tipo, title: "Anulacion bitacora", body: d.mensaje, timeout: 10000 }) 
+                        toaster.pop({ type: d.tipo, title: "Eliminar bitacora", body: d.mensaje, timeout: 10000 });
                     });
                     $scope.bita = {};
-                }
-            }
-
-            $scope.getBitacora = function (emp) {
-                empServicios.getBitacora(emp).then(function (data) {
-                    if (data.length > 0) {
-                        data[0].primero = true;
-                        $scope.bitacora = data;
-                    }
                 });
             }
 
-            $scope.getCatalogo = () => {
-                empServicios.getCatalogo().then(function (data) {
-                    $scope.movimiento = data.movimiento
+            $scope.getBitacora = emp => {
+                $scope.bita = {};
+                empServicios.getBitacora(emp).then(function (data) {
+                    if (data.length > 0) {
+                        data[0].anular = true;
+                        data.forEach(item => {
+                            if (+item.idplnmovimiento === 12) {
+                                item.anular = true;
+                            }
+                        });
+                        $scope.bitacora = data;
+                    } else {
+                        $scope.bitacora = [];
+                    }
                 });
             }
 
@@ -429,12 +388,10 @@ angular.module('cpm')
                 }
             }
 
-            $scope.getArchivos = function () {
-                if ($scope.emp.id) {
-                    empServicios.getArchivos($scope.emp.id).then(function (data) {
-                        $scope.archivos = data.archivos;
-                    });
-                }
+            $scope.getArchivos = idempleado => {
+                empServicios.getArchivos(idempleado).then(function (data) {
+                    $scope.archivos = data.archivos;
+                });
             }
 
             empresaSrvc.lstEmpresas().then(function (d) {
@@ -493,42 +450,27 @@ angular.module('cpm')
             }
 
             $scope.darAlta = () => {
-                var modalInstance = $uibModal.open({
+                $uibModal.open({
                     animation: true,
                     templateUrl: 'modalAlta.html',
                     controller: 'ModalAlta',
                     windowClass: 'app-modal-window',
                     resolve: {
-                        empleado: () => $scope.emp,
+                        idempleado: () => $scope.emp.id,
+                        laboral: () => $scope.lab,
                         empresas: () => $scope.empresasPlanilla
                     }
-                });
-
-                modalInstance.result.then(function (obj) {
-                    lab = {};   
-
-                    obj.id = $scope.emp.id;
-                    obj.idplnmovimiento = '6';
-                    obj.fechatmp = moment().toDate();
-                    obj.fintmp = null;
-                    obj.movfecha = $scope.formatoFecha(obj.fechatmp);
-                    obj.baja = 0;
-                    obj.reingreso = $scope.formatoFecha(obj.fecha);
-                    obj.activo = +1;
-                    $scope.guardar(obj);
-
-                    lab.id = $scope.emp.idlaboral;
-                    lab.idplnempleado = $scope.emp.id;
-                    lab.reingreso = obj.fecha;
-                    lab.baja = undefined;
-                    lab.bonificacionley = obj.bonificacionley;
-                    lab.sueldo = obj.sueldo;
-                    lab.porcentajeigss = obj.porcentajeigss;
-                    lab.descuentoisr = obj.descuentoisr;
-                    lab.idempresaactual = obj.idempresaactual;
-                    lab.idempresadebito = obj.idempresadebito;
-
-                    empServicios.editRow(lab, 'c_lab');
+                }).result.then(function (obj) {                    
+                    empServicios.darAlta(obj).then((r) => {
+                        toaster.pop({ type: r.tipo, title: 'Reingreso de empleado', body: r.mensaje, timeout: 10000 });
+    
+                        $scope.ver_activos = '1';
+                        // $scope.buscar(1);
+    
+                        if (r.id) {
+                            $scope.getEmpleado(r.id);
+                        }
+                    });
                 });
             };
 
@@ -541,7 +483,16 @@ angular.module('cpm')
                 empServicios.editRow(data, 'c_per').then((r) => {
                     toaster.pop({ type: r.tipo, title: titulo, body: r.mensaje, timeout: 10000 });
 
-                    $scope.buscar(1);
+                    if ($scope.emp.id > 0) {
+                        idx = $scope.empleados.findIndex(empleado => empleado.id === r.id);
+
+                        $scope.empleados[idx].nombre = r.nombre;
+                        $scope.empleados[idx].apellidos = r.apellidos;
+                        $scope.empleados[idx].direccion = r.direccion;
+                        $scope.empleados[idx].telefono = r.telefono;
+                    } else {
+                        $scope.empleados.push({ id: r.id, nombre: r.nombre, apellidos: r.apellidos, direccion: r.direccion, telefono: r.telefono, puesto: '' });
+                    }
 
                     if (r.id) {
                         $scope.getEmpleado(r.id);
@@ -601,7 +552,7 @@ angular.module('cpm')
             $scope.formPersonal = function (cancel, otro) {
                 if (!cancel) {
                     $scope.editando = true;
-                    
+
                     if (!otro) {
                         if ($scope.form_laboral) {
                             $scope.formLaboral(false, true);
@@ -764,7 +715,7 @@ angular.module('cpm')
                     controller: 'ModalReporteEmpleadorCtrl'
                 }).result.then(function (anio) {
                     $scope.cargando = true;
-                    jsReportSrvc.getReport('BkA5jnjK1x', anio).then(result => { 
+                    jsReportSrvc.getReport('BkA5jnjK1x', anio).then(result => {
                         var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
                         saveAs(file, 'Reporte_Empleador_' + anio + '.xlsx');
                         $scope.cargando = false;
@@ -776,6 +727,33 @@ angular.module('cpm')
                 })
             }
 
+            $scope.imprimirFicha = idempleado => {
+                $scope.cargando = true;
+
+                jsReportSrvc.getPDFReport('Sy0hlTcqyg', idempleado).then(function (pdf) {
+                    $scope.content = pdf;
+                    $scope.cargando = false;
+                }).catch (err => {
+                    console.log(err);
+                    toaster.pop({ type: 'error', title: 'Ficha de empleado', body: 'Error en la conexion con el servidor, favor comunicarse con IT.', timeout: 7000 });
+                    $scope.cargando = false;
+                });
+            }
+
+            $scope.eliminar = idempleado => {
+                $confirm({
+                    text: '¿Seguro(a) de eliminar el empleado?',
+                    title: 'Eliminar empleado', ok: 'Sí', cancel: 'No'
+                }).then(() => {
+                    empServicios.eliminar(idempleado).then(function (d) {
+                        toaster.pop({ type: d.tipo, title: 'Eliminacion de empleado', body: d.mensaje, timeout: 7000 });
+                        $scope.hay = false;
+                        $scope.formulario = false;
+                        $scope.buscar(1);
+                    })
+                });
+            }
+
             // $scope.buscar({});
             $scope.$watch('ver_activos', function (newValue, oldValue) {
                 $scope.buscar(newValue);
@@ -783,16 +761,40 @@ angular.module('cpm')
         }]
     )
 
-    .controller('ModalAlta', ['$scope', '$uibModalInstance', 'empleado', 'empresas', function
-        ($scope, $uibModalInstance, empleado, empresas) {
-        $scope.empleado = empleado;
+    .controller('ModalAlta', ['$scope', '$uibModalInstance', 'idempleado', 'laboral', 'empresas', 'proyectoSrvc', 'cuentacSrvc', function
+        ($scope, $uibModalInstance, idempleado, laboral, empresas, proyectoSrvc, cuentacSrvc) {
+        $scope.params = laboral;
         $scope.empresas = empresas;
-        $scope.params = {
-            idempresaactual: empleado.idempresaactual, idempresadebito: empleado.idempresadebito, sueldo: empleado.sueldo, bonificacionley: empleado.bonificacionley,
-            descuentoisr: empleado.descuentoisr, porcentajeigss: empleado.porcentajeigss, fecha: moment().toDate()
-        };
+        $scope.params.reingreso = moment().toDate();
+        $scope.params.idplnempleado = idempleado;
+        $scope.cambio_empresa = false;
+        $scope.proyectos = [];
+        $scope.cuentas = [];
+        const empresa_actual = laboral.idempresadebito;
+
+        $scope.$watch('params.idempresadebito', (newValue) => {
+            if (newValue !== undefined) {
+                if (+empresa_actual !== +newValue) {
+                    $scope.cambio_empresa = true;
+                    proyectoSrvc.lstProyectosPorEmpresa(newValue).then(d => { $scope.proyectos = d })
+                    cuentacSrvc.getByTipo(newValue, 0).then(d => { $scope.cuentas = d })
+                } else {
+                    $scope.cambio_empresa = false;
+                }
+            }
+        });
 
         $scope.ok = function () { $uibModalInstance.close($scope.params); };
+
+        $scope.cancel = () => { $uibModalInstance.dismiss('cancel'); };
+
+    }])
+    .controller('ModalCreacionCtrl', ['$scope', '$uibModalInstance', 'empresas', function
+        ($scope, $uibModalInstance, empresas) {
+        $scope.empleado = {};
+        $scope.empresas = empresas;
+
+        $scope.ok = function () { $uibModalInstance.close($scope.empleado); };
 
         $scope.cancel = () => { $uibModalInstance.dismiss('cancel'); };
 

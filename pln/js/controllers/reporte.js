@@ -31,19 +31,31 @@ angular.module('cpm')
         })
     }
 ])
-.controller('repFiniquitoController', ['$scope', '$http', 'empresaSrvc', 'empServicios',  '$confirm', '$window', '$uibModal', 'preServicios',
-    function($scope, $http, empresaSrvc, empServicios, $confirm, $window, $uibModal, preServicios){
+.controller('repFiniquitoController', ['$scope', '$http', 'empresaSrvc', 'empServicios',  '$confirm', '$window', '$uibModal', 'preServicios', 'toaster',
+    function($scope, $http, empresaSrvc, empServicios, $confirm, $window, $uibModal, preServicios, toaster){
         $scope.empleados = [];
         $scope.params = { meses_calculo: 6, dias_sueldo_pagar: 0, otrosdesc_razon: null, otros_razon: null, vacas_del: null, vacas_al: null, fecha_egreso: moment().toDate(), guardar: false };
         $scope.cargando = false;
 
         empServicios.buscar({'sin_limite':1, 'estatus': 1}).then(function(res){
+            res.resultados.forEach(value => {
+                value.segundonombre = value.segundonombre ? value.segundonombre : '';
+                value.tercernombre = value.tercernombre ? value.tercernombre : '';
+
+                value.nombre = value.primernombre + ' ' + value.segundonombre + ' ' + value.tercernombre;
+
+                value.segundoapellido = value.segundoapellido ? value.segundoapellido : '';
+                value.apellidocasada = value.apellidocasada ? value.apellidocasada : '';
+
+                value.apellidos = value.primerapellido + ' ' + value.segundoapellido + ' ' + value.apellidocasada;
+            });
+
             $scope.empleados = res.resultados
             setTimeout(function() { $("#selectEmpleado").chosen({width:'100%'}) }, 3)
         });
 
         $scope.getFiniquito = () => {
-            var modalInstance = $uibModal.open({
+            $uibModal.open({
                 animation: true,
                 templateUrl: 'modalFiniquito.html',
                 controller: 'ModalFiniquito',
@@ -51,26 +63,13 @@ angular.module('cpm')
                 resolve: {
                     params: $scope.params
                 }
-            });
-
-            modalInstance.result.then(function (obj) {
+            }).result.then(function (obj) {
                 obj.fechastr = formatoFechaStr(obj.fecha_egreso);
                 $scope.cargando = true;
+
                 // dar de baja y agregar movimiento en bitacora
                 darBaja(obj);
-
-                // liquidar el prestamo y agregar el descuento en otros desc de prestamo
-                liquidarPrestamo(obj);
-
-                empServicios.getFiniquito(obj).then(function (pdf) { 
-                    //mostrar el pdf en un ventana a parte
-                    $window.open(pdf.pantalla);
-                    // adjuntar el archivo al empleado
-                    agregarArchivo(pdf.descarga);
-                    $scope.cargando = false;      
-                    location.reload();
-                });
-            });
+            })
         };
 
         function agregarArchivo (pdf) {
@@ -86,22 +85,35 @@ angular.module('cpm')
 
         function darBaja (datos) {
             // crear objeto para bitacora y baja de empleado
-            let bita = {};
-            bita.id = datos.empleado;
-            bita.idplnmovimiento = '3';
-            bita.fechatmp = datos.fecha_egreso;
-            bita.movobservaciones = datos.concepto;
-            bita.fintmp = null;
-            bita.movfecha = formatoFecha(datos.fecha_egreso);
-            bita.baja = formatoFecha(datos.fecha_egreso);
-            bita.activo = '0';
-
-            lab = { baja: datos.fecha_egreso, idplnempleado: datos.empleado };
-
-            empServicios.getIdLaboral(datos).then((d) => { lab.id = d.empleado.idlaboral; });
-
-            empServicios.guardar(bita);
-            empServicios.editRow(lab, 'c_lab');
+            empServicios.darBaja(datos)
+            .then(d => {
+                console.log(d);
+                let bus = { empleado: datos.empleado, finalizado: 0 };
+                preServicios.buscar(bus)
+                .then(d => {
+                    datos.idprestamos = d.resultados.map(p => p.id).join(',');
+                    d.resultados.forEach(prestamo => {
+                        let abono = {monto: prestamo.saldo, fecha: formatoFecha(datos.fecha_egreso), 
+                            concepto: 'Liquidación del prestamo por baja de empleado.'};
+                        // guardar abono
+                        preServicios.guardarAbono(abono, prestamo.id);
+                        // liquidar prestamo
+                        let pres = { liquidacion: formatoFecha(datos.fecha_egreso), id: prestamo.id };
+                        preServicios.guardar(pres);
+                    })
+                })
+                .then(() => {
+                    empServicios.getFiniquito(datos)
+                    .then(function (pdf) { 
+                        //mostrar el pdf en un ventana a parte
+                        $window.open(pdf.pantalla);
+                        // adjuntar el archivo al empleado
+                        agregarArchivo(pdf.descarga);
+                        $scope.cargando = false;      
+                        // location.reload();
+                    });
+                })
+            })
         }
 
         function formatoFecha (fecha) {
@@ -110,21 +122,6 @@ angular.module('cpm')
 
         function formatoFechaStr (fecha) {
             return fecha.getDate()+'-'+(fecha.getMonth()+1)+'-'+fecha.getFullYear();
-        }
-
-        function liquidarPrestamo (datos) {
-            let bus = { empleado: datos.empleado, finalizado: 0 };
-            preServicios.buscar(bus).then((d) => { 
-                d.resultados.forEach(prestamo => {
-                    let abono = {monto: prestamo.saldo, fecha: formatoFecha(datos.fecha_egreso), 
-                        concepto: 'Liquidación del prestamo por baja de empleado.'};
-                    // guardar abono
-                    preServicios.guardarAbono(abono, prestamo.id);
-                    // liquidar prestamo
-                    let pres = { liquidacion: formatoFecha(datos.fecha_egreso), id: prestamo.id };
-                    preServicios.guardar(pres);
-                });
-            });
         }
     }
 ])

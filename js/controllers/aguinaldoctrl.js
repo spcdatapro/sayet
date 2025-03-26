@@ -32,10 +32,15 @@
                 // estatus de carga
                 $scope.cargando = true;
 
-                jsReportSrvc.getPDFReport('ryFYd5TuA', params).then(function (pdf) {
-                    $scope.content = pdf;
+                try {
+                    jsReportSrvc.getPDFReport('ryFYd5TuA', params).then(function (pdf) {
+                        $scope.content = pdf;
+                        $scope.cargando = false;
+                    })
+                } catch (err) {
+                    console.log(err);
                     $scope.cargando = false;
-                });
+                } 
             };
 
             // excel
@@ -43,14 +48,19 @@
                 // estatus de carga
                 $scope.cargando = true;
 
-                jsReportSrvc.getReport('SJiq_cTuR', params).then(function (result) {
-                    var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
-                    let rango = params.anio;
+                try {
+                    jsReportSrvc.getReport('SJiq_cTuR', params).then(function (result) {
+                        var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
+                        let rango = params.anio;
 
-                    saveAs(file, 'Reporte_Aguinaldo_' + rango + '.xlsx');
+                        saveAs(file, 'Reporte_Aguinaldo_' + rango + '.xlsx');
 
+                        $scope.cargando = false;
+                    })
+                } catch (err) {
+                    console.log(err);
                     $scope.cargando = false;
-                });
+                }
             };
         }]);
 }());

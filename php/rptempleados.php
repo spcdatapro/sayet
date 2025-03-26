@@ -31,24 +31,26 @@ $app->post('/rptempelados', function(){
                 c.id AS idempresa,
                 IFNULL(c.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
                 c.numeropat AS numero,
-                a.idproyecto,
+                e.idproyecto,
                 IFNULL(d.nomproyecto, 'NO ESPECIFICADO') AS proyecto,
                 CONCAT(a.nombre, ' ', IFNULL(a.apellidos, '')) AS nombre,
-                DATE_FORMAT(ingreso, '%d/%m/%y') AS fingreso,
-                IFNULL(DATE_FORMAT(reingreso, '%d/%m/%y'), '') AS freingreso,
-                a.sueldo,
-                a.bonificacionley,
-                a.sueldo + a.bonificacionley AS sueldotot,
+                DATE_FORMAT(e.ingreso, '%d/%m/%y') AS fingreso,
+                IFNULL(DATE_FORMAT(e.reingreso, '%d/%m/%y'), '') AS freingreso,
+                e.sueldo,
+                e.bonificacionley,
+                e.sueldo + e.bonificacionley AS sueldotot,
                 b.descripcion AS puesto,
                 c.abreviatura
             FROM
                 plnempleado a
+                    INNER JOIN 
+                plnlaboral e ON a.idlaboral = e.id
                     INNER JOIN
                 plnpuesto b ON a.idplnpuesto = b.id
                     LEFT JOIN
-                plnempresa c ON a.idempresaactual = c.id
+                plnempresa c ON e.idempresaactual = c.id
                     LEFT JOIN
-                proyecto d ON a.idproyecto = d.id ";
+                proyecto d ON e.idproyecto = d.id ";
     $query.= !$d->inactivos ? "WHERE a.baja IS NULL " : "WHERE (a.baja <= $d->fechastr OR a.baja IS NULL) ";
     $query.= isset($d->idempresa) ? "AND a.idempresadebito = $d->idempresa " : "";
     $query.= "ORDER BY  3 , ";
@@ -109,28 +111,31 @@ $app->post('/altasbajas', function(){
     $query = "SELECT 
                 a.id AS idempleado,
                 IFNULL(b.id, '9999') AS idempresa,
-                a.idproyecto,
+                f.idproyecto,
                 IF(a.baja AND $d->tipo = 3, '1', '0') AS tipo,
                 IFNULL(b.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
                 c.nomproyecto AS proyecto,
-                CONCAT(a.nombre, ' ', IFNULL(a.apellidos, '')) AS nombre,
+                CONCAT(e.primernombre, ' ', e.segundonombre, ' ', e.tercernombre, ' ', 
+                e.primerapellido, ' ', e.segundoapellido, ' ', e.apellidocasada) AS nombre,
                 IFNULL(d.descripcion, 'NO ESPECIFICADO') AS puesto,
-                IF(a.baja AND $d->tipo = 3,
-                    DATE_FORMAT(a.baja, '%d/%m/%Y'),
-                    DATE_FORMAT(a.ingreso, '%d/%m/%Y')) AS fecha,
-                a.sueldo,
-                a.bonificacionley AS bono,
-                (a.bonificacionley + a.sueldo) AS total,
-                IF(a.formapago = 1,
-                    'Quincenal',
-                    'Mensual') AS pago,
+                IF(f.baja AND $d->tipo = 3,
+                    DATE_FORMAT(f.baja, '%d/%m/%Y'),
+                    DATE_FORMAT(f.ingreso, '%d/%m/%Y')) AS fecha,
+                f.sueldo,
+                f.bonificacionley AS bono,
+                (f.bonificacionley + f.sueldo) AS total,
+                f.frecuencia AS pago,
                 b.numeropat AS numero
             FROM
                 plnempleado a
+                    INNER JOIN 
+                plnpersonal e ON a.idpersonal = e.id
+                    INNER JOIN 
+                plnlaboral f ON a.idlaboral = f.id
                     LEFT JOIN
-                plnempresa b ON a.idempresaactual = b.id
+                plnempresa b ON f.idempresaactual = b.id
                     INNER JOIN
-                proyecto c ON a.idproyecto = c.id
+                proyecto c ON f.idproyecto = c.id
                     LEFT JOIN
                 plnpuesto d ON a.idplnpuesto = d.id
             WHERE  1 = 1 ";
@@ -331,30 +336,35 @@ $app->post('/bono14', function(){
     $query = "SELECT 
                 a.id AS idempleado,
                 IFNULL(b.id, '9999') AS idempresa,
-                IFNULL(a.idproyecto, '9999') AS idproyecto,
+                IFNULL(g.idproyecto, '9999') AS idproyecto,
                 IFNULL(b.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
                 IFNULL(c.nomproyecto, 'SIN PROYECTO') AS proyecto,
-                CONCAT(a.nombre, ' ', IFNULL(a.apellidos, '')) AS nombre,
+                CONCAT(f.primernombre, ' ', f.segundonombre, ' ', f.tercernombre, ' ', f.primerapellido, ' ',
+                f.primerapellido, ' ', f.segundoapellido, ' ', f.apellidocasada) AS nombre,
                 b.numeropat AS numero,
                 IFNULL(d.descripcion, 'NO ESPECIFICADO') AS puesto,
-                DATE_FORMAT(a.ingreso, '%d/%m/%Y') AS fecha,
-                a.sueldo,
+                DATE_FORMAT(g.ingreso, '%d/%m/%Y') AS fecha,
+                g.sueldo,
                 e.bonocatorcedias,
                 e.bonocatorce,
                 b.abreviatura
             FROM
                 plnempleado a
                     INNER JOIN
+                plnpersonal f ON a.idpersonal = f.id
+                    INNER JOIN
+                plnlaboral g ON a.idlaboral = g.id
+                    INNER JOIN
                 plnnomina e ON e.idplnempleado = a.id
                     LEFT JOIN
-                plnempresa b ON a.idempresaactual = b.id
+                plnempresa b ON g.idempresaactual = b.id
                     LEFT JOIN
-                proyecto c ON a.idproyecto = c.id
+                proyecto c ON g.idproyecto = c.id
                     LEFT JOIN
                 plnpuesto d ON a.idplnpuesto = d.id
             WHERE
                 e.bonocatorce > 0 AND YEAR(fecha) = $d->anio ";
-    $query.= isset($d->idempresa) ? "AND a.idempresadebito = $d->idempresa " : "";
+    $query.= isset($d->idempresa) ? "AND f.idempresadebito = $d->idempresa " : "";
     $query.=   "ORDER BY 4 ,";
     $query.= $d->agrupar == 2 ? " 5 , 6" : " 6";
     $data = $db->getQuery($query);
@@ -404,14 +414,15 @@ $app->post('/aguinaldo', function(){
     $query = "SELECT 
                 a.id AS idempleado,
                 IFNULL(b.id, '9999') AS idempresa,
-                IFNULL(a.idproyecto, '9999') AS idproyecto,
+                IFNULL(g.idproyecto, '9999') AS idproyecto,
                 IFNULL(b.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
                 IFNULL(c.nomproyecto, 'SIN PROYECTO') AS proyecto,
-                CONCAT(a.nombre, ' ', IFNULL(a.apellidos, '')) AS nombre,
+                CONCAT(f.primernombre, ' ', f.segundonombre, ' ', f.tercernombre, ' ', f.primerapellido, 
+                ' ', f.segundoapellido, ' ', f.apellidocasada) AS nombre,
                 b.numeropat AS numero,
                 IFNULL(d.descripcion, 'NO ESPECIFICADO') AS puesto,
-                DATE_FORMAT(IFNULL(a.reingreso, a.ingreso), '%d/%m/%Y') AS fecha,
-                a.sueldo,
+                DATE_FORMAT(IFNULL(g.reingreso, g.ingreso), '%d/%m/%Y') AS fecha,
+                g.sueldo,
                 e.aguinaldodias,
                 e.aguinaldo,
                 b.abreviatura
@@ -420,14 +431,18 @@ $app->post('/aguinaldo', function(){
                     INNER JOIN
                 plnnomina e ON e.idplnempleado = a.id
                     LEFT JOIN
-                plnempresa b ON a.idempresaactual = b.id
-                    LEFT JOIN
-                proyecto c ON a.idproyecto = c.id
-                    LEFT JOIN
                 plnpuesto d ON a.idplnpuesto = d.id
+                    LEFT JOIN 
+                plnpersonal f ON a.idpersonal = f.id
+                    LEFT JOIN
+                plnlaboral g ON a.idlaboral = g.id
+                    LEFT JOIN
+                proyecto c ON g.idproyecto = c.id
+                    LEFT JOIN
+                plnempresa b ON g.idempresaactual = b.id
             WHERE
                 e.aguinaldo > 0 AND YEAR(fecha) = $d->anio ";
-    $query.= isset($d->idempresa) ? "AND a.idempresadebito = $d->idempresa " : "";
+    $query.= isset($d->idempresa) ? "AND g.idempresadebito = $d->idempresa " : "";
     $query.=   "ORDER BY 4 ,";
     $query.= $d->agrupar == 2 ? " 5 , 6" : " 6";
     $data = $db->getQuery($query);
@@ -563,7 +578,7 @@ $app->post('/prestamos', function(){
                 IFNULL(d.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
                 d.numeropat AS numero,
                 d.abreviatura,
-                c.idproyecto,
+                h.idproyecto,
                 IFNULL(e.nomproyecto, 'NO ESPECIFICADO') AS proyecto,
                 c.id AS idempleado,
                 CONCAT(c.nombre, ' ', IFNULL(c.apellidos, '')) AS nombre,
@@ -592,10 +607,12 @@ $app->post('/prestamos', function(){
                     MONTH(fecha) = $d->mes AND YEAR(fecha) = $d->anio) b ON b.idplnprestamo = a.id
                     INNER JOIN
                 plnempleado c ON a.idplnempleado = c.id
+                    INNER JOIN
+                plnlaboral h ON c.idlaboral = h.id
                     LEFT JOIN
-                plnempresa d ON c.idempresaactual = d.id
+                plnempresa d ON h.idempresaactual = d.id
                     LEFT JOIN
-                proyecto e ON c.idproyecto = e.id
+                proyecto e ON h.idproyecto = e.id
                     LEFT JOIN
                 plnpuesto f ON c.idplnpuesto = f.id
                     LEFT JOIN
@@ -608,7 +625,7 @@ $app->post('/prestamos', function(){
                         AND YEAR(fecha) = $d->anio) g ON g.idplnempleado = a.idplnempleado
             WHERE
                 a.anulado = 0 AND (a.finalizado = 0 OR (YEAR(a.liquidacion) = $d->anio AND MONTH(a.liquidacion) = $d->mes)) ";
-    $query.= isset($d->idempresa) ? "AND c.idempresadebito = $d->idempresa " : "";
+    $query.= isset($d->idempresa) ? "AND h.idempresadebito = $d->idempresa " : "";
     $query.= isset($d->idempleado) ? "AND b.idplnempleado = $d->idempleado " : "";
     $query.= "ORDER BY  2 , ";
     $query.= $d->agrupar == 2 ? " 6 , 8" : " 8";
@@ -658,28 +675,33 @@ $app->post('/antiguedad', function(){
                 IFNULL(d.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
                 d.numeropat AS numero,
                 d.abreviatura,
-                c.idproyecto,
+                h.idproyecto,
                 IFNULL(e.nomproyecto, 'NO ESPECIFICADO') AS proyecto,
                 c.id AS idempleado,
-                CONCAT(c.nombre, ' ', IFNULL(c.apellidos, '')) AS nombre,
+                CONCAT(g.primernombre, ' ', g.segundonombre, ' ', g.tercernombre, ' ', g.primerapellido, ' ',
+                g.segundoapellido, ' ', g.apellidocasada) AS nombre,
                 IFNULL(f.descripcion, 'NO ESPECIFICADO') As puesto,
-                DATE_FORMAT(ingreso, '%d/%m/%Y') AS ingreso,
-                DATEDIFF('2024-09-11', ingreso) AS dias,
+                DATE_FORMAT(h.ingreso, '%d/%m/%Y') AS ingreso,
+                DATEDIFF('$d->falstr', h.ingreso) AS dias,
                 TIMESTAMPDIFF(YEAR,
-                    ingreso,
-                    '2024-09-11') AS anios,
+                    h.ingreso,
+                    '$d->falstr') AS anios,
                 TIMESTAMPDIFF(MONTH,
-                    ingreso,
-                    '2024-09-11') AS meses
+                    h.ingreso,
+                    '$d->falstr') AS meses
             FROM
                 plnempleado c
+                    INNER JOIN 
+                plnpersonal g ON c.idpersonal = g.id
+                    INNER JOIN
+                plnlaboral h ON c.idlaboral = h.id
                     LEFT JOIN
-                plnempresa d ON c.idempresaactual = d.id
+                plnempresa d ON h.idempresaactual = d.id
                     LEFT JOIN
-                proyecto e ON c.idproyecto = e.id
+                proyecto e ON h.idproyecto = e.id
                     LEFT JOIN
                 plnpuesto f ON c.idplnpuesto = f.id ";
-    $query.= isset($d->idempresa) ? "WHERE c.idempresadebito = $d->idempresa " : "";
+    $query.= isset($d->idempresa) ? "WHERE h.idempresadebito = $d->idempresa " : "";
     $query.= isset($d->idempleado) ? "AND b.idplnempleado = $d->idempleado " : "";
     $query.= "ORDER BY  2 , ";
     $query.= $d->agrupar == 2 ? " 6 , 8" : " 8";

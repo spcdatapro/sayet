@@ -43,49 +43,71 @@ $app->post('/anular_bitacora', function () {
     $d = json_decode(file_get_contents('php://input'));
 
     $idempleado = $d->idplnempleado;
-    $antes = json_decode($d->antes);
-    $antes = get_object_vars($antes);
-    unset($antes['id']);
-    $antes["ultimo"] = " WHERE id = $d->idplnempleado"; 
-    $str = "UPDATE plnempleado SET";
-    // print_r($antes); return;
-    foreach ($antes as $a => $valor) {
-        if ($a == 'ultimo') {
-            $str.= $valor;
-        } else if ($a == 'observaciones') {
-            $str .= isset($valor) ? " $a = '$valor'" : $a = " $a = null";
-        } else {
-            $str .= isset($valor) ? " $a = '$valor'," : $a = " $a = null,";
-        }
-    }
-    $fecha = new DateTime($d->fecha);
-    $fecha = $fecha->format('Y-m-d');
-    $db->doQuery("$str");
-    $db->doQuery("UPDATE plnbitacora SET mostrar = 0 WHERE id = $d->id");
-    if ($d->idplnmovimiento == 3) {
-        $query = "SELECT GROUP_CONCAT(a.id) AS abonos, a.idplnprestamo AS id, SUM(a.monto) AS monto FROM plnpresabono a INNER JOIN plnprestamo b ON a.idplnprestamo = b.id 
-        WHERE a.fecha = '$fecha' AND b.idplnempleado = $d->idplnempleado GROUP BY a.idplnprestamo";
-        $prestamos = $db->getQuery($query);
+
+    if ($d->revertir) {
+        $query = "SELECT idempresaactual, idempresadebito, sueldo, bonificacionley, reingreso, baja, porcentajeigss, descuentoisr, idproyecto, idcuenta FROM plnbitacora WHERE id = $d->id";
+        $datos = $db->getQuery($query)[0];
+
+        $idlaboral = $db->getOneField("SELECT idlaboral FROM plnempleado WHERE id = $idempleado");
+
+        $datos->reingreso = $datos->reingreso !== null ? $datos->reingreso : 0;
+        $datos->baja = isset($datos->baja) ? $datos->baja : 'null';
+
+        $str = "UPDATE plnlaboral SET ";
+        $cambios = [
+            'idempresaactual' => $datos->idempresaactual,
+            'idempresadebito' => $datos->idempresadebito,
+            'sueldo' => $datos->sueldo,
+            'bonificacionley' => $datos->bonificacionley,
+            'reingreso' => $datos->reingreso,
+            'baja' => $datos->baja,
+            'porcentajeigss' => $datos->porcentajeigss,
+            'descuentoisr' => $datos->descuentoisr,
+            'idproyecto' => $datos->idproyecto,
+            'idcuenta' => $datos->idcuenta
+        ];
         
-        if (count($prestamos) > 0) {
-            foreach ($prestamos AS $p) {
-                $db->doQuery("DELETE FROM plnpresabono WHERE id IN($p->abonos)"); 
-                $db->doQuery("UPDATE plnprestamo SET saldo = $p->monto, finalizado = 0, liquidacion = null WHERE id = $p->id");
+        foreach ($cambios as $cambio => $valor) {
+            if ($valor > 0 || $cambio == 'baja') {
+                $str .= "$cambio = '$valor', ";
             }
         }
+        
+        $str = rtrim($str, ", ");
+        $str .= " WHERE id = $idlaboral";
 
-        $db->doQuery("DELETE FROM plnfiniquito WHERE idplnempleado = $d->idplnempleado AND fecha = '$fecha'");
-        $db->doQuery("DELETE FROM plnarchivo WHERE DATE_FORMAT(fecha, '%Y-%m-%d') = '$fecha' AND idplnarchivotipo = 3 AND idplnempleado = $d->idplnempleado");
+        $db->doQuery($str);
+
+        if ($d->idplnmovimiento == 3) {
+            $finiquito = $db->getQuery("SELECT id, idprestamos, fecha FROM plnfiniquito WHERE idplnempleado = $idempleado AND pendiente = 1")[0];
+            $idprestamos = isset($finiquito->idprestamos) ? explode(',', $finiquito->idprestamos) : null;
+
+            foreach ($idprestamos as $id) {
+                $monto = $db->getOneField("SELECT monto FROM plnpresabono WHERE idplnprestamo = $id AND fecha = '$finiquito->fecha'");
+                $db->doQuery("UPDATE plnprestamo SET saldo = $monto, finalizado = 0, liquidacion = null WHERE id = $id");
+                // ver prestamos 
+                $db->doQuery("DELETE FROM plnpresabono WHERE idplnprestamo = $id AND fecha = '$finiquito->fecha'");
+                $db->doQuery("DELETE FROM plnarchivo WHERE DATE_FORMAT(fecha, '%Y-%m-%d') = '$finiquito->fecha' AND idplnarchivotipo = 3 AND idplnempleado = $idempleado");
+            }
+
+            $db->doQuery("DELETE FROM plnfiniquito WHERE id = $finiquito->id");
+        }
+        $db->doQuery("UPDATE plnbitacora SET mostrar = 0 WHERE id = $d->id");
+        $db->doQuery("UPDATE plnempleado SET baja = $datos->baja WHERE id = $idempleado");
+    } else {
+        $db->doQuery("UPDATE plnbitacora SET mostrar = 0 WHERE id = $d->id");
     }
 
     $exito = $db->getOneField("SELECT mostrar FROM plnbitacora WHERE id = $d->id");
 
     if ($exito == 0) {
-        $mensaje = "Bitacora anulada con exito"; 
+        $mensaje = "Bitacora eliminada con exito"; 
         $tipo = "success";
+        $empleado = $idempleado;
     } else {
-        $mensaje = "Error al anular bitacora, favor revisar.";
+        $mensaje = "Error al eliminar bitacora, favor revisar.";
         $tipo = "error";
+        $empleado = $idempleado;
     }
 
     print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "empleado" => $idempleado]);
@@ -113,7 +135,8 @@ $app->get('/finiquitos', function () {
                 a.idempresa,
                 a.idproyecto,
                 c.nombre AS empresa,
-                IFNULL(d.nomproyecto, 'N/E, NO GENERARÁ DETALLE EN REP. ING. EGRE.') AS proyecto
+                IFNULL(d.nomproyecto, 'N/E, NO GENERARÁ DETALLE EN REP. ING. EGRE.') AS proyecto,
+                a.concepto
             FROM
                 plnfiniquito a
                     INNER JOIN

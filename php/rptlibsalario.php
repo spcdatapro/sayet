@@ -12,20 +12,24 @@ $app->post('/rptlibsalario', function(){
     $query = "SELECT 
                 CONCAT(a.nombre, ' ', IFNULL(a.apellidos, '')) AS nombre,
                 DATE_FORMAT(DATE_SUB(NOW(),
-                            INTERVAL YEAR(a.fechanacimiento) YEAR),
+                            INTERVAL YEAR(c.nacimiento) YEAR),
                         '%y') AS edad,
-                IF(sexo = 1, 'Masculino', 'Femenino') AS genero,
+                c.sexo AS genero,
                 IFNULL(nacionalidad, 'GUATEMALTECO') AS nacionalidad,
                 b.descripcion AS puesto,
-                a.igss,
-                a.dpi,
-                DATE_FORMAT(a.ingreso, '%d/%m/%Y') AS ingreso,
-                IFNULL(DATE_FORMAT(a.baja, '%d/%m/%Y'), '') AS baja,
-                a.idempresadebito
+                d.igss,
+                c.documento,
+                DATE_FORMAT(d.ingreso, '%d/%m/%Y') AS ingreso,
+                IFNULL(DATE_FORMAT(d.baja, '%d/%m/%Y'), '') AS baja,
+                d.idempresadebito
             FROM
                 plnempleado a
                     INNER JOIN
                             plnpuesto b ON a.idplnpuesto = b.id
+                    INNER JOIN
+                            plnpersonal c ON a.idpersonal = c.id
+                    INNER JOIN
+                            plnlaboral d ON a.idlaboral = d.id
                         WHERE
                             a.id = $d->idempleado ";
     $empleado = $db->getQuery($query)[0];

@@ -12,7 +12,7 @@ $app->get('/pagoboleto/:anio(/:idempresa)', function($anio, $idempresa = 0) use(
     $db->doQuery($query);
 
     $query = "SELECT a.id, c.nomempresa AS empresadebito, d.nombre AS empresaactual, TRIM(CONCAT(IFNULL(TRIM(b.nombre), ''), ' ',IFNULL(TRIM(b.apellidos), ''))) AS nombre, a.pagado ";
-    $query.= "FROM plnpagoboletoornato a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN empresa c ON c.id = b.idempresadebito INNER JOIN plnempresa d ON d.id = b.idempresaactual ";
+    $query.= "FROM plnpagoboletoornato a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral e ON b.idlaboral = e.id INNER JOIN empresa c ON c.id = e.idempresadebito INNER JOIN plnempresa d ON d.id = e.idempresaactual ";
     $query.= "WHERE a.periodo = $anio ";
     $query.= (int)$idempresa > 0 ? "AND b.idempresaactual = $idempresa " : "";
     $query.= "ORDER BY 3, 4";
@@ -34,12 +34,12 @@ $app->post('/rptpago', function() use($db){
     $query = "SELECT DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy, $d->anio AS periodo";
     $generales = $db->getQuery($query)[0];
 
-    $qGen = "SELECT LPAD(a.id, 3, '0') AS codigoempleado, a.idempresadebito, c.nomempresa AS empresadebito, a.idempresaactual, d.nombre AS empresaactual, ";
-    $qGen.= "TRIM(CONCAT(IFNULL(TRIM(a.nombre), ''), ' ',IFNULL(TRIM(a.apellidos), ''))) AS nombre, a.sueldo, a.bonificacionley, (a.sueldo + a.bonificacionley) AS total, ";
-    $qGen.= "(SELECT monto FROM boletoornato WHERE (a.sueldo + a.bonificacionley) >= rangode AND (a.sueldo + a.bonificacionley) <= rangoa) AS boleto, IF(b.pagado = 1, 'P', 'No P') AS pagado ";
-    $qGen.= "FROM plnempleado a INNER JOIN plnpagoboletoornato b ON a.id = b.idplnempleado LEFT JOIN empresa c ON c.id = a.idempresadebito LEFT JOIN plnempresa d ON d.id = a.idempresaactual ";
+    $qGen = "SELECT LPAD(a.id, 3, '0') AS codigoempleado, e.idempresadebito, c.nomempresa AS empresadebito, a.idempresaactual, d.nombre AS empresaactual, ";
+    $qGen.= "TRIM(CONCAT(IFNULL(TRIM(a.nombre), ''), ' ',IFNULL(TRIM(a.apellidos), ''))) AS nombre, e.sueldo, e.bonificacionley, (e.sueldo + e.bonificacionley) AS total, ";
+    $qGen.= "(SELECT monto FROM boletoornato WHERE (e.sueldo + e.bonificacionley) >= rangode AND (e.sueldo + e.bonificacionley) <= rangoa) AS boleto, IF(b.pagado = 1, 'P', 'No P') AS pagado ";
+    $qGen.= "FROM plnempleado a INNER JOIN plnlaboral e ON a.idlaboral = e.id INNER JOIN plnpagoboletoornato b ON a.id = b.idplnempleado LEFT JOIN empresa c ON c.id = e.idempresadebito LEFT JOIN plnempresa d ON d.id = e.idempresaactual ";
     $qGen.= "WHERE b.periodo = $d->anio ";
-    $qGen.= (int)$d->idempresa > 0 ? "AND a.idempresaactual = $d->idempresa " : "";
+    $qGen.= (int)$d->idempresa > 0 ? "AND e.idempresaactual = $d->idempresa " : "";
     $qGen.= "ORDER BY 5, 6";
 
     $query = "SELECT DISTINCT z.idempresaactual, z.empresaactual FROM($qGen) z ORDER BY z.empresaactual";

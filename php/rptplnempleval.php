@@ -12,10 +12,10 @@ $app->post('/catempleval', function(){
     $query = "SELECT DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy, FORMAT($d->minimo, 2) AS minimo";
     $generales = $db->getQuery($query)[0];
 
-    $qGen = "SELECT b.id AS idempresa, b.nombre AS empresa, a.id AS idempleado, TRIM(CONCAT(IFNULL(a.nombre, ''), ' ', IFNULL(a.apellidos, ''))) AS nombre, a.sueldo, ";
-    $qGen.= "ROUND(($d->minimo - a.sueldo), 2) AS diferencia, a.bonificacionley, (a.sueldo + a.bonificacionley) AS anterior, ROUND(($d->minimo + a.bonificacionley), 2) AS actualizado, b.ordenreppres AS orden ";
-    $qGen.= "FROM plnempleado a INNER JOIN plnempresa b ON b.id = a.idempresaactual ";
-    $qGen.= "WHERE a.baja IS NULL AND a.sueldo < $d->minimo ";
+    $qGen = "SELECT b.id AS idempresa, b.nombre AS empresa, a.id AS idempleado, TRIM(CONCAT(IFNULL(a.nombre, ''), ' ', IFNULL(a.apellidos, ''))) AS nombre, c.sueldo, ";
+    $qGen.= "ROUND(($d->minimo - c.sueldo), 2) AS diferencia, a.bonificacionley, (c.sueldo + c.bonificacionley) AS anterior, ROUND(($d->minimo + c.bonificacionley), 2) AS actualizado, b.ordenreppres AS orden ";
+    $qGen.= "FROM plnempleado a INNER JOIN plnlaboral c ON a.idlaboral = c.id INNER JOIN plnempresa b ON b.id = c.idempresaactual ";
+    $qGen.= "WHERE c.baja IS NULL AND c.sueldo < $d->minimo ";
     $qGen.= "ORDER BY b.ordenreppres, a.nombre, a.apellidos";
 
     $query = "SELECT DISTINCT idempresa, empresa FROM ($qGen) z ORDER BY z.orden";

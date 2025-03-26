@@ -8,6 +8,7 @@
             idempleado: undefined, del: moment().startOf('year').toDate(), al: moment().toDate()
         };
         $scope.empleados = [];
+        $scope.content = `${window.location.origin}/sayet/blank.html`;
 
         empleadoSrvc.lstEmpleados().then(function(d){ $scope.empleados = d; });
 

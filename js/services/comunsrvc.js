@@ -57,6 +57,15 @@
                     return response.data;
                 });
                 return promise;
+            },
+            doDELETE: function(urlBase) {
+                var promise = $http({
+                    url: urlBase,
+                    method: 'DELETE'
+                }).then(function(response){
+                    return response.data;
+                });
+                return promise;
             }
         };
         return comunFact;

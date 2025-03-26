@@ -23,7 +23,7 @@ $app->post('/historial', function(){
 
     $qGen = "SELECT a.id, a.idplnempleado, TRIM(CONCAT(IFNULL(TRIM(b.nombre), ''), ' ',IFNULL(TRIM(b.apellidos), ''))) AS nombre, c.nomempresa AS empresadebito, d.nombre AS empresaactual, d.numeropat, ";
     $qGen.= "DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.sueldoordinario, a.bonificacion, a.fecha AS fechaOrd ";
-    $qGen.= "FROM plnnomina a LEFT JOIN plnempleado b ON b.id = a.idplnempleado LEFT JOIN empresa c ON c.id = b.idempresadebito LEFT JOIN plnempresa d ON d.id = b.idempresaactual ";
+    $qGen.= "FROM plnnomina a LEFT JOIN plnempleado b ON b.id = a.idplnempleado LEFT JOIN plnlaboral e ON b.idlaboral = e.id LEFT JOIN empresa c ON c.id = e.idempresadebito LEFT JOIN plnempresa d ON d.id = e.idempresaactual ";
     $qGen.= "WHERE a.idplnempleado = $d->idempleado AND DAY(a.fecha) > 15 AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' ";
 
     $query = "SELECT DISTINCT z.idplnempleado, z.nombre, z.empresaactual, z.numeropat FROM ($qGen) z ORDER BY z.nombre";

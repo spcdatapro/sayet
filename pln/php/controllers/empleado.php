@@ -980,4 +980,31 @@ $app->post('/get_idlaboral', function() {
 	print json_encode(['empleado' => $e->emp]);
 });
 
+$app->delete('/eliminar/:id', function($id){
+	$e = new Empleado($id);
+
+	print json_encode($e->eliminar($id));
+});
+
+$app->post('/crear', function(){
+	$data = json_decode(file_get_contents('php://input'));
+	$e = new Empleado();
+
+	print json_encode($e->crear($data));
+});
+
+$app->post('/alta', function(){
+	$data = json_decode(file_get_contents('php://input'));
+	$e = new Empleado();
+
+	print json_encode($e->alta($data));
+});
+
+$app->post('/baja', function(){
+	$data = json_decode(file_get_contents('php://input'));
+	$e = new Empleado();
+
+	print json_encode($e->baja($data));
+});
+
 $app->run();

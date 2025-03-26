@@ -122,7 +122,7 @@ class Nomina extends Principal
 
 		if (elemento($args, 'empresa')) {
 			$condicion = ["AND" => [
-				"idempresadebito" => $args['empresa'],
+				"b.idempresadebito" => $args['empresa'],
 			]];
 		} 
 		else {
@@ -130,7 +130,8 @@ class Nomina extends Principal
 			$condicion = "";
 		}
 
-		$tmp = $this->db->select('plnempleado', ['*'], $condicion);
+		$tmp = $this->db->select('plnempleado', ['[>]plnlaboral(b)' => ['plnempleado.idlaboral' => 'id']],
+		['plnempleado.activo', 'b.baja', 'plnempleado.id', 'b.idempresadebito', 'b.idproyecto'], $condicion);
 
 		foreach ($tmp as $row) {
 			$insertar = FALSE;
@@ -170,13 +171,15 @@ class Nomina extends Principal
 		$sql = "SELECT 
 				    a.*, 
 				    CONCAT(ifnull(b.nombre,''), ' ', ifnull(b.apellidos,'')) AS nempleado, 
-				    b.formapago, 
-				    b.bonificacionley, 
-				    b.porcentajeigss
+				    c.metodo AS formapago, 
+				    c.bonificacionley, 
+				    c.porcentajeigss
 				FROM
 				    plnnomina a
 				        JOIN
 				    plnempleado b ON b.id = a.idplnempleado
+						JOIN
+					plnlaboral c ON b.idlaboral = c.id
 				WHERE
 				    a.fecha = '{$fecha}' ";
 
@@ -375,8 +378,8 @@ class Nomina extends Principal
 					$e->set_sueldo();
 
 					$datos = [
-						"sueldoordinarioreporte" => $e->emp->sueldo,
-						"fecha_baja"             => $e->emp->baja,
+						"sueldoordinarioreporte" => $e->lab->sueldo,
+						"fecha_baja"             => $e->lab->baja,
 						"bonocatorce"            => 0,
 						"bonocatorcedias"        => 0,
 						"esbonocatorce"          => 0,
@@ -430,7 +433,7 @@ class Nomina extends Principal
 
 					# Pago cada quincena
 					if ($dia == 15) {
-						if ($e->emp->formapago == 1) {
+						if ($e->lab->frecuencia == 'quincenal') {
 							$datos['anticipo'] = $e->get_anticipo();
 						}
 					} else {
@@ -504,7 +507,8 @@ class Nomina extends Principal
 			];
 
 			$tmp = $this->db->select("plnnomina", [
-					'[><]plnempleado(b)' => ['plnnomina.idplnempleado' => 'id']
+					'[><]plnempleado(b)' => ['plnnomina.idplnempleado' => 'id'],
+					'[><]plnlaboral(c)'     => ['b.idlaboral' => 'id']
 				], 
 				[
 					"plnnomina.id",
@@ -513,8 +517,8 @@ class Nomina extends Principal
 					"plnnomina.esbonocatorce",
 					"plnnomina.fecha",
 					"plnnomina.idproyecto(proyecto)",
-					"b.idempresadebito",
-					"b.idproyecto",
+					"c.idempresadebito",
+					"c.idproyecto",
 					"b.activo"
 				],
 				[
@@ -607,10 +611,10 @@ SELECT
     a.*, 
     b.nombre, 
     b.apellidos, 
-    b.dpi, 
-    b.idempresaactual, 
-    b.reingreso,
-    b.ingreso,
+    e.documento AS dpi, 
+    f.idempresaactual, 
+    f.reingreso,
+    f.ingreso,
     ifnull(d.id,0) as idproyecto,
     c.nombre AS nomempresa, 
     c.pigss,
@@ -619,10 +623,14 @@ FROM
     plnnomina a
         JOIN
     plnempleado b ON b.id = a.idplnempleado
+		JOIN
+	plnpersonal e ON b.idpersonal = e.id
+		JOIN
+	plnlaboral f ON b.idlaboral = f.id
         LEFT JOIN
-    plnempresa c ON c.id = b.idempresaactual
+    plnempresa c ON c.id = f.idempresaactual
     	LEFT JOIN 
-    proyecto d ON d.id = a.idproyecto
+    proyecto d ON d.id = f.idproyecto
 	where a.fecha between '{$args["fdel"]}' and '{$args["fal"]}' 
 	and a.devengado <> 0 
     {$where} order by {$orden}, b.nombre 

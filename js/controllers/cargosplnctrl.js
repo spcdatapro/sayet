@@ -53,9 +53,9 @@
 
         $scope.bancos = [];
         $scope.tiposmov = [];
-        $scope.cuentas = []
+        $scope.cuentas = [];
         $scope.data = data;
-        $scope.tran = { fecha: moment().toDate(), concepto: 'INDEMIIZACIÓN DEL EMPLEADO ' + data.empleado };
+        $scope.tran = { fecha: moment().toDate(), concepto: data.concepto };
 
         bancoSrvc.lstBancos(data.idempresa).then((d) => { $scope.bancos = d; });
         tipoMovTranBanSrvc.getBySuma(0).then(function (d) { $scope.tiposmov = d; });

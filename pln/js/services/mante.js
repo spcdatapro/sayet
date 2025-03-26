@@ -79,7 +79,11 @@ angular.module('cpm')
         },
         getIdLaboral: function(obj) {
             return comunFact.doPOST(urlBase + '/get_idlaboral', obj);
-        }
+        },
+        eliminar: idempleado => comunFact.doDELETE(`${urlBase}/eliminar/${idempleado}`),
+        nuevoEmpleado: obj => comunFact.doPOST(urlBase + '/crear', obj),
+        darAlta: obj => comunFact.doPOST(urlBase + '/alta', obj),
+        darBaja: obj => comunFact.doPOST(urlBase + '/baja', obj)
     };
 }])
 .factory('pstServicios', ['comunFact', function(comunFact){

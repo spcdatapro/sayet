@@ -1,5 +1,128 @@
-<form class="form-horizontal" role="form" ng-submit="guardarMovimiento(bita)">
-	<h4 class="text-center">Datos para movimiento/bitácora.</h4>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<div class="row">
+			<div class="col-md-12" style="color: black;">
+				Datos para b&iacute;tacora
+				<a style="color: black;"
+					ng-class="!form_bitacora ? 'glyphicon glyphicon-chevron-down' : 'glyphicon glyphicon-chevron-up'"
+					ng-click="form_bitacora = !form_bitacora" class="pull-right"></a>
+			</div>
+		</div>
+	</div>
+	<div class="panel-body" ng-show="form_bitacora">
+		<form novalidate role="form" ng-submit="guardarMovimiento(bita)" name="bitaForm" id="bitaForm">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group required">
+						<label class="control-label" for="selTipo">Tipo:</label>
+						<select class="form-control" ng-model="bita.idplnmovimiento" id="inputTipoMovimiento"
+							ng-options="item.id as item.descripcion for item in movimiento" ng-change="tipoMovimiento()"
+							required></select>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label class="control-label" for="inputMovOtros">Otros:</label>
+						<input type="number" step="0.01" class="form-control" ng-model="bita.movotros"
+							id="inputMovOtros">
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label class="control-label" for="inputMovGasolina">Gasolina:</label>
+						<input type="number" step="0.01" class="form-control" ng-model="bita.movgasolina"
+							id="inputMovGasolina">
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label for="inputMovDepvehiculo" class="control-label">Depreciación Vehículo:</label>
+						<input type="number" step="0.01" class="form-control" ng-model="bita.movdepvehiculo"
+							id="inputMovDepvehiculo">
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group required">
+						<label for="inputMovFecha" class="control-label">
+							<span ng-show="movRango">Inicio</span>
+							<span ng-show="!movRango">Fecha</span>
+						</label>
+						<input type="date" class="form-control" ng-model="bita.fechatmp" id="inputMovFecha" required>
+					</div>
+				</div>
+			</div>
+			<div class="row" ng-show="movRango">
+				<div class="col-md-6">
+					<div class="form-group required">
+						<label for="inputMovFin" class="control-label">Fin:</label>
+						<input type="date" class="form-control" ng-model="bita.fintmp" id="inputMovFin"
+							ng-required="movRango">
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group required">
+						<label for="inputMovDias" class="control-label">Total Días:</label>
+						<input type="number" step="0.01" class="form-control" ng-model="bita.movdias" id="inputMovDias"
+							ng-required="movRango">
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group">
+						<label for="inputMovObservaciones" class="control-label">Observaciones:</label>
+						<textarea ng-model="bita.movobservaciones" class="form-control" id="inputMovObservaciones"
+							rows="2"></textarea>
+					</div>
+				</div>
+			</div>
+			<div class="row" ng-show="!movProcesando">
+				<div class="col-md-12">
+					<div class="btn-group btn-group-justified" role="group">
+						<div class="btn-group" role="group">
+							<button class="btn btn-default" ng-show="movEditar"
+								title="Nueva bitacora" type="button" ng-click="nuevoMovimiento()">
+								<i class="fi fi-br-plus"></i> Nuevo
+							</button>
+						</div>
+						<div class="btn-group" role="group" ng-show="movEditar && bita.anular">
+							<button class="btn btn-danger" title="Eliminar movimiento" type="button" ng-click="anularMovimiento(bita)">
+								<i class="fi fi-sr-trash-xmark"></i> Eliminar
+							</button>
+						</div>
+						<div class="btn-group" role="group">
+							<button class="btn btn-primary" title="Guardar cambios" type="submit">
+								<i class="fi fi-sr-disk"></i> Guardar
+							</button>
+						</div>
+					</div>
+					<!-- <div class="form-group form-group-sm" ng-show="bita">
+						<div class="col-sm-10 col-sm-offset-2 text-right" ng-show="movProcesando">
+							<p><strong>Procesando...</strong></p>
+						</div>
+						<div class="col-sm-10 col-sm-offset-2 text-right" ng-show="!movProcesando">
+							<button type="button" class="btn btn-default btn-sm" ng-show="movEditar"
+								ng-click="nuevoMovimiento()">
+								<i class="glyphicon glyphicon-file"></i> Nuevo
+							</button>
+							<button type="button" class="btn btn-danger btn-sm" ng-show="movEditar && bita.primero"
+								ng-click="anularMovimiento(bita)">
+								<i class="glyphicon glyphicon-trash"></i> Anular
+							</button>
+							<button type="submit" class="btn btn-primary btn-sm">
+								<i class="glyphicon glyphicon-floppy-disk"></i> Guardar
+							</button>
+						</div>
+					</div> -->
+				</div>
+		</form>
+	</div>
+</div>
+<!-- <form class="form-horizontal" role="form" ng-submit="guardarMovimiento(bita)">
 	<div class="form-group form-group-sm">
 		<label for="inputTipoMovimiento" class="col-sm-2 control-label">Tipo:</label>
 		<div class="col-sm-4">
@@ -113,8 +236,8 @@
 				<i class="glyphicon glyphicon-floppy-disk"></i> Guardar
 			</button>
 		</div>
-	</div>
-</form>
+	</div> -->
+<!-- </form> -->
 <table class="table table-condensed table-hover">
 	<thead>
 		<tr>
@@ -124,26 +247,26 @@
 			<th>Movimiento</th>
 			<th>Usuario</th>
 			<th></th>
-			<th></th>
 		</tr>
 	</thead>
 	<tbody>
-		<tr ng-repeat="b in bitacora track by $index">
+		<tr ng-repeat="b in bitacora track by $index" ng-click="editarMovimiento($index)">
 			<td>{{ b.fecha | date:'dd/MM/yyyy HH:mm:ss' }}</td>
 			<td>{{ b.movdescripcion }}</td>
 			<td>{{ b.movobservaciones }}</td>
 			<td>{{ b.movfecha | date:'dd/MM/yyyy' }}</td>
 			<td>{{ b.nombre }}</td>
 			<td>
-				<a href="pln/php/controllers/empleado.php/printbit/{{b.idplnempleado}}/{{ b.id }}" class="btn btn-default btn-sm" target="_blank">
+				<a href="pln/php/controllers/empleado.php/printbit/{{b.idplnempleado}}/{{ b.id }}"
+					class="btn btn-default btn-sm" target="_blank">
 					<i class="glyphicon glyphicon-print"></i>
 				</a>
 			</td>
-			<td>
+			<!-- <td>
 				<button class="btn btn-xs btn-primary" ng-click="editarMovimiento($index)">
 					<i class="glyphicon glyphicon-edit"></i>
 				</button>
-			</td>
+			</td> -->
 		</tr>
 	</tbody>
 </table>
