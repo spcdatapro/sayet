@@ -258,7 +258,8 @@ angular.module('cpm')
 
                     // para permitir eliminar el empleado cuando esta en tiempo de prueba
                     const hoy = moment().toDate();
-                    $scope.eliminable = moment(d.lab.ingreso).diff(hoy, 'months') <= 2 ? true : false;
+                    console.log(moment(d.lab.ingreso).diff(hoy, 'months'));
+                    $scope.eliminable = moment(hoy).diff(d.lab.ingreso, 'months') <= 2 ? true : false;
 
                     $scope.formulario = true;
                     $scope.hay = true;
