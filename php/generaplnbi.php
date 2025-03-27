@@ -53,6 +53,8 @@ function insertaDetalleContable($origen, $iddocto, $idcuentac, $debe, $haber, $c
 
 function genDetContDoc($db, $d, $idtranban, $concepto, $idctabanco, $mediopago, $idempleado = 0){
 
+    $mediopago = (int)$mediopago === 3 ? 'nota debito' : 'cheque';
+
     $query = "SELECT b.idempresadebito AS deptodeb, a.fecha, SUM(a.anticipo) AS anticipo, SUM(a.sueldoordinario) AS suel_ord, SUM(a.sueldoextra) AS suel_ext, SUM(a.bonificacion) AS bonifica, ";
     $query.= "SUM(a.viaticos) AS viaticos, SUM(a.otrosingresos) AS otros_ingr, SUM(a.vacaciones) AS vacaciones, SUM(a.aguinaldo) AS aguinaldo, SUM(a.bonocatorce) AS bono_14, SUM(a.indemnizacion) AS indemniza, ";
     $query.= "SUM(a.descigss) AS desc_igss, SUM(a.descisr) AS desc_isr, SUM(a.descanticipo) AS desc_anti, SUM(a.descprestamo) AS desc_prest, SUM(a.descotros) AS otros_desc, SUM(a.liquido) AS liquido, ";
@@ -60,9 +62,9 @@ function genDetContDoc($db, $d, $idtranban, $concepto, $idctabanco, $mediopago, 
     $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral d ON b.idlaboral = d.id INNER JOIN plnempresa c ON c.id = d.idempresaactual ";
     $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' ";
     $query.= $mediopago == 3 ? "AND d.cuentabanco IS NOT NULL AND d.cuentabanco > 0 " : '';
-    $query.= "AND d.mediopago = $mediopago AND a.idempresa = $d->idempresa ";
+    $query.= "AND d.metodo = '$mediopago' AND a.idempresa = $d->idempresa ";
     $query.= $idempleado == 0 ? '' : "AND a.idplnempleado = $idempleado ";
-    //print $query;
+    // print $query;
     $sumas = $db->getQuery($query);
     if(count($sumas) > 0){
         $suma = $sumas[0];
@@ -169,19 +171,19 @@ function genDetContDoc($db, $d, $idtranban, $concepto, $idctabanco, $mediopago, 
             $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral c ON b.idlaboral = c.id ";
             $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido > 0 ";
             $query.= $mediopago == 3 ? "AND c.cuentabanco IS NOT NULL AND c.cuentabanco > 0 " : '';
-            $query.= "AND a.descprestamo <> 0 AND c.mediopago = $mediopago AND ";
+            $query.= "AND a.descprestamo <> 0 AND c.metodo = '$mediopago' AND ";
             $query.= "a.idempresa = $d->idempresa ";
             $query.= $idempleado == 0 ? '' : "AND a.idplnempleado = $idempleado ";
             $query.= "ORDER BY b.nombre, b.apellidos";
-            //print $query;
+            // print $query; return;
             $prestamos = $db->getQuery($query);
             $cntPrestamos = count($prestamos);
             for($i = 0; $i < $cntPrestamos; $i++){
                 $prestamo = $prestamos[$i];
                 // $query = "SELECT id FROM cuentac WHERE idempresa = $d->idempresa AND TRIM(codigo) = '".trim($prestamo->cuentapersonal)."'";
                 // $idctaempleado = (int)$db->getOneField($query);
-                if($idctaempleado > 0){
-                    insertaDetalleContable($origen, $idtranban, $$prestamo->cuentapersonal, 0.00, $prestamo->desc_prest, "PLANILLA $concepto", 1, 0);
+                if($prestamo->cuentapersonal > 0){
+                    insertaDetalleContable($origen, $idtranban, $prestamo->cuentapersonal, 0.00, $prestamo->desc_prest, "PLANILLA $concepto", 1, 0);
                 }
             }
         }
