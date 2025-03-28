@@ -1,6 +1,6 @@
 angular.module('cpm')
-    .controller('MntEmpleadoController', ['$scope', '$http', 'empServicios', 'empresaSrvc', 'proyectoSrvc', 'cuentacSrvc', 'pstServicios', 'unidadSrvc', '$confirm', '$uibModal', 'planillaSrvc', 'municipioSrvc', '$filter', 'toaster', 'jsReportSrvc',
-        function ($scope, $http, empServicios, empresaSrvc, proyectoSrvc, cuentacSrvc, pstServicios, unidadSrvc, $confirm, $uibModal, planillaSrvc, municipioSrvc, $filter, toaster, jsReportSrvc) {
+    .controller('MntEmpleadoController', ['$scope', '$http', 'empServicios', 'empresaSrvc', 'proyectoSrvc', 'cuentacSrvc', 'pstServicios', 'unidadSrvc', '$confirm', '$uibModal', 'planillaSrvc', 'municipioSrvc', '$filter', 'toaster', 'jsReportSrvc', '$window',
+        function ($scope, $http, empServicios, empresaSrvc, proyectoSrvc, cuentacSrvc, pstServicios, unidadSrvc, $confirm, $uibModal, planillaSrvc, municipioSrvc, $filter, toaster, jsReportSrvc, $window) {
             $scope.formulario = false;
             $scope.empleados = [];
             $scope.inicio = 0;
@@ -732,7 +732,7 @@ angular.module('cpm')
                 $scope.cargando = true;
 
                 jsReportSrvc.getPDFReport('Sy0hlTcqyg', idempleado).then(function (pdf) {
-                    $scope.content = pdf;
+                    $window.open(pdf);
                     $scope.cargando = false;
                 }).catch (err => {
                     console.log(err);
