@@ -1007,7 +1007,8 @@ $app->post('/contrato', function () {
                 e.descripcion AS puesto,
                 c.jornada,
                 c.sueldo,
-                c.bonificacionley
+                c.bonificacionley,
+                f.nombre AS empresa
             FROM
                 plnempleado a
                     INNER JOIN
@@ -1018,6 +1019,8 @@ $app->post('/contrato', function () {
                 nacionalidad d ON b.idnacionalidad = d.id
                     INNER JOIN
                 puesto e ON c.idpuesto = e.id
+                    INNER JOIN
+                plnempresa f ON c.idempresadebito = f.id
             WHERE
                 a.id = $d->idempleado";
     $empleado = $db->getQuery($query)[0];
