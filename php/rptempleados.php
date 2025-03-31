@@ -2,6 +2,7 @@
 require 'vendor/autoload.php';
 require_once 'db.php';
 require 'Reportes.php';
+require_once 'NumberToLetterConverter.class.php';
 
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
@@ -834,6 +835,8 @@ $app->get('/subir_personal', function () {
     echo "Personal copiado con exito ". $cuantos;
 });
 
+// fin de funciones temporales
+
 $app->get('/datos_empleador/:anio', function ($anio) {
     $db = new dbcpm();
 
@@ -968,6 +971,71 @@ $app->get('/ficha/:idempleado', function ($idempelado) {
             WHERE
                 a.id = $idempelado";
     print json_encode([ 'empleado' => $db->getQuery($query)[0] ]);
+});
+
+$app->post('/contrato', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $n2l = new NumberToLetterConverter();
+
+    $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+
+    $query = "SELECT nombre, TIMESTAMPDIFF(YEAR, nacimiento, now()) AS edad, estadocivil, genero, profesion, nacionalidad, identificacion, domicilio FROM representante WHERE id = $d->idrepresentante";
+    $representante = $db->getQuery($query)[0];
+
+    $query = "SELECT 
+                CONCAT(b.primernombre,
+                        ' ',
+                        b.segundonombre,
+                        ' ',
+                        b.tercernombre,
+                        ' ',
+                        b.primerapellido,
+                        ' ',
+                        b.segundoapellido,
+                        ' ',
+                        b.apellidocasada) AS nombre,
+                TIMESTAMPDIFF(YEAR, nacimiento, NOW()) AS edad,
+                b.estadocivil,
+                b.sexo,
+                b.profesion,
+                d.nacionalidad,
+                b.documento,
+                b.direccion,
+                c.ingreso,
+                c.temporalidad,
+                e.descripcion AS puesto,
+                c.jornada,
+                c.sueldo,
+                c.bonificacionley
+            FROM
+                plnempleado a
+                    INNER JOIN
+                plnpersonal b ON a.idpersonal = b.id
+                    INNER JOIN
+                plnlaboral c ON a.idlaboral = c.id
+                    INNER JOIN
+                nacionalidad d ON b.idnacionalidad = d.id
+                    INNER JOIN
+                puesto e ON c.idpuesto = e.id
+            WHERE
+                a.id = $d->idempleado";
+    $empleado = $db->getQuery($query)[0];
+
+    $fecha = new DateTime($empleado->ingreso);
+    // fecha
+    $empleado->dia = $fecha->format('d');
+    $empleado->mes = $meses[$fecha->format('n') - 1];
+    $empleado->anio = $fecha->format('Y');
+
+    // numeros a letras
+    $empleado->dia_letras = $n2l->to_word($empleado->dia);
+    $empleado->anio_letras = $n2l->to_word($empleado->anio);
+    $empleado->sueldo_letras = $n2l->to_word_int($empleado->sueldo, 'GTQ');
+    $empleado->bonificacion_letras = $n2l->to_word_int($empleado->bonificacionley, 'GTQ');
+
+
+    print json_encode([ 'representante' => $representante, 'empleado' => $empleado ]);
 });
 
 $app->run();
