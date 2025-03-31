@@ -562,12 +562,12 @@ function getDescripcionLarga($idfactura, $iddetallefactura, $idcliente = null) {
 
     $query = "SELECT DISTINCT TRIM(CONCAT(IF(b.esinsertada = 0, IF(a.idtiposervicio <> 4, CONCAT('$concepto_incial', ' ', UPPER(TRIM(e.desctiposervventa)), ', ', '$panifresh', TRIM(d.nomproyecto), ', ',
     TRIM(UnidadesPorContrato(c.id)), ', Mes de ', ".($periodo == '' ? "f.nombre, ' del año ', a.anio" : ("'".$periodo."'"))."), TRIM(a.descripcion)), TRIM(a.descripcion)), ' ', 
-    IFNULL(a.conceptoadicional, ''))) AS descripcion 
+    IFNULL(a.conceptoadicional, ''), IF(b.idmonedafact = 2, ROUND(b.tipocambio, 5), ''))) AS descripcion 
     FROM detfact a INNER JOIN factura b ON b.id = a.idfactura LEFT JOIN contrato c ON c.id = b.idcontrato LEFT JOIN proyecto d ON d.id = c.idproyecto 
     LEFT JOIN tiposervicioventa e ON e.id = a.idtiposervicio LEFT JOIN mes f ON f.id = a.mes 
     WHERE a.id = $iddetallefactura 
     UNION 
-    SELECT DISTINCT TRIM(CONCAT(a.descripcion, ' ', IFNULL(a.conceptoadicional, ''))) AS descripcion
+    SELECT DISTINCT TRIM(CONCAT(a.descripcion, ' ', IFNULL(a.conceptoadicional, ''), ' ', IF(b.idmonedafact = 2, ROUND(b.tipocambio, 5), ''))) AS descripcion
     FROM detfact a INNER JOIN factura b ON b.id = a.idfactura INNER JOIN tiposervicioventa e ON e.id = a.idtiposervicio INNER JOIN mes f ON f.id = a.mes 
     WHERE b.idcliente = 0 AND a.id = $iddetallefactura";
     $descripcion = $db->getOneField($query);
