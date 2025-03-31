@@ -446,6 +446,8 @@ $app->post('/genfactfel', function() {
             $montoletras = (int)$p->idmonedafact == 1 ? $n2l->to_word($p->totapagar, 'GTQ') : $n2l->to_word($p->totapagarcnv, 'USD');        
             $p->nit = strtoupper(preg_replace("/[^a-zA-Z0-9]+/", "", $p->nit));        
 
+            $p->tc_concepto = $p->idmonedafact == 2 ? 'Tipo de cambio: ' . $p->tc : '';
+
             $query = "INSERT INTO factura(";
             $query.= "idempresa, idtipofactura, idcontrato, idcliente, ";
             $query.= "fechaingreso, mesiva, fecha, idtipoventa, conceptomayor, iva, ";
@@ -457,7 +459,7 @@ $app->post('/genfactfel', function() {
             $query.= "serieadmin, numeroadmin, porretiva, importeexento, importeexentocnv, exentoiva, tipoidreceptor";
             $query.= ") VALUES (";
             $query.= "$params->idempresa, 1, $p->idcontrato, $p->idcliente, ";
-            $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '". str_replace(',', ', ', strip_tags($p->tipo))."', $p->iva, ";
+            $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '". str_replace(',', ', ', strip_tags($p->tipo)).' '.$p->tc_concepto."', $p->iva, ";
             $query.= "$p->totapagar, $p->montoconiva, '$montoletras', 1, $p->tc, ";
             $query.= "$p->isrporretener, $p->ivaporretener, $p->descuentoconiva, '$p->nit', '$p->facturara', '$p->direccion', $p->idmonedafact, ";
             $query.= "$p->montoconivacnv, $p->totapagarcnv, $p->ivaporretenercnv, $p->isrporretenercnv, $p->descuentoconivacnv, ";
