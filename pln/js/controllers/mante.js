@@ -741,6 +741,73 @@ angular.module('cpm')
                 });
             }
 
+            $scope.imprimirContrato = idempleado => {
+                $scope.cargando = true;
+
+                const requiredFields = [
+                    { field: $scope.per.nacimiento, message: 'No tiene fecha de nacimiento, favor ingresar.' },
+                    { field: $scope.per.estadocivil, message: 'No tiene estadocivil, favor ingresar.' },
+                    { field: $scope.per.sexo, message: 'No tiene género, favor ingresar.' },
+                    { field: $scope.per.profesion, message: 'No tiene profesión, favor ingresar.' },
+                    { field: $scope.per.documento, message: 'No tiene documento, favor ingresar.' },
+                    { field: $scope.per.direccion, message: 'No tiene dirección, favor ingresar.' },
+                    { field: $scope.lab.temporalidad, message: 'No tiene temporalidad, favor ingresar.' },
+                    { field: $scope.lab.idpuesto, message: 'No tiene puesto, favor ingresar.' },
+                    { field: $scope.lab.jornada, message: 'No tiene jornada, favor ingresar.' },
+                ];
+
+                // Loop through the required fields and check for errors
+                for (const field of requiredFields) {
+                    if (!field.field || (field.condition && !field.condition(field.field))) {
+                        toaster.pop({ type: 'error', title: 'Contrato de empleado', body: field.message, timeout: 7000});
+                        return;
+                    }
+                }
+
+                obj = { idempleado: idempleado, idrepresentante: 1 };
+
+                if (!$scope.per.nacimiento) {
+                    toaster.pop({ type: 'error', title: 'Contrato de empleado', body: 'No tiene fecha de nacimiento, favor ingresar.', timeout: 7000 });
+                    return;
+                } else if (!$scope.per.estadocivil) {
+                    toaster.pop({ type: 'error', title: 'Contrato de empleado', body: 'No tiene estadocivil, favor ingresar.', timeout: 7000 });
+                    return;
+                } else if (!$scope.per.sexo) { 
+                    toaster.pop({ type: 'error', title: 'Contrato de empleado', body: 'No tiene genero, favor ingresar.', timeout: 7000 });
+                    return;
+                } else if (!$scope.per.profesion) {
+                    toaster.pop({ type: 'error', title: 'Contrato de empleado', body: 'No tiene profesion, favor ingresar.', timeout: 7000 });
+                    return;
+                } else if ($scope.per.nacionalidad == 0) {
+                    toaster.pop({ type: 'error', title: 'Contrato de empleado', body: 'No tiene nacionalidad, favor ingresar.', timeout: 7000 });
+                    return;
+                } else if (!$scope.per.documento) {
+                    toaster.pop({ type: 'error', title: 'Contrato de empleado', body: 'No tiene documento, favor ingresar.', timeout: 7000 });
+                    return;
+                } else if (!$scope.per.direccion) {
+                    toaster.pop({ type: 'error', title: 'Contrato de empleado', body: 'No tiene direccion, favor ingresar.', timeout: 7000 });
+                    return;
+                } else if (!$scope.lab.temporalidad) {
+                    toaster.pop({ type: 'error', title: 'Contrato de empleado', body: 'No tiene temporalidad, favor ingresar.', timeout: 7000 });
+                    return;
+                } else if (!$scope.lab.idpuesto) {
+                    toaster.pop({ type: 'error', title: 'Contrato de empleado', body: 'No tiene puesto, favor ingresar.', timeout: 7000 });
+                    return;
+                } else if (!$scope.lab.jornada) {
+                    toaster.pop({ type: 'error', title: 'Contrato de empleado', body: 'No tiene jornada, favor ingresar.', timeout: 7000 });
+                    return;
+                } else {
+                    jsReportSrvc.getPDFReport('S1nJHXuaJl', obj).then(function (pdf) {
+                        $window.open(pdf);
+                        $scope.cargando = false;
+                    }).catch (err => {
+                        console.log(err);
+                        toaster.pop({ type: 'error', title: 'Contrato de empleado', body: 'Error en la conexion con el servidor, favor comunicarse con IT.', timeout: 7000 });
+                        $scope.cargando = false;
+                    });
+                }
+            }
+
             $scope.eliminar = idempleado => {
                 $confirm({
                     text: '¿Seguro(a) de eliminar el empleado?',

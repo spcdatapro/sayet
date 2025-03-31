@@ -1374,6 +1374,11 @@
 												<i class="fi fi-sr-print"></i> Imprimir
 											</button>
 										</div>
+										<div class="btn-group" role="group" ng-show="eliminable && emp.activo == 1" ng-click="imprimirContrato()">
+											<button class="btn btn-default" title="Imprimir contrato" type="button">
+												<i class="fi fi-rr-file-signature"></i> Contrato
+											</button>
+										</div>
 										<div class="btn-group" role="group" ng-show="emp.activo == 0" ng-click="darAlta()">
 											<button class="btn btn-primary" title="Dar de alta" type="button">
 												<i class="fi fi-sr-up"></i> Dar de alta
