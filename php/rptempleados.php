@@ -978,7 +978,7 @@ $app->post('/contrato', function () {
     $db = new dbcpm();
     $n2l = new NumberToLetterConverter();
 
-    $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+    $meses = array("ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE");
 
     $query = "SELECT nombre, TIMESTAMPDIFF(YEAR, nacimiento, now()) AS edad, estadocivil, genero, profesion, nacionalidad, identificacion, domicilio FROM representante WHERE id = $d->idrepresentante";
     $representante = $db->getQuery($query)[0];
@@ -1031,12 +1031,23 @@ $app->post('/contrato', function () {
     $empleado->mes = $meses[$fecha->format('n') - 1];
     $empleado->anio = $fecha->format('Y');
 
+    // horas
+    if ($empleado->jornada === 'diurna') {
+        $empleado->diario = 8;
+        $empleado->semana = 40;
+        $empleado->incia_manana = '07:00';
+        $empleado->fin = '12:00';
+        $empleado->incia_tarde = '13:00';
+        $empleado->fin_tarde = '16:00';
+    }
+
     // numeros a letras
     $empleado->dia_letras = $n2l->to_word($empleado->dia);
     $empleado->anio_letras = $n2l->to_word($empleado->anio);
     $empleado->sueldo_letras = $n2l->to_word_int($empleado->sueldo, 'GTQ');
     $empleado->bonificacion_letras = $n2l->to_word_int($empleado->bonificacionley, 'GTQ');
-
+    $empleado->diario_letras = $n2l->to_word($empleado->diario);
+    $empleado->semana_letras = $n2l->to_word($empleado->semana);
 
     print json_encode([ 'representante' => $representante, 'empleado' => $empleado ]);
 });
