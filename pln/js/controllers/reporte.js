@@ -25,7 +25,7 @@ angular.module('cpm')
             setTimeout(function() { $("#selectEmpresa").chosen({width:'100%'}) }, 3)
         })
 
-        empServicios.buscar({'sin_limite':1, 'estatus': 1}).then(function(res){
+        empServicios.buscar({'sin_limite':1 }).then(function(res){
             res.resultados.forEach(value => {
                 value.segundonombre = value.segundonombre ? value.segundonombre : '';
                 value.tercernombre = value.tercernombre ? value.tercernombre : '';
