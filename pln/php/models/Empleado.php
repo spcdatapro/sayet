@@ -1392,9 +1392,9 @@ EOT;
 			$tmp['ant_sueldo'] = 0;
 		}
 
-		$tmp['des_sueldo']       = $this->lab->sueldo;
-		$tmp['des_bonificacion'] = $this->lab->bonificacionley;
-		$tmp['des_total']        = $this->lab->sueldo + $this->lab->bonificacionley;
+		$tmp['des_sueldo']       = number_format($this->lab->sueldo, 2);
+		$tmp['des_bonificacion'] = number_format($this->lab->bonificacionley, 2);
+		$tmp['des_total']        = number_format($this->lab->sueldo + $this->lab->bonificacionley, 2);
 
 		return $tmp;
 	}
