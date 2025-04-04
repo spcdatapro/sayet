@@ -1380,6 +1380,22 @@ EOT;
 			$tmp['des_total']        = 0;
 		}
 
+		if ($bit->sueldo > 0) {
+			$tmp['ant_sueldo'] = number_format($bit->sueldo, 2);
+			if ($bit->bonificacionley > 0) {
+				$tmp['ant_bonificacion'] = number_format($bit->bonificacionley, 2);
+				$tmp['ant_total']  = number_format(($bit->sueldo+$bit->bonificacionley), 2);
+			} else {
+				$tmp['ant_bonificacion'] = 0;
+			}
+		} else {
+			$tmp['ant_sueldo'] = 0;
+		}
+
+		$tmp['des_sueldo']       = $this->lab->sueldo;
+		$tmp['des_bonificacion'] = $this->lab->bonificacionley;
+		$tmp['des_total']        = $this->lab->sueldo + $this->lab->bonificacionley;
+
 		return $tmp;
 	}
 

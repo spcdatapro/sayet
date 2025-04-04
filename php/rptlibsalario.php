@@ -15,7 +15,7 @@ $app->post('/rptlibsalario', function(){
                             INTERVAL YEAR(c.nacimiento) YEAR),
                         '%y') AS edad,
                 c.sexo AS genero,
-                IFNULL(nacionalidad, 'GUATEMALTECO') AS nacionalidad,
+                e.nacionalidad,
                 b.descripcion AS puesto,
                 d.igss,
                 c.documento,
@@ -30,12 +30,11 @@ $app->post('/rptlibsalario', function(){
                             plnpersonal c ON a.idpersonal = c.id
                     INNER JOIN
                             plnlaboral d ON a.idlaboral = d.id
+                    INNER JOIN
+                            nacionalidad e ON c.idnacionalidad = e.id
                         WHERE
                             a.id = $d->idempleado ";
     $empleado = $db->getQuery($query)[0];
-
-    $query = "SELECT nomempresa AS empresa, nit FROM empresa WHERE id = $empleado->idempresadebito ";
-    $empresa = $db->getQuery($query)[0];
 
     $query = "SELECT 
                 NULL AS numero,
@@ -57,7 +56,8 @@ $app->post('/rptlibsalario', function(){
                 SUM(a.aguinaldo) AS aguinaldo,
                 SUM(bonocatorce) AS bonocatorce,
                 '-' AS otros,
-                SUM(liquido) AS liquido
+                SUM(liquido) AS liquido,
+                a.idempresa
             FROM
                 plnnomina a
             WHERE
@@ -67,6 +67,11 @@ $app->post('/rptlibsalario', function(){
             GROUP BY MONTH(fecha)
             ORDER BY YEAR(fecha) , MONTH(fecha) ";
     $salarios = $db->getQuery($query);
+
+    $idempresa = $salarios[0]->idempresa;
+
+    $query = "SELECT nomempresa AS empresa, nit FROM empresa WHERE id = $idempresa";
+    $empresa = $db->getQuery($query)[0];
 
     $cntSalario = count($salarios);
 
@@ -86,7 +91,7 @@ $app->post('/rptlibsalario', function(){
     $aguinaldo = array();
     $bono14 = array();
     $liquido = array();
- 
+
     while ($i < $cntSalario) {
         $salario = $salarios[$i];
         $salario->numero = $j;
