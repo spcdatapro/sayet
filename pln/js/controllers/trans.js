@@ -261,8 +261,24 @@ angular.module('cpm')
              goTop()
         }
 
-        empServicios.buscar({'sin_limite':1}).then(function(d) {
-            $scope.empleados = d.resultados
+        // empServicios.buscar({'sin_limite':1}).then(function(d) {
+        //     $scope.empleados = d.resultados
+        // })
+
+        empServicios.buscar({'sin_limite':1, 'estatus': 1}).then(function(res){
+            res.resultados.forEach(value => {
+                value.segundonombre = value.segundonombre ? value.segundonombre : '';
+                value.tercernombre = value.tercernombre ? value.tercernombre : '';
+
+                value.nombre = value.primernombre + ' ' + value.segundonombre + ' ' + value.tercernombre;
+
+                value.segundoapellido = value.segundoapellido ? value.segundoapellido : '';
+                value.apellidocasada = value.apellidocasada ? value.apellidocasada : '';
+
+                value.apellidos = value.primerapellido + ' ' + value.segundoapellido + ' ' + value.apellidocasada;
+            });
+
+            $scope.empleados = res.resultados;
         })
 
         $scope.verOmisiones = function(pre) {
