@@ -268,16 +268,16 @@ class ConciliacionAutomatica
                 }
 
                 if (count($errores) === 0) {
-                    if (!$this->existia) {
+                    // if (!$this->existia) {
                         unset($datos['json']);
                         $datos['exito'] = true;
                         $datos['mensaje'] = 'Lista de archivos MT940.';
-                    } else {
-                        unset($datos['json']);
-                        $datos['exito'] = true;
-                        $datos['mensaje'] = 'No existen archivos nuevos, favor intentar mas tarde.';
-                        $archivos = [];
-                    }
+                    // } else {
+                    //     unset($datos['json']);
+                    //     $datos['exito'] = true;
+                    //     $datos['mensaje'] = 'No existen archivos nuevos, favor intentar mas tarde.';
+                    //     $archivos = [];
+                    // }
                 } else {
                     $datos['mensaje'] = implode('. ', $errores);
                 }
