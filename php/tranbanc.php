@@ -1050,8 +1050,9 @@ $app->get('/revexiste/:numero/:idbanco/:tipotrans', function ($numero, $idbanco,
 
 $app->post('/conciliacion_automatica', function () use ($app) {
 
-    $src = new SFTPConnInfo('190.242.184.26', 22, 'sftpSayetQA', 'S@Y3TQA24PP', '/');
+    // $src = new SFTPConnInfo('190.242.184.26', 22, 'sftpSayetQA', 'S@Y3TQA24PP', '/');
     $dest = new SFTPConnInfo('localhost', 222, 'aponce', 'y%YgW$Qk3x#a59Su', '/');
+    $src = new SFTPConnInfo('190.242.184.121', 22, 'sftpSayet', 'S3Pd25S@y3t', '/');
     $conciliacion = new ConciliacionAutomatica($src, $dest);
 
     print json_encode([

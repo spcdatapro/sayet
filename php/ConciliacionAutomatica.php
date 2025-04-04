@@ -194,9 +194,9 @@ class ConciliacionAutomatica
         foreach ($dataArchivo as $data) {
             $nombreArchivo = trim($nombreArchivo);
             $data->number = trim($data->number);
-            $query = "SELECT estado_cuenta FROM estado_cuenta WHERE TRIM(nombre) = '{$nombreArchivo}' AND TRIM(numero) = '{$data->number}'";
-            $existe = (int)$db->getOneField($query) > 0;
-            if (!$existe) {
+            // $query = "SELECT estado_cuenta FROM estado_cuenta WHERE TRIM(nombre) = '{$nombreArchivo}' AND TRIM(numero) = '{$data->number}'";
+            // $existe = (int)$db->getOneField($query) > 0;
+            // if (!$existe) {
                 $query = 'INSERT INTO estado_cuenta(nombre, cuenta, numero, moneda, saldo_inicial, saldo_final) VALUES(';
                 $query .= "'{$nombreArchivo}',  '{$data->account}', '{$data->number}', '{$data->currency}', {$data->startPrice}, {$data->endPrice}";
                 $query .= ')';
@@ -215,10 +215,10 @@ class ConciliacionAutomatica
                     }
                 }
                 $grabado = true;
-            } else {
-                $grabado = true;
-                $this->existia = true;
-            }
+            // } else {
+            //     $grabado = true;
+            //     $this->existia = true;
+            // }
         }
         return $grabado;
     }
