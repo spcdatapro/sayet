@@ -567,7 +567,9 @@ EOT;
 			"c.apellidos",
 			"c.dpi",
 			"d.descripcion (movimiento)",
-			"plnbitacora.revertir"
+			"plnbitacora.revertir", 
+			"plnbitacora.sueldo",
+			"plnbitacora.bonificacionley"
 		];
 
 		if (!isset($args["_reporte"])) {
