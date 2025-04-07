@@ -36,6 +36,8 @@ $app->post('/rptlibsalario', function(){
                             a.id = $d->idempleado ";
     $empleado = $db->getQuery($query)[0];
 
+    $db->doQuery("SET lc_time_names = 'es_ES'");
+
     $query = "SELECT 
                 NULL AS numero,
                 DATE_FORMAT(a.fecha, '%b, %Y') AS periodo,
