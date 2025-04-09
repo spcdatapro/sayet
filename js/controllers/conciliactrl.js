@@ -56,10 +56,14 @@
             }
         };
 
-        $scope.updOperado = function (data, id) {
+        $scope.updOperado = function (data, id, index) {
+            // console.log(data, index); 
+            // console.log($scope.lasTran[index]); return;
             data.operado = data.operado ? 0 : 1;
             //console.log(data);
-            tranBancSrvc.editRow({ id: data.id, operado: data.operado, foperado: moment($scope.fechaconcilia).format('YYYY-MM-DD') }, 'o').then(function () { $scope.getLstTran(); });
+            tranBancSrvc.editRow({ id: data.id, operado: data.operado, foperado: moment($scope.fechaconcilia).format('YYYY-MM-DD') }, 'o').then(function () { 
+                $scope.lasTran.splice(index, 1);
+            });
         };
 
     }]);

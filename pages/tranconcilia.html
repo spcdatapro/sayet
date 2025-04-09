@@ -53,7 +53,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="tb in lasTran | filter:searchdoc">
+                    <tr ng-repeat="(index, tb) in lasTran | filter:searchdoc">
                         <td>{{tb.fecha | date:'dd/MM/yyyy'}}</td>
                         <td>{{tb.tipotrans}}</td>
                         <td>{{tb.numero}}</td>
@@ -61,7 +61,7 @@
                         <td>{{tb.beneficiario}}</td>
                         <td>{{tb.concepto}}</td>
                         <td>
-                            <button type="button" class="btn" ng-class="{'btn-success': tb.operado, 'btn-warning': !tb.operado }" ng-click="updOperado(tb, tb.id)">
+                            <button type="button" class="btn" ng-class="{'btn-success': tb.operado, 'btn-warning': !tb.operado }" ng-click="updOperado(tb, tb.id, index)">
                                 <span class="glyphicon" ng-class="{'glyphicon-ok': tb.operado, 'glyphicon-remove': !tb.operado}"></span>
                             </button>
                         </td>
