@@ -891,8 +891,9 @@ function getTotales($orden, $db, $esmultiple, $ids = null) {
     }
 
     // traer monto, moneda, idordentrabajo y tipocambio de compra
-    $query = "SELECT id, totfact, idmoneda, tipocambio, isr, ordentrabajo AS ot, retiva FROM compra WHERE ordentrabajo IN($ids_str) AND idreembolso = 0 
-    AND id NOT IN(SELECT idcompra FROM detnotacompra) AND idtipofactura < 8
+    $query = "SELECT a.id, (a.totfact - IFNULL(b.monto, 0)) as totfact, a.idmoneda, a.tipocambio, a.isr, a.ordentrabajo AS ot, a.retiva FROM compra a 
+    LEFT JOIN (SELECT idcompra, SUM(monto) AS monto FROM detnotacompra) b ON b.idcompra = a.id WHERE a.ordentrabajo IN($ids_str) AND a.idreembolso = 0 
+    AND a.idtipofactura < 8
     UNION ALL SELECT b.id, b.totfact, b.idmoneda, b.tipocambio, b.isr, a.ordentrabajo, b.retiva AS ot FROM reembolso a 
     INNER JOIN compra b ON b.idreembolso = a.id WHERE a.ordentrabajo IN($ids_str)";
     $tcompras = $db->getQuery($query);
