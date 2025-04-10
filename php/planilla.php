@@ -17,6 +17,10 @@ $app->post('/empresas', function() use($db)
     $cntEmpresas = count($empresas);
     for($i = 0; $i < $cntEmpresas; $i++){
         $empresa = $empresas[$i];
+
+        $existe = $db->getQuery("SELECT a.id AS idtranban, b.id AS idbanco, a.numero FROM tranban a INNER JOIN banco b ON a.idbanco = b.id 
+        WHERE a.fechaplanilla = '$d->falstr' AND esplanilla = 1 AND b.idempresa = $empresa->idempresa AND a.tipotrans = 'B' AND a.liquidado = 0");
+
         $query = "SELECT a.id, b.id AS idcuentac, CONCAT('(', b.codigo, ') ', b.nombrecta) AS nombrecta, ";
         $query.= "a.nombre, a.nocuenta, a.siglas, a.nomcuenta, a.idmoneda, CONCAT(c.nommoneda,' (',c.simbolo,')') AS descmoneda, ";
         $query.= "CONCAT(a.nombre, ' (', c.simbolo,')') AS bancomoneda, a.correlativo, c.tipocambio, CONCAT(a.nombre, ' (', c.simbolo,') (Sigue el No. ', a.correlativo,')') AS bancomonedacorrela, ";
@@ -26,6 +30,7 @@ $app->post('/empresas', function() use($db)
         $query.= "LEFT JOIN tipoimpresioncheque d ON d.id = a.idtipoimpresion ";
         $query.= "WHERE a.idempresa = ".$empresa->idempresa." ORDER BY a.nombre";
         $empresa->bancos = $db->getQuery($query);
+        $empresa->existe = isset($existe[0]) ? $existe[0] : 0;
     }
     print json_encode($empresas);
 });

@@ -195,7 +195,7 @@ function genDetContDoc($db, $d, $idtranban, $concepto, $idctabanco, $mediopago, 
 }
 
 function generand($d, $db, $total, $generales){
-    $query = "SELECT COUNT(*) FROM tranban WHERE idbanco = $d->idbanco AND tipotrans = 'B' AND esplanilla = 1 AND fechaplanilla = '$d->falstr'";
+    $query = "SELECT COUNT(*) FROM tranban WHERE idbanco = $d->idbanco AND tipotrans = 'B' AND esplanilla = 1 AND fechaplanilla = '$d->falstr' AND liquidado = 0";
     $existe = (int)$db->getOneField($query) > 0;
     if(!$existe){
         $query = "INSERT INTO tranban(";

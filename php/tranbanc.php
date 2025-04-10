@@ -1026,4 +1026,31 @@ $app->get('/revexiste/:numero/:idbanco/:tipotrans', function($numero, $idbanco, 
     print json_encode($existe);
 });
 
+$app->get('/revertir/:idtranban', function($idtranban) {
+    $db = new dbcpm();
+    $hoy = new DateTime();
+    $hoy = $hoy->format('Y-m-d');
+
+    $detcont = $db->getQuery("SELECT idcuenta, debe, haber FROM detallecontable WHERE origen = 1 AND idorigen = $idtranban AND anulado = 0");
+    $doc = $db->getQuery("SELECT numero, monto, concepto, monto, idbanco, idempresa, fechaplanilla, id FROM tranban WHERE id = $idtranban")[0];
+
+    $concpeto = 'REINGRESO ('.$doc->concepto.')';
+
+    $db->doQuery("INSERT INTO tranban (idbanco, tipotrans, numero, esplanilla, fechaplanilla, fecha, monto, beneficiario, concepto, idempresa, iddocliquida) VALUES
+    ($doc->idbanco, 'R', $doc->numero, 1, '$doc->fechaplanilla', '$hoy', $doc->monto, 'REINGRESO (PLANILLA EMPLEADOS)', '$concpeto', 
+    $doc->idempresa, $idtranban)");
+    $idnota = $db->getLastId();
+
+    if ($idnota > 0) {
+        foreach ($detcont as $det) {
+            $db->doQuery("INSERT INTO detallecontable (origen, idorigen, idcuenta, debe, haber, conceptomayor, anulado) 
+            VALUES (1, $idnota, $det->idcuenta, $det->haber, $det->debe, 'REINGRESO (".$doc->concepto.")', 0)");
+        }
+        $db->doQuery("UPDATE tranban SET liquidado = 1 WHERE id = $idtranban");
+        print json_encode(['tipo' => 'success', 'mensaje' => 'Reversión exitosa']);
+    } else {
+        print json_encode(['tipo' => 'error', 'mensaje' => 'Error al revertir la transacción']);
+    }
+});
+
 $app->run();

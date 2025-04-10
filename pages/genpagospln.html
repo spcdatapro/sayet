@@ -30,8 +30,8 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-primary" ng-disabled="frmGenND.$invalid" ng-click="genND()">
-                            <span class="glyphicon glyphicon-link"></span>
+                        <button type="button" class="btn btn-primary" ng-disabled="frmGenND.$invalid" ng-click="genND()" title="Generar nota de débito">
+                            <i class="fi fi-rr-expense"></i> Generar pago
                         </button>
                     </form>
                 </div>
@@ -76,17 +76,23 @@
                 <th>Empresa</th>
                 <th>Correlativo</th>
                 <th>Banco</th>
+                <th ng-show="empresa.existe != 0">&nbsp;</th>
                 </thead>
                 <tbody>
                 <tr ng-repeat="empresa in empresas">
                     <td>{{empresa.empresa}}</td>
                     <td>
                         <input name="ndplanilla_{{$index}}" id="ndplanilla_{{$index}}" type="text" style="width: 75px; text-align: right" class="form-control input-sm" ng-model="empresa.ndplanilla"
-                               ng-blur="existeND($index, empresa.idbanco, empresa.ndplanilla)" required/>
+                            ng-disabled="empresa.existe != 0" required/>
                     </td>
                     <td>
                         <select name="selBcoND_{{$index}}" id="selBcoND_{{$index}}" class="form-control input-sm" ng-model="empresa.idbanco"
-                                ng-options="obj.id as obj.bancomoneda for obj in empresa.bancos" ng-change="existeND($index, empresa.idbanco, empresa.ndplanilla)" required></select>
+                        ng-options="obj.id as obj.bancomoneda for obj in empresa.bancos" ng-disabled="empresa.existe != 0" required></select>
+                    </td>
+                    <td ng-show="empresa.existe != 0">
+                        <button type="button" class="btn btn-primary btn-sm" ng-click="revertirND(empresa.existe.idtranban)" title="Revertir nota de débito">
+                            <i class="fi fi-rr-arrows-retweet"></i> Revertir
+                        </button>
                     </td>
                 </tr>
                 </tbody>
