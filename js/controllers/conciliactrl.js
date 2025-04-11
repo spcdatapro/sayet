@@ -76,7 +76,7 @@
                 } else {
                     return;
                 }
-            }, 1000)
+            }, 800)
 
             tranBancSrvc.conciliacionAutomatica().then(d => {
                 $scope.progress = d.porcentaje;
