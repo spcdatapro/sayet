@@ -72,7 +72,7 @@
             $scope.cargando = true;
             $interval(() => {
                 if ($scope.progress < 99) {
-                    $scope.progress + 1;
+                    $scope.progress += 1;
                 } else {
                     return;
                 }
