@@ -1056,7 +1056,6 @@ $app->get('/revertir/:idtranban', function($idtranban) {
 
 $app->post('/conciliacion_automatica', function () use ($app) {
     $db = new dbcpm();
-    $caso = 3;
 
     $dest = new SFTPConnInfo('localhost', 222, 'aponce', 'y%YgW$Qk3x#a59Su', '/');
     $src = new SFTPConnInfo('190.242.184.121', 22, 'sftpSayet', 'S3Pd25S@y3t', '/');
@@ -1071,6 +1070,9 @@ $app->post('/conciliacion_automatica', function () use ($app) {
     FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia INNER JOIN banco c ON a.idbanco = c.id AND a.monto = b.monto WHERE a.tipotrans = 'C'";
     $match = $db->getQuery($query);
 
+    $cuantos = count($match);
+    $case = $cuantos > 0 ? 3 : 1;
+
     switch ($caso) {
         case 1: 
             print json_encode(['tipo' => 'warning', 'mensaje' => 'No se encontraron nuevos archivos, por favor intente más tarde.', 'porcentaje' => 100, 'caso' => 1]);
@@ -1079,7 +1081,7 @@ $app->post('/conciliacion_automatica', function () use ($app) {
             print json_encode(['tipo' => 'warning', 'mensaje' => 'No se encontraron documentos que concuerden con los del sistema.', 'porcentaje' => 100, 'caso' => 2]);
             break;
         case 3:
-            print json_encode(['tipo' => 'success', 'mensaje' => 'Se encontraron tres documentos que concuerdan con los del sistema.', 'porcentaje' => 100, 'caso' => 3,
+            print json_encode(['tipo' => 'success', 'mensaje' => 'Se encontraron'. $cuantos .'documentos que concuerdan con los del sistema.', 'porcentaje' => 100, 'caso' => 3,
             'trans' => $match]);
             break;
         case 4:
