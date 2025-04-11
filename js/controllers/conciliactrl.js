@@ -2,7 +2,7 @@
 
     var conciliactrl = angular.module('cpm.conciliactrl', ['cpm.tranbacsrvc']);
 
-    conciliactrl.controller('conciliaCtrl', ['$scope', 'tranBancSrvc', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'DTOptionsBuilder', function ($scope, tranBancSrvc, authSrvc, bancoSrvc, empresaSrvc, DTOptionsBuilder) {
+    conciliactrl.controller('conciliaCtrl', ['$scope', 'tranBancSrvc', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'DTOptionsBuilder', '$interval', 'toaster', function ($scope, tranBancSrvc, authSrvc, bancoSrvc, empresaSrvc, DTOptionsBuilder, $interval, toaster) {
 
         $scope.laEmpresa = {};
         $scope.lasEmpresas = [];
@@ -12,6 +12,8 @@
         $scope.afecha = moment().toDate();
         $scope.fechaconcilia = moment().toDate();
         $scope.qver = 0;
+        $scope.progress = 0;
+        $scope.trans = [];
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true);
 
@@ -56,15 +58,53 @@
             }
         };
 
-        $scope.updOperado = function (data, id, index) {
+        $scope.updOperado = (data, id, index) => {
             // console.log(data, index); 
             // console.log($scope.lasTran[index]); return;
             data.operado = data.operado ? 0 : 1;
             //console.log(data);
-            tranBancSrvc.editRow({ id: data.id, operado: data.operado, foperado: moment($scope.fechaconcilia).format('YYYY-MM-DD') }, 'o').then(function () { 
+            tranBancSrvc.editRow({ id: data.id, operado: data.operado, foperado: moment($scope.fechaconcilia).format('YYYY-MM-DD') }, 'o').then(() => {
                 $scope.lasTran.splice(index, 1);
             });
         };
+
+        $scope.buscarDocumentos = () => {
+            $scope.cargando = true;
+            $interval(() => {
+                if ($scope.progress < 99) {
+                    $scope.progress + 1;
+                } else {
+                    return;
+                }
+            }, 1000)
+
+            tranBancSrvc.conciliacionAutomatica().then(d => {
+                $scope.progress = d.porcentaje;
+                $scope.cargando = false;
+                toaster.pop({ type: d.tipo, title: 'Conciliación automática', body: d.mensaje, timeout: 10000 }) 
+
+                if (d.caso === 2) {
+                    automaticaDos();
+                } else if (d.caso === 3) {
+                    $scope.trans = d.trans;
+                }
+            });
+        }
+
+        $scope.aceptarAutomatico = () => {
+            // falta codigo para conciliar los documentos
+            $scope.trans = [];
+            toaster.pop({ type: 'success', title: 'Conciliación automática', body: 'Documentos conciliados exitosamente', timeout: 10000 });
+        }
+
+        $scope.cancelarAutomatico = () => {
+            $scope.trans = [];
+            toaster.pop({ type: 'info', title: 'Conciliación automática', body: 'Conciliación automática cancelada', timeout: 10000 });    
+        }
+
+        $scope.imprimir = () => {
+
+        }
 
     }]);
 

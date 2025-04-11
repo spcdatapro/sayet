@@ -71,6 +71,9 @@
             },
             revertir: (idtranban) => {
                 return comunFact.doGET(`${urlBase}/revertir/${idtranban}`);
+            },
+            conciliacionAutomatica: function () {
+                return comunFact.doPOST(urlBase + '/conciliacion_automatica');
             }
         };
     }]);
