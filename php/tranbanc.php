@@ -1071,7 +1071,7 @@ $app->post('/conciliacion_automatica', function () use ($app) {
     $match = $db->getQuery($query);
 
     $cuantos = count($match);
-    $case = $cuantos > 0 ? 3 : 1;
+    $caso = $cuantos > 0 ? 3 : 1;
 
     switch ($caso) {
         case 1: 
