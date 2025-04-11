@@ -3,6 +3,7 @@ require 'vendor/autoload.php';
 require_once 'db.php';
 require_once 'NumberToLetterConverter.class.php';
 require_once 'ConciliacionAutomatica.php';
+require 'Reportes.php';
 
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
@@ -1086,6 +1087,22 @@ $app->post('/conciliacion_automatica', function () use ($app) {
             print json_encode(['tipo' => 'error', 'mensaje' => 'La conexion no fue existosa, favor comunicarse con IT.', 'porcentaje' => 100, 'caso' => 4]);
             break;
     }
+});
+
+$app->post('/reporte_conciliacion', function () use ($app) {
+    $db = new dbcpm();
+
+    $totales = ['monto'];
+
+    $query = "SELECT c.id AS idempresa, a.id, a.idbanco, a.tipotrans, a.numero, a.monto, b.monto AS montobanco, a.fecha, b.fecha AS concilia, a.beneficiario, c.idmoneda, 
+    CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas AS abreviatura FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia INNER JOIN banco c ON a.idbanco = c.id 
+    AND a.monto = b.monto WHERE a.tipotrans = 'C' AND c.idmoneda = 1 ORDER BY c.id";
+    $datos = $db->getQuery($query);
+
+    $reporte = new GeneradorReportes($datos, 'transacciones', $totales, false);
+    $empleados = $reporte->getReporte();
+
+    print json_encode([ 'bancos' => $empleados ]);
 });
 
 $app->run();
