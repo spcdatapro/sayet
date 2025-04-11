@@ -1062,29 +1062,30 @@ $app->post('/conciliacion_automatica', function () use ($app) {
     $src = new SFTPConnInfo('190.242.184.121', 22, 'sftpSayet', 'S3Pd25S@y3t', '/');
     $conciliacion = new ConciliacionAutomatica($src, $dest);
 
-    print json_encode([
-        'get_mt940' => $conciliacion->get_mt940(), // proceso uno 35
-        'read_mt940' => $conciliacion->read_mt940() //proceso dos 35
-    ]);
+    // print json_encode([
+    //     'get_mt940' => $conciliacion->get_mt940(), // proceso uno 35
+    //     'read_mt940' => $conciliacion->read_mt940() //proceso dos 35
+    // ]);
 
-    // $query = "SELECT id, idbanco, tipotrans, numero, monto, fecha, '2024-10-31' AS concilia, beneficiario FROM tranban WHERE id IN(63880, 63879, 63878)";
-    // $match = $db->getQuery($query);
+    $query = "SELECT a.id, a.idbanco, a.tipotrans, a.numero, a.monto, b.monto AS montobanco, a.fecha, b.fecha AS concilia, a.beneficiario, c.idmoneda 
+    FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia INNER JOIN banco c ON a.idbanco = c.id AND a.monto = b.monto WHERE a.tipotrans = 'C'";
+    $match = $db->getQuery($query);
 
-    // switch ($caso) {
-    //     case 1: 
-    //         print json_encode(['tipo' => 'warning', 'mensaje' => 'No se encontraron nuevos archivos, por favor intente más tarde.', 'porcentaje' => 100, 'caso' => 1]);
-    //         break;
-    //     case 2:
-    //         print json_encode(['tipo' => 'warning', 'mensaje' => 'No se encontraron documentos que concuerden con los del sistema.', 'porcentaje' => 100, 'caso' => 2]);
-    //         break;
-    //     case 3:
-    //         print json_encode(['tipo' => 'success', 'mensaje' => 'Se encontraron tres documentos que concuerdan con los del sistema.', 'porcentaje' => 100, 'caso' => 3,
-    //         'trans' => $match]);
-    //         break;
-    //     case 4:
-    //         print json_encode(['tipo' => 'error', 'mensaje' => 'La conexion no fue existosa, favor comunicarse con IT.', 'porcentaje' => 100, 'caso' => 4]);
-    //         break;
-    // }
+    switch ($caso) {
+        case 1: 
+            print json_encode(['tipo' => 'warning', 'mensaje' => 'No se encontraron nuevos archivos, por favor intente más tarde.', 'porcentaje' => 100, 'caso' => 1]);
+            break;
+        case 2:
+            print json_encode(['tipo' => 'warning', 'mensaje' => 'No se encontraron documentos que concuerden con los del sistema.', 'porcentaje' => 100, 'caso' => 2]);
+            break;
+        case 3:
+            print json_encode(['tipo' => 'success', 'mensaje' => 'Se encontraron tres documentos que concuerdan con los del sistema.', 'porcentaje' => 100, 'caso' => 3,
+            'trans' => $match]);
+            break;
+        case 4:
+            print json_encode(['tipo' => 'error', 'mensaje' => 'La conexion no fue existosa, favor comunicarse con IT.', 'porcentaje' => 100, 'caso' => 4]);
+            break;
+    }
 });
 
 $app->run();
