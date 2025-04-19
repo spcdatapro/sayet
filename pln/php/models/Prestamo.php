@@ -427,7 +427,7 @@ class Prestamo extends Principal
 			't_conforme'        => 'Recibí conforme: ',
 			'v_empleado'        => $empleado->nombre.' '.$empleado->apellidos,
 			'ln_conforme'       => str_repeat('_', 85),
-			't_anticipo'        => 'ANTICIPO A SUELDOS.',
+			't_anticipo'        => $this->pre->concepto,
 			'ln_autorizado'     => str_repeat('_', 27),
 			't_autorizado'      => 'Autorizado', 
 			't_nota'            => 'NOTA: Me comprometo a no solicitar otro préstamo hasta cancelar mi saldo.'
