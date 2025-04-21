@@ -1111,11 +1111,6 @@ $app->post('/reporte_conciliacion', function () use ($app) {
 
     $totales = ['monto'];
 
-    $query = "SELECT c.id AS idempresa, a.id, a.idbanco, a.tipotrans, a.numero, a.monto, b.monto AS montobanco, a.fecha, b.fecha AS concilia, a.beneficiario, c.idmoneda, 
-    CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas AS abreviatura FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia INNER JOIN banco c ON a.idbanco = c.id 
-    AND a.monto = b.monto WHERE a.tipotrans = 'C' AND c.idmoneda = 1 ORDER BY c.id";
-    $datos = $db->getQuery($query);
-
     $query = "SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero, b.referencia, a.monto, b.monto AS monto_real, c.idmoneda, a.fecha, 
                 b.fecha AS concilia, a.beneficiario, null AS numban, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas AS abreviatura FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
                 INNER JOIN banco c ON a.idbanco = c.id WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'C' AND operado = 0
