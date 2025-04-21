@@ -93,7 +93,8 @@ class ConciliacionAutomatica
                 if ($this->dest_conn->connect()) {
                     $errores = [];
                     foreach ($archivosmt940 as $archivo) {
-                        $query = "SELECT * FROM estado_cuenta WHERE TRIM(nombre0 = '{$archivo}')";
+                        echo "Archivo: {$archivo}\n";
+                        $query = "SELECT * FROM estado_cuenta WHERE TRIM(nombre = '{$archivo}')";
                         $existe = $db->getOneField($query) > 0;
                         if (!$existe) {
                             $localFileName = $this->local_folder . $archivo;
