@@ -43,7 +43,7 @@
  */
 
 namespace phpseclib3\Net;
-set_time_limit(60);
+set_time_limit(0);
 
 use phpseclib3\Common\Functions\Strings;
 use phpseclib3\Crypt\Blowfish;
