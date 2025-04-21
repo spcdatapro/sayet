@@ -85,6 +85,7 @@ class ConciliacionAutomatica
 
     public function get_mt940()
     {
+        $db = new dbcpm();
         $datos = ['exito' => false];
         if ($this->source_conn->connect()) {
             $archivosmt940 = $this->filter_mt940();
@@ -92,24 +93,28 @@ class ConciliacionAutomatica
                 if ($this->dest_conn->connect()) {
                     $errores = [];
                     foreach ($archivosmt940 as $archivo) {
-                        $localFileName = $this->local_folder . $archivo;
-                        try {
-                            $descargado = $this->source_conn->conn->get($archivo, $localFileName);
-                            if ($descargado) {
-                                $subido = $this->dest_conn->conn->put($archivo, $localFileName, SFTP::SOURCE_LOCAL_FILE);
-                                if (!$subido) {
-                                    $errores[] = "No se pudo subir el archivo '{$archivo}' al destino...";
+                        $query = "SELECT * FROM estado_cuenta WHERE TRIM(nombre0 = '{$archivo}')";
+                        $existe = $db->getOneField($query) > 0;
+                        if (!$existe) {
+                            $localFileName = $this->local_folder . $archivo;
+                            try {
+                                $descargado = $this->source_conn->conn->get($archivo, $localFileName);
+                                if ($descargado) {
+                                    $subido = $this->dest_conn->conn->put($archivo, $localFileName, SFTP::SOURCE_LOCAL_FILE);
+                                    if (!$subido) {
+                                        $errores[] = "No se pudo subir el archivo '{$archivo}' al destino...";
+                                    } else {
+                                        unlink($localFileName);
+                                    }
                                 } else {
-                                    unlink($localFileName);
+                                    $errores[] = "No se pudo descargar el archivo '{$archivo}' del origen...";
                                 }
-                            } else {
-                                $errores[] = "No se pudo descargar el archivo '{$archivo}' del origen...";
+                            } catch (Exception $e) {
+                                $errores[] = "No se pudo descargar el archivo '{$archivo}' del origen: {$e->getMessage()}";
                             }
-                        } catch (Exception $e) {
-                            $errores[] = "No se pudo descargar el archivo '{$archivo}' del origen: {$e->getMessage()}";
+                            $this->source_conn->conn->disconnect();
+                            $this->source_conn->connect();
                         }
-                        $this->source_conn->conn->disconnect();
-                        $this->source_conn->connect();
                     }
                     if (count($errores) === 0) {
                         $datos['mensaje'] = 'Archivos MT940 subidos al destino con éxito...';
