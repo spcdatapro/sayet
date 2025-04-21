@@ -1116,6 +1116,27 @@ $app->post('/reporte_conciliacion', function () use ($app) {
     AND a.monto = b.monto WHERE a.tipotrans = 'C' AND c.idmoneda = 1 ORDER BY c.id";
     $datos = $db->getQuery($query);
 
+    $query = "SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero, b.referencia, a.monto, b.monto AS monto_real, c.idmoneda, a.fecha, 
+                b.fecha AS concilia, a.beneficiario, null AS numban, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas AS abreviatura FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
+                INNER JOIN banco c ON a.idbanco = c.id WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'C' AND operado = 0
+            UNION ALL 
+                -- notas de debito
+                SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero, b.referencia, a.monto, b.monto AS monto_real, c.idmoneda, a.fecha, 
+                b.fecha AS concilia, a.beneficiario, a.numban, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas AS abreviatura FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto 
+                INNER JOIN banco c ON a.idbanco = c.id WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'B' AND operado = 0
+            UNION ALL 
+                -- notas de credito
+                SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero, b.referencia, a.monto, b.monto AS monto_real, c.idmoneda, a.fecha, 
+                b.fecha AS concilia, a.beneficiario, a.numban,CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas AS abreviatura FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto 
+                INNER JOIN banco c ON a.idbanco = c.id WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'R' AND operado = 0
+            UNION ALL 
+                -- depositos 
+                SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero, b.referencia, a.monto, b.monto AS monto_real, c.idmoneda, a.fecha, 
+                b.fecha AS concilia, a.beneficiario, a.numban, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas AS abreviatura FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
+                INNER JOIN banco c ON a.idbanco = c.id WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'D' AND operado = 0
+            ORDER BY 3, 10, 4, 5";
+        $datos = $db->getQuery($query);
+
     $reporte = new GeneradorReportes($datos, 'transacciones', $totales, false);
     $empleados = $reporte->getReporte();
 
