@@ -1,5 +1,4 @@
 <?php
-set_time_limit(60);
 /**
  * Pure-PHP implementation of SSHv2.
  *
@@ -44,6 +43,7 @@ set_time_limit(60);
  */
 
 namespace phpseclib3\Net;
+set_time_limit(60);
 
 use phpseclib3\Common\Functions\Strings;
 use phpseclib3\Crypt\Blowfish;
