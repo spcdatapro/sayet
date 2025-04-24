@@ -586,7 +586,61 @@ $app->get('/getpagorecli/:idrecibo', function($idrecibo){
 
 $app->get('/getlstrecpend/:idempresa', function($idempresa){
     $db = new dbcpm();
-    $query = "SELECT DISTINCT
+    $query = "SELECT 
+                a.id,
+                CONCAT(a.serie,
+                        '-',
+                        IF(a.serie = 'A', b.seriea, b.serieb)) AS reccli,
+                c.monto - IFNULL(f.pagado, 0) AS montorec,
+                IFNULL(IFNULL(d.nombre, e.nombre),
+                        'Clientes Varios') AS cliente,
+                a.concepto,
+                c.facturas
+            FROM
+                recibocli a
+                    INNER JOIN
+                serierecli b ON b.idrecibocli = a.id
+                    INNER JOIN
+                (SELECT 
+                    ROUND(SUM(a.monto), 2) AS monto,
+                        a.idrecibocli,
+                        GROUP_CONCAT(b.serie, '-', b.numero
+                            SEPARATOR ', ') AS facturas
+                FROM
+                    detcobroventa a
+                INNER JOIN factura b ON a.idfactura = b.id
+                GROUP BY a.idrecibocli) c ON c.idrecibocli = a.id
+                    LEFT JOIN
+                cliente d ON a.idcliente = d.id AND a.idcliente > 0
+                    LEFT JOIN
+                (SELECT 
+                    nombre, nit
+                FROM
+                    factura
+                LIMIT 1) e ON e.nit = a.nit AND a.nit != 'CF'
+                    LEFT JOIN
+                (SELECT 
+                    ROUND(SUM(monto), 2) AS pagado, idrecibocli
+                FROM
+                    reclitran
+                GROUP BY idrecibocli) f ON f.idrecibocli = a.id
+            WHERE
+                a.tipo = 1 AND a.anulado = 0
+                    AND a.idempresa = $idempresa
+                    AND (a.idtranban = 0
+                    OR (c.monto - f.pagado) > 0)";
+    print $db->doSelectASJson($query);
+});
+
+$app->get('/getlstrec/:idtran', function($idtran) {
+    $db = new dbcpm();
+
+    $query = "SELECT a.id, CONCAT(a.serie, '-', IF(a.serie = 'A', b.seriea, b.serieb)) AS reccli FROM recibocli a INNER JOIN serierecli b ON b.idrecibocli = a.id 
+    INNER JOIN reclitran c ON c.idrecibocli = a.id WHERE c.idtranban = $idtran";
+    $recibos = $db->getQuery($query);
+
+    if (count($recibos) == 0) {
+        $query = "SELECT DISTINCT
                     a.id,
                     CONCAT(a.serie,
                             '-',
@@ -599,16 +653,7 @@ $app->get('/getlstrecpend/:idempresa', function($idempresa){
                         WHERE
                             a.id = b.idrecibocli) AS montorec,
                     IFNULL(b.nombre, IFNULL(c.nombre, 'Clientes Varios')) AS cliente,
-                    a.concepto,
-                    (SELECT 
-                            GROUP_CONCAT(c.serie, '-', c.numero
-                                    SEPARATOR ', ')
-                        FROM
-                            detcobroventa b
-                                INNER JOIN
-                            factura c ON b.idfactura = c.id
-                        WHERE
-                            a.id = b.idrecibocli) AS facturas
+                    a.concepto
                 FROM
                     recibocli a
                         LEFT JOIN
@@ -617,41 +662,12 @@ $app->get('/getlstrecpend/:idempresa', function($idempresa){
                     factura c ON a.nit = c.nit AND a.nit != 'CF'
                         LEFT JOIN
                     serierecli d ON d.idrecibocli = a.id
-            WHERE
-                a.idtranban = 0 AND a.fecha >= 20211101
-                    AND a.tipo = 1
-                    AND a.anulado = 0
-                    AND a.idempresa = $idempresa ";
-    print $db->doSelectASJson($query);
-});
+                WHERE
+                        a.idtranban = $idtran ";
+        $recibos = $db->getQuery($query);
+    }
 
-$app->get('/getlstrec/:idtran', function($idtran) {
-    $db = new dbcpm();
-    $query = "SELECT DISTINCT
-                a.id,
-                CONCAT(a.serie,
-                        '-',
-                        IFNULL(IF(a.serie = 'A', d.seriea, d.serieb),
-                                a.id)) AS reccli,
-                (SELECT 
-                        IFNULL(ROUND(SUM(b.monto), 2), 0.00)
-                    FROM
-                        detcobroventa b
-                    WHERE
-                        a.id = b.idrecibocli) AS montorec,
-                IFNULL(b.nombre, IFNULL(c.nombre, 'Clientes Varios')) AS cliente,
-                a.concepto
-            FROM
-                recibocli a
-                    LEFT JOIN
-                cliente b ON a.idcliente = b.id
-                    LEFT JOIN
-                factura c ON a.nit = c.nit AND a.nit != 'CF'
-                    LEFT JOIN
-                serierecli d ON d.idrecibocli = a.id
-            WHERE
-                    a.idtranban = $idtran ";
-    print $db->doSelectASJson($query);
+    print json_encode($recibos);  
 });
 
 $app->get('/getpago/:idpago', function($idpago){

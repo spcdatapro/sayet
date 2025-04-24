@@ -331,16 +331,18 @@
         };
 
         $scope.fillDataOnRecli = function (item) {
-            if ($scope.laTran.recibocli.length == 1) {
-                $scope.laTran.beneficiario = item.cliente;
-                $scope.laTran.monto = item.montorec;
-                $scope.laTran.concepto = 'Ingreso recibo clientes ' + item.reccli + '[' + item.concepto + '] Facturas: ' + item.facturas;
-            } else {
-                var monto = undefined;
-                monto = +$scope.laTran.monto;
-                $scope.laTran.monto = +item.montorec + monto;
-                var concepto = $scope.laTran.concepto;
-                $scope.laTran.concepto = concepto.substring(0, 24) + item.reccli + ',' + concepto.substring(23) + ', ' + item.facturas;
+            if (!$scope.laTran.id) {
+                if ($scope.laTran.recibocli.length == 1) {
+                    $scope.laTran.beneficiario = item.cliente;
+                    $scope.laTran.monto = item.montorec;
+                    $scope.laTran.concepto = 'Ingreso recibo clientes ' + item.reccli + '[' + item.concepto + '] Facturas: ' + item.facturas;
+                } else {
+                    var monto = undefined;
+                    monto = +$scope.laTran.monto;
+                    $scope.laTran.monto = +item.montorec + monto;
+                    var concepto = $scope.laTran.concepto;
+                    $scope.laTran.concepto = concepto.substring(0, 24) + item.reccli + ',' + concepto.substring(23) + ', ' + item.facturas;
+                }
             }
         };
 

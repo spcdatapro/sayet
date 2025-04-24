@@ -194,7 +194,7 @@
                 else {
                     $scope.reccli.objCliente = $filter('getById')($scope.clientes, $scope.reccli.idcliente);
                 };
-                $scope.reccli.objTranBan = [$filter('getById')($scope.tranban, $scope.reccli.idtranban)];
+                // $scope.reccli.objTranBan = [$filter('getById')($scope.tranban, $scope.reccli.idtranban)];
                 $scope.reccli.correlativo
                 $scope.resetDetRecCli();
                 $scope.loadDetRecCli(idreccli);

@@ -45,10 +45,11 @@ $app->get('/gettran/:idtran', function($idtran){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idbanco, CONCAT(b.nombre, ' (', b.nocuenta, ')') AS nombanco, a.tipotrans, a.numero, a.fecha, a.monto,  a.retisr, a.montooriginal, a.isr, a.montocalcisr, ";
     $query.= "a.beneficiario, a.concepto, a.operado, a.anticipo, a.idbeneficiario, a.origenbene, a.anulado, c.razon, a.fechaanula, a.tipocambio, d.simbolo AS moneda, a.impreso, a.fechaliquida, a.esnegociable, ";
-    $query.= "CONCAT('OT: ', e.idpresupuesto, '-', e.correlativo, ' (', g.nombre,')') AS ot, a.iddetpresup, a.iddetpagopresup, a.idproyecto, a.iddocliquida, group_concat(h.id) AS idrecibocli, a.numban, ";
+    $query.= "CONCAT('OT: ', e.idpresupuesto, '-', e.correlativo, ' (', g.nombre,')') AS ot, a.iddetpresup, a.iddetpagopresup, a.idproyecto, a.iddocliquida, IFNULL(group_concat(h.id), group_concat(i.idrecibocli)) AS idrecibocli, a.numban, ";
     $query.= "a.idusuario, a.ultusuario ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco LEFT JOIN razonanulacion c ON c.id = a.idrazonanulacion LEFT JOIN moneda d ON d.id = b.idmoneda ";
     $query.= "LEFT JOIN detpresupuesto e ON e.id = a.iddetpresup LEFT JOIN presupuesto f ON f.id = e.idpresupuesto LEFT JOIN proveedor g ON g.id = e.idproveedor LEFT JOIN recibocli h ON a.id = h.idtranban ";
+    $query.= "LEFT JOIN reclitran i ON i.idtranban = a.id ";
     $query.= "WHERE a.id = ".$idtran;
     // print $query;
     print $db->doSelectASJson($query);
@@ -131,7 +132,7 @@ $app->post('/c', function(){
                 $i = 0;
                 while ($recibos > $i) {
                     $recibo = $d->idrecibocli[$i];
-                    $db->doQuery("UPDATE recibocli SET idtranban = $lastid WHERE id = $recibo");
+                    $db->doQuery("INSERT INTO reclitran(idrecibocli, idtranban, monto) VALUES($recibo, $lastid, $d->monto)");
                     $i++;
                 }
             };
