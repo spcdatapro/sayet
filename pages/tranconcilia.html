@@ -134,7 +134,7 @@
                             <tr>
                                 <th>Fecha</th>
                                 <th>Tipo</th>
-                                <th>N&uacute;mero</th>
+                                <th colspan="2">N&uacute;mero</th>
                                 <th>Monto</th>
                                 <th>Beneficiario</th>
                                 <th>Fecha conciliaci&oacute;n</th>
@@ -145,6 +145,7 @@
                                 <td>{{t.fecha | date:'dd/MM/yyyy'}}</td>
                                 <td>{{t.tipotrans}}</td>
                                 <td>{{t.numero}}</td>
+                                <td>{{t.numban}}</td>
                                 <td>{{t.monto | number:2}}</td>
                                 <td>{{t.beneficiario}}</td>
                                 <td>{{t.concilia | date: 'dd/MM/yyyy'}}</td>
