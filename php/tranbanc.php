@@ -1082,7 +1082,7 @@ $app->post('/conciliacion_automatica', function () use ($app) {
         UNION ALL 
             -- depositos 
             SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idbanco, a.tipotrans, a.numero, b.referencia, a.monto, b.monto AS monto_real, c.idmoneda, a.fecha, 
-            b.fecha AS concilia, a.beneficiario, NULL AS a.numban FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
+            b.fecha AS concilia, a.beneficiario, NULL AS numban FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
             INNER JOIN banco c ON a.idbanco = c.id WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'D' AND operado = 0
         ORDER BY 3, 10, 4, 5";
     $match = $db->getQuery($query);
