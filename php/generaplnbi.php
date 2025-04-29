@@ -18,7 +18,7 @@ $app->post('/generar', function() use($db){
     LPAD(a.liquido, 25,' ') AS monto FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado 
     INNER JOIN plnpersonal d ON b.idpersonal = d.id INNER JOIN plnlaboral e ON b.idlaboral = e.id 
     LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto WHERE a.idempresa = $d->idempresa AND a.fecha >= '$d->fdelstr' 
-    AND a.fecha <= '$d->falstr' AND a.liquido <> 0 AND b.cuentabanco IS NOT NULL AND b.mediopago = 3 
+    AND a.fecha <= '$d->falstr' AND a.liquido <> 0 AND b.cuentabanco IS NOT NULL AND e.metodo = 'nota debito' 
     ORDER BY c.descripcion, b.nombre, b.apellidos, a.fecha) z, (SELECT @row:= 0) r";
     print $db->doSelectASJson($query);
 });
@@ -61,7 +61,7 @@ function genDetContDoc($db, $d, $idtranban, $concepto, $idctabanco, $mediopago, 
     $query.= "ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * c.patronaligss), 2) AS cuotapatronaligss ";
     $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral d ON b.idlaboral = d.id INNER JOIN plnempresa c ON c.id = d.idempresaactual ";
     $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' ";
-    $query.= $mediopago == 3 ? "AND d.cuentabanco IS NOT NULL AND d.cuentabanco > 0 " : '';
+    $query.= $mediopago == 'nota debito' ? "AND d.cuentabanco IS NOT NULL AND d.cuentabanco > 0 " : '';
     $query.= "AND d.metodo = '$mediopago' AND a.idempresa = $d->idempresa ";
     $query.= $idempleado == 0 ? '' : "AND a.idplnempleado = $idempleado ";
     // print $query;
@@ -170,7 +170,7 @@ function genDetContDoc($db, $d, $idtranban, $concepto, $idctabanco, $mediopago, 
             $query = "SELECT c.idempresadebito AS deptodeb, a.fecha, a.descprestamo AS desc_prest, c.idcuenta AS cuentapersonal, CONCAT(IFNULL(TRIM(b.nombre), ''), ' ', IFNULL(TRIM(b.apellidos), '')) AS nombre ";
             $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral c ON b.idlaboral = c.id ";
             $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido > 0 ";
-            $query.= $mediopago == 3 ? "AND c.cuentabanco IS NOT NULL AND c.cuentabanco > 0 " : '';
+            $query.= $mediopago == 'nota debito' ? "AND c.cuentabanco IS NOT NULL AND c.cuentabanco > 0 " : '';
             $query.= "AND a.descprestamo <> 0 AND c.metodo = '$mediopago' AND ";
             $query.= "a.idempresa = $d->idempresa ";
             $query.= $idempleado == 0 ? '' : "AND a.idplnempleado = $idempleado ";
@@ -233,7 +233,7 @@ $app->post('/generand', function() use($db){
     $query.= "SELECT 3 AS tipo, TRIM(b.cuentabanco) AS cuenta, TRIM(CONCAT(TRIM(b.nombre), ' ', IFNULL(TRIM(b.apellidos), ''))) AS nombre, a.liquido AS monto, e.idcuenta AS cuentacontable ";
     $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral e ON b.idlaboral = e.id LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto LEFT JOIN plnempresa d ON d.id = b.idempresaactual ";
     $query.= "WHERE a.idempresa = $d->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido <> 0 AND b.cuentabanco IS NOT NULL ";
-    $query.= "AND b.mediopago = 3 ";
+    $query.= "AND e.metodo = 'nota debito' ";
     $query.= "ORDER BY d.ordenreppres, b.nombre, b.apellidos";
     $query.= ") z, (SELECT @row:= 0) r";
     // print $query;
@@ -296,10 +296,10 @@ $app->post('/generachq', function() use($db){
         $query.= "LPAD(DAY('$d->falstr'), 2, ' '), ' DE ', (SELECT nombre FROM mes WHERE id = MONTH('$d->falstr')), ' DEL ', YEAR('$d->falstr')) AS concepto ";
         $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral e ON b.idlaboral = e.id LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto LEFT JOIN plnempresa d ON d.id = e.idempresaactual ";
         $query.= "WHERE a.idempresa = $empresa->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido <> 0 ";
-        $query.= "AND b.mediopago = 1 ";
+        $query.= "AND e.metodo = 'cheque' ";
         $query.= "ORDER BY d.ordenreppres, b.nombre, b.apellidos";
         $query.= ") z, (SELECT @row:= 0) r";
-        // print $query;
+        print $query;
         $empleados = $db->getQuery($query);
         $cntEmpleados = count($empleados);
 
