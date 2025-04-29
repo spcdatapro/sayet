@@ -295,11 +295,11 @@ $app->post('/generachq', function() use($db){
         $query.= "CONCAT('DEL ', LPAD(DAY('$d->fdelstr'), 2, ' '), ' DE ', (SELECT nombre FROM mes WHERE id = MONTH('$d->fdelstr')), ' AL ', ";
         $query.= "LPAD(DAY('$d->falstr'), 2, ' '), ' DE ', (SELECT nombre FROM mes WHERE id = MONTH('$d->falstr')), ' DEL ', YEAR('$d->falstr')) AS concepto ";
         $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral e ON b.idlaboral = e.id LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto LEFT JOIN plnempresa d ON d.id = e.idempresaactual ";
-        $query.= "WHERE a.idempresa = $empresa->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido <> 0 ";
+        $query.= "WHERE a.idempresa = 4 AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido <> 0 ";
         $query.= "AND e.metodo = 'cheque' ";
         $query.= "ORDER BY d.ordenreppres, b.nombre, b.apellidos";
         $query.= ") z, (SELECT @row:= 0) r";
-        print $query;
+        // print $query;
         $empleados = $db->getQuery($query);
         $cntEmpleados = count($empleados);
 
