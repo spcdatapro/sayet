@@ -949,7 +949,7 @@ $app->get('/compiva/:fdel/:fal/:cuales/:idempresa', function($fdel, $fal, $cuale
                     AND a.idreembolso = 0
                     AND a.retiva > 0 
                     AND a.idempresa = $idempresa 
-                    AND a.idtipofactura < 9";
+                    AND a.idtipofactura < 9 ";
     $query.= $cuales == 0 ? 'UNION ALL' : ($cuales == 1 ? 'AND c.idformiva > 0 UNION ALL' : 'AND c.idformiva IS NULL UNION ALL');
     $query.= "  SELECT
                 a.fechaingreso, 
@@ -1059,7 +1059,7 @@ $app->post('/rptiva', function() {
                     AND a.idreembolso = 0
                     AND a.retiva > 0 
                     AND a.idempresa = $d->idempresa 
-                    AND a.idtipofactura < 9";
+                    AND a.idtipofactura < 9 ";
     $query.= $d->cuales == 0 ? 'UNION ALL' : ($d->cuales == 1 ? 'AND c.idformiva > 0 UNION ALL' : 'AND c.idformiva IS NULL UNION ALL');
     $query.= "  SELECT
                 a.fechaingreso, 
