@@ -982,7 +982,7 @@ $app->get('/compiva/:fdel/:fal/:cuales/:idempresa', function($fdel, $fal, $cuale
                     AND a.idreembolso > 0
                     AND a.retiva > 0 
                     AND a.idempresa = $idempresa 
-                    AND a.idtipofactura < 9";
+                    AND a.idtipofactura < 9 ";
     $query.= $cuales == 0 ? 'ORDER BY 1, 6 ' : ($cuales == 1 ? 'AND c.idformiva > 0 ORDER BY 2' : 'AND c.idformiva IS NULL ORDER BY 2');
     print $db->doSelectASJson($query);
 });
@@ -1093,7 +1093,7 @@ $app->post('/rptiva', function() {
                     AND a.idreembolso > 0
                     AND a.retiva > 0 
                     AND a.idempresa = $d->idempresa 
-                    AND a.idtipofactura < 9";
+                    AND a.idtipofactura < 9 ";
     $query.= $d->cuales == 0 ? 'ORDER BY 1, 7' : ($d->cuales == 1 ? 'AND c.idformiva > 0 ORDER BY 2' : 'AND c.idformiva IS NULL ORDER BY 2');
     $compra = $db->getQuery($query);
 
