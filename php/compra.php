@@ -941,12 +941,15 @@ $app->get('/compiva/:fdel/:fal/:cuales/:idempresa', function($fdel, $fal, $cuale
                 formiva c ON c.idcompra = a.id
                     INNER JOIN
                 moneda d ON a.idmoneda = d.id
+                    -- LEFT JOIN 
+                -- (SELECT idcompra, SUM(monto) AS monto FROM detnotacompra GROUP BY idcompra) e ON e.idcompra = a.id
             WHERE
                 a.fechafactura >= '$fdel'
                     AND a.fechafactura <= '$fal'
                     AND a.idreembolso = 0
                     AND a.retiva > 0 
-                    AND a.idempresa = $idempresa ";
+                    AND a.idempresa = $idempresa 
+                    AND a.idtipofactura < 9";
     $query.= $cuales == 0 ? 'UNION ALL' : ($cuales == 1 ? 'AND c.idformiva > 0 UNION ALL' : 'AND c.idformiva IS NULL UNION ALL');
     $query.= "  SELECT
                 a.fechaingreso, 
@@ -978,7 +981,8 @@ $app->get('/compiva/:fdel/:fal/:cuales/:idempresa', function($fdel, $fal, $cuale
                     AND a.fechafactura <= '$fal'
                     AND a.idreembolso > 0
                     AND a.retiva > 0 
-                    AND a.idempresa = $idempresa ";
+                    AND a.idempresa = $idempresa 
+                    AND a.idtipofactura < 9";
     $query.= $cuales == 0 ? 'ORDER BY 1, 6 ' : ($cuales == 1 ? 'AND c.idformiva > 0 ORDER BY 2' : 'AND c.idformiva IS NULL ORDER BY 2');
     print $db->doSelectASJson($query);
 });
@@ -1054,7 +1058,8 @@ $app->post('/rptiva', function() {
                     AND a.fechafactura <= '$d->falstr'
                     AND a.idreembolso = 0
                     AND a.retiva > 0 
-                    AND a.idempresa = $d->idempresa ";
+                    AND a.idempresa = $d->idempresa 
+                    AND a.idtipofactura < 9";
     $query.= $d->cuales == 0 ? 'UNION ALL' : ($d->cuales == 1 ? 'AND c.idformiva > 0 UNION ALL' : 'AND c.idformiva IS NULL UNION ALL');
     $query.= "  SELECT
                 a.fechaingreso, 
@@ -1087,7 +1092,8 @@ $app->post('/rptiva', function() {
                     AND a.fechafactura <= '$d->falstr'
                     AND a.idreembolso > 0
                     AND a.retiva > 0 
-                    AND a.idempresa = $d->idempresa ";
+                    AND a.idempresa = $d->idempresa 
+                    AND a.idtipofactura < 9";
     $query.= $d->cuales == 0 ? 'ORDER BY 1, 7' : ($d->cuales == 1 ? 'AND c.idformiva > 0 ORDER BY 2' : 'AND c.idformiva IS NULL ORDER BY 2');
     $compra = $db->getQuery($query);
 
