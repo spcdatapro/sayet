@@ -1184,6 +1184,13 @@ $app->post('/reporte_conciliacion', function () use ($app) {
     $db = new dbcpm();
     $d = json_decode(file_get_contents('php://input'));
 
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+    $letra->del = new DateTime($d->del);
+    $letra->del = $letra->del->format('d-m-Y');
+    $letra->al = new DateTime($d->al);
+    $letra->al = $letra->al->format('d-m-Y');
+
     $totales = ['monto'];
 
     if ($d->ver == 1) {
@@ -1255,7 +1262,7 @@ $app->post('/reporte_conciliacion', function () use ($app) {
     $reporte = new GeneradorReportes($datos, 'transacciones', $totales, false);
     $empleados = $reporte->getReporte();
 
-    print json_encode([ 'bancos' => $empleados ]);
+    print json_encode([ 'encabezado' => $letra, 'bancos' => $empleados ]);
 });
 
 function compararPorId($a, $b) {
