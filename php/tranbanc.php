@@ -1186,10 +1186,6 @@ $app->post('/reporte_conciliacion', function () use ($app) {
 
     $letra->estampa = new DateTime();
     $letra->estampa = $letra->estampa->format('d-m-Y H:i');
-    $letra->del = new DateTime($d->del);
-    $letra->del = $letra->del->format('d-m-Y');
-    $letra->al = new DateTime($d->al);
-    $letra->al = $letra->al->format('d-m-Y');
 
     $totales = ['monto'];
 
