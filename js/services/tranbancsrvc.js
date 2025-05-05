@@ -74,6 +74,9 @@
             },
             conciliacionAutomatica: function () {
                 return comunFact.doPOST(urlBase + '/conciliacion_automatica');
+            },
+            datosAutomatica: function (ver, del, al) {
+                return comunFact.doGET(urlBase + '/datos_automatica' + '/' + ver + '/' + del + '/' + al);
             }
         };
     }]);

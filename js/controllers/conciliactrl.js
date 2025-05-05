@@ -2,7 +2,8 @@
 
     var conciliactrl = angular.module('cpm.conciliactrl', ['cpm.tranbacsrvc']);
 
-    conciliactrl.controller('conciliaCtrl', ['$scope', 'tranBancSrvc', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'DTOptionsBuilder', '$interval', 'toaster', function ($scope, tranBancSrvc, authSrvc, bancoSrvc, empresaSrvc, DTOptionsBuilder, $interval, toaster) {
+    conciliactrl.controller('conciliaCtrl', ['$scope', 'tranBancSrvc', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'DTOptionsBuilder', '$interval', 'toaster', 'tipoMovTranBanSrvc', 
+        function ($scope, tranBancSrvc, authSrvc, bancoSrvc, empresaSrvc, DTOptionsBuilder, $interval, toaster, tipoMovTranBanSrvc) {
 
         $scope.laEmpresa = {};
         $scope.lasEmpresas = [];
@@ -13,9 +14,60 @@
         $scope.fechaconcilia = moment().toDate();
         $scope.qver = 0;
         $scope.progress = 0;
+        $scope.todas = [];
         $scope.trans = [];
+        // automatica
+        $scope.bancos = [];
+        $scope.selTodos = 0;
+        $scope.tipotrans = [];
+        $scope.params = { tipos: [], ver: '1' }
+        // para paginar
+        $scope.currentPage = 1; // Página actual
+        $scope.itemsPerPage = 20; // Número de elementos por página
+        $scope.lookFor = ''; // Busqueda
 
-        $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true);
+        // para pginas de resultados
+        $scope.$watch('trans.length', function () {
+            $scope.totalPages = Math.ceil($scope.trans.length / $scope.itemsPerPage);
+        });
+
+        $scope.$watch('lookFor', function () {
+            // Calcula el número total de páginas después del filtro
+            $scope.totalPages = Math.ceil($scope.filteredEmpleados().length / $scope.itemsPerPage);
+            // Reinicia la página actual a la primera después del filtro
+            $scope.currentPage = 1;
+        });
+
+        $scope.setPage = function (page) {
+            if (page >= 1 && page <= $scope.totalPages) {
+                $scope.currentPage = page;
+            }
+        };
+
+        $scope.paginatedEmpleados = function () {
+            var filtered = $scope.filteredEmpleados();
+            var start = ($scope.currentPage - 1) * $scope.itemsPerPage;
+            return filtered.slice(start, start + $scope.itemsPerPage);
+        };
+
+        $scope.filteredEmpleados = function () {
+            return $scope.trans.filter(function (e) {
+                return !$scope.lookFor || Object.keys(e).some(function (key) {
+                    return String(e[key]).toLowerCase().includes($scope.lookFor.toLowerCase());
+                });
+            });
+        };
+
+        $scope.totalPages = Math.ceil($scope.trans.length / $scope.itemsPerPage);
+        // fin de paginas
+
+        bancoSrvc.lstBancosActivos(4).then(d => { 
+            // solo mostrar los dos bancos que estan utilizando mt940
+            let idbancos = ['3', '33'];
+            $scope.bancos = d.filter(banco => idbancos.includes(banco.id));
+        })
+
+        tipoMovTranBanSrvc.lstTiposMovTB().then(function (d) { $scope.tipotrans = d; });
 
         authSrvc.getSession().then(function (usrLogged) {
             // traer empresas permitidas por el usuario
@@ -68,6 +120,8 @@
             });
         };
 
+        // automatico
+
         $scope.buscarDocumentos = () => {
             $scope.cargando = true;
             $interval(() => {
@@ -86,6 +140,7 @@
                 if (d.caso === 2) {
                     automaticaDos();
                 } else if (d.caso === 3) {
+                    $scope.todas = d.trans;
                     $scope.trans = d.trans;
                 }
             });
@@ -104,6 +159,102 @@
 
         $scope.imprimir = () => {
 
+        }
+
+        $scope.fltrTrans = (idbanco, tipos) => {
+        //     console.log(idbanco, tipos);
+        //     if (idbanco > 0) {
+        //         idbanco = idbanco.toString();
+        //         $scope.trans = todas.filter(tran => tran.idbanco.toString() === idbanco);
+        //     } else if (tipos.length > 0) {
+        //         $scope.trans = todas.filter(tran => tipos.includes(tran.idtipotrans));
+        //     } else {
+        //         $scope.trans = todas;
+        //     }
+        }
+
+        $scope.$watch('selTodos', function (newVal, oldVal) {
+            if (newVal != oldVal) {
+                $scope.trans.forEach(f => f.conciliar = +newVal);
+            }
+        });
+
+        $scope.$watch('params.idbanco', function (newVal) {
+            if (newVal > 0) {
+                idbanco = newVal.toString();
+                if ($scope.params.tipos.length > 0) {
+                    $scope.trans = $scope.todas.filter(tran => tran.idbanco === idbanco && $scope.params.tipos.includes(tran.idtipotrans));
+                } else {
+                    $scope.trans = $scope.todas.filter(tran => tran.idbanco.toString() === idbanco);
+                }
+            } else {
+                if ($scope.params.tipos.length > 0) {
+                    $scope.trans = $scope.todas.filter(tran => $scope.params.tipos.includes(tran.idtipotrans));
+                } else {
+                    $scope.trans = $scope.todas;
+                }
+            }
+            $scope.currentPage = 1;
+        })
+
+        $scope.$watch('params.tipos', function (newVal) {
+            if (newVal.length > 0) {
+                if ($scope.params.idbanco > 0) {
+                    idbanco = $scope.params.idbanco.toString();
+                    $scope.trans = $scope.todas.filter(tran => tran.idbanco === idbanco && $scope.params.tipos.includes(tran.idtipotrans));
+                } else {
+                    $scope.trans = $scope.todas.filter(tran => $scope.params.tipos.includes(tran.idtipotrans));
+                }
+            } else {
+                if ($scope.params.idbanco > 0) {
+                    idbanco = $scope.params.idbanco.toString();
+                    $scope.trans = $scope.todas.filter(tran => tran.idbanco.toString() === idbanco);
+                } else {
+                    $scope.trans = $scope.todas;
+                }
+            }
+            $scope.currentPage = 1;
+        })
+
+        $scope.getLstTranAutomatica = (ver, del, al) => {
+            if ($scope.todas.length > 0) {
+                if (del && al) {
+                    delstr = moment(del).format('YYYY-MM-DD');
+                    alstr = moment(al).format('YYYY-MM-DD');
+                    tranBancSrvc.datosAutomatica(ver, delstr, alstr).then(d => {
+                        if (ver == 2) {
+                            $scope.todas = Object.values(d);
+                            $scope.trans = Object.values(d);
+                        } else {
+                            $scope.todas = d;
+                            $scope.tras = d;
+                        }
+                        $scope.params = { tipos: [], ver: ver, del: del, al: al }
+                        if (ver === '1') {
+                            tipoMovTranBanSrvc.lstTiposMovTB().then(function (d) { $scope.tipotrans = d; console.log(d)});
+                        } else {
+                            $scope.tipotrans = [ {id: '1', abreviadesc: '(C) Créditos', abreviatura: 'C'}, {id: '2', abreviadesc: '(D) Débitos', abreviatura: 'D'} ];
+                        }
+                    })
+                } else {
+                    tranBancSrvc.datosAutomatica(ver, 0, 0).then(d => {
+                        if (ver == 2) {
+                            $scope.todas = Object.values(d);
+                            $scope.trans = Object.values(d);
+                        } else {
+                            $scope.todas = d;
+                            $scope.tras = d;
+                        }
+                        $scope.params = { tipos: [], ver: ver }
+                        if (ver === '1') {
+                            tipoMovTranBanSrvc.lstTiposMovTB().then(function (d) { $scope.tipotrans = d; console.log(d)});
+                        } else {
+                            $scope.tipotrans = [ {id: '1', abreviadesc: '(C) Créditos', abreviatura: 'C'}, {id: '2', abreviadesc: '(D) Débitos', abreviatura: 'D'} ];
+                        }
+                    })
+                }
+            }
+            $scope.currentPage = 1;
         }
 
     }]);
