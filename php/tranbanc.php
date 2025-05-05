@@ -1182,6 +1182,7 @@ $app->get('/datos_automatica/:ver/:del/:al', function ($ver, $del, $al) use ($ap
 
 $app->post('/reporte_conciliacion', function () use ($app) {
     $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
 
     $totales = ['monto'];
 
