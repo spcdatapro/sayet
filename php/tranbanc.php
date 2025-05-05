@@ -1184,6 +1184,7 @@ $app->post('/reporte_conciliacion', function () use ($app) {
     $db = new dbcpm();
     $d = json_decode(file_get_contents('php://input'));
 
+    $letra = new stdClass();
     $letra->estampa = new DateTime();
     $letra->estampa = $letra->estampa->format('d-m-Y H:i');
 
