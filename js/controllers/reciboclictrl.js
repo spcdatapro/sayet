@@ -225,7 +225,7 @@
             obj.idcliente = obj.objCliente.idcliente != null && obj.objCliente.idcliente != undefined ? obj.objCliente.idcliente : 0;
             obj.nit = obj.objCliente.nit != null && obj.objCliente.nit != undefined ? obj.objCliente.nit : 0;
             obj.espropio = obj.espropio != null && obj.espropio != undefined ? obj.espropio : 0;
-            obj.idtranban = obj.objTranBan[0] != null && obj.objTranBan[0] != undefined ? obj.objTranBan[0].id : 0;
+            // obj.idtranban = obj.objTranBan[0] != null && obj.objTranBan[0] != undefined ? obj.objTranBan[0].id : 0;
             obj.usuariocrea = $scope.usr.usuario;
             obj.tipo = +$scope.fltrre.tipo;
             obj.concepto = obj.concepto != null && obj.concepto != undefined ? obj.concepto : '';
