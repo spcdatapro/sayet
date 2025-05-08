@@ -32,8 +32,9 @@ class Prestamo extends Principal
     {
     	return (object)$this->db->get(
 			'plnempleado', 
-			['id', 'nombre', 'apellidos', 'idempresadebito'], 
-			['id' => $this->pre->idplnempleado]
+			['[><]plnlaboral(b)' => ['plnempleado.idlaboral' => 'id']],
+			['plnempleado.id', 'plnempleado.nombre', 'plnempleado.apellidos', 'b.idempresadebito'], 
+			['plnempleado.id' => $this->pre->idplnempleado]
 		);
     }
 
