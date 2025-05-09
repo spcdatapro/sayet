@@ -12,6 +12,7 @@
  */
 
 namespace phpseclib3\Math\BigInteger\Engines\PHP\Reductions;
+set_time_limit(0);
 
 use phpseclib3\Math\BigInteger\Engines\PHP;
 use phpseclib3\Math\BigInteger\Engines\PHP\Base;
