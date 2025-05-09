@@ -168,8 +168,8 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label">Tipo transacc&oacute;n:</label>
-                                <ui-select ng-model="params.tipos" title="Seleccione uno o varios tipos..." theme="bootstrap"
-                                    autofocus="false"  multiple>
+                                <ui-select ng-model="params.tipos" title="Seleccione uno o varios tipos..."
+                                    theme="bootstrap" autofocus="false" multiple>
                                     <ui-select-match placeholder="Buscar tipo transaccion..." allow-clear="true">
                                         <span>{{$item.abreviatura}}</span>
                                     </ui-select-match>
@@ -199,17 +199,19 @@
                         </caption>
                         <thead>
                             <tr>
-                                <th>Fecha</th>
+                                <th>Fecha operado</th>
                                 <th>Tipo</th>
                                 <th colspan="2" style="text-align: center;" ng-show="params.ver == 1">N&uacute;mero</th>
                                 <th ng-show="params.ver != 1">N&uacute;mero</th>
                                 <th style="text-align: right;">Monto</th>
                                 <th ng-show="params.ver == 1">Beneficiario</th>
                                 <th ng-show="params.ver != 1">Concepto</th>
-                                <th ng-show="params.ver == 1">Fecha concilia.</th>
+                                <th ng-show="params.ver == 1">Fecha banco</th>
                                 <th ng-show="params.ver == 1">
-                                    <span>Conciliar <input type="checkbox" ng-model="selTodos" ng-true-value="1" ng-false-value="0" ng-disabled="todas.length == 0"></span>
+                                    <span>Conciliar <input type="checkbox" ng-model="selTodos" ng-true-value="1"
+                                            ng-false-value="0" ng-disabled="todas.length == 0"></span>
                                 </th>
+                                <th ng-show="params.ver == 2">Posibles documentos</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -222,7 +224,15 @@
                                 <td>{{t.beneficiario}}</td>
                                 <td ng-show="params.ver == 1">{{t.concilia | date: 'dd/MM/yyyy'}}</td>
                                 <td style="text-align: center" ng-show="params.ver == 1">
-                                    <input type="checkbox" ng-model="t.conciliar" ng-true-value="1" ng-false-value="0"/>
+                                    <input type="checkbox" ng-model="t.conciliar" ng-true-value="1"
+                                        ng-false-value="0" />
+                                </td>
+                                <td ng-show="params.ver == 2" style="text-align: center;">
+                                    <button class="btn btn-default btn-sm" type="button"
+                                        title="Buscar posibles documentos"
+                                        ng-click="verPosiblesDoc(t.idbanco, t.numero, t.monto, t.tipotrans)">
+                                        <i class="fi fi-sr-assessment"></i> Ver documentos
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -268,4 +278,38 @@
             </div>
         </div>
     </div>
+    <script type="text/ng-template" id="modalPosibles.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Lista de posibles transacci&oacute;nes</h3>            
+        </div>
+        <div class="modal-body">
+            <div class="table-responsive">
+                <table class="table table-responsive table-hover table-condensed">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Banco</th>
+                            <th>N&uacute;mero</th>
+                            <th>Monto</th>
+                            <th>Beneficiario</th>
+                            <!-- <th>Concepto</th> -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="t in documentos">
+                            <td>{{t.fecha}}</td>
+                            <td>{{t.banco}}</td>
+                            <td>{{t.tipo}}-{{t.numero}}</td>
+                            <td>{{t.moneda}}{{t.monto}}</td>
+                            <td>{{t.beneficiario}}</td>
+                            <!-- <td>{{t.concepto}}</td> -->
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
+        </div>
+    </script>
 </div>

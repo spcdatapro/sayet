@@ -77,6 +77,9 @@
             },
             datosAutomatica: function (ver, del, al) {
                 return comunFact.doGET(urlBase + '/datos_automatica' + '/' + ver + '/' + del + '/' + al);
+            },
+            lstPosiblesDoc: function (idbanco, numero, monto, tipo) {
+                return comunFact.doGET(urlBase + '/lstposibledocs/' + idbanco + '/' + numero + '/' + monto + '/' + tipo);
             }
         };
     }]);
