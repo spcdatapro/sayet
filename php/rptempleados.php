@@ -1104,7 +1104,7 @@ $app->post('/proyeccion', function(){
     $reporte = new GeneradorReportes($data, 'empleados', [], false);
     $empleados = $reporte->getReporte();
 
-    print json_encode([ 'encabezado' => $letra, 'empresas' => $data ]);
+    print json_encode([ 'encabezado' => $letra, 'empresas' => $empleados ]);
 });
 
 $app->run();
