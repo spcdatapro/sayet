@@ -723,7 +723,9 @@ $app->post('/antiguedad', function(){
 
 function minusculas ($dat) {
     $dat->nombre = ucwords(strtolower($dat->nombre), ' ');
-    $dat->puesto = ucfirst(strtolower($dat->puesto));
+    if (isset($dat->puesto)) {
+        $dat->puesto = ucfirst(strtolower($dat->puesto));
+    }
 }
 
 $app->post('/ficha', function () {
@@ -776,66 +778,6 @@ $app->post('/ficha', function () {
 
     print json_encode([ 'encabezado' => $letra, 'empleado' => $empleado ]);
 });
-
-// funciones temporales
-$app->get('/subir_laboral', function () {
-    $db = new dbcpm();
-
-    $cuantos = 0;
-    $id_empleados = $db->getQuery("SELECT id FROM plnempleado WHERE nombre IS NOT NULL AND idlaboral IS NULL");
-    foreach ($id_empleados as $id) {
-        $db->doQuery("INSERT INTO plnlaboral (ingreso, reingreso, baja, idempresaactual, idempresadebito, idproyecto, idunidad, sueldo, bonificacionley, igss, porcentajeigss, idcuenta, 
-        descuentoisr, frecuencia, metodo, cuentabanco) 
-        SELECT a.ingreso, a.reingreso, a.baja, a.idempresaactual, a.idempresadebito, a.idproyecto, a.idunidad, a.sueldo, a.bonificacionley, a.igss, a.porcentajeigss, b.id AS idcuenta, 
-        a.descuentoisr, a.formapago, a.mediopago, a.cuentabanco FROM plnempleado a LEFT JOIN cuentac b ON a.cuentapersonal = b.codigo AND idempresa = a.idempresadebito WHERE a.id = $id->id");
-
-        $idlaboral = $db->getLastId();
-
-        if ($idlaboral > 0) {
-            $db->doQuery("UPDATE plnempleado SET idlaboral = $idlaboral WHERE id = $id->id");
-            $cuantos++;
-        } else {
-            return "Error no se pudo generar los datos laborales";
-        }
-    }
-
-    echo "Laboral copiado con exito ". $cuantos;
-});
-
-$app->get('/subir_personal', function () {
-    $db = new dbcpm();
-
-    $cuantos = 0;
-    $empleados = $db->getQuery("SELECT id, nombre, apellidos FROM plnempleado WHERE nombre IS NOT NULL AND idpersonal IS NULL");
-    foreach ($empleados as $emp) {
-        $nombresArray = explode(' ', $emp->nombre);
-        if (isset($emp->apellidos)) {
-            $apellidosArray = explode(' ', $emp->apellidos);
-
-            $db->doQuery("INSERT INTO plnpersonal (primernombre, segundonombre, tercernombre, primerapellido, segundoapellido, apellidocasada, direccion, sexo, estadocivil, 
-            nacimiento, telefono, tipodoc, documento, nit, correo, idnacionalidad, iddiscapacidad) 
-            SELECT '" . $nombresArray[0] . "', '" . (isset($nombresArray[1]) ? $nombresArray[1] : '') . "', '" . (isset($nombresArray[2]) ? $nombresArray[2] : '') . "', '" . 
-            $apellidosArray[0] . "', '" . (isset($apellidosArray[1]) ? $apellidosArray[1] : '') .  "', '" . (isset($apellidosArray[2]) ? $apellidosArray[2] : '') ."', direccion, 
-            sexo, estadocivil, fechanacimiento, telefono, 1, dpi, nit, correo, 83, 1 FROM plnempleado WHERE id = $emp->id");
-        } else {
-            $db->doQuery("INSERT INTO plnpersonal (primernombre, direccion, sexo, estadocivil, nacimiento, telefono, tipodoc, documento, nit, correo, idnacionalidad, iddiscapacidad) 
-            SELECT '" . $nombresArray[0] . "', direccion,  sexo, estadocivil, fechanacimiento, telefono, 1, dpi, nit, correo, 83, 1 FROM plnempleado WHERE id = $emp->id");
-        }
-
-        $idlaboral = $db->getLastId();
-
-        if ($idlaboral > 0) {
-            $db->doQuery("UPDATE plnempleado SET idpersonal = $idlaboral WHERE id = $emp->id");
-            $cuantos++;
-        } else {
-            die("Error no se pudo generar los datos personales");
-        }
-    }
-
-    echo "Personal copiado con exito ". $cuantos;
-});
-
-// fin de funciones temporales
 
 $app->get('/datos_empleador/:anio', function ($anio) {
     $db = new dbcpm();
@@ -1050,6 +992,119 @@ $app->post('/contrato', function () {
     $empleado->semana_letras = $n2l->to_word($empleado->semana);
 
     print json_encode([ 'representante' => $representante, 'empleado' => $empleado ]);
+});
+
+$app->post('/proyeccion', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $primero = true;
+    date_default_timezone_set("America/Guatemala");
+
+    $hoy = new DateTime();
+
+    // array de nombre de meses
+    $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+
+    // clase para fechas
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    // $letra->al = new DateTime($d->falstr);
+
+    // encabezado
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+    // $letra->titulo = 'Al '.$letra->al->format('d/m/Y');
+
+    $query = "SELECT 
+                a.id,
+                c.idempresadebito AS idempresa,
+                d.nombre AS empresa,
+                d.numeropat AS numero,
+                d.abreviatura,
+                CONCAT(b.primernombre,
+                        ' ',
+                        b.segundonombre,
+                        ' ',
+                        b.tercernombre,
+                        b.primerapellido,
+                        ' ',
+                        b.segundoapellido,
+                        ' ',
+                        b.apellidocasada) AS nombre,
+                NULL AS meses,
+                b.nit,
+                c.sueldo,
+                c.bonificacionley,
+                c.sueldo,
+                c.sueldo,
+                c.sueldo * $d->meses AS sueldo_global,
+                0.00 AS sueldo_e,
+                c.bonificacionley * $d->meses AS bonificacion_global,
+                NULL AS premio,
+                NULL AS renta,
+                48000 AS personales,
+                ROUND(c.sueldo * (c.porcentajeigss / 100) * $d->meses,
+                        2) AS igss,
+                NULL AS deducciones,
+                NULL AS imponible,
+                NULL AS impuesto,
+                NULL AS mensual, 
+                c.ingreso
+            FROM
+                plnempleado a
+                    INNER JOIN
+                plnpersonal b ON a.idpersonal = b.id
+                    INNER JOIN
+                plnlaboral c ON a.idlaboral = c.id
+                    INNER JOIN
+                plnempresa d ON c.idempresaactual = d.id
+            WHERE
+                a.activo = 1 AND a.nombre IS NOT NULL
+                    AND a.apellidos IS NOT NULL  ";
+    $query.= isset($d->idempresa) ? "AND c.idempresadebito = $d->idempresa " : "";
+    $query.= "ORDER BY b.primernombre , b.primerapellido";
+    $data = $db->getQuery($query);
+
+    foreach($data AS $emp) {
+        $ingreso = new DateTime($emp->ingreso);
+        if ($hoy->diff($ingreso)->y >= 40) {
+            $emp->premio = 70000;
+        } else if ($hoy->diff($ingreso)->y >= 35) {
+            $emp->premio = 17500;
+        } else if ($hoy->diff($ingreso)->y >= 30) {
+            $emp->premio = 15000;
+        } else if ($hoy->diff($ingreso)->y >= 25) {
+            $emp->premio = 12500;
+        } else if ($hoy->diff($ingreso)->y >= 20) {
+            $emp->premio = 10000;
+        } else if ($hoy->diff($ingreso)->y >= 15) {
+            $emp->premio = $emp->sueldo * 3;
+        } else if ($hoy->diff($ingreso)->y >= 10) {
+            $emp->premio = $emp->sueldo * 2;
+        } else if ($hoy->diff($ingreso)->y >= 5) {
+            $emp->premio = $emp->sueldo;
+        } else {
+            $emp->premio = 0;
+        }
+
+        // $emp->sueldo_e = isset($emp->sueldo_e) ? $emp->sueldo_e : 0;
+        $emp->renta = $emp->sueldo_global + $emp->bonificacion_global + $emp->premio + $emp->sueldo_e;
+        $emp->deducciones = $emp->igss + $emp->personales;
+        $emp->imponible = round($emp->renta - $emp->deducciones, 2);
+        $emp->impuesto = round($emp->imponible * 0.05); 
+        $emp->mensual = round($emp->impuesto / $d->meses, 2);
+    }
+
+    foreach($data as $dat) {
+        minusculas($dat);
+    }
+
+    // $porproyecto = $d->agrupar == 2 ? true : false;
+
+    // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
+    $reporte = new GeneradorReportes($data, 'empleados', [], false);
+    $empleados = $reporte->getReporte();
+
+    print json_encode([ 'encabezado' => $letra, 'empresas' => $data ]);
 });
 
 $app->run();
