@@ -247,9 +247,9 @@ angular.module('cpm')
                     $scope.emg = d.emg;
 
                     // Para resumen de empleado
-                    $scope.emp.dpi = d.emp.dpi;
-                    $scope.emp.nit = d.emp.nit;
-                    $scope.emp.direccion = d.emp.direccion;
+                    $scope.emp.dpi = d.per.documento;
+                    $scope.emp.nit = d.per.nit;
+                    $scope.emp.direccion = d.per.direccion;
                     $scope.emp.nompuesto = $scope.emp.idplnpuesto ? $filter('getById')($scope.puestos, $scope.emp.idplnpuesto).descripcion : null;
                     $scope.emp.nomempresa = $scope.lab.idempresadebito ? $filter('getById')($scope.empresas, $scope.lab.idempresadebito).nomempresa : null;
                     $scope.emp.estatus = $scope.emp.activo == 1 ? 'Activo' : 'Inactivo';
