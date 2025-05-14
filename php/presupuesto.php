@@ -486,6 +486,7 @@ function actualizaDetallePresupuesto($d)
     $query .= "idproveedor = $d->idproveedor, idsubtipogasto = $d->idsubtipogasto, coniva = $d->coniva, escontado = 0, monto = $d->monto_int, tipocambio = $d->tipocambio, notas = '$d->notas', origenprov = $d->origenprov, ";
     $query .= "idmoneda = $d->idmoneda, tipodocumento = $d->tipodocumento ";
     $query .= "WHERE idpresupuesto = " . $d->id;
+    // echo $query; return;
     $db->doQuery($query);
     updTotPresupuesto($d->idpresupuesto);
     $idot = $db->getOneField("SELECT id FROM detpresupuesto WHERE idpresupuesto = $d->id LIMIT 1");
@@ -521,6 +522,7 @@ $app->post('/u', function () {
 
     if ((int)$d->tipo == 1) {
         $d->idpresupuesto = $d->id;
+        $d->monto_int = (float)$d->monto;
         actualizaDetallePresupuesto($d);
     }
 });
