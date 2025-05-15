@@ -95,7 +95,7 @@ $app->post('/lstreciboscli', function(){
                     d.nit, d.nombre
                 FROM
                     factura d
-                LIMIT 1) d ON d.nit = a.nit
+                GROUP BY nit) d ON d.nit = a.nit
                     LEFT JOIN
                 (SELECT 
                     a.idreccli,
@@ -617,7 +617,7 @@ $app->get('/getlstrecpend/:idempresa', function($idempresa){
                     nombre, nit
                 FROM
                     factura
-                LIMIT 1) e ON e.nit = a.nit AND a.nit != 'CF'
+                GROUP BY nit) e ON e.nit = a.nit AND a.nit != 'CF'
                     LEFT JOIN
                 (SELECT 
                     ROUND(SUM(monto), 2) AS pagado, idrecibocli
