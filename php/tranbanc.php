@@ -1120,25 +1120,25 @@ $app->get('/datos_automatica/:ver/:del/:al', function ($ver, $del, $al) {
         $query = "SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idbanco, a.tipotrans, a.numero, b.referencia, a.monto, b.monto AS monto_real, c.idmoneda, a.fecha, 
                 b.fecha AS concilia, a.beneficiario, NULL AS numban, 1 AS idtipotrans FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
                 INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'C' AND operado = 0 AND c.mt940 = d.cuenta ";
-        $query.= $del > 0 && $al > 0 ? " AND a.fecha BETWEEN '$del' AND '$al'" : '';
+        $query.= $del > 0 && $al > 0 ? " AND b.fecha BETWEEN '$del' AND '$al'" : '';
         $query.= "   UNION ALL 
                 -- notas de debito
                 SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idbanco, a.tipotrans, a.numero, b.referencia, a.monto, b.monto AS monto_real, c.idmoneda, a.fecha, 
                 b.fecha AS concilia, a.beneficiario, a.numban, 4 AS idtipotrans FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto 
                 INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'B' AND operado = 0 AND c.mt940 = d.cuenta ";
-        $query.= $del > 0 && $al > 0 ? " AND a.fecha BETWEEN '$del' AND '$al'" : '';
+        $query.= $del > 0 && $al > 0 ? " AND b.fecha BETWEEN '$del' AND '$al'" : '';
         $query.= "  UNION ALL 
                 -- notas de credito
                 SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idbanco, a.tipotrans, a.numero, b.referencia, a.monto, b.monto AS monto_real, c.idmoneda, a.fecha, 
                 b.fecha AS concilia, a.beneficiario, a.numban, 3 AS idtipotrans  FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto 
                 INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'R' AND operado = 0 AND c.mt940 = d.cuenta ";
-        $query.= $del > 0 && $al > 0 ? " AND a.fecha BETWEEN '$del' AND '$al'" : '';
+        $query.= $del > 0 && $al > 0 ? " AND b.fecha BETWEEN '$del' AND '$al'" : '';
         $query.= "   UNION ALL 
                 -- depositos 
                 SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idbanco, a.tipotrans, a.numero, b.referencia, a.monto, b.monto AS monto_real, c.idmoneda, a.fecha, 
                 b.fecha AS concilia, a.beneficiario, NULL AS numban, 2 AS idtipotrans  FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
                 INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'D' AND operado = 0 AND c.mt940 = d.cuenta ";
-        $query.= $del > 0 && $al > 0 ? " AND a.fecha BETWEEN '$del' AND '$al'" : '';
+        $query.= $del > 0 && $al > 0 ? " AND b.fecha BETWEEN '$del' AND '$al'" : '';
         $query.= "  ORDER BY 3, 10, 4, 5";
         $datos = $db->getQuery($query);
     } else if ($ver == 2) {
