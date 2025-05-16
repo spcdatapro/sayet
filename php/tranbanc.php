@@ -1063,8 +1063,8 @@ $app->post('/conciliacion_automatica', function () use ($app) {
     $src = new SFTPConnInfo('190.242.184.121', 22, 'sftpSayet', 'S3Pd25S@y3t', '/');
     $conciliacion = new ConciliacionAutomatica($src, $dest);
 
-    $conciliacion->get_mt940(); // proceso uno 35
-    $conciliacion->read_mt940(); //proceso dos 35
+    // $conciliacion->get_mt940(); // proceso uno 35
+    // $conciliacion->read_mt940(); //proceso dos 35
 
     $query = "SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idbanco, a.tipotrans, a.numero, b.referencia, a.monto, b.monto AS monto_real, c.idmoneda, a.fecha, 
             b.fecha AS concilia, a.beneficiario, NULL AS numban, 1 AS idtipotrans FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
@@ -1158,7 +1158,7 @@ $app->get('/datos_automatica/:ver/:del/:al', function ($ver, $del, $al) {
     print json_encode($datos);
 });
 
-$app->post('/reporte_conciliacion', function () use ($app) {
+$app->post('/reporte_conciliacion', function () {
     $db = new dbcpm();
     $d = json_decode(file_get_contents('php://input'));
 
@@ -1166,9 +1166,11 @@ $app->post('/reporte_conciliacion', function () use ($app) {
     $letra->estampa = new DateTime();
     $letra->estampa = $letra->estampa->format('d-m-Y H:i');
     $letra->del = new DateTime($d->del);
-    $letra->del = $letra->del->format('d-m-Y');
+    $letra->del = $letra->del->format('d/m/Y');
     $letra->al = new DateTime($d->al);
-    $letra->al = $letra->al->format('d-m-Y');
+    $letra->al = $letra->al->format('d/m/Y');
+
+    $letra->titulo = $d->ver == 1 ? 'Reporte Conciliados' : $d->ver == 2 ? 'Reporte sin conciliar' : 'Reporte archivo MT940';
 
     $totales = ['monto'];
 
@@ -1198,13 +1200,13 @@ $app->post('/reporte_conciliacion', function () use ($app) {
         $query.= "  ORDER BY 3, 10, 4, 5";
         $datos = $db->getQuery($query);
     } else if ($d->ver == 2) {
-        $query = "SELECT a.d_estado_cuenta AS id, c.id AS idempresa, a.fecha, a.tipo_transaccion AS tipotrans, a.referencia AS numero, a.descripcion AS beneficiario, a.monto,
+        $query = "SELECT a.d_estado_cuenta AS id, c.id AS idempresa, a.fecha, IF(a.tipo_transaccion = 'C', '(C) Créditos', '(D) Débitos') AS tipotrans, a.referencia AS numero, a.descripcion AS beneficiario, a.monto,
             IF(a.tipo_transaccion = 'C', 1, 2) AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas AS abreviatura FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta 
             INNER JOIN banco c ON c.mt940 = b.cuenta WHERE b.estado_cuenta NOT IN(1, 2, 3, 4) AND a.idtranban IS NULL";
         $query.= $d->del > 0 && $d->al > 0 ? " AND a.fecha BETWEEN '$d->del' AND '$d->al'" : '';
         $datos = $db->getQuery($query);
     } else if ($d->ver == 3) {
-        $query = "SELECT a.d_estado_cuenta AS id, c.id AS idempresa, a.fecha, a.tipo_transaccion AS tipotrans, a.referencia AS numero, a.descripcion AS beneficiario, a.monto,
+        $query = "SELECT a.d_estado_cuenta AS id, c.id AS idempresa, a.fecha, IF(a.tipo_transaccion = 'C', '(C) Créditos', '(D) Débitos') AS tipotrans, a.referencia AS numero, a.descripcion AS beneficiario, a.monto,
             IF(a.tipo_transaccion = 'C', 1, 2) AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas AS abreviatura FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta 
             INNER JOIN banco c ON c.mt940 = b.cuenta WHERE b.estado_cuenta NOT IN(1, 2, 3, 4) ";
         $query.= $d->del > 0 && $d->al > 0 ? " AND a.fecha BETWEEN '$d->del' AND '$d->al'" : '';
