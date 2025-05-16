@@ -1176,6 +1176,9 @@ $app->post('/reporte_conciliacion', function () {
 
     $totales = ['monto'];
 
+    $d->al = $d->al == '' ? date('Y-m-d') : $d->al;
+    $d->del = $d->del == '' ? date('Y-m-d') : $d->del;
+
     if ($d->ver == 1) {
         $query = "SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero, b.referencia, a.monto, b.monto AS monto_real, c.idmoneda, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, 
                 DATE_FORMAT(b.fecha, '%d/%m/%Y') AS concilia, a.beneficiario, NULL AS numban, 1 AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas AS abreviatura, a.concepto FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
