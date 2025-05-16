@@ -199,7 +199,8 @@
                         </caption>
                         <thead>
                             <tr>
-                                <th>Fecha operado</th>
+                                <th ng-show="params.ver == 1">Fecha operado</th>
+                                <th ng-show="params.ver != 1">Fecha banco</th>
                                 <th>Tipo</th>
                                 <th colspan="2" style="text-align: center;" ng-show="params.ver == 1">N&uacute;mero</th>
                                 <th ng-show="params.ver != 1">N&uacute;mero</th>
