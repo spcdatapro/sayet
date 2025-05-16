@@ -158,6 +158,8 @@
             }
 
             $scope.imprimir = (params) => {
+                params.delstr = params.del ? moment(params.del).format('YYYY-MM-DD') : 0;
+                params.alstr = params.al ? moment(params.al).format('YYYY-MM-DD') : 0;
                 jsReportSrvc.getPDFReport('Hysnac8leg', params).then(function (pdf) { $window.open(pdf); });
             }
 
