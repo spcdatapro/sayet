@@ -1172,7 +1172,7 @@ $app->post('/reporte_conciliacion', function () {
 
     $letra->titulo = $d->ver == 1 ? 'Reporte Conciliados' : $d->ver == 2 ? 'Reporte sin conciliar' : 'Reporte archivo MT940';
 
-    $letra->tipo = $d->ver == 1 ? 1 : 2;
+    $letra->tipo = $d->ver == 1 ? true : false;
 
     $totales = ['monto'];
 
