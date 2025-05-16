@@ -2,8 +2,8 @@
 
     var conciliactrl = angular.module('cpm.conciliactrl', ['cpm.tranbacsrvc']);
 
-    conciliactrl.controller('conciliaCtrl', ['$scope', 'tranBancSrvc', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'DTOptionsBuilder', '$interval', 'toaster', 'tipoMovTranBanSrvc', '$uibModal',
-        function ($scope, tranBancSrvc, authSrvc, bancoSrvc, empresaSrvc, DTOptionsBuilder, $interval, toaster, tipoMovTranBanSrvc, $uibModal) {
+    conciliactrl.controller('conciliaCtrl', ['$scope', 'tranBancSrvc', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'DTOptionsBuilder', '$interval', 'toaster', 'tipoMovTranBanSrvc', '$uibModal', 'jsReportSrvc', '$window',
+        function ($scope, tranBancSrvc, authSrvc, bancoSrvc, empresaSrvc, DTOptionsBuilder, $interval, toaster, tipoMovTranBanSrvc, $uibModal, jsReportSrvc, $window) {
 
             $scope.laEmpresa = {};
             $scope.lasEmpresas = [];
@@ -157,8 +157,8 @@
                 toaster.pop({ type: 'info', title: 'Conciliación automática', body: 'Conciliación automática cancelada', timeout: 10000 });
             }
 
-            $scope.imprimir = () => {
-
+            $scope.imprimir = (params) => {
+                jsReportSrvc.getPDFReport('Hysnac8leg', params).then(function (pdf) { $window.open(pdf); });
             }
 
             $scope.fltrTrans = (idbanco, tipos) => {

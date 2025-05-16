@@ -1180,25 +1180,25 @@ $app->post('/reporte_conciliacion', function () {
         $query = "SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero, b.referencia, a.monto, b.monto AS monto_real, c.idmoneda, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, 
                 DATE_FORMAT(b.fecha, '%d/%m/%Y') AS concilia, a.beneficiario, NULL AS numban, 1 AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas AS abreviatura, a.concepto FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
                 INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'C' AND operado = 0 AND c.mt940 = d.cuenta ";
-        $query.= $d->del > 0 && $d->al > 0 ? " AND a.fecha BETWEEN '$d->del' AND '$d->al'" : '';
+        $query.= $d->del > 0 && $d->al > 0 ? " AND b.fecha BETWEEN '$d->del' AND '$d->al'" : '';
         $query.= "   UNION ALL 
                 -- notas de debito
                 SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero, b.referencia, a.monto, b.monto AS monto_real, c.idmoneda, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, 
                 DATE_FORMAT(b.fecha, '%d/%m/%Y') AS concilia, a.beneficiario, a.numban, 4 AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas AS abreviatura, a.concepto FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto 
                 INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'B' AND operado = 0 AND c.mt940 = d.cuenta ";
-        $query.= $d->del > 0 && $d->al > 0 ? " AND a.fecha BETWEEN '$d->del' AND '$d->al'" : '';
+        $query.= $d->del > 0 && $d->al > 0 ? " AND b.fecha BETWEEN '$d->del' AND '$d->al'" : '';
         $query.= "  UNION ALL 
                 -- notas de credito
                 SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero, b.referencia, a.monto, b.monto AS monto_real, c.idmoneda, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, 
                 DATE_FORMAT(b.fecha, '%d/%m/%Y') AS concilia, a.beneficiario, a.numban, 3 AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas AS abreviatura, a.concepto  FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto 
                 INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'R' AND operado = 0 AND c.mt940 = d.cuenta ";
-        $query.= $d->del > 0 && $d->al > 0 ? " AND a.fecha BETWEEN '$d->del' AND '$d->al'" : '';
+        $query.= $d->del > 0 && $d->al > 0 ? " AND b.fecha BETWEEN '$d->del' AND '$d->al'" : '';
         $query.= "   UNION ALL 
                 -- depositos 
                 SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero, b.referencia, a.monto, b.monto AS monto_real, c.idmoneda, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, 
                 DATE_FORMAT(b.fecha, '%d/%m/%Y') AS concilia, a.beneficiario, NULL AS numban, 2 AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas AS abreviatura, a.concepto FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
                 INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'D' AND operado = 0 AND c.mt940 = d.cuenta ";
-        $query.= $d->del > 0 && $d->al > 0 ? " AND a.fecha BETWEEN '$d->del' AND '$d->al'" : '';
+        $query.= $d->del > 0 && $d->al > 0 ? " AND b.fecha BETWEEN '$d->del' AND '$d->al'" : '';
         $query.= "  ORDER BY 3, 10, 4, 5";
         $datos = $db->getQuery($query);
     } else if ($d->ver == 2) {
