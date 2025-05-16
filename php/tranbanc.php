@@ -1174,7 +1174,7 @@ $app->post('/reporte_conciliacion', function () {
 
     $letra->tipo = $d->ver == 1 ? true : null;
 
-    $totales = ['monto'];
+    // $totales = ['monto'];
 
     $d->al = $d->al == '' ? date('Y-m-d') : $d->al;
     $d->del = $d->del == '' ? date('Y-m-d') : $d->del;
@@ -1218,7 +1218,7 @@ $app->post('/reporte_conciliacion', function () {
         $datos = $db->getQuery($query);
     }
 
-    $reporte = new GeneradorReportes($datos, 'transacciones', $totales, false);
+    $reporte = new GeneradorReportes($datos, 'transacciones', [], false);
     $empleados = $reporte->getReporte();
 
     print json_encode([ 'encabezado' => $letra, 'bancos' => $empleados ]);
