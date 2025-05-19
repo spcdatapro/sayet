@@ -1161,6 +1161,7 @@ $app->get('/datos_automatica/:ver/:del/:al', function ($ver, $del, $al) {
 $app->post('/reporte_conciliacion', function () {
     $db = new dbcpm();
     $d = json_decode(file_get_contents('php://input'));
+    date_default_timezone_set("America/Guatemala");
 
     $letra = new stdClass();
     $letra->estampa = new DateTime();

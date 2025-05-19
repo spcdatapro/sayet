@@ -1107,4 +1107,146 @@ $app->post('/proyeccion', function(){
     print json_encode([ 'encabezado' => $letra, 'empresas' => $empleados ]);
 });
 
+$app->post('/proyectado', function() {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+    date_default_timezone_set("America/Guatemala");
+
+    $hoy = new DateTime();
+
+    // array de nombre de meses
+    $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+    // para totales
+    $sueldo = [];
+    $bonificacion = [];
+    $igss = [];
+    $isr = [];
+    $bonos = [];
+    $extra = [];
+
+    $query = "SELECT 
+                a.id,
+                CONCAT(b.primernombre,
+                        ' ',
+                        IFNULL(b.segundonombre, ''),
+                        ' ',
+                        b.tercernombre,
+                        b.primerapellido,
+                        ' ',
+                        b.segundoapellido,
+                        ' ',
+                        IFNULL(b.apellidocasada, '')) AS nombre,
+                b.nit,
+                c.sueldo + c.bonificacionley AS sueldofijo,
+                MONTH(fecha) AS mes,
+                SUM(d.sueldoordinario) AS sueldo,
+                SUM(d.bonificacion) AS bonifiacion,
+                SUM(d.descigss) AS igss,
+                SUM(d.descisr) AS isr,
+                d.bonocatorce,
+                d.aguinaldo,
+                d.sueldoextra,
+                c.ingreso
+            FROM
+                plnempleado a
+                    INNER JOIN
+                plnpersonal b ON a.idpersonal = b.id
+                    INNER JOIN
+                plnlaboral c ON a.idpersonal = c.id
+                    INNER JOIN
+                plnnomina d ON d.idplnempleado = a.id
+            WHERE
+                a.id = $d->idempleado
+                    AND YEAR(d.fecha) = $d->anio
+            GROUP BY MONTH(fecha)";
+    $data = $db->getQuery($query);
+
+    // para encabezado
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+    $letra->titulo = 'Ingresos del: 1 de enero al 31 de diciembre de '. $d->anio;
+    $letra->nombre = $data[0]->nombre;
+    $letra->nit = $data[0]->nit;
+    $letra->sueldo = $data[0]->sueldofijo;
+
+    // para calculo mes a mes
+    $proyeccion = [];
+    $ultimoMes = null;
+
+    for ($i = 0; $i < 12; $i++) {
+        if (isset($data[$i])) {
+            $proyeccion[$i] = $data[$i];
+            $proyeccion[$i]->mes_letra = $meses[$proyeccion[$i]->mes - 1];
+            $ultimoMes = $proyeccion[$i];
+        } else {
+            $proyeccion[$i] = clone $ultimoMes ?? new stdClass();
+            $proyeccion[$i]->mes = $i + 1;
+            $proyeccion[$i]->mes_letra = $meses[$i];
+            $proyeccion[$i]->isr = 0;
+            if ($i + 1 === 7) {
+                $proyeccion[$i]->bonocatorce = $proyeccion[$i]->sueldo;
+            }
+            if ($i + 1 === 12) {
+                $proyeccion[$i]->aguinaldo = $proyeccion[$i]->sueldo;
+            }
+        }
+        array_push($sueldo, $proyeccion[$i]->sueldo);
+        array_push($bonificacion, $proyeccion[$i]->bonifiacion);
+        array_push($igss, $proyeccion[$i]->igss);
+        array_push($isr, $proyeccion[$i]->isr);
+        array_push($bonos, $proyeccion[$i]->bonocatorce + $proyeccion[$i]->aguinaldo);
+        array_push($extra, $proyeccion[$i]->sueldoextra);
+    }
+
+    $totales = new stdClass();
+    $totales->bonificacion = round(array_sum($bonificacion), 2);
+    $totales->igss = round(array_sum($igss), 2);
+    $totales->isr = round(array_sum($isr), 2);
+    $totales->bonos = round(array_sum($bonos), 2);
+    $totales->extra = round(array_sum($extra), 2);
+
+    // premios
+        $ingreso = new DateTime($data[0]->ingreso);
+    if ($hoy->diff($ingreso)->y >= 40) {
+        $totales->premios = 70000;
+    } else if ($hoy->diff($ingreso)->y >= 35) {
+        $totales->premios = 17500;
+    } else if ($hoy->diff($ingreso)->y >= 30) {
+        $totales->premios = 15000;
+    } else if ($hoy->diff($ingreso)->y >= 25) {
+        $totales->premios = 12500;
+    } else if ($hoy->diff($ingreso)->y >= 20) {
+        $totales->premios = 10000;
+    } else if ($hoy->diff($ingreso)->y >= 15) {
+        $totales->premios = $data[0]->sueldo * 3;
+    } else if ($hoy->diff($ingreso)->y >= 10) {
+        $totales->premios = $data[0]->sueldo * 2;
+    } else if ($hoy->diff($ingreso)->y >= 5) {
+        $totales->premios = $data[0]->sueldo;
+    } else {
+        $totales->premios = 0;
+    }
+
+    array_push($sueldo, $totales->premios);
+    array_push($sueldo, $totales->extra);
+    $totales->sueldo = round(array_sum($sueldo), 2);
+
+    $totales->renta_bruta = round($totales->sueldo + $totales->bonos + $totales->bonificacion, 2);
+    $totales->res_aguinaldo = round($totales->bonos);
+    $totales->renta_neta = round($totales->renta_bruta - $totales->res_aguinaldo, 2);
+    // gastos
+    $totales->gastos_igss = round($totales->igss, 2);
+    $totales->gastos_medicos = 0.00;
+    $totales->gastos_personales = 48000;
+    $totales->renta_imponible = round($totales->renta_neta - $totales->gastos_igss - $totales->gastos_personales, 2);
+    // impuesto
+    $totales->impuesto = round($totales->renta_imponible * 0.05, 2);
+    $totales->impuesto_pendiente = round($totales->impuesto - $totales->isr, 2);
+    // mensual
+    $totales->mensual = round($totales->impuesto_pendiente / 12, 2);
+
+    print json_encode([ 'encabezado' => $letra, 'meses' => $proyeccion, 'totales' => $totales ]);
+});
+
 $app->run();
