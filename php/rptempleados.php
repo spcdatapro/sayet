@@ -1140,11 +1140,10 @@ $app->post('/proyectado', function() {
                 c.sueldo + c.bonificacionley AS sueldofijo,
                 MONTH(fecha) AS mes,
                 SUM(d.sueldoordinario) AS sueldo,
-                SUM(d.bonificacion) AS bonifiacion,
+                SUM(d.bonificacion) AS bonificacion,
                 SUM(d.descigss) AS igss,
                 SUM(d.descisr) AS isr,
-                d.bonocatorce,
-                d.aguinaldo,
+                d.aguinaldo + d.bonocatorce AS aguinaldo,
                 d.sueldoextra,
                 c.ingreso
             FROM
@@ -1185,17 +1184,17 @@ $app->post('/proyectado', function() {
             $proyeccion[$i]->mes_letra = $meses[$i];
             $proyeccion[$i]->isr = 0;
             if ($i + 1 === 7) {
-                $proyeccion[$i]->bonocatorce = $proyeccion[$i]->sueldo;
+                $proyeccion[$i]->aguinaldo = $proyeccion[$i]->sueldo;
             }
             if ($i + 1 === 12) {
                 $proyeccion[$i]->aguinaldo = $proyeccion[$i]->sueldo;
             }
         }
         array_push($sueldo, $proyeccion[$i]->sueldo);
-        array_push($bonificacion, $proyeccion[$i]->bonifiacion);
+        array_push($bonificacion, $proyeccion[$i]->bonificacion);
         array_push($igss, $proyeccion[$i]->igss);
         array_push($isr, $proyeccion[$i]->isr);
-        array_push($bonos, $proyeccion[$i]->bonocatorce + $proyeccion[$i]->aguinaldo);
+        array_push($bonos, $proyeccion[$i]->aguinaldo);
         array_push($extra, $proyeccion[$i]->sueldoextra);
     }
 
