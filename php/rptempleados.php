@@ -1174,7 +1174,7 @@ $app->post('/proyectado', function() {
     $ultimoMes = null;
 
     for ($i = 0; $i < 12; $i++) {
-        if (isset($data[$i])) {
+        if (isset($data[$i]) && $data[$i]->sueldo > 0) {
             $proyeccion[$i] = $data[$i];
             $proyeccion[$i]->mes_letra = $meses[$proyeccion[$i]->mes - 1];
             $ultimoMes = $proyeccion[$i];
