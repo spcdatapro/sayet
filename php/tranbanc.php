@@ -248,6 +248,7 @@ $app->post('/d', function(){
     $db->doQuery("DELETE FROM dettranreem WHERE idtranban = $d->id");
     $db->doQuery("UPDATE reembolso SET pagado = 0 WHERE id = $idreembolso");
     $db->doQuery("DELETE FROM tranban WHERE id = $d->id");
+    $db->doQuery("DELETE FROM reclitran WHERE idtranban = $d->id");
 
     if((int)$tran->iddetpresup > 0 && (int)$tran->iddetpagopresup > 0){
         $query = "UPDATE detpagopresup SET pagado = 0, origen = 1, idorigen = 0 WHERE id = $tran->iddetpagopresup AND origen = 1 AND idorigen = $d->id";
