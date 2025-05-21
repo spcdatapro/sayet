@@ -202,9 +202,10 @@
                                 <th ng-show="params.ver == 1">Fecha operado</th>
                                 <th ng-show="params.ver != 1">Fecha banco</th>
                                 <th>Tipo</th>
-                                <th colspan="2" style="text-align: center;" ng-show="params.ver == 1">N&uacute;mero</th>
-                                <th ng-show="params.ver != 1">N&uacute;mero</th>
-                                <th style="text-align: right;">Monto</th>
+                                <th ng-show="params.ver == 1">N&uacute;mero Interno</th>
+                                <th>N&uacute;mero Banco</th>
+                                <th style="text-align: right;">D&eacute;bito</th>
+                                <th style="text-align: right;">Cr&eacute;dito</th>
                                 <th ng-show="params.ver == 1">Beneficiario</th>
                                 <th ng-show="params.ver != 1">Concepto</th>
                                 <th ng-show="params.ver == 1">Fecha banco</th>
@@ -221,7 +222,8 @@
                                 <td>{{t.tipotrans}}</td>
                                 <td>{{t.numero}}</td>
                                 <td ng-show="params.ver == 1">{{t.numban}}</td>
-                                <td style="text-align: right;">{{t.monto | number:2}}</td>
+                                <td style="text-align: right;">{{t.debito | number:2}}</td>
+                                <td style="text-align: right;">{{t.credito | number:2}}</td>
                                 <td>{{t.beneficiario}}</td>
                                 <td ng-show="params.ver == 1">{{t.concilia | date: 'dd/MM/yyyy'}}</td>
                                 <td style="text-align: center" ng-show="params.ver == 1">

@@ -21,6 +21,7 @@
             $scope.selTodos = 0;
             $scope.tipotrans = [];
             $scope.params = { tipos: [], ver: '1' }
+            var idusuario = undefined;
             // para paginar
             $scope.currentPage = 1; // Página actual
             $scope.itemsPerPage = 20; // Número de elementos por página
@@ -70,6 +71,7 @@
             tipoMovTranBanSrvc.lstTiposMovTB().then(function (d) { $scope.tipotrans = d; });
 
             authSrvc.getSession().then(function (usrLogged) {
+                idusuario = usrLogged.uid;
                 // traer empresas permitidas por el usuario
                 empresaSrvc.lstEmpresas().then(function (d) {
                     empresaSrvc.getEmpresaUsuario(usrLogged.uid).then(function (autorizado) {
@@ -160,19 +162,8 @@
             $scope.imprimir = (params) => {
                 params.delstr = params.del ? moment(params.del).format('YYYY-MM-DD') : 0;
                 params.alstr = params.al ? moment(params.al).format('YYYY-MM-DD') : 0;
+                params.idusuario = idusuario;
                 jsReportSrvc.getPDFReport('Hysnac8leg', params).then(function (pdf) { $window.open(pdf); });
-            }
-
-            $scope.fltrTrans = (idbanco, tipos) => {
-                //     console.log(idbanco, tipos);
-                //     if (idbanco > 0) {
-                //         idbanco = idbanco.toString();
-                //         $scope.trans = todas.filter(tran => tran.idbanco.toString() === idbanco);
-                //     } else if (tipos.length > 0) {
-                //         $scope.trans = todas.filter(tran => tipos.includes(tran.idtipotrans));
-                //     } else {
-                //         $scope.trans = todas;
-                //     }
             }
 
             $scope.$watch('selTodos', function (newVal, oldVal) {
