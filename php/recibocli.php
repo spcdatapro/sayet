@@ -95,7 +95,7 @@ $app->post('/lstreciboscli', function(){
                     d.nit, d.nombre
                 FROM
                     factura d
-                GROUP BY nit) d ON d.nit = a.nit
+                GROUP BY nit) d ON d.nit = a.nit AND a.nit != 'CF'
                     LEFT JOIN
                 (SELECT 
                     a.idreccli,
