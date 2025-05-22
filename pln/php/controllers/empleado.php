@@ -212,6 +212,7 @@ $app->post('/finiquito', function(){
 
 		if (elemento($_POST, 'fecha_egreso')) {
 			$emp->emp->baja = $_POST['fecha_egreso'];
+			$emp->lab->baja = $_POST['fecha_egreso'];
 		}
 
 		$tipoImpresion = (isset($_POST['recibo']) && $_POST['recibo'] == 1) ? 15 : 7;
