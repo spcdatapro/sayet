@@ -104,7 +104,16 @@ angular.module('cpm')
                 preServicios.buscar(bus)
                 .then(d => {
                     datos.idprestamos = d.resultados.map(p => p.id).join(',');
-                    d.resultados.forEach(prestamo => {
+                    datos.prestamos = d.resultados;
+                    empServicios.getFiniquito(datos)
+                    .then(function (pdf) { 
+                        //mostrar el pdf en un ventana a parte
+                        $window.open(pdf.pantalla);
+                        // adjuntar el archivo al empleado
+                        agregarArchivo(pdf.descarga);    
+                    })
+                    .then(() => {
+                        datos.prestamos.forEach(prestamo => {
                         let abono = {monto: prestamo.saldo, fecha: formatoFecha(datos.fecha_egreso), 
                             concepto: 'Liquidación del prestamo por baja de empleado.'};
                         // guardar abono
@@ -112,18 +121,10 @@ angular.module('cpm')
                         // liquidar prestamo
                         let pres = { liquidacion: formatoFecha(datos.fecha_egreso), id: prestamo.id };
                         preServicios.guardar(pres);
+                        $scope.cargando = false;  
+                        location.reload();
                     })
-                })
-                .then(() => {
-                    empServicios.getFiniquito(datos)
-                    .then(function (pdf) { 
-                        //mostrar el pdf en un ventana a parte
-                        $window.open(pdf.pantalla);
-                        // adjuntar el archivo al empleado
-                        agregarArchivo(pdf.descarga);
-                        $scope.cargando = false;      
-                        // location.reload();
-                    });
+                    })
                 })
             })
         }

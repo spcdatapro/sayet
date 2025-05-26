@@ -56,7 +56,7 @@ $app->post('/anular_bitacora', function () {
         $idlaboral = $db->getOneField("SELECT idlaboral FROM plnempleado WHERE id = $idempleado");
 
         $datos->reingreso = $datos->reingreso !== null ? $datos->reingreso : 0;
-        $datos->baja = isset($datos->baja) ? $datos->baja : 'null';
+        $datos->baja = $datos->baja !== null ? $datos->baja : 'NULL';
 
         $str = "UPDATE plnlaboral SET ";
         $cambios = [
@@ -73,8 +73,10 @@ $app->post('/anular_bitacora', function () {
         ];
         
         foreach ($cambios as $cambio => $valor) {
-            if ($valor > 0 || $cambio == 'baja') {
+            if ($valor > 0) {
                 $str .= "$cambio = '$valor', ";
+            } else if ($cambio == 'baja') {
+                $str .= "$cambio = $valor, ";
             }
         }
         
