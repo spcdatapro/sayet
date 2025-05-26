@@ -1307,7 +1307,7 @@ $app->post('/carta', function () {
         $datos->egreso = $dia . ' de ' . $mes . ' de ' . $anio;
     }
 
-    print json_encode($datos);
+    print json_encode([ 'empleado' => $datos ]);
 });
 
 $app->run();
