@@ -1250,6 +1250,7 @@ $app->post('/proyectado', function() {
 
 $app->post('/carta', function () { 
     $db = new dbcpm();
+    $n2l = new NumberToLetterConverter();
     $d = json_decode(file_get_contents('php://input'));
 
     $meses = array("enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre");
@@ -1306,6 +1307,13 @@ $app->post('/carta', function () {
         $anio = $fecha->format('Y');
         $datos->egreso = $dia . ' de ' . $mes . ' de ' . $anio;
     }
+
+    $fecha = new DateTime();
+    $dia = $fecha->format('d');
+    $mes = $meses[$fecha->format('n') - 1];
+    $anio = $fecha->format('Y');
+    $dia_letras = trim(strtolower($n2l->to_word($dia)));
+    $datos->hoy = 'a los ' . $dia_letras . ' días del mes de ' . $mes . ' de ' . $anio;
 
     print json_encode([ 'empleado' => $datos ]);
 });
