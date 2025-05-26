@@ -149,9 +149,21 @@
             }
 
             $scope.aceptarAutomatico = () => {
-                // falta codigo para conciliar los documentos
-                $scope.trans = [];
-                toaster.pop({ type: 'success', title: 'Conciliación automática', body: 'Documentos conciliados exitosamente', timeout: 10000 });
+                let aconciliar = [];
+
+                $scope.trans.forEach(tran => {
+                    console.log(tran);
+                    if (tran.conciliar == 1 && tran.tipo_transaccion == 'C') {
+                        aconciliar.push(tran);
+                    }
+                });
+
+                console.log(aconciliar);
+
+                tranBancSrvc.editRow(aconciliar, 'ca').then(d => {
+                    toaster.pop({ type: 'success', title: 'Conciliación automática', body: 'Documentos conciliados exitosamente', timeout: 10000 });
+                    $scope.buscarDocumentos();
+                });
             }
 
             $scope.cancelarAutomatico = () => {
