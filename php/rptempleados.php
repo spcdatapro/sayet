@@ -1275,7 +1275,8 @@ $app->post('/carta', function () {
                 IFNULL(DATE_FORMAT(c.baja, '%d/%m/%Y'),
                         'hasta la fecha') AS egreso,
                 e.descripcion AS puesto,
-                c.sueldo
+                c.sueldo,
+                b.sexo
             FROM
                 plnempleado a
                     INNER JOIN
@@ -1289,6 +1290,12 @@ $app->post('/carta', function () {
             WHERE
                 a.id = $d->idempleado";
     $datos = $db->getQuery($query)[0];
+
+    if ($datos->sexo === 'hombre') {
+        $datos->cortesia = 'el señor';
+    } else {
+        $datos->cortesia = 'la señora';
+    }
 
     if (!$d->sueldo) {
         $datos->sueldo = null;

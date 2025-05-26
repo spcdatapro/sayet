@@ -809,7 +809,9 @@ angular.module('cpm')
             }
 
             $scope.imprimirCarta = sueldo => {
-                jsReportSrvc.getPDFReport('S1nJHXuaJl', sueldo).then(function (pdf) {
+                const params = { sueldo: sueldo, idempleado: $scope.emp.id };
+
+                jsReportSrvc.getPDFReport('ryKOtgzMlx', params).then(function (pdf) {
                     $window.open(pdf);
                     $scope.cargando = false;
                 }).catch(err => {
