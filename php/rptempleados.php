@@ -1270,7 +1270,7 @@ $app->post('/carta', function () {
                 d.nomempresa AS empresa,
                 d.direccion,
                 IFNULL(d.telefono, 'favor agregar telefono') AS telefono,
-                DATE_FORMAT(c.ingreso, '%d/%m/%Y') AS ingreso,
+                DATE_FORMAT(IFNULL(c.reingreso, c.ingreso), '%d/%m/%Y') AS ingreso,
                 IFNULL(DATE_FORMAT(c.baja, '%d/%m/%Y'),
                         'hasta la fecha') AS egreso,
                 e.descripcion AS puesto,
