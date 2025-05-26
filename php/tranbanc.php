@@ -1064,8 +1064,8 @@ $app->post('/conciliacion_automatica', function () use ($app) {
     $src = new SFTPConnInfo('190.242.184.121', 22, 'sftpSayet', 'S3Pd25S@y3t', '/');
     $conciliacion = new ConciliacionAutomatica($src, $dest);
 
-    // $conciliacion->get_mt940(); // proceso uno 35
-    // $conciliacion->read_mt940(); //proceso dos 35
+    $conciliacion->get_mt940(); // proceso uno 35
+    $conciliacion->read_mt940(); //proceso dos 35
 
     $query = "SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idbanco, a.tipotrans, a.numero, b.referencia, a.monto AS debito, null AS credito, b.monto AS monto_real, c.idmoneda, a.fecha, 
             b.fecha AS concilia, a.beneficiario, NULL AS numban, 1 AS idtipotrans FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
