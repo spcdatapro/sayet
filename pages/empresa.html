@@ -88,6 +88,14 @@
                                         ng-model="laEmpresa.retenedora" ng-true-value="1" ng-false-value="0" />
                                 </div>
                             </div>
+                            <div class="col-md-3">
+                                <div class="form-group"
+                                    ng-class="{'has-error':frmEmpresa.chkPropia.$invalid && !frmEmpresa.chkPropia.$pristine}">
+                                    <label for="tel">T&eacute;lefono:</label>
+                                    <input type="tel" name="tel" id="tel" class="form-control"
+                                        ng-model="laEmpresa.telefono" placeholder="Ingresar télefono">
+                                </div>
+                            </div>
                         </div>
                         <div class="row" ng-show="+laEmpresa.congface == 0 && +laEmpresa.sifactura == 1">
                             <div class="col-md-3">

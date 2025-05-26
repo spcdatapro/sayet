@@ -1371,7 +1371,7 @@
 											<button class="btn"
 												ng-class="emp.activo == 0 ? 'btn-default' : 'btn-primary'"
 												title="Imprimir ficha" type="button" ng-click="imprimirFicha(emp)">
-												<i class="fi fi-sr-print"></i> Imprimir
+												<i class="fi fi-sr-print"></i> Ficha
 											</button>
 										</div>
 										<div class="btn-group" role="group" ng-click="imprimirContrato()">
@@ -1379,7 +1379,20 @@
 												<i class="fi fi-rr-file-signature"></i> Contrato
 											</button>
 										</div>
-										<div class="btn-group" role="group" ng-show="emp.activo == 0" ng-click="darAlta()">
+										<div class="btn-group" role="group">
+											<div class="dropdown">
+												<button class="btn btn-default dropdown-toggle" title="Imprimir carta"
+													type="button" data-toggle="dropdown">
+													<i class="fi fi-rr-envelope-open-text"></i> Carta
+												</button>
+												<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+													<li><a ng-click="impirmirCarta(false)">Sin sueldo</a></li>
+													<li><a ng-click="impirmirCarta(true)">Con sueldo</a></li>
+												</ul>
+											</div>
+										</div>
+										<div class="btn-group" role="group" ng-show="emp.activo == 0"
+											ng-click="darAlta()">
 											<button class="btn btn-primary" title="Dar de alta" type="button">
 												<i class="fi fi-sr-up"></i> Dar de alta
 											</button>

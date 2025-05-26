@@ -224,7 +224,7 @@ angular.module('cpm')
                     d.per.nacimiento = d.per.nacimiento ? moment(d.per.nacimiento).toDate() : undefined;
                     d.per.sexo = d.per.sexo === 'hombre' ? '1' : d.per.sexo === 'mujer' ? '2' : undefined;
                     d.per.estadocivil = d.per.estadocivil === 'soltero' ? '1' : d.per.estadocivil === 'casado' ? '2' : d.per.estadocivil === 'unido' ? '3' : undefined;
-                    d.per.tipodoc = d.per.tipodoc === 'dpi' ? '1' : d.per.tipodoc === 'certificado de nacimiento' ? '2' : d.per.tipodoc === 'pasaporte' ? '3': undefined;
+                    d.per.tipodoc = d.per.tipodoc === 'dpi' ? '1' : d.per.tipodoc === 'certificado de nacimiento' ? '2' : d.per.tipodoc === 'pasaporte' ? '3' : undefined;
 
                     // formatear datos laborales 
                     d.lab.ingreso = d.lab.ingreso ? moment(d.lab.ingreso).toDate() : undefined;
@@ -265,11 +265,11 @@ angular.module('cpm')
                     $scope.hay = true;
                     $scope.getArchivos($scope.emp.id);
                     $scope.getBitacora($scope.emp.id);
-                    if ($scope.lab.idproyecto) {    
-                    $scope.setUnidades($scope.lab.idproyecto);
+                    if ($scope.lab.idproyecto) {
+                        $scope.setUnidades($scope.lab.idproyecto);
                     }
                     if ($scope.lab.idempresadebito) {
-                    $scope.cargoEmpresa($scope.lab.idempresadebito);
+                        $scope.cargoEmpresa($scope.lab.idempresadebito);
                     }
 
                     goTop();
@@ -461,13 +461,13 @@ angular.module('cpm')
                         laboral: () => $scope.lab,
                         empresas: () => $scope.empresasPlanilla
                     }
-                }).result.then(function (obj) {                    
+                }).result.then(function (obj) {
                     empServicios.darAlta(obj).then((r) => {
                         toaster.pop({ type: r.tipo, title: 'Reingreso de empleado', body: r.mensaje, timeout: 10000 });
-    
+
                         $scope.ver_activos = '1';
                         // $scope.buscar(1);
-    
+
                         if (r.id) {
                             $scope.getEmpleado(r.id);
                         }
@@ -734,7 +734,7 @@ angular.module('cpm')
                 jsReportSrvc.getPDFReport('Sy0hlTcqyg', idempleado).then(function (pdf) {
                     $window.open(pdf);
                     $scope.cargando = false;
-                }).catch (err => {
+                }).catch(err => {
                     console.log(err);
                     toaster.pop({ type: 'error', title: 'Ficha de empleado', body: 'Error en la conexion con el servidor, favor comunicarse con IT.', timeout: 7000 });
                     $scope.cargando = false;
@@ -759,7 +759,7 @@ angular.module('cpm')
                 // Loop through the required fields and check for errors
                 for (const field of requiredFields) {
                     if (!field.field || (field.condition && !field.condition(field.field))) {
-                        toaster.pop({ type: 'error', title: 'Contrato de empleado', body: field.message, timeout: 7000});
+                        toaster.pop({ type: 'error', title: 'Contrato de empleado', body: field.message, timeout: 7000 });
                         return;
                     }
                 }
@@ -772,7 +772,7 @@ angular.module('cpm')
                 } else if (!$scope.per.estadocivil) {
                     toaster.pop({ type: 'error', title: 'Contrato de empleado', body: 'No tiene estadocivil, favor ingresar.', timeout: 7000 });
                     return;
-                } else if (!$scope.per.sexo) { 
+                } else if (!$scope.per.sexo) {
                     toaster.pop({ type: 'error', title: 'Contrato de empleado', body: 'No tiene genero, favor ingresar.', timeout: 7000 });
                     return;
                 } else if (!$scope.per.profesion) {
@@ -800,12 +800,23 @@ angular.module('cpm')
                     jsReportSrvc.getPDFReport('S1nJHXuaJl', obj).then(function (pdf) {
                         $window.open(pdf);
                         $scope.cargando = false;
-                    }).catch (err => {
+                    }).catch(err => {
                         console.log(err);
                         toaster.pop({ type: 'error', title: 'Contrato de empleado', body: 'Error en la conexion con el servidor, favor comunicarse con IT.', timeout: 7000 });
                         $scope.cargando = false;
                     });
                 }
+            }
+
+            $scope.imprimirCarta = sueldo => {
+                jsReportSrvc.getPDFReport('S1nJHXuaJl', sueldo).then(function (pdf) {
+                    $window.open(pdf);
+                    $scope.cargando = false;
+                }).catch(err => {
+                    console.log(err);
+                    toaster.pop({ type: 'error', title: 'Carta del empleado', body: 'Error en la conexion con el servidor, favor comunicarse con IT.', timeout: 7000 });
+                    $scope.cargando = false;
+                });
             }
 
             $scope.eliminar = idempleado => {

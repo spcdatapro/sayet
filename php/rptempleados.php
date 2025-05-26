@@ -1248,4 +1248,66 @@ $app->post('/proyectado', function() {
     print json_encode([ 'encabezado' => $letra, 'meses' => $proyeccion, 'totales' => $totales ]);
 });
 
+$app->post('/carta', function () { 
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $meses = array("enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre");
+
+    $query = "SELECT 
+                a.id,
+                CONCAT(b.primernombre,
+                        ' ',
+                        IFNULL(b.segundonombre, ''),
+                        ' ',
+                        b.tercernombre,
+                        b.primerapellido,
+                        ' ',
+                        b.segundoapellido,
+                        ' ',
+                        IFNULL(b.apellidocasada, '')) AS nombre,
+                b.documento,
+                d.nomempresa AS empresa,
+                d.direccion,
+                IFNULL(d.telefono, 'favor agregar telefono') AS telefono,
+                DATE_FORMAT(c.ingreso, '%d/%m/%Y') AS ingreso,
+                IFNULL(DATE_FORMAT(c.baja, '%d/%m/%Y'),
+                        'hasta la fecha') AS egreso,
+                e.descripcion AS puesto,
+                c.sueldo
+            FROM
+                plnempleado a
+                    INNER JOIN
+                plnpersonal b ON a.idpersonal = b.id
+                    INNER JOIN
+                plnlaboral c ON a.idlaboral = c.id
+                    INNER JOIN
+                empresa d ON c.idempresadebito = d.id
+                    INNER JOIN
+                puesto e ON c.idpuesto = e.id
+            WHERE
+                a.id = $d->idempleado";
+    $datos = $db->getQuery($query)[0];
+
+    if (!$d->sueldo) {
+        $datos->sueldo = null;
+    }
+
+    $fecha = new DateTime($datos->ingreso);
+    $dia = $fecha->format('d');
+    $mes = $meses[$fecha->format('n') - 1];
+    $anio = $fecha->format('Y');
+    $datos->ingreso = $dia . ' de ' . $mes . ' de ' . $anio;
+
+    if ($datos->egreso !== 'hasta la fecha') {
+        $fecha = new DateTime($datos->egreso);
+        $dia = $fecha->format('d');
+        $mes = $meses[$fecha->format('n') - 1];
+        $anio = $fecha->format('Y');
+        $datos->egreso = $dia . ' de ' . $mes . ' de ' . $anio;
+    }
+
+    print json_encode($datos);
+});
+
 $app->run();
