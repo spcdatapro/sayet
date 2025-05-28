@@ -1064,8 +1064,8 @@ $app->post('/conciliacion_automatica', function () use ($app) {
     $src = new SFTPConnInfo('190.242.184.121', 22, 'sftpSayet', 'S3Pd25S@y3t', '/');
     $conciliacion = new ConciliacionAutomatica($src, $dest);
 
-    $conciliacion->get_mt940(); // proceso uno 35
-    $conciliacion->read_mt940(); //proceso dos 35
+    // $conciliacion->get_mt940(); // proceso uno 35
+    // $conciliacion->read_mt940(); //proceso dos 35
 
     $query = "SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idbanco, a.tipotrans, a.numero, b.referencia, a.monto AS debito, null AS credito, b.monto AS monto_real, c.idmoneda, a.fecha, 
             b.fecha AS concilia, a.beneficiario, NULL AS numban, 1 AS idtipotrans FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
@@ -1242,6 +1242,40 @@ $app->get('/lstposibledocs/:idbanco/:numero/:monto/:tipo', function ($idbanco, $
     $query = "SELECT a.fecha, a.id, a.numero, a.monto, a.tipotrans, b.nomcuenta AS banco, a.beneficiario, a.concepto, c.simbolo AS moneda, a.tipotrans AS tipo FROM tranban a INNER JOIN banco b ON a.idbanco = b.id INNER JOIN moneda c ON b.idmoneda = c.id WHERE a.idbanco = $idbanco AND (a.numero = '$numero' OR a.numban = '$numero')";
     $datos = $db->getQuery($query);
     print json_encode($datos);
+});
+
+$app->post('/prntnotas', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $query = "SELECT 
+                a.d_estado_cuenta AS id,
+                a.referencia AS numero,
+                CONCAT('Nota de ',
+                        IF(tipo_transaccion = 'C',
+                            'Crédito',
+                            'Débito')) AS concepto,
+                a.fecha,
+                'Monetaria' AS tipo_cuenta,
+                a.descripcion,
+                IF(tipo_transaccion = 'C',
+                    'CRÉDITO POR',
+                    'DÉBITO POR') AS razon,
+                c.nombre,
+                c.nocuenta,
+                d.simbolo AS moneda,
+                a.monto
+            FROM
+                d_estado_cuenta a
+                    INNER JOIN
+                estado_cuenta b ON a.estado_cuenta = b.estado_cuenta
+                    INNER JOIN
+                banco c ON c.mt940 = b.cuenta
+                    INNER JOIN
+                moneda d ON c.idmoneda = d.id
+            WHERE
+                a.d_estado_cuenta = $d->idnota";
+    $datos = $db->getQuery($query)[0];
+    print json_encode([ 'nota' => $datos ]);
 });
 
 function compararPorId($a, $b) {

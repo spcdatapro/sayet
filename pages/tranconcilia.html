@@ -122,7 +122,8 @@
                             <div class="form-group">
                                 <div class="form-group">
                                     <label class="control-label">Del:</label>
-                                    <input type="date" name="fchDel" id="fchDel" class="form-control" ng-model="params.del">
+                                    <input type="date" name="fchDel" id="fchDel" class="form-control"
+                                        ng-model="params.del">
                                 </div>
                             </div>
                         </div>
@@ -130,158 +131,175 @@
                             <div class="form-group">
                                 <div class="form-group">
                                     <label class="control-label">Al:</label>
-                                    <input type="date" name="fchAl" id="fchAl" class="form-control" ng-model="params.al" ng-blur="getLstTranAutomatica(params.ver, params.del, params.al)"">
+                                    <input type="date" name="fchAl" id="fchAl" class="form-control" ng-model="params.al"
+                                        ng-blur="getLstTranAutomatica(params.ver, params.del, params.al)"">
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <div class="form-group">
-                                    <label class="control-label">Ver:</label>
-                                    <select name="selVer" id="selVer" ng-model="params.ver" class="form-control" ng-change="getLstTranAutomatica(params.ver, params.del, params.al)">
-                                        <option value="1">Conciliados</option>
-                                        <option value="2">Sin conciliar</option>
-                                        <option value="3">Todos</option>
-                                    </select>
+                        <div class=" col-md-4">
+                                    <div class="form-group">
+                                        <div class="form-group">
+                                            <label class="control-label">Ver:</label>
+                                            <select name="selVer" id="selVer" ng-model="params.ver" class="form-control"
+                                                ng-change="getLstTranAutomatica(params.ver, params.del, params.al)">
+                                                <option value="1">Conciliados</option>
+                                                <option value="2">Sin conciliar</option>
+                                                <option value="3">Todos</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="row" ng-show="todas.length > 0">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Banco:</label>
+                                        <ui-select ng-model="params.idbanco" title="Seleccione un banco..."
+                                            theme="bootstrap" autofocus="false">
+                                            <ui-select-match placeholder="Buscar banco..." allow-clear="true">
+                                                <span ng-bind="($select.selected.bancomoneda)"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices
+                                                repeat="item.id as item in bancos | filter:$select.search"
+                                                group-by="'grupo'">
+                                                <div ng-bind-html="(item.nombrecta) | highlight: $select.search">
+                                                </div>
+                                            </ui-select-choices>
+                                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Tipo transacc&oacute;n:</label>
+                                        <ui-select ng-model="params.tipos" title="Seleccione uno o varios tipos..."
+                                            theme="bootstrap" autofocus="false" multiple>
+                                            <ui-select-match placeholder="Buscar tipo transaccion..."
+                                                allow-clear="true">
+                                                <span>{{$item.abreviatura}}</span>
+                                            </ui-select-match>
+                                            <ui-select-choices
+                                                repeat="item.id as item in tipotrans | filter:$select.search"
+                                                group-by="'grupo'">
+                                                <div ng-bind-html="(item.abreviadesc) | highlight: $select.search">
+                                                </div>
+                                            </ui-select-choices>
+                                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr />
+                            <table class="table table-responsive table-hover table-condensed"
+                                ng-show="todas.length > 0">
+                                <caption>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control input-sm"
+                                            placeholder="Buscar documento..." ng-model="search.$" />
+                                        <span class="input-group-btn">
+                                            <button type="button" title="Descargar reporte"
+                                                class="btn btn-primary btn-sm" ng-click="imprimir(params)">
+                                                <i class="fi fi-rr-file-download"></i> Descargar
+                                            </button>
+                                            <button type="button" title="Descargar notas" ng-show="params.ver == 3"
+                                                class="btn btn-default btn-sm" ng-click="imprimirNota()">
+                                                <i class="fi fi-tr-money-check"></i> Descargar nota
+                                            </button>
+                                        </span>
+                                    </div>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th ng-show="params.ver == 1">Fecha operado</th>
+                                        <th ng-show="params.ver != 1">Fecha banco</th>
+                                        <th>Tipo</th>
+                                        <th ng-show="params.ver == 1">N&uacute;mero Interno</th>
+                                        <th>N&uacute;mero Banco</th>
+                                        <th style="text-align: right;">D&eacute;bito</th>
+                                        <th style="text-align: right;">Cr&eacute;dito</th>
+                                        <th ng-show="params.ver == 1">Beneficiario</th>
+                                        <th ng-show="params.ver != 1">Concepto</th>
+                                        <th ng-show="params.ver == 1">Fecha banco</th>
+                                        <th ng-show="params.ver == 1">
+                                            <span>Conciliar <input type="checkbox" ng-model="selTodos" ng-true-value="1"
+                                                    ng-false-value="0" ng-disabled="todas.length == 0"></span>
+                                        </th>
+                                        <th ng-show="params.ver == 3">
+                                            <span>Descargar<input type="checkbox" ng-model="selTodos" ng-true-value="1"
+                                                    ng-false-value="0" ng-disabled="todas.length == 0"></span>
+                                        </th>
+                                        <th ng-show="params.ver == 2">Posibles documentos</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="t in paginatedEmpleados() | filter:search">
+                                        <td>{{t.fecha | date:'dd/MM/yyyy'}}</td>
+                                        <td>{{t.tipotrans}}</td>
+                                        <td>{{t.numero}}</td>
+                                        <td ng-show="params.ver == 1">{{t.numban}}</td>
+                                        <td style="text-align: right;">{{t.debito | number:2}}</td>
+                                        <td style="text-align: right;">{{t.credito | number:2}}</td>
+                                        <td>{{t.beneficiario}}</td>
+                                        <td ng-show="params.ver == 1">{{t.concilia | date: 'dd/MM/yyyy'}}</td>
+                                        <td style="text-align: center">
+                                            <input type="checkbox" ng-model="t.conciliar" ng-true-value="1"
+                                                ng-false-value="0" />
+                                        </td>
+                                        <td ng-show="params.ver == 2" style="text-align: center;">
+                                            <button class="btn btn-default btn-sm" type="button"
+                                                title="Buscar posibles documentos"
+                                                ng-click="verPosiblesDoc(t.idbanco, t.numero, t.monto, t.tipotrans)">
+                                                <i class="fi fi-sr-assessment"></i> Ver documentos
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="9">
+                                            <div class="pull-right">
+                                                <button class="btn btn-sm btn-default"
+                                                    ng-click="setPage(currentPage - 1)"
+                                                    ng-disabled="currentPage == 1">Anterior</button>
+                                                <span>Página {{currentPage}} de {{totalPages}}</span>
+                                                <button class="btn btn-sm btn-default"
+                                                    ng-click="setPage(currentPage + 1)"
+                                                    ng-disabled="currentPage == totalPages">Siguiente</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="9">
+                                            <div class="btn-group btn-group-justified" ng-show="params.ver == 1">
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-success"
+                                                        title="Aceptar conciliaci&oacute;n"
+                                                        ng-click="aceptarAutomatico()">
+                                                        <i class="fi fi-rr-check"></i> Aceptar conciliaci&oacute;n
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="9">
+                                            <div class="btn-group btn-group-justified" ng-show="params.ver == 1">
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-danger" title="Cancelar"
+                                                        ng-click="cancelarAutomatico()">
+                                                        <i class="fi fi-rr-cross"></i> Cancelar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
                         </div>
                     </div>
-                    <div class="row" ng-show="todas.length > 0">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Banco:</label>
-                                <ui-select ng-model="params.idbanco" title="Seleccione un banco..." theme="bootstrap"
-                                    autofocus="false">
-                                    <ui-select-match placeholder="Buscar banco..." allow-clear="true">
-                                        <span ng-bind="($select.selected.bancomoneda)"></span>
-                                    </ui-select-match>
-                                    <ui-select-choices repeat="item.id as item in bancos | filter:$select.search"
-                                        group-by="'grupo'">
-                                        <div ng-bind-html="(item.nombrecta) | highlight: $select.search">
-                                        </div>
-                                    </ui-select-choices>
-                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
-                                </ui-select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="control-label">Tipo transacc&oacute;n:</label>
-                                <ui-select ng-model="params.tipos" title="Seleccione uno o varios tipos..."
-                                    theme="bootstrap" autofocus="false" multiple>
-                                    <ui-select-match placeholder="Buscar tipo transaccion..." allow-clear="true">
-                                        <span>{{$item.abreviatura}}</span>
-                                    </ui-select-match>
-                                    <ui-select-choices repeat="item.id as item in tipotrans | filter:$select.search"
-                                        group-by="'grupo'">
-                                        <div ng-bind-html="(item.abreviadesc) | highlight: $select.search">
-                                        </div>
-                                    </ui-select-choices>
-                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
-                                </ui-select>
-                            </div>
-                        </div>
-                    </div>
-                    <hr />
-                    <table class="table table-responsive table-hover table-condensed" ng-show="todas.length > 0">
-                        <caption>
-                            <div class="input-group">
-                                <input type="text" class="form-control input-sm" placeholder="Buscar documento..."
-                                    ng-model="search.$" />
-                                <span class="input-group-btn">
-                                    <button type="button" title="Descargar reporte" class="btn btn-primary btn-sm"
-                                        ng-click="imprimir(params)">
-                                        <i class="fi fi-rr-file-download"></i> Descargar
-                                    </button>
-                                </span>
-                            </div>
-                        </caption>
-                        <thead>
-                            <tr>
-                                <th ng-show="params.ver == 1">Fecha operado</th>
-                                <th ng-show="params.ver != 1">Fecha banco</th>
-                                <th>Tipo</th>
-                                <th ng-show="params.ver == 1">N&uacute;mero Interno</th>
-                                <th>N&uacute;mero Banco</th>
-                                <th style="text-align: right;">D&eacute;bito</th>
-                                <th style="text-align: right;">Cr&eacute;dito</th>
-                                <th ng-show="params.ver == 1">Beneficiario</th>
-                                <th ng-show="params.ver != 1">Concepto</th>
-                                <th ng-show="params.ver == 1">Fecha banco</th>
-                                <th ng-show="params.ver == 1">
-                                    <span>Conciliar <input type="checkbox" ng-model="selTodos" ng-true-value="1"
-                                            ng-false-value="0" ng-disabled="todas.length == 0"></span>
-                                </th>
-                                <th ng-show="params.ver == 2">Posibles documentos</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="t in paginatedEmpleados() | filter:search">
-                                <td>{{t.fecha | date:'dd/MM/yyyy'}}</td>
-                                <td>{{t.tipotrans}}</td>
-                                <td>{{t.numero}}</td>
-                                <td ng-show="params.ver == 1">{{t.numban}}</td>
-                                <td style="text-align: right;">{{t.debito | number:2}}</td>
-                                <td style="text-align: right;">{{t.credito | number:2}}</td>
-                                <td>{{t.beneficiario}}</td>
-                                <td ng-show="params.ver == 1">{{t.concilia | date: 'dd/MM/yyyy'}}</td>
-                                <td style="text-align: center" ng-show="params.ver == 1">
-                                    <input type="checkbox" ng-model="t.conciliar" ng-true-value="1"
-                                        ng-false-value="0" />
-                                </td>
-                                <td ng-show="params.ver == 2" style="text-align: center;">
-                                    <button class="btn btn-default btn-sm" type="button"
-                                        title="Buscar posibles documentos"
-                                        ng-click="verPosiblesDoc(t.idbanco, t.numero, t.monto, t.tipotrans)">
-                                        <i class="fi fi-sr-assessment"></i> Ver documentos
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="9">
-                                    <div class="pull-right">
-                                        <button class="btn btn-sm btn-default" ng-click="setPage(currentPage - 1)"
-                                            ng-disabled="currentPage == 1">Anterior</button>
-                                        <span>Página {{currentPage}} de {{totalPages}}</span>
-                                        <button class="btn btn-sm btn-default" ng-click="setPage(currentPage + 1)"
-                                            ng-disabled="currentPage == totalPages">Siguiente</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="9">
-                                    <div class="btn-group btn-group-justified" ng-show="params.ver == 1">
-                                        <div class="btn-group" role="group">
-                                            <button type="button" class="btn btn-success"
-                                                title="Aceptar conciliaci&oacute;n" ng-click="aceptarAutomatico()">
-                                                <i class="fi fi-rr-check"></i> Aceptar conciliaci&oacute;n
-                                            </button>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="9">
-                                    <div class="btn-group btn-group-justified" ng-show="params.ver == 1">
-                                        <div class="btn-group" role="group">
-                                            <button type="button" class="btn btn-danger" title="Cancelar"
-                                                ng-click="cancelarAutomatico()">
-                                                <i class="fi fi-rr-cross"></i> Cancelar
-                                            </button>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
                 </div>
             </div>
-        </div>
-    </div>
-    <script type="text/ng-template" id="modalPosibles.html">
+            <script type="text/ng-template" id="modalPosibles.html">
         <div class="modal-header">
             <h3 class="modal-title">Lista de posibles transacci&oacute;nes</h3>            
         </div>
@@ -315,4 +333,4 @@
             <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
         </div>
     </script>
-</div>
+        </div>

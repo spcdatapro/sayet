@@ -2,8 +2,8 @@
 
     var conciliactrl = angular.module('cpm.conciliactrl', ['cpm.tranbacsrvc']);
 
-    conciliactrl.controller('conciliaCtrl', ['$scope', 'tranBancSrvc', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'DTOptionsBuilder', '$interval', 'toaster', 'tipoMovTranBanSrvc', '$uibModal', 'jsReportSrvc', '$window',
-        function ($scope, tranBancSrvc, authSrvc, bancoSrvc, empresaSrvc, DTOptionsBuilder, $interval, toaster, tipoMovTranBanSrvc, $uibModal, jsReportSrvc, $window) {
+    conciliactrl.controller('conciliaCtrl', ['$scope', 'tranBancSrvc', 'authSrvc', 'bancoSrvc', 'empresaSrvc', 'DTOptionsBuilder', '$interval', 'toaster', 'tipoMovTranBanSrvc', '$uibModal', 'jsReportSrvc', '$window', '$http', '$q',
+        function ($scope, tranBancSrvc, authSrvc, bancoSrvc, empresaSrvc, DTOptionsBuilder, $interval, toaster, tipoMovTranBanSrvc, $uibModal, jsReportSrvc, $window, $http, $q) {
 
             $scope.laEmpresa = {};
             $scope.lasEmpresas = [];
@@ -178,6 +178,45 @@
                 jsReportSrvc.getPDFReport('Hysnac8leg', params).then(function (pdf) { $window.open(pdf); });
             }
 
+            $scope.imprimirNota = () => {
+                let aimprimir = [];
+                $scope.trans.forEach(tran => {
+                    if (tran.conciliar == 1) {
+                        aimprimir.push(tran);
+                    }
+                });
+                // $scope.trans.forEach(tran => {
+                // if (tran.conciliar == 1) {
+                const url = window.location.origin + ':5489/api/report';
+                let props = {}, file, formData = new FormData();
+
+                const promises = aimprimir.map(tran => {
+                    props = { 'template': { 'shortid': 'ryTzo2NGge' }, 'data': { idnota: tran.id } };
+                    return $http.post(url, props, { responseType: 'arraybuffer' });
+                });
+                $q.all(promises).then((respuestas) => {
+                    for (let i = 0; i < aimprimir.length; i++) {
+                        file = new Blob([respuestas[i].data], { type: 'application/pdf' });
+                        formData.append(`OT_${+aimprimir[i].id}`, file);
+                    }
+
+                    $.ajax({
+                        url: "php/rptotgroup.php",
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: () => { },
+                        error: () => console.log("Se produjo un error al generar la impresión de OTs...")
+                    }).done(() => {
+                        const urlpdf = window.location.origin + '/sayet/php/pdfgenerator/OTs.pdf';
+                        $window.open(urlpdf);
+                    });
+                });
+                // }
+                // });
+            }
+
             $scope.$watch('selTodos', function (newVal, oldVal) {
                 if (newVal != oldVal) {
                     $scope.trans.forEach(f => f.conciliar = +newVal);
@@ -239,27 +278,27 @@
                 }
             }
 
-                $scope.verPosiblesDoc = (idbanco, numero, monto, tipo) => {
-                    $uibModal.open({
-                        animation: true,
-                        templateUrl: 'modalPosibles.html',
-                        controller: 'ModalPosiblesCtrl',
-                        resolve: {
-                            documento: () => ({ idbanco, numero, monto, tipo })
-                        }
-                    }).result.then(function (data) {
-                        $scope.cargando = true;
-                        console.log(data);
-                        empServicios.nuevoEmpleado(data).then(d => {
-                            toaster.pop({ type: d.tipo, title: 'Nuevo empleado', body: d.mensaje, timeout: 10000 });
-                            $scope.cargando = false;
-                            $scope.buscar(1);
-                            $scope.getEmpleado(d.id);
-                        })
+            $scope.verPosiblesDoc = (idbanco, numero, monto, tipo) => {
+                $uibModal.open({
+                    animation: true,
+                    templateUrl: 'modalPosibles.html',
+                    controller: 'ModalPosiblesCtrl',
+                    resolve: {
+                        documento: () => ({ idbanco, numero, monto, tipo })
+                    }
+                }).result.then(function (data) {
+                    $scope.cargando = true;
+                    console.log(data);
+                    empServicios.nuevoEmpleado(data).then(d => {
+                        toaster.pop({ type: d.tipo, title: 'Nuevo empleado', body: d.mensaje, timeout: 10000 });
+                        $scope.cargando = false;
+                        $scope.buscar(1);
+                        $scope.getEmpleado(d.id);
                     })
-                }
+                })
+            }
 
-            }]);
+        }]);
 
     //------------------------------------------------------------------------------------------------------------------------------------------------//
     conciliactrl.controller('ModalPosiblesCtrl', ['$scope', '$uibModalInstance', 'documento', 'tranBancSrvc', function ($scope, $uibModalInstance, documento, tranBancSrvc) {
