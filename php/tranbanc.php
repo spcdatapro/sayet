@@ -1247,6 +1247,8 @@ $app->get('/lstposibledocs/:idbanco/:numero/:monto/:tipo', function ($idbanco, $
 $app->post('/prntnotas', function () {
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    date_default_timezone_set("America/Guatemala");
+
     $query = "SELECT 
                 a.d_estado_cuenta AS id,
                 a.referencia AS numero,
@@ -1254,7 +1256,7 @@ $app->post('/prntnotas', function () {
                         IF(tipo_transaccion = 'C',
                             'Crédito',
                             'Débito')) AS concepto,
-                a.fecha,
+                DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
                 'Monetaria' AS tipo_cuenta,
                 a.descripcion,
                 IF(tipo_transaccion = 'C',
@@ -1275,6 +1277,11 @@ $app->post('/prntnotas', function () {
             WHERE
                 a.d_estado_cuenta = $d->idnota";
     $datos = $db->getQuery($query)[0];
+
+
+    $fecha = new DateTime();
+    $datos->estampa = $fecha->format('d-m-Y H:i');
+
     print json_encode([ 'nota' => $datos ]);
 });
 
