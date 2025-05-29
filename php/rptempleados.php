@@ -140,11 +140,11 @@ $app->post('/altasbajas', function(){
                     LEFT JOIN
                 plnpuesto d ON a.idplnpuesto = d.id
             WHERE  1 = 1 ";
-    $query.= $d->tipo == 1 ? "AND a.ingreso >= '$d->fdelstr' AND a.ingreso <= '$d->falstr' " :
-    ($d->tipo == 2 ? "AND a.baja >= '$d->fdelstr' AND a.baja <= '$d->falstr' " : 
-    "AND (a.ingreso >= '$d->fdelstr' AND a.ingreso <= '$d->falstr' OR a.baja >= '$d->fdelstr' AND a.baja <= '$d->falstr') ");
-    $query.= isset($d->idempresa) ? "AND a.idempresadebito = $d->idempresa " : "";
-    $query.= isset($d->idproyecto) ? "AND a.idproyecto = $d->idproyecto " : "";
+    $query.= $d->tipo == 1 ? "AND f.ingreso >= '$d->fdelstr' AND f.ingreso <= '$d->falstr' " :
+    ($d->tipo == 2 ? "AND f.baja >= '$d->fdelstr' AND f.baja <= '$d->falstr' " : 
+    "AND (f.ingreso >= '$d->fdelstr' AND f.ingreso <= '$d->falstr' OR f.baja >= '$d->fdelstr' AND f.baja <= '$d->falstr') ");
+    $query.= isset($d->idempresa) ? "AND f.idempresadebito = $d->idempresa " : "";
+    $query.= isset($d->idproyecto) ? "AND f.idproyecto = $d->idproyecto " : "";
     $query.=   "ORDER BY 4 , 5 ,"; 
     $query.= $d->agrupar == 2 ? " 6 , 7" : " 7";
     $data = $db->getQuery($query);
