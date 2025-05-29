@@ -263,7 +263,7 @@
             $scope.getLstTranAutomatica = () => {
                 if ($scope.todas.length > 0) {
                     $scope.trans = [];
-                    tranBancSrvc.traerDocumentos({ver: $scope.params.ver}).then(d => {
+                    tranBancSrvc.traerDocumentos({ver: $scope.params.ver, reporte: false}).then(d => {
                         $scope.todas = d.bancos;
                         $scope.trans = d.bancos;
                         if ($scope.params.ver == '1') {
