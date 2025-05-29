@@ -20,7 +20,7 @@
             $scope.bancos = [];
             $scope.selTodos = 0;
             $scope.tipotrans = [];
-            $scope.params = { tipos: [], ver: '1' }
+            $scope.params = { tipos: [], ver: '1', reporte: false }
             var idusuario = undefined;
             // para paginar
             $scope.currentPage = 1; // Página actual
@@ -123,29 +123,52 @@
             };
 
             // automatico
-
             $scope.buscarDocumentos = () => {
                 $scope.cargando = true;
+
+                estatusCarga(40);
+
+                // primero nos concetcamos al banco, para traer los documentos
+                tranBancSrvc.concectarBanco()
+                    .then(d => {
+                        $scope.progress = 40;
+                        toaster.pop({ type: d.tipo, title: 'Conexion a banco', body: d.mensaje, timeout: 10000 })
+
+                        if (d.tipo === 'success') {
+                            estatusCarga(80);
+
+                            // si la conxeion es exitosa, entonces buscamos documetos para conciliar
+                            tranBancSrvc.conciliacionAutomatica()
+                                .then(d => {
+                                    $scope.progress = 80;
+
+                                    estatusCarga(100);
+
+                                    if (d) {
+                                        toaster.pop({ type: d.tipo, title: 'Documentos a conciliar', body: d.mensaje, timeout: 10000 })
+                                    }
+                                    // independientemente si encontro o no buscamos traemos los documenotos
+                                    tranBancSrvc.traerDocumentos($scope.params)
+                                        .then(d => {
+                                            $scope.progress = 100;
+                                            $scope.cargando = false;
+
+                                            $scope.todas = d.bancos;
+                                            $scope.trans = d.bancos;
+                                        })
+                                })
+                        }
+                    })
+            }
+
+            function estatusCarga(limite) {
                 $interval(() => {
-                    if ($scope.progress < 99) {
+                    if ($scope.progress < limite) {
                         $scope.progress += 1;
                     } else {
                         return;
                     }
                 }, 500)
-
-                tranBancSrvc.conciliacionAutomatica().then(d => {
-                    $scope.progress = d.porcentaje;
-                    $scope.cargando = false;
-                    toaster.pop({ type: d.tipo, title: 'Conciliación automática', body: d.mensaje, timeout: 10000 })
-
-                    if (d.caso === 2) {
-                        automaticaDos();
-                    } else if (d.caso === 3) {
-                        $scope.todas = d.trans;
-                        $scope.trans = d.trans;
-                    }
-                });
             }
 
             $scope.aceptarAutomatico = () => {
@@ -157,8 +180,6 @@
                         aconciliar.push(tran);
                     }
                 });
-
-                console.log(aconciliar);
 
                 tranBancSrvc.editRow(aconciliar, 'ca').then(d => {
                     toaster.pop({ type: 'success', title: 'Conciliación automática', body: 'Documentos conciliados exitosamente', timeout: 10000 });
@@ -223,56 +244,104 @@
                 }
             });
 
-            $scope.$watch('params.idbanco', function (newVal) {
-                if (newVal > 0) {
-                    idbanco = newVal.toString();
-                    if ($scope.params.tipos.length > 0) {
-                        $scope.trans = $scope.todas.filter(tran => tran.idbanco === idbanco && $scope.params.tipos.includes(tran.idtipotrans));
-                    } else {
-                        $scope.trans = $scope.todas.filter(tran => tran.idbanco.toString() === idbanco);
-                    }
-                } else {
-                    if ($scope.params.tipos.length > 0) {
-                        $scope.trans = $scope.todas.filter(tran => $scope.params.tipos.includes(tran.idtipotrans));
-                    } else {
-                        $scope.trans = $scope.todas;
-                    }
-                }
-                $scope.currentPage = 1;
-            })
+            $scope.$watchGroup(['params.idbanco', 'params.tipos', 'params.del', 'params.al'], function (newVals) {
+                let [idbanco, tipos, del, al] = newVals;
 
-            $scope.$watch('params.tipos', function (newVal) {
-                if (newVal.length > 0) {
-                    if ($scope.params.idbanco > 0) {
-                        idbanco = $scope.params.idbanco.toString();
-                        $scope.trans = $scope.todas.filter(tran => tran.idbanco === idbanco && $scope.params.tipos.includes(tran.idtipotrans));
-                    } else {
-                        $scope.trans = $scope.todas.filter(tran => $scope.params.tipos.includes(tran.idtipotrans));
-                    }
-                } else {
-                    if ($scope.params.idbanco > 0) {
-                        idbanco = $scope.params.idbanco.toString();
-                        $scope.trans = $scope.todas.filter(tran => tran.idbanco.toString() === idbanco);
-                    } else {
-                        $scope.trans = $scope.todas;
-                    }
-                }
-                $scope.currentPage = 1;
-            })
+                $scope.trans = $scope.todas.filter(tran => {
+                    let fecha = tran.concilia ? moment(tran.concilia).toDate() : null;
+                    let afterDel = del ? fecha >= del : true;
+                    let beforeAl = al ? fecha <= al : true;
+                    let matchesBanco = idbanco > 0 ? tran.idempresa.toString() === idbanco.toString() : true;
+                    let matchesTipos = tipos.length > 0 ? tipos.includes(tran.idtipotrans) : true;
 
-            $scope.getLstTranAutomatica = (ver, del, al) => {
+                    return afterDel && beforeAl && matchesBanco && matchesTipos;
+                });
+
+                $scope.currentPage = 1;
+            });
+
+            // $scope.$watch('params.idbanco', function (newVal) {
+            //     if (newVal > 0) {
+            //         idbanco = newVal.toString();
+            //         if ($scope.params.tipos.length > 0) {
+            //             $scope.trans = $scope.todas.filter(tran => tran.idempresa === idbanco && $scope.params.tipos.includes(tran.idtipotrans));
+            //         } else {
+            //             $scope.trans = $scope.todas.filter(tran => tran.idempresa.toString() === idbanco);
+            //         }
+            //     } else {
+            //         if ($scope.params.tipos.length > 0) {
+            //             $scope.trans = $scope.todas.filter(tran => $scope.params.tipos.includes(tran.idtipotrans));
+            //         } else {
+            //             $scope.trans = $scope.todas;
+            //         }
+            //     }
+            //     $scope.currentPage = 1;
+            // })
+
+            // $scope.$watch('params.tipos', function (newVal) {
+            //     if (newVal.length > 0) {
+            //         if ($scope.params.idbanco > 0) {
+            //             idbanco = $scope.params.idbanco.toString();
+            //             $scope.trans = $scope.todas.filter(tran => tran.idempresa === idbanco && $scope.params.tipos.includes(tran.idtipotrans));
+            //         } else {
+            //             $scope.trans = $scope.todas.filter(tran => $scope.params.tipos.includes(tran.idtipotrans));
+            //         }
+            //     } else {
+            //         if ($scope.params.idbanco > 0) {
+            //             idbanco = $scope.params.idbanco.toString();
+            //             $scope.trans = $scope.todas.filter(tran => tran.idempresa.toString() === idbanco);
+            //         } else {
+            //             $scope.trans = $scope.todas;
+            //         }
+            //     }
+            //     $scope.currentPage = 1;
+            // })
+
+            // $scope.$watchGroup(['params.del', 'params.al'], function (newVals) {
+            //     const [del, al] = newVals;
+            //     let delstr = del ? moment(del).format('YYYY-MM-DD') : null;
+            //     let alstr = al ? moment(al).format('YYYY-MM-DD') : null;
+
+            //     $scope.trans = $scope.todas.filter(tran => {
+            //         let fecha = tran.fecha ? moment(tran.fecha).format('YYYY-MM-DD') : null;
+            //         let afterDel = delstr ? fecha >= delstr : true;
+            //         let beforeAl = alstr ? fecha <= alstr : true;
+            //         return afterDel && beforeAl;
+            //     });
+
+            //     // Aplicar también los otros filtros si están activos
+            //     if ($scope.params.idbanco > 0) {
+            //         let idbanco = $scope.params.idbanco.toString();
+            //         $scope.trans = $scope.trans.filter(tran => tran.idempresa.toString() === idbanco);
+            //     }
+            //     if ($scope.params.tipos && $scope.params.tipos.length > 0) {
+            //         $scope.trans = $scope.trans.filter(tran => $scope.params.tipos.includes(tran.idtipotrans));
+            //     }
+            //     $scope.currentPage = 1;
+            // });
+
+            $scope.getLstTranAutomatica = () => {
                 if ($scope.todas.length > 0) {
-                    delstr = del ? moment(del).format('YYYY-MM-DD') : 0;
-                    alstr = al ? moment(al).format('YYYY-MM-DD') : 0;
-                    tranBancSrvc.datosAutomatica(ver, delstr, alstr).then(d => {
-                        $scope.todas = d;
-                        $scope.tras = d;
-                        $scope.params = { tipos: [], ver: ver, del: del, al: al }
-                        if (ver == '1') {
+                    $scope.trans = [];
+                    tranBancSrvc.traerDocumentos($scope.params).then(d => {
+                        $scope.todas = d.bancos;
+                        $scope.trans = d.bancos;
+                        if ($scope.params.ver == '1') {
                             tipoMovTranBanSrvc.lstTiposMovTB().then(function (d) { $scope.tipotrans = d; });
                         } else {
                             $scope.tipotrans = [{ id: '1', abreviadesc: '(C) Créditos', abreviatura: 'C' }, { id: '2', abreviadesc: '(D) Débitos', abreviatura: 'D' }];
                         }
+
+                        // Volver a aplicar los filtros de fecha, banco y tipo
+                        let { idbanco, tipos, del, al } = $scope.params;
+                        $scope.trans = $scope.todas.filter(tran => {
+                            let fecha = tran.concilia ? moment(tran.concilia).toDate() : null;
+                            let afterDel = del ? fecha >= del : true;
+                            let beforeAl = al ? fecha <= al : true;
+                            let matchesBanco = idbanco > 0 ? tran.idempresa.toString() === idbanco.toString() : true;
+                            let matchesTipos = tipos.length > 0 ? tipos.includes(tran.idtipotrans) : true;
+                            return afterDel && beforeAl && matchesBanco && matchesTipos;
+                        });
                     })
                     $scope.currentPage = 1;
                 }
@@ -289,12 +358,6 @@
                 }).result.then(function (data) {
                     $scope.cargando = true;
                     console.log(data);
-                    empServicios.nuevoEmpleado(data).then(d => {
-                        toaster.pop({ type: d.tipo, title: 'Nuevo empleado', body: d.mensaje, timeout: 10000 });
-                        $scope.cargando = false;
-                        $scope.buscar(1);
-                        $scope.getEmpleado(d.id);
-                    })
                 })
             }
 

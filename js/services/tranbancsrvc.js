@@ -1,69 +1,69 @@
-(function(){
+(function () {
 
     var tranbacsrvc = angular.module('cpm.tranbacsrvc', ['cpm.comunsrvc']);
 
-    tranbacsrvc.factory('tranBancSrvc', ['comunFact', function(comunFact){
+    tranbacsrvc.factory('tranBancSrvc', ['comunFact', function (comunFact) {
         var urlBase = 'php/tranbanc.php';
 
         return {
-            lstTransacciones: function(idbanco){
+            lstTransacciones: function (idbanco) {
                 return comunFact.doGET(urlBase + '/lsttranbanc/' + idbanco);
             },
-            lstTranFiltr: function(obj){
+            lstTranFiltr: function (obj) {
                 return comunFact.doPOST(urlBase + '/lsttran', obj);
             },
-            getTransaccion: function(idtran){
+            getTransaccion: function (idtran) {
                 return comunFact.doGET(urlBase + '/gettran/' + idtran);
             },
-            lstBeneficiarios: function(){
+            lstBeneficiarios: function () {
                 return comunFact.doGET(urlBase + '/lstbeneficiarios');
             },
-            lstFactCompra: function(idproveedor, idtranban){
+            lstFactCompra: function (idproveedor, idtranban) {
                 return comunFact.doGET(urlBase + '/factcomp/' + idproveedor + '/' + idtranban);
             },
-            lstReembolsos: function(idbene){
+            lstReembolsos: function (idbene) {
                 return comunFact.doGET(urlBase + '/reem/' + idbene);
             },
             getInfoToPrint: (idtran, idusr) => comunFact.doGET(`${urlBase}/prntinfochq/${idtran}/${idusr}`),
             getMontoOt: (idot) => comunFact.doGET(`${urlBase}/montoots/${idot}`),
             getBatchInfoToPrint: (idbanco, del, al, idusr) => comunFact.doGET(`${urlBase}/prntchqcont/${idbanco}/${del}/${al}/${idusr}`),
-            editRow: function(obj, op){
+            editRow: function (obj, op) {
                 return comunFact.doPOST(urlBase + '/' + op, obj);
             },
-            lstDocsSoporte: function(idtran){
+            lstDocsSoporte: function (idtran) {
                 return comunFact.doGET(urlBase + '/lstdocsop/' + idtran);
             },
-            getDocSoporte: function(iddocsop){
+            getDocSoporte: function (iddocsop) {
                 return comunFact.doGET(urlBase + '/getdocsop/' + iddocsop);
             },
-            getSumDocsSop: function(idtran){
+            getSumDocsSop: function (idtran) {
                 return comunFact.doGET(urlBase + '/getsumdocssop/' + idtran);
             },
-            lstCompras: function(idtran){
+            lstCompras: function (idtran) {
                 return comunFact.doGET(urlBase + '/lstcompras/' + idtran);
             },
-            rptcorrch: function(obj){
+            rptcorrch: function (obj) {
                 return comunFact.doPOST(urlBase + '/rptcorrch', obj);
             },
-            rptdocscircula: function(obj){
+            rptdocscircula: function (obj) {
                 return comunFact.doPOST(urlBase + '/rptdocscircula', obj);
             },
-            lstCorrelativos: function(ndel,nal,idbanco){
+            lstCorrelativos: function (ndel, nal, idbanco) {
                 return comunFact.doGET(urlBase + '/correlativodelal/' + ndel + '/' + nal + '/' + idbanco);
             },
-            lstAConciliar: function(idbanco, afecha, qver){
+            lstAConciliar: function (idbanco, afecha, qver) {
                 return comunFact.doGET(urlBase + '/aconciliar/' + idbanco + '/' + afecha + '/' + qver);
             },
-            imprimir: function(idtran){
+            imprimir: function (idtran) {
                 return comunFact.doGET(urlBase + '/imprimir/' + idtran);
             },
-            existe: function(obj){
+            existe: function (obj) {
                 return comunFact.doPOST(urlBase + '/existe', obj);
             },
-            calcIsr: function(obj){
+            calcIsr: function (obj) {
                 return comunFact.doPOST(urlBase + '/calcisr', obj);
             },
-            lstProveedores: function(){
+            lstProveedores: function () {
                 return comunFact.doGET(urlBase + '/lstproveedores');
             },
             revisarExistencia: function (numero, idbanco, tipotrans) {
@@ -72,11 +72,15 @@
             revertir: (idtranban) => {
                 return comunFact.doGET(`${urlBase}/revertir/${idtranban}`);
             },
+            // documentos del banco 
+            concectarBanco: function () {
+                return comunFact.doPOST(urlBase + '/conectar_banco');
+            },
             conciliacionAutomatica: function () {
                 return comunFact.doPOST(urlBase + '/conciliacion_automatica');
             },
-            datosAutomatica: function (ver, del, al) {
-                return comunFact.doGET(urlBase + '/datos_automatica' + '/' + ver + '/' + del + '/' + al);
+            traerDocumentos: function (obj) {
+                return comunFact.doPOST(urlBase + '/traer_documentos', obj);
             },
             lstPosiblesDoc: function (idbanco, numero, monto, tipo) {
                 return comunFact.doGET(urlBase + '/lstposibledocs/' + idbanco + '/' + numero + '/' + monto + '/' + tipo);

@@ -131,8 +131,7 @@
                             <div class="form-group">
                                 <div class="form-group">
                                     <label class="control-label">Al:</label>
-                                    <input type="date" name="fchAl" id="fchAl" class="form-control" ng-model="params.al"
-                                        ng-blur="getLstTranAutomatica(params.ver, params.del, params.al)"">
+                                    <input type="date" name="fchAl" id="fchAl" class="form-control" ng-model="params.al">
                                 </div>
                             </div>
                         </div>
@@ -141,7 +140,7 @@
                                         <div class="form-group">
                                             <label class="control-label">Ver:</label>
                                             <select name="selVer" id="selVer" ng-model="params.ver" class="form-control"
-                                                ng-change="getLstTranAutomatica(params.ver, params.del, params.al)">
+                                                ng-change="getLstTranAutomatica()">
                                                 <option value="1">Conciliados</option>
                                                 <option value="2">Sin conciliar</option>
                                                 <option value="3">Todos</option>
@@ -190,67 +189,53 @@
                                 </div>
                             </div>
                             <hr />
-                            <table class="table table-responsive table-hover table-condensed"
-                                ng-show="todas.length > 0">
+                            <!-- tabla para ver conciliados -->
+                            <table class="table table-responsive table-condensed" ng-show="params.ver == 1">
                                 <caption>
                                     <div class="input-group">
                                         <input type="text" class="form-control input-sm"
                                             placeholder="Buscar documento..." ng-model="search.$" />
                                         <span class="input-group-btn">
                                             <button type="button" title="Descargar reporte"
-                                                class="btn btn-primary btn-sm" ng-click="imprimir(params)">
-                                                <i class="fi fi-rr-file-download"></i> Descargar
+                                                class="btn btn-danger btn-sm" ng-click="imprimir(params)">
+                                                <i class="fa fa-file-pdf-o"></i>
                                             </button>
-                                            <button type="button" title="Descargar notas" ng-show="params.ver == 3"
-                                                class="btn btn-default btn-sm" ng-click="imprimirNota()">
-                                                <i class="fi fi-tr-money-check"></i> Descargar nota
+                                            <button type="button" title="Descargar excel" class="btn btn-success btn-sm"
+                                                ng-click="imprimirXML(params)">
+                                                <i class="fa fa-file-excel-o"></i>
                                             </button>
                                         </span>
                                     </div>
                                 </caption>
                                 <thead>
                                     <tr>
-                                        <th ng-show="params.ver == 1">Fecha operado</th>
-                                        <th ng-show="params.ver != 1">Fecha banco</th>
+                                        <th>Fecha banco</th>
                                         <th>Tipo</th>
-                                        <th ng-show="params.ver == 1">N&uacute;mero Interno</th>
-                                        <th>N&uacute;mero Banco</th>
+                                        <th>No. Interno</th>
+                                        <th>No. Banco</th>
                                         <th style="text-align: right;">D&eacute;bito</th>
                                         <th style="text-align: right;">Cr&eacute;dito</th>
-                                        <th ng-show="params.ver == 1">Beneficiario</th>
-                                        <th ng-show="params.ver != 1">Concepto</th>
-                                        <th ng-show="params.ver == 1">Fecha banco</th>
-                                        <th ng-show="params.ver == 1">
+                                        <th>Beneficiario</th>
+                                        <th>Fecha operado</th>
+                                        <th>
                                             <span>Conciliar <input type="checkbox" ng-model="selTodos" ng-true-value="1"
                                                     ng-false-value="0" ng-disabled="todas.length == 0"></span>
                                         </th>
-                                        <th ng-show="params.ver == 3">
-                                            <span>Descargar<input type="checkbox" ng-model="selTodos" ng-true-value="1"
-                                                    ng-false-value="0" ng-disabled="todas.length == 0"></span>
-                                        </th>
-                                        <th ng-show="params.ver == 2">Posibles documentos</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr ng-repeat="t in paginatedEmpleados() | filter:search">
-                                        <td>{{t.fecha | date:'dd/MM/yyyy'}}</td>
+                                        <td>{{t.concilia | date:'dd/MM/yyyy'}}</td>
                                         <td>{{t.tipotrans}}</td>
-                                        <td>{{t.numero}}</td>
-                                        <td ng-show="params.ver == 1">{{t.numban}}</td>
+                                        <td>{{t.numero_tran}}</td>
+                                        <td>{{t.referencia}}</td>
                                         <td style="text-align: right;">{{t.debito | number:2}}</td>
                                         <td style="text-align: right;">{{t.credito | number:2}}</td>
                                         <td>{{t.beneficiario}}</td>
-                                        <td ng-show="params.ver == 1">{{t.concilia | date: 'dd/MM/yyyy'}}</td>
+                                        <td>{{t.fecha | date: 'dd/MM/yyyy'}}</td>
                                         <td style="text-align: center">
                                             <input type="checkbox" ng-model="t.conciliar" ng-true-value="1"
                                                 ng-false-value="0" />
-                                        </td>
-                                        <td ng-show="params.ver == 2" style="text-align: center;">
-                                            <button class="btn btn-default btn-sm" type="button"
-                                                title="Buscar posibles documentos"
-                                                ng-click="verPosiblesDoc(t.idbanco, t.numero, t.monto, t.tipotrans)">
-                                                <i class="fi fi-sr-assessment"></i> Ver documentos
-                                            </button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -270,7 +255,7 @@
                                     </tr>
                                     <tr>
                                         <td colspan="9">
-                                            <div class="btn-group btn-group-justified" ng-show="params.ver == 1">
+                                            <div class="btn-group btn-group-justified">
                                                 <div class="btn-group" role="group">
                                                     <button type="button" class="btn btn-success"
                                                         title="Aceptar conciliaci&oacute;n"
@@ -281,13 +266,137 @@
                                             </div>
                                         </td>
                                     </tr>
+                                </tfoot>
+                            </table>
+                            <!-- tabla para ver sin conciliar -->
+                            <table class="table table-responsive table-condensed" ng-show="params.ver == 2">
+                                <caption>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control input-sm"
+                                            placeholder="Buscar documento..." ng-model="search.$" />
+                                        <span class="input-group-btn">
+                                            <button type="button" title="Descargar reporte"
+                                                class="btn btn-danger btn-sm" ng-click="imprimir(params)">
+                                                <i class="fa fa-file-pdf-o"></i>
+                                            </button>
+                                            <button type="button" title="Descargar excel" class="btn btn-success btn-sm"
+                                                ng-click="imprimirXML(params)">
+                                                <i class="fa fa-file-excel-o"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </caption>
+                                <thead>
                                     <tr>
-                                        <td colspan="9">
-                                            <div class="btn-group btn-group-justified" ng-show="params.ver == 1">
+                                        <th>Fecha banco</th>
+                                        <th>Tipo</th>
+                                        <th>N&uacute;mero Banco</th>
+                                        <th style="text-align: right;">D&eacute;bito</th>
+                                        <th style="text-align: right;">Cr&eacute;dito</th>
+                                        <th>Concepto</th>
+                                        <th>Posibles documentos</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="t in paginatedEmpleados() | filter:search">
+                                        <td>{{t.concilia | date:'dd/MM/yyyy'}}</td>
+                                        <td>{{t.tipotrans}}</td>
+                                        <td>{{t.numero_tran}}</td>
+                                        <td style="text-align: right;">{{t.debito | number:2}}</td>
+                                        <td style="text-align: right;">{{t.credito | number:2}}</td>
+                                        <td>{{t.beneficiario}}</td>
+                                        <td ng-show="params.ver == 2" style="text-align: center;">
+                                            <button class="btn btn-default btn-sm" type="button"
+                                                title="Buscar posibles documentos"
+                                                ng-click="verPosiblesDoc(t.idbanco, t.numero, t.monto, t.tipotrans)">
+                                                <i class="fi fi-sr-assessment"></i> Ver documentos
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="7">
+                                            <div class="pull-right">
+                                                <button class="btn btn-sm btn-default"
+                                                    ng-click="setPage(currentPage - 1)"
+                                                    ng-disabled="currentPage == 1">Anterior</button>
+                                                <span>Página {{currentPage}} de {{totalPages}}</span>
+                                                <button class="btn btn-sm btn-default"
+                                                    ng-click="setPage(currentPage + 1)"
+                                                    ng-disabled="currentPage == totalPages">Siguiente</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            <!-- tabla para ver todos -->
+                            <table class="table table-responsive table-condensed" ng-show="params.ver == 3">
+                                <caption>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control input-sm"
+                                            placeholder="Buscar documento..." ng-model="search.$" />
+                                        <span class="input-group-btn">
+                                            <button type="button" title="Descargar reporte"
+                                                class="btn btn-danger btn-sm" ng-click="imprimir(params)">
+                                                <i class="fa fa-file-pdf-o"></i>
+                                            </button>
+                                            <button type="button" title="Descargar excel" class="btn btn-success btn-sm"
+                                                ng-click="imprimirXML(params)">
+                                                <i class="fa fa-file-excel-o"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Fecha banco</th>
+                                        <th>Tipo</th>
+                                        <th>N&uacute;mero Banco</th>
+                                        <th style="text-align: right;">D&eacute;bito</th>
+                                        <th style="text-align: right;">Cr&eacute;dito</th>
+                                        <th>Concepto</th>
+                                        <th>
+                                            <span>Descargar<input type="checkbox" ng-model="selTodos" ng-true-value="1"
+                                                    ng-false-value="0" ng-disabled="todas.length == 0"></span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="t in paginatedEmpleados() | filter:search">
+                                        <td>{{t.concilia | date:'dd/MM/yyyy'}}</td>
+                                        <td>{{t.tipotrans}}</td>
+                                        <td>{{t.numero_tran}}</td>
+                                        <td style="text-align: right;">{{t.debito | number:2}}</td>
+                                        <td style="text-align: right;">{{t.credito | number:2}}</td>
+                                        <td>{{t.beneficiario}}</td>
+                                        <td style="text-align: center">
+                                            <input type="checkbox" ng-model="t.conciliar" ng-true-value="1"
+                                                ng-false-value="0" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="7">
+                                            <div class="pull-right">
+                                                <button class="btn btn-sm btn-default"
+                                                    ng-click="setPage(currentPage - 1)"
+                                                    ng-disabled="currentPage == 1">Anterior</button>
+                                                <span>Página {{currentPage}} de {{totalPages}}</span>
+                                                <button class="btn btn-sm btn-default"
+                                                    ng-click="setPage(currentPage + 1)"
+                                                    ng-disabled="currentPage == totalPages">Siguiente</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="7">
+                                            <div class="btn-group btn-group-justified">
                                                 <div class="btn-group" role="group">
-                                                    <button type="button" class="btn btn-danger" title="Cancelar"
-                                                        ng-click="cancelarAutomatico()">
-                                                        <i class="fi fi-rr-cross"></i> Cancelar
+                                                    <button type="button" title="Descargar notas"
+                                                        class="btn btn-primary" ng-click="imprimirNota()">
+                                                        <i class="fi fi-tr-money-check"></i> Descargar nota
                                                     </button>
                                                 </div>
                                             </div>

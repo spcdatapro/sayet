@@ -1057,174 +1057,141 @@ $app->get('/revertir/:idtranban', function($idtranban) {
     }
 });
 
-$app->post('/conciliacion_automatica', function () use ($app) {
+$app->post('/conectar_banco', function () use ($app) {
     $db = new dbcpm();
 
     $dest = new SFTPConnInfo('localhost', 222, 'aponce', 'y%YgW$Qk3x#a59Su', '/');
     $src = new SFTPConnInfo('190.242.184.121', 22, 'sftpSayet', 'S3Pd25S@y3t', '/');
     $conciliacion = new ConciliacionAutomatica($src, $dest);
 
-    // $conciliacion->get_mt940(); // proceso uno 35
-    // $conciliacion->read_mt940(); //proceso dos 35
+    try {
+        // $conciliacion->get_mt940(); 
+        // $conciliacion->read_mt940();
+    } catch (Exception $e) {
+        print json_encode(['tipo' => 'error', 'mensaje' => 'Error en la conexión, favor comunicarse con IT: ' . $e->getMessage()]);
+        return;
+    }
 
-    $query = "SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idbanco, a.tipotrans, a.numero, b.referencia, a.monto AS debito, null AS credito, b.monto AS monto_real, c.idmoneda, a.fecha, 
-            b.fecha AS concilia, a.beneficiario, NULL AS numban, 1 AS idtipotrans FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
+    print json_encode(['tipo' => 'success', 'mensaje' => 'Archivos extraídos con éxito']);
+    return;
+});
+
+$app->post('/conciliacion_automatica', function () {
+    $db = new dbcpm();
+
+    $query = "SELECT a.id, b.d_estado_cuenta AS id_real FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
             INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'C' AND operado = 0 AND c.mt940 = d.cuenta
+            AND b.idtranban IS NULL
         UNION ALL 
             -- notas de debito
-            SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idbanco, a.tipotrans, a.numero, b.referencia, a.monto AS debito, NULL AS credito, b.monto AS monto_real, c.idmoneda, a.fecha, 
-            b.fecha AS concilia, a.beneficiario, a.numban, 4 AS idtipotrans FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto 
+            SELECT a.id, b.d_estado_cuenta AS id_real FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto 
             INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'B' AND operado = 0 AND c.mt940 = d.cuenta
+            AND b.idtranban IS NULL
         UNION ALL 
             -- notas de credito
-            SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idbanco, a.tipotrans, a.numero, b.referencia, NULL AS debito, a.monto AS credito, b.monto AS monto_real, c.idmoneda, a.fecha, 
-            b.fecha AS concilia, a.beneficiario, a.numban, 3 AS idtipotrans  FROM tranban a INNER JOIN d_estado_cuenta b ON (a.numban = b.referencia OR a.numero = b.referencia) AND b.monto = a.monto 
+            SELECT a.id, b.d_estado_cuenta AS id_real FROM tranban a INNER JOIN d_estado_cuenta b ON (a.numban = b.referencia OR a.numero = b.referencia) AND b.monto = a.monto 
             INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'R' AND operado = 0 AND c.mt940 = d.cuenta
+            AND b.idtranban IS NULL
         UNION ALL 
             -- depositos 
-            SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idbanco, a.tipotrans, a.numero, b.referencia, NULL AS debito, a.monto AS credito, b.monto AS monto_real, c.idmoneda, a.fecha, 
-            b.fecha AS concilia, a.beneficiario, NULL AS numban, 2 AS idtipotrans  FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
+            SELECT a.id, b.d_estado_cuenta AS id_real FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
             INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'D' AND operado = 0 AND c.mt940 = d.cuenta
-        ORDER BY 3, 10, 4, 5";
+            AND b.idtranban IS NULL";
     $match = $db->getQuery($query);
 
-    foreach ($match as $key => $value) {
-        $query = "UPDATE d_estado_cuenta SET idtranban = $value->id WHERE d_estado_cuenta = $value->id_real AND idtranban IS NULL";
-        $db->doQuery($query);
-    }
-
     $cuantos = count($match);
-    $caso = $cuantos > 0 ? 3 : 1;
+    if ($cuantos > 0) {
+        foreach ($match as $key => $value) {
+            $query = "UPDATE d_estado_cuenta SET idtranban = $value->id WHERE d_estado_cuenta = $value->id_real AND idtranban IS NULL";
+            $db->doQuery($query);
+        }
 
-    switch ($caso) {
-        case 1: 
-            print json_encode(['tipo' => 'warning', 'mensaje' => 'No se encontraron nuevos archivos, por favor intente más tarde.', 'porcentaje' => 100, 'caso' => 1]);
-            break;
-        case 2:
-            print json_encode(['tipo' => 'warning', 'mensaje' => 'No se encontraron documentos que concuerden con los del sistema.', 'porcentaje' => 100, 'caso' => 2]);
-            break;
-        case 3:
-            print json_encode(['tipo' => 'success', 'mensaje' => 'Se encontraron '. $cuantos .' documentos que concuerdan con los del sistema.', 'porcentaje' => 100, 'caso' => 3,
-            'trans' => $match]);
-            break;
-        case 4:
-            print json_encode(['tipo' => 'error', 'mensaje' => 'La conexion no fue existosa, favor comunicarse con IT.', 'porcentaje' => 100, 'caso' => 4]);
-            break;
+        print json_encode(['tipo' => 'success', 'mensaje' => "Se han encontrado $cuantos documentos para conciliar."]);
     }
+    return;
 });
 
-$app->get('/datos_automatica/:ver/:del/:al', function ($ver, $del, $al) {
-    $db = new dbcpm();
-    $d = json_decode(file_get_contents('php://input'));
-
-    if ($ver == 1) {
-        $query = "SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idbanco, a.tipotrans, a.numero, b.referencia, a.monto AS debito, NULL AS credito, b.monto AS monto_real, c.idmoneda, a.fecha, 
-                b.fecha AS concilia, a.beneficiario, NULL AS numban, 1 AS idtipotrans, b.tipo_transaccion FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
-                INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'C' AND operado = 0 AND c.mt940 = d.cuenta ";
-        $query.= $del > 0 && $al > 0 ? " AND b.fecha BETWEEN '$del' AND '$al'" : '';
-        $query.= "   UNION ALL 
-                -- notas de debito
-                SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idbanco, a.tipotrans, a.numero, b.referencia, a.monto AS debito, NULL AS credito, b.monto AS monto_real, c.idmoneda, a.fecha, 
-                b.fecha AS concilia, a.beneficiario, a.numban, 4 AS idtipotrans, b.tipo_transaccion FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto 
-                INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'B' AND operado = 0 AND c.mt940 = d.cuenta ";
-        $query.= $del > 0 && $al > 0 ? " AND b.fecha BETWEEN '$del' AND '$al'" : '';
-        $query.= "  UNION ALL 
-                -- notas de credito
-                SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idbanco, a.tipotrans, a.numero, b.referencia, NULL AS debito, a.monto AS credito, b.monto AS monto_real, c.idmoneda, a.fecha, 
-                b.fecha AS concilia, a.beneficiario, a.numban, 3 AS idtipotrans, b.tipo_transaccion  FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto 
-                INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'R' AND operado = 0 AND c.mt940 = d.cuenta ";
-        $query.= $del > 0 && $al > 0 ? " AND b.fecha BETWEEN '$del' AND '$al'" : '';
-        $query.= "   UNION ALL 
-                -- depositos 
-                SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idbanco, a.tipotrans, a.numero, b.referencia, NULL AS debito, a.monto AS credito, b.monto AS monto_real, c.idmoneda, a.fecha, 
-                b.fecha AS concilia, a.beneficiario, NULL AS numban, 2 AS idtipotrans, b.tipo_transaccion  FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
-                INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'D' AND operado = 0 AND c.mt940 = d.cuenta ";
-        $query.= $del > 0 && $al > 0 ? " AND b.fecha BETWEEN '$del' AND '$al'" : '';
-        $query.= "  ORDER BY 3, 10, 4, 5";
-        $datos = $db->getQuery($query);
-    } else if ($ver == 2) {
-        $query = "SELECT a.d_estado_cuenta AS id, c.id AS idbanco, a.fecha, IF(a.tipo_transaccion = 'C', '(C) Créditos', '(D) Débitos') AS tipotrans, a.referencia AS numero, a.descripcion AS beneficiario, IF(a.tipo_transaccion = 'D', a.monto, NULL) AS debito,
-            IF(a.tipo_transaccion = 'C', a.monto, NULL) AS credito, IF(a.tipo_transaccion = 'C', 1, 2) AS idtipotrans FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta 
-            INNER JOIN banco c ON c.mt940 = b.cuenta WHERE b.estado_cuenta NOT IN(1, 2, 3, 4) AND a.idtranban IS NULL";
-        $query.= $del > 0 && $al > 0 ? " AND a.fecha BETWEEN '$del' AND '$al'" : '';
-        $datos = $db->getQuery($query);
-    } else if ($ver == 3) {
-        $query = "SELECT a.d_estado_cuenta AS id, c.id AS idbanco, a.fecha, IF(a.tipo_transaccion = 'C', '(C) Créditos', '(D) Débitos') AS tipotrans, a.referencia AS numero, a.descripcion AS beneficiario, IF(a.tipo_transaccion = 'D', a.monto, NULL) AS debito,
-            IF(a.tipo_transaccion = 'C', a.monto, NULL) AS credito,
-            IF(a.tipo_transaccion = 'C', 1, 2) AS idtipotrans FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta 
-            INNER JOIN banco c ON c.mt940 = b.cuenta WHERE b.estado_cuenta NOT IN(1, 2, 3, 4) ";
-        $query.= $del > 0 && $al > 0 ? " AND a.fecha BETWEEN '$del' AND '$al'" : '';
-        $datos = $db->getQuery($query);
-    }
-
-    print json_encode($datos);
-});
-
-$app->post('/reporte_conciliacion', function () {
+$app->post('/traer_documentos', function () {
     $db = new dbcpm();
     $d = json_decode(file_get_contents('php://input'));
     date_default_timezone_set("America/Guatemala");
 
     $letra = new stdClass();
-    $letra->estampa = new DateTime();
-    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
-    $letra->del = new DateTime($d->del);
-    $letra->del = $letra->del->format('d/m/Y');
-    $letra->al = new DateTime($d->al);
-    $letra->al = $letra->al->format('d/m/Y');
 
-    $letra->titulo = $d->ver == 1 ? 'Reporte Conciliados' : ($d->ver == 2 ? 'Reporte sin conciliar' : 'Estado de cuenta');
-    $letra->usuario = isset($d->idusuario) ? $db->getOneField("SELECT iniciales FROM usuario WHERE id = $d->idusuario") : 'N.E';
+    // para los select se estara usando el nombre idempresa y empresa para el idbanco y banco para que funcione la funcion constructora de reportes
+    switch ($d->ver) {
+        case 1:
+            $query = "SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero AS numero_tran, b.referencia, a.monto AS debito, NULL AS credito, 
+                        b.monto AS monto_real, c.idmoneda, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, b.fecha AS concilia, a.beneficiario, 
+                        NULL AS numban, 1 AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, a.concepto, NULL AS numero, NULL AS abreviatura, e.simbolo AS moneda
+                        FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto INNER JOIN banco c ON a.idbanco = c.id 
+                        INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta INNER JOIN moneda e ON c.idmoneda = e.id
+                        WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'C' AND operado = 0 AND c.mt940 = d.cuenta 
+                    UNION ALL 
+                        -- notas de debito
+                    SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero AS numero_tran, b.referencia, a.monto AS debito, NULL AS credito, 
+                        b.monto AS monto_real, c.idmoneda, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, b.fecha AS concilia, a.beneficiario, a.numban, 
+                        4 AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, a.concepto, NULL AS numero, NULL AS abreviatura, e.simbolo AS moneda
+                        FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto INNER JOIN banco c ON a.idbanco = c.id 
+                        INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta INNER JOIN moneda e ON c.idmoneda = e.id
+                        WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'B' AND operado = 0 AND c.mt940 = d.cuenta 
+                    UNION ALL 
+                        -- notas de credito
+                    SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero AS numero_tran, b.referencia, NULL AS debito, a.monto AS credito, 
+                        b.monto AS monto_real, c.idmoneda, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, b.fecha AS concilia, a.beneficiario, a.numban, 
+                        3 AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, a.concepto, NULL AS numero, NULL AS abreviatura, e.simbolo AS moneda
+                        FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto INNER JOIN banco c ON a.idbanco = c.id 
+                        INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta INNER JOIN moneda e ON c.idmoneda = e.id
+                        WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'R' AND operado = 0 AND c.mt940 = d.cuenta 
+                    UNION ALL 
+                        -- depositos 
+                    SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero AS numero_tran, b.referencia, NULL AS debito, a.monto AS credito, 
+                        b.monto AS monto_real, c.idmoneda, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,  b.fecha AS concilia, a.beneficiario, 
+                        NULL AS numban, 2 AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, a.concepto, NULL AS numero, NULL AS abreviatura, e.simbolo AS moneda
+                        FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto INNER JOIN banco c ON a.idbanco = c.id 
+                        INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta INNER JOIN moneda e ON c.idmoneda = e.id
+                        WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'D' AND operado = 0 AND c.mt940 = d.cuenta   
+                    ORDER BY 3, 12, 4, 5";
+            break;
+        case 2:
+            $query = "SELECT a.d_estado_cuenta AS id, c.id AS idempresa, a.fecha AS concilia, 
+                        IF(a.tipo_transaccion = 'C', '(C) Créditos', '(D) Débitos') AS tipotrans, a.referencia AS numero_tran, a.descripcion AS beneficiario, 
+                        IF(a.tipo_transaccion = 'D', a.monto, NULL) AS debito, IF(a.tipo_transaccion = 'C', a.monto, NULL) AS credito, a.monto, NULL AS numero, 
+                        NULL AS abreviatura, IF(a.tipo_transaccion = 'C', 1, 2) AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, d.simbolo AS moneda 
+                        FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta INNER JOIN banco c ON c.mt940 = b.cuenta 
+                        INNER JOIN moneda d ON c.idmoneda = d.id
+                        WHERE b.estado_cuenta NOT IN(1, 2, 3, 4) AND a.idtranban IS NULL
+                    ORDER BY 2, 3, 4, 5";
+            break;
+        case 3: 
+            $query = "SELECT a.d_estado_cuenta AS id, c.id AS idempresa, a.fecha AS concilia, 
+                        IF(a.tipo_transaccion = 'C', '(C) Créditos', '(D) Débitos') AS tipotrans, a.referencia AS numero_tran, a.descripcion AS beneficiario, 
+                        IF(a.tipo_transaccion = 'D', a.monto, NULL) AS debito, IF(a.tipo_transaccion = 'C', a.monto, NULL) AS credito, a.monto, b.saldo_inicial AS abreviatura, 
+                        b.saldo_final AS numero, IF(a.tipo_transaccion = 'C', 1, 2) AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, d.simbolo AS moneda
+                        FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta INNER JOIN banco c ON c.mt940 = b.cuenta
+                        INNER JOIN moneda d ON c.idmoneda = d.id 
+                        WHERE b.estado_cuenta NOT IN(1, 2, 3, 4) 
+                    ORDER BY 2, 3, 4, 5";
+            break;
+    }
+    $datos = $db->getQuery($query);
 
-    $letra->tipo = $d->ver == 1 ? true : null;
+    if ($d->reporte) {
+        $reporte = new GeneradorReportes($datos, 'transacciones', [], false);
+        $datos = $reporte->getReporte();
 
-    // $totales = ['monto'];
-
-    if ($d->ver == 1) {
-        $query = "SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero AS numero_tran, b.referencia, a.monto AS debito, NULL AS credito, b.monto AS monto_real, c.idmoneda, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, 
-                DATE_FORMAT(b.fecha, '%d/%m/%Y') AS concilia, a.beneficiario, NULL AS numban, 1 AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, a.concepto, NULL AS numero, NULL AS abreviatura FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
-                INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'C' AND operado = 0 AND c.mt940 = d.cuenta ";
-        $query.= isset($d->delstr) && isset($d->alstr) ? " AND b.fecha BETWEEN '$d->delstr' AND '$d->alstr'" : '';
-        $query.= "   UNION ALL 
-                -- notas de debito
-                SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero AS numero_tran, b.referencia, a.monto AS debito, NULL AS credito, b.monto AS monto_real, c.idmoneda, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, 
-                DATE_FORMAT(b.fecha, '%d/%m/%Y') AS concilia, a.beneficiario, a.numban, 4 AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, a.concepto, NULL AS numero, NULL AS abreviatura FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto 
-                INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'B' AND operado = 0 AND c.mt940 = d.cuenta ";
-        $query.= isset($d->delstr) && isset($d->alstr) ? " AND b.fecha BETWEEN '$d->delstr' AND '$d->alstr'" : '';
-        $query.= "  UNION ALL 
-                -- notas de credito
-                SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero AS numero_tran, b.referencia, NULL AS debito, a.monto AS credito, b.monto AS monto_real, c.idmoneda, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, 
-                DATE_FORMAT(b.fecha, '%d/%m/%Y') AS concilia, a.beneficiario, a.numban, 3 AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, a.concepto, NULL AS numero, NULL AS abreviatura FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto 
-                INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'R' AND operado = 0 AND c.mt940 = d.cuenta ";
-        $query.= isset($d->delstr) && isset($d->alstr) ? " AND b.fecha BETWEEN '$d->delstr' AND '$d->alstr'" : '';
-        $query.= "   UNION ALL 
-                -- depositos 
-                SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero AS numero_tran, b.referencia, NULL AS debito, a.monto AS credito, b.monto AS monto_real, c.idmoneda, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, 
-                DATE_FORMAT(b.fecha, '%d/%m/%Y') AS concilia, a.beneficiario, NULL AS numban, 2 AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, a.concepto, NULL AS numero, NULL AS abreviatura FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
-                INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'D' AND operado = 0 AND c.mt940 = d.cuenta ";
-        $query.= isset($d->delstr) && isset($d->alstr) ? " AND b.fecha BETWEEN '$d->delstr' AND '$d->alstr'" : '';
-        $query.= "  ORDER BY 3, 10, 4, 5";
-        $datos = $db->getQuery($query);
-    } else if ($d->ver == 2) {
-        $query = "SELECT a.d_estado_cuenta AS id, c.id AS idempresa, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, IF(a.tipo_transaccion = 'C', '(C) Créditos', '(D) Débitos') AS tipotrans, a.referencia AS numero_tran, a.descripcion AS beneficiario, IF(a.tipo_transaccion = 'D', a.monto, NULL) AS debito,
-            IF(a.tipo_transaccion = 'C', a.monto, NULL) AS credito, a.monto, NULL AS numero, NULL AS abreviatura,
-            IF(a.tipo_transaccion = 'C', 1, 2) AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta 
-            INNER JOIN banco c ON c.mt940 = b.cuenta WHERE b.estado_cuenta NOT IN(1, 2, 3, 4) AND a.idtranban IS NULL";
-        $query.= isset($d->delstr) && isset($d->alstr) ? " AND a.fecha BETWEEN '$d->delstr' AND '$d->alstr'" : '';
-        $datos = $db->getQuery($query);
-    } else if ($d->ver == 3) {
-        $query = "SELECT a.d_estado_cuenta AS id, c.id AS idempresa, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, IF(a.tipo_transaccion = 'C', '(C) Créditos', '(D) Débitos') AS tipotrans, a.referencia AS numero_tran, a.descripcion AS beneficiario, IF(a.tipo_transaccion = 'D', a.monto, NULL) AS debito,
-            IF(a.tipo_transaccion = 'C', a.monto, NULL) AS credito, a.monto, b.saldo_inicial AS abreviatura, b.saldo_final AS numero,
-            IF(a.tipo_transaccion = 'C', 1, 2) AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta 
-            INNER JOIN banco c ON c.mt940 = b.cuenta WHERE b.estado_cuenta NOT IN(1, 2, 3, 4) ";
-        $query.= isset($d->delstr) && isset($d->alstr) ? " AND a.fecha BETWEEN '$d->delstr' AND '$d->alstr'" : '';
-        $datos = $db->getQuery($query);
+        $letra->estampa = new DateTime();
+        $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+        $letra->del = new DateTime($d->del);
+        $letra->del = $letra->del->format('d/m/Y');
+        $letra->al = new DateTime($d->al);
+        $letra->al = $letra->al->format('d/m/Y');
+        $letra->titulo = $d->ver == 1 ? 'Reporte Conciliados' : ($d->ver == 2 ? 'Reporte sin conciliar' : 'Estado de cuenta');
+        $letra->usuario = isset($d->idusuario) ? $db->getOneField("SELECT iniciales FROM usuario WHERE id = $d->idusuario") : 'N.E';
+        $letra->tipo = $d->ver == 1 ? true : null;
     }
 
-    $reporte = new GeneradorReportes($datos, 'transacciones', [], false);
-    $empleados = $reporte->getReporte();
-
-    print json_encode([ 'encabezado' => $letra, 'bancos' => $empleados ]);
+    print json_encode([ 'encabezado' => $letra, 'bancos' => $datos ]);
 });
 
 $app->post('/ca', function () {
