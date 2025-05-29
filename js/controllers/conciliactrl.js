@@ -20,8 +20,7 @@
             $scope.bancos = [];
             $scope.selTodos = 0;
             $scope.tipotrans = [];
-            $scope.params = { tipos: [], ver: '1', reporte: false }
-            var idusuario = undefined;
+            $scope.params = { tipos: [], ver: '1', reporte: false, iniciales: undefined }
             // para paginar
             $scope.currentPage = 1; // Página actual
             $scope.itemsPerPage = 20; // Número de elementos por página
@@ -72,6 +71,7 @@
 
             authSrvc.getSession().then(function (usrLogged) {
                 idusuario = usrLogged.uid;
+                $scope.params.iniciales = usrLogged.iniciales;
                 // traer empresas permitidas por el usuario
                 empresaSrvc.lstEmpresas().then(function (d) {
                     empresaSrvc.getEmpresaUsuario(usrLogged.uid).then(function (autorizado) {
@@ -212,7 +212,7 @@
                 let props = {}, file, formData = new FormData();
 
                 const promises = aimprimir.map(tran => {
-                    props = { 'template': { 'shortid': 'ryTzo2NGge' }, 'data': { idnota: tran.id } };
+                    props = { 'template': { 'shortid': 'ryTzo2NGge' }, 'data': { idnota: tran.id, iniciales: $scope.params.iniciales } };
                     return $http.post(url, props, { responseType: 'arraybuffer' });
                 });
                 $q.all(promises).then((respuestas) => {
@@ -260,70 +260,10 @@
                 $scope.currentPage = 1;
             });
 
-            // $scope.$watch('params.idbanco', function (newVal) {
-            //     if (newVal > 0) {
-            //         idbanco = newVal.toString();
-            //         if ($scope.params.tipos.length > 0) {
-            //             $scope.trans = $scope.todas.filter(tran => tran.idempresa === idbanco && $scope.params.tipos.includes(tran.idtipotrans));
-            //         } else {
-            //             $scope.trans = $scope.todas.filter(tran => tran.idempresa.toString() === idbanco);
-            //         }
-            //     } else {
-            //         if ($scope.params.tipos.length > 0) {
-            //             $scope.trans = $scope.todas.filter(tran => $scope.params.tipos.includes(tran.idtipotrans));
-            //         } else {
-            //             $scope.trans = $scope.todas;
-            //         }
-            //     }
-            //     $scope.currentPage = 1;
-            // })
-
-            // $scope.$watch('params.tipos', function (newVal) {
-            //     if (newVal.length > 0) {
-            //         if ($scope.params.idbanco > 0) {
-            //             idbanco = $scope.params.idbanco.toString();
-            //             $scope.trans = $scope.todas.filter(tran => tran.idempresa === idbanco && $scope.params.tipos.includes(tran.idtipotrans));
-            //         } else {
-            //             $scope.trans = $scope.todas.filter(tran => $scope.params.tipos.includes(tran.idtipotrans));
-            //         }
-            //     } else {
-            //         if ($scope.params.idbanco > 0) {
-            //             idbanco = $scope.params.idbanco.toString();
-            //             $scope.trans = $scope.todas.filter(tran => tran.idempresa.toString() === idbanco);
-            //         } else {
-            //             $scope.trans = $scope.todas;
-            //         }
-            //     }
-            //     $scope.currentPage = 1;
-            // })
-
-            // $scope.$watchGroup(['params.del', 'params.al'], function (newVals) {
-            //     const [del, al] = newVals;
-            //     let delstr = del ? moment(del).format('YYYY-MM-DD') : null;
-            //     let alstr = al ? moment(al).format('YYYY-MM-DD') : null;
-
-            //     $scope.trans = $scope.todas.filter(tran => {
-            //         let fecha = tran.fecha ? moment(tran.fecha).format('YYYY-MM-DD') : null;
-            //         let afterDel = delstr ? fecha >= delstr : true;
-            //         let beforeAl = alstr ? fecha <= alstr : true;
-            //         return afterDel && beforeAl;
-            //     });
-
-            //     // Aplicar también los otros filtros si están activos
-            //     if ($scope.params.idbanco > 0) {
-            //         let idbanco = $scope.params.idbanco.toString();
-            //         $scope.trans = $scope.trans.filter(tran => tran.idempresa.toString() === idbanco);
-            //     }
-            //     if ($scope.params.tipos && $scope.params.tipos.length > 0) {
-            //         $scope.trans = $scope.trans.filter(tran => $scope.params.tipos.includes(tran.idtipotrans));
-            //     }
-            //     $scope.currentPage = 1;
-            // });
-
             $scope.getLstTranAutomatica = () => {
                 if ($scope.todas.length > 0) {
                     $scope.trans = [];
-                    tranBancSrvc.traerDocumentos($scope.params).then(d => {
+                    tranBancSrvc.traerDocumentos($scope.params.ver).then(d => {
                         $scope.todas = d.bancos;
                         $scope.trans = d.bancos;
                         if ($scope.params.ver == '1') {

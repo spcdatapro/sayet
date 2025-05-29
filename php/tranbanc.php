@@ -1065,8 +1065,8 @@ $app->post('/conectar_banco', function () use ($app) {
     $conciliacion = new ConciliacionAutomatica($src, $dest);
 
     try {
-        // $conciliacion->get_mt940(); 
-        // $conciliacion->read_mt940();
+        $conciliacion->get_mt940(); 
+        $conciliacion->read_mt940();
     } catch (Exception $e) {
         print json_encode(['tipo' => 'error', 'mensaje' => 'Error en la conexión, favor comunicarse con IT: ' . $e->getMessage()]);
         return;
@@ -1126,32 +1126,36 @@ $app->post('/traer_documentos', function () {
                         NULL AS numban, 1 AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, a.concepto, NULL AS numero, NULL AS abreviatura, e.simbolo AS moneda
                         FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto INNER JOIN banco c ON a.idbanco = c.id 
                         INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta INNER JOIN moneda e ON c.idmoneda = e.id
-                        WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'C' AND operado = 0 AND c.mt940 = d.cuenta 
-                    UNION ALL 
+                        WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'C' AND operado = 0 ";
+            $query.= isset($d->delstr) && isset($d->alstr) ? "AND b.fecha BETWEEN $d->delstr AND $d->alstr" : "";
+            $query.= "AND c.mt940 = d.cuenta UNION ALL 
                         -- notas de debito
                     SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero AS numero_tran, b.referencia, a.monto AS debito, NULL AS credito, 
                         b.monto AS monto_real, c.idmoneda, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, b.fecha AS concilia, a.beneficiario, a.numban, 
                         4 AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, a.concepto, NULL AS numero, NULL AS abreviatura, e.simbolo AS moneda
                         FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto INNER JOIN banco c ON a.idbanco = c.id 
                         INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta INNER JOIN moneda e ON c.idmoneda = e.id
-                        WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'B' AND operado = 0 AND c.mt940 = d.cuenta 
-                    UNION ALL 
+                        WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'B' AND operado = 0 ";
+            $query.= isset($d->delstr) && isset($d->alstr) ? "AND b.fecha BETWEEN $d->delstr AND $d->alstr" : "";
+            $query.="AND c.mt940 = d.cuenta UNION ALL 
                         -- notas de credito
                     SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero AS numero_tran, b.referencia, NULL AS debito, a.monto AS credito, 
                         b.monto AS monto_real, c.idmoneda, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, b.fecha AS concilia, a.beneficiario, a.numban, 
                         3 AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, a.concepto, NULL AS numero, NULL AS abreviatura, e.simbolo AS moneda
                         FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto INNER JOIN banco c ON a.idbanco = c.id 
                         INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta INNER JOIN moneda e ON c.idmoneda = e.id
-                        WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'R' AND operado = 0 AND c.mt940 = d.cuenta 
-                    UNION ALL 
+                        WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'R' AND operado = 0 "; 
+            $query.= isset($d->delstr) && isset($d->alstr) ? "AND b.fecha BETWEEN $d->delstr AND $d->alstr" : "";
+            $query.="AND c.mt940 = d.cuenta UNION ALL 
                         -- depositos 
                     SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero AS numero_tran, b.referencia, NULL AS debito, a.monto AS credito, 
                         b.monto AS monto_real, c.idmoneda, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,  b.fecha AS concilia, a.beneficiario, 
                         NULL AS numban, 2 AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, a.concepto, NULL AS numero, NULL AS abreviatura, e.simbolo AS moneda
                         FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto INNER JOIN banco c ON a.idbanco = c.id 
                         INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta INNER JOIN moneda e ON c.idmoneda = e.id
-                        WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'D' AND operado = 0 AND c.mt940 = d.cuenta   
-                    ORDER BY 3, 12, 4, 5";
+                        WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'D' AND operado = 0 ";
+            $query.= isset($d->delstr) && isset($d->alstr) ? "AND b.fecha BETWEEN $d->delstr AND $d->alstr" : "";  
+            $query.="AND c.mt940 = d.cuenta ORDER BY 3, 12, 4, 5";
             break;
         case 2:
             $query = "SELECT a.d_estado_cuenta AS id, c.id AS idempresa, a.fecha AS concilia, 
@@ -1160,8 +1164,9 @@ $app->post('/traer_documentos', function () {
                         NULL AS abreviatura, IF(a.tipo_transaccion = 'C', 1, 2) AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, d.simbolo AS moneda 
                         FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta INNER JOIN banco c ON c.mt940 = b.cuenta 
                         INNER JOIN moneda d ON c.idmoneda = d.id
-                        WHERE b.estado_cuenta NOT IN(1, 2, 3, 4) AND a.idtranban IS NULL
-                    ORDER BY 2, 3, 4, 5";
+                        WHERE b.estado_cuenta NOT IN(1, 2, 3, 4) ";
+            $query.= isset($d->delstr) && isset($d->alstr) ? "AND a.fecha BETWEEN $d->delstr AND $d->alstr" : ""; 
+            $query.="AND a.idtranban IS NULL ORDER BY 2, 3, 4, 5";
             break;
         case 3: 
             $query = "SELECT a.d_estado_cuenta AS id, c.id AS idempresa, a.fecha AS concilia, 
@@ -1170,8 +1175,9 @@ $app->post('/traer_documentos', function () {
                         b.saldo_final AS numero, IF(a.tipo_transaccion = 'C', 1, 2) AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, d.simbolo AS moneda
                         FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta INNER JOIN banco c ON c.mt940 = b.cuenta
                         INNER JOIN moneda d ON c.idmoneda = d.id 
-                        WHERE b.estado_cuenta NOT IN(1, 2, 3, 4) 
-                    ORDER BY 2, 3, 4, 5";
+                        WHERE b.estado_cuenta NOT IN(1, 2, 3, 4) ";
+            $query.= isset($d->delstr) && isset($d->alstr) ? "AND a.fecha BETWEEN $d->delstr AND $d->alstr" : "";  
+            $query.="ORDER BY 2, 3, 4, 5";
             break;
     }
     $datos = $db->getQuery($query);
@@ -1248,6 +1254,7 @@ $app->post('/prntnotas', function () {
 
     $fecha = new DateTime();
     $datos->estampa = $fecha->format('d-m-Y H:i');
+    $datos->usuario = isset($d->iniciales) ? $d->iniciales : 'N/E';
 
     print json_encode([ 'nota' => $datos ]);
 });
