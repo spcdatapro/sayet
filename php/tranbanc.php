@@ -1127,7 +1127,7 @@ $app->post('/traer_documentos', function () {
                         FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto INNER JOIN banco c ON a.idbanco = c.id 
                         INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta INNER JOIN moneda e ON c.idmoneda = e.id
                         WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'C' AND operado = 0 ";
-            $query.= isset($d->delstr) && isset($d->alstr) ? "AND b.fecha BETWEEN $d->delstr AND $d->alstr" : "";
+            $query.= isset($d->delstr) && isset($d->alstr) ? "AND b.fecha BETWEEN '$d->delstr' AND '$d->alstr'" : "";
             $query.= "AND c.mt940 = d.cuenta UNION ALL 
                         -- notas de debito
                     SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero AS numero_tran, b.referencia, a.monto AS debito, NULL AS credito, 
@@ -1136,7 +1136,7 @@ $app->post('/traer_documentos', function () {
                         FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto INNER JOIN banco c ON a.idbanco = c.id 
                         INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta INNER JOIN moneda e ON c.idmoneda = e.id
                         WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'B' AND operado = 0 ";
-            $query.= isset($d->delstr) && isset($d->alstr) ? "AND b.fecha BETWEEN $d->delstr AND $d->alstr" : "";
+            $query.= isset($d->delstr) && isset($d->alstr) ? "AND b.fecha BETWEEN '$d->delstr' AND '$d->alstr'" : "";
             $query.="AND c.mt940 = d.cuenta UNION ALL 
                         -- notas de credito
                     SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero AS numero_tran, b.referencia, NULL AS debito, a.monto AS credito, 
@@ -1145,7 +1145,7 @@ $app->post('/traer_documentos', function () {
                         FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto INNER JOIN banco c ON a.idbanco = c.id 
                         INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta INNER JOIN moneda e ON c.idmoneda = e.id
                         WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'R' AND operado = 0 "; 
-            $query.= isset($d->delstr) && isset($d->alstr) ? "AND b.fecha BETWEEN $d->delstr AND $d->alstr" : "";
+            $query.= isset($d->delstr) && isset($d->alstr) ? "AND b.fecha BETWEEN '$d->delstr' AND '$d->alstr'" : "";
             $query.="AND c.mt940 = d.cuenta UNION ALL 
                         -- depositos 
                     SELECT a.id, b.d_estado_cuenta AS id_real, c.id AS idempresa, a.tipotrans, a.numero AS numero_tran, b.referencia, NULL AS debito, a.monto AS credito, 
@@ -1154,7 +1154,7 @@ $app->post('/traer_documentos', function () {
                         FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto INNER JOIN banco c ON a.idbanco = c.id 
                         INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta INNER JOIN moneda e ON c.idmoneda = e.id
                         WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'D' AND operado = 0 ";
-            $query.= isset($d->delstr) && isset($d->alstr) ? "AND b.fecha BETWEEN $d->delstr AND $d->alstr" : "";  
+            $query.= isset($d->delstr) && isset($d->alstr) ? "AND b.fecha BETWEEN '$d->delstr' AND '$d->alstr'" : "";  
             $query.="AND c.mt940 = d.cuenta ORDER BY 3, 12, 4, 5";
             break;
         case 2:
@@ -1165,7 +1165,7 @@ $app->post('/traer_documentos', function () {
                         FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta INNER JOIN banco c ON c.mt940 = b.cuenta 
                         INNER JOIN moneda d ON c.idmoneda = d.id
                         WHERE b.estado_cuenta NOT IN(1, 2, 3, 4) ";
-            $query.= isset($d->delstr) && isset($d->alstr) ? "AND a.fecha BETWEEN $d->delstr AND $d->alstr" : ""; 
+            $query.= isset($d->delstr) && isset($d->alstr) ? "AND a.fecha BETWEEN '$d->delstr' AND '$d->alstr'" : ""; 
             $query.="AND a.idtranban IS NULL ORDER BY 2, 3, 4, 5";
             break;
         case 3: 
@@ -1176,7 +1176,7 @@ $app->post('/traer_documentos', function () {
                         FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta INNER JOIN banco c ON c.mt940 = b.cuenta
                         INNER JOIN moneda d ON c.idmoneda = d.id 
                         WHERE b.estado_cuenta NOT IN(1, 2, 3, 4) ";
-            $query.= isset($d->delstr) && isset($d->alstr) ? "AND a.fecha BETWEEN $d->delstr AND $d->alstr" : "";  
+            $query.= isset($d->delstr) && isset($d->alstr) ? "AND a.fecha BETWEEN '$d->delstr' AND '$d->alstr'" : "";  
             $query.="ORDER BY 2, 3, 4, 5";
             break;
     }
@@ -1235,9 +1235,9 @@ $app->post('/prntnotas', function () {
                 IF(tipo_transaccion = 'C',
                     'CRÉDITO POR',
                     'DÉBITO POR') AS razon,
-                c.nombre,
+                c.nomcuenta AS nombre,
                 c.nocuenta,
-                d.simbolo AS moneda,
+                CONCAT(d.codgface, d.simbolo) AS moneda,
                 a.monto
             FROM
                 d_estado_cuenta a
