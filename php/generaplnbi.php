@@ -18,7 +18,7 @@ $app->post('/generar', function() use($db){
     LPAD(a.liquido, 25,' ') AS monto FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado 
     INNER JOIN plnpersonal d ON b.idpersonal = d.id INNER JOIN plnlaboral e ON b.idlaboral = e.id 
     LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto WHERE a.idempresa = $d->idempresa AND a.fecha >= '$d->fdelstr' 
-    AND a.fecha <= '$d->falstr' AND a.liquido <> 0 AND b.cuentabanco IS NOT NULL AND e.metodo = 'nota debito' 
+    AND a.fecha <= '$d->falstr' AND a.liquido <> 0 AND e.cuentabanco IS NOT NULL AND e.metodo = 'nota debito' 
     ORDER BY c.descripcion, b.nombre, b.apellidos, a.fecha) z, (SELECT @row:= 0) r";
     print $db->doSelectASJson($query);
 });
