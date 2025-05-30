@@ -2,8 +2,8 @@
 
     var controller = angular.module('cpm.isrempleados', []);
 
-    controller.controller('rptIsrEmpleados', ['$scope', 'jsReportSrvc', 'empresaSrvc', 'proyectoSrvc', 'authSrvc', 'empleadoSrvc', function ($scope,
-        jsReportSrvc, empresaSrvc, proyectoSrvc, authSrvc, empleadoSrvc) {
+    controller.controller('rptIsrEmpleados', ['$scope', 'jsReportSrvc', 'empresaSrvc', 'proyectoSrvc', 'authSrvc', 'empleadoSrvc', '$filter', function ($scope,
+        jsReportSrvc, empresaSrvc, proyectoSrvc, authSrvc, empleadoSrvc, $filter) {
 
         // variables para selectores
         $scope.empresas = [];
