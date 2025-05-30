@@ -1020,6 +1020,7 @@ $app->post('/isr', function () {
                         IFNULL(b.primerapellido, ''),
                         ' ',
                         IFNULL(b.segundoapellido, ''),
+                        ' ',
                         IFNULL(b.apellidocasada, '')) AS nombre,
                 b.nit,
                 DATE_FORMAT(c.ingreso, '%d/%m/%Y') AS ingreso,
@@ -1042,7 +1043,8 @@ $app->post('/isr', function () {
                     AND YEAR(d.fecha) = $d->anio ";
     $query.= isset($d->idempresa) ? "AND c.idempresadebito = $d->idempresa " : "";
     $query.=       "AND d.diastrabajados > 0 
-            GROUP BY a.id";
+            GROUP BY a.id ";
+    $query.= $d->agrupar == 1 ? "ORDER BY 2, 8" : "ORDER BY 2, 3, 8";
     $datos = $db->getQuery($query);
 
     // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
