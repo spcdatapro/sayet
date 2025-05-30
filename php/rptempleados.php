@@ -1060,7 +1060,7 @@ $app->post('/isr', function () {
         $letra->$t = array_sum($montos_generales->$t);
     }
 
-    return print json_encode([ 'encabezado' => $letra, 'empleados' => $empleados ]);
+    return print json_encode([ 'encabezado' => $letra, 'empresas' => $empleados ]);
 });
 
 $app->post('/proyeccion', function(){
