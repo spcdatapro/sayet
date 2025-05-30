@@ -994,11 +994,79 @@ $app->post('/contrato', function () {
     print json_encode([ 'representante' => $representante, 'empleado' => $empleado ]);
 });
 
+$app->post('/isr', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    date_default_timezone_set("America/Guatemala");
+    $totales = ['devengado', 'isr'];
+    $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+
+    $letra = new StdClass();
+    $letra->por_proyecto = $d->agrupar == 2 ? true : false;
+
+    $query = "SELECT 
+                a.id,
+                c.idempresaactual AS idempresa,
+                IFNULL(c.idproyecto, 9999) AS idproyecto,
+                e.nombre AS empresa,
+                e.numeropat AS numero, 
+                e.abreviatura,
+                f.nomproyecto AS proyecto,
+                CONCAT(b.primernombre,
+                        ' ',
+                        IFNULL(b.segundonombre, ''),
+                        ' ',
+                        IFNULL(b.tercernombre, ''),
+                        IFNULL(b.primerapellido, ''),
+                        ' ',
+                        IFNULL(b.segundoapellido, ''),
+                        IFNULL(b.apellidocasada, '')) AS nombre,
+                b.nit,
+                DATE_FORMAT(c.ingreso, '%d/%m/%Y') AS ingreso,
+                SUM(d.devengado) AS devengado,
+                SUM(d.descisr) AS isr
+            FROM
+                plnempleado a
+                    INNER JOIN
+                plnpersonal b ON a.idpersonal = b.id
+                    INNER JOIN
+                plnlaboral c ON a.idlaboral = c.id
+                    INNER JOIN
+                plnnomina d ON d.idplnempleado = a.id
+                    INNER JOIN
+                plnempresa e ON c.idempresaactual = e.id
+                    LEFT JOIN
+                proyecto f ON c.idproyecto = f.id
+            WHERE
+                MONTH(d.fecha) = $d->mes
+                    AND YEAR(d.fecha) = $d->anio ";
+    $query.= isset($d->idempresa) ? "AND c.idempresadebito = $d->idempresa " : "";
+    $query.=       "AND d.diastrabajados > 0 
+            GROUP BY a.id";
+    $datos = $db->getQuery($query);
+
+    // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
+    $reporte = new GeneradorReportes($datos, 'empleados', $totales, $letra->por_proyecto);
+    $empleados = $reporte->getReporte();
+    $montos_generales = $reporte->getTotalesGenerales();
+
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+    $letra->titulo = 'Del mes de ' . $meses[$d->mes-1] . ' de ' . $d->anio;
+
+    foreach($totales as $t) {
+        $letra->$t = array_sum($montos_generales->$t);
+    }
+
+    return print json_encode([ 'encabezado' => $letra, 'empleados' => $empleados ]);
+});
+
 $app->post('/proyeccion', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
     $primero = true;
     date_default_timezone_set("America/Guatemala");
+    $d->meses = 12;
 
     $hoy = new DateTime();
 
@@ -1012,7 +1080,6 @@ $app->post('/proyeccion', function(){
 
     // encabezado
     $letra->estampa = $letra->estampa->format('d-m-Y H:i');
-    // $letra->titulo = 'Al '.$letra->al->format('d/m/Y');
 
     $query = "SELECT 
                 a.id,
@@ -1022,14 +1089,14 @@ $app->post('/proyeccion', function(){
                 d.abreviatura,
                 CONCAT(b.primernombre,
                         ' ',
-                        b.segundonombre,
+                        IFNULL(b.segundonombre, ''),
                         ' ',
                         b.tercernombre,
                         b.primerapellido,
                         ' ',
                         b.segundoapellido,
                         ' ',
-                        b.apellidocasada) AS nombre,
+                        IFNULL(b.apellidocasada, '')) AS nombre,
                 NULL AS meses,
                 b.nit,
                 c.sueldo,
@@ -1097,6 +1164,9 @@ $app->post('/proyeccion', function(){
     foreach($data as $dat) {
         minusculas($dat);
     }
+
+    $letra->empresa = $data[0]->empresa;
+    $letra->anio = $d->anio;
 
     // $porproyecto = $d->agrupar == 2 ? true : false;
 

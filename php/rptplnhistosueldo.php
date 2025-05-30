@@ -7,10 +7,8 @@ $app->response->headers->set('Content-Type', 'application/json');
 
 $app->get('/lstempleados', function(){
     $db = new dbcpm();
-    $query = "SELECT a.id, TRIM(CONCAT(IFNULL(TRIM(a.nombre), ''), ' ',IFNULL(TRIM(a.apellidos), ''))) AS nombre ";
-    $query.= "FROM plnempleado a ";
-    $query.= "WHERE a.id IN(SELECT idplnempleado FROM plnnomina) ";
-    $query.= "ORDER BY 2";
+    $query = "SELECT a.id, CONCAT(b.primernombre, ' ', IFNULL(b.segundonombre, ''), ' ', IFNULL(b.tercernombre, ''), IFNULL(b.primerapellido, ''), ' ', IFNULL(b.segundoapellido, ''), ' ', IFNULL(b.apellidocasada, '')) AS nombre 
+        FROM plnempleado a INNER JOIN plnpersonal b ON a.idpersonal = b.id WHERE a.nombre IS NOT NULL AND a.nombre != '' AND a.activo = 1 ORDER BY 2";
     print $db->doSelectASJson($query);
 });
 

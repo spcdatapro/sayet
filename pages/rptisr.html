@@ -1,0 +1,246 @@
+<style>
+    .amarillo {
+        background-color: #F7EB89;
+        text-align: center;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .celeste {
+        background-color: #B4E2E8;
+        border-radius: 5px;
+    }
+
+    .gris {
+        background-color: #E8E8E8;
+        border-radius: 5px;
+    }
+
+    .blanco {
+        background-color: white;
+    }
+</style>
+<div class="container" ng-controller="rptIsrEmpleados">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divISR" data-toggle="tab">Reporte de ISR</a>
+        </li>
+        <li>
+            <a show-tab href="#divGlobal" data-toggle="tab">Proyecci&oacute;n Global</a>
+        </li>
+        <li>
+            <a show-tab href="#divIndividual" data-toggle="tab">Proyecci&oacute;n Individual</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="divISR">
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Reporte de ISR</div>
+                    <div class="panel-body">
+                        <form name="paramsISR" id="paramsISR" novalidate>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="control-label">Empresa D&eacute;bito:</label>
+                                        <ui-select ng-model="isr.idempresa" title="Seleccione una empresa..."
+                                            theme="bootstrap" autofocus="false">
+                                            <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
+                                                <span ng-bind="($select.selected.nomempresa)"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices
+                                                repeat="item.id as item in empresas | filter:$select.search">
+                                                <div ng-bind-html="(item.nomempresa) | highlight: $select.search"></div>
+                                            </ui-select-choices>
+                                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label for="selAgrupar" class="control-label">Agrupar por:</label>
+                                        <select name="selAgrupar" id="selAgrupar" class="form-control"
+                                            ng-model="isr.agrupar" required>
+                                            <option value="1">Empresa</option>
+                                            <option value="2">Proyecto</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label for="numAnio" class="control-label">A&ntilde;o:</label>
+                                        <input name="numAnio" id="numAnio" type="number" class="form-control"
+                                            ng-model="isr.anio" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label for="selMes" class="control-label" ng-model="isr.mes">Mes:</label>
+                                        <select name="selMes" id="selMes" class="form-control" required>
+                                            <option value="0">Enero</option>
+                                            <option value="1">Febrero</option>
+                                            <option value="2">Marzo</option>
+                                            <option value="3">Abril</option>
+                                            <option value="4">Mayo</option>
+                                            <option value="5">Junio</option>
+                                            <option value="6">Julio</option>
+                                            <option value="7">Agosto</option>
+                                            <option value="8">Septiembre</option>
+                                            <option value="9">Octubre</option>
+                                            <option value="10">Noviembre</option>
+                                            <option value="11">Diciembre</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="panel-footer text-right">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-danger" ng-click="getPdfIsr(params)"
+                                ng-disabled="paramsISR.$invalid || cargando">
+                                <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
+                            </button>
+                            <button type="button" class="btn btn-success" ng-click="getXmlIsr(params)"
+                                ng-disabled="paramsISR.$invalid || cargando">
+                                <span class="fa fa-file-excel-o" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </hr>
+            <div class="row" ng-show="cargando">
+                <div class="col-md-6 col-md-offset-3">
+                    <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                        <span class="label label-primary">Generando reporte, por favor espere...</span>
+                        <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
+                    </div>
+                </div>
+            </div>
+            <rpt-viewer contenido="content"></rpt-viewer>
+        </div>
+        <div class="tab-pane fade" id="divGlobal">
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Proyecci&oacute;n Global de ISR</div>
+                    <div class="panel-body">
+                        <form name="paramsGlobal" id="paramsGlobal" novalidate>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class="control-label">Empresa D&eacute;bito:</label>
+                                        <ui-select ng-model="global.idempresa" title="Seleccione una empresa..."
+                                            theme="bootstrap" autofocus="false" required>
+                                            <ui-select-match placeholder="Buscar empresa..." allow-clear="false">
+                                                <span ng-bind="($select.selected.nomempresa)"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices
+                                                repeat="item.id as item in empresas | filter:$select.search">
+                                                <div ng-bind-html="(item.nomempresa) | highlight: $select.search"></div>
+                                            </ui-select-choices>
+                                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label for="numAnio" class="control-label">A&ntilde;o</label>
+                                        <input name="numAnio" id="numAnio" type="number" class="form-control"
+                                            ng-model="global.anio" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="panel-footer text-right">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-danger" ng-click="getPdfGlobal(params)"
+                                ng-disabled="paramsGlobal.$invalid || cargando">
+                                <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
+                            </button>
+                            <button type="button" class="btn btn-success" ng-click="getXmlGlobal(params)"
+                                ng-disabled="paramsGlobal.$invalid || cargando">
+                                <span class="fa fa-file-excel-o" aria-hidden="true"></span>
+                            </button>
+                            <!-- <button type="button" class="btn btn-primary" ng-click="getResumen(params)"
+                    ng-disabled="paramsGlobal.$invalid || cargando">
+                    <span class="glyphicon glyphicon-eye-open"></span> -->
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </hr>
+            <div class="row" ng-show="cargando">
+                <div class="col-md-6 col-md-offset-3">
+                    <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                        <span class="label label-primary">Generando reporte, por favor espere...</span>
+                        <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
+                    </div>
+                </div>
+            </div>
+            <rpt-viewer contenido="content"></rpt-viewer>
+        </div>
+        <div class="tab-pane fade" id="divIndividual">
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Proyecci&oacute;n Individual de ISR</div>
+                    <div class="panel-body">
+                        <form name="paramsIndividual" id="paramsIndividual" novalidate>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label class="control-label">Empleado:</label>
+                                        <ui-select ng-model="individual.idempleado" title="Seleccione un empleado..."
+                                            theme="bootstrap" autofocus="false" required>
+                                            <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
+                                                <span ng-bind="($select.selected.nombre)"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices
+                                                repeat="item.id as item in empleados | filter:$select.search">
+                                                <div ng-bind-html="(item.nombre) | highlight: $select.search"></div>
+                                            </ui-select-choices>
+                                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group required">
+                                        <label for="numAnio" class="control-label">A&ntilde;o</label>
+                                        <input name="numAnio" id="numAnio" type="number" class="form-control"
+                                            ng-model="individual.anio" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="panel-footer text-right">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-danger" ng-click="getPdfIndividual(params)"
+                                ng-disabled="paramsIndividual.$invalid || cargando">
+                                <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
+                            </button>
+                            <button type="button" class="btn btn-success" ng-click="getXIndividual(params)"
+                                ng-disabled="paramsIndividual.$invalid || cargando">
+                                <span class="fa fa-file-excel-o" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </hr>
+            <div class="row" ng-show="cargando">
+                <div class="col-md-6 col-md-offset-3">
+                    <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                        <span class="label label-primary">Generando reporte, por favor espere...</span>
+                        <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
+                    </div>
+                </div>
+            </div>
+            <rpt-viewer contenido="content"></rpt-viewer>
+        </div>
+    </div>
+</div>
