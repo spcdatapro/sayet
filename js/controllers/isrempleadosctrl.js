@@ -18,7 +18,6 @@
 
         // traer empresas
         authSrvc.getSession().then(usr => {
-            console.log(usr);
             if (parseInt(usr.workingon) > 0) {
                 $scope.global.idempresa = usr.workingon.toString();
             }
