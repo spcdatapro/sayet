@@ -14,7 +14,9 @@
         $scope.cargando = false;
 
         // para visualizaciones en pantalla
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.isr = `${window.location.origin}/sayet/blank.html`;
+        $scope.global = `${window.location.origin}/sayet/blank.html`;
+        $scope.individual = `${window.location.origin}/sayet/blank.html`;
 
         // traer empresas
         authSrvc.getSession().then(usr => {
@@ -43,7 +45,7 @@
 
             try {
                 jsReportSrvc.getPDFReport('rknrmwPzex', params).then(function (pdf) {
-                    $scope.content = pdf;
+                    $scope.isr = pdf;
                     $scope.cargando = false;
                 })
             } catch (err) {
@@ -85,7 +87,7 @@
 
             try {
                 jsReportSrvc.getPDFReport('Syh44TJ-xx', params).then(function (pdf) {
-                    $scope.content = pdf;
+                    $scope.global = pdf;
                     $scope.cargando = false;
                 })
             } catch (err) {
@@ -126,7 +128,7 @@
 
             try {
                 jsReportSrvc.getPDFReport('H1o8UeKZll', params).then(function (pdf) {
-                    $scope.content = pdf;
+                    $scope.individual = pdf;
                     $scope.cargando = false;
                 })
             } catch (err) {
