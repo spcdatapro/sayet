@@ -1331,13 +1331,15 @@ EOT;
 		], [
 			"AND" => [
 				"idplnempleado" => $bit->idplnempleado,
-				"mostrar" => 1,
-				"OR" => [
-					"sueldo[>]" => 0.00,
-					"bonificacionley[>]" => 0.00
-				]
+				"sueldo[>]" => 0.00,
+				"bonificacionley[>]" => 0.00
 			]
 		]);
+		if (!empty($sueldo_ant)) {
+			$sueldo_ant = $sueldo_ant[0];
+		} else {
+			$sueldo_ant = [];
+		}
 
 		$siempre = !empty($resultado) ? $resultado[0] : null;		
 
@@ -1403,10 +1405,10 @@ EOT;
 				$tmp['ant_bonificacion'] = 0;
 			}
 		} else if (!empty($sueldo_ant)) {
-			$tmp['ant_sueldo'] = number_format($sueldo_ant->sueldo, 2);
-			if ($bit->bonificacionley > 0) {
-				$tmp['ant_bonificacion'] = number_format($sueldo_ant->bonificacionley, 2);
-				$tmp['ant_total']  = number_format(($sueldo_ant->sueldo+$sueldo_ant->bonificacionley), 2);
+			$tmp['ant_sueldo'] = number_format($sueldo_ant['sueldo'], 2);
+			if ($sueldo_ant['bonificacionley'] > 0) {
+				$tmp['ant_bonificacion'] = number_format($sueldo_ant['bonificacionley'], 2);
+				$tmp['ant_total']  = number_format(($sueldo_ant['sueldo']+$sueldo_ant['bonificacionley']), 2);
 			} else {
 				$tmp['ant_bonificacion'] = 0;
 			}
