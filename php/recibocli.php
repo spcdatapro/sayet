@@ -236,7 +236,7 @@ $app->post('/u', function(){
     $query = "UPDATE recibocli SET ";
     $query.= "fecha = '$d->fechastr', idcliente = $d->idcliente, espropio = $d->espropio, idtranban = $d->idtranban, ";
     $query.= "serie = '$d->serie', concepto = '$d->concepto', ";
-    $query.= "usuariocrea = '$d->usuariocrea', nit = $d->nit, notas = '$d->notas' ";
+    $query.= "usuariocrea = '$d->usuariocrea', nit = '$d->nit', notas = '$d->notas' ";
     $query.= "WHERE id = $d->id";
     $db->doQuery($query);
 });
