@@ -1325,6 +1325,20 @@ EOT;
 			]
 		]);
 
+		$sueldo_ant = $this->db->select("plnbitacora", [
+			"sueldo",
+			"bonificacionley"
+		], [
+			"AND" => [
+				"idplnempleado" => $bit->idplnempleado,
+				"mostrar" => 1,
+				"OR" => [
+					"sueldo[>]" => 0.00,
+					"bonificacionley[>]" => 0.00
+				]
+			]
+		]);
+
 		$siempre = !empty($resultado) ? $resultado[0] : null;		
 
 		$antes = json_decode($bit->antes);
@@ -1388,8 +1402,14 @@ EOT;
 			} else {
 				$tmp['ant_bonificacion'] = 0;
 			}
-		} else {
-			$tmp['ant_sueldo'] = 0;
+		} else if (!empty($sueldo_ant)) {
+			$tmp['ant_sueldo'] = number_format($sueldo_ant->sueldo, 2);
+			if ($bit->bonificacionley > 0) {
+				$tmp['ant_bonificacion'] = number_format($sueldo_ant->bonificacionley, 2);
+				$tmp['ant_total']  = number_format(($sueldo_ant->sueldo+$sueldo_ant->bonificacionley), 2);
+			} else {
+				$tmp['ant_bonificacion'] = 0;
+			}
 		}
 
 		$tmp['des_sueldo']       = number_format($this->lab->sueldo, 2);
