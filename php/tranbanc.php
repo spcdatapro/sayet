@@ -115,6 +115,10 @@ $app->post('/c', function(){
     $query.= "$d->iddetpagopresup, $d->idproyecto, $d->iddocliquida, $d->retisr, $d->montooriginal, $d->isr, $d->montocalcisr, $d->numban, $d->idusuario)";
     $db->doQuery($query);
     $lastid = $db->getLastId();
+    if ($lastid > 0) {
+        $tipo = "success";
+        $mensaje = "Transacción insertada con éxito.";
+    }
     if(in_array($d->tipotrans, $tentrada)){
         if($d->iddocliquida > 0){
             $db->doQuery("UPDATE tranban SET liquidado = 1 where id = $d->iddocliquida"); 
@@ -127,6 +131,7 @@ $app->post('/c', function(){
         };
 
         if ($d->idrecibocli > 0) {
+            $idempresa = $db->getOneField("SELECT idempresa FROM banco WHERE id = $d->idbanco");
             $recibos = count($d->idrecibocli);
             if ($recibos > 0) {
                 $i = 0;
@@ -136,6 +141,10 @@ $app->post('/c', function(){
                     $i++;
                 }
             };
+            $idrecibo = $d->idrecibocli[0];
+            $cuenta_cliente = $db->getOneField("SELECT c.id FROM recibocli a INNER JOIN contrato b ON a.idcliente = b.idcliente AND b.inactivo = 0 AND b.idempresa = $idempresa 
+            INNER JOIN cuentac c ON b.idcuentac = c.codigo AND c.idempresa = $idempresa WHERE a.id = $idrecibo");
+            $cuenta_default = $cuenta_cliente > 0 ? $cuenta_cliente : $db->getOneFiled("SELECT idcuentac FROM detcontempresa WHERE idempresa = $idempresa AND idtipoconfig = 30");
         };
     }
     if(in_array($d->tipotrans, $ttsalida)){
@@ -150,13 +159,22 @@ $app->post('/c', function(){
         }
     }elseif(in_array($d->tipotrans, $tentrada)){
         $ctabco = (int)$db->getOneField("SELECT idcuentac FROM banco WHERE id = ".$d->idbanco);
+        $monto = round(((float)$d->monto * (float)$d->tipocambio), 2);
         if($ctabco > 0){
             $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
-            $query.= "1, ".$lastid.", ".$ctabco.", ".round(((float)$d->monto * (float)$d->tipocambio), 2).", 0.00, '".$d->concepto."')";
+            $query.= "1, ".$lastid.", ".$ctabco.", $monto, 0.00, '".$d->concepto."')";
             $db->doQuery($query);
         };
+        if ($cuenta_cliente > 0) {
+            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) 
+                VALUES(1, $lastid, $cuenta_cliente, 0.00, $monto, '$d->concepto')";
+            $db->doQuery($query);
+        } else {
+            $tipo = "warning";
+            $mensaje = "No se encontro cuenta de cliente, favor revisar.";
+        }
     }
-    print json_encode(['lastid' => $lastid]);
+    print json_encode([ 'lastid' => $lastid, 'tipo' => $tipo, 'mensaje' => $mensaje ]);
 });
 
 $app->post('/u', function(){
@@ -247,8 +265,8 @@ $app->post('/d', function(){
     $idreembolso = (int)$db->getOneField("SELECT a.id FROM reembolso a INNER JOIN dettranreem b ON b.idreembolso = a.id WHERE b.idtranban = $d->id");
     $db->doQuery("DELETE FROM dettranreem WHERE idtranban = $d->id");
     $db->doQuery("UPDATE reembolso SET pagado = 0 WHERE id = $idreembolso");
-    $db->doQuery("DELETE FROM tranban WHERE id = $d->id");
     $db->doQuery("DELETE FROM reclitran WHERE idtranban = $d->id");
+    $db->doQuery("DELETE FROM tranban WHERE id = $d->id");
 
     if((int)$tran->iddetpresup > 0 && (int)$tran->iddetpagopresup > 0){
         $query = "UPDATE detpagopresup SET pagado = 0, origen = 1, idorigen = 0 WHERE id = $tran->iddetpagopresup AND origen = 1 AND idorigen = $d->id";

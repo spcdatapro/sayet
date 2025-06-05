@@ -375,7 +375,11 @@
             // console.log(obj); return;
             tranBancSrvc.editRow(obj, 'c').then(function (d) {
                 $scope.getLstTran();
-                $scope.getDataTran(parseInt(d.lastid));
+                $scope.getDataTran(+d.lastid);
+                toaster.pop({
+                    type: d.tipo, title: 'Ingreso de transaccón',
+                    body: d.mensaje, timeout: 7000
+                });
             });
         };
 
@@ -503,7 +507,7 @@
                 });
 
                 authSrvc.getPerfil($scope.laTran.idusuario).then((usr) => { $scope.creador = usr[0].iniciales });
-                if ($scope.laTran.ultusuario > 0) { 
+                if ($scope.laTran.ultusuario > 0) {
                     authSrvc.getPerfil($scope.laTran.ultusuario).then((usr) => { $scope.ultimo_usuario = usr[0].iniciales });
                 }
 
@@ -816,7 +820,7 @@
                     if (existe) {
                         toaster.pop({
                             type: 'error', title: 'Esta transacción ya existe.',
-                            body: "La transaccion " + tipotrans + "-" + numero + " del banco " + $scope.laTran.objBanco.nombre + " ya existe, favor revisar.", 
+                            body: "La transaccion " + tipotrans + "-" + numero + " del banco " + $scope.laTran.objBanco.nombre + " ya existe, favor revisar.",
                             timeout: 10000
                         });
                         $scope.laTran.numero = undefined;
