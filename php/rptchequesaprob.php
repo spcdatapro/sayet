@@ -41,4 +41,41 @@ $app->get('/gettxt/:idempresa/:fechastr/:idmoneda/:nombre(/:idbanco)', function(
 	print iconv('UTF-8','Windows-1252', $respuesta);
 });
 
+$app->get('/gettxt_notas/:fechastr/:idbanco/:nombre', function($fechastr, $idbanco, $nombre) use($app){
+    $db = new dbcpm();
+    $app->response->headers->clear();
+    $app->response->headers->set('Content-Type', 'text/csv;charset=windows-1252');
+    $app->response->headers->set('Content-Disposition', 'attachment;filename="'.trim($nombre).'.csv"'); 
+
+    $url = 'http://localhost:5489/api/report';
+    $data = ['template' => ['shortid' => 'ry0srdoGgl'], 'data' => [ 'fechastr' => "$fechastr", 'idbanco' => $idbanco]];
+
+    $respuesta = $db->CallJSReportAPI('POST', $url, json_encode($data));
+	print iconv('UTF-8','Windows-1252', $respuesta);
+});
+
+$app->post('/getnotasd', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "SELECT 
+                a.id, IFNULL(e.cuentabanco, 'n/e') AS cuenta, e.nombre, e.concepto, e.correo, a.monto
+            FROM
+                tranban a
+                    INNER JOIN
+                banco b ON a.idbanco = b.id
+                    INNER JOIN
+                detpagocompra c ON c.idtranban = a.id
+                    INNER JOIN
+                compra d ON c.idcompra = d.id
+                    INNER JOIN
+                proveedor e ON d.idproveedor = e.id
+            WHERE
+                a.fecha = '$d->fechastr' AND a.idbanco = $idbanco
+                AND a.tipotrans = 'B'
+            GROUP BY a.id";
+    print $db->doSelectAsJSON($query);
+});
+
+
 $app->run();
