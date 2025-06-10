@@ -14,7 +14,7 @@ $app->post('/generar', function() use($db){
     (SELECT nombre FROM mes WHERE id = MONTH('$d->fdelstr')), ' AL ', LPAD(DAY('$d->falstr'), 2, ' '), ' DE ', 
     (SELECT nombre FROM mes WHERE id = MONTH('$d->falstr')), ' DEL ', YEAR('$d->falstr')) AS concepto 
     FROM (SELECT 1 AS tipo, LPAD(TRIM(e.cuentabanco), 10, ' ') AS cuenta, RPAD(CONCAT(d.primernombre, ' ', 
-    d.segundonombre, ' ', d.tercernombre, ' ', d.primerapellido, ' ', d.segundoapellido, ' ', d.apellidocasada), 100, ' ') AS nombre, 
+    IFNULL(d.segundonombre, ''), ' ', IFNULL(d.tercernombre, ''), ' ', IFNULL(d.primerapellido, ''), ' ', IFNULL(d.segundoapellido, ''), ' ', IFNULL(d.apellidocasada, '')), 100, ' ') AS nombre, 
     LPAD(a.liquido, 25,' ') AS monto FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado 
     INNER JOIN plnpersonal d ON b.idpersonal = d.id INNER JOIN plnlaboral e ON b.idlaboral = e.id 
     LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto WHERE a.idempresa = $d->idempresa AND a.fecha >= '$d->fdelstr' 
