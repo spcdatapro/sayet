@@ -1035,7 +1035,7 @@ $app->post('/isr', function () {
                     INNER JOIN
                 plnnomina d ON d.idplnempleado = a.id
                     INNER JOIN
-                plnempresa e ON c.idempresaactual = e.id
+                plnempresa e ON d.idempresa = e.id
                     LEFT JOIN
                 proyecto f ON c.idproyecto = f.id
             WHERE
