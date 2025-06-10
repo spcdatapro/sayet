@@ -37,12 +37,13 @@
         $scope.isr = { anio: +moment().toDate().getFullYear().toString(), agrupar: '1', mes: +moment().toDate().getMonth().toString() };
 
         // pdf isr
-        $scope.getPdfIsr = function (params) {
+        $scope.getPdfIsr = function (isr) {
             // estatus de carga
             $scope.cargando = true;
+            console.log(isr);
 
             try {
-                jsReportSrvc.getPDFReport('rknrmwPzex', params).then(function (pdf) {
+                jsReportSrvc.getPDFReport('rknrmwPzex', isr).then(function (pdf) {
                     $scope.content = pdf;
                     $scope.cargando = false;
                 })
