@@ -34,13 +34,12 @@
         // reporte isr
 
         // parametros
-        $scope.isr = { anio: +moment().toDate().getFullYear().toString(), agrupar: '1', mes: +moment().toDate().getMonth().toString() };
+        $scope.isr = { anio: +moment().toDate().getFullYear().toString(), agrupar: '1', mes: moment().toDate().getMonth().toString() };
 
         // pdf isr
         $scope.getPdfIsr = function (isr) {
             // estatus de carga
             $scope.cargando = true;
-            console.log(isr);
 
             try {
                 jsReportSrvc.getPDFReport('rknrmwPzex', isr).then(function (pdf) {
