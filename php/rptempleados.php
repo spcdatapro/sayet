@@ -1006,7 +1006,7 @@ $app->post('/isr', function () {
 
     $query = "SELECT 
                 a.id,
-                c.idempresaactual AS idempresa,
+                e.id AS idempresa,
                 IFNULL(c.idproyecto, 9999) AS idproyecto,
                 e.nombre AS empresa,
                 e.numeropat AS numero, 
