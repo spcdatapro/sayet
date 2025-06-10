@@ -1041,7 +1041,7 @@ $app->post('/isr', function () {
             WHERE
                 MONTH(d.fecha) = $d->mes
                     AND YEAR(d.fecha) = $d->anio ";
-    $query.= isset($d->idempresa) ? "AND c.idempresadebito = $d->idempresa " : "";
+    $query.= isset($d->idempresa) ? "e.id = $d->idempresa " : "";
     $query.=       "AND d.diastrabajados > 0 
             GROUP BY a.id ";
     $query.= $d->agrupar == 1 ? "ORDER BY 2, 8" : "ORDER BY 2, 3, 8";
