@@ -21,9 +21,15 @@
             getPendientes: function () {
                 return comunFact.doGET( urlBase + '/finiquitos');
             },
-            genera: function(obj){
-                return comunFact.doPOST('php/generaplnbi.php/generatran', obj);
+            generaTranFiniquito: function(obj){
+                return comunFact.doPOST('php/generaplnbi.php/tran_finiquito', obj);
             },
+            getPremios: function (obj) {
+                return comunFact.doPOST( urlBase + '/premios', obj);
+            },
+            generaTranPremio: function(obj){
+                return comunFact.doPOST('php/generaplnbi.php/tran_premio', obj);
+            }
         };
     }]);
 

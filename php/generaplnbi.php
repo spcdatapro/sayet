@@ -329,7 +329,7 @@ $app->post('/generachq', function() use($db){
     print json_encode(['generados' => $generados]);
 });
 
-$app->post('/generatran', function() {
+$app->post('/tran_finiquito', function() {
     $db = new dbcpm();
     $d = json_decode(file_get_contents('php://input'));
     $errores = '';
@@ -444,6 +444,54 @@ $app->post('/generatran', function() {
                 VALUES (1, $lastid, $cnt_anticipo, 0, $d->anticipos, '$d->concepto', 1, 0, $d->idproyecto)");
             } else {
                 $errores .= 'sin cuenta de anticipos, ';
+            }
+        }
+
+        $cnt_banco = $db->getOneField("SELECT idcuentac FROM banco WHERE id = $d->idbanco");
+        if ((int)$d->total > 0) {
+            if($cnt_banco > 0) {
+                $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
+                VALUES (1, $lastid, $cnt_banco, 0, $d->total, '$d->concepto', 1, 0, $d->idproyecto)");
+            } else {
+                $errores .= 'sin cuenta de banco. ';
+            }
+        }
+
+        if (strlen($errores) > 5) {
+            print json_encode(['tipo' => 'warning', 'mensaje' => 'No se pudo generar completamente la partida contable, favor arreglar. Errores: '.$errores]);
+        } else {
+            print json_encode(['tipo' => 'success', 'mensaje' => 'Transacción generada con éxito.']);
+        }
+    } else {
+        print json_encode(['tipo' => 'error', 'mensaje' => 'No se recibieron suficientes datos, favor volver a intentar.']);
+    }
+});
+
+$app->post('/tran_premio', function() {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+    $errores = '';
+
+    $d->total = round($d->total, 2);
+
+    $query = "INSERT INTO tranban(idbanco, tipotrans, numero, esplanilla, fechaplanilla, fecha, monto, beneficiario, concepto, tipocambio, idempresa, idempleado, idusuario) VALUES ($d->idbanco, 
+    '$d->tipo', $d->numero, 1, '$d->fecha', '$d->fechatran', $d->total, '$d->empleado', '$d->concepto', 1.00, $d->idempresa, $d->idempleado, $d->idusuario)";
+    $db->doQuery($query);
+
+    $lastid = $db->getLastId();
+
+    if ($lastid > 0) {
+        $db->doQuery("UPDATE detpremioemp SET pagado = 1 WHERE id = $d->id");
+        $db->doQuery("UPDATE banco SET correlativo = $d->numero+1 WHERE id = $d->idbanco");
+
+
+        $cnt_gratificaciones = getCuentaConfig($d->idempresa, 31); 
+        if ((int)$d->total > 0) {
+            if ($cnt_gratificaciones > 0) {
+                $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
+                VALUES (1, $lastid, $cnt_gratificaciones, $d->total, 0, '$d->concepto', 1, 0, $d->idproyecto)");
+            } else {
+                $errores .= 'sin cuenta de gratificacion, ';
             }
         }
 

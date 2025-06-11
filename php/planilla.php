@@ -161,4 +161,123 @@ $app->get('/finiquitos', function () {
     print json_encode($pendientes);
 });
 
+$app->post('/premios', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+    $hoy = new DateTime();
+
+    $anio_hoy = $hoy->format('Y');
+
+    $query = "SELECT a.id, b.ingreso FROM plnempleado a INNER JOIN plnlaboral b ON a.idlaboral = b.id 
+    WHERE a.id NOT IN(SELECT idplnempleado FROM detpremioemp WHERE anio = $d->anio) AND a.activo = 1 AND a.nombre IS NOT NULL AND a.nombre != ''";
+    $pendientes = $db->getQuery($query);
+
+    foreach ($pendientes as $p) {
+        $anio_ingreso = new DateTime($p->ingreso);
+        $anio_ingreso = $anio_ingreso->format('Y');
+        $antiguedad = $anio_hoy - $anio_ingreso;
+
+        $p->anios = $antiguedad;
+
+        switch ((int)$antiguedad) {
+            case 5:
+                $query = "INSERT INTO detpremioemp (idplnempleado, idpremio, anio) VALUES ($p->id, 1, $anio_hoy)";
+                $db->doQuery($query);
+                break;
+            case 10:
+                $query = "INSERT INTO detpremioemp (idplnempleado, idpremio, anio) VALUES ($p->id, 2, $anio_hoy)";
+                $db->doQuery($query);
+                break;
+            case 15:
+                $query = "INSERT INTO detpremioemp (idplnempleado, idpremio, anio) VALUES ($p->id, 3, $anio_hoy)";
+                $db->doQuery($query);
+                break;
+            case 20:
+                $query = "INSERT INTO detpremioemp (idplnempleado, idpremio, anio) VALUES ($p->id, 4, $anio_hoy)";
+                $db->doQuery($query);
+                break;
+            case 25:
+                $query = "INSERT INTO detpremioemp (idplnempleado, idpremio, anio) VALUES ($p->id, 5, $anio_hoy)";
+                $db->doQuery($query);
+                break;
+            case 30:
+                $query = "INSERT INTO detpremioemp (idplnempleado, idpremio, anio) VALUES ($p->id, 6, $anio_hoy)";
+                $db->doQuery($query);
+                break;
+            case 35:
+                $query = "INSERT INTO detpremioemp (idplnempleado, idpremio, anio) VALUES ($p->id, 7, $anio_hoy)";
+                $db->doQuery($query);
+                break;
+            case 40:
+                $query = "INSERT INTO detpremioemp (idplnempleado, idpremio, anio) VALUES ($p->id, 8, $anio_hoy)";
+                $db->doQuery($query);
+                break;
+        }
+    }
+
+    $query = "SELECT 
+                d.id,
+                a.id AS idempleado,
+                f.id AS idempresa, 
+                g.id AS idproyecto,
+                f.nombre AS empresa,
+                g.nomproyecto AS proyecto,
+                CONCAT(b.primernombre,
+                        ' ',
+                        IFNULL(b.segundonombre, ''),
+                        ' ',
+                        IFNULL(b.tercernombre, ''),
+                        b.primerapellido,
+                        ' ',
+                        IFNULL(b.segundoapellido, ''),
+                        ' ',
+                        IFNULL(b.apellidocasada, '')) AS empleado,
+                c.ingreso,
+                b.nacimiento,
+                e.anios,
+                c.sueldo,
+                e.monto AS total,
+                CONCAT('Premios por antigüedad de ', e.anios, ' años') AS concepto
+            FROM
+                plnempleado a
+                    INNER JOIN
+                plnpersonal b ON a.idpersonal = b.id
+                    INNER JOIN
+                plnlaboral c ON a.idlaboral = c.id
+                    INNER JOIN
+                detpremioemp d ON d.idplnempleado = a.id
+                    INNER JOIN
+                plnpremioanti e ON d.idpremio = e.id
+                    INNER JOIN 
+                plnempresa f ON c.idempresadebito = f.id
+                    LEFT JOIN 
+                proyecto g ON c.idproyecto = g.id
+            WHERE
+                d.anio = $d->anio AND d.pagado = 0
+            ORDER BY b.nacimiento";
+    $pendientes = $db->getQuery($query);
+
+    foreach ($pendientes as $p) {
+        $p->fecha = new DateTime($p->nacimiento);
+        $p->fecha->setDate($d->anio, $p->fecha->format('m'), $p->fecha->format('d'));
+        $p->fecha = $p->fecha->format('Y-m-d');
+
+        if ($p->total == null) {
+            switch ((int)$p->anios) {
+                case 5: 
+                    $p->total = $p->sueldo;
+                    break;
+                case 10: 
+                    $p->total = $p->sueldo * 2;
+                    break;
+                case 15:
+                    $p->total = $p->sueldo * 3;
+                    break;
+            }   
+        }
+    }
+
+    print json_encode($pendientes);
+});
+
 $app->run();

@@ -2,50 +2,100 @@
 
     var controller = angular.module('cpm.cargosplnctrl', []);
 
-    controller.controller('cargosPlnCtrl', ['$scope', 'planillaSrvc', '$uibModal', 'toaster', 'authSrvc', ($scope, planillaSrvc, $uibModal, toaster, authSrvc) => {
+    controller.controller('cargosPlnCtrl', ['$scope', 'planillaSrvc', '$uibModal', 'toaster', 'authSrvc', 'empresaSrvc',
+        ($scope, planillaSrvc, $uibModal, toaster, authSrvc, empresaSrvc) => {
 
-        $scope.idusuario = undefined;
-        $scope.cargos = [];
-        $scope.generando = false;
-        $scope.generados = [];
+            $scope.idusuario = undefined;
+            $scope.cargos = [];
+            $scope.generando = false;
+            $scope.generados = [];
+            $scope.empresas = [];
+            $scope.par_premios = { anio: moment().year() };
 
-        authSrvc.getSession().then((usuario) => { $scope.idusuario = usuario.uid; });
-
-        function getPendientes() {
-            planillaSrvc.getPendientes().then((d) => {
-                d.forEach(data => {
-                    data.total = (+data.finiquito + +data.vacaciones + +data.aguinaldo + +data.bono + +data.ordinario + +data.extra + +data.otrosbono)
-                        - (+data.prestamos + +data.anticipos + +data.otrosdesc);
+            authSrvc.getSession().then((usuario) => {
+                $scope.idusuario = usuario.uid;
+                empresaSrvc.lstEmpresas().then(d => {
+                    $scope.empresas = d;
+                    $scope.par_premios.idempresa = usuario.workingon > 0 ? usuario.workingon.toString() : undefined;
                 });
-                $scope.cargos = d;
             });
-        }
 
-        $scope.genTran = (data) => {
-            var modalInstance = $uibModal.open({
-                animation: true,
-                templateUrl: 'modalTranban.html',
-                controller: 'ModalTranban',
-                windowClass: 'app-modal-window',
-                resolve: {
-                    data: data
+            function getPendientes() {
+                planillaSrvc.getPendientes().then((d) => {
+                    d.forEach(data => {
+                        data.total = (+data.finiquito + +data.vacaciones + +data.aguinaldo + +data.bono + +data.ordinario + +data.extra + +data.otrosbono)
+                            - (+data.prestamos + +data.anticipos + +data.otrosdesc);
+                    });
+                    $scope.cargos = d;
+                });
+
+                $scope.getPremios();
+            }
+
+            $scope.genTranFiniquito = (data) => {
+                data.premio = false;
+                modalInstance = $uibModal.open({
+                    animation: true,
+                    templateUrl: 'modalTranban.html',
+                    controller: 'ModalTranban',
+                    windowClass: 'app-modal-window',
+                    resolve: {
+                        data: data
+                    }
+                }).result.then(function (obj) {
+                    $scope.generando = true;
+                    obj.idusuario = $scope.idusuario;
+                    planillaSrvc.generaTranFiniquito(obj).then((d) => {
+                        getPendientes();
+                        $scope.generando = false;
+                        toaster.pop({ type: d.tipo, title: 'Generación de transacción', body: d.mensaje, timeout: 10000 });
+                    });
+                });
+            };
+
+            // premios pendientes
+            $scope.premios = [];
+            $scope.otros = true;
+
+            $scope.$watch('par_premios.anio', (newVal) => {
+                if (newVal != moment().year()) {
+                    $scope.otros = false;
+                } else {
+                    $scope.otros = true;
                 }
             });
 
-            modalInstance.result.then(function (obj) {
-                $scope.generando = true;
-                obj.idusuario = $scope.idusuario;
-                planillaSrvc.genera(obj).then((d) => {
-                    getPendientes();
-                    $scope.generando = false;
-                    toaster.pop({ type: d.tipo, title: 'Generación de transacción', body: d.mensaje, timeout: 10000 });
+            $scope.getPremios = () => {
+                planillaSrvc.getPremios($scope.par_premios).then(d => {
+                    $scope.premios = d;
+                })
+            }
+
+            $scope.genTranPremio = (data) => {
+                data.premio = true;
+
+                $uibModal.open({
+                    animation: true,
+                    templateUrl: 'modalTranban.html',
+                    controller: 'ModalTranban',
+                    windowClass: 'app-modal-window',
+                    resolve: {
+                        data: data
+                    }
+                }).result.then(function (obj) {
+                    $scope.generando = true;
+                    obj.idusuario = $scope.idusuario;
+                    planillaSrvc.generaTranPremio(obj).then((d) => {
+                        getPendientes();
+                        $scope.generando = false;
+                        toaster.pop({ type: d.tipo, title: 'Generación de transacción', body: d.mensaje, timeout: 10000 });
+                    });
                 });
-            });
-        };
+            };
 
-        getPendientes();
+            getPendientes();
 
-    }]);
+        }]);
 
     //------------------------------------------------------------------------------------------------------------------------------------------------//
     controller.controller('ModalTranban', ['$scope', '$uibModalInstance', 'data', 'bancoSrvc', 'tipoMovTranBanSrvc', 'cuentacSrvc', function
