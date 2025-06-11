@@ -50,7 +50,7 @@ $app->post('/factemitidas', function(){
     $qGen.= (int)$d->tipo == 2 ? "AND w.pagada = 1 " : ((int)$d->tipo == 3 ? "AND w.pagada = 0 " : '');
     $qGen.="GROUP BY x.idfactura";
     $qGen.= ") c ON a.id = c.idfactura LEFT JOIN cliente d ON d.id = a.idcliente ";
-    $qGen.= "LEFT JOIN (SELECT v.id AS idcontrato, v.idproyecto, u.nomproyecto AS proyecto FROM contrato v INNER JOIN proyecto u ON u.id = v.idproyecto) e ON a.idcontrato = e.idcontrato ";
+    $qGen.= "LEFT JOIN (SELECT v.id AS idcontrato, v.idproyecto, u.nomproyecto AS proyecto, v.idunidad FROM contrato v INNER JOIN proyecto u ON u.id = v.idproyecto) e ON a.idcontrato = e.idcontrato ";
     $qGen.= "LEFT JOIN moneda f ON f.id = a.idmonedafact ";
     $qGen.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.esparqueo = 0 AND LENGTH(a.numero) > 0 AND a.idtipofactura NOT IN(9, 13) ";
     $qGen.= $d->idempresa != '' ? "AND a.idempresa IN($d->idempresa) " : '';
@@ -58,6 +58,7 @@ $app->post('/factemitidas', function(){
     $qGen.= trim($d->cliente) != '' && (int)$d->idcliente == 0 ? "AND a.anulada = 0 AND (a.nombre LIKE '%$d->cliente%' OR a.nit LIKE '%$d->cliente%' OR d.nombre LIKE '%$d->cliente%' OR d.nombrecorto LIKE '%$d->cliente%') " : '';
     $qGen.= (int)$d->tipo == 2 ? "AND a.pagada = 1 " : ((int)$d->tipo == 3 ? "AND a.pagada = 0 " : '');
     $qGen.= (int)$d->idproyecto > 0 ? "AND e.idproyecto = $d->idproyecto " : '';
+    $qGen.= isset($d->idunidad) ? "AND e.idunidad = $d->idunidad " : '';
     $qGen.= (int)$d->idtsventa > 0 ? "AND (SELECT COUNT(idfactura) FROM detfact WHERE idfactura = a.id AND idtiposervicio = $d->idtsventa) > 0 " : '';
     $qGen.= (int)$d->soloanuladas == 0 ? '' : 'AND a.anulada = 1 ';
     $qGen.= "ORDER BY a.serieadmin, a.numeroadmin, a.serie, a.numero";

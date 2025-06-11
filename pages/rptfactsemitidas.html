@@ -1,7 +1,16 @@
 <style>
-    .ancho{ width: 100% !important; }
-    .brdbtm{ border-bottom: solid 0.1em lightgrey}
-    .bld{ font-weight: bold; }
+    .ancho {
+        width: 100% !important;
+    }
+
+    .brdbtm {
+        border-bottom: solid 0.1em lightgrey
+    }
+
+    .bld {
+        font-weight: bold;
+    }
+
     .gris {
         background-color: #E8E8E8;
     }
@@ -15,26 +24,30 @@
                     <div class="col-md-3 col-sm-3 nopadding">
                         <div class="form-group">
                             <label for="txtDel">Del:</label>
-                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.fdel" placeholder="Del"/>
+                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.fdel"
+                                placeholder="Del" />
                         </div>
                     </div>
                     <div class="col-md-3 col-sm-3 nopadding">
                         <div class="form-group">
                             <label for="txtAl">Al:</label>
-                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fal" placeholder="Al"/>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fal"
+                                placeholder="Al" />
                         </div>
                     </div>
                     <div class="col-md-6 col-sm-6 nopadding">
                         <div class="form-group">
                             <label for="selEmpresa">Empresa:</label>
                             <div class="input-group">
-                                <select name="selEmpresa" id="selEmpresa" class="form-control" ng-model="params.idempresa"
-                                        ng-options="obj.id as obj.nomempresa for obj in empresas"
-                                        ng-change="loadProyectos(params.idempresa)">
+                                <select name="selEmpresa" id="selEmpresa" class="form-control"
+                                    ng-model="params.idempresa"
+                                    ng-options="obj.id as obj.nomempresa for obj in empresas"
+                                    ng-change="loadProyectos(params.idempresa)">
                                 </select>
                                 <span class="input-group-btn">
-                                    <button class="btn btn-primary" type="button" ng-click="params.idempresa = undefined; proyectos = []; params.idproyecto = undefined;"
-                                            ng-disabled="params.idempresa === null || params.idempresa === undefined">
+                                    <button class="btn btn-primary" type="button"
+                                        ng-click="params.idempresa = undefined; proyectos = []; params.idproyecto = undefined;"
+                                        ng-disabled="params.idempresa === null || params.idempresa === undefined">
                                         <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                                     </button>
                                 </span>
@@ -47,24 +60,14 @@
                         <div class="form-group">
                             <label for="txtCliente">Cliente:</label>
                             <!--<input name="txtCliente" id="txtCliente" type="text" class="form-control" ng-model="params.cliente" placeholder="Nombre, nombre corto, facturar a..."/>-->
-                            <div angucomplete-alt id="txtCliente"
-                                placeholder="Buscar cliente..."
-                                pause="400"
+                            <div angucomplete-alt id="txtCliente" placeholder="Buscar cliente..." pause="400"
                                 selected-object="clienteSelected"
                                 remote-url="php/facturaotros.php/srchcli/{{params.idempresa}}/"
-                                remote-url-error-callback="errorSearch"
-                                remote-url-data-field="results"
-                                title-field="facturara"
-                                description-field="infocliente"
-                                input-class="form-control form-control-sm ancho"
-                                match-class="highlight"
-                                minlength="1"
-                                field-required="true"
-                                input-name="txtCliente"
-                                input-changed="focusOut"
-                                override-suggestions="true"
-                                template-url="/my-custom-template.html"
-                            ></div>
+                                remote-url-error-callback="errorSearch" remote-url-data-field="results"
+                                title-field="facturara" description-field="infocliente"
+                                input-class="form-control form-control-sm ancho" match-class="highlight" minlength="1"
+                                field-required="true" input-name="txtCliente" input-changed="focusOut"
+                                override-suggestions="true" template-url="/my-custom-template.html"></div>
                         </div>
                     </div>
                     <div class="col-md-2 col-sm-2 nopadding">
@@ -83,39 +86,64 @@
                     <div class="col-md-2 col-sm-2 nopadding">
                         <div class="form-group">
                             <label for="txtTC">TC:</label>
-                            <input name="txtTC" id="txtTC" type="number" class="form-control" ng-model="params.tc" step="0.01"/>
+                            <input name="txtTC" id="txtTC" type="number" class="form-control" ng-model="params.tc"
+                                step="0.01" />
                         </div>
                     </div>
                     <div class="col-md-2 col-sm-2 nopadding">
                         <div class="form-group">
                             <label for="chkSoloAnuladas">Solo anuladas:</label>
-                            <input name="chkSoloAnuladas" id="chkSoloAnuladas" type="checkbox" class="form-control input-sm" ng-model="params.soloanuladas" ng-true-value="1" ng-false-value="0"/>
+                            <input name="chkSoloAnuladas" id="chkSoloAnuladas" type="checkbox"
+                                class="form-control input-sm" ng-model="params.soloanuladas" ng-true-value="1"
+                                ng-false-value="0" />
                         </div>
                     </div>
                 </div>
                 <div class="row" style="text-align: left">
-                    <div class="col-md-6 col-sm-6 nopadding">
+                    <div class="col-md-4 col-sm-4 nopadding">
                         <div class="form-group">
                             <label for="selProyecto">Proyecto:</label>
                             <div class="input-group">
-                                <select name="selProyecto" id="selProyecto" class="form-control" ng-model="params.idproyecto"
-                                        ng-options="obj.id as obj.nomproyecto for obj in proyectos"></select>
+                                <select name="selProyecto" id="selProyecto" class="form-control"
+                                    ng-model="params.idproyecto" ng-change="getUnidades(params.idproyecto)"
+                                    ng-options="obj.id as obj.nomproyecto for obj in proyectos"></select>
                                 <span class="input-group-btn">
-                                    <button class="btn btn-primary" type="button" ng-click="params.idproyecto = undefined;" ng-disabled="params.idproyecto === null || params.idproyecto === undefined">
+                                    <button class="btn btn-primary" type="button"
+                                        ng-click="params.idproyecto = undefined;"
+                                        ng-disabled="params.idproyecto === null || params.idproyecto === undefined">
                                         <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                                     </button>
                                 </span>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 col-sm-6 nopadding">
+                    <div class="col-md-4 col-sm-4 nopadding">
+                        <div class="form-group">
+                            <label for="selUnidad">Unidades:</label>
+
+                            <ui-select ng-model="params.idunidad" title="Seleccione una unidad..." theme="bootstrap"
+                                autofocus="false">
+                                <ui-select-match placeholder="Buscar unidad..." allow-clear="true">
+                                    <span ng-bind="($select.selected.unidad)"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="item.idunidad as item in unidades | filter:$select.search">
+                                    <div ng-bind-html="(item.unidad) | highlight: $select.search"></div>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
+
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-4 nopadding">
                         <div class="form-group">
                             <label for="selTipo">Tipo:</label>
                             <div class="input-group">
                                 <select name="selTipo" id="selTipo" class="form-control" ng-model="params.idtsventa"
-                                        ng-options="obj.id as obj.desctiposervventa for obj in tsventa"></select>
+                                    ng-options="obj.id as obj.desctiposervventa for obj in tsventa"></select>
                                 <span class="input-group-btn">
-                                    <button class="btn btn-primary" type="button" ng-click="params.idtsventa = undefined;" ng-disabled="params.idtsventa === null || params.idtsventa === undefined || params.idtsventa === ''">
+                                    <button class="btn btn-primary" type="button"
+                                        ng-click="params.idtsventa = undefined;"
+                                        ng-disabled="params.idtsventa === null || params.idtsventa === undefined || params.idtsventa === ''">
                                         <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                                     </button>
                                 </span>
@@ -126,8 +154,8 @@
                 <button type="button" class="btn btn-danger" ng-click="getFactsEmitidas()" ng-disabled="cargando">
                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                 </button>
-                <button type="button" class="btn btn-primary" ng-click="getPendientes(params)" ng-show="params.tipo == 4"
-                ng-disabled="cargando">
+                <button type="button" class="btn btn-primary" ng-click="getPendientes(params)"
+                    ng-show="params.tipo == 4" ng-disabled="cargando">
                     <i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i>
                 </button>
             </div>
@@ -171,8 +199,8 @@
                                 <td>{{p.fechacobro}}</td>
                                 <td style="text-align: right;">{{p.montoconiva}}</td>
                                 <td>
-                                    <button type="button" class="btn btn-danger btn-sm" ng-click="eliminarPendiente(p.id, p.tipo)"
-                                    ng-disabled="!permisos.e">
+                                    <button type="button" class="btn btn-danger btn-sm"
+                                        ng-click="eliminarPendiente(p.id, p.tipo)" ng-disabled="!permisos.e">
                                         <span class="glyphicon glyphicon-remove"></span>
                                     </button>
                                 </td>

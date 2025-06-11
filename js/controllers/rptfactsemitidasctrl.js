@@ -3,11 +3,11 @@
     var rptfactsemitidasctrl = angular.module('cpm.rptfactsemitidasctrl', []);
 
     rptfactsemitidasctrl.controller('rptFacturasEmitidasCtrl', ['$scope', 'empresaSrvc', 'jsReportSrvc', 'proyectoSrvc', 'tipoServicioVentaSrvc', 'tipoCambioSrvc', 'factEmitidaSrvc', '$confirm',
-        'toaster', 'authSrvc', '$route', function ($scope, empresaSrvc, jsReportSrvc, proyectoSrvc, tipoServicioVentaSrvc, tipoCambioSrvc, factEmitidaSrvc, $confirm, toaster, authSrvc, $route) {
+        'toaster', 'authSrvc', '$route', 'unidadSrvc', function ($scope, empresaSrvc, jsReportSrvc, proyectoSrvc, tipoServicioVentaSrvc, tipoCambioSrvc, factEmitidaSrvc, $confirm, toaster, authSrvc, $route, unidadSrvc) {
 
             $scope.params = {
                 idempresa: undefined, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), cliente: '', tipo: '1', idcliente: 0, idproyecto: undefined,
-                idtsventa: undefined, soloanuladas: 0, tc: undefined
+                idtsventa: undefined, soloanuladas: 0, tc: undefined, idunidad: undefined
             };
             $scope.empresas = [];
             $scope.content = `${window.location.origin}/sayet/blank.html`;
@@ -39,6 +39,10 @@
             tipoCambioSrvc.getTC().then(() => tipoCambioSrvc.getLastTC().then((d) => $scope.params.tc = parseFloat(parseFloat(d.lasttc).toFixed(2))));
 
             $scope.loadProyectos = (idempresa) => proyectoSrvc.lstProyectosPorEmpresa(+idempresa).then((d) => $scope.proyectos = d);
+
+            $scope.getUnidades = idproyecto => {
+                unidadSrvc.lstUnidadesProy(idproyecto).then(function (d) { $scope.unidades = d; });
+            };
 
             $scope.clienteSelected = (item) => {
                 if (item != null && item != undefined) {
