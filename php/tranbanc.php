@@ -1097,38 +1097,19 @@ $app->post('/conectar_banco', function () use ($app) {
 $app->post('/conciliacion_automatica', function () {
     $db = new dbcpm();
 
-    // $query = "SELECT a.id, b.d_estado_cuenta AS id_real FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
-    //         INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'C' AND operado = 0 AND c.mt940 = d.cuenta
-    //         AND b.idtranban IS NULL
-    //     UNION ALL 
-    //         -- notas de debito
-    //         SELECT a.id, b.d_estado_cuenta AS id_real FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto 
-    //         INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'B' AND operado = 0 AND c.mt940 = d.cuenta
-    //         AND b.idtranban IS NULL
-    //     UNION ALL 
-    //         -- notas de credito
-    //         SELECT a.id, b.d_estado_cuenta AS id_real FROM tranban a INNER JOIN d_estado_cuenta b ON (a.numban = b.referencia OR a.numero = b.referencia) AND b.monto = a.monto 
-    //         INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'R' AND operado = 0 AND c.mt940 = d.cuenta
-    //         AND b.idtranban IS NULL
-    //     UNION ALL 
-    //         -- depositos 
-    //         SELECT a.id, b.d_estado_cuenta AS id_real FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
-    //         INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'D' AND operado = 0 AND c.mt940 = d.cuenta
-    //         AND b.idtranban IS NULL";
-
-        $query = "SELECT a.id, b.d_estado_cuenta AS id_real FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
-            INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'C' AND c.mt940 = d.cuenta
+    $query = "SELECT a.id, b.d_estado_cuenta AS id_real FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
+            INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'C' AND operado = 0 AND c.mt940 = d.cuenta
             AND b.idtranban IS NULL
         UNION ALL 
             -- notas de debito
             SELECT a.id, b.d_estado_cuenta AS id_real FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto 
-            INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'B' AND c.mt940 = d.cuenta
+            INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'B' AND operado = 0 AND c.mt940 = d.cuenta
             AND b.idtranban IS NULL
         UNION ALL 
             -- notas de credito
             SELECT a.id, b.d_estado_cuenta AS id_real FROM tranban a INNER JOIN d_estado_cuenta b ON (a.numban = b.referencia OR a.numero = b.referencia) AND b.monto = a.monto 
-            INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'R' AND c.mt940 = d.cuenta
-            AND b.idtranban IS NULL AND year(b.fecha) = 2025 and month(b.fecha) = 6
+            INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'R' AND operado = 0 AND c.mt940 = d.cuenta
+            AND b.idtranban IS NULL
         UNION ALL 
             -- depositos 
             SELECT a.id, b.d_estado_cuenta AS id_real FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
