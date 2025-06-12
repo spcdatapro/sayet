@@ -23,18 +23,12 @@
             $scope.params = { tipos: [], ver: '1', reporte: false, iniciales: undefined }
             // para paginar
             $scope.currentPage = 1; // Página actual
-            $scope.itemsPerPage = 20; // Número de elementos por página
+            $scope.itemsPerPage = '20'; // Número de elementos por página
             $scope.lookFor = ''; // Busqueda
 
             // para pginas de resultados
-            $scope.$watch('trans.length', function () {
-                $scope.totalPages = Math.ceil($scope.trans.length / $scope.itemsPerPage);
-            });
-
-            $scope.$watch('lookFor', function () {
-                // Calcula el número total de páginas después del filtro
+            $scope.$watchGroup(['trans.length', 'lookFor', 'itemsPerPage'], function () {
                 $scope.totalPages = Math.ceil($scope.filteredEmpleados().length / $scope.itemsPerPage);
-                // Reinicia la página actual a la primera después del filtro
                 $scope.currentPage = 1;
             });
 
@@ -46,8 +40,8 @@
 
             $scope.paginatedEmpleados = function () {
                 var filtered = $scope.filteredEmpleados();
-                var start = ($scope.currentPage - 1) * $scope.itemsPerPage;
-                return filtered.slice(start, start + $scope.itemsPerPage);
+                var start = ($scope.currentPage - 1) * +$scope.itemsPerPage;
+                return filtered.slice(start, start + +$scope.itemsPerPage);
             };
 
             $scope.filteredEmpleados = function () {
@@ -58,7 +52,7 @@
                 });
             };
 
-            $scope.totalPages = Math.ceil($scope.trans.length / $scope.itemsPerPage);
+            $scope.totalPages = Math.ceil($scope.trans.length / +$scope.itemsPerPage);
             // fin de paginas
 
             bancoSrvc.lstBancosActivos(4).then(d => {
@@ -206,8 +200,7 @@
                         aimprimir.push(tran);
                     }
                 });
-                // $scope.trans.forEach(tran => {
-                // if (tran.conciliar == 1) {
+
                 const url = window.location.origin + ':5489/api/report';
                 let props = {}, file, formData = new FormData();
 
@@ -234,8 +227,6 @@
                         $window.open(urlpdf);
                     });
                 });
-                // }
-                // });
             }
 
             $scope.$watch('selTodos', function (newVal, oldVal) {
@@ -263,7 +254,7 @@
             $scope.getLstTranAutomatica = () => {
                 if ($scope.todas.length > 0) {
                     $scope.trans = [];
-                    tranBancSrvc.traerDocumentos({ver: $scope.params.ver, reporte: false}).then(d => {
+                    tranBancSrvc.traerDocumentos({ ver: $scope.params.ver, reporte: false }).then(d => {
                         $scope.todas = d.bancos;
                         $scope.trans = d.bancos;
                         if ($scope.params.ver == '1') {
