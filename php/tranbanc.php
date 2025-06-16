@@ -884,20 +884,11 @@ $app->post('/sellofactura', function() {
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $query = "SELECT DISTINCT b.siglas AS banco, a.tipotrans AS tipo, a.numero, 
-              DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, c.serie, c.numero AS numerorecibo, 
-              DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy
-              FROM tranban a
-              INNER JOIN banco b ON b.id = a.idbanco
-              INNER JOIN recibocli c ON a.id = c.idtranban
-              INNER JOIN detcobroventa d ON c.id = d.idrecibocli
-              WHERE c.idtranban = $d->idtranban";
-    $sellos = $db->getQuery($query);
-    $sello = new stdClass();
-    if (count($sellos) > 0) {
-        $sello = $sellos[0];
-    }
-    print json_encode(['sello' => $sello]);
+    $query = "SELECT a.id, CONCAT('NC', '-', a.numero) AS tran, CONCAT(c.serie, '-', IFNULL(d.seriea, d.serieb)) AS reci 
+    FROM tranban a INNER JOIN reclitran b ON b.idtranban = a.id INNER JOIN recibocli c ON b.idrecibocli = c.id INNER JOIN serierecli d ON d.idrecibocli = c.id 
+    WHERE a.id = $d->idtranban";
+    $sello = $db->getQuery($query)[0];
+    return print json_encode($sello);
 });
 
 $app->post('/sellonc', function() {
