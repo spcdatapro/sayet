@@ -144,7 +144,7 @@ $app->post('/c', function(){
             $idrecibo = $d->idrecibocli[0];
             $cuenta_cliente = $db->getOneField("SELECT c.id FROM recibocli a INNER JOIN contrato b ON a.idcliente = b.idcliente AND b.inactivo = 0 AND b.idempresa = $idempresa 
             INNER JOIN cuentac c ON b.idcuentac = c.codigo AND c.idempresa = $idempresa WHERE a.id = $idrecibo");
-            $cuenta_default = $cuenta_cliente > 0 ? $cuenta_cliente : $db->getOneFiled("SELECT idcuentac FROM detcontempresa WHERE idempresa = $idempresa AND idtipoconfig = 30");
+            $cuenta_default = isset($cuenta_cliente) ? $cuenta_cliente : $db->getOneFiled("SELECT idcuentac FROM detcontempresa WHERE idempresa = $idempresa AND idtipoconfig = 30");
         };
     }
     if(in_array($d->tipotrans, $ttsalida)){
