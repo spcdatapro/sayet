@@ -1335,7 +1335,7 @@ EOT;
 				"bonificacionley[>]" => 0.00
 			]
 		]);
-		if (!empty($sueldo_ant)) {
+		if (!empty($sueldo_ant) && $bit->idplnmovimiento != 10) {
 			$sueldo_ant = $sueldo_ant[0];
 		} else {
 			$sueldo_ant = [];
@@ -1345,7 +1345,7 @@ EOT;
 
 		$antes = json_decode($bit->antes);
 
-		if ($bit->idempresadebito > 0) {
+		if ($bit->idempresadebito > 0 && $bit->idplnmovimiento != 6) {
 			$nomempresa = $this->db->select("empresa","nomempresa",["id [=]" => $bit->idempresadebito])[0];
 		} else if ($antes !== null) {
 			$antes = get_object_vars($antes);
@@ -2025,7 +2025,7 @@ EOT;
 				$this->set_dato("baja", null); 
 				$upd = $this->db->update('plnempleado', $this->datos, ["id [=]" => $data->idplnempleado]);
 			if ($upd) {
-				if ($this->generarBitacora($data->idplnempleado, 6, $anterior, 'REINGRESO', 1) > 0) {
+				if ($this->generarBitacora($data->idplnempleado, 6, $anterior, 'REINGRESO', 1, $data->reingreso) > 0) {
 					$respuesta = new StdClass;
 					$respuesta->tipo = 'success';
 					$respuesta->mensaje = 'Empleado dado de alta con exito.';
@@ -2067,7 +2067,7 @@ EOT;
 		if ($upd) {
 			$upd = $this->db->update('plnempleado', ["baja" => $data->baja], ["id [=]" => $data->empleado]);
 			if ($upd) {
-				if ($this->generarBitacora($data->empleado, 3, $anterior, 'BAJA DE EMPLEADO', 1) > 0) {
+				if ($this->generarBitacora($data->empleado, 3, $anterior, 'BAJA DE EMPLEADO', 1, $data->baja) > 0) {
 					$respuesta = new StdClass;
 					$respuesta->tipo = 'success';
 					$respuesta->mensaje = 'Empleado dado de baja con exito.';
@@ -2093,11 +2093,12 @@ EOT;
 		return $respuesta;
 	}
 
-	private function generarBitacora ($idempleado, $tipo, $datos = [], $descripcion, $revertir = 0) : int {
+	private function generarBitacora ($idempleado, $tipo, $datos = [], $descripcion, $revertir = 0, $fecha = null) : int {
+		$fecha_mov = $fecha ? $fecha : date('Y-m-d');
 		$this->datos = [];
 		$this->set_dato("idplnempleado", $idempleado);
 		$this->set_dato("usuario", 1);
-		$this->set_dato("movfecha", date('Y-m-d'));
+		$this->set_dato("movfecha", $fecha_mov);
 		$this->set_dato("movdescripcion", $descripcion);
 		$this->set_dato("movobservaciones", $datos->movobservaciones);
 		$this->set_dato("mostrar", 1);
