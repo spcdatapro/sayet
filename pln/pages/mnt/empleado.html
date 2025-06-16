@@ -149,6 +149,26 @@
 												title="Copiar NIT" id="txtNit">{{emp.nit}}</a></h5>
 									</td>
 								</tr>
+								<tr>
+									<td colspan="2" id="confirmIgss"></td>
+								</tr>
+								<tr>
+									<td>
+										<h5 class="negro">IGSS:</h5>
+									</td>
+									<td>
+										<h5><a ng-click="copiar('txtIgss', 'confirmIgss')" class="negro"
+												title="Copiar IGSS" id="txtIgss">{{emp.igss}}</a></h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5 class="negro">Nacimiento:</h5>
+									</td>
+									<td>
+										<h5 class="negro">{{emp.nacimiento | date: 'dd/MM/yyyy'}}</h5>
+									</td>
+								</tr>
 								<tr ng-show="emp.activo == 1">
 									<td>
 										<h5 class="negro">Ingreso:</h5>

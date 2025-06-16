@@ -1949,6 +1949,9 @@ EOT;
 		$this->set_dato("idlaboral", $idlaboral);
 		$this->db->update('plnempleado', $this->datos, ["id [=]" => $idempleado]);
 
+		$data->sueldo = 0.00;
+		$data->bonificacionley = 0.00;
+
 		// generar bitacora de nuevo ingreso
 		$idbitacora = $this->generarBitacora($idempleado, 10, $data, 'NUEVO INGRESO');
 

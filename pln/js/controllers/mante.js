@@ -255,6 +255,8 @@ angular.module('cpm')
                     $scope.emp.estatus = $scope.emp.activo == 1 ? 'Activo' : 'Inactivo';
                     $scope.emp.fecha_activo = $scope.lab.reingreso != null ? $scope.lab.reingreso : $scope.lab.ingreso;
                     $scope.emp.fecha_baja = $scope.lab.baja != null ? $scope.lab.baja : null;
+                    $scope.emp.igss = $scope.lab.igss != null ? $scope.lab.igss : '';
+                    $scope.emp.nacimiento = $scope.per.nacimiento != null ? $scope.per.nacimiento : '';
 
                     // para permitir eliminar el empleado cuando esta en tiempo de prueba
                     const hoy = moment().toDate();
