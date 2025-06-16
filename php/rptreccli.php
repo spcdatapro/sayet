@@ -63,10 +63,10 @@ $app->post('/mensual', function(){
                 cliente c ON a.idcliente = c.id
                     LEFT JOIN
                 (SELECT 
-                    d.nit, d.nombre
+                    nombre, nit
                 FROM
-                    factura d
-                LIMIT 1) d ON d.nit = a.nit
+                    factura
+                GROUP BY nit) d ON d.nit = a.nit AND a.nit != 'CF'
                     LEFT JOIN
                 detpagorecli e ON e.idreccli = a.id
                     LEFT JOIN
