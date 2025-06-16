@@ -904,16 +904,13 @@ $app->post('/sellonc', function() {
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $query = "SELECT e.nombre AS cliente, e.serie, e.numero, e.serieadmin, e.numeroadmin, 
-            DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy, a.beneficiario, a.concepto
-            FROM tranban a
-            INNER JOIN banco b ON b.id = a.idbanco
-            INNER JOIN recibocli c ON a.id = c.idtranban
-            INNER JOIN detcobroventa d ON c.id = d.idrecibocli
-            INNER JOIN factura e ON e.id = d.idfactura
-            WHERE c.idtranban = $d->idtranban
-            ORDER BY e.numeroadmin";
-    print $db->doSelectASJson($query);
+    $query = "SELECT DISTINCT a.id, IFNULL(b.nombre, IFNULL(c.nombre, 'Clientes Varios')) AS cliente, f.concepto 
+    FROM recibocli a INNER JOIN reclitran e ON e.idrecibocli = a.id LEFT JOIN cliente b ON a.idcliente = b.id 
+    LEFT JOIN factura c ON a.nit = c.nit AND a.nit != 'CF' LEFT JOIN serierecli d ON d.idrecibocli = a.id INNER JOIN tranban f ON e.idtranban = f.id 
+    WHERE e.idtranban = $d->idtranban";
+    $datos = $db->getQuery($query)[0];
+
+    return print json_encode($datos);
 });
 
 $app->get('/montoots/:idot', function($idot){
