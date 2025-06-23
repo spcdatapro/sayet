@@ -80,7 +80,8 @@ class contabilidad{
         $query.= "FROM factura b ";
         $query.= "LEFT JOIN(".$this->detalleContable(3).") x ON b.id = x.idorigen ";
         $query.= "LEFT JOIN (";
-        $query.= "SELECT z.idfactura, GROUP_CONCAT(CONCAT(x.tipotrans, x.numero) SEPARATOR ', ') AS tranban FROM detcobroventa z INNER JOIN recibocli y ON y.id = z.idrecibocli INNER JOIN tranban x ON x.id = y.idtranban GROUP BY z.idfactura";
+        $query.= "SELECT z.idfactura, GROUP_CONCAT(CONCAT(IFNULL(b.tipotrans, x.tipotrans), IFNULL(b.numero, x.numero)) SEPARATOR ', ') AS tranban FROM detcobroventa z INNER JOIN recibocli y ON y.id = z.idrecibocli LEFT JOIN tranban x ON x.id = y.idtranban ";
+        $query.= "LEFT JOIN reclitran a ON a.idrecibocli = y.id LEFT JOIN tranban b ON a.idtranban = b.id GROUP BY z.idfactura";
         $query.= ") r ON b.id = r.idfactura ";
         $query.= "LEFT JOIN contrato s ON b.idcontrato = s.id LEFT JOIN proyecto t ON s.idproyecto = t.id WHERE "; 
         $query.= !$anterior ? "b.fecha >= '$this->_fdel' AND b.fecha <= '$this->_fal' " : "b.fecha < '$this->_fdel' ";
