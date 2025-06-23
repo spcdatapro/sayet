@@ -634,10 +634,9 @@ $app->post('/prestamos', function(){
                 g.anulado = 0 AND g.esembargo = 0
                     AND (g.finalizado = 0
                     OR (YEAR(g.liquidacion) = $d->anio
-                    AND MONTH(g.liquidacion) = $d->mes))
-            GROUP BY g.id ";
+                    AND MONTH(g.liquidacion) = $d->mes)) ";
     $query.= isset($d->idempresa) ? "AND h.id = $d->idempresa " : "";
-    $query.= "ORDER BY  2 , ";
+    $query.= "GROUP BY g.id ORDER BY  2 , ";
     $query.= $d->agrupar == 2 ? " 6 , 8, 11" : " 8, 11";
     $data = $db->getQuery($query);
 
