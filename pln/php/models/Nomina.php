@@ -74,13 +74,15 @@ class Nomina extends Principal
 		$nomina = (object)$this->db->get(
 			"plnnomina", 
 			['id', 'descprestamo'], 
-			['id' => $args['idplnnomina']]
+			['id' => $args['idplnnomina'],
+			'esembargo' => 0]
 		);
 
 		$descprestamo = $this->db->select(
 			"plnpresnom", 
 			['id', 'idplnprestamo', 'monto'],
-			['idplnnomina' => $args['idplnnomina']]
+			['idplnnomina' => $args['idplnnomina'],
+			'esembargo' => 0]
 		);
 
 		if (count($descprestamo) > 0) {
@@ -89,6 +91,52 @@ class Nomina extends Principal
 
 			if ($monto != $descuento) {
 				foreach ($descprestamo as $key => $value) {
+					$pr = new Prestamo($value['idplnprestamo']);
+					$saldo = $pr->get_saldo(['sin_idplnnomina' => $nomina->id]);
+					$cuota = $saldo < $pr->pre->cuotamensual ? $saldo : $pr->pre->cuotamensual;
+					
+					if ($cuota <= $monto) {
+						$nuevo = $cuota;
+						$monto -= $cuota;
+					} else {
+						$nuevo = $monto;
+						$monto = 0;
+					}
+
+					$this->db->update(
+						'plnpresnom', 
+						['monto' => $nuevo], 
+						["id" => $value['id']]
+					);
+
+					$pr->guardar(['saldo' => $pr->get_saldo()]);
+				}
+			}
+		}
+	}
+
+	public function actualizar_saldo_embargo($args=[])
+	{
+		$nomina = (object)$this->db->get(
+			"plnnomina", 
+			['id', 'descembargo'], 
+			['id' => $args['idplnnomina'],
+			'esembargo' => 1]
+		);
+
+		$descembargo = $this->db->select(
+			"plnpresnom", 
+			['id', 'idplnprestamo', 'monto'],
+			['idplnnomina' => $args['idplnnomina'],
+			'esembargo' => 1]
+		);
+
+		if (count($descembargo) > 0) {
+			$monto = $nomina->descembargo;
+			$descuento = totalCampo($descembargo, 'monto');
+
+			if ($monto != $descuento) {
+				foreach ($descembargo as $key => $value) {
 					$pr = new Prestamo($value['idplnprestamo']);
 					$saldo = $pr->get_saldo(['sin_idplnnomina' => $nomina->id]);
 					$cuota = $saldo < $pr->pre->cuotamensual ? $saldo : $pr->pre->cuotamensual;
@@ -212,6 +260,26 @@ class Nomina extends Principal
 		return $saldo;
 	}
 
+	public function get_saldo_embargo($args=[])
+	{
+		$saldo = 0;
+
+		$descembargo = $this->db->select(
+			"plnpresnom", 
+			['*'],
+			['idplnnomina' => $args['idplnnomina']]
+		);
+
+		if (count($descembargo) > 0) {
+			foreach ($descembargo as $key => $value) {
+				$pre = new Prestamo($value['idplnprestamo']);
+				$saldo += $pre->get_saldo(['sin_idplnnomina' => $args['idplnnomina']]);
+			}
+		}
+
+		return $saldo;
+	}
+
 	public function get_registro($id)
 	{
 		$sql = "SELECT 
@@ -313,9 +381,16 @@ class Nomina extends Principal
 					$datos["descprestamo"] = ((elemento($args, "descprestamo", 0) > $saldoPrestamos)?$saldoPrestamos:$args['descprestamo']);
 				}
 
+				if (isset($args["descembargo"])) {
+					$saldoEmbargo = $this->get_saldo_prestamos(['idplnnomina' => $args['id']]);
+					$datos["desembargo"] = ((elemento($args, "descembargo", 0) > $saldoPrestamos)?$saldoPrestamos:$args['descembargo']);
+				}
+
+
 				if (!empty($datos)) {
 					if ($this->db->update("plnnomina", $datos, ["id" => $args['id']])) {
 						$this->actualizar_saldo_prestamos(['idplnnomina' => $args['id']]);
+						$this->actualizar_saldo_embargo(['idplnnomina' => $args['id']]);
 						return $this->get_registro($args['id']);
 					} else {
 						if ($this->db->error()[0] == 0) {
@@ -447,10 +522,42 @@ class Nomina extends Principal
 						]);
 						
 						$prest = $e->get_descprestamo(['sin_idplnnomina' => $row['id']]);
+						$embargo = $e->get_descembargo(['sin_idplnnomina' => $row['id']]);
 						
 						$datos['descprestamo'] = $prest['total'];
+						$datos['descembargo'] = $embargo['total'];
 
 						foreach ($prest['prestamo'] as $prestamo) {
+							$tmp = (object)$this->db->get(
+								"plnpresnom", 
+								['*'], 
+								[
+									'AND' => [
+										'idplnprestamo' => $prestamo['id'], 
+										'idplnnomina'   => $row['id']
+									]
+								]
+							);
+
+							if (isset($tmp->scalar)) {
+								$this->db->insert(
+									"plnpresnom", 
+									[
+										'idplnprestamo' => $prestamo['id'],
+										'idplnnomina'   => $row['id'],
+										'monto'         => $prestamo['cuota']
+									]
+								);
+							} else {
+								$this->db->update(
+									"plnpresnom", 
+									['monto' => $prestamo['cuota']],
+									['id' => $tmp->id]
+								);
+							}
+						}
+
+						foreach ($embargo['prestamo'] as $prestamo) {
 							$tmp = (object)$this->db->get(
 								"plnpresnom", 
 								['*'], 
@@ -704,7 +811,7 @@ EOT;
 				'tprestamo'        => 'Préstamos:',
 				'vprestamo'        => $row->descprestamo,
 				'tdescotros'       => 'Otros:',
-				'vdescotros'       => $row->descotros,
+				'vdescotros'       => $row->descotros + $row->descembargo,
 				'tdevengado'       => 'Total Devengado:',
 				'vdevengado'       => $row->devengado,
 				'tdeducido'        => 'Total Deducido:',

@@ -575,61 +575,70 @@ $app->post('/prestamos', function(){
     $d->mes = $d->mes + 1;
 
     $query = "SELECT 
-                d.id AS idempresa,
-                IFNULL(d.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
-                d.numeropat AS numero,
-                d.abreviatura,
-                h.idproyecto,
-                IFNULL(e.nomproyecto, 'NO ESPECIFICADO') AS proyecto,
-                c.id AS idempleado,
-                CONCAT(c.nombre, ' ', IFNULL(c.apellidos, '')) AS nombre,
-                IFNULL(f.descripcion, 'NO ESPECIFICADO') AS puesto,
-                a.id AS idprestamo,
-                DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
-                a.monto AS monto,
-                a.cuotamensual AS cuota,
-                IF(MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio, 0.00, (a.saldo + IFNULL(a.cuotamensual, 0) + IFNULL(b.monto, 0))) AS saldoant,
-                IF(MONTH(a.fecha) = $d->mes
-                        AND YEAR(a.fecha) = $d->anio,
-                    a.monto,
+                h.id AS idempresa,
+                h.nombre AS empresa,
+                h.numeropat AS numero,
+                h.abreviatura,
+                i.id AS idproyecto,
+                i.nomproyecto AS proyecto,
+                a.id AS idempleado,
+                CONCAT(b.primernombre,
+                        ' ',
+                        IFNULL(b.segundonombre, ''),
+                        ' ',
+                        IFNULL(b.tercernombre, ''),
+                        IFNULL(b.primerapellido, ''),
+                        IFNULL(b.segundoapellido, ''),
+                        IFNULL(b.apellidocasada, '')) AS nombre,
+                d.descripcion AS puesto,
+                g.id AS idprestamo,
+                DATE_FORMAT(g.fecha, '%d/%m/%Y') AS fecha,
+                g.monto,
+                g.cuotamensual AS cuota,
+                g.saldo + f.monto AS saldoant,
+                IF(MONTH(g.fecha) = $d->mes
+                        AND YEAR(g.fecha) = $d->anio,
+                    g.monto,
                     0.00) AS nuevo,
-                IF(g.descprestamo = 0, 0.00, a.cuotamensual) AS descnomina,
-                b.monto AS descuento,
-                (IFNULL(b.monto, 0.00) + IF(g.descprestamo = 0, 0.00, a.cuotamensual)) AS totdesc,
-                IF((MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio) OR a.saldo = 0, a.saldo, (a.saldo - IFNULL(b.monto, 0))) AS saldo
+                f.monto AS descnomina,
+                j.monto AS descuento,
+                f.monto + IFNULL(j.monto, 0.00) AS totdesc,
+                g.saldo
             FROM
-                plnprestamo a
+                plnempleado a
+                    INNER JOIN
+                plnpersonal b ON a.idpersonal = b.id
+                    INNER JOIN
+                plnlaboral c ON a.idlaboral = c.id
+                    INNER JOIN
+                plnpuesto d ON a.idplnpuesto = d.id
+                    INNER JOIN
+                plnnomina e ON e.idplnempleado = a.id
+                    INNER JOIN
+                plnpresnom f ON f.idplnnomina = e.id
+                    INNER JOIN
+                plnprestamo g ON f.idplnprestamo = g.id
+                    INNER JOIN
+                plnempresa h ON e.idempresa = h.id
+                    INNER JOIN
+                proyecto i ON c.idproyecto = i.id
                     LEFT JOIN
                 (SELECT 
-                    idplnprestamo, monto
+                    idplnprestamo, SUM(monto) AS monto
                 FROM
                     plnpresabono
                 WHERE
-                    MONTH(fecha) = $d->mes AND YEAR(fecha) = $d->anio) b ON b.idplnprestamo = a.id
-                    INNER JOIN
-                plnempleado c ON a.idplnempleado = c.id
-                    INNER JOIN
-                plnlaboral h ON c.idlaboral = h.id
-                    LEFT JOIN
-                plnempresa d ON h.idempresaactual = d.id
-                    LEFT JOIN
-                proyecto e ON h.idproyecto = e.id
-                    LEFT JOIN
-                plnpuesto f ON c.idplnpuesto = f.id
-                    LEFT JOIN
-                (SELECT 
-                    descprestamo, idplnempleado
-                FROM
-                    plnnomina
-                WHERE
-                    DAY(fecha) > 16 AND MONTH(fecha) = $d->mes
-                        AND YEAR(fecha) = $d->anio) g ON g.idplnempleado = a.idplnempleado
+                    MONTH(fecha) = $d->mes AND YEAR(fecha) = $d->anio
+                GROUP BY idplnprestamo) j ON j.idplnprestamo = g.id
             WHERE
-                a.anulado = 0 AND (a.finalizado = 0 OR (YEAR(a.liquidacion) = $d->anio AND MONTH(a.liquidacion) = $d->mes)) ";
-    $query.= isset($d->idempresa) ? "AND h.idempresadebito = $d->idempresa " : "";
-    $query.= isset($d->idempleado) ? "AND b.idplnempleado = $d->idempleado " : "";
+                g.anulado = 0 AND g.esembargo = 0
+                    AND (g.finalizado = 0
+                    OR (YEAR(g.liquidacion) = $d->anio
+                    AND MONTH(g.liquidacion) = $d->mes))
+            GROUP BY g.id ";
+    $query.= isset($d->idempresa) ? "AND h.id = $d->idempresa " : "";
     $query.= "ORDER BY  2 , ";
-    $query.= $d->agrupar == 2 ? " 6 , 8" : " 8";
+    $query.= $d->agrupar == 2 ? " 6 , 8, 11" : " 8, 11";
     $data = $db->getQuery($query);
 
     foreach($data as $dat) {

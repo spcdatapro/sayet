@@ -685,7 +685,63 @@ class Empleado extends Principal
 					'AND' => [
 						'idplnempleado[=]' => $this->emp->id,
 						"iniciopago[<=]" => $this->nfecha,
-						'anulado[=]' => 0
+						'anulado[=]' => 0,
+						'esembargo[=]' => 0
+					]
+				]
+			);
+
+			if (count($prestamos) > 0) {
+				foreach ($prestamos as $row) {
+					$ant = $this->db->get(
+						"plnpresnodesc",
+						'*',
+						[
+							'AND' => [
+								"fecha" => $this->nfecha,
+								"idplnprestamo" => $row['id']
+							]
+						]
+					);
+
+					if ($ant && count($ant) > 0 && !isset($ant['scalar'])) {
+						continue;
+					} else {
+						$pr = new Prestamo($row['id']);
+						$saldo = $pr->get_saldo($args);
+
+						if ($saldo > 0) {
+							$cuota = (($pr->pre->cuotamensual < $saldo)?$pr->pre->cuotamensual:$saldo);
+							
+							$prest['prestamo'][] = [
+								'id'    => $pr->pre->id,
+								'cuota' => $cuota
+							];
+
+							$prest['total'] += $cuota;
+						}
+					}
+				}
+			}
+		}
+
+		return $prest;
+	}
+
+	public function get_descembargo($args=[])
+	{
+		$prest = ['prestamo' => [], 'total' => 0];
+
+		if ($this->ndia != 15) {
+			$prestamos = $this->db->select(
+				"plnprestamo", 
+				['id', 'cuotamensual'], 
+				[
+					'AND' => [
+						'idplnempleado[=]' => $this->emp->id,
+						"iniciopago[<=]" => $this->nfecha,
+						'anulado[=]' => 0,
+						'esembargo[=]' => 1
 					]
 				]
 			);

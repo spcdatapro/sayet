@@ -76,6 +76,10 @@ class Prestamo extends Principal
 			if (isset($args['id'])) {
 				$this->pre->id = $args['id'];
 			}
+
+			if (isset($args['esembargo'])) {
+				$this->set_dato('esembargo', $args['esembargo']);
+			}
 		}
 
 		if (!empty($this->datos)) {
