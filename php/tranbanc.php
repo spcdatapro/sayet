@@ -130,7 +130,7 @@ $app->post('/c', function(){
             $db->doQuery("UPDATE reembolso SET pagado = 0 WHERE id = $idreembolso");
         };
 
-        if ($d->idrecibocli > 0) {
+        if ((int)$d->idrecibocli > 0) {
             $idempresa = $db->getOneField("SELECT idempresa FROM banco WHERE id = $d->idbanco");
             $recibos = count($d->idrecibocli);
             if ($recibos > 0) {
@@ -140,12 +140,12 @@ $app->post('/c', function(){
                     $db->doQuery("INSERT INTO reclitran(idrecibocli, idtranban, monto) VALUES($recibo, $lastid, $d->monto)");
                     $i++;
                 }
-            };
+            }
             $idrecibo = $d->idrecibocli[0];
             $cuenta_cliente = $db->getOneField("SELECT c.id FROM recibocli a INNER JOIN contrato b ON a.idcliente = b.idcliente AND b.inactivo = 0 AND b.idempresa = $idempresa 
             INNER JOIN cuentac c ON b.idcuentac = c.codigo AND c.idempresa = $idempresa WHERE a.id = $idrecibo");
             $cuenta_default = isset($cuenta_cliente) ? $cuenta_cliente : $db->getOneFiled("SELECT idcuentac FROM detcontempresa WHERE idempresa = $idempresa AND idtipoconfig = 30");
-        };
+        }
     }
     if(in_array($d->tipotrans, $ttsalida)){
         if($d->tipotrans === 'C'){ $db->doQuery("UPDATE banco SET correlativo = correlativo + 1 WHERE id = ".$d->idbanco); }
@@ -164,14 +164,16 @@ $app->post('/c', function(){
             $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
             $query.= "1, ".$lastid.", ".$ctabco.", $monto, 0.00, '".$d->concepto."')";
             $db->doQuery($query);
-        };
-        if ($cuenta_cliente > 0) {
-            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) 
-                VALUES(1, $lastid, $cuenta_cliente, 0.00, $monto, '$d->concepto')";
-            $db->doQuery($query);
-        } else {
-            $tipo = "warning";
-            $mensaje = "No se encontro cuenta de cliente, favor revisar.";
+        }
+        if ($d->idrecibocli > 0) {
+            if ($cuenta_cliente > 0) {
+                $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) 
+                    VALUES(1, $lastid, $cuenta_cliente, 0.00, $monto, '$d->concepto')";
+                $db->doQuery($query);
+            } else {
+                $tipo = "warning";
+                $mensaje = "No se encontro cuenta de cliente, favor revisar.";
+            }
         }
     }
     print json_encode([ 'lastid' => $lastid, 'tipo' => $tipo, 'mensaje' => $mensaje ]);
