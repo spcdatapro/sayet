@@ -1,6 +1,8 @@
 <?php
 require 'vendor/autoload.php';
 require_once 'db.php';
+require 'Reportes.php';
+require_once 'NumberToLetterConverter.class.php';
 
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
@@ -593,22 +595,6 @@ $app->post('/finanzas', function(){
         array_push($mes, $separador_mes);
     }
 
-    // nombres y montos de todas las cuentas
-    // $grafica->nombres = $nombres;
-    // $grafica->montos = $montos;
-    // $cntNombres = count($nombres);
-
-    // $grafica->colores = gradient_colors($cntNombres);
-
-    // $tot_ventas = array_sum($suma_ventas);
-    // $tot_compras = array_sum($suma_compras);
-    // $diferencia = $tot_ventas - $tot_compras;
-
-    // $letra->total_ventas = $tot_ventas;
-    // $letra->total_compras = $tot_compras;
-    // $letra->deficit = $diferencia < 0 ? true : null;
-    // $letra->diferencia = $diferencia;
-
     print json_encode([ 'encabezado' => $letra, 'meses' => $mes ]);
 });
 
@@ -649,5 +635,85 @@ function contarMeses($min, $max) {
     }
     return $contador;
 }
+
+$app->post('/control_ingresos', function () {
+    date_default_timezone_set("America/Guatemala");
+
+    $db = new dbcpm;
+    $d = json_decode(file_get_contents('php://input'));
+    $n2l = new NumberToLetterConverter();
+
+    $meses = array("enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre");
+
+    // estampa
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+
+    // fecha
+    $fecha = new DateTime($d->fecha);
+    $letra->fecha = 'Guatemala ' . $fecha->format('d') . ' de ' . $meses[$fecha->format('n') - 1] . ' ' . $anio = $fecha->format('Y');
+
+    // usuario
+    $letra->usuario = $d->usuario;
+
+    // se sustituye id de empresa por id de moneda para funcionalidad con el reporteador al igual que todos sus nombres
+    // se sustituye id de proyecto por id de empresa para funcionalidad con el reporteador al igual que todos sus nombres 
+    $query = "SELECT 
+                a.id,
+                c.id AS idempresa,
+                CONCAT(c.nommoneda, ' ', c.simbolo) AS empresa,
+                NULL AS numero,
+                c.simbolo AS abreviatura,
+                d.id AS idproyecto,
+                d.abreviatura AS proyecto,
+                IF(a.numban = 0 OR a.numban IS NULL,
+                    a.numero,
+                    a.numban) AS tranban,
+                GROUP_CONCAT(h.numeroadmin) AS factura,
+                ROUND(SUM(IF(b.idmoneda = 1,
+                            h.subtotal,
+                            h.subtotalcnv)),
+                        2) AS ingreso,
+                a.monto AS deposito,
+                ROUND(SUM(IF(b.idmoneda = 1,
+                            h.retisr,
+                            h.retisrcnv)),
+                        2) AS isr,
+                ROUND(SUM(IF(b.idmoneda = 1,
+                            h.retiva,
+                            h.retivacnv)),
+                        2) AS iva,
+                ROUND(SUM(IF(b.idmoneda = 1, h.total, h.totalcnv)) - a.monto,
+                        2) AS diferencia,
+                c.simbolo AS moneda
+            FROM
+                tranban a
+                    INNER JOIN
+                banco b ON a.idbanco = b.id
+                    INNER JOIN
+                moneda c ON b.idmoneda = c.id
+                    INNER JOIN
+                empresa d ON b.idempresa = d.id
+                    INNER JOIN
+                reclitran e ON e.idtranban = a.id
+                    INNER JOIN
+                recibocli f ON e.idrecibocli = f.id
+                    INNER JOIN
+                detcobroventa g ON g.idrecibocli = f.id
+                    INNER JOIN
+                factura h ON g.idfactura = h.id
+            WHERE
+                a.fecha = $d->fecha
+            GROUP BY a.id ORDER BY 2, 3, 4";
+    $data = $db->getQuery($query);
+
+    // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
+    $reporte = new GeneradorReportes($data, 'transacciones', ['ingreso', 'deposito', 'isr', 'iva', 'diferencia'], true);
+    $transacciones = $reporte->getReporte();
+    $montos_generales = $reporte->getTotalesGenerales();
+
+    return print json_encode([ 'encabezado' => $letra, 'trans' => $transacciones ]);
+});
 
 $app->run();
