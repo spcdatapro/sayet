@@ -652,7 +652,8 @@ $app->post('/control_ingresos', function () {
 
     // fecha
     $fecha = new DateTime($d->fecha);
-    $letra->fecha = 'Guatemala ' . $fecha->format('d') . ' de ' . $meses[$fecha->format('n') - 1] . ' ' . $anio = $fecha->format('Y');
+    $letra->fecha = '';
+    $letra->fecha = 'Guatemala ' . $fecha->format('d') . ' de ' . $meses[$fecha->format('n') - 1] . ' ' . $fecha->format('Y');
 
     // usuario
     $letra->usuario = $d->usuario;
@@ -704,7 +705,7 @@ $app->post('/control_ingresos', function () {
                     INNER JOIN
                 factura h ON g.idfactura = h.id
             WHERE
-                a.fecha = $d->fecha
+                a.fecha = '$d->fecha' AND d.espersonal = $d->personal
             GROUP BY a.id ORDER BY 2, 3, 4";
     $data = $db->getQuery($query);
 
