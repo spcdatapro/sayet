@@ -98,6 +98,7 @@ class GeneradorReportes {
                     // crear separador de proyecto
                     $separador_proyecto = new StdClass;
                     $separador_proyecto->nombre = $d->proyecto;
+                    $separador_proyecto->moneda = $d->abreviatura;
                     $separador_proyecto->$tipo = array();
 
                     // crear sumadores de proyecto

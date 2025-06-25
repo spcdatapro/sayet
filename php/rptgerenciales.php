@@ -644,6 +644,12 @@ $app->post('/control_ingresos', function () {
     $n2l = new NumberToLetterConverter();
 
     $meses = array("enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre");
+    $totales = ['ingreso', 'deposito', 'isr', 'iva', 'diferencia'];
+    $ingreso = [];
+    $deposito = [];
+    $isr = [];
+    $iva = [];
+    $diferencia = [];
 
     // estampa
     $letra = new stdClass();
@@ -660,6 +666,13 @@ $app->post('/control_ingresos', function () {
 
     // tipo 
     $letra->tipo = $d->personal === 1 ? 'Personal' : 'Empresa';
+
+    // tc
+    $letra->tc = $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio WHERE fecha = '$d->fecha' LIMIT 1");
+    $letra->tc = $letra->tc > 0 ? $letra->tc : $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio ORDER BY fecha DESC LIMIT 1"); 
+
+    // No. de caja, son es el dia que se esta obteniendo me los fines de semana
+    $letra->caja = restarDiasHabiles($fecha);
 
     // se sustituye id de empresa por id de moneda para funcionalidad con el reporteador al igual que todos sus nombres
     // se sustituye id de proyecto por id de empresa para funcionalidad con el reporteador al igual que todos sus nombres 
@@ -712,12 +725,69 @@ $app->post('/control_ingresos', function () {
             GROUP BY a.id ORDER BY 2, 3, 4";
     $data = $db->getQuery($query);
 
-    // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
-    $reporte = new GeneradorReportes($data, 'transacciones', ['ingreso', 'deposito', 'isr', 'iva', 'diferencia'], true);
-    $transacciones = $reporte->getReporte();
-    $montos_generales = $reporte->getTotalesGenerales();
+    if (count($data) > 0) {
+        // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
+        $reporte = new GeneradorReportes($data, 'transacciones', $totales, true);
+        $transacciones = $reporte->getReporte();
+        $montos_generales = $reporte->getTotalesGenerales();
+        $success = true;
+    } else {
+        $transacciones = 'No se recibieron datos';
+        $success = false;
+    }
 
-    return print json_encode([ 'encabezado' => $letra, 'trans' => $transacciones ]);
+    // print_r($montos_generales); return;
+
+    foreach($transacciones as $t) {
+        if ($t->abreviatura === 'Q') {
+            array_push($ingreso, $t->ingreso);
+            array_push($deposito, $t->deposito);
+            array_push($isr, $t->isr);
+            array_push($iva, $t->iva);
+            array_push($diferencia, $t->diferencia);
+        } else {
+            $ingreso_q = round($t->ingreso * $letra->tc, 2);
+            array_push($ingreso, $ingreso_q);
+            $deposito_q = round($t->deposito * $letra->tc, 2);
+            array_push($deposito, $deposito_q);
+            $isr_q = round($t->isr * $letra->tc, 2);
+            array_push($isr, $isr_q);
+            $iva_q = round($t->iva * $letra->tc, 2);
+            array_push($iva, $iva_q);
+            $diferencia_q = round($t->diferencia * $letra->tc, 2);
+            array_push($diferencia, $diferencia_q);
+        }
+    }
+    // print_r($ingreso); return;
+
+    $letra->ingreso = array_sum($ingreso);
+    $letra->deposito = array_sum($deposito);
+    $letra->isr = array_sum($isr);
+    $letra->iva = array_sum($iva);
+    $letra->diferencia = array_sum($diferencia);
+
+    return print json_encode([ 'encabezado' => $letra, 'trans' => $transacciones, 'succes' => $success ]);
 });
+
+function restarDiasHabiles($fecha) {
+    $diasContados = 0;
+    $dias_restantes = $fecha->format('d');
+
+    // minetras queden dias del mes le suma uno a dias contados cuando no es fin de semana y resta uno de dias restantes
+    while ($dias_restantes > 0) {
+        $diaSemana = $fecha->format('N');
+
+        // < 6 ya que 6 es sabado y 7 es domingo, agrega uno a dias
+        if ($diaSemana < 6) { 
+            $diasContados++;
+        }
+
+        $fecha->modify('-1 day');
+
+        $dias_restantes--;
+    }
+
+    return $diasContados;
+}
 
 $app->run();
