@@ -658,6 +658,9 @@ $app->post('/control_ingresos', function () {
     // usuario
     $letra->usuario = $d->usuario;
 
+    // tipo 
+    $letra->tipo = $d->personal === 1 ? 'Personal' : 'Empresa';
+
     // se sustituye id de empresa por id de moneda para funcionalidad con el reporteador al igual que todos sus nombres
     // se sustituye id de proyecto por id de empresa para funcionalidad con el reporteador al igual que todos sus nombres 
     $query = "SELECT 
