@@ -674,53 +674,95 @@ $app->post('/control_ingresos', function () {
     // No. de caja, son es el dia que se esta obteniendo me los fines de semana
     $letra->caja = restarDiasHabiles($fecha);
 
+    $letra->esingreso = $d->tipo === 1 ? true : false;
+
     // se sustituye id de empresa por id de moneda para funcionalidad con el reporteador al igual que todos sus nombres
     // se sustituye id de proyecto por id de empresa para funcionalidad con el reporteador al igual que todos sus nombres 
-    $query = "SELECT 
-                a.id,
-                c.id AS idempresa,
-                CONCAT(c.nommoneda, ' ', c.simbolo) AS empresa,
-                NULL AS numero,
-                c.simbolo AS abreviatura,
-                d.id AS idproyecto,
-                d.abreviatura AS proyecto,
-                CONCAT(b.siglas, ' No. ',  IF(a.numban = 0 OR a.numban IS NULL, a.numero, a.numban)) AS tranban,
-                IF(COUNT(h.id) > 3, CAST(CONCAT(COUNT(h.id), '-FC') AS CHAR), GROUP_CONCAT(h.numeroadmin)) AS factura,
-                ROUND(SUM(IF(b.idmoneda = 1,
-                            h.subtotal,
-                            h.subtotalcnv)),
-                        2) AS ingreso,
-                a.monto AS deposito,
-                ROUND(SUM(IF(b.idmoneda = 1,
-                            h.retisr,
-                            h.retisrcnv)),
-                        2) AS isr,
-                ROUND(SUM(IF(b.idmoneda = 1,
-                            h.retiva,
-                            h.retivacnv)),
-                        2) AS iva,
-                ROUND(SUM(IF(b.idmoneda = 1, h.total, h.totalcnv)) - a.monto,
-                        2) AS diferencia,
-                c.simbolo AS moneda
-            FROM
-                tranban a
-                    INNER JOIN
-                banco b ON a.idbanco = b.id
-                    INNER JOIN
-                moneda c ON b.idmoneda = c.id
-                    INNER JOIN
-                empresa d ON b.idempresa = d.id
-                    INNER JOIN
-                reclitran e ON e.idtranban = a.id
-                    INNER JOIN
-                recibocli f ON e.idrecibocli = f.id
-                    INNER JOIN
-                detcobroventa g ON g.idrecibocli = f.id
-                    INNER JOIN
-                factura h ON g.idfactura = h.id
-            WHERE
-                a.fecha = '$d->fecha' AND d.espersonal = $d->personal
-            GROUP BY a.id ORDER BY 2, 3, 4";
+    // tipo 1 = ingresos tipo = 2 egresos
+    if ($d->tipo === 1) {
+        $query = "SELECT 
+                    a.id,
+                    c.id AS idempresa,
+                    CONCAT(c.nommoneda, ' ', c.simbolo) AS empresa,
+                    NULL AS numero,
+                    c.simbolo AS abreviatura,
+                    d.id AS idproyecto,
+                    d.abreviatura AS proyecto,
+                    CONCAT(b.siglas, ' No. ',  IF(a.numban = 0 OR a.numban IS NULL, a.numero, a.numban)) AS tranban,
+                    IF(COUNT(h.id) > 3, CAST(CONCAT(COUNT(h.id), '-FC') AS CHAR), GROUP_CONCAT(h.numeroadmin)) AS factura,
+                    ROUND(SUM(IF(b.idmoneda = 1,
+                                h.subtotal,
+                                h.subtotalcnv)),
+                            2) AS ingreso,
+                    a.monto AS deposito,
+                    ROUND(SUM(IF(b.idmoneda = 1,
+                                h.retisr,
+                                h.retisrcnv)),
+                            2) AS isr,
+                    ROUND(SUM(IF(b.idmoneda = 1,
+                                h.retiva,
+                                h.retivacnv)),
+                            2) AS iva,
+                    ROUND(SUM(IF(b.idmoneda = 1, h.total, h.totalcnv)) - a.monto,
+                            2) AS diferencia,
+                    c.simbolo AS moneda
+                FROM
+                    tranban a
+                        INNER JOIN
+                    banco b ON a.idbanco = b.id
+                        INNER JOIN
+                    moneda c ON b.idmoneda = c.id
+                        INNER JOIN
+                    empresa d ON b.idempresa = d.id
+                        INNER JOIN
+                    reclitran e ON e.idtranban = a.id
+                        INNER JOIN
+                    recibocli f ON e.idrecibocli = f.id
+                        INNER JOIN
+                    detcobroventa g ON g.idrecibocli = f.id
+                        INNER JOIN
+                    factura h ON g.idfactura = h.id
+                WHERE
+                    a.fecha = '$d->fecha' AND d.espersonal = $d->personal
+                GROUP BY a.id ORDER BY 2, 3, 4";
+    } else {
+        $query = "SELECT 
+                    a.id,
+                    c.id AS idempresa,
+                    CONCAT(c.nommoneda, ' ', c.simbolo) AS empresa,
+                    NULL AS numero,
+                    c.simbolo AS abreviatura,
+                    d.id AS idproyecto,
+                    d.abreviatura AS proyecto,
+                    CONCAT(b.siglas,
+                            ' No. ',
+                            IF(a.numban = 0 OR a.numban IS NULL,
+                                a.numero,
+                                a.numban)) AS numero,
+                    a.beneficiario,
+                    ROUND(SUM(f.totfact * f.tipocambio), 2) AS ingreso,
+                    a.monto AS deposito,
+                    f.isr,
+                    f.retiva AS iva,
+                    ROUND(SUM(f.totfact * f.tipocambio) - (a.monto),
+                            2) AS diferencia,
+                    c.simbolo AS moneda
+                FROM
+                    tranban a
+                        INNER JOIN
+                    banco b ON a.idbanco = b.id
+                        INNER JOIN
+                    moneda c ON b.idmoneda = c.id
+                        INNER JOIN
+                    empresa d ON b.idempresa = d.id
+                        INNER JOIN
+                    detpagocompra e ON e.idtranban = a.id
+                        INNER JOIN
+                    compra f ON e.idcompra = f.id
+                WHERE
+                    a.fecha = '$d->fecha' AND d.espersonal = $d->personal
+                GROUP BY a.id ORDER BY 2, 3, 4";
+    }
     $data = $db->getQuery($query);
 
     if (count($data) > 0) {
