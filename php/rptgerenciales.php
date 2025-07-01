@@ -724,7 +724,7 @@ $app->post('/control_ingresos', function () {
                     factura h ON g.idfactura = h.id
                 WHERE
                     a.fecha = '$d->fecha' AND d.espersonal = $d->personal
-                GROUP BY a.id ORDER BY 2, 3, 4";
+                GROUP BY a.id ORDER BY 2, 6";
     } else {
         $query = "SELECT 
                     a.id,
@@ -761,7 +761,7 @@ $app->post('/control_ingresos', function () {
                     compra f ON e.idcompra = f.id
                 WHERE
                     a.fecha = '$d->fecha' AND d.espersonal = $d->personal
-                GROUP BY a.id ORDER BY 2, 3, 4";
+                GROUP BY a.id ORDER BY 2, 6";
     }
     $data = $db->getQuery($query);
 
