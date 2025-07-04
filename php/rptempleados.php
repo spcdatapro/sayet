@@ -1401,6 +1401,8 @@ $app->post('/carta', function () {
     $anio = $fecha->format('Y');
     $dia_letras = trim(strtolower($n2l->to_word($dia)));
     $datos->hoy = 'a los ' . $dia_letras . ' días del mes de ' . $mes . ' de ' . $anio;
+    $datos->mes = $fecha->format('n');
+    $datos->anio = $fecha->format('Y');
 
     print json_encode([ 'empleado' => $datos ]);
 });
