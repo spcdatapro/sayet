@@ -673,6 +673,7 @@ $app->post('/control_ingresos', function () {
 
     // No. de caja, son es el dia que se esta obteniendo me los fines de semana
     $letra->caja = restarDiasHabiles($fecha);
+    $letra->caja = str_pad($letra->caja, 2, '0', STR_PAD_LEFT);
 
     $letra->esingreso = $d->tipo === 1 ? true : false;
 
