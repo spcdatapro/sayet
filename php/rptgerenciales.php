@@ -707,7 +707,7 @@ $app->post('/control_ingresos', function () {
                     ROUND(SUM(IF(b.idmoneda = 1, h.total, h.totalcnv)) - a.monto,
                             2) AS diferencia,
                     c.simbolo AS moneda,
-                    IF($d->tipo = 1, true, false) AS esingreso
+                    IF($d->tipo = 1, true, false) AS numero
                 FROM
                     tranban a
                         INNER JOIN
@@ -732,7 +732,6 @@ $app->post('/control_ingresos', function () {
                     a.id,
                     c.id AS idempresa,
                     CONCAT(c.nommoneda, ' ', c.simbolo) AS empresa,
-                    NULL AS numero,
                     c.simbolo AS abreviatura,
                     d.id AS idproyecto,
                     d.abreviatura AS proyecto,
@@ -749,7 +748,7 @@ $app->post('/control_ingresos', function () {
                     ROUND(SUM(f.totfact * f.tipocambio) - (a.monto),
                             2) AS diferencia,
                     c.simbolo AS moneda,
-                    IF($d->tipo = 1, true, false) AS esingreso
+                    IF($d->tipo = 1, true, false) AS numero
                 FROM
                     tranban a
                         INNER JOIN
