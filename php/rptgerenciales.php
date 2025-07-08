@@ -706,7 +706,8 @@ $app->post('/control_ingresos', function () {
                             2) AS iva,
                     ROUND(SUM(IF(b.idmoneda = 1, h.total, h.totalcnv)) - a.monto,
                             2) AS diferencia,
-                    c.simbolo AS moneda
+                    c.simbolo AS moneda,
+                    IF($d->tipo = 1, true, false) AS esingreso
                 FROM
                     tranban a
                         INNER JOIN
@@ -747,7 +748,8 @@ $app->post('/control_ingresos', function () {
                     f.retiva AS iva,
                     ROUND(SUM(f.totfact * f.tipocambio) - (a.monto),
                             2) AS diferencia,
-                    c.simbolo AS moneda
+                    c.simbolo AS moneda,
+                    IF($d->tipo = 1, true, false) AS esingreso
                 FROM
                     tranban a
                         INNER JOIN
