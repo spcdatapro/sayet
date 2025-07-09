@@ -503,7 +503,7 @@ $app->post('/genfactfel', function() {
                         if((float)$det->montoconiva != 0){
                             $db->doQuery($query);
                             $lastidDetalle = $db->getLastId();
-                            $descripcionLarga = getDescripcionLarga($lastid, $lastidDetalle, $p->idcliente);
+                            $descripcionLarga = getDescripcionLarga($lastid, $lastidDetalle, $p->idcliente, $params);
                             $query = "UPDATE detfact SET descripcionlarga = '$descripcionLarga' WHERE id = $lastidDetalle";
                             $db->doQuery($query);
                         }
@@ -521,7 +521,7 @@ $app->post('/genfactfel', function() {
     }
 });
 
-function getDescripcionLarga($idfactura, $iddetallefactura, $idcliente = null) {
+function getDescripcionLarga($idfactura, $iddetallefactura, $idcliente = null, $params) {
     $db = new dbcpm();
     $meses = [2 => 2, 3 => 5, 4 => 1];
     $periodo = '';
@@ -559,9 +559,12 @@ function getDescripcionLarga($idfactura, $iddetallefactura, $idcliente = null) {
     // concepto solo para panifresh
     $panifresh = $idcliente == 53 ? 'KM 19.5 BÁRCENAS VILLA NUEVA, COMPLEJO ' : '';
     $concepto_incial = $db->getOneField("SELECT concepto FROM cliente WHERE id = $idcliente");
+    $onesec = $idcliente == 103 ? 1 : 0;
+    $fecha = new DateTime($params->fvencestr);
+    $dias = $fecha->format('d');
 
     $query = "SELECT DISTINCT TRIM(CONCAT(IF(b.esinsertada = 0, IF(a.idtiposervicio <> 4, CONCAT('$concepto_incial', ' ', UPPER(TRIM(e.desctiposervventa)), ', ', '$panifresh', TRIM(d.nomproyecto), ', ',
-    TRIM(UnidadesPorContrato(c.id)), ', Mes de ', ".($periodo == '' ? "f.nombre, ' del año ', a.anio" : ("'".$periodo."'"))."), TRIM(a.descripcion)), TRIM(a.descripcion)), ' ', 
+    TRIM(UnidadesPorContrato(c.id)), IF($onesec, ', del 1 al $dias del', ','), ' Mes de ', ".($periodo == '' ? "f.nombre, ' del año ', a.anio" : ("'".$periodo."'"))."), TRIM(a.descripcion)), TRIM(a.descripcion)), ' ', 
     IFNULL(a.conceptoadicional, ''), IF(b.idmonedafact = 2, ROUND(b.tipocambio, 5), ''))) AS descripcion 
     FROM detfact a INNER JOIN factura b ON b.id = a.idfactura LEFT JOIN contrato c ON c.id = b.idcontrato LEFT JOIN proyecto d ON d.id = c.idproyecto 
     LEFT JOIN tiposervicioventa e ON e.id = a.idtiposervicio LEFT JOIN mes f ON f.id = a.mes 
@@ -986,5 +989,9 @@ $app->get('/revertir/:idfactura', function($idfactura){
 
     return;
 });
+
+function obtenerDiasDelMes($mes, $anio) {
+    return cal_days_in_month(CAL_GREGORIAN, $mes, $anio);
+}
 
 $app->run();
