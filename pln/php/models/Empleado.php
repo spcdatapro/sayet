@@ -1790,6 +1790,8 @@ EOT;
 			$data['id'] = $this->db->select("plnempleado","idlaboral",["id [=]" => $data['idplnempleado']])[0];
 		}
 
+		$lab = $this->db->get("plnlaboral", "*", ["id [=]" => $data['id']]);
+
 		// validar si existen datos
 		if (count($data) > 0) {
 			// formatear datos antes de hacer insert
@@ -1847,6 +1849,11 @@ EOT;
 				$upd = $this->db->update('plnlaboral', $this->datos, ["id [=]" => $idlaboral]);
 
 				if ($upd) {
+					if ($lab['sueldo'] != $data['sueldo'] || $lab['bonificacionley'] != $data['bonificacionley']) {
+						$objeto = json_decode(json_encode($lab));
+						$objeto->movobservaciones = 'Aumento de sueldo';
+						$this->generarBitacora($idempleado, 7, $objeto, 'Aumento de sueldo', 1);
+					}
 					$respuesta = new StdClass;
 					$respuesta->tipo = 'success';
 					$respuesta->mensaje = 'Datos laborales actualizados con exito.';
@@ -2154,6 +2161,7 @@ EOT;
 
 	private function generarBitacora ($idempleado, $tipo, $datos = [], $descripcion, $revertir = 0, $fecha = null) : int {
 		$fecha_mov = $fecha ? $fecha : date('Y-m-d');
+
 		$this->datos = [];
 		$this->set_dato("idplnempleado", $idempleado);
 		$this->set_dato("usuario", 1);
