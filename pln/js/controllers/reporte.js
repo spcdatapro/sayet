@@ -211,7 +211,19 @@ angular.module('cpm')
         })
 
         empServicios.buscar({sin_limite:1}).then(function(res){
-            console.log(res)
+            console.log(res);
+            res.resultados.forEach(value => {
+                value.segundonombre = value.segundonombre ? value.segundonombre : '';
+                value.tercernombre = value.tercernombre ? value.tercernombre : '';
+
+                value.nombre = value.primernombre + ' ' + value.segundonombre + ' ' + value.tercernombre;
+
+                value.primerapellido = value.primerapellido ? value.primerapellido : '';
+                value.segundoapellido = value.segundoapellido ? value.segundoapellido : '';
+                value.apellidocasada = value.apellidocasada ? value.apellidocasada : '';
+
+                value.apellidos = value.primerapellido + ' ' + value.segundoapellido + ' ' + value.apellidocasada;
+            });
 
             $scope.empleados = res.resultados
             setTimeout(function() { $("#selectEmpleado").chosen({width:'100%'}) }, 3)

@@ -16,8 +16,19 @@
         // parametros para reporte
         $scope.params = { agrupar: '1', anio: +moment().toDate().getFullYear().toString() };
 
-        empServicios.buscar({ estatus: 1, sin_limite: true }).then(function (d) {
-            $scope.empleados = d.resultados;
+        empServicios.buscar({ estatus: 1, sin_limite: true }).then(function (res) {
+            res.resultados.forEach(value => {
+                value.segundonombre = value.segundonombre ? value.segundonombre : '';
+                value.tercernombre = value.tercernombre ? value.tercernombre : '';
+
+                value.nombre = value.primernombre + ' ' + value.segundonombre + ' ' + value.tercernombre;
+
+                value.segundoapellido = value.segundoapellido ? value.segundoapellido : '';
+                value.apellidocasada = value.apellidocasada ? value.apellidocasada : '';
+
+                value.apellidos = value.primerapellido + ' ' + value.segundoapellido + ' ' + value.apellidocasada;
+            });
+            $scope.empleados = res.resultados;
         });
 
         // para visualizaciones en pantalla
