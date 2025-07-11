@@ -665,7 +665,7 @@ $app->post('/control_ingresos', function () {
     $letra->usuario = $d->usuario;
 
     // tipo 
-    $letra->tipo = $d->personal === 1 ? 'Personal' : 'Empresa';
+    $letra->tipo = $d->personal === 1 ? 'Personal' : 'por Empresa';
 
     // tc
     $letra->tc = $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio WHERE fecha = '$d->fecha' LIMIT 1");
