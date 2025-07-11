@@ -644,7 +644,7 @@ $app->post('/control_ingresos', function () {
     $n2l = new NumberToLetterConverter();
 
     $meses = array("enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre");
-    $totales = ['ingreso', 'deposito', 'isr', 'iva', 'diferencia'];
+    $totales = ['deposito'];
     $ingreso = [];
     $deposito = [];
     $isr = [];
@@ -730,43 +730,59 @@ $app->post('/control_ingresos', function () {
                 GROUP BY a.id ORDER BY 2, 6";
     } else {
         $query = "SELECT 
-                    a.id,
-                    c.id AS idempresa,
-                    CONCAT(c.nommoneda, ' ', c.simbolo) AS empresa,
-                    c.simbolo AS abreviatura,
-                    d.id AS idproyecto,
-                    d.abreviatura AS proyecto,
-                    CONCAT(IF(a.numban = 0 OR a.numban IS NULL,
-                                a.numero,
-                                a.numban)) AS tranban,
-                    b.siglas,
-                    a.beneficiario AS factura,
-                    ROUND(SUM(f.totfact * f.tipocambio), 2) AS ingreso,
-                    a.monto AS deposito,
-                    f.isr,
-                    f.retiva AS iva,
-                    ROUND(SUM(f.totfact * f.tipocambio) - (a.monto),
-                            2) AS diferencia,
-                    c.simbolo AS moneda,
-                    DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
-                    IF($d->tipo = 1, true, false) AS numero
-                FROM
-                    tranban a
-                        INNER JOIN
-                    banco b ON a.idbanco = b.id
-                        INNER JOIN
-                    moneda c ON b.idmoneda = c.id
-                        INNER JOIN
-                    empresa d ON b.idempresa = d.id
-                        INNER JOIN
-                    detpagocompra e ON e.idtranban = a.id
-                        INNER JOIN
-                    compra f ON e.idcompra = f.id
-                WHERE
-                    a.fecha = '$d->fecha' AND d.espersonal = $d->personal
-                GROUP BY a.id ORDER BY 2, 6";
+                a.id,
+                c.id AS idempresa,
+                CONCAT(c.nommoneda, ' ', c.simbolo) AS empresa,
+                c.simbolo AS abreviatura,
+                d.id AS idproyecto,
+                d.abreviatura AS proyecto,
+                CONCAT(IF(a.numban = 0 OR a.numban IS NULL,
+                            a.numero,
+                            a.numban)) AS tranban,
+                b.siglas,
+                a.beneficiario AS factura,
+                NULL AS ingreso,
+                a.monto AS deposito,
+                c.simbolo AS moneda,
+                DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
+                IF(2 = 1, TRUE, FALSE) AS numero
+            FROM
+                tranban a
+                    INNER JOIN
+                banco b ON a.idbanco = b.id
+                    INNER JOIN
+                moneda c ON b.idmoneda = c.id
+                    INNER JOIN
+                empresa d ON b.idempresa = d.id
+            WHERE
+                a.fecha = '$d->fecha'
+                    AND d.espersonal = $d->personal
+                    AND a.beneficiario != 'anulado'                     
+            GROUP BY a.id ORDER BY 2 , 6 , 9";
     }
     $data = $db->getQuery($query);
+
+    // print_r($transacciones); return;
+    $t_proveedor = [];
+
+    for ($i = 0; $i < count($data); $i++) {
+        // traer valor actual y anterior
+        $actual = $data[$i];
+        $proximo = count($data) === $i+1 ? $data[$i] : $data[$i+1];
+
+        array_push($t_proveedor, $actual->deposito);
+
+        // si no tienen el mismo proveedor
+        if ($actual->factura !== $proximo->factura) {
+            $actual->ingreso = array_sum($t_proveedor);
+            // generar variable de totales
+            if (count($t_proveedor) > 1) {
+                $actual->varios = true;
+            }
+
+            $t_proveedor = [];
+        }
+    }
 
     if (count($data) > 0) {
         // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
@@ -779,35 +795,16 @@ $app->post('/control_ingresos', function () {
         $success = false;
     }
 
-    // print_r($montos_generales); return;
-
     foreach($transacciones as $t) {
         if ($t->abreviatura === 'Q') {
-            array_push($ingreso, $t->ingreso);
             array_push($deposito, $t->deposito);
-            array_push($isr, $t->isr);
-            array_push($iva, $t->iva);
-            array_push($diferencia, $t->diferencia);
         } else {
-            $ingreso_q = round($t->ingreso * $letra->tc, 2);
-            array_push($ingreso, $ingreso_q);
             $deposito_q = round($t->deposito * $letra->tc, 2);
             array_push($deposito, $deposito_q);
-            $isr_q = round($t->isr * $letra->tc, 2);
-            array_push($isr, $isr_q);
-            $iva_q = round($t->iva * $letra->tc, 2);
-            array_push($iva, $iva_q);
-            $diferencia_q = round($t->diferencia * $letra->tc, 2);
-            array_push($diferencia, $diferencia_q);
         }
     }
-    // print_r($ingreso); return;
 
-    $letra->ingreso = array_sum($ingreso);
     $letra->deposito = array_sum($deposito);
-    $letra->isr = array_sum($isr);
-    $letra->iva = array_sum($iva);
-    $letra->diferencia = array_sum($diferencia);
 
     return print json_encode([ 'encabezado' => $letra, 'trans' => $transacciones, 'succes' => $success ]);
 });
