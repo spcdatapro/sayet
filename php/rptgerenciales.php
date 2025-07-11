@@ -748,6 +748,7 @@ $app->post('/control_ingresos', function () {
                     ROUND(SUM(f.totfact * f.tipocambio) - (a.monto),
                             2) AS diferencia,
                     c.simbolo AS moneda,
+                    DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
                     IF($d->tipo = 1, true, false) AS numero
                 FROM
                     tranban a
