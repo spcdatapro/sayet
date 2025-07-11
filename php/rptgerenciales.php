@@ -740,7 +740,7 @@ $app->post('/control_ingresos', function () {
                             a.numero,
                             a.numban)) AS tranban,
                 b.siglas,
-                a.beneficiario AS factura,
+                SUBSTRING(a.beneficiario, 1, 35) AS factura,
                 NULL AS ingreso,
                 a.monto AS deposito,
                 c.simbolo AS moneda,
