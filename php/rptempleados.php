@@ -107,9 +107,9 @@ $app->post('/altasbajas', function(){
     }
 
     if ($d->agrupar == 2) {
-        $letra->agrupar = 'por proyecto';
+        $letra->agrupar = 'proyecto';
     } else {
-        $letra->agrupar = 'por empresa';
+        $letra->agrupar = 'empresa';
     }
 
     // array de facturas
