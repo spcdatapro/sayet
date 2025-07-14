@@ -693,7 +693,7 @@ $app->post('/control_ingresos', function () {
                     d.abreviatura AS proyecto,
                     CONCAT(IF(a.numban = 0 OR a.numban IS NULL, a.numero, a.numban)) AS tranban,
                     b.siglas,
-                    IF(COUNT(h.id) > 3, CAST(CONCAT(COUNT(h.id), '-FC') AS CHAR), GROUP_CONCAT(h.numeroadmin)) AS factura,
+                    IFNULL(IF(COUNT(h.id) > 3, CAST(CONCAT(COUNT(h.id), '-FC') AS CHAR), GROUP_CONCAT(h.numeroadmin)), 'SC') AS factura,
                     ROUND(SUM(IF(b.idmoneda = 1,
                                 h.subtotal,
                                 h.subtotalcnv)),
