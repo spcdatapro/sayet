@@ -677,6 +677,8 @@ $app->post('/control_ingresos', function () {
 
     $letra->esingreso = $d->ingreso === 1 ? true : false;
 
+    $d->tipo = $d->tipo == 1 ? 0 : 1;
+
     // se sustituye id de empresa por id de moneda para funcionalidad con el reporteador al igual que todos sus nombres
     // se sustituye id de proyecto por id de empresa para funcionalidad con el reporteador al igual que todos sus nombres 
     // tipo 1 = ingresos tipo = 2 egresos
