@@ -743,6 +743,9 @@ $app->post('/control_ingresos', function () {
                 SUBSTRING(a.beneficiario, 1, 35) AS factura,
                 NULL AS ingreso,
                 a.monto AS deposito,
+                null AS isr, 
+                NULL AS iva, 
+                NULL AS diferencia,
                 c.simbolo AS moneda,
                 DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
                 IF(2 = 1, TRUE, FALSE) AS numero
