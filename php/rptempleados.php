@@ -357,7 +357,7 @@ $app->post('/bono14', function(){
                 IFNULL(f.apellidocasada, '')) AS nombre,
                 b.numeropat AS numero,
                 IFNULL(d.descripcion, 'NO ESPECIFICADO') AS puesto,
-                DATE_FORMAT(g.ingreso, '%d/%m/%Y') AS fecha,
+                DATE_FORMAT(IFNULL(g.reingreso, g.ingreso), '%d/%m/%Y') AS fecha,
                 g.sueldo,
                 e.bonocatorcedias,
                 e.bonocatorce,
