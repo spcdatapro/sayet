@@ -675,12 +675,12 @@ $app->post('/control_ingresos', function () {
     $letra->caja = restarDiasHabiles($fecha);
     $letra->caja = str_pad($letra->caja, 2, '0', STR_PAD_LEFT);
 
-    $letra->esingreso = $d->tipo === 1 ? true : false;
+    $letra->esingreso = $d->ingreso === 1 ? true : false;
 
     // se sustituye id de empresa por id de moneda para funcionalidad con el reporteador al igual que todos sus nombres
     // se sustituye id de proyecto por id de empresa para funcionalidad con el reporteador al igual que todos sus nombres 
     // tipo 1 = ingresos tipo = 2 egresos
-    if ($d->tipo === 1) {
+    if ($d->ingreso === 1) {
         $query = "SELECT 
                     a.id,
                     c.id AS idempresa,
@@ -708,7 +708,7 @@ $app->post('/control_ingresos', function () {
                     ROUND(SUM(IF(b.idmoneda = 1, h.total, h.totalcnv)) - a.monto,
                             2) AS diferencia,
                     c.simbolo AS moneda,
-                    IF($d->tipo = 1, true, false) AS numero
+                    IF($d->ingreso = 1, true, false) AS numero
                 FROM
                     tranban a
                         INNER JOIN
@@ -768,7 +768,7 @@ $app->post('/control_ingresos', function () {
     // print_r($transacciones); return;
     $t_proveedor = [];
 
-    if ($d->tipo === 2) {
+    if ($d->ingreso === 2) {
         for ($i = 0; $i < count($data); $i++) {
             // traer valor actual y anterior
             $actual = $data[$i];
