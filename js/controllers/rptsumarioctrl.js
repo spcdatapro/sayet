@@ -2,7 +2,7 @@
 
     var rptsumarioctrl = angular.module('cpm.rptsumarioctrl', []);
 
-    rptsumarioctrl.controller('rptSumarioCtrl', ['$scope', 'jsReportSrvc', 'monedaSrvc', 'bancoSrvc', '$sce', '$http', '$window', '$q', '$filter', 'Upload', function ($scope, jsReportSrvc, monedaSrvc, bancoSrvc, $sce, $http, $window, $q, $filter, Upload) {
+    rptsumarioctrl.controller('rptSumarioCtrl', ['$scope', 'jsReportSrvc', 'monedaSrvc', 'bancoSrvc', '$sce', '$http', '$window', '$q', '$filter', 'Upload', 'authSrvc', function ($scope, jsReportSrvc, monedaSrvc, bancoSrvc, $sce, $http, $window, $q, $filter, Upload, authSrvc) {
 
         $scope.params = { fecha: moment().toDate(), idmoneda: '1', solomov: 1, tipo: '1' };
         $scope.content = '';
@@ -10,6 +10,10 @@
         $scope.estaGenerando = false;
         // para mostrar reporte en pantalla
         $scope.content = `${window.location.origin}/sayet/blank.html`;
+
+        authSrvc.getSession().then(usr => {
+            $scope.params.usuario = usr.iniciales;
+        }) 
 
         var test = false;
         $scope.getRptSumario = function () {
