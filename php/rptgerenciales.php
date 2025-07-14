@@ -743,6 +743,8 @@ $app->post('/control_ingresos', function () {
                             a.numero,
                             a.numban)) AS tranban,
                 b.siglas,
+                b.ordensumario,
+                a.numero,
                 SUBSTRING(a.beneficiario, 1, 35) AS factura,
                 NULL AS ingreso,
                 a.monto AS deposito,
@@ -765,7 +767,7 @@ $app->post('/control_ingresos', function () {
                     AND d.espersonal = $d->tipo
                     AND a.beneficiario != 'anulado'  
                     AND a.tipotrans = 'B'                   
-            GROUP BY a.id ORDER BY 2 , 6 , 9";
+            GROUP BY a.id ORDER BY 2 , 6 , 9, 10";
     }
     $data = $db->getQuery($query);
 
