@@ -15,8 +15,8 @@
         $scope.getRptSumario = function () {
             $scope.estaGenerando = true;
             $scope.params.fechastr = moment($scope.params.fecha).format('YYYY-MM-DD');
-            jsReportSrvc.getPDFReport(test ? 'H13Q-o81-' : 'By_inM6jp', $scope.params).then(function (pdf) { 
-                $scope.content = pdf; 
+            jsReportSrvc.getPDFReport(test ? 'H13Q-o81-' : 'By_inM6jp', $scope.params).then(function (pdf) {
+                $scope.content = pdf;
                 $scope.estaGenerando = false;
             });
         };
@@ -68,6 +68,24 @@
                 });
             });
         };
+
+        $scope.reporteCreditos = () => {
+            $scope.estaGenerando = true;
+            $scope.params.fechastr = moment($scope.params.fecha).format('YYYY-MM-DD');
+            jsReportSrvc.getPDFReport('rkDFkiFEgl', $scope.params).then(function (pdf) {
+                $scope.content = pdf;
+                $scope.estaGenerando = false;
+            });
+        }
+
+        $scope.reporteDebitos = () => {
+            $scope.estaGenerando = true;
+            $scope.params.fechastr = moment($scope.params.fecha).format('YYYY-MM-DD');
+            jsReportSrvc.getPDFReport('Bk5Mf3ABel', $scope.params).then(function (pdf) {
+                $scope.content = pdf;
+                $scope.estaGenerando = false;
+            });
+        }
 
     }]);
 }());

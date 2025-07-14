@@ -44,6 +44,22 @@
                 ng-disabled="params.fecha == null || params.fecha == undefined" ng-click="getSumarioGeneral()">
                 <i class="fa fa-globe" aria-hidden="true"></i>
             </button>
+            <div class="btn-group">
+                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"
+                    ng-disabled="params.fecha == null || params.fecha == undefined">
+                    <i class="fi fi-tr-data-report"></i> Control de...
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a ng-click="enviar(presupuesto)" ng-hide="+presupuesto.idestatuspresupuesto == 2">
+                        Cr&eacute;itos
+                        </a>
+                    </li>
+                    <li><a ng-click="prntAprobacion(presupuesto.id)">
+                        D&eacute;bitos
+                        </a>
+                    </li>
+                </ul>
+            </div>
             <button type="button" class="btn btn-primary btn-sm" ng-click="resetParams()">
                 <i class="fa fa-refresh" aria-hidden="true"></i>
             </button>
