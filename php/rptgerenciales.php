@@ -665,7 +665,7 @@ $app->post('/control_ingresos', function () {
     $letra->usuario = $d->usuario;
 
     // tipo 
-    $letra->tipo = $d->personal === 1 ? 'Personal' : 'por Empresa';
+    $letra->tipo = $d->tipo === 1 ? 'Personal' : 'por Empresa';
 
     // tc
     $letra->tc = $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio WHERE fecha = '$d->fecha' LIMIT 1");
@@ -726,7 +726,7 @@ $app->post('/control_ingresos', function () {
                         INNER JOIN
                     factura h ON g.idfactura = h.id
                 WHERE
-                    a.fecha = '$d->fechastr' AND d.espersonal = $d->personal
+                    a.fecha = '$d->fechastr' AND d.espersonal = $d->tipo
                 GROUP BY a.id ORDER BY 2, 6";
     } else {
         $query = "SELECT 
@@ -759,7 +759,7 @@ $app->post('/control_ingresos', function () {
                 empresa d ON b.idempresa = d.id
             WHERE
                 a.fecha = '$d->fechastr'
-                    AND d.espersonal = $d->personal
+                    AND d.espersonal = $d->tipo
                     AND a.beneficiario != 'anulado'                     
             GROUP BY a.id ORDER BY 2 , 6 , 9";
     }
