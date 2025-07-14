@@ -657,7 +657,7 @@ $app->post('/control_ingresos', function () {
     $letra->estampa = $letra->estampa->format('d-m-Y H:i');
 
     // fecha
-    $fecha = new DateTime($d->fecha);
+    $fecha = new DateTime($d->fechastr);
     $letra->fecha = '';
     $letra->fecha = 'Guatemala ' . $fecha->format('d') . ' de ' . $meses[$fecha->format('n') - 1] . ' ' . $fecha->format('Y');
 
@@ -726,7 +726,7 @@ $app->post('/control_ingresos', function () {
                         INNER JOIN
                     factura h ON g.idfactura = h.id
                 WHERE
-                    a.fecha = '$d->fecha' AND d.espersonal = $d->personal
+                    a.fecha = '$d->fechastr' AND d.espersonal = $d->personal
                 GROUP BY a.id ORDER BY 2, 6";
     } else {
         $query = "SELECT 
@@ -758,7 +758,7 @@ $app->post('/control_ingresos', function () {
                     INNER JOIN
                 empresa d ON b.idempresa = d.id
             WHERE
-                a.fecha = '$d->fecha'
+                a.fecha = '$d->fechastr'
                     AND d.espersonal = $d->personal
                     AND a.beneficiario != 'anulado'                     
             GROUP BY a.id ORDER BY 2 , 6 , 9";
