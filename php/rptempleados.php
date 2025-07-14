@@ -106,6 +106,12 @@ $app->post('/altasbajas', function(){
         $letra->tipo = '';
     }
 
+    if ($d->agrupar == 2) {
+        $letra->agrupar = 'por proyecto';
+    } else {
+        $letra->agrupar = 'por empresa';
+    }
+
     // array de facturas
     $empleados = array();
 
