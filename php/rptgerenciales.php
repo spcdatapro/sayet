@@ -719,16 +719,17 @@ $app->post('/control_ingresos', function () {
                     moneda c ON b.idmoneda = c.id
                         INNER JOIN
                     empresa d ON b.idempresa = d.id
-                        INNER JOIN
+                        LEFT JOIN
                     reclitran e ON e.idtranban = a.id
-                        INNER JOIN
+                        LEFT JOIN
                     recibocli f ON e.idrecibocli = f.id
-                        INNER JOIN
+                        LEFT JOIN
                     detcobroventa g ON g.idrecibocli = f.id
-                        INNER JOIN
+                        LEFT JOIN
                     factura h ON g.idfactura = h.id
                 WHERE
                     a.fecha = '$d->fechastr' AND d.espersonal = $d->tipo
+                        AND a.tipotrans IN('R', 'D')
                 GROUP BY a.id ORDER BY 2, 6";
     } else {
         $query = "SELECT 
@@ -762,7 +763,8 @@ $app->post('/control_ingresos', function () {
             WHERE
                 a.fecha = '$d->fechastr'
                     AND d.espersonal = $d->tipo
-                    AND a.beneficiario != 'anulado'                     
+                    AND a.beneficiario != 'anulado'  
+                    AND a.tipotrans = 'B'                   
             GROUP BY a.id ORDER BY 2 , 6 , 9";
     }
     $data = $db->getQuery($query);
