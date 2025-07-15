@@ -1074,6 +1074,18 @@ $app->post('/isr', function () {
     $query.= $d->agrupar == 1 ? "ORDER BY 2, 8" : "ORDER BY 2, 3, 8";
     $datos = $db->getQuery($query);
 
+    $letra->t_empleados = count($datos);
+    $letra->empleados_isr = 0;
+    $letra->empleados_sin_isr = 0;
+
+    foreach($datos as $emp) {
+        if ($emp->isr > 0) {
+            $letra->empleados_isr++;
+        } else {
+            $letra->empleados_sin_isr++;
+        }
+    }
+
     // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
     $reporte = new GeneradorReportes($datos, 'empleados', $totales, $letra->por_proyecto);
     $empleados = $reporte->getReporte();
