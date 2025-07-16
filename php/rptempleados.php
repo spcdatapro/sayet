@@ -1201,7 +1201,7 @@ $app->post('/proyeccion', function(){
         $emp->renta = $emp->sueldo_global + $emp->bonificacion_global + $emp->premio + $emp->sueldo_e;
         $emp->deducciones = $emp->igss + $emp->personales;
         $emp->imponible = round($emp->renta - $emp->deducciones, 2);
-        $emp->impuesto = round($emp->imponible * 0.05); 
+        $emp->impuesto = round($emp->imponible * 0.05, 2); 
         $emp->mensual = round($emp->impuesto / $d->meses, 2);
     }
 
