@@ -806,32 +806,34 @@ $app->post('/control_ingresos', function () {
         $success = false;
     }
 
-    foreach($transacciones as $t) {
-        if ($t->abreviatura === 'Q') {
-            array_push($ingreso, $t->ingreso);
-            array_push($deposito, $t->deposito);
-            array_push($isr, $t->isr);
-            array_push($iva, $t->iva);
-            array_push($diferencia, $t->diferencia);
-        } else {
-            $ingreso_q = round($t->ingreso * $letra->tc, 2);
-            array_push($ingreso, $ingreso_q);
-            $deposito_q = round($t->deposito * $letra->tc, 2);
-            array_push($deposito, $deposito_q);
-            $isr_q = round($t->isr * $letra->tc, 2);
-            array_push($isr, $isr_q);
-            $iva_q = round($t->iva * $letra->tc, 2);
-            array_push($iva, $iva_q);
-            $diferencia_q = round($t->diferencia * $letra->tc, 2);
-            array_push($diferencia, $diferencia_q);
+    if ($success) {
+        foreach($transacciones as $t) {
+            if ($t->abreviatura === 'Q') {
+                array_push($ingreso, $t->ingreso);
+                array_push($deposito, $t->deposito);
+                array_push($isr, $t->isr);
+                array_push($iva, $t->iva);
+                array_push($diferencia, $t->diferencia);
+            } else {
+                $ingreso_q = round($t->ingreso * $letra->tc, 2);
+                array_push($ingreso, $ingreso_q);
+                $deposito_q = round($t->deposito * $letra->tc, 2);
+                array_push($deposito, $deposito_q);
+                $isr_q = round($t->isr * $letra->tc, 2);
+                array_push($isr, $isr_q);
+                $iva_q = round($t->iva * $letra->tc, 2);
+                array_push($iva, $iva_q);
+                $diferencia_q = round($t->diferencia * $letra->tc, 2);
+                array_push($diferencia, $diferencia_q);
+            }
         }
+    
+        $letra->ingreso = array_sum($ingreso);
+        $letra->deposito = array_sum($deposito);
+        $letra->isr = array_sum($isr);
+        $letra->iva = array_sum($iva);
+        $letra->diferencia = array_sum($diferencia);
     }
-
-    $letra->ingreso = array_sum($ingreso);
-    $letra->deposito = array_sum($deposito);
-    $letra->isr = array_sum($isr);
-    $letra->iva = array_sum($iva);
-    $letra->diferencia = array_sum($diferencia);
 
     return print json_encode([ 'encabezado' => $letra, 'trans' => $transacciones, 'succes' => $success ]);
 });
