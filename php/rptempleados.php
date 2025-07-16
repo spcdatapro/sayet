@@ -1339,7 +1339,7 @@ $app->post('/proyectado', function() {
     } else if ($anios == 10) {
         $totales->premios = $data[0]->sueldo * 2;
     } else if ($anios == 5) {
-        $totales->premios = $data[0]->sueldo;
+        $totales->premios = (float)$data[0]->sueldo;
     } else {
         $totales->premios = 0;
     }
