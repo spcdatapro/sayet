@@ -1174,21 +1174,21 @@ $app->post('/proyeccion', function(){
 
     foreach($data AS $emp) {
         $ingreso = new DateTime($emp->ingreso);
-        if ($hoy->diff($ingreso)->y >= 40) {
+        if ($hoy->diff($ingreso)->y == 40) {
             $emp->premio = 70000;
-        } else if ($hoy->diff($ingreso)->y >= 35) {
+        } else if ($hoy->diff($ingreso)->y == 35) {
             $emp->premio = 17500;
-        } else if ($hoy->diff($ingreso)->y >= 30) {
+        } else if ($hoy->diff($ingreso)->y == 30) {
             $emp->premio = 15000;
-        } else if ($hoy->diff($ingreso)->y >= 25) {
+        } else if ($hoy->diff($ingreso)->y == 25) {
             $emp->premio = 12500;
-        } else if ($hoy->diff($ingreso)->y >= 20) {
+        } else if ($hoy->diff($ingreso)->y == 20) {
             $emp->premio = 10000;
-        } else if ($hoy->diff($ingreso)->y >= 15) {
+        } else if ($hoy->diff($ingreso)->y == 15) {
             $emp->premio = $emp->sueldo * 3;
-        } else if ($hoy->diff($ingreso)->y >= 10) {
+        } else if ($hoy->diff($ingreso)->y == 10) {
             $emp->premio = $emp->sueldo * 2;
-        } else if ($hoy->diff($ingreso)->y >= 5) {
+        } else if ($hoy->diff($ingreso)->y == 5) {
             $emp->premio = $emp->sueldo;
         } else {
             $emp->premio = 0;
@@ -1318,21 +1318,21 @@ $app->post('/proyectado', function() {
 
     // premios
         $ingreso = new DateTime($data[0]->ingreso);
-    if ($hoy->diff($ingreso)->y >= 40) {
+    if ($hoy->diff($ingreso)->y == 40) {
         $totales->premios = 70000;
-    } else if ($hoy->diff($ingreso)->y >= 35) {
+    } else if ($hoy->diff($ingreso)->y == 35) {
         $totales->premios = 17500;
-    } else if ($hoy->diff($ingreso)->y >= 30) {
+    } else if ($hoy->diff($ingreso)->y == 30) {
         $totales->premios = 15000;
-    } else if ($hoy->diff($ingreso)->y >= 25) {
+    } else if ($hoy->diff($ingreso)->y == 25) {
         $totales->premios = 12500;
-    } else if ($hoy->diff($ingreso)->y >= 20) {
+    } else if ($hoy->diff($ingreso)->y == 20) {
         $totales->premios = 10000;
-    } else if ($hoy->diff($ingreso)->y >= 15) {
+    } else if ($hoy->diff($ingreso)->y == 15) {
         $totales->premios = $data[0]->sueldo * 3;
-    } else if ($hoy->diff($ingreso)->y >= 10) {
+    } else if ($hoy->diff($ingreso)->y == 10) {
         $totales->premios = $data[0]->sueldo * 2;
-    } else if ($hoy->diff($ingreso)->y >= 5) {
+    } else if ($hoy->diff($ingreso)->y == 5) {
         $totales->premios = $data[0]->sueldo;
     } else {
         $totales->premios = 0;
