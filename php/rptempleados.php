@@ -1110,6 +1110,7 @@ $app->post('/proyeccion', function(){
     $d->meses = 12;
 
     $hoy = new DateTime();
+    $hoy = $hoy->format('Y');
 
     // array de nombre de meses
     $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
@@ -1174,21 +1175,23 @@ $app->post('/proyeccion', function(){
 
     foreach($data AS $emp) {
         $ingreso = new DateTime($emp->ingreso);
-        if ($hoy->diff($ingreso)->y == 40) {
+        $ingreso = $ingreso->format('Y');
+        $anios = $hoy - $ingreso;
+        if ($anios == 40) {
             $emp->premio = 70000;
-        } else if ($hoy->diff($ingreso)->y == 35) {
+        } else if ($anios == 35) {
             $emp->premio = 17500;
-        } else if ($hoy->diff($ingreso)->y == 30) {
+        } else if ($anios == 30) {
             $emp->premio = 15000;
-        } else if ($hoy->diff($ingreso)->y == 25) {
+        } else if ($anios == 25) {
             $emp->premio = 12500;
-        } else if ($hoy->diff($ingreso)->y == 20) {
+        } else if ($anios == 20) {
             $emp->premio = 10000;
-        } else if ($hoy->diff($ingreso)->y == 15) {
+        } else if ($anios == 15) {
             $emp->premio = $emp->sueldo * 3;
-        } else if ($hoy->diff($ingreso)->y == 10) {
+        } else if ($anios == 10) {
             $emp->premio = $emp->sueldo * 2;
-        } else if ($hoy->diff($ingreso)->y == 5) {
+        } else if ($anios == 5) {
             $emp->premio = $emp->sueldo;
         } else {
             $emp->premio = 0;
@@ -1224,6 +1227,7 @@ $app->post('/proyectado', function() {
     date_default_timezone_set("America/Guatemala");
 
     $hoy = new DateTime();
+    $hoy = $hoy->format('Y');
 
     // array de nombre de meses
     $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
@@ -1318,25 +1322,27 @@ $app->post('/proyectado', function() {
 
     // premios
         $ingreso = new DateTime($data[0]->ingreso);
-    if ($hoy->diff($ingreso)->y == 40) {
-        $totales->premios = 70000;
-    } else if ($hoy->diff($ingreso)->y == 35) {
-        $totales->premios = 17500;
-    } else if ($hoy->diff($ingreso)->y == 30) {
-        $totales->premios = 15000;
-    } else if ($hoy->diff($ingreso)->y == 25) {
-        $totales->premios = 12500;
-    } else if ($hoy->diff($ingreso)->y == 20) {
-        $totales->premios = 10000;
-    } else if ($hoy->diff($ingreso)->y == 15) {
-        $totales->premios = $data[0]->sueldo * 3;
-    } else if ($hoy->diff($ingreso)->y == 10) {
-        $totales->premios = $data[0]->sueldo * 2;
-    } else if ($hoy->diff($ingreso)->y == 5) {
-        $totales->premios = $data[0]->sueldo;
-    } else {
-        $totales->premios = 0;
-    }
+        $ingreso = $ingreso->format('Y');
+        $anios = $hoy - $ingreso;
+        if ($anios == 40) {
+            $emp->premio = 70000;
+        } else if ($anios == 35) {
+            $emp->premio = 17500;
+        } else if ($anios == 30) {
+            $emp->premio = 15000;
+        } else if ($anios == 25) {
+            $emp->premio = 12500;
+        } else if ($anios == 20) {
+            $emp->premio = 10000;
+        } else if ($anios == 15) {
+            $emp->premio = $emp->sueldo * 3;
+        } else if ($anios == 10) {
+            $emp->premio = $emp->sueldo * 2;
+        } else if ($anios == 5) {
+            $emp->premio = $emp->sueldo;
+        } else {
+            $emp->premio = 0;
+        }
 
     array_push($sueldo, $totales->premios);
     array_push($sueldo, $totales->extra);
