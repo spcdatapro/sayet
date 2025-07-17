@@ -664,9 +664,6 @@ $app->post('/control_ingresos', function () {
     // usuario
     $letra->usuario = $d->usuario;
 
-    // tipo 
-    $letra->tipo = $d->tipo === 1 ? 'Personal' : 'por Empresa';
-
     // tc
     $letra->tc = $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio WHERE fecha = '$d->fecha' LIMIT 1");
     $letra->tc = $letra->tc > 0 ? $letra->tc : $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio ORDER BY fecha DESC LIMIT 1"); 
@@ -678,6 +675,9 @@ $app->post('/control_ingresos', function () {
     $letra->esingreso = $d->ingreso === 1 ? true : false;
 
     $d->tipo = $d->tipo == 1 ? 0 : 1;
+
+    // tipo 
+    $letra->tipo = $d->tipo == 1 ? 'Personal' : 'por Empresa';
 
     // se sustituye id de empresa por id de moneda para funcionalidad con el reporteador al igual que todos sus nombres
     // se sustituye id de proyecto por id de empresa para funcionalidad con el reporteador al igual que todos sus nombres 
