@@ -665,7 +665,7 @@ $app->post('/control_ingresos', function () {
     $letra->usuario = $d->usuario;
 
     // tc
-    $letra->tc = $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio WHERE fecha = '$d->fecha' LIMIT 1");
+    $letra->tc = $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio WHERE fecha = '$d->fechastr' LIMIT 1");
     $letra->tc = $letra->tc > 0 ? $letra->tc : $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio ORDER BY fecha DESC LIMIT 1"); 
 
     // No. de caja, son es el dia que se esta obteniendo me los fines de semana
@@ -693,6 +693,7 @@ $app->post('/control_ingresos', function () {
                     d.abreviatura AS proyecto,
                     CONCAT(IF(a.numban = 0 OR a.numban IS NULL, a.numero, a.numban)) AS tranban,
                     b.siglas,
+                    b.ordensumario,
                     IFNULL(IF(COUNT(h.id) > 3, CAST(CONCAT(COUNT(h.id), '-FC') AS CHAR), GROUP_CONCAT(h.numeroadmin)), 'SC') AS factura,
                     ROUND(SUM(IF(b.idmoneda = 1,
                                 h.subtotal,
@@ -730,7 +731,7 @@ $app->post('/control_ingresos', function () {
                 WHERE
                     a.fecha = '$d->fechastr' AND d.espersonal = $d->tipo
                         AND a.tipotrans IN('R', 'D')
-                GROUP BY a.id ORDER BY 2, 6";
+                GROUP BY a.id ORDER BY 2 , 6 , 10";
     } else {
         $query = "SELECT 
                 a.id,
