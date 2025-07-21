@@ -395,6 +395,8 @@ $app->post('/bono14', function(){
 
     $porproyecto = $d->agrupar == 2 ? true : false;
 
+    $letra->agrupar = $d->agrupar == 2 ? 'proyecto' : 'empresa';
+
     // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
     $reporte = new GeneradorReportes($data, 'empleados', $totales, $porproyecto);
     $empleados = $reporte->getReporte();
@@ -472,6 +474,8 @@ $app->post('/aguinaldo', function(){
     }
 
     $porproyecto = $d->agrupar == 2 ? true : false;
+
+    $letra->agrupar = $d->agrupar == 2 ? 'proyecto' : 'empresa';
 
     // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
     $reporte = new GeneradorReportes($data, 'empleados', $totales, $porproyecto);
