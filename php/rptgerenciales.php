@@ -674,10 +674,10 @@ $app->post('/control_ingresos', function () {
 
     $letra->esingreso = $d->ingreso === 1 ? true : false;
 
-    $d->tipo = $d->tipo == 1 ? 0 : 1;
-
     // tipo 
     $letra->tipo = $d->tipo == 1 ? 'Personal' : 'por Empresa';
+
+    $d->tipo = $d->tipo == 1 ? '1 , 4' : '2, 3';
 
     // se sustituye id de empresa por id de moneda para funcionalidad con el reporteador al igual que todos sus nombres
     // se sustituye id de proyecto por id de empresa para funcionalidad con el reporteador al igual que todos sus nombres 
@@ -729,7 +729,7 @@ $app->post('/control_ingresos', function () {
                         LEFT JOIN
                     factura h ON g.idfactura = h.id
                 WHERE
-                    a.fecha = '$d->fechastr' AND d.espersonal = $d->tipo
+                    a.fecha = '$d->fechastr' AND b.gruposumario IN($d->tipo)
                         AND a.tipotrans IN('R', 'D')
                 GROUP BY a.id ORDER BY 2 , 6 , 10";
     } else {
@@ -765,7 +765,7 @@ $app->post('/control_ingresos', function () {
                 empresa d ON b.idempresa = d.id
             WHERE
                 a.fecha = '$d->fechastr'
-                    AND d.espersonal = $d->tipo
+                    b.gruposumario IN($d->tipo)
                     AND a.beneficiario != 'anulado'  
                     AND a.tipotrans = 'B'                   
             GROUP BY a.id ORDER BY 2 , 6 , 9, 10";
