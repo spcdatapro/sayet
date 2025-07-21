@@ -830,7 +830,7 @@ class Empleado extends Principal
 			return isset($args['detallado']) ? false : $this->emp->sueldo;
 		} else {
 			$sql = "SELECT 
-						sueldoordinario,
+						sueldoordinarioreporte as sueldoordinario,
 						sueldoextra,
 						fecha,
 						year(fecha) as anio,
