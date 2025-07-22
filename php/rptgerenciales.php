@@ -675,7 +675,7 @@ $app->post('/control_ingresos', function () {
     $letra->esingreso = $d->ingreso === 1 ? true : false;
 
     // tipo 
-    $letra->tipo = $d->tipo == 1 ? 'Personal' : 'por Empresa';
+    $letra->tipo = $d->tipo == 1 ? 'por Empresa' : 'Personal';
 
     $d->tipo = $d->tipo == 1 ? '1 , 4' : '2, 3';
 
