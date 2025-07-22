@@ -728,6 +728,8 @@ $app->post('/control_ingresos', function () {
                     detcobroventa g ON g.idrecibocli = f.id
                         LEFT JOIN
                     factura h ON g.idfactura = h.id
+                        INNER JOIN 
+					tipomovtranban i ON a.tipotrans = i.abreviatura
                 WHERE
                     a.fecha = '$d->fechastr' AND b.gruposumario IN($d->tipo)
                         AND a.tipotrans IN('R', 'D')
