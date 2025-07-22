@@ -731,7 +731,7 @@ $app->post('/control_ingresos', function () {
                 WHERE
                     a.fecha = '$d->fechastr' AND b.gruposumario IN($d->tipo)
                         AND a.tipotrans IN('R', 'D')
-                GROUP BY a.id ORDER BY 2 , 6 , 10 , 8";
+                GROUP BY a.id ORDER BY 2 , 6 , 10 , 8 DESC";
     } else {
         $query = "SELECT 
                 a.id,
