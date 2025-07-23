@@ -1448,4 +1448,86 @@ $app->post('/carta', function () {
     print json_encode([ 'empleado' => $datos ]);
 });
 
+$app->post('/indemnizacion', function () {
+    date_default_timezone_set("America/Guatemala");
+
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $porproyecto = $d->agrupar == 2 ? true : false;
+    $letra = new stdClass();
+    $totales = ['monto'];
+
+    // fecha y hora que descargan reporte
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+
+    // titulos
+    $letra->agrupar = $porproyecto ? 'proyecto' : 'empresa';
+    $letra->titulo = 'Indeminizaciones del año ' . $d->anio;
+
+    $query = "SELECT 
+                a.id,
+                d.id AS idempresa,
+                d.nombre AS empresa,
+                d.numeropat AS numero,
+                d.abreviatura,
+                g.id AS idproyecto,
+                g.nomproyecto AS proyecto,
+                CONCAT(b.primernombre,
+                        ' ',
+                        IFNULL(b.segundonombre, ''),
+                        ' ',
+                        IFNULL(b.tercernombre, ''),
+                        IFNULL(b.primerapellido, ''),
+                        ' ',
+                        IFNULL(b.segundoapellido, ''),
+                        ' ',
+                        IFNULL(b.apellidocasada, '')) AS nombre,
+                DATE_FORMAT(IFNULL(c.reingreso, c.ingreso),
+                        '%d/%m/%Y') AS ingreso,
+                DATE_FORMAT(c.baja, '%d/%m/%Y') AS baja,
+                f.numero AS cheque,
+                e.finiquito,
+                e.vacaciones,
+                e.aguinaldo,
+                e.bono,
+                e.otrosbono,
+                e.prestamos,
+                e.anticipos,
+                e.otrosdesc,
+                f.monto
+            FROM
+                plnempleado a
+                    INNER JOIN
+                plnpersonal b ON a.idpersonal = b.id
+                    INNER JOIN
+                plnlaboral c ON a.idlaboral = c.id
+                    INNER JOIN
+                plnempresa d ON c.idempresaactual = d.id
+                    INNER JOIN
+                plnfiniquito e ON a.id = e.idplnempleado
+                    INNER JOIN
+                tranban f ON e.idtranban = f.id
+                    INNER JOIN
+                proyecto g ON c.idproyecto = g.id
+            WHERE
+                YEAR(c.baja) = $d->anio AND e.idtranban > 0 ";
+    $query.= isset($d->idempresa) ? "AND d.id = $d->idempresa " : "";
+    $query.= "ORDER BY "; 
+    $query.= $d->agrupar == 1 ? "3 , 6" : "3 , 5 , 6";
+    $data = $db->getQuery($query);
+
+    // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
+    $reporte = new GeneradorReportes($data, 'empleados', $totales, $porproyecto);
+    $empleados = $reporte->getReporte();
+    $montos_generales = $reporte->getTotalesGenerales();
+
+    foreach($totales as $t) {
+        $letra->$t = array_sum($montos_generales->$t);
+    }
+
+    print json_encode([ 'encabezado' => $letra, 'empresas' => $empleados ]);
+});
+
 $app->run();
