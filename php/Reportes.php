@@ -119,7 +119,7 @@ class GeneradorReportes {
                     // proyecto
                     foreach($montos as $monto) {
                         if (isset($d->factura)) {
-                            if (!in_array($d->factura, $repetidos)) {
+                            if (!in_array($d->factura, $this->repetidos)) {
                                 array_push($sumas_proyecto->$monto, $d->$monto * $tc);
                             }
                         } else {
@@ -142,7 +142,7 @@ class GeneradorReportes {
                 if ($porproyecto) {
                     array_push($separador_proyecto->$tipo, $d);
                     if (isset($d->factura)) {
-                        array_push($repetidos, $d->factura);
+                        array_push($this->repetidos, $d->factura);
                     } 
                 } else {
                     array_push($separador_empresa->$tipo, $d);
