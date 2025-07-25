@@ -128,14 +128,28 @@ class GeneradorReportes {
                     }
                 }
 
-                // empresa
-                foreach($montos as $monto) {
-                    array_push($sumas_empresa->$monto, $d->$monto * $tc);
-                }
+                if (isset($d->factura)) {
+                    if (!in_array($d->factura, $this->repetidos)) {
+                    // empresa
+                    foreach($montos as $monto) {
+                        array_push($sumas_empresa->$monto, $d->$monto * $tc);
+                    }
 
-                // general
-                foreach($montos as $monto) {
-                    array_push($this->sumas_general->$monto, $d->$monto * $tc);
+                    // general
+                    foreach($montos as $monto) {
+                        array_push($this->sumas_general->$monto, $d->$monto * $tc);
+                    }
+                    }
+                } else {
+                    // empresa
+                    foreach($montos as $monto) {
+                        array_push($sumas_empresa->$monto, $d->$monto * $tc);
+                    }
+
+                    // general
+                    foreach($montos as $monto) {
+                        array_push($this->sumas_general->$monto, $d->$monto * $tc);
+                    }
                 }
 
                 // empujar datos una vez generada las variables y validado estar en la mimsa empresa o proyecto
