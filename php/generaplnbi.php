@@ -343,7 +343,7 @@ $app->post('/tran_finiquito', function() {
     $lastid = $db->getLastId();
 
     if ($lastid > 0) {
-        $db->doQuery("UPDATE plnfiniquito SET pendiente = 0 WHERE id = $d->id");
+        $db->doQuery("UPDATE plnfiniquito SET pendiente = 0 idtranban = $lastid WHERE id = $d->id");
         $db->doQuery("UPDATE banco SET correlativo = $d->numero+1 WHERE id = $d->idbanco");
 
 

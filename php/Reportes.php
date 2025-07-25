@@ -5,6 +5,7 @@ class GeneradorReportes {
     private $idempresa;
     private $idproyecto;
     private $sumas_general;
+    private $repetidos = [];
 
     // mejoras separadores opcionales
     public function __construct($data, $tipo, $montos, $porproyecto = false) {
@@ -113,18 +114,17 @@ class GeneradorReportes {
                     $this->idproyecto = $d->idproyecto;
                 }
 
-                // empujar datos una vez generada las variables y validado estar en la mimsa empresa o proyecto
-                if ($porproyecto) {
-                    array_push($separador_proyecto->$tipo, $d);
-                } else {
-                    array_push($separador_empresa->$tipo, $d);
-                }
-
                 // empujar montos para sumas
                 if ($porproyecto) {
                     // proyecto
                     foreach($montos as $monto) {
-                        array_push($sumas_proyecto->$monto, $d->$monto * $tc);
+                        if (isset($d->factura)) {
+                            if (!in_array($d->factura, $repetidos)) {
+                                array_push($sumas_proyecto->$monto, $d->$monto * $tc);
+                            }
+                        } else {
+                            array_push($sumas_proyecto->$monto, $d->$monto * $tc);
+                        }
                     }
                 }
 
@@ -136,6 +136,16 @@ class GeneradorReportes {
                 // general
                 foreach($montos as $monto) {
                     array_push($this->sumas_general->$monto, $d->$monto * $tc);
+                }
+
+                // empujar datos una vez generada las variables y validado estar en la mimsa empresa o proyecto
+                if ($porproyecto) {
+                    array_push($separador_proyecto->$tipo, $d);
+                    if (isset($d->factura)) {
+                        array_push($repetidos, $d->factura);
+                    } 
+                } else {
+                    array_push($separador_empresa->$tipo, $d);
                 }
             }
         } else {
