@@ -685,7 +685,7 @@ $app->post('/control_ingresos', function () {
     if ($d->ingreso === 1) {
         $query = "SELECT 
                     a.id,
-                    GROUP_CONCAT(h.id) AS idfactura,
+                    -- GROUP_CONCAT(h.id) AS idfactura,
                     c.id AS idempresa,
                     CONCAT(c.nommoneda, ' ', c.simbolo) AS empresa,
                     NULL AS numero,
