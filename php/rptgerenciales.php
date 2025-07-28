@@ -799,7 +799,7 @@ $app->post('/control_ingresos', function () {
         }
     } else {
         foreach ($data as $t) {
-            if ($d->idfactura > 0) {
+            if (isset($d->idfactura)) {
                 $pend = $db->getOneField("SELECT SUM(b.monto) AS monto FROM reclitran a INNER JOIN tranban b ON a.idtranban = b.id INNER JOIN recibocli c ON a.idrecibocli = c.id INNER JOIN detcobroventa d ON d.idrecibocli = c.id INNER JOIN factura e ON d.idfactura = e.id
                     WHERE b.fecha != '$d->fechastr' AND e.id in('$d->idfactura')");
                 $t->diferencia = $pend > 0 ? $t->diferencia - $pend : $t->diferencia;
