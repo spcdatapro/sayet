@@ -685,7 +685,6 @@ $app->post('/control_ingresos', function () {
     if ($d->ingreso === 1) {
         $query = "SELECT 
                     a.id,
-                    -- GROUP_CONCAT(h.id) AS idfactura,
                     c.id AS idempresa,
                     CONCAT(c.nommoneda, ' ', c.simbolo) AS empresa,
                     NULL AS numero,
@@ -712,7 +711,8 @@ $app->post('/control_ingresos', function () {
                     ROUND(SUM(IF(b.idmoneda = 1, h.total, h.totalcnv)) - a.monto,
                             2) AS diferencia,
                     c.simbolo AS moneda,
-                    IF($d->ingreso = 1, true, false) AS numero
+                    IF($d->ingreso = 1, true, false) AS numero,
+                    GROUP_CONCAT(h.id) AS idfactura,
                 FROM
                     tranban a
                         INNER JOIN
@@ -773,6 +773,7 @@ $app->post('/control_ingresos', function () {
                     AND a.tipotrans = 'B'                   
             GROUP BY a.id ORDER BY 2 , 6 , 9, 10";
     }
+    echo $query; return;
     $data = $db->getQuery($query);
 
     // print_r($transacciones); return;
@@ -798,15 +799,15 @@ $app->post('/control_ingresos', function () {
             }
         }
     } 
-    // else {
-    //     foreach ($data as $t) {
-    //         if (isset($t->idfactura)) {
-    //             $pend = $db->getOneField("SELECT SUM(b.monto) AS monto FROM reclitran a INNER JOIN tranban b ON a.idtranban = b.id INNER JOIN recibocli c ON a.idrecibocli = c.id INNER JOIN detcobroventa d ON d.idrecibocli = c.id INNER JOIN factura e ON d.idfactura = e.id
-    //                 WHERE b.fecha != '$d->fechastr' AND e.id in('$t->idfactura')");
-    //             $t->diferencia = $pend > 0 ? $t->diferencia - $pend : $t->diferencia;
-    //         }
-    //     }
-    // }
+    else {
+        foreach ($data as $t) {
+            if (isset($t->idfactura)) {
+                $pend = $db->getOneField("SELECT SUM(b.monto) AS monto FROM reclitran a INNER JOIN tranban b ON a.idtranban = b.id INNER JOIN recibocli c ON a.idrecibocli = c.id INNER JOIN detcobroventa d ON d.idrecibocli = c.id INNER JOIN factura e ON d.idfactura = e.id
+                    WHERE b.fecha != '$d->fechastr' AND e.id in('$t->idfactura')");
+                $t->diferencia = $pend > 0 ? $t->diferencia - $pend : $t->diferencia;
+            }
+        }
+    }
 
     if (count($data) > 0) {
         // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
