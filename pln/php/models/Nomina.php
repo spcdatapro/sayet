@@ -383,7 +383,7 @@ class Nomina extends Principal
 
 				if (isset($args["descembargo"])) {
 					$saldoEmbargo = $this->get_saldo_prestamos(['idplnnomina' => $args['id']]);
-					$datos["desembargo"] = ((elemento($args, "descembargo", 0) > $saldoPrestamos)?$saldoPrestamos:$args['descembargo']);
+					$datos["descembargo"] = ((elemento($args, "descembargo", 0) > $saldoPrestamos)?$saldoPrestamos:$args['descembargo']);
 				}
 
 
