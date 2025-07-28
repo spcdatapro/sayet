@@ -773,7 +773,6 @@ $app->post('/control_ingresos', function () {
                     AND a.tipotrans = 'B'                   
             GROUP BY a.id ORDER BY 2 , 6 , 9, 10";
     }
-    echo $query; return;
     $data = $db->getQuery($query);
 
     // print_r($transacciones); return;
