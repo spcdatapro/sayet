@@ -712,7 +712,7 @@ $app->post('/control_ingresos', function () {
                             2) AS diferencia,
                     c.simbolo AS moneda,
                     IF($d->ingreso = 1, true, false) AS numero,
-                    GROUP_CONCAT(h.id) AS idfactura,
+                    GROUP_CONCAT(h.id) AS idfactura
                 FROM
                     tranban a
                         INNER JOIN
