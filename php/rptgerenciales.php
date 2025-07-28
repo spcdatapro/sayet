@@ -685,6 +685,7 @@ $app->post('/control_ingresos', function () {
     if ($d->ingreso === 1) {
         $query = "SELECT 
                     a.id,
+                    GROUP_CONCAT(h.idfactura) AS idfactura,
                     c.id AS idempresa,
                     CONCAT(c.nommoneda, ' ', c.simbolo) AS empresa,
                     NULL AS numero,
@@ -794,6 +795,14 @@ $app->post('/control_ingresos', function () {
                 }
 
                 $t_proveedor = [];
+            }
+        }
+    } else {
+        foreach ($data as $t) {
+            if ($d->factura > 0) {
+                $pend = $db->getOneField("SELECT SUM(b.monto) AS monto FROM reclitran a INNER JOIN tranban b ON a.idtranban = b.id INNER JOIN recibocli c ON a.idrecibocli = c.id INNER JOIN detcobroventa d ON d.idrecibocli = c.id INNER JOIN factura e ON d.idfactura = e.id
+                    WHERE b.fecha != '$d->fechastr' AND e.id in('$d->idfactura')");
+                $t->diferencia = $pend > 0 ? $t->diferencia - $pend : $t->diferencia;
             }
         }
     }
