@@ -81,8 +81,7 @@ class Nomina extends Principal
 		$descprestamo = $this->db->select(
 			"plnpresnom", 
 			['id', 'idplnprestamo', 'monto'],
-			['idplnnomina' => $args['idplnnomina'],
-			'esembargo' => 0]
+			['idplnnomina' => $args['idplnnomina']]
 		);
 
 		if (count($descprestamo) > 0) {
