@@ -5,7 +5,6 @@ class GeneradorReportes {
     private $idempresa;
     private $idproyecto;
     private $sumas_general;
-    private $repetidos = [];
 
     // mejoras separadores opcionales
     public function __construct($data, $tipo, $montos, $porproyecto = false) {
@@ -99,7 +98,6 @@ class GeneradorReportes {
                     // crear separador de proyecto
                     $separador_proyecto = new StdClass;
                     $separador_proyecto->nombre = $d->proyecto;
-                    $separador_proyecto->moneda = $d->abreviatura;
                     $separador_proyecto->$tipo = array();
 
                     // crear sumadores de proyecto
@@ -114,52 +112,29 @@ class GeneradorReportes {
                     $this->idproyecto = $d->idproyecto;
                 }
 
+                // empujar datos una vez generada las variables y validado estar en la mimsa empresa o proyecto
+                if ($porproyecto) {
+                    array_push($separador_proyecto->$tipo, $d);
+                } else {
+                    array_push($separador_empresa->$tipo, $d);
+                }
+
                 // empujar montos para sumas
                 if ($porproyecto) {
                     // proyecto
                     foreach($montos as $monto) {
-                        if (isset($d->factura)) {
-                            if (!in_array($d->factura, $this->repetidos)) {
-                                array_push($sumas_proyecto->$monto, $d->$monto * $tc);
-                            }
-                        } else {
-                            array_push($sumas_proyecto->$monto, $d->$monto * $tc);
-                        }
+                        array_push($sumas_proyecto->$monto, $d->$monto * $tc);
                     }
                 }
 
-                if (isset($d->factura)) {
-                    if (!in_array($d->factura, $this->repetidos)) {
-                    // empresa
-                    foreach($montos as $monto) {
-                        array_push($sumas_empresa->$monto, $d->$monto * $tc);
-                    }
-
-                    // general
-                    foreach($montos as $monto) {
-                        array_push($this->sumas_general->$monto, $d->$monto * $tc);
-                    }
-                    }
-                } else {
-                    // empresa
-                    foreach($montos as $monto) {
-                        array_push($sumas_empresa->$monto, $d->$monto * $tc);
-                    }
-
-                    // general
-                    foreach($montos as $monto) {
-                        array_push($this->sumas_general->$monto, $d->$monto * $tc);
-                    }
+                // empresa
+                foreach($montos as $monto) {
+                    array_push($sumas_empresa->$monto, $d->$monto * $tc);
                 }
 
-                // empujar datos una vez generada las variables y validado estar en la mimsa empresa o proyecto
-                if ($porproyecto) {
-                    array_push($separador_proyecto->$tipo, $d);
-                    if (isset($d->factura)) {
-                        array_push($this->repetidos, $d->factura);
-                    } 
-                } else {
-                    array_push($separador_empresa->$tipo, $d);
+                // general
+                foreach($montos as $monto) {
+                    array_push($this->sumas_general->$monto, $d->$monto * $tc);
                 }
             }
         } else {
