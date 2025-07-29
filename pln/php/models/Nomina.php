@@ -116,48 +116,46 @@ class Nomina extends Principal
 
 	public function actualizar_saldo_embargo($args=[])
 	{
-		// $nomina = (object)$this->db->get(
-		// 	"plnnomina", 
-		// 	['id', 'descembargo'], 
-		// 	['id' => $args['idplnnomina'],
-		// 	'esembargo' => 1]
-		// );
+		$nomina = (object)$this->db->get(
+			"plnnomina", 
+			['id', 'descembargo'], 
+			['id' => $args['idplnnomina']]
+		);
 
-		// $descembargo = $this->db->select(
-		// 	"plnpresnom", 
-		// 	['id', 'idplnprestamo', 'monto'],
-		// 	['idplnnomina' => $args['idplnnomina'],
-		// 	'esembargo' => 1]
-		// );
+		$descembargo = $this->db->select(
+			"plnpresnom", 
+			['id', 'idplnprestamo', 'monto'],
+			['idplnnomina' => $args['idplnnomina']]
+		);
 
-		// if (count($descembargo) > 0) {
-		// 	$monto = $nomina->descembargo;
-		// 	$descuento = totalCampo($descembargo, 'monto');
+		if (count($descembargo) > 0) {
+			$monto = $nomina->descembargo;
+			$descuento = totalCampo($descembargo, 'monto');
 
-		// 	if ($monto != $descuento) {
-		// 		foreach ($descembargo as $key => $value) {
-		// 			$pr = new Prestamo($value['idplnprestamo']);
-		// 			$saldo = $pr->get_saldo(['sin_idplnnomina' => $nomina->id]);
-		// 			$cuota = $saldo < $pr->pre->cuotamensual ? $saldo : $pr->pre->cuotamensual;
+			if ($monto != $descuento) {
+				foreach ($descembargo as $key => $value) {
+					$pr = new Prestamo($value['idplnprestamo']);
+					$saldo = $pr->get_saldo(['sin_idplnnomina' => $nomina->id]);
+					$cuota = $saldo < $pr->pre->cuotamensual ? $saldo : $pr->pre->cuotamensual;
 					
-		// 			if ($cuota <= $monto) {
-		// 				$nuevo = $cuota;
-		// 				$monto -= $cuota;
-		// 			} else {
-		// 				$nuevo = $monto;
-		// 				$monto = 0;
-		// 			}
+					if ($cuota <= $monto) {
+						$nuevo = $cuota;
+						$monto -= $cuota;
+					} else {
+						$nuevo = $monto;
+						$monto = 0;
+					}
 
-		// 			$this->db->update(
-		// 				'plnpresnom', 
-		// 				['monto' => $nuevo], 
-		// 				["id" => $value['id']]
-		// 			);
+					$this->db->update(
+						'plnpresnom', 
+						['monto' => $nuevo], 
+						["id" => $value['id']]
+					);
 
-		// 			$pr->guardar(['saldo' => $pr->get_saldo()]);
-		// 		}
-		// 	}
-		// }
+					$pr->guardar(['saldo' => $pr->get_saldo()]);
+				}
+			}
+		}
 	}
 
 	public function buscar($args=[])
