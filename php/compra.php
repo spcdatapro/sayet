@@ -358,7 +358,7 @@ $app->post('/c', function(){
         $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
 
         // si la empresa es retenedora y el proveedor no es retenedor retener iva
-        if (($empresaRet && !$esRet) && ($d->totfact - $d->noafecto) >= 2500 && !$esPeque) {
+        if (($empresaRet && !$esRet) && (($d->totfact - $d->noafecto) * $d->tipocambio) >= 2500 && !$esPeque) {
             $d->retIva = $db->retIVA((float)$d->iva, 0.15, 1, $esLocalMonedaFact);
         }
     }
@@ -423,7 +423,7 @@ $app->post('/u', function(){
         $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
 
         // si la empresa es retenedora y el proveedor no es retenedor retener iva
-        if (($empresaRet && !$esRet) && ($d->totfact - $d->noafecto) >= 2500 && !$esPeque) {
+        if (($empresaRet && !$esRet) && (($d->totfact - $d->noafecto) * $d->tipocambio) >= 2500 && !$esPeque) {
             $d->retIva = $db->retIVA((float)$d->iva, 0.15, 1, $esLocalMonedaFact, $decimal_iva);
         }
     }
