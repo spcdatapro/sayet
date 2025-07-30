@@ -132,10 +132,10 @@ angular.module('cpm')
                         preServicios.guardarAbono(abono, prestamo.id);
                         // liquidar prestamo
                         let pres = { liquidacion: formatoFecha(datos.fecha_egreso), id: prestamo.id };
-                        preServicios.guardar(pres);
-                        $scope.cargando = false;  
+                        preServicios.guardar(pres); 
                         location.reload();
                     })
+                    $scope.cargando = false; 
                     })
                 })
             })
