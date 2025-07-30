@@ -1512,10 +1512,11 @@ $app->post('/indemnizacion', function () {
                     INNER JOIN
                 proyecto g ON c.idproyecto = g.id
             WHERE
-                YEAR(c.baja) = $d->anio AND e.idtranban > 0 ";
+                YEAR(e.fecha) = $d->anio AND e.idtranban > 0 ";
     $query.= isset($d->idempresa) ? "AND d.id = $d->idempresa " : "";
     $query.= "ORDER BY "; 
     $query.= $d->agrupar == 1 ? "3 , 6" : "3 , 5 , 6";
+    echo $query; return;
     $data = $db->getQuery($query);
 
     // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
