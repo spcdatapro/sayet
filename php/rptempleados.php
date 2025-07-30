@@ -1516,7 +1516,6 @@ $app->post('/indemnizacion', function () {
     $query.= isset($d->idempresa) ? "AND d.id = $d->idempresa " : "";
     $query.= "ORDER BY "; 
     $query.= $d->agrupar == 1 ? "3 , 6" : "3 , 5 , 6";
-    echo $query; return;
     $data = $db->getQuery($query);
 
     // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
