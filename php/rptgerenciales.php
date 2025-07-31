@@ -773,6 +773,7 @@ $app->post('/control_ingresos', function () {
                     AND a.tipotrans = 'B'                   
             GROUP BY a.id ORDER BY 2 , 6 , 9, 10";
     }
+    echo $query; return;
     $data = $db->getQuery($query);
 
     // print_r($transacciones); return;
@@ -797,13 +798,24 @@ $app->post('/control_ingresos', function () {
                 $t_proveedor = [];
             }
         }
-    } 
-    else {
-        foreach ($data as $t) {
-            if (isset($t->idfactura)) {
+    } else {
+        for ($i = 0; $i < count($data); $i++) {
+            // traer valor actual y anterior
+            $actual = $data[$i];
+            $proximo = count($data) === $i+1 ? $data[$i] : $data[$i+1];
+
+            if (isset($actual->idfactura)) {
                 $pend = $db->getOneField("SELECT SUM(b.monto) AS monto FROM reclitran a INNER JOIN tranban b ON a.idtranban = b.id INNER JOIN recibocli c ON a.idrecibocli = c.id INNER JOIN detcobroventa d ON d.idrecibocli = c.id INNER JOIN factura e ON d.idfactura = e.id
-                    WHERE b.fecha != '$d->fechastr' AND e.id in('$t->idfactura')");
-                $t->diferencia = $pend > 0 ? $t->diferencia - $pend : $t->diferencia;
+                    WHERE b.fecha != '$d->fechastr' AND e.id in('$actual->idfactura')");
+                $actual->diferencia = $pend > 0 ? $actual->diferencia - $pend : $actual->diferencia;
+
+                if ($actual->idfactura === $proximo->idfactura) {
+                    $proximo->diferencia = $actual->ingreso - $actual->deposito - $actual->isr - $actual->iva - $proximo->deposito - $proximo->isr - $proximo->iva;
+                    $proximo->ingreso = 0.00;
+                    $proximo->isr = 0.00;
+                    $proximo->iva = 0.00;
+                    $actual->diferencia = 0.00;
+                }
             }
         }
     }
