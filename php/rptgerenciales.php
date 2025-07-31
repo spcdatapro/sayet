@@ -809,11 +809,11 @@ $app->post('/control_ingresos', function () {
                 $actual->diferencia = $pend > 0 ? $actual->diferencia - $pend : $actual->diferencia;
 
                 if ($actual->idfactura === $proximo->idfactura) {
-                    $proximo->diferencia = $actual->ingreso - $actual->deposito - $actual->isr - $actual->iva - $proximo->deposito - $proximo->isr - $proximo->iva;
                     $proximo->ingreso = 0.00;
                     $proximo->isr = 0.00;
                     $proximo->iva = 0.00;
                     $actual->diferencia = 0.00;
+                    $proximo->diferencia = $actual->ingreso - $actual->deposito - $actual->isr - $actual->iva - $proximo->deposito - $proximo->isr - $proximo->iva;
                 }
             }
         }
