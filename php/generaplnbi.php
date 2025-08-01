@@ -237,8 +237,8 @@ $app->post('/generand', function() use($db){
 
     $query = "SELECT z.tipo, z.cuenta, @row := @row + 1 AS contador, z.nombre, z.monto, z.cuentacontable ";
     $query.= "FROM (";
-    $query.= "SELECT 3 AS tipo, TRIM(e.cuentabanco) AS cuenta, TRIM(CONCAT(TRIM(b.nombre), ' ', IFNULL(TRIM(b.apellidos), ''))) AS nombre, a.liquido AS monto, e.idcuenta AS cuentacontable ";
-    $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral e ON b.idlaboral = e.id LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto LEFT JOIN plnempresa d ON d.id = b.idempresaactual ";
+    $query.= "SELECT 3 AS tipo, TRIM(e.cuentabanco) AS cuenta, TRIM(CONCAT(f.primernombre, ' ', IFNULL(f.segundonombre, ''), IFNULL(f.tercernombre, ''), ' ', IFNULL(f.primerapellido, ''), ' ', IFNULL(f.segundoapellido, ''), ' ', IFNULL(f.apellidocasada, ''))) AS nombre, a.liquido AS monto, e.idcuenta AS cuentacontable ";
+    $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral e ON b.idlaboral = e.id LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto LEFT JOIN plnempresa d ON d.id = b.idempresaactual INNER JOIN f.plnpersonal f ON b.idpersonal = f.id ";
     $query.= "WHERE a.idempresa = $d->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido <> 0 AND e.cuentabanco IS NOT NULL ";
     $query.= "AND e.metodo = 'nota debito' ";
     $query.= "ORDER BY b.nombre, b.apellidos";
@@ -298,10 +298,11 @@ $app->post('/generachq', function() use($db){
         $empresa = $d->empresas[$i];
         $query = "SELECT z.tipo, z.cuenta, @row := @row + 1 AS contador, z.nombre, z.monto, z.cuentacontable, z.idempleado, z.concepto ";
         $query.= "FROM (";
-        $query.= "SELECT 3 AS tipo, TRIM(e.cuentabanco) AS cuenta, TRIM(CONCAT(TRIM(b.nombre), ' ', IFNULL(TRIM(b.apellidos), ''))) AS nombre, a.liquido AS monto, e.idcuenta AS cuentacontable, b.id AS idempleado, ";
+        $query.= "SELECT 3 AS tipo, TRIM(e.cuentabanco) AS cuenta, TRIM(CONCAT(f.primernombre, ' ', IFNULL(f.segundonombre, ''), IFNULL(f.tercernombre, ''), ' ', IFNULL(f.primerapellido, ''), ' ', IFNULL(f.segundoapellido, ''), ' ', IFNULL(f.apellidocasada, ''))) AS nombre, a.liquido AS monto, e.idcuenta AS cuentacontable, b.id AS idempleado, ";
         $query.= "CONCAT('DEL ', LPAD(DAY('$d->fdelstr'), 2, ' '), ' DE ', (SELECT nombre FROM mes WHERE id = MONTH('$d->fdelstr')), ' AL ', ";
         $query.= "LPAD(DAY('$d->falstr'), 2, ' '), ' DE ', (SELECT nombre FROM mes WHERE id = MONTH('$d->falstr')), ' DEL ', YEAR('$d->falstr')) AS concepto ";
         $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral e ON b.idlaboral = e.id LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto LEFT JOIN plnempresa d ON d.id = e.idempresaactual ";
+        $query.= "INNER JOIN plnpersonal f ON b.idpersonal = f.id "; 
         $query.= "WHERE a.idempresa = 4 AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido <> 0 ";
         $query.= "AND e.metodo = 'cheque' ";
         $query.= "ORDER BY d.ordenreppres, b.nombre, b.apellidos";
