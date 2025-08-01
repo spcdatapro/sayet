@@ -804,8 +804,9 @@ $app->post('/control_ingresos', function () {
             $proximo = count($data) === $i+1 ? $data[$i] : $data[$i+1];
 
             if (isset($actual->idfactura)) {
-                $pend = $db->getOneField("SELECT SUM(d.monto) AS monto FROM reclitran a INNER JOIN tranban b ON a.idtranban = b.id INNER JOIN recibocli c ON a.idrecibocli = c.id INNER JOIN detcobroventa d ON d.idrecibocli = c.id INNER JOIN factura e ON d.idfactura = e.id
-                    WHERE b.fecha != '$d->fechastr' AND e.id in('$actual->idfactura')");
+                $query = "SELECT SUM(d.monto) AS monto FROM reclitran a INNER JOIN tranban b ON a.idtranban = b.id INNER JOIN recibocli c ON a.idrecibocli = c.id INNER JOIN detcobroventa d ON d.idrecibocli = c.id INNER JOIN factura e ON d.idfactura = e.id
+                    WHERE b.fecha != '$d->fechastr' AND e.id in('$actual->idfactura')";
+                $pend =  $db->getOneField($query);
                 $actual->diferencia = $pend > 0 ? $actual->diferencia - $pend : $actual->diferencia;
 
                 if ($actual->idfactura === $proximo->idfactura) {
