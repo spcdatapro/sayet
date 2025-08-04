@@ -787,7 +787,7 @@ $app->post('/control_ingresos', function () {
             array_push($t_proveedor, $actual->deposito);
 
             // si no tienen el mismo proveedor
-            if ($actual->factura !== $proximo->factura) {
+            if ($actual->factura !== $proximo->factura || $actual->idproyecto !== $proximo->idproyecto) {
                 $actual->ingreso = array_sum($t_proveedor);
                 // generar variable de totales
                 if (count($t_proveedor) > 1) {
