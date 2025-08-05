@@ -2,8 +2,8 @@
 
     var controller = angular.module('cpm.docsbancoctrl', []);
 
-    controller.controller('docsBancoCtrl', ['$scope', 'tranBancSrvc', 'bancoSrvc', '$interval', 'toaster', 'tipoMovTranBanSrvc',
-        ($scope, tranBancSrvc, bancoSrvc, $interval, toaster, tipoMovTranBanSrvc) => {
+    controller.controller('docsBancoCtrl', ['$scope', 'tranBancSrvc', 'bancoSrvc', '$interval', 'toaster', '$http', '$q', '$window',
+        ($scope, tranBancSrvc, bancoSrvc, $interval, toaster, $http, $q, $window) => {
             $scope.documentos = []; // desde se almacenan todos los documentos
             $scope.todas = [];
             $scope.cargando = false; // si esta cargando 
