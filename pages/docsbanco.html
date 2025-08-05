@@ -26,6 +26,25 @@
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <label class="control-label">Del:</label>
+                                <input type="date" name="fchDel" id="fchDel" class="form-control"
+                                    ng-model="params.fdel">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <label class="control-label">Al:</label>
+                                <input type="date" name="fchAl" id="fchAl" class="form-control" ng-model="params.fal">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div ng-show="documentos.length > 0">
                 <form name="paramsBus" id="paramsBus" novalidate>
@@ -44,7 +63,7 @@
                                 <div class="form-group">
                                     <label class="control-label">Al:</label>
                                     <input type="date" name="fchAl" id="fchAl" class="form-control"
-                                        ng-model="params.fal">
+                                        ng-model="params.fal" ng-change="buscarDocumentos()">
                                 </div>
                             </div>
                         </div>
