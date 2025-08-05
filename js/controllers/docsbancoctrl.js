@@ -125,6 +125,48 @@
                 $scope.currentPage = 1;
             })
 
+            $scope.imprimirNota = () => {
+                let aimprimir = [];
+                $scope.trans.forEach(tran => {
+                    if (tran.conciliar == 1) {
+                        aimprimir.push(tran);
+                    }
+                });
+
+                const url = window.location.origin + ':5489/api/report';
+                let props = {}, file, formData = new FormData();
+
+                const promises = aimprimir.map(tran => {
+                    props = { 'template': { 'shortid': 'ryTzo2NGge' }, 'data': { idnota: tran.id, iniciales: $scope.params.iniciales } };
+                    return $http.post(url, props, { responseType: 'arraybuffer' });
+                });
+                $q.all(promises).then((respuestas) => {
+                    for (let i = 0; i < aimprimir.length; i++) {
+                        file = new Blob([respuestas[i].data], { type: 'application/pdf' });
+                        formData.append(`OT_${+aimprimir[i].id}`, file);
+                    }
+
+                    $.ajax({
+                        url: "php/rptotgroup.php",
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: () => { },
+                        error: () => console.log("Se produjo un error al generar la impresión de OTs...")
+                    }).done(() => {
+                        const urlpdf = window.location.origin + '/sayet/php/pdfgenerator/OTs.pdf';
+                        $window.open(urlpdf);
+                    });
+                });
+            }
+
+            $scope.$watch('selTodos', function (newVal, oldVal) {
+                if (newVal != oldVal) {
+                    $scope.trans.forEach(f => f.conciliar = +newVal);
+                }
+            });
+
             function estatusCarga(limite) {
                 $interval(() => {
                     if ($scope.progress < limite) {
