@@ -782,7 +782,7 @@ $app->post('/control_ingresos', function () {
         for ($i = 0; $i < count($data); $i++) {
             // traer valor actual y anterior
             $actual = $data[$i];
-            $proximo = count($data) === $i+1 ? $data[$i] : $data[$i+1];
+            $proximo = count($data) === $i+1 ? $data[0] : $data[$i+1];
 
             array_push($t_proveedor, $actual->deposito);
 
@@ -801,7 +801,7 @@ $app->post('/control_ingresos', function () {
         for ($i = 0; $i < count($data); $i++) {
             // traer valor actual y anterior
             $actual = $data[$i];
-            $proximo = count($data) === $i+1 ? $data[$i] : $data[$i+1];
+            $proximo = count($data) === $i+1 ? $data[0] : $data[$i+1];
 
             if (isset($actual->idfactura)) {
                 $query = "SELECT SUM(DISTINCT b.monto) AS monto FROM factura a INNER JOIN detcobroventa b ON b.idfactura = a.id INNER JOIN reclitran c ON b.idrecibocli = c.idrecibocli 
