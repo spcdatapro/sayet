@@ -804,7 +804,8 @@ class Empleado extends Principal
 			[
 				'AND' => [
 					'idplnempleado' => $this->emp->id, 
-					'finalizado'    => 0
+					'finalizado'    => 0,
+					'esembargo'     => 0,
 				]
 			]
 		);
