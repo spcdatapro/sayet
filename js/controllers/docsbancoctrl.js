@@ -96,6 +96,8 @@
             }
 
             $scope.buscar = () => {
+                $scope.params.delstr = moment($scope.params.fdel).format('YYYY-MM-DD');
+                $scope.params.alstr = moment($scope.params.fal).format('YYYY-MM-DD');
                 tranBancSrvc.traerDocumentos($scope.params)
                     .then(d => {
                         $scope.progress = 100;
