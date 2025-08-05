@@ -59,8 +59,8 @@
                 $scope.bancos = d.filter(banco => idbancos.includes(banco.id));
             })
 
-            $scope.tipotrans = [{ id: '1', abreviadesc: '(C) Créditos', abreviatura: 'C' }, 
-                { id: '2', abreviadesc: '(D) Débitos', abreviatura: 'D' }];
+            $scope.tipotrans = [{ id: '1', abreviadesc: '(C) Créditos', abreviatura: 'C' },
+            { id: '2', abreviadesc: '(D) Débitos', abreviatura: 'D' }];
 
             $scope.buscarDocumentos = () => {
                 $scope.cargando = true;
@@ -92,6 +92,18 @@
                                     $scope.documentos = d.bancos;
                                 })
                         }
+                    })
+            }
+
+            $scope.buscar = () => {
+                tranBancSrvc.traerDocumentos($scope.params)
+                    .then(d => {
+                        $scope.progress = 100;
+                        $scope.cargando = false;
+
+                        console.log(d);
+                        $scope.todas = d.bancos;
+                        $scope.documentos = d.bancos;
                     })
             }
 
