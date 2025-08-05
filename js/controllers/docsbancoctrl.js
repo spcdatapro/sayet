@@ -127,7 +127,7 @@
 
             $scope.imprimirNota = () => {
                 let aimprimir = [];
-                $scope.trans.forEach(tran => {
+                $scope.documentos.forEach(tran => {
                     if (tran.conciliar == 1) {
                         aimprimir.push(tran);
                     }
@@ -163,7 +163,7 @@
 
             $scope.$watch('selTodos', function (newVal, oldVal) {
                 if (newVal != oldVal) {
-                    $scope.trans.forEach(f => f.conciliar = +newVal);
+                    $scope.documentos.forEach(f => f.conciliar = +newVal);
                 }
             });
 
