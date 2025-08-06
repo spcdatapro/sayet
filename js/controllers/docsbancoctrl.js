@@ -94,7 +94,7 @@
 
                                     console.log(d);
                                     $scope.todas = d.bancos;
-                                    $scope.documentos = d.filter(tran => tran.idtipotrans == 1);
+                                    $scope.documentos = d.bancos.filter(tran => tran.idtipotrans == 1);
                                 })
                         }
                     })
@@ -109,7 +109,7 @@
                         $scope.cargando = false;
 
                         $scope.todas = d.bancos;
-                        $scope.documentos = d.filter(tran => tran.idtipotrans == 1);
+                        $scope.documentos = d.bancos.filter(tran => tran.idtipotrans == 1);
                     })
             }
 
