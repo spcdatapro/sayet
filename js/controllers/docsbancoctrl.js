@@ -106,9 +106,7 @@
 
                         $scope.todas = d.bancos;
                         $scope.documentos = $scope.todas.filter(tran => {
-                            let matchesTipos = $scope.params.tipos.length > 0 ? $scope.params.tipos.includes(tran.idtipotrans) : true;
-
-                            return matchesTipos;
+                            return tran.idtipotrans === '1';
                         });
                     })
             }
