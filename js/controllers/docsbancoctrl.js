@@ -2,12 +2,13 @@
 
     var controller = angular.module('cpm.docsbancoctrl', []);
 
-    controller.controller('docsBancoCtrl', ['$scope', 'tranBancSrvc', 'bancoSrvc', '$interval', 'toaster', '$http', '$q', '$window',
-        ($scope, tranBancSrvc, bancoSrvc, $interval, toaster, $http, $q, $window) => {
+    controller.controller('docsBancoCtrl', ['$scope', 'tranBancSrvc', 'bancoSrvc', '$interval', 'toaster', '$http', '$q', '$window', 'authSrvc',
+        ($scope, tranBancSrvc, bancoSrvc, $interval, toaster, $http, $q, $window, authSrvc) => {
             $scope.documentos = []; // desde se almacenan todos los documentos
             $scope.todas = [];
             $scope.cargando = false; // si esta cargando 
             $scope.progress = 0; // progreso de carga
+            $scope.iniciales = 'N/E';
             // Obtener la fecha de hoy menos un día, o viernes si hoy es lunes
             let fecha = moment().toDate();
             let diaSemana = moment(fecha).day();
@@ -59,6 +60,10 @@
                 $scope.bancos = d.filter(banco => idbancos.includes(banco.id));
             })
 
+            authSrvc.getSession().then(function (usrLogged) {
+                $scope.params.iniciales = usrLogged.iniciales;
+            })
+
             $scope.tipotrans = [{ id: '1', abreviadesc: '(C) Créditos', abreviatura: 'C' },
             { id: '2', abreviadesc: '(D) Débitos', abreviatura: 'D' }];
 
@@ -89,7 +94,7 @@
 
                                     console.log(d);
                                     $scope.todas = d.bancos;
-                                    $scope.documentos = d.bancos;
+                                    $scope.documentos = d.filter(tran => tran.idtipotrans == 1);
                                 })
                         }
                     })
