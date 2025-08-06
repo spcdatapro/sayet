@@ -1274,7 +1274,7 @@ $app->get('/tran_recibos', function () {
 
     $query = "SELECT d_estado_cuenta AS id, c.id AS idbanco, d.id AS idmoneda, referencia AS numero, a.monto, d.simbolo AS moneda, FORMAT(a.monto, 2) AS monto_str, 'BI' AS banco, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.descripcion AS concepto
     FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta INNER JOIN banco c ON c.mt940 = b.cuenta INNER JOIN moneda d ON c.idmoneda = d.id 
-    WHERE tipo_transaccion = 'C' AND a.idtranban IS NULL AND b.estado_cuenta NOT IN(1, 2, 3, 4)";
+    WHERE tipo_transaccion = 'C' AND a.idtranban IS NULL AND b.estado_cuenta NOT IN(1, 2, 3, 4) AND a.impreso = 1";
     $trans = $db->getQuery($query);
 
     print json_encode($trans);
