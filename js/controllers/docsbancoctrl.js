@@ -103,10 +103,9 @@
                         $scope.progress = 100;
                         $scope.cargando = false;
 
-
                         $scope.todas = d.bancos;
                         $scope.documentos = $scope.todas.filter(tran => {
-                            return tran.idtipotrans === '1';
+                            return tran.idtipotrans == '1';
                         });
                     })
             }
@@ -130,6 +129,7 @@
             $scope.imprimirNota = () => {
                 let aimprimir = [];
                 $scope.documentos.forEach(tran => {
+                    tran.impreso = +1;
                     if (tran.conciliar == 1) {
                         aimprimir.push(tran);
                     }
