@@ -576,11 +576,11 @@
             // conexion mt940
             function getTrans(total) {
                 tranBancSrvc.getTransPendientesRecibo().then(d => {
-                    if (+total > 0) {
+                    // if (+total > 0) {
                         $scope.trans_banco = d.sort((a, b) => Math.abs(+a.monto - +total) - Math.abs(+b.monto - +total));
-                    } else {
-                        toaster.pop ({ title: 'Sin facturas', body:'Favor ingresar facturas antes de continuar'});
-                    }
+                    // } else {
+                        // toaster.pop ({ title: 'Sin facturas', body:'Favor ingresar facturas antes de continuar'});
+                    // }
                 })
             }
 

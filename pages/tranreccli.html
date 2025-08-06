@@ -375,7 +375,7 @@
                                 <div class="form-group">
                                     <label for="selTrans" class="control-label">Transacciónes disponibles</label>
                                     <ui-select ng-model="pagoreccli.tran" title="Seleccione una transacción..."
-                                        theme="bootstrap" autofocus="false" ng-change="selTran(pagoreccli.tran)" ng-disabled="lstdetreccli.length == 1">
+                                        theme="bootstrap" autofocus="false" ng-change="selTran(pagoreccli.tran)" ng-disabled="false">
                                         <ui-select-match placeholder="Buscar transacción..." allow-clear="false">
                                             <span ng-bind="($select.selected.numero)"></span>
                                         </ui-select-match>
