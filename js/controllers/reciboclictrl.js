@@ -503,14 +503,14 @@
                     $scope.loadPagoRecCli(obj.idrecibocli);
                     $scope.resetPagoRecCli();
                 });
-                // if (obj.tran > 0) {
+                if (obj.tran > 0) {
                 //     tranBancSrvc.editRow(obj, 'cc').then(function (d) {
                 //         if (d.success) {
-                //             loadDetRecCli(obj.idrecibocli);
-                //             $scope.pagoreccli.tran = 0;
+                            // loadDetRecCli(obj.idrecibocli);
+                            $scope.pagoreccli.tran = 0;
                 //         }
                 //     });
-                // }
+                }
             };
 
             $scope.delPagoRecli = function (obj) {
