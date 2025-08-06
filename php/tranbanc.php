@@ -1068,17 +1068,17 @@ $app->get('/revertir/:idtranban', function($idtranban) {
 $app->post('/conectar_banco', function () use ($app) {
     $db = new dbcpm();
 
-    // $dest = new SFTPConnInfo('localhost', 222, 'aponce', 'y%YgW$Qk3x#a59Su', '/');
-    // $src = new SFTPConnInfo('190.242.184.121', 22, 'sftpSayet', 'S3Pd25S@y3t', '/');
-    // $conciliacion = new ConciliacionAutomatica($src, $dest);
+    $dest = new SFTPConnInfo('localhost', 222, 'aponce', 'y%YgW$Qk3x#a59Su', '/');
+    $src = new SFTPConnInfo('190.242.184.121', 22, 'sftpSayet', 'S3Pd25S@y3t', '/');
+    $conciliacion = new ConciliacionAutomatica($src, $dest);
 
-    // try {
-    //     $conciliacion->get_mt940(); 
-    //     $conciliacion->read_mt940();
-    // } catch (Exception $e) {
-    //     print json_encode(['tipo' => 'error', 'mensaje' => 'Error en la conexión, favor comunicarse con IT: ' . $e->getMessage()]);
-    //     return;
-    // }
+    try {
+        $conciliacion->get_mt940(); 
+        $conciliacion->read_mt940();
+    } catch (Exception $e) {
+        print json_encode(['tipo' => 'error', 'mensaje' => 'Error en la conexión, favor comunicarse con IT: ' . $e->getMessage()]);
+        return;
+    }
 
     print json_encode(['tipo' => 'success', 'mensaje' => 'Archivos extraídos con éxito']);
     return;
@@ -1180,7 +1180,7 @@ $app->post('/traer_documentos', function () {
             $query = "SELECT a.d_estado_cuenta AS id, c.id AS idempresa, a.fecha AS concilia, 
                         IF(a.tipo_transaccion = 'C', '(C) Créditos', '(D) Débitos') AS tipotrans, a.referencia AS numero_tran, a.descripcion AS beneficiario, 
                         IF(a.tipo_transaccion = 'D', a.monto, NULL) AS debito, IF(a.tipo_transaccion = 'C', a.monto, NULL) AS credito, a.monto, b.saldo_inicial AS abreviatura, 
-                        b.saldo_final AS numero, IF(a.tipo_transaccion = 'C', 1, 2) AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, d.simbolo AS moneda
+                        b.saldo_final AS numero, IF(a.tipo_transaccion = 'C', 1, 2) AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, d.simbolo AS moneda, a.impreso
                         FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta INNER JOIN banco c ON c.mt940 = b.cuenta
                         INNER JOIN moneda d ON c.idmoneda = d.id 
                         WHERE b.estado_cuenta NOT IN(1, 2, 3, 4) ";
@@ -1229,6 +1229,8 @@ $app->post('/prntnotas', function () {
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
     date_default_timezone_set("America/Guatemala");
+
+    $db->doQuery("UPDATE d_estado_cuenta SET impreso = 1 WHERE d_estado_cuenta = $d->idnota");
 
     $query = "SELECT 
                 a.d_estado_cuenta AS id,

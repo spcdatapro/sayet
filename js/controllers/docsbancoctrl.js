@@ -17,7 +17,7 @@
             } else {
                 fdelFal = moment().subtract(1, 'days').toDate(); // Día anterior
             }
-            $scope.params = { ver: 3, fdel: fdelFal, fal: fdelFal, reporte: false };
+            $scope.params = { ver: 3, fdel: fdelFal, fal: fdelFal, reporte: false, tipotrans: 1 };
 
             // para paginar
             $scope.currentPage = 1; // Página actual

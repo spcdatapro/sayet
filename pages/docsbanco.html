@@ -1,3 +1,8 @@
+<style>
+    green {
+        background-color: #dff0d8 !important;
+    }
+</style>
 <div class="container-fluid" ng-controller="docsBancoCtrl">
     <div class="panel panel-primary">
         <div class="panel-heading">Documentos bancarios</div>
@@ -90,7 +95,7 @@
                             <div class="form-group">
                                 <label class="control-label">Tipo transacc&oacute;n:</label>
                                 <ui-select ng-model="params.tipos" title="Seleccione uno o varios tipos..."
-                                    theme="bootstrap" autofocus="false" multiple>
+                                    theme="bootstrap" autofocus="false" multiple ng-hide="true">
                                     <ui-select-match placeholder="Buscar tipo transaccion..." allow-clear="true">
                                         <span>{{$item.abreviatura}}</span>
                                     </ui-select-match>
@@ -152,7 +157,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="t in paginatedEmpleados() | filter:search">
+                        <tr ng-repeat="t in paginatedEmpleados() | filter:search" ng-class="{'green': +lt.impreso === 1}">
                             <td>{{t.concilia | date:'dd/MM/yyyy'}}</td>
                             <td>{{t.tipotrans}}</td>
                             <td>{{t.numero_tran}}</td>
