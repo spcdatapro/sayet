@@ -1292,7 +1292,7 @@ $app->post('/cc', function () {
         foreach ($idtran as $tran) {
             $generar = $db->getOneField("SELECT idtranban FROM d_estado_cuenta WHERE d_estado_cuenta = $tran->d_estado_cuenta AND idtranban > 0") > 0;
             if (!$generar) {
-                $query = "SELECT a.d_estado_cuenta AS id, c.id AS idbanco, TRIM(LEADING '0' FROM a.referencia) AS numero, DATE_FORMAT(NOW(), '%Y-%m-%d') AS fecha, a.monto, 6 AS usuario, a.fecha AS operado, c.idempresa
+                $query = "SELECT a.d_estado_cuenta AS id, c.id AS idbanco, TRIM(LEADING '0' FROM a.referencia) AS numero, DATE_FORMAT(NOW(), '%Y-%m-%d') AS fecha, a.monto, 6 AS usuario, a.fecha AS operado, c.idempresa, c.idmoneda
                 FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta INNER JOIN banco c ON c.mt940 = b.cuenta WHERE a.d_estado_cuenta = $tran->d_estado_cuenta";
                 $tran = $db->getQuery($query)[0];
 
@@ -1314,8 +1314,15 @@ $app->post('/cc', function () {
                     $numban = 0;
                 }
 
+                $tc = 1;
+
+                if ($tran->idmoneda == 2) {
+                    $tc = $db->getOneField("SELECT tipocambio FROM tipocambio WHERE fecha = '$tran->operado'");
+                    $tc = $tc > 1 ? $tc : $db->getOneField("SELECT tipocambio FROM tipocambio WHERE fecha = '$tran->fecha'");
+                }
+
                 $query = "INSERT INTO tranban (idbanco, tipotrans, numero, fecha, monto, beneficiario, concepto, operado, fechaoperado, anticipo, idbeneficiario, origenbene, tipocambio, numban, idusuario, pendiente) 
-                        VALUES ($tran->idbanco, 'R', $tran->numero, '$tran->fecha', $tran->monto, '$recibo->beneficiario', '$recibo->concepto', 1, '$tran->operado', 0, 0, 0, 1, $numban, $tran->usuario, 1)";
+                        VALUES ($tran->idbanco, 'R', $tran->numero, '$tran->fecha', $tran->monto, '$recibo->beneficiario', '$recibo->concepto', 1, '$tran->operado', 0, 0, 0, $tc, $numban, $tran->usuario, 1)";
                 $db->doQuery($query);
                 $lastid = $db->getLastId();
                 if ($lastid > 0) {
@@ -1324,13 +1331,13 @@ $app->post('/cc', function () {
                     $cuenta_cliente = isset($cuenta_cliente) ? $cuenta_cliente : $db->getOneFiled("SELECT idcuentac FROM detcontempresa WHERE idempresa = $tran->idempresa AND idtipoconfig = 30");
 
                     $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) 
-                            VALUES(1, $lastid, $cuenta_cliente, 0.00, $tran->monto, '$recibo->concepto')";
+                            VALUES(1, $lastid, $cuenta_cliente, 0.00, $tran->monto * $tc, '$recibo->concepto')";
                     $db->doQuery($query);
 
                     $ctabco = (int)$db->getOneField("SELECT idcuentac FROM banco WHERE id = $tran->idbanco");
                     if($ctabco > 0){
-                        $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
-                        $query.= "1, ".$lastid.", ".$ctabco.", $tran->monto, 0.00, '".$recibo->concepto."')";
+                        $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(
+                        1, $lastid, $ctabco, $tran->monto * $tc, 0.00, '$recibo->concepto')";
                         $db->doQuery($query);
                     };
 
