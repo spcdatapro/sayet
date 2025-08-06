@@ -1286,52 +1286,61 @@ $app->post('/cc', function () {
     $d = json_decode(file_get_contents('php://input'));
     $success = false;
 
-    $query = "SELECT a.d_estado_cuenta AS id, c.id AS idbanco, TRIM(LEADING '0' FROM a.referencia) AS numero, DATE_FORMAT(NOW(), '%Y-%m-%d') AS fecha, a.monto, 6 AS usuario, a.fecha AS operado, c.idempresa
-    FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta INNER JOIN banco c ON c.mt940 = b.cuenta WHERE a.d_estado_cuenta = $d->tran";
-    $tran = $db->getQuery($query)[0];
+    $idtran = $db->getQuery("SELECT d_estado_cuenta FROM detpagorecli WHERE idreccli = $d->idrecibocli AND d_estado_cuenta > 0");
 
-    $query = "SELECT a.id, IFNULL(e.nombre, c.nombre) AS beneficiario, CONCAT('Ingreso recibo clientes ', a.serie, '-', 
-    IFNULL(d.seriea, d.serieb), '[', a.concepto, ']', 'Facturas: ', GROUP_CONCAT(c.serie, '-', c.numero)) AS concepto 
-    FROM recibocli a INNER JOIN detcobroventa b ON b.idrecibocli = a.id INNER JOIN factura c ON b.idfactura = c.id INNER JOIN serierecli d ON d.idrecibocli = a.id 
-    LEFT JOIN cliente e ON a.idcliente = e.id WHERE a.id = $d->idrecibocli GROUP BY a.id";
-    $recibo = $db->getQuery($query)[0];
+    if (count($idtran) > 0) {
+        foreach ($idtran as $tran) {
+            $generar = $db->getOneField("SELECT idtranban FROM d_estado_cuenta WHERE d_estado_cuenta = $tran->d_estado_cuenta AND idtranban > 0") > 0;
+            if (!$generar) {
+                $query = "SELECT a.d_estado_cuenta AS id, c.id AS idbanco, TRIM(LEADING '0' FROM a.referencia) AS numero, DATE_FORMAT(NOW(), '%Y-%m-%d') AS fecha, a.monto, 6 AS usuario, a.fecha AS operado, c.idempresa
+                FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta INNER JOIN banco c ON c.mt940 = b.cuenta WHERE a.d_estado_cuenta = $tran->d_estado_cuenta";
+                $tran = $db->getQuery($query)[0];
 
-    $existe = $db->getOneField("SELECT id FROM tranban WHERE numero = $tran->numero AND idbanco = $tran->idbanco AND tipotrans = 'R'");
+                $query = "SELECT a.id, IFNULL(e.nombre, c.nombre) AS beneficiario, CONCAT('Ingreso recibo clientes ', a.serie, '-', 
+                IFNULL(d.seriea, d.serieb), '[', a.concepto, ']', 'Facturas: ', GROUP_CONCAT(c.serie, '-', c.numero)) AS concepto 
+                FROM recibocli a INNER JOIN detcobroventa b ON b.idrecibocli = a.id INNER JOIN factura c ON b.idfactura = c.id INNER JOIN serierecli d ON d.idrecibocli = a.id 
+                LEFT JOIN cliente e ON a.idcliente = e.id WHERE a.id = $d->idrecibocli GROUP BY a.id";
+                $recibo = $db->getQuery($query)[0];
 
-    if ($existe > 0) {
-        $numban = $tran->numero;
-        do {
-            $tran->numero++;
-            $existe = $db->getOneField("SELECT id FROM tranban WHERE numero = $tran->numero AND idbanco = $tran->idbanco AND tipotrans = 'R'");
-        } while ($existe > 0);
-    } else {
-        $numban = 0;
-    }
+                $existe = $db->getOneField("SELECT id FROM tranban WHERE numero = $tran->numero AND idbanco = $tran->idbanco AND tipotrans = 'R'");
 
-    $query = "INSERT INTO tranban (idbanco, tipotrans, numero, fecha, monto, beneficiario, concepto, operado, fechaoperado, anticipo, idbeneficiario, origenbene, tipocambio, numban, idusuario, pendiente) 
-            VALUES ($tran->idbanco, 'R', $tran->numero, '$tran->fecha', $tran->monto, '$recibo->beneficiario', '$recibo->concepto', 1, '$tran->operado', 0, 0, 0, 1, $numban, $tran->usuario, 1)";
-    $db->doQuery($query);
-    $lastid = $db->getLastId();
-    if ($lastid > 0) {
-        $cuenta_cliente = $db->getOneField("SELECT c.id FROM recibocli a INNER JOIN contrato b ON a.idcliente = b.idcliente AND b.inactivo = 0 AND b.idempresa = $tran->idempresa 
-        INNER JOIN cuentac c ON b.idcuentac = c.codigo AND c.idempresa = $tran->idempresa WHERE a.id = $recibo->id");
-        $cuenta_cliente = isset($cuenta_cliente) ? $cuenta_cliente : $db->getOneFiled("SELECT idcuentac FROM detcontempresa WHERE idempresa = $tran->idempresa AND idtipoconfig = 30");
+                if ($existe > 0) {
+                    $numban = $tran->numero;
+                    do {
+                        $tran->numero++;
+                        $existe = $db->getOneField("SELECT id FROM tranban WHERE numero = $tran->numero AND idbanco = $tran->idbanco AND tipotrans = 'R'");
+                    } while ($existe > 0);
+                } else {
+                    $numban = 0;
+                }
 
-        $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) 
-                VALUES(1, $lastid, $cuenta_cliente, 0.00, $tran->monto, '$recibo->concepto')";
-        $db->doQuery($query);
+                $query = "INSERT INTO tranban (idbanco, tipotrans, numero, fecha, monto, beneficiario, concepto, operado, fechaoperado, anticipo, idbeneficiario, origenbene, tipocambio, numban, idusuario, pendiente) 
+                        VALUES ($tran->idbanco, 'R', $tran->numero, '$tran->fecha', $tran->monto, '$recibo->beneficiario', '$recibo->concepto', 1, '$tran->operado', 0, 0, 0, 1, $numban, $tran->usuario, 1)";
+                $db->doQuery($query);
+                $lastid = $db->getLastId();
+                if ($lastid > 0) {
+                    $cuenta_cliente = $db->getOneField("SELECT c.id FROM recibocli a INNER JOIN contrato b ON a.idcliente = b.idcliente AND b.inactivo = 0 AND b.idempresa = $tran->idempresa 
+                    INNER JOIN cuentac c ON b.idcuentac = c.codigo AND c.idempresa = $tran->idempresa WHERE a.id = $recibo->id");
+                    $cuenta_cliente = isset($cuenta_cliente) ? $cuenta_cliente : $db->getOneFiled("SELECT idcuentac FROM detcontempresa WHERE idempresa = $tran->idempresa AND idtipoconfig = 30");
 
-        $ctabco = (int)$db->getOneField("SELECT idcuentac FROM banco WHERE id = $tran->idbanco");
-        if($ctabco > 0){
-            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
-            $query.= "1, ".$lastid.", ".$ctabco.", $tran->monto, 0.00, '".$recibo->concepto."')";
-            $db->doQuery($query);
-        };
+                    $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) 
+                            VALUES(1, $lastid, $cuenta_cliente, 0.00, $tran->monto, '$recibo->concepto')";
+                    $db->doQuery($query);
 
-        $success = true;
+                    $ctabco = (int)$db->getOneField("SELECT idcuentac FROM banco WHERE id = $tran->idbanco");
+                    if($ctabco > 0){
+                        $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
+                        $query.= "1, ".$lastid.", ".$ctabco.", $tran->monto, 0.00, '".$recibo->concepto."')";
+                        $db->doQuery($query);
+                    };
 
-        $db->doQuery("INSERT INTO reclitran (idrecibocli, idtranban, monto) VALUES ($recibo->id, $lastid, $tran->monto)");
-        $db->doQuery("UPDATE d_estado_cuenta SET idtranban = $lastid WHERE d_estado_cuenta = $tran->id");
+                    $success = true;
+
+                    $db->doQuery("INSERT INTO reclitran (idrecibocli, idtranban, monto) VALUES ($recibo->id, $lastid, $tran->monto)");
+                    $db->doQuery("UPDATE d_estado_cuenta SET idtranban = $lastid WHERE d_estado_cuenta = $tran->id");
+                }
+            }
+        }
     }
     return json_encode(['success' => $success]);
 });

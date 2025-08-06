@@ -216,6 +216,9 @@
             };
 
             $scope.printRecCli = (idrecibo) => {
+                if ($scope.lstdetreccli.length > 1) {
+                    tranBancSrvc.editRow({ idrecibocli: idrecibo }, 'cc');
+                }
                 jsReportSrvc.getPDFReport('r1jAA3sQY', { idrecibo: +idrecibo }).then(function (pdf) { $window.open(pdf); $scope.getRecCli(idrecibo); });
             };
 
@@ -499,19 +502,14 @@
 
             $scope.addPagoRecCli = function (obj) {
                 obj = setPagoRec(obj);
-                // console.log(obj); return;
+                console.log(obj); 
                 reciboClientesSrvc.editRow(obj, 'cp').then(function (d) {
                     $scope.loadPagoRecCli(obj.idrecibocli);
                     $scope.resetPagoRecCli();
-                });
-                if (obj.tran > 0) {
-                //     tranBancSrvc.editRow(obj, 'cc').then(function (d) {
-                //         if (d.success) {
-                            // loadDetRecCli(obj.idrecibocli);
-                            $scope.pagoreccli.tran = 0;
-                //         }
-                //     });
-                }
+                    if (obj.tran > 0) {
+                        $scope.pagoreccli.tran = 0;
+                    }
+                })
             };
 
             $scope.delPagoRecli = function (obj) {
