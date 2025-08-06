@@ -13,12 +13,12 @@ $app->get('/lsttranbanc/:idbanco(/:tipotrans)', function($idbanco, $tipotrans = 
     $db = new dbcpm();
     $query = "SELECT a.id, a.idbanco, CONCAT(b.nombre, ' (', b.nocuenta, ')') AS nombanco, a.tipotrans, a.numero, a.fecha, a.monto, ";
     $query.= "a.beneficiario, a.concepto, a.operado, a.anticipo, a.idbeneficiario, a.origenbene, a.anulado, a.fechaanula, a.tipocambio, a.impreso, a.fechaliquida, a.esnegociable, ";
-    $query.= "CONCAT('OT: ', c.idpresupuesto, '-', c.correlativo, ' (', e.nombre,')') AS ot, a.iddetpresup, a.iddetpagopresup, a.idproyecto, a.iddocliquida ";
+    $query.= "CONCAT('OT: ', c.idpresupuesto, '-', c.correlativo, ' (', e.nombre,')') AS ot, a.iddetpresup, a.iddetpagopresup, a.idproyecto, a.iddocliquida, a.pendiente ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco ";
     $query.= "LEFT JOIN detpresupuesto c ON c.id = a.iddetpresup LEFT JOIN presupuesto d ON d.id = c.idpresupuesto LEFT JOIN proveedor e ON e.id = c.idproveedor ";
     $query.= "WHERE a.idbanco = ".$idbanco." ";
     $query.= $tipotrans === '' ? '' : " AND a.tipotrans = '$tipotrans' ";
-    $query.= "ORDER BY a.fecha DESC, a.operado, b.nombre, a.tipotrans, a.numero";
+    $query.= "ORDER BY a.pendiente, a.fecha DESC, a.operado, b.nombre, a.tipotrans, a.numero";
     print $db->doSelectASJson($query);
 });
 
@@ -29,7 +29,7 @@ $app->post('/lsttran', function(){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idbanco, CONCAT(b.nombre, ' (', b.nocuenta, ')') AS nombanco, a.tipotrans, a.numero, a.fecha, a.monto,  a.retisr, a.montooriginal, a.isr, a.montocalcisr, ";
     $query.= "a.beneficiario, a.concepto, a.operado, a.anticipo, a.idbeneficiario, a.origenbene, a.anulado, a.fechaanula, a.tipocambio, a.impreso, a.fechaliquida, a.esnegociable, ";
-    $query.= "CONCAT('OT: ', c.idpresupuesto, '-', c.correlativo, ' (', e.nombre,')') AS ot, a.iddetpresup, a.iddetpagopresup, a.idproyecto, a.iddocliquida ";
+    $query.= "CONCAT('OT: ', c.idpresupuesto, '-', c.correlativo, ' (', e.nombre,')') AS ot, a.iddetpresup, a.iddetpagopresup, a.idproyecto, a.iddocliquida, a.pendiente ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco ";
     $query.= "LEFT JOIN detpresupuesto c ON c.id = a.iddetpresup LEFT JOIN presupuesto d ON d.id = c.idpresupuesto LEFT JOIN proveedor e ON e.id = c.idproveedor ";
     $query.= "WHERE a.idbanco = $d->idbanco ";
@@ -37,7 +37,7 @@ $app->post('/lsttran', function(){
     $query.= $d->falstr != "" ? "AND a.fecha <= '$d->falstr' " : "";
     $query.= $d->tipotrans != '' ? "AND a.tipotrans = '$d->tipotrans' " : "";
     $query.= (int)$d->idot > 0 ? "AND a.iddetpresup = $d->idot " : '';
-    $query.= "ORDER BY a.fecha DESC, a.operado, b.nombre, a.tipotrans, a.numero";
+    $query.= "ORDER BY a.pendiente DESC, a.fecha DESC, a.operado, b.nombre, a.tipotrans, a.numero";
     print $db->doSelectASJson($query);
 });
 
@@ -46,7 +46,7 @@ $app->get('/gettran/:idtran', function($idtran){
     $query = "SELECT a.id, a.idbanco, CONCAT(b.nombre, ' (', b.nocuenta, ')') AS nombanco, a.tipotrans, a.numero, a.fecha, a.monto,  a.retisr, a.montooriginal, a.isr, a.montocalcisr, ";
     $query.= "a.beneficiario, a.concepto, a.operado, a.anticipo, a.idbeneficiario, a.origenbene, a.anulado, c.razon, a.fechaanula, a.tipocambio, d.simbolo AS moneda, a.impreso, a.fechaliquida, a.esnegociable, ";
     $query.= "CONCAT('OT: ', e.idpresupuesto, '-', e.correlativo, ' (', g.nombre,')') AS ot, a.iddetpresup, a.iddetpagopresup, a.idproyecto, a.iddocliquida, IFNULL(group_concat(h.id), group_concat(i.idrecibocli)) AS idrecibocli, a.numban, ";
-    $query.= "a.idusuario, a.ultusuario ";
+    $query.= "a.idusuario, a.ultusuario, a.pendiente ";
     $query.= "FROM tranban a INNER JOIN banco b ON b.id = a.idbanco LEFT JOIN razonanulacion c ON c.id = a.idrazonanulacion LEFT JOIN moneda d ON d.id = b.idmoneda ";
     $query.= "LEFT JOIN detpresupuesto e ON e.id = a.iddetpresup LEFT JOIN presupuesto f ON f.id = e.idpresupuesto LEFT JOIN proveedor g ON g.id = e.idproveedor LEFT JOIN recibocli h ON a.id = h.idtranban ";
     $query.= "LEFT JOIN reclitran i ON i.idtranban = a.id ";
@@ -1068,17 +1068,17 @@ $app->get('/revertir/:idtranban', function($idtranban) {
 $app->post('/conectar_banco', function () use ($app) {
     $db = new dbcpm();
 
-    $dest = new SFTPConnInfo('localhost', 222, 'aponce', 'y%YgW$Qk3x#a59Su', '/');
-    $src = new SFTPConnInfo('190.242.184.121', 22, 'sftpSayet', 'S3Pd25S@y3t', '/');
-    $conciliacion = new ConciliacionAutomatica($src, $dest);
+    // $dest = new SFTPConnInfo('localhost', 222, 'aponce', 'y%YgW$Qk3x#a59Su', '/');
+    // $src = new SFTPConnInfo('190.242.184.121', 22, 'sftpSayet', 'S3Pd25S@y3t', '/');
+    // $conciliacion = new ConciliacionAutomatica($src, $dest);
 
-    try {
-        $conciliacion->get_mt940(); 
-        $conciliacion->read_mt940();
-    } catch (Exception $e) {
-        print json_encode(['tipo' => 'error', 'mensaje' => 'Error en la conexión, favor comunicarse con IT: ' . $e->getMessage()]);
-        return;
-    }
+    // try {
+    //     $conciliacion->get_mt940(); 
+    //     $conciliacion->read_mt940();
+    // } catch (Exception $e) {
+    //     print json_encode(['tipo' => 'error', 'mensaje' => 'Error en la conexión, favor comunicarse con IT: ' . $e->getMessage()]);
+    //     return;
+    // }
 
     print json_encode(['tipo' => 'success', 'mensaje' => 'Archivos extraídos con éxito']);
     return;
@@ -1270,7 +1270,80 @@ $app->post('/prntnotas', function () {
 $app->get('/tran_recibos', function () {
     $db = new dbcpm();
 
-    $query = "";
+    $query = "SELECT d_estado_cuenta AS id, c.id AS idbanco, d.id AS idmoneda, referencia AS numero, a.monto, d.simbolo AS moneda, FORMAT(a.monto, 2) AS monto_str, 'BI' AS banco, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.descripcion AS concepto
+    FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta INNER JOIN banco c ON c.mt940 = b.cuenta INNER JOIN moneda d ON c.idmoneda = d.id 
+    WHERE tipo_transaccion = 'C' AND a.idtranban IS NULL AND b.estado_cuenta NOT IN(1, 2, 3, 4)";
+    $trans = $db->getQuery($query);
+
+    print json_encode($trans);
+});
+
+// creacion de nota de credito por medio de recibo de clientes
+$app->post('/cc', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+    $success = false;
+
+    $query = "SELECT a.d_estado_cuenta AS id, c.id AS idbanco, TRIM(LEADING '0' FROM a.referencia) AS numero, DATE_FORMAT(NOW(), '%Y-%m-%d') AS fecha, a.monto, 6 AS usuario, a.fecha AS operado, c.idempresa
+    FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta INNER JOIN banco c ON c.mt940 = b.cuenta WHERE a.d_estado_cuenta = $d->tran";
+    $tran = $db->getQuery($query)[0];
+
+    $query = "SELECT a.id, IFNULL(e.nombre, c.nombre) AS beneficiario, CONCAT('Ingreso recibo clientes ', a.serie, '-', 
+    IFNULL(d.seriea, d.serieb), '[', a.concepto, ']', 'Facturas: ', GROUP_CONCAT(c.serie, '-', c.numero)) AS concepto 
+    FROM recibocli a INNER JOIN detcobroventa b ON b.idrecibocli = a.id INNER JOIN factura c ON b.idfactura = c.id INNER JOIN serierecli d ON d.idrecibocli = a.id 
+    LEFT JOIN cliente e ON a.idcliente = e.id WHERE a.id = $d->idrecibocli GROUP BY a.id";
+    $recibo = $db->getQuery($query)[0];
+
+    $existe = $db->getOneField("SELECT id FROM tranban WHERE numero = $tran->numero AND idbanco = $tran->idbanco AND tipotrans = 'R'");
+
+    if ($existe > 0) {
+        $numban = $tran->numero;
+        do {
+            $tran->numero++;
+            $existe = $db->getOneField("SELECT id FROM tranban WHERE numero = $tran->numero AND idbanco = $tran->idbanco AND tipotrans = 'R'");
+        } while ($existe > 0);
+    } else {
+        $numban = 0;
+    }
+
+    $query = "INSERT INTO tranban (idbanco, tipotrans, numero, fecha, monto, beneficiario, concepto, operado, fechaoperado, anticipo, idbeneficiario, origenbene, tipocambio, numban, idusuario, pendiente) 
+            VALUES ($tran->idbanco, 'R', $tran->numero, '$tran->fecha', $tran->monto, '$recibo->beneficiario', '$recibo->concepto', 1, '$tran->operado', 0, 0, 0, 1, $numban, $tran->usuario, 1)";
+    $db->doQuery($query);
+    $lastid = $db->getLastId();
+    if ($lastid > 0) {
+        $cuenta_cliente = $db->getOneField("SELECT c.id FROM recibocli a INNER JOIN contrato b ON a.idcliente = b.idcliente AND b.inactivo = 0 AND b.idempresa = $tran->idempresa 
+        INNER JOIN cuentac c ON b.idcuentac = c.codigo AND c.idempresa = $tran->idempresa WHERE a.id = $recibo->id");
+        $cuenta_cliente = isset($cuenta_cliente) ? $cuenta_cliente : $db->getOneFiled("SELECT idcuentac FROM detcontempresa WHERE idempresa = $tran->idempresa AND idtipoconfig = 30");
+
+        $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) 
+                VALUES(1, $lastid, $cuenta_cliente, 0.00, $tran->monto, '$recibo->concepto')";
+        $db->doQuery($query);
+
+        $ctabco = (int)$db->getOneField("SELECT idcuentac FROM banco WHERE id = $tran->idbanco");
+        if($ctabco > 0){
+            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
+            $query.= "1, ".$lastid.", ".$ctabco.", $tran->monto, 0.00, '".$recibo->concepto."')";
+            $db->doQuery($query);
+        };
+
+        $success = true;
+
+        $db->doQuery("INSERT INTO reclitran (idrecibocli, idtranban, monto) VALUES ($recibo->id, $lastid, $tran->monto)");
+        $db->doQuery("UPDATE d_estado_cuenta SET idtranban = $lastid WHERE d_estado_cuenta = $tran->id");
+    }
+    return json_encode(['success' => $success]);
+});
+
+$app->post('/apr', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $update = "UPDATE tranban SET pendiente = 0 WHERE id = $d->id";
+    $db->doQuery($update);
+
+    $success = $db->getOneField("SELECT pendiente FROM tranban WHERE id = $d->id") == 0;
+
+    return json_encode(['success' => $success]);
 });
 
 function compararPorId($a, $b) {

@@ -541,13 +541,21 @@ $app->post('/prtrecibocli', function() {
 $app->post('/cp', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $query = "INSERT INTO detpagorecli(idreccli, numero, idbanco, idmoneda, monto, tipotrans) VALUES($d->idrecibocli, $d->numero, $d->idbanco, $d->idmoneda, $d->monto, $d->idtipotrans)";
+    $query = "INSERT INTO detpagorecli(idreccli, numero, idbanco, idmoneda, monto, tipotrans, d_estado_cuenta) VALUES($d->idrecibocli, $d->numero, $d->idbanco, $d->idmoneda, $d->monto, $d->idtipotrans, $d->tran)";
     $db->doQuery($query);
 });
 
 $app->post('/dp', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    $d_estado_cuenta = $db->getOneField("SELECT d_estado_cuenta FROM detpagorecli WHERE id = $d->id");
+    if ($d_estado_cuenta > 0) {
+        $idtran = $db->getOneField("SELECT idtranban FROM d_estado_cuenta WHERE d_estado_cuenta = $d_estado_cuenta");
+        $db->doQuery("DELETE FROM reclitran WHERE idtranban = $idtran");
+        $db->doQuery("DELETE FROM tranban WHERE id = $idtran");
+        $db->doQuery("DELETE FROM detallecontable WHERE origen = 1 AND idorigen = $idtran");
+        $db->doQuery("UPDATE d_estado_cuenta SET idtranban = NULL WHERE d_estado_cuenta = $d_estado_cuenta");
+    }
     $db->doQuery("DELETE FROM detpagorecli WHERE id = $d->id");
 });
 
