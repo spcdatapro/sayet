@@ -91,11 +91,11 @@
                                 </ui-select>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6" ng-hide="true">
                             <div class="form-group">
                                 <label class="control-label">Tipo transacc&oacute;n:</label>
                                 <ui-select ng-model="params.tipos" title="Seleccione uno o varios tipos..."
-                                    theme="bootstrap" autofocus="false" multiple ng-hide="true">
+                                    theme="bootstrap" autofocus="false" multiple>
                                     <ui-select-match placeholder="Buscar tipo transaccion..." allow-clear="true">
                                         <span>{{$item.abreviatura}}</span>
                                     </ui-select-match>
@@ -157,7 +157,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="t in paginatedEmpleados() | filter:search" ng-class="{'green': +lt.impreso === 1}">
+                        <tr ng-repeat="t in paginatedEmpleados() | filter:search" ng-class="{'green': +t.impreso === 1}">
                             <td>{{t.concilia | date:'dd/MM/yyyy'}}</td>
                             <td>{{t.tipotrans}}</td>
                             <td>{{t.numero_tran}}</td>

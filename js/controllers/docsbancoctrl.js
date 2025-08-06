@@ -17,7 +17,7 @@
             } else {
                 fdelFal = moment().subtract(1, 'days').toDate(); // Día anterior
             }
-            $scope.params = { ver: 3, fdel: fdelFal, fal: fdelFal, reporte: false, tipotrans: 1 };
+            $scope.params = { ver: 3, fdel: fdelFal, fal: fdelFal, reporte: false, tipos: ['1'] };
 
             // para paginar
             $scope.currentPage = 1; // Página actual
@@ -103,9 +103,13 @@
                         $scope.progress = 100;
                         $scope.cargando = false;
 
-                        console.log(d);
+
                         $scope.todas = d.bancos;
-                        $scope.documentos = d.bancos;
+                        $scope.documentos = $scope.todas.filter(tran => {
+                            let matchesTipos = $scope.params.tipos.length > 0 ? $scope.params.tipos.includes(tran.idtipotrans) : true;
+
+                            return matchesTipos;
+                        });
                     })
             }
 
