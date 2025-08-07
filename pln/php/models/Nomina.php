@@ -715,8 +715,8 @@ class Nomina extends Principal
 		$sql = <<<EOT
 SELECT 
     a.*, 
-    b.nombre, 
-    b.apellidos, 
+    CONCAT(e.primernombre, ' ', IFNULL(e.segundonombre, ''), ' ', IFNULL(e.tercernombre, '')) AS nombre, 
+    CONCAT(IFNULL(e.primerapellido, ''), ' ', IFNULL(e.segundoapellido, ''), ' ', IFNULL(e.apellidocasada, '')) AS apellidos,
     e.documento AS dpi, 
     f.idempresaactual, 
     f.reingreso,
