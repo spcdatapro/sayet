@@ -1382,21 +1382,21 @@ EOT;
 			]
 		]);
 
-		$sueldo_ant = $this->db->select("plnbitacora", [
-			"sueldo",
-			"bonificacionley"
-		], [
-			"AND" => [
-				"idplnempleado" => $bit->idplnempleado,
-				"sueldo[>]" => 0.00,
-				"bonificacionley[>]" => 0.00
-			]
-		]);
-		if (!empty($sueldo_ant) && $bit->idplnmovimiento != 10) {
-			$sueldo_ant = $sueldo_ant[0];
-		} else {
-			$sueldo_ant = [];
-		}
+		// $sueldo_ant = $this->db->select("plnbitacora", [
+		// 	"sueldo",
+		// 	"bonificacionley"
+		// ], [
+		// 	"AND" => [
+		// 		"idplnempleado" => $bit->idplnempleado,
+		// 		"sueldo[>]" => 0.00,
+		// 		"bonificacionley[>]" => 0.00
+		// 	]
+		// ]);
+		// if (!empty($sueldo_ant) && $bit->idplnmovimiento != 10) {
+		// 	$sueldo_ant = $sueldo_ant[0];
+		// } else {
+		// 	$sueldo_ant = [];
+		// }
 
 		$siempre = !empty($resultado) ? $resultado[0] : null;		
 
@@ -1471,9 +1471,9 @@ EOT;
 			}
 		}
 
-		$tmp['des_sueldo']       = number_format($this->lab->sueldo, 2);
-		$tmp['des_bonificacion'] = number_format($this->lab->bonificacionley, 2);
-		$tmp['des_total']        = number_format($this->lab->sueldo + $this->lab->bonificacionley, 2);
+		// $tmp['des_sueldo']       = number_format($this->lab->sueldo, 2);
+		// $tmp['des_bonificacion'] = number_format($this->lab->bonificacionley, 2);
+		// $tmp['des_total']        = number_format($this->lab->sueldo + $this->lab->bonificacionley, 2);
 
 		return $tmp;
 	}
