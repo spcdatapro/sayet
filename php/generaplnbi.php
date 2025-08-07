@@ -238,7 +238,7 @@ $app->post('/generand', function() use($db){
     $query = "SELECT z.tipo, z.cuenta, @row := @row + 1 AS contador, z.nombre, z.monto, z.cuentacontable ";
     $query.= "FROM (";
     $query.= "SELECT 3 AS tipo, TRIM(e.cuentabanco) AS cuenta, TRIM(CONCAT(f.primernombre, ' ', IFNULL(f.segundonombre, ''), IFNULL(f.tercernombre, ''), ' ', IFNULL(f.primerapellido, ''), ' ', IFNULL(f.segundoapellido, ''), ' ', IFNULL(f.apellidocasada, ''))) AS nombre, a.liquido AS monto, e.idcuenta AS cuentacontable ";
-    $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral e ON b.idlaboral = e.id LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto LEFT JOIN plnempresa d ON d.id = b.idempresaactual INNER JOIN f.plnpersonal f ON b.idpersonal = f.id ";
+    $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral e ON b.idlaboral = e.id LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto LEFT JOIN plnempresa d ON d.id = b.idempresaactual INNER JOIN plnpersonal f ON b.idpersonal = f.id ";
     $query.= "WHERE a.idempresa = $d->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido <> 0 AND e.cuentabanco IS NOT NULL ";
     $query.= "AND e.metodo = 'nota debito' ";
     $query.= "ORDER BY b.nombre, b.apellidos";
