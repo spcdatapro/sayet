@@ -496,7 +496,7 @@
                 obj.idmoneda = obj.objMoneda != null && obj.objMoneda != undefined ? obj.objMoneda.id : 0;
                 obj.idtipotrans = obj.idtipotrans != null && obj.idtipotrans != undefined ? obj.idtipotrans : 0;
                 obj.monto = obj.monto != null && obj.monto != undefined ? obj.monto : 0.00;
-                obj.tran = obj.tran;
+                obj.tran = obj.tran > 0 ? obj.tran : 0;
                 return obj;
             }
 
