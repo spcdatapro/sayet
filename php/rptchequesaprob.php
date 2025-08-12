@@ -34,7 +34,7 @@ $app->get('/gettxt/:idempresa/:fechastr/:idmoneda/:nombre(/:idbanco)', function(
     //$url = 'http://104.197.209.57:5489/api/report';
     $url = 'http://localhost:5489/api/report';
     $data = ['template' => ['shortid' => 'B1ICfUfDb'], 'data' => ['idempresa' => "$idempresa", 'fechastr' => "$fechastr", 'idmoneda' => "$idmoneda", 'banco' => $banco]];
-    //print json_encode($data);
+    print json_encode($data); return;
 
     $respuesta = $db->CallJSReportAPI('POST', $url, json_encode($data));
     //print iconv('UTF-8','Windows-1252', preg_replace('/[^\P{C}\n]+/u', '', $respuesta));
