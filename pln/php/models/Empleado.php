@@ -1442,7 +1442,7 @@ EOT;
 			$tmp['ant_total']        = 0;
 		}
 
-		if (!empty($bit->despues)) {
+		if (!empty($bit->despues) && $bit->idplnmovimiento != 10) {
 			$des = json_decode($bit->despues);
 			$tmp['des_sueldo']       = number_format($des->sueldo, 2);
 			$tmp['des_bonificacion'] = number_format($des->bonificacionley, 2);
