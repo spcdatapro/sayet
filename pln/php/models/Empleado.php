@@ -1437,6 +1437,7 @@ EOT;
 			$tmp['ant_bonificacion'] = number_format($ant->bonificacionley, 2);
 			$tmp['ant_total']        = number_format(($ant->sueldo+$ant->bonificacionley), 2);
 		} else {
+			$ant = new stdClass();
 			$ant->sueldo = 0;
 			$tmp['ant_sueldo']       = 0;
 			$tmp['ant_bonificacion'] = 0;
