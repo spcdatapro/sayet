@@ -1431,18 +1431,19 @@ EOT;
 			'numero'           => $bit->id
 		];
 
-		if (!empty($bit->antes)) {
+		if (!empty($bit->antes) && $bit->idplnmovimiento != 10) {
 			$ant = json_decode($bit->antes);
 			$tmp['ant_sueldo']       = number_format($ant->sueldo, 2);
 			$tmp['ant_bonificacion'] = number_format($ant->bonificacionley, 2);
 			$tmp['ant_total']        = number_format(($ant->sueldo+$ant->bonificacionley), 2);
 		} else {
+			$ant->sueldo = 0;
 			$tmp['ant_sueldo']       = 0;
 			$tmp['ant_bonificacion'] = 0;
 			$tmp['ant_total']        = 0;
 		}
 
-		if (!empty($bit->despues) && $bit->idplnmovimiento != 10) {
+		if (!empty($bit->despues)) {
 			$des = json_decode($bit->despues);
 			$tmp['des_sueldo']       = number_format($des->sueldo, 2);
 			$tmp['des_bonificacion'] = number_format($des->bonificacionley, 2);
