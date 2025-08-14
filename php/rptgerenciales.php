@@ -221,8 +221,10 @@ $app->post('/finanzas', function(){
                 plnnomina a
                     INNER JOIN
                 plnempleado b ON a.idplnempleado = b.id
+                    INNER JOIN 
+                plnlaboral e ON b.idlaboral = e.id
                     LEFT JOIN
-                unidad c ON b.idunidad = c.id
+                unidad c ON e.idunidad = c.id
                     LEFT JOIN
                 (SELECT 
                     id, 
@@ -233,8 +235,8 @@ $app->post('/finanzas', function(){
                     AND MONTH(fecha) <= $d->mesal 
                     AND DAY(fecha) >= 16 AND YEAR(fecha) = $d->anio GROUP BY idempleado) d ON d.idempleado = a.idplnempleado
             WHERE
-                a.idempresa = $d->idempresa AND b.idproyecto = $d->idproyecto ";
-    $query.= isset($d->idunidad) ? "AND b.idunidad = $d->idunidad " : "";
+                a.idempresa = $d->idempresa AND e.idproyecto = $d->idproyecto ";
+    $query.= isset($d->idunidad) ? "AND e.idunidad = $d->idunidad " : "";
     $query.="       AND MONTH(a.fecha) >= $d->mesdel
                     AND MONTH(a.fecha) <= $d->mesal
                     AND DAY(a.fecha) >= 16
@@ -259,14 +261,14 @@ $app->post('/finanzas', function(){
                     INNER JOIN
                 plnempleado b ON a.idplnempleado = b.id
                     INNER JOIN
-                plnlaboral e ON b.idlaboral = b.id
+                plnlaboral e ON b.idlaboral = e.id
                     LEFT JOIN
-                unidad c ON b.idunidad = c.id
+                unidad c ON e.idunidad = c.id
                     INNER JOIN
                 plnempresa d ON e.idempresaactual = d.id
             WHERE
-                a.idempresa = $d->idempresa AND b.idproyecto = $d->idproyecto ";
-    $query.= isset($d->idunidad) ? "AND b.idunidad = $d->idunidad " : "";
+                a.idempresa = $d->idempresa AND e.idproyecto = $d->idproyecto ";
+    $query.= isset($d->idunidad) ? "AND e.idunidad = $d->idunidad " : "";
     $query.="       AND MONTH(a.fecha) >= $d->mesdel
                     AND MONTH(a.fecha) <= $d->mesal
                     AND DAY(a.fecha) >= 16
@@ -290,11 +292,13 @@ $app->post('/finanzas', function(){
                 plnnomina a
                     INNER JOIN
                 plnempleado b ON a.idplnempleado = b.id
+                    INNER JOIN 
+                plnlaboral d ON b.idlaboral = d.id
                     LEFT JOIN
                 unidad c ON b.idunidad = c.id
             WHERE
-                a.idempresa = $d->idempresa AND b.idproyecto = $d->idproyecto ";
-    $query.= isset($d->idunidad) ? "AND b.idunidad = $d->idunidad " : "";
+                a.idempresa = $d->idempresa AND d.idproyecto = $d->idproyecto ";
+    $query.= isset($d->idunidad) ? "AND d.idunidad = $d->idunidad " : "";
     $query.="       AND MONTH(a.fecha) >= $d->mesdel
                     AND MONTH(a.fecha) <= $d->mesal
                     AND DAY(a.fecha) = 15
