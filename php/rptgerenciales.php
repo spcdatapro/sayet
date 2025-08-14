@@ -390,7 +390,7 @@ $app->post('/finanzas', function(){
             -- PARA PROVISIONES UN ANIO ANTES
             UNION ALL SELECT 
                     c.id AS id,
-                    MONTH(a.fecha) AS mes,
+                    7 AS mes,
                     c.codigo, 
                     c.nombrecta AS nombrecta,
                     DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fechatran,
