@@ -258,10 +258,12 @@ $app->post('/finanzas', function(){
                 plnnomina a
                     INNER JOIN
                 plnempleado b ON a.idplnempleado = b.id
+                    INNER JOIN
+                plnlaboral e ON b.idlaboral = b.id
                     LEFT JOIN
                 unidad c ON b.idunidad = c.id
                     INNER JOIN
-                plnempresa d ON b.idempresaactual = d.id
+                plnempresa d ON e.idempresaactual = d.id
             WHERE
                 a.idempresa = $d->idempresa AND b.idproyecto = $d->idproyecto ";
     $query.= isset($d->idunidad) ? "AND b.idunidad = $d->idunidad " : "";
