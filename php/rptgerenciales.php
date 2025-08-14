@@ -63,6 +63,10 @@ $app->post('/finanzas', function(){
     $d->mesdel = $d->mesdel + 1;
     $d->mesal = $d->mesal + 1;
 
+    // para provisiones
+    $anio_ant = $d->anio - 1;
+    $tipo_provision = $d->mesdel === 7 ? 'BONIF' : ($d->mesdel === 12 ? 'AGUI' : 'N/A');
+
     $cntMeses = contarMeses($mesdel, $mesal);
 
     $query = "SELECT 
@@ -376,6 +380,35 @@ $app->post('/finanzas', function(){
                     AND MONTH(a.fecha) >= $d->mesdel
                     AND MONTH(a.fecha) <= $d->mesal
                     AND YEAR(a.fecha) = $d->anio
+                    AND b.debe > 0
+            -- PARA PROVISIONES UN ANIO ANTES
+            UNION ALL SELECT 
+                    c.id AS id,
+                    MONTH(a.fecha) AS mes,
+                    c.codigo, 
+                    c.nombrecta AS nombrecta,
+                    DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fechatran,
+                    NULL AS cheque,
+                    SUBSTRING(a.concepto, 1, 30) AS beneficiario,
+                    NULL AS orden,
+                    b.conceptomayor AS concepto,
+                    NULL AS fechafact,
+                    a.id AS documento,
+                    ROUND(b.debe *-1, 2) AS total,
+                    a.fecha AS ord
+                FROM
+                    directa a
+                        INNER JOIN
+                    detallecontable b ON a.id = b.idorigen
+                        INNER JOIN
+                    cuentac c ON c.id = b.idcuenta
+                WHERE
+                    a.idempresa = $d->idempresa AND b.idproyecto = $d->idproyecto 
+                    AND YEAR(a.fecha) = $anio_ant
+                    AND MONTH(a.fecha) >= 12
+                    AND MONTH(a.fecha) <= 12
+                    AND a.concepto LIKE '%$tipo_provision%'
+                    AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%')
                     AND b.debe > 0
             ORDER BY 2 ASC, 1 ASC, 13 ASC, 5 DESC, 7 ASC";
     $data_c = $db->getQuery($query);
