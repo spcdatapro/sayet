@@ -628,7 +628,7 @@
                             }
                         });
                         // revisar si el periodo de iva esta abierto
-                        periodoIvaSrvc.validaFecha(fecha).then(d => {
+                        periodoIvaSrvc.validaFechaFactura(fecha).then(d => {
                             periodoIva = parseInt(d.valida) === 1;
                         });
                     }

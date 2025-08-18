@@ -198,6 +198,7 @@
                         // revisar si el periodo de iva esta abierto
                         periodoIvaSrvc.validaFecha(fecha).then(d => {
                             periodoIva = parseInt(d.valida) === 1;
+                            $scope.periodoCerrado = +periodoIva === 0 && $scope.laCompra.totfact > 0 ? $scope.calcular() : false;
                         });
                     } else {
                         $scope.periodoCerrado = true;
@@ -223,8 +224,9 @@
                             }
                         });
                         // revisar si el periodo de iva esta abierto
-                        periodoIvaSrvc.validaFecha(fecha).then(d => {
+                        periodoIvaSrvc.validaFechaFactura(fecha).then(d => {
                             periodoIva = parseInt(d.valida) === 1;
+                            $scope.periodoCerrado = +periodoIva === 0 && $scope.laCompra.totfact > 0 ? $scope.calcular() : false;
                         });
                     }
                     $scope.periodoCerrado = true;

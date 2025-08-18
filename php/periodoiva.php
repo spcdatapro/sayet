@@ -63,4 +63,17 @@ $app->post('/validar', function(){
     print json_encode(['valida' => $hayAbiertos]);
 });
 
+$app->post('/validar_factura', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $fechaObj = new DateTime($d->fecha);
+    $fechaObj->modify('+1 month');
+    $fechaMasUno = $fechaObj->format('Y-m-d');
+
+    $query = "SELECT COUNT(id) AS abiertos FROM periodoiva WHERE abierto = 1 AND ('$d->fecha' >= del OR '$fechaMasUno' >= del) AND ('$d->fecha' <= al OR '$fechaMasUno' <= al)";
+    $hayAbiertos = (int)$db->getOneField($query) === 0 ? 0 : 1;
+    print json_encode(['valida' => $hayAbiertos]);
+});
+
 $app->run();
