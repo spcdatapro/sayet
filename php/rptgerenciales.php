@@ -851,7 +851,13 @@ $app->post('/control_ingresos', function () {
                     INNER JOIN tranban d ON c.idtranban = d.id WHERE a.id IN($actual->idfactura) AND d.fecha != '$d->fechastr'";
                     $pend =  $db->getOneField($query);
                     $actual->diferencia = $pend > 0 ? $actual->diferencia - $pend : $actual->diferencia;
-                
+                // si $actual o $proximo tienen una coma en idfactura asignarles 0
+                if (isset($actual->idfactura) && strpos((string)$actual->idfactura, ',') !== false) {
+                    $actual->idfactura = 0;
+                }
+                if (isset($proximo->idfactura) && strpos((string)$proximo->idfactura, ',') !== false) {
+                    $proximo->idfactura = 0;
+                }
                     if ($actual->idfactura === $proximo->idfactura) {
                         $proximo->diferencia = $actual->ingreso - $actual->deposito - $actual->isr - $actual->iva - $proximo->deposito;
                         $proximo->ingreso = 0.00;
