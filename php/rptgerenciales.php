@@ -736,18 +736,18 @@ $app->post('/control_ingresos', function () {
                     IFNULL(IF(COUNT(h.id) > 3, CAST(CONCAT(COUNT(h.id), '-FC') AS CHAR), GROUP_CONCAT(h.numeroadmin)), 'SC') AS factura,
                     ROUND(SUM(IF(b.idmoneda = 1,
                                 h.subtotal,
-                                h.subtotalcnv)),
+                                h.subtotal)),
                             2) AS ingreso,
                     a.monto AS deposito,
                     ROUND(SUM(IF(b.idmoneda = 1,
                                 h.retisr,
-                                h.retisrcnv)),
+                                h.retisr)),
                             2) AS isr,
                     ROUND(SUM(IF(b.idmoneda = 1,
                                 h.retiva,
-                                h.retivacnv)),
+                                h.retiva)),
                             2) AS iva,
-                    ROUND(SUM(IF(b.idmoneda = 1, h.total, h.totalcnv)) - a.monto,
+                    ROUND(SUM(IF(b.idmoneda = 1, h.total, h.total)) - a.monto,
                             2) AS diferencia,
                     c.simbolo AS moneda,
                     IF($d->ingreso = 1, true, false) AS numero,
@@ -838,26 +838,17 @@ $app->post('/control_ingresos', function () {
         }
     } else {
         if (count($data) > 1) {
-            $data_vacia = new stdClass;
-            $data_vacia->idfactura = null;
-
             for ($i = 0; $i < count($data); $i++) {
                 // traer valor actual y anterior
                 $actual = $data[$i];
-                $proximo = count($data) === $i+1 ? $data_vacia : $data[$i+1];
+                $proximo = count($data) === $i+1 ? $data[0] : $data[$i+1];
             
                 if (isset($actual->idfactura)) {
                     $query = "SELECT SUM(DISTINCT c.monto) AS monto FROM factura a INNER JOIN detcobroventa b ON b.idfactura = a.id INNER JOIN reclitran c ON b.idrecibocli = c.idrecibocli 
                     INNER JOIN tranban d ON c.idtranban = d.id WHERE a.id IN($actual->idfactura) AND d.fecha != '$d->fechastr'";
                     $pend =  $db->getOneField($query);
                     $actual->diferencia = $pend > 0 ? $actual->diferencia - $pend : $actual->diferencia;
-                // si $actual o $proximo tienen una coma en idfactura asignarles 0
-                if (isset($actual->idfactura) && strpos((string)$actual->idfactura, ',') !== false) {
-                    $actual->idfactura = 0;
-                }
-                if (isset($proximo->idfactura) && strpos((string)$proximo->idfactura, ',') !== false) {
-                    $proximo->idfactura = 0;
-                }
+                
                     if ($actual->idfactura === $proximo->idfactura) {
                         $proximo->diferencia = $actual->ingreso - $actual->deposito - $actual->isr - $actual->iva - $proximo->deposito;
                         $proximo->ingreso = 0.00;
