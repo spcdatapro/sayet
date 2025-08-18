@@ -838,10 +838,13 @@ $app->post('/control_ingresos', function () {
         }
     } else {
         if (count($data) > 1) {
+            $data_vacia = new stdClass;
+            $data_vacia->idfactura = null;
+
             for ($i = 0; $i < count($data); $i++) {
                 // traer valor actual y anterior
                 $actual = $data[$i];
-                $proximo = count($data) === $i+1 ? $data[0] : $data[$i+1];
+                $proximo = count($data) === $i+1 ? $data_vacia : $data[$i+1];
             
                 if (isset($actual->idfactura)) {
                     $query = "SELECT SUM(DISTINCT c.monto) AS monto FROM factura a INNER JOIN detcobroventa b ON b.idfactura = a.id INNER JOIN reclitran c ON b.idrecibocli = c.idrecibocli 
