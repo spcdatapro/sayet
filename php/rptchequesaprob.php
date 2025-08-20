@@ -106,6 +106,7 @@ $app->post('/aprobados', function () {
                 IFNULL(e.iniciales, '') AS revisado_por,
                 IF(c.autorizado > 0, TRUE, FALSE) AS autorizado,
                 IFNULL(f.iniciales, '') AS autorizado_por,
+                IFNULL(DATE_FORMAT(c.fecha_autorizado, '%d/%m/%Y'), '') AS fecha_autorizado,
                 g.nomempresa AS empresa,
                 h.nombre AS proveedor
             FROM
