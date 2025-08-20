@@ -131,6 +131,7 @@ $app->post('/aprobados', function () {
                     AND (a.idreembolso = 0
                     OR a.idreembolso IS NULL)
                     AND a.idempresa = 4
+                    AND (a.ordentrabajo IS NULL OR a.ordentrabajo = 0)
             ORDER BY a.fechafactura ASC";
     $data = $db->getQuery($query);
 
