@@ -77,5 +77,74 @@ $app->post('/getnotasd', function(){
     print $db->doSelectAsJSON($query);
 });
 
+$app->post('/aprobados', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+    $promedido = [];
+
+    // estampa
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+
+    $query = "SELECT 
+                a.id,
+                a.mesiva AS mes,
+                a.conceptomayor AS concepto,
+                DATE_FORMAT(fechafactura, '%d/%m/%Y') AS fecha,
+                a.serie,
+                a.documento AS numero,
+                IFNULL(c.numban, c.numero) AS tran,
+                a.subtotal AS monto_factura,
+                a.iva,
+                c.monto AS monto_cheque,
+                DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fecha_elaborado,
+                IFNULL(d.iniciales, 'N.E') AS elaborado_por,
+                IF(c.revisado > 0, TRUE, FALSE) AS revisado,
+                IFNULL(e.iniciales, '') AS revisado_por,
+                IF(c.autorizado > 0, TRUE, FALSE) AS autorizado,
+                IFNULL(f.iniciales, '') AS autorizado_por,
+                g.nomempresa AS empresa,
+                h.nombre AS proveedor
+            FROM
+                compra a
+                    INNER JOIN
+                detpagocompra b ON b.idcompra = a.id
+                    INNER JOIN
+                tranban c ON b.idtranban = c.id
+                    LEFT JOIN
+                usuario d ON c.idusuario = d.id
+                    LEFT JOIN
+                usuario e ON c.revisado = e.id
+                    LEFT JOIN
+                usuario f ON c.autorizado = f.id
+                    INNER JOIN
+                empresa g ON a.idempresa = g.id
+                    INNER JOIN
+                proveedor h ON a.idproveedor = h.id
+            WHERE
+                a.idproveedor = 162
+                    AND YEAR(a.fechafactura) = 2025
+                    AND (a.idreembolso = 0
+                    OR a.idreembolso IS NULL)
+                    AND a.idempresa = 4
+            ORDER BY a.fechafactura ASC";
+    $data = $db->getQuery($query);
+
+    $letra->proveedor = $data[0]->proveedor;
+    $letra->empresa = $data[0]->empresa;
+    $letra->concepto = $data[0]->concepto;
+
+    foreach($data as $compra) {
+        $compra->mes = $meses[$compra->mes - 1];
+        array_push($promedido, $compra->monto_cheque);
+    }
+
+    $letra->promedio = round(array_sum($promedido) / count($promedido), 2);
+
+    print json_encode(['encabezado' => $letra, 'data' => $data]);
+});
 
 $app->run();
