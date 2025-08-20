@@ -143,6 +143,7 @@ $app->post('/aprobados', function () {
     }
 
     $letra->promedio = round(array_sum($promedido) / count($promedido), 2);
+    $letra->total = round(array_sum($promedido), 2);
 
     print json_encode(['encabezado' => $letra, 'data' => $data]);
 });
