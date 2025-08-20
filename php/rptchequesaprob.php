@@ -139,7 +139,7 @@ $app->post('/aprobados', function () {
 
     foreach($data as $compra) {
         $compra->mes = $meses[$compra->mes - 1];
-        array_push($promedido, $compra->monto_cheque);
+        array_push($promedido, $compra->monto_factura);
     }
 
     $letra->promedio = round(array_sum($promedido) / count($promedido), 2);
