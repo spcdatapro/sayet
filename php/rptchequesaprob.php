@@ -1,6 +1,7 @@
 <?php
 require 'vendor/autoload.php';
 require_once 'db.php';
+require 'Reportes.php';
 
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
@@ -83,6 +84,7 @@ $app->post('/aprobados', function () {
 
     $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
     $promedido = [];
+    $totales = ['monto_factura', 'iva', 'monto_cheque'];
 
     // estampa
     $letra = new stdClass();
@@ -91,11 +93,15 @@ $app->post('/aprobados', function () {
 
     $query = "SELECT 
                 a.id,
+                YEAR(a.fechafactura) AS idempresa,
+                YEAR(a.fechafactura) AS empresa,
+                NULL AS abreviatura,
+                NULL AS numero,
                 a.mesiva AS mes,
                 a.conceptomayor AS concepto,
                 DATE_FORMAT(fechafactura, '%d/%m/%Y') AS fecha,
                 a.serie,
-                a.documento AS numero,
+                a.documento AS factura,
                 IFNULL(c.numban, c.numero) AS tran,
                 a.subtotal AS monto_factura,
                 a.iva,
@@ -107,7 +113,7 @@ $app->post('/aprobados', function () {
                 IF(c.autorizado > 0, TRUE, FALSE) AS autorizado,
                 IFNULL(f.iniciales, '') AS autorizado_por,
                 IFNULL(DATE_FORMAT(c.fecha_autorizado, '%d/%m/%Y'), '') AS fecha_autorizado,
-                g.nomempresa AS empresa,
+                g.nomempresa,
                 h.nombre AS proveedor
             FROM
                 compra a
@@ -126,14 +132,27 @@ $app->post('/aprobados', function () {
                     INNER JOIN
                 proveedor h ON a.idproveedor = h.id
             WHERE
-                a.idproveedor = 162
-                    AND YEAR(a.fechafactura) = 2025
-                    AND (a.idreembolso = 0
+                a.idproveedor = $d->idproveedor ";
+    $query.= isset($d->anio_inicial) && isset($d->anio_final) ? " AND YEAR(a.fechafactura) BETWEEN $d->anio_inicial AND $d->anio_final " : ""; 
+    $query.="       AND (a.idreembolso = 0
                     OR a.idreembolso IS NULL)
-                    AND a.idempresa = 4
+                    AND a.idempresa = $d->idempresa
+                    AND a.idproyecto = $d->idproyecto
                     AND (a.ordentrabajo IS NULL OR a.ordentrabajo = 0)
             ORDER BY a.fechafactura ASC";
     $data = $db->getQuery($query);
+
+    if (count($data) > 0) {
+        // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
+        $reporte = new GeneradorReportes($data, 'transacciones', $totales);
+        $transacciones = $reporte->getReporte();
+        $montos_generales = $reporte->getTotalesGenerales();
+        $success = true;
+    } else {
+        $transacciones = 'No se recibieron datos';
+        $success = false;
+    }
+
 
     $letra->proveedor = $data[0]->proveedor;
     $letra->empresa = $data[0]->empresa;
@@ -144,10 +163,7 @@ $app->post('/aprobados', function () {
         array_push($promedido, $compra->monto_factura);
     }
 
-    $letra->promedio = round(array_sum($promedido) / count($promedido), 2);
-    $letra->total = round(array_sum($promedido), 2);
-
-    print json_encode(['encabezado' => $letra, 'data' => $data]);
+    print json_encode(['encabezado' => $letra, 'data' => $transacciones]);
 });
 
 $app->run();
