@@ -158,7 +158,7 @@ $app->post('/aprobados', function () {
 
 
     $letra->proveedor = $data[0]->proveedor;
-    $letra->empresa = $data[0]->empresa;
+    $letra->empresa = $data[0]->nomempresa;
     $letra->proyecto = $data[0]->proyecto;
 
     foreach($data as $compra) {
