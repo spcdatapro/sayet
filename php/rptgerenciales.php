@@ -747,7 +747,7 @@ $app->post('/control_ingresos', function () {
                                 h.retiva,
                                 h.retivacnv)),
                             2) AS iva,
-                    ROUND(SUM(IF(b.idmoneda = 1, h.total, h.total)) - a.monto,
+                    ROUND(SUM(IF(b.idmoneda = 1, h.total, h.totalcnv)) - a.monto,
                             2) AS diferencia,
                     c.simbolo AS moneda,
                     IF($d->ingreso = 1, true, false) AS numero,
