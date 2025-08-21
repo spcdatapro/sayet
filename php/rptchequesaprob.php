@@ -115,7 +115,8 @@ $app->post('/aprobados', function () {
                 IFNULL(DATE_FORMAT(c.fecha_autorizado, '%d/%m/%Y'), '') AS fecha_autorizado,
                 g.nomempresa,
                 h.nombre AS proveedor,
-                i.nomproyecto AS proyecto
+                i.nomproyecto AS proyecto,
+                c.tipotrans
             FROM
                 compra a
                     INNER JOIN
