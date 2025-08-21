@@ -114,7 +114,8 @@ $app->post('/aprobados', function () {
                 IFNULL(f.iniciales, '') AS autorizado_por,
                 IFNULL(DATE_FORMAT(c.fecha_autorizado, '%d/%m/%Y'), '') AS fecha_autorizado,
                 g.nomempresa,
-                h.nombre AS proveedor
+                h.nombre AS proveedor,
+                i.nomproyecto AS proyecto
             FROM
                 compra a
                     INNER JOIN
@@ -131,6 +132,8 @@ $app->post('/aprobados', function () {
                 empresa g ON a.idempresa = g.id
                     INNER JOIN
                 proveedor h ON a.idproveedor = h.id
+                    INNER JOIN 
+                proyecto i ON a.idproyecto = i.id
             WHERE
                 a.idproveedor = $d->idproveedor ";
     $query.= isset($d->anio_inicial) && isset($d->anio_final) ? " AND YEAR(a.fechafactura) BETWEEN $d->anio_inicial AND $d->anio_final " : ""; 
@@ -156,7 +159,7 @@ $app->post('/aprobados', function () {
 
     $letra->proveedor = $data[0]->proveedor;
     $letra->empresa = $data[0]->empresa;
-    $letra->concepto = $data[0]->concepto;
+    $letra->proyecto = $data[0]->proyecto;
 
     foreach($data as $compra) {
         $compra->mes = $meses[$compra->mes - 1];
