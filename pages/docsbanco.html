@@ -161,8 +161,10 @@
                             <td>{{t.concilia | date:'dd/MM/yyyy'}}</td>
                             <td>{{t.tipotrans}}</td>
                             <td>{{t.numero_tran}}</td>
-                            <td style="text-align: right;">{{t.debito | number:2}}</td>
-                            <td style="text-align: right;">{{t.credito | number:2}}</td>
+                            <td style="text-align: right;" ng-show="t.debito > 0">{{t.moneda}}.{{t.debito | number:2}}</td>
+                            <td style="text-align: right;" ng-hide="t.debito > 0">{{t.debito | number:2}}</td>
+                            <td style="text-align: right;"ng-show="t.credito > 0">{{t.moneda}}.{{t.credito | number:2}}</td>
+                            <td style="text-align: right;"ng-hide="t.credito > 0">{{credito | number:2}}</td>
                             <td>{{t.beneficiario}}</td>
                             <td style="text-align: center">
                                 <input type="checkbox" ng-model="t.conciliar" ng-true-value="1" ng-false-value="0" />
