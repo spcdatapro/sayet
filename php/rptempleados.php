@@ -1532,4 +1532,94 @@ $app->post('/indemnizacion', function () {
     print json_encode([ 'encabezado' => $letra, 'empresas' => $empleados ]);
 });
 
+$app->post('/embargos', function () {
+    date_default_timezone_set("America/Guatemala");
+
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $letra = new stdClass();
+    $cargos = [];
+
+    // fecha y hora que descargan reporte
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+
+    $query = "SELECT 
+                e.id,
+                CONCAT(b.primernombre,
+                        ' ',
+                        IFNULL(b.segundonombre, ''),
+                        ' ',
+                        IFNULL(b.tercernombre, ''),
+                        b.primerapellido,
+                        ' ',
+                        IFNULL(b.segundoapellido, ''),
+                        ' ',
+                        IFNULL(b.apellidocasada, '')) AS nombre,
+                c.sueldo AS salariobase,
+                e.cuotamensual AS cuota,
+                e.monto,
+                ROUND(e.monto * 0.10 + e.monto, 2) AS total,
+                d.nombre AS empresa,
+                e.iniciopago
+            FROM
+                plnempleado a
+                    INNER JOIN
+                plnpersonal b ON a.idpersonal = b.id
+                    INNER JOIN
+                plnlaboral c ON a.idlaboral = c.id
+                    INNER JOIN
+                plnprestamo e ON e.idplnempleado = a.id
+                    INNER JOIN
+                plnempresa d ON c.idempresadebito = d.id
+            WHERE
+                e.esembargo = 1 AND a.id = $d->idempleado";
+    $data = $db->getQuery($query)[0];
+
+    $monto_restante = $data->total;
+    $id = 0;
+    $fecha = new DateTime($data->iniciopago);
+    $acumulado = 0;
+
+    while ($monto_restante > 0) {
+        $cargo = new stdClass();
+
+        $cargo->id = $id++;
+
+        $cargo->empresa = $data->empresa;
+
+        // Obtener último día del mes actual
+        $ultimoDia = clone $fecha;
+        $ultimoDia->modify('last day of this month');
+        $cargo->fecha = $ultimoDia->format('Y-m-d');
+
+        // Avanzar un mes
+        $fecha->modify('+1 month');
+        
+        $comprobante = $db->getQuery("SELECT a.monto, a.idplnnomina AS comprobante FROM plnpresnom a INNER JOIN plnnomina b ON a.idplnnomina = b.id WHERE idplnprestamo = $data->id AND b.fecha = '{$cargo->fecha}'");
+        if (!is_array($comprobante) || count($comprobante) === 0) {
+            $comprobante = null;
+        } else {
+            $comprobante = $comprobante[0];
+        }
+        if (isset($comprobante)) {
+            $cargo->descuento = $comprobante->monto;
+            $cargo->comprobante = $comprobante->comprobante;
+        } else {
+            $cargo->descuento = $data->cuota <= $monto_restante ? $data->cuota : $monto_restante;
+            $cargo->comprobante = '';
+        }
+
+        $cargo->acumulado = $acumulado > 0 ? $acumulado + $cargo->descuento : $cargo->descuento;
+
+        $monto_restante -= $cargo->descuento;
+        $acumulado += $cargo->descuento;
+
+        array_push($cargos, $cargo);
+    }
+
+    return print json_encode([ 'encabezado' => $data, 'cargos' => $cargos ]);
+});
+
 $app->run();
