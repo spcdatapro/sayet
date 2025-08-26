@@ -1590,12 +1590,13 @@ $app->post('/embargos', function () {
         // Obtener último día del mes actual
         $ultimoDia = clone $fecha;
         $ultimoDia->modify('last day of this month');
+        $fecha_busqueda = $ultimoDia->format('Y-m-d');
         $cargo->fecha = $ultimoDia->format('d/m/Y');
 
         // Avanzar un mes
         $fecha->modify('+1 month');
         
-        $comprobante = $db->getQuery("SELECT a.monto, a.idplnnomina AS comprobante FROM plnpresnom a INNER JOIN plnnomina b ON a.idplnnomina = b.id WHERE idplnprestamo = $data->id AND b.fecha = '{$cargo->fecha}'");
+        $comprobante = $db->getQuery("SELECT a.monto, a.idplnnomina AS comprobante FROM plnpresnom a INNER JOIN plnnomina b ON a.idplnnomina = b.id WHERE idplnprestamo = $data->id AND b.fecha = '{$fecha_busqueda}'");
         if (!is_array($comprobante) || count($comprobante) === 0) {
             $comprobante = null;
         } else {
