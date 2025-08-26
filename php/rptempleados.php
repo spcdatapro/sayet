@@ -1538,12 +1538,7 @@ $app->post('/embargos', function () {
     $db = new dbcpm();
     $d = json_decode(file_get_contents('php://input'));
 
-    $letra = new stdClass();
     $cargos = [];
-
-    // fecha y hora que descargan reporte
-    $letra->estampa = new DateTime();
-    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
 
     $query = "SELECT 
                 e.id,
@@ -1576,6 +1571,9 @@ $app->post('/embargos', function () {
             WHERE
                 e.esembargo = 1 AND a.id = $d->idempleado";
     $data = $db->getQuery($query)[0];
+
+    $data->estampa = new DateTime();
+    $data->estampa = $data->estampa->format('d-m-Y H:i');
 
     $monto_restante = $data->total;
     $id = 0;
