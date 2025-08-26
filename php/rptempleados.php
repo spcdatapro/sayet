@@ -1590,7 +1590,7 @@ $app->post('/embargos', function () {
         // Obtener último día del mes actual
         $ultimoDia = clone $fecha;
         $ultimoDia->modify('last day of this month');
-        $cargo->fecha = $ultimoDia->format('Y-m-d');
+        $cargo->fecha = $ultimoDia->format('d/m/Y');
 
         // Avanzar un mes
         $fecha->modify('+1 month');
