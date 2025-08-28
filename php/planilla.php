@@ -10,9 +10,10 @@ $db = new dbcpm();
 $app->post('/empresas', function() use($db)
 {
     $d = json_decode(file_get_contents('php://input'));
+    $d->mediopago = (int)$d->mediopago == 1 ? 'cheque' : ((int)$d->mediopago == 3 ? 'nota debito' : 'efectivo');
     $query = "SELECT DISTINCT a.idempresa, b.nomempresa AS empresa, b.ndplanilla, NULL as idbanco ";
-    $query.= "FROM plnnomina a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN plnempleado c ON c.id = a.idplnempleado ";
-    $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND c.mediopago = $d->mediopago ORDER BY b.ordensumario";
+    $query.= "FROM plnnomina a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN plnempleado c ON c.id = a.idplnempleado INNER JOIN plnlaboral d ON c.idlaboral = d.id ";
+    $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND d.metodo = '$d->mediopago' ORDER BY b.ordensumario";
     $empresas = $db->getQuery($query);
     $cntEmpresas = count($empresas);
     for($i = 0; $i < $cntEmpresas; $i++){

@@ -296,42 +296,43 @@ $app->post('/generachq', function() use($db){
     $generados = [];
     for($i = 0; $i < $cntEmpresas; $i++){
         $empresa = $d->empresas[$i];
-        $query = "SELECT z.tipo, z.cuenta, @row := @row + 1 AS contador, z.nombre, z.monto, z.cuentacontable, z.idempleado, z.concepto ";
-        $query.= "FROM (";
-        $query.= "SELECT 3 AS tipo, TRIM(e.cuentabanco) AS cuenta, TRIM(CONCAT(f.primernombre, ' ', IFNULL(f.segundonombre, ''), IFNULL(f.tercernombre, ''), ' ', IFNULL(f.primerapellido, ''), ' ', IFNULL(f.segundoapellido, ''), ' ', IFNULL(f.apellidocasada, ''))) AS nombre, a.liquido AS monto, e.idcuenta AS cuentacontable, b.id AS idempleado, ";
-        $query.= "CONCAT('DEL ', LPAD(DAY('$d->fdelstr'), 2, ' '), ' DE ', (SELECT nombre FROM mes WHERE id = MONTH('$d->fdelstr')), ' AL ', ";
-        $query.= "LPAD(DAY('$d->falstr'), 2, ' '), ' DE ', (SELECT nombre FROM mes WHERE id = MONTH('$d->falstr')), ' DEL ', YEAR('$d->falstr')) AS concepto ";
-        $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral e ON b.idlaboral = e.id LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto LEFT JOIN plnempresa d ON d.id = e.idempresaactual ";
-        $query.= "INNER JOIN plnpersonal f ON b.idpersonal = f.id "; 
-        $query.= "WHERE a.idempresa = 4 AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido <> 0 ";
-        $query.= "AND e.metodo = 'cheque' ";
-        $query.= "ORDER BY d.ordenreppres, b.nombre, b.apellidos";
-        $query.= ") z, (SELECT @row:= 0) r";
-        // print $query;
-        $empleados = $db->getQuery($query);
-        $cntEmpleados = count($empleados);
-
-        $empresa->correlativo = 0;
-        $cntBancos = count($empresa->bancos);
-        $banco = '';
-        for($j = 0; $j < $cntBancos; $j++){
-            if((int)$empresa->idbanco === (int)$empresa->bancos[$j]->id){
-                $empresa->correlativo = (int)$empresa->bancos[$j]->correlativo;
-                $banco = $empresa->bancos[$j]->bancomoneda;
+        if ($empresa->idbanco > 0) {
+            $query = "SELECT z.tipo, z.cuenta, @row := @row + 1 AS contador, z.nombre, z.monto, z.cuentacontable, z.idempleado, z.concepto ";
+            $query.= "FROM (";
+            $query.= "SELECT 3 AS tipo, TRIM(e.cuentabanco) AS cuenta, TRIM(CONCAT(f.primernombre, ' ', IFNULL(f.segundonombre, ''), IFNULL(f.tercernombre, ''), ' ', IFNULL(f.primerapellido, ''), ' ', IFNULL(f.segundoapellido, ''), ' ', IFNULL(f.apellidocasada, ''))) AS nombre, a.liquido AS monto, e.idcuenta AS cuentacontable, b.id AS idempleado, ";
+            $query.= "CONCAT('DEL ', LPAD(DAY('$d->fdelstr'), 2, ' '), ' DE ', (SELECT nombre FROM mes WHERE id = MONTH('$d->fdelstr')), ' AL ', ";
+            $query.= "LPAD(DAY('$d->falstr'), 2, ' '), ' DE ', (SELECT nombre FROM mes WHERE id = MONTH('$d->falstr')), ' DEL ', YEAR('$d->falstr')) AS concepto ";
+            $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral e ON b.idlaboral = e.id LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto LEFT JOIN plnempresa d ON d.id = e.idempresaactual ";
+            $query.= "INNER JOIN plnpersonal f ON b.idpersonal = f.id "; 
+            $query.= "WHERE a.idempresa = $empresa->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido <> 0 ";
+            $query.= "AND e.metodo = 'cheque' ";
+            $query.= "ORDER BY d.ordenreppres, b.nombre, b.apellidos";
+            $query.= ") z, (SELECT @row:= 0) r";
+            $empleados = $db->getQuery($query);
+            $cntEmpleados = count($empleados);
+            
+            $empresa->correlativo = 0;
+            $cntBancos = count($empresa->bancos);
+            $banco = '';
+            for($j = 0; $j < $cntBancos; $j++){
+                if((int)$empresa->idbanco === (int)$empresa->bancos[$j]->id){
+                    $empresa->correlativo = (int)$empresa->bancos[$j]->correlativo;
+                    $banco = $empresa->bancos[$j]->bancomoneda;
+                }
             }
-        }
-
-        $numeros = [];
-        for($j = 0; $j < $cntEmpleados; $j++){
-            $empleado = $empleados[$j];
-            $numero = generachq($d, $db, $empresa, $empleado);
-            if($numero > 0){
-                $numeros[] = ['numero' => $numero, 'beneficiario' => $empleado->nombre, 'monto' => number_format((float)$empleado->monto, 2)];
-                $empresa->correlativo++;
+        
+            $numeros = [];
+            for($j = 0; $j < $cntEmpleados; $j++){
+                $empleado = $empleados[$j];
+                $numero = generachq($d, $db, $empresa, $empleado);
+                if($numero > 0){
+                    $numeros[] = ['numero' => $numero, 'beneficiario' => $empleado->nombre, 'monto' => number_format((float)$empleado->monto, 2)];
+                    $empresa->correlativo++;
+                }
             }
-        }
-        if(count($numeros) > 0){
-            $generados[] = ['empresa' => $empresa->empresa, 'banco' => $banco, 'cheques' => $numeros];
+            if(count($numeros) > 0){
+                $generados[] = ['empresa' => $empresa->empresa, 'banco' => $banco, 'cheques' => $numeros];
+            }
         }
     }
     print json_encode(['generados' => $generados]);
