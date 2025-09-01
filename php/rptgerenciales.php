@@ -810,7 +810,7 @@ $app->post('/control_ingresos', function () {
                     AND b.gruposumario IN($d->tipo)
                     AND a.beneficiario != 'anulado'  
                     AND a.tipotrans = 'B'                   
-            GROUP BY a.id ORDER BY 9 , 10";
+            GROUP BY a.id ORDER BY 2 , 9 , 10";
     }
     $data = $db->getQuery($query);
 
