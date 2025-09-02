@@ -828,7 +828,7 @@ class Empleado extends Principal
 	public function get_sueldo_promedio($args = [])
 	{
 		if ($this->mesesCalculo == 'ficha') {
-			return isset($args['detallado']) ? false : $this->emp->sueldo;
+			return isset($args['detallado']) ? false : $this->lab->sueldo;
 		} else {
 			$sql = "SELECT 
 						sueldoordinarioreporte as sueldoordinario,
