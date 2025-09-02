@@ -747,8 +747,8 @@ $app->post('/control_ingresos', function () {
                                 h.retiva,
                                 h.retivacnv)),
                             2) AS iva,
-                    ROUND(SUM(IF(b.idmoneda = 1, h.total, h.totalcnv)) - a.monto,
-                            2) AS diferencia,
+                     IF(a.beneficiario LIKE '%REINGRESO%', a.monto*-1, ROUND(SUM(IF(b.idmoneda = 1, h.total, h.totalcnv)) - a.monto,
+                            2)) AS diferencia,
                     c.simbolo AS moneda,
                     IF($d->ingreso = 1, true, false) AS numero,
                     GROUP_CONCAT(h.id) AS idfactura
