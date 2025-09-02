@@ -1468,7 +1468,7 @@ EOT;
 					],
 					1
 				);
-				if (isset($ante[0])) {
+				if (isset($antes[0])) {
 					$antes = json_decode($antes[0]['antes']);
 					$tmp['ant_sueldo']       = number_format($antes->sueldo, 2);
 					$tmp['ant_bonificacion'] = number_format($antes->bonificacionley, 2);
