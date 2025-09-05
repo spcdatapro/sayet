@@ -1621,4 +1621,45 @@ $app->post('/embargos', function () {
     return print json_encode([ 'encabezado' => $data, 'cargos' => $cargos ]);
 });
 
+$app->post('/lst_embargos', function () { 
+    $db = new dbcpm();
+    $n2l = new NumberToLetterConverter();
+    $d = json_decode(file_get_contents('php://input'));
+
+
+    $query = "SELECT 
+                c.id AS id,
+                CONCAT(d.primernombre,
+                        ' ',
+                        IFNULL(d.segundonombre, ''),
+                        ' ',
+                        IFNULL(d.tercernombre, ''),
+                        d.primerapellido,
+                        ' ',
+                        IFNULL(d.segundoapellido, ''),
+                        ' ',
+                        IFNULL(d.apellidocasada, '')) AS nombre,
+                COUNT(a.id) AS numero,
+                a.idplnprestamo AS vale,
+                b.fecha AS fecha,
+                b.monto AS total_deuda,
+                b.cuotamensual AS descuento_en_planilla,
+                b.saldo AS acumulado,
+                (b.monto - b.saldo) AS saldo_pendiente
+            FROM
+                plnpresnom a
+                    INNER JOIN
+                plnprestamo b ON a.idplnprestamo = b.id
+                    INNER JOIN
+                plnempleado c ON b.idplnempleado = c.id
+                    INNER JOIN
+                plnpersonal d ON c.idpersonal = d.id
+            WHERE
+                b.esembargo = 1
+            GROUP BY c.id";
+    $datos = $db->getQuery($query);
+
+    print json_encode([ 'empleado' => $datos ]);
+});
+
 $app->run();
