@@ -1622,10 +1622,15 @@ $app->post('/embargos', function () {
 });
 
 $app->post('/lst_embargos', function () { 
+    date_default_timezone_set("America/Guatemala");
+
     $db = new dbcpm();
     $n2l = new NumberToLetterConverter();
     $d = json_decode(file_get_contents('php://input'));
+    $letra = new stdClass();
 
+    $letra->estampa = new DateTime();
+    $letra->estampa = $data->estampa->format('d-m-Y H:i');
 
     $query = "SELECT 
                 c.id AS id,
@@ -1659,7 +1664,7 @@ $app->post('/lst_embargos', function () {
             GROUP BY c.id";
     $datos = $db->getQuery($query);
 
-    print json_encode([ 'empleado' => $datos ]);
+    print json_encode([ 'empleado' => $datos, 'encabezado' => $estampa ]);
 });
 
 $app->run();
