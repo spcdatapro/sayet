@@ -1664,7 +1664,7 @@ $app->post('/lst_embargos', function () {
             GROUP BY c.id";
     $datos = $db->getQuery($query);
 
-    print json_encode([ 'empleado' => $datos, 'encabezado' => $estampa ]);
+    print json_encode([ 'empleado' => $datos, 'encabezado' => $letra ]);
 });
 
 $app->run();
