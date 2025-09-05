@@ -1630,7 +1630,7 @@ $app->post('/lst_embargos', function () {
     $letra = new stdClass();
 
     $letra->estampa = new DateTime();
-    $letra->estampa = $data->estampa->format('d-m-Y H:i');
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
 
     $query = "SELECT 
                 c.id AS id,
