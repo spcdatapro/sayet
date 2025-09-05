@@ -1646,7 +1646,7 @@ $app->post('/lst_embargos', function () {
                         IFNULL(d.apellidocasada, '')) AS nombre,
                 COUNT(a.id) AS numero,
                 a.idplnprestamo AS vale,
-                b.fecha AS fecha,
+                DATE_FORMAT(b.iniciopago, '%d/%m/%Y') AS fecha,
                 b.monto AS total_deuda,
                 b.cuotamensual AS descuento_en_planilla,
                 b.saldo AS acumulado,
