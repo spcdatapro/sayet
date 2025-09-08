@@ -1296,6 +1296,8 @@ $app->post('/cc', function () {
                 FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta INNER JOIN banco c ON c.mt940 = b.cuenta WHERE a.d_estado_cuenta = $tran->d_estado_cuenta";
                 $tran = $db->getQuery($query)[0];
 
+                $tran->fecha = $db->getOneField("SELECT fecha FROM recibocli WHERE id = $d->idrecibocli");
+
                 $query = "SELECT a.id, IFNULL(e.nombre, c.nombre) AS beneficiario, CONCAT('Ingreso recibo clientes ', a.serie, '-', 
                 IFNULL(d.seriea, d.serieb), '[', a.concepto, ']', 'Facturas: ', GROUP_CONCAT(c.serie, '-', c.numero)) AS concepto 
                 FROM recibocli a INNER JOIN detcobroventa b ON b.idrecibocli = a.id INNER JOIN factura c ON b.idfactura = c.id INNER JOIN serierecli d ON d.idrecibocli = a.id 
@@ -1368,5 +1370,47 @@ function compararPorId($a, $b) {
     return $a->id <=> $b->id;
 }
 
+$app->post('/tran_pendientes', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "SELECT 
+            DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
+            d.iniciales AS usuario,
+            a.tipotrans,
+            IF(a.numban = 0 OR a.numban IS NULL, a.numero, a.numban) AS transaccion,
+            c.simbolo AS moneda,
+            a.monto,
+            f.documento AS factura,
+            g.nombre AS proveedor,
+            h.nomproyecto AS proyecto
+        FROM
+            tranban a
+                INNER JOIN
+            banco b ON a.idbanco = b.id
+                INNER JOIN
+            moneda c ON b.idmoneda = c.id
+                INNER JOIN
+            usuario d ON a.idusuario = d.id
+                INNER JOIN
+            detpagocompra e ON e.idtranban = a.id
+                INNER JOIN
+            compra f ON e.idcompra = f.id
+                INNER JOIN
+            proveedor g ON f.idproveedor = g.id
+                INNER JOIN 
+            proyecto h ON f.idproyecto = h.id
+        WHERE
+            (f.idreembolso IS NULL
+                OR f.idreembolso = 0)
+                AND (f.ordentrabajo IS NULL
+                OR f.ordentrabajo = 0) 
+                AND (a.fecha BETWEEN '$d->fdelstr' AND '$d->falstr') ";
+    $query.= isset($d->idempresa) ? "AND f.idempresa = $d->idempresa " : "";
+    $query.= isset($d->idproyecto) ? "AND f.idproyecto = $d->idproyecto " : "";
+    $query.= isset($d->idproveedor) ? "AND f.idproveedor = $d->idproveedor " : "";
+    $query.= $d->revisando ? "AND a.revisado = 0 GROUP BY a.id" : "AND a.revisado > 0 AND a.autorizado = 0 GROUP BY a.id";
+    print json_encode($db->getQuery($query));
+});
 
 $app->run();
