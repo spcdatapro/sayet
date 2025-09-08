@@ -853,6 +853,7 @@ EOT;
 		
 		return [
 			'titulon'                => 'Módulo de Planillas',
+			'fecha_impresion'        => (function(){ $dt = new DateTime('now', new DateTimeZone('America/Guatemala')); return formatoFecha($dt->format('Y-m-d'), 1) . ' ' . $dt->format('H:i:s'); })(),
 			'subtitulo'              => $subtitulo,
 			'mes'                    => "del mes de {$nmes} de {$args['anio']}",
 			'tcodigot'               => "Código",
