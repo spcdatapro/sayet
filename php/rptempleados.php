@@ -1532,6 +1532,98 @@ $app->post('/indemnizacion', function () {
     print json_encode([ 'encabezado' => $letra, 'empresas' => $empleados ]);
 });
 
+$app->post('/ivs', function () {
+    date_default_timezone_set("America/Guatemala");
+
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $letra = new stdClass();
+
+    $fdel = new DateTime($d->fdelstr);
+    $fal = new DateTime($d->falstr);
+
+    // fecha y hora que descargan reporte
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+    $letra->fechas = 'Del ' . $fdel->format('d/m/Y') . ' al ' . $fal->format('d/m/Y');
+
+    $query = "SELECT 
+                t.codigo,
+                t.igss,
+                t.empresa,
+                t.nombre_empleado,
+                MIN(t.fecha) AS fecha_orden,
+                DATE_FORMAT(MIN(t.fecha), '01/%m/%Y') AS fecha_inicio,
+                DATE_FORMAT(MAX(t.fecha), '%d/%m/%Y') AS fecha_fin,
+                SUBSTRING_INDEX(GROUP_CONCAT(t.sueldoordinario ORDER BY t.fecha ASC), ',', 1) AS sueldoordinario,
+                SUBSTRING_INDEX(GROUP_CONCAT(t.sueldoextra ORDER BY t.fecha ASC), ',', 1) AS sueldoextra,
+                SUBSTRING_INDEX(GROUP_CONCAT(t.vacaciones ORDER BY t.fecha ASC), ',', 1) AS vacaciones,
+                SUBSTRING_INDEX(GROUP_CONCAT(t.grantotal ORDER BY t.fecha ASC), ',', 1) AS grantotal
+            FROM (
+                SELECT 
+                    c.id AS codigo,
+                    b.nombre AS empresa,
+                    e.igss,
+                    CONCAT(
+                        d.primernombre, ' ', IFNULL(d.segundonombre, ''), ' ', IFNULL(d.tercernombre, ''), 
+                        IFNULL(d.primerapellido, ''), ' ', IFNULL(d.segundoapellido, ''), 
+                        IFNULL(d.apellidocasada, '')
+                    ) AS nombre_empleado,
+                    a.fecha,
+                    IFNULL(a.sueldoordinario, 0.00) AS sueldoordinario,
+                    IFNULL(a.sueldoextra, 0.00) AS sueldoextra,
+                    IFNULL(a.vacaciones, 0.00) AS vacaciones,
+                    (IFNULL(a.sueldoordinario, 0.00) + IFNULL(a.sueldoextra, 0.00) + IFNULL(a.vacaciones, 0.00)) AS grantotal,
+                    @grp := @grp + IF(
+                        @prev_empresa = b.nombre
+                        AND PERIOD_DIFF(EXTRACT(YEAR_MONTH FROM a.fecha), EXTRACT(YEAR_MONTH FROM @prev_fecha)) = 1
+                        AND @prev_sueldo = IFNULL(a.sueldoordinario, 0.00),
+                        0, 1
+                    ) AS grupo,
+                    @prev_empresa := b.nombre,
+                    @prev_fecha := a.fecha,
+                    @prev_sueldo := IFNULL(a.sueldoordinario, 0.00)
+                FROM plnnomina a
+                INNER JOIN plnempresa b ON b.id = a.idempresa
+                INNER JOIN plnempleado c ON a.idplnempleado = c.id
+                INNER JOIN plnpersonal d ON c.idpersonal = d.id
+                INNER JOIN plnlaboral e ON c.idlaboral = e.id
+                CROSS JOIN (SELECT @grp := 0, @prev_empresa := '', @prev_fecha := NULL, @prev_sueldo := NULL) vars
+                WHERE a.idplnempleado = $d->idempleado
+                    AND DAY(a.fecha) <> 15
+                    AND a.esbonocatorce = 0
+                    AND a.aguinaldo = 0
+                    AND a.fecha BETWEEN '$d->fdelstr' AND '$d->falstr'
+                ORDER BY a.fecha
+            ) t
+            GROUP BY t.empresa, t.nombre_empleado, t.grupo
+            ORDER BY fecha_orden";
+    $data = $db->getQuery($query);
+
+    $letra->empleado = $data[0]->nombre_empleado;
+    $letra->codigo = $data[0]->codigo;
+    $letra->igss = $data[0]->igss;
+
+    for ($i = 0; $i < count($data); $i++) {
+        $actual = $data[$i];
+        $proximo = isset($data[$i + 1]) ? $data[$i + 1] : null;
+
+        if ($proximo != null && $actual->empresa != $proximo->empresa) {
+            $mes = new DateTime($proximo->fecha_inicio);
+            $mes = $mes->format('m');
+            $anio = new DateTime($proximo->fecha_inicio);
+            $anio = $anio->format('Y');
+
+            $fecha_real = "SELECT movfecha AS fecha FROM plnbitacora WHERE idplnempleado = $d->idempleado AND MONTH(movfecha) = $mes AND YEAR(movfecha) = $anio ORDER BY movfecha DESC LIMIT 1";
+
+            // $proximo->fecha_inicio = isset($fecha_real) ? (new DateTime($fecha_real))->format('d/m/Y') : $proximo->fecha_inicio; 
+        }
+    }
+
+    return print json_encode([ 'encabezado' => $letra, 'cambios' => $data ]);
+});
+
 $app->post('/embargos', function () {
     date_default_timezone_set("America/Guatemala");
 
