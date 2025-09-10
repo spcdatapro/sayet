@@ -220,17 +220,23 @@ $app->post('/u', function(){
             $db->doQuery($query);
             updateGastosOT($d->iddetpresup);
         }
+    } elseif(in_array($d->tipotrans, $tentrada)){
+        $recibos = count($d->recibocli);
+        if ($recibos > 0) {
+            $idrecibocli = strlen($d->idrecibocli) > 0 ? explode(",", $d->idrecibocli) : [];  
+            $i = 0;
+            while ($recibos > $i) {
+                $recibo = $d->recibocli[$i];
+                if (!isset($idrecibocli) || !in_array($recibo, $idrecibocli)) {
+                    $db->doQuery("INSERT INTO reclitran(idrecibocli, idtranban, monto) VALUES($recibo, $d->id, $d->monto)");
+                }
+                $i++;
+            }
+        } else {
+            $db->doQuery("DELETE FROM reclitran WHERE idtranban = $d->id");
+        }
     }
-    /*
-    elseif(in_array($d->tipotrans, $tentrada)){
-        $ctabco = (int)$db->getOneField("SELECT idcuentac FROM banco WHERE id = ".$d->idbanco);
-        if($ctabco > 0){
-            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
-            $query.= "1, ".$d->id.", ".$ctabco.", ".round(((float)$d->monto * (float)$d->tipocambio), 2).", 0.00, '".$d->concepto."')";
-            $db->doQuery($query);
-        };
-    }
-    */
+
     if((int)$d->iddocliquida > 0){
         $query = "UPDATE tranban SET iddetpresup = $d->iddetpresup, iddetpagopresup = $d->iddetpagopresup WHERE id = $d->iddocliquida";
         $db->doQuery($query);
