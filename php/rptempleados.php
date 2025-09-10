@@ -1647,7 +1647,7 @@ $app->post('/embargos', function () {
                 c.sueldo AS salariobase,
                 ROUND(c.sueldo * 0.35, 2) AS cuota,
                 e.monto AS total,
-                ROUND(e.monto * 0.10 - e.monto, 2) AS monto,
+                ROUND(e.monto - e.monto * 0.10, 2) AS monto,
                 d.nombre AS empresa,
                 e.iniciopago
             FROM
