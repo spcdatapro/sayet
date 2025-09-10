@@ -1645,9 +1645,9 @@ $app->post('/embargos', function () {
                         ' ',
                         IFNULL(b.apellidocasada, '')) AS nombre,
                 c.sueldo AS salariobase,
-                e.cuotamensual AS cuota,
-                e.monto,
-                ROUND(e.monto * 0.10 + e.monto, 2) AS total,
+                ROUND(c.sueldo * 0.35, 2) AS cuota,
+                e.monto AS total,
+                ROUND(e.monto * 0.10 - e.monto, 2) AS monto,
                 d.nombre AS empresa,
                 e.iniciopago
             FROM
