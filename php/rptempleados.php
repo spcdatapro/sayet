@@ -1759,4 +1759,44 @@ $app->post('/lst_embargos', function () {
     print json_encode([ 'empleado' => $datos, 'encabezado' => $letra ]);
 });
 
+$app->post('/boleta_pagos', function () { 
+    $db = new dbcpm();
+    $n2l = new NumberToLetterConverter();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+
+    $query = "SELECT 
+                e.nombre AS empresa,
+                a.monto,
+                DATE_FORMAT(a.iniciopago, '%d/%m/%Y') AS fecha,
+                CONCAT(c.primernombre,
+                        ' ',
+                        IFNULL(c.segundonombre, ''),
+                        ' ',
+                        IFNULL(c.tercernombre, ''),
+                        c.primerapellido,
+                        ' ',
+                        IFNULL(c.segundoapellido, ''),
+                        ' ',
+                        IFNULL(c.apellidocasada, '')) AS nombre
+            FROM
+                plnprestamo a
+                    INNER JOIN
+                plnempleado b ON a.idplnempleado = b.id
+                    INNER JOIN
+                plnpersonal c ON b.idpersonal = c.id
+                    INNER JOIN
+                plnlaboral d ON b.idlaboral = d.id
+                    INNER JOIN
+                plnempresa e ON d.idempresadebito = e.id
+            WHERE
+                a.id = $d->idprestamo";
+    $datos = $db->getQuery($query)[0];
+
+    print json_encode([ 'prestamo' => $datos, 'encabezado' => $letra ]);
+});
+
 $app->run();
