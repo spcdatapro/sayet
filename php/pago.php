@@ -106,10 +106,10 @@ $app->post('/g', function(){
             $getCorrela = "SELECT CONCAT('9999', correlativond) FROM banco WHERE id = $objBanco->idbanco";
         }
         */
-        $query = "INSERT INTO tranban(idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, origenbene, idbeneficiario, iddetpresup, idfact, tipocambio) ";
+        $query = "INSERT INTO tranban(idbanco, tipotrans, fecha, monto, beneficiario, concepto, numero, origenbene, idbeneficiario, iddetpresup, idfact, tipocambio, idusuario) ";
         $query.= "VALUES($objBanco->idbanco, '$objBanco->tipo', '$objBanco->fechatranstr', $totAPagar, '$nombreProveedor', ";
         $query.= strlen($ot) > 0 ? "'Pago de factura(s) $qFacturas / Orden de trabajo $ot [$not]'," : "'Pago de factura(s) $qFacturas',";
-        $query.= "($getCorrela), 1, $idprovs[$y], $ots, $idfac, $tpcambio)";
+        $query.= "($getCorrela), 1, $idprovs[$y], $ots, $idfac, $tpcambio, $objBanco->idusuario)";
         //echo $query.'<br/><br/>';
         $db->doQuery($query);
         $lastid = $db->getLastId();
