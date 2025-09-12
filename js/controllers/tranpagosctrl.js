@@ -15,11 +15,13 @@
         $scope.pagosSelected = [];
         $scope.totales = { cantfacts: 0, monto: 0.00 };
         $scope.periodoCerrado = false;
+        $scope.idusuario = undefined;
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('ordering', false).withOption('paging', false);
 
         authSrvc.getSession().then(function (usrLogged) {
             if (parseInt(usrLogged.workingon) > 0) {
+                $scope.idusuario = +usrLogged.uid;
                 empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function (d) {
                     $scope.objEmpresa = d[0];
                     $scope.getPagos($scope.objEmpresa.id, null);
@@ -136,7 +138,8 @@
                 idmoneda: parseInt($scope.objBanco.idmoneda),
                 tipocambio: parseFloat($scope.objBanco.tipocambio),
                 fechatranstr: moment($scope.fechatran).format('YYYY-MM-DD'),
-                tipo: tipo
+                tipo: tipo,
+                idusuario: $scope.idusuario
             });
 
             /*
