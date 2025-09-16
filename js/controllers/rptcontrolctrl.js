@@ -9,7 +9,7 @@
         $scope.proveedores = [];
         // $scope.cuentas_prov = [];
 
-        $scope.params_proveedores = { ver: '1', anio_del: +moment().toDate().getFullYear(), anio_al: +moment().toDate().getFullYear() };
+        $scope.params_proveedores = { ver: '1', anio_inicial: +moment().toDate().getFullYear(), anio_final: +moment().toDate().getFullYear() };
 
         $scope.usuario = undefined;
         $scope.cargando = false;
@@ -57,16 +57,16 @@
         $scope.$watch('params_proveedores.ver', newVal => {
             switch (newVal) {
                 case '1':
-                    $scope.params_proveedores.anio_del = +moment().toDate().getFullYear();
-                    $scope.params_proveedores.anio_al = +moment().toDate().getFullYear();
+                    $scope.params_proveedores.anio_inicial = +moment().toDate().getFullYear();
+                    $scope.params_proveedores.anio_final = +moment().toDate().getFullYear();
                     break;
                 case '2': 
-                    $scope.params_proveedores.anio_del = +moment().toDate().getFullYear();
-                    $scope.params_proveedores.anio_al = +moment().toDate().getFullYear();
+                    $scope.params_proveedores.anio_inicial = +moment().toDate().getFullYear();
+                    $scope.params_proveedores.anio_final = +moment().toDate().getFullYear();
                     break;
                 case '3':
-                    $scope.params_proveedores.anio_del = undefined;
-                    $scope.params_proveedores.anio_al = undefined;
+                    $scope.params_proveedores.anio_inicial = undefined;
+                    $scope.params_proveedores.anio_final = undefined;
                     break;
             }
         })
@@ -102,7 +102,7 @@
                             rango = params.anio;
                         break;
                         case '2': 
-                            rango = params.anio_del + '_' + params.anio_al;
+                            rango = params.anio_inicial + '_' + params.anio_final;
                         break;
                         case '3':
                             rango = 'todos';
