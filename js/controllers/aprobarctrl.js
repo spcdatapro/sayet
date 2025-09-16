@@ -48,7 +48,7 @@
                             const diff = Math.abs(monto - promedio);
                             tr.diferenciaPorcentaje = +((diff / promedio) * 100).toFixed(2);
                             // marcar si la diferencia excede el 15%
-                            tr.desviado = tr.diferenciaPorcentaje > 2;
+                            tr.desviado = tr.diferenciaPorcentaje > 15;
                         });
                         console.log(d);
                         $scope.transacciones = d;
