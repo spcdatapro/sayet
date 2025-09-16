@@ -164,7 +164,7 @@ $app->post('/aprobados', function () {
 
     foreach($data as $compra) {
         $compra->mes = $meses[$compra->mes - 1];
-        array_push($promedido, $compra->monto_factura);
+        array_push($promedido, $compra->monto_cheque);
     }
 
     print json_encode(['encabezado' => $letra, 'data' => $transacciones]);
