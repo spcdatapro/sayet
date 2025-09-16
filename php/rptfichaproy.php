@@ -236,4 +236,125 @@ $app->post('/lista', function() {
     print json_encode(['general' => $general, 'proyectos' => $proyectos]);
 });
 
+$app->post('/porocupacion', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $meses = [];
+
+    $ocupado = [];
+    $vacante = [];
+    $total = 0;
+
+    $query = "SELECT b.id AS idunidad,  ROUND(b.mcuad, 2) AS medida, ROUND(b.mcuad * 100 / a.metros_rentable, 2) AS porcentaje FROM proyecto a INNER JOIN unidad b ON b.idproyecto = a.id 
+    WHERE a.id = $d->idproyecto AND b.idtipolocal != 9 limit 10";
+    $unidades = $db->getQuery($query);
+
+    $query = "SELECT 
+                a.nomproyecto AS proyecto,
+                a.metros_rentable AS mdisponibles,
+                b.id AS idunidad,
+                ROUND(b.mcuad, 2) AS medida,
+                ROUND(b.mcuad * 100 / a.metros_rentable, 2) AS porcentaje,
+                IF(d.id > 0, 1, 0) AS ocupado,
+                IFNULL(MONTH(d.fecha), 0) AS mes,
+                ROUND(SUM(IF(d.idmonedafact = 1,
+                            d.total,
+                            d.total * d.tipocambio)),
+                        2) AS total
+            FROM
+                proyecto a
+                    INNER JOIN
+                unidad b ON a.id = b.idproyecto
+                    LEFT JOIN
+                contrato c ON b.id = c.idunidad AND c.inactivo = 0
+                    LEFT JOIN
+                factura d ON c.id = d.idcontrato
+                    AND YEAR(d.fecha) = $d->anio
+                    AND MONTH(d.fecha) >= $d->mesdel
+                    AND MONTH(d.fecha) <= $d->mesal
+            WHERE
+                a.id = $d->idproyecto AND b.idtipolocal != 9
+            GROUP BY b.id, MONTH(d.fecha)
+            ORDER BY MONTH(d.fecha), b.id LIMIT 10";
+    $data = $db->getQuery($query);
+
+    for ($i = $d->mesdel; $i <= $d->mesal; $i++) {
+        $data_mes = new StdClass();
+        $data_mes->mes = $i;
+        $data_mes->unidades = [];
+        for ($j = 0; $j < count($unidades); $j++) {
+            $unidad = $unidades[$j];
+            for ($k = 0; $k < count($data); $k++) {
+                $dat = $data[$k]; 
+                if ($unidad->idunidad == $dat->idunidad && $dat->mes == $i) {
+                    $unidad->metros = $dat->medida;
+                    $unidad->porcentaje = $dat->porcentaje;
+                    $unidad->ocupado = 1;
+                    $unidad->monto = $dat->total;
+                    $k = count($data); // Salir del ciclo
+                } else if ($unidad->idunidad == $dat->idunidad) {
+                    $unidad->metros = $unidad->medida;
+                    $unidad->porcentaje = $unidad->porcentaje;
+                    $unidad->ocupado = 0;
+                    $unidad->monto = 0;
+                }
+            }
+            array_push($data_mes->unidades, $unidad);
+        }
+        array_push($meses, $data_mes);
+    }
+
+    print json_encode($meses); return;
+
+        foreach($general as $fila) {
+        $fila = (array)$fila;
+        if($fila['disponible'] == 1) {
+            $ocupado[] = $fila;
+            $total = $fila['total'] + $total;
+        } else {
+            $vacante[] = $fila;
+        }
+    }
+
+    $totalocupado = 0;
+    foreach ($ocupado as $fila) {
+        $totalocupado += $fila['porcentaje'];
+    }
+    $totalvacante = 0;
+    foreach ($vacante as $fila) {
+        $totalvacante += $fila['porcentaje'];
+    }
+
+        $fuente = !empty($ocupado) ? $ocupado[0] : $vacante[0];
+
+    $totalUnidadesOcupadas = count($ocupado);
+    $totalUnidadesVacantes = count($vacante);
+    $totalunidades = ($totalUnidadesOcupadas+$totalUnidadesVacantes);
+
+    $infoproyecto = new stdClass();
+    $infoproyecto->nomproyecto = $fuente['nomproyecto'];
+    $infoproyecto->mdisponibles = $fuente['mdisponibles'];
+    $infoproyecto->totalocupado = round($totalocupado, 2);
+    $infoproyecto->totalvacante = round($totalvacante, 2);
+    $infoproyecto->medidaocupado = ($totalocupado * $fuente['mdisponibles']) / 100;
+    $infoproyecto->medidavacante = ($totalvacante * $fuente['mdisponibles']) / 100;
+    $infoproyecto->uocupadas = $totalUnidadesOcupadas;
+    $infoproyecto->uvacantes = $totalUnidadesVacantes;
+    $infoproyecto->utotal = $totalunidades;
+    $infoproyecto->total = $total;
+
+    $letra = new stdClass();
+        $letra->estampa = new DateTime();
+        $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+        $letra->año = $fuente['año'];
+        $letra->mes = $fuente['mes'];
+
+    print json_encode([
+        'infoproyecto' => $infoproyecto,
+        'encabezado' => $letra
+    ]);
+
+});
+
 $app->run();

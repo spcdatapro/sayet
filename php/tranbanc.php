@@ -1381,6 +1381,7 @@ $app->post('/tran_pendientes', function () {
     $db = new dbcpm();
 
     $query = "SELECT 
+            a.id,
             DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
             d.iniciales AS usuario,
             a.tipotrans,
@@ -1389,7 +1390,9 @@ $app->post('/tran_pendientes', function () {
             a.monto,
             f.documento AS factura,
             g.nombre AS proveedor,
-            h.nomproyecto AS proyecto
+            h.nomproyecto AS proyecto, 
+            f.idproveedor,
+            g.concepto
         FROM
             tranban a
                 INNER JOIN
@@ -1416,7 +1419,72 @@ $app->post('/tran_pendientes', function () {
     $query.= isset($d->idproyecto) ? "AND f.idproyecto = $d->idproyecto " : "";
     $query.= isset($d->idproveedor) ? "AND f.idproveedor = $d->idproveedor " : "";
     $query.= $d->revisando ? "AND a.revisado = 0 GROUP BY a.id" : "AND a.revisado > 0 AND a.autorizado = 0 GROUP BY a.id";
-    print json_encode($db->getQuery($query));
+    $data = $db->getQuery($query);
+
+    $cnt = count($data);
+    for ($i = 0; $i < $cnt; $i++) {
+        $tran = $data[$i];
+        $idproveedor = isset($tran->idproveedor) ? (int)$tran->idproveedor : 0;
+        $concepto = isset($tran->concepto) ? addslashes($tran->concepto) : '';
+
+        $query = "SELECT 
+                    c.id,
+                    DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fecha,
+                    CONCAT(c.tipotrans, '-', c.numero) AS tran,
+                    a.documento AS factura,
+                    c.monto
+                FROM 
+                    compra a
+                        INNER JOIN 
+                    detpagocompra b ON b.idcompra = a.id
+                        INNER JOIN 
+                    tranban c ON b.idtranban = c.id
+                WHERE 
+                    conceptomayor LIKE '%$concepto%' 
+                        AND idproveedor = $idproveedor
+                ORDER BY c.fecha DESC
+                LIMIT 5";
+        $hist = $db->getQuery($query);
+
+        $sum = 0.0;
+        foreach ($hist as $h) {
+            $sum += (float)$h->monto;
+        }
+        $promedio = count($hist) > 0 ? round($sum / count($hist), 2) : 0.00;
+
+        $tran->historial = $hist;
+        $tran->promedio = $promedio;
+        $data[$i] = $tran;
+    }
+
+    print json_encode($data);
+});
+
+$app->post('/revtran', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    foreach ($d AS $tran) {
+        $update = "UPDATE tranban SET revisado = $tran->idusuario, fecha_revisado = $tran->fecha WHERE id = $tran->id";
+        $db->doQuery($update);
+
+        $success = $db->getOneField("SELECT revisado FROM tranban WHERE id = $tran->id") == 1;
+    }
+
+    return json_encode(['success' => $success]);
+}); 
+
+$app->post('/auttran', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    foreach ($d AS $tran) {
+        $update = "UPDATE tranban SET autorizado = $tran->idusuario, fecha_autorizado = $tran->fecha WHERE id = $tran->id";
+        $db->doQuery($update);
+    }
+
+    $success = $db->getOneField("SELECT autorizado FROM tranban WHERE id = $tran->id") == 1;
+
+    return json_encode(['success' => $success]);
 });
 
 $app->run();

@@ -18,9 +18,14 @@
         $scope.losBancosPais = [];
         $scope.dectc = 2;
         $scope.permiso = {};
-        $scope.todos = 0;
+        $scope.todos = 1;
 
-        $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true);
+        $scope.dtOptions = DTOptionsBuilder.newOptions()
+        .withPaginationType('full_numbers')
+        .withDisplayLength(10)
+        .withBootstrap()
+        .withOption('deferRender', true)
+        .withOption('responsive', true);
 
         empresaSrvc.lstEmpresas().then(function(d){ $scope.lasEmpresas = d; });
 
@@ -173,7 +178,7 @@
             data.idbancopais = !!data.objBancoPais ? parseInt(data.objBancoPais.id) : 0;
             data = setDataProv(data);
             proveedorSrvc.editRow(data, 'u').then(function(){
-                $scope.getLstProveedores();
+                // $scope.getLstProveedores();
                 $scope.resetElProv();
                 $scope.strProveedor = '';
                 $scope.editando = false;

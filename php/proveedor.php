@@ -8,8 +8,8 @@ $app->response->headers->set('Content-Type', 'application/json');
 //API para encabezado de proveedores
 $app->get('/lstprovs(/:todos)', function($todos = 0){
     $db = new dbcpm();
-    $query = "SELECT a.id, a.nit, a.nombre, a.direccion, a.telefono, a.correo, a.concepto, a.chequesa, a.retensionisr, a.diascred, a.limitecred, a.idbancopais, ";
-    $query.= "a.pequeniocont, CONCAT('(', a.nit, ') ', a.nombre, ' (', b.simbolo, ')') AS nitnombre, a.idmoneda, a.tipcuenta, b.nommoneda AS moneda, a.tipocambioprov, a.debaja, a.cuentabanco, a.recurrente, a.identificacion ";
+    $query = "SELECT a.id, a.nit, a.nombre, a.concepto, a.chequesa, a.retensionisr, a.diascred, a.limitecred, ";
+    $query.= "a.pequeniocont, CONCAT('(', a.nit, ') ', a.nombre, ' (', b.simbolo, ')') AS nitnombre ";
     $query.= "FROM proveedor a INNER JOIN moneda b ON b.id = a.idmoneda ";
     $query.= (int)$todos === 0 ? 'WHERE a.debaja = 0 ' : '';
     $query.= "ORDER BY a.nombre";
@@ -19,7 +19,7 @@ $app->get('/lstprovs(/:todos)', function($todos = 0){
 $app->get('/getprov/:idprov', function($idprov){
     $db = new dbcpm();
     $query = "SELECT a.id, a.nit, a.nombre, a.direccion, a.telefono, a.correo, a.concepto, a.chequesa, a.retensionisr, a.diascred, a.limitecred, a.idbancopais, ";
-    $query.= "a.pequeniocont, CONCAT('(', a.nit, ') ', a.nombre, ' (', b.simbolo, ')') AS nitnombre, a.tipcuenta, a.idmoneda, b.nommoneda AS moneda, a.tipocambioprov, a.debaja, a.cuentabanco, a.recurrente, a.identificacion, a.retensioniva ";
+    $query.= "a.pequeniocont, CONCAT('(', a.nit, ') ', a.nombre, ' (', b.simbolo, ')') AS nitnombre, a.tipcuenta, a.idmoneda, b.nommoneda AS moneda, a.tipocambioprov, a.debaja, a.cuentabanco, a.recurrente, a.identificacion, a.retensioniva, a.hoja_control ";
     $query.= "FROM proveedor a INNER JOIN moneda b ON b.id = a.idmoneda ";
     $query.= "WHERE a.id = ".$idprov;
     print $db->doSelectASJson($query);
@@ -79,10 +79,12 @@ $app->post('/u', function(){
     if (!isset($d->recurrente)) { $d->recurrente = 0; }
     if (!isset($d->tipcuenta)) { $d->tipcuenta = 'NULL'; }
 
+    $d->hoja_control = isset($d->hoja_control) ? $d->hoja_control : 0;
+
     $query = "UPDATE proveedor SET nit = '$d->nit', nombre = '$d->nombre', direccion = '$d->direccion', telefono = '$d->telefono', correo = '$d->correo', concepto = '$d->concepto', ";
     $query.= "chequesa = '$d->chequesa', retensionisr = $d->retensionisr, diascred = $d->diascred, limitecred = $d->limitecred, pequeniocont = $d->pequeniocont, ";
     $query.= "idmoneda = $d->idmoneda, tipocambioprov = $d->tipocambioprov, debaja = $d->debaja, cuentabanco = $d->cuentabanco, "; 
-    $query.= "idbancopais = $d->idbancopais, recurrente = $d->recurrente, tipcuenta = $d->tipcuenta, identificacion = $d->identificacion, retensioniva = $d->retensioniva ";
+    $query.= "idbancopais = $d->idbancopais, recurrente = $d->recurrente, tipcuenta = $d->tipcuenta, identificacion = $d->identificacion, retensioniva = $d->retensioniva, hoja_control = $d->hoja_control ";
     $query.= "WHERE id = $d->id";
     // print $query;
     $db->doQuery($query);
@@ -212,6 +214,18 @@ $app->get('/lstdetcontprovifnull/:idprov/:idempresa', function($idprov, $idempre
         $data = $conn->query($query)->fetchAll(5);
         print json_encode($data);
     }
+});
+
+$app->get('/lstprovsbyempresa/:idempresa/:idproyecto', function ($idempresa, $idproyecto) {
+    $db = new dbcpm();
+
+    $query = "SELECT a.id, a.nombre, a.nit, CONCAT('(', a.nit, ') ', a.nombre) AS nitnombre, CONCAT('(', d.codigo,') ', d.nombrecta) as cuentac FROM proveedor a INNER JOIN compra b ON b.idproveedor = a.id 
+            INNER JOIN detcontprov c ON a.id = c.idproveedor INNER JOIN cuentac d ON c.idcuentac = d.id
+            WHERE b.idempresa = $idempresa AND idproyecto = $idproyecto AND (b.ordentrabajo IS NULL OR b.ordentrabajo = 0) 
+            AND a.debaja = 0 AND (b.idreembolso = 0 OR b.idreembolso IS NULL) GROUP BY a.id ORDER BY a.nombre";
+    $data = $db->getQuery($query);
+
+    return print json_encode($data);
 });
 
 $app->run();

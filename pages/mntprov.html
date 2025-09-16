@@ -180,7 +180,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <center>
                                         <label for="chkRecurrente">Recurrente:</label>
@@ -189,13 +189,23 @@
                                     </center>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <center>
                                         <label for="chkDeBaja">De baja:</label>
                                         <input name="chkDeBaja" id="chkDeBaja" type="checkbox" class="checkbox"
                                             ng-model="elProv.debaja" ng-true-value="'1'" ng-false-value="'0'" />
                                     </center>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="selTipCuet" class="control-label">Hoja de control:</label>
+                                    <select name="selTipCuet" id="selTipCuet" class="form-control"
+                                        ng-model="elProv.hoja_control">
+                                        <option value="1">Proveedores</option>
+                                        <!-- <option value="2">Ahorro</option> -->
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -215,7 +225,7 @@
                         </div>
                     </form>
                     <hr />
-                    <div class="row">
+                    <!-- <div class="row">
                         <div class="col-md-12">
                             <div class="checkbox">
                                 <label for="">
@@ -225,15 +235,15 @@
                                 </label>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                     <table datatable="ng" dt-options="dtOptions"
                         class="table table-responsive table-hover table-condensed">
                         <thead>
                             <tr>
                                 <th style="text-align: right">No.</th>
                                 <th>Proveedor</th>
-                                <th>Tel.</th>
-                                <th>Correo</th>
+                                <!-- <th>Tel.</th>
+                                <th>Correo</th> -->
                                 <!--
                                 <th>Cheques A</th>
                                 <th>D&iacute;as de cr&eacute;d.</th>
@@ -246,8 +256,8 @@
                             <tr ng-repeat="prov in losProvs" ng-click="getDataProv(prov.id)">
                                 <td style="text-align: right">{{prov.id | padNumber:5}}</td>
                                 <td style="white-space: nowrap;">{{prov.nitnombre}}</td>
-                                <td>{{prov.telefono}}</td>
-                                <td>{{prov.correo}}</td>
+                                <!-- <td>{{prov.telefono}}</td>
+                                <td>{{prov.correo}}</td> -->
                                 <!--
                                 <td>{{prov.chequesa}}</td>
                                 <td>{{prov.diascred}}</td>

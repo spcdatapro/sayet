@@ -13,7 +13,8 @@
             lstDetCuentaC: (idprov) => comunFact.doGET(`${urlBase}/detcontprov/${idprov}`),
             getDetCuentaC: (iddet) => comunFact.doGET(`${urlBase}/getdetcontprov/${iddet}`),
             getLstCuentasCont: (idprov, idempresa) => comunFact.doGET(`${urlBase}/lstdetcontprov/${idprov}/${idempresa}`),
-            lstCuentacProv: (idprov, idempresa) => comunFact.doGET(`${urlBase}/lstdetcontprovifnull/${idprov}/${idempresa}`)
+            lstCuentacProv: (idprov, idempresa) => comunFact.doGET(`${urlBase}/lstdetcontprovifnull/${idprov}/${idempresa}`),
+            lstProveedoresByEmpresa: (idempresa, idproyecto) => comunFact.doGET(`${urlBase}/lstprovsbyempresa/${idempresa}/${idproyecto}`),
         };
     }]);
 

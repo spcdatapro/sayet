@@ -1,0 +1,130 @@
+<div class="container" ng-controller="hojasControlCtrl">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divTransacciones" data-toggle="tab">Proveedores</a>
+        </li>
+        <!-- <li>
+            <a show-tab href="#divNotas" data-toggle="tab">Notas de d&eacute;bito</a>
+        </li> -->
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="divTransacciones">
+            <div class="panel panel-default">
+                <div class="panel-heading">Hoja de control pago proveedores</div>
+                <div class="panel-body">
+                    <form name="paramsProv" id="paramsProv" novalidate>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group required">
+                                    <label class="control-label">Empresa:</label>
+                                    <ui-select ng-model="params_proveedores.idempresa" title="Seleccione una empresa..."
+                                        theme="bootstrap" autofocus="false" required
+                                        ng-change="getProyectos(params_proveedores.idempresa)">
+                                        <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
+                                            <span ng-bind="($select.selected.nomempresa)"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+                                            <div ng-bind-html="(item.nomempresa) | highlight: $select.search"></div>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group required">
+                                    <label class="control-label">Proyecto:</label>
+                                    <ui-select ng-model="params_proveedores.idproyecto"
+                                        ng-change="getProveedores(params_proveedores.idempresa, params_proveedores.idproyecto)"
+                                        title="Seleccione un proyecto..." theme="bootstrap" autofocus="false" required>
+                                        <ui-select-match placeholder="Buscar proyecto..." allow-clear="true">
+                                            <span ng-bind="($select.selected.nomproyecto)"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices
+                                            repeat="item.id as item in proyectos | filter:$select.search">
+                                            <div ng-bind-html="(item.nomproyecto) | highlight: $select.search"></div>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group required">
+                                    <label class="control-label">Proveedores:</label>
+                                    <ui-select ng-model="params_proveedores.idproveedor"
+                                        title="Seleccione un proveedor..." theme="bootstrap" autofocus="false" required>
+                                        <ui-select-match placeholder="Buscar proveedor..." allow-clear="true">
+                                            <span ng-bind="($select.selected.nombre)"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices
+                                            repeat="item.id as item in proveedores | filter:$select.search">
+                                            <div ng-bind-html=" (item.nitnombre) | highlight: $select.search"></div>
+                                            <strong> Cuenta: </strong>
+                                            <span ng-bind-html="(item.cuentac) | highlight: $select.search"></span>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group required">
+                                    <label for="selVer" class="control-label">Ver:</label>
+                                    <select name="selVer" id="selVer" class="form-control"
+                                        ng-model="params_proveedores.ver" required>
+                                        <option value="1">A&ntilde;o</option>
+                                        <option value="2">Rango</option>
+                                        <option value="3">Todos los a&ntilde;os</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4" ng-hide="params_proveedores.ver == 3">
+                                <div class="form-group">
+                                    <label for="numAnioDel" class="control-label"
+                                        ng-show="params_proveedores.ver == 1">A&ntilde;o:</label>
+                                    <label for="numAnioDel" class="control-label"
+                                        ng-show="params_proveedores.ver == 2">A&ntilde;o del:</label>
+                                    <input name="numAnioDel" id="numAnioDel" type="number" class="form-control"
+                                        ng-model="params_proveedores.anio_del">
+                                </div>
+                            </div>
+                            <div class="col-md-4" ng-show="params_proveedores.ver == 2">
+                                <div class="form-group">
+                                    <label for="numAnioAl" class="control-label">A&ntilde;o al:</label>
+                                    <input name="numAnioAl" id="numAnioAl" type="number" class="form-control"
+                                        ng-model="params_proveedores.anio_al">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="panel-footer text-right">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-danger" ng-click="getPdfProveedores(params_proveedores)"
+                            ng-disabled="paramsProv.$invalid || cargando">
+                            <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
+                        </button>
+                        <button type="button" class="btn btn-success" ng-click="getXmlProveedores(params_proveedores)"
+                            ng-disabled="paramsProv.$invalid || cargando">
+                            <span class="fa fa-file-excel-o" aria-hidden="true"></span>
+                        </button>
+                        <button type="button" class="btn btn-primary" ng-click="getResumen(params)"
+                            ng-disabled="paramsProv.$invalid || cargando">
+                            <span class="glyphicon glyphicon-eye-open"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </hr>
+            <div class="row" ng-show="cargando">
+                <div class="col-md-6 col-md-offset-3">
+                    <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                        <span class="label label-primary">Generando reporte, por favor espere...</span>
+                        <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
+                    </div>
+                </div>
+            </div>
+            <rpt-viewer contenido="content"></rpt-viewer>
+        </div>
+    </div>
+</div>

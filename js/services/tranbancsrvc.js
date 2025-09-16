@@ -87,6 +87,12 @@
             },
             getTransPendientesRecibo: () => {
                 return comunFact.doGET(urlBase + '/tran_recibos');
+            },
+            getPendientesAprobar: (obj) => {
+                return comunFact.doPOST(urlBase + '/tran_pendientes', obj);
+            },
+            getHistorial: (idproveedor, concepto) => {
+                return comunFact.doGET(`${urlBase}/tran_historial/${idproveedor}/${concepto}`);
             }
         };
     }]);
