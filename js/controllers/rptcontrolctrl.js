@@ -2,7 +2,7 @@
 
     const controller = angular.module('cpm.rptcontrolctrl', []);
 
-    controller.controller('hojasControlCtrl', ['$scope', 'authSrvc', 'empresaSrvc', 'proyectoSrvc', 'proveedorSrvc', 'jsReportSrvc', ($scope, authSrvc, empresaSrvc, proyectoSrvc, proveedorSrvc, jsReportSrvc) => {
+    controller.controller('hojasControlCtrl', ['$scope', 'authSrvc', 'empresaSrvc', 'proyectoSrvc', 'proveedorSrvc', 'jsReportSrvc', 'tranBancSrvc', ($scope, authSrvc, empresaSrvc, proyectoSrvc, proveedorSrvc, jsReportSrvc, tranBancSrvc) => {
 
         $scope.empresas = [];
         $scope.proyectos = [];
@@ -11,6 +11,7 @@
 
         $scope.params_proveedores = { ver: '1', anio_inicial: +moment().toDate().getFullYear(), anio_final: +moment().toDate().getFullYear() };
 
+        $scope.ver = false;
         $scope.usuario = undefined;
         $scope.cargando = false;
         $scope.content = `${window.location.origin}/sayet/blank.html`;
@@ -75,6 +76,7 @@
         $scope.getPdfProveedores = params => {
             // estatus de carga
             $scope.cargando = true;
+            $scope.ver = false;
             // control de errores en el reporteador
             try {
                 jsReportSrvc.getPDFReport('HyoH1nfKxl', params).then(function (pdf) {
@@ -91,6 +93,7 @@
         $scope.getXmlProveedores = params => {
             // estatus de carga
             $scope.cargando = true;
+            $scope.ver = false;
             // control de errores en el reporteador
             try {
                 jsReportSrvc.getReport('By1YuG8Fex', params).then(function (result) {
@@ -116,6 +119,19 @@
                 $scope.cargando = false;
                 console.log(err);
             }
+        }
+
+        $scope.getReportProveedores = params => {
+            // estatus carga
+            $scope.cargando = true;
+
+            tranBancSrvc.datosReporteAprobados(params).then(d => {
+                console.log(d);
+                $scope.encabezado = d.encabezado;
+                $scope.data = d.data;
+                $scope.cargando = false;
+                $scope.ver = true;
+            })
         }
         // fin hoja de control proveedores
     }])
