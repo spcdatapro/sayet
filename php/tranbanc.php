@@ -1392,7 +1392,8 @@ $app->post('/tran_pendientes', function () {
             g.nombre AS proveedor,
             h.nomproyecto AS proyecto, 
             f.idproveedor,
-            g.concepto
+            g.concepto,
+            h.id AS idproyecto
         FROM
             tranban a
                 INNER JOIN
@@ -1426,6 +1427,7 @@ $app->post('/tran_pendientes', function () {
         $tran = $data[$i];
         $idproveedor = isset($tran->idproveedor) ? (int)$tran->idproveedor : 0;
         $concepto = isset($tran->concepto) ? addslashes($tran->concepto) : '';
+        $idproyecto = isset($tran->idproyecto) ? (int)$tran->idproyecto : 0;
 
         $query = "SELECT 
                     c.id,
@@ -1440,8 +1442,9 @@ $app->post('/tran_pendientes', function () {
                         INNER JOIN 
                     tranban c ON b.idtranban = c.id
                 WHERE 
-                    conceptomayor LIKE '%$concepto%' 
-                        AND idproveedor = $idproveedor
+                    a.conceptomayor LIKE '%$concepto%' 
+                        AND a.idproveedor = $idproveedor
+                        AND a.idproyecto = $idproyecto
                 ORDER BY c.fecha DESC
                 LIMIT 5";
         $hist = $db->getQuery($query);
