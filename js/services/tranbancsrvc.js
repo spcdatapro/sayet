@@ -93,6 +93,9 @@
             },
             getHistorial: (idproveedor, concepto) => {
                 return comunFact.doGET(`${urlBase}/tran_historial/${idproveedor}/${concepto}`);
+            },
+            datosReporteAprobados: obj => {
+                return comunFact.doPOST('php/rptchequesaprob.php/aprobados', obj);
             }
         };
     }]);
