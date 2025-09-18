@@ -301,7 +301,7 @@ $app->post('/cd', function(){
     $esPeque = (int)$db->getOneField("SELECT pequeniocont FROM proveedor WHERE id = $d->idproveedor") === 1;
 
     // ver si el proveedor esta marcado como retenedor
-    $esRet = (int)$db->getOneField("SELECT retensioniva FROM proveedor WHERE id = $d->idproveedor ") === 1;
+    $esRet = (int)$db->getOneField("SELECT retensioniva FROM proveedor WHERE nit = '$d->nit' ") === 1;
 
     $esLocalMonedaFact = (int)$db->getOneField("SELECT eslocal FROM moneda WHERE id = $d->idmoneda") === 1;
 
