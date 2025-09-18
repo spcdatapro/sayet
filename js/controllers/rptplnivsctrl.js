@@ -1,35 +1,54 @@
-(function(){
+(function () {
 
     const rptplnivsctrl = angular.module('cpm.rptplnivsctrl', []);
 
-    rptplnivsctrl.controller('rptPlnIVSCtrl', ['$scope', 'jsReportSrvc', 'empServicios', ($scope, jsReportSrvc, empServicios) => {
+    rptplnivsctrl.controller('rptPlnIVSCtrl', ['$scope', 'jsReportSrvc', 'empleadoSrvc', ($scope, jsReportSrvc, empleadoSrvc) => {
 
-        $scope.params = { idempleado: undefined, del: moment().startOf('year').toDate(), al: moment().endOf('month').toDate() };
+        $scope.paramsMovimientos = { del: moment().startOf('year').toDate(), al: moment().endOf('month').toDate() }
         $scope.empleados = [];
         $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.cargando = false;
 
-        empServicios.buscar({'sin_limite':1}).then((res) => {
-            res.resultados.forEach(value => {
-                value.segundonombre = value.segundonombre ? value.segundonombre : '';
-                value.tercernombre = value.tercernombre ? value.tercernombre : '';
+        empleadoSrvc.lstEmpleados().then(d => $scope.empleados = d);
 
-                value.nombre = value.primernombre + ' ' + value.segundonombre + ' ' + value.tercernombre;
+        // reporte ivs
+        $scope.paramsIVS = { del: moment().startOf('year').toDate(), al: moment().endOf('month').toDate() };
 
-                value.primerapellido = value.primerapellido ? value.primerapellido : '';
-                value.segundoapellido = value.segundoapellido ? value.segundoapellido : '';
-                value.apellidocasada = value.apellidocasada ? value.apellidocasada : '';
+        $scope.getReporteIVS = params => {
+            $scope.cargando = true;
+            params.fdelstr = moment(params.del).format('YYYY-MM-DD');
+            params.falstr = moment(params.al).format('YYYY-MM-DD');
+            jsReportSrvc.getPDFReport('rk3SeDokw', params).then(pdf => {
+                $scope.content = pdf;
+                $scope.cargando = false;
+            })
+        }
 
-                value.apellidos = value.primerapellido + ' ' + value.segundoapellido + ' ' + value.apellidocasada;
-            });
-            $scope.empleados = res.resultados
-        });
-
-        const test = false;
-        $scope.getReporte = () => {
-            $scope.params.fdelstr = moment($scope.params.del).format('YYYY-MM-DD');
-            $scope.params.falstr = moment($scope.params.al).format('YYYY-MM-DD');
-            // console.log($scope.params); return;
-            jsReportSrvc.getPDFReport(test ? 'rk3SeDokw' : 'rk3SeDokw', $scope.params).then(function(pdf){ $scope.content = pdf; });
+        $scope.getReporteMovimientos = params => {
+            $scope.cargando = true;
+            params.fdelstr = moment(params.del).format('YYYY-MM-DD');
+            params.falstr = moment(params.al).format('YYYY-MM-DD');
+            jsReportSrvc.getPDFReport('HyIw0Ap9xx', params).then(pdf => { 
+                $scope.content = pdf; 
+                $scope.cargando = false;
+            })
         };
+
+        $scope.getReporteMovXML = params => {
+            $scope.cargando = true;
+            params.fdelstr = moment(params.del).format('YYYY-MM-DD');
+            params.falstr = moment(params.al).format('YYYY-MM-DD');
+            jsReportSrvc.getReport('By0sCuusll', $scope.params).then(function (result) {
+                var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
+
+                let delstr = moment(params.fdelstr).format('DD-MM-YYYY');
+                let alstr = moment(params.falstr).format('DD-MM-YYYY');
+
+                let rango = 'Del_' + delstr + '_al_' + alstr;
+
+                saveAs(file, 'Reporte_movimientos_' + rango + '.xlsx');
+                $scope.cargando = false;
+            })
+        }
     }]);
 }());
