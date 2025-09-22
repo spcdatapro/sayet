@@ -313,8 +313,8 @@ $app->post('/porocupacion', function() {
         array_push($meses, $data_mes);
     }
 
-    // $letra->proyecto = $data[0]->proyecto;
-    // $letra->metros = round($data[0]->mdisponibles, 2);
+    $letra->proyecto = $data[0]->proyecto;
+    $letra->metros = round($data[0]->mdisponibles, 2);
 
     print json_encode([ 'encabezado' => $letra, 'meses' => $meses ]);
 });
