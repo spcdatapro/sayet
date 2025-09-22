@@ -278,7 +278,7 @@ $app->post('/porocupacion', function() {
                     AND MONTH(d.fecha) >= $d->mesdel
                     AND MONTH(d.fecha) <= $d->mesal
             WHERE
-                a.id = $d->idproyecto AND b.idtipolocal != 9
+                a.id = $d->idproyecto AND b.idtipolocal NOT IN (9, 17)
             GROUP BY b.id, MONTH(d.fecha)
             ORDER BY MONTH(d.fecha), b.id";
     $data = $db->getQuery($query);
