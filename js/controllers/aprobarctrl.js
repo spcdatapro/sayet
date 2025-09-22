@@ -78,7 +78,8 @@
 
             $scope.aceptar = () => {
                 let aenviar = [];
-                const fecha = moment().format('YYYY-MM-DD');
+                let fecha = moment().toDate();
+                fecha = moment(fecha).format('YYYY-MM-DD');
                 $scope.transacciones.forEach(t => {
                     if (t.aprobada) {
                         aenviar.push({ id: t.id, idusuario: $scope.usrdata.uid, fecha: fecha })
