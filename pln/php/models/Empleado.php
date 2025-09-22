@@ -1880,12 +1880,12 @@ EOT;
 				$despues = (object)$this->db->get('plnlaboral', '*',['id[=]' => $idlaboral]);
 
 				if ($upd) {
-					if ($lab['sueldo'] != $data['sueldo'] || $lab['bonificacionley'] != $data['bonificacionley'] || $lab['isr'] != $data['isr']) {
+					if ($lab['sueldo'] != $data['sueldo'] || $lab['bonificacionley'] != $data['bonificacionley'] || $lab['descuentoisr'] != $data['descuentoisr']) {
 						$objeto = json_decode(json_encode($lab));
 						$objeto->movobservaciones = 'Aumento de sueldo';
 						$this->generarBitacora($idempleado, 7, $objeto, 'Aumento de sueldo', 0, null, $antes, $despues);
 
-						$fecha_nomina = date('d') <= 15 ? date('Y-m-15') : date('Y-m-t');
+						$fecha_nomina = date('d') <= 15 ? date('Y-m-15') : date('Y-m-15');
 
 						$existe_nomina = $this->db->get(
 						"plnnomina",
