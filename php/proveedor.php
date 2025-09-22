@@ -8,7 +8,7 @@ $app->response->headers->set('Content-Type', 'application/json');
 //API para encabezado de proveedores
 $app->get('/lstprovs(/:todos)', function($todos = 0){
     $db = new dbcpm();
-    $query = "SELECT a.id, a.nit, a.nombre, a.concepto, a.chequesa, a.retensionisr, a.diascred, a.limitecred, a.idmoneda, a.tipocambioprov ";
+    $query = "SELECT a.id, a.nit, a.nombre, a.concepto, a.chequesa, a.retensionisr, a.diascred, a.limitecred, a.idmoneda, a.tipocambioprov, ";
     $query.= "a.pequeniocont, CONCAT('(', a.nit, ') ', a.nombre, ' (', b.simbolo, ')') AS nitnombre ";
     $query.= "FROM proveedor a INNER JOIN moneda b ON b.id = a.idmoneda ";
     $query.= (int)$todos === 0 ? 'WHERE a.debaja = 0 ' : '';
