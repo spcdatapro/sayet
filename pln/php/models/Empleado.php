@@ -1880,15 +1880,40 @@ EOT;
 				$despues = (object)$this->db->get('plnlaboral', '*',['id[=]' => $idlaboral]);
 
 				if ($upd) {
-					if ($lab['sueldo'] != $data['sueldo'] || $lab['bonificacionley'] != $data['bonificacionley']) {
+					if ($lab['sueldo'] != $data['sueldo'] || $lab['bonificacionley'] != $data['bonificacionley'] || $lab['isr'] != $data['isr']) {
 						$objeto = json_decode(json_encode($lab));
 						$objeto->movobservaciones = 'Aumento de sueldo';
 						$this->generarBitacora($idempleado, 7, $objeto, 'Aumento de sueldo', 0, null, $antes, $despues);
+
+						$fecha_nomina = date('d') <= 15 ? date('Y-m-15') : date('Y-m-t');
+
+						$existe_nomina = $this->db->get(
+						"plnnomina",
+						'id',
+						[
+							'AND' => [
+								"fecha" => $fecha_nomina,
+								"idplnempleado" => $idempleado
+							]
+						]
+							) > 0;
+						if ($existe_nomina) {
+							$respuesta = new StdClass;
+							$respuesta->tipo = 'warning';
+							$respuesta->mensaje = 'Datos laborales actualizados con exito. Favor actualizar la nómina del empleado para que los cambios tengan efecto.';
+							$respuesta->id = $idempleado;
+						} else {
+							$respuesta = new StdClass;
+							$respuesta->tipo = 'success';
+							$respuesta->mensaje = 'Datos laborales actualizados con exito.';
+							$respuesta->id = $idempleado;
+						}
+					} else {
+						$respuesta = new StdClass;
+						$respuesta->tipo = 'success';
+						$respuesta->mensaje = 'Datos laborales actualizados con exito.';
+						$respuesta->id = $idempleado;
 					}
-					$respuesta = new StdClass;
-					$respuesta->tipo = 'success';
-					$respuesta->mensaje = 'Datos laborales actualizados con exito.';
-					$respuesta->id = $idempleado;
 				} else {
 					$respuesta = new StdClass;
 					$respuesta->tipo = 'warning';
