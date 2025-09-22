@@ -1398,7 +1398,9 @@ $app->post('/tran_pendientes', function () {
             h.nomproyecto AS proyecto, 
             f.idproveedor,
             g.concepto,
-            h.id AS idproyecto
+            h.id AS idproyecto,
+            f.idempresa,
+            f.idunidad
         FROM
             tranban a
                 INNER JOIN
@@ -1431,28 +1433,31 @@ $app->post('/tran_pendientes', function () {
     $cnt = count($data);
     for ($i = 0; $i < $cnt; $i++) {
         $tran = $data[$i];
-        $idproveedor = isset($tran->idproveedor) ? (int)$tran->idproveedor : 0;
-        $concepto = isset($tran->concepto) ? addslashes($tran->concepto) : '';
-        $idproyecto = isset($tran->idproyecto) ? (int)$tran->idproyecto : 0;
 
         $query = "SELECT 
                     c.id,
                     DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fecha,
                     CONCAT(c.tipotrans, '-', c.numero) AS tran,
                     a.documento AS factura,
-                    c.monto
-                FROM 
+                    c.monto,
+                    a.conceptomayor
+                FROM
                     compra a
-                        INNER JOIN 
+                        INNER JOIN
                     detpagocompra b ON b.idcompra = a.id
-                        INNER JOIN 
+                        INNER JOIN
                     tranban c ON b.idtranban = c.id
-                WHERE 
-                    a.conceptomayor LIKE '%$concepto%' 
-                        AND a.idproveedor = $idproveedor
-                        AND a.idproyecto = $idproyecto
-                ORDER BY c.fecha DESC
-                LIMIT 5";
+                WHERE
+                    a.idproveedor = $tran->idproveedor
+                        a.idproyecto = $tran->idproyecto
+                        AND (a.idreembolso = 0
+                        OR a.idreembolso IS NULL)
+                        AND (a.ordentrabajo IS NULL
+                        OR a.ordentrabajo = 0)
+                        AND a.idempresa = $tran->idempresa ";
+        $query.= $tran->idunidad > 0 ? " AND a.idunidad = $tran->idunidad " : "";
+        $query.="ORDER BY c.fecha DESC
+                LIMIT 5 ";
         $hist = $db->getQuery($query);
 
         $sum = 0.0;
