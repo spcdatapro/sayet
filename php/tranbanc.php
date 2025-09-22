@@ -1449,13 +1449,13 @@ $app->post('/tran_pendientes', function () {
                     tranban c ON b.idtranban = c.id
                 WHERE
                     a.idproveedor = $tran->idproveedor
-                        a.idproyecto = $tran->idproyecto
+                        AND a.idproyecto = $tran->idproyecto
                         AND (a.idreembolso = 0
                         OR a.idreembolso IS NULL)
                         AND (a.ordentrabajo IS NULL
                         OR a.ordentrabajo = 0)
                         AND a.idempresa = $tran->idempresa ";
-        $query.= $tran->idunidad > 0 ? " AND a.idunidad = $tran->idunidad " : "";
+        $query.= $tran->idunidad > 0 ? "AND a.idunidad = $tran->idunidad " : "";
         $query.="ORDER BY c.fecha DESC
                 LIMIT 5 ";
         $hist = $db->getQuery($query);
