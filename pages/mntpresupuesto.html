@@ -312,7 +312,7 @@
                                     ng-class="{'has-error':frmPresup.txtTotal.$invalid && !frmPresup.txtTotal.$pristine}">
                                     <label for="txtTotal">Total:</label>
                                     <input name="txtTotal" id="txtTotal" class="form-control" type="text"
-                                        ng-model="presupuesto.total" fcsa-number="{maxDecimals:2}" 
+                                        ng-model="presupuesto.total" fcsa-number="{maxDecimals:2}"
                                         ng-disabled="(presupuesto.tipo == 2 || presupuesto.idestatuspresupuesto > 1) && usrdata.uid != 11 || sl.presupuesto" />
                                 </div>
                             </div>
@@ -335,7 +335,8 @@
                                     <ui-select name="selProveedorPresup" ng-model="presupuesto.idproveedor"
                                         title="Seleccione un proveedor/beneficiario..." theme="bootstrap"
                                         autofocus="true" append-to-body="true" ng-required="+presupuesto.tipo == 1"
-                                        ng-disabled="sl.presupuesto" on-select="setOrigenProv($item, $model)" ng-focus="onFocus()" ng-blur="onBlur()">
+                                        ng-disabled="sl.presupuesto" on-select="setOrigenProv($item, $model)"
+                                        ng-focus="onFocus()" ng-blur="onBlur()">
                                         <ui-select-match placeholder="Favor ingresar 3 caracteres (nit o nombre)"
                                             allow-clear="false">
                                             <span ng-bind="$select.selected.beneficiario"></span>
@@ -435,10 +436,10 @@
                                 <span class="glyphicon glyphicon-cog"></span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a ng-click="adherirAOTM(presupuesto, true)" ng-hide="!permiso.m">Adherir &nbsp; <span
-                                            class="glyphicon glyphicon-paste"></span></a></li>
-                                <li><a ng-click="terminaPresupuesto(presupuesto)" ng-hide="!permiso.m">Cerrar &nbsp;&nbsp; <span
-                                            class="glyphicon glyphicon-folder-close"></span></a></li>
+                                <li><a ng-click="adherirAOTM(presupuesto, true)" ng-hide="!permiso.m">Adherir &nbsp;
+                                        <span class="glyphicon glyphicon-paste"></span></a></li>
+                                <li><a ng-click="terminaPresupuesto(presupuesto)" ng-hide="!permiso.m">Cerrar
+                                        &nbsp;&nbsp; <span class="glyphicon glyphicon-folder-close"></span></a></li>
                                 <li><a ng-click="prntAprobacion(presupuesto.id)">Solicitud &nbsp;&nbsp; <span
                                             class="glyphicon glyphicon-print"></span></a></li>
                             </ul>
@@ -680,12 +681,12 @@
                         </div>
                         <div class="btn-group">
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-                                title="Opciones" ng-show="+ot.idestatuspresupuesto == 3"
-                                ng-disabled="!sl.presupuesto">
+                                title="Opciones" ng-show="+ot.idestatuspresupuesto == 3" ng-disabled="!sl.presupuesto">
                                 <span class="glyphicon glyphicon-cog"></span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a ng-click="terminaPresupuesto(ot, +ot.idpresupuesto, +ot.correlativo)" ng-hide="!permiso.m">
+                                <li><a ng-click="terminaPresupuesto(ot, +ot.idpresupuesto, +ot.correlativo)"
+                                        ng-hide="!permiso.m">
                                         Cerrar &nbsp;&nbsp;
                                         <span class="glyphicon glyphicon-folder-close"></span>
                                     </a>
@@ -705,8 +706,17 @@
                     <hr />
                     <table class="table table-hover table-condensed">
                         <caption>
-                            <input name="srchTxt" id="srchTxt" type="text" class="form-control input-sm"
+                            <div class="input-group">
+                                <input name="srchTxt" id="srchTxt" type="text" class="form-control input-sm"
                                 style="width: 100%" ng-model="lookFor.$" placeholder="Buscar..." />
+                                <div class="input-group-btn">
+                                    <select name="selTipCuet" id="selTipCuet" class="form-control"
+                                        ng-model="elProv.hoja_control">
+                                        <option value="1">Proveedores</option>
+                                        <!-- <option value="2">Ahorro</option> -->
+                                    </select>
+                                </div>
+                            </div>
                         </caption>
                         <thead>
                             <tr>

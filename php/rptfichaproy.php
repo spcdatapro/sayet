@@ -307,14 +307,14 @@ $app->post('/porocupacion', function() {
         $data_mes->porcentaje_ocupado = round(array_sum($procentaje), 2);
         $data_mes->metros_ocupados = round(array_sum($metros), 2);
         $data_mes->porcentaje_vacante = round(100 - $data_mes->porcentaje_ocupado, 2);
-        $data_mes->metros_vacantes = round($data[0]->mdisponibles - $data_mes->metros_ocupados, 2);
+        // $data_mes->metros_vacantes = round($data[0]->mdisponibles - $data_mes->metros_ocupados, 2);
         $data_mes->total = round($data_mes->total, 2);
         $data_mes->unidades_ocupadas = count($procentaje);
         array_push($meses, $data_mes);
     }
 
-    $letra->proyecto = $data[0]->proyecto;
-    $letra->metros = round($data[0]->mdisponibles, 2);
+    // $letra->proyecto = $data[0]->proyecto;
+    // $letra->metros = round($data[0]->mdisponibles, 2);
 
     print json_encode([ 'encabezado' => $letra, 'meses' => $meses ]);
 });
