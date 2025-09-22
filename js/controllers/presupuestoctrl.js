@@ -9,6 +9,7 @@
         $scope.lstpresupuestos = [];
         $scope.ot = {};
         $scope.lstot = [];
+        var lstot_todas = [];
 
         $scope.proyectos = [];
         $scope.empresas = [];
@@ -21,6 +22,7 @@
         $scope.usrdata = {};
         $scope.permiso = {};
         $scope.lbl = { id: '', proyecto: '', empresa: '', tipgasto: '', montopres: '', motnogas: '', avance: '' };
+        $scope.ver = 1;
 
         $scope.grpBtnPresupuesto = { i: false, p: false, e: false, u: false, c: false, d: false, a: true };
         $scope.grpBtnOt = { i: false, p: false, e: false, u: false, c: false, d: false, a: true };
@@ -34,14 +36,14 @@
 
         authSrvc.getSession().then(function (usuario) {
             // traer empresas permitidas por el usuario
-            empresaSrvc.lstEmpresas().then(function(d) { 
+            empresaSrvc.lstEmpresas().then(function (d) {
                 empresaSrvc.getEmpresaUsuario(usuario.uid).then(function (autorizado) {
                     let idempresas = [];
                     autorizado.forEach(aut => {
                         idempresas.push(aut.id);
                     });
                     $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
-                }); 
+                });
             });
             proyectoSrvc.lstProyecto(usuario.uid).then(function (d) { $scope.proyectos = d; });
         });
@@ -454,6 +456,7 @@
         $scope.getLstOts = function (idpresupuesto) {
             presupuestoSrvc.lstOts(idpresupuesto).then(function (d) {
                 $scope.lstot = procDataOts(d);
+                lstot_todas = angular.copy($scope.lstot);
                 if (+$scope.presupuesto.tipo === 1 && $scope.lstot.length > 0) {
                     $scope.getOt(d[0].id);
                 }
@@ -732,12 +735,12 @@
             });
         };
 
-        $scope.onFocus = function() {
+        $scope.onFocus = function () {
             $scope.buscar = true;
             console.log(!$scope.presupuesto.idproveedor || $scope.buscar);
         };
 
-        $scope.onBlur = function() {
+        $scope.onBlur = function () {
             $scope.buscar = false;
         };
 
@@ -753,6 +756,22 @@
                 }
             }));
         };
+
+        $scope.mostrar = tipo => {
+            if (tipo == 1) {
+                // mostrar todas
+                $scope.ver = 1;
+                $scope.lstot = lstot_todas;
+            } else if (tipo == 2) {
+                // mostrar solo aprobadas
+                $scope.ver = 2;
+                $scope.lstot = lstot_todas.filter(function (o) { return +o.idestatuspresupuesto === 3; });
+            } else {
+                // mostrar solo terminadas
+                $scope.ver = 3;
+                $scope.lstot = lstot_todas.filter(function (o) { return +o.idestatuspresupuesto === 5; });
+            }
+        }
 
         // $scope.setTC = () => $scope.presupuesto.tipocambio = $scope.tipocambiogt;        
     }]);
@@ -1039,7 +1058,7 @@
     }]);
 
     // _____________________________________________________________________________________________________________________________________________________________
-    presupuestoctrl.controller('prntAprobacionCtrl', ['$scope', '$uibModalInstance', 'id', 'presupuesto', 'correlativo', 'tipocambiogt', 
+    presupuestoctrl.controller('prntAprobacionCtrl', ['$scope', '$uibModalInstance', 'id', 'presupuesto', 'correlativo', 'tipocambiogt',
         'usuario', 'presupuestoSrvc', function ($scope, $uibModalInstance, id, presupuesto, correlativo, tipocambiogt, usuario, presupuestoSrvc) {
 
             $scope.ot = { correlativo: correlativo, presupuesto: presupuesto };
@@ -1047,7 +1066,7 @@
 
             $scope.tipocambiogt = tipocambiogt;
 
-            presupuestoSrvc.getMonto(presupuesto, correlativo).then(function(d) {
+            presupuestoSrvc.getMonto(presupuesto, correlativo).then(function (d) {
                 $scope.ot.monto = parseFloat(d.monto_int).toFixed(2);
                 $scope.ot.gastado = parseFloat(d.gastado_int).toFixed(2);
                 $scope.ot.idmoneda = d.idmoneda;
@@ -1057,10 +1076,10 @@
 
             $scope.setMonto = function () {
                 if ($scope.params.total == 1) {
-                $scope.params.monto = $scope.ot.gastado > 0 ? +$scope.ot.monto - +$scope.ot.gastado : +$scope.ot.monto;
-                $scope.params.idmoneda = $scope.ot.idmoneda;
-                $scope.params.tc = +$scope.ot.tipocambio;
-                $scope.params.notas = "PAGO FINAL ";
+                    $scope.params.monto = $scope.ot.gastado > 0 ? +$scope.ot.monto - +$scope.ot.gastado : +$scope.ot.monto;
+                    $scope.params.idmoneda = $scope.ot.idmoneda;
+                    $scope.params.tc = +$scope.ot.tipocambio;
+                    $scope.params.notas = "PAGO FINAL ";
                 } else {
                     $scope.params = { id: id, correlativo: correlativo, idpresupuesto: presupuesto, tc: 1.00, iniciales: usuario.iniciales };
                 }

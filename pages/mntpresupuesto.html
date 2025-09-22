@@ -708,13 +708,16 @@
                         <caption>
                             <div class="input-group">
                                 <input name="srchTxt" id="srchTxt" type="text" class="form-control input-sm"
-                                style="width: 100%" ng-model="lookFor.$" placeholder="Buscar..." />
+                                    style="width: 100%" ng-model="lookFor.$" placeholder="Buscar..." />
                                 <div class="input-group-btn">
-                                    <select name="selTipCuet" id="selTipCuet" class="form-control"
-                                        ng-model="elProv.hoja_control">
-                                        <option value="1">Proveedores</option>
-                                        <!-- <option value="2">Ahorro</option> -->
-                                    </select>
+                                    <button ng-class="{'btn-success': ver === 1, 'btn-default': ver !== 1}" type="button" class="btn btn-sm" ng-click="mostrar(1)">
+                                        <span>Todas</span>
+                                    </button>
+                                    <button ng-class="{'btn-success': ver === 2, 'btn-default': ver !== 2}" type="button" class="btn btn-sm" ng-click="mostrar(2)">
+                                        <span>Activas</span>
+                                    </button>
+                                    <button ng-class="{'btn-success': ver === 3, 'btn-default': ver !== 3}" type="button" class="btn btn-sm" ng-click="mostrar(3)">                                    <span>Cerradas</span>
+                                    </button>
                                 </div>
                             </div>
                         </caption>
