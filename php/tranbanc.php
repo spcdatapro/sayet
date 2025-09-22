@@ -1423,7 +1423,7 @@ $app->post('/tran_pendientes', function () {
                 AND (f.ordentrabajo IS NULL
                 OR f.ordentrabajo = 0) 
                 AND (a.fecha BETWEEN '$d->fdelstr' AND '$d->falstr') 
-                AND h.hoja_control = 1 ";
+                AND g.hoja_control = 1 ";
     $query.= isset($d->idempresa) ? "AND f.idempresa = $d->idempresa " : "";
     $query.= isset($d->idproyecto) ? "AND f.idproyecto = $d->idproyecto " : "";
     $query.= isset($d->idproveedor) ? "AND f.idproveedor = $d->idproveedor " : "";
