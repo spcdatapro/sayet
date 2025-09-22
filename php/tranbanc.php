@@ -906,10 +906,15 @@ $app->post('/sellonc', function() {
     $query = "SELECT DISTINCT a.id, IFNULL(b.nombre, IFNULL(c.nombre, 'Clientes Varios')) AS cliente, f.concepto 
     FROM recibocli a INNER JOIN reclitran e ON e.idrecibocli = a.id LEFT JOIN cliente b ON a.idcliente = b.id 
     LEFT JOIN factura c ON a.nit = c.nit AND a.nit != 'CF' LEFT JOIN serierecli d ON d.idrecibocli = a.id INNER JOIN tranban f ON e.idtranban = f.id 
-    WHERE e.idtranban = $d->idtranban";
-    $datos = $db->getQuery($query)[0];
+    WHERE e.idtranban = 0";
+    $datos = $db->getQuery($query);
 
-    return print json_encode($datos);
+
+    if (count($datos) == 0) {
+        $datos = $db->getQuery("SELECT DISTINCT a.id, a.beneficiario AS cliente, a.concepto FROM tranban a WHERE a.id = $d->idtranban");
+    }
+
+    return print json_encode($datos[0]);
 });
 
 $app->get('/montoots/:idot', function($idot){
