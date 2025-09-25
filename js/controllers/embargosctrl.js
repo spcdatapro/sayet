@@ -11,10 +11,10 @@
         $scope.cargando = true;
 
         // parametros lista
-        $scope.lista = {};
+        $scope.lista = { ver: '1' };
 
         // parametros Proyección Embargos
-        $scope.proy = { ver: '1' };
+        $scope.proy = {};
 
         // estatus de carga
         $scope.cargando = false;
