@@ -2073,7 +2073,7 @@ EOT;
 		$despues = (object)$this->db->get('plnlaboral', '*',['id[=]' => $idlaboral]);
 
 		// generar bitacora de nuevo ingreso
-		$idbitacora = $this->generarBitacora($idempleado, 10, $data, 'NUEVO INGRESO', 0, null, null, $despues);
+		$idbitacora = $this->generarBitacora($idempleado, 10, $data, 'NUEVO INGRESO', 0,$data->ingreso, null, $despues);
 
 		if ($idempleado > 0) {
 			if ($idpersonal > 0) {
