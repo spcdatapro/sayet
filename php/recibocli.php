@@ -285,11 +285,22 @@ $app->post('/anula', function(){
         $db->doQuery($query);
     }
 
-        $query = "DELETE FROM detpagorecli WHERE idreccli = $d->id ";
-        $db->doQuery($query);
+    // Liberar nota de credito bancaria si esta atada 
+    $query = "SELECT d_estado_cuenta FROM detpagorecli WHERE idreccli = $d->id";
+    $transacciones = $db->getQuery($query);
 
-        $query = "DELETE FROM detcobroventa WHERE idrecibocli = $d->id";
-        $db->doQuery($query);
+    foreach($transacciones as $t){
+        if($t->d_estado_cuenta > 0){
+            $query = "UPDATE d_estado_cuenta SET idtranban = NULL WHERE d_estado_cuenta = $t->d_estado_cuenta";
+            $db->doQuery($query);
+        }
+    }
+
+    $query = "DELETE FROM detpagorecli WHERE idreccli = $d->id ";
+    $db->doQuery($query);
+
+    $query = "DELETE FROM detcobroventa WHERE idrecibocli = $d->id";
+    $db->doQuery($query);
 
     // $query = "UPDATE detallecontable SET activada = 0, anulado = 1 WHERE origen = 8 AND idorigen = $d->id";
     // $db->doQuery($query);
