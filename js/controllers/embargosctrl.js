@@ -25,7 +25,7 @@
         // traer empresas
         authSrvc.getSession().then(usr => {
             if (parseInt(usr.workingon) > 0) {
-                $scope.proy.idempresa = usr.workingon.toString();
+                $scope.lista.idempresa = usr.workingon.toString();
             }
         })
 
