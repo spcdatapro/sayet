@@ -154,8 +154,12 @@
                         </table>
                     </div>
                     <div class="col-sm-4 text-right input-group-btn">
+                        <button type="button" class="btn btn-default btn-sm" ng-show="pre.esembargo == 1"
+                            ng-show="pre.finalizado == 0 && pre.anulado == 0" ng-click="prntEmbargo(pre.id)" title="Imprimir embargo">
+                            <i class="glyphicon glyphicon-print"></i>
+                        </button>
                         <a class="btn btn-default btn-sm" ng-href="pln/php/controllers/prestamo.php/imprimir/{{pre.id}}"
-                            ng-show="hay && pre.anulado == 0" target="_blank" title="Imprimir préstamo">
+                            ng-show="hay && pre.anulado == 0" target="_blank" title="Imprimir préstamo" ng-hide="pre.esembargo == 1">
                             <i class="glyphicon glyphicon-print"></i>
                         </a>
                         <button type="button" class="btn btn-success btn-sm"
@@ -173,7 +177,7 @@
                         <button type="button" class="btn btn-danger btn-sm" ng-show="pre.id > 0 && pre.anulado == 0"
                             ng-click="anularPrestamo(pre)">
                             <i class="glyphicon glyphicon-remove-circle"></i> Anular
-                        </button>
+                        </button>>
                     </div>
                 </div>
             </form>

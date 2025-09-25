@@ -163,8 +163,8 @@ angular.module('cpm')
         })
     }
 ])
-.controller('transPrestamoController', ['$scope', '$http', 'preServicios', 'empServicios', '$confirm', 
-    function($scope, $http, preServicios, empServicios, $confirm){
+.controller('transPrestamoController', ['$scope', '$http', 'preServicios', 'empServicios', '$confirm', 'jsReportSrvc', '$window',
+    function($scope, $http, preServicios, empServicios, $confirm, jsReportSrvc, $window){
         $scope.formulario  = false;
         $scope.resultados  = false;
         $scope.prestamos   = [];
@@ -251,6 +251,7 @@ angular.module('cpm')
                 $scope.pre.fechafin = $scope.formatoFechajs($scope.pre.liquidacion);
              }
              
+             $scope.pre.esembargo = +$scope.pre.esembargo;
              $scope.pre.monto = parseFloat($scope.pre.monto)
              $scope.pre.cuotamensual = parseFloat($scope.pre.cuotamensual)
              $scope.pre.id = $scope.pre.id;
@@ -355,6 +356,10 @@ angular.module('cpm')
                 preServicios.anular(pre.id);
                 pre.anulado = 1;
             });
+        }
+
+        $scope.prntEmbargo = id => {
+            jsReportSrvc.getPDFReport('BJCkZEkixx', { id: $scope.pre.id }).then(pdf => $window.open(pdf));
         }
 
         $scope.buscar({})
