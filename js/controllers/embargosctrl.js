@@ -56,7 +56,7 @@
             try {
                 jsReportSrvc.getReport(id, params).then(function (result) {
                     var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
-                    let nombre = params.idempleado > 0 ? $filter('getById')($scope.empleados, params.idempleado).nombre : $filter('getById')($scope.empresa, params.idempresa).nomempresa;
+                    let nombre = params.idempleado > 0 ? ($filter('getById')($scope.empleados, params.idempleado)).nombre : ($filter('getById')($scope.empresas, params.idempresa)).nomempresa;
 
                     saveAs(file, 'Reporte' + tipo + nombre + '.xlsx');
 
