@@ -359,7 +359,7 @@ angular.module('cpm')
         }
 
         $scope.prntEmbargo = id => {
-            jsReportSrvc.getPDFReport('BJCkZEkixx', { id: $scope.pre.id }).then(pdf => $window.open(pdf));
+            jsReportSrvc.getPDFReport('BJCkZEkixx', { idprestamo: $scope.pre.id }).then(pdf => $window.open(pdf));
         }
 
         $scope.buscar({})
