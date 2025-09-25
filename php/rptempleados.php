@@ -1723,6 +1723,7 @@ $app->post('/lst_embargos', function () {
 
     $letra->estampa = new DateTime();
     $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+    $letra->titulo = $d->ver === 1 ? 'activos' : 'todos';
 
     $query = "SELECT 
                 c.id AS id,
@@ -1753,7 +1754,9 @@ $app->post('/lst_embargos', function () {
                 plnpersonal d ON c.idpersonal = d.id
             WHERE
                 b.esembargo = 1
-            GROUP BY c.id";
+                    AND c.idempresadebito = $d->idempresa ";
+    $query.= $d->ver === 1 ?  "AND b.finalizado = 0 " : ""; 
+    $query.="GROUP BY c.id";
     $datos = $db->getQuery($query);
 
     print json_encode([ 'empleado' => $datos, 'encabezado' => $letra ]);

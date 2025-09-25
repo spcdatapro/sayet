@@ -52,7 +52,7 @@
         'cpm.testsrvc', 'cpm.rpttoptenprovctrl', 'cpm.rptrecclimenctrl', 'cpm.rptcontcrea', 'cpm.rptcorrelageren', 'cpm.rptlibsalario', 'cpm.rptempleados',
         'cpm.rptfinanzas', 'cpm.rptservterceros', 'cpm.ivactrl', 'cpm.gerencialsrvc', 'cpm.rptaltasbajas', 'cpm.rptbono14', 'cpm.factemitidas', 'cpm.aguinaldo',
         'cpm.vacaciones', 'cpm.prestamos', 'cpm.antiguedad', 'cpm.cargosplnctrl', 'cpm.isrempleados', 'cpm.periodoivactrl', 'cpm.pivasrvc', 'cpm.docsbancoctrl',
-        'cpm.aprobarctrl', 'cpm.rptcontrolctrl'
+        'cpm.aprobarctrl', 'cpm.rptcontrolctrl', 'cpm.embargos'
     ]);
 
     app.config(['$routeProvider', 'desktopNotificationProvider', function ($routeProvider, desktopNotificationProvider) {
