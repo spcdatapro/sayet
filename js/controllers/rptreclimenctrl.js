@@ -9,19 +9,19 @@
 
             authSrvc.getSession().then(function (usuario) {
                 // traer empresas permitidas por el usuario
-                empresaSrvc.lstEmpresas().then(function(d) { 
+                empresaSrvc.lstEmpresas().then(function (d) {
                     empresaSrvc.getEmpresaUsuario(usuario.uid).then(function (autorizado) {
                         let idempresas = [];
                         autorizado.forEach(aut => {
                             idempresas.push(aut.id);
                         });
                         $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
-                    }); 
+                    });
                 });
             });
 
             $scope.params = {
-                fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(),                
+                fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(),
                 idempresa: [], tipo: '1'
             };
 
@@ -36,6 +36,15 @@
 
 
                 jsReportSrvc.getPDFReport(test ? rpttest : rpt, $scope.params).then(function (pdf) { $scope.content = pdf; });
+            };
+
+            $scope.params_auditoria = { fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate() }
+
+            $scope.getRptRecibosAuditoria = params => {
+                params.fdelstr = moment(params.fdel).isValid() ? moment(params.fdel).format('YYYY-MM-DD') : '';
+                params.falstr = moment(params.fal).isValid() ? moment(params.fal).format('YYYY-MM-DD') : '';
+
+                jsReportSrvc.getPDFReport('B1y5mEE3xe', $scope.params).then(pdf => $scope.content = pdf);
             };
 
         }]);
