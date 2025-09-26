@@ -44,7 +44,7 @@
                 params.fdelstr = moment(params.fdel).isValid() ? moment(params.fdel).format('YYYY-MM-DD') : '';
                 params.falstr = moment(params.fal).isValid() ? moment(params.fal).format('YYYY-MM-DD') : '';
 
-                jsReportSrvc.getPDFReport('B1y5mEE3xe', $scope.params).then(pdf => $scope.content = pdf);
+                jsReportSrvc.getPDFReport('B1y5mEE3xe', params).then(pdf => $scope.content = pdf);
             };
 
         }]);
