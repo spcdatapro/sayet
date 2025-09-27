@@ -71,15 +71,15 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="txtDel">Del:</label>
-                                <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params_auditoria.fdel"
-                                    placeholder="Del" />
+                                <input name="txtDel" id="txtDel" type="date" class="form-control"
+                                    ng-model="params_auditoria.fdel" placeholder="Del" />
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="txtAl">Al:</label>
-                                <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params_auditoria.fal"
-                                    placeholder="Al" />
+                                <input name="txtAl" id="txtAl" type="date" class="form-control"
+                                    ng-model="params_auditoria.fal" placeholder="Al" />
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -103,6 +103,9 @@
                 </div>
                 <div class="panel-footer text-right">
                     <button type="button" class="btn btn-danger" ng-click="getRptRecibosAuditoria(params_auditoria)">
+                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn btn-success" ng-click="getRptRecibosAuditoriaXml(params_auditoria)">
                         <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                     </button>
                 </div>

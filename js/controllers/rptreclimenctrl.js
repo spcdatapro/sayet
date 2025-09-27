@@ -47,5 +47,20 @@
                 jsReportSrvc.getPDFReport('B1y5mEE3xe', params).then(pdf => $scope.content = pdf);
             };
 
+            $scope.getRptRecibosAuditoriaXml = params => {
+                params.fdelstr = moment(params.fdel).isValid() ? moment(params.fdel).format('YYYY-MM-DD') : '';
+                params.falstr = moment(params.fal).isValid() ? moment(params.fal).format('YYYY-MM-DD') : '';
+                try {
+                    jsReportSrvc.getReport('B17FZ9Snge', params).then(function (result) {
+                        var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
+                        let rango = moment(params.del).format('DD-MM-YYYY') + '_' + moment(params.anio).format('DD-MM-YYYY');
+
+                        saveAs(file, 'Reporte_recibos_' + rango + '.xlsx');
+                    })
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+
         }]);
 }());

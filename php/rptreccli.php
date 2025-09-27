@@ -432,6 +432,7 @@ $app->post('/auditoria', function () {
                 f.simbolo AS moneda,
                 a.fecha AS fecharec,
                 g.facturas,
+                g.facturas_completo
                 GROUP_CONCAT(IF(e.tipotrans = 1,
                         'C',
                         IF(e.tipotrans = 2,
@@ -462,7 +463,8 @@ $app->post('/auditoria', function () {
                 (SELECT 
                     e.idrecibocli AS idrecibo,
                         IF(g.idproyecto = 0, d.idproyecto, g.idproyecto) AS idproyecto,
-                        IFNULL(IF(COUNT(g.id) > 3, CAST(CONCAT(COUNT(g.id), '-FC') AS CHAR), GROUP_CONCAT(g.numeroadmin)), 'SC') AS facturas
+                        IFNULL(IF(COUNT(g.id) > 3, CAST(CONCAT(COUNT(g.id), '-FC') AS CHAR), GROUP_CONCAT(g.numeroadmin)), 'SC') AS facturas,
+                        GROUP_CONCAT(g.numero) AS facturas_completo 
                 FROM
                     detcobroventa e
                 INNER JOIN factura g ON e.idfactura = g.id
