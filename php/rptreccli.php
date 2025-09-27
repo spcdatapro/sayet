@@ -432,7 +432,7 @@ $app->post('/auditoria', function () {
                 f.simbolo AS moneda,
                 a.fecha AS fecharec,
                 g.facturas,
-                g.facturas_completo
+                g.facturas_completo,
                 GROUP_CONCAT(IF(e.tipotrans = 1,
                         'C',
                         IF(e.tipotrans = 2,
