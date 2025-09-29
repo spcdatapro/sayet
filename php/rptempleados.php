@@ -620,7 +620,10 @@ $app->post('/prestamos', function(){
                 DATE_FORMAT(g.fecha, '%d/%m/%Y') AS fecha,
                 g.monto,
                 g.cuotamensual AS cuota,
-                g.saldo + f.monto AS saldoant,
+                IF(MONTH(g.fecha) = $d->mes 
+                    AND YEAR(g.fecha) = $d->anio, 
+                    0.00, 
+                    g.saldo + f.monto) AS saldoant,
                 IF(MONTH(g.fecha) = $d->mes
                         AND YEAR(g.fecha) = $d->anio,
                     g.monto,
