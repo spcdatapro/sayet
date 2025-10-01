@@ -368,7 +368,7 @@ $app->post('/balancesaldos', function () {
             $cuenta->mostrar = false;
         }
 
-        if ($cuenta->mostrar && (int)$cuenta->tipocuenta === 0) {
+        if ($cuenta->mostrar && (int)$cuenta->tipocuenta === 1 && strlen(trim($cuenta->codigo)) == 1) {
             $empresa->anterior += round($cuenta->anterior, 2);
             $empresa->debe += round($cuenta->debe, 2);
             $empresa->haber += round($cuenta->haber, 2);
