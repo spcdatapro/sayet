@@ -409,7 +409,7 @@ $app->post('/avanceotm', function(){
                 usuario g ON a.idusuarioanula = g.id
             WHERE
                 a.idpresupuesto = $d->idot
-                AND a.idestatuspresupuesto IN('$d->tipos')
+                AND a.idestatuspresupuesto IN($d->tipos)
             ORDER BY a.correlativo";
             $orden->ots = $db->getQuery($query);
 
