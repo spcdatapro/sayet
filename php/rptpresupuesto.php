@@ -411,7 +411,6 @@ $app->post('/avanceotm', function(){
                 a.idpresupuesto = $d->idot
                 AND a.idestatuspresupuesto IN('$d->tipos')
             ORDER BY a.correlativo";
-            echo $query; return;
             $orden->ots = $db->getQuery($query);
 
             $cntsOts = count($orden->ots);
