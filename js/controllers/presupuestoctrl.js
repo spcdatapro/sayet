@@ -227,9 +227,21 @@
 
         };
 
-        $scope.printPrespuestoNueD = function (idpresupuesto) {
-            var test = false;
-            jsReportSrvc.getPDFReport(test ? 'r1UD2qMnZ' : 'H1w6yuaWd', { idot: idpresupuesto }).then(function (pdf) { $window.open(pdf); });
+        $scope.printPrespuestoNueD = function (idpresupuesto, resumen = false, ver = 1) {
+            let tipos = '';
+            switch (ver) {
+                case 1:
+                    tipos = '1 , 2 , 3 , 4 , 5 , 6';
+                    break;
+                case 2:
+                    tipos = '3';
+                    break;
+                case 3: 
+                    tipos = '5';
+                    break;
+            }
+
+            jsReportSrvc.getPDFReport(resumen ? 'S183YxGZ_' : 'H1w6yuaWd', { idot: idpresupuesto, tipos: tipos }).then(function (pdf) { $window.open(pdf); });
         };
 
         $scope.printOt = async function (idot, esPresupuesto) {
@@ -758,18 +770,21 @@
         };
 
         $scope.mostrar = tipo => {
-            if (tipo == 1) {
-                // mostrar todas
-                $scope.ver = 1;
-                $scope.lstot = lstot_todas;
-            } else if (tipo == 2) {
-                // mostrar solo aprobadas
-                $scope.ver = 2;
-                $scope.lstot = lstot_todas.filter(function (o) { return +o.idestatuspresupuesto === 3; });
-            } else {
-                // mostrar solo terminadas
-                $scope.ver = 3;
-                $scope.lstot = lstot_todas.filter(function (o) { return +o.idestatuspresupuesto === 5; });
+            switch (+tipo) {
+                case 1:
+                    // mostrar todas
+                    $scope.ver = 1;
+                    $scope.lstot = lstot_todas;
+                    break;
+                case 2:
+                    // mostrar solo aprobadas
+                    $scope.ver = 2;
+                    $scope.lstot = lstot_todas.filter(function (o) { return +o.idestatuspresupuesto === 3; });
+                    break;
+                default:
+                    // mostrar solo terminadas
+                    $scope.ver = 3;
+                    $scope.lstot = lstot_todas.filter(function (o) { return +o.idestatuspresupuesto === 5; });
             }
         }
 

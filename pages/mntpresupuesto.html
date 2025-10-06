@@ -527,16 +527,25 @@
                                     </li>
                                     <li style="color: black; font-size: 120%;">
                                         <p style="float: left;"><b>Avance: </b>{{lbl.avance}}%</p>
-                                        <button ng-show="+presupuesto.tipo == 2" style="float: right;" type="button"
-                                            class="btn btn-primary btn-sm tipo" ng-click="printPrespuestoNueD(lbl.id)"
-                                            data-toggle="tooltip" data-placement="auto" title="Imprimir">
-                                            <span class="glyphicon glyphicon-print"></span>
-                                        </button>
-                                        <button ng-show="+presupuesto.tipo == 1" style="float: right;" type="button"
-                                            class="btn btn-primary btn-sm tipo" ng-click="printOtNue(lbl.id, true)"
-                                            data-toggle="tooltip" data-placement="auto" title="Imprimir">
-                                            <span class="glyphicon glyphicon-print"></span>
-                                        </button>
+                                        <div class="btn-group" style="float: right;">
+                                            <button ng-show="+presupuesto.tipo == 2" type="button"
+                                                class="btn btn-primary btn-sm tipo"
+                                                ng-click="printPrespuestoNueD(lbl.id, false, ver)" data-toggle="tooltip"
+                                                data-placement="auto" title="Imprimir detalle">
+                                                <span class="glyphicon glyphicon-print"></span> Imprimir Detalle
+                                            </button>
+                                            <button ng-show="+presupuesto.tipo == 1" style="float: right;" type="button"
+                                                class="btn btn-primary btn-sm tipo" ng-click="printOtNue(lbl.id, true)"
+                                                data-toggle="tooltip" data-placement="auto" title="Imprimir">
+                                                <span class="glyphicon glyphicon-print"></span>
+                                            </button>
+                                            <button ng-show="+presupuesto.tipo == 2" type="button"
+                                                class="btn btn-default btn-sm tipo"
+                                                ng-click="printPrespuestoNueD(lbl.id, true, ver)" data-toggle="tooltip"
+                                                data-placement="auto" title="Imprimir resumen">
+                                                <span class="glyphicon glyphicon-print"></span> Imprimir Resumen
+                                            </button>
+                                        </div>
                                     </li>
                                 </ul>
                             </div>
@@ -710,13 +719,16 @@
                                 <input name="srchTxt" id="srchTxt" type="text" class="form-control input-sm"
                                     style="width: 100%" ng-model="lookFor.$" placeholder="Buscar..." />
                                 <div class="input-group-btn">
-                                    <button ng-class="{'btn-success': ver === 1, 'btn-default': ver !== 1}" type="button" class="btn btn-sm" ng-click="mostrar(1)">
+                                    <button ng-class="{'btn-success': ver === 1, 'btn-default': ver !== 1}"
+                                        type="button" class="btn btn-sm" ng-click="mostrar(1)">
                                         <span>Todas</span>
                                     </button>
-                                    <button ng-class="{'btn-success': ver === 2, 'btn-default': ver !== 2}" type="button" class="btn btn-sm" ng-click="mostrar(2)">
+                                    <button ng-class="{'btn-success': ver === 2, 'btn-default': ver !== 2}"
+                                        type="button" class="btn btn-sm" ng-click="mostrar(2)">
                                         <span>Activas</span>
                                     </button>
-                                    <button ng-class="{'btn-success': ver === 3, 'btn-default': ver !== 3}" type="button" class="btn btn-sm" ng-click="mostrar(3)">                                    <span>Cerradas</span>
+                                    <button ng-class="{'btn-success': ver === 3, 'btn-default': ver !== 3}"
+                                        type="button" class="btn btn-sm" ng-click="mostrar(3)"> <span>Cerradas</span>
                                     </button>
                                 </div>
                             </div>
