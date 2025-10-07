@@ -88,7 +88,6 @@ $app->post('/mensual', function(){
     $query.= "GROUP BY a.id ";
     $query.= $d->tipo == 1 ? "ORDER BY a.fecha ASC, " : "ORDER BY h.nomproyecto ASC, ";
     $query.= "a.serie ASC, b.seriea ASC, b.serieb ASC";
-    echo $query; return;
     $data = $db->getQuery($query);
 
     foreach($data AS $rec) {
