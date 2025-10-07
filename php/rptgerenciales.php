@@ -747,7 +747,7 @@ $app->post('/control_ingresos', function () {
                                 h.retiva,
                                 h.retivacnv)),
                             2) AS iva,
-                     IF(a.beneficiario LIKE '%REINGRESO%', a.monto*-1, ROUND(SUM(IF(b.idmoneda = 1, h.total, h.totalcnv)) - IFNULL(e.monto, a.monto),
+                     IF(a.beneficiario LIKE '%REINGRESO%', a.monto*-1, ROUND(SUM(IFNULL(IF(b.idmoneda = 1, h.total, h.totalcnv), 0.00)) - IFNULL(e.monto, a.monto),
                             2)) AS diferencia,
                     c.simbolo AS moneda,
                     IF($d->ingreso = 1, true, false) AS numero,
@@ -902,6 +902,126 @@ $app->post('/control_ingresos', function () {
     }
 
     return print json_encode([ 'encabezado' => $letra, 'trans' => $transacciones, 'succes' => $success ]);
+});
+
+$app->post('/ocupacion', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    date_default_timezone_set("America/Guatemala");
+
+    $d->mes_del = (int)$d->mes_del + 1;
+    $d->mes_al = (int)$d->mes_al + 1;
+
+    // array de nombre de meses
+    $meses_nombre = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+
+    // Traer datos para todo el rango de años y meses solicitado
+    $query = "SELECT 
+                a.nomproyecto AS proyecto,
+                a.metros_rentable AS mdisponibles,
+                b.id AS idunidad,
+                ROUND(b.mcuad, 2) AS medida,
+                ROUND(b.mcuad * 100 / a.metros_rentable, 2) AS porcentaje,
+                IF(d.id > 0, 1, 0) AS ocupado,
+                IFNULL(MONTH(d.fecha), 0) AS mes,
+                IFNULL(YEAR(d.fecha), 0) AS anio,
+                ROUND(SUM(IF(d.idmonedafact = 1,
+                            d.total,
+                            d.total * d.tipocambio)),
+                        2) AS total
+            FROM
+                proyecto a
+                    INNER JOIN
+                unidad b ON a.id = b.idproyecto
+                    LEFT JOIN
+                contrato c ON b.id = c.idunidad AND c.inactivo = 0
+                    LEFT JOIN
+                factura d ON c.id = d.idcontrato
+                    AND MONTH(d.fecha) >= $d->mes_del
+                    AND MONTH(d.fecha) <= $d->mes_al
+                    AND YEAR(d.fecha) BETWEEN $d->anio_del AND $d->anio_al
+            WHERE
+                a.id = $d->idproyecto AND b.idtipolocal NOT IN (9, 17)
+            GROUP BY b.id, YEAR(d.fecha), MONTH(d.fecha)
+            ORDER BY YEAR(d.fecha), MONTH(d.fecha), b.id";
+    $data = $db->getQuery($query);
+
+    // Guardar copia para encabezado (si hay datos)
+    $orig = $data;
+
+    $result = [];
+
+    // número de meses en el rango (para promedios por año)
+    $num_months_range = ($d->mes_al - $d->mes_del) + 1;
+    $num_months_range = $num_months_range > 0 ? $num_months_range : 1;
+
+    // Agrupar por año y por mes dentro de cada año
+    for ($y = $d->anio_del; $y <= $d->anio_al; $y++) {
+        $yearObj = new stdClass();
+        $yearObj->anio = $y;
+        $yearObj->meses = [];
+
+        // acumuladores por año para calcular promedios
+        $sum_porcentaje_anual = 0;
+        $sum_total_anual = 0;
+        $sum_metros_anual = 0;
+
+        for ($m = $d->mes_del; $m <= $d->mes_al; $m++) {
+            $data_mes = new StdClass();
+            $data_mes->mes = $meses_nombre[$m - 1];
+            $procentaje = [];
+            $metros = [];
+            $data_mes->total = 0;
+
+            // recorrer datos y extraer los que correspondan a este mes y año
+            for ($j = 0; $j < count($data); $j++) {
+                $unidad = $data[$j];
+                if ((int)$unidad->mes == $m && (int)$unidad->anio == $y) {
+                    array_push($procentaje, (float)$unidad->porcentaje);
+                    array_push($metros, (float)$unidad->medida);
+                    $data_mes->total += (float)$unidad->total;
+                    // eliminar la entrada ya procesada para mejorar performance
+                    array_splice($data, $j, 1);
+                    $j--;
+                }
+            }
+
+            $data_mes->porcentaje_ocupado = round(array_sum($procentaje), 2);
+            $data_mes->metros_ocupados = round(array_sum($metros), 2);
+            $data_mes->porcentaje_vacante = round(100 - $data_mes->porcentaje_ocupado, 2);
+            $data_mes->total = round($data_mes->total, 2);
+            $data_mes->unidades_ocupadas = count($procentaje);
+
+            // acumular para promedios anuales
+            $sum_porcentaje_anual += $data_mes->porcentaje_ocupado;
+            $sum_total_anual += $data_mes->total;
+            $sum_metros_anual += $data_mes->metros_ocupados;
+
+            array_push($yearObj->meses, $data_mes);
+        }
+
+        // calcular promedios por año (promedio sobre todos los meses del rango)
+        $yearObj->promedio_porcentaje_ocupado = round($sum_porcentaje_anual / $num_months_range, 2);
+        $yearObj->promedio_total = round($sum_total_anual / $num_months_range, 2);
+        $yearObj->promedio_metros_ocupados = round($sum_metros_anual / $num_months_range, 2);
+
+        array_push($result, $yearObj);
+    }
+
+    // Rellenar encabezado con información del proyecto si hay datos originales
+    if (count($orig) > 0) {
+        $letra->proyecto = $orig[0]->proyecto;
+        $letra->metros = round($orig[0]->mdisponibles, 2);
+    } else {
+        $letra->proyecto = $db->getOneField("SELECT nomproyecto FROM proyecto WHERE id = $d->idproyecto");
+        $letra->metros = 0;
+    }
+
+    print json_encode([ 'encabezado' => $letra, 'anios' => $result ]);
 });
 
 function restarDiasHabiles($fecha) {
