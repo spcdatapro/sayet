@@ -103,7 +103,7 @@
 
             // reinicar visualizacion
             function resetVer() {
-                $scope.ver = { resumen: false };
+                $scope.ver = false;
                 $scope.content = `${window.location.origin}/sayet/blank.html`;
             }
         }])
