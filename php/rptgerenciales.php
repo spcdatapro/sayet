@@ -747,7 +747,7 @@ $app->post('/control_ingresos', function () {
                                 h.retiva,
                                 h.retivacnv)),
                             2) AS iva,
-                     IF(a.beneficiario LIKE '%REINGRESO%', a.monto*-1, ROUND(SUM(IFNULL(IF(b.idmoneda = 1, h.total, h.totalcnv), 0.00)) - IFNULL(e.monto, a.monto),
+                    IF(a.beneficiario LIKE '%REINGRESO%', a.monto*-1, ROUND(SUM(IFNULL(IF(b.idmoneda = 1, h.total, h.totalcnv), 0.00)) - IFNULL(e.monto, a.monto),
                             2)) AS diferencia,
                     c.simbolo AS moneda,
                     IF($d->ingreso = 1, true, false) AS numero,

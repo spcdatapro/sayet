@@ -1,0 +1,190 @@
+<style>
+    .amarillo {
+        background-color: lightgoldenrodyellow;
+        text-align: center;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .celeste {
+        background-color: rgb(217, 231, 248);
+        border-radius: 5px;
+    }
+
+    .gris {
+        background-color: #E8E8E8;
+        border-radius: 5px;
+    }
+
+    .blanco {
+        background-color: white;
+    }
+
+    .redondeado {
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        padding: 10px;
+    }
+</style>
+<div class="container" ng-controller="rptOcupacion">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">Repote de ocupaci&oacute;n</div>
+            <div class="panel-body">
+                <form name="paramsRep" id="paramsRep" novalidate>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <label class="control-label">Empresa:</label>
+                                <ui-select ng-model="params.idempresa" title="Seleccione una empresa..."
+                                    theme="bootstrap" autofocus="false" ng-change="getProyectos(params.idempresa)"
+                                    required>
+                                    <ui-select-match placeholder="Buscar empresa..." allow-clear="false">
+                                        <span ng-bind="($select.selected.nomempresa)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+                                        <div ng-bind-html="(item.nomempresa) | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <label class="control-label">Proyecto:</label>
+                                <ui-select ng-model="params.idproyecto" title="Seleccione un proyecto..."
+                                    theme="bootstrap" autofocus="true" required>
+                                    <ui-select-match placeholder="Buscar proyecto..." allow-clear="false">
+                                        <span ng-bind="($select.selected.nomproyecto)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in proyectos | filter:$select.search">
+                                        <div ng-bind-html="(item.nomproyecto) | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <label for="numAnio" class="control-label">A&ntilde;o del:</label>
+                                <input name="numAnio" id="numAnio" type="number" class="form-control"
+                                    ng-model="params.anio_del" ng-max="params.anio_al" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <label for="numAnio" class="control-label">A&ntilde;o al:</label>
+                                <input name="numAnio" id="numAnio" type="number" class="form-control"
+                                    ng-model="params.anio_al" ng-min="params.anio_del" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <label for="selDel" class="control-label">Mes del:</label>
+                                <select name="selDel" id="selDel" class="form-control" ng-model="params.mes_del"
+                                    required>
+                                    <option value="0">Enero</option>
+                                    <option value="1">Febrero</option>
+                                    <option value="2">Marzo</option>
+                                    <option value="3">Abril</option>
+                                    <option value="4">Mayo</option>
+                                    <option value="5">Junio</option>
+                                    <option value="6">Julio</option>
+                                    <option value="7">Agosto</option>
+                                    <option value="8">Septiembre</option>
+                                    <option value="9">Octubre</option>
+                                    <option value="10">Noviembre</option>
+                                    <option value="11">Diciembre</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group required">
+                                <label for="selAl" class="control-label">Mes al:</label>
+                                <select name="selAl" id="selAl" class="form-control" ng-model="params.mes_al" required>
+                                    <option value="0">Enero</option>
+                                    <option value="1">Febrero</option>
+                                    <option value="2">Marzo</option>
+                                    <option value="3">Abril</option>
+                                    <option value="4">Mayo</option>
+                                    <option value="5">Junio</option>
+                                    <option value="6">Julio</option>
+                                    <option value="7">Agosto</option>
+                                    <option value="8">Septiembre</option>
+                                    <option value="9">Octubre</option>
+                                    <option value="10">Noviembre</option>
+                                    <option value="11">Diciembre</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="panel-footer text-right">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-danger" ng-click="getPDF(params)"
+                        ng-disabled="paramsRep.$invalid || cargando">
+                        <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="btn btn-success" ng-click="getXML(params)"
+                        ng-disabled="paramsRep.$invalid || cargando">
+                        <span class="fa fa-file-excel-o" aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-click="getResumen(params)"
+                        ng-disabled="paramsRep.$invalid || cargando">
+                        <i class="fi fi-tr-file-download"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </hr>
+    <div class="row" ng-show="cargando">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                <span class="label label-primary">Generando reporte, por favor espere...</span>
+                <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
+            </div>
+        </div>
+    </div>
+    <div id="tblResumen" ng-show="ver" class="table-responsive">
+        <table class="table table-responsive table-hover">
+            <caption style="text-align: center; " class="amarillo">
+                <h3 style="color: black;">Reporte de ocupaci&oacute;n</h3>
+                <h4 style="color: black;">{{encabezado.proyecto}}</h4>
+                <h5 style="color: black;">{{encabezado.metros | number: 2}}m<sup>2</sup></h5>
+            </caption>
+            <tbody ng-repeat="anio in anios">
+                <tr ng-click="anio.detalle = !anio.detalle" class="celeste">
+                    <th colspan="{{anio.meses.length / 4 + 1}}">{{anio.anio}}</th>
+                    <th colspan="{{anio.meses.length / 4}}">Promedio metros: {{anio.promedio_metros_ocupados | number: 2}}m<sup>2</sup></th>
+                    <th colspan="{{anio.meses.length / 4}}">Promedio porcentaje: {{anio.promedio_porcentaje_ocupado | number: 2}}%</th>
+                    <th colspan="{{anio.meses.length / 4}}">Promedio monto: Q.{{anio.promedio_total | number: 2}}</th>
+                </tr>
+                <tr ng-show="anio.detalle">
+                    <th>&nbsp;</th>
+                    <th ng-repeat="mes in anio.meses">{{mes.mes}}</th>
+                </tr>
+                <tr ng-show="anio.detalle">
+                    <th>Metros</th>
+                    <td ng-repeat="mes in anio.meses">{{mes.metros_ocupados | number: 2}}m<sup>2</sup></td>
+                </tr>
+                <tr ng-show="anio.detalle">
+                    <th>Porcentaje</th>
+                    <td ng-repeat="mes in anio.meses">{{mes.porcentaje_ocupado | number: 2}}%</td>
+                </tr>
+                <tr ng-show="anio.detalle">
+                    <th>Monto</th>
+                    <td ng-repeat="mes in anio.meses">Q.{{mes.total | number: 2}}</td>
+                </tr>
+                <tr>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <rpt-viewer contenido="content"></rpt-viewer>
+</div>

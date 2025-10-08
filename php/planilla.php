@@ -281,4 +281,24 @@ $app->post('/premios', function () {
     print json_encode($pendientes);
 });
 
+$app->get('/historial_vacaciones/:idempleado/:anio', function ($idempleado, $anio) {
+    $db = new dbcpm;
+
+    $query = "SELECT id, fechainicio, fechafin, dias, observaciones, anio 
+                FROM plnvacaciones WHERE idplnempleado = $idempleado AND anio = $anio";
+    $historial = $db->getQuery($query);
+
+    return print json_encode($historial);
+});
+
+$app->get('/detalle_vacacion/:id', function ($id) {
+    $db = new dbcpm;
+
+    $query = "SELECT id, idplnempleado AS idempleado, fechainicio, fechafin, dias, observaciones, anio 
+                FROM plnvacaciones WHERE id = $id";
+    $detalle = $db->getQuery($query)[0];
+
+    return print json_encode($detalle);
+});
+
 $app->run();

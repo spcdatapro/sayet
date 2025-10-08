@@ -1,0 +1,141 @@
+<style>
+    .amarillo {
+        background-color: #F7EB89;
+        text-align: center;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .celeste {
+        background-color: #B4E2E8;
+        border-radius: 5px;
+    }
+
+    .gris {
+        background-color: #E8E8E8;
+        border-radius: 5px;
+    }
+
+    .blanco {
+        background-color: white;
+    }
+</style>
+<div class="container" ng-controller="vacacionesCtrl">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">Vacaciones</div>
+            <div class="panel-body">
+                <form name="paramsVacaciones" id="paramsVacaciones" novalidate>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group required">
+                                <label class="control-label">Empleado:</label>
+                                <ui-select ng-model="vacaciones.idempleado" title="Seleccione un empleado..."
+                                    theme="bootstrap" autofocus="false" ng-change="getHistorial(vacaciones.idempleado, $selected.selected.ingreso)"
+                                    required>
+                                    <ui-select-match placeholder="Buscar empleado..." allow-clear="false">
+                                        <span ng-bind="($select.selected.nombre)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in empleados | filter:$select.search">
+                                        <div ng-bind-html="(item.nombre) | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group required">
+                                <label class="control-label">A&ntilde;o:</label>
+                                <input type="number" ng-model="vacaciones.anio" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group required">
+                                <label class="control-label">D&iacute;as restantes:</label>
+                                <input type="number" ng-model="dias_restantes" class="form-control" ng-disabled="true">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Fecha inicia:</label>
+                                <input type="date" class="form-control" ng-model="vacaciones.fechainicio">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Fecha fin:</label>
+                                <input type="date" class="form-control" ng-model="vacaciones.fechafin">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">D&iacute;as a gozar:</label>
+                                <input type="number" ng-model="vacaciones.dias" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label">Observaciones:</label>
+                                <textarea rows="4" ng-model="vacaciones.observaciones" class="form-control"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="panel-footer text-right">
+                <div class="btn-group">
+                    <!-- <button type="button" class="btn btn-danger" ng-click="getPDF(params)"
+                        ng-disabled="paramsRep.$invalid || cargando">
+                        <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="btn btn-success" ng-click="getXML(params)"
+                        ng-disabled="paramsRep.$invalid || cargando">
+                        <span class="fa fa-file-excel-o" aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-click="getResumen(params)"
+                        ng-disabled="paramsRep.$invalid || cargando">
+                        <span class="glyphicon glyphicon-eye-open"></span>
+                    </button> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    </hr>
+    <div class="row" ng-show="cargando">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                <span class="label label-primary">Generando reporte, por favor espere...</span>
+                <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
+            </div>
+        </div>
+    </div>
+    <div id="tblResumen">
+        <table class="table table-responsive table-hover" ng-show="historial.length > 0">
+            <caption><h4 style="color: black; text-align: center;">HISTORIAL DE VACACIONES {{empleado}}</h4></caption>
+            <thead>
+                <tr>
+                    <th>A&ntilde;o</th>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Fin</th>
+                    <th>D&iacute;as</th>
+                    <th>Observaciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="h in historial" ng-click="getDetalle(h.id)">
+                    <td>{{h.anio}}</td>
+                    <td>{{h.fechainicio | date:'dd/MM/yyyy'}}</td>
+                    <td>{{h.fechafin | date: 'dd/MM/yyyy'}}</td>
+                    <td>{{h.dias}}</td>
+                    <td>{{h.observaciones}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <h4 style="color: black; text-align: center;" ng-show="historial.length == 0 && vacaciones.idempleado > 0">SIN HISOTRAL EN {{vacaciones.anio}} PARA {{empleado}}</h4>
+    </div>
+</div>
