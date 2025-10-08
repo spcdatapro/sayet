@@ -594,7 +594,7 @@ $app->post('/rptcompisr', function(){
 
     $query = "SELECT TRIM(nomempresa) AS empresa, abreviatura AS abreviaempre, DATE_FORMAT('$d->fdelstr', '%d/%m/%Y') AS fdel, DATE_FORMAT('$d->falstr', '%d/%m/%Y') AS fal, ";
     $query.= "DATE_FORMAT(NOW(), '%d/%m/%Y') AS hoy, 0.00 AS totisr, 0.00 AS totfact, 0.00 AS totiva, 0.00 AS totbase, FORMAT($d->isrempleados, 2) AS isrempleados, 0.00 AS isrpagar, ";
-	$query.= "FORMAT($d->isrcapital, 2) AS isrcapital ";
+    $query.= "FORMAT($d->isrcapital, 2) AS isrcapital ";
     $query.= "FROM empresa WHERE id = $d->idempresa";
     //print $query;
     $info->general = $db->getQuery($query)[0];
@@ -629,6 +629,13 @@ $app->post('/rptcompisr', function(){
     $query.= $where;
     $query.= "ORDER BY 13, 3, 6";
     $info->facturas = $db->getQuery($query);
+
+    // Agregar correlativo a cada línea comenzando en 1
+    if(is_array($info->facturas)){
+        for($i = 0; $i < count($info->facturas); $i++){
+            $info->facturas[$i]->correlativo = $i + 1;
+        }
+    }
 
     $query = "SELECT SUM(isrlocal) AS totisrlocal, FORMAT(SUM(totfactlocal), 2) AS totfactlocal, FORMAT(SUM(montobase), 2) AS montobase, ";
     $query.= "FORMAT(SUM(totiva), 2) AS totiva ";
@@ -1096,6 +1103,13 @@ $app->post('/rptiva', function() {
                     AND a.idtipofactura < 9 ";
     $query.= $d->cuales == 0 ? 'ORDER BY 1, 7' : ($d->cuales == 1 ? 'AND c.idformiva > 0 ORDER BY 2' : 'AND c.idformiva IS NULL ORDER BY 2');
     $compra = $db->getQuery($query);
+
+    // Agregar correlativo a cada línea comenzando en 1
+    if (is_array($compra)) {
+        for ($i = 0; $i < count($compra); $i++) {
+            $compra[$i]->correlativo = $i + 1;
+        }
+    }
 
     print json_encode([ 'encabezado' => $letra, 'cuerpo' => $compra ]);
 });
