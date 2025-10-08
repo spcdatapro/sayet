@@ -1023,6 +1023,8 @@ $app->post('/ocupacion', function() {
         $letra->metros = 0;
     }
 
+    $letra->columnas = contarMeses($d->mes_del, $d->mes_al) + 1;
+
     print json_encode([ 'encabezado' => $letra, 'anios' => $result ]);
 });
 
