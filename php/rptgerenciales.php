@@ -1008,6 +1008,7 @@ $app->post('/ocupacion', function() {
         $yearObj->promedio_porcentaje_ocupado = round($sum_porcentaje_anual / $num_months_range, 2);
         $yearObj->promedio_total = round($sum_total_anual / $num_months_range, 2);
         $yearObj->promedio_metros_ocupados = round($sum_metros_anual / $num_months_range, 2);
+        $yearObj->columnas = contarMeses($d->mes_del, $d->mes_al);
 
         array_push($result, $yearObj);
     }
