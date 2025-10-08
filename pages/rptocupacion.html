@@ -160,10 +160,7 @@
             </caption>
             <tbody ng-repeat="anio in anios">
                 <tr ng-click="anio.detalle = !anio.detalle" class="celeste">
-                    <th colspan="{{anio.meses.length / 4 + 1}}">{{anio.anio}}</th>
-                    <th colspan="{{anio.meses.length / 4}}">Promedio metros: {{anio.promedio_metros_ocupados | number: 2}}m<sup>2</sup></th>
-                    <th colspan="{{anio.meses.length / 4}}">Promedio porcentaje: {{anio.promedio_porcentaje_ocupado | number: 2}}%</th>
-                    <th colspan="{{anio.meses.length / 4}}">Promedio monto: Q.{{anio.promedio_total | number: 2}}</th>
+                    <th colspan="{{anio.columnas}}">{{anio.anio}}</th>
                 </tr>
                 <tr ng-show="anio.detalle">
                     <th>&nbsp;</th>
@@ -182,6 +179,10 @@
                     <td ng-repeat="mes in anio.meses">Q.{{mes.total | number: 2}}</td>
                 </tr>
                 <tr>
+                    <th colspan="{{anio.columna_tres + 1}}">Promedios</th>
+                    <th colspan="{{anio.columna_tres}}">{{anio.promedio_metros_ocupados | number: 2}}m<sup>2</sup></th>
+                    <th colspan="{{anio.columna_tres}}">{{anio.promedio_porcentaje_ocupado | number: 2}}%</th>
+                    <th colspan="{{anio.columna_tres}}">Q.{{anio.promedio_total | number: 2}}</th>
                 </tr>
             </tbody>
         </table>
