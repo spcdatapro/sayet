@@ -431,6 +431,7 @@ $app->post('/auditoria', function () {
                 f.simbolo AS moneda,
                 a.fecha AS fecharec,
                 g.facturas,
+                g.serieadmin,
                 g.facturas_completo,
                 GROUP_CONCAT(IF(e.tipotrans = 1,
                         'C',
@@ -461,7 +462,7 @@ $app->post('/auditoria', function () {
                     LEFT JOIN
                 (SELECT 
                     e.idrecibocli AS idrecibo,
-                        IF(g.idproyecto = 0, d.idproyecto, g.idproyecto) AS idproyecto,
+                        IF(g.idproyecto = 0, d.idproyecto, g.idproyecto) AS idproyecto, g.serieadmin,
                         IFNULL(IF(COUNT(g.id) > 3, CAST(CONCAT(COUNT(g.id), '-FC') AS CHAR), GROUP_CONCAT(g.numeroadmin)), 'SC') AS facturas,
                         GROUP_CONCAT(g.numero) AS facturas_completo 
                 FROM

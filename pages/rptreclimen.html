@@ -105,9 +105,18 @@
                     <button type="button" class="btn btn-danger" ng-click="getRptRecibosAuditoria(params_auditoria)">
                         <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                     </button>
-                    <button type="button" class="btn btn-success" ng-click="getRptRecibosAuditoriaXml(params_auditoria)">
+                    <button type="button" class="btn btn-success"
+                        ng-click="getRptRecibosAuditoriaXml(params_auditoria)">
                         <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                     </button>
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-show="cargando">
+            <div class="col-md-6 col-md-offset-3">
+                <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                    <span class="label label-primary">Generando reporte, por favor espere...</span>
+                    <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
                 </div>
             </div>
         </div>
