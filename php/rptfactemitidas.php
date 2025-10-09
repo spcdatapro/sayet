@@ -61,6 +61,7 @@ $app->post('/factemitidas', function(){
     $qGen.= isset($d->idunidad) ? "AND e.idunidad = $d->idunidad " : '';
     $qGen.= (int)$d->idtsventa > 0 ? "AND (SELECT COUNT(idfactura) FROM detfact WHERE idfactura = a.id AND idtiposervicio = $d->idtsventa) > 0 " : '';
     $qGen.= (int)$d->soloanuladas == 0 ? '' : 'AND a.anulada = 1 ';
+    $qGen.= isset($d->idmoneda) ? "AND a.idmonedafact = $d->idmoneda " : '';
     $qGen.= "ORDER BY a.serieadmin, a.numeroadmin, a.serie, a.numero";
 
     $query = "SELECT DISTINCT z.idempresa, z.empresa, 0.00 AS totfacturado, 0.00 AS totfacturadocnv FROM ($qGen) z ORDER BY z.ordensumario";
