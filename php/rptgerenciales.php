@@ -848,6 +848,7 @@ $app->post('/control_ingresos', function () {
                     INNER JOIN tranban d ON c.idtranban = d.id WHERE a.id IN($actual->idfactura) AND d.fecha != '$d->fechastr'";
                     $pend =  $db->getOneField($query);
                     $actual->diferencia = $pend > 0 ? $actual->diferencia - $pend : $actual->diferencia;
+                    $actual->ingreso = $pend > 0 ? $actual->ingreso - $pend : $actual->ingreso;
                 
                     if ($actual->idfactura === $proximo->idfactura) {
                         $proximo->diferencia = $actual->ingreso - $actual->deposito - $actual->isr - $actual->iva - $proximo->deposito;
