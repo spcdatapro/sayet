@@ -68,7 +68,7 @@ $app->post('/validar_factura', function(){
     $db = new dbcpm();
 
     $fechaObj = new DateTime($d->fecha);
-    $fechaObj->modify('+1 month');
+    $fechaObj->modify('+2 month');
     $fechaMasUno = $fechaObj->format('Y-m-d');
 
     $query = "SELECT COUNT(id) AS abiertos FROM periodoiva WHERE abierto = 1 AND ('$d->fecha' >= del OR '$fechaMasUno' >= del) AND ('$d->fecha' <= al OR '$fechaMasUno' <= al)";
