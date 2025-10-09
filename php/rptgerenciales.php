@@ -847,8 +847,8 @@ $app->post('/control_ingresos', function () {
                     $query = "SELECT SUM(DISTINCT c.monto) AS monto FROM factura a INNER JOIN detcobroventa b ON b.idfactura = a.id INNER JOIN reclitran c ON b.idrecibocli = c.idrecibocli 
                     INNER JOIN tranban d ON c.idtranban = d.id WHERE a.id IN($actual->idfactura) AND d.fecha != '$d->fechastr'";
                     $pend =  $db->getOneField($query);
-                    $actual->diferencia = $pend > 0 ? $actual->diferencia - $pend : $actual->diferencia;
                     $actual->ingreso = $pend > 0 ? $actual->ingreso - $pend : $actual->ingreso;
+                    $actual->diferencia = $pend > 0 ? $actual->diferencia - $pend : $actual->diferencia;
                 
                     if ($actual->idfactura === $proximo->idfactura) {
                         $proximo->diferencia = $actual->ingreso - $actual->deposito - $actual->isr - $actual->iva - $proximo->deposito;
