@@ -757,7 +757,8 @@ $app->post('/control_ingresos', function () {
                                     d.iva / d.tc_fact,
                                     d.iva),
                                 0),
-                        2) AS diferencia
+                        2) AS diferencia,
+                e.simbolo AS moneda
             FROM
                 tranban a
                     INNER JOIN
@@ -771,8 +772,7 @@ $app->post('/control_ingresos', function () {
                         SUM(IF(b.pagada = 1, a.monto + b.retisr + b.retiva, b.subtotal)) AS ingreso,
                         SUM(b.retisr) AS isr,
                         SUM(b.retiva) AS iva,
-                        b.tipocambio AS tc_fact,
-                e.simbolo AS moneda
+                        b.tipocambio AS tc_fact
                 FROM
                     detcobroventa a
                 INNER JOIN factura b ON a.idfactura = b.id
