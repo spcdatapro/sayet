@@ -771,7 +771,8 @@ $app->post('/control_ingresos', function () {
                         SUM(IF(b.pagada = 1, a.monto + b.retisr + b.retiva, b.subtotal)) AS ingreso,
                         SUM(b.retisr) AS isr,
                         SUM(b.retiva) AS iva,
-                        b.tipocambio AS tc_fact
+                        b.tipocambio AS tc_fact,
+                e.simbolo AS moneda
                 FROM
                     detcobroventa a
                 INNER JOIN factura b ON a.idfactura = b.id
