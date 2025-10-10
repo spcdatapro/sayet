@@ -724,7 +724,7 @@ $app->post('/control_ingresos', function () {
                 e.simbolo AS abreviatura,
                 b.idempresa AS idproyecto,
                 f.abreviatura AS proyecto,
-                b.siglas AS banco,
+                b.siglas,
                 IF(a.numban = 0 OR a.numban IS NULL,
                     a.numero,
                     a.numban) AS tranban,
