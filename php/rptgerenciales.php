@@ -707,75 +707,175 @@ $app->post('/control_ingresos', function () {
     $letra->tc = $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio WHERE fecha = '$d->fechastr' LIMIT 1");
     $letra->tc = $letra->tc > 0 ? $letra->tc : $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio ORDER BY fecha DESC LIMIT 1"); 
 
+    // No. de caja, son es el dia que se esta obteniendo menos los fines de semana
+    $letra->caja = restarDiasHabiles($fecha);
+    $letra->caja = str_pad($letra->caja, 2, '0', STR_PAD_LEFT);
+
+    // tipo 
+    $letra->tipo = $d->tipo == 1 ? 'por Empresa' : 'Personal';
+    $d->tipo = $d->tipo == 1 ? '1 , 4' : '2, 3';
+
+    $query = "SELECT 
+                c.idrecibocli,
+                a.id,
+                b.idmoneda AS idempresa,
+                CONCAT(e.nommoneda, ' ', e.simbolo) AS empresa,
+                NULL AS numero,
+                e.simbolo AS abreviatura,
+                b.idempresa AS idproyecto,
+                f.abreviatura AS proyecto,
+                b.siglas AS banco,
+                IF(a.numban = 0 OR a.numban IS NULL,
+                    a.numero,
+                    a.numban) AS tranban,
+                IFNULL(d.factura, 'SC') AS factura,
+                ROUND(IFNULL(IF(b.idmoneda = 2,
+                                    d.ingreso / d.tc_fact,
+                                    d.ingreso),
+                                0),
+                        2) AS ingreso,
+                a.monto AS deposito,
+                ROUND(IFNULL(IF(b.idmoneda = 2,
+                                    d.isr / d.tc_fact,
+                                    d.isr),
+                                0),
+                        2) AS isr,
+                ROUND(IFNULL(IF(b.idmoneda = 2,
+                                    d.iva / d.tc_fact,
+                                    d.iva),
+                                0),
+                        2) AS iva,
+                ROUND(IFNULL(IF(b.idmoneda = 2,
+                                    d.ingreso / d.tc_fact,
+                                    d.ingreso),
+                                0),
+                        2) - a.monto - ROUND(IFNULL(IF(b.idmoneda = 2,
+                                    d.isr / d.tc_fact,
+                                    d.isr),
+                                0),
+                        2) - ROUND(IFNULL(IF(b.idmoneda = 2,
+                                    d.iva / d.tc_fact,
+                                    d.iva),
+                                0),
+                        2) AS diferencia
+            FROM
+                tranban a
+                    INNER JOIN
+                banco b ON a.idbanco = b.id
+                    LEFT JOIN
+                reclitran c ON c.idtranban = a.id
+                    LEFT JOIN
+                (SELECT 
+                    a.idrecibocli,
+                        IF(COUNT(b.id) > 3, CAST(CONCAT(COUNT(b.id), '-FC') AS CHAR), GROUP_CONCAT(b.numeroadmin)) AS factura,
+                        SUM(IF(b.pagada = 1, a.monto + b.retisr + b.retiva, b.subtotal)) AS ingreso,
+                        SUM(b.retisr) AS isr,
+                        SUM(b.retiva) AS iva,
+                        b.tipocambio AS tc_fact
+                FROM
+                    detcobroventa a
+                INNER JOIN factura b ON a.idfactura = b.id
+                GROUP BY a.idrecibocli
+                ORDER BY b.fecha) d ON d.idrecibocli = c.idrecibocli
+                    INNER JOIN
+                moneda e ON b.idmoneda = e.id
+                    INNER JOIN
+                empresa f ON b.idempresa = f.id
+                    INNER JOIN
+                tipomovtranban g ON a.tipotrans = g.abreviatura
+            WHERE
+                a.fecha = '$d->fechastr'
+                    AND a.tipotrans IN ('R' , 'D')
+                    AND b.gruposumario IN ($d->tipo)
+            GROUP BY a.id
+            ORDER BY b.idmoneda , b.ordensumario , g.ordenalt";
+    $data = $db->getQuery($query);
+
+    if (count($data) > 0) {
+        // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
+        $reporte = new GeneradorReportes($data, 'transacciones', $totales, true);
+        $transacciones = $reporte->getReporte();
+        $montos_generales = $reporte->getTotalesGenerales();
+        $success = true;
+    } else {
+        $transacciones = 'No se recibieron datos';
+        $success = false;
+    }
+
+    if ($success) {
+        foreach($transacciones as $t) {
+            if ($t->abreviatura === 'Q') {
+                array_push($ingreso, $t->ingreso);
+                array_push($deposito, $t->deposito);
+                array_push($isr, $t->isr);
+                array_push($iva, $t->iva);
+                array_push($diferencia, $t->diferencia);
+            } else {
+                $ingreso_q = round($t->ingreso * $letra->tc, 2);
+                array_push($ingreso, $ingreso_q);
+                $deposito_q = round($t->deposito * $letra->tc, 2);
+                array_push($deposito, $deposito_q);
+                $isr_q = round($t->isr * $letra->tc, 2);
+                array_push($isr, $isr_q);
+                $iva_q = round($t->iva * $letra->tc, 2);
+                array_push($iva, $iva_q);
+                $diferencia_q = round($t->diferencia * $letra->tc, 2);
+                array_push($diferencia, $diferencia_q);
+            }
+        }
+    
+        $letra->ingreso = array_sum($ingreso);
+        $letra->deposito = array_sum($deposito);
+        $letra->isr = array_sum($isr);
+        $letra->iva = array_sum($iva);
+        $letra->diferencia = array_sum($diferencia);
+    }
+
+    return print json_encode([ 'encabezado' => $letra, 'trans' => $transacciones, 'succes' => $success ]);
+});
+
+$app->post('/control_egresos', function () {
+    date_default_timezone_set("America/Guatemala");
+
+    $db = new dbcpm;
+    $d = json_decode(file_get_contents('php://input'));
+    $n2l = new NumberToLetterConverter();
+
+    $meses = array("enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre");
+    $totales = ['ingreso', 'deposito', 'isr', 'iva', 'diferencia'];
+    $ingreso = [];
+    $deposito = [];
+    $isr = [];
+    $iva = [];
+    $diferencia = [];
+    $t_proveedor = [];
+
+    // estampa
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+
+    // fecha
+    $fecha = new DateTime($d->fechastr);
+    $letra->fecha = '';
+    $letra->fecha = 'Guatemala ' . $fecha->format('d') . ' de ' . $meses[$fecha->format('n') - 1] . ' ' . $fecha->format('Y');
+
+    // usuario
+    $letra->usuario = $d->usuario;
+
+    // tc
+    $letra->tc = $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio WHERE fecha = '$d->fechastr' LIMIT 1");
+    $letra->tc = $letra->tc > 0 ? $letra->tc : $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio ORDER BY fecha DESC LIMIT 1"); 
+
     // No. de caja, son es el dia que se esta obteniendo me los fines de semana
     $letra->caja = restarDiasHabiles($fecha);
     $letra->caja = str_pad($letra->caja, 2, '0', STR_PAD_LEFT);
 
-    $letra->esingreso = $d->ingreso === 1 ? true : false;
-
     // tipo 
     $letra->tipo = $d->tipo == 1 ? 'por Empresa' : 'Personal';
+    $d->tipo = $d->tipo == 1 ? '1 , 4' : '2, 3'; 
 
-    $d->tipo = $d->tipo == 1 ? '1 , 4' : '2, 3';
-
-    // se sustituye id de empresa por id de moneda para funcionalidad con el reporteador al igual que todos sus nombres
-    // se sustituye id de proyecto por id de empresa para funcionalidad con el reporteador al igual que todos sus nombres 
-    // tipo 1 = ingresos tipo = 2 egresos
-    if ($d->ingreso === 1) {
-        $query = "SELECT 
-                    a.id,
-                    c.id AS idempresa,
-                    CONCAT(c.nommoneda, ' ', c.simbolo) AS empresa,
-                    NULL AS numero,
-                    c.simbolo AS abreviatura,
-                    d.id AS idproyecto,
-                    d.abreviatura AS proyecto,
-                    CONCAT(IF(a.numban = 0 OR a.numban IS NULL, a.numero, a.numban)) AS tranban,
-                    b.siglas,
-                    b.ordensumario,
-                    IFNULL(IF(COUNT(h.id) > 3, CAST(CONCAT(COUNT(h.id), '-FC') AS CHAR), GROUP_CONCAT(h.numeroadmin)), 'SC') AS factura,
-                    ROUND(SUM(IF(b.idmoneda = 1,
-                                h.subtotal,
-                                h.subtotalcnv)),
-                            2) AS ingreso,
-                    a.monto AS deposito,
-                    ROUND(SUM(IF(b.idmoneda = 1,
-                                h.retisr,
-                                h.retisrcnv)),
-                            2) AS isr,
-                    ROUND(SUM(IF(b.idmoneda = 1,
-                                h.retiva,
-                                h.retivacnv)),
-                            2) AS iva,
-                    IF(a.beneficiario LIKE '%REINGRESO%', a.monto*-1, ROUND(SUM(IFNULL(IF(b.idmoneda = 1, h.total, h.totalcnv), 0.00)) - IFNULL(e.monto, a.monto),
-                            2)) AS diferencia,
-                    c.simbolo AS moneda,
-                    IF($d->ingreso = 1, true, false) AS numero,
-                    GROUP_CONCAT(h.id) AS idfactura
-                FROM
-                    tranban a
-                        INNER JOIN
-                    banco b ON a.idbanco = b.id
-                        INNER JOIN
-                    moneda c ON b.idmoneda = c.id
-                        INNER JOIN
-                    empresa d ON b.idempresa = d.id
-                        LEFT JOIN
-                    reclitran e ON e.idtranban = a.id
-                        LEFT JOIN
-                    recibocli f ON e.idrecibocli = f.id
-                        LEFT JOIN
-                    detcobroventa g ON g.idrecibocli = f.id
-                        LEFT JOIN
-                    factura h ON g.idfactura = h.id
-                        INNER JOIN 
-					tipomovtranban i ON a.tipotrans = i.abreviatura
-                WHERE
-                    a.fecha = '$d->fechastr' AND b.gruposumario IN($d->tipo)
-                        AND a.tipotrans IN('R', 'D')
-                GROUP BY a.id ORDER BY 2 , 10, i.ordenalt";
-    } else {
-        $query = "SELECT 
+    $query = "SELECT 
                 a.id,
                 c.id AS idempresa,
                 CONCAT(c.nommoneda, ' ', c.simbolo) AS empresa,
@@ -811,20 +911,14 @@ $app->post('/control_ingresos', function () {
                     AND a.beneficiario != 'anulado'  
                     AND a.tipotrans = 'B'                   
             GROUP BY a.id ORDER BY 2 , 9 , 10";
-    }
     $data = $db->getQuery($query);
 
-    // print_r($transacciones); return;
-    $t_proveedor = [];
-
-    if ($d->ingreso === 2) {
+    if (count($data) > 0) {
         for ($i = 0; $i < count($data); $i++) {
             // traer valor actual y anterior
             $actual = $data[$i];
             $proximo = count($data) === $i+1 ? $data[0] : $data[$i+1];
-
             array_push($t_proveedor, $actual->deposito);
-
             // si no tienen el mismo proveedor
             if ($actual->factura !== $proximo->factura || $actual->idproyecto !== $proximo->idproyecto) {
                 $actual->ingreso = array_sum($t_proveedor);
@@ -832,37 +926,10 @@ $app->post('/control_ingresos', function () {
                 if (count($t_proveedor) > 1) {
                     $actual->varios = true;
                 }
-
                 $t_proveedor = [];
             }
         }
-    } else {
-        if (count($data) > 1) {
-            for ($i = 0; $i < count($data); $i++) {
-                // traer valor actual y anterior
-                $actual = $data[$i];
-                $proximo = count($data) === $i+1 ? $data[0] : $data[$i+1];
-            
-                if (isset($actual->idfactura)) {
-                    $query = "SELECT SUM(DISTINCT c.monto) AS monto FROM factura a INNER JOIN detcobroventa b ON b.idfactura = a.id INNER JOIN reclitran c ON b.idrecibocli = c.idrecibocli 
-                    INNER JOIN tranban d ON c.idtranban = d.id WHERE a.id IN($actual->idfactura) AND d.fecha != '$d->fechastr'";
-                    $pend =  $db->getOneField($query);
-                    $actual->ingreso = $pend > 0 ? $actual->ingreso - $pend : $actual->ingreso;
-                    $actual->diferencia = $pend > 0 ? ($actual->ingreso - $actual->deposito - $actual->isr - $actual->iva) : $actual->diferencia;
-                
-                    if ($actual->idfactura === $proximo->idfactura) {
-                        $proximo->diferencia = $actual->ingreso - $actual->deposito - $actual->isr - $actual->iva - $proximo->deposito;
-                        $proximo->ingreso = 0.00;
-                        $proximo->isr = 0.00;
-                        $proximo->iva = 0.00;
-                        $actual->diferencia = 0.00;
-                    }
-                }
-            }
-        }
-    }
 
-    if (count($data) > 0) {
         // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
         $reporte = new GeneradorReportes($data, 'transacciones', $totales, true);
         $transacciones = $reporte->getReporte();
