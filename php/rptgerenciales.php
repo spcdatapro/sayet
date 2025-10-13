@@ -756,7 +756,7 @@ $app->post('/control_ingresos', function () {
                         2) - ROUND(IFNULL(IF(b.idmoneda = 2,
                                     d.iva / d.tc_fact,
                                     d.iva),
-                                0) * -1,
+                                0),
                         2) AS diferencia,
                 e.simbolo AS moneda
             FROM
