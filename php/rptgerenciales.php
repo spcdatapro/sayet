@@ -1126,7 +1126,8 @@ $app->post('/resumen_prov', function () {
                 AND (b.ordentrabajo IS NULL
                 OR b.ordentrabajo = 0)
                 AND YEAR(b.fechafactura) = $d->anio
-        GROUP BY b.idproyecto, b.idproveedor";
+        GROUP BY b.idproyecto, b.idproveedor
+        ORDER BY a.nombre";
     $data = $db->getQuery($query);
 
     foreach ($data as $c) {
