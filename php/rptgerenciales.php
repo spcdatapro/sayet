@@ -745,7 +745,7 @@ $app->post('/control_ingresos', function () {
                                     d.iva),
                                 0),
                         2) AS iva,
-                ROUND(IFNULL(IF(b.idmoneda = 2,
+                (ROUND(IFNULL(IF(b.idmoneda = 2,
                                     d.ingreso / d.tc_fact,
                                     d.ingreso),
                                 0),
@@ -757,7 +757,7 @@ $app->post('/control_ingresos', function () {
                                     d.iva / d.tc_fact,
                                     d.iva),
                                 0),
-                        2) * -1 AS diferencia,
+                        2)) * -1 AS diferencia,
                 e.simbolo AS moneda
             FROM
                 tranban a
