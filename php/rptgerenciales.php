@@ -757,7 +757,7 @@ $app->post('/control_ingresos', function () {
                                     d.iva / d.tc_fact,
                                     d.iva),
                                 0),
-                        2) AS diferencia,
+                        2) * -1 AS diferencia,
                 e.simbolo AS moneda
             FROM
                 tranban a
