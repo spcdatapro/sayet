@@ -1109,6 +1109,7 @@ $app->post('/resumen_prov', function () {
     $query = "SELECT 
             a.id,
             c.nomempresa AS empresa,
+            d.nomproyecto AS proyecto,
             a.nombre,
             COUNT(b.id) AS cuantos
         FROM
