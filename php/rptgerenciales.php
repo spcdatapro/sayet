@@ -1097,6 +1097,74 @@ $app->post('/ocupacion', function() {
     print json_encode([ 'encabezado' => $letra, 'anios' => $result ]);
 });
 
+$app->post('/resumen_prov', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    date_default_timezone_set("America/Guatemala");
+
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+
+    $query = "SELECT 
+            a.id,
+            c.nomempresa AS empresa,
+            a.nombre,
+            COUNT(b.id) AS cuantos
+        FROM
+            proveedor a
+                INNER JOIN
+            compra b ON b.idproveedor = a.id
+                INNER JOIN
+            empresa c ON b.idempresa = c.id
+                INNER JOIN
+            proyecto d ON b.idproyecto = d.id
+        WHERE
+            a.hoja_control = 1
+                AND (b.idreembolso = 0
+                OR b.idreembolso IS NULL)
+                AND (b.ordentrabajo IS NULL
+                OR b.ordentrabajo = 0)
+                AND YEAR(b.fechafactura) = $d->anio
+        GROUP BY b.idproyecto, b.idproveedor";
+    $data = $db->getQuery($query);
+
+    foreach ($data as $c) {
+        $months = max(1, (int)$d->mes); // evitar división por cero
+        $cnt = (int)$c->cuantos;
+
+        if ($cnt === 0) {
+            $c->recurrencia = 'Sin movimientos';
+            continue;
+        }
+
+        // frecuencia media: cuantos meses pasan entre movimientos
+        $freq = $months / $cnt;
+
+        if ($freq <= 1.25) {
+            // ~1 mes o más de 1 movimiento por mes
+            $c->recurrencia = 'Mensual';
+        } elseif ($freq <= 2.25) {
+            // ~2 meses
+            $c->recurrencia = 'Bimensual';
+        } elseif ($freq <= 3.25) {
+            // ~3 meses
+            $c->recurrencia = 'Trimestral';
+        } elseif ($freq <= 6.5) {
+            // ~6 meses
+            $c->recurrencia = 'Semestral';
+        } elseif ($cnt < $months) {
+            // menos movimientos que meses del periodo y no encaja en las reglas anteriores
+            $c->recurrencia = 'Ocasional';
+        } else {
+            // más movimientos que meses (varios por mes) o casos atípicos
+            $c->recurrencia = 'Varios movimientos';
+        }
+    }
+
+    print json_encode([ 'encabezado' => $letra, 'resumen' => $data ]);
+});
+
 function restarDiasHabiles($fecha) {
     $diasContados = 0;
     $dias_restantes = $fecha->format('d');
