@@ -1130,7 +1130,17 @@ $app->post('/resumen_prov', function () {
         ORDER BY a.nombre";
     $data = $db->getQuery($query);
 
+    // agregar correlativo por cada id unico
+    $correlativos = [];
+    $nextCorrelativo = 1;
+
     foreach ($data as $c) {
+        // asignar correlativo único por proveedor (mismo correlativo si el id ya apareció)
+        if (!isset($correlativos[$c->id])) {
+            $correlativos[$c->id] = $nextCorrelativo++;
+        }
+        $c->correlativo = $correlativos[$c->id];
+
         $months = max(1, (int)$d->mes); // evitar división por cero
         $cnt = (int)$c->cuantos;
 
