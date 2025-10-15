@@ -496,7 +496,7 @@ $app->post('/vacaciones', function(){
     date_default_timezone_set("America/Guatemala");
 
     // array para totales si se tiene que modificar por reporte
-    $totales = ['liquido'];
+    $totales = [];
 
     // para periodo
     $fal = $d->anio.'-01-01';
@@ -511,49 +511,80 @@ $app->post('/vacaciones', function(){
     // encabezado
     $letra->estampa = $letra->estampa->format('d-m-Y H:i');
     $letra->titulo = 'Período del '.$al->format('d/m/Y').' al '. $del->format('d/m/Y');
+    $letra->anio = $d->anio;
 
     // array de facturas
     $empleados = array();
 
     $query = "SELECT 
                 d.id AS idempresa,
-                IFNULL(d.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
+                d.nombre AS empresa,
                 d.numeropat AS numero,
                 d.abreviatura,
                 c.idproyecto,
-                IFNULL(e.nomproyecto, 'NO ESPECIFICADO') AS proyecto,
-                c.id AS idempleado,
-                CONCAT(c.nombre, ' ', IFNULL(c.apellidos, '')) AS nombre,
-                DATE_FORMAT(ingreso, '%d/%m/%y') AS ingreso,
-                c.sueldo,
-                b.vacastotal AS monto,
-                b.vacasdias AS dias,
-                b.vacasdescuento AS descuento,
-                b.vacasusados,
-                b.vacasliquido AS liquido,
-                IFNULL(f.descripcion, 'NO ESPECIFICADO') AS puesto
+                e.nomproyecto AS proyecto,
+                a.id AS codigo,
+                CONCAT(IFNULL(b.primernombre, ''),
+                        ' ',
+                        IFNULL(b.segundonombre, ''),
+                        ' ',
+                        IFNULL(b.tercernombre, ''),
+                        IFNULL(b.primerapellido, ''),
+                        ' ',
+                        IFNULL(b.segundoapellido, ''),
+                        ' ',
+                        IFNULL(b.apellidocasada, '')) AS nombre,
+                f.descripcion AS puesto,
+                DATE_FORMAT(IFNULL(c.reingreso, c.ingreso), '%d/%m/%Y') AS ingreso,
+                IFNULL(c.reingreso, c.ingreso) AS fecha,
+                g.anio,
+                NULL AS dias_totales,
+                SUM(g.dias) AS dias,
+                NULL AS dias_gozar
             FROM
-                plnextra a
+                plnempleado a
                     INNER JOIN
-                plnextradetalle b ON b.idplnextra = a.id
+                plnpersonal b ON a.idpersonal = b.id
                     INNER JOIN
-                plnempleado c ON b.idplnempleado = c.id
-                    LEFT JOIN
-                plnempresa d ON c.idempresaactual = d.id
-                    LEFT JOIN
+                plnlaboral c ON a.idlaboral = c.id
+                    INNER JOIN
+                plnempresa d ON c.idempresadebito = d.id
+                    INNER JOIN
                 proyecto e ON c.idproyecto = e.id
-                    LEFT JOIN 
-                plnpuesto f ON c.idplnpuesto = f.id
+                    INNER JOIN
+                plnpuesto f ON a.idplnpuesto = f.id
+                    INNER JOIN
+                plnvacaciones g ON g.idplnempleado = a.id AND g.anulado = 0
             WHERE
-                a.anio = $d->anio ";
+                g.anio = $d->anio ";
     $query.= isset($d->idempresa) ? "AND c.idempresadebito = $d->idempresa " : "";
-    $query.= isset($d->idempleado) ? "AND b.idplnempleado = $d->idempleado " : "";
-    $query.= "ORDER BY  2 , ";
+    $query.= isset($d->idproyecto) ? "AND c.idproyecto = $d->idproyecto " : "";
+    $query.="GROUP BY a.id
+                ORDER BY  2 , ";
     $query.= $d->agrupar == 2 ? " 6 , 8" : " 8";
     $data = $db->getQuery($query);
 
-    foreach($data as $dat) {
-        minusculas($dat);
+    foreach($data as $v) {
+        // calcular dias desde fecha_ingreso hasta fecha_baja (si existe) o hasta el ultimo dia del año
+        $inicio = $v->fecha;
+        $inicio = new DateTime($inicio);
+        $fin = new DateTime($letra->anio . '-12-31');
+
+        if ($inicio->format('Y') == $letra->anio){
+            if ($fin < $inicio) {
+                $totalDias = 0;
+            } else {
+                $interval = $inicio->diff($fin);
+                // incluir ambos extremos
+                $totalDias = (int)$interval->days + 1;
+            }
+
+            $v->dias_totales = floor(($totalDias * 15) / 365);
+        } else {
+            $v->dias_totales = 15;
+        }
+
+        $v->dias_gozar = $v->dias_totales - $v->dias;
     }
 
     $porproyecto = $d->agrupar == 2 ? true : false;
@@ -562,11 +593,6 @@ $app->post('/vacaciones', function(){
     $reporte = new GeneradorReportes($data, 'empleados', $totales, $porproyecto);
     $empleados = $reporte->getReporte();
     $montos_generales = $reporte->getTotalesGenerales();
-
-    foreach($totales as $t) {
-        $letra->$t = array_sum($montos_generales->$t);
-    }
-
 
     print json_encode([ 'encabezado' => $letra, 'empresas' => $empleados ]);
 });
@@ -1803,6 +1829,104 @@ $app->post('/boleta_pagos', function () {
     $datos = $db->getQuery($query)[0];
 
     print json_encode([ 'prestamo' => $datos, 'encabezado' => $letra ]);
+});
+
+$app->post('/vacaciones_empleado', function () { 
+    $db = new dbcpm();
+    $n2l = new NumberToLetterConverter();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+
+    $query = "SELECT 
+                a.id,
+                CONCAT(IFNULL(b.primernombre, ''),
+                        ' ',
+                        IFNULL(b.segundonombre, ''),
+                        ' ',
+                        IFNULL(b.tercernombre, ''),
+                        IFNULL(b.primerapellido, ''),
+                        ' ',
+                        IFNULL(b.segundoapellido, ''),
+                        ' ',
+                        IFNULL(b.apellidocasada, '')) AS nombre,
+                DATE_FORMAT(IFNULL(c.reingreso, c.ingreso), '%d/%m/%Y') AS ingreso,
+                DATE_FORMAT(c.baja, '%d/%m/%Y') AS baja,
+                d.nombre AS empresa,
+                e.nomproyecto AS proyecto,
+                f.descripcion AS puesto,
+                g.anio AS anio,
+                NULL AS dias_correspondientes,
+                IFNULL(c.reingreso, c.ingreso) AS fecha_ingreso,
+                c.baja AS fecha_baja,
+                DATE_FORMAT(g.fecha, '%d/%m/%Y') AS fecha_solicitud,
+                DATE_FORMAT(g.fechainicio, '%d/%m/%Y') AS fecha_inicio,
+                DATE_FORMAT(g.fechafin, '%d/%m/%Y') AS fecha_fin,
+                g.dias,
+                'Aprobado' AS estatus
+            FROM
+                plnempleado a
+                    INNER JOIN
+                plnpersonal b ON a.idpersonal = b.id
+                    INNER JOIN
+                plnlaboral c ON a.idlaboral = c.id
+                    INNER JOIN
+                plnempresa d ON c.idempresaactual = d.id
+                    INNER JOIN
+                proyecto e ON c.idproyecto = e.id
+                    INNER JOIN
+                plnpuesto f ON a.idplnpuesto = f.id
+                    INNER JOIN
+                plnvacaciones g ON g.idplnempleado = a.id
+            WHERE
+                a.id = $d->idempleado AND g.anio = $d->anio
+                    AND g.anulado = 0";
+    $datos = $db->getQuery($query);
+
+    if (count($datos) > 0) {
+        $letra->empleado = $datos[0]->nombre;
+        $letra->empresa = $datos[0]->empresa;
+        $letra->proyecto = $datos[0]->proyecto;
+        $letra->puesto = $datos[0]->puesto;
+        $letra->anio = $datos[0]->anio;
+        $letra->ingreso = $datos[0]->ingreso;
+        $letra->baja = $datos[0]->baja;
+
+        // calcular dias desde fecha_ingreso hasta fecha_baja (si existe) o hasta el ultimo dia del año
+        $inicio = $datos[0]->fecha_ingreso;
+        $fin = $datos[0]->fecha_baja;
+        $inicio = new DateTime($inicio);
+        $fin = !empty($fin) ? new DateTime($fin) : new DateTime($letra->anio . '-12-31');
+
+        if ($inicio->format('Y') < $letra->anio) {
+            $letra->dias = 15;
+        } else {
+            if ($fin < $inicio) {
+                $totalDias = 0;
+            } else {
+                $interval = $inicio->diff($fin);
+                // incluir ambos extremos
+                $totalDias = (int)$interval->days + 1;
+            }
+
+            // multiplicar por 15, dividir por 365 y aplicar floor
+            $letra->dias = floor(($totalDias * 15) / 365);
+        }
+
+        $letra->dias_gozados = 0;
+        foreach($datos as $vac) {
+            $letra->dias_gozados += (int)$vac->dias;
+        }
+
+        $letra->dias_pendientes = $letra->dias - $letra->dias_gozados;
+    } else {
+        $letra = 'sin datos';
+        $datos = []; 
+    }
+
+    print json_encode([ 'encabezado' => $letra, 'vacaciones' => $datos ]);
 });
 
 $app->run();

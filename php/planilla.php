@@ -285,7 +285,7 @@ $app->get('/historial_vacaciones/:idempleado/:anio', function ($idempleado, $ani
     $db = new dbcpm;
 
     $query = "SELECT id, fechainicio, fechafin, dias, observaciones, anio 
-                FROM plnvacaciones WHERE idplnempleado = $idempleado AND anio = $anio";
+                FROM plnvacaciones WHERE idplnempleado = $idempleado AND anio = $anio AND anulado = 0 ORDER BY fechainicio DESC";
     $historial = $db->getQuery($query);
 
     return print json_encode($historial);
@@ -299,6 +299,134 @@ $app->get('/detalle_vacacion/:id', function ($id) {
     $detalle = $db->getQuery($query)[0];
 
     return print json_encode($detalle);
+});
+
+$app->post('/avac', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $query = "INSERT INTO plnvacaciones (idusuario, idplnempleado, fechainicio, fechafin, dias, observaciones, anio) 
+                VALUES (1, $d->idempleado, '$d->fechainicio', '$d->fechafin', $d->dias, '$d->observaciones', $d->anio)";
+    $db->doQuery($query);
+
+    $lastid = $db->getLastId();
+
+    if ($lastid > 0) {
+        $mensaje = "Vacaciones guardadas con exito";
+        $tipo = "success";
+    } else {
+        $mensaje = "Error al guardar vacaciones, favor revisar.";
+        $tipo = "error";
+    }
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $lastid]);
+});
+
+$app->post('/uvac', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $query = "UPDATE plnvacaciones SET idplnempleado = $d->idempleado, fechainicio = '$d->fechainicio', fechafin = '$d->fechafin', dias = $d->dias, 
+    observaciones = '$d->observaciones', anio = $d->anio WHERE id = $d->id";
+    $db->doQuery($query);
+
+    $mensaje = "Vacaciones actualizadas con exito";
+    $tipo = "success";
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $d->id]);
+});
+
+$app->post('/dvac', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $query = "UPDATE plnvacaciones SET anulado = 1 WHERE id = $d->id";
+    $db->doQuery($query);
+
+    $anulado = $db->getOneField("SELECT anulado FROM plnvacaciones WHERE id = $d->id") == 1;
+
+    if ($anulado) {
+        $mensaje = "Registro eliminado con exito";
+        $tipo = "success";
+    } else {
+        $mensaje = "Error al eliminar registro, favor revisar.";
+        $tipo = "error";
+    }
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $d->idempleado]);
+});
+
+$app->get('/registro_asuetos/:anio', function ($anio) {
+    $db = new dbcpm;
+
+    $query = "SELECT id, fechainicio, fechafin, anio, dias FROM asuetos WHERE anio = $anio ORDER BY fechainicio DESC";
+    $registro = $db->getQuery($query);
+
+    return print json_encode($registro);
+});
+
+$app->get('/detalle_asueto/:id', function ($id) {
+    $db = new dbcpm;
+
+    $query = "SELECT id, fechainicio, fechafin, dias, anio FROM asuetos WHERE id = $id";
+    $detalle = $db->getQuery($query)[0];
+
+    return print json_encode($detalle);
+});
+
+$app->post('/aasu', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $query = "INSERT INTO asuetos (fechainicio, fechafin, dias, anio) 
+                VALUES ('$d->fechainicio', '$d->fechafin', $d->dias, $d->anio)";
+    $db->doQuery($query);
+
+    $lastid = $db->getLastId();
+
+    if ($lastid > 0) {
+        $mensaje = "Asueto guardado con exito";
+        $tipo = "success";
+    } else {
+        $mensaje = "Error al guardar asueto, favor revisar.";
+        $tipo = "error";
+    }
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $lastid]);
+});
+
+$app->post('/uasu', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $query = "UPDATE asuetos SET fechainicio = '$d->fechainicio', fechafin = '$d->fechafin', dias = $d->dias, 
+    anio = $d->anio WHERE id = $d->id";
+    $db->doQuery($query);
+
+    $mensaje = "Asueto actualizado con exito";
+    $tipo = "success";
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $d->id]);
+});
+
+$app->post('/dasu', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $query = "DELETE FROM asuetos WHERE id = $d->id";
+    $db->doQuery($query);
+
+    $existe = $db->getOneField("SELECT id FROM asuetos WHERE id = $d->id") > 1;
+
+    if (!$existe) {
+        $mensaje = "Registro eliminado con exito";
+        $tipo = "success";
+    } else {
+        $mensaje = "Error al eliminar registro, favor revisar.";
+        $tipo = "error";
+    }
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $d->anio]);
 });
 
 $app->run();

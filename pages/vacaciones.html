@@ -7,7 +7,7 @@
     }
 
     .celeste {
-        background-color: #B4E2E8;
+        background-color: rgb(217, 231, 248);
         border-radius: 5px;
     }
 
@@ -18,6 +18,25 @@
 
     .blanco {
         background-color: white;
+    }
+
+    .search-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .search-container input {
+        padding-left: 30px;
+        /* Ajusta el padding para que no se superponga el ícono */
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 10px;
+        /* Ajusta la posición del ícono */
+        color: #aaa;
+        /* Color del ícono */
     }
 </style>
 <div class="container" ng-controller="vacacionesCtrl">
@@ -31,7 +50,8 @@
                             <div class="form-group required">
                                 <label class="control-label">Empleado:</label>
                                 <ui-select ng-model="vacaciones.idempleado" title="Seleccione un empleado..."
-                                    theme="bootstrap" autofocus="false" ng-change="getHistorial(vacaciones.idempleado, $selected.selected.ingreso)"
+                                    theme="bootstrap" autofocus="false"
+                                    ng-change="getHistorial(vacaciones.idempleado, $selected.selected.ingreso)"
                                     required>
                                     <ui-select-match placeholder="Buscar empleado..." allow-clear="false">
                                         <span ng-bind="($select.selected.nombre)"></span>
@@ -46,7 +66,7 @@
                         <div class="col-md-4">
                             <div class="form-group required">
                                 <label class="control-label">A&ntilde;o:</label>
-                                <input type="number" ng-model="vacaciones.anio" class="form-control">
+                                <input type="number" ng-model="vacaciones.anio" ng-change="getHistorial(vacaciones.idempleado)" class="form-control">
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -57,50 +77,73 @@
                         </div>
                     </div>
                     <div class="row">
-
                         <div class="col-md-4">
-                            <div class="form-group">
+                            <div class="form-group required">
                                 <label class="control-label">Fecha inicia:</label>
-                                <input type="date" class="form-control" ng-model="vacaciones.fechainicio">
+                                <input type="date" class="form-control" ng-model="vacaciones.fechainicio" required
+                                    ng-attr-max="{{vacaciones.fechafin | date:'yyyy-MM-dd'}}">
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="form-group">
+                            <div class="form-group required">
                                 <label class="control-label">Fecha fin:</label>
-                                <input type="date" class="form-control" ng-model="vacaciones.fechafin">
+                                <input type="date" class="form-control" ng-model="vacaciones.fechafin" required
+                                    ng-attr-min="{{vacaciones.fechainicio | date:'yyyy-MM-dd'}}">
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="form-group">
+                            <div class="form-group required">
                                 <label class="control-label">D&iacute;as a gozar:</label>
-                                <input type="number" ng-model="vacaciones.dias" class="form-control">
+                                <input type="number" ng-model="vacaciones.dias" class="form-control" ng-disabled="true" required>
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="form-group">
+                            <div class="form-group required">
                                 <label class="control-label">Observaciones:</label>
-                                <textarea rows="4" ng-model="vacaciones.observaciones" class="form-control"></textarea>
+                                <textarea rows="4" ng-model="vacaciones.observaciones" class="form-control"
+                                    required></textarea>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="panel-footer text-right">
-                <div class="btn-group">
-                    <!-- <button type="button" class="btn btn-danger" ng-click="getPDF(params)"
-                        ng-disabled="paramsRep.$invalid || cargando">
-                        <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
-                    </button>
-                    <button type="button" class="btn btn-success" ng-click="getXML(params)"
-                        ng-disabled="paramsRep.$invalid || cargando">
-                        <span class="fa fa-file-excel-o" aria-hidden="true"></span>
-                    </button>
-                    <button type="button" class="btn btn-primary" ng-click="getResumen(params)"
-                        ng-disabled="paramsRep.$invalid || cargando">
-                        <span class="glyphicon glyphicon-eye-open"></span>
-                    </button> -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="btn-group btn-group-justified" role="group">
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-default" title="Imprimir detalle" type="button"
+                                        ng-show="historial.length > 0" ng-disabled="cargando"
+                                        ng-click="printDetalle(vacaciones)">
+                                        <i class="fi fi-rr-print"></i> Detalle empleado
+                                    </button>
+                                </div>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-primary" title="Guardar registro" type="button"
+                                        ng-disabled="paramsVacaciones.$invalid || cargando || !modificaciones"
+                                        ng-click="guardar(vacaciones)">
+                                        <i class="fi fi-rr-disk"></i> Guardar
+                                    </button>
+                                </div>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-danger" ng-disabled="!vacaciones.id || cargando"
+                                        title="Eliminar registro" type="button" ng-click="eliminar(vacaciones)">
+                                        <i class="fi fi-rr-trash"></i> Eliminar
+                                    </button>
+                                </div>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-default" title="Crear nuevo registro" type="button"
+                                        ng-show="vacaciones.id > 0" ng-disabled="cargando"
+                                        ng-click="resetParams(vacaciones.idempleado, historial)">
+                                        <i class="fi fi-br-plus"></i> Nuevo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -109,14 +152,17 @@
     <div class="row" ng-show="cargando">
         <div class="col-md-6 col-md-offset-3">
             <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
-                <span class="label label-primary">Generando reporte, por favor espere...</span>
-                <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
+                <span class="label label-primary">Cargando por favor espere...</span>
+                <img ng-src="img/generando.gif" alt="Obteniendo informacion..." style="width: 25px; height: 25px;" />
             </div>
         </div>
     </div>
     <div id="tblResumen">
-        <table class="table table-responsive table-hover" ng-show="historial.length > 0">
-            <caption><h4 style="color: black; text-align: center;">HISTORIAL DE VACACIONES {{empleado}}</h4></caption>
+        <table class="table table-responsive table-hover" ng-show="historial.length > 0 && !cargando">
+            <caption class="celeste">
+                <h4 style="color: black; text-align: center;">Historial de vacaciones del {{vacaciones.anio}}</h4>
+                </div>
+            </caption>
             <thead>
                 <tr>
                     <th>A&ntilde;o</th>
@@ -136,6 +182,8 @@
                 </tr>
             </tbody>
         </table>
-        <h4 style="color: black; text-align: center;" ng-show="historial.length == 0 && vacaciones.idempleado > 0">SIN HISOTRAL EN {{vacaciones.anio}} PARA {{empleado}}</h4>
+        <h4 style="color: black; text-align: center;"
+            ng-show="historial.length == 0 && vacaciones.idempleado > 0 && !cargando" class="celeste">SIN HISOTRAL EN
+            {{vacaciones.anio}} PARA {{empleado}}</h4>
     </div>
 </div>

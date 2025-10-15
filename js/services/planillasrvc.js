@@ -35,6 +35,15 @@
             },
             getDetalleVacacion: id => {
                 return comunFact.doGET(`${urlBase}/detalle_vacacion/${id}`)
+            },
+            editRow: function (op, obj) {
+                return comunFact.doPOST(urlBase + '/' + op, obj);
+            },
+            getRegistroAsuetos: function (anio) {
+                return comunFact.doGET(`${urlBase}/registro_asuetos/${anio}`)
+            },
+            getDetalleAsueto: id => {
+                return comunFact.doGET(`${urlBase}/detalle_asueto/${id}`)
             }
         };
     }]);
