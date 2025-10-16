@@ -83,6 +83,15 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group required">
+                                <label class="control-label">Concepto:</label>
+                                <textarea rows="2" ng-model="asueto.concepto" class="form-control" title="Ingresar concepto del asueto"
+                                    required></textarea>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
             <div class="panel-footer text-right">
@@ -95,6 +104,13 @@
                                         ng-disabled="paramsAsuetos.$invalid || cargando || !modificaciones"
                                         ng-click="guardar(asueto)">
                                         <i class="fi fi-rr-disk"></i> Guardar
+                                    </button>
+                                </div>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-danger" title="Eliminar asueto" type="button"
+                                        ng-disabled="cargando || !asueto.id"
+                                        ng-click="eliminar(asueto)">
+                                        <i class="fi fi-rr-trash"></i> Eliminar
                                     </button>
                                 </div>
                                 <div class="btn-group" role="group">
@@ -131,7 +147,7 @@
                     <th>Fecha Inicio</th>
                     <th>Fecha Fin</th>
                     <th>D&iacute;as</th>
-                    <th>&nbsp;</th>
+                    <th>Concepto</th>
                 </tr>
             </thead>
             <tbody>
@@ -140,11 +156,7 @@
                     <td>{{r.fechainicio | date:'dd/MM/yyyy'}}</td>
                     <td>{{r.fechafin | date: 'dd/MM/yyyy'}}</td>
                     <td>{{r.dias}}</td>
-                    <td>
-                        <button type="button" class="btn btn-danger" ng-click="eliminar(r)" title="Eliminar registro">
-                            <i class="fi fi-rr-trash"></i>
-                        </button>
-                    </td>
+                    <td>{{r.concepto}}</td>
                 </tr>
             </tbody>
         </table>

@@ -359,7 +359,7 @@ $app->post('/dvac', function () {
 $app->get('/registro_asuetos/:anio', function ($anio) {
     $db = new dbcpm;
 
-    $query = "SELECT id, fechainicio, fechafin, anio, dias FROM asuetos WHERE anio = $anio ORDER BY fechainicio DESC";
+    $query = "SELECT id, fechainicio, fechafin, anio, dias, concepto FROM asuetos WHERE anio = $anio ORDER BY fechainicio DESC";
     $registro = $db->getQuery($query);
 
     return print json_encode($registro);
@@ -368,7 +368,7 @@ $app->get('/registro_asuetos/:anio', function ($anio) {
 $app->get('/detalle_asueto/:id', function ($id) {
     $db = new dbcpm;
 
-    $query = "SELECT id, fechainicio, fechafin, dias, anio FROM asuetos WHERE id = $id";
+    $query = "SELECT id, fechainicio, fechafin, dias, anio, concepto FROM asuetos WHERE id = $id";
     $detalle = $db->getQuery($query)[0];
 
     return print json_encode($detalle);
@@ -378,8 +378,8 @@ $app->post('/aasu', function () {
     $db = new dbcpm();
     $d = json_decode(file_get_contents('php://input'));
 
-    $query = "INSERT INTO asuetos (fechainicio, fechafin, dias, anio) 
-                VALUES ('$d->fechainicio', '$d->fechafin', $d->dias, $d->anio)";
+    $query = "INSERT INTO asuetos (fechainicio, fechafin, dias, anio, concepto) 
+                VALUES ('$d->fechainicio', '$d->fechafin', $d->dias, $d->anio, '$d->concepto')";
     $db->doQuery($query);
 
     $lastid = $db->getLastId();
@@ -400,7 +400,7 @@ $app->post('/uasu', function () {
     $d = json_decode(file_get_contents('php://input'));
 
     $query = "UPDATE asuetos SET fechainicio = '$d->fechainicio', fechafin = '$d->fechafin', dias = $d->dias, 
-    anio = $d->anio WHERE id = $d->id";
+    anio = $d->anio, concepto = '$d->concepto' WHERE id = $d->id";
     $db->doQuery($query);
 
     $mensaje = "Asueto actualizado con exito";
