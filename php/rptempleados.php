@@ -513,6 +513,8 @@ $app->post('/vacaciones', function(){
     $letra->titulo = 'Período del '.$al->format('d/m/Y').' al '. $del->format('d/m/Y');
     $letra->anio = $d->anio;
 
+    $letra->agrupar = $d->agrupar == 2 ? 'proyecto' : 'empresa';
+
     // array de facturas
     $empleados = array();
 
