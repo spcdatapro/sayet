@@ -158,7 +158,10 @@
             $scope.$watchGroup(['vacaciones.fechainicio', 'vacaciones.fechafin'], function (fechas) {
                 const [inicio, fin] = fechas;
 
-                if (inicio && fin) {
+                if ($scope.vacaciones.id > 0) {
+                    return;
+                } else {
+                    if (inicio && fin) {
                     const fechaInicio = new Date(inicio);
                     const fechaFin = new Date(fin);
                     let dias = 0;
@@ -179,6 +182,7 @@
                     $scope.vacaciones.dias = dias;
                 } else {
                     $scope.vacaciones.dias = 0;
+                }
                 }
             })
 
