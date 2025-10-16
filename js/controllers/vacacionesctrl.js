@@ -118,7 +118,7 @@
             $scope.printDetalle = params => {
                 $scope.cargando = true;
                 try {
-                    jsReportSrvc.getPDFReport('rknrmwPzex', params).then(function (pdf) {
+                    jsReportSrvc.getPDFReport('rkV7i506lx', params).then(function (pdf) {
                         $window.open(pdf);
                         $scope.cargando = false;
                     })
