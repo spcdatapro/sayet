@@ -66,7 +66,7 @@
 
             let reporte = params.idempleado > 0 ? 'rJ9MSTRpgx' : 'SyLv2H6cA';
 
-            jsReportSrvc.getReport('SyLv2H6cA', params).then(function (result) {
+            jsReportSrvc.getReport(reporte, params).then(function (result) {
                 var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
                 let rango = undefined;
 
