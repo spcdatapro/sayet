@@ -51,8 +51,9 @@
         $scope.getPDF = function (params) {
             // estatus de carga
             $scope.cargando = true;
+            let reporte = params.idempleado > 0 ? 'rkV7i506lx' : 'B18Mvr690';
 
-            jsReportSrvc.getPDFReport('B18Mvr690', params).then(function (pdf) {
+            jsReportSrvc.getPDFReport(reporte, params).then(function (pdf) {
                 $scope.content = pdf;
                 $scope.cargando = false;
             });
@@ -62,6 +63,8 @@
         $scope.getXML = function (params) {
             // estatus de carga
             $scope.cargando = true;
+
+            let reporte = params.idempleado > 0 ? 'rJ9MSTRpgx' : 'SyLv2H6cA';
 
             jsReportSrvc.getReport('SyLv2H6cA', params).then(function (result) {
                 var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
