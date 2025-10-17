@@ -138,7 +138,8 @@
 
                 if (+anio === +$scope.vacaciones.anio) {
                     // si el empleado ingreso el anio actual, hacer calculo para dias de vacaciones
-                    dias_restantes = Math.round((ultima_fecha.diff(fecha_ingreso, 'days') + 1) * 15 / 365);
+                    dias_restantes = (ultima_fecha.diff(fecha_ingreso, 'days')+1) * 15 / 365;
+                    dias_restantes = +dias_restantes.toFixed(2);
                 } else {
                     // de lo contrario utilizar los 15 dias de vacaciones de ley
                     dias_restantes = 15;
