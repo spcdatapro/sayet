@@ -769,10 +769,10 @@ $app->post('/control_ingresos', function () {
                 (SELECT 
                     a.idrecibocli,
                         IF(COUNT(b.id) > 3, CAST(CONCAT(COUNT(b.id), '-FC') AS CHAR), GROUP_CONCAT(b.numeroadmin)) AS factura,
-                        SUM(IF(b.pagada = 1, a.monto + b.retisr + b.retiva, b.subtotal)) AS ingreso,
-                        SUM(b.retisr) AS isr,
-                        SUM(b.retiva) AS iva,
-                        b.tipocambio AS tc_fact
+                        SUM(IF(b.pagada = 1, IF(b.idmonedafact = 2, b.subtotalcnv, a.monto + b.retisr + b.retiva), IF(b.idmonedafact = 2, b.subtotalcnv, b.subtotal))) AS ingreso,
+                        SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr)) AS isr,
+                        SUM(IF(b.idmonedafact = 2, b.retivacnv, b.retiva)) AS iva,
+                        IF(b.idmonedafact = 2, 1, b.tipocambio) AS tc_fact
                 FROM
                     detcobroventa a
                 INNER JOIN factura b ON a.idfactura = b.id
