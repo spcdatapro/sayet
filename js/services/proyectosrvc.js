@@ -68,6 +68,9 @@
             },
             quitarEmpresa: function (id) {
                 return comunFact.doGET(urlBase + '/qp/' + id);
+            },
+            listaProyectosCliente: idcliente => {
+                return comunFact.doGET(urlBase + '/proyectos_cliente/' + idcliente);
             }
         };
     }]);

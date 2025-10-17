@@ -46,7 +46,7 @@ $app->post('/pendientes', function(){
     $query.= "a.monto AS montocargoflat, ";
 
     $query.= "RetISR(c.idcliente, b.idtipoventa) AS retenerisr, d.nombrecorto AS clientecorto, b.idtipoventa, ";
-    $query.= "NitFacturarA(c.idcliente, b.idtipoventa) AS nit, DirFacturarA(c.idcliente, b.idtipoventa) AS direccion, PorcentajeRetIVA(c.idcliente, b.idtipoventa) AS porcentajeretiva, ";
+    $query.= "NitFacturarA(c.idcliente, b.idtipoventa) AS nit, DirFacturarA(c.idcliente, b.idtipoventa, j.id) AS direccion, PorcentajeRetIVA(c.idcliente, b.idtipoventa) AS porcentajeretiva, ";
     $query.= "b.idmonedafact, b.idmoneda AS idmonedacargo, k.simbolo AS monedafact, h.simbolo AS monedacargo ";
     
     $query.= "FROM cargo a INNER JOIN detfactcontrato b ON b.id = a.iddetcont INNER JOIN contrato c ON c.id = b.idcontrato INNER JOIN cliente d ON d.id = c.idcliente ";
@@ -142,7 +142,7 @@ function getQueryCargos($d) {
     CONCAT(e.desctiposervventa, ' ', DATE_FORMAT(a.fechacobro, '%m/%Y')) AS tipo, e.id as idtipo, j.nomproyecto AS proyecto, 
     UnidadesPorContrato(a.idcontrato) AS unidades, RetISR(c.idcliente, b.idtipoventa) AS retenerisr, RetIVA(c.idcliente, b.idtipoventa) AS reteneriva, c.idtipocliente, 
     PorcentajeRetIVA(c.idcliente, b.idtipoventa) AS porcentajeretiva, a.conceptoadicional, MONTH(a.fechacobro) AS mes, YEAR(a.fechacobro) AS anio, 
-    NitFacturarA(c.idcliente, b.idtipoventa) AS nit, DirFacturarA(c.idcliente, b.idtipoventa) AS direccion, ExentoIVA(c.idcliente, b.idtipoventa) AS exentoiva, TIPOIDRECEPTOR(c.idcliente) AS tipoidreceptor, 1 AS facturar
+    NitFacturarA(c.idcliente, b.idtipoventa) AS nit, DirFacturarA(c.idcliente, b.idtipoventa, j.id) AS direccion, ExentoIVA(c.idcliente, b.idtipoventa) AS exentoiva, TIPOIDRECEPTOR(c.idcliente) AS tipoidreceptor, 1 AS facturar
     FROM cargo a INNER JOIN detfactcontrato b ON b.id = a.iddetcont INNER JOIN contrato c ON c.id = b.idcontrato INNER JOIN cliente d ON d.id = c.idcliente 
     INNER JOIN tiposervicioventa e ON e.id = b.idtipoventa INNER JOIN tipocliente g ON g.id = c.idtipocliente 
     INNER JOIN moneda h ON h.id = b.idmoneda INNER JOIN empresa i ON i.id = c.idempresa 
