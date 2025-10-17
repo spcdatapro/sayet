@@ -342,6 +342,7 @@ $app->post('/c', function(){
     if(!isset($d->idunidad)){ $d->idunidad = 0; }
     if(!isset($d->nombrerecibo)){ $d->nombrerecibo = 'NULL'; } else { $d->nombrerecibo = "'$d->nombrerecibo'"; }
     if(!isset($d->idcheque)){ $d->idcheque = 0; }
+    $d->tipocambio = $d->tipocambio > 0 ? $d->tipocambio : 1.00;
 
     $calcisr = false;
     $d->retIva = 0.00;
@@ -407,6 +408,7 @@ $app->post('/u', function(){
     if(!isset($d->idcheque)){ $d->idcheque = 0; }
     $d->decimal_isr = !isset($d->decimal_isr) ? 2 : $d->decimal_isr;
     $decimal_iva = !isset($d->decimal_iva) ? 2 : $d->decimal_iva;
+    $d->tipocambio = $d->tipocambio > 0 ? $d->tipocambio : 1.00;
 
     $calcisr = false;
     $d->retIva = 0.00;
