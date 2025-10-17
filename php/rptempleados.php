@@ -581,7 +581,7 @@ $app->post('/vacaciones', function(){
                 $totalDias = (int)$interval->days + 1;
             }
 
-            $v->dias_totales = floor(($totalDias * 15) / 365);
+            $v->dias_totales = round(($totalDias * 15) / 365, 2);
         } else {
             $v->dias_totales = 15;
         }
@@ -1913,8 +1913,8 @@ $app->post('/vacaciones_empleado', function () {
                 $totalDias = (int)$interval->days + 1;
             }
 
-            // multiplicar por 15, dividir por 365 y aplicar floor
-            $letra->dias = floor(($totalDias * 15) / 365);
+            // multiplicar por 15, dividir por 365 y aplicar round
+            $letra->dias = round(($totalDias * 15) / 365, 2);
         }
 
         $letra->dias_gozados = 0;
