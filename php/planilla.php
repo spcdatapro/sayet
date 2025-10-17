@@ -255,7 +255,7 @@ $app->post('/premios', function () {
                 proyecto g ON c.idproyecto = g.id
             WHERE
                 d.anio = $d->anio AND d.pagado = 0
-            ORDER BY b.nacimiento";
+            ORDER BY MONTH(b.nacimiento) ASC";
     $pendientes = $db->getQuery($query);
 
     foreach ($pendientes as $p) {
