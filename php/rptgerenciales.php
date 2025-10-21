@@ -768,7 +768,7 @@ $app->post('/control_ingresos', function () {
                     AND a.tipotrans IN ('R' , 'D')
                     AND b.gruposumario IN ($d->tipo)
             GROUP BY a.id
-            ORDER BY b.idmoneda , b.ordensumario , g.ordenalt";
+            ORDER BY b.idmoneda , b.ordensumario , g.ordenalt , a.numero";
     $data = $db->getQuery($query);
 
     if (count($data) > 0) {
