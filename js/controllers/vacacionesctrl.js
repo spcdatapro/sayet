@@ -29,6 +29,7 @@
                         let rango = {};
                         rango.del = moment(asueto.fechainicio).toDate();
                         rango.al = moment(asueto.fechafin).toDate();
+                        rango.dias = +asueto.dias;
                         asuetos.push(rango);
                     })
                 })
@@ -39,11 +40,16 @@
                 if (!fecha) { return false; }
                 const d = moment(fecha).startOf('day').toDate();
                 for (let r of asuetos) {
+                    console.log(r);
                     const del = moment(r.del).startOf('day').toDate();
                     const al = moment(r.al).startOf('day').toDate();
-                    if (d >= del && d <= al) { return true; }
+                    if (d >= del && d <= al && r.dias >= 1) { 
+                        return 0; 
+                    } else if ((d >= del && d <= al && r.dias == 0.5)) {
+                        return 0.5; 
+                    }
                 }
-                return false;
+                return 1;
             }
 
             $scope.resetParams = (idempleado, historial = []) => {
@@ -172,9 +178,14 @@
                         let fechaActual = new Date(fechaInicio);
 
                         while (fechaActual <= fechaFin) {
+                            const asueto = esAsueto(fechaActual);
                             const diaSemana = fechaActual.getDay(); // 0 = domingo, 6 = sábado
-                            if (diaSemana !== 0 && diaSemana !== 6 && !esAsueto(fechaActual)) {
-                                dias++;
+                            if (diaSemana !== 0 && diaSemana !== 6) {
+                                if (asueto == 0.5) {
+                                    dias += 0.5;
+                                } else if (asueto == 1) {
+                                    dias++;
+                                }
                             }
                             fechaActual.setDate(fechaActual.getDate() + 1);
                         }
