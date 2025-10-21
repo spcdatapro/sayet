@@ -73,7 +73,7 @@
                     text: '¿Seguro(a) desea eliminar el registro de asuetos? Esto liberara los días de ese registro.',
                     title: 'Eliminar registro de asueto', ok: 'Sí', cancel: 'No'
                 }).then(() => {
-                    planillaSrvc.editRow('dasu', asueto).then(d => { 
+                    planillaSrvc.editRow('dasu', asueto).then(d => {
                         toaster.pop(d.tipo, "Registro de asueto", d.mensaje);
                         $scope.getRegistro(d.id);
                     })
@@ -95,27 +95,31 @@
             $scope.$watchGroup(['asueto.fechainicio', 'asueto.fechafin'], function (fechas) {
                 const [inicio, fin] = fechas;
 
-                if (inicio && fin) {
-                    const fechaInicio = new Date(inicio);
-                    const fechaFin = new Date(fin);
-                    let dias = 0;
-
-                    // Asegurarse de que la fecha de inicio no sea mayor que la fecha de fin
-                    if (fechaInicio <= fechaFin) {
-                        let fechaActual = new Date(fechaInicio);
-
-                        while (fechaActual <= fechaFin) {
-                            const diaSemana = fechaActual.getDay(); // 0 = domingo, 6 = sábado
-                            if (diaSemana !== 0 && diaSemana !== 6) {
-                                dias++;
-                            }
-                            fechaActual.setDate(fechaActual.getDate() + 1);
-                        }
-                    }
-
-                    $scope.asueto.dias = +dias;
+                if ($scope.asueto.id > 0) {
+                    return;
                 } else {
-                    $scope.asueto.dias = 0;
+                    if (inicio && fin) {
+                        const fechaInicio = new Date(inicio);
+                        const fechaFin = new Date(fin);
+                        let dias = 0;
+
+                        // Asegurarse de que la fecha de inicio no sea mayor que la fecha de fin
+                        if (fechaInicio <= fechaFin) {
+                            let fechaActual = new Date(fechaInicio);
+
+                            while (fechaActual <= fechaFin) {
+                                const diaSemana = fechaActual.getDay(); // 0 = domingo, 6 = sábado
+                                if (diaSemana !== 0 && diaSemana !== 6) {
+                                    dias++;
+                                }
+                                fechaActual.setDate(fechaActual.getDate() + 1);
+                            }
+                        }
+
+                        $scope.asueto.dias = +dias;
+                    } else {
+                        $scope.asueto.dias = 0;
+                    }
                 }
             })
 
