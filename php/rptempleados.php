@@ -578,7 +578,7 @@ $app->post('/vacaciones', function(){
             } else {
                 $interval = $inicio->diff($fin);
                 // incluir ambos extremos
-                $totalDias = (int)$interval->days + 1;
+                $totalDias = (float)$interval->days + 1;
             }
 
             $v->dias_totales = round(($totalDias * 15) / 365, 2);
@@ -1910,7 +1910,7 @@ $app->post('/vacaciones_empleado', function () {
             } else {
                 $interval = $inicio->diff($fin);
                 // incluir ambos extremos
-                $totalDias = (int)$interval->days + 1;
+                $totalDias = (float)$interval->days + 1;
             }
 
             // multiplicar por 15, dividir por 365 y aplicar round
@@ -1919,7 +1919,7 @@ $app->post('/vacaciones_empleado', function () {
 
         $letra->dias_gozados = 0;
         foreach($datos as $vac) {
-            $letra->dias_gozados += (int)$vac->dias;
+            $letra->dias_gozados += (float)$vac->dias;
         }
 
         $letra->dias_pendientes = $letra->dias - $letra->dias_gozados;
