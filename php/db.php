@@ -39,14 +39,14 @@ class dbcpm{
     }
 
     private function getDbNameFromFile() {
-        // $dbName = '';
-        // try {
-        //     $myfile = fopen("db.syt", "r");
-        //     $dbName = fgets($myfile);
-        //     fclose($myfile);
-        // } catch (Exception $e) {
+        $dbName = '';
+        try {
+            $myfile = fopen("db.syt", "r");
+            $dbName = fgets($myfile);
+            fclose($myfile);
+        } catch (Exception $e) {
             $dbName = 'sayet';
-        // }
+        }
         $this->dbSchema = $dbName;        
     }
 
