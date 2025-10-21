@@ -393,7 +393,7 @@ $app->get('/qp/:id', function ($id) {
 $app->get('/proyectos_cliente/:idcliente', function ($idcliente) {
     $db = new dbcpm();
 
-    $query = "SELECT a.id, a.nomproyecto AS proyecto FROM proyecto a INNER JOIN contrato b ON b.idproyecto = a.id WHERE b.idcliente = $idcliente AND b.inactivo = 0";
+    $query = "SELECT DISTINCT a.id, a.nomproyecto AS proyecto FROM proyecto a INNER JOIN contrato b ON b.idproyecto = a.id WHERE b.idcliente = $idcliente AND b.inactivo = 0";
     $proyectos = $db->getQuery($query);
     return print json_encode($proyectos);
 });
