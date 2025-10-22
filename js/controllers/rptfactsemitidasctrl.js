@@ -124,7 +124,7 @@
                         rango = 'por_Proyecto';
                         break;
                     default: 
-                        reporte = 'BJW6LWoYb';
+                        reporte = 'BkNGl5URxl';
                         rango = 'Emitidas';
                 }
 
