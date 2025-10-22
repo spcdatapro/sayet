@@ -772,6 +772,19 @@ $app->post('/control_ingresos', function () {
     $data = $db->getQuery($query);
 
     if (count($data) > 0) {
+
+        for ($i = 0; $i < count($data); $i++) {
+            $actual = $data[$i];
+            $proximo = $i+1 == count($dat) ? null : $data[$i+1];
+
+            if (isset($proximo)) {
+                if ($proximo->idrecibocli == $actual->idrecibocli) {
+                    $proximo->diferencia = $actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito);
+                    $actual->ingreso = 0;
+                }
+            }
+        }
+        
         // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
         $reporte = new GeneradorReportes($data, 'transacciones', $totales, true);
         $transacciones = $reporte->getReporte();
