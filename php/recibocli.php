@@ -291,7 +291,12 @@ $app->post('/anula', function(){
 
     foreach($transacciones as $t){
         if($t->d_estado_cuenta > 0){
-            $query = "UPDATE d_estado_cuenta SET idtranban = NULL WHERE d_estado_cuenta = $t->d_estado_cuenta";
+            $idtranban = $db->getOneField("SELECT idtranban FROM d_estado_cuenta WHERE d_estado_cuenta = $t->d_estado_cuenta");
+
+            if ($idtranban > 0) {
+                deleteTranBan($idtranban, $db);
+                $query = "UPDATE d_estado_cuenta SET idtranban = NULL WHERE d_estado_cuenta = $t->d_estado_cuenta";
+            }
             $db->doQuery($query);
         }
     }
@@ -717,6 +722,13 @@ $app->post('/validar', function () {
 
 function setImpreso ($id, $db) {
     $db->doQuery("UPDATE recibocli SET impreso = 1 WHERE id = $id ");
+}
+
+function deleteTranBan ($id, $db) {
+    $db->doQuery("UPDATE recibocli SET idtranban = 0 WHERE idtranban = $id");
+    $db->doQuery("DELETE FROM detallecontable WHERE origen = 1 AND idorigen = $id");
+    $db->doQuery("DELETE FROM reclitran WHERE idtranban = $id");
+    $db->doQuery("DELETE FROM tranban WHERE id = $id");
 }
 
 $app->run();
