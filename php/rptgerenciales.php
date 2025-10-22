@@ -783,7 +783,7 @@ $app->post('/control_ingresos', function () {
                     $actual->iva = 0;
                     $actual->isr = 0;
                     $actual->ingreso = 0;
-                    $actual->diferncia = 0;
+                    $actual->diferencia = 0;
                 }
             }
         }
