@@ -775,11 +775,13 @@ $app->post('/control_ingresos', function () {
 
         for ($i = 0; $i < count($data); $i++) {
             $actual = $data[$i];
-            $proximo = $i+1 == count($dat) ? null : $data[$i+1];
+            $proximo = $i+1 == count($data) ? null : $data[$i+1];
 
             if (isset($proximo)) {
                 if ($proximo->idrecibocli == $actual->idrecibocli) {
                     $proximo->diferencia = $actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito);
+                    $actual->iva = 0;
+                    $actual->isr = 0;
                     $actual->ingreso = 0;
                 }
             }
