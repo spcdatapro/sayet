@@ -163,6 +163,10 @@
                 <button type="button" class="btn btn-danger" ng-click="getFactsEmitidas()" ng-disabled="cargando">
                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                 </button>
+                <button type="button" class="btn btn-success" ng-click="getFactsEmitidasXml()"
+                    ng-disabled="cargando">
+                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                </button>
                 <button type="button" class="btn btn-primary" ng-click="getPendientes(params)"
                     ng-show="params.tipo == 4" ng-disabled="cargando">
                     <i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i>
