@@ -10,6 +10,7 @@
         $scope.clientes = [];
         $scope.empresas = [];
         $scope.objEmpresa = [];
+        $scope.cargando = false;
 
         clienteSrvc.lstCliente().then(function (d) {
             $scope.clientes = d;
@@ -38,6 +39,7 @@
 
         $scope.getEcuentaCli = function () {
             // console.log($scope.params);
+            $scope.cargando = true;
             if (+$scope.params.cliente.id > 0) {
                 $scope.params.falstr = moment($scope.params.al).format('YYYY-MM-DD');
                 $scope.params.clistr = $scope.params.cliente.id;
@@ -47,9 +49,11 @@
                     var file = new Blob([result.data], { type: 'application/pdf' });
                     var fileURL = URL.createObjectURL(file);
                     $scope.content = $sce.trustAsResourceUrl(fileURL);
+                    $scope.cargando = false;
                 });
             } else {
                 toaster.pop({ type: 'error', title: 'Cliente', body: 'Por favor seleccione un cliente.', timeout: 7000 });
+                $scope.cargando = false;
             }
         };
 
@@ -57,7 +61,9 @@
 
         $scope.getEcuentaCliXLSX = function () {
             // console.log($scope.params);
+            $scope.cargando = true;
             if (+$scope.params.cliente.id > 0) {
+                $scope.cargando = false;
                 $scope.params.falstr = moment($scope.params.al).format('YYYY-MM-DD');
                 $scope.params.clistr = $scope.params.cliente.id;
                 $scope.params.idempresa = $scope.objEmpresa[0] != null && $scope.objEmpresa[0] != undefined ? $scope.objEmpresa[0].id : 0;
@@ -68,6 +74,7 @@
                     saveAs(file, 'EC_al_' + nombre + '.xlsx');
                 });
             } else {
+                $scope.cargando = false;
                 toaster.pop({ type: 'error', title: 'Cliente', body: 'Por favor seleccione un cliente.', timeout: 7000 });
             }
         };
