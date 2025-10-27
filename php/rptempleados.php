@@ -707,8 +707,6 @@ $app->post('/prestamos', function(){
                 GROUP BY idplnprestamo) j ON j.idplnprestamo = g.id
             WHERE
                 g.anulado = 0 AND g.esembargo = 0
-                    AND MONTH(g.fecha) <= $d->mes 
-                    AND YEAR(g.fecha) <= $d->anio
                     AND (g.finalizado = 0
                     OR (YEAR(g.liquidacion) = $d->anio
                     AND MONTH(g.liquidacion) = $d->mes)) ";
