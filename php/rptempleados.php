@@ -706,21 +706,11 @@ $app->post('/prestamos', function(){
                     MONTH(fecha) = $d->mes AND YEAR(fecha) = $d->anio
                 GROUP BY idplnprestamo) j ON j.idplnprestamo = g.id
             WHERE
-                g.anulado = 0 AND g.esembargo = 0 AND
-                (
-                    g.monto
-                    - COALESCE((SELECT SUM(pn.monto)
-                                FROM plnpresnom pn
-                                INNER JOIN plnnomina n ON pn.idplnnomina = n.id
-                                WHERE pn.idplnprestamo = g.id
-                                AND MONTH(n.fecha) <= $d->mes AND YEAR(n.fecha) <= $d->anio), 0)
-                    - COALESCE((SELECT SUM(pa.monto)
-                                FROM plnpresabono pa
-                                WHERE pa.idplnprestamo = g.id
-                                AND MONTH(pa.fecha) <= $d->mes AND YEAR(pa.fecha) <= $d->anio), 0)
-                ) > 0 
+                g.anulado = 0 AND g.esembargo = 0
                     AND MONTH(g.fecha) <= $d->mes 
-                    AND YEAR(g.fecha) <= $d->anio ";
+                    AND YEAR(g.fecha) <= $d->anio
+                    AND YEAR(g.liquidacion) >= $d->anio
+                    AND MONTH(g.liquidacion) >= $d->mes ";
     $query.= isset($d->idempresa) ? "AND h.id = $d->idempresa " : "";
     $query.= "GROUP BY g.id ORDER BY  2 , ";
     $query.= $d->agrupar == 2 ? " 6 , 8, 11" : " 8, 11";
