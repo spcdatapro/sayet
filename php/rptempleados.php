@@ -648,10 +648,18 @@ $app->post('/prestamos', function(){
                 DATE_FORMAT(g.fecha, '%d/%m/%Y') AS fecha,
                 g.monto,
                 g.cuotamensual AS cuota,
-                IF(MONTH(g.fecha) = $d->mes 
-                    AND YEAR(g.fecha) = $d->anio, 
-                    0.00, 
-                    g.saldo + f.monto) AS saldoant,
+                (
+                    g.monto
+                    - COALESCE((SELECT SUM(pn.monto)
+                                FROM plnpresnom pn
+                                INNER JOIN plnnomina n ON pn.idplnnomina = n.id
+                                WHERE pn.idplnprestamo = g.id
+                                AND MONTH(n.fecha) <= $d->mes-1 AND YEAR(n.fecha) <= $d->anio-1), 0)
+                    - COALESCE((SELECT SUM(pa.monto)
+                                FROM plnpresabono pa
+                                WHERE pa.idplnprestamo = g.id
+                                AND MONTH(pa.fecha) <= $d->mes-1 AND YEAR(pa.fecha) <= $d->anio-1), 0)
+                ) AS saldoant,
                 IF(MONTH(g.fecha) = $d->mes
                         AND YEAR(g.fecha) = $d->anio,
                     g.monto,
@@ -659,7 +667,18 @@ $app->post('/prestamos', function(){
                 f.monto AS descnomina,
                 j.monto AS descuento,
                 f.monto + IFNULL(j.monto, 0.00) AS totdesc,
-                g.saldo
+                (
+                    g.monto
+                    - COALESCE((SELECT SUM(pn.monto)
+                                FROM plnpresnom pn
+                                INNER JOIN plnnomina n ON pn.idplnnomina = n.id
+                                WHERE pn.idplnprestamo = g.id
+                                AND MONTH(n.fecha) <= $d->mes AND YEAR(n.fecha) <= $d->anio), 0)
+                    - COALESCE((SELECT SUM(pa.monto)
+                                FROM plnpresabono pa
+                                WHERE pa.idplnprestamo = g.id
+                                AND MONTH(pa.fecha) <= $d->mes AND YEAR(pa.fecha) <= $d->anio), 0)
+                ) AS saldo
             FROM
                 plnempleado a
                     INNER JOIN
@@ -688,6 +707,8 @@ $app->post('/prestamos', function(){
                 GROUP BY idplnprestamo) j ON j.idplnprestamo = g.id
             WHERE
                 g.anulado = 0 AND g.esembargo = 0
+                    AND MONTH(g.fecha) <= $d->mes 
+                    AND YEAR(g.fecha) <= $d->anio
                     AND (g.finalizado = 0
                     OR (YEAR(g.liquidacion) = $d->anio
                     AND MONTH(g.liquidacion) = $d->mes)) ";
