@@ -709,8 +709,10 @@ $app->post('/prestamos', function(){
                 g.anulado = 0 AND g.esembargo = 0
                     AND MONTH(g.fecha) <= $d->mes 
                     AND YEAR(g.fecha) <= $d->anio
+                    IF(g.finalizado = 1, 
                     AND YEAR(g.liquidacion) >= $d->anio
-                    AND MONTH(g.liquidacion) >= $d->mes ";
+                    AND MONTH(g.liquidacion) >= $d->mes, 
+                    g.finalizado = 0) ";
     $query.= isset($d->idempresa) ? "AND h.id = $d->idempresa " : "";
     $query.= "GROUP BY g.id ORDER BY  2 , ";
     $query.= $d->agrupar == 2 ? " 6 , 8, 11" : " 8, 11";
