@@ -1085,7 +1085,7 @@ $app->post('/conectar_banco', function () use ($app) {
 
     try {
         $archivos = $conciliacion->get_mt940(); 
-        // $conciliacion->read_mt940();
+        $conciliacion->read_mt940();
     } catch (Exception $e) {
         print json_encode(['tipo' => 'error', 'mensaje' => 'Error en la conexión, favor comunicarse con IT: ' . $e->getMessage()]);
         return;
