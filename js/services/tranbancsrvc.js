@@ -96,6 +96,9 @@
             },
             datosReporteAprobados: obj => {
                 return comunFact.doPOST('php/rptchequesaprob.php/aprobados', obj);
+            },
+            getErroresMT940: () => {
+                return comunFact.doGET(urlBase + '/errores_mt940');
             }
         };
     }]);

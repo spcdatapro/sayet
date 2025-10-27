@@ -69,6 +69,39 @@
             </div>
         </script>
         <!--Fin de Template de la modal-->
+        <!--Template de la modal //Este usa el controlador ModalErroresCtrl-->
+        <script type="text/ng-template" id="modalErrores.html">
+            <div class="modal-header">
+                <h3 class="modal-title">Algunos archivos no han sido recibidos correctamente desde el banco</h3>
+            </div>
+            <div class="modal-body" style="overflow-y: auto; overflow-x: auto">
+                <h5>
+                    Por favor notifica estos casos para que podamos gestionarlos con la entidad correspondiente. </br>
+                    Si ya se notificó, haz clic en el ícono de verificación para marcarlo como atendido y evitar que vuelva a mostrarse.
+                </h5>
+                <table class="table table-condensed table-hover">
+                    <thead>
+                        <th>Fecha</th>
+                        <th>Descripci&oacute;n</th>
+                        <th>&nbsp;</th>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="e in errores">
+                        <td>{{e.fecha | date:'dd/MM/yyyy'}}</td>
+                        <td>{{e.descripcion | date:'dd/MM/yyyy'}}</td>
+                        <td>
+                            <button type="button" class="btn btn-success btn-sm" ng-click="revisarError(e.id)">
+                                <i class="fi fi-br-check"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="button" ng-click="cancel()">Aceptar</button>
+            </div>
+        </script>
     </ul>
     <ul class="nav navbar-nav navbar-right">
         <li style="min-width: 0.5em; max-width: 15.5em; white-space: nowrap">

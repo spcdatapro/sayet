@@ -2,8 +2,8 @@
 
     var controller = angular.module('cpm.docsbancoctrl', []);
 
-    controller.controller('docsBancoCtrl', ['$scope', 'tranBancSrvc', 'bancoSrvc', '$interval', 'toaster', '$http', '$q', '$window', 'authSrvc',
-        ($scope, tranBancSrvc, bancoSrvc, $interval, toaster, $http, $q, $window, authSrvc) => {
+    controller.controller('docsBancoCtrl', ['$scope', 'tranBancSrvc', 'bancoSrvc', '$interval', 'toaster', '$http', '$q', '$window', 'authSrvc', 'desktopNotification',
+        ($scope, tranBancSrvc, bancoSrvc, $interval, toaster, $http, $q, $window, authSrvc, desktopNotification) => {
             $scope.documentos = []; // desde se almacenan todos los documentos
             $scope.todas = [];
             $scope.cargando = false; // si esta cargando 
@@ -83,7 +83,7 @@
                         $scope.progress = 40;
                         toaster.pop({ type: d.tipo, title: 'Conexion a banco', body: d.mensaje, timeout: 10000 })
 
-                        if (d.tipo === 'success') {
+                        if (d.tipo === 'success' || d.tipo === 'warning') {
                             estatusCarga(80);
 
                             // si la conxeion es exitosa, entonces buscamos documetos para conciliar

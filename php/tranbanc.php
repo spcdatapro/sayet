@@ -1084,14 +1084,21 @@ $app->post('/conectar_banco', function () use ($app) {
     $conciliacion = new ConciliacionAutomatica($src, $dest);
 
     try {
-        $conciliacion->get_mt940(); 
-        $conciliacion->read_mt940();
+        $archivos = $conciliacion->get_mt940(); 
+        // $conciliacion->read_mt940();
     } catch (Exception $e) {
         print json_encode(['tipo' => 'error', 'mensaje' => 'Error en la conexión, favor comunicarse con IT: ' . $e->getMessage()]);
         return;
     }
 
-    print json_encode(['tipo' => 'success', 'mensaje' => 'Archivos extraídos con éxito']);
+    if (count($archivos->errores)) {
+        $error = $archivos->errores[0];
+        $fecha = $archivos->fecha;
+        $db->doQuery("INSERT INTO errores_ecuenta(descripcion, fecha) VALUES ('$error', '$fecha')");
+        print json_encode(['tipo' => 'warning', 'mensaje' => 'Archivos extraídos con éxito, no se recibiron todos los archivos', 'errores' => $error]);
+    }  else {
+        print json_encode(['tipo' => 'success', 'mensaje' => 'Archivos extraídos con éxito']);
+    }
     return;
 });
 
@@ -1499,6 +1506,26 @@ $app->post('/auttran', function () {
     $success = $db->getOneField("SELECT autorizado FROM tranban WHERE id = $tran->id") == 1;
 
     return json_encode(['success' => $success]);
+});
+
+$app->get('/errores_mt940', function () {
+    $db = new dbcpm();
+
+    $query = "SELECT id, descripcion, fecha, revisado FROM errores_ecuenta WHERE revisado = 0";
+    $errores = $db->getQuery($query);
+
+    return print json_encode($errores);
+});
+
+$app->post('/rerr', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $db->doQuery("UPDATE errores_ecuenta SET revisado = 1 WHERE id = $d->id");
+
+    $success = $db->getOneField("SELECT revisado FROM errores_ecuenta WHERE id = $d->id") == 1;
+
+    return print json_encode($success);
 });
 
 $app->run();
