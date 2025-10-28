@@ -987,6 +987,7 @@ $app->post('/ocupacion', function() {
     $query = "SELECT 
                 a.nomproyecto AS proyecto,
                 a.metros_rentable AS mdisponibles,
+                b.nombre AS unidad,
                 b.id AS idunidad,
                 ROUND(b.mcuad, 2) AS medida,
                 ROUND(b.mcuad * 100 / a.metros_rentable, 2) AS porcentaje,
@@ -1040,6 +1041,7 @@ $app->post('/ocupacion', function() {
             $procentaje = [];
             $metros = [];
             $data_mes->total = 0;
+            $data_mes->detalles = [];
 
             // recorrer datos y extraer los que correspondan a este mes y año
             for ($j = 0; $j < count($data); $j++) {
@@ -1048,7 +1050,16 @@ $app->post('/ocupacion', function() {
                     array_push($procentaje, (float)$unidad->porcentaje);
                     array_push($metros, (float)$unidad->medida);
                     $data_mes->total += (float)$unidad->total;
-                    // eliminar la entrada ya procesada para mejorar performance
+                
+                    // Guardar detalle de la unidad
+                    $detalle = new StdClass();
+                    $detalle->unidad = $unidad->unidad;     
+                    $detalle->medida = (float)$unidad->medida;
+                    $detalle->porcentaje = (float)$unidad->porcentaje;
+                    $detalle->total = (float)$unidad->total;
+                    array_push($data_mes->detalles, $detalle);
+                
+                    // eliminar la entrada ya procesada
                     array_splice($data, $j, 1);
                     $j--;
                 }
