@@ -25,6 +25,11 @@
         border: 1px solid #ccc;
         padding: 10px;
     }
+
+    .modal-wide .modal-dialog {
+        max-width: 80% !important;
+        /* o 1000px, lo que necesites */
+    }
 </style>
 <div class="container" ng-controller="rptOcupacion">
     <div class="row">
@@ -160,35 +165,73 @@
             </caption>
             <tbody ng-repeat="anio in anios">
                 <tr ng-click="anio.detalle = !anio.detalle" class="celeste">
-                    <th colspan="{{ anio.detalle ? anio.columnas : anio.columna_tres + 1  }}">{{ anio.anio }}</th>
-                    <th ng-show="!anio.detalle" colspan="{{anio.columna_tres}}">{{anio.promedio_metros_ocupados | number: 2}}m<sup>2</sup></th>
-                    <th ng-show="!anio.detalle" colspan="{{anio.columna_tres}}">{{anio.promedio_porcentaje_ocupado | number: 2}}%</th>
-                    <th ng-show="!anio.detalle" colspan="{{anio.columna_tres}}">Q.{{anio.promedio_total | number: 2}}</th>
+                    <th colspan="{{anio.columnas + 1}}">{{ anio.anio }}</th>
                 </tr>
                 <tr ng-show="anio.detalle">
                     <th>&nbsp;</th>
-                    <th ng-repeat="mes in anio.meses">{{mes.mes}}</th>
+                    <th style="vertical-align: middle;">Promedio</th>
+                    <th ng-repeat="mes in anio.meses">
+                        <div
+                            style="display:flex; align-items:center; justify-content:space-between; white-space:nowrap;">
+                            <span>{{mes.mes}}</span>
+                            <button type="button" class="btn btn-link" title="Detalle {{mes.mes}}"
+                                ng-click="verDetalle(mes.detalles, mes.mes)">
+                                <i class="fi fi-rr-file-circle-info"></i>
+                            </button>
+                        </div>
+                    </th>
                 </tr>
                 <tr ng-show="anio.detalle">
                     <th>Metros</th>
+                    <td>{{anio.promedio_metros_ocupados | number: 2}}m<sup>2</sup></td>
                     <td ng-repeat="mes in anio.meses">{{mes.metros_ocupados | number: 2}}m<sup>2</sup></td>
                 </tr>
                 <tr ng-show="anio.detalle">
                     <th>Porcentaje</th>
+                    <td>{{anio.promedio_porcentaje_ocupado | number: 2}}%</td>
                     <td ng-repeat="mes in anio.meses">{{mes.porcentaje_ocupado | number: 2}}%</td>
                 </tr>
                 <tr ng-show="anio.detalle">
                     <th>Monto</th>
+                    <td>Q.{{anio.promedio_total | number: 2}}</td>
                     <td ng-repeat="mes in anio.meses">Q.{{mes.total | number: 2}}</td>
-                </tr>
-                <tr ng-show="anio.detalle">
-                    <th colspan="{{anio.columna_tres + 1}}">Promedios</th>
-                    <th colspan="{{anio.columna_tres}}">{{anio.promedio_metros_ocupados | number: 2}}m<sup>2</sup></th>
-                    <th colspan="{{anio.columna_tres}}">{{anio.promedio_porcentaje_ocupado | number: 2}}%</th>
-                    <th colspan="{{anio.columna_tres}}">Q.{{anio.promedio_total | number: 2}}</th>
                 </tr>
             </tbody>
         </table>
     </div>
     <rpt-viewer contenido="content"></rpt-viewer>
+
+    <!-- detalle del mes -->
+    <script type="text/ng-template" id="modalDetalleMes.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Detalle del mes de {{mes}}</h3>
+        </div>
+        <div class="modal-body">
+            <div ng-show="detalles.length > 0" class="table-responsive">
+                <table class="table table-responsive">
+                    <thead>
+                        <th>Unidad</th>
+                        <th>Tipo</th>
+                        <th>Metros</th>
+                        <th>Porcentaje</th>
+                        <th>Cliente</th>
+                        <th>Servicio</th>
+                        <th>Total</th>
+                    </thead>
+                    <tbody ng-repeat="d in detalles">
+                        <td>{{d.unidad}}</td>
+                        <td>{{d.tipo}}</td>
+                        <td>{{d.medida | number:2}}m<sup>2</sup></td>
+                        <td>{{d.porcentaje}}%</td>
+                        <td>{{d.cliente}}</td>
+                        <td>{{d.servicio}}</td>
+                        <td>Q.{{d.total | number:2}}</td>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="cancel()">Aceptar</button>
+        </div>
+    </script>
 </div>

@@ -987,8 +987,9 @@ $app->post('/ocupacion', function() {
     $query = "SELECT 
                 a.nomproyecto AS proyecto,
                 a.metros_rentable AS mdisponibles,
-                b.nombre AS unidad,
                 b.id AS idunidad,
+                b.nombre AS unidad,
+                e.descripcion AS tipo,
                 ROUND(b.mcuad, 2) AS medida,
                 ROUND(b.mcuad * 100 / a.metros_rentable, 2) AS porcentaje,
                 IF(d.id > 0, 1, 0) AS ocupado,
@@ -997,7 +998,9 @@ $app->post('/ocupacion', function() {
                 ROUND(SUM(IF(d.idmonedafact = 1,
                             d.total,
                             d.total * d.tipocambio)),
-                        2) AS total
+                        2) AS total,
+                GROUP_CONCAT(DISTINCT f.nombrecorto) AS cliente,
+                GROUP_CONCAT(h.desctiposervventa) AS tipo_servicio
             FROM
                 proyecto a
                     INNER JOIN
@@ -1009,6 +1012,14 @@ $app->post('/ocupacion', function() {
                     AND MONTH(d.fecha) >= $d->mes_del
                     AND MONTH(d.fecha) <= $d->mes_al
                     AND YEAR(d.fecha) BETWEEN $d->anio_del AND $d->anio_al
+                    INNER JOIN 
+                tipolocal e ON b.idtipolocal = e.id 
+                    LEFT JOIN 
+                cliente f ON d.idcliente = f.id
+                    LEFT JOIN 
+                detfact g ON g.idfactura = d.id 
+                    LEFT JOIN 
+                tiposervicioventa h ON g.idtiposervicio = h.id
             WHERE
                 a.id = $d->idproyecto AND b.idtipolocal NOT IN (9, 17)
             GROUP BY b.id, YEAR(d.fecha), MONTH(d.fecha)
@@ -1053,9 +1064,12 @@ $app->post('/ocupacion', function() {
                 
                     // Guardar detalle de la unidad
                     $detalle = new StdClass();
-                    $detalle->unidad = $unidad->unidad;     
+                    $detalle->unidad = $unidad->unidad;
+                    $detalle->tipo = $unidad->tipo;     
                     $detalle->medida = (float)$unidad->medida;
                     $detalle->porcentaje = (float)$unidad->porcentaje;
+                    $detalle->cliente = $unidad->cliente;
+                    $detalle->servicio = $unidad->tipo_servicio;
                     $detalle->total = (float)$unidad->total;
                     array_push($data_mes->detalles, $detalle);
                 

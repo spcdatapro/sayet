@@ -2,8 +2,8 @@
 
     const controller = angular.module('cpm.rptocupacion', []);
 
-    controller.controller('rptOcupacion', ['$scope', 'jsReportSrvc', 'authSrvc', 'empresaSrvc', 'proyectoSrvc', '$filter', 'gerencialSrvc',
-        function ($scope, jsReportSrvc, authSrvc, empresaSrvc, proyectoSrvc, $filter, gerencialSrvc) {
+    controller.controller('rptOcupacion', ['$scope', 'jsReportSrvc', 'authSrvc', 'empresaSrvc', 'proyectoSrvc', '$filter', 'gerencialSrvc', '$uibModal',
+        function ($scope, jsReportSrvc, authSrvc, empresaSrvc, proyectoSrvc, $filter, gerencialSrvc, $uibModal) {
 
             // variables para selectores
             $scope.empresas = [];
@@ -74,7 +74,7 @@
             }
 
             // pdf
-            $scope.getPDF = function (params) {
+            $scope.getPDF = params => {
                 // estatus de carga
                 $scope.cargando = true;
                 // reinciar visualizacion
@@ -87,7 +87,7 @@
             }
 
             // excel
-            $scope.getXML = function (params) {
+            $scope.getXML = params => {
                 // estatus de carga
                 $scope.cargando = true;
 
@@ -101,10 +101,34 @@
                 })
             }
 
+            $scope.verDetalle = (detalles, mes) => {
+                console.log(detalles);
+                $uibModal.open({
+                    animation: true,
+                    templateUrl: 'modalDetalleMes.html',
+                    controller: 'modalDetalleMesCtrl',
+                    size: 'lg',
+                    resolve: {
+                        detalles: () => detalles,
+                        mes: () => mes
+                    }
+                });
+            }
+
             // reinicar visualizacion
             function resetVer() {
                 $scope.ver = false;
                 $scope.content = `${window.location.origin}/sayet/blank.html`;
             }
         }])
+
+    //___________________________________________________________________________________________________________________________________________________
+    controller.controller('modalDetalleMesCtrl', ['$scope', '$uibModalInstance', 'detalles', 'mes', function ($scope, $uibModalInstance, detalles, mes) {
+        $scope.detalles = detalles;
+        $scope.mes = mes;
+
+        $scope.cancel = () => {
+            $uibModalInstance.dismiss('cancel');
+        }
+    }])
 }())
