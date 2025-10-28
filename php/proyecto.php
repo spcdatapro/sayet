@@ -193,8 +193,7 @@ $app->get('/servunibasico/:idunidad', function($idunidad){
     $db = new dbcpm();
     $query = "SELECT a.id, a.idunidad, a.idserviciobasico, c.desctiposervventa AS tiposervicio, d.nombre AS proveedor, b.numidentificacion, b.numreferencia, e.nomempresa AS empresa, ";
     $query.= "IF(b.pagacliente = 0, 'No', 'Sí') AS pagacliente, ";
-    $query.= "IF((SELECT cantbase FROM detunidadservicio WHERE idunidadservicio = a.id ORDER BY fechacambio DESC LIMIT 1) IS NULL, 0.00, ";
-    $query.= "(SELECT cantbase FROM detunidadservicio WHERE idunidadservicio = a.id ORDER BY fechacambio DESC LIMIT 1)) AS mcubsug ";
+    $query.= " b.mcubsug ";
     $query.= "FROM unidadservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico INNER JOIN tiposervicioventa c ON c.id = b.idtiposervicio ";
     $query.= "INNER JOIN proveedor d ON d.id = b.idproveedor INNER JOIN empresa e ON e.id = b.idempresa ";
     $query.= "WHERE b.asignado = 1 AND b.espropio = 0 AND a.idunidad = ".$idunidad." AND ISNULL(a.ffin) ";
