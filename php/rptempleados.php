@@ -625,6 +625,20 @@ $app->post('/prestamos', function(){
     // parametros 
     $d->mes = $d->mes + 1;
 
+    // asegurar formato de mes con dos dígitos
+    $mes = str_pad($d->mes, 2, '0', STR_PAD_LEFT);
+
+    // inicio = primer día del mes
+    $fecha_inicio_dt = new DateTime("{$d->anio}-{$mes}-01");
+
+    // fin = último día de ese mes
+    $fecha_fin_dt = clone $fecha_inicio_dt;
+    $fecha_fin_dt->modify('last day of this month');
+
+    // usar como strings 'YYYY-MM-DD' en la consulta
+    $fecha_inicio = $fecha_inicio_dt->format('Y-m-d');
+    $fecha_fin = $fecha_fin_dt->format('Y-m-d');
+
     $query = "SELECT 
                 h.id AS idempresa,
                 h.nombre AS empresa,
@@ -638,6 +652,7 @@ $app->post('/prestamos', function(){
                         IFNULL(b.segundonombre, ''),
                         ' ',
                         IFNULL(b.tercernombre, ''),
+                        ' ',
                         IFNULL(b.primerapellido, ''),
                         ' ',
                         IFNULL(b.segundoapellido, ''),
@@ -648,37 +663,46 @@ $app->post('/prestamos', function(){
                 DATE_FORMAT(g.fecha, '%d/%m/%Y') AS fecha,
                 g.monto,
                 g.cuotamensual AS cuota,
-                (
-                    g.monto
-                    - COALESCE((SELECT SUM(pn.monto)
-                                FROM plnpresnom pn
-                                INNER JOIN plnnomina n ON pn.idplnnomina = n.id
-                                WHERE pn.idplnprestamo = g.id
-                                AND MONTH(n.fecha) <= $d->mes-1 AND YEAR(n.fecha) <= $d->anio-1), 0)
-                    - COALESCE((SELECT SUM(pa.monto)
-                                FROM plnpresabono pa
-                                WHERE pa.idplnprestamo = g.id
-                                AND MONTH(pa.fecha) <= $d->mes-1 AND YEAR(pa.fecha) <= $d->anio-1), 0)
-                ) AS saldoant,
-                IF(MONTH(g.fecha) = $d->mes
-                        AND YEAR(g.fecha) = $d->anio,
+                (g.monto - COALESCE((SELECT 
+                                SUM(pn.monto)
+                            FROM
+                                plnpresnom pn
+                                    INNER JOIN
+                                plnnomina n ON pn.idplnnomina = n.id
+                            WHERE
+                                pn.idplnprestamo = g.id
+                                    AND n.fecha <= DATE_SUB('$fecha_inicio', INTERVAL 1 DAY)),
+                        0) - COALESCE((SELECT 
+                                SUM(pa.monto)
+                            FROM
+                                plnpresabono pa
+                            WHERE
+                                pa.idplnprestamo = g.id
+                                    AND pa.fecha <= DATE_SUB('$fecha_inicio', INTERVAL 1 DAY)),
+                        0)) AS saldoant,
+                IF(DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m'),
                     g.monto,
                     0.00) AS nuevo,
                 f.monto AS descnomina,
                 j.monto AS descuento,
                 f.monto + IFNULL(j.monto, 0.00) AS totdesc,
-                (
-                    g.monto
-                    - COALESCE((SELECT SUM(pn.monto)
-                                FROM plnpresnom pn
-                                INNER JOIN plnnomina n ON pn.idplnnomina = n.id
-                                WHERE pn.idplnprestamo = g.id
-                                AND MONTH(n.fecha) <= $d->mes AND YEAR(n.fecha) <= $d->anio), 0)
-                    - COALESCE((SELECT SUM(pa.monto)
-                                FROM plnpresabono pa
-                                WHERE pa.idplnprestamo = g.id
-                                AND MONTH(pa.fecha) <= $d->mes AND YEAR(pa.fecha) <= $d->anio), 0)
-                ) AS saldo
+                (g.monto - COALESCE((SELECT 
+                                SUM(pn.monto)
+                            FROM
+                                plnpresnom pn
+                                    INNER JOIN
+                                plnnomina n ON pn.idplnnomina = n.id
+                            WHERE
+                                pn.idplnprestamo = g.id
+                                    AND n.fecha <= '$fecha_fin'),
+                        0) - COALESCE((SELECT 
+                                SUM(pa.monto)
+                            FROM
+                                plnpresabono pa
+                            WHERE
+                                pa.idplnprestamo = g.id
+                                    AND pa.fecha <= '$fecha_fin'),
+                        0)) AS saldo
             FROM
                 plnempleado a
                     INNER JOIN
@@ -703,15 +727,14 @@ $app->post('/prestamos', function(){
                 FROM
                     plnpresabono
                 WHERE
-                    MONTH(fecha) = $d->mes AND YEAR(fecha) = $d->anio
+                    fecha BETWEEN '$fecha_inicio' AND '$fecha_fin'
                 GROUP BY idplnprestamo) j ON j.idplnprestamo = g.id
             WHERE
                 g.anulado = 0 AND g.esembargo = 0
-                    AND MONTH(g.fecha) <= $d->mes 
-                    AND YEAR(g.fecha) <= $d->anio
+                    AND g.fecha <= '$fecha_fin'
+                    AND g.fecha <= '$fecha_fin'
                     AND (g.finalizado = 0
-                    OR (YEAR(g.liquidacion) >= $d->anio
-                    AND MONTH(g.liquidacion) >= $d->mes)) ";
+                    OR g.liquidacion >= '$fecha_inicio')";
     $query.= isset($d->idempresa) ? "AND h.id = $d->idempresa " : "";
     $query.= "GROUP BY g.id ORDER BY  2 , ";
     $query.= $d->agrupar == 2 ? " 6 , 8, 11" : " 8, 11";
