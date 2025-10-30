@@ -74,13 +74,13 @@
             }
 
             // pdf
-            $scope.getPDF = params => {
+            $scope.getPDF = (params, rpt) => {
                 // estatus de carga
                 $scope.cargando = true;
                 // reinciar visualizacion
                 resetVer();
 
-                jsReportSrvc.getPDFReport('Bkr3njFixg', params).then(function (pdf) {
+                jsReportSrvc.getPDFReport(rpt, params).then(function (pdf) {
                     $scope.content = pdf;
                     $scope.cargando = false;
                 })
@@ -107,7 +107,7 @@
                     animation: true,
                     templateUrl: 'modalDetalleMes.html',
                     controller: 'modalDetalleMesCtrl',
-                    size: 'lg',
+                    windowClass: 'modal-xl',
                     resolve: {
                         detalles: () => detalles,
                         mes: () => mes

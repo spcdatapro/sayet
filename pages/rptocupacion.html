@@ -26,9 +26,10 @@
         padding: 10px;
     }
 
-    .modal-wide .modal-dialog {
-        max-width: 80% !important;
-        /* o 1000px, lo que necesites */
+    .modal-xl .modal-dialog {
+        width: 90%;
+        /* o 1200px, lo que necesites */
+        max-width: none;
     }
 </style>
 <div class="container" ng-controller="rptOcupacion">
@@ -131,7 +132,7 @@
             </div>
             <div class="panel-footer text-right">
                 <div class="btn-group">
-                    <button type="button" class="btn btn-danger" ng-click="getPDF(params)"
+                    <button type="button" class="btn btn-danger" ng-click="getPDF(params, 'Bkr3njFixg')"
                         ng-disabled="paramsRep.$invalid || cargando">
                         <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
                     </button>
@@ -142,6 +143,10 @@
                     <button type="button" class="btn btn-primary" ng-click="getResumen(params)"
                         ng-disabled="paramsRep.$invalid || cargando">
                         <i class="fi fi-tr-file-download"></i>
+                    </button>
+                    <button type="button" class="btn btn-danger" ng-click="getPDF(params, 'S1PMiZWybl')"
+                        ng-disabled="paramsRep.$invalid || cargando">
+                        <i class="fi fi-rr-file-circle-info"></i>
                     </button>
                 </div>
             </div>
@@ -221,11 +226,11 @@
                     <tbody ng-repeat="d in detalles">
                         <td>{{d.unidad}}</td>
                         <td>{{d.tipo}}</td>
-                        <td>{{d.medida | number:2}}m<sup>2</sup></td>
-                        <td>{{d.porcentaje}}%</td>
+                        <td class="text-right">{{d.medida | number:2}}m<sup>2</sup></td>
+                        <td class="text-right">{{d.porcentaje}}%</td>
                         <td>{{d.cliente}}</td>
                         <td>{{d.servicio}}</td>
-                        <td>Q.{{d.total | number:2}}</td>
+                        <td class="text-right">Q.{{d.total | number:2}}</td>
                     </tbody>
                 </table>
             </div>
