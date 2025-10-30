@@ -133,19 +133,19 @@
             <div class="panel-footer text-right">
                 <div class="btn-group">
                     <button type="button" class="btn btn-danger" ng-click="getPDF(params, 'Bkr3njFixg')"
-                        ng-disabled="paramsRep.$invalid || cargando">
+                        ng-disabled="paramsRep.$invalid || cargando" title="Reporte PDF">
                         <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
                     </button>
                     <button type="button" class="btn btn-success" ng-click="getXML(params)"
-                        ng-disabled="paramsRep.$invalid || cargando">
+                        ng-disabled="paramsRep.$invalid || cargando" title="Reporte excel">
                         <span class="fa fa-file-excel-o" aria-hidden="true"></span>
                     </button>
                     <button type="button" class="btn btn-primary" ng-click="getResumen(params)"
-                        ng-disabled="paramsRep.$invalid || cargando">
+                        ng-disabled="paramsRep.$invalid || cargando" title="Reporte en pantalla">
                         <i class="fi fi-tr-file-download"></i>
                     </button>
-                    <button type="button" class="btn btn-danger" ng-click="getPDF(params, 'S1PMiZWybl')"
-                        ng-disabled="paramsRep.$invalid || cargando">
+                    <button type="button" class="btn btn-default" ng-click="getPDF(params, 'S1PMiZWybl')"
+                        ng-disabled="paramsRep.$invalid || cargando" title="Detalle de los meses">
                         <i class="fi fi-rr-file-circle-info"></i>
                     </button>
                 </div>
