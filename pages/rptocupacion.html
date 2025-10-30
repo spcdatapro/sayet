@@ -165,7 +165,7 @@
             </caption>
             <tbody ng-repeat="anio in anios">
                 <tr ng-click="anio.detalle = !anio.detalle" class="celeste">
-                    <th colspan="{{anio.columnas + 1}}">{{ anio.anio }}</th>
+                    <th colspan="{{anio.columnas}}">{{ anio.anio }}</th>
                 </tr>
                 <tr ng-show="anio.detalle">
                     <th>&nbsp;</th>
