@@ -31,7 +31,7 @@
             $scope.params.idempresa = $scope.idempresa;
             if ($scope.idempresa > 0) {
                 empresaSrvc.getEmpresa($scope.idempresa).then(function (d) {
-                    $scope.dectc = parseInt(d[0].dectc);
+                    $scope.dectc = 5;
                     monedaSrvc.lstMonedas().then(function (l) {
                         $scope.monedas = l;
                         $scope.resetVenta();
