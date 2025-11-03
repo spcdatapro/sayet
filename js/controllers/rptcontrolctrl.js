@@ -61,7 +61,7 @@
                     $scope.params_proveedores.anio_inicial = +moment().toDate().getFullYear();
                     $scope.params_proveedores.anio_final = +moment().toDate().getFullYear();
                     break;
-                case '2': 
+                case '2':
                     $scope.params_proveedores.anio_inicial = +moment().toDate().getFullYear();
                     $scope.params_proveedores.anio_final = +moment().toDate().getFullYear();
                     break;
@@ -103,10 +103,10 @@
                     switch (params.ver) {
                         case '1':
                             rango = params.anio;
-                        break;
-                        case '2': 
+                            break;
+                        case '2':
                             rango = params.anio_inicial + '_' + params.anio_final;
-                        break;
+                            break;
                         case '3':
                             rango = 'todos';
                     }
@@ -123,7 +123,7 @@
 
         $scope.getReportProveedores = params => {
             // estatus carga
-            $scope.cargando = true;
+            // $scope.cargando = true;
 
             tranBancSrvc.datosReporteAprobados(params).then(d => {
                 console.log(d);
@@ -133,6 +133,17 @@
                 $scope.ver = true;
             })
         }
+
+        $scope.toggleAnios = function (d) {
+            d.ver_anios = !d.ver_anios;
+
+            // si se cierra, también resetea los detalles de cada año
+            if (!d.ver_anios && d.proyectos) {
+                d.proyectos.forEach(function (anio) {
+                    anio.ver_detalle = false;
+                });
+            }
+        };
         // fin hoja de control proveedores
     }])
 }())

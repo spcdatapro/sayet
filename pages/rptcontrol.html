@@ -7,7 +7,7 @@
     }
 
     .celeste {
-        background-color: #B4E2E8;
+        background-color: rgb(217, 231, 248);
         border-radius: 5px;
     }
 
@@ -135,8 +135,7 @@
                             <span class="fa fa-file-excel-o" aria-hidden="true"></span>
                         </button>
                         <button type="button" class="btn btn-primary"
-                            ng-click="getReportProveedores(params_proveedores)"
-                            ng-disabled="paramsProv.$invalid || cargando">
+                            ng-click="getReportProveedores(params_proveedores)" ng-disabled="cargando">
                             <span class="glyphicon glyphicon-eye-open"></span>
                         </button>
                     </div>
@@ -151,163 +150,70 @@
                     </div>
                 </div>
             </div>
-            <div id="tblResumen" ng-show="ver">
+            <div id="tblResumen" class="table-responsive sticky-table sticky-headers" ng-show="ver">
                 <table class="table table-responsive table-hover">
-                    <caption class="ctxt">HOJA DE CONTROL</caption>
+                    <caption class="ctxt amarillo" style="color: black;">HOJA DE CONTROL PROVEEDORES</caption>
                     <thead>
-                        <tr>
-                            <th class="ctxt amarillo" colspan="5">Empresa</th>
-                            <th class="ctxt amarillo" colspan="4">Proveedor</th>
-                            <th class="ctxt amarillo" colspan="5">Proyecto</th>
-                        </tr>
-                        <tr>
-                            <td class="ctxt gris" colspan="5">{{encabezado.empresa}}</td>
-                            <td class="ctxt gris" colspan="4">{{encabezado.proveedor}}</td>
-                            <td class="ctxt gris" colspan="5">{{encabezado.proyecto}}</td>
+                        <tr class="sticky-header">
+                            <th>No.</th>
+                            <th>Empresa</th>
+                            <th>Proyecto</th>
+                            <th>Proveedor</th>
+                            <th>Recurrencia</th>
                         </tr>
                     </thead>
-                    <tr>
-                        <td colspan="14">&nbsp;</td>
-                    </tr>
                     <tbody ng-repeat="d in data">
-                        <tr>
-                            <td colspan="4"></td>
-                            <th colspan="3">PROMEDIO AÑO {{d.nombre}}</th>
-                            <th colspan="3" class="rtxt">{{d.monto_factura_promedio | number:2}}<th>
-                            <td colspan="4"></td>
+                        <!-- fila principal -->
+                        <tr ng-click="toggleAnios(d)">
+                            <td>{{d.id}}</td>
+                            <td>{{d.abreviatura}}</td>
+                            <td>{{d.numero}}</td>
+                            <td>{{d.nombre}}</td>
+                            <td>{{d.cuantos}}</td>
                         </tr>
-                        <tr>
-                            <td colspan="14">&nbsp;</td>
+
+                        <!-- fila de años -->
+                        <tr ng-if="d.ver_anios" ng-repeat="anio in d.proyectos">
+                            <th colspan="5" class="celeste" ng-click="anio.ver_detalle = !anio.ver_detalle">
+                                {{anio.nombre}}
+                            </th>
                         </tr>
-                        <tr>
-                            <th class="ctxt">A&ntilde;o </br> {{d.nombre}}</th>
-                            <th class="ctxt">Fecha de Emisi&oacute;n</th>
-                            <th class="ctxt">Serie</th>
-                            <th class="ctxt">Numero</th>
-                            <th class="ctxt">Transacci&oacute;n</th>
-                            <th class="ctxt">Monto</th>
-                            <th class="ctxt">Iva</th>
-                            <th class="ctxt">Monto cheque</th>
-                            <th class="ctxt">Fecha ela.</th>
-                            <th class="">Ela. Por:</th>
-                            <th class="">Rev. Por:</th>
-                            <th class="">Fecha </br> rev.</th>
-                            <th class="">Auto. Por:</th>
-                            <th class="">Fecha auto.</th>
-                        </tr>
-                        <tr ng-repeat="t in d.transacciones">
-                            <td class="ltxt espacio brd">{{t.mes}}</td>
-                            <td class="ctxt espacio brd">{{t.fecha}}</td>
-                            <td class="ctxt espacio brd">{{t.serie}}</td>
-                            <td class="ctxt espacio brd">{{t.factura}}</td>
-                            <td class="ctxt espacio brd">{{t.tipotrans}}-{{t.tran}}</td>
-                            <td class="rtxt espacio brd">{{t.monto_factura | number:2}}</td>
-                            <td class="rtxt espacio brd">{{t.iva | number:2}}</td>
-                            <td class="rtxt espacio brd">{{t.monto_cheque | number:2}}</td>
-                            <td class="espacio brd ctxt">{{t.fecha_elaborado}}</td>
-                            <td class="espacio brd ctxt">{{t.elaborado_por}}</td>
-                            <td class="espacio brd ctxt">{{t.revisado_por}}</td>
-                            <td class="espacio brd ctxt">{{t.fecha_autorizado}}</td>
-                            <td class="espacio brd ctxt">{{t.autorizado_por}}</td>
-                            <td class="espacio brd ctxt">{{t.fecha_autorizado}}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <!-- <table class="table table-responsive table-hover">
-                    <tbody ng-repeat="r in reporte">
-                        <tr ng-click="r.detalle = !r.detalle">
-                            <td style="text-align: left; width: 50%;">{{r.nombre}}</td>
-                            <td style="text-align: right; width: 50%;">{{r.diferencia}}</td>
-                        </tr>
-                        <tr ng-show="r.detalle">
-                            <td colspan="2">
-                                <table class="table table-hover table-responsive"
-                                    style="border-radius: 5px !important;">
-                                    <thead class="celeste">
+
+                        <!-- fila de transacciones -->
+                        <tr ng-if="anio.ver_detalle" ng-repeat="anio in d.proyectos">
+                            <td colspan="5">
+                                <table class="table table-sm">
+                                    <thead>
                                         <tr>
-                                            <td style="text-align: left; width: 50%;">INGRESOS</td>
-                                            <td style="text-align: right; width: 50%;">{{r.total_ventas | number:2}}
-                                            </td>
+                                            <th>Mes</th>
+                                            <th>Emisi&oacute;n</th>
+                                            <th>Serie</th>
+                                            <th>Numero</th>
+                                            <th>Transacci&oacute;n</th>
+                                            <th>Monto</th>
+                                            <th>IVA</th>
+                                            <th>Monto D&eacute;bito</th>
+                                            <th>Elaboraci&oacute;n</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="gris" ng-repeat="v in r.ventas" ng-click="v.detalle = !v.detalle">
-                                        <tr>
-                                            <td style="text-align: left; width: 50%;">{{v.nombre}}</td>
-                                            <td style="text-align: right; width: 50%;">{{v.total | number:2}}</td>
-                                        </tr>
-                                        <tr ng-show="v.detalle">
-                                            <td colspan="2" class="blanco">
-                                                <table class="table table-responsive table-hover"
-                                                    style="width: 98%; margin-left: auto; margin-right: auto;">
-                                                    <thead>
-                                                        <th>Cliente</th>
-                                                        <th>Unidades</th>
-                                                        <th>Documento</th>
-                                                        <th>M<sup>2</sup></th>
-                                                        <th>Monto/M<sup>2</sup></th>
-                                                        <th>Monto</th>
-                                                    </thead>
-                                                    <tbody ng-repeat="f in v.facturas" ng-click="verFactura(f.id, 1)">
-                                                        <td>{{f.cliente}}</td>
-                                                        <td>{{f.unidad}}</td>
-                                                        <td>{{f.factura}}</td>
-                                                        <td>{{f.mcuad}}</td>
-                                                        <td>{{f.unitario}}</td>
-                                                        <td style="text-align: right;">{{f.total | number:2}}</td>
-                                                    </tbody>
-                                                </table>
-                                            </td>
+                                    <tbody>
+                                        <tr ng-repeat="det in anio.transacciones">
+                                            <td>{{det.mes}}</td>
+                                            <td>{{det.fecha}}</td>
+                                            <td>{{det.serie}}</td>
+                                            <td>{{det.factura}}</td>
+                                            <td>{{det.tran}}</td>
+                                            <td>{{det.monto_factura | number: 2}}</td>
+                                            <td>{{det.iva | number: 2}}</td>
+                                            <td>{{det.monto_cheque | number: 2}}</td>
+                                            <td>{{det.fecha_elaborado}}</td>
                                         </tr>
                                     </tbody>
-                                    <thead class="celeste">
-                                        <tr>
-                                            <td style="text-align: left; width: 50%;">EGRESOS</td>
-                                            <td style="text-align: right; width: 50%;">{{r.total_compras | number:2}}
-                                            </td>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="gris" ng-repeat="c in r.compras" ng-click="c.detalle = !c.detalle">
-                                        <tr>
-                                            <td style="text-align: left; width: 50%;">{{c.nombre}}</td>
-                                            <td style="text-align: right; width: 50%;">{{c.total | number:2}}</td>
-                                        </tr>
-                                        <tr ng-show="c.detalle">
-                                            <td colspan="2" class="blanco">
-                                                <table class="table table-responsive table-hover"
-                                                    style="width: 98%; margin-left: auto; margin-right: auto;">
-                                                    <thead>
-                                                        <th>Beneficiario</th>
-                                                        <th>Chque</th>
-                                                        <th>Fecha</th>
-                                                        <th>Documento</th>
-                                                        <th>Concepto</th>
-                                                        <th>Monto</th>
-                                                    </thead>
-                                                    <tbody ng-repeat="f in c.facturas"
-                                                        ng-click="verFactura(f.idcompra, 2)">
-                                                        <td>{{f.beneficiario}}</td>
-                                                        <td>{{f.cheque}}</td>
-                                                        <td>{{f.fechafact}}</td>
-                                                        <td>{{f.documento}}</td>
-                                                        <td>{{f.concepto}}</td>
-                                                        <td style="text-align: right;">{{f.total | number:2}}</td>
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                    <tfoot class="celeste">
-                                        <tr>
-                                            <td style="text-align: left; width: 50%;">D&Eacute;FICIT/SUPER&Aacute;VIT
-                                            </td>
-                                            <td style="text-align: right; width: 50%;">{{r.diferencia}}</td>
-                                        </tr>
-                                    </tfoot>
                                 </table>
                             </td>
                         </tr>
                     </tbody>
-                </table> -->
+                </table>
             </div>
             <rpt-viewer contenido="content"></rpt-viewer>
         </div>

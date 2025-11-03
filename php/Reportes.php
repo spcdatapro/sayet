@@ -58,8 +58,10 @@ class GeneradorReportes {
                     // crear separador de empresa
                     $separador_empresa = new StdClass;
                     $separador_empresa->nombre = $d->empresa;
-                    $separador_empresa->numero = $d->numero > 0 ? $d->numero : null;
+                    $separador_empresa->id = $d->idempresa;
+                    $separador_empresa->numero = isset($d->numero) ? $d->numero : null;
                     $separador_empresa->abreviatura = $d->abreviatura;
+                    $separador_empresa->cuantos = isset($d->cuantos) ? $d->cuantos : null;
                     $separador_empresa->porproyecto = $porproyecto ? true : null;
 
                     // crear sumadores empresa 
