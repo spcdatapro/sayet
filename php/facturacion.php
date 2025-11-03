@@ -588,7 +588,7 @@ $app->post('/gengface', function() use($app){
     $query.= "TRIM(a.direccion) AS direccion, b.nombrecorto, ";
 
     $query.= "CONCAT('$ ', FORMAT(IF(a.idmonedafact = 1, ROUND(a.subtotal / a.tipocambio, 2), a.subtotalcnv), 2)) AS montodol, ";
-    $query.= "FORMAT(a.tipocambio, 4) AS tipocambio, ";
+    $query.= "FORMAT(a.tipocambio, 5) AS tipocambio, ";
     $query.= "CONCAT('$ ', FORMAT(IF(a.idmonedafact = 1, ROUND(a.total / a.tipocambio, 2), a.totalcnv), 2)) AS pagonetodol, ";
     $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2)) AS pagoneto, ";
     $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2)) AS retiva, ";
@@ -604,7 +604,7 @@ $app->post('/gengface', function() use($app){
     $query.= "a.id AS idfactura, 'S' AS tipoventa, a.nombre, IFNULL(a.direccion, '') AS direccion, '' AS nombrecorto, ";
 
     $query.= "CONCAT('$ ', FORMAT(IF(a.idmonedafact = 1, ROUND(a.subtotal / a.tipocambio, 2), a.subtotalcnv), 2)) AS montodol, ";
-    $query.= "FORMAT(a.tipocambio, 4) AS tipocambio, ";
+    $query.= "FORMAT(a.tipocambio, 5) AS tipocambio, ";
     $query.= "CONCAT('$ ', FORMAT(IF(a.idmonedafact = 1, ROUND(a.total / a.tipocambio, 2), a.totalcnv), 2)) AS pagonetodol, ";
     $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2)) AS pagoneto, ";
     $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2)) AS retiva, ";
@@ -762,10 +762,10 @@ $app->post('/genfel', function() use($app) {
     }    
     //Encabezado //CONCAT(TRIM(a.serieadmin), '-', LPAD(a.numeroadmin, 10, '0')) AS ordenexterno
     $query = "SELECT 1 AS tiporegistro, DATE_FORMAT(a.fecha, '%Y%m%d') AS fechadocumento, b.siglasfel AS tipodocumento, a.nit AS nitcomprador, a.idmonedafact AS codigomoneda, 
-    IF(a.idmonedafact = 1, 1, ROUND(a.tipocambio, 4)) AS tasacambio, CONCAT(TRIM(a.serieadmin), '-', LPAD(a.numeroadmin, 10, '0'), IF(a.idtipofactura = 1, '', CONCAT('-', b.siglasfel))) AS ordenexterno,
+    IF(a.idmonedafact = 1, 1, ROUND(a.tipocambio, 5)) AS tasacambio, CONCAT(TRIM(a.serieadmin), '-', LPAD(a.numeroadmin, 10, '0'), IF(a.idtipofactura = 1, '', CONCAT('-', b.siglasfel))) AS ordenexterno,
     IF(a.idtipoventa = 1, 'B', 'S') AS tipoventa, 1 AS destinoventa, 'S' AS enviarcorreo, 
     IF(a.nit <> 'CF', '', IF(LENGTH(a.nombre) > 0, a.nombre, 'Consumidor final')) AS nombrecomprador, IF(LENGTH(a.direccion) > 0, a.direccion, 'Ciudad') AS direccion, 
-    '' AS numeroacceso, IFNULL(a.serieadmin, 'A') AS serieadmin, a.numeroadmin, c.nombrecorto, FORMAT(a.importetotalcnv, 2) AS montodol, ROUND(a.tipocambio, 4) AS tipocambio, FORMAT(TRUNCATE(a.totalcnv, 2), 2) AS pagonetodol, 
+    '' AS numeroacceso, IFNULL(a.serieadmin, 'A') AS serieadmin, a.numeroadmin, c.nombrecorto, FORMAT(a.importetotalcnv, 2) AS montodol, ROUND(a.tipocambio, 5) AS tipocambio, FORMAT(TRUNCATE(a.totalcnv, 2), 2) AS pagonetodol, 
     FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2), 2) AS pagoneto, FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2), 2) AS retiva, 
     FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.retisr, a.retisrcnv), 2), 2) AS retisr, FORMAT(IF(a.idmonedafact = 1, a.importetotal, a.importetotalcnv), 2) AS monto, 
     DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.nombre, d.simbolo AS monedafact, 1 AS descargar, a.idfacturaafecta, a.id, a.tipoidreceptor
