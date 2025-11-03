@@ -12,7 +12,7 @@
         $scope.losTiposCompra = [];
         $scope.origen = 3;
         $scope.monedas = [];
-        $scope.dectc = 2;
+        $scope.dectc = 5;
         $scope.lsttiposfact = [];
         $scope.losDetCont = [];
         $scope.elDetCont = { debe: 0.0, haber: 0.0 };
