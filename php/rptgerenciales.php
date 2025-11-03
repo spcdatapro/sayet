@@ -995,7 +995,7 @@ $app->post('/ocupacion', function() {
                 IF(d.id > 0, 1, 0) AS ocupado,
                 IFNULL(MONTH(d.fecha), 0) AS mes,
                 IFNULL(YEAR(d.fecha), 0) AS anio,
-                ROUND(SUM(IF(d.idmonedafact = 1,
+                ROUND(SUM(DISTINCT IF(d.idmonedafact = 1,
                             d.total,
                             d.total * d.tipocambio)),
                         2) AS total,
