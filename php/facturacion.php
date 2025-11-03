@@ -2,6 +2,7 @@
 require 'vendor/autoload.php';
 require_once 'db.php';
 require_once 'NumberToLetterConverter.class.php';
+set_time_limit(0);
 
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
