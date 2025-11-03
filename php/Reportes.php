@@ -39,6 +39,7 @@ class GeneradorReportes {
                             // por cada suma que se hara generar la variable dentro de separador con el nombre de la suma
                             foreach($montos as $monto) {
                                 $separador_proyecto->$monto = round(array_sum($sumas_proyecto->$monto), 2);
+                                $separador_proyecto->{$monto . '_promedio'} = round((array_sum($sumas_proyecto->$monto) / count($sumas_proyecto->$monto)), 2);
                             }
 
                             // empujar a array padre, proyecto es a empresa
@@ -92,6 +93,7 @@ class GeneradorReportes {
                         // por cada suma que se hara generar la variable dentro de separador con el nombre de la suma
                         foreach($montos as $monto) {
                             $separador_proyecto->$monto = round(array_sum($sumas_proyecto->$monto), 2);
+                            $separador_proyecto->{$monto . '_promedio'} = round((array_sum($sumas_proyecto->$monto) / count($sumas_proyecto->$monto)), 2);
                         }
 
                         // empujar a array padre, proyecto es a empresa
@@ -150,6 +152,7 @@ class GeneradorReportes {
             // por cada suma que se hara generar la variable dentro de separador con el nombre de la suma
             foreach($montos as $monto) {
                 $separador_proyecto->$monto = round(array_sum($sumas_proyecto->$monto), 2);
+                $separador_proyecto->{$monto . '_promedio'} = round((array_sum($sumas_proyecto->$monto) / count($sumas_proyecto->$monto)), 2);
             }
 
             // empujar a array padre, proyecto es a empresa
