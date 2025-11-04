@@ -733,7 +733,7 @@ $app->post('/control_ingresos', function () {
                 a.monto AS deposito,
                 ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.isrdlr, d.isr)), 0), 2) AS isr,
                 ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ivadlr, d.iva)), 0), 2) AS iva,
-                (ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ingresodlr, d.ingreso)), 0), 2) - a.monto - ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ivadlr, d.iva)), 0), 2) - ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.isrdlr, d.isr)), 0), 2)) * IF(d.ingreso IS NULL, -1, -1) AS diferencia,
+                (ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ingresodlr, d.ingreso)), 0), 2) - a.monto - ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ivadlr, d.iva)), 0), 2) - ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.isrdlr, d.isr)), 0), 2)) * -1 AS diferencia,
                 e.simbolo AS moneda
             FROM
                 tranban a
@@ -780,7 +780,7 @@ $app->post('/control_ingresos', function () {
             if (isset($proximo)) {
                 if ($proximo->idrecibocli == $actual->idrecibocli && $proximo->idrecibocli > 0) {
                     // $proximo->diferencia = ($actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito)) * -1;
-                    $proximo->diferencia = $actual->depostio * -1;
+                    $proximo->diferencia = $actual->deposito * -1;
                     $actual->iva = 0;
                     $actual->isr = 0;
                     $actual->ingreso = 0;
