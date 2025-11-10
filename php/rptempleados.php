@@ -663,27 +663,30 @@ $app->post('/prestamos', function(){
                 DATE_FORMAT(g.fecha, '%d/%m/%Y') AS fecha,
                 g.monto,
                 g.cuotamensual AS cuota,
+                IF(DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m'),
+                0.00,
                 (g.monto - COALESCE((SELECT 
-                                SUM(pn.monto)
-                            FROM
-                                plnpresnom pn
-                                    INNER JOIN
-                                plnnomina n ON pn.idplnnomina = n.id
-                            WHERE
-                                pn.idplnprestamo = g.id
-                                    AND n.fecha <= DATE_SUB('$fecha_inicio', INTERVAL 1 DAY)),
+                                    SUM(pn.monto)
+                                FROM
+                                    plnpresnom pn
+                                        INNER JOIN
+                                    plnnomina n ON pn.idplnnomina = n.id
+                                WHERE
+                                    pn.idplnprestamo = g.id
+                                        AND n.fecha <= DATE_SUB('$fecha_inicio', INTERVAL 1 DAY)),
                         0) - COALESCE((SELECT 
-                                SUM(pa.monto)
-                            FROM
-                                plnpresabono pa
-                            WHERE
-                                pa.idplnprestamo = g.id
-                                    AND pa.fecha <= DATE_SUB('$fecha_inicio', INTERVAL 1 DAY)),
-                        0)) AS saldoant,
+                                    SUM(pa.monto)
+                                FROM
+                                    plnpresabono pa
+                                WHERE
+                                    pa.idplnprestamo = g.id
+                                        AND pa.fecha <= DATE_SUB('$fecha_inicio', INTERVAL 1 DAY)),
+                        0))
+                ) AS saldoant,
                 IF(DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m'),
                     g.monto,
                     0.00) AS nuevo,
-                f.monto AS descnomina,
+                IF(DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m'), 0.00, f.monto) AS descnomina,
                 j.monto AS descuento,
                 f.monto + IFNULL(j.monto, 0.00) AS totdesc,
                 (g.monto - COALESCE((SELECT 
