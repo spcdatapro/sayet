@@ -165,10 +165,24 @@ function genDetContDoc($db, $d, $idtranban, $concepto, $idctabanco, $mediopago, 
             }
         }
 
+        // Embargos
         if ((float)$suma->desc_embargos > 0 ) {
             $ctaEmbargos = getCuentaConfig($d->idempresa, 32);
+            $query = "SELECT SUM(a.descembargo) AS desc_embargos FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado 
+            INNER JOIN plnlaboral d ON b.idlaboral = d.id INNER JOIN plnempresa c ON c.id = d.idempresaactual 
+            WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.descembargo > 0 ";
+            $query.= $mediopago == 'nota debito' ? "AND d.cuentabanco IS NOT NULL AND d.cuentabanco > 0 " : '';
+            $query.= "AND d.metodo = '$mediopago' AND a.idempresa = $d->idempresa ";
+            $query.= $idempleado == 0 ? '' : "AND a.idplnempleado = $idempleado ";
+            $query.= "GROUP BY a.descembargo";
+            $embargos =  $db->getQuery($query);
+
             if ($ctaEmbargos > 0) {
-                insertaDetalleContable($origen, $idtranban, $ctaEmbargos, 0.00, $suma->desc_embargos, "PLANILLA $concepto", 1, 0);
+                if (count($embargos) > 0) {
+                    foreach ($embargos as $emb) {
+                        insertaDetalleContable($origen, $idtranban, $ctaEmbargos, 0.00, $emb->desc_embargos, "PLANILLA $concepto", 1, 0);
+                    }
+                }
             }
         }
 
