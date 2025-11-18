@@ -63,8 +63,8 @@ $app->post('/rptempelados', function(){
                 proyecto d ON e.idproyecto = d.id
                     INNER JOIN 
                 plnpersonal f ON a.idpersonal = f.id ";
-    $query.= !$d->inactivos ? "WHERE a.baja IS NULL " : "WHERE (a.baja <= $d->fechastr OR a.baja IS NULL) ";
-    $query.= isset($d->idempresa) ? "AND a.idempresadebito = $d->idempresa " : "";
+    $query.= !$d->inactivos ? "WHERE e.baja IS NULL " : "WHERE (e.baja <= $d->fechastr OR e.baja IS NULL) ";
+    $query.= isset($d->idempresa) ? "AND e.idempresadebito = $d->idempresa " : "";
     $query.= "ORDER BY  3 , ";
     $query.= $d->agrupar == 2 ? " 6 , 7" : " 7";
     $data = $db->getQuery($query);
