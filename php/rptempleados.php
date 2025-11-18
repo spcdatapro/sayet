@@ -34,7 +34,16 @@ $app->post('/rptempelados', function(){
                 c.numeropat AS numero,
                 e.idproyecto,
                 IFNULL(d.nomproyecto, 'NO ESPECIFICADO') AS proyecto,
-                CONCAT(a.nombre, ' ', IFNULL(a.apellidos, '')) AS nombre,
+                CONCAT(f.primernombre, ' ', 
+                IFNULL(f.segundonombre, '')
+                , ' ', 
+                IFNULL(f.tercernombre, '')
+                , ' ', 
+                IFNULL(f.primerapellido, ''), 
+                ' ', 
+                IFNULL(f.segundoapellido, ''), 
+                ' ', 
+                IFNULL(f.apellidocasada, '')) AS nombre,
                 DATE_FORMAT(e.ingreso, '%d/%m/%y') AS fingreso,
                 IFNULL(DATE_FORMAT(e.reingreso, '%d/%m/%y'), '') AS freingreso,
                 e.sueldo,
@@ -51,7 +60,9 @@ $app->post('/rptempelados', function(){
                     LEFT JOIN
                 plnempresa c ON e.idempresaactual = c.id
                     LEFT JOIN
-                proyecto d ON e.idproyecto = d.id ";
+                proyecto d ON e.idproyecto = d.id
+                    INNER JOIN 
+                plnpersonal f ON a.idpersonal = f.id ";
     $query.= !$d->inactivos ? "WHERE a.baja IS NULL " : "WHERE (a.baja <= $d->fechastr OR a.baja IS NULL) ";
     $query.= isset($d->idempresa) ? "AND a.idempresadebito = $d->idempresa " : "";
     $query.= "ORDER BY  3 , ";
