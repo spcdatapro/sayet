@@ -717,12 +717,15 @@ angular.module('cpm')
                 $uibModal.open({
                     animation: true,
                     templateUrl: 'modalReporteEmpleador.html',
-                    controller: 'ModalReporteEmpleadorCtrl'
-                }).result.then(function (anio) {
+                    controller: 'ModalReporteEmpleadorCtrl',
+                    resolve: {
+                        empresas: () => $scope.empresasPlanilla
+                    }
+                }).result.then(function (anio, empresa) {
                     $scope.cargando = true;
-                    jsReportSrvc.getReport('BkA5jnjK1x', anio).then(result => {
+                    jsReportSrvc.getReport('BkA5jnjK1x', anio, empresa).then(result => {
                         var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
-                        saveAs(file, 'Reporte_Empleador_' + anio + '.xlsx');
+                        saveAs(file, 'Reporte_Empleador_' + anio + '_' + empresa + '.xlsx');
                         $scope.cargando = false;
                     }).catch(err => {
                         console.log(err);
@@ -979,10 +982,11 @@ angular.module('cpm')
         }
     ])
     //------------------------------------------------------------------------------------------------------------------------------------------------//
-    .controller('ModalReporteEmpleadorCtrl', ['$scope', '$uibModalInstance', function ($scope, $uibModalInstance) {
+    .controller('ModalReporteEmpleadorCtrl', ['$scope', '$uibModalInstance', 'empresas', function ($scope, $uibModalInstance, empresas) {
         $scope.anio = moment().year() - 1;
+        $scope.empresas = empresas;
 
-        $scope.ok = anio => { $uibModalInstance.close(anio) }
+        $scope.ok = (anio, empresa) => { $uibModalInstance.close(anio, empresa) }
 
         $scope.cancel = () => { $uibModalInstance.dismiss('cancel') }
 

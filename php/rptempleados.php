@@ -1003,7 +1003,7 @@ $app->post('/ficha', function () {
     print json_encode([ 'encabezado' => $letra, 'empleado' => $empleado ]);
 });
 
-$app->get('/datos_empleador/:anio', function ($anio) {
+$app->get('/datos_empleador/:anio/:empresa', function ($anio, $empresa) {
     $db = new dbcpm();
 
     $query = "SELECT 
@@ -1040,8 +1040,11 @@ $app->get('/datos_empleador/:anio', function ($anio) {
                 FIELD(c.temporalidad, 'indefinido', 'definido') AS temporalidad,
                 FIELD(c.tipocontrato, 'verbal', 'escrito') AS tipo,
                 DATE_FORMAT(c.ingreso, '%d/%m/%Y') AS inicio,
-                IFNULL(DATE_FORMAT(c.reingreso, '%d/%m/%Y'), '') AS reinicio,
-                IFNULL(DATE_FORMAT(c.baja, '%d/%m/%Y'), '') AS fin,
+                IF(c.reingreso IS NOT NULL, DATE_FORMAT(IFNULL(e.fecha_alta, c.reingreso),
+                    '%d/%m/%Y'),
+                    '') AS reinicio,
+                IFNULL(DATE_FORMAT(IFNULL(e.fecha_baja, c.baja), '%d/%m/%Y'),
+                        '') AS fin,
                 IFNULL(c.idpuesto, '') AS puesto,
                 FIELD(c.jornada,
                         'diurna',
@@ -1051,16 +1054,21 @@ $app->get('/datos_empleador/:anio', function ($anio) {
                 IF(e.dias > 250, 250, e.dias) AS dias,
                 c.sueldo,
                 c.sueldo * 12 AS sueldo_anual,
-                c.bonificacionley,
-                '' AS horas_extra,
-                '' AS valor_extra,
+                e.bonificacionley,
+                e.horas_extra + e.horas_dobles AS horas_extra,
+                ROUND(IF(e.horas_dobles > 0,
+                            ((c.sueldo / 30) / 8) * 2,
+                            IF(e.horas_extra > 0,
+                                ((c.sueldo / 30) / 8) * 1.5,
+                                0.00)),
+                        2) AS valor_extra,
                 e.aguinaldo,
                 e.bonocatorce,
                 '' AS comision,
                 e.viaticos AS viaticos,
-                e.otrosingresos,
+                e.otrosingresos + e.bonificacion AS otrosingresos,
                 e.vacaciones,
-                e.indemnizacion,
+                f.finiquito,
                 IF(c.idproyecto = 16, 2, 1) AS sucursal
             FROM
                 plnempleado a
@@ -1079,12 +1087,23 @@ $app->get('/datos_empleador/:anio', function ($anio) {
                         SUM(otrosingresos) AS otrosingresos,
                         SUM(viaticos) AS viaticos,
                         SUM(vacaciones) AS vacaciones,
-                        SUM(indemnizacion) AS indemnizacion
+                        SUM(indemnizacion) AS indemnizacion,
+                        SUM(horasmes) AS horas_extra,
+                        SUM(hedcantidad) AS horas_dobles,
+                        LEAST(SUM(bonificacion), 3000) AS bonificacionley,
+                        SUM(GREATEST(bonificacion - 250, 0)) AS bonificacion,
+                        IFNULL(fecha_baja, MAX(fecha)) AS fecha_baja,
+                        IFNULL(fecha_ingreso, MIN(fecha)) AS fecha_alta,
+                        idempresa
                 FROM
                     plnnomina
                 WHERE
-                    YEAR(fecha) = $anio
+                    YEAR(fecha) = $anio AND idempresa = $empresa
                 GROUP BY idplnempleado) e ON e.idplnempleado = a.id
+                    LEFT JOIN
+                plnfiniquito f ON f.idplnempleado = a.id
+                    AND e.idempresa = f.idempresa
+                    AND f.idtranban > 0
             WHERE
                 (c.baja IS NULL OR YEAR(c.baja) = $anio)
                     AND YEAR(c.ingreso) <= $anio";

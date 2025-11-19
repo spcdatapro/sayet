@@ -1890,14 +1890,33 @@
 			<div class="col-md-12">
 				<div class="form-group">
 					<label for="selAnio_empleador" class="control-label">Selecionar a&ntilde;o:</label>
-					<input type="number" name="selAnio_empleador" id="selAnio_empleador" ng-model="anio" class="form-control"
-					min="2024"/>
+					<input type="number" name="selAnio_empleador" id="selAnio_empleador" ng-model="anio"
+						class="form-control" min="2024" />
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="form-group">
+					<label for="selEmpresaActual" class="control-label">Empresa
+						d&eacute;bito:</label>
+					<ui-select ng-model="empresa_empleador" title="Seleccione una empresa..." theme="bootstrap" 
+						autofocus="false" ng-disabled="!editando && hay" required>
+						<ui-select-match placeholder="Buscar empresa..." allow-clear="false">
+							<span ng-bind="($select.selected.nombre)"></span>
+						</ui-select-match>
+						<ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+							<div ng-bind-html="(item.nombre) | highlight: $select.search">
+							</div>
+						</ui-select-choices>
+						<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+					</ui-select>
 				</div>
 			</div>
 		</div>
 	</div>
 	<div class="modal-footer">
-		<button class="btn btn-primary" ng-disabled="!anio" type="button" ng-click="ok(anio)">Aceptar</button>
+		<button class="btn btn-primary" ng-disabled="!anio && !empresa_empleador" type="button" ng-click="ok(anio, empresa_empleador)">Aceptar</button>
 		<button class="btn btn-danger" type="button" ng-click="cancel()">Cancelar</button>
 	</div>
 </script>
