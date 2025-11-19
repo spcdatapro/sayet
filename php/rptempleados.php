@@ -1043,7 +1043,7 @@ $app->get('/datos_empleador/:anio/:empresa', function ($anio, $empresa) {
                 IF(c.reingreso IS NOT NULL, DATE_FORMAT(IFNULL(e.fecha_alta, c.reingreso),
                     '%d/%m/%Y'),
                     '') AS reinicio,
-                IFNULL(DATE_FORMAT(IFNULL(e.fecha_baja, c.baja), '%d/%m/%Y'),
+                IF(a.activo = 0, DATE_FORMAT(IFNULL(e.fecha_baja, c.baja), '%d/%m/%Y'),
                         '') AS fin,
                 IFNULL(c.idpuesto, '') AS puesto,
                 FIELD(c.jornada,
@@ -1068,7 +1068,7 @@ $app->get('/datos_empleador/:anio/:empresa', function ($anio, $empresa) {
                 e.viaticos AS viaticos,
                 e.otrosingresos + e.bonificacion AS otrosingresos,
                 e.vacaciones,
-                f.finiquito,
+                f.finiquito AS indemnizacion,
                 IF(c.idproyecto = 16, 2, 1) AS sucursal
             FROM
                 plnempleado a
