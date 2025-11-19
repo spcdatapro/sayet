@@ -721,12 +721,11 @@ angular.module('cpm')
                     resolve: {
                         empresas: () => $scope.empresasPlanilla
                     }
-                }).result.then(function (anio, empresa) {
+                }).result.then(params => {
                     $scope.cargando = true;
-                    const params = {anio: anio, empresa: empresa}
                     jsReportSrvc.getReport('BkA5jnjK1x', params).then(result => {
                         var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
-                        saveAs(file, 'Reporte_Empleador_' + anio + '_' + empresa + '.xlsx');
+                        saveAs(file, 'Reporte_Empleador_' + params.anio + '_' + $filter('getById')($scope.empresas, params.empresa).nomempresa + '.xlsx');
                         $scope.cargando = false;
                     }).catch(err => {
                         console.log(err);
@@ -984,10 +983,10 @@ angular.module('cpm')
     ])
     //------------------------------------------------------------------------------------------------------------------------------------------------//
     .controller('ModalReporteEmpleadorCtrl', ['$scope', '$uibModalInstance', 'empresas', function ($scope, $uibModalInstance, empresas) {
-        $scope.anio = moment().year() - 1;
         $scope.empresas = empresas;
+        $scope.params = {anio: moment().year() - 1};
 
-        $scope.ok = (anio, empresa) => { $uibModalInstance.close(anio, empresa) }
+        $scope.ok = params => { $uibModalInstance.close(params) }
 
         $scope.cancel = () => { $uibModalInstance.dismiss('cancel') }
 

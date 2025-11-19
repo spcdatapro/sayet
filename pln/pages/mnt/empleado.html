@@ -1890,7 +1890,7 @@
 			<div class="col-md-12">
 				<div class="form-group">
 					<label for="selAnio_empleador" class="control-label">Selecionar a&ntilde;o:</label>
-					<input type="number" name="selAnio_empleador" id="selAnio_empleador" ng-model="anio"
+					<input type="number" name="selAnio_empleador" id="selAnio_empleador" ng-model="params.anio"
 						class="form-control" min="2024" />
 				</div>
 			</div>
@@ -1898,10 +1898,9 @@
 		<div class="row">
 			<div class="col-md-12">
 				<div class="form-group">
-					<label for="selEmpresaActual" class="control-label">Empresa
-						d&eacute;bito:</label>
-					<ui-select ng-model="empresa_empleador" title="Seleccione una empresa..." theme="bootstrap" 
-						autofocus="false" ng-disabled="!editando && hay" required>
+					<label for="selEmpresaEmpleador" class="control-label">Empresa:</label>
+					<ui-select ng-model="params.empresa" title="Seleccione una empresa..." theme="bootstrap" 
+						autofocus="false" required>
 						<ui-select-match placeholder="Buscar empresa..." allow-clear="false">
 							<span ng-bind="($select.selected.nombre)"></span>
 						</ui-select-match>
@@ -1916,7 +1915,7 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<button class="btn btn-primary" ng-disabled="!anio && !empresa_empleador" type="button" ng-click="ok(anio, empresa_empleador)">Aceptar</button>
+		<button class="btn btn-primary" ng-disabled="!params.anio && !params.empresa" type="button" ng-click="ok(params)">Aceptar</button>
 		<button class="btn btn-danger" type="button" ng-click="cancel()">Cancelar</button>
 	</div>
 </script>
