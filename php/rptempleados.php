@@ -1043,7 +1043,7 @@ $app->get('/datos_empleador/:anio/:empresa', function ($anio, $empresa) {
                 IF(c.reingreso IS NOT NULL, DATE_FORMAT(IFNULL(e.fecha_alta, c.reingreso),
                     '%d/%m/%Y'),
                     '') AS reinicio,
-                IF(a.activo = 0, DATE_FORMAT(IFNULL(e.fecha_baja, c.baja), '%d/%m/%Y'),
+                IF(a.activo = 0 OR f.idtranban > 0, DATE_FORMAT(IFNULL(e.fecha_baja, c.baja), '%d/%m/%Y'),
                         '') AS fin,
                 IFNULL(c.idpuesto, '') AS puesto,
                 FIELD(c.jornada,
