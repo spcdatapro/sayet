@@ -723,7 +723,8 @@ angular.module('cpm')
                     }
                 }).result.then(function (anio, empresa) {
                     $scope.cargando = true;
-                    jsReportSrvc.getReport('BkA5jnjK1x', anio, empresa).then(result => {
+                    const params = {anio: anio, empresa: empresa}
+                    jsReportSrvc.getReport('BkA5jnjK1x', params).then(result => {
                         var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
                         saveAs(file, 'Reporte_Empleador_' + anio + '_' + empresa + '.xlsx');
                         $scope.cargando = false;
