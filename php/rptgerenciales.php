@@ -733,7 +733,7 @@ $app->post('/control_ingresos', function () {
                 a.monto AS deposito,
                 ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.isrdlr, d.isr)), 0), 2) AS isr,
                 ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ivadlr, d.iva)), 0), 2) AS iva,
-                (ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ingresodlr, d.ingreso)), 0), 2) - a.monto - ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ivadlr, d.iva)), 0), 2) - ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.isrdlr, d.isr)), 0), 2)) * -1 AS diferencia,
+                (ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ingresodlr, d.ingreso)), 0), 2) - a.monto - IFNULL(d.cobrado_prev, 0.00) - ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ivadlr, d.iva)), 0), 2) - ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.isrdlr, d.isr)), 0), 2)) * -1 AS diferencia,
                 e.simbolo AS moneda
             FROM
                 tranban a
@@ -751,7 +751,8 @@ $app->post('/control_ingresos', function () {
                         SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, (a.monto + b.retisr + b.retiva)), IF(b.idmonedafact = 2, b.subtotalcnv, b.subtotal))) AS ingreso,
                         SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr)) AS isr,
                         SUM(IF(b.idmonedafact = 2, b.retivacnv, b.retiva)) AS iva,
-                        IF(b.idmonedafact = 2, 1, b.tipocambio) AS tc_fact
+                        IF(b.idmonedafact = 2, 1, b.tipocambio) AS tc_fact,
+                        IFNULL((SELECT SUM(dc.monto) FROM detcobroventa dc WHERE dc.idfactura = b.id AND dc.idrecibocli != a.idrecibocli),0) AS cobrado_prev
                 FROM
                     detcobroventa a
                 INNER JOIN factura b ON a.idfactura = b.id
