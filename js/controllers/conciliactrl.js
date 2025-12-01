@@ -55,16 +55,13 @@
             $scope.totalPages = Math.ceil($scope.trans.length / +$scope.itemsPerPage);
             // fin de paginas
 
-            bancoSrvc.lstBancosActivos(4).then(d => {
-                // solo mostrar los dos bancos que estan utilizando mt940
-                let idbancos = ['3', '33'];
-                $scope.bancos = d.filter(banco => idbancos.includes(banco.id));
-            })
+            var user = {};
 
             tipoMovTranBanSrvc.lstTiposMovTB().then(function (d) { $scope.tipotrans = d; });
 
             authSrvc.getSession().then(function (usrLogged) {
                 idusuario = usrLogged.uid;
+                user = usrLogged;
                 $scope.params.iniciales = usrLogged.iniciales;
                 // traer empresas permitidas por el usuario
                 empresaSrvc.lstEmpresas().then(function (d) {
@@ -77,6 +74,7 @@
                     });
                 });
                 if (parseInt(usrLogged.workingon) > 0) {
+                    bancoSrvc.lstBancosMT940(usrLogged.workingon).then(d => { $scope.bancos = d });
                     empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function (d) {
                         $scope.laEmpresa = d[0];
                         $scope.getLstBancos();
@@ -142,6 +140,7 @@
                                         toaster.pop({ type: d.tipo, title: 'Documentos a conciliar', body: d.mensaje, timeout: 10000 })
                                     }
                                     // independientemente si encontro o no buscamos traemos los documenotos
+                                    $scope.params.idempresa = user.workingon;
                                     tranBancSrvc.traerDocumentos($scope.params)
                                         .then(d => {
                                             $scope.progress = 100;
@@ -254,7 +253,7 @@
             $scope.getLstTranAutomatica = () => {
                 if ($scope.todas.length > 0) {
                     $scope.trans = [];
-                    tranBancSrvc.traerDocumentos({ ver: $scope.params.ver, reporte: false }).then(d => {
+                    tranBancSrvc.traerDocumentos({ ver: $scope.params.ver, reporte: false, idempresa: user.workingon }).then(d => {
                         $scope.todas = d.bancos;
                         $scope.trans = d.bancos;
                         if ($scope.params.ver == '1') {

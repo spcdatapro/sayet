@@ -16,7 +16,8 @@
             getCuentasSumario: (idmoneda, fdelstr, falstr, tipo)=> comunFact.doGET(urlBase + '/ctassumario/' + idmoneda + '/' + fdelstr + '/' + falstr + '/' + tipo),
             editRow: (obj, op) => comunFact.doPOST(urlBase + '/' + op, obj),
             rptEstadoCta: (obj) => comunFact.doPOST(urlBase + '/rptestcta', obj),
-            lstNombreBancosActivos: (idempresa) => comunFact.doGET(`${urlBase}/lstnombrebcosactivos` + (idempresa ? `/${idempresa}` : ''))
+            lstNombreBancosActivos: (idempresa) => comunFact.doGET(`${urlBase}/lstnombrebcosactivos` + (idempresa ? `/${idempresa}` : '')),
+            lstBancosMT940: (idempresa) => comunFact.doGET(urlBase + '/lstbancosmt940/' + idempresa)
         };
     }]);
 

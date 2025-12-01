@@ -54,6 +54,8 @@
             $scope.totalPages = Math.ceil($scope.documentos.length / +$scope.itemsPerPage);
             // fin de paginas
 
+            var user = {};
+
             bancoSrvc.lstBancosActivos(4).then(d => {
                 // solo mostrar los dos bancos que estan utilizando mt940
                 let idbancos = ['3', '33'];
@@ -61,7 +63,9 @@
             })
 
             authSrvc.getSession().then(function (usrLogged) {
+                user = usrLogged;
                 $scope.params.iniciales = usrLogged.iniciales;
+                bancoSrvc.lstBancosMT940(usrLogged.workingon).then(d => { $scope.bancos = d });
             })
 
             $scope.tipotrans = [{ id: '1', abreviadesc: '(C) Créditos', abreviatura: 'C' },
@@ -87,6 +91,7 @@
                             estatusCarga(80);
 
                             // si la conxeion es exitosa, entonces buscamos documetos para conciliar
+                            $scope.params.idempresa = user.workingon;
                             tranBancSrvc.traerDocumentos($scope.params)
                                 .then(d => {
                                     $scope.progress = 100;
@@ -103,6 +108,7 @@
             $scope.buscar = () => {
                 $scope.params.delstr = moment($scope.params.fdel).format('YYYY-MM-DD');
                 $scope.params.alstr = moment($scope.params.fal).format('YYYY-MM-DD');
+                $scope.params.idempresa = user.workingon;
                 tranBancSrvc.traerDocumentos($scope.params)
                     .then(d => {
                         $scope.progress = 100;
