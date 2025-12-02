@@ -778,11 +778,22 @@ $app->post('/control_ingresos', function () {
         for ($i = 0; $i < count($data); $i++) {
             $actual = $data[$i];
             $proximo = $i+1 == count($data) ? null : $data[$i+1];
+            $proximo2 = $i+2 == count($data) ? null : $data[$i+2];
 
             if (isset($proximo)) {
                 if ($proximo->idrecibocli == $actual->idrecibocli && $proximo->idrecibocli > 0) {
                     // $proximo->diferencia = ($actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito)) * -1;
                     $proximo->diferencia = $actual->deposito * -1;
+                    $actual->iva = 0;
+                    $actual->isr = 0;
+                    $actual->ingreso = 0;
+                    $actual->diferencia = $actual->deposito;
+                }
+            }
+            if (isset($proximo2)) {
+                if ($proximo2->idrecibocli == $actual->idrecibocli && $proximo2->idrecibocli > 0) {
+                    // $proximo->diferencia = ($actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito)) * -1;
+                    $proximo2->diferencia = $actual->deposito * -1;
                     $actual->iva = 0;
                     $actual->isr = 0;
                     $actual->ingreso = 0;
