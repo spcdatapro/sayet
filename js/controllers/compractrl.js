@@ -49,6 +49,7 @@
             $scope.usuario = undefined;
             $scope.creador = undefined;
             $scope.ultimo_usuario = undefined;
+            $scope.laCompra.retiva_manual = 0;
 
             empresaSrvc.lstEmpresas().then(function (d) { $scope.lasEmpresas = d; });
             tipoCambioSrvc.getLastTC().then(function (d) { $scope.tipocambiogt = +d.lasttc; });
@@ -934,6 +935,74 @@
                 })
             }
 
+            $scope.calcularRetIVA = function(){
+                if ($scope.laCompra.retiva_manual == 1) return;  
+            };
+            $scope.abrirRetIVAQ = function () {
+                $scope.retivaQtemp = parseFloat($scope.laCompra.retiva) || 0;
+                $('#modalRetIVAQ').modal('show');
+            };
+            $scope.$watch('laCompra.objMoneda', function (nueva, vieja) {
+                if (!nueva || !vieja) return;
+                        
+                // Si ya es manual → NO recalcular, NO hacer nada.
+                if ($scope.laCompra.retiva_manual == 1) return;
+                        
+                // Si cambia de moneda y no es manual = recalculo normal
+                if (nueva.id !== vieja.id) {
+                    $scope.calcularRetIVA(); 
+                }
+            });
+            $scope.guardarRetIVAQ = function () {
+                if (!$scope.laCompra.id || $scope.laCompra.id == 0) {
+                
+                    if ($scope.retivaQtemp == 0) {
+                        // 0 significa NO manual
+                        $scope.laCompra.retiva_manual = 0;
+                        $scope.calcularRetIVA();   // hace la automática
+                    } else {
+                        // cualquier número > 0 = manual
+                        $scope.laCompra.retiva_manual = 1;
+                        $scope.laCompra.retiva = $scope.retivaQtemp;                        
+                    }
+            
+                
+                    $('#modalRetIVAQ').modal('hide');
+                    return;
+                }
+            
+                
+                let datos = angular.copy($scope.laCompra);
+                datos.iddocliquida = datos.iddocliquida || null;
+                datos.ctagastoprov = datos.ctagastoprov || null;
+                datos.fechaingresostr  = datos.fechaingresostr || datos.fechaingreso;
+                datos.fechafacturastr  = datos.fechafacturastr || datos.fechafactura;
+                datos.fechapagostr     = datos.fechapagostr    || datos.fechapago;
+                datos.conceptoprov = datos.conceptoprov  ||  null;    
+                
+                if ($scope.retivaQtemp == 0) {
+                    datos.retiva_manual = 0;
+                    datos.retiva = 0;
+                } else {
+                    datos.retiva_manual = 1;
+                    datos.retiva = $scope.retivaQtemp;
+                }
+            
+                compraSrvc.editRow(datos, 'u').then(function () {
+                    if ($scope.retivaQtemp == 0) {
+                        // dejarla automática visualmente
+                        $scope.laCompra.retiva_manual = 0;
+                        $scope.calcularRetIVA();
+                    } else {
+                        // manual visualmente
+                        $scope.laCompra.retiva_manual = 1;
+                        $scope.laCompra.retiva = $scope.retivaQtemp;
+                    }
+                });
+            
+                $('#modalRetIVAQ').modal('hide');
+            };  
+               
         }]);
     //------------------------------------------------------------------------------------------------------------------------------------------------//
     compractrl.controller('ModalCtasGastoProvCtrl', ['$scope', '$uibModalInstance', 'lstctasgasto', function ($scope, $uibModalInstance, lstctasgasto) {

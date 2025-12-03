@@ -1,0 +1,95 @@
+<div class="container-fluid" ng-controller="repIndemnizacionController">
+	<div class="row">
+		<div class="col-sm-offset-2 col-sm-8">
+			<div class="jumbotron" id="contenidoGenerar">
+				<h3 class="text-center">Reporte de Indemnización</h3>
+				<form ng-submit="generarReporte()" class="form-horizontal" role="form">
+					
+					<!-- Empresa -->
+					<div class="form-group form-group-sm">
+						<label for="selectEmpresa" class="col-sm-2 control-label">Empresa:</label>
+						<div class="col-sm-10">
+							<select class="form-control" ng-model="filtro.idempresa" id="selectEmpresa">
+								<option value="">------</option>
+								<option ng-repeat="empresa in empresas" value="{{empresa.id}}">
+									{{empresa.nomempresa}}
+								</option>
+							</select>
+						</div>
+					</div>
+
+					<!-- Año -->
+					<div class="form-group form-group-sm">
+						<label for="inputAnio" class="col-sm-2 control-label">Año:</label>
+						<div class="col-sm-4">
+							<input type="number" ng-model="filtro.anio" class="form-control" min="2000" required>
+                        </div>
+						<div class="col-sm-6 text-right">
+							<button type="submit" class="btn btn-primary btn-sm">Aceptar</button>
+						</div>
+                    </div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<!-- Contenedor para resultados -->
+	<div class="row" ng-if="reporte">
+		<div class="col-sm-12">
+			<h4 class="text-center">{{reporte.encabezado.titulo}}</h4>
+			<p class="text-center"><em>Generado el {{reporte.encabezado.estampa}}</em></p>
+
+			<table class="table table-bordered table-condensed">
+				<thead>
+					<tr class="info">
+						<th>Código</th>
+						<th>Nombre</th>
+						<th>Ingreso</th>
+						<th>Baja</th>
+						<th>Cheque</th>
+						<th class="text-right">Indemnización</th>
+						<th class="text-right">Vacaciones</th>
+						<th class="text-right">Aguinaldo</th>
+						<th class="text-right">Bono 14</th>
+						<th class="text-right">O. Bono</th>
+						<th class="text-right">Préstamos</th>
+						<th class="text-right">Anticipos</th>
+						<th class="text-right">O. Desc.</th>
+						<th class="text-right">Total</th>
+					</tr>
+				</thead>
+				<tbody ng-repeat="emp in reporte.empresas">
+					<tr>
+						<td colspan="14" class="bld">{{emp.empresa}} ({{emp.numero}})</td>
+					</tr>
+					<tr ng-repeat="empleado in emp.empleados">
+						<td>{{empleado.id}}</td>
+						<td>{{empleado.nombre}}</td>
+						<td>{{empleado.ingreso}}</td>
+						<td>{{empleado.baja}}</td>
+						<td>{{empleado.cheque}}</td>
+						<td class="text-right">{{empleado.finiquito | currency:"Q "}}</td>
+						<td class="text-right">{{empleado.vacaciones | currency:"Q "}}</td>
+						<td class="text-right">{{empleado.aguinaldo | currency:"Q "}}</td>
+						<td class="text-right">{{empleado.bono | currency:"Q "}}</td>
+						<td class="text-right">{{empleado.otrosbono | currency:"Q "}}</td>
+						<td class="text-right">{{empleado.prestamos | currency:"Q "}}</td>
+						<td class="text-right">{{empleado.anticipos | currency:"Q "}}</td>
+						<td class="text-right">{{empleado.otrosdesc | currency:"Q "}}</td>
+						<td class="text-right">{{empleado.monto | currency:"Q "}}</td>
+					</tr>
+					<tr class="bld">
+						<td colspan="13" class="text-right">Total empresa ({{emp.abreviatura}}):</td>
+						<td class="text-right">{{emp.monto | currency:"Q "}}</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr class="bld">
+						<td colspan="13" class="text-right">Total general:</td>
+						<td class="text-right">{{reporte.encabezado.monto | currency:"Q "}}</td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+</div>

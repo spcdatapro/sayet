@@ -394,8 +394,15 @@
                                             </ul>
                                         </div>
                                         <input name="retIVA" id="retIVA" type="text" class="form-control"
-                                            ng-model="laCompra.retiva" fcsa-number="{ min:0, maxDecimals: 2 }" required
-                                            ng-disabled="true">
+                                            ng-model="laCompra.retiva" fcsa-number="{ min:0, maxDecimals: 2 }"
+                                            required ng-disabled="true">
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-info"
+                                                ng-show="laCompra.objMoneda && laCompra.objMoneda.id == 2 && laCompra.totfact > 0"
+                                                ng-click="abrirRetIVAQ()">
+                                                Q
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1300,4 +1307,23 @@
             <button class="btn btn-danger" type="button" ng-click="cancel()">Cancelar</button>
         </div>
     </script>
+    <div class="modal fade" id="modalRetIVAQ" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h4 class="modal-title">Ingresar Ret. IVA en Quetzales</h4>
+                </div>
+                <div class="modal-body">
+                    <label>Monto en Quetzales:</label>
+                    <input type="number" class="form-control"
+                           ng-model="retivaQtemp"
+                           min="0" step="0.001">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-primary" ng-click="guardarRetIVAQ()">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
