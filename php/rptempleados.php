@@ -2101,7 +2101,7 @@ $app->post('/vacaciones_empleado', function () {
             $letra->dias_gozados += (float)$vac->dias;
         }
 
-        $letra->dias_pendientes = $letra->dias - $letra->dias_gozados;
+        $letra->dias_pendientes = round($letra->dias - $letra->dias_gozados, 2);
     } else {
         $letra = 'sin datos';
         $datos = []; 
