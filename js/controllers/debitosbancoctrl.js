@@ -10,6 +10,7 @@
             $scope.progress = 0; // progreso de carga
             $scope.iniciales = 'N/E';
             $scope.params = { ver: 1, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), reporte: false, tipos: ['2'] };
+            $scope.idbanco = 0;
 
             // para paginar
             $scope.currentPage = 1; // Página actual
@@ -73,9 +74,8 @@
                             estatusCarga(80);
 
                             // si la conxeion es exitosa, entonces buscamos documetos para conciliar
-                            tranBancSrvc.emparejarDebitos(delstr, alstr, user.workingon)
+                            tranBancSrvc.emparejarDebitos(delstr, alstr, user.workingon, $scope.idbanco)
                                 .then(d => {
-                                    console.log(d);
                                     let transacciones = d.map(tran => {
                                         // Clonamos el primer match
                                         let principal = { ...tran.matches[0] };
@@ -98,8 +98,6 @@
 
                                         return principal;
                                     });
-
-                                    console.log(transacciones);
 
                                     $scope.progress = 100;
                                     $scope.cargando = false;
