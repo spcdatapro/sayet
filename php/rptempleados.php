@@ -597,7 +597,7 @@ $app->post('/vacaciones', function(){
             $v->dias_totales = 15;
         }
 
-        $v->dias_gozar = $v->dias_totales - $v->dias;
+        $v->dias_gozar = round($v->dias_totales - $v->dias, 2);
     }
 
     $porproyecto = $d->agrupar == 2 ? true : false;
