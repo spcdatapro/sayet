@@ -1532,44 +1532,94 @@ $app->post('/rerr', function () {
 $app->get('/emparejar_debitos/:del/:al/:idempresa/:idbanco', function ($del, $al, $idempresa, $idbanco) {
     $db = new dbcpm();
 
-    $query = "SELECT a.id, CONCAT(b.siglas, ' (', b.nocuenta, ')') AS banco, a.numero, a.monto, a.fecha, SUBSTRING(a.concepto, 1, 50) AS concepto, c.referencia AS numban, 
-                c.monto AS montoban, c.fecha AS fechaban, c.descripcion, e.simbolo AS moneda, c.d_estado_cuenta AS id_banco, 1 AS tipo, 
-                CONCAT(e.simbolo, '.', FORMAT(c.monto, 2)) AS montobanstr, DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fechabanstr, a.operado AS emparejado
-                FROM tranban a INNER JOIN banco b ON a.idbanco = b.id LEFT JOIN d_estado_cuenta c ON (a.numban = c.referencia OR a.numero = c.referencia)
-                LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta INNER JOIN moneda e ON b.idmoneda = e.id 
-                WHERE a.fecha >= '$del' AND a.fecha <= '$al' AND b.mt940 IS NOT NULL AND a.tipotrans IN ('C' , 'B') AND b.mt940 = d.cuenta AND b.idempresa = $idempresa ";
-            $query.= $idbanco > 0 ? "AND b.id = $idbanco UNION ALL " : "UNION ALL ";
-            $query.="SELECT a.id, CONCAT(b.siglas, ' (', b.nocuenta, ')') AS banco, a.numero, a.monto, a.fecha, SUBSTRING(a.concepto, 1, 50) AS concepto, c.referencia AS numban, 
-                c.monto AS montoban, c.fecha AS fechaban, c.descripcion, e.simbolo AS moneda, c.d_estado_cuenta AS id_banco, 2 AS tipo,
-                CONCAT(e.simbolo, '.', FORMAT(c.monto, 2)) AS montobanstr, DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fechabanstr, a.operado AS emparejado
-                FROM tranban a INNER JOIN banco b ON a.idbanco = b.id LEFT JOIN d_estado_cuenta c ON a.fecha = c.fecha AND a.monto = c.monto 
-                LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta INNER JOIN moneda e ON b.idmoneda = e.id 
-                WHERE a.fecha >= '$del' AND a.fecha <= '$al' AND b.mt940 IS NOT NULL AND a.tipotrans IN ('B') AND b.mt940 = d.cuenta AND a.numban != c.referencia AND b.idempresa = $idempresa ";
-                $query.= $idbanco > 0 ? "AND b.id = $idbanco UNION ALL " : "UNION ALL ";
-            $query.="SELECT a.id, CONCAT(b.siglas, ' (', b.nocuenta, ')') AS banco, a.numero, a.monto, a.fecha, SUBSTRING(a.concepto, 1, 50) AS concepto, c.referencia AS numban, 
-                c.monto AS montoban, c.fecha AS fechaban, c.descripcion, e.simbolo AS moneda, c.d_estado_cuenta AS id_banco, 3 AS tipo,
-                CONCAT(e.simbolo, '.', FORMAT(c.monto, 2)) AS montobanstr, DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fechabanstr, a.operado AS emparejado
-                FROM tranban a INNER JOIN banco b ON a.idbanco = b.id LEFT JOIN d_estado_cuenta c ON a.monto = c.monto AND a.fecha != c.fecha 
-                LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta INNER JOIN moneda e ON b.idmoneda = e.id 
-                WHERE a.fecha >= '$del' AND a.fecha <= '$al' AND b.mt940 IS NOT NULL AND a.tipotrans IN ('C' , 'B') AND b.mt940 = d.cuenta AND a.numban != c.referencia AND b.idempresa = $idempresa ";
-            $query.= $idbanco > 0 ? "AND b.id = $idbanco " : "";
-            $query.="AND a.id NOT IN (
-                    SELECT a.id
-                    FROM tranban a
-                    INNER JOIN banco b ON a.idbanco = b.id
-                    LEFT JOIN d_estado_cuenta c ON a.numban = c.referencia
-                    LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta
-                    WHERE a.fecha >= '$del' AND a.fecha <= '$al' AND IS NOT NULL
-                    AND a.tipotrans IN ('C' , 'B') AND b.mt940 = d.cuenta AND b.idempresa = $idempresa
-                    UNION
-                    SELECT a.id
-                    FROM tranban a
-                    INNER JOIN banco b ON a.idbanco = b.id
-                    LEFT JOIN d_estado_cuenta c ON a.fecha = c.fecha AND a.monto = c.monto
-                    LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta
-                    WHERE a.fecha >= '$del' AND a.fecha <= '$al' AND b.mt940 IS NOT NULL
-                    AND a.tipotrans IN ('C' , 'B') AND b.mt940 = d.cuenta AND a.numban != c.referencia AND b.idempresa = $idempresa
-                    )
+    $query = "SELECT a.id, CONCAT(b.siglas, ' (', b.nocuenta, ')') AS banco, a.numero, a.monto, a.fecha,
+                SUBSTRING(a.concepto, 1, 50) AS concepto, c.referencia AS numban,
+                c.monto AS montoban, c.fecha AS fechaban, c.descripcion, e.simbolo AS moneda,
+                c.d_estado_cuenta AS id_banco, 1 AS tipo,
+                CONCAT(e.simbolo, '.', FORMAT(c.monto, 2)) AS montobanstr,
+                DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fechabanstr,
+                a.operado AS emparejado
+            FROM tranban a
+            INNER JOIN banco b ON a.idbanco = b.id
+            LEFT JOIN d_estado_cuenta c ON (a.numban = c.referencia OR a.numero = c.referencia)
+            LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta
+            INNER JOIN moneda e ON b.idmoneda = e.id
+            WHERE a.fecha >= '$del' AND a.fecha <= '$al'
+            AND b.mt940 IS NOT NULL
+            AND a.tipotrans IN ('C','B')
+            AND b.mt940 = d.cuenta
+            AND b.idempresa = $idempresa " .
+            ($idbanco > 0 ? "AND b.id = $idbanco " : "") . "
+
+            UNION ALL
+
+            SELECT a.id, CONCAT(b.siglas, ' (', b.nocuenta, ')') AS banco, a.numero, a.monto, a.fecha,
+                SUBSTRING(a.concepto, 1, 50) AS concepto, c.referencia AS numban,
+                c.monto AS montoban, c.fecha AS fechaban, c.descripcion, e.simbolo AS moneda,
+                c.d_estado_cuenta AS id_banco, 2 AS tipo,
+                CONCAT(e.simbolo, '.', FORMAT(c.monto, 2)) AS montobanstr,
+                DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fechabanstr,
+                a.operado AS emparejado
+            FROM tranban a
+            INNER JOIN banco b ON a.idbanco = b.id
+            LEFT JOIN d_estado_cuenta c ON a.fecha = c.fecha AND a.monto = c.monto
+            LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta
+            INNER JOIN moneda e ON b.idmoneda = e.id
+            WHERE a.fecha >= '$del' AND a.fecha <= '$al'
+            AND b.mt940 IS NOT NULL
+            AND a.tipotrans IN ('B')
+            AND b.mt940 = d.cuenta
+            AND a.numban != c.referencia
+            AND b.idempresa = $idempresa " .
+            ($idbanco > 0 ? "AND b.id = $idbanco " : "") . "
+
+            UNION ALL
+
+            SELECT a.id, CONCAT(b.siglas, ' (', b.nocuenta, ')') AS banco, a.numero, a.monto, a.fecha,
+                SUBSTRING(a.concepto, 1, 50) AS concepto, c.referencia AS numban,
+                c.monto AS montoban, c.fecha AS fechaban, c.descripcion, e.simbolo AS moneda,
+                c.d_estado_cuenta AS id_banco, 3 AS tipo,
+                CONCAT(e.simbolo, '.', FORMAT(c.monto, 2)) AS montobanstr,
+                DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fechabanstr,
+                a.operado AS emparejado
+            FROM tranban a
+            INNER JOIN banco b ON a.idbanco = b.id
+            LEFT JOIN d_estado_cuenta c ON a.monto = c.monto AND a.fecha != c.fecha
+            LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta
+            INNER JOIN moneda e ON b.idmoneda = e.id
+            WHERE a.fecha >= '$del' AND a.fecha <= '$al'
+            AND b.mt940 IS NOT NULL
+            AND a.tipotrans IN ('C','B')
+            AND b.mt940 = d.cuenta
+            AND a.numban != c.referencia
+            AND b.idempresa = $idempresa " .
+            ($idbanco > 0 ? "AND b.id = $idbanco " : "") . "
+            AND a.id NOT IN (
+                SELECT a.id
+                FROM tranban a
+                INNER JOIN banco b ON a.idbanco = b.id
+                LEFT JOIN d_estado_cuenta c ON (a.numban = c.referencia OR a.numero = c.referencia)
+                LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta
+                WHERE a.fecha >= '$del' AND a.fecha <= '$al'
+                    AND b.mt940 IS NOT NULL
+                    AND a.tipotrans IN ('C','B')
+                    AND b.mt940 = d.cuenta
+                    AND b.idempresa = $idempresa " .
+                    ($idbanco > 0 ? "AND b.id = $idbanco " : "") . "
+                UNION
+                SELECT a.id
+                FROM tranban a
+                INNER JOIN banco b ON a.idbanco = b.id
+                LEFT JOIN d_estado_cuenta c ON a.fecha = c.fecha AND a.monto = c.monto
+                LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta
+                WHERE a.fecha >= '$del' AND a.fecha <= '$al'
+                    AND b.mt940 IS NOT NULL
+                    AND a.tipotrans IN ('B')
+                    AND b.mt940 = d.cuenta
+                    AND a.numban != c.referencia
+                    AND b.idempresa = $idempresa " .
+                    ($idbanco > 0 ? "AND b.id = $idbanco " : "") . "
+            )
             ORDER BY 1";
     $debitos = $db->getQuery($query);
 
