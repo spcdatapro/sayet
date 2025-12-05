@@ -100,7 +100,7 @@
             getErroresMT940: () => {
                 return comunFact.doGET(urlBase + '/errores_mt940');
             },
-            emparejarDebitos: (del, al, idempresa) => {
+            emparejarDebitos: (del, al, idempresa, idbanco) => {
                 return comunFact.doGET(`${urlBase}/emparejar_debitos/${del}/${al}/${idempresa}/${idbanco}`);
             },
             emparejarDebitosBanco: (aemparejar) => {
