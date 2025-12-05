@@ -1079,26 +1079,26 @@ $app->get('/revertir/:idtranban', function($idtranban) {
 $app->post('/conectar_banco', function () use ($app) {
     $db = new dbcpm();
 
-    $dest = new SFTPConnInfo('localhost', 222, 'aponce', 'y%YgW$Qk3x#a59Su', '/');
-    $src = new SFTPConnInfo('190.242.184.121', 22, 'sftpSayet', 'S3Pd25S@y3t', '/');
-    $conciliacion = new ConciliacionAutomatica($src, $dest);
+    // $dest = new SFTPConnInfo('localhost', 222, 'aponce', 'y%YgW$Qk3x#a59Su', '/');
+    // $src = new SFTPConnInfo('190.242.184.121', 22, 'sftpSayet', 'S3Pd25S@y3t', '/');
+    // $conciliacion = new ConciliacionAutomatica($src, $dest);
 
-    try {
-        $archivos = $conciliacion->get_mt940(); 
-        $conciliacion->read_mt940();
-    } catch (Exception $e) {
-        print json_encode(['tipo' => 'error', 'mensaje' => 'Error en la conexión, favor comunicarse con IT: ' . $e->getMessage()]);
-        return;
-    }
+    // try {
+    //     $archivos = $conciliacion->get_mt940(); 
+    //     $conciliacion->read_mt940();
+    // } catch (Exception $e) {
+    //     print json_encode(['tipo' => 'error', 'mensaje' => 'Error en la conexión, favor comunicarse con IT: ' . $e->getMessage()]);
+    //     return;
+    // }
 
-    if (count($archivos->errores)) {
-        $error = $archivos->errores[0];
-        $fecha = $archivos->fecha;
-        $db->doQuery("INSERT INTO errores_ecuenta(descripcion, fecha) VALUES ('$error', '$fecha')");
-        print json_encode(['tipo' => 'warning', 'mensaje' => 'Archivos extraídos con éxito, no se recibiron todos los archivos', 'errores' => $error]);
-    }  else {
+    // if (count($archivos->errores)) {
+    //     $error = $archivos->errores[0];
+    //     $fecha = $archivos->fecha;
+    //     $db->doQuery("INSERT INTO errores_ecuenta(descripcion, fecha) VALUES ('$error', '$fecha')");
+    //     print json_encode(['tipo' => 'warning', 'mensaje' => 'Archivos extraídos con éxito, no se recibiron todos los archivos', 'errores' => $error]);
+    // }  else {
         print json_encode(['tipo' => 'success', 'mensaje' => 'Archivos extraídos con éxito']);
-    }
+    // }
     return;
 });
 
@@ -1534,24 +1534,41 @@ $app->get('/emparejar_debitos/:del/:al/:idempresa', function ($del, $al, $idempr
 
     $query = "SELECT a.id, CONCAT(b.siglas, ' (', b.nocuenta, ')') AS banco, a.numero, a.monto, a.fecha, SUBSTRING(a.concepto, 1, 50) AS concepto, c.referencia AS numban, 
                 c.monto AS montoban, c.fecha AS fechaban, c.descripcion, e.simbolo AS moneda, c.d_estado_cuenta AS id_banco, 1 AS tipo, 
-                CONCAT(e.simbolo, '.', FORMAT(c.monto, 2)) AS montobanstr, DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fechabanstr
+                CONCAT(e.simbolo, '.', FORMAT(c.monto, 2)) AS montobanstr, DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fechabanstr, a.operado AS emparejado
                 FROM tranban a INNER JOIN banco b ON a.idbanco = b.id LEFT JOIN d_estado_cuenta c ON a.numban = c.referencia 
                 LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta INNER JOIN moneda e ON b.idmoneda = e.id 
                 WHERE a.fecha >= '$del' AND a.fecha <= '$al' AND b.mt940 > 0 AND a.tipotrans IN ('C' , 'B') AND b.mt940 = d.cuenta AND b.idempresa = $idempresa
             UNION ALL
                 SELECT a.id, CONCAT(b.siglas, ' (', b.nocuenta, ')') AS banco, a.numero, a.monto, a.fecha, SUBSTRING(a.concepto, 1, 50) AS concepto, c.referencia AS numban, 
                 c.monto AS montoban, c.fecha AS fechaban, c.descripcion, e.simbolo AS moneda, c.d_estado_cuenta AS id_banco, 2 AS tipo,
-                CONCAT(e.simbolo, '.', FORMAT(c.monto, 2)) AS montobanstr, DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fechabanstr
+                CONCAT(e.simbolo, '.', FORMAT(c.monto, 2)) AS montobanstr, DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fechabanstr, a.operado AS emparejado
                 FROM tranban a INNER JOIN banco b ON a.idbanco = b.id LEFT JOIN d_estado_cuenta c ON a.fecha = c.fecha AND a.monto = c.monto 
                 LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta INNER JOIN moneda e ON b.idmoneda = e.id 
                 WHERE a.fecha >= '$del' AND a.fecha <= '$al' AND b.mt940 > 0 AND a.tipotrans IN ('C' , 'B') AND b.mt940 = d.cuenta AND a.numban != c.referencia AND b.idempresa = $idempresa
             UNION ALL
                 SELECT a.id, CONCAT(b.siglas, ' (', b.nocuenta, ')') AS banco, a.numero, a.monto, a.fecha, SUBSTRING(a.concepto, 1, 50) AS concepto, c.referencia AS numban, 
                 c.monto AS montoban, c.fecha AS fechaban, c.descripcion, e.simbolo AS moneda, c.d_estado_cuenta AS id_banco, 3 AS tipo,
-                CONCAT(e.simbolo, '.', FORMAT(c.monto, 2)) AS montobanstr, DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fechabanstr
+                CONCAT(e.simbolo, '.', FORMAT(c.monto, 2)) AS montobanstr, DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fechabanstr, a.operado AS emparejado
                 FROM tranban a INNER JOIN banco b ON a.idbanco = b.id LEFT JOIN d_estado_cuenta c ON a.monto = c.monto AND a.fecha != c.fecha 
                 LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta INNER JOIN moneda e ON b.idmoneda = e.id 
                 WHERE a.fecha >= '$del' AND a.fecha <= '$al' AND b.mt940 > 0 AND a.tipotrans IN ('C' , 'B') AND b.mt940 = d.cuenta AND a.numban != c.referencia AND b.idempresa = $idempresa
+                AND a.id NOT IN (
+                    SELECT a.id
+                    FROM tranban a
+                    INNER JOIN banco b ON a.idbanco = b.id
+                    LEFT JOIN d_estado_cuenta c ON a.numban = c.referencia
+                    LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta
+                    WHERE a.fecha >= '$del' AND a.fecha <= '$al' AND b.mt940 > 0 
+                    AND a.tipotrans IN ('C' , 'B') AND b.mt940 = d.cuenta AND b.idempresa = $idempresa
+                    UNION
+                    SELECT a.id
+                    FROM tranban a
+                    INNER JOIN banco b ON a.idbanco = b.id
+                    LEFT JOIN d_estado_cuenta c ON a.fecha = c.fecha AND a.monto = c.monto
+                    LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta
+                    WHERE a.fecha >= '$del' AND a.fecha <= '$al' AND b.mt940 > 0 
+                    AND a.tipotrans IN ('C' , 'B') AND b.mt940 = d.cuenta AND a.numban != c.referencia AND b.idempresa = $idempresa
+                    )
             ORDER BY 1";
     $debitos = $db->getQuery($query);
 
@@ -1572,6 +1589,38 @@ $app->get('/emparejar_debitos/:del/:al/:idempresa', function ($del, $al, $idempr
     $result = array_values($grouped);
 
     return print json_encode($result);
+});
+
+$app->post('/auto_emparejar', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    if (count($d) > 0) {
+        foreach ($d as $item) {
+            $idtranban = $item->id;
+            $idbanco = $item->id_banco;
+
+            $query = "SELECT operado, numban FROM tranban WHERE id = $idtranban";
+            $operada = $db->getQuery($query)[0];
+
+            if ($operada->operado > 0 && $operada->numban > 0) {
+                continue;
+            } else {
+                $db->doQuery("UPDATE tranban SET operado = 1, fechaoperado = '$item->fechaban', numban = $item->numban WHERE id = $idtranban");
+            }
+
+            $query = "SELECT idtranban FROM d_estado_cuenta WHERE d_estado_cuenta = $idbanco";
+            $emparejada = $db->getQuery($query)[0];
+
+            if ($emparejada->idtranban > 0) {
+                continue;
+            } else {
+                $db->doQuery("UPDATE d_estado_cuenta SET idtranaban = $idtranban WHERE d_estado_cuenta = $idbanco");
+            }
+        }
+
+        print json_encode(['tipo' => 'success', 'mensaje' => "Se han emparejado los documentos seleccionados."]);
+    }
 });
 
 $app->run();
