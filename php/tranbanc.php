@@ -1079,26 +1079,26 @@ $app->get('/revertir/:idtranban', function($idtranban) {
 $app->post('/conectar_banco', function () use ($app) {
     $db = new dbcpm();
 
-    // $dest = new SFTPConnInfo('localhost', 222, 'aponce', 'y%YgW$Qk3x#a59Su', '/');
-    // $src = new SFTPConnInfo('190.242.184.121', 22, 'sftpSayet', 'S3Pd25S@y3t', '/');
-    // $conciliacion = new ConciliacionAutomatica($src, $dest);
+    $dest = new SFTPConnInfo('localhost', 222, 'aponce', 'y%YgW$Qk3x#a59Su', '/');
+    $src = new SFTPConnInfo('190.242.184.121', 22, 'sftpSayet', 'S3Pd25S@y3t', '/');
+    $conciliacion = new ConciliacionAutomatica($src, $dest);
 
-    // try {
-    //     $archivos = $conciliacion->get_mt940(); 
-    //     $conciliacion->read_mt940();
-    // } catch (Exception $e) {
-    //     print json_encode(['tipo' => 'error', 'mensaje' => 'Error en la conexión, favor comunicarse con IT: ' . $e->getMessage()]);
-    //     return;
-    // }
+    try {
+        $archivos = $conciliacion->get_mt940(); 
+        $conciliacion->read_mt940();
+    } catch (Exception $e) {
+        print json_encode(['tipo' => 'error', 'mensaje' => 'Error en la conexión, favor comunicarse con IT: ' . $e->getMessage()]);
+        return;
+    }
 
-    // if (count($archivos->errores)) {
-    //     $error = $archivos->errores[0];
-    //     $fecha = $archivos->fecha;
-    //     $db->doQuery("INSERT INTO errores_ecuenta(descripcion, fecha) VALUES ('$error', '$fecha')");
-    //     print json_encode(['tipo' => 'warning', 'mensaje' => 'Archivos extraídos con éxito, no se recibiron todos los archivos', 'errores' => $error]);
-    // }  else {
+    if (count($archivos->errores)) {
+        $error = $archivos->errores[0];
+        $fecha = $archivos->fecha;
+        $db->doQuery("INSERT INTO errores_ecuenta(descripcion, fecha) VALUES ('$error', '$fecha')");
+        print json_encode(['tipo' => 'warning', 'mensaje' => 'Archivos extraídos con éxito, no se recibiron todos los archivos', 'errores' => $error]);
+    }  else {
         print json_encode(['tipo' => 'success', 'mensaje' => 'Archivos extraídos con éxito']);
-    // }
+    }
     return;
 });
 
