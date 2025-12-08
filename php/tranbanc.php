@@ -1529,7 +1529,7 @@ $app->post('/rerr', function () {
     return print json_encode($success);
 });
 
-$app->get('/emparejar_debitos/:del/:al/:idempresa/:idbanco', function ($del, $al, $idempresa, $idbanco) {
+$app->get('/emparejar_debitos/:del/:al/:idempresa', function ($del, $al, $idempresa) {
     $db = new dbcpm();
 
     $query = "SELECT a.id, CONCAT(b.siglas, ' (', b.nocuenta, ')') AS banco, a.numero, a.monto, a.fecha,
@@ -1538,7 +1538,7 @@ $app->get('/emparejar_debitos/:del/:al/:idempresa/:idbanco', function ($del, $al
                 c.d_estado_cuenta AS id_banco, 1 AS tipo,
                 CONCAT(e.simbolo, '.', FORMAT(c.monto, 2)) AS montobanstr,
                 DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fechabanstr,
-                a.operado AS emparejado
+                a.operado AS emparejado, a.idbanco
             FROM tranban a
             INNER JOIN banco b ON a.idbanco = b.id
             LEFT JOIN d_estado_cuenta c ON (a.numban = c.referencia OR a.numero = c.referencia)
@@ -1548,18 +1548,15 @@ $app->get('/emparejar_debitos/:del/:al/:idempresa/:idbanco', function ($del, $al
             AND b.mt940 IS NOT NULL
             AND a.tipotrans IN ('C','B')
             AND b.mt940 = d.cuenta
-            AND b.idempresa = $idempresa " .
-            ($idbanco > 0 ? "AND b.id = $idbanco " : "") . "
-
+            AND b.idempresa = $idempresa 
             UNION ALL
-
             SELECT a.id, CONCAT(b.siglas, ' (', b.nocuenta, ')') AS banco, a.numero, a.monto, a.fecha,
                 SUBSTRING(a.concepto, 1, 50) AS concepto, c.referencia AS numban,
                 c.monto AS montoban, c.fecha AS fechaban, c.descripcion, e.simbolo AS moneda,
                 c.d_estado_cuenta AS id_banco, 2 AS tipo,
                 CONCAT(e.simbolo, '.', FORMAT(c.monto, 2)) AS montobanstr,
                 DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fechabanstr,
-                a.operado AS emparejado
+                a.operado AS emparejado, a.idbanco
             FROM tranban a
             INNER JOIN banco b ON a.idbanco = b.id
             LEFT JOIN d_estado_cuenta c ON a.fecha = c.fecha AND a.monto = c.monto
@@ -1567,21 +1564,18 @@ $app->get('/emparejar_debitos/:del/:al/:idempresa/:idbanco', function ($del, $al
             INNER JOIN moneda e ON b.idmoneda = e.id
             WHERE a.fecha >= '$del' AND a.fecha <= '$al'
             AND b.mt940 IS NOT NULL
-            AND a.tipotrans IN ('B')
+            AND a.tipotrans IN ('B', 'C')
             AND b.mt940 = d.cuenta
-            AND a.numban != c.referencia
-            AND b.idempresa = $idempresa " .
-            ($idbanco > 0 ? "AND b.id = $idbanco " : "") . "
-
+            AND (a.numban != c.referencia AND a.numero != c.referencia)
+            AND b.idempresa = $idempresa
             UNION ALL
-
             SELECT a.id, CONCAT(b.siglas, ' (', b.nocuenta, ')') AS banco, a.numero, a.monto, a.fecha,
                 SUBSTRING(a.concepto, 1, 50) AS concepto, c.referencia AS numban,
                 c.monto AS montoban, c.fecha AS fechaban, c.descripcion, e.simbolo AS moneda,
                 c.d_estado_cuenta AS id_banco, 3 AS tipo,
                 CONCAT(e.simbolo, '.', FORMAT(c.monto, 2)) AS montobanstr,
                 DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fechabanstr,
-                a.operado AS emparejado
+                a.operado AS emparejado, a.idbanco
             FROM tranban a
             INNER JOIN banco b ON a.idbanco = b.id
             LEFT JOIN d_estado_cuenta c ON a.monto = c.monto AND a.fecha != c.fecha
@@ -1592,20 +1586,19 @@ $app->get('/emparejar_debitos/:del/:al/:idempresa/:idbanco', function ($del, $al
             AND a.tipotrans IN ('C','B')
             AND b.mt940 = d.cuenta
             AND a.numban != c.referencia
-            AND b.idempresa = $idempresa " .
-            ($idbanco > 0 ? "AND b.id = $idbanco " : "") . "
+            AND b.idempresa = $idempresa 
             AND a.id NOT IN (
                 SELECT a.id
-                FROM tranban a
-                INNER JOIN banco b ON a.idbanco = b.id
-                LEFT JOIN d_estado_cuenta c ON (a.numban = c.referencia OR a.numero = c.referencia)
-                LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta
-                WHERE a.fecha >= '$del' AND a.fecha <= '$al'
+                    FROM tranban a
+                    INNER JOIN banco b ON a.idbanco = b.id
+                    LEFT JOIN d_estado_cuenta c ON (a.numban = c.referencia OR a.numero = c.referencia)
+                    LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta
+                    INNER JOIN moneda e ON b.idmoneda = e.id
+                    WHERE a.fecha >= '$del' AND a.fecha <= '$al'
                     AND b.mt940 IS NOT NULL
                     AND a.tipotrans IN ('C','B')
                     AND b.mt940 = d.cuenta
-                    AND b.idempresa = $idempresa " .
-                    ($idbanco > 0 ? "AND b.id = $idbanco " : "") . "
+                    AND b.idempresa = $idempresa 
                 UNION
                 SELECT a.id
                 FROM tranban a
@@ -1614,11 +1607,10 @@ $app->get('/emparejar_debitos/:del/:al/:idempresa/:idbanco', function ($del, $al
                 LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta
                 WHERE a.fecha >= '$del' AND a.fecha <= '$al'
                     AND b.mt940 IS NOT NULL
-                    AND a.tipotrans IN ('B')
+                    AND a.tipotrans IN ('B', 'C')
                     AND b.mt940 = d.cuenta
                     AND a.numban != c.referencia
-                    AND b.idempresa = $idempresa " .
-                    ($idbanco > 0 ? "AND b.id = $idbanco " : "") . "
+                    AND b.idempresa = $idempresa
             )
             ORDER BY 1";
     $debitos = $db->getQuery($query);
@@ -1651,23 +1643,16 @@ $app->post('/auto_emparejar', function () {
             $idtranban = $item->id;
             $idbanco = $item->id_banco;
 
-            $query = "SELECT operado, numban FROM tranban WHERE id = $idtranban";
+            $query = "SELECT operado, numban, tipotrans FROM tranban WHERE id = $idtranban";
             $operada = $db->getQuery($query)[0];
 
-            if ($operada->operado > 0 && $operada->numban > 0) {
-                continue;
-            } else {
+            if ($operada->tipotrans == 'R') {
                 $db->doQuery("UPDATE tranban SET operado = 1, fechaoperado = '$item->fechaban', numban = $item->numban WHERE id = $idtranban");
-            }
-
-            $query = "SELECT idtranban FROM d_estado_cuenta WHERE d_estado_cuenta = $idbanco";
-            $emparejada = $db->getQuery($query)[0];
-
-            if ($emparejada->idtranban > 0) {
-                continue;
             } else {
-                $db->doQuery("UPDATE d_estado_cuenta SET idtranaban = $idtranban WHERE d_estado_cuenta = $idbanco");
+                $db->doQuery("UPDATE tranban SET operado = 1, fechaoperado = '$item->fechaban' WHERE id = $idtranban");
             }
+
+            $db->doQuery("UPDATE d_estado_cuenta SET idtranaban = $idtranban WHERE d_estado_cuenta = $idbanco");
         }
 
         print json_encode(['tipo' => 'success', 'mensaje' => "Se han emparejado los documentos seleccionados."]);

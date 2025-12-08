@@ -19,7 +19,22 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Empresa:</label>
+                            <ui-select ng-model="params.idempresa" title="Seleccione una empresa..." theme="bootstrap"
+                                autofocus="false">
+                                <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
+                                    <span ng-bind="($select.selected.nomempresa)"></span>
+                                </ui-select-match>
+                                <ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+                                    <div ng-bind-html="(item.nomempresa) | highlight: $select.search"></div>
+                                </ui-select-choices>
+                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                            </ui-select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
                         <div class="form-group">
                             <div class="form-group">
                                 <label class="control-label">Del:</label>
@@ -28,7 +43,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <div class="form-group">
                                 <label class="control-label">Al:</label>
@@ -55,26 +70,40 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <div class="form-group">
-                                    <label class="control-label">Del:</label>
-                                    <input type="date" name="fchDel" id="fchDel" class="form-control"
-                                        ng-model="params.fdel">
-                                </div>
+                                <label class="control-label">Empresa:</label>
+                                <ui-select ng-model="params.idempresa" title="Seleccione una empresa..."
+                                    theme="bootstrap" autofocus="false">
+                                    <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
+                                        <span ng-bind="($select.selected.nomempresa)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+                                        <div ng-bind-html="(item.nomempresa) | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+
+                            <div class="form-group">
+                                <label class="control-label">Del:</label>
+                                <input type="date" name="fchDel" id="fchDel" class="form-control"
+                                    ng-model="params.fdel">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <div class="form-group">
-                                    <label class="control-label">Al:</label>
-                                    <input type="date" name="fchAl" id="fchAl" class="form-control"
-                                        ng-model="params.fal">
-                                </div>
+                                <label class="control-label">Al:</label>
+                                <input type="date" name="fchAl" id="fchAl" class="form-control" ng-model="params.fal">
                             </div>
+
                         </div>
-                        <div class="col-md-4">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label">Banco:</label>
-                                <ui-select ng-model="idbanco" title="Seleccione un banco..." theme="bootstrap"
+                                <ui-select ng-model="params.idbanco" title="Seleccione un banco..." theme="bootstrap"
                                     autofocus="false">
                                     <ui-select-match placeholder="Buscar banco..." allow-clear="true">
                                         <span ng-bind="($select.selected.bancomoneda)"></span>
@@ -88,13 +117,30 @@
                                 </ui-select>
                             </div>
                         </div>
+                        <div class="col-md-6" ng-hide="true">
+                            <div class="form-group">
+                                <label class="control-label">Tipo transacc&oacute;n:</label>
+                                <ui-select ng-model="tipos" title="Seleccione uno o varios tipos..." theme="bootstrap"
+                                    autofocus="false" multiple>
+                                    <ui-select-match placeholder="Buscar tipo transaccion..." allow-clear="true">
+                                        <span>{{$item.abreviatura}}</span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in tipotrans | filter:$select.search"
+                                        group-by="'grupo'">
+                                        <div ng-bind-html="(item.abreviadesc) | highlight: $select.search">
+                                        </div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12">
                             <div class="btn-group btn-group-justified">
                                 <div class="btn-group" role="group">
                                     <button type="button" class="btn btn-default" title="Buscar documentos del banco"
-                                        ng-click="buscarDocumentos()">
+                                        ng-click="buscar()">
                                         <i class="fi fi-rr-search"></i> Buscar documentos del banco
                                     </button>
                                 </div>
