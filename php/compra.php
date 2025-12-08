@@ -339,28 +339,41 @@ $app->post('/c', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
+
+    $d->retiva_manual = isset($d->retiva_manual) ? (int)$d->retiva_manual : 0;
+
+    if (isset($d->retiva_manual) && (int)$d->retiva_manual === 1) {
+        if ((float)$d->tipocambio > 0) {
+            $d->retIva = (float)$d->retiva / (float)$d->tipocambio;
+        }
+    } else {
+        $d->retIva = 0.00; // se recalculará más abajo si aplica
+    }
+
     if(!isset($d->idunidad)){ $d->idunidad = 0; }
     if(!isset($d->nombrerecibo)){ $d->nombrerecibo = 'NULL'; } else { $d->nombrerecibo = "'$d->nombrerecibo'"; }
     if(!isset($d->idcheque)){ $d->idcheque = 0; }
     $d->tipocambio = $d->tipocambio > 0 ? $d->tipocambio : 1.00;
 
     $calcisr = false;
-    $d->retIva = 0.00;
+    
 
-    // ver si empresa es retenedora
-    $empresaRet = (int)$db->getOneField("SELECT retenedora FROM empresa WHERE id = $d->idempresa") === 1;
-    // ver si proveedor es peque cont.
-    $esPeque = (int)$db->getOneField("SELECT pequeniocont FROM proveedor WHERE id = $d->idproveedor") === 1;
-    // ver si el proveedor esta marcado como retenedor
-    $esRet = (int)$db->getOneField("SELECT retensioniva FROM proveedor WHERE id = $d->idproveedor ") === 1;
-    $esLocalMonedaFact = (int)$db->getOneField("SELECT eslocal FROM moneda WHERE id = $d->idmoneda") === 1;
+        // ver si empresa es retenedora
+        $empresaRet = (int)$db->getOneField("SELECT retenedora FROM empresa WHERE id = $d->idempresa") === 1;
+        // ver si proveedor es peque cont.
+        $esPeque = (int)$db->getOneField("SELECT pequeniocont FROM proveedor WHERE id = $d->idproveedor") === 1;
+        // ver si el proveedor esta marcado como retenedor
+        $esRet = (int)$db->getOneField("SELECT retensioniva FROM proveedor WHERE id = $d->idproveedor ") === 1;
+        $esLocalMonedaFact = (int)$db->getOneField("SELECT eslocal FROM moneda WHERE id = $d->idmoneda") === 1;
 
-    if((int)$d->idtipofactura !== 5) {
-        $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
+    if ($d->retiva_manual != 1) {
+        if((int)$d->idtipofactura !== 5) {
+            $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
 
-        // si la empresa es retenedora y el proveedor no es retenedor retener iva
-        if (($empresaRet && !$esRet) && (($d->totfact - $d->noafecto) * $d->tipocambio) >= 2500 && !$esPeque) {
-            $d->retIva = $db->retIVA((float)$d->iva, 0.15, 1, $esLocalMonedaFact);
+            // si la empresa es retenedora y el proveedor no es retenedor retener iva
+            if (($empresaRet && !$esRet) && (($d->totfact - $d->noafecto) * $d->tipocambio) >= 2500 && !$esPeque) {
+                $d->retIva = $db->retIVA((float)$d->iva, 0.15, 1, $esLocalMonedaFact, $decimal_iva);
+            }
         }
     }
 
@@ -403,6 +416,16 @@ $app->post('/u', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
+    $d->retiva_manual = isset($d->retiva_manual) ? (int)$d->retiva_manual : 0;
+
+    if (isset($d->retiva_manual) && (int)$d->retiva_manual === 1) {
+        if ((float)$d->tipocambio > 0) {
+            $d->retIva = (float)$d->retiva / (float)$d->tipocambio;
+        }
+    } else {
+        $d->retIva = 0.00; // se recalculará más abajo si aplica
+    }
+
     if(!isset($d->idunidad)){ $d->idunidad = 0; }
     if(!isset($d->nombrerecibo)){ $d->nombrerecibo = 'NULL'; } else { $d->nombrerecibo = "'$d->nombrerecibo'"; }
     if(!isset($d->idcheque)){ $d->idcheque = 0; }
@@ -411,22 +434,24 @@ $app->post('/u', function(){
     $d->tipocambio = $d->tipocambio > 0 ? $d->tipocambio : 1.00;
 
     $calcisr = false;
-    $d->retIva = 0.00;
+    
 
-    // ver si empresa es retenedora
-    $empresaRet = (int)$db->getOneField("SELECT retenedora FROM empresa WHERE id = $d->idempresa") === 1;
-    // ver si proveedor es peque cont.
-    $esPeque = (int)$db->getOneField("SELECT pequeniocont FROM proveedor WHERE id = $d->idproveedor") === 1;
-    // ver si el proveedor esta marcado como retenedor
-    $esRet = (int)$db->getOneField("SELECT retensioniva FROM proveedor WHERE id = $d->idproveedor ") === 1;
-    $esLocalMonedaFact = (int)$db->getOneField("SELECT eslocal FROM moneda WHERE id = $d->idmoneda") === 1;
+        // ver si empresa es retenedora
+        $empresaRet = (int)$db->getOneField("SELECT retenedora FROM empresa WHERE id = $d->idempresa") === 1;
+        // ver si proveedor es peque cont.
+        $esPeque = (int)$db->getOneField("SELECT pequeniocont FROM proveedor WHERE id = $d->idproveedor") === 1;
+        // ver si proveedor es retenedor
+        $esRet = (int)$db->getOneField("SELECT retensioniva FROM proveedor WHERE id = $d->idproveedor ") === 1;
+        $esLocalMonedaFact = (int)$db->getOneField("SELECT eslocal FROM moneda WHERE id = $d->idmoneda") === 1;
 
-    if((int)$d->idtipofactura !== 5) {
-        $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
+    if ($d->retiva_manual != 1) {
+        if((int)$d->idtipofactura !== 5) {
+            $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
 
-        // si la empresa es retenedora y el proveedor no es retenedor retener iva
-        if (($empresaRet && !$esRet) && (($d->totfact - $d->noafecto) * $d->tipocambio) >= 2500 && !$esPeque) {
-            $d->retIva = $db->retIVA((float)$d->iva, 0.15, 1, $esLocalMonedaFact, $decimal_iva);
+            // si la empresa es retenedora y el proveedor no es retenedor retener iva
+            if (($empresaRet && !$esRet) && (($d->totfact - $d->noafecto) * $d->tipocambio) >= 2500 && !$esPeque) {
+                $d->retIva = $db->retIVA((float)$d->iva, 0.15, 1, $esLocalMonedaFact, $decimal_iva);
+            }
         }
     }
 
