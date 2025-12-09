@@ -195,8 +195,13 @@
                         $scope.fltrtran.tipotrans = 'C';
                         tranBancSrvc.lstTranFiltr($scope.fltrtran).then(function (y) {
                             $scope.lstchq = prepareTranBan(y);
-                            $scope.fltrtran.tipotrans = '';
-                            $scope.cargando = false;
+                            $scope.fltrtran.tipotrans = 'B';
+                            tranBancSrvc.lstTranFiltr($scope.fltrtran).then(function (ddb) {
+                            $scope.lstndd = prepareTranBan(ddb);
+                                $scope.lstDocsLiq = [].concat($scope.lstchq, $scope.lstndd);
+                                $scope.fltrtran.tipotrans = '';
+                                $scope.cargando = false;
+                            });    
                         });
                     });
                 });
