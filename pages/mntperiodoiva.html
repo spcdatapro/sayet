@@ -1,0 +1,103 @@
+<div class="container" ng-controller="periodoIvaCtrl">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Per&iacute;odo(s) de IVA</div>
+        <div class="panel-body">
+            <form name="frmPCont" id="frmPCont" ng-submit="frmPCont.$valid && addPeriodo(elPeriodo)" novalidate>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group"
+                            ng-class="{'has-error':frmPCont.txtDel.$invalid && !frmPCont.txtDel.$pristine}">
+                            <label for="txtDel">Del:</label>
+                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="elPeriodo.del"
+                                required />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group"
+                            ng-class="{'has-error':frmPCont.txtAl.$invalid && !frmPCont.txtAl.$pristine}">
+                            <label for="txtAl">Al:</label>
+                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="elPeriodo.al"
+                                required />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group"
+                            ng-class="{'has-error':frmPCont.chkAbierto.$invalid && !frmPCont.chkAbierto.$pristine}">
+                            <center><label for="chkAbierto">Abierto:</label>
+                                <input name="chkAbierto" id="chkAbierto" type="checkbox" class="checkbox"
+                                    ng-model="elPeriodo.abierto" ng-true-value="1" ng-false-value="0" />
+                            </center>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group" role="group" aria-label="...">
+                    <button type="submit" class="btn btn-primary" ng-disabled="frmPCont.$invalid"
+                        ng-hide="+elPeriodo.id > 0">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-disabled="frmPCont.$invalid"
+                        ng-show="+elPeriodo.id > 0" ng-click="updPeriodo(elPeriodo)">
+                        <span class="glyphicon glyphicon-floppy-save"></span>
+                    </button>
+                    <button type="button" class="btn btn-primary" ng-show="+elPeriodo.id > 0" ng-click="resetPeriodo()">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+                </div>
+            </form>
+            <hr />
+            <table class="table table-responsive table-hover table-condensed table-striped">
+                <caption>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="chkVerCerrados">Ver cerrados:</label>
+                                <input name="chkVerCerrados" id="chkVerCerrados" type="checkbox"
+                                    class="form-control input-sm" ng-model="params.vercerrados" ng-true-value="1"
+                                    ng-false-value="0" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="txtAnio">Año:</label>
+                                <div class="input-group">
+                                    <input name="txtAnio" id="txtAnio" type="number" class="form-control input-sm"
+                                        ng-model="params.anio">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-primary btn-sm"
+                                            ng-click="getLstPeriodos()">Buscar</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <input ng-model="searchPeriodo.$" class="form-control input-sm"
+                                placeholder="Buscar per&iacute;odo contable..." style="width: 100%;" />
+                        </div>
+                    </div>
+                </caption>
+                <thead>
+                    <tr>
+                        <th>Del</th>
+                        <th>Al</th>
+                        <th>Abierto</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="p in losPeriodos | filter:searchPeriodo" ng-click="getPeriodo(p.id)">
+                        <td>{{p.del | date:'dd/MM/yyyy'}}</td>
+                        <td>{{p.al | date:'dd/MM/yyyy'}}</td>
+                        <td>{{p.abierto === 1 ? 'S&iacute;' : 'No'}}</td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm" ng-click="delPeriodo(p)">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

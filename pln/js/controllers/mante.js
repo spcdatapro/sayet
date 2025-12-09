@@ -255,6 +255,10 @@ angular.module('cpm')
                     $scope.emp.estatus = $scope.emp.activo == 1 ? 'Activo' : 'Inactivo';
                     $scope.emp.fecha_activo = $scope.lab.reingreso != null ? $scope.lab.reingreso : $scope.lab.ingreso;
                     $scope.emp.fecha_baja = $scope.lab.baja != null ? $scope.lab.baja : null;
+                    $scope.emp.igss = $scope.lab.igss != null ? $scope.lab.igss : '';
+                    $scope.emp.nacimiento = $scope.per.nacimiento != null ? $scope.per.nacimiento : '';
+                    $scope.emp.nombre = d.per.primernombre + ' ' + d.per.segundonombre + ' ' + d.per.tercernombre;
+                    $scope.emp.apellidos = d.per.primerapellido + ' ' + d.per.segundoapellido + ' ' + d.per.apellidocasada;
 
                     // para permitir eliminar el empleado cuando esta en tiempo de prueba
                     const hoy = moment().toDate();
@@ -713,12 +717,15 @@ angular.module('cpm')
                 $uibModal.open({
                     animation: true,
                     templateUrl: 'modalReporteEmpleador.html',
-                    controller: 'ModalReporteEmpleadorCtrl'
-                }).result.then(function (anio) {
+                    controller: 'ModalReporteEmpleadorCtrl',
+                    resolve: {
+                        empresas: () => $scope.empresasPlanilla
+                    }
+                }).result.then(params => {
                     $scope.cargando = true;
-                    jsReportSrvc.getReport('BkA5jnjK1x', anio).then(result => {
+                    jsReportSrvc.getReport('BkA5jnjK1x', params).then(result => {
                         var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
-                        saveAs(file, 'Reporte_Empleador_' + anio + '.xlsx');
+                        saveAs(file, 'Reporte_Empleador_' + params.anio + '_' + $filter('getById')($scope.empresas, params.empresa).nomempresa + '.xlsx');
                         $scope.cargando = false;
                     }).catch(err => {
                         console.log(err);
@@ -975,10 +982,11 @@ angular.module('cpm')
         }
     ])
     //------------------------------------------------------------------------------------------------------------------------------------------------//
-    .controller('ModalReporteEmpleadorCtrl', ['$scope', '$uibModalInstance', function ($scope, $uibModalInstance) {
-        $scope.anio = moment().year() - 1;
+    .controller('ModalReporteEmpleadorCtrl', ['$scope', '$uibModalInstance', 'empresas', function ($scope, $uibModalInstance, empresas) {
+        $scope.empresas = empresas;
+        $scope.params = {anio: moment().year() - 1};
 
-        $scope.ok = anio => { $uibModalInstance.close(anio) }
+        $scope.ok = params => { $uibModalInstance.close(params) }
 
         $scope.cancel = () => { $uibModalInstance.dismiss('cancel') }
 

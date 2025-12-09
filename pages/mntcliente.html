@@ -128,8 +128,10 @@
                                     <div class="col-md-4 nopadding">
                                         <div class="form-group">
                                             <label for="txtCon" class="control-label">Concepto:</label>
-                                            <textarea name="txtCon" id="txtCon" class="form-control" ng-model="cliente.concepto" 
-                                            placeholder="Esto aparecera al principio del concepto en todas las facturas del cliente" ng-disabled="lectura"></textarea>
+                                            <textarea name="txtCon" id="txtCon" class="form-control"
+                                                ng-model="cliente.concepto"
+                                                placeholder="Esto aparecera al principio del concepto en todas las facturas del cliente"
+                                                ng-disabled="lectura"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -354,7 +356,7 @@
                                             <input name="txtNITDF" id="txtNITDF" type="text"
                                                 class="form-control input-sm" ng-model="detfact.nit" maxlength="25"
                                                 placeholder="N.I.T. de facturaci&oacute;n" ng-disabled="sldatafact"
-                                                ng-required="req.nit" required/>
+                                                ng-required="req.nit" required />
                                         </div>
                                     </div>
                                     <div class="col-md-2 nopadding">
@@ -431,11 +433,20 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 nopadding">
+                                        <div class="form-group">
+                                            <label for="selProyectO" class="control-label">Proyecto (si se deja en
+                                                blanco afectara a todos):</label>
+                                            <select name="selProyCli" id="selProyCli" class="form-control input-sm"
+                                                ng-model="detfact.idproyecto"
+                                                ng-options="obj.id as obj.proyecto for obj in proyectos_cliente" ng-disabled="sldatafact"></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 nopadding">
                                         <div class="form-group"><label for="cuiTxt">CUI:</label><input type="text"
                                                 class="form-control input-sm" id="cuiTxt" ng-model="detfact.cui"
                                                 ng-disabled="sldatafact"></div>
                                     </div>
-                                    <div class="col-md-6 nopadding">
+                                    <div class="col-md-3 nopadding">
                                         <div class="form-group"><label for="pasTxt">Pasaporte:</label><input type="text"
                                                 class="form-control input-sm" id="pasTxt" ng-model="detfact.pasaporte"
                                                 ng-disabled="sldatafact"></div>
@@ -1115,8 +1126,9 @@
                                         <td style="text-align: right">{{d.moneda}}&nbsp;{{d.monto | number:2}}</td>
                                         <td>
                                             <button type="button" class="btn btn-info btn-sm"
-                                                ng-click="generaCobros(d.id, d.concepto, d.idcontrato)" data-toggle="tooltip"
-                                                data-placement="auto" title="Agregar descuento al período...">
+                                                ng-click="generaCobros(d.id, d.concepto, d.idcontrato)"
+                                                data-toggle="tooltip" data-placement="auto"
+                                                title="Agregar descuento al período...">
                                                 <span class="glyphicon glyphicon-list-alt"></span>
                                             </button>
                                         </td>

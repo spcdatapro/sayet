@@ -1,3 +1,8 @@
+<style>
+    .red {
+        background-color: #F7C5AA;
+    }
+</style>
 <div id="pageTranBanc" class="container" ng-controller="tranBancCtrl">
     <!--<div id="print_button_container"></div>
     <hr/>-->
@@ -379,20 +384,24 @@
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </button>
                                     <button type="button" class="btn btn-primary" ng-show="editando"
-                                        ng-click="printNota(laTran.id)" ng-disabled="cargando">
+                                        ng-click="printNota(laTran.id)" ng-disabled="cargando" ng-hide="laTran.pendiente == 1">
                                         <span class="glyphicon glyphicon-print"></span>
                                     </button>
                                     <button type="button" class="btn btn-primary" ng-show="editando"
-                                        ng-disabled="cargando" ng-click="printSelloFactura(laTran.id)">
+                                        ng-disabled="cargando" ng-click="printSelloFactura(laTran.id)" ng-hide="laTran.pendiente == 1">
                                         <span>Sello factura</span>
                                     </button>
                                     <button type="button" class="btn btn-primary" ng-show="editando"
-                                        ng-disabled="cargando" ng-click="printSelloNotaCredito(laTran.id)">
+                                        ng-disabled="cargando" ng-click="printSelloNotaCredito(laTran.id)" ng-hide="laTran.pendiente == 1">
                                         <span>Sello NC</span>
                                     </button>
                                     <button type="button" class="btn btn-primary" ng-show="editando"
                                         ng-disabled="cargando" ng-click="resetLaTran()">
                                         <span class="glyphicon glyphicon-plus"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-success" ng-show="laTran.pendiente == 1"
+                                        ng-disabled="cargando" ng-click="aprobTran()" title="Aprobar transacción">
+                                        <span class="glyphicon glyphicon-ok"></span>
                                     </button>
                                 </div>
                             </div>
@@ -436,7 +445,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="lt in lasTran | filter:lookFor" ng-click="getDataTran(lt.id)">
+                                <tr ng-repeat="lt in lasTran | filter:lookFor" ng-click="getDataTran(lt.id)"
+                                    ng-class="{'red': +lt.pendiente === 1}">
                                     <td>{{lt.tipotrans}}-{{lt.numero}}</td>
                                     <td>{{lt.fecha | date:'dd/MM/yyyy'}}</td>
                                     <td class="num">{{lt.monto | number:2}}</td>

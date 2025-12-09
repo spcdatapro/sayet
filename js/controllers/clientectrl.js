@@ -60,6 +60,7 @@
         $scope.grabando = false;
         $scope.categoriaclie = [];
         $scope.req = { nit: true, cui: true, pasaporte: true };
+        $scope.proyectos_cliente = [];
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('paging', false);
         $scope.dtOptionsDetCont = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('ordering', false).withOption('paging', false);
@@ -281,6 +282,9 @@
                 moveToTab('divLstClientes', 'divFrmCliente');
                 goTop();
             });
+
+            // para trer los proyectos del clinete, para datos de facturacion
+            proyectoSrvc.listaProyectosCliente(idcliente).then(p => $scope.proyectos_cliente = p);
         };
 
         //var test = true;

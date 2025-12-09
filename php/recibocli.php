@@ -285,11 +285,27 @@ $app->post('/anula', function(){
         $db->doQuery($query);
     }
 
-        $query = "DELETE FROM detpagorecli WHERE idreccli = $d->id ";
-        $db->doQuery($query);
+    // Liberar nota de credito bancaria si esta atada 
+    $query = "SELECT d_estado_cuenta FROM detpagorecli WHERE idreccli = $d->id";
+    $transacciones = $db->getQuery($query);
 
-        $query = "DELETE FROM detcobroventa WHERE idrecibocli = $d->id";
-        $db->doQuery($query);
+    foreach($transacciones as $t){
+        if($t->d_estado_cuenta > 0){
+            $idtranban = $db->getOneField("SELECT idtranban FROM d_estado_cuenta WHERE d_estado_cuenta = $t->d_estado_cuenta");
+
+            if ($idtranban > 0) {
+                deleteTranBan($idtranban, $db);
+                $query = "UPDATE d_estado_cuenta SET idtranban = NULL WHERE d_estado_cuenta = $t->d_estado_cuenta";
+            }
+            $db->doQuery($query);
+        }
+    }
+
+    $query = "DELETE FROM detpagorecli WHERE idreccli = $d->id ";
+    $db->doQuery($query);
+
+    $query = "DELETE FROM detcobroventa WHERE idrecibocli = $d->id";
+    $db->doQuery($query);
 
     // $query = "UPDATE detallecontable SET activada = 0, anulado = 1 WHERE origen = 8 AND idorigen = $d->id";
     // $db->doQuery($query);
@@ -412,9 +428,9 @@ $app->post('/prntrecint', function() {
     $n2l = new NumberToLetterConverter();
     $db = new dbcpm();
     $query = "SELECT a.serie, a.numero, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, IFNULL(IFNULL(b.nombre, c.nombre), 'Clientes Varios') AS cliente, IFNULL(b.nombrecorto, SUBSTRING(c.nombre, 1, 5)) AS abreviacliente, ";
-    $query .= "a.concepto, a.usuariocrea AS hechopor, (SELECT FORMAT(IFNULL(SUM(monto), 0.00), 2) FROM detcobroventa WHERE idrecibocli = a.id) AS monto, ";
-    $query .= "(SELECT IFNULL(SUM(monto), 0.00) FROM detcobroventa WHERE idrecibocli = a.id) AS total, NULL as montoletras ";
-    $query .= "FROM recibocli a LEFT JOIN cliente b ON b.id = a.idcliente LEFT JOIN factura c ON c.nit = a.nit ";
+    $query .= "a.concepto, a.usuariocrea AS hechopor, (SELECT FORMAT(IFNULL(SUM(monto), 0.00), 2) FROM detcobroventa WHERE idrecibocli = a.id) AS monto, d.nomempresa AS empresa, ";
+    $query .= "(SELECT IFNULL(SUM(monto), 0.00) FROM detcobroventa WHERE idrecibocli = a.id) AS total, NULL as montoletras, DATE_FORMAT(a.fecha, '%d') AS dia, DATE_FORMAT(a.fecha, '%m') AS mes, DATE_FORMAT(a.fecha, '%Y') AS anio ";
+    $query .= "FROM recibocli a LEFT JOIN cliente b ON b.id = a.idcliente LEFT JOIN factura c ON c.nit = a.nit INNER JOIN empresa d ON a.idempresa = d.id ";
     $query .= "WHERE a.id = $d->id LIMIT 1";
 
     $recibo = $db->getQuery($query);
@@ -541,13 +557,21 @@ $app->post('/prtrecibocli', function() {
 $app->post('/cp', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $query = "INSERT INTO detpagorecli(idreccli, numero, idbanco, idmoneda, monto, tipotrans) VALUES($d->idrecibocli, $d->numero, $d->idbanco, $d->idmoneda, $d->monto, $d->idtipotrans)";
+    $query = "INSERT INTO detpagorecli(idreccli, numero, idbanco, idmoneda, monto, tipotrans, d_estado_cuenta) VALUES($d->idrecibocli, $d->numero, $d->idbanco, $d->idmoneda, $d->monto, $d->idtipotrans, $d->tran)";
     $db->doQuery($query);
 });
 
 $app->post('/dp', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    $d_estado_cuenta = $db->getOneField("SELECT d_estado_cuenta FROM detpagorecli WHERE id = $d->id");
+    if ($d_estado_cuenta > 0) {
+        $idtran = $db->getOneField("SELECT idtranban FROM d_estado_cuenta WHERE d_estado_cuenta = $d_estado_cuenta");
+        $db->doQuery("DELETE FROM reclitran WHERE idtranban = $idtran");
+        $db->doQuery("DELETE FROM tranban WHERE id = $idtran");
+        $db->doQuery("DELETE FROM detallecontable WHERE origen = 1 AND idorigen = $idtran");
+        $db->doQuery("UPDATE d_estado_cuenta SET idtranban = NULL WHERE d_estado_cuenta = $d_estado_cuenta");
+    }
     $db->doQuery("DELETE FROM detpagorecli WHERE id = $d->id");
 });
 
@@ -698,6 +722,13 @@ $app->post('/validar', function () {
 
 function setImpreso ($id, $db) {
     $db->doQuery("UPDATE recibocli SET impreso = 1 WHERE id = $id ");
+}
+
+function deleteTranBan ($id, $db) {
+    $db->doQuery("UPDATE recibocli SET idtranban = 0 WHERE idtranban = $id");
+    $db->doQuery("DELETE FROM detallecontable WHERE origen = 1 AND idorigen = $id");
+    $db->doQuery("DELETE FROM reclitran WHERE idtranban = $id");
+    $db->doQuery("DELETE FROM tranban WHERE id = $id");
 }
 
 $app->run();

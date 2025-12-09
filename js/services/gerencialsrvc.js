@@ -6,7 +6,8 @@
         const urlBase = 'php/rptgerenciales.php';
 
         return {
-            finanzas: (obj) => comunFact.doPOST(`${urlBase}/finanzas`, obj)
+            finanzas: (obj) => comunFact.doPOST(`${urlBase}/finanzas`, obj),
+            ocupacion: obj => comunFact.doPOST(`${urlBase}/ocupacion`, obj)
         };
     }]);
 

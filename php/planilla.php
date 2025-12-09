@@ -10,9 +10,10 @@ $db = new dbcpm();
 $app->post('/empresas', function() use($db)
 {
     $d = json_decode(file_get_contents('php://input'));
+    $d->mediopago = (int)$d->mediopago == 1 ? 'cheque' : ((int)$d->mediopago == 3 ? 'nota debito' : 'efectivo');
     $query = "SELECT DISTINCT a.idempresa, b.nomempresa AS empresa, b.ndplanilla, NULL as idbanco ";
-    $query.= "FROM plnnomina a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN plnempleado c ON c.id = a.idplnempleado ";
-    $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND c.mediopago = $d->mediopago ORDER BY b.ordensumario";
+    $query.= "FROM plnnomina a INNER JOIN empresa b ON b.id = a.idempresa INNER JOIN plnempleado c ON c.id = a.idplnempleado INNER JOIN plnlaboral d ON c.idlaboral = d.id ";
+    $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND d.metodo = '$d->mediopago' ORDER BY b.ordensumario";
     $empresas = $db->getQuery($query);
     $cntEmpresas = count($empresas);
     for($i = 0; $i < $cntEmpresas; $i++){
@@ -159,6 +160,273 @@ $app->get('/finiquitos', function () {
     $pendientes = $db->getQuery($query);
 
     print json_encode($pendientes);
+});
+
+$app->post('/premios', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+    $hoy = new DateTime();
+
+    $anio_hoy = $hoy->format('Y');
+
+    $query = "SELECT a.id, b.ingreso FROM plnempleado a INNER JOIN plnlaboral b ON a.idlaboral = b.id 
+    WHERE a.id NOT IN(SELECT idplnempleado FROM detpremioemp WHERE anio = $d->anio) AND a.activo = 1 AND a.nombre IS NOT NULL AND a.nombre != ''";
+    $pendientes = $db->getQuery($query);
+
+    foreach ($pendientes as $p) {
+        $anio_ingreso = new DateTime($p->ingreso);
+        $anio_ingreso = $anio_ingreso->format('Y');
+        $antiguedad = $anio_hoy - $anio_ingreso;
+
+        $p->anios = $antiguedad;
+
+        switch ((int)$antiguedad) {
+            case 5:
+                $query = "INSERT INTO detpremioemp (idplnempleado, idpremio, anio) VALUES ($p->id, 1, $anio_hoy)";
+                $db->doQuery($query);
+                break;
+            case 10:
+                $query = "INSERT INTO detpremioemp (idplnempleado, idpremio, anio) VALUES ($p->id, 2, $anio_hoy)";
+                $db->doQuery($query);
+                break;
+            case 15:
+                $query = "INSERT INTO detpremioemp (idplnempleado, idpremio, anio) VALUES ($p->id, 3, $anio_hoy)";
+                $db->doQuery($query);
+                break;
+            case 20:
+                $query = "INSERT INTO detpremioemp (idplnempleado, idpremio, anio) VALUES ($p->id, 4, $anio_hoy)";
+                $db->doQuery($query);
+                break;
+            case 25:
+                $query = "INSERT INTO detpremioemp (idplnempleado, idpremio, anio) VALUES ($p->id, 5, $anio_hoy)";
+                $db->doQuery($query);
+                break;
+            case 30:
+                $query = "INSERT INTO detpremioemp (idplnempleado, idpremio, anio) VALUES ($p->id, 6, $anio_hoy)";
+                $db->doQuery($query);
+                break;
+            case 35:
+                $query = "INSERT INTO detpremioemp (idplnempleado, idpremio, anio) VALUES ($p->id, 7, $anio_hoy)";
+                $db->doQuery($query);
+                break;
+            case 40:
+                $query = "INSERT INTO detpremioemp (idplnempleado, idpremio, anio) VALUES ($p->id, 8, $anio_hoy)";
+                $db->doQuery($query);
+                break;
+        }
+    }
+
+    $query = "SELECT 
+                d.id,
+                a.id AS idempleado,
+                f.id AS idempresa, 
+                g.id AS idproyecto,
+                f.nombre AS empresa,
+                g.nomproyecto AS proyecto,
+                CONCAT(b.primernombre,
+                        ' ',
+                        IFNULL(b.segundonombre, ''),
+                        ' ',
+                        IFNULL(b.tercernombre, ''),
+                        b.primerapellido,
+                        ' ',
+                        IFNULL(b.segundoapellido, ''),
+                        ' ',
+                        IFNULL(b.apellidocasada, '')) AS empleado,
+                c.ingreso,
+                b.nacimiento,
+                e.anios,
+                c.sueldo,
+                e.monto AS total,
+                CONCAT('Premios por antigüedad de ', e.anios, ' años') AS concepto
+            FROM
+                plnempleado a
+                    INNER JOIN
+                plnpersonal b ON a.idpersonal = b.id
+                    INNER JOIN
+                plnlaboral c ON a.idlaboral = c.id
+                    INNER JOIN
+                detpremioemp d ON d.idplnempleado = a.id
+                    INNER JOIN
+                plnpremioanti e ON d.idpremio = e.id
+                    INNER JOIN 
+                plnempresa f ON c.idempresadebito = f.id
+                    LEFT JOIN 
+                proyecto g ON c.idproyecto = g.id
+            WHERE
+                d.anio = $d->anio AND d.pagado = 0
+            ORDER BY MONTH(b.nacimiento) ASC";
+    $pendientes = $db->getQuery($query);
+
+    foreach ($pendientes as $p) {
+        $p->fecha = new DateTime($p->nacimiento);
+        $p->fecha->setDate($d->anio, $p->fecha->format('m'), $p->fecha->format('d'));
+        $p->fecha = $p->fecha->format('Y-m-d');
+
+        if ($p->total == null) {
+            switch ((int)$p->anios) {
+                case 5: 
+                    $p->total = $p->sueldo;
+                    break;
+                case 10: 
+                    $p->total = $p->sueldo * 2;
+                    break;
+                case 15:
+                    $p->total = $p->sueldo * 3;
+                    break;
+            }   
+        }
+    }
+
+    print json_encode($pendientes);
+});
+
+$app->get('/historial_vacaciones/:idempleado/:anio', function ($idempleado, $anio) {
+    $db = new dbcpm;
+
+    $query = "SELECT id, fechainicio, fechafin, dias, observaciones, anio 
+                FROM plnvacaciones WHERE idplnempleado = $idempleado AND anio = $anio AND anulado = 0 ORDER BY fechainicio DESC";
+    $historial = $db->getQuery($query);
+
+    return print json_encode($historial);
+});
+
+$app->get('/detalle_vacacion/:id', function ($id) {
+    $db = new dbcpm;
+
+    $query = "SELECT id, idplnempleado AS idempleado, fechainicio, fechafin, dias, observaciones, anio 
+                FROM plnvacaciones WHERE id = $id";
+    $detalle = $db->getQuery($query)[0];
+
+    return print json_encode($detalle);
+});
+
+$app->post('/avac', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $query = "INSERT INTO plnvacaciones (idusuario, idplnempleado, fechainicio, fechafin, dias, observaciones, anio) 
+                VALUES (1, $d->idempleado, '$d->fechainicio', '$d->fechafin', $d->dias, '$d->observaciones', $d->anio)";
+    $db->doQuery($query);
+
+    $lastid = $db->getLastId();
+
+    if ($lastid > 0) {
+        $mensaje = "Vacaciones guardadas con exito";
+        $tipo = "success";
+    } else {
+        $mensaje = "Error al guardar vacaciones, favor revisar.";
+        $tipo = "error";
+    }
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $lastid]);
+});
+
+$app->post('/uvac', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $query = "UPDATE plnvacaciones SET idplnempleado = $d->idempleado, fechainicio = '$d->fechainicio', fechafin = '$d->fechafin', dias = $d->dias, 
+    observaciones = '$d->observaciones', anio = $d->anio WHERE id = $d->id";
+    $db->doQuery($query);
+
+    $mensaje = "Vacaciones actualizadas con exito";
+    $tipo = "success";
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $d->id]);
+});
+
+$app->post('/dvac', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $query = "UPDATE plnvacaciones SET anulado = 1 WHERE id = $d->id";
+    $db->doQuery($query);
+
+    $anulado = $db->getOneField("SELECT anulado FROM plnvacaciones WHERE id = $d->id") == 1;
+
+    if ($anulado) {
+        $mensaje = "Registro eliminado con exito";
+        $tipo = "success";
+    } else {
+        $mensaje = "Error al eliminar registro, favor revisar.";
+        $tipo = "error";
+    }
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $d->idempleado]);
+});
+
+$app->get('/registro_asuetos/:anio', function ($anio) {
+    $db = new dbcpm;
+
+    $query = "SELECT id, fechainicio, fechafin, anio, dias, concepto FROM asuetos WHERE anio = $anio ORDER BY fechainicio DESC";
+    $registro = $db->getQuery($query);
+
+    return print json_encode($registro);
+});
+
+$app->get('/detalle_asueto/:id', function ($id) {
+    $db = new dbcpm;
+
+    $query = "SELECT id, fechainicio, fechafin, dias, anio, concepto FROM asuetos WHERE id = $id";
+    $detalle = $db->getQuery($query)[0];
+
+    return print json_encode($detalle);
+});
+
+$app->post('/aasu', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $query = "INSERT INTO asuetos (fechainicio, fechafin, dias, anio, concepto) 
+                VALUES ('$d->fechainicio', '$d->fechafin', $d->dias, $d->anio, '$d->concepto')";
+    $db->doQuery($query);
+
+    $lastid = $db->getLastId();
+
+    if ($lastid > 0) {
+        $mensaje = "Asueto guardado con exito";
+        $tipo = "success";
+    } else {
+        $mensaje = "Error al guardar asueto, favor revisar.";
+        $tipo = "error";
+    }
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $lastid]);
+});
+
+$app->post('/uasu', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $query = "UPDATE asuetos SET fechainicio = '$d->fechainicio', fechafin = '$d->fechafin', dias = $d->dias, 
+    anio = $d->anio, concepto = '$d->concepto' WHERE id = $d->id";
+    $db->doQuery($query);
+
+    $mensaje = "Asueto actualizado con exito";
+    $tipo = "success";
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $d->id]);
+});
+
+$app->post('/dasu', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $query = "DELETE FROM asuetos WHERE id = $d->id";
+    $db->doQuery($query);
+
+    $existe = $db->getOneField("SELECT id FROM asuetos WHERE id = $d->id") > 1;
+
+    if (!$existe) {
+        $mensaje = "Registro eliminado con exito";
+        $tipo = "success";
+    } else {
+        $mensaje = "Error al eliminar registro, favor revisar.";
+        $tipo = "error";
+    }
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $d->anio]);
 });
 
 $app->run();

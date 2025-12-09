@@ -36,7 +36,7 @@ $app->post('/fix', function(){
     if(isset($d->desde)){ $desde = trim($d->desde); }
     if(!isset($d->desde) && !isset($d->idfactura)){ $desde = '2018-01-01'; }
 
-    $query = "SELECT a.idorigen, TRUNCATE(b.totfact, 2) AS totfact, SUM(a.debe) AS totdebe, SUM(a.haber) AS tothaber ";
+    $query = "SELECT a.idorigen, TRUNCATE(b.totfact, 2) AS totfact, SUM(a.debe) AS totdebe, SUM(a.haber) AS tothaber, b.tipocambio, b.idmoneda ";
     $query.= "FROM detallecontable a INNER JOIN compra b ON b.id = a.idorigen ";
     $query.= "WHERE a.origen = 2 ";
     //$query.= "AND b.idreembolso = 0 "; //Se comentó esto para que funcione con reembolsos
@@ -48,7 +48,7 @@ $app->post('/fix', function(){
     $cntDescuadres = count($descuadres);
     for($i = 0; $i < $cntDescuadres; $i++){
         $descuadre = $descuadres[$i];
-        $totfact = (float)$descuadre->totfact;
+        $totfact = $descuadre->idmoneda != 1 ? (float)$descuadre->totfact * (float)$descuadre->tipocambio : (float)$descuadre->totfact;
         $totdebe = (float)$descuadre->totdebe;
         $tothaber = (float)$descuadre->tothaber;
         if($totdebe !== $totfact){

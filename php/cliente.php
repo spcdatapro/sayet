@@ -137,7 +137,7 @@ $app->get('/getfacturara/:iddetfact', function($iddetfact){
     $query = "SELECT a.id, a.idcliente, a.facturara, a.direccion, a.nit, a.fdel, a.fal, a.emailfactura, a.exentoiva, ";
     $query.= "(SELECT IF(GROUP_CONCAT(DISTINCT c.desctiposervventa ORDER BY c.desctiposervventa SEPARATOR ', ') IS NULL, 'Todos', GROUP_CONCAT(DISTINCT c.desctiposervventa ORDER BY c.desctiposervventa SEPARATOR ', ')) ";
     $query.= "FROM detclienteserv b INNER JOIN tiposervicioventa c ON c.id = b.idservicioventa ";
-    $query.= "WHERE b.iddetclientefact = a.id) AS serviciosafact, a.retisr, a.retiva, a.porretiva, a.cui, a.pasaporte ";
+    $query.= "WHERE b.iddetclientefact = a.id) AS serviciosafact, a.retisr, a.retiva, a.porretiva, a.cui, a.pasaporte, a.idproyecto ";
     $query.= "FROM detclientefact a ";
     $query.= "WHERE a.id = $iddetfact";
     print $db->doSelectASJson($query);
@@ -152,10 +152,11 @@ $app->post('/cdf', function(){
     $d->cui = $d->cui != '' ? "'".$d->cui."'" : 'NULL';
     if(!isset($d->porretiva)){ $d->porretiva = 0.00; }
     if(!isset($d->exentoiva)){ $d->exentoiva = 0; }
+    if(!isset($d->idproyecto)) $d->idproyecto = 0;
     $query = "INSERT INTO detclientefact(";
-    $query.= "idcliente, facturara, direccion, nit, fdel, fal, emailfactura, retisr, retiva, porretiva, exentoiva, cui, pasaporte";
+    $query.= "idcliente, facturara, direccion, nit, fdel, fal, emailfactura, retisr, retiva, porretiva, exentoiva, cui, pasaporte, idproyecto";
     $query.= ") VALUES(";
-    $query.= "$d->idcliente, '$d->facturara', '$d->direccion', '$d->nit', $d->fdelstr, $d->falstr, '$d->emailfactura', $d->retisr, $d->retiva, $d->porretiva, $d->exentoiva, $d->cui, $d->pasaporte ";
+    $query.= "$d->idcliente, '$d->facturara', '$d->direccion', '$d->nit', $d->fdelstr, $d->falstr, '$d->emailfactura', $d->retisr, $d->retiva, $d->porretiva, $d->exentoiva, $d->cui, $d->pasaporte, $d->idproyecto ";
     $query.= ")";
     // print $query;
     $db->doQuery($query);
@@ -172,9 +173,10 @@ $app->post('/udf', function(){
     if(!isset($d->exentoiva)){ $d->exentoiva = 0; }
     $d->pasaporte = $d->pasaporte != '' ? "'".$d->pasaporte."'" : 'NULL';
     $d->cui = $d->cui != '' ? "'".$d->cui."'" : 'NULL';
+    if(!isset($d->idproyecto)) $d->idproyecto = 0;
     $query = "UPDATE detclientefact SET ";
     $query.= "facturara = '$d->facturara', direccion = '$d->direccion', nit = '$d->nit', fdel = $d->fdelstr, fal = $d->falstr, emailfactura = '$d->emailfactura', retisr = $d->retisr, ";
-    $query.= "retiva = $d->retiva, porretiva = $d->porretiva, exentoiva = $d->exentoiva, cui = $d->cui, pasaporte = $d->pasaporte ";
+    $query.= "retiva = $d->retiva, porretiva = $d->porretiva, exentoiva = $d->exentoiva, cui = $d->cui, pasaporte = $d->pasaporte, idproyecto = $d->idproyecto ";
     $query.= "WHERE id = ".$d->id;
     $db->doQuery($query);
 });

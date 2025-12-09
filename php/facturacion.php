@@ -2,6 +2,7 @@
 require 'vendor/autoload.php';
 require_once 'db.php';
 require_once 'NumberToLetterConverter.class.php';
+set_time_limit(0);
 
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
@@ -46,7 +47,7 @@ $app->post('/pendientes', function(){
     $query.= "a.monto AS montocargoflat, ";
 
     $query.= "RetISR(c.idcliente, b.idtipoventa) AS retenerisr, d.nombrecorto AS clientecorto, b.idtipoventa, ";
-    $query.= "NitFacturarA(c.idcliente, b.idtipoventa) AS nit, DirFacturarA(c.idcliente, b.idtipoventa) AS direccion, PorcentajeRetIVA(c.idcliente, b.idtipoventa) AS porcentajeretiva, ";
+    $query.= "NitFacturarA(c.idcliente, b.idtipoventa) AS nit, DirFacturarA(c.idcliente, b.idtipoventa, j.id) AS direccion, PorcentajeRetIVA(c.idcliente, b.idtipoventa) AS porcentajeretiva, ";
     $query.= "b.idmonedafact, b.idmoneda AS idmonedacargo, k.simbolo AS monedafact, h.simbolo AS monedacargo ";
     
     $query.= "FROM cargo a INNER JOIN detfactcontrato b ON b.id = a.iddetcont INNER JOIN contrato c ON c.id = b.idcontrato INNER JOIN cliente d ON d.id = c.idcliente ";
@@ -142,7 +143,7 @@ function getQueryCargos($d) {
     CONCAT(e.desctiposervventa, ' ', DATE_FORMAT(a.fechacobro, '%m/%Y')) AS tipo, e.id as idtipo, j.nomproyecto AS proyecto, 
     UnidadesPorContrato(a.idcontrato) AS unidades, RetISR(c.idcliente, b.idtipoventa) AS retenerisr, RetIVA(c.idcliente, b.idtipoventa) AS reteneriva, c.idtipocliente, 
     PorcentajeRetIVA(c.idcliente, b.idtipoventa) AS porcentajeretiva, a.conceptoadicional, MONTH(a.fechacobro) AS mes, YEAR(a.fechacobro) AS anio, 
-    NitFacturarA(c.idcliente, b.idtipoventa) AS nit, DirFacturarA(c.idcliente, b.idtipoventa) AS direccion, ExentoIVA(c.idcliente, b.idtipoventa) AS exentoiva, TIPOIDRECEPTOR(c.idcliente) AS tipoidreceptor, 1 AS facturar
+    NitFacturarA(c.idcliente, b.idtipoventa) AS nit, DirFacturarA(c.idcliente, b.idtipoventa, j.id) AS direccion, ExentoIVA(c.idcliente, b.idtipoventa) AS exentoiva, TIPOIDRECEPTOR(c.idcliente) AS tipoidreceptor, 1 AS facturar
     FROM cargo a INNER JOIN detfactcontrato b ON b.id = a.iddetcont INNER JOIN contrato c ON c.id = b.idcontrato INNER JOIN cliente d ON d.id = c.idcliente 
     INNER JOIN tiposervicioventa e ON e.id = b.idtipoventa INNER JOIN tipocliente g ON g.id = c.idtipocliente 
     INNER JOIN moneda h ON h.id = b.idmoneda INNER JOIN empresa i ON i.id = c.idempresa 
@@ -503,7 +504,7 @@ $app->post('/genfactfel', function() {
                         if((float)$det->montoconiva != 0){
                             $db->doQuery($query);
                             $lastidDetalle = $db->getLastId();
-                            $descripcionLarga = getDescripcionLarga($lastid, $lastidDetalle, $p->idcliente);
+                            $descripcionLarga = getDescripcionLarga($lastid, $lastidDetalle, $p->idcliente, $params);
                             $query = "UPDATE detfact SET descripcionlarga = '$descripcionLarga' WHERE id = $lastidDetalle";
                             $db->doQuery($query);
                         }
@@ -521,7 +522,7 @@ $app->post('/genfactfel', function() {
     }
 });
 
-function getDescripcionLarga($idfactura, $iddetallefactura, $idcliente = null) {
+function getDescripcionLarga($idfactura, $iddetallefactura, $idcliente = null, $params) {
     $db = new dbcpm();
     $meses = [2 => 2, 3 => 5, 4 => 1];
     $periodo = '';
@@ -559,9 +560,12 @@ function getDescripcionLarga($idfactura, $iddetallefactura, $idcliente = null) {
     // concepto solo para panifresh
     $panifresh = $idcliente == 53 ? 'KM 19.5 BÁRCENAS VILLA NUEVA, COMPLEJO ' : '';
     $concepto_incial = $db->getOneField("SELECT concepto FROM cliente WHERE id = $idcliente");
+    $onesec = $idcliente == 103 ? 1 : 0;
+    $fecha = new DateTime($params->fvencestr);
+    $dias = $fecha->format('d');
 
     $query = "SELECT DISTINCT TRIM(CONCAT(IF(b.esinsertada = 0, IF(a.idtiposervicio <> 4, CONCAT('$concepto_incial', ' ', UPPER(TRIM(e.desctiposervventa)), ', ', '$panifresh', TRIM(d.nomproyecto), ', ',
-    TRIM(UnidadesPorContrato(c.id)), ', Mes de ', ".($periodo == '' ? "f.nombre, ' del año ', a.anio" : ("'".$periodo."'"))."), TRIM(a.descripcion)), TRIM(a.descripcion)), ' ', 
+    TRIM(UnidadesPorContrato(c.id)), IF($onesec, ', del 1 al $dias del', ','), ' Mes de ', ".($periodo == '' ? "f.nombre, ' del año ', a.anio" : ("'".$periodo."'"))."), TRIM(a.descripcion)), TRIM(a.descripcion)), ' ', 
     IFNULL(a.conceptoadicional, ''), IF(b.idmonedafact = 2, ROUND(b.tipocambio, 5), ''))) AS descripcion 
     FROM detfact a INNER JOIN factura b ON b.id = a.idfactura LEFT JOIN contrato c ON c.id = b.idcontrato LEFT JOIN proyecto d ON d.id = c.idproyecto 
     LEFT JOIN tiposervicioventa e ON e.id = a.idtiposervicio LEFT JOIN mes f ON f.id = a.mes 
@@ -585,7 +589,7 @@ $app->post('/gengface', function() use($app){
     $query.= "TRIM(a.direccion) AS direccion, b.nombrecorto, ";
 
     $query.= "CONCAT('$ ', FORMAT(IF(a.idmonedafact = 1, ROUND(a.subtotal / a.tipocambio, 2), a.subtotalcnv), 2)) AS montodol, ";
-    $query.= "FORMAT(a.tipocambio, 4) AS tipocambio, ";
+    $query.= "FORMAT(a.tipocambio, 5) AS tipocambio, ";
     $query.= "CONCAT('$ ', FORMAT(IF(a.idmonedafact = 1, ROUND(a.total / a.tipocambio, 2), a.totalcnv), 2)) AS pagonetodol, ";
     $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2)) AS pagoneto, ";
     $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2)) AS retiva, ";
@@ -601,7 +605,7 @@ $app->post('/gengface', function() use($app){
     $query.= "a.id AS idfactura, 'S' AS tipoventa, a.nombre, IFNULL(a.direccion, '') AS direccion, '' AS nombrecorto, ";
 
     $query.= "CONCAT('$ ', FORMAT(IF(a.idmonedafact = 1, ROUND(a.subtotal / a.tipocambio, 2), a.subtotalcnv), 2)) AS montodol, ";
-    $query.= "FORMAT(a.tipocambio, 4) AS tipocambio, ";
+    $query.= "FORMAT(a.tipocambio, 5) AS tipocambio, ";
     $query.= "CONCAT('$ ', FORMAT(IF(a.idmonedafact = 1, ROUND(a.total / a.tipocambio, 2), a.totalcnv), 2)) AS pagonetodol, ";
     $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2)) AS pagoneto, ";
     $query.= "CONCAT(c.simbolo, ' ', FORMAT(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2)) AS retiva, ";
@@ -759,10 +763,10 @@ $app->post('/genfel', function() use($app) {
     }    
     //Encabezado //CONCAT(TRIM(a.serieadmin), '-', LPAD(a.numeroadmin, 10, '0')) AS ordenexterno
     $query = "SELECT 1 AS tiporegistro, DATE_FORMAT(a.fecha, '%Y%m%d') AS fechadocumento, b.siglasfel AS tipodocumento, a.nit AS nitcomprador, a.idmonedafact AS codigomoneda, 
-    IF(a.idmonedafact = 1, 1, ROUND(a.tipocambio, 4)) AS tasacambio, CONCAT(TRIM(a.serieadmin), '-', LPAD(a.numeroadmin, 10, '0'), IF(a.idtipofactura = 1, '', CONCAT('-', b.siglasfel))) AS ordenexterno,
+    IF(a.idmonedafact = 1, 1, ROUND(a.tipocambio, 5)) AS tasacambio, CONCAT(TRIM(a.serieadmin), '-', LPAD(a.numeroadmin, 10, '0'), IF(a.idtipofactura = 1, '', CONCAT('-', b.siglasfel))) AS ordenexterno,
     IF(a.idtipoventa = 1, 'B', 'S') AS tipoventa, 1 AS destinoventa, 'S' AS enviarcorreo, 
     IF(a.nit <> 'CF', '', IF(LENGTH(a.nombre) > 0, a.nombre, 'Consumidor final')) AS nombrecomprador, IF(LENGTH(a.direccion) > 0, a.direccion, 'Ciudad') AS direccion, 
-    '' AS numeroacceso, IFNULL(a.serieadmin, 'A') AS serieadmin, a.numeroadmin, c.nombrecorto, FORMAT(a.importetotalcnv, 2) AS montodol, ROUND(a.tipocambio, 4) AS tipocambio, FORMAT(TRUNCATE(a.totalcnv, 2), 2) AS pagonetodol, 
+    '' AS numeroacceso, IFNULL(a.serieadmin, 'A') AS serieadmin, a.numeroadmin, c.nombrecorto, FORMAT(a.importetotalcnv, 2) AS montodol, ROUND(a.tipocambio, 5) AS tipocambio, FORMAT(TRUNCATE(a.totalcnv, 2), 2) AS pagonetodol, 
     FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2), 2) AS pagoneto, FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2), 2) AS retiva, 
     FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.retisr, a.retisrcnv), 2), 2) AS retisr, FORMAT(IF(a.idmonedafact = 1, a.importetotal, a.importetotalcnv), 2) AS monto, 
     DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.nombre, d.simbolo AS monedafact, 1 AS descargar, a.idfacturaafecta, a.id, a.tipoidreceptor
@@ -986,5 +990,9 @@ $app->get('/revertir/:idfactura', function($idfactura){
 
     return;
 });
+
+function obtenerDiasDelMes($mes, $anio) {
+    return cal_days_in_month(CAL_GREGORIAN, $mes, $anio);
+}
 
 $app->run();

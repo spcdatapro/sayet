@@ -52,9 +52,9 @@
 
         tipoCambioSrvc.getTC().then(function () {
             tipoCambioSrvc.getLastTC().then(function (d) {
-                $scope.params.tc = parseFloat(parseFloat(d.lasttc).toFixed(2));
-                $scope.paramsh2o.tc = parseFloat(parseFloat(d.lasttc).toFixed(2));
-                $scope.paramsParqueo.tc = parseFloat(parseFloat(d.lasttc).toFixed(2));
+                $scope.params.tc = parseFloat(parseFloat(d.lasttc).toFixed(5));
+                $scope.paramsh2o.tc = parseFloat(parseFloat(d.lasttc).toFixed(5));
+                $scope.paramsParqueo.tc = parseFloat(parseFloat(d.lasttc).toFixed(5));
             });
         });
 

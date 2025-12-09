@@ -39,6 +39,7 @@ class GeneradorReportes {
                             // por cada suma que se hara generar la variable dentro de separador con el nombre de la suma
                             foreach($montos as $monto) {
                                 $separador_proyecto->$monto = round(array_sum($sumas_proyecto->$monto), 2);
+                                $separador_proyecto->{$monto . '_promedio'} = round((array_sum($sumas_proyecto->$monto) / count($sumas_proyecto->$monto)), 2);
                             }
 
                             // empujar a array padre, proyecto es a empresa
@@ -48,6 +49,7 @@ class GeneradorReportes {
                         // por cada suma que se hara generar la variable dentro de separador con el nombre de la suma
                         foreach($montos as $monto) {
                             $separador_empresa->$monto = round(array_sum($sumas_empresa->$monto), 2);
+                            $separador_empresa->{$monto . '_promedio'} = round((array_sum($sumas_empresa->$monto) / count($sumas_empresa->$monto)), 2);
                         }
 
                         // empujar a array padre, empresa es a global
@@ -57,8 +59,10 @@ class GeneradorReportes {
                     // crear separador de empresa
                     $separador_empresa = new StdClass;
                     $separador_empresa->nombre = $d->empresa;
-                    $separador_empresa->numero = $d->numero > 0 ? $d->numero : null;
+                    $separador_empresa->id = $d->idempresa;
+                    $separador_empresa->numero = isset($d->numero) ? $d->numero : null;
                     $separador_empresa->abreviatura = $d->abreviatura;
+                    $separador_empresa->cuantos = isset($d->cuantos) ? $d->cuantos : null;
                     $separador_empresa->porproyecto = $porproyecto ? true : null;
 
                     // crear sumadores empresa 
@@ -89,6 +93,7 @@ class GeneradorReportes {
                         // por cada suma que se hara generar la variable dentro de separador con el nombre de la suma
                         foreach($montos as $monto) {
                             $separador_proyecto->$monto = round(array_sum($sumas_proyecto->$monto), 2);
+                            $separador_proyecto->{$monto . '_promedio'} = round((array_sum($sumas_proyecto->$monto) / count($sumas_proyecto->$monto)), 2);
                         }
 
                         // empujar a array padre, proyecto es a empresa
@@ -98,6 +103,7 @@ class GeneradorReportes {
                     // crear separador de proyecto
                     $separador_proyecto = new StdClass;
                     $separador_proyecto->nombre = $d->proyecto;
+                    $separador_proyecto->moneda = $d->abreviatura;
                     $separador_proyecto->$tipo = array();
 
                     // crear sumadores de proyecto
@@ -146,6 +152,7 @@ class GeneradorReportes {
             // por cada suma que se hara generar la variable dentro de separador con el nombre de la suma
             foreach($montos as $monto) {
                 $separador_proyecto->$monto = round(array_sum($sumas_proyecto->$monto), 2);
+                $separador_proyecto->{$monto . '_promedio'} = round((array_sum($sumas_proyecto->$monto) / count($sumas_proyecto->$monto)), 2);
             }
 
             // empujar a array padre, proyecto es a empresa
@@ -155,6 +162,7 @@ class GeneradorReportes {
         // por cada suma que se hara generar la variable dentro de separador con el nombre de la suma
         foreach($montos as $monto) {
             $separador_empresa->$monto = round(array_sum($sumas_empresa->$monto), 2);
+            $separador_empresa->{$monto . '_promedio'} = round((array_sum($sumas_empresa->$monto) / count($sumas_empresa->$monto)), 2);
         }
 
         // empujar a array padre, empresa es a global

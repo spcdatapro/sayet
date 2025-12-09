@@ -369,10 +369,10 @@ $app->post('/balancesaldos', function () {
         }
 
         if ($cuenta->mostrar && (int)$cuenta->tipocuenta === 0) {
-            $empresa->anterior += (float)$cuenta->anterior;
-            $empresa->debe += (float)$cuenta->debe;
-            $empresa->haber += (float)$cuenta->haber;
-            $empresa->actual += (float)$cuenta->actual;
+            $empresa->anterior += round($cuenta->anterior, 2);
+            $empresa->debe += round($cuenta->debe, 2);
+            $empresa->haber += round($cuenta->haber, 2);
+            $empresa->actual += round($cuenta->actual, 2);
         }
     }
 

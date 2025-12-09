@@ -236,4 +236,87 @@ $app->post('/lista', function() {
     print json_encode(['general' => $general, 'proyectos' => $proyectos]);
 });
 
+$app->post('/porocupacion', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    date_default_timezone_set("America/Guatemala");
+
+    // array de nombre de meses
+    $meses_nombre = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+
+    $meses = [];
+
+    $ocupado = [];
+    $vacante = [];
+    $total = 0;
+
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+
+    $query = "SELECT 
+                a.nomproyecto AS proyecto,
+                a.metros_rentable AS mdisponibles,
+                b.id AS idunidad,
+                ROUND(b.mcuad, 2) AS medida,
+                ROUND(b.mcuad * 100 / a.metros_rentable, 2) AS porcentaje,
+                IF(d.id > 0, 1, 0) AS ocupado,
+                IFNULL(MONTH(d.fecha), 0) AS mes,
+                ROUND(SUM(IF(d.idmonedafact = 1,
+                            d.total,
+                            d.total * d.tipocambio)),
+                        2) AS total
+            FROM
+                proyecto a
+                    INNER JOIN
+                unidad b ON a.id = b.idproyecto
+                    LEFT JOIN
+                contrato c ON b.id = c.idunidad AND c.inactivo = 0
+                    LEFT JOIN
+                factura d ON c.id = d.idcontrato
+                    AND YEAR(d.fecha) = $d->anio
+                    AND MONTH(d.fecha) >= $d->mesdel
+                    AND MONTH(d.fecha) <= $d->mesal
+            WHERE
+                a.id = $d->idproyecto AND b.idtipolocal NOT IN (9, 17)
+            GROUP BY b.id, MONTH(d.fecha)
+            ORDER BY MONTH(d.fecha), b.id";
+    $data = $db->getQuery($query);
+
+    $meses = [];
+
+    for ($i = $d->mesdel; $i <= $d->mesal; $i++) {
+        $data_mes = new StdClass();
+        $data_mes->mes = $meses_nombre[$i - 1];
+        $procentaje = [];
+        $metros = [];
+        $data_mes->total = 0;
+
+        for ($j = 0; $j < count($data); $j++) {
+            $unidad = $data[$j];
+            if ($unidad->mes == $i) {
+                array_push($procentaje, $unidad->porcentaje);
+                array_push($metros, $unidad->medida);
+                $data_mes->total += (float)$unidad->total;
+                // eliminar la entrada ya procesada para que no se vuelva a buscar
+                array_splice($data, $j, 1);
+                $j--;
+            }
+        }
+
+        $data_mes->porcentaje_ocupado = round(array_sum($procentaje), 2);
+        $data_mes->metros_ocupados = round(array_sum($metros), 2);
+        $data_mes->porcentaje_vacante = round(100 - $data_mes->porcentaje_ocupado, 2);
+        // $data_mes->metros_vacantes = round($data[0]->mdisponibles - $data_mes->metros_ocupados, 2);
+        $data_mes->total = round($data_mes->total, 2);
+        $data_mes->unidades_ocupadas = count($procentaje);
+        array_push($meses, $data_mes);
+    }
+
+    $letra->proyecto = $data[0]->proyecto;
+    $letra->metros = round($data[0]->mdisponibles, 2);
+
+    print json_encode([ 'encabezado' => $letra, 'meses' => $meses ]);
+});
+
 $app->run();

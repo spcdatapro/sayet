@@ -2,7 +2,7 @@
 
     var rptsumarioctrl = angular.module('cpm.rptsumarioctrl', []);
 
-    rptsumarioctrl.controller('rptSumarioCtrl', ['$scope', 'jsReportSrvc', 'monedaSrvc', 'bancoSrvc', '$sce', '$http', '$window', '$q', '$filter', 'Upload', function ($scope, jsReportSrvc, monedaSrvc, bancoSrvc, $sce, $http, $window, $q, $filter, Upload) {
+    rptsumarioctrl.controller('rptSumarioCtrl', ['$scope', 'jsReportSrvc', 'monedaSrvc', 'bancoSrvc', '$sce', '$http', '$window', '$q', '$filter', 'Upload', 'authSrvc', function ($scope, jsReportSrvc, monedaSrvc, bancoSrvc, $sce, $http, $window, $q, $filter, Upload, authSrvc) {
 
         $scope.params = { fecha: moment().toDate(), idmoneda: '1', solomov: 1, tipo: '1' };
         $scope.content = '';
@@ -11,12 +11,16 @@
         // para mostrar reporte en pantalla
         $scope.content = `${window.location.origin}/sayet/blank.html`;
 
+        authSrvc.getSession().then(usr => {
+            $scope.params.usuario = usr.iniciales;
+        }) 
+
         var test = false;
         $scope.getRptSumario = function () {
             $scope.estaGenerando = true;
             $scope.params.fechastr = moment($scope.params.fecha).format('YYYY-MM-DD');
-            jsReportSrvc.getPDFReport(test ? 'H13Q-o81-' : 'By_inM6jp', $scope.params).then(function (pdf) { 
-                $scope.content = pdf; 
+            jsReportSrvc.getPDFReport(test ? 'H13Q-o81-' : 'By_inM6jp', $scope.params).then(function (pdf) {
+                $scope.content = pdf;
                 $scope.estaGenerando = false;
             });
         };
@@ -68,6 +72,24 @@
                 });
             });
         };
+
+        $scope.reporteCreditos = () => {
+            $scope.estaGenerando = true;
+            $scope.params.fechastr = moment($scope.params.fecha).format('YYYY-MM-DD');
+            jsReportSrvc.getPDFReport('rkDFkiFEgl', $scope.params).then(function (pdf) {
+                $scope.content = pdf;
+                $scope.estaGenerando = false;
+            });
+        }
+
+        $scope.reporteDebitos = () => {
+            $scope.estaGenerando = true;
+            $scope.params.fechastr = moment($scope.params.fecha).format('YYYY-MM-DD');
+            jsReportSrvc.getPDFReport('Bk5Mf3ABel', $scope.params).then(function (pdf) {
+                $scope.content = pdf;
+                $scope.estaGenerando = false;
+            });
+        }
 
     }]);
 }());

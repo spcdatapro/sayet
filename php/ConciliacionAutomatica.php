@@ -69,30 +69,108 @@ class ConciliacionAutomatica
         return $this->bac_pk_folder;
     }
 
-    private function filter_mt940($copiar = true)
+    // private function filter_mt940($copiar = true)
+    // {
+    //     $archivos = $copiar ? $this->source_conn->conn->nlist('.') : $this->dest_conn->conn->nlist('.');
+    //     $mt940 = [];
+    //     $valid_ext = ['.pgp', '.gpg', '.txt', '.p12'];
+    //     foreach ($archivos as $archivo) {
+    //         $ext = substr($archivo, -4);
+    //         if (in_array($ext, $valid_ext)) {
+    //             $mt940[] = $archivo;
+    //         }
+    //     }
+    //     return $mt940;
+    // }
+
+    private function filter_mt940($copiar = true, $ultFecha = null, $db = null)
     {
+        date_default_timezone_set('America/Guatemala');
+        // Simulación de archivos recibidos
         $archivos = $copiar ? $this->source_conn->conn->nlist('.') : $this->dest_conn->conn->nlist('.');
+
         $mt940 = [];
         $valid_ext = ['.pgp', '.gpg', '.txt', '.p12'];
+        $fechas = [];
+
         foreach ($archivos as $archivo) {
             $ext = substr($archivo, -4);
             if (in_array($ext, $valid_ext)) {
-                $mt940[] = $archivo;
+                // Extraer fecha en formato ddmmyyyy después de la primera letra
+                if (preg_match('/^[A-Z](\d{2})(\d{2})(\d{4})/', $archivo, $match)) {
+                    $fecha = DateTime::createFromFormat('dmY', $match[1] . $match[2] . $match[3]);
+                    if ($fecha) {
+                        $key = $fecha->format('Y-m-d');
+                        $fechas[$key][] = $archivo;
+                        $mt940[] = ['archivo' => $archivo, 'fecha' => $fecha];
+                    }
+                }
             }
         }
-        return $mt940;
+
+        if ($copiar) {
+            // Ordenar por fecha ascendente
+            usort($mt940, function ($a, $b) {
+                return $a['fecha'] <=> $b['fecha'];
+            });
+
+            // Validar que desde la última fecha recibida haya al menos 2 archivos por día hasta ayer
+            $errores = [];
+            $fecha_error = null;
+            if (!empty($fechas)) {
+                $inicio = $ultFecha->modify('+1 day');
+                $ayer = new DateTime('yesterday');
+                $intervalo = new DateInterval('P1D');
+                $periodo = new DatePeriod($inicio, $intervalo, $ayer->modify('+1 day'));
+
+                foreach ($periodo as $fecha) {
+                    $key = $fecha->format('Y-m-d');
+                    $cantidad = isset($fechas[$key]) ? count($fechas[$key]) : 0;
+                    if ($cantidad < 2) {
+                        $existe = $db->getOneField("SELECT id FROM errores_ecuenta WHERE fecha = '$key'") > 0;
+                        if (!$existe) {
+                            $errores[] = "Faltan archivos para el día {$key} (solo $cantidad encontrado)";
+                            $fecha_error = $key;
+                        }
+                    }
+                }
+            }
+        } else {
+            $errores = [];
+            $fecha_error = '0000-00-00';
+        }
+
+        // if (!empty($errores)) {
+        //     foreach ($errores as $error) {
+        //         echo $error . PHP_EOL;
+        //     }
+        // }
+
+        // Retorna solo los nombres de archivo
+        return (object)['archivos' => array_column($mt940, 'archivo'), 'errores' => $errores, 'fechas' => $fecha_error];
     }
 
     public function get_mt940()
     {
+        date_default_timezone_set('America/Guatemala');
         $db = new dbcpm();
         $datos = ['exito' => false];
+        // agregado para validar que vegnan todos los archivo
+        $ultFecha = $db->getOneField("SELECT SUBSTRING(nombre, 2, 8) AS fecha FROM estado_cuenta ORDER BY estado_cuenta DESC LIMIT 1");
+        $ultFecha = DateTime::createFromFormat('dmY', $ultFecha);
+        // fin de agregado
         if ($this->source_conn->connect()) {
-            $archivosmt940 = $this->filter_mt940();
-            if (count($archivosmt940) > 0) {
+            // $archivosmt940 = $this->filter_mt940(true); Asi estaba antes de cambios para validacion de archivos
+            $archivosmt940 = $this->filter_mt940(true, $ultFecha, $db);
+            // agregado para validar que vengan todos los archivos
+            $datos['errores'] = $archivosmt940->errores;
+            $datos['fecha'] = $archivosmt940->fechas;
+            // fin de agregado
+            // todos donde dice archivosmt940->arvhivos solo estaba archivosmt940
+            if (count($archivosmt940->archivos) > 0) {
                 if ($this->dest_conn->connect()) {
                     $errores = [];
-                    foreach ($archivosmt940 as $archivo) {
+                    foreach ($archivosmt940->archivos as $archivo) {
                         $query = "SELECT * FROM estado_cuenta WHERE TRIM(nombre = '{$archivo}')";
                         $existe = $db->getOneField($query) > 0;
                         if (!$existe) {
@@ -128,7 +206,7 @@ class ConciliacionAutomatica
             } else {
                 $datos['mensaje'] = 'No hay archivos disponibles...';
             }
-            $datos['archivos_mt940'] = $archivosmt940;
+            $datos['archivos_mt940'] = $archivosmt940->archivos;
         } else {
             $datos['mensaje'] = $this->source_conn->mensaje;
         }
@@ -234,10 +312,11 @@ class ConciliacionAutomatica
         $datos = ['exito' => false];
         if ($this->dest_conn->connect()) {
             $archivos = $this->filter_mt940(false);
-            if (count($archivos) > 0) {
+            // antes solo archivos
+            if (count($archivos->archivos) > 0) {
                 $parser = new \Kingsquare\Parser\Banking\Mt940();
                 $errores = [];
-                foreach ($archivos as $archivo) {
+                foreach ($archivos->archivos as $archivo) {
                     $localFileName = $this->local_folder . $archivo;
                     $descargado = null;
                     try {
@@ -286,7 +365,7 @@ class ConciliacionAutomatica
                 } else {
                     $datos['mensaje'] = implode('. ', $errores);
                 }
-                $datos['archivos_mt940'] = $archivos;
+                $datos['archivos_mt940'] = $archivos->archivos;
             } else {
                 $datos['mensaje'] = 'No hay archivos MT940 disponibles.';
             }

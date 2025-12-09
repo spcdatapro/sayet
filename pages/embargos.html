@@ -1,0 +1,113 @@
+<div class="container" ng-controller="embargosCtrl">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divLis" data-toggle="tab">Lista Embargos</a>
+        </li>
+        <li>
+            <a show-tab href="#divPro" data-toggle="tab">Proyección de Embargos</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- Listado Embargos -->
+        <div class="tab-pane fade in active" id="divLis">
+            <div class="panel panel-default">
+                <div class="panel-heading">Listado de Embargos</div>
+                <div class="panel-body">
+                    <form name="paramsLista" id="paramsLista" novalidate>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label class="control-label">Empresa:</label>
+                                    <ui-select ng-model="lista.idempresa" title="Seleccione una empresa..."
+                                        theme="bootstrap" autofocus="false" required>
+                                        <ui-select-match placeholder="Buscar empresa..." allow-clear="false">
+                                            <span ng-bind="($select.selected.nomempresa)"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+                                            <div ng-bind-html="(item.nomempresa) | highlight: $select.search"></div>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label for="selVer" class="control-label">Ver:</label>
+                                    <select name="selVer" id="selVer" class="form-control" ng-model="lista.ver"
+                                        required>
+                                        <option value="1">Activas</option>
+                                        <option value="2">Todas</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="panel-footer text-right">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-danger" ng-click="getPDF(lista, 'B13yFcOqee')"
+                            ng-disabled="paramsLista.$invalid || cargando">
+                            <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
+                        </button>
+                        <button type="button" class="btn btn-success" ng-click="getXML(lista, 'H1dYSf1hll', '_lista_')"
+                            ng-disabled="paramsLista.$invalid || cargando">
+                            <span class="fa fa-file-excel-o" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Proyección de Embargos -->
+        <div class="tab-pane fade" id="divPro">
+            <div class="panel panel-default">
+                <div class="panel-heading">Proyección de Embargos</div>
+                <div class="panel-body">
+                    <form name="paramsProy" id="paramsProy" novalidate>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group required">
+                                    <label class="control-label">Empleado:</label>
+                                    <ui-select ng-model="proy.idempleado" title="Seleccione un empleado..."
+                                        theme="bootstrap" autofocus="false" required>
+                                        <ui-select-match placeholder="Buscar empleado..." allow-clear="true">
+                                            <span ng-bind="($select.selected.nombre)"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices
+                                            repeat="item.id as item in empleados | filter:$select.search">
+                                            <div ng-bind-html="(item.nombre) | highlight: $select.search"></div>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="panel-footer text-right">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-danger" ng-click="getPDF(proy, 'BkzkNS5tgl')"
+                            ng-disabled="paramsProy.$invalid || cargando">
+                            <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
+                        </button>
+                        <button type="button" class="btn btn-success" ng-click="getXML(proy, 'SJcJWrkheg', '_proyectado_')"
+                            ng-disabled="paramsProy.$invalid || cargando">
+                            <span class="fa fa-file-excel-o" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </br>
+        <div class="row" ng-show="cargando">
+            <div class="col-md-6 col-md-offset-3">
+                <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                    <span class="label label-primary">Generando reporte, por favor espere...</span>
+                    <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
+                </div>
+            </div>
+        </div>
+        <rpt-viewer contenido="content"></rpt-viewer>
+    </div>
+</div>

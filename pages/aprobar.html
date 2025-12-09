@@ -1,0 +1,143 @@
+<style>
+    .amarillo {
+        background-color: #ffff99;
+    }
+</style>
+<div class="container" ng-controller="aprobarCtrl">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divTransacciones" data-toggle="tab">Transacciones</a>
+        </li>
+        <!-- <li>
+            <a show-tab href="#divNotas" data-toggle="tab">Notas de d&eacute;bito</a>
+        </li> -->
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="divTransacciones">
+            <div class="panel panel-default">
+                <div class="panel-heading">{{operacion}} transacciones</div>
+                <div class="panel-body">
+                    <form name="paramsTrans" id="paramsTrans" novalidate>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="control-label">Empresa:</label>
+                                    <ui-select ng-model="params_trans.idempresa" title="Seleccione una empresa..."
+                                        theme="bootstrap" autofocus="false">
+                                        <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
+                                            <span ng-bind="($select.selected.nomempresa)"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+                                            <div ng-bind-html="(item.nomempresa) | highlight: $select.search"></div>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group required">
+                                    <label class="control-label">Del:</label>
+                                    <input type="date" class="form-control" ng-model="params_trans.fdel" required />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group required">
+                                    <label class="control-label">Al:</label>
+                                    <div class="input-group">
+                                        <input type="date" class="form-control" ng-model="params_trans.fal" required />
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-primary" ng-click="getPendientes()"
+                                                ng-disabled="paramsTrans.$invalid">
+                                                <i class="fi fi-rr-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="panel-body">
+                    <table datatable="ng" dt-options="dtOptions" class="table table-condensed table-hover">
+                        <thead>
+                            <tr>
+                                <th>Historial</th>
+                                <th>Creado</th>
+                                <th>Fecha</th>
+                                <th>Transacci&oacute;n</th>
+                                <th>Proveedor</th>
+                                <th>Factura</th>
+                                <th style="text-align: right">Monto</th>
+                                <th style="text-align: center">{{operacion}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="p in transacciones">
+                                <td ng-class="{'amarillo':p.desviado}"><button class="btn btn-default" ng-click="verHistorial(p.historial, p.promedio)"
+                                        label="Ver historial">
+                                        <i class="fi fi-sr-rectangle-history-circle-plus"></i>
+                                    </button></td>
+                                <td ng-class="{'amarillo':p.desviado}">{{p.usuario}}</td>
+                                <td ng-class="{'amarillo':p.desviado}">{{p.fecha}}</td>
+                                <td ng-class="{'amarillo':p.desviado}">{{p.tipotrans}}-{{p.transaccion}}</td>
+                                <td ng-class="{'amarillo':p.desviado}">{{p.proveedor}}</td>
+                                <td ng-class="{'amarillo':p.desviado}">{{p.factura}}</td>
+                                <td ng-class="{'amarillo':p.desviado}" style="text-align: right">{{p.moneda}}.{{p.monto | number:2}}</td>
+                                <td ng-class="{'amarillo':p.desviado}" style="text-align: center">
+                                    <input type="checkbox" class="form-control" ng-model="p.aprobada" ng-true-value="1"
+                                        ng-false-value="0" ng-change="aprobar(p)" />
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="6">&nbsp;</td>
+                                <td style="text-align: right">Total: Q.{{total | number:2}}</td>
+                                <td style="text-align: center">
+                                    <button class="btn btn-success" ng-click="aceptar(p)">
+                                        <i class="fi fi-rr-check"></i>&nbsp;Aceptar
+                                    </button>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- historial de transacciones -->
+    <script type="text/ng-template" id="modalHistorial.html">
+        <div class="modal-header">
+            <h4 class="modal-title">Historial</h4>
+        </div>
+        <div class="modal-body">
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Transacci&oacute;n</th>
+                        <th>Factura</th>
+                        <th style="text-align: right">Monto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="h in historial">
+                        <td>{{h.fecha}}</td>
+                        <td>{{h.tran}}</td>
+                        <td>{{h.factura}}</td>
+                        <td style="text-align: right">Q.{{h.monto | number:2}}</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3">&nbsp;</td>
+                        <td style="text-align: right">Promedio: Q.{{promedio | number:2}}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="cancel()">Aceptar</button>
+        </div>
+    </script>
+</div>

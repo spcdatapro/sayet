@@ -74,7 +74,8 @@ class Nomina extends Principal
 		$nomina = (object)$this->db->get(
 			"plnnomina", 
 			['id', 'descprestamo'], 
-			['id' => $args['idplnnomina']]
+			['id' => $args['idplnnomina'],
+			'esembargo' => 0]
 		);
 
 		$descprestamo = $this->db->select(
@@ -111,6 +112,52 @@ class Nomina extends Principal
 				}
 			}
 		}
+	}
+
+	public function actualizar_saldo_embargo($args=[])
+	{
+		// $nomina = (object)$this->db->get(
+		// 	"plnnomina", 
+		// 	['id', 'descembargo'], 
+		// 	['id' => $args['idplnnomina'],
+		// 	'esembargo' => 1]
+		// );
+
+		// $descembargo = $this->db->select(
+		// 	"plnpresnom", 
+		// 	['id', 'idplnprestamo', 'monto'],
+		// 	['idplnnomina' => $args['idplnnomina'],
+		// 	'esembargo' => 1]
+		// );
+
+		// if (count($descembargo) > 0) {
+		// 	$monto = $nomina->descembargo;
+		// 	$descuento = totalCampo($descembargo, 'monto');
+
+		// 	if ($monto != $descuento) {
+		// 		foreach ($descembargo as $key => $value) {
+		// 			$pr = new Prestamo($value['idplnprestamo']);
+		// 			$saldo = $pr->get_saldo(['sin_idplnnomina' => $nomina->id]);
+		// 			$cuota = $saldo < $pr->pre->cuotamensual ? $saldo : $pr->pre->cuotamensual;
+					
+		// 			if ($cuota <= $monto) {
+		// 				$nuevo = $cuota;
+		// 				$monto -= $cuota;
+		// 			} else {
+		// 				$nuevo = $monto;
+		// 				$monto = 0;
+		// 			}
+
+		// 			$this->db->update(
+		// 				'plnpresnom', 
+		// 				['monto' => $nuevo], 
+		// 				["id" => $value['id']]
+		// 			);
+
+		// 			$pr->guardar(['saldo' => $pr->get_saldo()]);
+		// 		}
+		// 	}
+		// }
 	}
 
 	public function buscar($args=[])
@@ -204,6 +251,26 @@ class Nomina extends Principal
 
 		if (count($descprestamo) > 0) {
 			foreach ($descprestamo as $key => $value) {
+				$pre = new Prestamo($value['idplnprestamo']);
+				$saldo += $pre->get_saldo(['sin_idplnnomina' => $args['idplnnomina']]);
+			}
+		}
+
+		return $saldo;
+	}
+
+	public function get_saldo_embargo($args=[])
+	{
+		$saldo = 0;
+
+		$descembargo = $this->db->select(
+			"plnpresnom", 
+			['*'],
+			['idplnnomina' => $args['idplnnomina']]
+		);
+
+		if (count($descembargo) > 0) {
+			foreach ($descembargo as $key => $value) {
 				$pre = new Prestamo($value['idplnprestamo']);
 				$saldo += $pre->get_saldo(['sin_idplnnomina' => $args['idplnnomina']]);
 			}
@@ -313,9 +380,16 @@ class Nomina extends Principal
 					$datos["descprestamo"] = ((elemento($args, "descprestamo", 0) > $saldoPrestamos)?$saldoPrestamos:$args['descprestamo']);
 				}
 
+				if (isset($args["descembargo"])) {
+					$saldoEmbargo = $this->get_saldo_prestamos(['idplnnomina' => $args['id']]);
+					$datos["descembargo"] = ((elemento($args, "descembargo", 0) > $saldoPrestamos)?$saldoPrestamos:$args['descembargo']);
+				}
+
+
 				if (!empty($datos)) {
 					if ($this->db->update("plnnomina", $datos, ["id" => $args['id']])) {
 						$this->actualizar_saldo_prestamos(['idplnnomina' => $args['id']]);
+						$this->actualizar_saldo_embargo(['idplnnomina' => $args['id']]);
 						return $this->get_registro($args['id']);
 					} else {
 						if ($this->db->error()[0] == 0) {
@@ -447,10 +521,42 @@ class Nomina extends Principal
 						]);
 						
 						$prest = $e->get_descprestamo(['sin_idplnnomina' => $row['id']]);
+						$embargo = $e->get_descembargo(['sin_idplnnomina' => $row['id']]);
 						
 						$datos['descprestamo'] = $prest['total'];
+						$datos['descembargo'] = $embargo['total'];
 
 						foreach ($prest['prestamo'] as $prestamo) {
+							$tmp = (object)$this->db->get(
+								"plnpresnom", 
+								['*'], 
+								[
+									'AND' => [
+										'idplnprestamo' => $prestamo['id'], 
+										'idplnnomina'   => $row['id']
+									]
+								]
+							);
+
+							if (isset($tmp->scalar)) {
+								$this->db->insert(
+									"plnpresnom", 
+									[
+										'idplnprestamo' => $prestamo['id'],
+										'idplnnomina'   => $row['id'],
+										'monto'         => $prestamo['cuota']
+									]
+								);
+							} else {
+								$this->db->update(
+									"plnpresnom", 
+									['monto' => $prestamo['cuota']],
+									['id' => $tmp->id]
+								);
+							}
+						}
+
+						foreach ($embargo['prestamo'] as $prestamo) {
 							$tmp = (object)$this->db->get(
 								"plnpresnom", 
 								['*'], 
@@ -609,8 +715,8 @@ class Nomina extends Principal
 		$sql = <<<EOT
 SELECT 
     a.*, 
-    b.nombre, 
-    b.apellidos, 
+    CONCAT(e.primernombre, ' ', IFNULL(e.segundonombre, ''), ' ', IFNULL(e.tercernombre, '')) AS nombre, 
+    CONCAT(IFNULL(e.primerapellido, ''), ' ', IFNULL(e.segundoapellido, ''), ' ', IFNULL(e.apellidocasada, '')) AS apellidos,
     e.documento AS dpi, 
     f.idempresaactual, 
     f.reingreso,
@@ -704,7 +810,7 @@ EOT;
 				'tprestamo'        => 'Préstamos:',
 				'vprestamo'        => $row->descprestamo,
 				'tdescotros'       => 'Otros:',
-				'vdescotros'       => $row->descotros,
+				'vdescotros'       => $row->descotros + $row->descembargo,
 				'tdevengado'       => 'Total Devengado:',
 				'vdevengado'       => $row->devengado,
 				'tdeducido'        => 'Total Deducido:',
@@ -747,6 +853,7 @@ EOT;
 		
 		return [
 			'titulon'                => 'Módulo de Planillas',
+			'fecha_impresion'        => (function(){ $dt = new DateTime('now', new DateTimeZone('America/Guatemala')); return formatoFecha($dt->format('Y-m-d'), 1) . ' ' . $dt->format('H:i:s'); })(),
 			'subtitulo'              => $subtitulo,
 			'mes'                    => "del mes de {$nmes} de {$args['anio']}",
 			'tcodigot'               => "Código",

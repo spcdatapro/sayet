@@ -5,10 +5,10 @@
     reembolsoctrl.controller('reembolsoCtrl', [
         '$scope', 'reembolsoSrvc', 'monedaSrvc', 'authSrvc', 'empresaSrvc', '$route', '$confirm', 'tipoReembolsoSrvc', 'DTOptionsBuilder', '$filter', 'tipoFacturaSrvc', 'tipoCompraSrvc', 'detContSrvc', 'cuentacSrvc',
         'toaster', '$uibModal', 'tipoMovTranBanSrvc', 'bancoSrvc', 'beneficiarioSrvc', 'tipoCombustibleSrvc', 'proveedorSrvc', 'localStorageSrvc', '$location', 'proyectoSrvc', 'tipogastoSrvc', 'periodoContableSrvc',
-        'presupuestoSrvc', 'compraSrvc',
+        'presupuestoSrvc', 'compraSrvc', 'periodoIvaSrvc',
         ($scope, reembolsoSrvc, monedaSrvc, authSrvc, empresaSrvc, $route, $confirm, tipoReembolsoSrvc, DTOptionsBuilder, $filter, tipoFacturaSrvc, tipoCompraSrvc, detContSrvc, cuentacSrvc,
             toaster, $uibModal, tipoMovTranBanSrvc, bancoSrvc, beneficiarioSrvc, tipoCombustibleSrvc, proveedorSrvc, localStorageSrvc, $location, proyectoSrvc, tipogastoSrvc, periodoContableSrvc,
-            presupuestoSrvc, compraSrvc
+            presupuestoSrvc, compraSrvc, periodoIvaSrvc
         ) => {
 
             $scope.monedas = [];
@@ -52,6 +52,7 @@
             $scope.ots = [];
             $scope.creador_compra = undefined;
             $scope.ultimo_compra = undefined;
+            var periodoIva = true;
 
             $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap()
                 .withBootstrapOptions({
@@ -422,20 +423,25 @@
                 var total = 0.00, noafecto = 0.00, subtotal = 0.00, genidp = esCombustible(), idp = 0.00, exento = 0.00, isr = 0.00;
                 $scope.compra.idp = calcIDP(genidp);
                 if (obj.objTipoFactura.generaiva && obj.totfact != null && obj.totfact != undefined) {
-                    total = parseFloat(parseFloat($scope.compra.totfact).toFixed(2));
-                    //console.log('TOTAL = ' + total);
-                    noafecto = parseFloat(parseFloat($scope.compra.noafecto).toFixed(2));
-                    //console.log('NO AFECTO = ' + noafecto);
-                    idp = parseFloat(parseFloat($scope.compra.idp).toFixed(2));
-                    //console.log('IDP = ' + idp);
-                    isr = parseFloat(parseFloat($scope.compra.isr).toFixed(2));
-                    //console.log('ISR = ' + isr);
-                    exento = idp + noafecto;
-                    //console.log('EXENTO = ' + exento);
-                    subtotal = parseFloat((total - exento).toFixed(2));
-                    //console.log('SUBTOTAL = ' + subtotal);
-                    $scope.compra.subtotal = parseFloat(subtotal / 1.12).toFixed(2);
-                    $scope.compra.iva = parseFloat($scope.compra.subtotal * 0.12).toFixed(2);
+                    if (periodoIva) {
+                        total = parseFloat(parseFloat($scope.compra.totfact).toFixed(2));
+                        //console.log('TOTAL = ' + total);
+                        noafecto = parseFloat(parseFloat($scope.compra.noafecto).toFixed(2));
+                        //console.log('NO AFECTO = ' + noafecto);
+                        idp = parseFloat(parseFloat($scope.compra.idp).toFixed(2));
+                        //console.log('IDP = ' + idp);
+                        isr = parseFloat(parseFloat($scope.compra.isr).toFixed(2));
+                        //console.log('ISR = ' + isr);
+                        exento = idp + noafecto;
+                        //console.log('EXENTO = ' + exento);
+                        subtotal = parseFloat((total - exento).toFixed(2));
+                        //console.log('SUBTOTAL = ' + subtotal);
+                        $scope.compra.subtotal = parseFloat(subtotal / 1.12).toFixed(2);
+                        $scope.compra.iva = parseFloat($scope.compra.subtotal * 0.12).toFixed(2);
+                    } else {
+                        $scope.periodoCerrado = true;
+                        toaster.pop({ type: 'warning', title: 'Periodo de IVA', body: 'Periodo de IVA cerrado, no se puede modificar ni calcular el IVA', timeout: 7000 });
+                    }
                 } else {
                     total = parseFloat(parseFloat($scope.compra.totfact).toFixed(2));
                     noafecto = parseFloat(parseFloat($scope.compra.noafecto).toFixed(2));
@@ -594,6 +600,10 @@
                                 $scope.periodoCerrado = false;
                             }
                         });
+                        // revisar si el periodo de iva esta abierto
+                        periodoIvaSrvc.validaFecha(fecha).then(d => {
+                            periodoIva = parseInt(d.valida) === 1;
+                        });
                     } else {
                         $scope.periodoCerrado = true;
                     }
@@ -616,6 +626,10 @@
                             } else {
                                 $scope.periodoCerrado = false;
                             }
+                        });
+                        // revisar si el periodo de iva esta abierto
+                        periodoIvaSrvc.validaFechaFactura(fecha).then(d => {
+                            periodoIva = parseInt(d.valida) === 1;
                         });
                     }
                     $scope.periodoCerrado = true;

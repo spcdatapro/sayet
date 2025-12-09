@@ -1,0 +1,81 @@
+(function(){
+
+    var periodocontctrl = angular.module('cpm.periodoivactrl', ['cpm.pivasrvc']);
+
+    periodocontctrl.controller('periodoIvaCtrl', ['$scope', 'periodoIvaSrvc', 'toaster', '$confirm', function($scope, periodoIvaSrvc, toaster, $confirm){
+
+        $scope.params = {anio: moment().year(), vercerrados: 0};
+
+        $scope.elPeriodo = {
+            del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), abierto: 0
+        };
+        $scope.losPeriodos = [];
+
+        function procData(data){
+            for(var i = 0; i < data.length; i++){
+                data[i].del = moment(data[i].del).toDate();
+                data[i].al = moment(data[i].al).toDate();
+                data[i].abierto = parseInt(data[i].abierto);
+            }
+            return data;
+        }
+
+        $scope.resetPeriodo = function(){
+            $scope.elPeriodo = { id: 0, del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), abierto: 0 };
+        };
+
+        $scope.getLstPeriodos = function(){
+            $scope.params.vercerrados = $scope.params.vercerrados !== null && $scope.params.vercerrados !== undefined ? $scope.params.vercerrados : 0;
+            $scope.params.anio = $scope.params.anio !== null && $scope.params.anio !== undefined ? $scope.params.anio : null;
+            periodoIvaSrvc.lstPeriodosCont($scope.params.vercerrados, $scope.params.anio).then(function(d){
+                $scope.losPeriodos = procData(d);
+            });
+        };
+
+        $scope.getPeriodo = function(idperiodo){
+            periodoIvaSrvc.getPeriodoCont(+idperiodo).then(function(d){
+                $scope.elPeriodo = procData(d)[0];
+            });
+        };
+
+        function setData(obj){
+            obj.delstr = moment(obj.del).format('YYYY-MM-DD');
+            obj.alstr = moment(obj.al).format('YYYY-MM-DD');
+            obj.abierto = obj.abierto != null && obj.abierto !== undefined ? obj.abierto : 0;
+            return obj;
+        }
+
+        $scope.addPeriodo = function(obj){
+            obj = setData(obj);
+            if(moment(obj.del).isBefore(obj.al)){
+                periodoIvaSrvc.editRow(obj, 'c').then(function(){
+                    $scope.getLstPeriodos();
+                    $scope.resetPeriodo();
+                });
+            }else{
+                toaster.pop({ type: 'error', title: 'Error en las fechas.', body: 'La fecha inicial no puede ser mayor a la fecha final.', timeout: 7000 });
+                $scope.elPeriodo.al = moment(obj.del).endOf('month').toDate();
+            }
+        };
+
+        $scope.updPeriodo = function(data){
+            data = setData(data);
+            periodoIvaSrvc.editRow(data, 'u').then(function(){
+                $scope.getLstPeriodos();
+                $scope.resetPeriodo();
+            });
+        };
+
+        $scope.delPeriodo = function(obj){
+            $confirm({text: '¿Seguro(a) de eliminar el período del ' + obj.delstr + ' al ' + obj.alstr + '?', title: 'Eliminar período contable', ok: 'Sí', cancel: 'No'}).then(function() {
+                periodoIvaSrvc.editRow({ id:obj.id }, 'd').then(function(){
+                    $scope.getLstPeriodos();
+                    $scope.resetPeriodo();
+                });
+            });
+        };
+
+        $scope.getLstPeriodos();
+    }]);
+
+}());

@@ -84,6 +84,27 @@
             },
             lstPosiblesDoc: function (idbanco, numero, monto, tipo) {
                 return comunFact.doGET(urlBase + '/lstposibledocs/' + idbanco + '/' + numero + '/' + monto + '/' + tipo);
+            },
+            getTransPendientesRecibo: () => {
+                return comunFact.doGET(urlBase + '/tran_recibos');
+            },
+            getPendientesAprobar: (obj) => {
+                return comunFact.doPOST(urlBase + '/tran_pendientes', obj);
+            },
+            getHistorial: (idproveedor, concepto) => {
+                return comunFact.doGET(`${urlBase}/tran_historial/${idproveedor}/${concepto}`);
+            },
+            datosReporteAprobados: obj => {
+                return comunFact.doPOST('php/rptchequesaprob.php/aprobados', obj);
+            },
+            getErroresMT940: () => {
+                return comunFact.doGET(urlBase + '/errores_mt940');
+            },
+            emparejarDebitos: (del, al, idempresa) => {
+                return comunFact.doGET(`${urlBase}/emparejar_debitos/${del}/${al}/${idempresa}`);
+            },
+            emparejarDebitosBanco: (aemparejar) => {
+                return comunFact.doPOST(`${urlBase}/auto_emparejar`, aemparejar);
             }
         };
     }]);

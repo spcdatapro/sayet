@@ -1,38 +1,134 @@
 <div class="container" ng-controller="rptPlnIVSCtrl">
-    <div class="row">
-        <div class="panel panel-default">
-            <div class="panel-heading">Planilla IVS</div>
-            <div class="panel-body" style="text-align: right">
-                <div class="row" style="text-align: left">
-                    <div class="col-md-6 col-sm-6">
-                        <div class="form-group">
-                            <label for="selEmpleado">Empleado:</label>
-                            <select name="selEmpleado" id="selEmpleado" class="form-control input-sm" ng-model="params.idempleado"
-                                    ng-options="obj.id as (obj.nombre + ' ' + obj.apellidos) for obj in empleados">
-                            </select>
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divIVS" data-toggle="tab">Reporte de IVS</a>
+        </li>
+        <li>
+            <a show-tab href="#divMovimientos" data-toggle="tab">Reporte de Movimientos</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- Tab IVS -->
+        <div class="tab-pane fade in active" id="divIVS">
+            <div class="panel panel-default">
+                <div class="panel-heading">Reporte de IVS</div>
+                <div class="panel-body" style="text-align: right">
+                    <form name="formIVS" id="formIVS" novalidate>
+                        <div class="row" style="text-align: left">
+                            <div class="col-md-6 col-sm-6">
+                                <div class="form-group required">
+                                    <label class="control-label">Empleado:</label>
+                                    <ui-select ng-model="paramsIVS.idempleado" title="Seleccione un empleado..."
+                                        theme="bootstrap" autofocus="false" required>
+                                        <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
+                                            <span ng-bind="($select.selected.nombre)"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices
+                                            repeat="item.id as item in empleados | filter:$select.search">
+                                            <div ng-bind-html="(item.nombre) | highlight: $select.search"></div>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-3">
+                                <div class="form-group">
+                                    <label for="txtDelIVS">Del:</label>
+                                    <input name="txtDelIVS" id="txtDelIVS" type="date" class="form-control"
+                                        ng-model="paramsIVS.del" placeholder="Del" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-3">
+                                <div class="form-group">
+                                    <label for="txtAlIVS">Al:</label>
+                                    <input name="txtAlIVS" id="txtAlIVS" type="date" class="form-control"
+                                        ng-model="paramsIVS.al" placeholder="Al" required />
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-3 col-sm-3">
-                        <div class="form-group">
-                            <label for="txtDel">Del:</label>
-                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.del" placeholder="Del"/>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-sm-3">
-                        <div class="form-group">
-                            <label for="txtAl">Al:</label>
-                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.al" placeholder="Al"/>
-                        </div>
+                </div>
+                </form>
+                <div class="panel-footer text-right">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-danger" ng-click="getReporteIVS(paramsIVS)"
+                            ng-disabled="formIVS.$invalid || cargando">
+                            <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
+                        </button>
                     </div>
                 </div>
-                <button type="button" class="btn btn-primary" ng-click="getReporte()">
-                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                </button>
-                <!--
-                <button type="button" class="btn btn-primary" ng-click="getLibroDiarioXLSX()">
-                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
-                </button>
-                -->
+            </div>
+            </hr>
+            <div class="row" ng-show="cargando">
+                <div class="col-md-6 col-md-offset-3">
+                    <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                        <span class="label label-primary">Generando reporte, por favor espere...</span>
+                        <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Tab Movimientos -->
+        <div class="tab-pane fade" id="divMovimientos">
+            <div class="panel panel-default">
+                <div class="panel-heading">Reporte de Movimientos</div>
+                <div class="panel-body" style="text-align: right">
+                    <form name="formMovimientos" id="formMovimientos" novalidate>
+                        <div class="row" style="text-align: left">
+                            <div class="col-md-6 col-sm-6">
+                                <div class="form-group required">
+                                    <label class="control-label">Empleado:</label>
+                                    <ui-select ng-model="paramsMovimientos.idempleado" title="Seleccione un empleado..."
+                                        theme="bootstrap" autofocus="false" required>
+                                        <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
+                                            <span ng-bind="($select.selected.nombre)"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices
+                                            repeat="item.id as item in empleados | filter:$select.search">
+                                            <div ng-bind-html="(item.nombre) | highlight: $select.search"></div>
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-3">
+                                <div class="form-group required">
+                                    <label for="txtDelMov">Del:</label>
+                                    <input name="txtDelMov" id="txtDelMov" type="date" class="form-control"
+                                        ng-model="paramsMovimientos.del" placeholder="Del" required />
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-3">
+                                <div class="form-group required">
+                                    <label for="txtAlMov">Al:</label>
+                                    <input name="txtAlMov" id="txtAlMov" type="date" class="form-control"
+                                        ng-model="paramsMovimientos.al" placeholder="Al" required />
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                </form>
+                <div class="panel-footer text-right">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-danger" ng-click="getReporteMovimientos(paramsMovimientos)"
+                            ng-disabled="formMovimientos.$invalid || cargando">
+                            <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
+                        </button>
+                        <button type="button" class="btn btn-success" ng-click="getReporteMovXML(paramsMovimientos)"
+                            ng-disabled="formMovimientos.$invalid || cargando">
+                            <span class="fa fa-file-excel-o" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </hr>
+            <div class="row" ng-show="cargando">
+                <div class="col-md-6 col-md-offset-3">
+                    <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                        <span class="label label-primary">Generando reporte, por favor espere...</span>
+                        <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
+                    </div>
+                </div>
             </div>
         </div>
     </div>

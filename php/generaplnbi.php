@@ -57,7 +57,7 @@ function genDetContDoc($db, $d, $idtranban, $concepto, $idctabanco, $mediopago, 
 
     $query = "SELECT b.idempresadebito AS deptodeb, a.fecha, SUM(a.anticipo) AS anticipo, SUM(a.sueldoordinario) AS suel_ord, SUM(a.sueldoextra) AS suel_ext, SUM(a.bonificacion) AS bonifica, ";
     $query.= "SUM(a.viaticos) AS viaticos, SUM(a.otrosingresos) AS otros_ingr, SUM(a.vacaciones) AS vacaciones, SUM(a.aguinaldo) AS aguinaldo, SUM(a.bonocatorce) AS bono_14, SUM(a.indemnizacion) AS indemniza, ";
-    $query.= "SUM(a.descigss) AS desc_igss, SUM(a.descisr) AS desc_isr, SUM(a.descanticipo) AS desc_anti, SUM(a.descprestamo) AS desc_prest, SUM(a.descotros) AS otros_desc, SUM(a.liquido) AS liquido, ";
+    $query.= "SUM(a.descigss) AS desc_igss, SUM(a.descisr) AS desc_isr, SUM(a.descanticipo) AS desc_anti, SUM(a.descprestamo) AS desc_prest, SUM(a.descotros) AS otros_desc, SUM(a.liquido) AS liquido, SUM(a.descembargo) AS desc_embargos, ";
     $query.= "ROUND(SUM((a.sueldoordinario + a.sueldoextra + a.vacaciones) * c.patronaligss), 2) AS cuotapatronaligss ";
     $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral d ON b.idlaboral = d.id INNER JOIN plnempresa c ON c.id = d.idempresaactual ";
     $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' ";
@@ -165,13 +165,34 @@ function genDetContDoc($db, $d, $idtranban, $concepto, $idctabanco, $mediopago, 
             }
         }
 
+        // Embargos
+        if ((float)$suma->desc_embargos > 0 ) {
+            $ctaEmbargos = getCuentaConfig($d->idempresa, 32);
+            $query = "SELECT SUM(a.descembargo) AS desc_embargos FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado 
+            INNER JOIN plnlaboral d ON b.idlaboral = d.id INNER JOIN plnempresa c ON c.id = d.idempresaactual 
+            WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.descembargo > 0 ";
+            $query.= $mediopago == 'nota debito' ? "AND d.cuentabanco IS NOT NULL AND d.cuentabanco > 0 " : '';
+            $query.= "AND d.metodo = '$mediopago' AND a.idempresa = $d->idempresa ";
+            $query.= $idempleado == 0 ? '' : "AND a.idplnempleado = $idempleado ";
+            $query.= "GROUP BY a.descembargo";
+            $embargos =  $db->getQuery($query);
+
+            if ($ctaEmbargos > 0) {
+                if (count($embargos) > 0) {
+                    foreach ($embargos as $emb) {
+                        insertaDetalleContable($origen, $idtranban, $ctaEmbargos, 0.00, $emb->desc_embargos, "PLANILLA $concepto", 1, 0);
+                    }
+                }
+            }
+        }
+
         //Préstamos
         if((float)$suma->desc_prest != 0.00){
             $query = "SELECT c.idempresadebito AS deptodeb, a.fecha, a.descprestamo AS desc_prest, c.idcuenta AS cuentapersonal, CONCAT(IFNULL(TRIM(b.nombre), ''), ' ', IFNULL(TRIM(b.apellidos), '')) AS nombre ";
             $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral c ON b.idlaboral = c.id ";
             $query.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido > 0 ";
             $query.= $mediopago == 'nota debito' ? "AND c.cuentabanco IS NOT NULL AND c.cuentabanco > 0 " : '';
-            $query.= "AND a.descprestamo <> 0 AND c.metodo = '$mediopago' AND ";
+            $query.= "AND (a.descprestamo <> 0) AND c.metodo = '$mediopago' AND ";
             $query.= "a.idempresa = $d->idempresa ";
             $query.= $idempleado == 0 ? '' : "AND a.idplnempleado = $idempleado ";
             $query.= "ORDER BY b.nombre, b.apellidos";
@@ -230,11 +251,11 @@ $app->post('/generand', function() use($db){
 
     $query = "SELECT z.tipo, z.cuenta, @row := @row + 1 AS contador, z.nombre, z.monto, z.cuentacontable ";
     $query.= "FROM (";
-    $query.= "SELECT 3 AS tipo, TRIM(e.cuentabanco) AS cuenta, TRIM(CONCAT(TRIM(b.nombre), ' ', IFNULL(TRIM(b.apellidos), ''))) AS nombre, a.liquido AS monto, e.idcuenta AS cuentacontable ";
-    $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral e ON b.idlaboral = e.id LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto LEFT JOIN plnempresa d ON d.id = b.idempresaactual ";
+    $query.= "SELECT 3 AS tipo, TRIM(e.cuentabanco) AS cuenta, TRIM(CONCAT(f.primernombre, ' ', IFNULL(f.segundonombre, ''), IFNULL(f.tercernombre, ''), ' ', IFNULL(f.primerapellido, ''), ' ', IFNULL(f.segundoapellido, ''), ' ', IFNULL(f.apellidocasada, ''))) AS nombre, a.liquido AS monto, e.idcuenta AS cuentacontable ";
+    $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral e ON b.idlaboral = e.id LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto LEFT JOIN plnempresa d ON d.id = b.idempresaactual INNER JOIN plnpersonal f ON b.idpersonal = f.id ";
     $query.= "WHERE a.idempresa = $d->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido <> 0 AND e.cuentabanco IS NOT NULL ";
     $query.= "AND e.metodo = 'nota debito' ";
-    $query.= "ORDER BY d.ordenreppres, b.nombre, b.apellidos";
+    $query.= "ORDER BY b.nombre, b.apellidos";
     $query.= ") z, (SELECT @row:= 0) r";
     // print $query;
     $empleados = $db->getQuery($query);
@@ -289,47 +310,49 @@ $app->post('/generachq', function() use($db){
     $generados = [];
     for($i = 0; $i < $cntEmpresas; $i++){
         $empresa = $d->empresas[$i];
-        $query = "SELECT z.tipo, z.cuenta, @row := @row + 1 AS contador, z.nombre, z.monto, z.cuentacontable, z.idempleado, z.concepto ";
-        $query.= "FROM (";
-        $query.= "SELECT 3 AS tipo, TRIM(e.cuentabanco) AS cuenta, TRIM(CONCAT(TRIM(b.nombre), ' ', IFNULL(TRIM(b.apellidos), ''))) AS nombre, a.liquido AS monto, e.idcuenta AS cuentacontable, b.id AS idempleado, ";
-        $query.= "CONCAT('DEL ', LPAD(DAY('$d->fdelstr'), 2, ' '), ' DE ', (SELECT nombre FROM mes WHERE id = MONTH('$d->fdelstr')), ' AL ', ";
-        $query.= "LPAD(DAY('$d->falstr'), 2, ' '), ' DE ', (SELECT nombre FROM mes WHERE id = MONTH('$d->falstr')), ' DEL ', YEAR('$d->falstr')) AS concepto ";
-        $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral e ON b.idlaboral = e.id LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto LEFT JOIN plnempresa d ON d.id = e.idempresaactual ";
-        $query.= "WHERE a.idempresa = 4 AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido <> 0 ";
-        $query.= "AND e.metodo = 'cheque' ";
-        $query.= "ORDER BY d.ordenreppres, b.nombre, b.apellidos";
-        $query.= ") z, (SELECT @row:= 0) r";
-        // print $query;
-        $empleados = $db->getQuery($query);
-        $cntEmpleados = count($empleados);
-
-        $empresa->correlativo = 0;
-        $cntBancos = count($empresa->bancos);
-        $banco = '';
-        for($j = 0; $j < $cntBancos; $j++){
-            if((int)$empresa->idbanco === (int)$empresa->bancos[$j]->id){
-                $empresa->correlativo = (int)$empresa->bancos[$j]->correlativo;
-                $banco = $empresa->bancos[$j]->bancomoneda;
+        if ($empresa->idbanco > 0) {
+            $query = "SELECT z.tipo, z.cuenta, @row := @row + 1 AS contador, z.nombre, z.monto, z.cuentacontable, z.idempleado, z.concepto ";
+            $query.= "FROM (";
+            $query.= "SELECT 3 AS tipo, TRIM(e.cuentabanco) AS cuenta, TRIM(CONCAT(f.primernombre, ' ', IFNULL(f.segundonombre, ''), IFNULL(f.tercernombre, ''), ' ', IFNULL(f.primerapellido, ''), ' ', IFNULL(f.segundoapellido, ''), ' ', IFNULL(f.apellidocasada, ''))) AS nombre, a.liquido AS monto, e.idcuenta AS cuentacontable, b.id AS idempleado, ";
+            $query.= "CONCAT('DEL ', LPAD(DAY('$d->fdelstr'), 2, ' '), ' DE ', (SELECT nombre FROM mes WHERE id = MONTH('$d->fdelstr')), ' AL ', ";
+            $query.= "LPAD(DAY('$d->falstr'), 2, ' '), ' DE ', (SELECT nombre FROM mes WHERE id = MONTH('$d->falstr')), ' DEL ', YEAR('$d->falstr')) AS concepto ";
+            $query.= "FROM plnnomina a INNER JOIN plnempleado b ON b.id = a.idplnempleado INNER JOIN plnlaboral e ON b.idlaboral = e.id LEFT JOIN plnpuesto c ON c.id = b.idplnpuesto LEFT JOIN plnempresa d ON d.id = e.idempresaactual ";
+            $query.= "INNER JOIN plnpersonal f ON b.idpersonal = f.id "; 
+            $query.= "WHERE a.idempresa = $empresa->idempresa AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.liquido <> 0 ";
+            $query.= "AND e.metodo = 'cheque' ";
+            $query.= "ORDER BY d.ordenreppres, b.nombre, b.apellidos";
+            $query.= ") z, (SELECT @row:= 0) r";
+            $empleados = $db->getQuery($query);
+            $cntEmpleados = count($empleados);
+            
+            $empresa->correlativo = 0;
+            $cntBancos = count($empresa->bancos);
+            $banco = '';
+            for($j = 0; $j < $cntBancos; $j++){
+                if((int)$empresa->idbanco === (int)$empresa->bancos[$j]->id){
+                    $empresa->correlativo = (int)$empresa->bancos[$j]->correlativo;
+                    $banco = $empresa->bancos[$j]->bancomoneda;
+                }
             }
-        }
-
-        $numeros = [];
-        for($j = 0; $j < $cntEmpleados; $j++){
-            $empleado = $empleados[$j];
-            $numero = generachq($d, $db, $empresa, $empleado);
-            if($numero > 0){
-                $numeros[] = ['numero' => $numero, 'beneficiario' => $empleado->nombre, 'monto' => number_format((float)$empleado->monto, 2)];
-                $empresa->correlativo++;
+        
+            $numeros = [];
+            for($j = 0; $j < $cntEmpleados; $j++){
+                $empleado = $empleados[$j];
+                $numero = generachq($d, $db, $empresa, $empleado);
+                if($numero > 0){
+                    $numeros[] = ['numero' => $numero, 'beneficiario' => $empleado->nombre, 'monto' => number_format((float)$empleado->monto, 2)];
+                    $empresa->correlativo++;
+                }
             }
-        }
-        if(count($numeros) > 0){
-            $generados[] = ['empresa' => $empresa->empresa, 'banco' => $banco, 'cheques' => $numeros];
+            if(count($numeros) > 0){
+                $generados[] = ['empresa' => $empresa->empresa, 'banco' => $banco, 'cheques' => $numeros];
+            }
         }
     }
     print json_encode(['generados' => $generados]);
 });
 
-$app->post('/generatran', function() {
+$app->post('/tran_finiquito', function() {
     $db = new dbcpm();
     $d = json_decode(file_get_contents('php://input'));
     $errores = '';
@@ -343,7 +366,7 @@ $app->post('/generatran', function() {
     $lastid = $db->getLastId();
 
     if ($lastid > 0) {
-        $db->doQuery("UPDATE plnfiniquito SET pendiente = 0 WHERE id = $d->id");
+        $db->doQuery("UPDATE plnfiniquito SET pendiente = 0, idtranban = $lastid WHERE id = $d->id");
         $db->doQuery("UPDATE banco SET correlativo = $d->numero+1 WHERE id = $d->idbanco");
 
 
@@ -444,6 +467,54 @@ $app->post('/generatran', function() {
                 VALUES (1, $lastid, $cnt_anticipo, 0, $d->anticipos, '$d->concepto', 1, 0, $d->idproyecto)");
             } else {
                 $errores .= 'sin cuenta de anticipos, ';
+            }
+        }
+
+        $cnt_banco = $db->getOneField("SELECT idcuentac FROM banco WHERE id = $d->idbanco");
+        if ((int)$d->total > 0) {
+            if($cnt_banco > 0) {
+                $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
+                VALUES (1, $lastid, $cnt_banco, 0, $d->total, '$d->concepto', 1, 0, $d->idproyecto)");
+            } else {
+                $errores .= 'sin cuenta de banco. ';
+            }
+        }
+
+        if (strlen($errores) > 5) {
+            print json_encode(['tipo' => 'warning', 'mensaje' => 'No se pudo generar completamente la partida contable, favor arreglar. Errores: '.$errores]);
+        } else {
+            print json_encode(['tipo' => 'success', 'mensaje' => 'Transacción generada con éxito.']);
+        }
+    } else {
+        print json_encode(['tipo' => 'error', 'mensaje' => 'No se recibieron suficientes datos, favor volver a intentar.']);
+    }
+});
+
+$app->post('/tran_premio', function() {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+    $errores = '';
+
+    $d->total = round($d->total, 2);
+
+    $query = "INSERT INTO tranban(idbanco, tipotrans, numero, esplanilla, fechaplanilla, fecha, monto, beneficiario, concepto, tipocambio, idempresa, idempleado, idusuario) VALUES ($d->idbanco, 
+    '$d->tipo', $d->numero, 1, '$d->fecha', '$d->fechatran', $d->total, '$d->empleado', '$d->concepto', 1.00, $d->idempresa, $d->idempleado, $d->idusuario)";
+    $db->doQuery($query);
+
+    $lastid = $db->getLastId();
+
+    if ($lastid > 0) {
+        $db->doQuery("UPDATE detpremioemp SET pagado = 1 WHERE id = $d->id");
+        $db->doQuery("UPDATE banco SET correlativo = $d->numero+1 WHERE id = $d->idbanco");
+
+
+        $cnt_gratificaciones = getCuentaConfig($d->idempresa, 31); 
+        if ((int)$d->total > 0) {
+            if ($cnt_gratificaciones > 0) {
+                $db->doQuery("INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, activada, anulado, idproyecto) 
+                VALUES (1, $lastid, $cnt_gratificaciones, $d->total, 0, '$d->concepto', 1, 0, $d->idproyecto)");
+            } else {
+                $errores .= 'sin cuenta de gratificacion, ';
             }
         }
 

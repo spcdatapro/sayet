@@ -95,6 +95,49 @@
                 });
             };
 
+            $scope.getFactsEmitidasXml = () => {
+                $scope.cargando = true;
+                $scope.ver = false;
+                let rango = false;
+                let reporte = 'BkNGl5URxl';
+                $scope.params.fdelstr = moment($scope.params.fdel).format('YYYY-MM-DD');
+                $scope.params.falstr = moment($scope.params.fal).format('YYYY-MM-DD');
+                $scope.params.idempresa = $scope.params.idempresa != null && $scope.params.idempresa !== undefined ? $scope.params.idempresa : '';
+                $scope.params.cliente = $scope.params.cliente != null && $scope.params.cliente !== undefined ? $scope.params.cliente : '';
+                $scope.params.idcliente = $scope.params.idcliente != null && $scope.params.idcliente !== undefined ? $scope.params.idcliente : 0;
+                $scope.params.tipo = $scope.params.tipo != null && $scope.params.tipo !== undefined ? $scope.params.tipo : '1';
+                $scope.params.idproyecto = $scope.params.idproyecto != null && $scope.params.idproyecto !== undefined ? $scope.params.idproyecto : 0;
+                $scope.params.idtsventa = $scope.params.idtsventa != null && $scope.params.idtsventa !== undefined ? $scope.params.idtsventa : 0;
+                $scope.params.soloanuladas = $scope.params.soloanuladas != null && $scope.params.soloanuladas !== undefined ? $scope.params.soloanuladas : 0;
+
+                switch (+$scope.params.tipo) {
+                    case 4: 
+                        reporte = 'SJXAXc8Aex'; 
+                        rango = 'Pendientes';
+                        break;
+                    case 5: 
+                        reporte = 'SySgAaUAxl'; 
+                        rango = 'Notas_Credito';
+                        break;
+                    case 6: 
+                        reporte = 'rkWacaLAxe'; 
+                        rango = 'por_Proyecto';
+                        break;
+                    default: 
+                        reporte = 'BkNGl5URxl';
+                        rango = 'Emitidas';
+                }
+
+                //console.log($scope.params); return;
+                jsReportSrvc.getReport(reporte, $scope.params).then(function (result) {
+                    var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
+
+                    saveAs(file, 'Reporte_Facturas_' + rango + '.xlsx');
+
+                    $scope.cargando = false;
+                });
+            };
+
             $scope.getPendientes = function (params) {
                 $scope.cargando = true;
                 $scope.content = `${window.location.origin}/sayet/blank.html`;

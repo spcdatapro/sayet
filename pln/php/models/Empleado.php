@@ -685,7 +685,63 @@ class Empleado extends Principal
 					'AND' => [
 						'idplnempleado[=]' => $this->emp->id,
 						"iniciopago[<=]" => $this->nfecha,
-						'anulado[=]' => 0
+						'anulado[=]' => 0,
+						'esembargo[=]' => 0
+					]
+				]
+			);
+
+			if (count($prestamos) > 0) {
+				foreach ($prestamos as $row) {
+					$ant = $this->db->get(
+						"plnpresnodesc",
+						'*',
+						[
+							'AND' => [
+								"fecha" => $this->nfecha,
+								"idplnprestamo" => $row['id']
+							]
+						]
+					);
+
+					if ($ant && count($ant) > 0 && !isset($ant['scalar'])) {
+						continue;
+					} else {
+						$pr = new Prestamo($row['id']);
+						$saldo = $pr->get_saldo($args);
+
+						if ($saldo > 0) {
+							$cuota = (($pr->pre->cuotamensual < $saldo)?$pr->pre->cuotamensual:$saldo);
+							
+							$prest['prestamo'][] = [
+								'id'    => $pr->pre->id,
+								'cuota' => $cuota
+							];
+
+							$prest['total'] += $cuota;
+						}
+					}
+				}
+			}
+		}
+
+		return $prest;
+	}
+
+	public function get_descembargo($args=[])
+	{
+		$prest = ['prestamo' => [], 'total' => 0];
+
+		if ($this->ndia != 15) {
+			$prestamos = $this->db->select(
+				"plnprestamo", 
+				['id', 'cuotamensual'], 
+				[
+					'AND' => [
+						'idplnempleado[=]' => $this->emp->id,
+						"iniciopago[<=]" => $this->nfecha,
+						'anulado[=]' => 0,
+						'esembargo[=]' => 1
 					]
 				]
 			);
@@ -748,7 +804,8 @@ class Empleado extends Principal
 			[
 				'AND' => [
 					'idplnempleado' => $this->emp->id, 
-					'finalizado'    => 0
+					'finalizado'    => 0,
+					'esembargo'     => 0,
 				]
 			]
 		);
@@ -771,10 +828,10 @@ class Empleado extends Principal
 	public function get_sueldo_promedio($args = [])
 	{
 		if ($this->mesesCalculo == 'ficha') {
-			return isset($args['detallado']) ? false : $this->emp->sueldo;
+			return isset($args['detallado']) ? false : $this->lab->sueldo;
 		} else {
 			$sql = "SELECT 
-						sueldoordinario,
+						sueldoordinarioreporte as sueldoordinario,
 						sueldoextra,
 						fecha,
 						year(fecha) as anio,
@@ -1325,27 +1382,27 @@ EOT;
 			]
 		]);
 
-		$sueldo_ant = $this->db->select("plnbitacora", [
-			"sueldo",
-			"bonificacionley"
-		], [
-			"AND" => [
-				"idplnempleado" => $bit->idplnempleado,
-				"sueldo[>]" => 0.00,
-				"bonificacionley[>]" => 0.00
-			]
-		]);
-		if (!empty($sueldo_ant)) {
-			$sueldo_ant = $sueldo_ant[0];
-		} else {
-			$sueldo_ant = [];
-		}
+		// $sueldo_ant = $this->db->select("plnbitacora", [
+		// 	"sueldo",
+		// 	"bonificacionley"
+		// ], [
+		// 	"AND" => [
+		// 		"idplnempleado" => $bit->idplnempleado,
+		// 		"sueldo[>]" => 0.00,
+		// 		"bonificacionley[>]" => 0.00
+		// 	]
+		// ]);
+		// if (!empty($sueldo_ant) && $bit->idplnmovimiento != 10) {
+		// 	$sueldo_ant = $sueldo_ant[0];
+		// } else {
+		// 	$sueldo_ant = [];
+		// }
 
 		$siempre = !empty($resultado) ? $resultado[0] : null;		
 
 		$antes = json_decode($bit->antes);
 
-		if ($bit->idempresadebito > 0) {
+		if ($bit->idempresadebito > 0 && $bit->idplnmovimiento != 6) {
 			$nomempresa = $this->db->select("empresa","nomempresa",["id [=]" => $bit->idempresadebito])[0];
 		} else if ($antes !== null) {
 			$antes = get_object_vars($antes);
@@ -1374,12 +1431,14 @@ EOT;
 			'numero'           => $bit->id
 		];
 
-		if (!empty($bit->antes)) {
+		if (!empty($bit->antes) && $bit->idplnmovimiento != 10) {
 			$ant = json_decode($bit->antes);
 			$tmp['ant_sueldo']       = number_format($ant->sueldo, 2);
 			$tmp['ant_bonificacion'] = number_format($ant->bonificacionley, 2);
 			$tmp['ant_total']        = number_format(($ant->sueldo+$ant->bonificacionley), 2);
 		} else {
+			$ant = new stdClass();
+			$ant->sueldo = 0;
 			$tmp['ant_sueldo']       = 0;
 			$tmp['ant_bonificacion'] = 0;
 			$tmp['ant_total']        = 0;
@@ -1396,27 +1455,53 @@ EOT;
 			$tmp['des_total']        = 0;
 		}
 
-		if ($bit->sueldo > 0) {
-			$tmp['ant_sueldo'] = number_format($bit->sueldo, 2);
-			if ($bit->bonificacionley > 0) {
-				$tmp['ant_bonificacion'] = number_format($bit->bonificacionley, 2);
-				$tmp['ant_total']  = number_format(($bit->sueldo+$bit->bonificacionley), 2);
-			} else {
-				$tmp['ant_bonificacion'] = 0;
-			}
-		} else if (!empty($sueldo_ant)) {
-			$tmp['ant_sueldo'] = number_format($sueldo_ant['sueldo'], 2);
-			if ($sueldo_ant['bonificacionley'] > 0) {
-				$tmp['ant_bonificacion'] = number_format($sueldo_ant['bonificacionley'], 2);
-				$tmp['ant_total']  = number_format(($sueldo_ant['sueldo']+$sueldo_ant['bonificacionley']), 2);
-			} else {
-				$tmp['ant_bonificacion'] = 0;
+		if (isset($des)) {
+			if ($ant->sueldo === $des->sueldo) {
+				$antes = $this->db->select("plnbitacora", ["antes"], 
+					[
+						"AND" => [
+							"idplnempleado" => $bit->idplnempleado,
+							"idplnmovimiento[=]" => 7
+						],
+						"ORDER" => ["fecha DESC"],
+						"LIMIT" => 1
+					],
+					1
+				);
+				if (isset($antes[0])) {
+					$antes = json_decode($antes[0]['antes']);
+					$tmp['ant_sueldo']       = number_format($antes->sueldo, 2);
+					$tmp['ant_bonificacion'] = number_format($antes->bonificacionley, 2);
+					$tmp['ant_total']        = number_format(($antes->sueldo+$antes->bonificacionley), 2);
+				} else {
+					$tmp['ant_sueldo']       = 0.00;
+					$tmp['ant_bonificacion'] = 0.00;
+					$tmp['ant_total']        = 0.00;
+				}
 			}
 		}
 
-		$tmp['des_sueldo']       = number_format($this->lab->sueldo, 2);
-		$tmp['des_bonificacion'] = number_format($this->lab->bonificacionley, 2);
-		$tmp['des_total']        = number_format($this->lab->sueldo + $this->lab->bonificacionley, 2);
+		// if ($bit->sueldo > 0) {
+		// 	$tmp['ant_sueldo'] = number_format($bit->sueldo, 2);
+		// 	if ($bit->bonificacionley > 0) {
+		// 		$tmp['ant_bonificacion'] = number_format($bit->bonificacionley, 2);
+		// 		$tmp['ant_total']  = number_format(($bit->sueldo+$bit->bonificacionley), 2);
+		// 	} else {
+		// 		$tmp['ant_bonificacion'] = 0;
+		// 	}
+		// } else if (!empty($sueldo_ant)) {
+		// 	$tmp['ant_sueldo'] = number_format($sueldo_ant['sueldo'], 2);
+		// 	if ($sueldo_ant['bonificacionley'] > 0) {
+		// 		$tmp['ant_bonificacion'] = number_format($sueldo_ant['bonificacionley'], 2);
+		// 		$tmp['ant_total']  = number_format(($sueldo_ant['sueldo']+$sueldo_ant['bonificacionley']), 2);
+		// 	} else {
+		// 		$tmp['ant_bonificacion'] = 0;
+		// 	}
+		// }
+
+		// $tmp['des_sueldo']       = number_format($this->lab->sueldo, 2);
+		// $tmp['des_bonificacion'] = number_format($this->lab->bonificacionley, 2);
+		// $tmp['des_total']        = number_format($this->lab->sueldo + $this->lab->bonificacionley, 2);
 
 		return $tmp;
 	}
@@ -1734,6 +1819,8 @@ EOT;
 			$data['id'] = $this->db->select("plnempleado","idlaboral",["id [=]" => $data['idplnempleado']])[0];
 		}
 
+		$lab = $this->db->get("plnlaboral", "*", ["id [=]" => $data['id']]);
+
 		// validar si existen datos
 		if (count($data) > 0) {
 			// formatear datos antes de hacer insert
@@ -1788,13 +1875,45 @@ EOT;
 					$respuesta->mensaje = 'Error en la base de datos favor comunicarse con IT.';
 				}
 			} else {
+				$antes = (object)$this->db->get('plnlaboral', '*',['id[=]' => $idlaboral]);
 				$upd = $this->db->update('plnlaboral', $this->datos, ["id [=]" => $idlaboral]);
+				$despues = (object)$this->db->get('plnlaboral', '*',['id[=]' => $idlaboral]);
 
 				if ($upd) {
-					$respuesta = new StdClass;
-					$respuesta->tipo = 'success';
-					$respuesta->mensaje = 'Datos laborales actualizados con exito.';
-					$respuesta->id = $idempleado;
+					if ($lab['sueldo'] != $data['sueldo'] || $lab['bonificacionley'] != $data['bonificacionley'] || $lab['descuentoisr'] != $data['descuentoisr']) {
+						$objeto = json_decode(json_encode($lab));
+						$objeto->movobservaciones = 'Aumento de sueldo';
+						$this->generarBitacora($idempleado, 7, $objeto, 'Aumento de sueldo', 0, null, $antes, $despues);
+
+						$fecha_nomina = date('d') <= 15 ? date('Y-m-15') : date('Y-m-15');
+
+						$existe_nomina = $this->db->get(
+						"plnnomina",
+						'id',
+						[
+							'AND' => [
+								"fecha" => $fecha_nomina,
+								"idplnempleado" => $idempleado
+							]
+						]
+							) > 0;
+						if ($existe_nomina) {
+							$respuesta = new StdClass;
+							$respuesta->tipo = 'warning';
+							$respuesta->mensaje = 'Datos laborales actualizados con exito. Favor actualizar la nómina del empleado para que los cambios tengan efecto.';
+							$respuesta->id = $idempleado;
+						} else {
+							$respuesta = new StdClass;
+							$respuesta->tipo = 'success';
+							$respuesta->mensaje = 'Datos laborales actualizados con exito.';
+							$respuesta->id = $idempleado;
+						}
+					} else {
+						$respuesta = new StdClass;
+						$respuesta->tipo = 'success';
+						$respuesta->mensaje = 'Datos laborales actualizados con exito.';
+						$respuesta->id = $idempleado;
+					}
 				} else {
 					$respuesta = new StdClass;
 					$respuesta->tipo = 'warning';
@@ -1949,8 +2068,12 @@ EOT;
 		$this->set_dato("idlaboral", $idlaboral);
 		$this->db->update('plnempleado', $this->datos, ["id [=]" => $idempleado]);
 
+		$data->sueldo = 0.00;
+		$data->bonificacionley = 0.00;
+		$despues = (object)$this->db->get('plnlaboral', '*',['id[=]' => $idlaboral]);
+
 		// generar bitacora de nuevo ingreso
-		$idbitacora = $this->generarBitacora($idempleado, 10, $data, 'NUEVO INGRESO');
+		$idbitacora = $this->generarBitacora($idempleado, 10, $data, 'NUEVO INGRESO', 0,$data->ingreso, null, $despues);
 
 		if ($idempleado > 0) {
 			if ($idpersonal > 0) {
@@ -1987,6 +2110,8 @@ EOT;
 	public function alta ($data) : object {
 		$fecha = new DateTime($data->reingreso);
 		$data->reingreso = $fecha->format('Y-m-d');
+
+		$antes = (object)$this->db->get('plnlaboral', '*',['id[=]' => $data->id]);
 
 		$data_anterior = $this->db->select("plnlaboral","*",["id" => $data->id])[0];
 		$anterior = new StdClass;
@@ -2025,7 +2150,8 @@ EOT;
 				$this->set_dato("baja", null); 
 				$upd = $this->db->update('plnempleado', $this->datos, ["id [=]" => $data->idplnempleado]);
 			if ($upd) {
-				if ($this->generarBitacora($data->idplnempleado, 6, $anterior, 'REINGRESO', 1) > 0) {
+				$despues = (object)$this->db->get('plnlaboral', '*',['id[=]' => $data->id]);
+				if ($this->generarBitacora($data->idplnempleado, 6, $anterior, 'REINGRESO', 1, $data->reingreso, $antes, $despues) > 0) {
 					$respuesta = new StdClass;
 					$respuesta->tipo = 'success';
 					$respuesta->mensaje = 'Empleado dado de alta con exito.';
@@ -2054,6 +2180,8 @@ EOT;
 	public function baja ($data) : object {
 		$idlaboral = $this->db->select("plnempleado","idlaboral",["id [=]" => $data->empleado])[0];
 
+		$antes = (object)$this->db->get('plnlaboral', '*',['id[=]' => $idlaboral]);
+
 		$data_anterior = $this->db->select("plnlaboral","*",["id" => $idlaboral])[0];
 		$anterior = new StdClass;
 		$anterior->movobservaciones = $data->concepto;
@@ -2067,7 +2195,8 @@ EOT;
 		if ($upd) {
 			$upd = $this->db->update('plnempleado', ["baja" => $data->baja], ["id [=]" => $data->empleado]);
 			if ($upd) {
-				if ($this->generarBitacora($data->empleado, 3, $anterior, 'BAJA DE EMPLEADO', 1) > 0) {
+				$despues = (object)$this->db->get('plnlaboral', '*',['id[=]' => $idlaboral]);
+				if ($this->generarBitacora($data->empleado, 3, $anterior, 'BAJA DE EMPLEADO', 1, $data->baja, $antes, $despues) > 0) {
 					$respuesta = new StdClass;
 					$respuesta->tipo = 'success';
 					$respuesta->mensaje = 'Empleado dado de baja con exito.';
@@ -2093,16 +2222,22 @@ EOT;
 		return $respuesta;
 	}
 
-	private function generarBitacora ($idempleado, $tipo, $datos = [], $descripcion, $revertir = 0) : int {
+	private function generarBitacora ($idempleado, $tipo, $datos = [], $descripcion, $revertir = 0, $fecha = null, $antes = null, $despues = null) : int {
+		$fecha_mov = $fecha ? $fecha : date('Y-m-d');
+		$antes = $antes ? json_encode($antes) : null;
+		$despues = $despues ? json_encode($despues) : null;
+
 		$this->datos = [];
 		$this->set_dato("idplnempleado", $idempleado);
 		$this->set_dato("usuario", 1);
-		$this->set_dato("movfecha", date('Y-m-d'));
+		$this->set_dato("movfecha", $fecha_mov);
 		$this->set_dato("movdescripcion", $descripcion);
 		$this->set_dato("movobservaciones", $datos->movobservaciones);
 		$this->set_dato("mostrar", 1);
 		$this->set_dato("idplnmovimiento", $tipo);
 		$this->set_dato("revertir", $revertir);
+		$this->set_dato("antes", $antes);
+		$this->set_dato("despues", $despues);
 
 		if (isset($datos->idempresadebito) && $datos->idempresadebito > 0) {
 			$this->set_dato("idempresadebito", $datos->idempresadebito);

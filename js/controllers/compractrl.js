@@ -4,9 +4,9 @@
 
     compractrl.controller('compraCtrl', [
         '$scope', '$filter', 'compraSrvc', 'authSrvc', 'empresaSrvc', 'DTOptionsBuilder', 'proveedorSrvc', 'tipoCompraSrvc', 'toaster', 'cuentacSrvc', 'detContSrvc', '$uibModal', '$confirm', 'monedaSrvc', 'tipoFacturaSrvc',
-        'tipoCombustibleSrvc', 'presupuestoSrvc', 'proyectoSrvc', 'jsReportSrvc', '$window', 'periodoContableSrvc', 'tipoCambioSrvc', 'servicioBasicoSrvc', 'localStorageSrvc',
+        'tipoCombustibleSrvc', 'presupuestoSrvc', 'proyectoSrvc', 'jsReportSrvc', '$window', 'periodoContableSrvc', 'tipoCambioSrvc', 'servicioBasicoSrvc', 'localStorageSrvc', 'periodoIvaSrvc',
         ($scope, $filter, compraSrvc, authSrvc, empresaSrvc, DTOptionsBuilder, proveedorSrvc, tipoCompraSrvc, toaster, cuentacSrvc, detContSrvc, $uibModal, $confirm, monedaSrvc, tipoFacturaSrvc,
-            tipoCombustibleSrvc, presupuestoSrvc, proyectoSrvc, jsReportSrvc, $window, periodoContableSrvc, tipoCambioSrvc, servicioBasicoSrvc, localStorageSrvc
+            tipoCombustibleSrvc, presupuestoSrvc, proyectoSrvc, jsReportSrvc, $window, periodoContableSrvc, tipoCambioSrvc, servicioBasicoSrvc, localStorageSrvc, periodoIvaSrvc
         ) => {
 
             $scope.lasEmpresas = [];
@@ -50,6 +50,7 @@
             $scope.creador = undefined;
             $scope.ultimo_usuario = undefined;
             $scope.laCompra.retiva_manual = 0;
+            var periodoIva = true;
 
             empresaSrvc.lstEmpresas().then(function (d) { $scope.lasEmpresas = d; });
             tipoCambioSrvc.getLastTC().then(function (d) { $scope.tipocambiogt = +d.lasttc; });
@@ -84,7 +85,6 @@
                     });
                 }
             });
-
 
             function getCompraInicial() {
                 let idcompra = localStorageSrvc.get('idfactura');
@@ -196,6 +196,11 @@
                                 $scope.periodoCerrado = false;
                             }
                         });
+                        // revisar si el periodo de iva esta abierto
+                        periodoIvaSrvc.validaFecha(fecha).then(d => {
+                            periodoIva = parseInt(d.valida) === 1;
+                            $scope.periodoCerrado = +periodoIva === 0 && $scope.laCompra.totfact > 0 ? $scope.calcular() : false;
+                        });
                     } else {
                         $scope.periodoCerrado = true;
                     }
@@ -218,6 +223,11 @@
                             } else {
                                 $scope.periodoCerrado = false;
                             }
+                        });
+                        // revisar si el periodo de iva esta abierto
+                        periodoIvaSrvc.validaFechaFactura(fecha).then(d => {
+                            periodoIva = parseInt(d.valida) === 1;
+                            $scope.periodoCerrado = +periodoIva === 0 && $scope.laCompra.totfact > 0 ? $scope.calcular() : false;
                         });
                     }
                     $scope.periodoCerrado = true;
@@ -297,15 +307,20 @@
                     $scope.laCompra.subtotal = totFact;
                     $scope.laCompra.iva = 0.00;
                 } else {
-                    if (noAfecto <= totFact) {
-                        $scope.laCompra.subtotal = geniva ? parseFloat(subtotal / 1.12).toFixed(2) : subtotal;
-                        $scope.laCompra.iva = geniva ? parseFloat($scope.laCompra.subtotal * 0.12).toFixed(2) : 0.00;
+                    if (periodoIva) {
+                        if (noAfecto <= totFact) {
+                            $scope.laCompra.subtotal = geniva ? parseFloat(subtotal / 1.12).toFixed(2) : subtotal;
+                            $scope.laCompra.iva = geniva ? parseFloat($scope.laCompra.subtotal * 0.12).toFixed(2) : 0.00;
+                        } else {
+                            $scope.laCompra.noafecto = 0;
+                            toaster.pop({
+                                type: 'error', title: 'Error en el monto de No afecto.',
+                                body: 'El monto de No afecto no puede ser mayor al total de la factura.', timeout: 7000
+                            });
+                        }
                     } else {
-                        $scope.laCompra.noafecto = 0;
-                        toaster.pop({
-                            type: 'error', title: 'Error en el monto de No afecto.',
-                            body: 'El monto de No afecto no puede ser mayor al total de la factura.', timeout: 7000
-                        });
+                        $scope.periodoCerrado = true;
+                        toaster.pop({ type: 'warning', title: 'Periodo de IVA', body: 'Periodo de IVA cerrado, no se puede modificar ni calcular el IVA', timeout: 7000 });
                     }
                 }
             };
@@ -925,14 +940,14 @@
             $scope.tercerDecimal = function (tipo) {
                 let titulo = tipo === 1 ? 'Retencion de ISR' : 'Retencion de IVA';
                 $confirm({ text: '¿Desea agregar un tercer decimal al ' + titulo + '?', title: 'Tercer decimal', ok: 'Sí', cancel: 'No' })
-                .then(() => { 
-                    if (tipo === 1) {
-                        $scope.laCompra.decimal_isr = 3;
-                    } else {
-                        $scope.laCompra.decimal_iva = 3;
-                    }
-                    $scope.updCompra($scope.laCompra);
-                })
+                    .then(() => {
+                        if (tipo === 1) {
+                            $scope.laCompra.decimal_isr = 3;
+                        } else {
+                            $scope.laCompra.decimal_iva = 3;
+                        }
+                        $scope.updCompra($scope.laCompra);
+                    })
             }
 
             $scope.calcularRetIVA = function(){
@@ -1048,7 +1063,7 @@
     compractrl.controller('ModalTercerDecimal', ['$scope', '$uibModalInstance', 'compra', 'tipo', function ($scope, $uibModalInstance, compra, tipo) {
 
         $scope.compra = compra;
-        $scope.tipo = tipo === 1 ? 'ISR' : 'IVA'; 
+        $scope.tipo = tipo === 1 ? 'ISR' : 'IVA';
         $scope.tercerDecimal = 0.001;
 
 

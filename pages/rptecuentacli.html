@@ -8,14 +8,16 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="selEmpre">Empresa:</label>
-                                <input name="txtFiltroEmpre" id="txtFiltroEmpre" type="text" class="form-control" ng-model="searchempre" placeholder="Empresa"/>
+                                <input name="txtFiltroEmpre" id="txtFiltroEmpre" type="text" class="form-control"
+                                    ng-model="searchempre" placeholder="Empresa" />
                             </div>
                         </div>
                         <div class="col-md-8">
                             <div class="form-group">
                                 <label for="selEmpre">&nbsp;</label>
                                 <select name="selEmpre" id="selEmpre" class="form-control" ng-model="objEmpresa"
-                                        ng-options="obj.nomempresa for obj in empresas | filter:{nomempresa:searchempre}" multiple>
+                                    ng-options="obj.nomempresa for obj in empresas | filter:{nomempresa:searchempre}"
+                                    multiple>
                                 </select>
                             </div>
                         </div>
@@ -25,13 +27,15 @@
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <label for="txtAl">Al:</label>
-                                    <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.al" placeholder="Al"/>
+                                    <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.al"
+                                        placeholder="Al" />
                                 </div>
                             </div>
                             <div class="col-sm-3">
                                 <div class="form-group">
                                     <label for="chkDet">Historico</label>
-                                    <input name="chkDet" id="chkDet" type="checkbox" class="form-control" ng-model="params.detalle" ng-true-value="1" ng-false-value="0" />
+                                    <input name="chkDet" id="chkDet" type="checkbox" class="form-control"
+                                        ng-model="params.detalle" ng-true-value="1" ng-false-value="0" />
                                 </div>
                             </div>
                         </div>
@@ -39,25 +43,32 @@
                             <div class="col-sm-9">
                                 <div class="form-group">
                                     <label for="selCLiente">Cliente:</label>
-                                    <select name="selCliente" id="selCLiente" class="form-control" ng-model="params.cliente"
-                                            option="clientes" ng-options="obj.nombre for obj in clientes"
-                                            data-placeholder="Seleccione el cliente">
+                                    <select name="selCliente" id="selCLiente" class="form-control"
+                                        ng-model="params.cliente" option="clientes"
+                                        ng-options="obj.nombre for obj in clientes"
+                                        data-placeholder="Seleccione el cliente">
                                     </select>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-
-
-                <button type="button" class="btn btn-primary" ng-click="getEcuentaCli()">
-                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                </button>
-
-                <button type="button" class="btn btn-primary" ng-click="getEcuentaCliXLSX()">
-                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
-                </button>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-danger" ng-click="getEcuentaCli()" ng-disabled="cargando">
+                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn btn-success" ng-click="getEcuentaCliXLSX()" ng-disabled="cargando">
+                        <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-show="cargando">
+            <div class="col-md-6 col-md-offset-3">
+                <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                    <span class="label label-primary">Generando reporte, por favor espere...</span>
+                    <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
+                </div>
             </div>
         </div>
     </div>

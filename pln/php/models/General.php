@@ -379,6 +379,7 @@ class General extends Principal
 				"plnprestamo.concepto",
 				"plnprestamo.finalizado",
 				"plnprestamo.saldo", 
+				"plnprestamo.esembargo",
 				"b.nombre", 
 				"b.apellidos",
 				"b.idempresaactual",

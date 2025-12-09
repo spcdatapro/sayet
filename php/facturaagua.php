@@ -24,7 +24,7 @@ $app->post('/pendientes', function(){
     $query.= "0.00 AS iva, ";
 
     $query.= "0.00 AS retisr, RetISR(d.id, b.idtiposervicio) as retenerisr, 0.00 AS retiva, RetIVA(d.id, b.idtiposervicio) AS reteneriva, c.idtipocliente, d.nombre, d.nombrecorto, ";
-    $query.= "FacturarA(d.id, b.idtiposervicio) AS facturara, NitFacturarA(d.id, b.idtiposervicio) AS nit, DirFacturarA(d.id, b.idtiposervicio) AS direccion, PorcentajeRetIVA(d.id, b.idtiposervicio) AS porcentajeretiva, ";
+    $query.= "FacturarA(d.id, b.idtiposervicio) AS facturara, NitFacturarA(d.id, b.idtiposervicio) AS nit, DirFacturarA(d.id, b.idtiposervicio, a.idproyecto) AS direccion, PorcentajeRetIVA(d.id, b.idtiposervicio) AS porcentajeretiva, ";
     $query.= "f.desctiposervventa AS tipo, 0.00 AS totapagar, 0 AS numfact, '' AS seriefact, ";
 
     $query.= "IF(((a.lectura - LecturaAnterior(a.idserviciobasico, a.mes, a.anio)) - b.mcubsug) > 0, 0, 1) AS facturar, ";
@@ -150,7 +150,7 @@ $app->post('/pendientesfel', function() {
     @importeexento := IF(@factor = 1, @importetotal, 0.00) AS importeexento,
     @importeexentocnv := IF(@factor = 1, @importetotalcnv, 0.00) AS importeexentocnv,
     0.00 AS isrporretener, RetISR(d.id, b.idtiposervicio) as retenerisr, 0.00 AS ivaporretener, RetIVA(d.id, b.idtiposervicio) AS reteneriva, c.idtipocliente, d.nombre, d.nombrecorto, 
-    FacturarA(d.id, b.idtiposervicio) AS facturara, NitFacturarA(d.id, b.idtiposervicio) AS nit, DirFacturarA(d.id, b.idtiposervicio) AS direccion, PorcentajeRetIVA(d.id, b.idtiposervicio) AS porcentajeretiva, 
+    FacturarA(d.id, b.idtiposervicio) AS facturara, NitFacturarA(d.id, b.idtiposervicio) AS nit, DirFacturarA(d.id, b.idtiposervicio, a.idproyecto) AS direccion, PorcentajeRetIVA(d.id, b.idtiposervicio) AS porcentajeretiva, 
     f.desctiposervventa AS tipo, 0.00 AS totapagar, IFNULL(i.idcontrato, c.id) AS idcontrato, d.id AS idcliente, UPPER(f.desctiposervventa) AS tipo, UPPER(g.nomproyecto) AS proyecto, h.nombre AS unidad, 
     (SELECT nombre FROM mes WHERE id = a.mes) AS nommes, b.idtiposervicio, DATE_FORMAT(FechaLecturaAnterior(a.idserviciobasico, a.mes, a.anio), '%d/%m/%Y') AS fechaanterior, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechaactual, 
     a.fechacorte, a.conceptoadicional, 0.00 AS isrporretenercnv, 0.00 AS ivaporretenercnv, 0.00 AS totapagar, 0.00 AS totapagarcnv, ExentoIVA(d.id, b.idtiposervicio) AS exentoiva,
@@ -212,7 +212,7 @@ $app->post('/pendientesfelrevision', function() {
     @importeexento := IF(@factor = 1, @importetotal, 0.00) AS importeexento,
     @importeexentocnv := IF(@factor = 1, @importetotalcnv, 0.00) AS importeexentocnv,
     0.00 AS isrporretener, RetISR(d.id, b.idtiposervicio) as retenerisr, 0.00 AS ivaporretener, RetIVA(d.id, b.idtiposervicio) AS reteneriva, c.idtipocliente, d.nombre, d.nombrecorto, 
-    FacturarA(d.id, b.idtiposervicio) AS facturara, NitFacturarA(d.id, b.idtiposervicio) AS nit, DirFacturarA(d.id, b.idtiposervicio) AS direccion, PorcentajeRetIVA(d.id, b.idtiposervicio) AS porcentajeretiva, 
+    FacturarA(d.id, b.idtiposervicio) AS facturara, NitFacturarA(d.id, b.idtiposervicio) AS nit, DirFacturarA(d.id, b.idtiposervicio, a.idproyecto) AS direccion, PorcentajeRetIVA(d.id, b.idtiposervicio) AS porcentajeretiva, 
     f.desctiposervventa AS tipo, 0.00 AS totapagar, IFNULL(i.idcontrato, c.id) AS idcontrato, d.id AS idcliente, UPPER(f.desctiposervventa) AS tipo, UPPER(g.nomproyecto) AS proyecto, h.nombre AS unidad, 
     (SELECT nombre FROM mes WHERE id = a.mes) AS nommes, b.idtiposervicio, DATE_FORMAT(FechaLecturaAnterior(a.idserviciobasico, a.mes, a.anio), '%d/%m/%Y') AS fechaanterior, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechaactual, 
     a.fechacorte, a.conceptoadicional, 0.00 AS isrporretenercnv, 0.00 AS ivaporretenercnv, 0.00 AS totapagar, 0.00 AS totapagarcnv, ExentoIVA(d.id, b.idtiposervicio) AS exentoiva,
@@ -538,7 +538,7 @@ $app->post('/rptagua', function(){
             $query.= "FORMAT((SELECT IFNULL((SELECT cantbase FROM detunidadservicio WHERE idunidad = a.idunidad AND idserviciobasico = a.idserviciobasico AND DATE(fechacambio) <= '$d->fvencestr' ORDER BY fechacambio DESC LIMIT 1) , 0.00)), 2) AS mcubsug, ";
             $query.= "FORMAT((a.lectura - LecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr'))), 2) as consumo, ";
             $query.= "FORMAT(ROUND(IF(((a.lectura - LecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr'))) - (SELECT IFNULL((SELECT cantbase FROM detunidadservicio WHERE idunidad = a.idunidad AND idserviciobasico = a.idserviciobasico AND DATE(fechacambio) <= '$d->fvencestr' ORDER BY fechacambio DESC LIMIT 1) , 0.00))) > 0, ((a.lectura - LecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr'))) - (SELECT IFNULL((SELECT cantbase FROM detunidadservicio WHERE idunidad = a.idunidad AND idserviciobasico = a.idserviciobasico AND DATE(fechacambio) <= '$d->fvencestr' ORDER BY fechacambio DESC LIMIT 1) , 0.00))) * b.preciomcubsug - a.descuento, 0.00 ), 2), 2) AS montosiniva, ";
-            $query.= "IFNULL(d.nombre, 'VACANTE') AS nombre, h.nombre AS unidad, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechafinal, DATE_FORMAT(FechaLecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr')), '%d/%m/%Y') AS fechainicial, ";
+            $query.= "IFNULL(IFNULL(j.nombre, d.nombre), 'VACANTE') AS nombre, h.nombre AS unidad, DATE_FORMAT(a.fechacorte, '%d/%m/%Y') AS fechafinal, DATE_FORMAT(FechaLecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr')), '%d/%m/%Y') AS fechainicial, ";
             $query.= "FORMAT(LecturaAnterior(a.idserviciobasico, MONTH('$d->fvencestr'), YEAR('$d->fvencestr')), 2) AS lecturainicial ";
             $query.= "FROM lecturaservicio a INNER JOIN serviciobasico b ON b.id = a.idserviciobasico ";
             $query.= "LEFT JOIN contrato c ON c.id = (";
@@ -546,6 +546,7 @@ $app->post('/rptagua', function(){
             $query.= "WHERE IF(b.inactivo = 1 AND MONTH(b.fechainactivo) = MONTH('$d->fvencestr') AND YEAR(b.fechainactivo) = YEAR('$d->fvencestr'), FIND_IN_SET(a.idunidad, b.idunidadbck), FIND_IN_SET(a.idunidad, b.idunidad)) LIMIT 1";
             $query.= ") ";
             $query.= "LEFT JOIN cliente d ON d.id = c.idcliente LEFT JOIN tiposervicioventa f ON f.id = b.idtiposervicio LEFT JOIN proyecto g ON g.id = a.idproyecto LEFT JOIN unidad h ON h.id = a.idunidad LEFT JOIN empresa i ON i.id = b.idempresa ";
+            $query.= "LEFT JOIN (SELECT a.id AS idcontrato, b.idserviciobasico, a.idcliente FROM contrato a INNER JOIN unidadservicio b ON b.idcontrato = a.id WHERE b.ffin IS NULL) i ON i.idserviciobasico = a.idserviciobasico LEFT JOIN cliente j ON j.id = i.idcliente ";
             $query.= "WHERE a.estatus IN(2, 3) AND b.pagacliente = 0 AND b.cobrar = 1 AND (c.inactivo = 0 OR (c.inactivo = 1 AND MONTH(c.fechainactivo) = MONTH('$d->fvencestr') AND YEAR(c.fechainactivo) = YEAR('$d->fvencestr')) OR c.inactivo IS NULL) ";
             $query.= "AND a.mes = MONTH('$d->fvencestr') AND a.anio = YEAR('$d->fvencestr') AND b.idempresa = $contador->idempresa AND a.idproyecto = $proyecto->idproyecto ";
             $query.= "ORDER BY CAST(digits(h.nombre) AS UNSIGNED), h.nombre, b.numidentificacion";

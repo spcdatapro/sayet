@@ -233,4 +233,15 @@ $app->get('/lstbcospais', function(){
     print $db->doSelectASJson($query);
 });
 
+$app->get('/lstbancosmt940/:idempresa', function($idempresa) {
+    $db = new dbcpm();
+    $query = "SELECT a.id, e.id AS idempresa, e.nomempresa AS empresa, e.abreviatura AS abreviaempresa, b.id AS idcuentac, CONCAT('(', b.codigo, ') ', b.nombrecta) AS nombrecta,
+            a.nombre, a.nocuenta, a.siglas, a.nomcuenta, a.idmoneda, CONCAT(c.nommoneda,' (',c.simbolo,')') AS descmoneda, 
+            CONCAT(a.nombre, ' (', c.simbolo,')') AS bancomoneda, a.correlativo, c.tipocambio, CONCAT(a.nombre, ' (', c.simbolo,') (Sigue el No. ', a.correlativo,')') AS bancomonedacorrela, 
+            a.idtipoimpresion, d.descripcion AS tipoimpresion, d.formato, c.eslocal AS monedalocal, a.debaja, a.gruposumario, a.ordensumario, a.idbancopais 
+            FROM banco a INNER JOIN cuentac b ON b.id = a.idcuentac INNER JOIN moneda c ON c.id = a.idmoneda LEFT JOIN tipoimpresioncheque d ON d.id = a.idtipoimpresion LEFT JOIN empresa e ON e.id = a.idempresa 
+            WHERE a.mt940 IS NOT NULL AND a.debaja = 0 AND a.idempresa = $idempresa ORDER BY e.ordensumario, a.nombre";
+    return print $db->doSelectASJson($query);
+});
+
 $app->run();

@@ -1,6 +1,8 @@
 <?php
 require 'vendor/autoload.php';
 require_once 'db.php';
+require 'Reportes.php';
+require_once 'NumberToLetterConverter.class.php';
 
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
@@ -60,6 +62,10 @@ $app->post('/finanzas', function(){
     // convertir los meses
     $d->mesdel = $d->mesdel + 1;
     $d->mesal = $d->mesal + 1;
+
+    // para provisiones
+    $anio_ant = $d->anio - 1;
+    $tipo_provision = $d->mesdel === 7 ? 'BONIF' : ($d->mesdel === 12 ? 'AGUI' : 'N/A');
 
     $cntMeses = contarMeses($mesdel, $mesal);
 
@@ -215,8 +221,10 @@ $app->post('/finanzas', function(){
                 plnnomina a
                     INNER JOIN
                 plnempleado b ON a.idplnempleado = b.id
+                    INNER JOIN 
+                plnlaboral e ON b.idlaboral = e.id
                     LEFT JOIN
-                unidad c ON b.idunidad = c.id
+                unidad c ON e.idunidad = c.id
                     LEFT JOIN
                 (SELECT 
                     id, 
@@ -227,8 +235,8 @@ $app->post('/finanzas', function(){
                     AND MONTH(fecha) <= $d->mesal 
                     AND DAY(fecha) >= 16 AND YEAR(fecha) = $d->anio GROUP BY idempleado) d ON d.idempleado = a.idplnempleado
             WHERE
-                a.idempresa = $d->idempresa AND b.idproyecto = $d->idproyecto ";
-    $query.= isset($d->idunidad) ? "AND b.idunidad = $d->idunidad " : "";
+                a.idempresa = $d->idempresa AND e.idproyecto = $d->idproyecto ";
+    $query.= isset($d->idunidad) ? "AND e.idunidad = $d->idunidad " : "";
     $query.="       AND MONTH(a.fecha) >= $d->mesdel
                     AND MONTH(a.fecha) <= $d->mesal
                     AND DAY(a.fecha) >= 16
@@ -252,13 +260,15 @@ $app->post('/finanzas', function(){
                 plnnomina a
                     INNER JOIN
                 plnempleado b ON a.idplnempleado = b.id
-                    LEFT JOIN
-                unidad c ON b.idunidad = c.id
                     INNER JOIN
-                plnempresa d ON b.idempresaactual = d.id
+                plnlaboral e ON b.idlaboral = e.id
+                    LEFT JOIN
+                unidad c ON e.idunidad = c.id
+                    INNER JOIN
+                plnempresa d ON e.idempresaactual = d.id
             WHERE
-                a.idempresa = $d->idempresa AND b.idproyecto = $d->idproyecto ";
-    $query.= isset($d->idunidad) ? "AND b.idunidad = $d->idunidad " : "";
+                a.idempresa = $d->idempresa AND e.idproyecto = $d->idproyecto ";
+    $query.= isset($d->idunidad) ? "AND e.idunidad = $d->idunidad " : "";
     $query.="       AND MONTH(a.fecha) >= $d->mesdel
                     AND MONTH(a.fecha) <= $d->mesal
                     AND DAY(a.fecha) >= 16
@@ -282,11 +292,13 @@ $app->post('/finanzas', function(){
                 plnnomina a
                     INNER JOIN
                 plnempleado b ON a.idplnempleado = b.id
+                    INNER JOIN 
+                plnlaboral d ON b.idlaboral = d.id
                     LEFT JOIN
                 unidad c ON b.idunidad = c.id
             WHERE
-                a.idempresa = $d->idempresa AND b.idproyecto = $d->idproyecto ";
-    $query.= isset($d->idunidad) ? "AND b.idunidad = $d->idunidad " : "";
+                a.idempresa = $d->idempresa AND d.idproyecto = $d->idproyecto ";
+    $query.= isset($d->idunidad) ? "AND d.idunidad = $d->idunidad " : "";
     $query.="       AND MONTH(a.fecha) >= $d->mesdel
                     AND MONTH(a.fecha) <= $d->mesal
                     AND DAY(a.fecha) = 15
@@ -374,6 +386,35 @@ $app->post('/finanzas', function(){
                     AND MONTH(a.fecha) >= $d->mesdel
                     AND MONTH(a.fecha) <= $d->mesal
                     AND YEAR(a.fecha) = $d->anio
+                    AND b.debe > 0
+            -- PARA PROVISIONES UN ANIO ANTES
+            UNION ALL SELECT 
+                    c.id AS id,
+                    7 AS mes,
+                    c.codigo, 
+                    c.nombrecta AS nombrecta,
+                    DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fechatran,
+                    NULL AS cheque,
+                    SUBSTRING(a.concepto, 1, 30) AS beneficiario,
+                    NULL AS orden,
+                    b.conceptomayor AS concepto,
+                    NULL AS fechafact,
+                    a.id AS documento,
+                    ROUND(b.debe *-1, 2) AS total,
+                    a.fecha AS ord
+                FROM
+                    directa a
+                        INNER JOIN
+                    detallecontable b ON a.id = b.idorigen
+                        INNER JOIN
+                    cuentac c ON c.id = b.idcuenta
+                WHERE
+                    a.idempresa = $d->idempresa AND b.idproyecto = $d->idproyecto 
+                    AND YEAR(a.fecha) = $anio_ant
+                    AND MONTH(a.fecha) >= 12
+                    AND MONTH(a.fecha) <= 12
+                    AND c.nombrecta LIKE '%$tipo_provision%'
+                    AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%')
                     AND b.debe > 0
             ORDER BY 2 ASC, 1 ASC, 13 ASC, 5 DESC, 7 ASC";
     $data_c = $db->getQuery($query);
@@ -593,22 +634,6 @@ $app->post('/finanzas', function(){
         array_push($mes, $separador_mes);
     }
 
-    // nombres y montos de todas las cuentas
-    // $grafica->nombres = $nombres;
-    // $grafica->montos = $montos;
-    // $cntNombres = count($nombres);
-
-    // $grafica->colores = gradient_colors($cntNombres);
-
-    // $tot_ventas = array_sum($suma_ventas);
-    // $tot_compras = array_sum($suma_compras);
-    // $diferencia = $tot_ventas - $tot_compras;
-
-    // $letra->total_ventas = $tot_ventas;
-    // $letra->total_compras = $tot_compras;
-    // $letra->deficit = $diferencia < 0 ? true : null;
-    // $letra->diferencia = $diferencia;
-
     print json_encode([ 'encabezado' => $letra, 'meses' => $mes ]);
 });
 
@@ -648,6 +673,563 @@ function contarMeses($min, $max) {
         $contador++;
     }
     return $contador;
+}
+
+$app->post('/control_ingresos', function () {
+    date_default_timezone_set("America/Guatemala");
+
+    $db = new dbcpm;
+    $d = json_decode(file_get_contents('php://input'));
+    $n2l = new NumberToLetterConverter();
+
+    $meses = array("enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre");
+    $totales = ['ingreso', 'deposito', 'isr', 'iva', 'diferencia'];
+    $ingreso = [];
+    $deposito = [];
+    $isr = [];
+    $iva = [];
+    $diferencia = [];
+
+    // estampa
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+
+    // fecha
+    $fecha = new DateTime($d->fechastr);
+    $letra->fecha = '';
+    $letra->fecha = 'Guatemala ' . $fecha->format('d') . ' de ' . $meses[$fecha->format('n') - 1] . ' ' . $fecha->format('Y');
+
+    // usuario
+    $letra->usuario = $d->usuario;
+
+    // tc
+    $letra->tc = $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio WHERE fecha = '$d->fechastr' LIMIT 1");
+    $letra->tc = $letra->tc > 0 ? $letra->tc : $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio ORDER BY fecha DESC LIMIT 1"); 
+
+    // No. de caja, son es el dia que se esta obteniendo menos los fines de semana
+    $letra->caja = restarDiasHabiles($fecha);
+    $letra->caja = str_pad($letra->caja, 2, '0', STR_PAD_LEFT);
+
+    // tipo 
+    $letra->tipo = $d->tipo == 1 ? 'por Empresa' : 'Personal';
+    $d->tipo = $d->tipo == 1 ? '1 , 4' : '2, 3';
+
+    $query = "SELECT 
+                c.idrecibocli,
+                a.id,
+                b.idmoneda AS idempresa,
+                CONCAT(e.nommoneda, ' ', e.simbolo) AS empresa,
+                NULL AS numero,
+                e.simbolo AS abreviatura,
+                b.idempresa AS idproyecto,
+                f.abreviatura AS proyecto,
+                b.siglas,
+                IF(a.numban = 0 OR a.numban IS NULL,
+                    a.numero,
+                    a.numban) AS tranban,
+                IFNULL(d.factura, 'SC') AS factura,
+                ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ingresodlr, d.ingreso)), 0), 2) AS ingreso,
+                a.monto AS deposito,
+                ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.isrdlr, d.isr)), 0), 2) AS isr,
+                ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ivadlr, d.iva)), 0), 2) AS iva,
+                (ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ingresodlr, d.ingreso)), 0), 2) - a.monto - IFNULL(d.cobrado_prev, 0.00) - ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ivadlr, d.iva)), 0), 2) - ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.isrdlr, d.isr)), 0), 2)) * -1 AS diferencia,
+                e.simbolo AS moneda
+            FROM
+                tranban a
+                    INNER JOIN
+                banco b ON a.idbanco = b.id
+                    LEFT JOIN
+                reclitran c ON c.idtranban = a.id
+                    LEFT JOIN
+                (SELECT 
+                    a.idrecibocli,
+                        IF(COUNT(b.id) > 3, CAST(CONCAT(COUNT(b.id), '-FC') AS CHAR), GROUP_CONCAT(b.numeroadmin)) AS factura,
+                        SUM(IF(b.pagada = 1, IF(b.idmonedafact = 2, b.subtotalcnv, (a.monto + b.retisr + b.retiva) / b.tipocambio), IF(b.idmonedafact = 2, b.subtotalcnv, b.subtotal / b.tipocambio))) AS ingresodlr,
+                        SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr / b.tipocambio)) AS isrdlr,
+                        SUM(IF(b.idmonedafact = 2, b.retivacnv, b.retiva / b.tipocambio)) AS ivadlr,
+                        SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, (a.monto + b.retisr + b.retiva)), IF(b.idmonedafact = 2, b.subtotalcnv, b.subtotal))) AS ingreso,
+                        SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr)) AS isr,
+                        SUM(IF(b.idmonedafact = 2, b.retivacnv, b.retiva)) AS iva,
+                        IF(b.idmonedafact = 2, 1, b.tipocambio) AS tc_fact,
+                        -- IFNULL((SELECT SUM(dc.monto) FROM detcobroventa dc WHERE dc.idfactura = b.id AND dc.idrecibocli != a.idrecibocli),0) AS cobrado_prev
+                        0 AS cobrado_prev
+                FROM
+                    detcobroventa a
+                INNER JOIN factura b ON a.idfactura = b.id
+                GROUP BY a.idrecibocli
+                ORDER BY b.fecha) d ON d.idrecibocli = c.idrecibocli
+                    INNER JOIN
+                moneda e ON b.idmoneda = e.id
+                    INNER JOIN
+                empresa f ON b.idempresa = f.id
+                    INNER JOIN
+                tipomovtranban g ON a.tipotrans = g.abreviatura
+            WHERE
+                a.fecha = '$d->fechastr'
+                    AND a.tipotrans IN ('R' , 'D')
+                    AND b.gruposumario IN ($d->tipo)
+            GROUP BY a.id
+            ORDER BY b.idmoneda , b.ordensumario , g.ordenalt , a.numero";
+    $data = $db->getQuery($query);
+
+    if (count($data) > 0) {
+
+        for ($i = 0; $i < count($data); $i++) {
+            $actual = $data[$i];
+            $proximo = $i+1 == count($data) ? null : $data[$i+1];
+            $proximo2 = $i+2 >= count($data) ? null : $data[$i+2];
+
+            if (isset($proximo)) {
+                if ($proximo->idrecibocli == $actual->idrecibocli && $proximo->idrecibocli > 0) {
+                    // $proximo->diferencia = ($actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito)) * -1;
+                    $proximo->diferencia = $actual->deposito * -1;
+                    $actual->iva = 0;
+                    $actual->isr = 0;
+                    $actual->ingreso = 0;
+                    $actual->diferencia = $actual->deposito;
+                }
+            }
+            if (isset($proximo2)) {
+                if ($proximo2->idrecibocli == $actual->idrecibocli && $proximo2->idrecibocli > 0) {
+                    // $proximo->diferencia = ($actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito)) * -1;
+                    $proximo2->diferencia = $actual->deposito * -1;
+                    $actual->iva = 0;
+                    $actual->isr = 0;
+                    $actual->ingreso = 0;
+                    $actual->diferencia = $actual->deposito;
+                }
+            }
+        }
+        
+        // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
+        $reporte = new GeneradorReportes($data, 'transacciones', $totales, true);
+        $transacciones = $reporte->getReporte();
+        $montos_generales = $reporte->getTotalesGenerales();
+        $success = true;
+    } else {
+        $transacciones = 'No se recibieron datos';
+        $success = false;
+    }
+
+    if ($success) {
+        foreach($transacciones as $t) {
+            if ($t->abreviatura === 'Q') {
+                array_push($ingreso, $t->ingreso);
+                array_push($deposito, $t->deposito);
+                array_push($isr, $t->isr);
+                array_push($iva, $t->iva);
+                array_push($diferencia, $t->diferencia);
+            } else {
+                $ingreso_q = round($t->ingreso * $letra->tc, 2);
+                array_push($ingreso, $ingreso_q);
+                $deposito_q = round($t->deposito * $letra->tc, 2);
+                array_push($deposito, $deposito_q);
+                $isr_q = round($t->isr * $letra->tc, 2);
+                array_push($isr, $isr_q);
+                $iva_q = round($t->iva * $letra->tc, 2);
+                array_push($iva, $iva_q);
+                $diferencia_q = round($t->diferencia * $letra->tc, 2);
+                array_push($diferencia, $diferencia_q);
+            }
+        }
+    
+        $letra->ingreso = array_sum($ingreso);
+        $letra->deposito = array_sum($deposito);
+        $letra->isr = array_sum($isr);
+        $letra->iva = array_sum($iva);
+        $letra->diferencia = array_sum($diferencia);
+    }
+
+    return print json_encode([ 'encabezado' => $letra, 'trans' => $transacciones, 'succes' => $success ]);
+});
+
+$app->post('/control_egresos', function () {
+    date_default_timezone_set("America/Guatemala");
+
+    $db = new dbcpm;
+    $d = json_decode(file_get_contents('php://input'));
+    $n2l = new NumberToLetterConverter();
+
+    $meses = array("enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre");
+    $totales = ['ingreso', 'deposito', 'isr', 'iva', 'diferencia'];
+    $ingreso = [];
+    $deposito = [];
+    $isr = [];
+    $iva = [];
+    $diferencia = [];
+    $t_proveedor = [];
+
+    // estampa
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+
+    // fecha
+    $fecha = new DateTime($d->fechastr);
+    $letra->fecha = '';
+    $letra->fecha = 'Guatemala ' . $fecha->format('d') . ' de ' . $meses[$fecha->format('n') - 1] . ' ' . $fecha->format('Y');
+
+    // usuario
+    $letra->usuario = $d->usuario;
+
+    // tc
+    $letra->tc = $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio WHERE fecha = '$d->fechastr' LIMIT 1");
+    $letra->tc = $letra->tc > 0 ? $letra->tc : $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio ORDER BY fecha DESC LIMIT 1"); 
+
+    // No. de caja, son es el dia que se esta obteniendo me los fines de semana
+    $letra->caja = restarDiasHabiles($fecha);
+    $letra->caja = str_pad($letra->caja, 2, '0', STR_PAD_LEFT);
+
+    // tipo 
+    $letra->tipo = $d->tipo == 1 ? 'por Empresa' : 'Personal';
+    $d->tipo = $d->tipo == 1 ? '1 , 4' : '2, 3'; 
+
+    $query = "SELECT 
+                a.id,
+                c.id AS idempresa,
+                CONCAT(c.nommoneda, ' ', c.simbolo) AS empresa,
+                c.simbolo AS abreviatura,
+                d.id AS idproyecto,
+                d.abreviatura AS proyecto,
+                CONCAT(IF(a.numban = 0 OR a.numban IS NULL,
+                            a.numero,
+                            a.numban)) AS tranban,
+                b.siglas,
+                b.ordensumario,
+                a.numero,
+                SUBSTRING(a.beneficiario, 1, 35) AS factura,
+                NULL AS ingreso,
+                a.monto AS deposito,
+                null AS isr, 
+                NULL AS iva, 
+                NULL AS diferencia,
+                c.simbolo AS moneda,
+                DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
+                IF(2 = 1, TRUE, FALSE) AS numero
+            FROM
+                tranban a
+                    INNER JOIN
+                banco b ON a.idbanco = b.id
+                    INNER JOIN
+                moneda c ON b.idmoneda = c.id
+                    INNER JOIN
+                empresa d ON b.idempresa = d.id
+            WHERE
+                a.fecha = '$d->fechastr'
+                    AND b.gruposumario IN($d->tipo)
+                    AND a.beneficiario != 'anulado'  
+                    AND a.tipotrans = 'B'                   
+            GROUP BY a.id ORDER BY 2 , 9 , 10";
+    $data = $db->getQuery($query);
+
+    if (count($data) > 0) {
+        for ($i = 0; $i < count($data); $i++) {
+            // traer valor actual y anterior
+            $actual = $data[$i];
+            $proximo = count($data) === $i+1 ? $data[0] : $data[$i+1];
+            array_push($t_proveedor, $actual->deposito);
+            // si no tienen el mismo proveedor
+            if ($actual->factura !== $proximo->factura || $actual->idproyecto !== $proximo->idproyecto) {
+                $actual->ingreso = array_sum($t_proveedor);
+                // generar variable de totales
+                if (count($t_proveedor) > 1) {
+                    $actual->varios = true;
+                }
+                $t_proveedor = [];
+            }
+        }
+
+        // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
+        $reporte = new GeneradorReportes($data, 'transacciones', $totales, true);
+        $transacciones = $reporte->getReporte();
+        $montos_generales = $reporte->getTotalesGenerales();
+        $success = true;
+    } else {
+        $transacciones = 'No se recibieron datos';
+        $success = false;
+    }
+
+    if ($success) {
+        foreach($transacciones as $t) {
+            if ($t->abreviatura === 'Q') {
+                array_push($ingreso, $t->ingreso);
+                array_push($deposito, $t->deposito);
+                array_push($isr, $t->isr);
+                array_push($iva, $t->iva);
+                array_push($diferencia, $t->diferencia);
+            } else {
+                $ingreso_q = round($t->ingreso * $letra->tc, 2);
+                array_push($ingreso, $ingreso_q);
+                $deposito_q = round($t->deposito * $letra->tc, 2);
+                array_push($deposito, $deposito_q);
+                $isr_q = round($t->isr * $letra->tc, 2);
+                array_push($isr, $isr_q);
+                $iva_q = round($t->iva * $letra->tc, 2);
+                array_push($iva, $iva_q);
+                $diferencia_q = round($t->diferencia * $letra->tc, 2);
+                array_push($diferencia, $diferencia_q);
+            }
+        }
+    
+        $letra->ingreso = array_sum($ingreso);
+        $letra->deposito = array_sum($deposito);
+        $letra->isr = array_sum($isr);
+        $letra->iva = array_sum($iva);
+        $letra->diferencia = array_sum($diferencia);
+    }
+
+    return print json_encode([ 'encabezado' => $letra, 'trans' => $transacciones, 'succes' => $success ]);
+});
+
+$app->post('/ocupacion', function() {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    date_default_timezone_set("America/Guatemala");
+
+    $d->mes_del = (int)$d->mes_del + 1;
+    $d->mes_al = (int)$d->mes_al + 1;
+
+    // array de nombre de meses
+    $meses_nombre = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+
+    // Traer datos para todo el rango de años y meses solicitado
+    $query = "SELECT 
+                a.nomproyecto AS proyecto,
+                a.metros_rentable AS mdisponibles,
+                b.id AS idunidad,
+                b.nombre AS unidad,
+                e.descripcion AS tipo,
+                ROUND(b.mcuad, 2) AS medida,
+                ROUND(b.mcuad * 100 / a.metros_rentable, 2) AS porcentaje,
+                IF(d.id > 0, 1, 0) AS ocupado,
+                IFNULL(MONTH(d.fecha), 0) AS mes,
+                IFNULL(YEAR(d.fecha), 0) AS anio,
+                ROUND(SUM(DISTINCT IF(d.idmonedafact = 1,
+                            d.total,
+                            d.total * d.tipocambio)),
+                        2) AS total,
+                GROUP_CONCAT(DISTINCT f.nombrecorto) AS cliente,
+                GROUP_CONCAT(h.desctiposervventa) AS tipo_servicio
+            FROM
+                proyecto a
+                    INNER JOIN
+                unidad b ON a.id = b.idproyecto
+                    LEFT JOIN
+                contrato c ON b.id = c.idunidad AND c.inactivo = 0
+                    LEFT JOIN
+                factura d ON c.id = d.idcontrato
+                    AND MONTH(d.fecha) >= $d->mes_del
+                    AND MONTH(d.fecha) <= $d->mes_al
+                    AND YEAR(d.fecha) BETWEEN $d->anio_del AND $d->anio_al
+                    INNER JOIN 
+                tipolocal e ON b.idtipolocal = e.id 
+                    LEFT JOIN 
+                cliente f ON d.idcliente = f.id
+                    LEFT JOIN 
+                detfact g ON g.idfactura = d.id 
+                    LEFT JOIN 
+                tiposervicioventa h ON g.idtiposervicio = h.id
+            WHERE
+                a.id = $d->idproyecto AND b.idtipolocal NOT IN (9, 17)
+            GROUP BY b.id, YEAR(d.fecha), MONTH(d.fecha)
+            ORDER BY YEAR(d.fecha), MONTH(d.fecha), b.id";
+    $data = $db->getQuery($query);
+
+    // Guardar copia para encabezado (si hay datos)
+    $orig = $data;
+
+    $result = [];
+
+    // número de meses en el rango (para promedios por año)
+    $num_months_range = ($d->mes_al - $d->mes_del) + 1;
+    $num_months_range = $num_months_range > 0 ? $num_months_range : 1;
+
+    // Agrupar por año y por mes dentro de cada año
+    for ($y = $d->anio_del; $y <= $d->anio_al; $y++) {
+        $yearObj = new stdClass();
+        $yearObj->anio = $y;
+        $yearObj->meses = [];
+
+        // acumuladores por año para calcular promedios
+        $sum_porcentaje_anual = 0;
+        $sum_total_anual = 0;
+        $sum_metros_anual = 0;
+
+        for ($m = $d->mes_del; $m <= $d->mes_al; $m++) {
+            $data_mes = new StdClass();
+            $data_mes->mes = $meses_nombre[$m - 1];
+            $procentaje = [];
+            $metros = [];
+            $data_mes->total = 0;
+            $data_mes->detalles = [];
+
+            // recorrer datos y extraer los que correspondan a este mes y año
+            for ($j = 0; $j < count($data); $j++) {
+                $unidad = $data[$j];
+                if ((int)$unidad->mes == $m && (int)$unidad->anio == $y) {
+                    array_push($procentaje, (float)$unidad->porcentaje);
+                    array_push($metros, (float)$unidad->medida);
+                    $data_mes->total += (float)$unidad->total;
+                
+                    // Guardar detalle de la unidad
+                    $detalle = new StdClass();
+                    $detalle->unidad = $unidad->unidad;
+                    $detalle->tipo = $unidad->tipo;     
+                    $detalle->medida = (float)$unidad->medida;
+                    $detalle->porcentaje = (float)$unidad->porcentaje;
+                    $detalle->cliente = $unidad->cliente;
+                    $detalle->servicio = $unidad->tipo_servicio;
+                    $detalle->total = (float)$unidad->total;
+                    array_push($data_mes->detalles, $detalle);
+                
+                    // eliminar la entrada ya procesada
+                    array_splice($data, $j, 1);
+                    $j--;
+                }
+            }
+
+            $data_mes->porcentaje_ocupado = round(array_sum($procentaje), 2);
+            $data_mes->metros_ocupados = round(array_sum($metros), 2);
+            $data_mes->porcentaje_vacante = round(100 - $data_mes->porcentaje_ocupado, 2);
+            $data_mes->total = round($data_mes->total, 2);
+            $data_mes->unidades_ocupadas = count($procentaje);
+
+            // acumular para promedios anuales
+            $sum_porcentaje_anual += $data_mes->porcentaje_ocupado;
+            $sum_total_anual += $data_mes->total;
+            $sum_metros_anual += $data_mes->metros_ocupados;
+
+            array_push($yearObj->meses, $data_mes);
+        }
+
+        // calcular promedios por año (promedio sobre todos los meses del rango)
+        $yearObj->promedio_porcentaje_ocupado = round($sum_porcentaje_anual / $num_months_range, 2);
+        $yearObj->promedio_total = round($sum_total_anual / $num_months_range, 2);
+        $yearObj->promedio_metros_ocupados = round($sum_metros_anual / $num_months_range, 2);
+        $yearObj->columnas = contarMeses($d->mes_del, $d->mes_al) + 2;
+        $yearObj->columna_tres = floor((contarMeses($d->mes_del, $d->mes_al) + 1) / 4);
+
+        array_push($result, $yearObj);
+    }
+
+    // Rellenar encabezado con información del proyecto si hay datos originales
+    if (count($orig) > 0) {
+        $letra->proyecto = $orig[0]->proyecto;
+        $letra->metros = round($orig[0]->mdisponibles, 2);
+    } else {
+        $letra->proyecto = $db->getOneField("SELECT nomproyecto FROM proyecto WHERE id = $d->idproyecto");
+        $letra->metros = 0;
+    }
+
+    $letra->columnas = contarMeses($d->mes_del, $d->mes_al) + 1;
+
+    print json_encode([ 'encabezado' => $letra, 'anios' => $result ]);
+});
+
+$app->post('/resumen_prov', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    date_default_timezone_set("America/Guatemala");
+
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+
+    $query = "SELECT 
+            a.id,
+            c.nomempresa AS empresa,
+            d.nomproyecto AS proyecto,
+            a.nombre,
+            COUNT(b.id) AS cuantos
+        FROM
+            proveedor a
+                INNER JOIN
+            compra b ON b.idproveedor = a.id
+                INNER JOIN
+            empresa c ON b.idempresa = c.id
+                INNER JOIN
+            proyecto d ON b.idproyecto = d.id
+        WHERE
+            a.hoja_control = 1
+                AND (b.idreembolso = 0
+                OR b.idreembolso IS NULL)
+                AND (b.ordentrabajo IS NULL
+                OR b.ordentrabajo = 0)
+                AND YEAR(b.fechafactura) = $d->anio
+        GROUP BY b.idproyecto, b.idproveedor
+        ORDER BY a.nombre";
+    $data = $db->getQuery($query);
+
+    // agregar correlativo por cada id unico
+    $correlativos = [];
+    $nextCorrelativo = 1;
+
+    foreach ($data as $c) {
+        // asignar correlativo único por proveedor (mismo correlativo si el id ya apareció)
+        if (!isset($correlativos[$c->id])) {
+            $correlativos[$c->id] = $nextCorrelativo++;
+        }
+        $c->correlativo = $correlativos[$c->id];
+
+        $months = max(1, (int)$d->mes); // evitar división por cero
+        $cnt = (int)$c->cuantos;
+
+        if ($cnt === 0) {
+            $c->recurrencia = 'Sin movimientos';
+            continue;
+        }
+
+        // frecuencia media: cuantos meses pasan entre movimientos
+        $freq = $months / $cnt;
+
+        if ($freq <= 1.25) {
+            // ~1 mes o más de 1 movimiento por mes
+            $c->recurrencia = 'Mensual';
+        } elseif ($freq <= 2.25) {
+            // ~2 meses
+            $c->recurrencia = 'Bimensual';
+        } elseif ($freq <= 3.25) {
+            // ~3 meses
+            $c->recurrencia = 'Trimestral';
+        } elseif ($freq <= 6.5) {
+            // ~6 meses
+            $c->recurrencia = 'Semestral';
+        } elseif ($cnt < $months) {
+            // menos movimientos que meses del periodo y no encaja en las reglas anteriores
+            $c->recurrencia = 'Ocasional';
+        } else {
+            // más movimientos que meses (varios por mes) o casos atípicos
+            $c->recurrencia = 'Varios movimientos';
+        }
+    }
+
+    print json_encode([ 'encabezado' => $letra, 'resumen' => $data ]);
+});
+
+function restarDiasHabiles($fecha) {
+    $diasContados = 0;
+    $dias_restantes = $fecha->format('d');
+
+    // minetras queden dias del mes le suma uno a dias contados cuando no es fin de semana y resta uno de dias restantes
+    while ($dias_restantes > 0) {
+        $diaSemana = $fecha->format('N');
+
+        // < 6 ya que 6 es sabado y 7 es domingo, agrega uno a dias
+        if ($diaSemana < 6) { 
+            $diasContados++;
+        }
+
+        $fecha->modify('-1 day');
+
+        $dias_restantes--;
+    }
+
+    return $diasContados;
 }
 
 $app->run();

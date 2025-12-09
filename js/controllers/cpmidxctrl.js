@@ -2,7 +2,7 @@
 
     var cpmidxctrl = angular.module('cpm.cpmidxctrl', ['cpm.authsrvc', 'toaster']);
 
-    cpmidxctrl.controller('cpmIdxCtrl', ['$scope', '$rootScope', '$uibModal', '$window', 'authSrvc', 'toaster', 'empresaSrvc', '$interval', 'presupuestoSrvc', 'desktopNotification', '$confirm', function($scope, $rootScope, $uibModal, $window, authSrvc, toaster, empresaSrvc, $interval, presupuestoSrvc, desktopNotification, $confirm){
+    cpmidxctrl.controller('cpmIdxCtrl', ['$scope', '$rootScope', '$uibModal', '$window', 'authSrvc', 'toaster', 'empresaSrvc', '$interval', 'presupuestoSrvc', 'desktopNotification', '$confirm', 'tranBancSrvc', function($scope, $rootScope, $uibModal, $window, authSrvc, toaster, empresaSrvc, $interval, presupuestoSrvc, desktopNotification, $confirm, tranBancSrvc){
         $scope.tituloPagina = 'CPM - Bienvenido';
 
         $scope.menuUsr = [];
@@ -59,10 +59,36 @@
             }
         }
 
+        function faltanArchivosMT940 (usr) {
+            if (usr == 1 || usr == 22 || usr == 28 || usr == 14 || usr == 17 || usr == 6) {
+                tranBancSrvc.getErroresMT940().then(errores => {
+                    if (errores.length > 0) {
+                        desktopNotification.show('No se recibieron todos los archivos MT940', {
+                            icon: 'img/sayet.ico',
+                            body: errores[0].descripcion,
+                            onClick: () => {
+                                $uibModal.open({
+                                    animation: true,
+                                    templateUrl: 'modalErrores.html',
+                                    controller: 'ModalErroresCtrl',
+                                    resolve:{
+                                        errores: () => errores
+                                    }
+                                }).result.then(() => { 
+
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
         authSrvc.getSession().then(function(usrLogged){
             authSrvc.getMenu(parseInt(usrLogged.uid)).then(function(res){
                 $scope.menuUsr = res;
                 $scope.usr = usrLogged;
+                faltanArchivosMT940(usrLogged.uid);
 
                 empresaSrvc.lstEmpresas().then(function(d) { 
                     empresaSrvc.getEmpresaUsuario(usrLogged.uid).then(function (autorizado) {
@@ -175,6 +201,23 @@
         $scope.ok = function () {
             presupuestoSrvc.setNotificado(usr.uid).then(function(){ $uibModalInstance.close(); });
         };
+
+        $scope.cancel = function () {
+            $uibModalInstance.dismiss('cancel');
+        };
+
+    }]);
+
+    cpmidxctrl.controller('ModalErroresCtrl', ['$scope', '$uibModalInstance', 'tranBancSrvc', 'errores',  function($scope, $uibModalInstance, tranBancSrvc, errores){
+        $scope.errores = errores;
+
+        $scope.revisarError = (id) => {
+            tranBancSrvc.editRow({ id: id }, 'rerr').then(s => {
+                if (s) {
+                    $scope.errores = $scope.errores.filter(err => err.id !== id);
+                }
+            })
+        } 
 
         $scope.cancel = function () {
             $uibModalInstance.dismiss('cancel');

@@ -1,57 +1,123 @@
 <div class="container" ng-controller="rptRecibosClienteMenCtrl">
-    <div class="row">
-        <div class="panel panel-default">
-            <div class="panel-heading">Recibos de cliente</div>
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="txtDel">Del:</label>
-                            <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.fdel" placeholder="Del"/>
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divClie" data-toggle="tab">Recibos Cliente</a>
+        </li>
+        <li>
+            <a show-tab href="#divAudi" data-toggle="tab">Recibos Auditoria</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="divClie">
+            <div class="panel panel-default">
+                <div class="panel-heading">Recibos de cliente</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="txtDel">Del:</label>
+                                <input name="txtDel" id="txtDel" type="date" class="form-control" ng-model="params.fdel"
+                                    placeholder="Del" />
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="txtAl">Al:</label>
-                            <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fal" placeholder="Al"/>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="txtAl">Al:</label>
+                                <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="params.fal"
+                                    placeholder="Al" />
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label>Empresa: </label>
-                            <ui-select ng-model="params.idempresa"
-                                title="Seleccione una empresa..." theme="bootstrap"
-                                autofocus="false" on-select="getDataEmpresa($item)" multiple>
-                                <ui-select-match placeholder="Seleccionar empresas"
-                                    allow-clear="true">
-                                    <span>{{$item.abreviatura}}</span>
-                                </ui-select-match>
-                                <ui-select-choices 
-                                    repeat="item.id as item in empresas | filter:$select.search"
-                                    group-by="'grupo'">
-                                    <div
-                                        ng-bind-html="(item.nomempresa) | highlight: $select.search">
-                                    </div>
-                                </ui-select-choices>
-                                <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
-                            </ui-select>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Empresa: </label>
+                                <ui-select ng-model="params.idempresa" title="Seleccione una empresa..."
+                                    theme="bootstrap" autofocus="false" on-select="getDataEmpresa($item)" multiple>
+                                    <ui-select-match placeholder="Seleccionar empresas" allow-clear="true">
+                                        <span>{{$item.abreviatura}}</span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in empresas | filter:$select.search"
+                                        group-by="'grupo'">
+                                        <div ng-bind-html="(item.nomempresa) | highlight: $select.search">
+                                        </div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label for="selTipo" class="control-label">Ver por:</label>
-                            <select name="selTipo" id="selTipo" class="form-control" ng-model="params.tipo">
-                                <option value="1">Fecha</option>
-                                <option value="2">Proyecto</option>
-                            </select>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="selTipo" class="control-label">Ver por:</label>
+                                <select name="selTipo" id="selTipo" class="form-control" ng-model="params.tipo">
+                                    <option value="1">Fecha</option>
+                                    <option value="2">Proyecto</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div class="panel-footer text-right">
+                    <button type="button" class="btn btn-danger" ng-click="getRptRecibosCliente()"
+                        ng-disabled="!params.fdel || !params.fal">
+                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                    </button>
+                </div>
             </div>
-            <div class="panel-footer text-right">
-                <button type="button" class="btn btn-primary" ng-click="getRptRecibosCliente()" ng-disabled="!params.fdel || !params.fal">
-                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                </button>
+        </div>
+        <div class="tab-pane fade" id="divAudi">
+            <div class="panel panel-default">
+                <div class="panel-heading">Reporte de recibos para auditoria</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="txtDel">Del:</label>
+                                <input name="txtDel" id="txtDel" type="date" class="form-control"
+                                    ng-model="params_auditoria.fdel" placeholder="Del" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="txtAl">Al:</label>
+                                <input name="txtAl" id="txtAl" type="date" class="form-control"
+                                    ng-model="params_auditoria.fal" placeholder="Al" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Empresa: </label>
+                                <ui-select ng-model="params_auditoria.idempresa" title="Seleccione una empresa..."
+                                    theme="bootstrap" autofocus="false">
+                                    <ui-select-match placeholder="Seleccionar empresas" allow-clear="true">
+                                        <span ng-bind="($select.selected.nomempresa)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in empresas | filter:$select.search"
+                                        group-by="'grupo'">
+                                        <div ng-bind-html="(item.nomempresa) | highlight: $select.search">
+                                        </div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer text-right">
+                    <button type="button" class="btn btn-danger" ng-click="getRptRecibosAuditoria(params_auditoria)">
+                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn btn-success"
+                        ng-click="getRptRecibosAuditoriaXml(params_auditoria)">
+                        <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-show="cargando">
+            <div class="col-md-6 col-md-offset-3">
+                <div class="well well-sm" style="text-align: center; font-size: 1.45em; font-weight: bold;">
+                    <span class="label label-primary">Generando reporte, por favor espere...</span>
+                    <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
+                </div>
             </div>
         </div>
     </div>

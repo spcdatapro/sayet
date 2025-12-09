@@ -63,10 +63,10 @@ $app->post('/mensual', function(){
                 cliente c ON a.idcliente = c.id
                     LEFT JOIN
                 (SELECT 
-                    d.nit, d.nombre
+                    nombre, nit
                 FROM
-                    factura d
-                LIMIT 1) d ON d.nit = a.nit
+                    factura
+                GROUP BY nit) d ON d.nit = a.nit AND a.nit != 'CF'
                     LEFT JOIN
                 detpagorecli e ON e.idreccli = a.id
                     LEFT JOIN
@@ -397,6 +397,102 @@ $app->post('/correlativo', function(){
     }
 
     print json_encode(['fechas' => $letra, 'recibos' => $recibos]);
+});
+
+$app->post('/auditoria', function () {
+    date_default_timezone_set("America/Guatemala");
+
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+    $letra->del = date("d/m/Y", strtotime($d->fdelstr));
+    $letra->al = 'al '.date("d/m/Y", strtotime($d->falstr));
+
+    $total_q = 0;
+    $total_d = 0;
+
+    $query = "SELECT 
+                a.id,
+                IF(a.anulado = 0,
+                    CONCAT(a.serie, '-', IFNULL(b.seriea, b.serieb)),
+                    'ANULADO') AS recibo,
+                DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha,
+                IFNULL(IFNULL(c.nombre, d.nombre),
+                        'Clientes Varios') AS cliente,
+                IF(e.idmoneda = 1 AND a.anulado = 0,
+                    ROUND(SUM(e.monto), 2),
+                    NULL) AS montogtq,
+                IF(e.idmoneda = 2 AND a.anulado = 0,
+                    ROUND(SUM(e.monto), 2),
+                    NULL) AS montodlr,
+                f.simbolo AS moneda,
+                a.fecha AS fecharec,
+                g.facturas,
+                g.serieadmin,
+                g.facturas_completo,
+                GROUP_CONCAT(IF(e.tipotrans = 1,
+                        'C',
+                        IF(e.tipotrans = 2,
+                            'D',
+                            IF(e.tipotrans = 3,
+                                'R',
+                                IF(e.tipotrans = 4, 'B', 'E')))),
+                    '-',
+                    e.numero) AS tran,
+                i.nomempresa AS empresa
+            FROM
+                recibocli a
+                    INNER JOIN
+                serierecli b ON b.idrecibocli = a.id
+                    LEFT JOIN
+                cliente c ON a.idcliente = c.id
+                    LEFT JOIN
+                (SELECT 
+                    nombre, nit
+                FROM
+                    factura
+                GROUP BY nit) d ON d.nit = a.nit AND a.nit != 'CF'
+                    LEFT JOIN
+                detpagorecli e ON e.idreccli = a.id
+                    LEFT JOIN
+                moneda f ON e.idmoneda = f.id
+                    LEFT JOIN
+                (SELECT 
+                    e.idrecibocli AS idrecibo,
+                        IF(g.idproyecto = 0, d.idproyecto, g.idproyecto) AS idproyecto, g.serieadmin,
+                        IFNULL(IF(COUNT(g.id) > 3, CAST(CONCAT(COUNT(g.id), '-FC') AS CHAR), GROUP_CONCAT(g.numeroadmin)), 'SC') AS facturas,
+                        GROUP_CONCAT(g.numero) AS facturas_completo 
+                FROM
+                    detcobroventa e
+                INNER JOIN factura g ON e.idfactura = g.id
+                INNER JOIN contrato d ON g.idcontrato = d.id
+                GROUP BY e.idrecibocli) g ON g.idrecibo = a.id
+                    LEFT JOIN
+                proyecto h ON g.idproyecto = h.id
+                    INNER JOIN
+                empresa i ON a.idempresa = i.id
+            WHERE
+                a.fecha >= '$d->fdelstr'
+                    AND a.fecha <= '$d->falstr' ";
+    $query.= isset($d->idempresa) ? "AND a.idempresa = $d->idempresa " : '';
+    $query.="GROUP BY a.id
+            ORDER BY a.fecha ASC , a.serie ASC , b.seriea ASC , b.serieb ASC";
+    $datos = $db->getQuery($query);
+    
+    $letra->empresa = isset($d->idempresa) ? $datos[0]->empresa : 'VARIAS EMPRESAS';
+
+    foreach ($datos as $data) {
+        $total_q += $data->montogtq;
+        $total_d += $data->montodlr;
+    }
+
+    $letra->total_q = round($total_q, 2);
+    $letra->total_d = round($total_d, 2);
+
+    print json_encode(['encabezado' => $letra, 'recibos' => $datos]);
 });
 
 $app->run();

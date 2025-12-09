@@ -12,7 +12,7 @@
         $scope.losTiposCompra = [];
         $scope.origen = 3;
         $scope.monedas = [];
-        $scope.dectc = 2;
+        $scope.dectc = 5;
         $scope.lsttiposfact = [];
         $scope.losDetCont = [];
         $scope.elDetCont = { debe: 0.0, haber: 0.0 };
@@ -31,7 +31,7 @@
             $scope.params.idempresa = $scope.idempresa;
             if ($scope.idempresa > 0) {
                 empresaSrvc.getEmpresa($scope.idempresa).then(function (d) {
-                    $scope.dectc = parseInt(d[0].dectc);
+                    $scope.dectc = 5;
                     monedaSrvc.lstMonedas().then(function (l) {
                         $scope.monedas = l;
                         $scope.resetVenta();

@@ -56,7 +56,7 @@
                     </div>
                 </div>
                 <div class="row" style="text-align: left">
-                    <div class="col-md-6 col-sm-6 nopadding">
+                    <div class="col-md-4 col-sm-4 nopadding">
                         <div class="form-group">
                             <label for="txtCliente">Cliente:</label>
                             <!--<input name="txtCliente" id="txtCliente" type="text" class="form-control" ng-model="params.cliente" placeholder="Nombre, nombre corto, facturar a..."/>-->
@@ -80,6 +80,15 @@
                                 <option value="4">Pendientes de emitir</option>
                                 <option value="5">Notas de Cr&eacute;dito</option>
                                 <option value="6">Por proyecto</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-2 nopadding">
+                        <div class="form-group">
+                            <label for="txtTC">Moneda:</label>
+                            <select name="selVer" id="selVer" class="form-control" ng-model="params.idmoneda">
+                                <option value="1">Quetzales (Q)</option>
+                                <option value="2">D&oacute;lares ($)</option>
                             </select>
                         </div>
                     </div>
@@ -153,6 +162,10 @@
                 </div>
                 <button type="button" class="btn btn-danger" ng-click="getFactsEmitidas()" ng-disabled="cargando">
                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-success" ng-click="getFactsEmitidasXml()"
+                    ng-disabled="cargando">
+                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
                 </button>
                 <button type="button" class="btn btn-primary" ng-click="getPendientes(params)"
                     ng-show="params.tipo == 4" ng-disabled="cargando">

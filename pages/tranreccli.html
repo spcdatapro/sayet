@@ -2,6 +2,12 @@
     .bld {
         font-weight: bold;
     }
+
+    .ui-select-bootstrap .ui-select-choices-content {
+        max-height: 400px;
+        /* Ajusta según lo que necesites */
+        overflow-y: auto;
+    }
 </style>
 <div class="container" ng-controller="reciboClientesCtrl">
     <ul class="nav nav-tabs">
@@ -365,6 +371,33 @@
                     <form name="frmDocsPag" id="frmDocsPag"
                         ng-submit="pagoreccli.id > 0 ? updPagoRecCli(pagoreccli) : addPagoRecCli(pagoreccli)">
                         <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="selTrans" class="control-label">Transacciónes disponibles</label>
+                                    <ui-select ng-model="pagoreccli.tran" title="Seleccione una transacción..."
+                                        theme="bootstrap" autofocus="false" ng-change="selTran(pagoreccli.tran)" ng-disabled="false">
+                                        <ui-select-match placeholder="Buscar transacción..." allow-clear="false">
+                                            <span ng-bind="($select.selected.numero)"></span>
+                                        </ui-select-match>
+                                        <ui-select-choices
+                                            repeat="item.id as item in trans_banco | filter:$select.search">
+                                            <div ng-bind-html="(item.numero) | highlight: $select.search"></div>
+                                            <!-- <small> -->
+                                            <strong>Monto: </strong>
+                                            <span
+                                                ng-bind-html="(item.moneda + item.monto_str) | highlight: $select.search"></span>
+                                            <strong> Banco: </strong>
+                                            <span ng-bind-html="(item.banco) | highlight: $select.search"></span>
+                                            <strong> Fecha: </strong>
+                                            <span ng-bind-html="(item.fecha) | highlight: $select.search"></span>
+                                            <strong> Concepto: </strong>
+                                            <span ng-bind-html="(item.concepto) | highlight: $select.search"></span>
+                                            <!-- </small> -->
+                                        </ui-select-choices>
+                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                    </ui-select>
+                                </div>
+                            </div>
                             <div class="col-md-4">
                                 <div class="form-group required">
                                     <label for="selTipoTrans" class="control-label">Tipo de transacci&oacute;n:</label>

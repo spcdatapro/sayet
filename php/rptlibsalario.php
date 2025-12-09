@@ -102,6 +102,7 @@ $app->post('/rptlibsalario', function(){
         array_push($textra, $salario->hextra);
         array_push($tsextra, $salario->sextra);
         array_push($tasueto, $salario->sasuetos);
+        array_push($tasueto, $salario->sotros);
         array_push($tvacas, $salario->svacaciones);
         array_push($tingreso, $salario->stotal);
         array_push($tigss, $salario->digss);
@@ -121,8 +122,8 @@ $app->post('/rptlibsalario', function(){
     $empleado->extra = array_sum($textra);
     $empleado->sueldo = $empleado->salario; 
     $empleado->sueldoext = number_format(array_sum($tsextra), 2);
-    $empleado->asueto = number_format(array_sum($tasueto), 2);
-    $empleado->sotros = '-';
+    $empleado->asueto = '-';
+    $empleado->sotros = number_format(array_sum($tasueto), 2);
     $empleado->vacas = number_format(array_sum($tvacas), 2);
     $empleado->ingresos = number_format(array_sum($tingreso), 2);
     $empleado->miggs = number_format(array_sum($tigss), 2);

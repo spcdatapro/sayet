@@ -149,6 +149,26 @@
 												title="Copiar NIT" id="txtNit">{{emp.nit}}</a></h5>
 									</td>
 								</tr>
+								<tr>
+									<td colspan="2" id="confirmIgss"></td>
+								</tr>
+								<tr>
+									<td>
+										<h5 class="negro">IGSS:</h5>
+									</td>
+									<td>
+										<h5><a ng-click="copiar('txtIgss', 'confirmIgss')" class="negro"
+												title="Copiar IGSS" id="txtIgss">{{emp.igss}}</a></h5>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<h5 class="negro">Nacimiento:</h5>
+									</td>
+									<td>
+										<h5 class="negro">{{emp.nacimiento | date: 'dd/MM/yyyy'}}</h5>
+									</td>
+								</tr>
 								<tr ng-show="emp.activo == 1">
 									<td>
 										<h5 class="negro">Ingreso:</h5>
@@ -1870,14 +1890,32 @@
 			<div class="col-md-12">
 				<div class="form-group">
 					<label for="selAnio_empleador" class="control-label">Selecionar a&ntilde;o:</label>
-					<input type="number" name="selAnio_empleador" id="selAnio_empleador" ng-model="anio" class="form-control"
-					min="2024"/>
+					<input type="number" name="selAnio_empleador" id="selAnio_empleador" ng-model="params.anio"
+						class="form-control" min="2024" />
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="form-group">
+					<label for="selEmpresaEmpleador" class="control-label">Empresa:</label>
+					<ui-select ng-model="params.empresa" title="Seleccione una empresa..." theme="bootstrap" 
+						autofocus="false" required>
+						<ui-select-match placeholder="Buscar empresa..." allow-clear="false">
+							<span ng-bind="($select.selected.nombre)"></span>
+						</ui-select-match>
+						<ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+							<div ng-bind-html="(item.nombre) | highlight: $select.search">
+							</div>
+						</ui-select-choices>
+						<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+					</ui-select>
 				</div>
 			</div>
 		</div>
 	</div>
 	<div class="modal-footer">
-		<button class="btn btn-primary" ng-disabled="!anio" type="button" ng-click="ok(anio)">Aceptar</button>
+		<button class="btn btn-primary" ng-disabled="!params.anio && !params.empresa" type="button" ng-click="ok(params)">Aceptar</button>
 		<button class="btn btn-danger" type="button" ng-click="cancel()">Cancelar</button>
 	</div>
 </script>

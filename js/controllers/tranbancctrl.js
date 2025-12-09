@@ -383,6 +383,14 @@
             });
         };
 
+        $scope.aprobTran = () => {
+            tranBancSrvc.editRow($scope.laTran, 'apr').then(() => {
+                $scope.laTran.pendiente = 0;
+                $scope.getLstTran();
+                $scope.getDataTran($scope.laTran.id);
+            })
+        }
+
         function processData(data) {
             for (var i = 0; i < data.length; i++) {
                 data[i].id = parseInt(data[i].id);
