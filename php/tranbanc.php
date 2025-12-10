@@ -1538,7 +1538,7 @@ $app->get('/emparejar_debitos/:del/:al/:idempresa', function ($del, $al, $idempr
                 c.d_estado_cuenta AS id_banco, 1 AS tipo,
                 CONCAT(e.simbolo, '.', FORMAT(c.monto, 2)) AS montobanstr,
                 DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fechabanstr,
-                a.operado AS emparejado, a.idbanco
+                a.operado AS emparejado, a.idbanco, a.tipotrans
             FROM tranban a
             INNER JOIN banco b ON a.idbanco = b.id
             LEFT JOIN d_estado_cuenta c ON (a.numban = c.referencia OR a.numero = c.referencia)
@@ -1556,7 +1556,7 @@ $app->get('/emparejar_debitos/:del/:al/:idempresa', function ($del, $al, $idempr
                 c.d_estado_cuenta AS id_banco, 2 AS tipo,
                 CONCAT(e.simbolo, '.', FORMAT(c.monto, 2)) AS montobanstr,
                 DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fechabanstr,
-                a.operado AS emparejado, a.idbanco
+                a.operado AS emparejado, a.idbanco, a.tipotrans
             FROM tranban a
             INNER JOIN banco b ON a.idbanco = b.id
             LEFT JOIN d_estado_cuenta c ON a.fecha = c.fecha AND a.monto = c.monto
@@ -1575,7 +1575,7 @@ $app->get('/emparejar_debitos/:del/:al/:idempresa', function ($del, $al, $idempr
                 c.d_estado_cuenta AS id_banco, 3 AS tipo,
                 CONCAT(e.simbolo, '.', FORMAT(c.monto, 2)) AS montobanstr,
                 DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fechabanstr,
-                a.operado AS emparejado, a.idbanco
+                a.operado AS emparejado, a.idbanco, a.tipotrans
             FROM tranban a
             INNER JOIN banco b ON a.idbanco = b.id
             LEFT JOIN d_estado_cuenta c ON a.monto = c.monto AND a.fecha != c.fecha
@@ -1585,7 +1585,7 @@ $app->get('/emparejar_debitos/:del/:al/:idempresa', function ($del, $al, $idempr
             AND b.mt940 IS NOT NULL
             AND a.tipotrans IN ('C','B')
             AND b.mt940 = d.cuenta
-            AND a.numban != c.referencia
+            AND (c.idtranban IS NULL OR c.idtranban = 0)
             AND b.idempresa = $idempresa 
             AND a.id NOT IN (
                 SELECT a.id
