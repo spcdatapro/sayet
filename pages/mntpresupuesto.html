@@ -845,7 +845,9 @@
                                     </a>
                                 </td>
                                 <td style="white-space: nowrap">
-                                    <button type="button" class="btn btn-danger" ng-click="delOTAdjunto(ot_adjunto.id)">
+                                    <button type="button" class="btn btn-danger"
+                                            ng-disabled="ot_adjunto.id_usuario == 21 && userId != 21"
+                                            ng-click="delOTAdjunto(ot_adjunto.id)">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </button>
                                 </td>

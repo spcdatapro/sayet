@@ -1283,7 +1283,7 @@ $app->post('/ibp', function () {
 
 $app->get('/lstotadjuntos/:idot(/:multiple)', function ($idot, $multiple) {
     $db = new dbcpm();
-    $query = "SELECT id, idot, nomadjunto, ubicacion, IFNULL(DATE_FORMAT(fecha, '%d/%m/%Y'), '') AS fecha, 
+    $query = "SELECT id, idot, nomadjunto, ubicacion,  id_usuario, IFNULL(DATE_FORMAT(fecha, '%d/%m/%Y'), '') AS fecha, 
     IFNULL(correlativo, '') AS correlativo FROM ot_adjunto WHERE idot = $idot AND esmultiple = $multiple ORDER BY id, fecha ASC";
     print $db->doSelectASJson($query);
 });
@@ -1294,8 +1294,8 @@ $app->post('/aaot', function () {
     $correlativo = $db->getOneField("SELECT correlativo FROM ot_adjunto WHERE idot = $d->idot ORDER BY correlativo DESC LIMIT 1");
     $fecha = date('Y-m-d');
     $numero = $correlativo >= 1 ? $correlativo + 1 : 1;
-    $query = "INSERT INTO ot_adjunto(idot, nomadjunto, ubicacion, esmultiple, fecha, correlativo) VALUES(";
-    $query .= "$d->idot,'$d->nomadjunto', '$d->ubicacion', '$d->esmultiple', '$fecha', $numero ";
+    $query = "INSERT INTO ot_adjunto(idot, nomadjunto, ubicacion, esmultiple, fecha, correlativo, id_usuario) VALUES(";
+    $query .= "$d->idot,'$d->nomadjunto', '$d->ubicacion', '$d->esmultiple', '$fecha', $numero, $d->idusuario ";
     $query .= ")";
     $db->doQuery($query);
 });
@@ -1303,10 +1303,24 @@ $app->post('/aaot', function () {
 $app->post('/daot', function () {
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+
+    // Obtener quién subió el archivo
+    $idDueno = $db->getOneField("SELECT id_usuario FROM ot_adjunto WHERE id = $d->id");
+
+    
+    // Si el dueño es 21 Y el usuario NO es 21 → NO puede borrar
+    if ((int)$idDueno === 21 && (int)$d->idusuario !== 21) {
+        print json_encode(['error' => 'No autorizado']);
+        return;
+    }
+
+    // Borrar archivo físico
     $ubicacion = $db->getOneField("SELECT ubicacion FROM ot_adjunto WHERE id = $d->id");
     if (file_exists('../' . $ubicacion)) {
         unlink('../' . $ubicacion);
     }
+
+    // Borrar de la BD (borrado real)
     $query = "DELETE FROM ot_adjunto WHERE id = $d->id";
     $db->doQuery($query);
 });

@@ -56,6 +56,7 @@
 
         authSrvc.getSession().then(function (usrLogged) {
             $scope.usrdata = usrLogged;
+            $scope.userId = usrLogged.uid;
             $scope.fltrot.idusuario = $scope.usrdata.uid;
             authSrvc.gpr({ idusuario: parseInt(usrLogged.uid), ruta: $route.current.params.name }).then(function (d) { $scope.permiso = d; });
             $scope.getLstPresupuestos('1,2,3');
@@ -732,6 +733,7 @@
             } else {
                 $scope.otAdjunto.idot = $scope.presupuesto.id
             };
+            $scope.otAdjunto.idusuario = $scope.userId;
             $scope.otAdjunto.ubicacion = "ots_adjunto/" + 'OT_' + (($scope.ot && $scope.ot.id) ? $scope.ot.id : (`${$scope.presupuesto.id}_1`)) + '_' + $filter('textCleaner')($scope.file.name);
             if ($scope.ot.id > 0) {
                 $scope.otAdjunto.esmultiple = 0
@@ -760,7 +762,8 @@
             $confirm({
                 text: '¿Seguro(a) de eliminar este adjunto? (Esto también eliminará físicamente el documento)',
                 title: 'Eliminar adjunto de OT', ok: 'Sí', cancel: 'No'
-            }).then(() => presupuestoSrvc.editRow({ id: id }, 'daot').then(() => {
+            }).then(() => presupuestoSrvc.editRow({ id: id, 
+                idusuario: $scope.userId }, 'daot').then(() => {
                 if ($scope.ot && $scope.ot.id) {
                     $scope.loadOTAdjuntos();
                 } else {
