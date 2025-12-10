@@ -9,7 +9,7 @@
             $scope.cargando = false; // si esta cargando 
             $scope.progress = 0; // progreso de carga
             $scope.iniciales = 'N/E';
-            $scope.params = { fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), reporte: false };
+            $scope.params = { fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), reporte: false, ver: '0' };
             $scope.idbanco = undefined;
 
             // para paginar
@@ -154,14 +154,17 @@
                         $scope.todas = transacciones;
                         // $scope.documentos = transacciones;
 
-                        if ($scope.params.idbanco > 0) {
-                            $scope.documentos = transacciones.filter(tran => {
-                                return tran.idbanco.toString() === $scope.params.idbanco.toString();
+                    if ($scope.params.idbanco > 0 || $scope.params.tipos || $scope.params.ver) {
+                            $scope.documentos = $scope.todas.filter(tran => {
+                                let matchesBanco = $scope.params.idbanco > 0 ? tran.idbanco.toString() === $scope.params.idbanco.toString() : true;
+                                let matchesTipo = !$scope.params.tipos ? true : tran.tipotrans === $scope.params.tipos;
+                                let matchesVer = !$scope.params.ver ? true :
+                                    ($scope.params.ver == 1 ? tran.emparejado == 0 :
+                                        $scope.params.ver == 2 ? tran.emparejado == 1 : true);
+
+                                return matchesBanco && matchesTipo && matchesVer;
                             });
-                        } else {
-                            $scope.documentos = transacciones;
                         }
-                        // $scope.currentPage = 1;
                     })
             }
 
