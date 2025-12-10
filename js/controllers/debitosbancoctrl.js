@@ -2,14 +2,14 @@
 
     var controller = angular.module('cpm.debitosbanco', []);
 
-    controller.controller('debitosBancoCtrl', ['$scope', 'tranBancSrvc', 'bancoSrvc', '$interval', 'toaster', '$http', '$q', '$window', 'authSrvc', 'empresaSrvc',
-        ($scope, tranBancSrvc, bancoSrvc, $interval, toaster, $http, $q, $window, authSrvc, empresaSrvc) => {
+    controller.controller('debitosBancoCtrl', ['$scope', 'tranBancSrvc', 'bancoSrvc', '$interval', 'toaster', '$http', '$q', '$window', 'authSrvc', 'empresaSrvc', 'tipoMovTranBanSrvc',
+        ($scope, tranBancSrvc, bancoSrvc, $interval, toaster, $http, $q, $window, authSrvc, empresaSrvc, tipoMovTranBanSrvc) => {
             $scope.documentos = []; // desde se almacenan todos los documentos
             $scope.todas = [];
             $scope.cargando = false; // si esta cargando 
             $scope.progress = 0; // progreso de carga
             $scope.iniciales = 'N/E';
-            $scope.params = { ver: 1, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), reporte: false, tipos: ['2'] };
+            $scope.params = { fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), reporte: false };
             $scope.idbanco = undefined;
 
             // para paginar
@@ -65,8 +65,7 @@
                 $scope.params.idempresa = user.workingon.toString();
             })
 
-            // $scope.tipotrans = [{ id: '1', abreviadesc: '(C) Créditos', abreviatura: 'C' },
-            // { id: '2', abreviadesc: '(D) Débitos', abreviatura: 'D' }];
+            tipoMovTranBanSrvc.getBySuma(false).then(d => { $scope.tipotrans = d });
 
             $scope.buscarDocumentos = () => {
                 $scope.cargando = true;
@@ -166,17 +165,23 @@
                     })
             }
 
-            $scope.$watch('params.idbanco', function (newVal) {
-                let idbanco = newVal;
+            $scope.$watchGroup(['params.idbanco', 'params.tipos', 'params.ver'], function (newVals) {
+                let idbanco = newVals[0];
+                let tipos = newVals[1];
+                let ver = newVals[2];
 
                 $scope.documentos = $scope.todas.filter(tran => {
                     let matchesBanco = idbanco > 0 ? tran.idbanco.toString() === idbanco.toString() : true;
+                    let matchesTipo = !tipos ? true : tran.tipotrans === tipos;
+                    let matchesVer = !ver ? true :
+                        (ver == 1 ? tran.emparejado == 0 :
+                            ver == 2 ? tran.emparejado == 1 : true);
 
-                    return matchesBanco;
+                    return matchesBanco && matchesTipo && matchesVer;
                 });
 
                 $scope.currentPage = 1;
-            })
+            });
 
             $scope.imprimirNota = () => {
                 let aimprimir = [];

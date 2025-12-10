@@ -7,7 +7,7 @@
     <div class="panel panel-default">
         <div class="panel-heading">Emparejamiento de d&eacute;bitos</div>
         <div class="panel-body">
-            <div ng-show="documentos.length == 0">
+            <div ng-show="todas.length == 0">
                 <div class="row" ng-show="cargando">
                     <div class="col-md-12">
                         <div class="progress">
@@ -65,7 +65,7 @@
                     </div>
                 </div>
             </div>
-            <div ng-show="documentos.length > 0">
+            <div ng-show="todas.length > 0">
                 <form name="paramsBus" id="paramsBus" novalidate>
                     <div class="row">
                         <div class="col-md-4">
@@ -100,7 +100,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="control-label">Banco:</label>
                                 <ui-select ng-model="params.idbanco" title="Seleccione un banco..." theme="bootstrap"
@@ -117,21 +117,31 @@
                                 </ui-select>
                             </div>
                         </div>
-                        <div class="col-md-6" ng-hide="true">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label class="control-label">Tipo transacc&oacute;n:</label>
-                                <ui-select ng-model="tipos" title="Seleccione uno o varios tipos..." theme="bootstrap"
-                                    autofocus="false" multiple>
+                                <ui-select ng-model="params.tipos" title="Seleccione uno o varios tipos..." theme="bootstrap"
+                                    autofocus="false">
                                     <ui-select-match placeholder="Buscar tipo transaccion..." allow-clear="true">
-                                        <span>{{$item.abreviatura}}</span>
+                                        <span ng-bind="($select.selected.abreviatura)"></span>
                                     </ui-select-match>
-                                    <ui-select-choices repeat="item.id as item in tipotrans | filter:$select.search"
+                                    <ui-select-choices repeat="item.abreviatura as item in tipotrans | filter:$select.search"
                                         group-by="'grupo'">
                                         <div ng-bind-html="(item.abreviadesc) | highlight: $select.search">
                                         </div>
                                     </ui-select-choices>
                                     <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
                                 </ui-select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Ver:</label>
+                                <select name="selVer" id="selVer" class="form-control" ng-model="params.ver">
+                                    <option value="0">Todos</option>
+                                    <option value="1">D&eacute;bitos no emparejados</option>
+                                    <option value="2">D&eacute;bitos emparejados</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -187,10 +197,10 @@
                             <th>Banco</th>
                         </tr>
                     </thead>
-                    <tbody ng-repeat="t in paginatedEmpleados() | filter:search">
+                    <tbody ng-repeat="t in paginatedEmpleados() | filter:search" ng-show="paginatedEmpleados().length > 0">
                         <tr ng-class="{'green': +t.emparejado === 1}">
                             <td style="border-right: 1px solid #ccc" rowspan="2" class="text-center">{{t.banco}}</td>
-                            <td style="border-right: 1px solid #ccc">{{t.numero}}</td>
+                            <td style="border-right: 1px solid #ccc">{{t.tipotrans}}-{{t.numero}}</td>
                             <td ng-show="t.cuantos === 1">{{t.numban}}</td>
                             <td ng-hide="t.cuantos === 1" rowspan="4" style="vertical-align: middle;">
                                 <ui-select ng-model="t.idbanco" title="Seleccione una transaccion..." theme="bootstrap"
@@ -232,6 +242,11 @@
                         <tr ng-class="{'green': +t.emparejado === 1}">
                             <td style="border-right: 1px solid #ccc">{{t.concepto}}</td>
                             <td ng-show="t.cuantos === 1"> {{t.descripcion}}</td>
+                        </tr>
+                    </tbody>
+                    <tbody ng-hide="paginatedEmpleados().length > 0">
+                        <tr>
+                            <td colspan="7" class="text-center">No se encontraron registros con los parametros de busqueda...</td>
                         </tr>
                     </tbody>
                     <tfoot>
