@@ -158,6 +158,7 @@ $app->post('/c', function(){
             updateGastosOT($d->iddetpresup);
         }
     }elseif(in_array($d->tipotrans, $tentrada)){
+        $cuenta_cliente = 0;
         $ctabco = (int)$db->getOneField("SELECT idcuentac FROM banco WHERE id = ".$d->idbanco);
         $monto = round(((float)$d->monto * (float)$d->tipocambio), 2);
         if($ctabco > 0){
