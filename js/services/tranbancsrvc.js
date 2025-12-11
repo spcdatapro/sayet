@@ -85,8 +85,8 @@
             lstPosiblesDoc: function (idbanco, numero, monto, tipo) {
                 return comunFact.doGET(urlBase + '/lstposibledocs/' + idbanco + '/' + numero + '/' + monto + '/' + tipo);
             },
-            getTransPendientesRecibo: () => {
-                return comunFact.doGET(urlBase + '/tran_recibos');
+            getTransPendientesRecibo: (idempresa) => {
+                return comunFact.doGET(urlBase + '/tran_recibos/' + idempresa);
             },
             getPendientesAprobar: (obj) => {
                 return comunFact.doPOST(urlBase + '/tran_pendientes', obj);

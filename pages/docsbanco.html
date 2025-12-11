@@ -7,7 +7,7 @@
     <div class="panel panel-primary">
         <div class="panel-heading">Documentos bancarios</div>
         <div class="panel-body">
-            <div ng-show="documentos.length == 0">
+            <div ng-show="!ya_busco">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="btn-group btn-group-justified">
@@ -32,7 +32,22 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Empresa:</label>
+                                <ui-select ng-model="params.idempresa" title="Seleccione una empresa..."
+                                    theme="bootstrap" autofocus="false">
+                                    <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
+                                        <span ng-bind="($select.selected.nomempresa)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+                                        <div ng-bind-html="(item.nomempresa) | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
+                        </div>
+                    <div class="col-md-4">
                         <div class="form-group">
                             <div class="form-group">
                                 <label class="control-label">Del:</label>
@@ -41,7 +56,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="form-group">
                             <div class="form-group">
                                 <label class="control-label">Al:</label>
@@ -51,10 +66,25 @@
                     </div>
                 </div>
             </div>
-            <div ng-show="documentos.length > 0">
+            <div ng-show="ya_busco">
                 <form name="paramsBus" id="paramsBus" novalidate>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label">Empresa:</label>
+                                <ui-select ng-model="params.idempresa" title="Seleccione una empresa..."
+                                    theme="bootstrap" autofocus="false">
+                                    <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
+                                        <span ng-bind="($select.selected.nomempresa)"></span>
+                                    </ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+                                        <div ng-bind-html="(item.nomempresa) | highlight: $select.search"></div>
+                                    </ui-select-choices>
+                                    <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                </ui-select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <div class="form-group">
                                     <label class="control-label">Del:</label>
@@ -63,12 +93,12 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <div class="form-group">
                                     <label class="control-label">Al:</label>
                                     <input type="date" name="fchAl" id="fchAl" class="form-control"
-                                        ng-model="params.fal" ng-change="buscar()">
+                                        ng-model="params.fal">
                                 </div>
                             </div>
                         </div>
@@ -110,6 +140,18 @@
                         </div>
                     </div>
                 </form>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="btn-group btn-group-justified">
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-default" title="Buscar documentos del banco"
+                                    ng-click="buscar()">
+                                    <i class="fi fi-rr-search"></i> Buscar documentos del banco
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <table class="table table-responsive table-condensed">
                     <caption>
                         <div class="col-md-2">
@@ -156,11 +198,11 @@
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody ng-show="todas.length > 0">
                         <tr ng-repeat="t in paginatedEmpleados() | filter:search" ng-class="{'green': +t.impreso === 1}">
                             <td>{{t.concilia | date:'dd/MM/yyyy'}}</td>
                             <td>{{t.tipotrans}}</td>
-                            <td>{{t.numero_tran}}</td>
+                            <td>{{t.nomempresa}}-{{t.numero_tran}}</td>
                             <td style="text-align: right;" ng-show="t.debito > 0">{{t.moneda}}.{{t.debito | number:2}}</td>
                             <td style="text-align: right;" ng-hide="t.debito > 0">{{t.debito | number:2}}</td>
                             <td style="text-align: right;"ng-show="t.credito > 0">{{t.moneda}}.{{t.credito | number:2}}</td>
@@ -170,6 +212,12 @@
                                 <input type="checkbox" ng-model="t.conciliar" ng-true-value="1" ng-false-value="0" />
                             </td>
                         </tr>
+                    </tbody>
+                    <tbody ng-show="todas.length == 0">
+                        <tr>
+                            <td colspan="7" style="text-align: center;">No hay documentos bancarios que mostrar, favor realizar otra busqueda</td>
+                        </tr>
+
                     </tbody>
                     <tfoot>
                         <tr>
@@ -199,7 +247,5 @@
                 </table>
             </div>
         </div>
-        <!-- <div class="panel-footer" ng-show="generados.lenght > 0">
-                </div> -->
     </div>
 </div>

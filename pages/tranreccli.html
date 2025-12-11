@@ -383,6 +383,8 @@
                                             repeat="item.id as item in trans_banco | filter:$select.search">
                                             <div ng-bind-html="(item.numero) | highlight: $select.search"></div>
                                             <!-- <small> -->
+                                            <strong>Empresa:</strong>
+                                            <span ng-bind-html="(item.empresa) | highlight: $select.search"></span>
                                             <strong>Monto: </strong>
                                             <span
                                                 ng-bind-html="(item.moneda + item.monto_str) | highlight: $select.search"></span>

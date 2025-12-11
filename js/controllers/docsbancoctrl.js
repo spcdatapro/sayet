@@ -2,13 +2,14 @@
 
     var controller = angular.module('cpm.docsbancoctrl', []);
 
-    controller.controller('docsBancoCtrl', ['$scope', 'tranBancSrvc', 'bancoSrvc', '$interval', 'toaster', '$http', '$q', '$window', 'authSrvc', 'desktopNotification',
-        ($scope, tranBancSrvc, bancoSrvc, $interval, toaster, $http, $q, $window, authSrvc, desktopNotification) => {
+    controller.controller('docsBancoCtrl', ['$scope', 'tranBancSrvc', 'bancoSrvc', '$interval', 'toaster', '$http', '$q', '$window', 'authSrvc', 'empresaSrvc',
+        ($scope, tranBancSrvc, bancoSrvc, $interval, toaster, $http, $q, $window, authSrvc, empresaSrvc) => {
             $scope.documentos = []; // desde se almacenan todos los documentos
             $scope.todas = [];
             $scope.cargando = false; // si esta cargando 
             $scope.progress = 0; // progreso de carga
             $scope.iniciales = 'N/E';
+            $scope.ya_busco = false;
             // Obtener la fecha de hoy menos un día, o viernes si hoy es lunes
             let fecha = moment().toDate();
             let diaSemana = moment(fecha).day();
@@ -56,17 +57,24 @@
 
             var user = {};
 
-            bancoSrvc.lstBancosActivos(4).then(d => {
-                // solo mostrar los dos bancos que estan utilizando mt940
-                let idbancos = ['3', '33'];
-                $scope.bancos = d.filter(banco => idbancos.includes(banco.id));
-            })
-
             authSrvc.getSession().then(function (usrLogged) {
                 user = usrLogged;
                 $scope.params.iniciales = usrLogged.iniciales;
-                bancoSrvc.lstBancosMT940(usrLogged.workingon).then(d => { $scope.bancos = d });
+                empresaSrvc.lstEmpresas().then(function (d) {
+                    empresaSrvc.getEmpresaUsuario(user.uid).then(function (autorizado) {
+                        let idempresas = [];
+                        autorizado.forEach(aut => {
+                            idempresas.push(aut.id);
+                        });
+                        $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                        $scope.params.idempresa = usrLogged.workingon.toString();
+                    });
+                })
             })
+
+            traerBancos = idempresa => {
+                bancoSrvc.lstBancosMT940(idempresa).then(d => { $scope.bancos = d });
+            }
 
             $scope.tipotrans = [{ id: '1', abreviadesc: '(C) Créditos', abreviatura: 'C' },
             { id: '2', abreviadesc: '(D) Débitos', abreviatura: 'D' }];
@@ -75,6 +83,7 @@
                 $scope.cargando = true;
                 $scope.params.delstr = moment($scope.params.fdel).format('YYYY-MM-DD');
                 $scope.params.alstr = moment($scope.params.fal).format('YYYY-MM-DD');
+                traerBancos($scope.params.idempresa);
 
                 // $scope.params.delstr = '20250501';
                 // $scope.params.alstr = '20250501';
@@ -91,15 +100,14 @@
                             estatusCarga(80);
 
                             // si la conxeion es exitosa, entonces buscamos documetos para conciliar
-                            $scope.params.idempresa = user.workingon;
                             tranBancSrvc.traerDocumentos($scope.params)
                                 .then(d => {
                                     $scope.progress = 100;
                                     $scope.cargando = false;
 
-                                    console.log(d);
                                     $scope.todas = d.bancos;
                                     $scope.documentos = d.bancos.filter(tran => tran.idtipotrans == 1);
+                                    $scope.ya_busco = true;
                                 })
                         }
                     })
@@ -108,7 +116,7 @@
             $scope.buscar = () => {
                 $scope.params.delstr = moment($scope.params.fdel).format('YYYY-MM-DD');
                 $scope.params.alstr = moment($scope.params.fal).format('YYYY-MM-DD');
-                $scope.params.idempresa = user.workingon;
+                traerBancos($scope.params.idempresa);
                 tranBancSrvc.traerDocumentos($scope.params)
                     .then(d => {
                         $scope.progress = 100;
