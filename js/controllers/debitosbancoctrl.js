@@ -51,19 +51,22 @@
             authSrvc.getSession().then(function (usrLogged) {
                 user = usrLogged;
                 $scope.params.iniciales = usrLogged.iniciales;
-                bancoSrvc.lstBancosMT940(usrLogged.workingon).then(d => { $scope.bancos = d });
                 // traer empresas permitidas por el usuario
                 empresaSrvc.lstEmpresas().then(function (d) {
-                    empresaSrvc.getEmpresaUsuario(user.uid).then(function (autorizado) {
+                    empresaSrvc.getEmpresaUsuario(user.uid).then(autorizado => {
                         let idempresas = [];
                         autorizado.forEach(aut => {
                             idempresas.push(aut.id);
                         });
                         $scope.empresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
+                        $scope.params.idempresa = user.workingon.toString();
                     });
                 });
-                $scope.params.idempresa = user.workingon.toString();
             })
+
+            traerBancos = idempresa => {
+                bancoSrvc.lstBancosMT940(idempresa).then(d => { $scope.bancos = d });
+            }
 
             tipoMovTranBanSrvc.getBySuma(false).then(d => { $scope.tipotrans = d });
 
@@ -71,6 +74,7 @@
                 $scope.cargando = true;
                 delstr = moment($scope.params.fdel).format('YYYY-MM-DD');
                 alstr = moment($scope.params.fal).format('YYYY-MM-DD');
+                traerBancos($scope.params.idempresa);
 
                 estatusCarga(40);
 
@@ -122,6 +126,7 @@
             $scope.buscar = () => {
                 delstr = moment($scope.params.fdel).format('YYYY-MM-DD');
                 alstr = moment($scope.params.fal).format('YYYY-MM-DD');
+                traerBancos($scope.params.idempresa);
                 // si la conxeion es exitosa, entonces buscamos documetos para conciliar
                 tranBancSrvc.emparejarDebitos(delstr, alstr, $scope.params.idempresa)
                     .then(d => {

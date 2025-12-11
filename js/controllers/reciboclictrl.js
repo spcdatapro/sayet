@@ -574,7 +574,7 @@
 
             // conexion mt940
             function getTrans(total) {
-                tranBancSrvc.getTransPendientesRecibo().then(d => {
+                tranBancSrvc.getTransPendientesRecibo($scope.usr.workingon).then(d => {
                     // if (+total > 0) {
                         $scope.trans_banco = d.sort((a, b) => Math.abs(+a.monto - +total) - Math.abs(+b.monto - +total));
                     // } else {

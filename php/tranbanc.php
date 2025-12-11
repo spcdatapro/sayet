@@ -1197,12 +1197,12 @@ $app->post('/traer_documentos', function () {
             $query.="AND a.idtranban IS NULL ORDER BY 2, 3, 4, 5";
             break;
         case 3: 
-            $query = "SELECT a.d_estado_cuenta AS id, c.id AS idempresa, a.fecha AS concilia, 
+            $query = "SELECT a.d_estado_cuenta AS id, c.id AS idempresa, a.fecha AS concilia, e.abreviatura AS nomempresa, 
                         IF(a.tipo_transaccion = 'C', '(C) Créditos', '(D) Débitos') AS tipotrans, a.referencia AS numero_tran, a.descripcion AS beneficiario, 
                         IF(a.tipo_transaccion = 'D', a.monto, NULL) AS debito, IF(a.tipo_transaccion = 'C', a.monto, NULL) AS credito, a.monto, b.saldo_inicial AS abreviatura, 
                         b.saldo_final AS numero, IF(a.tipo_transaccion = 'C', 1, 2) AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, d.simbolo AS moneda, a.impreso
                         FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta INNER JOIN banco c ON c.mt940 = b.cuenta
-                        INNER JOIN moneda d ON c.idmoneda = d.id 
+                        INNER JOIN moneda d ON c.idmoneda = d.id INNER JOIN empresa e ON c.idempresa = e.id
                         WHERE b.estado_cuenta NOT IN(1, 2, 3, 4) AND c.idempresa = $d->idempresa ";
             $query.= isset($d->delstr) && isset($d->alstr) ? "AND a.fecha BETWEEN '$d->delstr' AND '$d->alstr'" : "";  
             $query.="ORDER BY 2, 3, 4, 5";
@@ -1289,12 +1289,12 @@ $app->post('/prntnotas', function () {
     print json_encode([ 'nota' => $datos ]);
 });
 
-$app->get('/tran_recibos', function () {
+$app->get('/tran_recibos/:idempresa', function ($idempresa) {
     $db = new dbcpm();
 
-    $query = "SELECT d_estado_cuenta AS id, c.id AS idbanco, d.id AS idmoneda, referencia AS numero, a.monto, d.simbolo AS moneda, FORMAT(a.monto, 2) AS monto_str, 'BI' AS banco, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.descripcion AS concepto
-    FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta INNER JOIN banco c ON c.mt940 = b.cuenta INNER JOIN moneda d ON c.idmoneda = d.id 
-    WHERE tipo_transaccion = 'C' AND (a.idtranban IS NULL OR a.idtranban = 0) AND b.estado_cuenta NOT IN(1, 2, 3, 4) AND a.impreso = 1";
+    $query = "SELECT d_estado_cuenta AS id, c.id AS idbanco, d.id AS idmoneda, referencia AS numero, a.monto, d.simbolo AS moneda, FORMAT(a.monto, 2) AS monto_str, 'BI' AS banco, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.descripcion AS concepto, e.abreviatura AS empresa
+    FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta INNER JOIN banco c ON c.mt940 = b.cuenta INNER JOIN moneda d ON c.idmoneda = d.id INNER JOIN empresa e ON c.idempresa = e.id
+    WHERE tipo_transaccion = 'C' AND (a.idtranban IS NULL OR a.idtranban = 0) AND b.estado_cuenta NOT IN(1, 2, 3, 4) AND a.impreso = 1 AND c.idempresa = $idempresa";
     $trans = $db->getQuery($query);
 
     print json_encode($trans);
@@ -1613,6 +1613,15 @@ $app->get('/emparejar_debitos/:del/:al/:idempresa', function ($del, $al, $idempr
                     AND a.numban != c.referencia
                     AND b.idempresa = $idempresa
             )
+            -- los que no tienen documento bancario aun
+            -- UNION  
+            -- SELECT a.id, CONCAT(b.siglas, ' (', b.nocuenta, ')') AS banco, a.numero, a.monto, a.fecha, SUBSTRING(a.concepto, 1, 50) AS concepto, NULL AS numban, 
+            -- NULL AS montoban, NULL AS fechaban, NULL AS descripcion, e.simbolo AS moneda,NULL AS id_banco, 4 AS tipo, NULL AS montobanstr, NULL AS fechabanstr, 
+            -- 1 AS emparejado, a.idbanco, a.tipotrans FROM tranban a INNER JOIN banco b ON a.idbanco = b.id INNER JOIN moneda e ON b.idmoneda = e.id 
+            -- WHERE a.fecha >= '$del' AND a.fecha <= '$al' AND b.mt940 IS NOT NULL AND a.tipotrans IN ('C','B') AND a.operado = 0 
+            -- AND (a.numban = 0 or a.numban is null) AND b.idempresa = $idempresa AND a.monto NOT IN(SELECT a.monto FROM d_estado_cuenta a 
+            -- INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta INNER JOIN banco c ON b.cuenta = c.mt940 WHERE c.idempresa = $idempresa 
+            -- AND (a.idtranban IS NULL OR a.idtranban = 0))
             ORDER BY 1";
     $debitos = $db->getQuery($query);
 
