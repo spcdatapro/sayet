@@ -861,11 +861,31 @@ $app->get('/imprimir/:idtran', function($idtran){
     $query.= " WHERE c.id=$idtran ";
     $tran[0]->reccont =$db->getQuery($query);
 
+    if (empty($tran[0]->reccont)) {
+        $query = "SELECT CONCAT(a.serie, '-', IFNULL(h.seriea, h.serieb)) AS idrec, a.fecha, IFNULL(IFNULL(b.nombre, c.nombre), 'Clientes Varios') AS cliente, 
+        e.numero, f.nombre, g.simbolo, FORMAT(e.monto, 2) AS monto, a.idempresa, NULL AS razon, e.tipotrans, e.id 
+        FROM recibocli a LEFT JOIN cliente b ON a.idcliente = b.id AND a.idcliente > 0 
+        LEFT JOIN (SELECT nombre, nit FROM factura GROUP BY nit) c ON c.nit = a.nit AND a.nit != 'CF' INNER JOIN reclitran d ON a.id = d.idrecibocli 
+        INNER JOIN tranban e ON d.idtranban = e.id INNER JOIN banco f ON e.idbanco = f.id INNER JOIN moneda g ON f.idmoneda = g.id 
+        INNER JOIN serierecli h ON h.idrecibocli = a.id 
+        WHERE e.id = $idtran GROUP BY a.id";
+        $tran[0]->reccont = $db->getQuery($query);
+    }
+
     $query = " SELECT a.idfactura, a.idrecibocli, d.siglas, b.serie, b.numero, b.fecha, c.simbolo, FORMAT(b.total, 2) AS total, FORMAT(a.monto, 2) AS monto, a.interes ";
     $query.= "FROM detcobroventa a INNER JOIN factura b ON b.id = a.idfactura INNER JOIN moneda c ON c.id = b.idmoneda INNER JOIN tipofactura d ON d.id = b.idtipofactura ";
     $query.= "INNER JOIN recibocli n ON n.id = a.idrecibocli LEFT JOIN tranban m ON m.id = n.idtranban ";
     $query.= "WHERE m.id=$idtran ";
     $tran[0]->facrec =$db->getQuery($query);
+
+    if (empty($tran[0]->facrec)) {
+        $query = "SELECT CONCAT(b.serieadmin, '-', b.numeroadmin) AS idfactura, a.idrecibocli, d.siglas, b.serie, b.numero, b.fecha, c.simbolo, 
+        FORMAT(b.total, 2) AS total, FORMAT(a.monto, 2) AS monto, a.interes 
+        FROM detcobroventa a INNER JOIN factura b ON a.idfactura = b.id INNER JOIN moneda c ON b.idmonedafact = c.id INNER JOIN tipofactura d ON b.idtipofactura = d.id 
+        INNER JOIN recibocli e ON a.idrecibocli = e.id INNER JOIN reclitran f ON f.idrecibocli = e.id 
+        WHERE f.idtranban = $idtran";
+        $tran[0]->facrec = $db->getQuery($query);
+    }
 
     if(count($tran[0]->detcont) > 0){
         $query = "SELECT 0 AS codigo, 'TOTALES:' AS nombrecta, FORMAT(SUM(a.debe), 2) AS debe, FORMAT(SUM(a.haber), 2) AS haber, 1 AS estotal ";
