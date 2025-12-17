@@ -752,8 +752,8 @@ $app->post('/control_ingresos', function () {
                         SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr)) AS isr,
                         SUM(IF(b.idmonedafact = 2, b.retivacnv, b.retiva)) AS iva,
                         IF(b.idmonedafact = 2, 1, b.tipocambio) AS tc_fact,
-                        IFNULL((SELECT SUM(dc.monto) FROM detcobroventa dc WHERE dc.idfactura = b.id AND dc.idrecibocli != a.idrecibocli),0) AS cobrado_prev
-                        -- 0 AS cobrado_prev
+                        -- IFNULL((SELECT SUM(dc.monto) FROM detcobroventa dc WHERE dc.idfactura = b.id AND dc.idrecibocli != a.idrecibocli),0) AS cobrado_prev
+                        0 AS cobrado_prev
                 FROM
                     detcobroventa a
                 INNER JOIN factura b ON a.idfactura = b.id
