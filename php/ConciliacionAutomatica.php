@@ -141,8 +141,8 @@ class ConciliacionAutomatica
         }
 
         // temporal
-        $fechaInicio = '2025-12-21';
-        $fechaFin = '2025-12-25'; 
+        $fechaInicio = '2025-12-26';
+        $fechaFin = '2025-12-31'; 
 
         $mt940 = array_filter($mt940, function ($item) use ($fechaInicio, $fechaFin) {
             $f = $item['fecha']->format('Y-m-d');
