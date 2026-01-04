@@ -126,7 +126,7 @@ class ConciliacionAutomatica
                 foreach ($periodo as $fecha) {
                     $key = $fecha->format('Y-m-d');
                     $cantidad = isset($fechas[$key]) ? count($fechas[$key]) : 0;
-                    if ($cantidad < 2) {
+                    if ($cantidad < 29) {
                         $existe = $db->getOneField("SELECT id FROM errores_ecuenta WHERE fecha = '$key'") > 0;
                         if (!$existe) {
                             $errores[] = "Faltan archivos para el día {$key} (solo $cantidad encontrado)";
@@ -139,6 +139,16 @@ class ConciliacionAutomatica
             $errores = [];
             $fecha_error = '0000-00-00';
         }
+        $fechaInicio = '2025-12-15';
+        $fechaFin = '2025-12-20'; 
+
+        $mt940 = array_filter($mt940, function ($item) use ($fechaInicio, $fechaFin) {
+            $f = $item['fecha']->format('Y-m-d');
+            if ($fechaInicio && $f < $fechaInicio) return false;
+            if ($fechaFin && $f > $fechaFin) return false;
+            return true;
+        });
+
 
         // if (!empty($errores)) {
         //     foreach ($errores as $error) {
