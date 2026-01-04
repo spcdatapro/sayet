@@ -139,8 +139,10 @@ class ConciliacionAutomatica
             $errores = [];
             $fecha_error = '0000-00-00';
         }
-        $fechaInicio = '2025-12-15';
-        $fechaFin = '2025-12-20'; 
+
+        // temporal
+        $fechaInicio = '2025-12-21';
+        $fechaFin = '2025-12-25'; 
 
         $mt940 = array_filter($mt940, function ($item) use ($fechaInicio, $fechaFin) {
             $f = $item['fecha']->format('Y-m-d');
