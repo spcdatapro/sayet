@@ -141,15 +141,15 @@ class ConciliacionAutomatica
         }
 
         // temporal
-        $fechaInicio = '2025-12-26';
-        $fechaFin = '2025-12-31'; 
+        // $fechaInicio = '2025-12-26';
+        // $fechaFin = '2025-12-31'; 
 
-        $mt940 = array_filter($mt940, function ($item) use ($fechaInicio, $fechaFin) {
-            $f = $item['fecha']->format('Y-m-d');
-            if ($fechaInicio && $f < $fechaInicio) return false;
-            if ($fechaFin && $f > $fechaFin) return false;
-            return true;
-        });
+        // $mt940 = array_filter($mt940, function ($item) use ($fechaInicio, $fechaFin) {
+        //     $f = $item['fecha']->format('Y-m-d');
+        //     if ($fechaInicio && $f < $fechaInicio) return false;
+        //     if ($fechaFin && $f > $fechaFin) return false;
+        //     return true;
+        // });
 
 
         // if (!empty($errores)) {
