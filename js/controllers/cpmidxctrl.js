@@ -64,6 +64,7 @@
                 tranBancSrvc.getErroresMT940().then(errores => {
                     console.log(errores);
                     if (errores.length > 0) {
+                        console.log('Faltan archivos MT940');
                         desktopNotification.show('No se recibieron todos los archivos MT940', {
                             icon: 'img/sayet.ico',
                             body: errores[0].descripcion,
