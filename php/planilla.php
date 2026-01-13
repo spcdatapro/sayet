@@ -2,9 +2,9 @@
 require 'vendor/autoload.php';
 require_once 'db.php';
 
-function ordenDescendente(&$array, $dateField) {
+function ordenAscendente(&$array, $dateField) {
     usort($array, function($a, $b) use ($dateField) {
-        return strtotime($b->$dateField) - strtotime($a->$dateField);
+        return strtotime($a->$dateField) - strtotime($b->$dateField);
     });
 }
 
