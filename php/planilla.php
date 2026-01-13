@@ -237,6 +237,7 @@ $app->post('/premios', function () {
                 b.nacimiento,
                 e.anios,
                 c.sueldo,
+                c.bonificacionley,
                 e.monto AS total,
                 CONCAT('Premios por antigüedad de ', e.anios, ' años') AS concepto
             FROM
@@ -266,13 +267,13 @@ $app->post('/premios', function () {
         if ($p->total == null) {
             switch ((int)$p->anios) {
                 case 5: 
-                    $p->total = $p->sueldo;
+                    $p->total = $p->sueldo + $p->bonificacionley;
                     break;
                 case 10: 
-                    $p->total = $p->sueldo * 2;
+                    $p->total = ($p->sueldo + $p->bonificacionley) * 2;
                     break;
                 case 15:
-                    $p->total = $p->sueldo * 3;
+                    $p->total = ($p->sueldo + $p->bonificacionley) * 3;
                     break;
             }   
         }
