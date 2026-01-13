@@ -2,6 +2,12 @@
 require 'vendor/autoload.php';
 require_once 'db.php';
 
+function ordenDescendente(&$array, $dateField) {
+    usort($array, function($a, $b) use ($dateField) {
+        return strtotime($b->$dateField) - strtotime($a->$dateField);
+    });
+}
+
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
 
@@ -278,6 +284,8 @@ $app->post('/premios', function () {
             }   
         }
     }
+
+    ordenDescendente($pendientes, 'fecha');
 
     print json_encode($pendientes);
 });
