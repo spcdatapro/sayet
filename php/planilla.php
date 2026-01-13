@@ -285,7 +285,7 @@ $app->post('/premios', function () {
         }
     }
 
-    ordenDescendente($pendientes, 'fecha');
+    ordenAscendente($pendientes, 'fecha');
 
     print json_encode($pendientes);
 });
