@@ -1266,7 +1266,7 @@ $app->post('/isr', function () {
                         ' ',
                         IFNULL(b.apellidocasada, '')) AS nombre,
                 b.nit,
-                DATE_FORMAT(c.ingreso, '%d/%m/%Y') AS ingreso,
+                DATE_FORMAT(IFNULL(c.reingreso, c.ingreso), '%d/%m/%Y') AS ingreso,
                 SUM(d.devengado) AS devengado,
                 SUM(d.descisr) AS isr
             FROM
