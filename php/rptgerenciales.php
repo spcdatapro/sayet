@@ -322,10 +322,12 @@ $app->post('/finanzas', function(){
                 plnnomina a
                     INNER JOIN
                 plnempleado b ON a.idplnempleado = b.id
+                    INNER JOIN 
+                plnlaboral d ON b.idlaboral = d.id
                     LEFT JOIN
                 unidad c ON b.idunidad = c.id
             WHERE
-                a.idempresa = $d->idempresa AND b.idproyecto = $d->idproyecto ";
+                a.idempresa = $d->idempresa AND d.idproyecto = $d->idproyecto ";
     $query.= isset($d->idunidad) ? "AND b.idunidad = $d->idunidad " : "";
     $query.="       AND MONTH(a.fecha) >= $d->mesdel
                     AND MONTH(a.fecha) <= $d->mesal
