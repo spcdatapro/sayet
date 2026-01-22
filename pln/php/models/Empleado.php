@@ -408,6 +408,14 @@ class Empleado extends Principal
 		if (elemento($args, 'vence')) {
 			$this->set_dato('vence', $args['vence']);
 		}
+
+		if (elemento($args, 'inicio')) {
+			$this->set_dato('inicio', $args['inicio']);
+		}
+
+		if (elemento($args, 'idempresa')) {
+			$this->set_dato('idempresa', $args['idempresa']);
+		}
 		
 		if (isset($fl['archivo'])) {
 			$base = "archivos/emp/{$this->emp->id}/" . date('Y-m-d');
@@ -841,6 +849,7 @@ class Empleado extends Principal
 					FROM plnnomina
 					WHERE idplnempleado = {$this->emp->id} 
 					AND day(fecha) <> 15
+					AND esextraordinaria = 0
 					AND esbonocatorce = 0 
 					ORDER BY fecha DESC
 					LIMIT {$this->mesesCalculo}";
