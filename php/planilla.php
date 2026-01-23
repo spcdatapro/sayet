@@ -98,19 +98,19 @@ $app->post('/anular_bitacora', function () {
             if (!empty($finiquito)) {
                 $finiquito = $finiquito[0];
                 $idprestamos = $finiquito->idprestamos > 0 ? explode(',', $finiquito->idprestamos) : null;
-            }
 
-            if (isset($idprestamos)) { 
-                foreach ($idprestamos as $id) {
-                    $monto = $db->getOneField("SELECT monto FROM plnpresabono WHERE idplnprestamo = $id AND fecha = '$finiquito->fecha'");
-                    $db->doQuery("UPDATE plnprestamo SET saldo = $monto, finalizado = 0, liquidacion = null WHERE id = $id");
-                    // ver prestamos 
-                    $db->doQuery("DELETE FROM plnpresabono WHERE idplnprestamo = $id AND fecha = '$finiquito->fecha'");
-                    $db->doQuery("DELETE FROM plnarchivo WHERE DATE_FORMAT(fecha, '%Y-%m-%d') = '$finiquito->fecha' AND idplnarchivotipo = 3 AND idplnempleado = $idempleado");
+                if (isset($idprestamos)) { 
+                    foreach ($idprestamos as $id) {
+                        $monto = $db->getOneField("SELECT monto FROM plnpresabono WHERE idplnprestamo = $id AND fecha = '$finiquito->fecha'");
+                        $db->doQuery("UPDATE plnprestamo SET saldo = $monto, finalizado = 0, liquidacion = null WHERE id = $id");
+                        // ver prestamos 
+                        $db->doQuery("DELETE FROM plnpresabono WHERE idplnprestamo = $id AND fecha = '$finiquito->fecha'");
+                        $db->doQuery("DELETE FROM plnarchivo WHERE DATE_FORMAT(fecha, '%Y-%m-%d') = '$finiquito->fecha' AND idplnarchivotipo = 3 AND idplnempleado = $idempleado");
+                    }
                 }
-            }
 
-            $db->doQuery("DELETE FROM plnfiniquito WHERE id = $finiquito->id");
+                $db->doQuery("DELETE FROM plnfiniquito WHERE id = $finiquito->id");
+            }
         }
         $db->doQuery("UPDATE plnbitacora SET mostrar = 0 WHERE id = $d->id");
         $db->doQuery("UPDATE plnempleado SET baja = $datos->baja WHERE id = $idempleado");
