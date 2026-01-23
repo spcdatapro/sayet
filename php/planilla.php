@@ -93,7 +93,11 @@ $app->post('/anular_bitacora', function () {
         $db->doQuery($str);
 
         if ($d->idplnmovimiento == 3) {
-            $finiquito = $db->getQuery("SELECT id, idprestamos, fecha FROM plnfiniquito WHERE idplnempleado = $idempleado AND pendiente = 1")[0];
+            $finiquito = $db->getQuery("SELECT id, idprestamos, fecha FROM plnfiniquito WHERE idplnempleado = $idempleado AND pendiente = 1");
+            if (!empty($finiquito)) {
+                $finiquito = $finiquito[0];
+            }
+
             $idprestamos = $finiquito->idprestamos > 0 ? explode(',', $finiquito->idprestamos) : null;
 
             if (isset($idprestamos)) { 
