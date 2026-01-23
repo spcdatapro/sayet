@@ -453,7 +453,10 @@ class Empleado extends Principal
 		return $this->db->select(
 			'plnarchivo', 
 			'*', 
-			['idplnempleado[=]' => $this->emp->id]
+			['AND' => [
+				'idplnempleado[=]' => $this->emp->id,
+				'esconder[=]' => 0
+			]]
 		);
 	}
 
@@ -2281,5 +2284,20 @@ EOT;
 
 		$idbitacora = $this->db->insert('plnbitacora', $this->datos);
 		return $idbitacora;
+	}
+
+	public function eliminarArchivo ($id) {
+		$elm = $this->db->update('plnarchivo', ['esconder' => 1], ["id [=]" => $id]);
+		if ($elm) {
+			$respuesta = new StdClass;
+			$respuesta->tipo = 'success';
+			$respuesta->mensaje = 'Archivo eliminado con exito.';
+		} else {
+			$respuesta = new StdClass;
+			$respuesta->tipo = 'error';
+			$respuesta->mensaje = 'Error al eliminar archivo, favor comunicarse con IT.';
+		}
+
+		return $respuesta;
 	}
 }

@@ -40,6 +40,7 @@ angular.module('cpm')
             $scope.ver_activos = '1';
             $scope.eliminable = false;
             $scope.form_bitacora = false;
+            $scope.form_archivo = false;
 
             // para pginas de resultados
             $scope.$watch('empleados.length', function () {
@@ -382,10 +383,10 @@ angular.module('cpm')
                 if ($scope.emp.id) {
                     var $btn = $("#btnAgregarArchivo").button('loading');
 
-                    arc.vence = $scope.formatoFecha(arc.fchvence);
+                    arc.vence = moment(arc.fchvence).isValid() ? $scope.formatoFecha(arc.fchvence) : undefined;
 
                     empServicios.agregarArchivo($scope.emp.id, arc).then(function (data) {
-                        $scope.getArchivos();
+                        $scope.getArchivos($scope.emp.id);
                         alert(data.mensaje);
                         $btn.button('reset');
 
@@ -395,6 +396,10 @@ angular.module('cpm')
 
             $scope.getArchivos = idempleado => {
                 empServicios.getArchivos(idempleado).then(function (data) {
+                    data.archivos.forEach(arch => {
+                        arch.tipo = $filter('getById')($scope.archivotipo, arch.idplnarchivotipo).descripcion;
+                        arch.fecha = moment(arch.fecha).toDate();
+                    });
                     $scope.archivos = data.archivos;
                 });
             }
@@ -846,6 +851,34 @@ angular.module('cpm')
             $scope.$watch('ver_activos', function (newValue, oldValue) {
                 $scope.buscar(newValue);
             });
+
+            $scope.getArchivo = id => {
+                let arc = $filter('getById')($scope.archivos, id);
+                arc.fchvence = moment(arc.vence).isValid() ? moment(arc.vence, 'YYYY-MM-DD').toDate() : undefined;
+                arc.fecha = moment(arc.fecha).toDate();
+                arc.inicio = moment(arc.vence).isValid() ? moment(arc.inicio).toDate() : undefined;
+                arc.idempresa = arc.idempresa ? arc.idempresa.toString() : $scope.lab.idempresadebito;
+                $scope.arc = arc;
+                $scope.form_archivo = true;
+            }
+
+            $scope.nuevoArchivo = () => {
+                $scope.arc = {};
+                $scope.form_archivo = true;
+            }
+
+            $scope.eliminarArchivo = id => {
+                $confirm({
+                    text: '¿Seguro(a) de eliminar el archivo?',
+                    title: 'Eliminar archivo', ok: 'Sí', cancel: 'No'
+                }).then(() => {
+                    empServicios.eliminarArchivo(id).then(function (d) {
+                        toaster.pop({ type: d.tipo, title: 'Eliminacion de archivo', body: d.mensaje, timeout: 7000 });
+                        $scope.getArchivos($scope.emp.id);
+                        $scope.nuevoArchivo();
+                    });
+                });
+            }
         }]
     )
 
@@ -984,7 +1017,7 @@ angular.module('cpm')
     //------------------------------------------------------------------------------------------------------------------------------------------------//
     .controller('ModalReporteEmpleadorCtrl', ['$scope', '$uibModalInstance', 'empresas', function ($scope, $uibModalInstance, empresas) {
         $scope.empresas = empresas;
-        $scope.params = {anio: moment().year() - 1};
+        $scope.params = { anio: moment().year() - 1 };
 
         $scope.ok = params => { $uibModalInstance.close(params) }
 

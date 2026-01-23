@@ -1,0 +1,131 @@
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<div class="row">
+			<div class="col-md-12" style="color: black;">
+				Archivos
+				<a style="color: black;"
+					ng-class="!form_archivo ? 'glyphicon glyphicon-chevron-down' : 'glyphicon glyphicon-chevron-up'"
+					ng-click="form_archivo = !form_archivo" class="pull-right"></a>
+			</div>
+		</div>
+	</div>
+	<div class="panel-body" ng-show="form_archivo">
+		<form novalidate role="form" ng-submit="agregarArchivo(arc)" name="archForm" id="archForm">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group required">
+						<label class="control-label" for="selTipo">Tipo:</label>
+						<select class="form-control" ng-model="arc.idplnarchivotipo" id="inputTipoArchivo"
+							ng-options="item.id as item.descripcion for item in archivotipo" required></select>
+					</div>
+				</div>
+			</div>
+			<div class="row" ng-show="arc.idplnarchivotipo == 2">
+				<div class="col-md-12">
+					<div class="form-group" ng-class="{'required': arc.idplnarchivotipo == 2}">
+						<label for="fVence" class="control-label">Fecha vence:</label>
+						<input type="date" name="fVence" id="fVence" class="form-control"
+							ng-required="arc.idplnarchivotipo == 2" ng-model="arc.fchvence">
+					</div>
+				</div>
+			</div>
+			<div class="row" ng-show="arc.idplnarchivotipo == 3">
+				<div class="col-md-6">
+					<div class="form-group" ng-class="{'required': arc.idplnarchivotipo == 3}">
+						<label for="fVence" class="control-label">Fecha baja:</label>
+						<input type="date" name="fVence" id="fVence" class="form-control"
+							ng-required="arc.idplnarchivotipo == 3" ng-model="arc.fchvence">
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group" ng-class="{'required': arc.idplnarchivotipo == 3}">
+						<label for="fVence" class="control-label">Empresa baja:</label>
+						<ui-select ng-model="arc.idempresa" title="Seleccione una empresa..." theme="bootstrap"
+							autofocus="false" ng-required="arc.idplnarchivotipo == 3">
+							<ui-select-match placeholder="Buscar empresa..." allow-clear="false">
+								<span ng-bind="($select.selected.nombre)"></span>
+							</ui-select-match>
+							<ui-select-choices repeat="item.id as item in empresasPlanilla | filter:$select.search">
+								<div ng-bind-html="(item.nombre) | highlight: $select.search"></div>
+							</ui-select-choices>
+							<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+						</ui-select>
+					</div>
+				</div>
+			</div>
+			<div class="row" ng-show="arc.idplnarchivotipo == 4">
+				<div class="col-md-6">
+					<div class="form-group" ng-class="{'required': arc.idplnarchivotipo == 4}">
+						<label for="fInicio" class="control-label">Fecha incio:</label>
+						<input type="date" name="fInicio" id="fInicio" class="form-control"
+							ng-required="arc.idplnarchivotipo == 4" ng-model="arc.incio">
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group" ng-class="{'required': arc.idplnarchivotipo == 4}">
+						<label for="fVence" class="control-label">Fecha fin:</label>
+						<input type="date" name="fVence" id="fVence" class="form-control"
+							ng-required="arc.idplnarchivotipo == 4" ng-model="arc.fchvence">
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12" ng-disabled="arc.id > 0">
+					<div class="form-group required">
+						<label for="inputArchivo" class="control-label">Archivo:</label>
+						<input type="file" file-model="arc.archivo" class="form-control" id="inputArchivo" required>
+					</div>
+				</div>
+			</div>
+			<div class="row" ng-show="!movProcesando">
+				<div class="col-md-12">
+					<div class="btn-group btn-group-justified" role="group">
+						<div class="btn-group" role="group">
+							<button class="btn btn-default" ng-show="arc.id > 0" title="Nuevo archivo" type="button"
+								ng-click="nuevoArchivo()">
+								<i class="fi fi-br-plus"></i> Nuevo
+							</button>
+						</div>
+						<div class="btn-group" role="group">
+							<a ng-href="{{ arc.ruta }}" class="btn btn-primary" role="button" target="_blank">
+								<i class="fi fi-rr-overview"></i> Ver
+							</a>
+						</div>
+						<div class="btn-group" role="group" ng-show="arc.id > 0">
+							<button class="btn btn-danger" title="Eliminar movimiento" type="button"
+								ng-click="eliminarArchivo(arc.id)">
+								<i class="fi fi-sr-trash-xmark"></i> Eliminar
+							</button>
+						</div>
+						<div class="btn-group" role="group">
+							<button class="btn btn-primary" title="Guardar cambios" type="submit"
+								ng-disabled="archForm.$invalid" ng-hide="arc.id > 0">
+								<i class="fi fi-sr-disk"></i> Guardar
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="panel-footer" style="background-color: white;">
+		<table class="table table-condensed table-hover table-responsive">
+			<thead>
+				<tr>
+					<th>Registro</th>
+					<th>Nombre</th>
+					<th>Tipo</th>
+					<th>Fin</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="a in archivos" ng-click="getArchivo(a.id)">
+					<td>{{ a.fecha | date:'dd/MM/yyyy' }}</td>
+					<td>{{a.nombre}}</td>
+					<td>{{ a.tipo }}</td>
+					<td>{{ a.vence | date: 'dd/MM/yyyy' }}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

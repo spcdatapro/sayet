@@ -1008,4 +1008,10 @@ $app->post('/baja', function(){
 	print json_encode($e->baja($data));
 });
 
+$app->delete('/eliminar_archivo/:id', function($id){
+	$e = new Empleado($id);
+
+	print json_encode($e->eliminarArchivo($id));
+});
+
 $app->run();

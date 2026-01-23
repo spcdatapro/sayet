@@ -1689,4 +1689,10 @@ $app->post('/auto_emparejar', function () {
     }
 });
 
+function ordenAscendente(&$array, $dateField) {
+    usort($array, function($a, $b) use ($dateField) {
+        return strtotime($a->$dateField) - strtotime($b->$dateField);
+    });
+}
+
 $app->run();

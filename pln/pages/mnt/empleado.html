@@ -37,6 +37,12 @@
 			/* Color del ícono */
 		}
 
+		canvas {
+			display: block;
+			max-width: 100%;
+			height: auto;
+		}
+
 		/* .toolbar {
 			float: left;
 			margin-bottom: 10px;
@@ -1447,7 +1453,7 @@
 					</div>
 				</div>
 				<div role="tabpanel" class="tab-pane" id="archivos">
-					<br>
+					<!-- <br>
 					<div class="col-md-8">
 						<form class="form-horizontal" novalidate role="form" ng-submit="agregarArchivo(arc)"
 							ng-show="hay">
@@ -1480,12 +1486,18 @@
 							</div>
 						</form>
 					</div>
-					<hr>
+					<hr> -->
 					<div class="col-md-8">
-						<div class="row" ng-cloak>
-							<div class="col-xs-6 col-md-3" ng-repeat="i in archivos">
+						<div ng-include="'pln/pages/mnt/archivos.html'"></div>
+						<!-- <div class="row" ng-cloak>
+							<div class="col-md-6" ng-repeat="i in archivos">
 								<div class="thumbnail">
-									<img ng-src="{{ i.ruta }}">
+									<img ng-if="+i.idplnarchivotipo !== 3" ng-src="{{ i.ruta }}">
+									<div ng-if="+i.idplnarchivotipo === 3"
+										ng-init="renderPdfThumb(i.ruta, 'pdf-thumb-' + $index)">
+										<canvas id="pdf-thumb-{{ $index }}"></canvas>
+									</div>
+									<canvas id="pdf-thumb-test"></canvas>
 									<div class="caption">
 										<p>{{ i.nombre }}</p>
 										<p>
@@ -1497,8 +1509,8 @@
 									</div>
 								</div>
 							</div>
-							...
-						</div>
+							... -->
+						<!-- </div> -->
 					</div>
 				</div>
 				<div role="tabpanel" class="tab-pane" id="bitacora">
