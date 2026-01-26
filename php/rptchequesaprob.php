@@ -199,7 +199,7 @@ $app->post('/aprobados', function () {
                 DATE_FORMAT(fechafactura, '%d/%m/%Y') AS fecha,
                 a.serie,
                 a.documento AS factura,
-                IFNULL(c.numban, c.numero) AS tran,
+                IF(c.numban = 0 OR c.numban IS NULL, c.numero, c.numban) AS tran,
                 a.subtotal AS monto_factura,
                 a.iva,
                 c.monto AS monto_cheque,
