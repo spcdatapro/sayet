@@ -202,7 +202,7 @@ $app->post('/aprobados', function () {
                 IF(c.numban = 0 OR c.numban IS NULL, c.numero, c.numban) AS tran,
                 a.subtotal AS monto_factura,
                 a.iva,
-                c.monto AS monto_cheque,
+                b.monto AS monto_cheque,
                 DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fecha_elaborado,
                 IFNULL(d.iniciales, 'N.E') AS elaborado_por,
                 IF(c.revisado > 0, TRUE, FALSE) AS revisado,
