@@ -242,7 +242,7 @@ $app->post('/aprobados', function () {
     $query.= isset($d->idproyecto) ? "AND a.idproyecto = $d->idproyecto " : "";
     $query.="       AND (a.ordentrabajo IS NULL
                     OR a.ordentrabajo = 0)
-            ORDER BY h.nombre , g.nomempresa , i.nomproyecto , a.fechafactura ASC";
+            ORDER BY g.nomempresa , i.nomproyecto , h.nombre , a.fechafactura ASC";
     $data = $db->getQuery($query);
 
     if (count($data) > 0) {
