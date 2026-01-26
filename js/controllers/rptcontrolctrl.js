@@ -138,7 +138,7 @@
             $scope.ver = false;
 
             try {
-                jsReportSrvc.getPDFReport('S1JX8D3Fex', params).then(function (pdf) {
+                jsReportSrvc.getPDFReport('BJ_JkGH8-l', params).then(function (pdf) {
                     $scope.content = pdf;
                     $scope.cargando = false;
                 })
