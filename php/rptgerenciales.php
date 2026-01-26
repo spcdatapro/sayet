@@ -1165,7 +1165,7 @@ $app->post('/resumen_prov', function () {
                 OR b.ordentrabajo = 0)
                 AND YEAR(b.fechafactura) = $d->anio
         GROUP BY b.idproyecto, b.idproveedor
-        ORDER BY a.nombre";
+        ORDER BY d.nomproyecto, a.nombre";
     $data = $db->getQuery($query);
 
     // agregar correlativo por cada id unico
