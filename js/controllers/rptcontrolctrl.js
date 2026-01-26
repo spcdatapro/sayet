@@ -123,15 +123,29 @@
 
         $scope.getReportProveedores = params => {
             // estatus carga
-            // $scope.cargando = true;
+            $scope.cargando = true;
 
             tranBancSrvc.datosReporteAprobados(params).then(d => {
-                console.log(d);
                 $scope.encabezado = d.encabezado;
                 $scope.data = d.data;
                 $scope.cargando = false;
                 $scope.ver = true;
             })
+        }
+
+        $scope.getCaratula = params => { 
+            $scope.cargando = true;
+            $scope.ver = false;
+
+            try {
+                jsReportSrvc.getPDFReport('S1JX8D3Fex', params).then(function (pdf) {
+                    $scope.content = pdf;
+                    $scope.cargando = false;
+                })
+            } catch (err) {
+                $scope.cargando = false;
+                console.log(err);
+            }
         }
 
         $scope.toggleAnios = function (d) {

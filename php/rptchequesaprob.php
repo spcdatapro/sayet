@@ -183,6 +183,8 @@ $app->post('/aprobados', function () {
     $letra = new stdClass();
     $letra->estampa = new DateTime();
     $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+    $letra->anio = $d->anio_inicial === $d->anio_final ? $d->anio_inicial : "$d->anio_inicial - $d->anio_final";
+    $letra->agrupar = $d->ver == 1 ? 'Año' : ($d->ver == 2 ? 'Rango de años' : 'Todos los años');
 
     $query = "SELECT 
                 a.id,

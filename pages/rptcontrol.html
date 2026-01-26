@@ -126,6 +126,10 @@
                 </div>
                 <div class="panel-footer text-right">
                     <div class="btn-group">
+                        <button type="button" class="btn btn-default" ng-click="getCaratula(params_proveedores)"
+                            ng-disabled="paramsProv.$invalid || cargando" title="Descargar caratula">
+                            <span class="fa fa-file-pdf-o" aria-hidden="true"></span> Caratula
+                        </button>
                         <button type="button" class="btn btn-danger" ng-click="getPdfProveedores(params_proveedores)"
                             ng-disabled="paramsProv.$invalid || cargando">
                             <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
