@@ -1112,12 +1112,12 @@ $app->get('/datos_empleador/:anio/:empresa', function ($anio, $empresa) {
                         SUM(hedcantidad) AS horas_dobles,
                         30 - DAY(IFNULL(fecha_ingreso, MIN(fecha))) AS dia,
                         IF(
-                            DAY(IFNULL(fecha_ingreso, MIN(fecha))) != 1,
+                            DAY(IFNULL(fecha_ingreso, '$anio-01-01')) != 1,
                             (250 * (30 - DAY(IFNULL(fecha_ingreso, MIN(fecha))))) / 30,
                             LEAST(SUM(bonificacion), 250)
                         ) AS bonificacionley,
                         IFNULL(fecha_baja, MAX(fecha)) AS fecha_baja,
-                        IFNULL(fecha_ingreso, MIN(fecha)) AS fecha_alta,
+                        IFNULL(fecha_ingreso, '$anio-01-01') AS fecha_alta,
                         SUM(sueldoordinario) AS sueldo_anual,
                         MAX(sueldoordinarioreporte) AS sueldo_mensual,
                         idempresa,
