@@ -1125,7 +1125,7 @@ $app->get('/datos_empleador/:anio/:empresa', function ($anio, $empresa) {
                     FROM plnnomina
                         WHERE YEAR(fecha) = $anio AND idempresa = $empresa
                     GROUP BY idplnempleado
-                ) AS base) e ON e.idplnempleado = a.id
+                ) AS base GROUP BY idplnempleado) e ON e.idplnempleado = a.id
                     LEFT JOIN
                 plnfiniquito f ON f.idplnempleado = a.id
                     AND e.idempresa = f.idempresa
