@@ -1080,7 +1080,27 @@ $app->get('/datos_empleador/:anio/:empresa', function ($anio, $empresa) {
                 nacionalidad d ON b.idnacionalidad = d.id
                     INNER JOIN
                 (SELECT 
-                    SUM(diastrabajados) AS dias,
+                    base.dias,
+                    base.idplnempleado,
+                    base.aguinaldo,
+                    base.bonocatorce,
+                    base.otrosingresos,
+                    base.viaticos,
+                    base.vacaciones,
+                    base.indemnizacion,
+                    base.horas_extra,
+                    base.horas_dobles,
+                    base.dia,
+                    base.bonificacionley,
+                    SUM(GREATEST(base.bonificacion_total - base.bonificacionley, 0)) AS bonificacion,
+                    base.fecha_baja,
+                    base.fecha_alta,
+                    base.sueldo_anual,
+                    base.sueldo_mensual,
+                    base.idempresa
+                FROM (
+                    SELECT 
+                        SUM(diastrabajados) AS dias,
                         idplnempleado,
                         SUM(aguinaldo) AS aguinaldo,
                         SUM(bonocatorce) AS bonocatorce,
@@ -1090,18 +1110,22 @@ $app->get('/datos_empleador/:anio/:empresa', function ($anio, $empresa) {
                         SUM(indemnizacion) AS indemnizacion,
                         SUM(horasmes) AS horas_extra,
                         SUM(hedcantidad) AS horas_dobles,
-                        LEAST(SUM(bonificacion), 3000) AS bonificacionley,
-                        SUM(GREATEST(bonificacion - 250, 0)) AS bonificacion,
+                        30 - DAY(IFNULL(fecha_ingreso, MIN(fecha))) AS dia,
+                        IF(
+                            DAY(IFNULL(fecha_ingreso, MIN(fecha))) != 1,
+                            (250 * (30 - DAY(IFNULL(fecha_ingreso, MIN(fecha))))) / 30,
+                            LEAST(SUM(bonificacion), 250)
+                        ) AS bonificacionley,
                         IFNULL(fecha_baja, MAX(fecha)) AS fecha_baja,
                         IFNULL(fecha_ingreso, MIN(fecha)) AS fecha_alta,
                         SUM(sueldoordinario) AS sueldo_anual,
                         MAX(sueldoordinarioreporte) AS sueldo_mensual,
-                        idempresa
-                FROM
-                    plnnomina
-                WHERE
-                    YEAR(fecha) = $anio AND idempresa = $empresa
-                GROUP BY idplnempleado) e ON e.idplnempleado = a.id
+                        idempresa,
+                        SUM(bonificacion) AS bonificacion_total
+                    FROM plnnomina
+                        WHERE YEAR(fecha) = $anio AND idempresa = $empresa
+                    GROUP BY idplnempleado
+                ) AS base) e ON e.idplnempleado = a.id
                     LEFT JOIN
                 plnfiniquito f ON f.idplnempleado = a.id
                     AND e.idempresa = f.idempresa
