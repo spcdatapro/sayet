@@ -1040,7 +1040,7 @@ $app->get('/datos_empleador/:anio/:empresa', function ($anio, $empresa) {
                 FIELD(c.temporalidad, 'indefinido', 'definido') AS temporalidad,
                 FIELD(c.tipocontrato, 'verbal', 'escrito') AS tipo,
                 DATE_FORMAT(c.ingreso, '%d/%m/%Y') AS inicio,
-                IF(c.reingreso IS NOT NULL, DATE_FORMAT(IFNULL(e.fecha_alta, c.reingreso),
+                IF(c.reingreso IS NOT NULL, DATE_FORMAT(c.reingreso,
                     '%d/%m/%Y'),
                     '') AS reinicio,
                 IF(a.activo = 0 OR f.idtranban > 0, DATE_FORMAT(IFNULL(e.fecha_baja, c.baja), '%d/%m/%Y'),
