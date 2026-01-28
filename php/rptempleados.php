@@ -1052,8 +1052,8 @@ $app->get('/datos_empleador/:anio/:empresa', function ($anio, $empresa) {
                         'nocturna',
                         'no esta sujeto a jornada') AS jornada,
                 IF(e.dias > 250, 250, e.dias) AS dias,
-                c.sueldo,
-                c.sueldo * 12 AS sueldo_anual,
+                e.sueldo_mensual AS sueldo,
+                e.sueldo_anual,
                 e.bonificacionley,
                 e.horas_extra + e.horas_dobles AS horas_extra,
                 ROUND(IF(e.horas_dobles > 0,
@@ -1094,7 +1094,8 @@ $app->get('/datos_empleador/:anio/:empresa', function ($anio, $empresa) {
                         SUM(GREATEST(bonificacion - 250, 0)) AS bonificacion,
                         IFNULL(fecha_baja, MAX(fecha)) AS fecha_baja,
                         IFNULL(fecha_ingreso, MIN(fecha)) AS fecha_alta,
-                        SUM(sueldoordinario) AS sueldo,
+                        SUM(sueldoordinario) AS sueldo_anual,
+                        MAX(sueldoordinarioreporte) AS sueldo_mensual,
                         idempresa
                 FROM
                     plnnomina
