@@ -1027,7 +1027,7 @@ $app->get('/datos_empleador/:anio/:empresa', function ($anio, $empresa) {
                 b.documento AS numdocumento,
                 d.codigo AS origen,
                 '' AS permiso,
-                IFNULL(b.idmunicipio, '') AS municipio,
+                g.codigo AS municipio,
                 b.nit,
                 c.igss,
                 FIELD(b.sexo, 'hombre', 'mujer') AS sexo,
@@ -1104,6 +1104,8 @@ $app->get('/datos_empleador/:anio/:empresa', function ($anio, $empresa) {
                 plnfiniquito f ON f.idplnempleado = a.id
                     AND e.idempresa = f.idempresa
                     AND f.idtranban > 0
+                    INNER JOIN 
+                municipio g ON b.idmunicipio = g.id
             WHERE
                 (c.baja IS NULL OR YEAR(c.baja) = $anio)
                     AND YEAR(c.ingreso) <= $anio";
