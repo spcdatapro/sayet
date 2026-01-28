@@ -1040,12 +1040,12 @@ $app->get('/datos_empleador/:anio/:empresa', function ($anio, $empresa) {
                 FIELD(c.temporalidad, 'indefinido', 'definido') AS temporalidad,
                 FIELD(c.tipocontrato, 'verbal', 'escrito') AS tipo,
                 DATE_FORMAT(c.ingreso, '%d/%m/%Y') AS inicio,
-                IF(c.reingreso IS NOT NULL, DATE_FORMAT(c.reingreso,
+                IF(c.reingreso IS NOT NULL AND c.idempresadebito = $empresa, DATE_FORMAT(c.reingreso,
                     '%d/%m/%Y'),
                     '') AS reinicio,
                 IF(a.activo = 0 OR f.idtranban > 0, DATE_FORMAT(IFNULL(e.fecha_baja, c.baja), '%d/%m/%Y'),
                         '') AS fin,
-                IFNULL(c.idpuesto, '') AS puesto,
+                h.codigo AS puesto,
                 FIELD(c.jornada,
                         'diurna',
                         'mixta',
@@ -1094,6 +1094,7 @@ $app->get('/datos_empleador/:anio/:empresa', function ($anio, $empresa) {
                         SUM(GREATEST(bonificacion - 250, 0)) AS bonificacion,
                         IFNULL(fecha_baja, MAX(fecha)) AS fecha_baja,
                         IFNULL(fecha_ingreso, MIN(fecha)) AS fecha_alta,
+                        SUM(sueldoordinario) AS sueldo,
                         idempresa
                 FROM
                     plnnomina
@@ -1106,6 +1107,8 @@ $app->get('/datos_empleador/:anio/:empresa', function ($anio, $empresa) {
                     AND f.idtranban > 0
                     INNER JOIN 
                 municipio g ON b.idmunicipio = g.id
+                    INNER JOIN 
+                puesto h ON c.idpuesto = h.id
             WHERE
                 (c.baja IS NULL OR YEAR(c.baja) = $anio)
                     AND YEAR(c.ingreso) <= $anio";
