@@ -71,6 +71,9 @@
             },
             listaProyectosCliente: idcliente => {
                 return comunFact.doGET(urlBase + '/proyectos_cliente/' + idcliente);
+            },
+            listaProyectosProveedor: (idproveedor, idempresa) => {
+                return comunFact.doGET(urlBase + '/proyectos_proveedor/' + idproveedor + '/' + idempresa);
             }
         };
     }]);

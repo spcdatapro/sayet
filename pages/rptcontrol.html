@@ -76,7 +76,7 @@
                             <div class="col-md-4">
                                 <div class="form-group required">
                                     <label class="control-label">Proveedores:</label>
-                                    <ui-select ng-model="params_proveedores.idproveedor"
+                                    <ui-select ng-model="params_proveedores.idproveedor" ng-change="getProyectosProveedor(params_proveedores.idproveedor, params_proveedores.idempresa)"
                                         title="Seleccione un proveedor..." theme="bootstrap" autofocus="false" required>
                                         <ui-select-match placeholder="Buscar proveedor..." allow-clear="true">
                                             <span ng-bind="($select.selected.nombre)"></span>

@@ -37,15 +37,34 @@
 
         // traer proyectos al cambiar empresa
         $scope.getProyectos = idempresa => {
-            proyectoSrvc.lstProyectosPorEmpresa(idempresa, $scope.usuario).then(function (d) { $scope.proyectos = d });
+            proyectoSrvc.lstProyectosPorEmpresa(idempresa, $scope.usuario).then(d => $scope.proyectos = d);
+            proveedorSrvc.lstProveedoresByEmpresa(idempresa, 0).then(d => {$scope.proveedores = d; console.log(d)});
             $scope.params_proveedores.idproyecto = undefined;
             $scope.params_proveedores.idproveedor = undefined;
         }
 
         // traer proveedores al cambiar proyecto/empresa
         $scope.getProveedores = (idempresa, idproyecto) => {
-            proveedorSrvc.lstProveedoresByEmpresa(idempresa, idproyecto).then(d => { $scope.proveedores = d });
-            $scope.params_proveedores.idproveedor = undefined;
+            if ($scope.params_proveedores.idproveedor > 0) {
+                return;
+            } else {
+                proveedorSrvc.lstProveedoresByEmpresa(idempresa, idproyecto).then(d => { $scope.proveedores = d });
+                $scope.params_proveedores.idproveedor = undefined;
+            }
+        }
+
+        $scope.getProyectosProveedor = (idproveedor, idempresa) => {
+            if (!$scope.params_proveedores.idproveedor) {
+                $scope.getProyectos(idempresa);
+                return;
+            }
+            console.log('llego');
+            if ($scope.params_proveedores.idproyecto > 0) {
+                return;
+            } else {
+                proyectoSrvc.listaProyectosProveedor(idproveedor, idempresa).then(d => $scope.proyectos = d);
+                $scope.params_proveedores.idproyecto = undefined;
+            }
         }
 
         // $scope.getCuentaContable = (idproveedor, idempresa) => {

@@ -397,4 +397,13 @@ $app->get('/proyectos_cliente/:idcliente', function ($idcliente) {
     return print json_encode($proyectos);
 });
 
+$app->get('/proyectos_proveedor/:idproveedor/:idempresa', function ($idproveedor, $idempresa) {
+    $db = new dbcpm();
+
+    $query = "SELECT a.id, a.nomproyecto FROM proyecto a INNER JOIN compra b ON b.idproyecto = a.id WHERE b.idproveedor = $idproveedor 
+        AND (a.idempresa = $idempresa OR a.id IN (SELECT idproyecto FROM empresa_proyecto WHERE idempresa = $idempresa)) GROUP BY a.id";
+    $proyectos = $db->getQuery($query);
+    return print json_encode($proyectos);
+});
+
 $app->run();
