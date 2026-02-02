@@ -1,3 +1,8 @@
+<style>
+    .red {
+        background-color: lightpink;
+    }
+</style>
 <div class="container" ng-controller="ventaCtrl">
     <ul class="nav nav-tabs">
         <li class="active">
@@ -414,19 +419,19 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="dc in losDetCont">
-                                <td>{{dc.desccuentacont}}</td>
-                                <td style="text-align: right">{{dc.debe | number:2}}</td>
-                                <td style="text-align: right">{{dc.haber | number:2}}</td>
-                                <td>{{dc.conceptomayor}}</td>
+                                <td ng-class="{'red': dc.anulado == 1}">{{dc.desccuentacont}}</td>
+                                <td ng-class="{'red': dc.anulado == 1}" style="text-align: right">{{dc.debe | number:2}}</td>
+                                <td ng-class="{'red': dc.anulado == 1}"style="text-align: right">{{dc.haber | number:2}}</td>
+                                <td ng-class="{'red': dc.anulado == 1}">{{dc.conceptomayor}}</td>
                                 <td>
                                     <div class="btn-group" role="group" aria-label="...">
                                         <button type="button" class="btn btn-info btn-sm" ng-click="updDetCont(dc)"
-                                            ng-disabled="periodoCerrado" ng-hide="dc.id == 0" data-toggle="tooltip"
+                                            ng-disabled="periodoCerrado || dc.anulado" ng-hide="dc.id == 0" data-toggle="tooltip"
                                             data-placement="auto" title="Modificar este detalle contable...">
                                             <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                                         </button>
                                         <button type="button" class="btn btn-danger btn-sm" ng-click="delDetCont(dc)"
-                                            ng-disabled="periodoCerrado" ng-hide="dc.id == 0">
+                                            ng-disabled="periodoCerrado || dc.anulado" ng-hide="dc.id == 0">
                                             <span class="glyphicon glyphicon-trash"></span>
                                         </button>
                                     </div>
