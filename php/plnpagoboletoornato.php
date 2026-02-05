@@ -57,7 +57,6 @@ $app->post('/rptpago', function() use($db){
             $query = "SELECT FORMAT(SUM(z.sueldo), 2) AS sueldo, FORMAT(SUM(z.bonificacionley), 2) AS bonificacion, FORMAT(SUM(z.total), 2) AS total, FORMAT(SUM(z.boleto), 2) AS boleto ";
             $query.= "FROM ($qGen) z WHERE z.idempresaactual = $empresa->idempresaactual";
             $sumas = $db->getQuery($query)[0];
-            echo $query; return;
             $empresa->boletos[] = [
                 'codigoempleado' => '', 'nombre' => 'Total empresa:', 'sueldo' => $sumas->sueldo, 'bonificacion' => $sumas->bonificacion,
                 'total' => $sumas->total, 'boleto' => $sumas->boleto, 'pagado' => ''
