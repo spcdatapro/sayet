@@ -269,7 +269,7 @@ $app->post('/premios', function () {
     $pendientes = $db->getQuery($query);
 
     foreach ($pendientes as $p) {
-        $p->fecha = new DateTime($p->nacimiento);
+        $p->fecha = new DateTime($p->ingreso);
         $p->fecha->setDate($d->anio, $p->fecha->format('m'), $p->fecha->format('d'));
         $p->fecha = $p->fecha->format('Y-m-d');
 
