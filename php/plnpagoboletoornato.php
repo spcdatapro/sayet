@@ -34,7 +34,7 @@ $app->post('/rptpago', function() use($db){
     $query = "SELECT DATE_FORMAT(NOW(), '%d/%m/%Y %H:%i:%s') AS hoy, $d->anio AS periodo";
     $generales = $db->getQuery($query)[0];
 
-    $qGen = "SELECT LPAD(a.id, 3, '0') AS codigoempleado, e.idempresadebito, c.nomempresa AS empresadebito, a.idempresaactual, d.nombre AS empresaactual, ";
+    $qGen = "SELECT LPAD(a.id, 3, '0') AS codigoempleado, e.idempresadebito, c.nomempresa AS empresadebito, e.idempresaactual, d.nombre AS empresaactual, ";
     $qGen.= "TRIM(CONCAT(IFNULL(TRIM(a.nombre), ''), ' ',IFNULL(TRIM(a.apellidos), ''))) AS nombre, e.sueldo, e.bonificacionley, (e.sueldo + e.bonificacionley) AS total, ";
     $qGen.= "(SELECT monto FROM boletoornato WHERE (e.sueldo + e.bonificacionley) >= rangode AND (e.sueldo + e.bonificacionley) <= rangoa) AS boleto, IF(b.pagado = 1, 'P', 'No P') AS pagado ";
     $qGen.= "FROM plnempleado a INNER JOIN plnlaboral e ON a.idlaboral = e.id INNER JOIN plnpagoboletoornato b ON a.id = b.idplnempleado LEFT JOIN empresa c ON c.id = e.idempresadebito LEFT JOIN plnempresa d ON d.id = e.idempresaactual ";
@@ -57,6 +57,7 @@ $app->post('/rptpago', function() use($db){
             $query = "SELECT FORMAT(SUM(z.sueldo), 2) AS sueldo, FORMAT(SUM(z.bonificacionley), 2) AS bonificacion, FORMAT(SUM(z.total), 2) AS total, FORMAT(SUM(z.boleto), 2) AS boleto ";
             $query.= "FROM ($qGen) z WHERE z.idempresaactual = $empresa->idempresaactual";
             $sumas = $db->getQuery($query)[0];
+            echo $query; return;
             $empresa->boletos[] = [
                 'codigoempleado' => '', 'nombre' => 'Total empresa:', 'sueldo' => $sumas->sueldo, 'bonificacion' => $sumas->bonificacion,
                 'total' => $sumas->total, 'boleto' => $sumas->boleto, 'pagado' => ''
