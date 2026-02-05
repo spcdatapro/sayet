@@ -734,7 +734,7 @@ FROM
 		JOIN
 	plnlaboral f ON b.idlaboral = f.id
         LEFT JOIN
-    plnempresa c ON c.id = f.idempresaactual
+    plnempresa c ON c.id = a.idempresa
     	LEFT JOIN 
     proyecto d ON d.id = f.idproyecto
 	where a.fecha between '{$args["fdel"]}' and '{$args["fal"]}' 
