@@ -1377,14 +1377,14 @@ $app->post('/proyeccion', function(){
                 d.nombre AS empresa,
                 d.numeropat AS numero,
                 d.abreviatura,
-                CONCAT(b.primernombre,
+                CONCAT(IFNULL(b.primernombre, ''),
                         ' ',
                         IFNULL(b.segundonombre, ''),
                         ' ',
-                        b.tercernombre,
-                        b.primerapellido,
+                        IFNULL(b.tercernombre, ''),
+                        IFNULL(b.primerapellido, ''),
                         ' ',
-                        b.segundoapellido,
+                        IFNULL(b.segundoapellido, ''),
                         ' ',
                         IFNULL(b.apellidocasada, '')) AS nombre,
                 NULL AS meses,
@@ -1415,8 +1415,7 @@ $app->post('/proyeccion', function(){
                     INNER JOIN
                 plnempresa d ON c.idempresaactual = d.id
             WHERE
-                a.activo = 1 AND a.nombre IS NOT NULL
-                    AND a.apellidos IS NOT NULL  ";
+                a.activo = 1 ";
     $query.= isset($d->idempresa) ? "AND c.idempresadebito = $d->idempresa " : "";
     $query.= "ORDER BY b.primernombre , b.primerapellido";
     $data = $db->getQuery($query);
