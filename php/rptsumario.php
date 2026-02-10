@@ -258,7 +258,7 @@ $app->post('/sumario', function(){
                     c.id, c.simbolo, c.eslocal, c.nommoneda AS nombre
                 FROM
                     moneda c) c ON c.id = a.idmoneda
-                    INNER JOIN
+                    LEFT JOIN
                 (SELECT 
                     d.idbanco, d.monto, d.tipotrans, d.fecha
                 FROM
