@@ -506,7 +506,7 @@ $app->post('/pagos_diarios', function () {
                     INNER JOIN
                 banco i ON c.idbanco = i.id
             WHERE
-                c.fecha BETWEEN $d->delstr AND $d->alstr ";
+                c.fecha BETWEEN '$d->delstr' AND '$d->alstr' ";
     $query.= isset($d->idtipogasto) ? "AND a.idtipogasto = $d->idtipogasto" : "";
     $pagos = $db->getQuery($query);
 
