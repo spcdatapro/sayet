@@ -846,8 +846,8 @@
                                 </td>
                                 <td style="white-space: nowrap">
                                     <button type="button" class="btn btn-danger"
-                                            ng-disabled="ot_adjunto.id_usuario == 21 && userId != 21"
-                                            ng-click="delOTAdjunto(ot_adjunto.id)">
+                                        ng-disabled="ot_adjunto.id_usuario == 21 && userId != 21"
+                                        ng-click="delOTAdjunto(ot_adjunto.id)">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </button>
                                 </td>
@@ -1089,16 +1089,33 @@
         </div>
         <div class="modal-body" style="overflow-y: auto;">
             <div class="row">
-                <div class="col-md-5">
+                <div class="col-md-6">
                     <div class="form-group">
-                        <label for="txtFechaGenera">Fecha de generaci&oacute;n de cheque:</label>
-                        <input name="txtFechaGenera" id="txtFechaGenera" type="date" class="form-control input-sm" ng-model="params.fecha" required/>
+                        <label for="txtFechaGenera">Del:</label>
+                        <input name="txtFechaGenera" id="txtFechaGenera" type="date" class="form-control input-sm" ng-model="params.del" required/>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="txtFechaGeneraAl">Al:</label>
+                        <input name="txtFechaGeneraAl" id="txtFechaGeneraAl" type="date" class="form-control input-sm" ng-model="params.al" required/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="selGasto" class="control-label">Tipo gasto:</label>
+                        <select name="selTipoGasto" id="selTipoGasto" class="form-control"
+                            ng-model="params.idtipogasto"
+                            ng-options="obj.id as obj.desctipogast for obj in tiposgasto">
+                        </select>
                     </div>
                 </div>
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-info" type="button" ng-click="ok()" ng-disabled="!params.fecha">Generar</button>
+            <button class="btn btn-info" type="button" ng-click="ok()" ng-disabled="!params.del && !params.al">Generar</button>
             <button class="btn btn-info" type="button" ng-click="cancel()">Terminar</button>
         </div>
     </script>

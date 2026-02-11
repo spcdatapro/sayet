@@ -445,8 +445,9 @@ $app->post('/pagos_diarios', function () {
     $letra->estampa = $letra->estampa->format('d-m-Y H:i');
 
     // fecha y tipo de gasto
-    $letra->fecha = new DateTime($d->fecha);
-    $letra->fecha = $letra->fecha->format('d/m/Y');
+    $del = new DateTime($d->delstr);
+    $al = new DateTime($d->alstr);
+    $letra->fecha = 'Del '. $del->format('d/m/Y') . ' al ' . $al->format('d/m/Y');
     $letra->tipogasto = isset($d->idtipogasto) ? $db->getOneField("SELECT desctipogast FROM tipogasto WHERE id = $d->idtipogasto") : "Todos los tipos de gasto";
 
     $query = "SELECT 
@@ -505,7 +506,7 @@ $app->post('/pagos_diarios', function () {
                     INNER JOIN
                 banco i ON c.idbanco = i.id
             WHERE
-                c.fecha = $d->fecha ";
+                c.fecha BETWEEN $d->delstr AND $d->alstr ";
     $query.= isset($d->idtipogasto) ? "AND a.idtipogasto = $d->idtipogasto" : "";
     $pagos = $db->getQuery($query);
 
