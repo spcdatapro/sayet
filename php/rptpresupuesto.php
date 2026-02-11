@@ -435,6 +435,135 @@ $app->post('/avanceotm', function(){
             print json_encode(['fechas' => $letra, 'orden' => $orden]);
 });
 
+$app->post('/pagos_diarios', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    // estampa
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+
+    // fecha y tipo de gasto
+    $letra->fecha = new DateTime($d->fecha);
+    $letra->fecha = $letra->fecha->format('d/m/Y');
+    $letra->tipogasto = isset($d->idtipogasto) ? $db->getOneField("SELECT desctipogast FROM tipogasto WHERE id = $d->idtipogasto") : "Todos los tipos de gasto";
+
+    $query = "SELECT 
+                a.id,
+                d.nomempresa AS empresa,
+                e.nomproyecto AS proyecto,
+                a.notas,
+                b.correlativo,
+                fecha,
+                f.nombre AS proveedor,
+                IF(b.idmoneda = 1,
+                    IF(i.idmoneda = 1,
+                        c.monto,
+                        c.monto * c.tipocambio),
+                    IF(i.idmoneda = 2,
+                        c.monto,
+                        c.monto / c.tipocambio)) AS monto,
+                IF(b.idmoneda = 1,
+                    IF(h.idmoneda = 1,
+                        h.totfact,
+                        h.totfact * h.tipocambio),
+                    IF(h.idmoneda = 2,
+                        h.totfact,
+                        h.totfact / h.tipocambio)) AS total,
+                IF(b.idmoneda = 1,
+                    IF(h.idmoneda = 1,
+                        h.isr,
+                        h.isr * h.tipocambio),
+                    IF(h.idmoneda = 2,
+                        h.isr,
+                        h.isr / h.tipocambio)) AS isr,
+                IF(b.idmoneda = 1,
+                    IF(h.idmoneda = 1,
+                        h.retiva,
+                        h.retiva * h.tipocambio),
+                    IF(h.idmoneda = 2,
+                        h.retiva,
+                        h.retiva / h.tipocambio)) AS iva,
+                a.tipocambio
+            FROM
+                presupuesto a
+                    INNER JOIN
+                detpresupuesto b ON b.idpresupuesto = a.id
+                    INNER JOIN
+                tranban c ON c.iddetpresup = b.id
+                    INNER JOIN
+                empresa d ON a.idempresa = d.id
+                    INNER JOIN
+                proyecto e ON a.idproyecto = e.id
+                    INNER JOIN
+                proveedor f ON b.idproveedor = f.id
+                    LEFT JOIN
+                detpagocompra g ON g.idtranban = c.id
+                    LEFT JOIN
+                compra h ON g.idcompra = h.id
+                    INNER JOIN
+                banco i ON c.idbanco = i.id
+            WHERE
+                c.fecha = $d->fecha ";
+    $query.= isset($d->idtipogasto) ? "AND a.idtipogasto = $d->idtipogasto" : "";
+    $pagos = $db->getQuery($query);
+
+    // Supongamos que $pagos es el resultado de tu query (array de objetos)
+    $resultadoAgrupado = [];
+
+    foreach ($pagos as $pago) {
+        $id = $pago->id;
+
+        // Buscar si ya existe el encabezado en el array
+        $index = null;
+        foreach ($resultadoAgrupado as $key => $item) {
+            if ($item["id"] == $id) {
+                $index = $key;
+                break;
+            }
+        }
+
+        if ($index === null) {
+            // Inicializamos el encabezado
+            $resultadoAgrupado[] = [
+                "id"       => $id,
+                "empresa"  => $pago->empresa,
+                "proyecto" => $pago->proyecto,
+                "notas"    => $pago->notas,
+                "totales"  => [
+                    "monto" => 0,
+                    "total" => 0,
+                    "isr"   => 0,
+                    "iva"   => 0
+                ],
+                "ot" => [] // aquí irá el detalle
+            ];
+            $index = count($resultadoAgrupado) - 1;
+        }
+
+        // Sumamos los totales
+        $resultadoAgrupado[$index]["totales"]["monto"] += (float)$pago->monto;
+        $resultadoAgrupado[$index]["totales"]["total"] += (float)$pago->total;
+        $resultadoAgrupado[$index]["totales"]["isr"]   += (float)$pago->isr;
+        $resultadoAgrupado[$index]["totales"]["iva"]   += (float)$pago->iva;
+
+        // Agregamos el detalle completo en "ot"
+        $resultadoAgrupado[$index]["ot"][] = [
+            "correlativo" => $pago->correlativo,
+            "fecha"       => $pago->fecha,
+            "proveedor"   => $pago->proveedor,
+            "monto"       => (float)$pago->monto,
+            "total"       => (float)$pago->total,
+            "isr"         => (float)$pago->isr,
+            "iva"         => (float)$pago->iva,
+            "tipocambio"  => (float)$pago->tipocambio
+        ];
+    }
+
+    print json_encode(['encabezado' => $letra, 'pagos' => $resultadoAgrupado]);
+});
+
 function getPagos($orden, $db, $esmultiple, $ids = null) {
     $cntsOts = $esmultiple ? count($orden->ots) : 1;
 
