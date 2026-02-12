@@ -785,8 +785,8 @@ $app->post('/control_ingresos', function () {
 
             if (isset($proximo)) {
                 if ($proximo->idrecibocli == $actual->idrecibocli && $proximo->idrecibocli > 0) {
-                    $proximo->diferencia = ($actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito)) * -1;
-                    // $proximo->diferencia = $actual->deposito * -1;
+                    // $proximo->diferencia = ($actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito)) * -1;
+                    $proximo->diferencia = $actual->deposito;
                     $actual->iva = 0;
                     $actual->isr = 0;
                     $actual->ingreso = 0;
