@@ -750,7 +750,7 @@ $app->post('/prestamos', function(){
                     AND (g.finalizado = 0
                     OR g.liquidacion >= '$fecha_inicio')";
     $query.= isset($d->idempresa) ? "AND h.id = $d->idempresa " : "";
-    $query.= "GROUP BY g.id UNION ALL ";
+    $query.= "GROUP BY g.id UNION ";
     $query.= "SELECT 
                 h.id AS idempresa,
                 h.nombre AS empresa,
@@ -798,7 +798,7 @@ $app->post('/prestamos', function(){
                 IF(DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m'),
                     g.monto,
                     0.00) AS nuevo,
-                IF(DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m'), 0.00, f.monto) AS descnomina,
+                f.monto AS descnomina,
                 j.monto AS descuento,
                 IF(DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m'), 0.00, f.monto) + IFNULL(j.monto, 0.00) AS totdesc,
                 (g.monto - COALESCE((SELECT 
@@ -854,6 +854,7 @@ $app->post('/prestamos', function(){
     $query.= isset($d->idempresa) ? "AND h.id = $d->idempresa " : "";
     $query.= "GROUP BY g.id ORDER BY  2 , ";
     $query.= $d->agrupar == 2 ? " 6 , 8, 11" : " 8, 11";
+    echo $query; return;
     $data = $db->getQuery($query);
 
     foreach($data as $dat) {
