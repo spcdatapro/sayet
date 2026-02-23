@@ -1676,7 +1676,7 @@ $app->post('/auto_emparejar', function () {
             $query = "SELECT operado, numban, tipotrans FROM tranban WHERE id = $idtranban";
             $operada = $db->getQuery($query)[0];
 
-            if ($operada->tipotrans == 'R') {
+            if ($operada->tipotrans == 'B') {
                 $db->doQuery("UPDATE tranban SET operado = 1, fechaoperado = '$item->fechaban', numban = $item->numban WHERE id = $idtranban");
             } else {
                 $db->doQuery("UPDATE tranban SET operado = 1, fechaoperado = '$item->fechaban' WHERE id = $idtranban");
