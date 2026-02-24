@@ -75,6 +75,7 @@
             // estatus de carga
             $scope.cargando = true;
             $scope.ver = false;
+            $scope.ver_comparativo = false;
             params.fecha_inicialstr = moment(params.fecha_inicial).format('YYYY-MM-DD');
             params.fecha_finalstr = moment(params.fecha_final).format('YYYY-MM-DD');
             // control de errores en el reporteador
