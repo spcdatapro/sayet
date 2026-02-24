@@ -332,7 +332,7 @@ $app->post('/comparativo', function () {
     $letra = new stdClass();
     $letra->estampa = new DateTime();
     $letra->estampa = $letra->estampa->format('d-m-Y H:i');
-    $letra->rango = "Del ". $meses[$d->mes - 1] ." al ". $meses[$d->mes_comparar - 1] ." del ". $d->anio;
+    $letra->rango = "Comparacion de ". $meses[$d->mes_comparar - 1] ." con ". $meses[$d->mes - 1] ." del ". $d->anio;
 
     $query = "SELECT 
                 a.id,
