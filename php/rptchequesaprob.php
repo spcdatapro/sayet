@@ -183,8 +183,8 @@ $app->post('/aprobados', function () {
     $letra = new stdClass();
     $letra->estampa = new DateTime();
     $letra->estampa = $letra->estampa->format('d-m-Y H:i');
-    $letra->anio = $d->anio_inicial === $d->anio_final ? $d->anio_inicial : "$d->anio_inicial - $d->anio_final";
-    $letra->agrupar = $d->ver == 1 ? 'Año' : ($d->ver == 2 ? 'Rango de años' : 'Todos los años');
+    $letra->anio = "Del ".$d->fecha_inicialstr." al ".$d->fecha_finalstr;
+    // $letra->agrupar = $d->ver == 1 ? 'Año' : ($d->ver == 2 ? 'Rango de años' : 'Todos los años');
 
     $query = "SELECT 
                 a.id,
@@ -236,9 +236,10 @@ $app->post('/aprobados', function () {
                     INNER JOIN
                 proyecto i ON a.idproyecto = i.id
             WHERE
-                YEAR(a.fechafactura) BETWEEN $d->anio_inicial AND $d->anio_final
+                a.fechafactura BETWEEN '$d->fecha_inicialstr' AND '$d->fecha_finalstr'
                     AND (a.idreembolso = 0
-                    OR a.idreembolso IS NULL) ";
+                    OR a.idreembolso IS NULL) 
+                    AND a.hoja_control = 1";
     $query.= isset($d->idempresa) ? "AND a.idempresa = $d->idempresa " : "";
     $query.= isset($d->idproveedor) ? "AND a.idproveedor = $d->idproveedor " : ""; 
     $query.= isset($d->idproyecto) ? "AND a.idproyecto = $d->idproyecto " : "";
@@ -318,6 +319,152 @@ $app->post('/aprobados', function () {
     }
 
     print json_encode(['encabezado' => $letra, 'data' => $transacciones]);
+});
+
+$app->post('/comparativo', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $totales = ['monto_factura', 'iva', 'monto_cheque'];
+    $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+
+    $query = "SELECT 
+                a.id,
+                e.id AS idempresa,
+                e.nombre AS empresa,
+                d.nomempresa AS abreviatura,
+                f.nomproyecto AS numero,
+                MONTH(a.fechafactura) AS idproyecto,
+                MONTH(a.fechafactura) AS proyecto,
+                MONTH(a.fechafactura) AS mes,
+                a.conceptomayor AS concepto,
+                DATE_FORMAT(fechafactura, '%d/%m/%Y') AS fecha,
+                a.serie,
+                a.documento AS factura,
+                IF(c.numban = 0 OR c.numban IS NULL,
+                    c.numero,
+                    c.numban) AS tran,
+                a.subtotal AS monto_factura,
+                a.iva,
+                b.monto AS monto_cheque,
+                d.nomempresa,
+                e.nombre AS proveedor,
+                f.nomproyecto,
+                c.tipotrans
+            FROM
+                compra a
+                    INNER JOIN
+                detpagocompra b ON b.idcompra = a.id
+                    INNER JOIN
+                tranban c ON b.idtranban = c.id
+                    INNER JOIN
+                empresa d ON a.idempresa = d.id
+                    INNER JOIN
+                proveedor e ON a.idproveedor = e.id
+                    INNER JOIN
+                proyecto f ON a.idproyecto = f.id
+            WHERE
+                YEAR(a.fechafactura) = 2025
+                    AND (a.idreembolso = 0
+                    OR a.idreembolso IS NULL)
+                    AND a.idempresa = 4
+                    AND MONTH(a.fechafactura) IN (7 , 8)
+                    AND a.idproyecto = 3
+                    AND (a.ordentrabajo IS NULL
+                    OR a.ordentrabajo = 0)
+            ORDER BY e.id , MONTH(a.fechafactura)";
+    $data = $db->getQuery($query);
+
+    if (count($data) > 0) {
+        $correlativos = [];
+        $nextCorrelativo = 1;
+
+        foreach ($data as $c) {
+            $c->proyecto = $meses[$c->mes - 1];
+            // clave compuesta: empresa + proveedor + proyecto
+            $key = $c->nomempresa . '|' . $c->proveedor . '|' . $c->nomproyecto;
+        
+            // asignar correlativo único por combinación
+            if (!isset($correlativos[$key])) {
+                $correlativos[$key] = $nextCorrelativo++;
+            }
+            $c->idempresa = $correlativos[$key];
+        
+            // contar cuántos documentos hay con la misma combinación
+            $cnt = 0;
+            foreach ($data as $x) {
+                if ($x->nomempresa === $c->nomempresa &&
+                    $x->proveedor === $c->proveedor &&
+                    $x->nomproyecto === $c->nomproyecto) {
+                    $cnt++;
+                }
+            }
+        
+            // meses del periodo (usa el campo mes de cada registro)
+            $months = max(1, (int)$c->mes);
+        
+            if ($cnt === 0) {
+                $c->cuantos = 'Sin movimientos';
+                continue;
+            }
+        
+            // frecuencia media: meses / cantidad de documentos
+            $freq = $months / $cnt;
+        
+            if ($freq <= 1.25) {
+                $c->cuantos = 'Mensual';
+            } elseif ($freq <= 2.25) {
+                $c->cuantos = 'Bimensual';
+            } elseif ($freq <= 3.25) {
+                $c->cuantos = 'Trimestral';
+            } elseif ($freq <= 6.5) {
+                $c->cuantos = 'Semestral';
+            } elseif ($cnt < $months) {
+                $c->cuantos = 'Ocasional';
+            } else {
+                $c->cuantos = 'Varios movimientos';
+            }
+        }
+
+        // Primero, agrupamos por clave compuesta y mes
+        $facturasPorMes = [];
+        foreach ($data as $c) {
+            $key = $c->nomempresa . '|' . $c->proveedor . '|' . $c->nomproyecto;
+            if (!isset($facturasPorMes[$key])) {
+                $facturasPorMes[$key] = [];
+            }
+            if (!isset($facturasPorMes[$key][$c->mes])) {
+                $facturasPorMes[$key][$c->mes] = 0;
+            }
+            $facturasPorMes[$key][$c->mes]++;
+        }
+        
+        // Ahora recorremos los datos y asignamos la columna "diferente"
+        foreach ($data as $c) {
+            $key = $c->nomempresa . '|' . $c->proveedor . '|' . $c->nomproyecto;
+        
+            // obtenemos cantidad de facturas en mes actual y siguiente
+            $mesActual = (int)$c->mes;
+            $mesSiguiente = $mesActual + 1;
+        
+            $cntActual = $facturasPorMes[$key][$mesActual] ?? 0;
+            $cntSiguiente = $facturasPorMes[$key][$mesSiguiente] ?? 0;
+        
+            // comparativo
+            $c->diferente = ($cntActual !== $cntSiguiente) ? 1 : 0;
+        }
+
+        // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
+        $reporte = new GeneradorReportes($data, 'transacciones', $totales, true);
+        $transacciones = $reporte->getReporte();
+        $montos_generales = $reporte->getTotalesGenerales();
+        $success = true;
+    } else {
+        $transacciones = 'No se recibieron datos';
+        $success = false;
+    }
+
+    print json_encode(['data' => $transacciones]);
 });
 
 $app->run();

@@ -9,7 +9,9 @@
         $scope.proveedores = [];
         // $scope.cuentas_prov = [];
 
-        $scope.params_proveedores = { ver: '1', anio_inicial: +moment().toDate().getFullYear(), anio_final: +moment().toDate().getFullYear() };
+        $scope.params_proveedores = { ver: '1', fecha_inicial: moment().startOf('year').toDate(), fecha_final: moment().endOf('month').toDate(),
+            mes: (moment().month() + 1).toString(), mes_comparar: (moment().month() - 1 < 0 ? 12 : moment().month()).toString()
+        };
 
         $scope.ver = false;
         $scope.usuario = undefined;
@@ -38,7 +40,7 @@
         // traer proyectos al cambiar empresa
         $scope.getProyectos = idempresa => {
             proyectoSrvc.lstProyectosPorEmpresa(idempresa, $scope.usuario).then(d => $scope.proyectos = d);
-            proveedorSrvc.lstProveedoresByEmpresa(idempresa, 0).then(d => {$scope.proveedores = d; console.log(d)});
+            proveedorSrvc.lstProveedoresByEmpresa(idempresa, 0).then(d => {$scope.proveedores = d; });
             $scope.params_proveedores.idproyecto = undefined;
             $scope.params_proveedores.idproveedor = undefined;
         }
@@ -67,35 +69,14 @@
             }
         }
 
-        // $scope.getCuentaContable = (idproveedor, idempresa) => {
-        //     proveedorSrvc.getLstCuentasCont(idproveedor, idempresa).then(d => $scope.cuentas_prov = d);
-        // }
-
         // hoja de control proveedores
-
-        // para asegurar 
-        $scope.$watch('params_proveedores.ver', newVal => {
-            switch (newVal) {
-                case '1':
-                    $scope.params_proveedores.anio_inicial = +moment().toDate().getFullYear();
-                    $scope.params_proveedores.anio_final = +moment().toDate().getFullYear();
-                    break;
-                case '2':
-                    $scope.params_proveedores.anio_inicial = +moment().toDate().getFullYear();
-                    $scope.params_proveedores.anio_final = +moment().toDate().getFullYear();
-                    break;
-                case '3':
-                    $scope.params_proveedores.anio_inicial = undefined;
-                    $scope.params_proveedores.anio_final = undefined;
-                    break;
-            }
-        })
-
 
         $scope.getPdfProveedores = params => {
             // estatus de carga
             $scope.cargando = true;
             $scope.ver = false;
+            params.fecha_inicialstr = moment(params.fecha_inicial).format('YYYY-MM-DD');
+            params.fecha_finalstr = moment(params.fecha_final).format('YYYY-MM-DD');
             // control de errores en el reporteador
             try {
                 jsReportSrvc.getPDFReport('HyoH1nfKxl', params).then(function (pdf) {
@@ -113,23 +94,14 @@
             // estatus de carga
             $scope.cargando = true;
             $scope.ver = false;
+            params.fecha_inicialstr = moment(params.fecha_inicial).format('YYYY-MM-DD');
+            params.fecha_finalstr = moment(params.fecha_final).format('YYYY-MM-DD');
             // control de errores en el reporteador
             try {
                 jsReportSrvc.getReport('By1YuG8Fex', params).then(function (result) {
                     var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
                     let rango = undefined;
-
-                    switch (params.ver) {
-                        case '1':
-                            rango = params.anio;
-                            break;
-                        case '2':
-                            rango = params.anio_inicial + '_' + params.anio_final;
-                            break;
-                        case '3':
-                            rango = 'todos';
-                    }
-
+                    rango = params.fecha_inicialstr + '_' + params.fecha_finalstr;
                     saveAs(file, 'Hoja_control_proveedores_' + rango + '.xlsx');
 
                     $scope.cargando = false;
@@ -143,6 +115,9 @@
         $scope.getReportProveedores = params => {
             // estatus carga
             $scope.cargando = true;
+            $scope.content = `${window.location.origin}/sayet/blank.html`;
+            params.fecha_inicialstr = moment(params.fecha_inicial).format('YYYY-MM-DD');
+            params.fecha_finalstr = moment(params.fecha_final).format('YYYY-MM-DD');
 
             tranBancSrvc.datosReporteAprobados(params).then(d => {
                 $scope.encabezado = d.encabezado;
@@ -155,6 +130,8 @@
         $scope.getCaratula = params => { 
             $scope.cargando = true;
             $scope.ver = false;
+            params.fecha_inicialstr = moment(params.fecha_inicial).format('YYYY-MM-DD');
+            params.fecha_finalstr = moment(params.fecha_final).format('YYYY-MM-DD');
 
             try {
                 jsReportSrvc.getPDFReport('BJ_JkGH8-l', params).then(function (pdf) {
@@ -167,16 +144,61 @@
             }
         }
 
-        $scope.toggleAnios = function (d) {
-            d.ver_anios = !d.ver_anios;
+        $scope.getCaratulaXML = params => { 
+            // estatus de carga
+            $scope.cargando = true;
+            $scope.ver = false;
+            params.fecha_inicialstr = moment(params.fecha_inicial).format('YYYY-MM-DD');
+            params.fecha_finalstr = moment(params.fecha_final).format('YYYY-MM-DD');
+            // control de errores en el reporteador
+
+            // control de errores en el reporteador
+            try {
+                jsReportSrvc.getReport('SJNU9iqdbx', params).then(function (result) {
+                    var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
+                    let rango = undefined;
+                    rango = params.fecha_inicialstr + '_' + params.fecha_finalstr;
+                    saveAs(file, 'Caratula_proveedores' + rango + '.xlsx');
+
+                    $scope.cargando = false;
+                })
+            } catch (err) {
+                $scope.cargando = false;
+                console.log(err);
+            }
+        }
+        // fin hoja de control proveedores
+
+        // comparativo {{por el momento solo proveedores, puede extenderse a clientes u otros}}
+        $scope.getPdfComparativo = params => {
+            // estatus de carga
+            // $scope.cargando = true;
+        }
+
+        $scope.getReportComparativo = params => {
+            // estatus carga
+            $scope.cargando = true;
+            // limpiar vista
+            $scope.content = `${window.location.origin}/sayet/blank.html`;
+
+            tranBancSrvc.datosReporteComparativo(params).then(d => {
+                $scope.data = d.data;
+                $scope.ver_comparativo = true;
+                $scope.cargando = false;
+                console.log(d);
+            })
+        }
+
+        $scope.toggleMeses = function (d) {
+            d.ver_meses = !d.ver_meses;
 
             // si se cierra, también resetea los detalles de cada año
-            if (!d.ver_anios && d.proyectos) {
-                d.proyectos.forEach(function (anio) {
-                    anio.ver_detalle = false;
-                });
-            }
+            // if (!d.ver_anios && d.proyectos) {
+            //     d.proyectos.forEach(function (anio) {
+            //         anio.ver_detalle = false;
+            //     });
+            // }
         };
-        // fin hoja de control proveedores
+        // fin 
     }])
 }())

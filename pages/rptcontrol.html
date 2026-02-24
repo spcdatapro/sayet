@@ -6,6 +6,10 @@
         font-size: 16px;
     }
 
+    .red {
+        background-color: rgb(255, 182, 182);
+    }
+
     .celeste {
         background-color: rgb(217, 231, 248);
         border-radius: 5px;
@@ -76,7 +80,8 @@
                             <div class="col-md-4">
                                 <div class="form-group required">
                                     <label class="control-label">Proveedores:</label>
-                                    <ui-select ng-model="params_proveedores.idproveedor" ng-change="getProyectosProveedor(params_proveedores.idproveedor, params_proveedores.idempresa)"
+                                    <ui-select ng-model="params_proveedores.idproveedor"
+                                        ng-change="getProyectosProveedor(params_proveedores.idproveedor, params_proveedores.idempresa)"
                                         title="Seleccione un proveedor..." theme="bootstrap" autofocus="false" required>
                                         <ui-select-match placeholder="Buscar proveedor..." allow-clear="true">
                                             <span ng-bind="($select.selected.nombre)"></span>
@@ -95,30 +100,67 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group required">
-                                    <label for="selVer" class="control-label">Ver:</label>
-                                    <select name="selVer" id="selVer" class="form-control"
-                                        ng-model="params_proveedores.ver" required>
-                                        <option value="1">A&ntilde;o</option>
-                                        <option value="2">Rango</option>
-                                        <option value="3">Todos los a&ntilde;os</option>
+                                    <label for="comparativo" class="control-label">Comparativo</label>
+                                    <input type="checkbox" name="comparativo" id="comparativo" class="form-control"
+                                        ng-true-value="1" ng-false-value="0" ng-model="params_proveedores.comparativo">
+                                </div>
+                            </div>
+                            <!-- para reporte nomral -->
+                            <div class="col-md-4"
+                                ng-show="!params_proveedores.comparativo">
+                                <div class="form-group">
+                                    <label for="fDel" class="control-label">Fecha del:</label>
+                                    <input name="fDel" id="fDel" type="date" class="form-control"
+                                        ng-model="params_proveedores.fecha_inicial">
+                                </div>
+                            </div>
+                            <div class="col-md-4"
+                                ng-show="!params_proveedores.comparativo">
+                                <div class="form-group">
+                                    <label for="fAl" class="control-label">al:</label>
+                                    <input name="fAl" id="fAl" type="date" class="form-control"
+                                        ng-model="params_proveedores.fecha_final">
+                                </div>
+                            </div>
+                            <!-- fin de reporte normal -->
+                            <!-- reporte comparativo -->
+                            <div class="col-md-4" ng-show="params_proveedores.comparativo">
+                                <div class="form-group">
+                                    <label for="mes" class="control-label">Mes:</label>
+                                    <select name="mes" id="mes" class="form-control" ng-model="params_proveedores.mes">
+                                        <option value="1">Enero</option>
+                                        <option value="2">Febrero</option>
+                                        <option value="3">Marzo</option>
+                                        <option value="4">Abril</option>
+                                        <option value="5">Mayo</option>
+                                        <option value="6">Junio</option>
+                                        <option value="7">Julio</option>
+                                        <option value="8">Agosto</option>
+                                        <option value="9">Septiembre</option>
+                                        <option value="10">Octubre</option>
+                                        <option value="11">Noviembre</option>
+                                        <option value="12">Diciembre</option>
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-4" ng-hide="params_proveedores.ver == 3">
+                            <div class="col-md-4" ng-show="params_proveedores.comparativo">
                                 <div class="form-group">
-                                    <label for="numAnioDel" class="control-label"
-                                        ng-show="params_proveedores.ver == 1">A&ntilde;o:</label>
-                                    <label for="numAnioDel" class="control-label"
-                                        ng-show="params_proveedores.ver == 2">A&ntilde;o del:</label>
-                                    <input name="numAnioDel" id="numAnioDel" type="number" class="form-control"
-                                        ng-model="params_proveedores.anio_inicial">
-                                </div>
-                            </div>
-                            <div class="col-md-4" ng-show="params_proveedores.ver == 2">
-                                <div class="form-group">
-                                    <label for="numAnioAl" class="control-label">A&ntilde;o al:</label>
-                                    <input name="numAnioAl" id="numAnioAl" type="number" class="form-control"
-                                        ng-model="params_proveedores.anio_final">
+                                    <label for="mes_comparar" class="control-label">Mes a comparar:</label>
+                                    <select name="mes_comparar" id="mes_comparar" class="form-control"
+                                        ng-model="params_proveedores.mes_comparar">
+                                        <option value="1">Enero</option>
+                                        <option value="2">Febrero</option>
+                                        <option value="3">Marzo</option>
+                                        <option value="4">Abril</option>
+                                        <option value="5">Mayo</option>
+                                        <option value="6">Junio</option>
+                                        <option value="7">Julio</option>
+                                        <option value="8">Agosto</option>
+                                        <option value="9">Septiembre</option>
+                                        <option value="10">Octubre</option>
+                                        <option value="11">Noviembre</option>
+                                        <option value="12">Diciembre</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -126,20 +168,39 @@
                 </div>
                 <div class="panel-footer text-right">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-default" ng-click="getCaratula(params_proveedores)"
-                            ng-disabled="cargando" title="Descargar caratula">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                title="Opciones de caratula">
+                                <span class="glyphicon glyphicon-cog"></span> Caratula
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a ng-click="getCaratula(params_proveedores)">
+                                        <span class="fa fa-file-pdf-o" aria-hidden="true"></span> PDF
+                                    </a>
+                                </li>
+                                <li><a ng-click="getCaratulaXML(params_proveedores)">
+                                        <span class="fa fa-file-excel-o" aria-hidden="true"></span> Excel
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- <button type="button" class="btn btn-default" ng-click="getCaratula(params_proveedores)"
+                            ng-disabled="cargando" title="Descargar caratula" ng-hide="params_proveedores.comparativo">
                             <span class="fa fa-file-pdf-o" aria-hidden="true"></span> Caratula
-                        </button>
-                        <button type="button" class="btn btn-danger" ng-click="getPdfProveedores(params_proveedores)"
+                        </button> -->
+                        <button type="button" class="btn btn-danger"
+                            ng-click="params_proveedores.comparativo ? getPdfComparativo(params_proveedores) : getPdfProveedores(params_proveedores)"
                             ng-disabled="paramsProv.$invalid || cargando">
                             <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
                         </button>
-                        <button type="button" class="btn btn-success" ng-click="getXmlProveedores(params_proveedores)"
+                        <button type="button" class="btn btn-success"
+                            ng-click="params_proveedores.comparativo ? getXmlComparativo(params_proveedores) : getXmlProveedores(params_proveedores)"
                             ng-disabled="paramsProv.$invalid || cargando">
                             <span class="fa fa-file-excel-o" aria-hidden="true"></span>
                         </button>
                         <button type="button" class="btn btn-primary"
-                            ng-click="getReportProveedores(params_proveedores)" ng-disabled="cargando">
+                            ng-click="params_proveedores.comparativo ? getReportComparativo(params_proveedores) : getReportProveedores(params_proveedores)"
+                            ng-disabled="cargando">
                             <span class="glyphicon glyphicon-eye-open"></span>
                         </button>
                     </div>
@@ -154,6 +215,7 @@
                     </div>
                 </div>
             </div>
+            <!-- hoja de control -->
             <div id="tblResumen" class="table-responsive sticky-table sticky-headers" ng-show="ver">
                 <table class="table table-responsive table-hover">
                     <caption class="ctxt amarillo" style="color: black;">HOJA DE CONTROL PROVEEDORES</caption>
@@ -218,7 +280,77 @@
                         </tr>
                     </tbody>
                 </table>
+                <!-- fin -->
             </div>
+            <!-- comparativo -->
+            <div id="tblComparativo" class="table-responsive sticky-table sticky-headers" ng-show="ver_comparativo">
+                <table class="table table-responsive table-hover">
+                    <caption class="ctxt amarillo" style="color: black;">COMPARATIVO DE PROVEEDORES</caption>
+                    <thead>
+                        <tr class="sticky-header">
+                            <th>Empresa</th>
+                            <th>Proyecto</th>
+                            <th>Proveedor</th>
+                            <th>Recurrencia</th>
+                        </tr>
+                    </thead>
+                    <tbody ng-repeat="d in data">
+                        <!-- fila principal -->
+                        <tr ng-click="toggleMeses(d)" ng-class="{'red': d.diferente}">
+                            <td>{{d.abreviatura}}</td>
+                            <td>{{d.numero}}</td>
+                            <td>{{d.nombre}}</td>
+                            <td>{{d.cuantos}}</td>
+                        </tr>
+                        <!-- fila meses -->
+                        <tr ng-if="d.ver_meses" ng-repeat-start="mes in d.proyectos">
+                            <th colspan="4" class="celeste" ng-click="mes.ver_detalle = !mes.ver_detalle">
+                                {{mes.nombre}}
+                            </th>
+                        </tr>
+
+                        <tr ng-if="mes.ver_detalle" ng-repeat-end>
+                            <td colspan="4">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Emisi&oacute;n</th>
+                                            <!-- <th>Serie</th> -->
+                                            <!-- <th>Numero</th> -->
+                                            <!-- <th>Transacci&oacute;n</th> -->
+                                            <th style="text-align: right;">Monto</th>
+                                            <th style="text-align: right;">IVA</th>
+                                            <th style="text-align: right;">Monto D&eacute;bito</th>
+                                            <!-- <th>Elaboraci&oacute;n</th> -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="det in mes.transacciones">
+                                            <td>{{det.fecha}}</td>
+                                            <!-- <td>{{det.serie}}</td> -->
+                                            <!-- <td>{{det.factura}}</td> -->
+                                            <!-- <td>{{det.tran}}</td> -->
+                                            <td style="text-align: right;">{{det.monto_factura | number: 2}}</td>
+                                            <td style="text-align: right;">{{det.iva | number: 2}}</td>
+                                            <td style="text-align: right;">{{det.monto_cheque | number: 2}}</td>
+                                            <!-- <td>{{det.fecha_elaborado}}</td> -->
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Total</th>
+                                            <th style="text-align: right;">{{mes.monto_factura | number: 2}}</th>
+                                            <th style="text-align: right;">{{mes.iva | number: 2}}</th>
+                                            <th style="text-align: right;">{{mes.monto_cheque | number: 2}}</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- fin -->
             <rpt-viewer contenido="content"></rpt-viewer>
         </div>
     </div>
