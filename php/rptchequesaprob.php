@@ -364,7 +364,7 @@ $app->post('/comparativo', function () {
                     INNER JOIN
                 proyecto f ON a.idproyecto = f.id
             WHERE
-                YEAR(a.fechafactura) = YEAR('$fecha_inicialstr')
+                YEAR(a.fechafactura) = $anio
                     AND (a.idreembolso = 0
                     OR a.idreembolso IS NULL)
                     AND a.idempresa = 4

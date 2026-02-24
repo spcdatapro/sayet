@@ -181,6 +181,8 @@
             // limpiar vista
             $scope.content = `${window.location.origin}/sayet/blank.html`;
 
+            params.anio = moment(params.fecha_inicial).year();
+
             tranBancSrvc.datosReporteComparativo(params).then(d => {
                 $scope.data = d.data;
                 $scope.ver_comparativo = true;
