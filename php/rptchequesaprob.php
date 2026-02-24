@@ -368,7 +368,7 @@ $app->post('/comparativo', function () {
                     AND (a.idreembolso = 0
                     OR a.idreembolso IS NULL)
                     AND a.idempresa = 4
-                    AND MONTH(a.fechafactura) IN ($mes , $mes_comparar)
+                    AND MONTH(a.fechafactura) IN ($d->mes , $d->mes_comparar)
                     AND a.idproyecto = 3
                     AND (a.ordentrabajo IS NULL
                     OR a.ordentrabajo = 0)
