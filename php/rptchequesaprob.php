@@ -328,6 +328,12 @@ $app->post('/comparativo', function () {
     $totales = ['monto_factura', 'iva', 'monto_cheque'];
     $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
 
+    // estampa
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+    $letra->rango = "Del ". $meses[$d->mes - 1] ." al ". $meses[$d->mes_comparar - 1] ." del ". $d->anio;
+
     $query = "SELECT 
                 a.id,
                 e.id AS idempresa,
@@ -465,7 +471,7 @@ $app->post('/comparativo', function () {
         $success = false;
     }
 
-    print json_encode(['data' => $transacciones]);
+    print json_encode(['data' => $transacciones, 'encabezado' => $letra]);
 });
 
 $app->run();
