@@ -364,14 +364,15 @@ $app->post('/comparativo', function () {
                     INNER JOIN
                 proyecto f ON a.idproyecto = f.id
             WHERE
-                YEAR(a.fechafactura) = 2025
+                YEAR(a.fechafactura) = YEAR($fecha_inicialstr)
                     AND (a.idreembolso = 0
                     OR a.idreembolso IS NULL)
                     AND a.idempresa = 4
-                    AND MONTH(a.fechafactura) IN (7 , 8)
+                    AND MONTH(a.fechafactura) IN ($mes , $mes_comparar)
                     AND a.idproyecto = 3
                     AND (a.ordentrabajo IS NULL
                     OR a.ordentrabajo = 0)
+                    AND e.hoja_control = 1
             ORDER BY e.id , MONTH(a.fechafactura)";
     $data = $db->getQuery($query);
 
