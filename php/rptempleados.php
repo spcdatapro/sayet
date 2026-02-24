@@ -854,7 +854,6 @@ $app->post('/prestamos', function(){
     $query.= isset($d->idempresa) ? "AND h.id = $d->idempresa " : "";
     $query.= "GROUP BY g.id ORDER BY  2 , ";
     $query.= $d->agrupar == 2 ? " 6 , 8, 11" : " 8, 11";
-    echo $query; return;
     $data = $db->getQuery($query);
 
     foreach($data as $dat) {
