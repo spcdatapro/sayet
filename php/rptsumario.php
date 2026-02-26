@@ -331,7 +331,7 @@ $app->post('/sumario', function(){
             array_push($monto_credito, $actual->credito);
             array_push($monto_debito, $actual->debito);
             array_push($monto_actual, $actual->saldoactual);
-            if ($d->solomov == 0 || $actual->saldoactual != 0) {
+            if ($d->solomov == 0) {
                 array_push($separador->bancos, $actual);
             }
             $totales->saldoanterior = round(array_sum($monto_anterior), 2);
