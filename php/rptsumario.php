@@ -292,9 +292,9 @@ $app->post('/sumario', function(){
         array_push($monto_credito, $anterior->credito);
         array_push($monto_debito, $anterior->debito);
         array_push($monto_actual, $anterior->saldoactual);
-        if ($d->solomov == 0 || $anterior->saldoactual != 0 || $anterior->saldoanterior != 0) {
+        // if ($d->solomov == 0 || $anterior->saldoactual != 0 || $anterior->saldoanterior != 0) {
             array_push($separador->bancos, $anterior);
-        }
+        // }
 
         // si no tienen el mismo separador
         if ($actual->idmoneda != $anterior->idmoneda || $actual->grupo != $anterior->grupo) {
