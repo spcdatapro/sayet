@@ -747,6 +747,7 @@ $app->post('/control_ingresos', function () {
                     LEFT JOIN
                 (SELECT 
                     a.idrecibocli,
+                    b.id AS idfactura,
                         IF(COUNT(b.id) > 3, CAST(CONCAT(COUNT(b.id), '-FC') AS CHAR), GROUP_CONCAT(b.numeroadmin)) AS factura,
                         SUM(IF(b.pagada = 1, IF(b.idmonedafact = 2, b.subtotalcnv, (a.monto + b.retisr + b.retiva) / b.tipocambio), IF(b.idmonedafact = 2, b.subtotalcnv, b.subtotal / b.tipocambio))) AS ingresodlr,
                         SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr / b.tipocambio)) AS isrdlr,
