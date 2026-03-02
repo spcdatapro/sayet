@@ -247,4 +247,53 @@ $app->post('/elmcargo', function() {
     print json_encode(['tipo' => $tipo, 'mensaje' => $mensaje]);
 });
 
+$app->post('/fact_tran', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    // clase para fechas
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+    $letra->fechas = 'Del ' . (new DateTime($d->fdelstr))->format('d/m/Y') . ' al ' . (new DateTime($d->falstr))->format('d/m/Y');
+
+    // 1. Consulta de facturas
+    $query = "SELECT 
+        a.id, a.serieadmin, a.numeroadmin, a.serie, a.numero, a.fecha, e.nomempresa AS empresa, a.nombre AS cliente, a.importetotal, a.idmonedafact, a.tipocambio
+    FROM factura a
+        INNER JOIN detcobroventa b ON b.idfactura = a.id
+        INNER JOIN recibocli c ON b.idrecibocli = c.id
+        LEFT JOIN reclitran d ON d.idrecibocli = c.id
+        INNER JOIN empresa e ON e.id = a.idempresa
+    WHERE (a.idfox IS NULL OR a.idfox = 0)
+        AND (c.idtranban IS NULL OR c.idtranban = 0)
+        AND a.anulada = 0
+        AND a.idtipofactura IN (1)
+        AND (a.idfacturaafecta IS NULL OR a.idfacturaafecta = 0)
+        AND a.id NOT IN (
+            SELECT id FROM factura WHERE idfacturaafecta > 0
+        )
+        AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' 
+        AND c.id NOT IN (SELECT idrecibocli FROM reclitran WHERE idtranban > 0)";
+    $facturas = $db->getQuery($query);
+
+    // 2. Consulta de tranban
+    $query = "SELECT idfact FROM tranban WHERE idfact > 0 AND fecha >= '$d->fdelstr' AND fecha <= '$d->falstr'";
+    $eliminar = $db->getQuery($query);
+
+    // 3. Filtrar en PHP
+    $tranbanIds = array_map(function($row) {
+        return $row->idfact;
+    }, $eliminar);
+    $tranbanIds = array_flip($tranbanIds);
+
+    $final = array_filter($facturas, function($row) use ($tranbanIds) {
+        return !isset($tranbanIds[$row->id]);
+    });
+
+    // 4. Devolver resultado
+    print json_encode(['encabezado' => $letra, 'facturas' => $final]);
+});
+
 $app->run();
