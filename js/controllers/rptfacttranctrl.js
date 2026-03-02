@@ -21,7 +21,7 @@
                 params.falstr = moment(params.fal).format('YYYY-MM-DD');
                 params.fdelstr = moment(params.fdel).format('YYYY-MM-DD');
 
-                jsReportSrvc.getPDFReport('BJkLbEmtbl', params).then(function (pdf) {
+                jsReportSrvc.getPDFReport('ryRIW4mKWg', params).then(function (pdf) {
                     $scope.content = pdf;
                     $scope.cargando = false;
                 });
