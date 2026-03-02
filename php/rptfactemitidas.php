@@ -260,7 +260,7 @@ $app->post('/fact_tran', function () {
 
     // 1. Consulta de facturas
     $query = "SELECT 
-        a.id, a.serieadmin, a.numeroadmin, a.serie, a.numero, a.fecha, e.nomempresa AS empresa, a.nombre AS cliente, a.importetotal, a.idmonedafact, a.tipocambio
+        a.id, a.serieadmin, a.numeroadmin, a.serie, a.numero, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, e.nomempresa AS empresa, a.nombre AS cliente, a.importetotal, a.idmonedafact, a.tipocambio
     FROM factura a
         INNER JOIN detcobroventa b ON b.idfactura = a.id
         INNER JOIN recibocli c ON b.idrecibocli = c.id
