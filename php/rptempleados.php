@@ -2141,4 +2141,87 @@ $app->post('/vacaciones_empleado', function () {
     print json_encode([ 'encabezado' => $letra, 'vacaciones' => $datos ]);
 });
 
+$app->post('/horas_extra', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+    $letra->fechas = 'Del ' . (new DateTime($d->fdelstr))->format('d/m/Y') . ' al ' . (new DateTime($d->falstr))->format('d/m/Y');
+
+    $query = "SELECT 
+                d.id AS idempresa,
+                d.nombre AS empresa,
+                d.numeropat AS numero,
+                d.abreviatura,
+                e.id AS idproyecto,
+                e.nomproyecto AS proyecto,
+                a.id AS codigo,
+                CONCAT(IFNULL(b.primernombre, ''),
+                        ' ',
+                        IFNULL(b.segundonombre, ''),
+                        ' ',
+                        IFNULL(b.tercernombre, ''),
+                        IFNULL(b.primerapellido, ''),
+                        ' ',
+                        IFNULL(b.segundoapellido, ''),
+                        ' ',
+                        IFNULL(b.apellidocasada, '')) AS nombre,
+                f.descripcion AS puesto,
+                c.jornada,
+                g.sueldoordinarioreporte,
+                SUM(g.horasmes) AS horas_extra,
+                ROUND(IF(c.jornada = 'diurna',
+                            (g.sueldoordinarioreporte / 30 / 8) * 1.5,
+                            IF(c.jornada = 'mixta',
+                                (g.sueldoordinarioreporte / 30 / 7) * 1.5,
+                                (g.sueldoordinarioreporte / 30 / 6) * 1.5)),
+                        2) AS extra_valor,
+                SUM(g.hedcantidad) AS horas_dobles,
+                ROUND(IF(c.jornada = 'diurna',
+                            (g.sueldoordinarioreporte / 30 / 8) * 2,
+                            IF(c.jornada = 'mixta',
+                                (g.sueldoordinarioreporte / 30 / 7) * 2,
+                                (g.sueldoordinarioreporte / 30 / 6) * 2)),
+                        2) AS valor_doble
+            FROM
+                plnempleado a
+                    INNER JOIN
+                plnpersonal b ON a.idpersonal = b.id
+                    INNER JOIN
+                plnlaboral c ON a.idlaboral = c.id
+                    INNER JOIN
+                plnempresa d ON c.idempresadebito = d.id
+                    INNER JOIN
+                proyecto e ON c.idproyecto = e.id
+                    INNER JOIN
+                plnpuesto f ON a.idplnpuesto = f.id
+                    INNER JOIN
+                plnnomina g ON g.idplnempleado = a.id
+            WHERE
+                g.fecha BETWEEN '$d->fdelstr' AND '$d->falstr'
+                    AND (g.horasmes > 0 OR g.hedcantidad > 0)
+            GROUP BY a.id";
+    $data = $db->getQuery($query);
+
+    foreach($data as $dat) {
+        $dat->pagar_extra = $dat->horas_extra * $dat->extra_valor;
+        $dat->pagar_dobles = $dat->horas_dobles * $dat->valor_doble;
+    }
+    $totales = ['pagar_extra', 'pagar_dobles'];
+    $porproyecto = $d->agrupar == 2 ? true : false;
+
+    // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
+    $reporte = new GeneradorReportes($data, 'empleados', $totales, $porproyecto);
+    $empleados = $reporte->getReporte();
+    $montos_generales = $reporte->getTotalesGenerales();
+
+    foreach($totales as $t) {
+        $letra->$t = array_sum($montos_generales->$t);
+    }
+
+    print json_encode([ 'encabezado' => $letra, 'empresas' => $empleados ]);
+});
+
 $app->run();
