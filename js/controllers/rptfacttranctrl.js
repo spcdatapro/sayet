@@ -21,7 +21,7 @@
                 params.falstr = moment(params.fal).format('YYYY-MM-DD');
                 params.fdelstr = moment(params.fdel).format('YYYY-MM-DD');
 
-                jsReportSrvc.getPDFReport('SkGm8JJdR', params).then(function (pdf) {
+                jsReportSrvc.getPDFReport('BJkLbEmtbl', params).then(function (pdf) {
                     $scope.content = pdf;
                     $scope.cargando = false;
                 });
@@ -36,7 +36,7 @@
                 params.falstr = moment(params.fal).format('YYYY-MM-DD');
                 params.fdelstr = moment(params.fdel).format('YYYY-MM-DD');
 
-                jsReportSrvc.getReport('B1wOhgkOC', params).then(function (result) {
+                jsReportSrvc.getReport('HJGLL87K-g', params).then(function (result) {
                     var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
                     let rango = undefined;
 
