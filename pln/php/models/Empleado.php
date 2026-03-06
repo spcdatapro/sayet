@@ -1416,7 +1416,7 @@ EOT;
 
 		if ($bit->idempresadebito > 0 && $bit->idplnmovimiento != 6) {
 			$nomempresa = $this->db->select("empresa","nomempresa",["id [=]" => $bit->idempresadebito])[0];
-		} else if ($antes !== null) {
+		} else if ($antes !== null && $bit->idplnmovimiento != 6) {
 			$antes = get_object_vars($antes);
 			// print_r($antes); return;
 			foreach ($antes as $a => $valor) {
