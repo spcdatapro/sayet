@@ -102,9 +102,11 @@
                     <div class="col-md-2 col-sm-2 nopadding">
                         <div class="form-group">
                             <label for="chkSoloAnuladas">Solo anuladas:</label>
-                            <input name="chkSoloAnuladas" id="chkSoloAnuladas" type="checkbox"
-                                class="form-control input-sm" ng-model="params.soloanuladas" ng-true-value="1"
-                                ng-false-value="0" />
+                            <select name="chkSoloAnuladas" id="chkSoloAnuladas" class="form-control" ng-model="params.soloanuladas">
+                                <option value="0">Todas</option>
+                                <option value="1">Solo anuladas</option>
+                                <option value="2">Activas</option>
+                            </select>
                         </div>
                     </div>
                 </div>
