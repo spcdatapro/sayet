@@ -2204,7 +2204,7 @@ $app->post('/horas_extra', function () {
                     AND (g.horasmes > 0 OR g.hedcantidad > 0)
             GROUP BY a.id ";
     $query.=   "ORDER BY 4 , 5 ,"; 
-    $query.= $d->agrupar == 2 ? " 6 , 7" : " 7";
+    $query.= $d->agrupar == 2 ? " 6 , 8" : " 8";
     $data = $db->getQuery($query);
 
     foreach($data as $dat) {
