@@ -2203,7 +2203,7 @@ $app->post('/horas_extra', function () {
                 g.fecha BETWEEN '$d->fdelstr' AND '$d->falstr'
                     AND (g.horasmes > 0 OR g.hedcantidad > 0)
             GROUP BY a.id ";
-    $query.=   "ORDER BY 4 , 5 ,"; 
+    $query.=   "ORDER BY 2 "; 
     $query.= $d->agrupar == 2 ? " 6 , 8" : " 8";
     $data = $db->getQuery($query);
 
