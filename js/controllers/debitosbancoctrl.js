@@ -11,6 +11,7 @@
             $scope.iniciales = 'N/E';
             $scope.params = { fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), reporte: false, ver: '0' };
             $scope.idbanco = undefined;
+            $scope.todos = true;
 
             // para paginar
             $scope.currentPage = 1; // Página actual
@@ -256,6 +257,14 @@
                     toaster.pop({ type: 'error', title: 'Emparejar débitos', body: 'No hay débitos seleccionados para emparejar.', timeout: 5000 });
                     return;
                 }
+            }
+
+            $scope.selTodos = todos => {
+                $scope.paginatedEmpleados().forEach(tran => {
+                    if (tran.cuantos === 1) {
+                        tran.conciliar = todos;
+                    }
+                });
             }
 
         }]);
