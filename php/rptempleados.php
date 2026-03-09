@@ -2170,7 +2170,7 @@ $app->post('/horas_extra', function () {
                         IFNULL(b.apellidocasada, '')) AS nombre,
                 f.descripcion AS puesto,
                 c.jornada,
-                g.sueldoordinarioreporte,
+                g.sueldoordinarioreporte AS sueldo,
                 ROUND(SUM(g.horasmes), 0) AS horas_extra,
                 ROUND(IF(c.jornada = 'diurna',
                             (g.sueldoordinarioreporte / 30 / 8) * 1.5,
