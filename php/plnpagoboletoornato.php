@@ -40,7 +40,7 @@ $app->post('/rptpago', function() use($db){
     $qGen.= "CONCAT(IFNULL(f.primernombre, ''), ' ', IFNULL(f.segundonombre,''), ' ', IFNULL(f.tercernombre,''), IFNULL(f.primerapellido, ''), ' ', IFNULL(f.segundoapellido, ''), ' ', IFNULL(f.apellidocasada, '')) AS nombre, e.sueldo, e.bonificacionley, (e.sueldo + e.bonificacionley) AS total, ";
     $qGen.= "(SELECT monto FROM boletoornato WHERE (e.sueldo + e.bonificacionley) >= rangode AND (e.sueldo + e.bonificacionley) <= rangoa) AS boleto, IF(b.pagado = 1, 'P', 'No P') AS pagado ";
     $qGen.= "FROM plnempleado a INNER JOIN plnlaboral e ON a.idlaboral = e.id INNER JOIN plnpagoboletoornato b ON a.id = b.idplnempleado LEFT JOIN empresa c ON c.id = e.idempresadebito LEFT JOIN plnempresa d ON d.id = e.idempresaactual ";
-    $qGen.="INNER JOIN plnpersonal f ON b.idpersonal = f.id ";
+    $qGen.= "INNER JOIN plnpersonal f ON a.idpersonal = f.id ";
     $qGen.= "WHERE b.periodo = $d->anio ";
     $qGen.= (int)$d->idempresa > 0 ? "AND e.idempresaactual = $d->idempresa " : "";
     $qGen.= "ORDER BY 5, 6";
