@@ -211,7 +211,7 @@
             })
         }
 
-        $scope.getXmlProveedores = params => {
+        $scope.getXmlComparativo = params => {
             // estatus de carga
             $scope.cargando = true;
             $scope.ver = false;

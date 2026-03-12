@@ -82,7 +82,7 @@
                                     <label class="control-label">Proveedores:</label>
                                     <ui-select ng-model="params_proveedores.idproveedor"
                                         ng-change="getProyectosProveedor(params_proveedores.idproveedor, params_proveedores.idempresa)"
-                                        title="Seleccione un proveedor..." theme="bootstrap" autofocus="false" required>
+                                        title="Seleccione un proveedor..." theme="bootstrap" autofocus="false" ng-required="params_proveedores.comparativo == 0">
                                         <ui-select-match placeholder="Buscar proveedor..." allow-clear="true">
                                             <span ng-bind="($select.selected.nombre)"></span>
                                         </ui-select-match>
