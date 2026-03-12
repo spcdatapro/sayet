@@ -101,11 +101,15 @@
                     let abreviatura = $filter('getById')($scope.empresas, $scope.params.idempresa).abreviatura;
                     abreviatura = !!abreviatura ? abreviatura : '';
                     d.forEach(f => {
+                        let campos_adicionales = `|||`;
                         var idtiporeceptor = `${f.tipoidreceptor}`;
                         if (f.serieadmin == 'BI' && f.tipodocumento == 'FACT') {
                             idtiporeceptor = '';
                         }
-                        facturas += `${f.tiporegistro}|${f.fechadocumento}|${f.tipodocumento}|${f.nitcomprador}|${f.codigomoneda}|${f.tasacambio}|${f.ordenexterno}|${f.tipoventa}|${f.destinoventa}|${f.enviarcorreo}|${f.nombrecomprador}|${f.direccion}|${f.nombrecorto}|$ ${f.montodol}|${f.tipocambio}|$ ${f.pagonetodol}|${f.monedafact} ${f.pagoneto}|${f.monedafact} ${f.retiva}|${f.monedafact} ${f.retisr}|${f.monedafact} ${f.monto}|${f.numeroacceso}|${f.serieadmin}|${f.numeroadmin}|${idtiporeceptor}\n`;
+                        if (f.serieadmin == 'BI') {
+                            campos_adicionales = `|||`;
+                        }
+                        facturas += `${f.tiporegistro}|${f.fechadocumento}|${f.tipodocumento}|${f.nitcomprador}|${f.codigomoneda}|${f.tasacambio}|${f.ordenexterno}|${f.tipoventa}|${f.destinoventa}|${f.enviarcorreo}|${f.nombrecomprador}|${f.direccion}|${f.nombrecorto}|$ ${f.montodol}|${f.tipocambio}|$ ${f.pagonetodol}|${f.monedafact} ${f.pagoneto}|${f.monedafact} ${f.retiva}|${f.monedafact} ${f.retisr}|${f.monedafact} ${f.monto}|${f.numeroacceso}|${f.serieadmin}|${f.numeroadmin}|${idtiporeceptor}${campos_adicionales}\n`;
                         f.detalle.forEach(d => {
                             facturas += `${d.tiporegistro}|${d.cantidad}|${d.unidadmedida}|${d.precio}|${d.porcentajedescuento}|${d.importedescuento}|${d.importebruto}|${d.importeexento}|${d.importeneto}|${d.importeiva}|${d.importeotros}|${d.importetotal}|${d.producto}|${d.descripcion}|${d.tipoventa}\n`;
                         });
