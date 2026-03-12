@@ -373,10 +373,10 @@ $app->post('/comparativo', function () {
                 YEAR(a.fechafactura) = $d->anio
                     AND (a.idreembolso = 0
                     OR a.idreembolso IS NULL)
-                    AND a.idempresa = 4
-                    AND MONTH(a.fechafactura) IN ($d->mes , $d->mes_comparar)
-                    AND a.idproyecto = 3
-                    AND (a.ordentrabajo IS NULL
+                    AND a.idempresa = $d->idempresa
+                    AND MONTH(a.fechafactura) IN ($d->mes , $d->mes_comparar) ";
+    $query.= isset($d->idproyecto) ? "AND a.idproyecto = $d->idproyecto " : "";
+    $query.= "AND (a.ordentrabajo IS NULL
                     OR a.ordentrabajo = 0)
                     AND e.hoja_control = 1
             ORDER BY e.id , MONTH(a.fechafactura)";
