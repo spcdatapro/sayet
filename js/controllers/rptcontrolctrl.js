@@ -95,6 +95,7 @@
             // estatus de carga
             $scope.cargando = true;
             $scope.ver = false;
+            $scope.ver_comparativo = false;
             params.fecha_inicialstr = moment(params.fecha_inicial).format('YYYY-MM-DD');
             params.fecha_finalstr = moment(params.fecha_final).format('YYYY-MM-DD');
             // control de errores en el reporteador
@@ -117,6 +118,7 @@
             // estatus carga
             $scope.cargando = true;
             $scope.content = `${window.location.origin}/sayet/blank.html`;
+            $scope.ver_comparativo = false;
             params.fecha_inicialstr = moment(params.fecha_inicial).format('YYYY-MM-DD');
             params.fecha_finalstr = moment(params.fecha_final).format('YYYY-MM-DD');
 
@@ -131,6 +133,7 @@
         $scope.getCaratula = params => { 
             $scope.cargando = true;
             $scope.ver = false;
+            $scope.ver_comparativo = false;
             params.fecha_inicialstr = moment(params.fecha_inicial).format('YYYY-MM-DD');
             params.fecha_finalstr = moment(params.fecha_final).format('YYYY-MM-DD');
 
@@ -173,7 +176,22 @@
         // comparativo {{por el momento solo proveedores, puede extenderse a clientes u otros}}
         $scope.getPdfComparativo = params => {
             // estatus de carga
-            // $scope.cargando = true;
+            $scope.cargando = true;
+            $scope.ver = false;
+            $scope.ver_comparativo = false;
+
+            params.anio = moment(params.fecha_inicial).year();
+
+            // control de errores en el reporteador
+            try {
+                jsReportSrvc.getPDFReport('H1_synquWl', params).then(function (pdf) {
+                    $scope.content = pdf;
+                    $scope.cargando = false;
+                })
+            } catch (err) {
+                $scope.cargando = false;
+                console.log(err);
+            }
         }
 
         $scope.getReportComparativo = params => {
@@ -181,6 +199,7 @@
             $scope.cargando = true;
             // limpiar vista
             $scope.content = `${window.location.origin}/sayet/blank.html`;
+            $scope.ver = false;
 
             params.anio = moment(params.fecha_inicial).year();
 
@@ -190,6 +209,30 @@
                 $scope.cargando = false;
                 console.log(d);
             })
+        }
+
+        $scope.getXmlProveedores = params => {
+            // estatus de carga
+            $scope.cargando = true;
+            $scope.ver = false;
+            $scope.ver_comparativo = false;
+
+            params.anio = moment(params.fecha_inicial).year();
+
+            // control de errores en el reporteador
+            try {
+                jsReportSrvc.getReport('HkKigvgcZg', params).then(function (result) {
+                    var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
+                    let rango = undefined;
+                    rango = params.mes + '_' + params.mes_comparar + '_' + params.anio;
+                    saveAs(file, 'Comparativo_proveedores_' + rango + '.xlsx');
+
+                    $scope.cargando = false;
+                })
+            } catch (err) {
+                $scope.cargando = false;
+                console.log(err);
+            }
         }
 
         $scope.toggleMeses = function (d) {
