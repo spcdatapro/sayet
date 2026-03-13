@@ -732,7 +732,9 @@ $app->post('/control_ingresos', function () {
                     a.numban) AS tranban,
                 IFNULL(d.factura, 'SC') AS factura,
                 ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ingresodlr, 
-                d.ingreso - (SELECT IFNULL(SUM(dc.monto), 0) FROM detcobroventa dc INNER JOIN recibocli reci ON dc.idrecibocli = reci.id WHERE dc.idfactura = d.idfactura AND reci.fecha != '$d->fechastr'))), 0), 2) AS ingreso,
+                d.ingreso 
+                -- - (SELECT IFNULL(SUM(dc.monto), 0) FROM detcobroventa dc INNER JOIN recibocli reci ON dc.idrecibocli = reci.id WHERE dc.idfactura = d.idfactura AND reci.fecha != '$d->fechastr')
+                )), 0), 2) AS ingreso,
                 a.monto AS deposito,
                 ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.isrdlr, d.isr)), 0), 2) AS isr,
                 ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ivadlr, d.iva)), 0), 2) AS iva,
