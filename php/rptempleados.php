@@ -395,7 +395,7 @@ $app->post('/bono14', function(){
                 plnpuesto d ON a.idplnpuesto = d.id
             WHERE
                 e.bonocatorce > 0 AND YEAR(fecha) = $d->anio ";
-    $query.= isset($d->idempresa) ? "AND f.idempresadebito = $d->idempresa " : "";
+    $query.= isset($d->idempresa) ? "AND e.idempresa = $d->idempresa " : "";
     $query.=   "ORDER BY 4 ,";
     $query.= $d->agrupar == 2 ? " 5 , 6" : " 6";
     $data = $db->getQuery($query);
