@@ -388,7 +388,7 @@ $app->post('/bono14', function(){
                     INNER JOIN
                 plnnomina e ON e.idplnempleado = a.id
                     LEFT JOIN
-                plnempresa b ON g.idempresaactual = b.id
+                plnempresa b ON e.idempresa = b.id
                     LEFT JOIN
                 proyecto c ON g.idproyecto = c.id
                     LEFT JOIN
