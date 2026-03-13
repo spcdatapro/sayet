@@ -101,7 +101,7 @@
                     let abreviatura = $filter('getById')($scope.empresas, $scope.params.idempresa).abreviatura;
                     abreviatura = !!abreviatura ? abreviatura : '';
                     d.forEach(f => {
-                        let campos_adicionales = `|||`;
+                        let campos_adicionales = '';
                         var idtiporeceptor = `${f.tipoidreceptor}`;
                         if (f.serieadmin == 'BI' && f.tipodocumento == 'FACT') {
                             idtiporeceptor = '';
