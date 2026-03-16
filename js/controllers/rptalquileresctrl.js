@@ -7,7 +7,7 @@
         $scope.params = {
             fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), usuario: '', porlocal: 0, sinproy: 0, verinactivos: 0, solofacturados: 0, categoria: undefined
         };
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
         $scope.empresas = [];
         $scope.proyectos = [];
         $scope.tipos = [];

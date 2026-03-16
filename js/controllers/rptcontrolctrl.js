@@ -16,7 +16,7 @@
         $scope.ver = false;
         $scope.usuario = undefined;
         $scope.cargando = false;
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
 
         // servicio para traer la informacion del usuario
         authSrvc.getSession().then(function (usuario) {
@@ -117,7 +117,7 @@
         $scope.getReportProveedores = params => {
             // estatus carga
             $scope.cargando = true;
-            $scope.content = `${window.location.origin}/sayet/blank.html`;
+            $scope.content = `${window.location.origin}/blank.html`
             $scope.ver_comparativo = false;
             params.fecha_inicialstr = moment(params.fecha_inicial).format('YYYY-MM-DD');
             params.fecha_finalstr = moment(params.fecha_final).format('YYYY-MM-DD');
@@ -198,7 +198,7 @@
             // estatus carga
             $scope.cargando = true;
             // limpiar vista
-            $scope.content = `${window.location.origin}/sayet/blank.html`;
+            $scope.content = `${window.location.origin}/blank.html`
             $scope.ver = false;
 
             params.anio = moment(params.fecha_inicial).year();

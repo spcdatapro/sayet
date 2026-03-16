@@ -7,7 +7,7 @@
         $scope.params = { mes: (moment().month() + 1).toString(), anio: moment().year(), cliente: undefined, fdel: undefined, fal: undefined, ordenalfa: 1 };
         $scope.clientes = [];
         $scope.meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
 
         ventaSrvc.lstClientes().then(function(d){ $scope.clientes = d; });
 

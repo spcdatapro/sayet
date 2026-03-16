@@ -138,7 +138,7 @@
             // reinicar visualizacion
             function resetVer() {
                 $scope.ver = { resumen: false };
-                $scope.content = `${window.location.origin}/sayet/blank.html`;
+                $scope.content = `${window.location.origin}/blank.html`
             }
 
             // formatear numero negativos en parentesis

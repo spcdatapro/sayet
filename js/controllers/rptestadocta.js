@@ -7,7 +7,7 @@
         $scope.bancos = [];
         $scope.empresas = [];
         $scope.params = { fDel: moment().startOf('month').toDate(), fAl: moment().endOf('month').toDate(), resumen: 0 };
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
         $scope.cargando = false;
 
         authSrvc.getSession().then(function(usrLogged){

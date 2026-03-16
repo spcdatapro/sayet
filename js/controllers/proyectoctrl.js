@@ -778,7 +778,7 @@
     proyectoctrl.controller('ModalListProyectosCtrl', ['$scope', '$uibModalInstance', 'empresas', 'tipos', 'jsReportSrvc', function ($scope, $uibModalInstance, empresas, tipos, jsReportSrvc) {
         $scope.empresas = empresas;
         $scope.tipos = tipos;
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
 
         $scope.resetParams = () => $scope.params = { idempresa: undefined, tipo: undefined, cuales: '1' };        
 

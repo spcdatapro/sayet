@@ -5,7 +5,7 @@
     rptplnpremiosctrl.controller('rptPlnPremiosCtrl', ['$scope', 'empresaSrvc', 'authSrvc', 'jsReportSrvc', function($scope, empresaSrvc, authSrvc, jsReportSrvc){
 
         $scope.params = { del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate() };
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
 
         var test = false;
         $scope.getReporte = function(){

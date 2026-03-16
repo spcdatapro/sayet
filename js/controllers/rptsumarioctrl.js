@@ -9,7 +9,7 @@
         // variable para mostrar que esta cargando
         $scope.estaGenerando = false;
         // para mostrar reporte en pantalla
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
 
         authSrvc.getSession().then(usr => {
             $scope.params.usuario = usr.iniciales;

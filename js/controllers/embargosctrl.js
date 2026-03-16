@@ -20,7 +20,7 @@
         $scope.cargando = false;
 
         // para visualizaciones en pantalla
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
 
         // traer empresas
         authSrvc.getSession().then(usr => {

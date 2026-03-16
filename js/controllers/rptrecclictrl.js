@@ -13,7 +13,7 @@
         $scope.monedas = [];
         $scope.clientes = [];
         $scope.proyectos = [];
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
 
         authSrvc.getSession().then(function (usuario) {
             // traer empresas permitidas por el usuario

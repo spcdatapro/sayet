@@ -5,7 +5,7 @@
     rptarbolsrvcctrl.controller('rptArbolSrvcCtrl', ['$scope', 'jsReportSrvc', function ($scope, jsReportSrvc) {
 
         $scope.params = { mes: (moment().month() + 1).toString(), anio: moment().year() };
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
 
         var test = false;
         $scope.getRptAgua = function () {

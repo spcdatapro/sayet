@@ -10,7 +10,7 @@
             // parametros para reporte
             $scope.params = { fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate() };
 
-            $scope.content = `${window.location.origin}/sayet/blank.html`;
+            $scope.content = `${window.location.origin}/blank.html`
 
             // pdf
             $scope.getPDF = function (params) {

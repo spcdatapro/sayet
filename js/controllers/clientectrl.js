@@ -1238,7 +1238,7 @@
 
     clientectrl.controller('ModalListClientesCtrl', ['$scope', '$uibModalInstance', 'empresas', 'jsReportSrvc', function ($scope, $uibModalInstance, empresas, jsReportSrvc) {
         $scope.empresas = empresas;
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
 
         $scope.resetParams = () => $scope.params = { idempresa: undefined };
 

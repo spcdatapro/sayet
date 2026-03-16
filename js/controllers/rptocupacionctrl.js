@@ -24,7 +24,7 @@
 
             // para visualizaciones en pantalla
             $scope.ver = false;
-            $scope.content = `${window.location.origin}/sayet/blank.html`;
+            $scope.content = `${window.location.origin}/blank.html`
 
             // asignar la empresa en la que el usuario se encuentra
             authSrvc.getSession().then(usuario => {
@@ -118,7 +118,7 @@
             // reinicar visualizacion
             function resetVer() {
                 $scope.ver = false;
-                $scope.content = `${window.location.origin}/sayet/blank.html`;
+                $scope.content = `${window.location.origin}/blank.html`
             }
         }])
 

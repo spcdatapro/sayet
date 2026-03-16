@@ -16,7 +16,7 @@
             $scope.params = { anio: +moment().toDate().getFullYear().toString(), agrupar: '1' };
 
             // para visualizaciones en pantalla
-            $scope.content = `${window.location.origin}/sayet/blank.html`;
+            $scope.content = `${window.location.origin}/blank.html`
 
             authSrvc.getSession().then(function (usuario) {
                 // traer empresas permitidas por el usuario

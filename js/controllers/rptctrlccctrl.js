@@ -9,7 +9,7 @@
         $scope.params = {
             idbeneficiario:undefined, fdini: undefined, faini: undefined, fdfin: undefined, fafin:undefined, empresas:'', estatus:'0', lstEmpresas: undefined, solocc: 0, idrembolso: undefined, solorem: 0
         };
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
 
         beneficiarioSrvc.lstBeneficiarios().then(function(d){ $scope.beneficiarios = d; });
         authSrvc.getSession().then(function (usuario) {
