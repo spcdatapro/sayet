@@ -1046,7 +1046,7 @@
             $scope.params.alstr = moment($scope.params.al).format('YYYY-MM-DD');
 
             // presupuestoSrvc.lstOtsImprimir($scope.params).then(generados => {
-            //     const url = window.location.origin + ':5489/api/report';
+            //     const url = `${window.location.origin}/api/report`;
             //     let props = {}, file, formData = new FormData();
             //     //console.log('NUEVO (MODAL) = ', nuevoFormato);
             //     const shortId = nuevoFormato ? 'rJPo84G0w' : 'S1eAuyN2b';

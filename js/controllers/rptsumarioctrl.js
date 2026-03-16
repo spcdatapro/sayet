@@ -38,7 +38,7 @@
             $scope.params.resumen = 1;
 
             bancoSrvc.getCuentasSumario(+$scope.params.idmoneda, $scope.params.fdelstr, $scope.params.falstr, $scope.params.tipo).then(function (d) {
-                var url = window.location.origin + ':5489/api/report', props = {}, file, formData = new FormData();
+                var url = `${window.location.origin}/api/report`, props = {}, file, formData = new FormData();
 
                 props = { 'template': { 'shortid': 'By_inM6jp' }, 'data': $scope.params };
                 $http.post(url, props, { responseType: 'arraybuffer' }).then(function (response) {

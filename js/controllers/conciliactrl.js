@@ -200,7 +200,7 @@
                     }
                 });
 
-                const url = window.location.origin + ':5489/api/report';
+                const url = `${window.location.origin}/api/report`;
                 let props = {}, file, formData = new FormData();
 
                 const promises = aimprimir.map(tran => {
