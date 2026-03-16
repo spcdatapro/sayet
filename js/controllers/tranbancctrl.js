@@ -592,7 +592,7 @@
                     });
                 }
                 // console.log(objs); return;
-                socketIOSrvc.emit('print', JSON.stringify(objs));
+                socketIOSrvc.emit('sayet:print', JSON.stringify(objs));
             });
         };
 
