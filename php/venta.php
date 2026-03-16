@@ -219,7 +219,7 @@ $app->post('/modmontos', function(){
     $query.= ")";
     $db->doQuery($query);
 
-    $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
+    $url = 'http://localhost/php/genpartidasventa.php/genpost';
     $data = ['ids' => $d->id, 'idcontrato' => $old->concontrato];
     $db->CallJSReportAPI('POST', $url, json_encode($data));
 });

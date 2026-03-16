@@ -65,7 +65,7 @@
                             success: function () { $scope.estaGenerando = false; },
                             error: function () { console.log("Se produjo un error al generar el sumario y su detalle..."); }
                         }).done(function () {
-                            var urlpdf = window.location.origin + '/sayet/php/pdfgenerator/SumarioDetalle.pdf';
+                            var urlpdf = window.location.origin + '/php/pdfgenerator/SumarioDetalle.pdf';
                             $window.open(urlpdf);
                         });
                     });

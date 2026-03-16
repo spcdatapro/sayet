@@ -1,6 +1,7 @@
 <?php
 
-define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
+// define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
+define('BASEPATH', $_SERVER['DOCUMENT_ROOT']);
 define('PLNPATH', BASEPATH . '/pln/php');
 
 require_once 'fpdf.php';

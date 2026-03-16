@@ -2,7 +2,7 @@
 require 'vendor/autoload.php';
 require_once 'db.php';
 
-$plantillas = $_SERVER["DOCUMENT_ROOT"] . "/sayet/pages";
+$plantillas = $_SERVER["DOCUMENT_ROOT"] . "/pages";
 
 $app = new \Slim\Slim(array('templates.path' => $plantillas));
 $app->response->headers->set('Content-Type', 'application/json');
@@ -283,7 +283,7 @@ function insertaDetalleContable($d, $idorigen){
         }
     }
 
-    $url = 'http://localhost/sayet/php/fixdescuadrecompra.php/fix';
+    $url = 'http://localhost/php/fixdescuadrecompra.php/fix';
     $dataa = ['idfactura' => $idorigen];
     $db->CallJSReportAPI('POST', $url, json_encode($dataa));
 };
@@ -554,7 +554,7 @@ $app->post('/lstchq', function(){
 $app->post('/addtotranban', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $url = 'http://localhost/sayet/php/tranbanc.php/cd';
+    $url = 'http://localhost/php/tranbanc.php/cd';
     $data = [
         'idtranban' => $d->idtranban, 'idtipodoc' => $d->idtipodoc, 'documento' => $d->documento, 'fechadocstr' => $d->fechadoc, 'monto' => $d->monto, 'serie' => $d->serie, 'iddocto' => $d->iddocto, 'fechaliquidastr' => $d->fechaliquidastr
     ];

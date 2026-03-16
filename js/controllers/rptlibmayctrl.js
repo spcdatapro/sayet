@@ -112,7 +112,7 @@
                 $scope.params.codigoal = $scope.params.codigoaljs != null && $scope.params.codigoaljs !== undefined ? ("'" + $scope.params.codigoaljs.trim() + "'") : '';
             }
 
-            var url = '/sayet/php/rptlibmay.php/rptlibmay'
+            var url = '/php/rptlibmay.php/rptlibmay'
 
             $.post(url, $scope.params, function(data){
                 var tab_text='<table>'

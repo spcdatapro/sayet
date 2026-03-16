@@ -269,7 +269,7 @@ function insertaDetalleContable($d, $db, $lastid){
         }
     }
 
-    $url = 'http://localhost/sayet/php/fixdescuadrecompra.php/fix';
+    $url = 'http://localhost/php/fixdescuadrecompra.php/fix';
     $dataa = ['idfactura' => $lastid];
     $db->CallJSReportAPI('POST', $url, json_encode($dataa));
 }
