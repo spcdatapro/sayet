@@ -3,7 +3,8 @@
     var jsreportsrvc = angular.module('cpm.jsreportsrvc', []);
 
     jsreportsrvc.factory('jsReportSrvc', ['$http', '$sce', function($http, $sce){
-        var url = `${window.location.protocol}//${window.location.hostname}` + ':5489/api/report', props = {};        
+        // var url = `${window.location.protocol}//${window.location.hostname}` + ':5489/api/report', props = {};      
+        var url = `${window.location.origin}/api/report`;  
         var props = {}, test = false;
         return {
             getReport: function(shortid, obj){
