@@ -2,7 +2,7 @@ angular.module('cpm')
 .factory('empServicios', ['comunFact', '$http', '$sce', function(comunFact, $http, $sce){
     var urlBase = 'pln/php/controllers/empleado.php';
 
-    var url = `${window.location.protocol}//${window.location.hostname}/sayet/pln/php/controllers/empleado.php/finiquito`;
+    var url = `${window.location.protocol}//${window.location.hostname}/pln/php/controllers/empleado.php/finiquito`;
 
     return {
         buscar: function(obj){
