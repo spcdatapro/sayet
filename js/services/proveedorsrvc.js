@@ -15,6 +15,7 @@
             getLstCuentasCont: (idprov, idempresa) => comunFact.doGET(`${urlBase}/lstdetcontprov/${idprov}/${idempresa}`),
             lstCuentacProv: (idprov, idempresa) => comunFact.doGET(`${urlBase}/lstdetcontprovifnull/${idprov}/${idempresa}`),
             lstProveedoresByEmpresa: (idempresa, idproyecto) => comunFact.doGET(`${urlBase}/lstprovsbyempresa/${idempresa}/${idproyecto}`),
+            lstCuentasGastos: idempresa => comunFact.doGET(`${urlBase}/lstcuentasgastos/${idempresa}`)
         };
     }]);
 

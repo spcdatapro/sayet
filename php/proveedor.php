@@ -224,7 +224,23 @@ $app->get('/lstprovsbyempresa/:idempresa/:idproyecto', function ($idempresa, $id
             WHERE (b.ordentrabajo IS NULL OR b.ordentrabajo = 0) ";
     $query.= $idempresa > 0 ? "AND b.idempresa = $idempresa " : "";
     $query.= $idproyecto > 0 ? "AND b.idproyecto = $idproyecto " : "";
-    $query.="AND a.debaja = 0 AND (b.idreembolso = 0 OR b.idreembolso IS NULL) AND a.hoja_control = 1 GROUP BY a.id ORDER BY a.nombre";
+    $query.="AND a.debaja = 0 AND (b.idreembolso = 0 OR b.idreembolso IS NULL) 
+    AND a.hoja_control = 1 
+    GROUP BY a.id ORDER BY a.nombre";
+    $data = $db->getQuery($query);
+
+    return print json_encode($data);
+});
+
+$app->get('/lstcuentasgastos/:idempresa', function ($idempresa) {
+    $db = new dbcpm();
+
+    $query = "SELECT a.id, CONCAT(codigo, ' - ', nombrecta) AS codnom FROM cuentac a INNER JOIN detcontprov b ON b.idcuentac = a.id 
+    INNER JOIN proveedor c ON c.id = b.idproveedor
+    WHERE a.idempresa = $idempresa 
+    AND c.hoja_control = 1
+    GROUP BY a.id 
+    ORDER BY nombrecta";
     $data = $db->getQuery($query);
 
     return print json_encode($data);

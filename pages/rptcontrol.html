@@ -49,7 +49,7 @@
                                     <label class="control-label">Empresa:</label>
                                     <ui-select ng-model="params_proveedores.idempresa" title="Seleccione una empresa..."
                                         theme="bootstrap" autofocus="false" required
-                                        ng-change="getProyectos(params_proveedores.idempresa)">
+                                        ng-change="getProyectos(params_proveedores.idempresa); getCuentasGasto(params_proveedores.idempresa)">
                                         <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
                                             <span ng-bind="($select.selected.nomempresa)"></span>
                                         </ui-select-match>
@@ -61,11 +61,11 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="form-group required">
+                                <div class="form-group">
                                     <label class="control-label">Proyecto:</label>
                                     <ui-select ng-model="params_proveedores.idproyecto"
-                                        ng-change="getProveedores(params_proveedores.idempresa, params_proveedores.idproyecto)"
-                                        title="Seleccione un proyecto..." theme="bootstrap" autofocus="false" required>
+                                        ng-change="getProveedores(params_proveedores.idempresa, params_proveedores.idproyecto[0])"
+                                        title="Seleccione un proyecto..." theme="bootstrap" autofocus="false" multiple>
                                         <ui-select-match placeholder="Buscar proyecto..." allow-clear="true">
                                             <span ng-bind="($select.selected.nomproyecto)"></span>
                                         </ui-select-match>
@@ -78,22 +78,39 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="form-group required">
-                                    <label class="control-label">Proveedores:</label>
-                                    <ui-select ng-model="params_proveedores.idproveedor"
-                                        ng-change="getProyectosProveedor(params_proveedores.idproveedor, params_proveedores.idempresa)"
-                                        title="Seleccione un proveedor..." theme="bootstrap" autofocus="false" ng-required="params_proveedores.comparativo == 0">
-                                        <ui-select-match placeholder="Buscar proveedor..." allow-clear="true">
-                                            <span ng-bind="($select.selected.nombre)"></span>
-                                        </ui-select-match>
-                                        <ui-select-choices
-                                            repeat="item.id as item in proveedores | filter:$select.search">
-                                            <div ng-bind-html=" (item.nitnombre) | highlight: $select.search"></div>
-                                            <strong> Cuenta: </strong>
-                                            <span ng-bind-html="(item.cuentac) | highlight: $select.search"></span>
-                                        </ui-select-choices>
-                                        <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
-                                    </ui-select>
+                                <div class="form-group">
+                                    <label class="control-label">{{por_proveedor ? 'Proveedores:' : 'Cuentas:'}}</label>
+                                    <div class="input-group">
+                                        <ui-select ng-model="params_proveedores.idproveedor"
+                                            ng-change="getProyectosProveedor(params_proveedores.idproveedor, params_proveedores.idempresa)"
+                                            title="Seleccione un proveedor..." theme="bootstrap" autofocus="false" ng-show="por_proveedor">
+                                            <ui-select-match placeholder="Buscar proveedor..." allow-clear="true">
+                                                <span ng-bind="($select.selected.nombre)"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices
+                                                repeat="item.id as item in proveedores | filter:$select.search">
+                                                <div ng-bind-html=" (item.nitnombre) | highlight: $select.search"></div>
+                                            </ui-select-choices>
+                                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                        </ui-select>
+                                        <ui-select ng-model="params_proveedores.idcuenta"
+                                            title="Seleccione una cuenta..." theme="bootstrap" autofocus="false" ng-show="!por_proveedor">
+                                            <ui-select-match placeholder="Buscar cuenta..." allow-clear="true">
+                                                <span ng-bind="($select.selected.codnom)"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices
+                                                repeat="item.id as item in cuentas_gastos | filter:$select.search">
+                                                <div ng-bind-html=" (item.codnom) | highlight: $select.search"></div>
+                                            </ui-select-choices>
+                                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                        </ui-select>
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-primary"
+                                                ng-click="por_proveedor = !por_proveedor" title="Cambiar a tipo de gasto">
+                                                <i class="fi fi-rr-replace"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -106,28 +123,26 @@
                                 </div>
                             </div>
                             <!-- para reporte nomral -->
-                            <div class="col-md-4"
-                                ng-show="!params_proveedores.comparativo">
-                                <div class="form-group">
+                            <div class="col-md-4" ng-show="!params_proveedores.comparativo">
+                                <div class="form-group required">
                                     <label for="fDel" class="control-label">Fecha del:</label>
                                     <input name="fDel" id="fDel" type="date" class="form-control"
-                                        ng-model="params_proveedores.fecha_inicial">
+                                        ng-model="params_proveedores.fecha_inicial" ng-required="!params_proveedores.comparativo">
                                 </div>
                             </div>
-                            <div class="col-md-4"
-                                ng-show="!params_proveedores.comparativo">
-                                <div class="form-group">
+                            <div class="col-md-4" ng-show="!params_proveedores.comparativo">
+                                <div class="form-group required">
                                     <label for="fAl" class="control-label">al:</label>
                                     <input name="fAl" id="fAl" type="date" class="form-control"
-                                        ng-model="params_proveedores.fecha_final">
+                                        ng-model="params_proveedores.fecha_final" ng-required="!params_proveedores.comparativo">
                                 </div>
                             </div>
                             <!-- fin de reporte normal -->
                             <!-- reporte comparativo -->
                             <div class="col-md-4" ng-show="params_proveedores.comparativo">
-                                <div class="form-group">
+                                <div class="form-group required">
                                     <label for="mes" class="control-label">Mes:</label>
-                                    <select name="mes" id="mes" class="form-control" ng-model="params_proveedores.mes">
+                                    <select name="mes" id="mes" class="form-control" ng-model="params_proveedores.mes" ng-required="params_proveedores.comparativo">
                                         <option value="1">Enero</option>
                                         <option value="2">Febrero</option>
                                         <option value="3">Marzo</option>
@@ -144,10 +159,10 @@
                                 </div>
                             </div>
                             <div class="col-md-4" ng-show="params_proveedores.comparativo">
-                                <div class="form-group">
+                                <div class="form-group required">
                                     <label for="mes_comparar" class="control-label">Mes a comparar:</label>
                                     <select name="mes_comparar" id="mes_comparar" class="form-control"
-                                        ng-model="params_proveedores.mes_comparar">
+                                        ng-model="params_proveedores.mes_comparar" ng-required="params_proveedores.comparativo">
                                         <option value="1">Enero</option>
                                         <option value="2">Febrero</option>
                                         <option value="3">Marzo</option>
@@ -226,6 +241,7 @@
                             <th>Proyecto</th>
                             <th>Proveedor</th>
                             <th>Recurrencia</th>
+                            <th>Promedio</th>
                         </tr>
                     </thead>
                     <tbody ng-repeat="d in data">
@@ -236,6 +252,7 @@
                             <td>{{d.numero}}</td>
                             <td>{{d.nombre}}</td>
                             <td>{{d.cuantos}}</td>
+                            <td>{{d.monto_cheque_promedio | number: 2}}</td>
                         </tr>
 
                         <!-- fila de años -->

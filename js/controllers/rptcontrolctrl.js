@@ -7,7 +7,8 @@
         $scope.empresas = [];
         $scope.proyectos = [];
         $scope.proveedores = [];
-        // $scope.cuentas_prov = [];
+        $scope.por_proveedor = true;
+        $scope.cuentas_gastos = [];
 
         $scope.params_proveedores = { ver: '1', fecha_inicial: moment().startOf('year').toDate(), fecha_final: moment().endOf('month').toDate(),
             mes: (moment().month() + 1).toString(), mes_comparar: (moment().month() - 1 < 0 ? 12 : moment().month()).toString()
@@ -35,6 +36,8 @@
             $scope.params_proveedores.idempresa = usuario.workingon.toString();
             // traer proyectos con la empresa del usuario
             $scope.getProyectos(usuario.workingon.toString());
+            // traer cuentas de gasto para caratula de gastos
+            $scope.getCuentasGastos(usuario.workingon.toString());
         })
 
         // traer proyectos al cambiar empresa
@@ -43,6 +46,11 @@
             proveedorSrvc.lstProveedoresByEmpresa(idempresa, 0).then(d => {$scope.proveedores = d; });
             $scope.params_proveedores.idproyecto = undefined;
             $scope.params_proveedores.idproveedor = undefined;
+        }
+
+        // trae cuentas de gasto para caratula de gastos
+        $scope.getCuentasGastos = idempresa => {
+            proveedorSrvc.lstCuentasGastos(idempresa).then(d => $scope.cuentas_gastos = d);
         }
 
         // traer proveedores al cambiar proyecto/empresa
@@ -61,7 +69,7 @@
                 return;
             }
             console.log('llego');
-            if ($scope.params_proveedores.idproyecto > 0) {
+            if ($scope.params_proveedores.idproyecto.length > 0) {
                 return;
             } else {
                 proyectoSrvc.listaProyectosProveedor(idproveedor, idempresa).then(d => $scope.proyectos = d);
@@ -235,15 +243,8 @@
             }
         }
 
-        $scope.toggleMeses = function (d) {
+        $scope.toggleMeses = d => {
             d.ver_meses = !d.ver_meses;
-
-            // si se cierra, también resetea los detalles de cada año
-            // if (!d.ver_anios && d.proyectos) {
-            //     d.proyectos.forEach(function (anio) {
-            //         anio.ver_detalle = false;
-            //     });
-            // }
         };
         // fin 
     }])

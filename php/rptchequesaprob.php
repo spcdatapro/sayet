@@ -178,6 +178,7 @@ $app->post('/aprobados', function () {
     $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
     $promedido = [];
     $totales = ['monto_factura', 'iva', 'monto_cheque'];
+    $idproyecto = isset($d->idproyecto) ? implode(',', $d->idproyecto) : 0;
 
     // estampa
     $letra = new stdClass();
@@ -235,17 +236,24 @@ $app->post('/aprobados', function () {
                 proveedor h ON a.idproveedor = h.id
                     INNER JOIN
                 proyecto i ON a.idproyecto = i.id
+                    LEFT JOIN 
+                detcontprov j ON h.id = j.idproveedor
+                    LEFT JOIN
+                cuentac k ON j.idcuentac = k.id
             WHERE
                 a.fechafactura BETWEEN '$d->fecha_inicialstr' AND '$d->fecha_finalstr'
                     AND (a.idreembolso = 0
                     OR a.idreembolso IS NULL) 
-                    AND h.hoja_control = 1 ";
+                    AND h.hoja_control = 1 
+                    ";
     $query.= isset($d->idempresa) ? "AND a.idempresa = $d->idempresa " : "";
     $query.= isset($d->idproveedor) ? "AND a.idproveedor = $d->idproveedor " : ""; 
-    $query.= isset($d->idproyecto) ? "AND a.idproyecto = $d->idproyecto " : "";
+    $query.= $idproyecto > 0 ? "AND a.idproyecto IN($idproyecto) " : "";
+    $query.= isset($d->idcuenta) ? "AND j.idcuentac = $d->idcuenta " : "";
     $query.="       AND (a.ordentrabajo IS NULL
                     OR a.ordentrabajo = 0)
             ORDER BY g.nomempresa , i.nomproyecto , h.nombre , a.fechafactura ASC";
+            // echo $query; return;
     $data = $db->getQuery($query);
 
     if (count($data) > 0) {
