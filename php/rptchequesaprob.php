@@ -244,7 +244,7 @@ $app->post('/aprobados', function () {
                 a.fechafactura BETWEEN '$d->fecha_inicialstr' AND '$d->fecha_finalstr'
                     AND (a.idreembolso = 0
                     OR a.idreembolso IS NULL) 
-                    AND h.hoja_control = 1 
+                    -- AND h.hoja_control = 1 
                     ";
     $query.= isset($d->idempresa) ? "AND a.idempresa = $d->idempresa " : "";
     $query.= isset($d->idproveedor) ? "AND a.idproveedor = $d->idproveedor " : ""; 
@@ -386,88 +386,137 @@ $app->post('/comparativo', function () {
     $query.= isset($d->idproyecto) ? "AND a.idproyecto = $d->idproyecto " : "";
     $query.= "AND (a.ordentrabajo IS NULL
                     OR a.ordentrabajo = 0)
-                    AND e.hoja_control = 1
+                    -- AND e.hoja_control = 1
             ORDER BY e.id , MONTH(a.fechafactura)";
     $data = $db->getQuery($query);
 
     if (count($data) > 0) {
         $correlativos = [];
         $nextCorrelativo = 1;
+        $facturasPorMes = [];
+        $metaPorKey = [];
+        $cuantosPorKey = [];
+        $diferentePorKey = [];
+        $mesesComparados = array_values(array_unique([(int)$d->mes_comparar, (int)$d->mes]));
+        $mesesPeriodo = count(array_unique($mesesComparados));
 
         foreach ($data as $c) {
-            $c->proyecto = $meses[$c->mes - 1];
-            // clave compuesta: empresa + proveedor + proyecto
             $key = $c->nomempresa . '|' . $c->proveedor . '|' . $c->nomproyecto;
-        
-            // asignar correlativo único por combinación
+
             if (!isset($correlativos[$key])) {
                 $correlativos[$key] = $nextCorrelativo++;
+                $metaPorKey[$key] = [
+                    'idempresa' => $correlativos[$key],
+                    'empresa' => $c->empresa,
+                    'abreviatura' => $c->abreviatura,
+                    'numero' => $c->numero,
+                    'concepto' => $c->concepto,
+                    'nomempresa' => $c->nomempresa,
+                    'proveedor' => $c->proveedor,
+                    'nomproyecto' => $c->nomproyecto,
+                    'tipotrans' => $c->tipotrans
+                ];
             }
-            $c->idempresa = $correlativos[$key];
-        
-            // contar cuántos documentos hay con la misma combinación
-            $cnt = 0;
-            foreach ($data as $x) {
-                if ($x->nomempresa === $c->nomempresa &&
-                    $x->proveedor === $c->proveedor &&
-                    $x->nomproyecto === $c->nomproyecto) {
-                    $cnt++;
-                }
-            }
-        
-            // meses del periodo (usa el campo mes de cada registro)
-            $months = max(1, (int)$c->mes);
-        
-            if ($cnt === 0) {
-                $c->cuantos = 'Sin movimientos';
-                continue;
-            }
-        
-            // frecuencia media: meses / cantidad de documentos
-            $freq = $months / $cnt;
-        
-            if ($freq <= 1.25) {
-                $c->cuantos = 'Mensual';
-            } elseif ($freq <= 2.25) {
-                $c->cuantos = 'Bimensual';
-            } elseif ($freq <= 3.25) {
-                $c->cuantos = 'Trimestral';
-            } elseif ($freq <= 6.5) {
-                $c->cuantos = 'Semestral';
-            } elseif ($cnt < $months) {
-                $c->cuantos = 'Ocasional';
-            } else {
-                $c->cuantos = 'Varios movimientos';
-            }
-        }
 
-        // Primero, agrupamos por clave compuesta y mes
-        $facturasPorMes = [];
-        foreach ($data as $c) {
-            $key = $c->nomempresa . '|' . $c->proveedor . '|' . $c->nomproyecto;
+            $c->idempresa = $correlativos[$key];
+            $c->idproyecto = (int)$c->mes;
+            $c->proyecto = $meses[$c->idproyecto - 1];
+
             if (!isset($facturasPorMes[$key])) {
                 $facturasPorMes[$key] = [];
             }
-            if (!isset($facturasPorMes[$key][$c->mes])) {
-                $facturasPorMes[$key][$c->mes] = 0;
+            if (!isset($facturasPorMes[$key][$c->idproyecto])) {
+                $facturasPorMes[$key][$c->idproyecto] = 0;
             }
-            $facturasPorMes[$key][$c->mes]++;
+            $facturasPorMes[$key][$c->idproyecto]++;
         }
-        
-        // Ahora recorremos los datos y asignamos la columna "diferente"
+
+        foreach ($metaPorKey as $key => $meta) {
+            $mesA = $mesesComparados[0];
+            $mesB = $mesesComparados[1] ?? $mesesComparados[0];
+            $cntMesA = $facturasPorMes[$key][$mesA] ?? 0;
+            $cntMesB = $facturasPorMes[$key][$mesB] ?? 0;
+            $cntTotal = $cntMesA + $cntMesB;
+
+            if ($cntTotal === 0) {
+                $cuantosPorKey[$key] = 'Sin movimientos';
+            } else {
+                $freq = max(1, $mesesPeriodo) / $cntTotal;
+                if ($freq <= 1.25) {
+                    $cuantosPorKey[$key] = 'Mensual';
+                } elseif ($freq <= 2.25) {
+                    $cuantosPorKey[$key] = 'Bimensual';
+                } elseif ($freq <= 3.25) {
+                    $cuantosPorKey[$key] = 'Trimestral';
+                } elseif ($freq <= 6.5) {
+                    $cuantosPorKey[$key] = 'Semestral';
+                } elseif ($cntTotal < $mesesPeriodo) {
+                    $cuantosPorKey[$key] = 'Ocasional';
+                } else {
+                    $cuantosPorKey[$key] = 'Varios movimientos';
+                }
+            }
+
+            $diferentePorKey[$key] = ($cntMesA !== $cntMesB) ? 1 : 0;
+
+            foreach ($mesesComparados as $mesComparado) {
+                if (($facturasPorMes[$key][$mesComparado] ?? 0) > 0) {
+                    continue;
+                }
+
+                $vacio = new stdClass();
+                $vacio->id = 0;
+                $vacio->idempresa = $meta['idempresa'];
+                $vacio->empresa = $meta['empresa'];
+                $vacio->abreviatura = $meta['abreviatura'];
+                $vacio->numero = $meta['numero'];
+                $vacio->idproyecto = (int)$mesComparado;
+                $vacio->proyecto = $meses[$mesComparado - 1];
+                $vacio->mes = (int)$mesComparado;
+                $vacio->concepto = 'Sin transaccion';
+                $vacio->fecha = '';
+                $vacio->serie = '';
+                $vacio->factura = '';
+                $vacio->tran = '';
+                $vacio->monto_factura = 0;
+                $vacio->iva = 0;
+                $vacio->monto_cheque = 0;
+                $vacio->nomempresa = $meta['nomempresa'];
+                $vacio->proveedor = $meta['proveedor'];
+                $vacio->nomproyecto = $meta['nomproyecto'];
+                $vacio->tipotrans = $meta['tipotrans'];
+                $vacio->cuantos = $cuantosPorKey[$key];
+                $vacio->diferente = $diferentePorKey[$key];
+
+                $data[] = $vacio;
+            }
+        }
+
         foreach ($data as $c) {
             $key = $c->nomempresa . '|' . $c->proveedor . '|' . $c->nomproyecto;
-        
-            // obtenemos cantidad de facturas en mes actual y siguiente
-            $mesActual = (int)$c->mes;
-            $mesSiguiente = $mesActual + 1;
-        
-            $cntActual = $facturasPorMes[$key][$mesActual] ?? 0;
-            $cntSiguiente = $facturasPorMes[$key][$mesSiguiente] ?? 0;
-        
-            // comparativo
-            $c->diferente = ($cntActual !== $cntSiguiente) ? 1 : 0;
+            $c->cuantos = $cuantosPorKey[$key] ?? 'Sin movimientos';
+            $c->diferente = $diferentePorKey[$key] ?? 0;
+            $c->idproyecto = (int)$c->mes;
+            $c->proyecto = $meses[$c->idproyecto - 1];
         }
+
+        usort($data, function ($a, $b) use ($mesesComparados) {
+            if ($a->idempresa !== $b->idempresa) {
+                return $a->idempresa <=> $b->idempresa;
+            }
+
+            $ordenMesA = array_search((int)$a->mes, $mesesComparados);
+            $ordenMesB = array_search((int)$b->mes, $mesesComparados);
+
+            $ordenMesA = $ordenMesA === false ? 99 : $ordenMesA;
+            $ordenMesB = $ordenMesB === false ? 99 : $ordenMesB;
+
+            if ($ordenMesA !== $ordenMesB) {
+                return $ordenMesA <=> $ordenMesB;
+            }
+
+            return ((int)$a->id) <=> ((int)$b->id);
+        });
 
         // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
         $reporte = new GeneradorReportes($data, 'transacciones', $totales, true);
