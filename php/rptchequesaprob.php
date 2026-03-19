@@ -386,7 +386,7 @@ $app->post('/comparativo', function () {
     $query.= isset($d->idproyecto) ? "AND a.idproyecto = $d->idproyecto " : "";
     $query.= "AND (a.ordentrabajo IS NULL
                     OR a.ordentrabajo = 0)
-                    -- AND e.hoja_control = 1
+                    AND e.hoja_control = 1
             ORDER BY e.id , MONTH(a.fechafactura)";
     $data = $db->getQuery($query);
 
