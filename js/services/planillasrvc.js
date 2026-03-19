@@ -44,6 +44,9 @@
             },
             getDetalleAsueto: id => {
                 return comunFact.doGET(`${urlBase}/detalle_asueto/${id}`)
+            },
+            getHorarios: () => {
+                return comunFact.doGET(`${urlBase}/horarios`)
             }
         };
     }]);

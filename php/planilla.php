@@ -441,4 +441,68 @@ $app->post('/dasu', function () {
     print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $d->anio]);
 });
 
+$app->post('/ahor', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $query = "INSERT INTO horarios (nombre, del, al, observaciones, domingo, lunes, martes, miercoles, jueves, viernes, sabado) 
+    VALUES ('$d->nombre', '$d->delstr', '$d->alstr', '$d->observaciones', $d->domingo, $d->lunes, $d->martes, $d->miercoles, $d->jueves, $d->viernes, $d->sabado)";
+    $db->doQuery($query);
+
+    $lastid = $db->getLastId();
+
+    if ($lastid > 0) {
+        $mensaje = "Horario guardado con exito";
+        $tipo = "success";
+    } else {
+        $mensaje = "Error al guardar horario, favor revisar.";
+        $tipo = "error";
+    }
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $lastid]);
+});
+
+$app->post('/uhor', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $query = "UPDATE horarios SET nombre = '$d->nombre', del = '$d->delstr', al = '$d->alstr', observaciones = '$d->observaciones', 
+    domingo = $d->domingo, lunes = $d->lunes, martes = $d->martes, miercoles = $d->miercoles, jueves = $d->jueves, viernes = $d->viernes, sabado = $d->sabado WHERE id = $d->id";
+    $db->doQuery($query);
+
+    $mensaje = "Horario actualizado con exito";
+    $tipo = "success";
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $d->id]);
+});
+
+$app->get('/horarios', function () {
+    $db = new dbcpm();
+
+    $query = "SELECT id, nombre, del AS delstr, al AS alstr, observaciones, domingo, lunes, martes, miercoles, jueves, viernes, sabado FROM horarios ORDER BY nombre";
+    $horarios = $db->getQuery($query);
+
+    return print json_encode($horarios);
+});
+
+$app->post('/dhor', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $query = "DELETE FROM horarios WHERE id = $d->id";
+    $db->doQuery($query);
+
+    $existe = $db->getOneField("SELECT id FROM horarios WHERE id = $d->id") > 0;
+
+    if (!$existe) {
+        $mensaje = "Registro eliminado con exito";
+        $tipo = "success";
+    } else {
+        $mensaje = "Error al eliminar registro, favor revisar.";
+        $tipo = "error";
+    }
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $d->id]);
+});
+
 $app->run();
