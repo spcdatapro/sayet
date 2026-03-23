@@ -420,7 +420,6 @@ $app->post('/finanzas', function(){
                     AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%')
                     AND b.debe > 0
             ORDER BY 2 ASC, 1 ASC, 13 ASC, 5 DESC, 7 ASC";
-    echo $query; return;
     $data_c = $db->getQuery($query);
 
     $cntsCompras = count($data_c);
