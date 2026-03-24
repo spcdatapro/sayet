@@ -748,111 +748,112 @@ $app->post('/prestamos', function(){
                     AND g.fecha <= '$fecha_fin'
                     AND g.fecha <= '$fecha_fin'
                     AND (g.finalizado = 0
-                    OR g.liquidacion >= '$fecha_inicio')";
+                    OR g.liquidacion >= '$fecha_inicio') 
+                    AND DATE_FORMAT(g.fecha, '%Y-%m') != DATE_FORMAT('$fecha_inicio', '%Y-%m')";
+    $query.= isset($d->idempresa) ? "AND h.id = $d->idempresa " : "";
+    $query.= "GROUP BY g.id ";
+    $query.= "SELECT 
+                h.id AS idempresa,
+                h.nombre AS empresa,
+                h.numeropat AS numero,
+                h.abreviatura,
+                i.id AS idproyecto,
+                i.nomproyecto AS proyecto,
+                a.id AS idempleado,
+                CONCAT(b.primernombre,
+                        ' ',
+                        IFNULL(b.segundonombre, ''),
+                        ' ',
+                        IFNULL(b.tercernombre, ''),
+                        ' ',
+                        IFNULL(b.primerapellido, ''),
+                        ' ',
+                        IFNULL(b.segundoapellido, ''),
+                        ' ',
+                        IFNULL(b.apellidocasada, '')) AS nombre,
+                d.descripcion AS puesto,
+                g.id AS idprestamo,
+                DATE_FORMAT(g.fecha, '%d/%m/%Y') AS fecha,
+                g.monto,
+                g.cuotamensual AS cuota,
+                IF(DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m'),
+                0.00,
+                (g.monto - COALESCE((SELECT 
+                                    SUM(pn.monto)
+                                FROM
+                                    plnpresnom pn
+                                        INNER JOIN
+                                    plnnomina n ON pn.idplnnomina = n.id
+                                WHERE
+                                    pn.idplnprestamo = g.id
+                                        AND n.fecha <= DATE_SUB('$fecha_inicio', INTERVAL 1 DAY)),
+                        0) - COALESCE((SELECT 
+                                    SUM(pa.monto)
+                                FROM
+                                    plnpresabono pa
+                                WHERE
+                                    pa.idplnprestamo = g.id
+                                        AND pa.fecha <= DATE_SUB('$fecha_inicio', INTERVAL 1 DAY)),
+                        0))
+                ) AS saldoant,
+                IF(DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m'),
+                    g.monto,
+                    0.00) AS nuevo,
+                f.monto AS descnomina,
+                j.monto AS descuento,
+                IF(DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m'), 0.00, f.monto) + IFNULL(j.monto, 0.00) AS totdesc,
+                (g.monto - COALESCE((SELECT 
+                                SUM(pn.monto)
+                            FROM
+                                plnpresnom pn
+                                    INNER JOIN
+                                plnnomina n ON pn.idplnnomina = n.id
+                            WHERE
+                                pn.idplnprestamo = g.id
+                                    AND n.fecha <= '$fecha_fin'),
+                        0) - COALESCE((SELECT 
+                                SUM(pa.monto)
+                            FROM
+                                plnpresabono pa
+                            WHERE
+                                pa.idplnprestamo = g.id
+                                    AND pa.fecha <= '$fecha_fin'),
+                        0)) AS saldo
+            FROM
+                plnempleado a
+                    INNER JOIN
+                plnpersonal b ON a.idpersonal = b.id
+                    INNER JOIN
+                plnlaboral c ON a.idlaboral = c.id
+                    INNER JOIN
+                plnpuesto d ON a.idplnpuesto = d.id
+                    INNER JOIN
+                plnnomina e ON e.idplnempleado = a.id AND e.fecha = '$fecha_fin'
+                    INNER JOIN
+                plnpresnom f ON f.idplnnomina = e.id
+                    INNER JOIN
+                plnprestamo g ON f.idplnprestamo = g.id
+                    INNER JOIN
+                plnempresa h ON e.idempresa = h.id
+                    INNER JOIN
+                proyecto i ON c.idproyecto = i.id
+                    LEFT JOIN
+                (SELECT 
+                    idplnprestamo, SUM(monto) AS monto
+                FROM
+                    plnpresabono
+                WHERE
+                    fecha BETWEEN '$fecha_inicio' AND '$fecha_fin'
+                GROUP BY idplnprestamo) j ON j.idplnprestamo = g.id
+            WHERE
+                g.anulado = 0 AND g.esembargo = 0
+                    AND g.fecha <= '$fecha_fin'
+                    AND g.fecha <= '$fecha_fin'
+                    AND (g.finalizado = 0
+                    OR g.liquidacion >= '$fecha_inicio')
+                    AND DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m') ";
     $query.= isset($d->idempresa) ? "AND h.id = $d->idempresa " : "";
     $query.= "GROUP BY g.id ORDER BY  2 , ";
-    // $query.= "SELECT 
-    //             h.id AS idempresa,
-    //             h.nombre AS empresa,
-    //             h.numeropat AS numero,
-    //             h.abreviatura,
-    //             i.id AS idproyecto,
-    //             i.nomproyecto AS proyecto,
-    //             a.id AS idempleado,
-    //             CONCAT(b.primernombre,
-    //                     ' ',
-    //                     IFNULL(b.segundonombre, ''),
-    //                     ' ',
-    //                     IFNULL(b.tercernombre, ''),
-    //                     ' ',
-    //                     IFNULL(b.primerapellido, ''),
-    //                     ' ',
-    //                     IFNULL(b.segundoapellido, ''),
-    //                     ' ',
-    //                     IFNULL(b.apellidocasada, '')) AS nombre,
-    //             d.descripcion AS puesto,
-    //             g.id AS idprestamo,
-    //             DATE_FORMAT(g.fecha, '%d/%m/%Y') AS fecha,
-    //             g.monto,
-    //             g.cuotamensual AS cuota,
-    //             IF(DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m'),
-    //             0.00,
-    //             (g.monto - COALESCE((SELECT 
-    //                                 SUM(pn.monto)
-    //                             FROM
-    //                                 plnpresnom pn
-    //                                     INNER JOIN
-    //                                 plnnomina n ON pn.idplnnomina = n.id
-    //                             WHERE
-    //                                 pn.idplnprestamo = g.id
-    //                                     AND n.fecha <= DATE_SUB('$fecha_inicio', INTERVAL 1 DAY)),
-    //                     0) - COALESCE((SELECT 
-    //                                 SUM(pa.monto)
-    //                             FROM
-    //                                 plnpresabono pa
-    //                             WHERE
-    //                                 pa.idplnprestamo = g.id
-    //                                     AND pa.fecha <= DATE_SUB('$fecha_inicio', INTERVAL 1 DAY)),
-    //                     0))
-    //             ) AS saldoant,
-    //             IF(DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m'),
-    //                 g.monto,
-    //                 0.00) AS nuevo,
-    //             f.monto AS descnomina,
-    //             j.monto AS descuento,
-    //             IF(DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m'), 0.00, f.monto) + IFNULL(j.monto, 0.00) AS totdesc,
-    //             (g.monto - COALESCE((SELECT 
-    //                             SUM(pn.monto)
-    //                         FROM
-    //                             plnpresnom pn
-    //                                 INNER JOIN
-    //                             plnnomina n ON pn.idplnnomina = n.id
-    //                         WHERE
-    //                             pn.idplnprestamo = g.id
-    //                                 AND n.fecha <= '$fecha_fin'),
-    //                     0) - COALESCE((SELECT 
-    //                             SUM(pa.monto)
-    //                         FROM
-    //                             plnpresabono pa
-    //                         WHERE
-    //                             pa.idplnprestamo = g.id
-    //                                 AND pa.fecha <= '$fecha_fin'),
-    //                     0)) AS saldo
-    //         FROM
-    //             plnempleado a
-    //                 INNER JOIN
-    //             plnpersonal b ON a.idpersonal = b.id
-    //                 INNER JOIN
-    //             plnlaboral c ON a.idlaboral = c.id
-    //                 INNER JOIN
-    //             plnpuesto d ON a.idplnpuesto = d.id
-    //                 INNER JOIN
-    //             plnnomina e ON e.idplnempleado = a.id AND e.fecha = '$fecha_fin'
-    //                 INNER JOIN
-    //             plnpresnom f ON f.idplnnomina = e.id
-    //                 INNER JOIN
-    //             plnprestamo g ON f.idplnprestamo = g.id
-    //                 INNER JOIN
-    //             plnempresa h ON e.idempresa = h.id
-    //                 INNER JOIN
-    //             proyecto i ON c.idproyecto = i.id
-    //                 LEFT JOIN
-    //             (SELECT 
-    //                 idplnprestamo, SUM(monto) AS monto
-    //             FROM
-    //                 plnpresabono
-    //             WHERE
-    //                 fecha BETWEEN '$fecha_inicio' AND '$fecha_fin'
-    //             GROUP BY idplnprestamo) j ON j.idplnprestamo = g.id
-    //         WHERE
-    //             g.anulado = 0 AND g.esembargo = 0
-    //                 AND g.fecha <= '$fecha_fin'
-    //                 AND g.fecha <= '$fecha_fin'
-    //                 AND (g.finalizado = 0
-    //                 OR g.liquidacion >= '$fecha_inicio')
-    //                 AND DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m') ";
-    // $query.= isset($d->idempresa) ? "AND h.id = $d->idempresa " : "";
-    // $query.= "GROUP BY g.id ORDER BY  2 , ";
     $query.= $d->agrupar == 2 ? " 6 , 8, 11" : " 8, 11";
     $data = $db->getQuery($query);
 
