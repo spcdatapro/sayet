@@ -801,7 +801,7 @@ $app->post('/prestamos', function(){
                     0.00) AS nuevo,
                 f.monto AS descnomina,
                 j.monto AS descuento,
-                IF(DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m'), 0.00, f.monto) + IFNULL(j.monto, 0.00) AS totdesc,
+                IF(DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m'), f.monto, 0) + IFNULL(j.monto, 0.00) AS totdesc,
                 (g.monto - COALESCE((SELECT 
                                 SUM(pn.monto)
                             FROM
