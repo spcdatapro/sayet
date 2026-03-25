@@ -1299,6 +1299,7 @@ $app->post('/ingresos', function () {
     $idproyecto_actual = null;
     $proyecto_obj = null;
     $totales_mes_empresa = []; // Para acumular totales por mes en cada empresa
+    $proyectos_index = []; // Índice para buscar proyectos existentes por idproyecto
 
     foreach ($data as $row) {
         // Si es una nueva empresa, crear objeto empresa
@@ -1313,10 +1314,12 @@ $app->post('/ingresos', function () {
             $idempresa_actual = $row->idempresa;
             $idproyecto_actual = null;
             $totales_mes_empresa = [];
+            $proyectos_index = []; // Reiniciar índice para la nueva empresa
         }
 
-        // Si es un nuevo proyecto dentro de la empresa, crear objeto proyecto
-        if ($row->idproyecto != $idproyecto_actual) {
+        // Verificar si el proyecto ya existe en esta empresa
+        if (!isset($proyectos_index[$row->idproyecto])) {
+            // Crear nuevo proyecto si no existe
             $proyecto_obj = new stdClass();
             $proyecto_obj->idproyecto = $row->idproyecto;
             $proyecto_obj->proyecto = $row->proyecto;
@@ -1324,8 +1327,14 @@ $app->post('/ingresos', function () {
             $proyecto_obj->monto_fact_total = 0;
             $proyecto_obj->monto_rec_total = 0;
             array_push($empresa_obj->proyectos, $proyecto_obj);
-            $idproyecto_actual = $row->idproyecto;
+            $proyectos_index[$row->idproyecto] = count($empresa_obj->proyectos) - 1;
+        } else {
+            // Obtener referencia al proyecto existente
+            $proyecto_idx = $proyectos_index[$row->idproyecto];
+            $proyecto_obj = $empresa_obj->proyectos[$proyecto_idx];
         }
+
+        $idproyecto_actual = $row->idproyecto;
 
         // Crear objeto mes
         $mes_obj = new stdClass();
