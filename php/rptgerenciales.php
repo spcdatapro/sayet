@@ -1260,7 +1260,8 @@ $app->post('/ingresos', function () {
             ORDER BY empresa , mes , proyecto";
     $data = $db->getQuery($query);
 
-    $letra->fechas = $d->anio . ' - ' . (isset($d->idempresa) ? $data[0]->empresa : 'Todas las empresas');
+    $letra->fechas = $d->anio;
+    $letra->empresa = isset($d->idempresa) ? $data[0]->empresa : 'Todas las empresas';
 
     print json_encode([ 'encabezado' => $letra, 'ingresos' => $data ]);
 });
