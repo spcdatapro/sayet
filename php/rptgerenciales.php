@@ -1286,7 +1286,6 @@ $app->post('/ingresos', function () {
             $max_meses_global = $count;
         }
     }
-    $max_meses_global = $max_meses_global + 2;
 
     // Restructurar datos agrupados por empresa y proyecto
     $empresas = [];
@@ -1345,6 +1344,35 @@ $app->post('/ingresos', function () {
         }
         $totales_mes_empresa[$row->mes]->monto_fact += $row->monto_fact;
         $totales_mes_empresa[$row->mes]->monto_rec += $row->monto_rec;
+    }
+
+    // Completar meses faltantes con ceros en cada proyecto
+    foreach ($empresas as $empresa) {
+        foreach ($empresa->proyectos as $proyecto) {
+            // Obtener los meses que ya tiene el proyecto
+            $meses_existentes = [];
+            foreach ($proyecto->meses as $mes) {
+                $meses_existentes[$mes->mes] = true;
+            }
+
+            // Recorrer todos los meses del 1 al 12 y agregar los faltantes
+            for ($mes_num = 1; $mes_num <= 12; $mes_num++) {
+                if (!isset($meses_existentes[$mes_num])) {
+                    // Crear objeto mes con valores en cero
+                    $mes_obj = new stdClass();
+                    $mes_obj->mes = $mes_num;
+                    $mes_obj->nombre = $meses_nombre[$mes_num - 1];
+                    $mes_obj->monto_fact = 0;
+                    $mes_obj->monto_rec = 0;
+                    array_push($proyecto->meses, $mes_obj);
+                }
+            }
+
+            // Ordenar los meses por número
+            usort($proyecto->meses, function ($a, $b) {
+                return $a->mes - $b->mes;
+            });
+        }
     }
 
     // Asignar totales de meses a cada empresa
