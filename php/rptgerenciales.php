@@ -1266,8 +1266,8 @@ $app->post('/ingresos', function () {
     // Array de nombres de meses
     $meses_nombre = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
 
-    // Calcular máximo de meses únicos en todo el dataset
-    $max_meses_global = 0;
+    // Calcular el número de mes máximo en todo el dataset
+    $max_mes_numero = 0;
     $meses_por_proyecto = [];
     
     foreach ($data as $row) {
@@ -1277,13 +1277,18 @@ $app->post('/ingresos', function () {
         }
         // Usar el mes como índice para evitar duplicados
         $meses_por_proyecto[$key][$row->mes] = true;
+        // Encontrar el mes número máximo
+        if ($row->mes > $max_mes_numero) {
+            $max_mes_numero = $row->mes;
+        }
     }
     
-    // Encontrar el máximo de meses únicos
+    // Contar también la cantidad de meses para las columnas
+    $max_meses_cantidad = 0;
     foreach ($meses_por_proyecto as $meses) {
         $count = count($meses);
-        if ($count > $max_meses_global) {
-            $max_meses_global = $count;
+        if ($count > $max_meses_cantidad) {
+            $max_meses_cantidad = $count;
         }
     }
 
@@ -1301,7 +1306,7 @@ $app->post('/ingresos', function () {
             $empresa_obj = new stdClass();
             $empresa_obj->idempresa = $row->idempresa;
             $empresa_obj->empresa = $row->empresa;
-            $empresa_obj->columnas = $max_meses_global;
+            $empresa_obj->columnas = $max_meses_cantidad;
             $empresa_obj->proyectos = [];
             $empresa_obj->totales_mes = [];
             array_push($empresas, $empresa_obj);
@@ -1346,7 +1351,7 @@ $app->post('/ingresos', function () {
         $totales_mes_empresa[$row->mes]->monto_rec += $row->monto_rec;
     }
 
-    // Completar meses faltantes con ceros en cada proyecto
+    // Completar meses faltantes con ceros en cada proyecto (solo hasta el mes máximo encontrado)
     foreach ($empresas as $empresa) {
         foreach ($empresa->proyectos as $proyecto) {
             // Obtener los meses que ya tiene el proyecto
@@ -1355,8 +1360,8 @@ $app->post('/ingresos', function () {
                 $meses_existentes[$mes->mes] = true;
             }
 
-            // Recorrer todos los meses del 1 al 12 y agregar los faltantes
-            for ($mes_num = 1; $mes_num <= 12; $mes_num++) {
+            // Recorrer desde el mes 1 hasta el mes máximo encontrado y agregar los faltantes
+            for ($mes_num = 1; $mes_num <= $max_mes_numero; $mes_num++) {
                 if (!isset($meses_existentes[$mes_num])) {
                     // Crear objeto mes con valores en cero
                     $mes_obj = new stdClass();
