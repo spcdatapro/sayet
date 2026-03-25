@@ -1256,14 +1256,55 @@ $app->post('/ingresos', function () {
     $query.= "      AND a.idtipofactura = 1
                     AND (a.idfacturaafecta = 0
                     OR a.idfacturaafecta IS NULL)
-            GROUP BY idproyecto , mes
-            ORDER BY empresa , mes , proyecto";
+            GROUP BY a.idempresa, idproyecto , mes
+            ORDER BY a.idempresa , proyecto , mes";
     $data = $db->getQuery($query);
 
     $letra->fechas = $d->anio;
-    $letra->empresa = isset($d->idempresa) ? $data[0]->empresa : 'Todas las empresas';
+    $letra->empresa = isset($d->idempresa) ? (count($data) > 0 ? $data[0]->empresa : 'N/A') : 'Todas las empresas';
 
-    print json_encode([ 'encabezado' => $letra, 'ingresos' => $data ]);
+    // Array de nombres de meses
+    $meses_nombre = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+
+    // Restructurar datos agrupados por empresa y proyecto
+    $empresas = [];
+    $idempresa_actual = null;
+    $empresa_obj = null;
+    $idproyecto_actual = null;
+    $proyecto_obj = null;
+
+    foreach ($data as $row) {
+        // Si es una nueva empresa, crear objeto empresa
+        if ($row->idempresa != $idempresa_actual) {
+            $empresa_obj = new stdClass();
+            $empresa_obj->idempresa = $row->idempresa;
+            $empresa_obj->empresa = $row->empresa;
+            $empresa_obj->proyectos = [];
+            array_push($empresas, $empresa_obj);
+            $idempresa_actual = $row->idempresa;
+            $idproyecto_actual = null;
+        }
+
+        // Si es un nuevo proyecto dentro de la empresa, crear objeto proyecto
+        if ($row->idproyecto != $idproyecto_actual) {
+            $proyecto_obj = new stdClass();
+            $proyecto_obj->idproyecto = $row->idproyecto;
+            $proyecto_obj->proyecto = $row->proyecto;
+            $proyecto_obj->meses = [];
+            array_push($empresa_obj->proyectos, $proyecto_obj);
+            $idproyecto_actual = $row->idproyecto;
+        }
+
+        // Crear objeto mes
+        $mes_obj = new stdClass();
+        $mes_obj->mes = $row->mes;
+        $mes_obj->nombre = $meses_nombre[$row->mes - 1];
+        $mes_obj->monto_fact = $row->monto_fact;
+        $mes_obj->monto_rec = $row->monto_rec;
+        array_push($proyecto_obj->meses, $mes_obj);
+    }
+
+    print json_encode([ 'encabezado' => $letra, 'ingresos' => $empresas ]);
 });
 
 function restarDiasHabiles($fecha) {
