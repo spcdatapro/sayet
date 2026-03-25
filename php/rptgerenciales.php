@@ -1266,6 +1266,27 @@ $app->post('/ingresos', function () {
     // Array de nombres de meses
     $meses_nombre = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
 
+    // Calcular máximo de meses únicos en todo el dataset
+    $max_meses_global = 0;
+    $meses_por_proyecto = [];
+    
+    foreach ($data as $row) {
+        $key = $row->idproyecto;
+        if (!isset($meses_por_proyecto[$key])) {
+            $meses_por_proyecto[$key] = [];
+        }
+        // Usar el mes como índice para evitar duplicados
+        $meses_por_proyecto[$key][$row->mes] = true;
+    }
+    
+    // Encontrar el máximo de meses únicos
+    foreach ($meses_por_proyecto as $meses) {
+        $count = count($meses);
+        if ($count > $max_meses_global) {
+            $max_meses_global = $count;
+        }
+    }
+
     // Restructurar datos agrupados por empresa y proyecto
     $empresas = [];
     $idempresa_actual = null;
@@ -1279,6 +1300,7 @@ $app->post('/ingresos', function () {
             $empresa_obj = new stdClass();
             $empresa_obj->idempresa = $row->idempresa;
             $empresa_obj->empresa = $row->empresa;
+            $empresa_obj->columnas = $max_meses_global;
             $empresa_obj->proyectos = [];
             array_push($empresas, $empresa_obj);
             $idempresa_actual = $row->idempresa;
