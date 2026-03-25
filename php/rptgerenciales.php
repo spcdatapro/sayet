@@ -1286,7 +1286,7 @@ $app->post('/ingresos', function () {
             $max_meses_global = $count;
         }
     }
-    $max_meses_global++;
+    $max_meses_global = ($max_meses_global + 1) * 2;
 
     // Restructurar datos agrupados por empresa y proyecto
     $empresas = [];
