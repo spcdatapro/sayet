@@ -1294,6 +1294,7 @@ $app->post('/ingresos', function () {
     $empresa_obj = null;
     $idproyecto_actual = null;
     $proyecto_obj = null;
+    $totales_mes_empresa = []; // Para acumular totales por mes en cada empresa
 
     foreach ($data as $row) {
         // Si es una nueva empresa, crear objeto empresa
@@ -1303,9 +1304,11 @@ $app->post('/ingresos', function () {
             $empresa_obj->empresa = $row->empresa;
             $empresa_obj->columnas = $max_meses_global;
             $empresa_obj->proyectos = [];
+            $empresa_obj->totales_mes = [];
             array_push($empresas, $empresa_obj);
             $idempresa_actual = $row->idempresa;
             $idproyecto_actual = null;
+            $totales_mes_empresa = [];
         }
 
         // Si es un nuevo proyecto dentro de la empresa, crear objeto proyecto
@@ -1314,6 +1317,8 @@ $app->post('/ingresos', function () {
             $proyecto_obj->idproyecto = $row->idproyecto;
             $proyecto_obj->proyecto = $row->proyecto;
             $proyecto_obj->meses = [];
+            $proyecto_obj->monto_fact_total = 0;
+            $proyecto_obj->monto_rec_total = 0;
             array_push($empresa_obj->proyectos, $proyecto_obj);
             $idproyecto_actual = $row->idproyecto;
         }
@@ -1325,6 +1330,41 @@ $app->post('/ingresos', function () {
         $mes_obj->monto_fact = $row->monto_fact;
         $mes_obj->monto_rec = $row->monto_rec;
         array_push($proyecto_obj->meses, $mes_obj);
+
+        // Acumular totales del proyecto
+        $proyecto_obj->monto_fact_total += $row->monto_fact;
+        $proyecto_obj->monto_rec_total += $row->monto_rec;
+
+        // Acumular totales por mes en la empresa
+        if (!isset($totales_mes_empresa[$row->mes])) {
+            $totales_mes_empresa[$row->mes] = new stdClass();
+            $totales_mes_empresa[$row->mes]->mes = $row->mes;
+            $totales_mes_empresa[$row->mes]->nombre = $meses_nombre[$row->mes - 1];
+            $totales_mes_empresa[$row->mes]->monto_fact = 0;
+            $totales_mes_empresa[$row->mes]->monto_rec = 0;
+        }
+        $totales_mes_empresa[$row->mes]->monto_fact += $row->monto_fact;
+        $totales_mes_empresa[$row->mes]->monto_rec += $row->monto_rec;
+    }
+
+    // Asignar totales de meses a cada empresa
+    foreach ($empresas as $empresa) {
+        // Recalcular totales por mes para esta empresa específica
+        $totales_mes_temp = [];
+        foreach ($empresa->proyectos as $proyecto) {
+            foreach ($proyecto->meses as $mes) {
+                if (!isset($totales_mes_temp[$mes->mes])) {
+                    $totales_mes_temp[$mes->mes] = new stdClass();
+                    $totales_mes_temp[$mes->mes]->mes = $mes->mes;
+                    $totales_mes_temp[$mes->mes]->nombre = $mes->nombre;
+                    $totales_mes_temp[$mes->mes]->monto_fact = 0;
+                    $totales_mes_temp[$mes->mes]->monto_rec = 0;
+                }
+                $totales_mes_temp[$mes->mes]->monto_fact += $mes->monto_fact;
+                $totales_mes_temp[$mes->mes]->monto_rec += $mes->monto_rec;
+            }
+        }
+        $empresa->totales_mes = array_values($totales_mes_temp);
     }
 
     print json_encode([ 'encabezado' => $letra, 'ingresos' => $empresas ]);
