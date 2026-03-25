@@ -1219,6 +1219,52 @@ $app->post('/resumen_prov', function () {
     print json_encode([ 'encabezado' => $letra, 'resumen' => $data ]);
 });
 
+$app->post('/ingresos', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i'); 
+
+    $query = "SELECT 
+                a.id,
+                a.idempresa,
+                e.nomempresa AS empresa,
+                MONTH(a.fecha) AS mes,
+                IFNULL(b.idproyecto, a.idproyecto) AS idproyecto,
+                IFNULL(b.proyecto, c.nomproyecto) AS proyecto,
+                ROUND(SUM(a.total), 2) AS monto_fact,
+                ROUND(SUM(d.monto), 2) AS monto_rec
+            FROM
+                factura a
+            	    INNER JOIN 
+                empresa e ON a.idempresa = e.id 
+                    LEFT JOIN
+                (SELECT 
+                    a.id AS idcontrato, a.idproyecto, b.nomproyecto AS proyecto
+                FROM
+                    contrato a
+                INNER JOIN proyecto b ON a.idproyecto = b.id) b ON a.idcontrato = b.idcontrato
+                    LEFT JOIN
+                proyecto c ON a.idproyecto = c.id
+                    LEFT JOIN
+                detcobroventa d ON d.idfactura = a.id
+            WHERE
+                YEAR(a.fecha) = $d->anio AND a.anulada = 0 ";
+    $query.= isset($d->idempresa) ? "AND a.idempresa = $d->idempresa " : "";
+    $query.= "      AND a.idtipofactura = 1
+                    AND (a.idfacturaafecta = 0
+                    OR a.idfacturaafecta IS NULL)
+            GROUP BY idproyecto , mes
+            ORDER BY empresa , mes , proyecto";
+    $data = $db->getQuery($query);
+
+    $letra->fechas = $d->anio . ' - ' . (isset($d->idempresa) ? $data[0]->empresa : 'Todas las empresas');
+
+    print json_encode([ 'encabezado' => $letra, 'ingresos' => $data ]);
+});
+
 function restarDiasHabiles($fecha) {
     $diasContados = 0;
     $dias_restantes = $fecha->format('d');
