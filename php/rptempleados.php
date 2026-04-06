@@ -113,6 +113,8 @@ $app->post('/altasbajas', function(){
         $letra->tipo = 'altas';
     } else if ($d->tipo == 2) {
         $letra->tipo = 'bajas';
+    } else if ($d->tipo == 4) {
+        $letra->tipo = 'reingresos';
     } else {
         $letra->tipo = '';
     }
@@ -130,7 +132,8 @@ $app->post('/altasbajas', function(){
                 a.id AS idempleado,
                 IFNULL(b.id, '9999') AS idempresa,
                 f.idproyecto,
-                IF(a.activo = 0 AND ($d->tipo = 3 OR $d->tipo = 2), '1', '0') AS tipo,
+                IF(f.reingreso AND ($d->tipo = 3 OR $d->tipo = 4), '2',
+                IF(a.activo = 0 AND ($d->tipo = 3 OR $d->tipo = 2), '1', '0')) AS tipo,
                 IFNULL(b.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
                 c.nomproyecto AS proyecto,
                 CONCAT(e.primernombre, ' ', 
@@ -144,9 +147,10 @@ $app->post('/altasbajas', function(){
                 ' ', 
                 IFNULL(e.apellidocasada, '')) AS nombre,
                 IFNULL(d.descripcion, 'NO ESPECIFICADO') AS puesto,
+                IF(f.reingreso AND ($d->tipo = 3 OR $d->tipo = 4), DATE_FORMAT(f.reingreso, '%d/%m/%Y'),
                 IF(f.baja AND ($d->tipo = 3 OR $d->tipo = 2),
                     DATE_FORMAT(f.baja, '%d/%m/%Y'),
-                    DATE_FORMAT(f.ingreso, '%d/%m/%Y')) AS fecha,
+                    DATE_FORMAT(f.ingreso, '%d/%m/%Y'))) AS fecha,
                 f.sueldo,
                 f.bonificacionley AS bono,
                 (f.bonificacionley + f.sueldo) AS total,
@@ -167,7 +171,9 @@ $app->post('/altasbajas', function(){
             WHERE  1 = 1 ";
     $query.= $d->tipo == 1 ? "AND f.ingreso >= '$d->fdelstr' AND f.ingreso <= '$d->falstr' " :
     ($d->tipo == 2 ? "AND f.baja >= '$d->fdelstr' AND f.baja <= '$d->falstr' " : 
-    "AND (f.ingreso >= '$d->fdelstr' AND f.ingreso <= '$d->falstr' OR f.baja >= '$d->fdelstr' AND f.baja <= '$d->falstr') ");
+    ($d->tipo == 4 ? "AND f.reingreso >= '$d->fdelstr' AND f.reingreso <= '$d->falstr' " :
+    "AND (f.ingreso >= '$d->fdelstr' AND f.ingreso <= '$d->falstr' OR f.baja >= '$d->fdelstr' 
+    AND f.baja <= '$d->falstr' OR f.reingreso >= '$d->fdelstr' AND f.reingreso <= '$d->falstr') "));
     $query.= isset($d->idempresa) ? "AND f.idempresadebito = $d->idempresa " : "";
     $query.= isset($d->idproyecto) ? "AND f.idproyecto = $d->idproyecto " : "";
     $query.=   "ORDER BY 4 , 5 ,"; 
@@ -189,7 +195,7 @@ $app->post('/altasbajas', function(){
         // si es el primero insertar nombre del separador y crear array de recibos
         if ($primero) {
             // tipo 
-            $separador_tipo->nombre = $anterior->tipo == 1 ? 'BAJAS' : 'ALTAS';
+            $separador_tipo->nombre = $anterior->tipo == 1 ? 'BAJAS' : ($anterior->tipo == 2 ? 'REINGRESOS' : 'ALTAS');
             $separador_tipo->mostrar = $d->tipo == 3 ? true : null;
             $separador_tipo->empresas = array();
             // empresa
@@ -242,7 +248,7 @@ $app->post('/altasbajas', function(){
 
             // separador
             $separador_tipo = new StdClass;
-            $separador_tipo->nombre = $actual->tipo == 1 ? 'BAJAS' : 'ALTAS';
+            $separador_tipo->nombre = $actual->tipo == 1 ? 'BAJAS' : ($actual->tipo == 2 ? 'REINGRESOS' : 'ALTAS');
             $separador_tipo->mostrar = $d->tipo == 3 ? true : null;
             $separador_tipo->empresas = array();
         }
@@ -303,7 +309,7 @@ $app->post('/altasbajas', function(){
             // si es el primero insertar nombre del separador y crear array de recibos
             if ($primero) {
                 // tipo 
-                $separador_tipo->nombre = $actual->tipo == 1 ? 'BAJAS' : 'ALTAS';
+                $separador_tipo->nombre = $actual->tipo == 1 ? 'BAJAS' : ($actual->tipo == 2 ? 'REINGRESOS' : 'ALTAS');
                 $separador_tipo->mostrar = $d->tipo == 3 ? true : null;
                 $separador_tipo->empresas = array();
                 // empresa
@@ -313,7 +319,7 @@ $app->post('/altasbajas', function(){
                 if ($d->agrupar == 2) {
                     $separador_empresa->proyectos = array();
                     // proyecto
-                    $separador_proyecto->nombre = $anterior->proyecto;
+                    $separador_proyecto->nombre = $actual->proyecto;
                     $separador_proyecto->empleados = array();
                     $primero = false;
                 } else {
