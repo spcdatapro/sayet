@@ -143,7 +143,8 @@ function getQueryCargos($d) {
     CONCAT(e.desctiposervventa, ' ', DATE_FORMAT(a.fechacobro, '%m/%Y')) AS tipo, e.id as idtipo, j.nomproyecto AS proyecto, 
     UnidadesPorContrato(a.idcontrato) AS unidades, RetISR(c.idcliente, b.idtipoventa) AS retenerisr, RetIVA(c.idcliente, b.idtipoventa) AS reteneriva, c.idtipocliente, 
     PorcentajeRetIVA(c.idcliente, b.idtipoventa) AS porcentajeretiva, a.conceptoadicional, MONTH(a.fechacobro) AS mes, YEAR(a.fechacobro) AS anio, 
-    NitFacturarA(c.idcliente, b.idtipoventa) AS nit, DirFacturarA(c.idcliente, b.idtipoventa, j.id) AS direccion, ExentoIVA(c.idcliente, b.idtipoventa) AS exentoiva, TIPOIDRECEPTOR(c.idcliente) AS tipoidreceptor, 1 AS facturar
+    NitFacturarA(c.idcliente, b.idtipoventa) AS nit, DirFacturarA(c.idcliente, b.idtipoventa, j.id) AS direccion, ExentoIVA(c.idcliente, b.idtipoventa) AS exentoiva, TIPOIDRECEPTOR(c.idcliente) AS tipoidreceptor, 1 AS facturar,
+    a.proveedor, a.pedido, a.framework
     FROM cargo a INNER JOIN detfactcontrato b ON b.id = a.iddetcont INNER JOIN contrato c ON c.id = b.idcontrato INNER JOIN cliente d ON d.id = c.idcliente 
     INNER JOIN tiposervicioventa e ON e.id = b.idtipoventa INNER JOIN tipocliente g ON g.id = c.idtipocliente 
     INNER JOIN moneda h ON h.id = b.idmoneda INNER JOIN empresa i ON i.id = c.idempresa 
@@ -177,7 +178,7 @@ $app->post('/pendientesfel', function() {
         SUM(z.importebrutocnv) AS importebrutocnv, SUM(z.importenetocnv) AS importenetocnv, SUM(z.importeivacnv) AS importeivacnv, SUM(z.importetotalcnv) AS importetotalcnv,
         SUM(z.importeexento) AS importeexento, SUM(z.importeexentocnv) AS importeexentocnv,
 
-        IF(SUM(z.montoconiva) > 2500, 0, 1) AS cf, 1 AS facturar
+        IF(SUM(z.montoconiva) > 2500, 0, 1) AS cf, 1 AS facturar, z.proveedor, z.pedido, z.framework
         FROM ($queryCargos) z
         GROUP BY z.idcontrato, z.idcliente, z.facturara, z.idmonedafact
         ORDER BY z.facturara, z.clientecorto, z.tipo
@@ -440,6 +441,9 @@ $app->post('/genfactfel', function() {
     foreach($pendientes as $p) {
 
         // $datosFel->correlativofel++;
+        $p->proveedor = isset($p->proveedor) ? "'".$p->proveedor."'" : 'NULL';
+        $p->pedido = isset($p->pedido) ? "'".$p->pedido."'" : 'NULL';
+        $p->framework = isset($p->framework) ? "'".$p->framework."'" : 'NULL';
 
         if (($p->cf == 1) || ($p->cf == 0 && $p->nit != 'CF')) {
 
@@ -457,7 +461,8 @@ $app->post('/genfactfel', function() {
             $query.= "subtotalcnv, totalcnv, retivacnv, retisrcnv, totdescuentocnv,";
             $query.= "importebruto, importeneto, importeiva, importetotal, descuentosiniva, descuentoiva, ";
             $query.= "importebrutocnv, importenetocnv, importeivacnv, importetotalcnv, descuentosinivacnv, descuentoivacnv, ";
-            $query.= "serieadmin, numeroadmin, porretiva, importeexento, importeexentocnv, exentoiva, tipoidreceptor";
+            $query.= "serieadmin, numeroadmin, porretiva, importeexento, importeexentocnv, exentoiva, tipoidreceptor, ";
+            $query.= "proveedor, pedido, framework ";
             $query.= ") VALUES (";
             $query.= "$params->idempresa, 1, $p->idcontrato, $p->idcliente, ";
             $query.= "NOW(), MONTH('$params->ffacturastr'), '$params->ffacturastr', 2, '". str_replace(',', ', ', strip_tags($p->tipo)).' '.$p->tc_concepto."', $p->iva, ";
@@ -466,7 +471,8 @@ $app->post('/genfactfel', function() {
             $query.= "$p->montoconivacnv, $p->totapagarcnv, $p->ivaporretenercnv, $p->isrporretenercnv, $p->descuentoconivacnv, ";
             $query.= "$p->importebruto, $p->importeneto, $p->importeiva, $p->importetotal, $p->descuentosiniva, $p->descuentoiva, ";
             $query.= "$p->importebrutocnv, $p->importenetocnv, $p->importeivacnv, $p->importetotalcnv, $p->descuentosinivacnv, $p->descuentoivacnv, ";
-            $query.= "'$datosFel->seriefel', NULL, $p->porcentajeretiva, $p->importeexento, $p->importeexentocnv, $p->exentoiva, $p->tipoidreceptor";
+            $query.= "'$datosFel->seriefel', NULL, $p->porcentajeretiva, $p->importeexento, $p->importeexentocnv, $p->exentoiva, $p->tipoidreceptor, ";
+            $query.= "$p->proveedor, $p->pedido, $p->framework";
             $query.= ")";
             //print $query;
             //die();
@@ -769,7 +775,7 @@ $app->post('/genfel', function() use($app) {
     '' AS numeroacceso, IFNULL(a.serieadmin, 'A') AS serieadmin, a.numeroadmin, c.nombrecorto, FORMAT(a.importetotalcnv, 2) AS montodol, ROUND(a.tipocambio, 5) AS tipocambio, FORMAT(TRUNCATE(a.totalcnv, 2), 2) AS pagonetodol, 
     FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.total, a.totalcnv), 2), 2) AS pagoneto, FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.retiva, a.retivacnv), 2), 2) AS retiva, 
     FORMAT(TRUNCATE(IF(a.idmonedafact = 1, a.retisr, a.retisrcnv), 2), 2) AS retisr, FORMAT(IF(a.idmonedafact = 1, a.importetotal, a.importetotalcnv), 2) AS monto, 
-    DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.nombre, d.simbolo AS monedafact, 1 AS descargar, a.idfacturaafecta, a.id, a.tipoidreceptor
+    DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, a.nombre, d.simbolo AS monedafact, 1 AS descargar, a.idfacturaafecta, a.id, a.tipoidreceptor, a.proveedor, a.pedido, a.framework
     FROM factura a
     INNER JOIN tipofactura b ON b.id = a.idtipofactura
     LEFT JOIN cliente c ON c.id = a.idcliente

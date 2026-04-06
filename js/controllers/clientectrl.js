@@ -1045,6 +1045,25 @@
             $scope.sldesc[rowIndex] = false;
         };
 
+        $scope.agregarCampo = (id, dato, tipo) => {
+            let option = undefined;
+            switch (tipo) {
+                case 'proveedor':
+                    option = 'uprov';
+                    break;
+                case 'pedido':
+                    option = 'uped';
+                    break;
+                case 'framework':
+                    option = 'ufw';
+                    break;
+            }
+
+            clienteSrvc.editRow({ id: id, valor: dato }, option).then(d => {
+                toaster.pop(d.tipo, 'Campo adicional', d.mensaje, 'timeout:5000');
+            });
+        }
+
         function procDataCargos(d) {
             //console.log(d); return;
             for (var i = 0; i < d.length; i++) {
