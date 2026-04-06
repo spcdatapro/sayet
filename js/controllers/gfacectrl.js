@@ -111,6 +111,7 @@
                             pedido = f.pedido != null ? f.pedido : '';
                             framework = f.framework != null ? f.framework : '';
                             campos_adicionales = `|${proveedor}|${pedido}|${framework}|`;
+                            campos_adicionales = '|||';
                         }
                         facturas += `${f.tiporegistro}|${f.fechadocumento}|${f.tipodocumento}|${f.nitcomprador}|${f.codigomoneda}|${f.tasacambio}|${f.ordenexterno}|${f.tipoventa}|${f.destinoventa}|${f.enviarcorreo}|${f.nombrecomprador}|${f.direccion}|${f.nombrecorto}|$ ${f.montodol}|${f.tipocambio}|$ ${f.pagonetodol}|${f.monedafact} ${f.pagoneto}|${f.monedafact} ${f.retiva}|${f.monedafact} ${f.retisr}|${f.monedafact} ${f.monto}|${f.numeroacceso}|${f.serieadmin}|${f.numeroadmin}|${idtiporeceptor}${campos_adicionales}\n`;
                         f.detalle.forEach(d => {
