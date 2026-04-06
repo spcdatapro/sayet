@@ -41,11 +41,14 @@ angular.module('cpm')
             $scope.eliminable = false;
             $scope.form_bitacora = false;
             $scope.form_archivo = false;
+            $scope.horarios = [];
 
             // para pginas de resultados
             $scope.$watch('empleados.length', function () {
                 $scope.totalPages = Math.ceil($scope.empleados.length / $scope.itemsPerPage);
             });
+
+            empServicios.getHorarios().then(d => $scope.horarios = d );
 
             $scope.$watch('lookFor', function () {
                 // Calcula el número total de páginas después del filtro
@@ -240,12 +243,14 @@ angular.module('cpm')
                     d.lab.jornada = d.lab.jornada == 'diurna' ? '1' : d.lab.jornada == 'mixta' ? '2' : d.lab.jornada == 'noctura' ? '3' : d.lab.jornada == 'no esta sujeto a jornada' ? '4' : undefined;
                     d.lab.tipocontrato = d.lab.tipocontrato == 'verbal' ? '1' : d.lab.tipocontrato == 'escrito' ? '2' : undefined;
                     d.lab.temporalidad = d.lab.temporalidad == 'indefinido' ? '1' : d.lab.temporalidad == 'definido' ? '2' : undefined;
+                    d.lab.idhorarios = d.lab.idhorarios ? d.lab.idhorarios.split(',').map(id => $filter('getById')($scope.horarios, parseInt(id))) : [];
 
                     // globalizar las variables
                     $scope.per = d.per;
                     $scope.emp = d.emp;
                     $scope.lab = d.lab;
                     $scope.emg = d.emg;
+                    console.log($scope.lab);
 
                     // Para resumen de empleado
                     $scope.emp.dpi = d.per.documento;

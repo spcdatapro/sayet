@@ -928,6 +928,13 @@ $app->get('/get_educacion', function() {
 	print json_encode($b->getNivelEducacion());
 });
 
+$app->get('/get_horarios', function() {
+	$b = new General();
+
+	print json_encode($b->getHorarios());
+});
+
+
 $app->get('/get_castas', function() {
 	$b = new General();
 

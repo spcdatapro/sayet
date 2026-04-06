@@ -67,7 +67,7 @@
                                         ng-change="getProveedores(params_proveedores.idempresa, params_proveedores.idproyecto[0])"
                                         title="Seleccione un proyecto..." theme="bootstrap" autofocus="false" multiple>
                                         <ui-select-match placeholder="Buscar proyecto..." allow-clear="true">
-                                            <span ng-bind="($select.selected.nomproyecto)"></span>
+                                            <span>{{$item.nomproyecto}}</span>
                                         </ui-select-match>
                                         <ui-select-choices
                                             repeat="item.id as item in proyectos | filter:$select.search">

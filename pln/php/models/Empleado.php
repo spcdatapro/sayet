@@ -1854,6 +1854,7 @@ EOT;
 			}
 			$idempleado = isset($data['idplnempleado']) ? $data['idplnempleado'] : null;
 			$idlaboral = isset($data['id']) ? $data['id'] : null;
+			$data['idhorarios'] = isset($data['idhorarios']) ? implode(',', $data['idhorarios']) : null;
 
 			unset($data['idplnempleado']);
 			unset($data['id']);

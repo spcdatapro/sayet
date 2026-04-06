@@ -84,7 +84,8 @@ angular.module('cpm')
         nuevoEmpleado: obj => comunFact.doPOST(urlBase + '/crear', obj),
         darAlta: obj => comunFact.doPOST(urlBase + '/alta', obj),
         darBaja: obj => comunFact.doPOST(urlBase + '/baja', obj),
-        eliminarArchivo: id => comunFact.doDELETE(`${urlBase}/eliminar_archivo/${id}`)
+        eliminarArchivo: id => comunFact.doDELETE(`${urlBase}/eliminar_archivo/${id}`),
+        getHorarios: () => comunFact.doGET(urlBase + '/get_horarios'),
     };
 }])
 .factory('pstServicios', ['comunFact', function(comunFact){

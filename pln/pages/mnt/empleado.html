@@ -1266,6 +1266,27 @@
 										</div>
 									</div>
 									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="selHorario" class="control-label">Horarios:</label>
+												<ui-select ng-model="lab.idhorarios" title="Seleccione un horario..."
+													theme="bootstrap" autofocus="false" ng-disabled="!editando && hay" multiple>
+													<ui-select-match placeholder="Seleccionar un horario"
+														allow-clear="false">
+														<span>{{$item.nombre}}</span>
+													</ui-select-match>
+													<ui-select-choices
+														repeat="item.id as item in horarios | filter:$select.search">
+														<div
+															ng-bind-html="(item.nombre) | highlight: $select.search">
+														</div>
+													</ui-select-choices>
+													<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+												</ui-select>
+											</div>
+										</div>
+									</div>
+									<div class="row">
 										<div class="col-md-12">
 											<div class="btn-group btn-group-justified">
 												<div class="btn-group" role="group">
