@@ -443,11 +443,10 @@ $app->post('/u', function(){
         // ver si proveedor es retenedor
         $esRet = (int)$db->getOneField("SELECT retensioniva FROM proveedor WHERE id = $d->idproveedor ") === 1;
         $esLocalMonedaFact = (int)$db->getOneField("SELECT eslocal FROM moneda WHERE id = $d->idmoneda") === 1;
+        $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
 
     if ($d->retiva_manual != 1) {
         if((int)$d->idtipofactura !== 5) {
-            $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
-
             // si la empresa es retenedora y el proveedor no es retenedor retener iva
             if (($empresaRet && !$esRet) && (($d->totfact - $d->noafecto) * $d->tipocambio) >= 2500 && !$esPeque) {
                 $d->retIva = $db->retIVA((float)$d->iva, 0.15, 1, $esLocalMonedaFact);
