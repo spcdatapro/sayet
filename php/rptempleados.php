@@ -2294,7 +2294,7 @@ $app->get('/informe_alta/:idempleado', function ($idempleado) {
                 plnpersonal e ON a.idpersonal = e.id
                     INNER JOIN
                 puesto f ON b.idpuesto = f.id
-                    INNER JOIN
+                    LEFT JOIN
                 horarios g ON FIND_IN_SET(g.id, b.idhorarios)
                     INNER JOIN
                 (SELECT 
