@@ -2233,4 +2233,90 @@ $app->post('/horas_extra', function () {
     print json_encode([ 'encabezado' => $letra, 'empresas' => $empleados ]);
 });
 
+$app->get('/informe_alta/:idempleado', function ($idempleado) {
+    $db = new dbcpm();
+    $dias_semana = [ 'domingo' => 'domingo', 'lunes' => 'lunes', 'martes' => 'martes', 'miercoles' => 'miercoles', 'jueves' => 'jueves', 'viernes' => 'viernes', 'sabado' => 'sabado' ];
+
+    $query = "SELECT 
+                a.id AS codigo,
+                c.nombre AS empresa,
+                b.temporalidad,
+                d.nomproyecto AS proyecto,
+                CONCAT(IFNULL(e.primernombre, ''),
+                        ' ',
+                        IFNULL(e.segundonombre, ''),
+                        ' ',
+                        IFNULL(e.tercernombre, ''),
+                        IFNULL(e.primerapellido, ''),
+                        ' ',
+                        IFNULL(e.segundoapellido, ''),
+                        ' ',
+                        IFNULL(e.apellidocasada, '')) AS nombre,
+                e.direccion,
+                e.correo,
+                e.telefono,
+                f.descripcion,
+                DATE_FORMAT(IFNULL(a.reingreso, a.ingreso),
+                        '%d/%m/%Y') AS ingreso,
+                e.documento,
+                e.nit,
+                a.igss,
+                b.jornada,
+                b.idhorarios,
+                GROUP_CONCAT(DISTINCT CONCAT(g.del, '-', g.al)
+                    ORDER BY g.del
+                    SEPARATOR ', ') AS horarios,
+                MAX(g.domingo) AS domingo,
+                MAX(g.lunes) AS lunes,
+                MAX(g.martes) AS martes,
+                MAX(g.miercoles) AS miercoles,
+                MAX(g.jueves) AS jueves,
+                MAX(g.viernes) AS viernes,
+                MAX(g.sabado) AS sabado,
+                b.sueldo,
+                b.bonificacionley AS bonificacion,
+                b.cuentabanco,
+                NULL AS confianza,
+                NULL AS confidencialidad,
+                NULL AS celular,
+                NULL AS medico,
+                h.depreciacion,
+                h.combustible
+            FROM
+                plnempleado a
+                    INNER JOIN
+                plnlaboral b ON a.idlaboral = b.id
+                    INNER JOIN
+                plnempresa c ON b.idempresadebito = c.id
+                    INNER JOIN
+                proyecto d ON b.idproyecto = d.id
+                    INNER JOIN
+                plnpersonal e ON a.idpersonal = e.id
+                    INNER JOIN
+                puesto f ON b.idpuesto = f.id
+                    INNER JOIN
+                horarios g ON FIND_IN_SET(g.id, b.idhorarios)
+                    INNER JOIN
+                (SELECT 
+                    a.idplnempleado,
+                        movdepvehiculo AS depreciacion,
+                        movgasolina AS combustible
+                FROM
+                    plnbitacora a) h ON a.id = h.idplnempleado
+            WHERE
+                a.id = $idempleado";
+    $data = $db->getQuery($query)[0];
+
+    $dias_activos = [];
+    foreach ($dias_semana as $campo => $nombre_dia) {
+        if (isset($data->$campo) && (int)$data->$campo === 1) {
+            $dias_activos[] = $nombre_dia;
+        }
+    }
+
+    $data->dias = implode(', ', $dias_activos);
+
+    print json_encode([ 'empleado' => $data ]);
+});
+
 $app->run();
