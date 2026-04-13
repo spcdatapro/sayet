@@ -2305,6 +2305,7 @@ $app->get('/informe_alta/:idempleado', function ($idempleado) {
                     plnbitacora a) h ON a.id = h.idplnempleado
             WHERE
                 a.id = $idempleado";
+    echo $query; return;
     $data = $db->getQuery($query)[0];
 
     // $dias_activos = [];
