@@ -2235,7 +2235,7 @@ $app->post('/horas_extra', function () {
 
 $app->get('/informe_alta/:idempleado', function ($idempleado) {
     $db = new dbcpm();
-    $dias_semana = [ 'domingo' => 'domingo', 'lunes' => 'lunes', 'martes' => 'martes', 'miercoles' => 'miercoles', 'jueves' => 'jueves', 'viernes' => 'viernes', 'sabado' => 'sabado' ];
+    // $dias_semana = [ 'domingo' => 'domingo', 'lunes' => 'lunes', 'martes' => 'martes', 'miercoles' => 'miercoles', 'jueves' => 'jueves', 'viernes' => 'viernes', 'sabado' => 'sabado' ];
 
     $query = "SELECT 
                 a.id AS codigo,
@@ -2307,14 +2307,14 @@ $app->get('/informe_alta/:idempleado', function ($idempleado) {
                 a.id = $idempleado";
     $data = $db->getQuery($query)[0];
 
-    $dias_activos = [];
-    foreach ($dias_semana as $campo => $nombre_dia) {
-        if (isset($data->$campo) && (int)$data->$campo === 1) {
-            $dias_activos[] = $nombre_dia;
-        }
-    }
+    // $dias_activos = [];
+    // foreach ($dias_semana as $campo => $nombre_dia) {
+    //     if (isset($data->$campo) && (int)$data->$campo === 1) {
+    //         $dias_activos[] = $nombre_dia;
+    //     }
+    // }
 
-    $data->dias = implode(', ', $dias_activos);
+    // $data->dias = implode(', ', $dias_activos);
 
     print json_encode([ 'empleado' => $data ]);
 });
