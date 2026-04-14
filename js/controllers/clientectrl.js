@@ -916,6 +916,7 @@
                 d[i].monto = parseFloat(parseFloat(d[i].monto).toFixed(2));
                 d[i].descuento = parseFloat(parseFloat(d[i].descuento).toFixed(2));
                 d[i].facturado = parseInt(d[i].facturado);
+                d[i].noproveedor = d[i].proveedor;
             }
             return d;
         }
