@@ -583,7 +583,7 @@ $app->post('/gencobros', function(){
 
 $app->get('/getcargos/:iddetcont', function($iddetcont){
     $db = new dbcpm();
-    $query = "SELECT a.id, a.iddetcont, a.fechacobro, a.monto, a.descuento, a.facturado, a.conceptoadicional FROM cargo a WHERE a.iddetcont = ".$iddetcont." ORDER BY a.fechacobro";
+    $query = "SELECT a.id, a.iddetcont, a.fechacobro, a.monto, a.descuento, a.facturado, a.conceptoadicional, a.proveedor, a.pedido, a.framework FROM cargo a WHERE a.iddetcont = ".$iddetcont." ORDER BY a.fechacobro";
     print $db->doSelectASJson($query);
 });
 
