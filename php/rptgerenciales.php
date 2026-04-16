@@ -801,7 +801,7 @@ $app->post('/control_ingresos', function () {
             if (isset($proximo2)) {
                 if ($proximo2->idrecibocli == $actual->idrecibocli && $proximo2->idrecibocli > 0) {
                     // $proximo->diferencia = ($actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito)) * -1;
-                    $proximo2->diferencia = $proximo2->ingreso - ($proximo2->deposito + $proximo2->isr + $proximo2->iva + $proximo->deposito + $actual->deposito);
+                    $proximo2->diferencia = ($proximo2->ingreso - ($proximo2->deposito + $proximo2->isr + $proximo2->iva + $proximo->deposito + $actual->deposito)) * -1;
                     $actual->iva = 0;
                     $actual->isr = 0;
                     $actual->ingreso = 0;
