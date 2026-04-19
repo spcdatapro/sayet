@@ -2234,11 +2234,13 @@ $app->post('/horas_extra', function () {
 });
 
 $app->get('/informe_alta/:idempleado', function ($idempleado) {
+    date_default_timezone_set("America/Guatemala");
     $db = new dbcpm();
     $dias_semana = [ 'domingo' => 'domingo', 'lunes' => 'lunes', 'martes' => 'martes', 'miercoles' => 'miercoles', 'jueves' => 'jueves', 'viernes' => 'viernes', 'sabado' => 'sabado' ];
 
     $letra = new stdClass();
     $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
 
     $query = "SELECT 
                 a.id AS codigo,
