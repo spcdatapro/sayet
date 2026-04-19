@@ -2237,6 +2237,9 @@ $app->get('/informe_alta/:idempleado', function ($idempleado) {
     $db = new dbcpm();
     $dias_semana = [ 'domingo' => 'domingo', 'lunes' => 'lunes', 'martes' => 'martes', 'miercoles' => 'miercoles', 'jueves' => 'jueves', 'viernes' => 'viernes', 'sabado' => 'sabado' ];
 
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+
     $query = "SELECT 
                 a.id AS codigo,
                 c.nombre AS empresa,
@@ -2316,7 +2319,7 @@ $app->get('/informe_alta/:idempleado', function ($idempleado) {
 
     $data->dias = implode(', ', $dias_activos);
 
-    print json_encode([ 'empleado' => $data ]);
+    print json_encode([ 'encabezado' => $letra, 'empleado' => $data ]);
 });
 
 $app->run();
