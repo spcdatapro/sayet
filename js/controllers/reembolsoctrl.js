@@ -103,7 +103,7 @@
                     $scope.uid = +usrLogged.uid;
                     $scope.nombre = usrLogged.nombre;
                     beneficiarioSrvc.lstBeneficiarios().then(function (d) {
-                        if (!$scope.permiso.m && $scope.nombre) {
+                        if (!$scope.permiso.m) {
                             $scope.beneficiarios = filtraBeneficiariosPorUsuario(d);
                         } else {
                             $scope.beneficiarios = d;
