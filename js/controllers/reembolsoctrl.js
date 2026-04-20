@@ -177,7 +177,7 @@
             function nombresSonSimilares(nombreUsuario, nombreBeneficiario) {
                 var usr = normalizaNombre(nombreUsuario);
                 var ben = normalizaNombre(nombreBeneficiario);
-
+                console.log(usr, ben);
                 if (!usr || !ben) {
                     return false;
                 }
