@@ -603,6 +603,8 @@ $app->post('/ucnt', function () {
     $cntriva = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 28");
     $cntrisr = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 8");
 
+    $db->doQuery("UPDATE reembolso SET ultusuario = $d->idusuario WHERE id = $d->id");
+
     if (isset($d->id) && $d->id > 0 && isset($d->idcuentac) && $d->idcuentac > 0) {
         $query = "UPDATE reembolso SET idcuentaliq = $d->idcuentac WHERE id = $d->id";
         $db->doQuery($query);

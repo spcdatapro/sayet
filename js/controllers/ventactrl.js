@@ -22,6 +22,7 @@
         $scope.params = { idempresa: undefined, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), fdelstr: '', falstr: '' };
         $scope.periodoCerrado = false;
         $scope.usrdata = {};
+        $scope.permiso = {};
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
 
@@ -29,6 +30,9 @@
             $scope.usrdata = usrLogged;
             $scope.idempresa = parseInt(usrLogged.workingon);
             $scope.params.idempresa = $scope.idempresa;
+            authSrvc.gpr({ idusuario: parseInt(usrLogged.uid), ruta: $route.current.params.name }).then(d => {
+                $scope.permiso = d;
+            });
             if ($scope.idempresa > 0) {
                 empresaSrvc.getEmpresa($scope.idempresa).then(function (d) {
                     $scope.dectc = 5;
@@ -48,6 +52,26 @@
                 $scope.getVenta(+idventa);
             }
         };
+
+        $scope.delRetIva = obj => {
+            $confirm({ text: '¿Seguro(a) de eliminar la retención de IVA de esta factura? Se eliminara en el detalle contable y en la factura.', title: 'Eliminar retención de IVA', ok: 'Sí', cancel: 'No' })
+                .then(() => {
+                    ventaSrvc.editRow({ idfactura: obj.id, idusuario: $scope.usrdata.uid, idempresa: obj.idempresa }, 'driva').then(d => {
+                        toaster.pop({ type: d.tipo, title: 'Eliminar retención de IVA', body: d.mensaje, timeout: 3000 });
+                        $scope.getVenta(obj);
+                    });
+                });
+        }
+
+        $scope.delRetIsr = obj => {
+            $confirm({ text: '¿Seguro(a) de eliminar la retención de ISR de esta factura? Se eliminara en el detalle contable y en la factura.', title: 'Eliminar retención de ISR', ok: 'Sí', cancel: 'No' })
+                .then(() => {
+                    ventaSrvc.editRow({ idfactura: obj.id, idusuario: $scope.usrdata.uid, idempresa: obj.idempresa }, 'drisr').then(d => {
+                        toaster.pop({ type: d.tipo, title: 'Eliminar retención de ISR', body: d.mensaje, timeout: 3000 });
+                        $scope.getVenta(obj);
+                    });
+                });
+        }
 
         tipoFacturaSrvc.lstTiposFactura().then(function (d) {
             for (var i = 0; i < d.length; i++) { d[i].id = parseInt(d[i].id); d[i].paraventa = parseInt(d[i].paraventa); }
@@ -165,6 +189,8 @@
                 d[i].retisr = parseFloat(parseFloat(d[i].retisr).toFixed(2));
                 //inicio modificacion de error formilariosr  17/11/2017
                 d[i].fecpagoformisr = moment(d[i].fecpagoformisr).isValid() ? moment(d[i].fecpagoformisr).toDate() : null;
+                d[i].retiva = +d[i].retiva;
+                d[i].retisr = +d[i].retisr;
                 //fin modificacion 17/11/2017
             }
             return d;
@@ -516,7 +542,7 @@
             $confirm({ text: '¿Seguro(a) de guardar los cambios?', title: 'Modificar detalle contable', ok: 'Sí', cancel: 'No' })
                 .then(() => {
                     detContSrvc.editRow(obj, 'u')
-                    .then(respuesta => { $scope.ok(respuesta); });
+                        .then(respuesta => { $scope.ok(respuesta); });
                 });
         };
 
