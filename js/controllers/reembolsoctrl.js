@@ -102,6 +102,13 @@
                     $scope.params.idemp = +usrLogged.workingon;
                     $scope.uid = +usrLogged.uid;
                     $scope.nombre = usrLogged.nombre;
+                    beneficiarioSrvc.lstBeneficiarios().then(function (d) {
+                        if (!$scope.permiso.m && $scope.nombre) {
+                            $scope.beneficiarios = filtraBeneficiariosPorUsuario(d);
+                        } else {
+                            $scope.beneficiarios = d;
+                        }
+                    });
                     authSrvc.gpr({ idusuario: parseInt(usrLogged.uid), ruta: $route.current.params.name }).then((d) => {
                         $scope.permiso = d;
                         console.log($scope.permiso);
@@ -199,14 +206,6 @@
                     return nombresSonSimilares($scope.nombre, beneficiario.nombre);
                 });
             }
-
-            beneficiarioSrvc.lstBeneficiarios().then(function (d) {
-                if (!$scope.permiso.m && $scope.nombre) {
-                    $scope.beneficiarios = filtraBeneficiariosPorUsuario(d);
-                } else {
-                    $scope.beneficiarios = d;
-                }
-            });
 
             $scope.loadUnidadesProyecto = (idproyecto) => proyectoSrvc.lstUnidadesProyecto(+idproyecto).then((d) => $scope.unidades = d);
 
