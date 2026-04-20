@@ -103,7 +103,7 @@
                     $scope.uid = +usrLogged.uid;
                     $scope.nombre = usrLogged.nombre;
                     beneficiarioSrvc.lstBeneficiarios().then(function (d) {
-                        console.log($scope.nombre);
+                        // console.log($scope.nombre);
                         if (!$scope.permiso.m) {
                             $scope.beneficiarios = filtraBeneficiariosPorUsuario(d);
                         } else {
@@ -112,7 +112,7 @@
                     });
                     authSrvc.gpr({ idusuario: parseInt(usrLogged.uid), ruta: $route.current.params.name }).then((d) => {
                         $scope.permiso = d;
-                        console.log($scope.permiso);
+                        // console.log($scope.permiso);
                         empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then((d) => {
                             $scope.reembolso.idempresa = parseInt(d[0].id);
                             $scope.dectc = parseInt(d[0].dectc);
@@ -158,7 +158,7 @@
             tipoCompraSrvc.lstTiposCompra().then(function (d) { $scope.tiposcompra = d; });
 
             $scope.selBene = (obj) => {
-                console.log(obj);
+                // console.log(obj);
                 $scope.reembolso.beneficiario = obj[0].nombre;
                 $scope.reembolso.fondoasignado = +obj[0].fondo;
             }
@@ -177,7 +177,7 @@
             function nombresSonSimilares(nombreUsuario, nombreBeneficiario) {
                 var usr = normalizaNombre(nombreUsuario);
                 var ben = normalizaNombre(nombreBeneficiario);
-                console.log(usr === ben);
+
                 if (!usr || !ben) {
                     return false;
                 }
@@ -327,7 +327,7 @@
                     ordentrabajo: undefined,
                     retiva: 0.00
                 };
-                console.log($scope.compra);
+                // console.log($scope.compra);
                 if (!!$scope.reembolso.objTipoReembolso && !!$scope.reembolso.objTipoReembolso.id) {
                     if (+$scope.reembolso.objTipoReembolso.id === 1) {
                         $scope.compra.idproyecto = $scope.reembolso.idproyecto;
