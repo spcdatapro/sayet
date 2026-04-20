@@ -289,6 +289,8 @@ $app->post('/cd', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
+    $d->idsubtipogasto = isset($d->idsubtipogasto) ? $d->idsubtipogasto : 0;
+
     $d->retIva = 0.00;
 
     //$calcisr = (int)$d->retenerisr === 1;
@@ -463,7 +465,10 @@ $app->post('/gentranban', function(){
 
     $origen = 1;
     //Inserto el detalle contable de la transacción bancaria
-    $ctaporliquidar = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 5");
+    $ctaporliquidar = (int)$db->getOneField("SELECT idcuentaliq FROM reembolso WHERE id = ".$d->id);
+    if ($ctaporliquidar == 0) {
+        $ctaporliquidar = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 5");
+    }
     $ctabanco = (int)$db->getOneField("SELECT idcuentac FROM banco WHERE id = ".$d->objBanco->id);
 
     if($ctaporliquidar > 0){
@@ -589,6 +594,32 @@ $app->get('/uriva/:idcompra/:monto/:idempresa/:suma/:idreembolso', function ($id
     $db->doQuery("UPDATE detallecontable SET haber = $monto_prov WHERE idorigen = $idcompra AND origen = 2 AND idcuenta = $ctaliq");
 
     print json_encode(['tipo' => 'success', 'mensaje' => 'Se ha modificado correctamente.']);;
+});
+
+$app->post('/ucnt', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $cntriva = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 28");
+    $cntrisr = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 8");
+
+    if (isset($d->id) && $d->id > 0 && isset($d->idcuentac) && $d->idcuentac > 0) {
+        $query = "UPDATE reembolso SET idcuentaliq = $d->idcuentac WHERE id = $d->id";
+        $db->doQuery($query);
+        if ($db->getOneField("SELECT idcuentaliq FROM reembolso WHERE id = $d->id") == $d->idcuentac) {
+            $query = "UPDATE detallecontable SET idcuenta = $d->idcuentac WHERE origen = 2 AND idorigen IN (SELECT id FROM compra WHERE idreembolso = $d->id) AND haber > 0 AND idcuenta NOT IN ($cntriva, $cntrisr)";
+            $db->doQuery($query);
+            if ($db->getOneField("SELECT COUNT(id) FROM detallecontable WHERE origen = 2 AND idorigen IN (SELECT id FROM compra WHERE idreembolso = $d->id) AND haber > 0 AND idcuenta = $d->idcuentac") > 0) {
+                print json_encode(['tipo' => 'success', 'mensaje' => 'Cuenta contable actualizada correctamente.']);
+            } else {
+                print json_encode(['tipo' => 'error', 'mensaje' => 'No se ha podido actualizar la cuenta contable de las compras.']);
+            }
+        } else {
+            print json_encode(['tipo' => 'error', 'mensaje' => 'No se ha podido actualizar el reembolso.']);
+        }
+    } else {
+        print json_encode(['tipo' => 'error', 'mensaje' => 'No se ha podido actualizar, datos incompletos.']);
+    }   
 });
 
 $app->run();

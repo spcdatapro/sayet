@@ -46,6 +46,7 @@
                 idemp: undefined, estatus: 1, tipo: undefined, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(),
                 fdelstr: undefined, falstr: undefined
             };
+            $scope.mismo = false;
             $scope.presupuesto = {};
             $scope.ot = {};
             var prov = { id: 0, concepto: null, retensionisr: 0 };
@@ -53,6 +54,19 @@
             $scope.creador_compra = undefined;
             $scope.ultimo_compra = undefined;
             var periodoIva = true;
+
+            $scope.selLiquidacion = idcuenta => {
+                // para cambiar cuenta de liquidacion en todas las compras si ya hay un reembolso
+                if ($scope.reembolso.id && $scope.reembolso.id > 0) {
+                    $confirm({ text: '¿Seguro(a) de seleccionar esta cuenta para liquidación? Se asignará a este reembolso y a todas sus compras.', title: 'Seleccionar cuenta de liquidación', ok: 'Sí', cancel: 'No' }).then(() => {
+                        reembolsoSrvc.editRow({ id: $scope.reembolso.id, idcuentac: idcuenta, idempresa: $scope.reembolso.idempresa }, 'ucnt').then(d => {
+                            $scope.reembolso.idcuentaliq = idcuenta;
+                            toaster.pop({ type: d.tipo, title: 'Modificar cuenta de liquidación', body: d.mensaje });
+                        });
+                    });
+                }
+                $scope.getReembolso($scope.reembolso.id);
+            }
 
             $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap()
                 .withBootstrapOptions({
@@ -87,8 +101,10 @@
                 if (parseInt(usrLogged.workingon) > 0) {
                     $scope.params.idemp = +usrLogged.workingon;
                     $scope.uid = +usrLogged.uid;
+                    $scope.nombre = usrLogged.nombre;
                     authSrvc.gpr({ idusuario: parseInt(usrLogged.uid), ruta: $route.current.params.name }).then((d) => {
                         $scope.permiso = d;
+                        console.log($scope.permiso);
                         empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then((d) => {
                             $scope.reembolso.idempresa = parseInt(d[0].id);
                             $scope.dectc = parseInt(d[0].dectc);
@@ -133,7 +149,64 @@
 
             tipoCompraSrvc.lstTiposCompra().then(function (d) { $scope.tiposcompra = d; });
 
-            beneficiarioSrvc.lstBeneficiarios().then(function (d) { $scope.beneficiarios = d; });
+            $scope.selBene = (obj) => {
+                console.log(obj);
+                $scope.reembolso.beneficiario = obj[0].nombre;
+                $scope.reembolso.fondoasignado = +obj[0].fondo;
+            }
+
+            function normalizaNombre(valor) {
+                return (valor || '')
+                    .toString()
+                    .toLowerCase()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
+                    .replace(/[^a-z0-9\s]/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+            }
+
+            function nombresSonSimilares(nombreUsuario, nombreBeneficiario) {
+                var usr = normalizaNombre(nombreUsuario);
+                var ben = normalizaNombre(nombreBeneficiario);
+
+                if (!usr || !ben) {
+                    return false;
+                }
+
+                if (usr === ben || usr.indexOf(ben) !== -1 || ben.indexOf(usr) !== -1) {
+                    return true;
+                }
+
+                var tokensUsr = usr.split(' ').filter(function (t) { return t.length >= 3; });
+                var matches = 0;
+
+                for (var i = 0; i < tokensUsr.length; i++) {
+                    if (ben.indexOf(tokensUsr[i]) !== -1) {
+                        matches++;
+                    }
+                }
+
+                return tokensUsr.length > 0 && matches > 0;
+            }
+
+            function filtraBeneficiariosPorUsuario(lstBeneficiarios) {
+                if (!$scope.nombre) {
+                    return lstBeneficiarios;
+                }
+
+                return (lstBeneficiarios || []).filter(function (beneficiario) {
+                    return nombresSonSimilares($scope.nombre, beneficiario.nombre);
+                });
+            }
+
+            beneficiarioSrvc.lstBeneficiarios().then(function (d) {
+                if (!$scope.permiso.m && $scope.nombre) {
+                    $scope.beneficiarios = filtraBeneficiariosPorUsuario(d);
+                } else {
+                    $scope.beneficiarios = d;
+                }
+            });
 
             $scope.loadUnidadesProyecto = (idproyecto) => proyectoSrvc.lstUnidadesProyecto(+idproyecto).then((d) => $scope.unidades = d);
 
@@ -239,7 +312,7 @@
                     iva: 0.00,
                     idmoneda: 1,
                     tipocambio: parseFloat('1').toFixed($scope.dectc),
-                    objTipoFactura: [],
+                    objTipoFactura: {},
                     conceptomayor: '',
                     retenerisr: 0,
                     isr: 0.00,
@@ -254,7 +327,7 @@
                     ordentrabajo: undefined,
                     retiva: 0.00
                 };
-                //console.log($scope.compra);
+                console.log($scope.compra);
                 if (!!$scope.reembolso.objTipoReembolso && !!$scope.reembolso.objTipoReembolso.id) {
                     if (+$scope.reembolso.objTipoReembolso.id === 1) {
                         $scope.compra.idproyecto = $scope.reembolso.idproyecto;
@@ -265,6 +338,8 @@
                 $scope.$broadcast('angucomplete-alt:clearInput', 'txtNit');
                 $scope.periodoCerrado = false;
                 $scope.unidades = [];
+                $scope.compra.objTipoFactura = $filter('getById')($scope.tiposfactura, 1);
+                $scope.compra.objTipoCompra = $filter('getById')($scope.tiposcompra, 1);
                 goTop();
             };
 
@@ -299,6 +374,7 @@
                     if (d.length > 0) {
                         $scope.reembolso = procDataReemb(d)[0];
                         authSrvc.getPerfil($scope.reembolso.idusuario).then((usr) => { $scope.creador = usr[0].iniciales });
+                        $scope.mismo = +$scope.reembolso.idusuario === +$scope.uid;
                         if ($scope.reembolso.ultusuario > 0) {
                             authSrvc.getPerfil($scope.reembolso.ultusuario).then((usr) => { $scope.ultimo_usuario = usr[0].iniciales });
                         }

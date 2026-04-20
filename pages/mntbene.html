@@ -117,7 +117,13 @@
                             </div> 
                         </div>
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Fondo Asignado:</label>
+                                    <input type="number" class="form-control" ng-model="bene.fondo" step="0.01" ng-disabled="!permiso.m">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <center>
                                         <label for="chkDeBaja">De baja:</label>

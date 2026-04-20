@@ -60,6 +60,7 @@
                 data[i].idmoneda = parseInt(data[i].idmoneda);
                 data[i].tipocambioprov = parseFloat(data[i].tipocambioprov).toFixed($scope.dectc);
                 data[i].idbancopais = parseInt(data[i].idbancopais);
+                data[i].fondo = +data[i].fondo;
             }
             return data;
         }

@@ -79,7 +79,7 @@
                                     <select name="selBene" id="selBene" class="form-control"
                                         ng-model="reembolso.objBeneficiario"
                                         ng-options="obj.nitnombre for obj in beneficiarios | filter:{nitnombre:searchbene}"
-                                        ng-change="reembolso.beneficiario = reembolso.objBeneficiario[0].nombre"
+                                        ng-change="selBene(reembolso.objBeneficiario)"
                                         multiple required>
                                     </select>
                                 </div>
@@ -98,8 +98,8 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="selCtaLiq">Cuenta de liquidaci&oacute;n</label>
-                                    <ui-select id="selCtaLiq" ng-model="reembolso.idcuentaliq"
-                                        title="Seleccione una cuenta contable..." theme="bootstrap" autofocus="false">
+                                    <ui-select id="selCtaLiq" ng-model="reembolso.idcuentaliq"  ng-disabled="!permiso.m"
+                                        title="Seleccione una cuenta contable..." theme="bootstrap" autofocus="false" ng-change="selLiquidacion(reembolso.idcuentaliq)">
                                         <ui-select-match placeholder="Buscar cuenta contable..." allow-clear="true">
                                             <span ng-bind="$select.selected.nombrecta"></span>
                                         </ui-select-match>
@@ -114,13 +114,13 @@
                                     </ui-select>
                                 </div>
                             </div>
-                            <div class="col-md-6" ng-show="+reembolso.objTipoReembolso.id == 1">
-                                <div class="form-group required"
+                            <div class="col-md-6">
+                                <div class="form-group"
                                     ng-class="{'has-error':frmReembolso.selIdSubTipoGastRee.$invalid && !frmReembolso.selIdSubTipoGastRee.$pristine}">
                                     <label for="selIdSubTipoGastRee" class="control-label">Sub-tipo de gasto:</label>
                                     <ui-select id="selIdSubTipoGastRee" name="selIdSubTipoGastRee"
                                         ng-model="reembolso.idsubtipogasto" title="Seleccione un sub-tipo de gasto..."
-                                        theme="bootstrap" autofocus="false" ng-required="false">
+                                        theme="bootstrap" autofocus="false" ng-required="false" ng-disabled="!permiso.m">
                                         <ui-select-match placeholder="Buscar sub-tipo de gasto..." allow-clear="false">
                                             <span ng-bind="$select.selected.descripcion"></span>
                                         </ui-select-match>
@@ -138,11 +138,11 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6" ng-show="+reembolso.objTipoReembolso.id == 1">
+                            <div class="col-md-6">
                                 <div class="form-group required">
                                     <label for="selProyecto"> Proyecto:</label>
                                     <select name="selProyecto" id="selProyecto" class="form-control"
-                                        ng-model="reembolso.idproyecto"
+                                        ng-model="reembolso.idproyecto" ng-disabled="!permiso.m"
                                         ng-options="obj.id as obj.nomproyecto for obj in proyectos">
                                     </select>
                                 </div>
@@ -150,7 +150,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Orden de trabajo:</label>
-                                    <ui-select ng-model="reembolso.ordentrabajo"
+                                    <ui-select ng-model="reembolso.ordentrabajo" ng-disabled="!permiso.m"
                                         title="Seleccione una orden de trabajo..." theme="bootstrap" autofocus="false"
                                         on-select="fillData($item, $model)">
                                         <ui-select-match placeholder="Buscar orden de trabajo..." allow-clear="true">
@@ -231,11 +231,11 @@
                                         ng-click="printVersion()">
                                         <span class="glyphicon glyphicon-print"></span>
                                     </button>
-                                    <button type="button" class="btn btn-primary" ng-show="+reembolso.idempresa > 0"
+                                    <button type="button" class="btn btn-primary" ng-show="+reembolso.idempresa > 0 && permiso.m"
                                         ng-click="printPendientes()">
                                         <span class="glyphicon glyphicon-print"></span>&nbsp;Pendientes
                                     </button>
-                                    <button type="button" class="btn btn-primary" ng-click="printSinCtaDeLiquidacion()">
+                                    <button type="button" class="btn btn-primary" ng-click="printSinCtaDeLiquidacion()" ng-show="permiso.m">
                                         <span class="glyphicon glyphicon-print"></span>&nbsp;Sin cta. de liquidación
                                     </button>
                                     <button type="button" class="btn btn-danger"
@@ -343,7 +343,7 @@
                                     <select name="selTFact" id="selTFact" class="form-control input-sm"
                                         ng-model="compra.objTipoFactura"
                                         ng-options="obj.desctipofact for obj in tiposfactura | filter:{paracompra:1}"
-                                        ng-change="calcIVA(compra); esrec();" required>
+                                        ng-change="calcIVA(compra); esrec();" ng-disabled="!permiso.m" required>
                                     </select>
                                 </div>
                             </div>
@@ -399,7 +399,7 @@
                                     <label for="txtFIng">Fecha de ingreso:</label>
                                     <input name="txtFIng" id="txtFIng" type="date"
                                         class="form-control form-control-sm input-sm" ng-model="compra.fechaingreso"
-                                        ng-change="setMesIva(compra.fechaingreso)" required />
+                                        ng-change="setMesIva(compra.fechaingreso)" ng-disabled="!permiso.m" required />
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -425,7 +425,7 @@
                                     ng-class="{'has-error':frmCompra.selTComp.$invalid && !frmCompra.selTComp.$pristine}">
                                     <label for="selTComp">Tipo de compra:</label>
                                     <select name="selTComp" id="selTComp" class="form-control input-sm"
-                                        ng-model="compra.objTipoCompra"
+                                        ng-model="compra.objTipoCompra" ng-disabled="!permiso.m"
                                         ng-options="obj.desctipocompra for obj in tiposcompra track by obj.id" required>
                                     </select>
                                 </div>
@@ -492,18 +492,18 @@
                                     ng-class="{'has-error':frmCompra.selUnidad.$invalid && !frmCompra.selUnidad.$pristine}">
                                     <label for="selUnidad" class="control-label">Unidad (si aplica):</label>
                                     <select name="selUnidad" id="selUnidad" class="form-control"
-                                        ng-model="compra.idunidad"
+                                        ng-model="compra.idunidad" ng-disabled="!permiso.m"
                                         ng-options="obj.id as obj.nombre for obj in unidades">
                                     </select>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="form-group required"
+                                <div class="form-group"
                                     ng-class="{'has-error':frmCompra.selIdSubTipoGast.$invalid && !frmCompra.selIdSubTipoGast.$pristine}">
                                     <label for="selIdSubTipoGast" class="control-label">Sub-tipo de gasto:</label>
-                                    <ui-select id="selIdSubTipoGast" name="selIdSubTipoGast"
+                                    <ui-select id="selIdSubTipoGast" name="selIdSubTipoGast" ng-disabled="!permiso.m"
                                         ng-model="compra.idsubtipogasto" title="Seleccione un sub-tipo de gasto..."
-                                        theme="bootstrap" autofocus="false" ng-required="true">
+                                        theme="bootstrap" autofocus="false">
                                         <ui-select-match placeholder="Buscar sub-tipo de gasto..." allow-clear="false">
                                             <span ng-bind="$select.selected.descripcion"></span>
                                         </ui-select-match>
@@ -547,7 +547,7 @@
                                     <input name="txtNoAfecto" id="txtNoAfecto" type="text" class="form-control input-sm"
                                         ng-model="compra.noafecto" fcsa-number="{ min:0, maxDecimals:2 }"
                                         ng-change="calcIVA(compra)"
-                                        ng-disabled="!(compra.objTipoFactura != null && compra.objTipoFactura != undefined)"
+                                        ng-disabled="!(compra.objTipoFactura != null && compra.objTipoFactura != undefined) || !permiso.m"
                                         required />
                                 </div>
                             </div>
@@ -574,7 +574,7 @@
                                     ng-class="{'has-error':frmCompra.chkRetISR.$invalid && !frmCompra.chkRetISR.$pristine}">
                                     <label for="chkRetISR">Ret. ISR:</label>
                                     <input name="chkRetISR" id="chkRetISR" type="checkbox" class="form-control input-sm"
-                                        ng-model="compra.retenerisr" ng-change="calcISR()" ng-true-value="1"
+                                        ng-model="compra.retenerisr" ng-change="calcISR()" ng-true-value="1" ng-disabled="!permiso.m"
                                         ng-false-value="0" />
                                 </div>
                             </div>
@@ -634,17 +634,17 @@
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
                                     <button type="button" class="btn btn-primary"
-                                        ng-disabled="frmCompra.$invalid || !permiso.m || periodoCerrado"
+                                        ng-disabled="frmCompra.$invalid || (!permiso.m && !mismo) || periodoCerrado"
                                         ng-show="compra.id > 0" ng-click="updCompra(compra)">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
                                     <button type="button" class="btn btn-primary"
-                                        ng-disabled="frmCompra.$invalid || !permiso.m || +compra.revisada == 1 || periodoCerrado"
-                                        ng-show="compra.id > 0" ng-click="revisada(compra)">
+                                        ng-disabled="frmCompra.$invalid || +compra.revisada == 1 || periodoCerrado"
+                                        ng-show="compra.id > 0 && permiso.m" ng-click="revisada(compra)">
                                         <span class="glyphicon glyphicon-ok"></span>&nbsp;Revisada
                                     </button>
                                     <button type="button" class="btn btn-danger"
-                                        ng-disabled="!permiso.e || periodoCerrado" ng-show="compra.id > 0"
+                                        ng-disabled="periodoCerrado" ng-show="compra.id > 0 && permiso.e"
                                         ng-click="delCompra(compra)">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </button>
