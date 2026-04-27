@@ -1657,7 +1657,7 @@ $app->post('/carta', function () {
                     INNER JOIN
                 empresa d ON c.idempresadebito = d.id
                     INNER JOIN
-                puesto e ON c.idpuesto = e.id
+                plnpuesto e ON a.idplnpuesto = e.id
             WHERE
                 a.id = $d->idempleado";
     $datos = $db->getQuery($query)[0];
