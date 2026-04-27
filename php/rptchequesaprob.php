@@ -384,7 +384,7 @@ $app->post('/comparativo', function () {
                     OR a.idreembolso IS NULL)
                     AND a.idempresa = $d->idempresa
                     AND MONTH(a.fechafactura) IN ($d->mes , $d->mes_comparar) ";
-    $query.= isset($d->idproyecto) ? "AND a.idproyecto IN ($idproyecto) " : "";
+    $query.= $idproyecto > 0 ? "AND a.idproyecto IN($idproyecto) " : "";    
     $query.= "AND (a.ordentrabajo IS NULL
                     OR a.ordentrabajo = 0)
                     AND e.hoja_control = 1
