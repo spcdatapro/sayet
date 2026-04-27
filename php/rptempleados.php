@@ -2284,12 +2284,12 @@ $app->get('/informe_alta/:idempleado', function ($idempleado) {
                 b.sueldo,
                 b.bonificacionley AS bonificacion,
                 b.cuentabanco,
-                b.confianza,
-                b.confidencialidad,
-                b.telefono,
-                b.seguromedico AS medico,
-                b.depreciacion, 
-                b.combustible
+                IF(b.confianza > 0, 'Si', 'No') AS confianza,
+                IF(b.confidencialidad > 0, 'Si', 'No') AS confidencialidad,
+                IF(b.telefono > 0, 'Si', 'No') AS telefono,
+                IF(b.seguromedico > 0, 'Si', 'No') AS medico,
+                IF(b.depreciacion > 0, 'Si', 'No') AS depreciacion, 
+                IF(b.combustible > 0, 'Si', 'No') AS combustible
                 -- h.depreciacion,
                 -- h.combustible
             FROM
