@@ -2286,7 +2286,7 @@ $app->get('/informe_alta/:idempleado', function ($idempleado) {
                 b.cuentabanco,
                 IF(b.confianza > 0, 'Si', 'No') AS confianza,
                 IF(b.confidencialidad > 0, 'Si', 'No') AS confidencialidad,
-                IF(b.telefono > 0, 'Si', 'No') AS telefono,
+                IF(b.telefono > 0, 'Si', 'No') AS celular,
                 IF(b.seguromedico > 0, 'Si', 'No') AS medico,
                 IF(b.depreciacion > 0, 'Si', 'No') AS depreciacion, 
                 IF(b.combustible > 0, 'Si', 'No') AS combustible
