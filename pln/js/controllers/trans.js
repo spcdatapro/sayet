@@ -1,6 +1,6 @@
 angular.module('cpm')
-.controller('transNominaController', ['$scope', '$http', 'nominaServicios', 'empresaSrvc', 
-    function($scope, $http, nominaServicios, empresaSrvc){
+.controller('transNominaController', ['$scope', '$http', 'nominaServicios', 'empresaSrvc', 'toaster',
+    function($scope, $http, nominaServicios, empresaSrvc, toaster){
         $scope.resultados = false;
         $scope.nomina = [];
         $scope.empresas  = [];
@@ -27,6 +27,9 @@ angular.module('cpm')
         	nominaServicios.buscar(datos).then(function(data){
                 if (data.exito == 1) {
                     $scope.nomina = data.resultados;
+                    if (data.nomina != data.ingresados) {
+                        toaster.pop('warning', 'Advertencia', 'La cantidad de empleados no concuerda.');
+                    }
                 } else {
                     alert(data.mensaje);
                 }

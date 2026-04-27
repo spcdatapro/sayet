@@ -31,6 +31,8 @@ $app->get('/buscar', function(){
 		} else {
 			$datos['resultados'] = $b->buscar($_GET);
 			$datos['exito']      = 1;
+			$datos['nomina'] = count($datos['resultados']);
+			$datos['ingresados'] = $b->cantidad_empleados($_GET);
 		}
 	} else {
 		$datos['mensaje'] = "Fecha incorrecta, por favor verifique.";
