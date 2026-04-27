@@ -2179,19 +2179,21 @@ $app->post('/horas_extra', function () {
                 c.jornada,
                 g.sueldoordinarioreporte AS sueldo,
                 ROUND(SUM(g.horasmes), 0) AS horas_extra,
-                ROUND(IF(c.jornada = 'diurna',
-                            (g.sueldoordinarioreporte / 30 / 8) * 1.5,
-                            IF(c.jornada = 'mixta',
-                                (g.sueldoordinarioreporte / 30 / 7) * 1.5,
-                                (g.sueldoordinarioreporte / 30 / 6) * 1.5)),
-                        2) AS extra_valor,
+                -- ROUND(IF(c.jornada = 'diurna',
+                --             (g.sueldoordinarioreporte / 30 / 8) * 1.5,
+                --             IF(c.jornada = 'mixta',
+                --                 (g.sueldoordinarioreporte / 30 / 7) * 1.5,
+                --                 (g.sueldoordinarioreporte / 30 / 6) * 1.5)),
+                --         2) 
+                (g.sueldoordinarioreporte / 30 / 8) * 1.5 AS extra_valor,
                 ROUND(SUM(g.hedcantidad), 0) AS horas_dobles,
-                ROUND(IF(c.jornada = 'diurna',
-                            (g.sueldoordinarioreporte / 30 / 8) * 2,
-                            IF(c.jornada = 'mixta',
-                                (g.sueldoordinarioreporte / 30 / 7) * 2,
-                                (g.sueldoordinarioreporte / 30 / 6) * 2)),
-                        2) AS valor_doble
+                -- ROUND(IF(c.jornada = 'diurna',
+                --             (g.sueldoordinarioreporte / 30 / 8) * 2,
+                --             IF(c.jornada = 'mixta',
+                --                 (g.sueldoordinarioreporte / 30 / 7) * 2,
+                --                 (g.sueldoordinarioreporte / 30 / 6) * 2)),
+                --         2)
+                (g.sueldoordinarioreporte / 30 / 8) * 2 AS valor_doble
             FROM
                 plnempleado a
                     INNER JOIN
@@ -2288,8 +2290,8 @@ $app->get('/informe_alta/:idempleado', function ($idempleado) {
                 IF(b.confidencialidad > 0, 'Si', 'No') AS confidencialidad,
                 IF(b.telefono > 0, 'Si', 'No') AS celular,
                 IF(b.seguromedico > 0, 'Si', 'No') AS medico,
-                IF(b.depreciacion > 0, 'Si', 'No') AS depreciacion, 
-                IF(b.combustible > 0, 'Si', 'No') AS combustible
+                IF(b.depreciacion > 0, CONCAT('Si -', h.depreciacion), 'No') AS depreciacion, 
+                IF(b.combustible > 0, CONCAT('Si -', h.combustible), 'No') AS combustible
                 -- h.depreciacion,
                 -- h.combustible
             FROM
@@ -2306,13 +2308,13 @@ $app->get('/informe_alta/:idempleado', function ($idempleado) {
                 puesto f ON b.idpuesto = f.id
                     INNER JOIN
                 horarios g ON FIND_IN_SET(g.id, b.idhorarios)
-            --        INNER JOIN
-            --    (SELECT 
-            --        a.idplnempleado,
-            --            movdepvehiculo AS depreciacion,
-            --            movgasolina AS combustible
-            --    FROM
-            --        plnbitacora a) h ON a.id = h.idplnempleado
+                    INNER JOIN
+                (SELECT 
+                    a.idplnempleado,
+                    movdepvehiculo AS depreciacion,
+                    movgasolina AS combustible
+                FROM
+                    plnbitacora a) h ON a.id = h.idplnempleado
             WHERE
                 a.id = $idempleado";
     $data = $db->getQuery($query)[0];

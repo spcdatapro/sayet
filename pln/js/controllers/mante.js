@@ -845,6 +845,17 @@ angular.module('cpm')
                 });
             }
 
+            $scope.informeAlta = () => {
+                jsReportSrvc.getPDFReport('BJIeJ962Zl', { idempleado: $scope.emp.id }).then(pdf => {
+                    $window.open(pdf);
+                    $scope.cargando = false;
+                }).catch(err => {
+                    console.log(err);
+                    toaster.pop({ type: 'error', title: 'Informe de alta', body: 'Error en la conexion con el servidor, favor comunicarse con IT.', timeout: 7000 });
+                    $scope.cargando = false;
+                });
+            }
+
             $scope.eliminar = idempleado => {
                 $confirm({
                     text: '¿Seguro(a) de eliminar el empleado?',
