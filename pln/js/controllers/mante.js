@@ -48,7 +48,7 @@ angular.module('cpm')
                 $scope.totalPages = Math.ceil($scope.empleados.length / $scope.itemsPerPage);
             });
 
-            empServicios.getHorarios().then(d => $scope.horarios = d );
+            empServicios.getHorarios().then(d => $scope.horarios = d);
 
             $scope.$watch('lookFor', function () {
                 // Calcula el número total de páginas después del filtro
@@ -243,7 +243,14 @@ angular.module('cpm')
                     d.lab.jornada = d.lab.jornada == 'diurna' ? '1' : d.lab.jornada == 'mixta' ? '2' : d.lab.jornada == 'noctura' ? '3' : d.lab.jornada == 'no esta sujeto a jornada' ? '4' : undefined;
                     d.lab.tipocontrato = d.lab.tipocontrato == 'verbal' ? '1' : d.lab.tipocontrato == 'escrito' ? '2' : undefined;
                     d.lab.temporalidad = d.lab.temporalidad == 'indefinido' ? '1' : d.lab.temporalidad == 'definido' ? '2' : undefined;
-                    d.lab.idhorarios = d.lab.idhorarios ? d.lab.idhorarios.split(',').map(id => $filter('getById')($scope.horarios, parseInt(id))) : [];
+                    d.lab.idhorarios = d.lab.idhorarios ? d.lab.idhorarios.split(',').map(id => $filter('getById')($scope.horarios, parseInt(id)).id) : [];
+                    d.lab.telefono = d.lab.telefono ? +d.lab.telefono : undefined;
+                    d.lab.confianza = d.lab.confianza ? +d.lab.confianza : undefined;
+                    d.lab.confidencialidad = d.lab.confidencialidad ? +d.lab.confidencialidad : undefined;
+                    d.lab.seguromedico = d.lab.seguromedico ? +d.lab.seguromedico : undefined;
+                    d.lab.depreciacion = d.lab.depreciacion ? +d.lab.depreciacion : undefined;
+                    d.lab.combustible = d.lab.combustible ? +d.lab.combustible : undefined;
+                    console.log(d.lab.confianza);
 
                     // globalizar las variables
                     $scope.per = d.per;

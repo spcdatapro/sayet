@@ -1852,6 +1852,21 @@ EOT;
 			} else { 
 				$data['baja'] = null;
 			}
+
+			if (isset($data['del'])) {
+				$fecha = new DateTime($data['del']);
+				$data['del'] = $fecha->format('Y-m-d');
+			} else { 
+				$data['del'] = null;
+			}
+
+			if (isset($data['al'])) {
+				$fecha = new DateTime($data['al']);
+				$data['al'] = $fecha->format('Y-m-d');
+			} else { 
+				$data['al'] = null;
+			}
+
 			$idempleado = isset($data['idplnempleado']) ? $data['idplnempleado'] : null;
 			$idlaboral = isset($data['id']) ? $data['id'] : null;
 			$data['idhorarios'] = isset($data['idhorarios']) ? implode(',', $data['idhorarios']) : null;

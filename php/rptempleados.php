@@ -2246,6 +2246,8 @@ $app->get('/informe_alta/:idempleado', function ($idempleado) {
                 a.id AS codigo,
                 c.nombre AS empresa,
                 b.temporalidad,
+                b.del, 
+                b.al,
                 d.nomproyecto AS proyecto,
                 CONCAT(IFNULL(e.primernombre, ''),
                         ' ',
@@ -2265,7 +2267,8 @@ $app->get('/informe_alta/:idempleado', function ($idempleado) {
                         '%d/%m/%Y') AS ingreso,
                 e.documento,
                 e.nit,
-                a.igss,
+                b.igss,
+                b.irtra,
                 b.jornada,
                 b.idhorarios,
                 GROUP_CONCAT(DISTINCT CONCAT(g.del, '-', g.al)
@@ -2281,12 +2284,14 @@ $app->get('/informe_alta/:idempleado', function ($idempleado) {
                 b.sueldo,
                 b.bonificacionley AS bonificacion,
                 b.cuentabanco,
-                NULL AS confianza,
-                NULL AS confidencialidad,
-                NULL AS celular,
-                NULL AS medico,
-                h.depreciacion,
-                h.combustible
+                b.confianza,
+                b.confidencialidad,
+                b.telefono,
+                b.seguromedico AS medico,
+                b.depreciacion, 
+                b.combustible
+                -- h.depreciacion,
+                -- h.combustible
             FROM
                 plnempleado a
                     INNER JOIN
@@ -2301,13 +2306,13 @@ $app->get('/informe_alta/:idempleado', function ($idempleado) {
                 puesto f ON b.idpuesto = f.id
                     INNER JOIN
                 horarios g ON FIND_IN_SET(g.id, b.idhorarios)
-                    INNER JOIN
-                (SELECT 
-                    a.idplnempleado,
-                        movdepvehiculo AS depreciacion,
-                        movgasolina AS combustible
-                FROM
-                    plnbitacora a) h ON a.id = h.idplnempleado
+            --        INNER JOIN
+            --    (SELECT 
+            --        a.idplnempleado,
+            --            movdepvehiculo AS depreciacion,
+            --            movgasolina AS combustible
+            --    FROM
+            --        plnbitacora a) h ON a.id = h.idplnempleado
             WHERE
                 a.id = $idempleado";
     $data = $db->getQuery($query)[0];
