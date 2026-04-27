@@ -244,7 +244,7 @@ $app->post('/aprobados', function () {
                 a.fechafactura BETWEEN '$d->fecha_inicialstr' AND '$d->fecha_finalstr'
                     AND (a.idreembolso = 0
                     OR a.idreembolso IS NULL) 
-                    -- AND h.hoja_control = 1 
+                    AND h.hoja_control = 1 
                     ";
     $query.= isset($d->idempresa) ? "AND a.idempresa = $d->idempresa " : "";
     $query.= isset($d->idproveedor) ? "AND a.idproveedor = $d->idproveedor " : ""; 
