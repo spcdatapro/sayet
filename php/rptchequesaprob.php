@@ -335,6 +335,7 @@ $app->post('/comparativo', function () {
 
     $totales = ['monto_factura', 'iva', 'monto_cheque'];
     $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+    $idproyecto = isset($d->idproyecto) ? implode(',', $d->idproyecto) : 0;
 
     // estampa
     $letra = new stdClass();
@@ -383,7 +384,7 @@ $app->post('/comparativo', function () {
                     OR a.idreembolso IS NULL)
                     AND a.idempresa = $d->idempresa
                     AND MONTH(a.fechafactura) IN ($d->mes , $d->mes_comparar) ";
-    $query.= isset($d->idproyecto) ? "AND a.idproyecto = $d->idproyecto " : "";
+    $query.= isset($d->idproyecto) ? "AND a.idproyecto IN ($idproyecto) " : "";
     $query.= "AND (a.ordentrabajo IS NULL
                     OR a.ordentrabajo = 0)
                     AND e.hoja_control = 1
