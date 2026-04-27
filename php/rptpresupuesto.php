@@ -275,8 +275,8 @@ $app->post('/avanceot', function(){
                 SUBSTRING(a.notas, 1, 90) AS concepto,
                 b.notas AS notag,
                 i.simbolo AS moneda,
-                DATE_FORMAT(b.fechacreacion, '%d/%m/%Y') AS creacion,
-                j.iniciales AS creador,
+                DATE_FORMAT(IFNULL(a.creacion, b.fechacreacion), '%d/%m/%Y') AS creacion,
+                IFNULL(o.iniciales, j.iniciales) AS creador,
                 DATE_FORMAT(a.fhaprobacion, '%d%/%m/%Y') AS aprobacion,
                 k.iniciales AS aprobador,
                 DATE_FORMAT(a.fechamodificacion, '%d/%m/%Y') AS modificacion,
@@ -320,6 +320,8 @@ $app->post('/avanceot', function(){
                 estatuspresupuesto m ON a.idestatuspresupuesto = m.id
                     LEFT JOIN 
                 usuario n ON a.idusuarioanula = n.id
+                    LEFT JOIN 
+                usuario o ON a.creador = o.id
             WHERE
                 a.id = $d->idot";
     $orden = $db->getQuery($query)[0];
