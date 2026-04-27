@@ -563,6 +563,8 @@
 
         $scope.addOt = function (obj) {
             obj = setDataOt(obj);
+            obj.creador = $scope.usrdata.uid;
+            obj.creacion = moment().format('YYYY-MM-DD HH:mm:ss');
             //console.log(obj); return;
             presupuestoSrvc.editRow(obj, 'cd').then(function (d) {
                 $scope.getLstPresupuestos('1,2,3');

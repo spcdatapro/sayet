@@ -763,9 +763,9 @@ $app->post('/cd', function () {
     $correlativo = (int)$db->getOneField("SELECT IF(ISNULL(MAX(correlativo)), 1, MAX(correlativo) + 1) AS correlativo FROM detpresupuesto WHERE idpresupuesto = $d->idpresupuesto");
     $excedente = round((float)$db->getOneField("SELECT excedente FROM confpresupuestos WHERE id = 1"), 2);
     $query = "INSERT INTO detpresupuesto(";
-    $query .= "idpresupuesto, correlativo, idproveedor, idsubtipogasto, coniva, escontado, monto, tipocambio, excedente, notas, origenprov, idmoneda, tipodocumento";
+    $query .= "idpresupuesto, correlativo, idproveedor, idsubtipogasto, coniva, escontado, monto, tipocambio, excedente, notas, origenprov, idmoneda, tipodocumento, creador, creacion";
     $query .= ") VALUES(";
-    $query .= "$d->idpresupuesto, $correlativo, $d->idproveedor, $d->idsubtipogasto, $d->coniva, $d->escontado, $d->monto, $d->tipocambio, $excedente, '$d->notas', $d->origenprov, $d->idmoneda, $d->tipodocumento";
+    $query .= "$d->idpresupuesto, $correlativo, $d->idproveedor, $d->idsubtipogasto, $d->coniva, $d->escontado, $d->monto, $d->tipocambio, $excedente, '$d->notas', $d->origenprov, $d->idmoneda, $d->tipodocumento, $d->creador, '$d->creacion'";
     $query .= ")";
     $db->doQuery($query);
     $lastid = $db->getLastId();
