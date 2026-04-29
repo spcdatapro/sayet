@@ -624,4 +624,114 @@ $app->post('/ucnt', function () {
     }   
 });
 
+$app->get('/pendientes', function (){
+    $db = new dbcpm();
+    $query = "SELECT 
+                a.id,
+                b.nombre,
+                DATE_FORMAT(envioaprob, '%d/%m/%Y') AS fecha,
+                beneficiario,
+                c.totfact AS monto,
+                c.documento,
+                c.conceptomayor AS concepto,
+                d.simbolo AS moneda
+            FROM
+                reembolso a
+                    INNER JOIN
+                usuario b ON a.idusuario = b.id
+                    INNER JOIN
+                compra c ON c.idreembolso = a.id
+                    INNER JOIN
+                moneda d ON c.idmoneda = d.id
+            WHERE
+                aprobar = 1 AND aprobador = 0
+            ORDER BY fecha";
+    $data = $db->getQuery($query);
+
+    $reembolsos = [];
+    foreach ($data as $row) {
+        if (!isset($reembolsos[$row->id])) {
+            $reembolsos[$row->id] = [
+                'id' => $row->id,
+                'nombre' => $row->nombre,
+                'fecha' => $row->fecha,
+                'beneficiario' => $row->beneficiario,
+                'monto' => 0,
+                'moneda' => $row->moneda,
+                'compras' => []
+            ];
+        }
+        
+        $reembolsos[$row->id]['monto'] += $row->monto;
+        $reembolsos[$row->id]['compras'][] = [
+            'monto' => $row->monto,
+            'documento' => $row->documento,
+            'concepto' => $row->concepto,
+            'moneda' => $row->moneda
+        ];
+    }
+    
+    $result = array_values($reembolsos);
+
+    print json_encode($result);
+});
+
+$app->get('/reembolso_aprobacion/:idreembolso', function ($idreembolso) {
+    date_default_timezone_set("America/Guatemala");
+    $db = new dbcpm();
+
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+
+    $query = "SELECT 
+                a.id,
+                b.iniciales AS solicitante,
+                DATE_FORMAT(envioaprob, '%d/%m/%Y') AS fecha,
+                beneficiario,
+                c.totfact AS monto,
+                c.documento,
+                c.conceptomayor,
+                DATE_FORMAT(fechafactura, '%d/%m/%Y') AS fecha_compra,
+                c.proveedor,
+                a.fondoasignado,
+                d.iniciales AS jefe,
+                '37ce35dd-186e-4372-8b34-81893dd0dfed' AS firma_jefe
+            FROM
+                reembolso a
+                    INNER JOIN
+                usuario b ON a.idusuario = b.id
+                    INNER JOIN
+                compra c ON c.idreembolso = a.id
+                    LEFT JOIN
+                usuario d ON a.aprobador = d.id
+            WHERE
+                a.id = $idreembolso
+            ORDER BY fecha";
+    $data = $db->getQuery($query);
+
+    $compras = [];
+    foreach ($data as $row) {
+        if (!isset($reembolsos[$row->id])) {
+            $letra->reembolso = $row->id;
+            $letra->monto = 0;
+            $letra->fecha = $row->fecha;
+            $letra->beneficiario = $row->beneficiario;
+        }
+        
+        $letra->monto += $row->monto;
+        $compras[] = [
+            'monto' => $row->monto,
+            'documento' => $row->documento,
+            'concepto' => $row->conceptomayor,
+            'fecha_compra' => $row->fecha_compra,
+            'proveedor' => $row->proveedor
+        ];
+    }
+    
+    $result = array_values($compras);
+
+    print json_encode(['encabezado' => $letra, 'compras' => $compras]);
+});
+
 $app->run();
