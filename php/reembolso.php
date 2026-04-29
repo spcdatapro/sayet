@@ -696,7 +696,9 @@ $app->get('/reembolso_aprobacion/:idreembolso', function ($idreembolso) {
                 c.proveedor,
                 a.fondoasignado,
                 d.iniciales AS jefe,
-                '37ce35dd-186e-4372-8b34-81893dd0dfed' AS firma_jefe
+                '37ce35dd-186e-4372-8b34-81893dd0dfed' AS firma_jefe,
+                e.nomempresa AS empresa,
+                f.descripcion AS subtipogasto
             FROM
                 reembolso a
                     INNER JOIN
@@ -705,6 +707,10 @@ $app->get('/reembolso_aprobacion/:idreembolso', function ($idreembolso) {
                 compra c ON c.idreembolso = a.id
                     LEFT JOIN
                 usuario d ON a.aprobador = d.id
+                    INNER JOIN 
+                empresa e ON a.idempresa = e.id
+                    INNER JOIN 
+                subtipogasto f ON c.idsubtipogasto = f.id
             WHERE
                 a.id = $idreembolso
             ORDER BY fecha";
