@@ -419,7 +419,7 @@ class Empleado extends Principal
 		
 		if (isset($fl['archivo'])) {
 			$base = "archivos/emp/{$this->emp->id}/" . date('Y-m-d');
-			$ruta = BASEPATH . "/pln/{$base}";
+			$ruta = "/pln/{$base}";
 			$nom  = $fl['archivo']['name'];
 
 			if (!file_exists($ruta)) {
@@ -432,7 +432,7 @@ class Empleado extends Principal
 
 			$dir = basename(BASEPATH);
 
-			$link = "/{$dir}/pln/{$base}/{$nom}";
+			$link = "/pln/{$base}/{$nom}";
 
 			$this->set_dato('ruta', $link);
 			$this->set_dato('nombre', $nom);
