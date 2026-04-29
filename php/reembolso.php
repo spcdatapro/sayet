@@ -46,7 +46,7 @@ $app->get('/getreembolso/:idreembolso(/:idot)', function($idreembolso, $idot = 0
     $idot = (int)$idot;
     $query = "SELECT a.id, a.idempresa, a.idtiporeembolso, b.desctiporeembolso AS tipo, a.finicio, a.ffin, a.beneficiario, ";
     $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto, a.idcuentaliq, a.ordentrabajo, ";
-    $query.= "a.idproyecto, a.pagado, a.idusuario, a.ultusuario ";
+    $query.= "a.idproyecto, a.pagado, a.idusuario, a.ultusuario, '37ce35dd-186e-4372-8b34-81893dd0dfed' AS firma_jefe ";
     $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso ";
     $query.= "LEFT JOIN (SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) c ON a.id = c.idreembolso ";
     $query.= "WHERE ";
@@ -711,6 +711,8 @@ $app->get('/reembolso_aprobacion/:idreembolso', function ($idreembolso) {
                 empresa e ON a.idempresa = e.id
                     LEFT JOIN 
                 subtipogasto f ON c.idsubtipogasto = f.id
+                    LEFT JOIN 
+                proyecto g ON c.idproyecto = g.id
             WHERE
                 a.id = $idreembolso
             ORDER BY fecha";
