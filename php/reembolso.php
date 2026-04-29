@@ -698,7 +698,7 @@ $app->get('/reembolso_aprobacion/:idreembolso', function ($idreembolso) {
                 d.iniciales AS jefe,
                 '37ce35dd-186e-4372-8b34-81893dd0dfed' AS firma_jefe,
                 e.nomempresa AS empresa,
-                f.descripcion AS subtipogasto
+                IFNULL(f.descripcion, 'N/E') AS subtipogasto
             FROM
                 reembolso a
                     INNER JOIN
@@ -709,7 +709,7 @@ $app->get('/reembolso_aprobacion/:idreembolso', function ($idreembolso) {
                 usuario d ON a.aprobador = d.id
                     INNER JOIN 
                 empresa e ON a.idempresa = e.id
-                    INNER JOIN 
+                    LEFT JOIN 
                 subtipogasto f ON c.idsubtipogasto = f.id
             WHERE
                 a.id = $idreembolso
@@ -723,6 +723,7 @@ $app->get('/reembolso_aprobacion/:idreembolso', function ($idreembolso) {
             $letra->monto = 0;
             $letra->fecha = $row->fecha;
             $letra->beneficiario = $row->beneficiario;
+            $letra->empresa = $row->empresa;
         }
         
         $letra->monto += $row->monto;
@@ -731,7 +732,8 @@ $app->get('/reembolso_aprobacion/:idreembolso', function ($idreembolso) {
             'documento' => $row->documento,
             'concepto' => $row->conceptomayor,
             'fecha_compra' => $row->fecha_compra,
-            'proveedor' => $row->proveedor
+            'proveedor' => $row->proveedor,
+            'subtipogasto' => $row->subtipogasto
         ];
     }
     
