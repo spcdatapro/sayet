@@ -739,7 +739,8 @@ $app->get('/reembolso_aprobacion/:idreembolso', function ($idreembolso) {
             'concepto' => $row->conceptomayor,
             'fecha_compra' => $row->fecha_compra,
             'proveedor' => $row->proveedor,
-            'subtipogasto' => $row->subtipogasto
+            'subtipogasto' => $row->subtipogasto,
+            'proyecto' => $row->proyecto
         ];
     }
     
