@@ -729,6 +729,7 @@ $app->get('/reembolso_aprobacion/:idreembolso', function ($idreembolso) {
             $letra->fecha = $row->fecha;
             $letra->beneficiario = $row->beneficiario;
             $letra->empresa = $row->empresa;
+            $letra->firma_jefe = $row->firma_jefe;
         }
         
         $letra->monto += $row->monto;
