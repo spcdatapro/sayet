@@ -717,7 +717,9 @@ $app->get('/reembolso_aprobacion/:idreembolso', function ($idreembolso) {
     $data = $db->getQuery($query);
 
     $compras = [];
+    $numero = 0;
     foreach ($data as $row) {
+        $numero++;
         if (!isset($reembolsos[$row->id])) {
             $letra->reembolso = $row->id;
             $letra->monto = 0;
@@ -728,6 +730,7 @@ $app->get('/reembolso_aprobacion/:idreembolso', function ($idreembolso) {
         
         $letra->monto += $row->monto;
         $compras[] = [
+            'numero' => $numero,
             'monto' => $row->monto,
             'documento' => $row->documento,
             'concepto' => $row->conceptomayor,
