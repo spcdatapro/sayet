@@ -29,7 +29,7 @@ $app->post('/lstreembolsos', function(){
 
     $query = "SELECT a.id, a.idempresa, a.idtiporeembolso, b.desctiporeembolso AS tipo, a.finicio, a.ffin, a.beneficiario, ";
     $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto, a.idcuentaliq, a.ordentrabajo, ";
-    $query.= "a.idproyecto ";
+    $query.= "a.idproyecto, a.aprobar, a.aprobador, a.estatus_aprobacion ";
     $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso ";
     $query.= "LEFT JOIN (SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) c ON a.id = c.idreembolso ";
     $query.= "WHERE a.idempresa = $d->idemp AND a.finicio >= '$d->fdel' AND a.finicio <= '$d->fal' ";
@@ -698,7 +698,8 @@ $app->get('/reembolso_aprobacion/:idreembolso', function ($idreembolso) {
                 d.iniciales AS jefe,
                 '37ce35dd-186e-4372-8b34-81893dd0dfed' AS firma_jefe,
                 e.nomempresa AS empresa,
-                IFNULL(f.descripcion, 'N/E') AS subtipogasto
+                IFNULL(f.descripcion, 'N/E') AS subtipogasto,
+                g.nomproyecto AS proyecto
             FROM
                 reembolso a
                     INNER JOIN
