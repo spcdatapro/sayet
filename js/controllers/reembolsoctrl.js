@@ -57,15 +57,17 @@
 
             $scope.selLiquidacion = idcuenta => {
                 // para cambiar cuenta de liquidacion en todas las compras si ya hay un reembolso
-                if ($scope.reembolso.id && $scope.reembolso.id > 0) {
+                if ($scope.reembolso.id && $scope.reembolso.id > 0 && $scope.infocompras.cantidad > 0) {
                     $confirm({ text: '¿Seguro(a) de seleccionar esta cuenta para liquidación? Se asignará a este reembolso y a todas sus compras.', title: 'Seleccionar cuenta de liquidación', ok: 'Sí', cancel: 'No' }).then(() => {
                         reembolsoSrvc.editRow({ id: $scope.reembolso.id, idcuentac: idcuenta, idempresa: $scope.reembolso.idempresa, idusuario: $scope.uid }, 'ucnt').then(d => {
                             $scope.reembolso.idcuentaliq = idcuenta;
                             toaster.pop({ type: d.tipo, title: 'Modificar cuenta de liquidación', body: d.mensaje });
                         });
                     });
+                    $scope.getReembolso($scope.reembolso.id);
+                } else {
+                    return;
                 }
-                $scope.getReembolso($scope.reembolso.id);
             }
 
             $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap()
