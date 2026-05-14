@@ -755,7 +755,7 @@ $app->post('/control_ingresos', function () {
                         SUM(IF(b.pagada = 1, IF(b.idmonedafact = 2, b.subtotalcnv, (a.monto + b.retisr + b.retiva) / b.tipocambio), IF(b.idmonedafact = 2, b.subtotalcnv, b.subtotal / b.tipocambio))) AS ingresodlr,
                         SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr / b.tipocambio)) AS isrdlr,
                         SUM(IF(b.idmonedafact = 2, b.retivacnv, b.retiva / b.tipocambio)) AS ivadlr,
-                        SUM(IF(b.pagada = 1, LEAST(b.subtotal, a.monto + b.retisr + b.retiva), b.subtotal - (SELECT IFNULL(SUM(dc.monto),0) FROM detcobroventa dc WHERE dc.idfactura = b.id AND dc.idrecibocli < a.idrecibocli))) AS ingreso,
+SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, (a.monto + b.retisr + b.retiva)), IF(b.idmonedafact = 2, b.subtotalcnv, b.subtotal))) AS ingreso,
                         SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr)) AS isr,
                         SUM(IF(b.idmonedafact = 2, b.retivacnv, b.retiva)) AS iva,
                         IF(b.idmonedafact = 2, 1, b.tipocambio) AS tc_fact,
