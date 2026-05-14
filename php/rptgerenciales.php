@@ -801,7 +801,7 @@ SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, 
                 if (isset($saldoFacturas[$factura]) && $saldoFacturas[$factura] > 0) {
                     // Aplicar depósito contra saldo
                     $aplicar = min($saldoFacturas[$factura], $row->deposito);
-                    // $row->ingreso += $aplicar;
+                    $row->ingreso += $aplicar;
                     $saldoFacturas[$factura] -= $aplicar;
                 }
             }
