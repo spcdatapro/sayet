@@ -813,7 +813,7 @@ SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, 
 
                     $row->diferencia = $row->ingreso - ($row->deposito + $row->isr + $row->iva);
                     if ($countFacturas[$factura] > 1) {
-                        $row->ingreso = 0;
+                        $row->diferencia = 0;
                     }
                 } else {
                     if (count($facturas) > 1) {
