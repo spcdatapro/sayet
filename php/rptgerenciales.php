@@ -789,20 +789,18 @@ SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, 
 
         foreach ($data as $row) {
             // Puede haber varias facturas en la misma fila
-            $facturas = array_map('trim', explode(',', $row->factura));
-            $facturaRepetida = array_count_values($facturas);
+            $facturas = explode(',', $row->factura);
             // $row->ingreso = 0;
         
             foreach ($facturas as $factura) {
+                $factura = trim($factura);
+        
                 // Inicializar saldo si no existe
                 if (!isset($saldoFacturas[$factura])) {
                     $montoFacturas[$factura] = $row->ingreso;
                     $isrFacturas[$factura] = $row->isr;
                     $saldoFacturas[$factura] = $row->ingreso - ($row->deposito + $row->isr + $row->iva);
                     $resta = $row->deposito + $row->isr + $row->iva;
-                    if ($facturaRepetida[$factura] > 1) {
-                        $row->diferencia = 0;
-                    }
                 } else {
                     if (count($facturas) > 1) {
                         $row->ingreso -= $montoFacturas[$factura];
@@ -819,9 +817,7 @@ SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, 
             }
         
             // Recalcular diferencia con el ingreso ajustado
-            if (!isset($row->diferencia)) {
-                $row->diferencia = ($row->ingreso - $resta) * -1;
-            }
+            $row->diferencia = ($row->ingreso - $resta) * -1;
         }
 
 
