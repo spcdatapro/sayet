@@ -755,7 +755,7 @@ $app->post('/control_ingresos', function () {
                         SUM(IF(b.pagada = 1, IF(b.idmonedafact = 2, b.subtotalcnv, (a.monto + b.retisr + b.retiva) / b.tipocambio), IF(b.idmonedafact = 2, b.subtotalcnv, b.subtotal / b.tipocambio))) AS ingresodlr,
                         SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr / b.tipocambio)) AS isrdlr,
                         SUM(IF(b.idmonedafact = 2, b.retivacnv, b.retiva / b.tipocambio)) AS ivadlr,
-                        SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, (a.monto + b.retisr + b.retiva)), IF(b.idmonedafact = 2, b.subtotalcnv, b.subtotal))) AS ingreso,
+                        SUM(IF(b.pagada = 1, LEAST(b.subtotal, a.monto + b.retisr + b.retiva), b.subtotal - (SELECT IFNULL(SUM(dc.monto),0) FROM detcobroventa dc WHERE dc.idfactura = b.id AND dc.idrecibocli < a.idrecibocli) AS ingreso,
                         SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr)) AS isr,
                         SUM(IF(b.idmonedafact = 2, b.retivacnv, b.retiva)) AS iva,
                         IF(b.idmonedafact = 2, 1, b.tipocambio) AS tc_fact,
@@ -783,32 +783,52 @@ $app->post('/control_ingresos', function () {
 
     if (count($data) > 0) {
 
-        for ($i = 0; $i < count($data); $i++) {
-            $actual = $data[$i];
-            $proximo = $i+1 == count($data) ? null : $data[$i+1];
-            $proximo2 = $i+2 >= count($data) ? null : $data[$i+2];
-
-            if (isset($proximo)) {
-                if ($proximo->idrecibocli == $actual->idrecibocli && $proximo->idrecibocli > 0) {
-                    // $proximo->diferencia = ($actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito)) * -1;
-                    $proximo->diferencia = $proximo->diferencia;
-                    $actual->iva = 0;
-                    $actual->isr = 0;
-                    $actual->ingreso = 0;
-                    $actual->diferencia = $actual->deposito;
-                }
-            }
-            if (isset($proximo2)) {
-                if ($proximo2->idrecibocli == $actual->idrecibocli && $proximo2->idrecibocli > 0) {
-                    // $proximo->diferencia = ($actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito)) * -1;
-                    $proximo2->diferencia = ($proximo2->ingreso - ($proximo2->deposito + $proximo2->isr + $proximo2->iva + $proximo->deposito + $actual->deposito)) * -1;
-                    $actual->iva = 0;
-                    $actual->isr = 0;
-                    $actual->ingreso = 0;
-                    $actual->diferencia = $actual->deposito;
-                }
+        $facturasProcesadas = [];
+        foreach($data as $row){
+            if(in_array($row->factura, $facturasProcesadas)){
+                $row->ingreso = 0;
+            } else {
+                $facturasProcesadas[] = $row->factura;
             }
         }
+
+        for ($i = 0; $i < count($data); $i++) {
+            $actual = $data[$i];
+
+            // Buscar todas las transacciones siguientes con el mismo idrecibocli
+            $j = $i + 1;
+            $depositosAcumulados = $actual->deposito;
+            $yaAgrupados = false;
+
+            while ($j < count($data) && $data[$j]->idrecibocli == $actual->idrecibocli && $data[$j]->idrecibocli > 0) {
+                $depositosAcumulados += $data[$j]->deposito;
+
+                // Ajustar ingreso/iva/isr de los repetidos
+                $data[$j]->ingreso = 0;
+                $data[$j]->iva = 0;
+                $data[$j]->isr = 0;
+                $data[$j]->diferencia = $data[$j]->deposito;
+
+                $yaAgrupados = true;
+                $j++;
+            }
+
+            // Si hubo agrupación, recalcular diferencia del último
+            if ($yaAgrupados) {
+                $ultimo = $data[$j - 1];
+                $ultimo->diferencia = ($ultimo->ingreso - ($depositosAcumulados + $ultimo->isr + $ultimo->iva)) * -1;
+
+                // El primero conserva solo su depósito como diferencia
+                $actual->ingreso = 0;
+                $actual->iva = 0;
+                $actual->isr = 0;
+                $actual->diferencia = $actual->deposito;
+            }
+
+            // Saltar los que ya procesaste
+            $i = $j - 1;
+        }
+
         
         // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
         $reporte = new GeneradorReportes($data, 'transacciones', $totales, true);
