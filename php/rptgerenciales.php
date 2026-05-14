@@ -802,7 +802,7 @@ $app->post('/control_ingresos', function () {
         
                 // Aplicar depósito contra saldo
                 $aplicar = min($saldoFacturas[$factura], $row->deposito);
-                $row->ingreso += $aplicar;
+                // $row->ingreso += $aplicar;
                 $saldoFacturas[$factura] -= $aplicar;
             }
         
