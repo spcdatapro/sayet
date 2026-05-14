@@ -799,7 +799,7 @@ SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, 
                     $resta = $row->deposito + $row->isr + $row->iva;
                 } else {
                     // Aplicar depósito contra saldo
-                    $row->ingreso = $saldoFacturas[$factura] - $row->deposito;
+                    $row->ingreso = $saldoFacturas[$factura];
                     $saldoFacturas[$factura] -= $row->deposito;
                     $resta = $row->deposito;
                 }
