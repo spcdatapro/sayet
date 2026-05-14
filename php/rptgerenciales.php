@@ -800,13 +800,12 @@ SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, 
         
                 // Aplicar depósito contra saldo
                 $aplicar = min($saldoFacturas[$factura], $row->deposito);
-                // $row->ingreso += $aplicar;
-                // $saldoFacturas[$factura] -= $aplicar;
+                $row->ingreso += $aplicar;
+                $saldoFacturas[$factura] -= $aplicar;
             }
         
             // Recalcular diferencia con el ingreso ajustado
             $row->diferencia = ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
-            $row->ingreso -= $row->deposito;
         }
 
 
