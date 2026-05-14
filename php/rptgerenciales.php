@@ -825,7 +825,11 @@ SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, 
                         // Aplicar depósito contra saldo
                         $row->ingreso = $saldoFacturas[$factura];
                         $saldoFacturas[$factura] -= $row->deposito;
-                        $row->diferencia =  $row->ingreso - $row->deposito;
+                        if ($countFacturas[$factura] > 2) {
+                            $row->diferencia = 0;
+                        } else {
+                            $row->diferencia =  $row->ingreso - $row->deposito;
+                        }
                     }
                 }
             }
