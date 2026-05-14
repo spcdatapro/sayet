@@ -788,7 +788,7 @@ SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, 
         foreach ($data as $row) {
             // Puede haber varias facturas en la misma fila
             $facturas = explode(',', $row->factura);
-            $row->ingreso = 0;
+            // $row->ingreso = 0;
         
             foreach ($facturas as $factura) {
                 $factura = trim($factura);
@@ -798,10 +798,12 @@ SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, 
                     $saldoFacturas[$factura] = $row->ingreso; // monto original de la factura
                 }
         
-                // Aplicar depósito contra saldo
-                $aplicar = min($saldoFacturas[$factura], $row->deposito);
-                $row->ingreso += $aplicar;
-                $saldoFacturas[$factura] -= $aplicar;
+                if (isset($saldoFacturas[$factura]) && $saldoFacturas[$factura] > 0) {
+                    // Aplicar depósito contra saldo
+                    $aplicar = min($saldoFacturas[$factura], $row->deposito);
+                    // $row->ingreso += $aplicar;
+                    $saldoFacturas[$factura] -= $aplicar;
+                }
             }
         
             // Recalcular diferencia con el ingreso ajustado
