@@ -786,6 +786,16 @@ SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, 
         $saldoFacturas = [];
         $montoFacturas = [];
         $isrFacturas = [];
+        $countFacturas = [];
+
+        // Pre-compute counts
+        foreach ($data as $row) {
+            $facturas = explode(',', $row->factura);
+            foreach ($facturas as $factura) {
+                $factura = trim($factura);
+                $countFacturas[$factura] = ($countFacturas[$factura] ?? 0) + 1;
+            }
+        }
 
         foreach ($data as $row) {
             // Puede haber varias facturas en la misma fila
@@ -800,24 +810,28 @@ SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, 
                     $montoFacturas[$factura] = $row->ingreso;
                     $isrFacturas[$factura] = $row->isr;
                     $saldoFacturas[$factura] = $row->ingreso - ($row->deposito + $row->isr + $row->iva);
-                    $resta = $row->deposito + $row->isr + $row->iva;
+
+                    $row->diferencia = $row->ingreso - ($row->deposito + $row->isr + $row->iva);
+                    if ($countFacturas[$factura] > 1) {
+                        $row->ingreso = 0;
+                    }
                 } else {
                     if (count($facturas) > 1) {
                         $row->ingreso -= $montoFacturas[$factura];
                         $row->ingreso += $saldoFacturas[$factura];
                         $row->isr -= $isrFacturas[$factura];
-                        $resta = $row->deposito + $row->isr + $row->iva;
+                        $row->diferencia =  $row->ingreso - ($row->deposito + $row->isr + $row->iva);
                     } else {
                         // Aplicar depósito contra saldo
                         $row->ingreso = $saldoFacturas[$factura];
                         $saldoFacturas[$factura] -= $row->deposito;
-                        $resta = $row->deposito;
+                        $row->diferencia =  $row->ingreso - $row->deposito;
                     }
                 }
             }
         
             // Recalcular diferencia con el ingreso ajustado
-            $row->diferencia = ($row->ingreso - $resta) * -1;
+            // $row->diferencia = ($row->ingreso - $resta) * -1;
         }
 
 
