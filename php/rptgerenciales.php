@@ -783,14 +783,30 @@ $app->post('/control_ingresos', function () {
 
     if (count($data) > 0) {
 
-        $facturasProcesadas = [];
-        foreach($data as $row){
-            if(in_array($row->factura, $facturasProcesadas)){
-                $row->ingreso = 0;
-            } else {
-                $facturasProcesadas[] = $row->factura;
+        $saldoFacturas = [];
+
+        foreach ($data as $row) {
+            $facturas = explode(',', $row->factura); // puede haber varias facturas
+            $row->ingreso = 0;
+        
+            foreach ($facturas as $factura) {
+                $factura = trim($factura);
+        
+                // inicializar saldo si no existe
+                if (!isset($saldoFacturas[$factura])) {
+                    $saldoFacturas[$factura] = $row->ingreso; // monto original de la factura
+                }
+        
+                // aplicar depósito contra saldo
+                $aplicar = min($saldoFacturas[$factura], $row->deposito);
+                $row->ingreso += $aplicar;
+                $saldoFacturas[$factura] -= $aplicar;
             }
+        
+            // recalcular diferencia
+            $row->diferencia = ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
         }
+
 
         for ($i = 0; $i < count($data); $i++) {
             $actual = $data[$i];
