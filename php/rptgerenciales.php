@@ -796,9 +796,7 @@ SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, 
                 // Inicializar saldo si no existe
                 if (!isset($saldoFacturas[$factura])) {
                     $saldoFacturas[$factura] = $row->ingreso; // monto original de la factura
-                }
-        
-                if (isset($saldoFacturas[$factura]) && $saldoFacturas[$factura] > 0) {
+                } else {
                     // Aplicar depósito contra saldo
                     $aplicar = min($saldoFacturas[$factura], $row->deposito);
                     $row->ingreso -= $aplicar;
