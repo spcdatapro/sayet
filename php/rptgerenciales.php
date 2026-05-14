@@ -811,7 +811,7 @@ SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, 
                     $isrFacturas[$factura] = $row->isr;
                     $saldoFacturas[$factura] = $row->ingreso - ($row->deposito + $row->isr + $row->iva);
 
-                    $row->diferencia = $row->ingreso - ($row->deposito + $row->isr + $row->iva);
+                    $row->diferencia = ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
                     if ($countFacturas[$factura] > 1) {
                         $row->diferencia = 0;
                     }
@@ -820,7 +820,7 @@ SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, 
                         $row->ingreso -= $montoFacturas[$factura];
                         $row->ingreso += $saldoFacturas[$factura];
                         $row->isr -= $isrFacturas[$factura];
-                        $row->diferencia =  $row->ingreso - ($row->deposito + $row->isr + $row->iva);
+                        $row->diferencia =  ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
                     } else {
                         // Aplicar depósito contra saldo
                         $row->ingreso = $saldoFacturas[$factura];
@@ -828,7 +828,7 @@ SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, 
                         if ($countFacturas[$factura] > 2) {
                             $row->diferencia = 0;
                         } else {
-                            $row->diferencia =  $row->ingreso - $row->deposito;
+                            $row->diferencia =  ($row->ingreso - $row->deposito) * -1;
                         }
                     }
                 }
