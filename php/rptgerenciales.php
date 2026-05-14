@@ -795,17 +795,18 @@ SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, 
         
                 // Inicializar saldo si no existe
                 if (!isset($saldoFacturas[$factura])) {
-                    $saldoFacturas[$factura] = $row->ingreso; // monto original de la factura
+                    $saldoFacturas[$factura] = $row->ingreso - ($row->deposito + $row->isr + $row->iva);
+                    $resta = $row->deposito + $row->isr + $row->iva;
                 } else {
                     // Aplicar depósito contra saldo
-                    $aplicar = min($saldoFacturas[$factura], $row->deposito);
-                    $row->ingreso -= $aplicar;
-                    $saldoFacturas[$factura] -= $aplicar;
+                    $row->ingreso = $saldoFacturas[$factura] - $row->deposito;
+                    $saldoFacturas[$factura] -= $row->deposito;
+                    $resta = $row->deposito;
                 }
             }
         
             // Recalcular diferencia con el ingreso ajustado
-            $row->diferencia = ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
+            $row->diferencia = ($row->ingreso - $resta) * -1;
         }
 
 
