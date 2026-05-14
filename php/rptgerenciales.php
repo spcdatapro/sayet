@@ -804,9 +804,9 @@ SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, 
                     $resta = $row->deposito;
                 }
 
-                if (count($facturas) > 1) {
-                    $row->ingreso += $row->ingreso; // Sumar ingreso para cada factura en la misma fila
-                }
+                // if (count($facturas) > 1) {
+                //     $row->ingreso += $row->ingreso; 
+                // }
             }
         
             // Recalcular diferencia con el ingreso ajustado
