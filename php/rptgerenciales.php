@@ -842,39 +842,29 @@ SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, 
 
         for ($i = 0; $i < count($data); $i++) {
             $actual = $data[$i];
+            $proximo = $i+1 == count($data) ? null : $data[$i+1];
+            $proximo2 = $i+2 >= count($data) ? null : $data[$i+2];
 
-            // Buscar todas las transacciones siguientes con el mismo idrecibocli
-            $j = $i + 1;
-            $depositosAcumulados = $actual->deposito;
-            $yaAgrupados = false;
-
-            while ($j < count($data) && $data[$j]->idrecibocli == $actual->idrecibocli && $data[$j]->idrecibocli > 0) {
-                $depositosAcumulados += $data[$j]->deposito;
-
-                // Ajustar ingreso/iva/isr de los repetidos
-                $data[$j]->ingreso = 0;
-                $data[$j]->iva = 0;
-                $data[$j]->isr = 0;
-                $data[$j]->diferencia = $data[$j]->deposito;
-
-                $yaAgrupados = true;
-                $j++;
+            if (isset($proximo)) {
+                if ($proximo->idrecibocli == $actual->idrecibocli && $proximo->idrecibocli > 0) {
+                    // $proximo->diferencia = ($actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito)) * -1;
+                    $proximo->diferencia = $proximo->diferencia;
+                    $actual->iva = 0;
+                    $actual->isr = 0;
+                    $actual->ingreso = 0;
+                    $actual->diferencia = $actual->deposito;
+                }
             }
-
-            // Si hubo agrupación, recalcular diferencia del último
-            if ($yaAgrupados) {
-                $ultimo = $data[$j - 1];
-                $ultimo->diferencia = ($ultimo->ingreso - ($depositosAcumulados + $ultimo->isr + $ultimo->iva)) * -1;
-
-                // El primero conserva solo su depósito como diferencia
-                $actual->ingreso = 0;
-                $actual->iva = 0;
-                $actual->isr = 0;
-                $actual->diferencia = $actual->deposito;
+            if (isset($proximo2)) {
+                if ($proximo2->idrecibocli == $actual->idrecibocli && $proximo2->idrecibocli > 0) {
+                    // $proximo->diferencia = ($actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito)) * -1;
+                    $proximo2->diferencia = ($proximo2->ingreso - ($proximo2->deposito + $proximo2->isr + $proximo2->iva + $proximo->deposito + $actual->deposito)) * -1;
+                    $actual->iva = 0;
+                    $actual->isr = 0;
+                    $actual->ingreso = 0;
+                    $actual->diferencia = $actual->deposito;
+                }
             }
-
-            // Saltar los que ya procesaste
-            $i = $j - 1;
         }
 
         
