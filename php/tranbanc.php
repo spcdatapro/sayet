@@ -8,6 +8,19 @@ require 'Reportes.php';
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
 
+function wsMtsGetResultField($response, $field)
+{
+    if (is_object($response) && isset($response->{$field})) {
+        return $response->{$field};
+    }
+
+    if (is_array($response) && isset($response[$field])) {
+        return $response[$field];
+    }
+
+    return $response;
+}
+
 //API para transacciones bancarias
 $app->get('/lsttranbanc/:idbanco(/:tipotrans)', function($idbanco, $tipotrans = ''){
     $db = new dbcpm();
@@ -1121,6 +1134,113 @@ $app->post('/conectar_banco', function () use ($app) {
         print json_encode(['tipo' => 'success', 'mensaje' => 'Archivos extraídos con éxito']);
     }
     return;
+});
+
+$app->post('/wsmts/trasladar', function () {
+    $d = json_decode(file_get_contents('php://input'));
+
+    if (!isset($d->usuario) || trim($d->usuario) === '') {
+        print json_encode(['tipo' => 'error', 'mensaje' => 'Debe enviar el usuario para autenticar en GyT.']);
+        return;
+    }
+
+    if (!isset($d->cuenta) || trim($d->cuenta) === '') {
+        print json_encode(['tipo' => 'error', 'mensaje' => 'Debe enviar el número de cuenta para solicitar el estado de cuenta.']);
+        return;
+    }
+
+    $wsdlUrl = 'https://ws.ss.gytcontinental.com.gt/WsBancaMTS/WsMTS.svc?singleWsdl';
+    $llave = isset($d->llave) && trim($d->llave) !== '' ? trim($d->llave) : 'ME0G2gCzvqsBriW';
+    $usuario = trim($d->usuario);
+    $cuenta = trim($d->cuenta);
+    $reporte = isset($d->reporte) ? (int)$d->reporte : 29;
+    $fecha = isset($d->fecha) ? trim($d->fecha) : '';
+    $operacion = isset($d->operacion) ? trim($d->operacion) : 'TrasladarEstadoCta';
+
+    $operacionesValidas = ['TrasladarEstadoCta', 'TrasladarEstadoCtaFecha', 'GenerarEstadoCta', 'GenerarEstadoCtaFecha'];
+    if (!in_array($operacion, $operacionesValidas)) {
+        print json_encode([
+            'tipo' => 'error',
+            'mensaje' => 'Operación no válida.',
+            'operaciones_permitidas' => $operacionesValidas
+        ]);
+        return;
+    }
+
+    if (($operacion === 'TrasladarEstadoCtaFecha' || $operacion === 'GenerarEstadoCtaFecha') && $fecha === '') {
+        print json_encode(['tipo' => 'error', 'mensaje' => 'La operación seleccionada requiere el campo fecha.']);
+        return;
+    }
+
+    try {
+        $soapClient = new SoapClient($wsdlUrl, [
+            'trace' => 1,
+            'exceptions' => true,
+            'cache_wsdl' => WSDL_CACHE_NONE,
+            'connection_timeout' => 60
+        ]);
+
+        $authResponse = $soapClient->__soapCall('AutenticarUsuario', [[
+            'usuario' => $usuario,
+            'clave' => $llave,
+            'producto' => 'MT940'
+        ]]);
+
+        echo "<h3>REQUEST XML</h3>";
+        echo htmlentities($soapClient->__getLastRequest());
+        return;
+
+
+        $token = trim((string)wsMtsGetResultField($authResponse, 'AutenticarUsuarioResult'));
+        if ($token === '') {
+            print json_encode([
+                'tipo' => 'error',
+                'mensaje' => 'No fue posible autenticar usuario en GyT (token vacío).',
+                'respuesta_auth' => $authResponse
+            ]);
+            return;
+        }
+
+        $paramsOperacion = [
+            'usuario' => $usuario,
+            'token' => $token,
+            'reporte' => $reporte,
+            'cuenta' => $cuenta
+        ];
+
+        if ($operacion === 'TrasladarEstadoCtaFecha' || $operacion === 'GenerarEstadoCtaFecha') {
+            $paramsOperacion['fecha'] = $fecha;
+        }
+
+        $operacionResponse = $soapClient->__soapCall($operacion, [$paramsOperacion]);
+        $campoResultado = $operacion . 'Result';
+        $resultadoOperacion = wsMtsGetResultField($operacionResponse, $campoResultado);
+
+        $desconexionResponse = $soapClient->__soapCall('DesconectarUsuario', [[
+            'usuario' => $usuario
+        ]]);
+
+        print json_encode([
+            'tipo' => 'success',
+            'mensaje' => 'Consumo de webservice GyT ejecutado correctamente.',
+            'token' => $token,
+            'operacion' => $operacion,
+            'resultado_operacion' => $resultadoOperacion,
+            'respuesta_operacion' => $operacionResponse,
+            'respuesta_desconexion' => $desconexionResponse
+        ]);
+    } catch (SoapFault $e) {
+        print json_encode([
+            'tipo' => 'error',
+            'mensaje' => 'Error SOAP al consumir GyT: ' . $e->getMessage(),
+            'codigo' => $e->getCode()
+        ]);
+    } catch (Exception $e) {
+        print json_encode([
+            'tipo' => 'error',
+            'mensaje' => 'Error al consumir GyT: ' . $e->getMessage()
+        ]);
+    }
 });
 
 $app->post('/conciliacion_automatica', function () {
