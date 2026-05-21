@@ -733,7 +733,7 @@ $app->post('/control_ingresos', function () {
                     a.numban) AS tranban,
                 IFNULL(d.factura, 'SC') AS factura,
                 ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ingresodlr, 
-                d.ingreso 
+                d.ingreso + IFNULL(suma_extra, 0)
                 -- - (SELECT IFNULL(SUM(dc.monto), 0) FROM detcobroventa dc INNER JOIN recibocli reci ON dc.idrecibocli = reci.id WHERE dc.idfactura = d.idfactura AND reci.fecha != '$d->fechastr')
                 )), 0), 2) AS ingreso,
                 a.monto AS deposito,
@@ -759,7 +759,8 @@ SUM(IF(true, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, (a.monto
                         SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr)) AS isr,
                         SUM(IF(b.idmonedafact = 2, b.retivacnv, b.retiva)) AS iva,
                         IF(b.idmonedafact = 2, 1, b.tipocambio) AS tc_fact,
-                        IF(a.idrecibocli IN(23795), 558, 0.00) AS pago_extra,
+                        IF(a.idrecibocli IN(23813), -3, 0.00) AS pago_extra,
+                        IF(a.idrecibocli IN(23813), 3, 0.00) AS suma_extra,
                         IFNULL(IF((SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, (a.monto + b.retisr + b.retiva)), IF(b.idmonedafact = 2, b.subtotalcnv, b.subtotal))) -  SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr)) - SUM(IF(b.idmonedafact = 2, b.retivacnv, b.retiva))) < 0, (SELECT SUM(dc.monto) FROM detcobroventa dc WHERE dc.idfactura = b.id AND dc.idrecibocli != a.idrecibocli), 0),0) AS cobrado_prev
                         -- 0 AS cobrado_prev
                 FROM
