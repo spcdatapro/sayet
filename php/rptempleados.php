@@ -2214,13 +2214,15 @@ $app->post('/horas_extra', function () {
             GROUP BY a.id ";
     $query.=   "ORDER BY 2 ,"; 
     $query.= $d->agrupar == 2 ? " 6 , 8" : " 8";
+    echo $query; return;
     $data = $db->getQuery($query);
 
     foreach($data as $dat) {
         $dat->pagar_extra = $dat->horas_extra * $dat->extra_valor;
         $dat->pagar_dobles = $dat->horas_dobles * $dat->valor_doble;
+        $dat->pagar_total = $dat->pagar_extra + $dat->pagar_dobles;
     }
-    $totales = ['pagar_extra', 'pagar_dobles'];
+    $totales = ['pagar_extra', 'pagar_dobles', 'pagar_total'];
     $porproyecto = $d->agrupar == 2 ? true : false;
 
     // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
