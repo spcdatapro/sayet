@@ -9,7 +9,7 @@ $app->response->headers->set('Content-Type', 'application/json');
 $app->get('/lstdetcont/:origen/:idorigen', function($origen, $idorigen){
     $db = new dbcpm();
     $query = "SELECT a.id, a.origen, a.idorigen, a.idcuenta, CONCAT('(', b.codigo, ') ', b.nombrecta) AS desccuentacont, ";
-    $query.= "a.debe, a.haber, a.conceptomayor, c.nomproyecto AS idproyecto ";
+    $query.= "a.debe, a.haber, a.conceptomayor, c.nomproyecto AS idproyecto, a.anulado ";
     $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta LEFT JOIN proyecto c ON a.idproyecto = c.id ";
     $query.= "WHERE a.origen = ".$origen." AND a.idorigen = ".$idorigen." ";
     $query.= "ORDER BY a.debe DESC, a.haber, b.codigo";

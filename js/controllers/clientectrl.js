@@ -916,6 +916,7 @@
                 d[i].monto = parseFloat(parseFloat(d[i].monto).toFixed(2));
                 d[i].descuento = parseFloat(parseFloat(d[i].descuento).toFixed(2));
                 d[i].facturado = parseInt(d[i].facturado);
+                d[i].noproveedor = d[i].proveedor;
             }
             return d;
         }
@@ -1044,6 +1045,25 @@
             var rowIndex = iddetcont - $scope.restar;
             $scope.sldesc[rowIndex] = false;
         };
+
+        $scope.agregarCampo = (id, dato, tipo) => {
+            let option = undefined;
+            switch (tipo) {
+                case 'proveedor':
+                    option = 'uprov';
+                    break;
+                case 'pedido':
+                    option = 'uped';
+                    break;
+                case 'framework':
+                    option = 'ufw';
+                    break;
+            }
+
+            clienteSrvc.editRow({ id: id, valor: dato }, option).then(d => {
+                toaster.pop(d.tipo, 'Campo adicional', d.mensaje, 'timeout:5000');
+            });
+        }
 
         function procDataCargos(d) {
             //console.log(d); return;
@@ -1238,7 +1258,7 @@
 
     clientectrl.controller('ModalListClientesCtrl', ['$scope', '$uibModalInstance', 'empresas', 'jsReportSrvc', function ($scope, $uibModalInstance, empresas, jsReportSrvc) {
         $scope.empresas = empresas;
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
 
         $scope.resetParams = () => $scope.params = { idempresa: undefined };
 

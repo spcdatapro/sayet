@@ -219,7 +219,7 @@ $app->post('/modmontos', function(){
     $query.= ")";
     $db->doQuery($query);
 
-    $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
+    $url = 'http://localhost/php/genpartidasventa.php/genpost';
     $data = ['ids' => $d->id, 'idcontrato' => $old->concontrato];
     $db->CallJSReportAPI('POST', $url, json_encode($data));
 });
@@ -393,6 +393,60 @@ $app->post('/generandc', function() {
     }
 
     print json_encode(['exito' => true, 'mensaje' => 'Nota de crédito generada con éxito.']);
+});
+
+$app->post('/drisr', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $cnt_retisr = $db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 13");
+    $cnt_retiva = $db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 14");
+    $db->doQuery("UPDATE factura SET ultusuario = $d->idusuario WHERE id = $d->idfactura");
+
+    if ($cnt_retisr > 0) {
+        $query = "UPDATE factura SET retisr = 0 WHERE id = $d->idfactura";
+        $db->doQuery($query);
+        if ($db->getOneField("SELECT retisr FROM factura WHERE id = $d->idfactura") == 0) {
+            $monto = $db->getOneField("SELECT debe FROM detallecontable WHERE origen = 3 AND idorigen = $d->idfactura AND idcuenta = $cnt_retisr");
+            $query = "DELETE FROM detallecontable WHERE origen = 3 AND idorigen = $d->idfactura AND idcuenta = $cnt_retisr";
+            $db->doQuery($query);
+            $query = "UPDATE detallecontable SET debe = ROUND(debe + $monto, 2) WHERE origen = 3 AND idorigen = $d->idfactura AND debe > 0 AND idcuenta != $cnt_retiva";
+            $db->doQuery($query);
+            print json_encode(['tipo' => 'success', 'mensaje' => 'Retención de ISR eliminada de la factura con éxito']);
+        } else {
+            print json_encode(['tipo' => 'error', 'mensaje' => 'No se puede eliminar la retención de ISR de la factura']);
+        }
+    } else {
+        print json_encode(['tipo' => 'error', 'mensaje' => 'No se encontró la cuenta contable para la retención de ISR.']);
+    }
+});
+
+$app->post('/driva', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $cnt_retiva = $db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 14");
+    $cnt_retisr = $db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 13");
+
+    $db->doQuery("UPDATE factura SET ultusuario = $d->idusuario WHERE id = $d->idfactura");
+
+    if ($cnt_retiva > 0) {
+        $query = "UPDATE factura SET retiva = 0 WHERE id = $d->idfactura";
+        $db->doQuery($query);
+        if ($db->getOneField("SELECT retiva FROM factura WHERE id = $d->idfactura") == 0) {
+            $monto = $db->getOneField("SELECT debe FROM detallecontable WHERE origen = 3 AND idorigen = $d->idfactura AND idcuenta = $cnt_retiva");
+            $query = "DELETE FROM detallecontable WHERE origen = 3 AND idorigen = $d->idfactura AND idcuenta = $cnt_retiva";
+            $db->doQuery($query);
+            $query = "UPDATE detallecontable SET debe = ROUND(debe + $monto, 2) WHERE origen = 3 AND idorigen = $d->idfactura AND debe > 0 AND idcuenta != $cnt_retisr";
+            $db->doQuery($query);
+            print json_encode(['tipo' => 'success', 'mensaje' => 'Retención de IVA eliminada de la factura con éxito']);
+        } else {
+            print json_encode(['tipo' => 'error', 'mensaje' => 'No se puede eliminar la retención de IVA de la factura']);
+        }
+    } else {
+        print json_encode(['tipo' => 'error', 'mensaje' => 'No se encontró la cuenta contable para la retención de IVA.']);
+    }
+
 });
 
 $app->run();

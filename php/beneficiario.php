@@ -9,7 +9,7 @@ $app = new \Slim\Slim();
 //API para encabezado de benefiaciario
 $app->get('/lstbene(/:todos)', function($todos = 0){
     $db = new dbcpm();
-    $query = "SELECT a.id, a.nit, a.nombre, a.direccion, a.telefono, a.correo, a.concepto, a.idbancopais, a.tipcuenta, a.identificacion, ";
+    $query = "SELECT a.id, a.nit, a.nombre, a.direccion, a.telefono, a.correo, a.concepto, a.idbancopais, a.tipcuenta, a.identificacion, a.fondo, ";
     $query.= "CONCAT('(', a.nit, ') ', a.nombre, ' (', b.simbolo, ')') AS nitnombre, a.idmoneda, b.nommoneda AS moneda, a.tipocambioprov, a.debaja, a.cuentabanco ";
     $query.= "FROM beneficiario a INNER JOIN moneda b ON b.id = a.idmoneda ";
     $query.= (int)$todos === 0 ? 'WHERE a.debaja = 0 ' : '';
@@ -19,7 +19,7 @@ $app->get('/lstbene(/:todos)', function($todos = 0){
 
 $app->get('/getbene/:idbene', function($idbene){
     $db = new dbcpm();
-    $query = "SELECT a.id, a.nit, a.nombre, a.direccion, a.telefono, a.correo, a.concepto, a.idbancopais, a.tipcuenta, a.identificacion, ";
+    $query = "SELECT a.id, a.nit, a.nombre, a.direccion, a.telefono, a.correo, a.concepto, a.idbancopais, a.tipcuenta, a.identificacion, a.fondo, ";
     $query.= "CONCAT('(', a.nit, ') ', a.nombre, ' (', b.simbolo, ')') AS nitnombre, a.idmoneda, b.nommoneda AS moneda, a.tipocambioprov, a.debaja, a.cuentabanco ";
     $query.= "FROM beneficiario a INNER JOIN moneda b ON b.id = a.idmoneda ";
     $query.= "WHERE a.id = ".$idbene;
@@ -39,10 +39,11 @@ $app->post('/c', function(){
 
     if (!isset($d->tipcuenta)) { $d->tipcuenta = 0; }
     if (!isset($d->identificacion)) { $d->identificacion = 0; }
+    if (!isset($d->fondo)) { $d->fondo = 0; }
 
-    $query = "INSERT INTO beneficiario(nit, nombre, direccion, telefono, correo, concepto, idbancopais, tipcuenta, identificacion, idmoneda, tipocambioprov, debaja, cuentabanco ) ";
+    $query = "INSERT INTO beneficiario(nit, nombre, direccion, telefono, correo, concepto, idbancopais, tipcuenta, identificacion, idmoneda, tipocambioprov, debaja, cuentabanco, fondo ) ";
     $query.= "VALUES('$d->nit', '$d->nombre', '$d->direccion', '$d->telefono', '$d->correo', '$d->concepto', $d->idbancopais, $d->tipcuenta, $d->identificacion, ";
-    $query.= "$d->idmoneda, $d->tipocambioprov, $d->debaja, $d->cuentabanco)";
+    $query.= "$d->idmoneda, $d->tipocambioprov, $d->debaja, $d->cuentabanco, $d->fondo)";
     $db->doQuery($query);
     print json_encode(['lastid' => $db->getLastId()]);
 });
@@ -60,9 +61,10 @@ $app->post('/u', function(){
 
     if (!isset($d->tipcuenta)) { $d->tipcuenta = 0; }
     if (!isset($d->identificacion)) { $d->identificacion = 0; }
+    if (!isset($d->fondo)) { $d->fondo = 0; }
 
     $query = "UPDATE beneficiario SET nit = '$d->nit', nombre = '$d->nombre', direccion = '$d->direccion', idbancopais = $d->idbancopais, tipcuenta = $d->tipcuenta, ";
-    $query.= "telefono = '$d->telefono', correo = '$d->correo', concepto = '$d->concepto', ";
+    $query.= "telefono = '$d->telefono', correo = '$d->correo', concepto = '$d->concepto',  fondo = $d->fondo, ";
     $query.= "idmoneda = $d->idmoneda, tipocambioprov = $d->tipocambioprov, debaja = $d->debaja, cuentabanco = $d->cuentabanco, identificacion = $d->identificacion ";
     $query.= "WHERE id = $d->id";
     $db->doQuery($query);

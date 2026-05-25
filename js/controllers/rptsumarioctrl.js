@@ -9,7 +9,7 @@
         // variable para mostrar que esta cargando
         $scope.estaGenerando = false;
         // para mostrar reporte en pantalla
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
 
         authSrvc.getSession().then(usr => {
             $scope.params.usuario = usr.iniciales;
@@ -38,7 +38,7 @@
             $scope.params.resumen = 1;
 
             bancoSrvc.getCuentasSumario(+$scope.params.idmoneda, $scope.params.fdelstr, $scope.params.falstr, $scope.params.tipo).then(function (d) {
-                var url = window.location.origin + ':5489/api/report', props = {}, file, formData = new FormData();
+                var url = `${window.location.origin}/api/report`, props = {}, file, formData = new FormData();
 
                 props = { 'template': { 'shortid': 'By_inM6jp' }, 'data': $scope.params };
                 $http.post(url, props, { responseType: 'arraybuffer' }).then(function (response) {
@@ -65,7 +65,7 @@
                             success: function () { $scope.estaGenerando = false; },
                             error: function () { console.log("Se produjo un error al generar el sumario y su detalle..."); }
                         }).done(function () {
-                            var urlpdf = window.location.origin + '/sayet/php/pdfgenerator/SumarioDetalle.pdf';
+                            var urlpdf = window.location.origin + '/php/pdfgenerator/SumarioDetalle.pdf';
                             $window.open(urlpdf);
                         });
                     });

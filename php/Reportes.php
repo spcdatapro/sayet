@@ -63,6 +63,7 @@ class GeneradorReportes {
                     $separador_empresa->numero = isset($d->numero) ? $d->numero : null;
                     $separador_empresa->abreviatura = $d->abreviatura;
                     $separador_empresa->cuantos = isset($d->cuantos) ? $d->cuantos : null;
+                    $separador_empresa->diferente = isset($d->diferente) ? $d->diferente : null;
                     $separador_empresa->porproyecto = $porproyecto ? true : null;
 
                     // crear sumadores empresa 

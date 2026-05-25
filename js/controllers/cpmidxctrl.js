@@ -62,7 +62,9 @@
         function faltanArchivosMT940 (usr) {
             if (usr == 1 || usr == 22 || usr == 28 || usr == 14 || usr == 17 || usr == 6) {
                 tranBancSrvc.getErroresMT940().then(errores => {
+                    console.log(errores);
                     if (errores.length > 0) {
+                        console.log('Faltan archivos MT940');
                         desktopNotification.show('No se recibieron todos los archivos MT940', {
                             icon: 'img/sayet.ico',
                             body: errores[0].descripcion,

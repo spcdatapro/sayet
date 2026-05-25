@@ -10,7 +10,7 @@
                 idtsventa: undefined, soloanuladas: 0, tc: undefined, idunidad: undefined
             };
             $scope.empresas = [];
-            $scope.content = `${window.location.origin}/sayet/blank.html`;
+            $scope.content = `${window.location.origin}/blank.html`
             $scope.proyectos = [];
             $scope.tsventa = [];
             $scope.cargando = false;
@@ -140,7 +140,7 @@
 
             $scope.getPendientes = function (params) {
                 $scope.cargando = true;
-                $scope.content = `${window.location.origin}/sayet/blank.html`;
+                $scope.content = `${window.location.origin}/blank.html`
                 params.fdelstr = moment(params.fdel).format('YYYY-MM-DD');
                 params.falstr = moment(params.fal).format('YYYY-MM-DD');
                 $scope.params.idempresa = $scope.params.idempresa != null && $scope.params.idempresa !== undefined ? $scope.params.idempresa : '';

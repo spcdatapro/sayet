@@ -5,7 +5,7 @@
     rptincdecctrl.controller('rptIncDecCtrl', ['$scope', 'empresaSrvc', 'proyectoSrvc', 'jsReportSrvc', function($scope, empresaSrvc, proyectoSrvc, jsReportSrvc){
 
         $scope.params = {fdel: moment().startOf('month').toDate() , fal: moment().endOf('month').toDate(), tipo: '1'};
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
         $scope.cargando = false;
         //$scope.empresas = [];
         //$scope.proyectos = [];

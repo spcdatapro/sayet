@@ -11,6 +11,7 @@
             $scope.iniciales = 'N/E';
             $scope.params = { fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(), reporte: false, ver: '0' };
             $scope.idbanco = undefined;
+            $scope.todos = true;
 
             // para paginar
             $scope.currentPage = 1; // Página actual
@@ -200,7 +201,7 @@
                     }
                 });
 
-                const url = window.location.origin + ':5489/api/report';
+                const url = `${window.location.origin}/api/report`;
                 let props = {}, file, formData = new FormData();
 
                 const promises = aimprimir.map(tran => {
@@ -222,7 +223,7 @@
                         success: () => { },
                         error: () => console.log("Se produjo un error al generar la impresión de OTs...")
                     }).done(() => {
-                        const urlpdf = window.location.origin + '/sayet/php/pdfgenerator/OTs.pdf';
+                        const urlpdf = window.location.origin + '/php/pdfgenerator/OTs.pdf';
                         $window.open(urlpdf);
                     });
                 });
@@ -256,6 +257,14 @@
                     toaster.pop({ type: 'error', title: 'Emparejar débitos', body: 'No hay débitos seleccionados para emparejar.', timeout: 5000 });
                     return;
                 }
+            }
+
+            $scope.selTodos = todos => {
+                $scope.paginatedEmpleados().forEach(tran => {
+                    if (tran.cuantos === 1) {
+                        tran.conciliar = todos;
+                    }
+                });
             }
 
         }]);

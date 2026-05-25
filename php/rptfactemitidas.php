@@ -34,7 +34,7 @@ $app->post('/factemitidas', function(){
     $qGen = "SELECT a.id, a.idempresa, b.nomempresa AS empresa, b.abreviatura AS abreviaempre, a.serie, a.numero, 
     IF(a.anulada = 0, TRIM(a.nombre), 'ANULADA') AS cliente, IF(c.tipo IS NULL, TRIM(SUBSTR(a.conceptomayor, LOCATE('(', a.conceptomayor) + 1, LOCATE(')', a.conceptomayor) - 10)), c.tipo) AS tipo, 
     IF(a.anulada = 0, IF(a.idmonedafact = 1, a.subtotal, a.subtotalcnv), 0.00) AS total, IF(c.periodo IS NULL, TRIM(SUBSTR(a.conceptomayor, (LOCATE(')', a.conceptomayor) + 1))), c.periodo) AS periodo, b.ordensumario, 
-    a.idmonedafact, f.simbolo AS monedafact, a.serieadmin, a.numeroadmin, a.tipocambio
+    a.idmonedafact, f.simbolo AS monedafact, a.serieadmin, a.numeroadmin, a.tipocambio, a.fecha
     FROM factura a 
     INNER JOIN empresa b ON b.id = a.idempresa 
     LEFT JOIN (
@@ -60,7 +60,7 @@ $app->post('/factemitidas', function(){
     $qGen.= (int)$d->idproyecto > 0 ? "AND e.idproyecto = $d->idproyecto " : '';
     $qGen.= isset($d->idunidad) ? "AND e.idunidad = $d->idunidad " : '';
     $qGen.= (int)$d->idtsventa > 0 ? "AND (SELECT COUNT(idfactura) FROM detfact WHERE idfactura = a.id AND idtiposervicio = $d->idtsventa) > 0 " : '';
-    $qGen.= (int)$d->soloanuladas == 0 ? '' : 'AND a.anulada = 1 ';
+    $qGen.= (int)$d->soloanuladas == 0 ? '' : ($d->soloanuladas == 1 ? 'AND a.anulada = 1 ' : 'AND a.anulada = 0 ');
     $qGen.= isset($d->idmoneda) ? "AND a.idmonedafact = $d->idmoneda " : '';
     $qGen.= "ORDER BY a.serieadmin, a.numeroadmin, a.serie, a.numero";
 
@@ -69,7 +69,7 @@ $app->post('/factemitidas', function(){
     $cntEmpresas = count($info->facturas);
     for($i = 0; $i < $cntEmpresas; $i++){
         $empresa = $info->facturas[$i];
-        $query = "SELECT z.id, z.idempresa, z.empresa, z.abreviaempre, z.serie, z.numero, z.cliente, z.tipo, FORMAT(z.total, 2) AS total, z.periodo, z.monedafact, z.serieadmin, z.numeroadmin, ROUND(z.tipocambio, 5) AS tipocambio ";
+        $query = "SELECT z.id, z.idempresa, z.empresa, z.abreviaempre, z.serie, z.numero, z.cliente, z.tipo, FORMAT(z.total, 2) AS total, z.periodo, z.monedafact, z.serieadmin, z.numeroadmin, ROUND(z.tipocambio, 5) AS tipocambio, z.fecha ";
         $query.= "FROM ($qGen) z ";
         $query.= "WHERE z.idempresa = $empresa->idempresa ";
         $query.= "ORDER BY z.serieadmin, z.numeroadmin, z.serie, z.numero";
@@ -245,6 +245,55 @@ $app->post('/elmcargo', function() {
     $tipo = $exito == 1 ? 'success' : 'error';
     $mensaje = $exito == 1 ? 'Cargo eliminado con éxito.' : 'Ocurrio un error por favor volver a intentar.';
     print json_encode(['tipo' => $tipo, 'mensaje' => $mensaje]);
+});
+
+$app->post('/fact_tran', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    // clase para fechas
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+    $letra->fechas = 'Del ' . (new DateTime($d->fdelstr))->format('d/m/Y') . ' al ' . (new DateTime($d->falstr))->format('d/m/Y');
+
+    // 1. Consulta de facturas
+    $query = "SELECT 
+        a.id, a.serieadmin, a.numeroadmin, a.serie, a.numero, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, e.nomempresa AS empresa, a.nombre AS cliente, a.importetotal, a.idmonedafact, a.tipocambio
+    FROM factura a
+        INNER JOIN detcobroventa b ON b.idfactura = a.id
+        INNER JOIN recibocli c ON b.idrecibocli = c.id
+        LEFT JOIN reclitran d ON d.idrecibocli = c.id
+        INNER JOIN empresa e ON e.id = a.idempresa
+    WHERE (a.idfox IS NULL OR a.idfox = 0)
+        AND (c.idtranban IS NULL OR c.idtranban = 0)
+        AND a.anulada = 0
+        AND a.idtipofactura IN (1)
+        AND (a.idfacturaafecta IS NULL OR a.idfacturaafecta = 0)
+        AND a.id NOT IN (
+            SELECT id FROM factura WHERE idfacturaafecta > 0
+        )
+        AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' 
+        AND c.id NOT IN (SELECT idrecibocli FROM reclitran WHERE idtranban > 0)";
+    $facturas = $db->getQuery($query);
+
+    // 2. Consulta de tranban
+    $query = "SELECT idfact FROM tranban WHERE idfact > 0 AND fecha >= '$d->fdelstr' AND fecha <= '$d->falstr'";
+    $eliminar = $db->getQuery($query);
+
+    // 3. Filtrar en PHP
+    $tranbanIds = array_map(function($row) {
+        return $row->idfact;
+    }, $eliminar);
+    $tranbanIds = array_flip($tranbanIds);
+
+    $final = array_filter($facturas, function($row) use ($tranbanIds) {
+        return !isset($tranbanIds[$row->id]);
+    });
+
+    // 4. Devolver resultado
+    print json_encode(['encabezado' => $letra, 'facturas' => $final]);
 });
 
 $app->run();

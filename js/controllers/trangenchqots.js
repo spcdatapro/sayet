@@ -157,7 +157,7 @@
         };
 
         $scope.printOts = (generados) => {
-            const url = window.location.origin + ':5489/api/report';
+            const url = `${window.location.origin}/api/report`;
             let props = {}, file, formData = new FormData();
 
             const promises = generados.map(generado => {
@@ -180,7 +180,7 @@
                     success: () => { },
                     error: () => console.log("Se produjo un error al generar la impresión de OTs...")
                 }).done(() => {
-                    const urlpdf = window.location.origin + '/sayet/php/pdfgenerator/OTs.pdf';
+                    const urlpdf = window.location.origin + '/php/pdfgenerator/OTs.pdf';
                     $window.open(urlpdf);
                 });
             });

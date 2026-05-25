@@ -10,7 +10,7 @@
 
             servicioBasicoSrvc.getContadores(0).then(function (r) { $scope.servicios = r; });
 
-            $scope.content = `${window.location.origin}/sayet/blank.html`;
+            $scope.content = `${window.location.origin}/blank.html`
 
             var test = false;
 

@@ -928,6 +928,13 @@ $app->get('/get_educacion', function() {
 	print json_encode($b->getNivelEducacion());
 });
 
+$app->get('/get_horarios', function() {
+	$b = new General();
+
+	print json_encode($b->getHorarios());
+});
+
+
 $app->get('/get_castas', function() {
 	$b = new General();
 
@@ -1006,6 +1013,12 @@ $app->post('/baja', function(){
 	$e = new Empleado();
 
 	print json_encode($e->baja($data));
+});
+
+$app->delete('/eliminar_archivo/:id', function($id){
+	$e = new Empleado($id);
+
+	print json_encode($e->eliminarArchivo($id));
 });
 
 $app->run();

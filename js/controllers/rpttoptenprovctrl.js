@@ -4,7 +4,7 @@
     rpttoptenprovctrl.controller('rptTopTenProvCtrl', ['$scope', 'empresaSrvc', 'jsReportSrvc', 'authSrvc', function ($scope, empresaSrvc, jsReportSrvc, authSrvc) {
         $scope.uid = 0;
         $scope.params = { mes: moment().month().toString(), anio: moment().year() };
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
         $scope.empresas = [];
         $scope.meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 

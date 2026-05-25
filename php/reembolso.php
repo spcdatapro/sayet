@@ -29,7 +29,7 @@ $app->post('/lstreembolsos', function(){
 
     $query = "SELECT a.id, a.idempresa, a.idtiporeembolso, b.desctiporeembolso AS tipo, a.finicio, a.ffin, a.beneficiario, ";
     $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto, a.idcuentaliq, a.ordentrabajo, ";
-    $query.= "a.idproyecto ";
+    $query.= "a.idproyecto, a.aprobar, a.aprobador, a.estatus_aprobacion ";
     $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso ";
     $query.= "LEFT JOIN (SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) c ON a.id = c.idreembolso ";
     $query.= "WHERE a.idempresa = $d->idemp AND a.finicio >= '$d->fdel' AND a.finicio <= '$d->fal' ";
@@ -46,7 +46,7 @@ $app->get('/getreembolso/:idreembolso(/:idot)', function($idreembolso, $idot = 0
     $idot = (int)$idot;
     $query = "SELECT a.id, a.idempresa, a.idtiporeembolso, b.desctiporeembolso AS tipo, a.finicio, a.ffin, a.beneficiario, ";
     $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto, a.idcuentaliq, a.ordentrabajo, ";
-    $query.= "a.idproyecto, a.pagado, a.idusuario, a.ultusuario ";
+    $query.= "a.idproyecto, a.pagado, a.idusuario, a.ultusuario, '37ce35dd-186e-4372-8b34-81893dd0dfed' AS firma_jefe, a.estatus_aprobacion, a.aprobar ";
     $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso ";
     $query.= "LEFT JOIN (SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) c ON a.id = c.idreembolso ";
     $query.= "WHERE ";
@@ -269,7 +269,7 @@ function insertaDetalleContable($d, $db, $lastid){
         }
     }
 
-    $url = 'http://localhost/sayet/php/fixdescuadrecompra.php/fix';
+    $url = 'http://localhost/php/fixdescuadrecompra.php/fix';
     $dataa = ['idfactura' => $lastid];
     $db->CallJSReportAPI('POST', $url, json_encode($dataa));
 }
@@ -288,6 +288,8 @@ function updateIdProveedor($db, $idcompra) {
 $app->post('/cd', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+
+    $d->idsubtipogasto = isset($d->idsubtipogasto) ? $d->idsubtipogasto : 0;
 
     $d->retIva = 0.00;
 
@@ -463,7 +465,10 @@ $app->post('/gentranban', function(){
 
     $origen = 1;
     //Inserto el detalle contable de la transacción bancaria
-    $ctaporliquidar = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 5");
+    $ctaporliquidar = (int)$db->getOneField("SELECT idcuentaliq FROM reembolso WHERE id = ".$d->id);
+    if ($ctaporliquidar == 0) {
+        $ctaporliquidar = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 5");
+    }
     $ctabanco = (int)$db->getOneField("SELECT idcuentac FROM banco WHERE id = ".$d->objBanco->id);
 
     if($ctaporliquidar > 0){
@@ -589,6 +594,243 @@ $app->get('/uriva/:idcompra/:monto/:idempresa/:suma/:idreembolso', function ($id
     $db->doQuery("UPDATE detallecontable SET haber = $monto_prov WHERE idorigen = $idcompra AND origen = 2 AND idcuenta = $ctaliq");
 
     print json_encode(['tipo' => 'success', 'mensaje' => 'Se ha modificado correctamente.']);;
+});
+
+$app->post('/ucnt', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $cntriva = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 28");
+    $cntrisr = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 8");
+
+    $db->doQuery("UPDATE reembolso SET ultusuario = $d->idusuario WHERE id = $d->id");
+
+    if (isset($d->id) && $d->id > 0 && isset($d->idcuentac) && $d->idcuentac > 0) {
+        $query = "UPDATE reembolso SET idcuentaliq = $d->idcuentac WHERE id = $d->id";
+        $db->doQuery($query);
+        if ($db->getOneField("SELECT idcuentaliq FROM reembolso WHERE id = $d->id") == $d->idcuentac) {
+            $query = "UPDATE detallecontable SET idcuenta = $d->idcuentac WHERE origen = 2 AND idorigen IN (SELECT id FROM compra WHERE idreembolso = $d->id) AND haber > 0 AND idcuenta NOT IN ($cntriva, $cntrisr)";
+            $db->doQuery($query);
+            if ($db->getOneField("SELECT COUNT(id) FROM detallecontable WHERE origen = 2 AND idorigen IN (SELECT id FROM compra WHERE idreembolso = $d->id) AND haber > 0 AND idcuenta = $d->idcuentac") > 0) {
+                print json_encode(['tipo' => 'success', 'mensaje' => 'Cuenta contable actualizada correctamente.']);
+            } else {
+                print json_encode(['tipo' => 'error', 'mensaje' => 'No se ha podido actualizar la cuenta contable de las compras.']);
+            }
+        } else {
+            print json_encode(['tipo' => 'error', 'mensaje' => 'No se ha podido actualizar el reembolso.']);
+        }
+    } else {
+        print json_encode(['tipo' => 'error', 'mensaje' => 'No se ha podido actualizar, datos incompletos.']);
+    }   
+});
+
+$app->get('/pendientes', function (){
+    $db = new dbcpm();
+    $query = "SELECT 
+                a.id,
+                b.nombre,
+                DATE_FORMAT(envioaprob, '%d/%m/%Y') AS fecha,
+                beneficiario,
+                c.totfact AS monto,
+                c.documento,
+                c.conceptomayor AS concepto,
+                d.simbolo AS moneda
+            FROM
+                reembolso a
+                    INNER JOIN
+                usuario b ON a.idusuario = b.id
+                    INNER JOIN
+                compra c ON c.idreembolso = a.id
+                    INNER JOIN
+                moneda d ON c.idmoneda = d.id
+            WHERE
+                aprobar = 1 AND aprobador = 0
+            ORDER BY fecha";
+    $data = $db->getQuery($query);
+
+    $reembolsos = [];
+    foreach ($data as $row) {
+        if (!isset($reembolsos[$row->id])) {
+            $reembolsos[$row->id] = [
+                'id' => $row->id,
+                'nombre' => $row->nombre,
+                'fecha' => $row->fecha,
+                'beneficiario' => $row->beneficiario,
+                'monto' => 0,
+                'moneda' => $row->moneda,
+                'compras' => []
+            ];
+        }
+        
+        $reembolsos[$row->id]['monto'] += $row->monto;
+        $reembolsos[$row->id]['compras'][] = [
+            'monto' => $row->monto,
+            'documento' => $row->documento,
+            'concepto' => $row->concepto,
+            'moneda' => $row->moneda
+        ];
+    }
+    
+    $result = array_values($reembolsos);
+
+    print json_encode($result);
+});
+
+$app->get('/reembolso_aprobacion/:idreembolso', function ($idreembolso) {
+    date_default_timezone_set("America/Guatemala");
+    $db = new dbcpm();
+
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+
+    $query = "SELECT 
+                a.id,
+                b.iniciales AS solicitante,
+                DATE_FORMAT(envioaprob, '%d/%m/%Y') AS fecha,
+                beneficiario,
+                c.totfact AS monto,
+                c.documento,
+                c.conceptomayor,
+                DATE_FORMAT(fechafactura, '%d/%m/%Y') AS fecha_compra,
+                c.proveedor,
+                a.fondoasignado,
+                d.iniciales AS jefe,
+                '37ce35dd-186e-4372-8b34-81893dd0dfed' AS firma_jefe,
+                e.nomempresa AS empresa,
+                IFNULL(f.descripcion, 'N/E') AS subtipogasto,
+                g.nomproyecto AS proyecto
+            FROM
+                reembolso a
+                    INNER JOIN
+                usuario b ON a.idusuario = b.id
+                    INNER JOIN
+                compra c ON c.idreembolso = a.id
+                    LEFT JOIN
+                usuario d ON a.aprobador = d.id
+                    INNER JOIN 
+                empresa e ON a.idempresa = e.id
+                    LEFT JOIN 
+                subtipogasto f ON c.idsubtipogasto = f.id
+                    LEFT JOIN 
+                proyecto g ON c.idproyecto = g.id
+            WHERE
+                a.id = $idreembolso
+            ORDER BY fecha";
+    $data = $db->getQuery($query);
+
+    $compras = [];
+    $numero = 0;
+    foreach ($data as $row) {
+        $numero++;
+        if (!isset($reembolsos[$row->id])) {
+            $letra->reembolso = $row->id;
+            $letra->monto = 0;
+            $letra->fecha = $row->fecha;
+            $letra->beneficiario = $row->beneficiario;
+            $letra->empresa = $row->empresa;
+            $letra->firma_jefe = $row->firma_jefe;
+        }
+        
+        $letra->monto += $row->monto;
+        $compras[] = [
+            'numero' => $numero,
+            'monto' => $row->monto,
+            'documento' => $row->documento,
+            'concepto' => $row->conceptomayor,
+            'fecha_compra' => $row->fecha_compra,
+            'proveedor' => $row->proveedor,
+            'subtipogasto' => $row->subtipogasto,
+            'proyecto' => $row->proyecto
+        ];
+    }
+    
+    $result = array_values($compras);
+
+    print json_encode(['encabezado' => $letra, 'compras' => $compras]);
+});
+
+$app->post('/env', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "UPDATE reembolso SET aprobar = 1, envioaprob = NOW() WHERE id = $d->id";
+    $db->doQuery($query);
+
+    return;
+});
+
+$app->post('/apr', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $uid = $db->generate_uuid();
+
+    $query = "UPDATE reembolso SET aprobador = $d->idusuario, aprobacion = NOW(), estatus_aprobacion = 1, codigo_aprobacion = '$uid' WHERE id = $d->id";
+    $db->doQuery($query);
+
+    return;
+});
+
+$app->post('/ngr', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "UPDATE reembolso SET aprobador = $d->idusuario, aprobacion = NOW(), estatus_aprobacion = 2 WHERE id = $d->id";
+    $db->doQuery($query);
+
+    return;
+});
+
+// Adjuntos endpoints
+$app->get('/lstremadjuntos/:idreembolso', function($idreembolso){
+    $db = new dbcpm();
+    $idreembolso = (int)$idreembolso;
+    $query = "SELECT id, idreembolso, nombre, ubicacion, idusuario, correlativo, IFNULL(DATE_FORMAT(fecha, '%d/%m/%Y'), '') AS fecha FROM reem_adjunto WHERE idreembolso = $idreembolso ORDER BY id, fecha ASC";
+    print json_encode($db->getQuery($query));
+});
+
+$app->post('/aareem', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $correlativo = $db->getOneField("SELECT correlativo FROM reem_adjunto WHERE idreembolso = $d->idreembolso ORDER BY correlativo DESC LIMIT 1");
+    $correlativo = $correlativo >= 1 ? $correlativo + 1 : 1;
+    $d->ubicacion = trim($d->ubicacion);
+
+    $query = "INSERT INTO reem_adjunto(idreembolso, nombre, ubicacion, fecha, idusuario, correlativo) VALUES ($d->idreembolso, '$d->nombre', '$d->ubicacion', DATE_FORMAT(NOW(), '%Y-%m-%d'), $d->idusuario, $correlativo)";
+    $db->doQuery($query);
+
+    $lastid = $db->getLastId();
+
+    if ($lastid > 0) {
+        $tipo = 'success';
+        $mensaje = 'Archivo adjunto agregado correctamente.';
+    } else {
+        $tipo = 'error';
+        $mensaje = 'No se ha podido agregar el archivo adjunto.';
+    }
+
+    print json_encode(['tipo' => $tipo, 'mensaje' => $mensaje]);
+});
+
+$app->post('/dareem', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "DELETE FROM reem_adjunto WHERE id = $d->id";
+    $db->doQuery($query);
+
+    $adjunto = $db->getOneField("SELECT ubicacion FROM reem_adjunto WHERE id = $d->id") > 0;
+
+    if (!$adjunto) {
+        $tipo = 'success';
+        $mensaje = 'Archivo adjunto eliminado correctamente.';
+    } else {
+        $tipo = 'error';
+        $mensaje = 'No se ha podido eliminar el archivo adjunto.';
+    }
+
+    print json_encode(['tipo' => $tipo, 'mensaje' => $mensaje]);
 });
 
 $app->run();

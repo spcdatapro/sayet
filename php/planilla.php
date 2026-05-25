@@ -2,6 +2,12 @@
 require 'vendor/autoload.php';
 require_once 'db.php';
 
+function ordenAscendente(&$array, $dateField) {
+    usort($array, function($a, $b) use ($dateField) {
+        return strtotime($a->$dateField) - strtotime($b->$dateField);
+    });
+}
+
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
 
@@ -87,20 +93,24 @@ $app->post('/anular_bitacora', function () {
         $db->doQuery($str);
 
         if ($d->idplnmovimiento == 3) {
-            $finiquito = $db->getQuery("SELECT id, idprestamos, fecha FROM plnfiniquito WHERE idplnempleado = $idempleado AND pendiente = 1")[0];
-            $idprestamos = $finiquito->idprestamos > 0 ? explode(',', $finiquito->idprestamos) : null;
+            $idprestamos = null;
+            $finiquito = $db->getQuery("SELECT id, idprestamos, fecha FROM plnfiniquito WHERE idplnempleado = $idempleado AND pendiente = 1");
+            if (!empty($finiquito)) {
+                $finiquito = $finiquito[0];
+                $idprestamos = $finiquito->idprestamos > 0 ? explode(',', $finiquito->idprestamos) : null;
 
-            if (isset($idprestamos)) { 
-                foreach ($idprestamos as $id) {
-                    $monto = $db->getOneField("SELECT monto FROM plnpresabono WHERE idplnprestamo = $id AND fecha = '$finiquito->fecha'");
-                    $db->doQuery("UPDATE plnprestamo SET saldo = $monto, finalizado = 0, liquidacion = null WHERE id = $id");
-                    // ver prestamos 
-                    $db->doQuery("DELETE FROM plnpresabono WHERE idplnprestamo = $id AND fecha = '$finiquito->fecha'");
-                    $db->doQuery("DELETE FROM plnarchivo WHERE DATE_FORMAT(fecha, '%Y-%m-%d') = '$finiquito->fecha' AND idplnarchivotipo = 3 AND idplnempleado = $idempleado");
+                if (isset($idprestamos)) { 
+                    foreach ($idprestamos as $id) {
+                        $monto = $db->getOneField("SELECT monto FROM plnpresabono WHERE idplnprestamo = $id AND fecha = '$finiquito->fecha'");
+                        $db->doQuery("UPDATE plnprestamo SET saldo = $monto, finalizado = 0, liquidacion = null WHERE id = $id");
+                        // ver prestamos 
+                        $db->doQuery("DELETE FROM plnpresabono WHERE idplnprestamo = $id AND fecha = '$finiquito->fecha'");
+                        $db->doQuery("DELETE FROM plnarchivo WHERE DATE_FORMAT(fecha, '%Y-%m-%d') = '$finiquito->fecha' AND idplnarchivotipo = 3 AND idplnempleado = $idempleado");
+                    }
                 }
-            }
 
-            $db->doQuery("DELETE FROM plnfiniquito WHERE id = $finiquito->id");
+                $db->doQuery("DELETE FROM plnfiniquito WHERE id = $finiquito->id");
+            }
         }
         $db->doQuery("UPDATE plnbitacora SET mostrar = 0 WHERE id = $d->id");
         $db->doQuery("UPDATE plnempleado SET baja = $datos->baja WHERE id = $idempleado");
@@ -236,7 +246,7 @@ $app->post('/premios', function () {
                 c.ingreso,
                 b.nacimiento,
                 e.anios,
-                c.sueldo,
+                c.sueldo + c.bonificacionley AS sueldo,
                 e.monto AS total,
                 CONCAT('Premios por antigüedad de ', e.anios, ' años') AS concepto
             FROM
@@ -259,7 +269,7 @@ $app->post('/premios', function () {
     $pendientes = $db->getQuery($query);
 
     foreach ($pendientes as $p) {
-        $p->fecha = new DateTime($p->nacimiento);
+        $p->fecha = new DateTime($p->ingreso);
         $p->fecha->setDate($d->anio, $p->fecha->format('m'), $p->fecha->format('d'));
         $p->fecha = $p->fecha->format('Y-m-d');
 
@@ -269,14 +279,16 @@ $app->post('/premios', function () {
                     $p->total = $p->sueldo;
                     break;
                 case 10: 
-                    $p->total = $p->sueldo * 2;
+                    $p->total = ($p->sueldo) * 2;
                     break;
                 case 15:
-                    $p->total = $p->sueldo * 3;
+                    $p->total = ($p->sueldo) * 3;
                     break;
             }   
         }
     }
+
+    ordenAscendente($pendientes, 'fecha');
 
     print json_encode($pendientes);
 });
@@ -427,6 +439,70 @@ $app->post('/dasu', function () {
     }
 
     print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $d->anio]);
+});
+
+$app->post('/ahor', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $query = "INSERT INTO horarios (nombre, del, al, observaciones, domingo, lunes, martes, miercoles, jueves, viernes, sabado) 
+    VALUES ('$d->nombre', '$d->delstr', '$d->alstr', '$d->observaciones', $d->domingo, $d->lunes, $d->martes, $d->miercoles, $d->jueves, $d->viernes, $d->sabado)";
+    $db->doQuery($query);
+
+    $lastid = $db->getLastId();
+
+    if ($lastid > 0) {
+        $mensaje = "Horario guardado con exito";
+        $tipo = "success";
+    } else {
+        $mensaje = "Error al guardar horario, favor revisar.";
+        $tipo = "error";
+    }
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $lastid]);
+});
+
+$app->post('/uhor', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $query = "UPDATE horarios SET nombre = '$d->nombre', del = '$d->delstr', al = '$d->alstr', observaciones = '$d->observaciones', 
+    domingo = $d->domingo, lunes = $d->lunes, martes = $d->martes, miercoles = $d->miercoles, jueves = $d->jueves, viernes = $d->viernes, sabado = $d->sabado WHERE id = $d->id";
+    $db->doQuery($query);
+
+    $mensaje = "Horario actualizado con exito";
+    $tipo = "success";
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $d->id]);
+});
+
+$app->get('/horarios', function () {
+    $db = new dbcpm();
+
+    $query = "SELECT id, nombre, del AS delstr, al AS alstr, observaciones, domingo, lunes, martes, miercoles, jueves, viernes, sabado FROM horarios ORDER BY nombre";
+    $horarios = $db->getQuery($query);
+
+    return print json_encode($horarios);
+});
+
+$app->post('/dhor', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $query = "DELETE FROM horarios WHERE id = $d->id";
+    $db->doQuery($query);
+
+    $existe = $db->getOneField("SELECT id FROM horarios WHERE id = $d->id") > 0;
+
+    if (!$existe) {
+        $mensaje = "Registro eliminado con exito";
+        $tipo = "success";
+    } else {
+        $mensaje = "Error al eliminar registro, favor revisar.";
+        $tipo = "error";
+    }
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $d->id]);
 });
 
 $app->run();

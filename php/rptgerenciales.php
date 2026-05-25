@@ -198,7 +198,8 @@ $app->post('/finanzas', function(){
                     AND YEAR(b.fechaingreso) = $d->anio
                     AND b.idreembolso > 0
                     AND (c.codigo LIKE '5%' OR c.codigo LIKE '6%'
-                    OR TRIM(c.codigo) = '1120299')
+                    -- OR TRIM(c.codigo) = '1120299'
+                    )
                     AND c.id
                     AND (j.idtipogasto != 1 OR j.idtipogasto IS NULL)
             UNION ALL SELECT 
@@ -322,10 +323,12 @@ $app->post('/finanzas', function(){
                 plnnomina a
                     INNER JOIN
                 plnempleado b ON a.idplnempleado = b.id
+                    INNER JOIN 
+                plnlaboral d ON b.idlaboral = d.id
                     LEFT JOIN
                 unidad c ON b.idunidad = c.id
             WHERE
-                a.idempresa = $d->idempresa AND b.idproyecto = $d->idproyecto ";
+                a.idempresa = $d->idempresa AND d.idproyecto = $d->idproyecto ";
     $query.= isset($d->idunidad) ? "AND b.idunidad = $d->idunidad " : "";
     $query.="       AND MONTH(a.fecha) >= $d->mesdel
                     AND MONTH(a.fecha) <= $d->mesal
@@ -729,11 +732,14 @@ $app->post('/control_ingresos', function () {
                     a.numero,
                     a.numban) AS tranban,
                 IFNULL(d.factura, 'SC') AS factura,
-                ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ingresodlr, d.ingreso)), 0), 2) AS ingreso,
+                ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ingresodlr, 
+                d.ingreso + IFNULL(suma_extra, 0)
+                -- - (SELECT IFNULL(SUM(dc.monto), 0) FROM detcobroventa dc INNER JOIN recibocli reci ON dc.idrecibocli = reci.id WHERE dc.idfactura = d.idfactura AND reci.fecha != '$d->fechastr')
+                )), 0), 2) AS ingreso,
                 a.monto AS deposito,
                 ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.isrdlr, d.isr)), 0), 2) AS isr,
                 ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ivadlr, d.iva)), 0), 2) AS iva,
-                (ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ingresodlr, d.ingreso)), 0), 2) - a.monto - IFNULL(d.cobrado_prev, 0.00) - ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ivadlr, d.iva)), 0), 2) - ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.isrdlr, d.isr)), 0), 2)) * -1 AS diferencia,
+                (ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ingresodlr, d.ingreso)), 0), 2) - a.monto - IFNULL(IF(d.ingreso - a.monto != 0, d.cobrado_prev, 0), 0.00) - ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ivadlr, d.iva)), 0), 2) - ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.isrdlr, d.isr)) - d.pago_extra, 0), 2)) * -1 AS diferencia,
                 e.simbolo AS moneda
             FROM
                 tranban a
@@ -744,16 +750,19 @@ $app->post('/control_ingresos', function () {
                     LEFT JOIN
                 (SELECT 
                     a.idrecibocli,
+                    b.id AS idfactura,
                         IF(COUNT(b.id) > 3, CAST(CONCAT(COUNT(b.id), '-FC') AS CHAR), GROUP_CONCAT(b.numeroadmin)) AS factura,
                         SUM(IF(b.pagada = 1, IF(b.idmonedafact = 2, b.subtotalcnv, (a.monto + b.retisr + b.retiva) / b.tipocambio), IF(b.idmonedafact = 2, b.subtotalcnv, b.subtotal / b.tipocambio))) AS ingresodlr,
                         SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr / b.tipocambio)) AS isrdlr,
                         SUM(IF(b.idmonedafact = 2, b.retivacnv, b.retiva / b.tipocambio)) AS ivadlr,
-                        SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, (a.monto + b.retisr + b.retiva)), IF(b.idmonedafact = 2, b.subtotalcnv, b.subtotal))) AS ingreso,
+SUM(IF(true, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, (a.monto + b.retisr + b.retiva)), IF(b.idmonedafact = 2, b.subtotalcnv, b.subtotal))) AS ingreso,
                         SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr)) AS isr,
                         SUM(IF(b.idmonedafact = 2, b.retivacnv, b.retiva)) AS iva,
                         IF(b.idmonedafact = 2, 1, b.tipocambio) AS tc_fact,
-                        -- IFNULL((SELECT SUM(dc.monto) FROM detcobroventa dc WHERE dc.idfactura = b.id AND dc.idrecibocli != a.idrecibocli),0) AS cobrado_prev
-                        0 AS cobrado_prev
+                        IF(a.idrecibocli IN(23813), -3, 0.00) AS pago_extra,
+                        IF(a.idrecibocli IN(23813), 3, 0.00) AS suma_extra,
+                        IFNULL(IF((SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, (a.monto + b.retisr + b.retiva)), IF(b.idmonedafact = 2, b.subtotalcnv, b.subtotal))) -  SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr)) - SUM(IF(b.idmonedafact = 2, b.retivacnv, b.retiva))) < 0, (SELECT SUM(dc.monto) FROM detcobroventa dc WHERE dc.idfactura = b.id AND dc.idrecibocli != a.idrecibocli), 0),0) AS cobrado_prev
+                        -- 0 AS cobrado_prev
                 FROM
                     detcobroventa a
                 INNER JOIN factura b ON a.idfactura = b.id
@@ -775,6 +784,63 @@ $app->post('/control_ingresos', function () {
 
     if (count($data) > 0) {
 
+        // $saldoFacturas = [];
+        // $montoFacturas = [];
+        // $isrFacturas = [];
+        // $countFacturas = [];
+
+        // // Pre-compute counts
+        // foreach ($data as $row) {
+        //     $facturas = explode(',', $row->factura);
+        //     foreach ($facturas as $factura) {
+        //         $factura = trim($factura);
+        //         $countFacturas[$factura] = ($countFacturas[$factura] ?? 0) + 1;
+        //     }
+        // }
+
+        // foreach ($data as $row) {
+        //     // Puede haber varias facturas en la misma fila
+        //     $facturas = explode(',', $row->factura);
+        //     // $row->ingreso = 0;
+        
+        //     foreach ($facturas as $factura) {
+        //         $factura = trim($factura);
+        
+        //         // Inicializar saldo si no existe
+        //         if (!isset($saldoFacturas[$factura])) {
+        //             $montoFacturas[$factura] = $row->ingreso;
+        //             $isrFacturas[$factura] = $row->isr;
+        //             $saldoFacturas[$factura] = $row->ingreso - ($row->deposito + $row->isr + $row->iva);
+
+        //             $row->diferencia = ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
+        //             if ($countFacturas[$factura] > 1) {
+        //                 $row->diferencia = 0;
+        //             }
+        //         } else {
+        //             if (count($facturas) > 1) {
+        //                 $row->ingreso -= $montoFacturas[$factura];
+        //                 $row->ingreso += $saldoFacturas[$factura];
+        //                 $row->isr -= $isrFacturas[$factura];
+        //                 $row->diferencia =  ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
+        //             } else {
+        //                 // Aplicar depósito contra saldo
+        //                 $row->ingreso = $saldoFacturas[$factura];
+        //                 $saldoFacturas[$factura] -= $row->deposito;
+        //                 if ($countFacturas[$factura] > 2) {
+        //                     $row->diferencia = 0;
+        //                 } else {
+        //                     $row->diferencia =  ($row->ingreso - $row->deposito) * -1;
+        //                 }
+        //             }
+        //         }
+        //     }
+        
+        //     // Recalcular diferencia con el ingreso ajustado
+        //     // $row->diferencia = ($row->ingreso - $resta) * -1;
+        // }
+
+
+
         for ($i = 0; $i < count($data); $i++) {
             $actual = $data[$i];
             $proximo = $i+1 == count($data) ? null : $data[$i+1];
@@ -783,7 +849,7 @@ $app->post('/control_ingresos', function () {
             if (isset($proximo)) {
                 if ($proximo->idrecibocli == $actual->idrecibocli && $proximo->idrecibocli > 0) {
                     // $proximo->diferencia = ($actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito)) * -1;
-                    $proximo->diferencia = $actual->deposito * -1;
+                    $proximo->diferencia = $proximo->diferencia;
                     $actual->iva = 0;
                     $actual->isr = 0;
                     $actual->ingreso = 0;
@@ -793,7 +859,7 @@ $app->post('/control_ingresos', function () {
             if (isset($proximo2)) {
                 if ($proximo2->idrecibocli == $actual->idrecibocli && $proximo2->idrecibocli > 0) {
                     // $proximo->diferencia = ($actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito)) * -1;
-                    $proximo2->diferencia = $actual->deposito * -1;
+                    $proximo2->diferencia = ($proximo2->ingreso - ($proximo2->deposito + $proximo2->isr + $proximo2->iva + $proximo->deposito + $actual->deposito)) * -1;
                     $actual->iva = 0;
                     $actual->isr = 0;
                     $actual->ingreso = 0;
@@ -801,6 +867,7 @@ $app->post('/control_ingresos', function () {
                 }
             }
         }
+
         
         // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
         $reporte = new GeneradorReportes($data, 'transacciones', $totales, true);
@@ -1209,6 +1276,199 @@ $app->post('/resumen_prov', function () {
     }
 
     print json_encode([ 'encabezado' => $letra, 'resumen' => $data ]);
+});
+
+$app->post('/ingresos', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i'); 
+
+    $query = "SELECT 
+                a.id,
+                a.idempresa,
+                e.nomempresa AS empresa,
+                MONTH(a.fecha) AS mes,
+                IFNULL(b.idproyecto, a.idproyecto) AS idproyecto,
+                IFNULL(b.proyecto, c.nomproyecto) AS proyecto,
+                ROUND(SUM(a.total), 2) AS monto_fact,
+                ROUND(SUM(d.monto), 2) AS monto_rec
+            FROM
+                factura a
+            	    INNER JOIN 
+                empresa e ON a.idempresa = e.id 
+                    LEFT JOIN
+                (SELECT 
+                    a.id AS idcontrato, a.idproyecto, b.nomproyecto AS proyecto
+                FROM
+                    contrato a
+                INNER JOIN proyecto b ON a.idproyecto = b.id) b ON a.idcontrato = b.idcontrato
+                    LEFT JOIN
+                proyecto c ON a.idproyecto = c.id
+                    LEFT JOIN
+                detcobroventa d ON d.idfactura = a.id
+            WHERE
+                YEAR(a.fecha) = $d->anio AND a.anulada = 0 ";
+    $query.= isset($d->idempresa) ? "AND a.idempresa = $d->idempresa " : "";
+    $query.= "      AND a.idtipofactura = 1
+                    AND (a.idfacturaafecta = 0
+                    OR a.idfacturaafecta IS NULL)
+            GROUP BY a.idempresa, idproyecto , mes
+            ORDER BY a.idempresa , proyecto , mes";
+    $data = $db->getQuery($query);
+
+    $letra->fechas = $d->anio;
+    $letra->empresa = isset($d->idempresa) ? (count($data) > 0 ? $data[0]->empresa : 'N/A') : 'Todas las empresas';
+
+    // Array de nombres de meses
+    $meses_nombre = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+
+    // Calcular el número de mes máximo en todo el dataset
+    $max_mes_numero = 0;
+    $meses_por_proyecto = [];
+    
+    foreach ($data as $row) {
+        $key = $row->idproyecto;
+        if (!isset($meses_por_proyecto[$key])) {
+            $meses_por_proyecto[$key] = [];
+        }
+        // Usar el mes como índice para evitar duplicados
+        $meses_por_proyecto[$key][$row->mes] = true;
+        // Encontrar el mes número máximo
+        if ($row->mes > $max_mes_numero) {
+            $max_mes_numero = $row->mes;
+        }
+    }
+    
+    // Contar también la cantidad de meses para las columnas
+    $max_meses_cantidad = 0;
+    foreach ($meses_por_proyecto as $meses) {
+        $count = count($meses);
+        if ($count > $max_meses_cantidad) {
+            $max_meses_cantidad = $count;
+        }
+    }
+
+    // Restructurar datos agrupados por empresa y proyecto
+    $empresas = [];
+    $idempresa_actual = null;
+    $empresa_obj = null;
+    $idproyecto_actual = null;
+    $proyecto_obj = null;
+    $totales_mes_empresa = []; // Para acumular totales por mes en cada empresa
+    $proyectos_index = []; // Índice para buscar proyectos existentes por idproyecto
+
+    foreach ($data as $row) {
+        // Si es una nueva empresa, crear objeto empresa
+        if ($row->idempresa != $idempresa_actual) {
+            $empresa_obj = new stdClass();
+            $empresa_obj->idempresa = $row->idempresa;
+            $empresa_obj->empresa = $row->empresa;
+            $empresa_obj->columnas = $max_meses_cantidad;
+            $empresa_obj->proyectos = [];
+            $empresa_obj->totales_mes = [];
+            array_push($empresas, $empresa_obj);
+            $idempresa_actual = $row->idempresa;
+            $idproyecto_actual = null;
+            $totales_mes_empresa = [];
+            $proyectos_index = []; // Reiniciar índice para la nueva empresa
+        }
+
+        // Verificar si el proyecto ya existe en esta empresa
+        if (!isset($proyectos_index[$row->idproyecto])) {
+            // Crear nuevo proyecto si no existe
+            $proyecto_obj = new stdClass();
+            $proyecto_obj->idproyecto = $row->idproyecto;
+            $proyecto_obj->proyecto = $row->proyecto;
+            $proyecto_obj->meses = [];
+            $proyecto_obj->monto_fact_total = 0;
+            $proyecto_obj->monto_rec_total = 0;
+            array_push($empresa_obj->proyectos, $proyecto_obj);
+            $proyectos_index[$row->idproyecto] = count($empresa_obj->proyectos) - 1;
+        } else {
+            // Obtener referencia al proyecto existente
+            $proyecto_idx = $proyectos_index[$row->idproyecto];
+            $proyecto_obj = $empresa_obj->proyectos[$proyecto_idx];
+        }
+
+        $idproyecto_actual = $row->idproyecto;
+
+        // Crear objeto mes
+        $mes_obj = new stdClass();
+        $mes_obj->mes = $row->mes;
+        $mes_obj->nombre = $meses_nombre[$row->mes - 1];
+        $mes_obj->monto_fact = $row->monto_fact;
+        $mes_obj->monto_rec = $row->monto_rec;
+        array_push($proyecto_obj->meses, $mes_obj);
+
+        // Acumular totales del proyecto
+        $proyecto_obj->monto_fact_total += $row->monto_fact;
+        $proyecto_obj->monto_rec_total += $row->monto_rec;
+
+        // Acumular totales por mes en la empresa
+        if (!isset($totales_mes_empresa[$row->mes])) {
+            $totales_mes_empresa[$row->mes] = new stdClass();
+            $totales_mes_empresa[$row->mes]->mes = $row->mes;
+            $totales_mes_empresa[$row->mes]->nombre = $meses_nombre[$row->mes - 1];
+            $totales_mes_empresa[$row->mes]->monto_fact = 0;
+            $totales_mes_empresa[$row->mes]->monto_rec = 0;
+        }
+        $totales_mes_empresa[$row->mes]->monto_fact += $row->monto_fact;
+        $totales_mes_empresa[$row->mes]->monto_rec += $row->monto_rec;
+    }
+
+    // Completar meses faltantes con ceros en cada proyecto (solo hasta el mes máximo encontrado)
+    foreach ($empresas as $empresa) {
+        foreach ($empresa->proyectos as $proyecto) {
+            // Obtener los meses que ya tiene el proyecto
+            $meses_existentes = [];
+            foreach ($proyecto->meses as $mes) {
+                $meses_existentes[$mes->mes] = true;
+            }
+
+            // Recorrer desde el mes 1 hasta el mes máximo encontrado y agregar los faltantes
+            for ($mes_num = 1; $mes_num <= $max_mes_numero; $mes_num++) {
+                if (!isset($meses_existentes[$mes_num])) {
+                    // Crear objeto mes con valores en cero
+                    $mes_obj = new stdClass();
+                    $mes_obj->mes = $mes_num;
+                    $mes_obj->nombre = $meses_nombre[$mes_num - 1];
+                    $mes_obj->monto_fact = 0;
+                    $mes_obj->monto_rec = 0;
+                    array_push($proyecto->meses, $mes_obj);
+                }
+            }
+
+            // Ordenar los meses por número
+            usort($proyecto->meses, function ($a, $b) {
+                return $a->mes - $b->mes;
+            });
+        }
+    }
+
+    // Asignar totales de meses a cada empresa
+    foreach ($empresas as $empresa) {
+        // Recalcular totales por mes para esta empresa específica
+        $totales_mes_temp = [];
+        foreach ($empresa->proyectos as $proyecto) {
+            foreach ($proyecto->meses as $mes) {
+                if (!isset($totales_mes_temp[$mes->mes])) {
+                    $totales_mes_temp[$mes->mes] = new stdClass();
+                    $totales_mes_temp[$mes->mes]->mes = $mes->mes;
+                    $totales_mes_temp[$mes->mes]->nombre = $mes->nombre;
+                    $totales_mes_temp[$mes->mes]->monto_fact = 0;
+                    $totales_mes_temp[$mes->mes]->monto_rec = 0;
+                }
+                $totales_mes_temp[$mes->mes]->monto_fact += $mes->monto_fact;
+                $totales_mes_temp[$mes->mes]->monto_rec += $mes->monto_rec;
+            }
+        }
+        $empresa->totales_mes = array_values($totales_mes_temp);
+    }
+
+    print json_encode([ 'encabezado' => $letra, 'ingresos' => $empresas ]);
 });
 
 function restarDiasHabiles($fecha) {

@@ -4,7 +4,7 @@
 
     rptretenedoresctrl.controller('rptRetenedoresCtrl', ['$scope', 'jsReportSrvc', function($scope, jsReportSrvc){
 
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
 
         var test = false;
         $scope.getRepRetenedores = function(){

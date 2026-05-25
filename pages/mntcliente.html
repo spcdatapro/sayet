@@ -438,7 +438,8 @@
                                                 blanco afectara a todos):</label>
                                             <select name="selProyCli" id="selProyCli" class="form-control input-sm"
                                                 ng-model="detfact.idproyecto"
-                                                ng-options="obj.id as obj.proyecto for obj in proyectos_cliente" ng-disabled="sldatafact"></select>
+                                                ng-options="obj.id as obj.proyecto for obj in proyectos_cliente"
+                                                ng-disabled="sldatafact"></select>
                                         </div>
                                     </div>
                                     <div class="col-md-3 nopadding">
@@ -1382,22 +1383,37 @@
                 <th>Cobro</th>
                 <th style="text-align: right">Monto</th>
                 <th style="text-align: right">Descuento</th>
-                <th>Concepto adicional</th>
+                <th style="text-align: center">No. Prov.</th>
+                <th style="text-align: center">Pedido</th>
+                <th style="text-align: center">Framework</th>
                 <th style="text-align: center">Facturado</th>
             </tr>
             </thead>
-            <tbody>
-            <tr ng-repeat="c in cargos">
+            <tbody ng-repeat="c in cargos">
+            <tr>
                 <td>{{c.fechacobro | date:'dd/MM/yyyy'}}</td>
                 <td style="text-align: right">{{c.monto | number:2}}</td>
                 <td style="text-align: right; width: 7%;">
                     <input name="txtDesc_{{c.id}}" id="txtDesc_{{c.id}}" class="form-control input-sm" style="text-align: right" type="text"
                         ng-model="c.descuento" ng-disabled="sldesc[c.id - restar]" fcsa-number="{ maxDecimals:2 }" />
                 </td>
-                <td style="vertical-align: top">
+                <td>
+                    <input type="text" name="prov" id="prov" class="form-control input-sm" ng-model="c.noproveedor" ng-disabled="+c.facturado == 1" ng-blur="agregarCampo(c.id, c.noproveedor, 'proveedor')"
+                    placeholder="Número de proveedor" />
+                </td>
+                <td>
+                    <input type="text" name="pedido" id="pedido" class="form-control input-sm" ng-model="c.pedido" ng-disabled="+c.facturado == 1" ng-blur="agregarCampo(c.id, c.pedido, 'pedido')" placeholder="Número de pedido" />
+                </td>
+                <td>
+                    <input type="text" name="framework" id="framework" class="form-control input-sm" ng-model="c.framework" ng-disabled="+c.facturado == 1" ng-blur="agregarCampo(c.id, c.framework, 'framework')" placeholder="Framework Order" />
+                </td>
+                <td style="text-align: center">{{c.facturado == 1 ? 'Sí' : 'No'}}</td>
+            </tr>
+            <tr>
+                <td colspan="7">
                     <div class="input-group" style="vertical-align: top !important;">
-                        <textarea name="txtConcAd_{{c.id}}" id="txtConcAd_{{c.id}}" class="form-control input-sm" ng-model="c.conceptoadicional" ng-disabled="sldesc[c.id - restar]"
-                                rows="2" maxlength="300" placeholder="Concepto adicional que saldrá en el detalle de la factura."></textarea>
+                        <input name="txtConcAd_{{c.id}}" id="txtConcAd_{{c.id}}" class="form-control input-sm" ng-model="c.conceptoadicional" ng-disabled="sldesc[c.id - restar]"
+                                maxlength="300" placeholder="Concepto adicional que saldrá en el detalle de la factura." type="text"/>
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-info btn-secondary btn-sm" ng-click="habilitar(c.id)" ng-show="sldesc[c.id - restar]" ng-disabled="+c.facturado == 1">
                                 <span class="glyphicon glyphicon-edit"></span>
@@ -1410,7 +1426,6 @@
                         </span>
                     </div>
                 </td>
-                <td style="text-align: center">{{c.facturado == 1 ? 'Sí' : 'No'}}</td>
             </tr>
             </tbody>
         </table>

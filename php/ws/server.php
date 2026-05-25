@@ -1,6 +1,7 @@
 <?php
 
-define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
+// define('BASEPATH', $_SERVER['DOCUMENT_ROOT'] . '/sayet');
+define('BASEPATH', $_SERVER['DOCUMENT_ROOT']);
 require_once BASEPATH . '/php/clases/Compra.php';
 
 class compraWS {

@@ -5,7 +5,7 @@
     rptcontinactctrl.controller('rptContInactCtrl', ['$scope', 'empresaSrvc', 'proyectoSrvc', 'clienteSrvc', 'jsReportSrvc', 'authSrvc', function ($scope, empresaSrvc, proyectoSrvc, clienteSrvc, jsReportSrvc, authSrvc) {
 
         $scope.params = { idempresa: undefined, idproyecto: undefined, idcliente: undefined, idcategoria: undefined, fdel: moment().startOf('year').toDate(), fal: moment().endOf('month').toDate(), usufructo: 1 };
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
         $scope.empresas = [];
         $scope.proyectos = [];
         $scope.lstCliente = [];

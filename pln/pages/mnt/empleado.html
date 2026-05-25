@@ -37,6 +37,12 @@
 			/* Color del ícono */
 		}
 
+		canvas {
+			display: block;
+			max-width: 100%;
+			height: auto;
+		}
+
 		/* .toolbar {
 			float: left;
 			margin-bottom: 10px;
@@ -1259,6 +1265,110 @@
 											</div>
 										</div>
 									</div>
+									<div class="row" ng-show="lab.temporalidad == 2">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="inputDelContrato" class="control-label">Del:</label>
+												<input type="date" ng-model="lab.del" class="form-control"
+													ng-disabled="!editando && hay" id="inputDelContrato">
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="inputAlContrato" class="control-label">Al:</label>
+												<input type="date" ng-model="lab.al" class="form-control"
+													ng-disabled="!editando && hay" id="inputAlContrato">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="selHorario" class="control-label">Horarios:</label>
+												<ui-select ng-model="lab.idhorarios" title="Seleccione un horario..."
+													theme="bootstrap" autofocus="false" ng-disabled="!editando && hay"
+													multiple>
+													<ui-select-match placeholder="Seleccionar un horario"
+														allow-clear="false">
+														<span>{{$item.nombre}}</span>
+													</ui-select-match>
+													<ui-select-choices
+														repeat="item.id as item in horarios | filter:$select.search">
+														<div ng-bind-html="(item.nombre) | highlight: $select.search">
+														</div>
+													</ui-select-choices>
+													<ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+												</ui-select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="inputIRTRA" class="control-label">Afiliaci&oacute;n
+													IRTRA:</label>
+												<input type="text" name="inputIRTRA" id="inputIRTRA"
+													class="form-control" ng-model="lab.irtra"
+													ng-disabled="!editando && hay" placeholder="1244341">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-4">
+											<div class="form-group">
+												<label for="checkConfianza" class="control-label">Empleado de
+													confianza:</label>
+												<input type="checkbox" name="checkConfianza" id="checkConfianza"
+													class="form-control" ng-model="lab.confianza" ng-true-value="1"
+													ng-false-value="0" ng-disabled="!editando && hay">
+											</div>
+										</div>
+										<div class="col-md-4">
+											<div class="form-group">
+												<label for="checkConfidencialidad" class="control-label">Contrato de
+													confidencialidad:</label>
+												<input type="checkbox" name="checkConfidencialidad"
+													id="checkConfidencialidad" class="form-control"
+													ng-model="lab.confidencialidad" ng-true-value="1" ng-false-value="0"
+													ng-disabled="!editando && hay">
+											</div>
+										</div>
+										<div class="col-md-4">
+											<div class="form-group">
+												<label for="checkTelefono"
+													class="control-label">Tel&eacute;fono:</label>
+												<input type="checkbox" name="checkTelefono" id="checkTelefono"
+													class="form-control" ng-model="lab.telefono" ng-true-value="1"
+													ng-false-value="0" ng-disabled="!editando && hay">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-4">
+											<div class="form-group">
+												<label for="checkSeguroMedico" class="control-label">Seguro
+													médico:</label>
+												<input type="checkbox" name="checkSeguroMedico" id="checkSeguroMedico"
+													class="form-control" ng-model="lab.seguromedico" ng-true-value="1"
+													ng-false-value="0" ng-disabled="!editando && hay">
+											</div>
+										</div>
+										<div class="col-md-4">
+											<div class="form-group">
+												<label for="checkDepreciacion" class="control-label">Depreciación
+													vehículo:</label>
+												<input type="checkbox" name="checkDepreciacion" id="checkDepreciacion"
+													class="form-control" ng-model="lab.depreciacion" ng-true-value="1"
+													ng-false-value="0" ng-disabled="!editando && hay">
+											</div>
+										</div>
+										<div class="col-md-4">
+											<div class="form-group">
+												<label for="checkCombustible" class="control-label">Combustible:</label>
+												<input type="checkbox" name="checkCombustible" id="checkCombustible"
+													class="form-control" ng-model="lab.combustible" ng-true-value="1"
+													ng-false-value="0" ng-disabled="!editando && hay">
+											</div>
+										</div>
+									</div>
 									<div class="row">
 										<div class="col-md-12">
 											<div class="btn-group btn-group-justified">
@@ -1411,6 +1521,12 @@
 												</ul>
 											</div>
 										</div>
+										<div class="btn-group" role="group"
+											ng-click="informeAlta()">
+											<button class="btn btn-default" title="Informe de alta" type="button">
+												<i class="fi fi-sr-file-medical"></i> R. de Alta
+											</button>
+										</div>
 										<div class="btn-group" role="group" ng-show="emp.activo == 0"
 											ng-click="darAlta()">
 											<button class="btn btn-primary" title="Dar de alta" type="button">
@@ -1447,7 +1563,7 @@
 					</div>
 				</div>
 				<div role="tabpanel" class="tab-pane" id="archivos">
-					<br>
+					<!-- <br>
 					<div class="col-md-8">
 						<form class="form-horizontal" novalidate role="form" ng-submit="agregarArchivo(arc)"
 							ng-show="hay">
@@ -1480,12 +1596,18 @@
 							</div>
 						</form>
 					</div>
-					<hr>
+					<hr> -->
 					<div class="col-md-8">
-						<div class="row" ng-cloak>
-							<div class="col-xs-6 col-md-3" ng-repeat="i in archivos">
+						<div ng-include="'pln/pages/mnt/archivos.html'"></div>
+						<!-- <div class="row" ng-cloak>
+							<div class="col-md-6" ng-repeat="i in archivos">
 								<div class="thumbnail">
-									<img ng-src="{{ i.ruta }}">
+									<img ng-if="+i.idplnarchivotipo !== 3" ng-src="{{ i.ruta }}">
+									<div ng-if="+i.idplnarchivotipo === 3"
+										ng-init="renderPdfThumb(i.ruta, 'pdf-thumb-' + $index)">
+										<canvas id="pdf-thumb-{{ $index }}"></canvas>
+									</div>
+									<canvas id="pdf-thumb-test"></canvas>
 									<div class="caption">
 										<p>{{ i.nombre }}</p>
 										<p>
@@ -1497,8 +1619,8 @@
 									</div>
 								</div>
 							</div>
-							...
-						</div>
+							... -->
+						<!-- </div> -->
 					</div>
 				</div>
 				<div role="tabpanel" class="tab-pane" id="bitacora">

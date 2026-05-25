@@ -5,10 +5,36 @@
             <form name="frmPCont" id="frmPCont" ng-submit="frmPCont.$valid && addPeriodo(elPeriodo)" novalidate>
                 <div class="row">
                     <div class="col-md-4">
+                        <div class="form-group required">
+                            <label for="selAnio" class="control-label">Año:</label>
+                            <input name="selAnio" id="selAnio" type="number" class="form-control" ng-model="elPeriodo.anio" 
+                            ng-disabled="true" required />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group required">
+                            <label for="selMes" class="control-label">Mes:</label>
+                            <select name="selMes" id="selMes" class="form-control" ng-model="elPeriodo.mes" required>
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Mayo</option>
+                                <option value="6">Junio</option>
+                                <option value="7">Julio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Septiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11">Noviembre</option>
+                                <option value="12">Diciembre</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- <div class="col-md-4">
                         <div class="form-group" ng-class="{'has-error':frmPCont.txtDel.$invalid && !frmPCont.txtDel.$pristine}">
                             <label for="txtDel">Del:</label>
                             <input name="txtDel" id="txtDel" type="date" class="form-control"
-                                   ng-model="elPeriodo.del" required />
+                                ng-model="elPeriodo.del" required />
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -16,12 +42,12 @@
                             <label for="txtAl">Al:</label>
                             <input name="txtAl" id="txtAl" type="date" class="form-control" ng-model="elPeriodo.al" required />
                         </div>
-                    </div>
+                    </div> -->
                     <div class="col-md-4">
                         <div class="form-group" ng-class="{'has-error':frmPCont.chkAbierto.$invalid && !frmPCont.chkAbierto.$pristine}">
-                            <center><label for="chkAbierto">Abierto:</label>
-                            <input name="chkAbierto" id="chkAbierto" type="checkbox" class="checkbox"
-                                   ng-model="elPeriodo.abierto" ng-true-value="1" ng-false-value="0"/></center>
+                            <label for="chkAbierto">Abierto:</label>
+                            <input name="chkAbierto" id="chkAbierto" type="checkbox" class="form-control"
+                                ng-model="elPeriodo.abierto" ng-true-value="1" ng-false-value="0"/>
                         </div>
                     </div>
                 </div>
@@ -67,16 +93,18 @@
                 </caption>
                 <thead>
                     <tr>
-                        <th>Del</th>
-                        <th>Al</th>
+                        <!-- <th>Del</th>
+                        <th>Al</th> -->
+                        <th>Mes</th>
                         <th>Abierto</th>
                         <th>&nbsp;</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="p in losPeriodos | filter:searchPeriodo" ng-click="getPeriodo(p.id)">
-                        <td>{{p.del | date:'dd/MM/yyyy'}}</td>
-                        <td>{{p.al | date:'dd/MM/yyyy'}}</td>
+                        <!-- <td>{{p.del | date:'dd/MM/yyyy'}}</td>
+                        <td>{{p.al | date:'dd/MM/yyyy'}}</td> -->
+                        <td>{{meses[p.mes - 1].nombre}}</td>
                         <td>{{p.abierto === 1 ? 'S&iacute;' : 'No'}}</td>
                         <td>
                             <button type="button" class="btn btn-danger btn-sm" ng-click="delPeriodo(p)">

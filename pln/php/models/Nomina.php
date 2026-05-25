@@ -239,6 +239,34 @@ class Nomina extends Principal
 		return $this->db->query($sql)->fetchAll();
 	}
 
+	public function cantidad_empleados($args=[])
+	{
+		$fecha = $args['fecha'];
+		$tmpFecha = new DateTime($fecha);
+
+		$this->limpiar_nomina($args);
+
+		if (elemento($args, 'empresa')) {
+			$condicion = ["AND" => [
+				"b.idempresadebito" => $args['empresa'],
+				"OR" => [
+					"plnempleado.activo" => 1,
+					"b.baja[>]" => $fecha
+				]
+			]];
+		} 
+		else {
+			$condicion = ["OR" => [
+				"plnempleado.activo" => 1,
+				"b.baja[>]" => $fecha
+			]];
+		}
+
+		$tmp = $this->db->select('plnempleado', ['[><]plnlaboral(b)' => ['plnempleado.idlaboral' => 'id']],
+		['plnempleado.activo', 'b.baja', 'plnempleado.id', 'b.idempresadebito', 'b.idproyecto'], $condicion);
+		return count($tmp);
+	}
+
 	public function get_saldo_prestamos($args=[])
 	{
 		$saldo = 0;

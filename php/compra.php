@@ -2,7 +2,7 @@
 require 'vendor/autoload.php';
 require_once 'db.php';
 
-$plantillas = $_SERVER["DOCUMENT_ROOT"] . "/sayet/pages";
+$plantillas = $_SERVER["DOCUMENT_ROOT"] . "/pages";
 
 $app = new \Slim\Slim(array('templates.path' => $plantillas));
 $app->response->headers->set('Content-Type', 'application/json');
@@ -283,7 +283,7 @@ function insertaDetalleContable($d, $idorigen){
         }
     }
 
-    $url = 'http://localhost/sayet/php/fixdescuadrecompra.php/fix';
+    $url = 'http://localhost/php/fixdescuadrecompra.php/fix';
     $dataa = ['idfactura' => $idorigen];
     $db->CallJSReportAPI('POST', $url, json_encode($dataa));
 };
@@ -372,8 +372,9 @@ $app->post('/c', function(){
         // ver si el proveedor esta marcado como retenedor
         $esRet = (int)$db->getOneField("SELECT retensioniva FROM proveedor WHERE id = $d->idproveedor ") === 1;
         $esLocalMonedaFact = (int)$db->getOneField("SELECT eslocal FROM moneda WHERE id = $d->idmoneda") === 1;
+        $esNota = (int)$db->getOneField("SELECT notas FROM tipofactura WHERE id = $d->idtipofactura") === 1;
 
-    if ($d->retiva_manual != 1) {
+    if ($d->retiva_manual != 1 && !$esNota) {
         if((int)$d->idtipofactura !== 5) {
             $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
 
@@ -459,11 +460,11 @@ $app->post('/u', function(){
         // ver si proveedor es retenedor
         $esRet = (int)$db->getOneField("SELECT retensioniva FROM proveedor WHERE id = $d->idproveedor ") === 1;
         $esLocalMonedaFact = (int)$db->getOneField("SELECT eslocal FROM moneda WHERE id = $d->idmoneda") === 1;
+        $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
+        $esNota = (int)$db->getOneField("SELECT notas FROM tipofactura WHERE id = $d->idtipofactura") === 1;
 
-    if ($d->retiva_manual != 1) {
+    if ($d->retiva_manual != 1 && !$esNota) {
         if((int)$d->idtipofactura !== 5) {
-            $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
-
             // si la empresa es retenedora y el proveedor no es retenedor retener iva
             if (($empresaRet && !$esRet) && (($d->totfact - $d->noafecto) * $d->tipocambio) >= 2500 && !$esPeque) {
                 $d->retIva = $db->retIVA((float)$d->iva, 0.15, 1, $esLocalMonedaFact);
@@ -572,7 +573,7 @@ $app->post('/lstchq', function(){
 $app->post('/addtotranban', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
-    $url = 'http://localhost/sayet/php/tranbanc.php/cd';
+    $url = 'http://localhost/php/tranbanc.php/cd';
     $data = [
         'idtranban' => $d->idtranban, 'idtipodoc' => $d->idtipodoc, 'documento' => $d->documento, 'fechadocstr' => $d->fechadoc, 'monto' => $d->monto, 'serie' => $d->serie, 'iddocto' => $d->iddocto, 'fechaliquidastr' => $d->fechaliquidastr
     ];

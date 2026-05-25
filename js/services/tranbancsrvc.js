@@ -105,7 +105,10 @@
             },
             emparejarDebitosBanco: (aemparejar) => {
                 return comunFact.doPOST(`${urlBase}/auto_emparejar`, aemparejar);
-            }
+            },
+            datosReporteComparativo: obj => {
+                return comunFact.doPOST('php/rptchequesaprob.php/comparativo', obj);
+            },
         };
     }]);
 

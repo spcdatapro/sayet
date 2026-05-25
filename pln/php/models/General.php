@@ -603,6 +603,10 @@ EOT;
 		return $this->db->select('discapacidades', '*');
 	}
 
+	public function getHorarios() : array {
+		return $this->db->select('horarios', '*');
+	}
+
 	public function getNivelEducacion() : array {
 		return $this->db->select('educacion', '*');
 	}

@@ -113,6 +113,8 @@ $app->post('/altasbajas', function(){
         $letra->tipo = 'altas';
     } else if ($d->tipo == 2) {
         $letra->tipo = 'bajas';
+    } else if ($d->tipo == 4) {
+        $letra->tipo = 'reingresos';
     } else {
         $letra->tipo = '';
     }
@@ -130,7 +132,8 @@ $app->post('/altasbajas', function(){
                 a.id AS idempleado,
                 IFNULL(b.id, '9999') AS idempresa,
                 f.idproyecto,
-                IF(a.activo = 0 AND ($d->tipo = 3 OR $d->tipo = 2), '1', '0') AS tipo,
+                IF(f.reingreso AND ($d->tipo = 3 OR $d->tipo = 4), '2',
+                IF(a.activo = 0 AND ($d->tipo = 3 OR $d->tipo = 2), '1', '0')) AS tipo,
                 IFNULL(b.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
                 c.nomproyecto AS proyecto,
                 CONCAT(e.primernombre, ' ', 
@@ -144,9 +147,10 @@ $app->post('/altasbajas', function(){
                 ' ', 
                 IFNULL(e.apellidocasada, '')) AS nombre,
                 IFNULL(d.descripcion, 'NO ESPECIFICADO') AS puesto,
+                IF(f.reingreso AND ($d->tipo = 3 OR $d->tipo = 4), DATE_FORMAT(f.reingreso, '%d/%m/%Y'),
                 IF(f.baja AND ($d->tipo = 3 OR $d->tipo = 2),
                     DATE_FORMAT(f.baja, '%d/%m/%Y'),
-                    DATE_FORMAT(f.ingreso, '%d/%m/%Y')) AS fecha,
+                    DATE_FORMAT(f.ingreso, '%d/%m/%Y'))) AS fecha,
                 f.sueldo,
                 f.bonificacionley AS bono,
                 (f.bonificacionley + f.sueldo) AS total,
@@ -167,7 +171,9 @@ $app->post('/altasbajas', function(){
             WHERE  1 = 1 ";
     $query.= $d->tipo == 1 ? "AND f.ingreso >= '$d->fdelstr' AND f.ingreso <= '$d->falstr' " :
     ($d->tipo == 2 ? "AND f.baja >= '$d->fdelstr' AND f.baja <= '$d->falstr' " : 
-    "AND (f.ingreso >= '$d->fdelstr' AND f.ingreso <= '$d->falstr' OR f.baja >= '$d->fdelstr' AND f.baja <= '$d->falstr') ");
+    ($d->tipo == 4 ? "AND f.reingreso >= '$d->fdelstr' AND f.reingreso <= '$d->falstr' " :
+    "AND (f.ingreso >= '$d->fdelstr' AND f.ingreso <= '$d->falstr' OR f.baja >= '$d->fdelstr' 
+    AND f.baja <= '$d->falstr' OR f.reingreso >= '$d->fdelstr' AND f.reingreso <= '$d->falstr') "));
     $query.= isset($d->idempresa) ? "AND f.idempresadebito = $d->idempresa " : "";
     $query.= isset($d->idproyecto) ? "AND f.idproyecto = $d->idproyecto " : "";
     $query.=   "ORDER BY 4 , 5 ,"; 
@@ -189,7 +195,7 @@ $app->post('/altasbajas', function(){
         // si es el primero insertar nombre del separador y crear array de recibos
         if ($primero) {
             // tipo 
-            $separador_tipo->nombre = $anterior->tipo == 1 ? 'BAJAS' : 'ALTAS';
+            $separador_tipo->nombre = $anterior->tipo == 1 ? 'BAJAS' : ($anterior->tipo == 2 ? 'REINGRESOS' : 'ALTAS');
             $separador_tipo->mostrar = $d->tipo == 3 ? true : null;
             $separador_tipo->empresas = array();
             // empresa
@@ -242,7 +248,7 @@ $app->post('/altasbajas', function(){
 
             // separador
             $separador_tipo = new StdClass;
-            $separador_tipo->nombre = $actual->tipo == 1 ? 'BAJAS' : 'ALTAS';
+            $separador_tipo->nombre = $actual->tipo == 1 ? 'BAJAS' : ($actual->tipo == 2 ? 'REINGRESOS' : 'ALTAS');
             $separador_tipo->mostrar = $d->tipo == 3 ? true : null;
             $separador_tipo->empresas = array();
         }
@@ -303,7 +309,7 @@ $app->post('/altasbajas', function(){
             // si es el primero insertar nombre del separador y crear array de recibos
             if ($primero) {
                 // tipo 
-                $separador_tipo->nombre = $actual->tipo == 1 ? 'BAJAS' : 'ALTAS';
+                $separador_tipo->nombre = $actual->tipo == 1 ? 'BAJAS' : ($actual->tipo == 2 ? 'REINGRESOS' : 'ALTAS');
                 $separador_tipo->mostrar = $d->tipo == 3 ? true : null;
                 $separador_tipo->empresas = array();
                 // empresa
@@ -313,7 +319,7 @@ $app->post('/altasbajas', function(){
                 if ($d->agrupar == 2) {
                     $separador_empresa->proyectos = array();
                     // proyecto
-                    $separador_proyecto->nombre = $anterior->proyecto;
+                    $separador_proyecto->nombre = $actual->proyecto;
                     $separador_proyecto->empleados = array();
                     $primero = false;
                 } else {
@@ -388,14 +394,14 @@ $app->post('/bono14', function(){
                     INNER JOIN
                 plnnomina e ON e.idplnempleado = a.id
                     LEFT JOIN
-                plnempresa b ON g.idempresaactual = b.id
+                plnempresa b ON e.idempresa = b.id
                     LEFT JOIN
                 proyecto c ON g.idproyecto = c.id
                     LEFT JOIN
                 plnpuesto d ON a.idplnpuesto = d.id
             WHERE
                 e.bonocatorce > 0 AND YEAR(fecha) = $d->anio ";
-    $query.= isset($d->idempresa) ? "AND f.idempresadebito = $d->idempresa " : "";
+    $query.= isset($d->idempresa) ? "AND e.idempresa = $d->idempresa " : "";
     $query.=   "ORDER BY 4 ,";
     $query.= $d->agrupar == 2 ? " 5 , 6" : " 6";
     $data = $db->getQuery($query);
@@ -748,7 +754,8 @@ $app->post('/prestamos', function(){
                     AND g.fecha <= '$fecha_fin'
                     AND g.fecha <= '$fecha_fin'
                     AND (g.finalizado = 0
-                    OR g.liquidacion >= '$fecha_inicio')";
+                    OR g.liquidacion >= '$fecha_inicio') 
+                    AND DATE_FORMAT(g.fecha, '%Y-%m') != DATE_FORMAT('$fecha_inicio', '%Y-%m') ";
     $query.= isset($d->idempresa) ? "AND h.id = $d->idempresa " : "";
     $query.= "GROUP BY g.id UNION ALL ";
     $query.= "SELECT 
@@ -798,9 +805,9 @@ $app->post('/prestamos', function(){
                 IF(DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m'),
                     g.monto,
                     0.00) AS nuevo,
-                IF(DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m'), 0.00, f.monto) AS descnomina,
+                f.monto AS descnomina,
                 j.monto AS descuento,
-                IF(DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m'), 0.00, f.monto) + IFNULL(j.monto, 0.00) AS totdesc,
+                IF(DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m'), f.monto, 0) + IFNULL(j.monto, 0.00) AS totdesc,
                 (g.monto - COALESCE((SELECT 
                                 SUM(pn.monto)
                             FROM
@@ -1027,7 +1034,7 @@ $app->get('/datos_empleador/:anio/:empresa', function ($anio, $empresa) {
                 b.documento AS numdocumento,
                 d.codigo AS origen,
                 '' AS permiso,
-                IFNULL(b.idmunicipio, '') AS municipio,
+                g.codigo AS municipio,
                 b.nit,
                 c.igss,
                 FIELD(b.sexo, 'hombre', 'mujer') AS sexo,
@@ -1040,30 +1047,32 @@ $app->get('/datos_empleador/:anio/:empresa', function ($anio, $empresa) {
                 FIELD(c.temporalidad, 'indefinido', 'definido') AS temporalidad,
                 FIELD(c.tipocontrato, 'verbal', 'escrito') AS tipo,
                 DATE_FORMAT(c.ingreso, '%d/%m/%Y') AS inicio,
-                IF(c.reingreso IS NOT NULL, DATE_FORMAT(IFNULL(e.fecha_alta, c.reingreso),
+                IF(c.reingreso IS NOT NULL AND c.idempresadebito = $empresa, DATE_FORMAT(c.reingreso,
                     '%d/%m/%Y'),
                     '') AS reinicio,
                 IF(a.activo = 0 OR f.idtranban > 0, DATE_FORMAT(IFNULL(e.fecha_baja, c.baja), '%d/%m/%Y'),
                         '') AS fin,
-                IFNULL(c.idpuesto, '') AS puesto,
+                h.codigo AS puesto,
                 FIELD(c.jornada,
                         'diurna',
                         'mixta',
                         'nocturna',
                         'no esta sujeto a jornada') AS jornada,
                 IF(e.dias > 250, 250, e.dias) AS dias,
-                c.sueldo,
-                c.sueldo * 12 AS sueldo_anual,
-                e.bonificacionley,
+                e.sueldo_mensual AS sueldo,
+                e.sueldo_anual,
+                ROUND(e.bonificacionley, 2) AS bonificacionley,
                 e.horas_extra + e.horas_dobles AS horas_extra,
-                ROUND(IF(e.horas_dobles > 0,
+                ROUND (IF(e.horas_extra > 0 AND e.horas_dobles > 0,
+                            ((c.sueldo / 30) / 8) * 1.75,
+                            IF(e.horas_dobles > 0,
                             ((c.sueldo / 30) / 8) * 2,
                             IF(e.horas_extra > 0,
                                 ((c.sueldo / 30) / 8) * 1.5,
-                                0.00)),
-                        2) AS valor_extra,
-                e.aguinaldo,
-                e.bonocatorce,
+                                0.00))),
+                        2) AS valor_hora,
+                IFNULL(IF(e.aguinaldo > 0, e.aguinaldo, (SELECT aguinaldo FROM plnfiniquito WHERE idempresa = 6 AND idtranban > 0 AND idplnempleado = a.id)), 0.00) AS aguinaldo,
+                IFNULL(IF(e.bonocatorce > 0, e.bonocatorce, (SELECT bono FROM plnfiniquito WHERE idempresa = 6 AND idtranban > 0 AND idplnempleado = a.id)), 0.00) AS bonocatorce,
                 '' AS comision,
                 e.viaticos AS viaticos,
                 e.otrosingresos + e.bonificacion AS otrosingresos,
@@ -1080,7 +1089,27 @@ $app->get('/datos_empleador/:anio/:empresa', function ($anio, $empresa) {
                 nacionalidad d ON b.idnacionalidad = d.id
                     INNER JOIN
                 (SELECT 
-                    SUM(diastrabajados) AS dias,
+                    base.dias,
+                    base.idplnempleado,
+                    base.aguinaldo,
+                    base.bonocatorce,
+                    base.otrosingresos,
+                    base.viaticos,
+                    base.vacaciones,
+                    base.indemnizacion,
+                    base.horas_extra,
+                    base.horas_dobles,
+                    base.dia,
+                    base.bonificacionley,
+                    SUM(GREATEST(base.bonificacion_total - base.bonificacionley, 0)) AS bonificacion,
+                    base.fecha_baja,
+                    base.fecha_alta,
+                    base.sueldo_anual,
+                    base.sueldo_mensual,
+                    base.idempresa
+                FROM (
+                    SELECT 
+                        SUM(diastrabajados) AS dias,
                         idplnempleado,
                         SUM(aguinaldo) AS aguinaldo,
                         SUM(bonocatorce) AS bonocatorce,
@@ -1090,20 +1119,30 @@ $app->get('/datos_empleador/:anio/:empresa', function ($anio, $empresa) {
                         SUM(indemnizacion) AS indemnizacion,
                         SUM(horasmes) AS horas_extra,
                         SUM(hedcantidad) AS horas_dobles,
-                        LEAST(SUM(bonificacion), 3000) AS bonificacionley,
-                        SUM(GREATEST(bonificacion - 250, 0)) AS bonificacion,
+                        30 - DAY(IFNULL(fecha_ingreso, MIN(fecha))) AS dia,
+                        IF(
+                            DAY(IFNULL(fecha_ingreso, '$anio-01-01')) != 1,
+                            (250 * (30 - DAY(IFNULL(fecha_ingreso, MIN(fecha))))) / 30,
+                            LEAST(SUM(bonificacion), 250)
+                        ) AS bonificacionley,
                         IFNULL(fecha_baja, MAX(fecha)) AS fecha_baja,
-                        IFNULL(fecha_ingreso, MIN(fecha)) AS fecha_alta,
-                        idempresa
-                FROM
-                    plnnomina
-                WHERE
-                    YEAR(fecha) = $anio AND idempresa = $empresa
-                GROUP BY idplnempleado) e ON e.idplnempleado = a.id
+                        IFNULL(fecha_ingreso, '$anio-01-01') AS fecha_alta,
+                        SUM(sueldoordinario) AS sueldo_anual,
+                        MAX(sueldoordinarioreporte) AS sueldo_mensual,
+                        idempresa,
+                        SUM(bonificacion) AS bonificacion_total
+                    FROM plnnomina
+                        WHERE YEAR(fecha) = $anio AND idempresa = $empresa
+                    GROUP BY idplnempleado
+                ) AS base GROUP BY idplnempleado) e ON e.idplnempleado = a.id
                     LEFT JOIN
                 plnfiniquito f ON f.idplnempleado = a.id
                     AND e.idempresa = f.idempresa
                     AND f.idtranban > 0
+                    INNER JOIN 
+                municipio g ON b.idmunicipio = g.id
+                    INNER JOIN 
+                puesto h ON c.idpuesto = h.id
             WHERE
                 (c.baja IS NULL OR YEAR(c.baja) = $anio)
                     AND YEAR(c.ingreso) <= $anio";
@@ -1266,7 +1305,7 @@ $app->post('/isr', function () {
                         ' ',
                         IFNULL(b.apellidocasada, '')) AS nombre,
                 b.nit,
-                DATE_FORMAT(c.ingreso, '%d/%m/%Y') AS ingreso,
+                DATE_FORMAT(IFNULL(c.reingreso, c.ingreso), '%d/%m/%Y') AS ingreso,
                 SUM(d.devengado) AS devengado,
                 SUM(d.descisr) AS isr
             FROM
@@ -1345,14 +1384,14 @@ $app->post('/proyeccion', function(){
                 d.nombre AS empresa,
                 d.numeropat AS numero,
                 d.abreviatura,
-                CONCAT(b.primernombre,
+                CONCAT(IFNULL(b.primernombre, ''),
                         ' ',
                         IFNULL(b.segundonombre, ''),
                         ' ',
-                        b.tercernombre,
-                        b.primerapellido,
+                        IFNULL(b.tercernombre, ''),
+                        IFNULL(b.primerapellido, ''),
                         ' ',
-                        b.segundoapellido,
+                        IFNULL(b.segundoapellido, ''),
                         ' ',
                         IFNULL(b.apellidocasada, '')) AS nombre,
                 NULL AS meses,
@@ -1383,8 +1422,7 @@ $app->post('/proyeccion', function(){
                     INNER JOIN
                 plnempresa d ON c.idempresaactual = d.id
             WHERE
-                a.activo = 1 AND a.nombre IS NOT NULL
-                    AND a.apellidos IS NOT NULL  ";
+                a.activo = 1 ";
     $query.= isset($d->idempresa) ? "AND c.idempresadebito = $d->idempresa " : "";
     $query.= "ORDER BY b.primernombre , b.primerapellido";
     $data = $db->getQuery($query);
@@ -1619,7 +1657,7 @@ $app->post('/carta', function () {
                     INNER JOIN
                 empresa d ON c.idempresadebito = d.id
                     INNER JOIN
-                puesto e ON c.idpuesto = e.id
+                plnpuesto e ON a.idplnpuesto = e.id
             WHERE
                 a.id = $d->idempleado";
     $datos = $db->getQuery($query)[0];
@@ -2108,6 +2146,190 @@ $app->post('/vacaciones_empleado', function () {
     }
 
     print json_encode([ 'encabezado' => $letra, 'vacaciones' => $datos ]);
+});
+
+$app->post('/horas_extra', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+    $letra->fechas = 'Del ' . (new DateTime($d->fdelstr))->format('d/m/Y') . ' al ' . (new DateTime($d->falstr))->format('d/m/Y');
+
+    $query = "SELECT 
+                d.id AS idempresa,
+                d.nombre AS empresa,
+                d.numeropat AS numero,
+                d.abreviatura,
+                e.id AS idproyecto,
+                e.nomproyecto AS proyecto,
+                a.id AS codigo,
+                CONCAT(IFNULL(b.primernombre, ''),
+                        ' ',
+                        IFNULL(b.segundonombre, ''),
+                        ' ',
+                        IFNULL(b.tercernombre, ''),
+                        IFNULL(b.primerapellido, ''),
+                        ' ',
+                        IFNULL(b.segundoapellido, ''),
+                        ' ',
+                        IFNULL(b.apellidocasada, '')) AS nombre,
+                f.descripcion AS puesto,
+                c.jornada,
+                g.sueldoordinarioreporte AS sueldo,
+                ROUND(SUM(g.horasmes), 0) AS horas_extra,
+                -- ROUND(IF(c.jornada = 'diurna',
+                --             (g.sueldoordinarioreporte / 30 / 8) * 1.5,
+                --             IF(c.jornada = 'mixta',
+                --                 (g.sueldoordinarioreporte / 30 / 7) * 1.5,
+                --                 (g.sueldoordinarioreporte / 30 / 6) * 1.5)),
+                --         2) 
+                (g.sueldoordinarioreporte / 30 / 8) * 1.5 AS extra_valor,
+                ROUND(SUM(g.hedcantidad), 0) AS horas_dobles,
+                -- ROUND(IF(c.jornada = 'diurna',
+                --             (g.sueldoordinarioreporte / 30 / 8) * 2,
+                --             IF(c.jornada = 'mixta',
+                --                 (g.sueldoordinarioreporte / 30 / 7) * 2,
+                --                 (g.sueldoordinarioreporte / 30 / 6) * 2)),
+                --         2)
+                (g.sueldoordinarioreporte / 30 / 8) * 2 AS valor_doble
+            FROM
+                plnempleado a
+                    INNER JOIN
+                plnpersonal b ON a.idpersonal = b.id
+                    INNER JOIN
+                plnlaboral c ON a.idlaboral = c.id
+                    INNER JOIN
+                plnempresa d ON c.idempresadebito = d.id
+                    INNER JOIN
+                proyecto e ON c.idproyecto = e.id
+                    INNER JOIN
+                plnpuesto f ON a.idplnpuesto = f.id
+                    INNER JOIN
+                plnnomina g ON g.idplnempleado = a.id
+            WHERE
+                g.fecha BETWEEN '$d->fdelstr' AND '$d->falstr'
+                    AND (g.horasmes > 0 OR g.hedcantidad > 0)
+            GROUP BY a.id ";
+    $query.=   "ORDER BY 2 ,"; 
+    $query.= $d->agrupar == 2 ? " 6 , 8" : " 8";
+    $data = $db->getQuery($query);
+
+    foreach($data as $dat) {
+        $dat->pagar_extra = $dat->horas_extra * $dat->extra_valor;
+        $dat->pagar_dobles = $dat->horas_dobles * $dat->valor_doble;
+        $dat->pagar_total = $dat->pagar_extra + $dat->pagar_dobles;
+    }
+    $totales = ['pagar_extra', 'pagar_dobles', 'pagar_total'];
+    $porproyecto = $d->agrupar == 2 ? true : false;
+
+    // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
+    $reporte = new GeneradorReportes($data, 'empleados', $totales, $porproyecto);
+    $empleados = $reporte->getReporte();
+    $montos_generales = $reporte->getTotalesGenerales();
+
+    foreach($totales as $t) {
+        $letra->$t = array_sum($montos_generales->$t);
+    }
+
+    print json_encode([ 'encabezado' => $letra, 'empresas' => $empleados ]);
+});
+
+$app->get('/informe_alta/:idempleado', function ($idempleado) {
+    date_default_timezone_set("America/Guatemala");
+    $db = new dbcpm();
+    $dias_semana = [ 'domingo' => 'domingo', 'lunes' => 'lunes', 'martes' => 'martes', 'miercoles' => 'miercoles', 'jueves' => 'jueves', 'viernes' => 'viernes', 'sabado' => 'sabado' ];
+
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+
+    $query = "SELECT 
+                a.id AS codigo,
+                c.nombre AS empresa,
+                b.temporalidad,
+                b.del, 
+                b.al,
+                d.nomproyecto AS proyecto,
+                CONCAT(IFNULL(e.primernombre, ''),
+                        ' ',
+                        IFNULL(e.segundonombre, ''),
+                        ' ',
+                        IFNULL(e.tercernombre, ''),
+                        IFNULL(e.primerapellido, ''),
+                        ' ',
+                        IFNULL(e.segundoapellido, ''),
+                        ' ',
+                        IFNULL(e.apellidocasada, '')) AS nombre,
+                e.direccion,
+                e.correo,
+                e.telefono,
+                f.descripcion,
+                DATE_FORMAT(IFNULL(a.reingreso, a.ingreso),
+                        '%d/%m/%Y') AS ingreso,
+                e.documento,
+                e.nit,
+                b.igss,
+                b.irtra,
+                b.jornada,
+                b.idhorarios,
+                GROUP_CONCAT(DISTINCT CONCAT(g.del, '-', g.al)
+                    ORDER BY g.del
+                    SEPARATOR ', ') AS horarios,
+                MAX(g.domingo) AS domingo,
+                MAX(g.lunes) AS lunes,
+                MAX(g.martes) AS martes,
+                MAX(g.miercoles) AS miercoles,
+                MAX(g.jueves) AS jueves,
+                MAX(g.viernes) AS viernes,
+                MAX(g.sabado) AS sabado,
+                b.sueldo,
+                b.bonificacionley AS bonificacion,
+                b.cuentabanco,
+                IF(b.confianza > 0, 'Si', 'No') AS confianza,
+                IF(b.confidencialidad > 0, 'Si', 'No') AS confidencialidad,
+                IF(b.telefono > 0, 'Si', 'No') AS celular,
+                IF(b.seguromedico > 0, 'Si', 'No') AS medico,
+                IF(b.depreciacion > 0, CONCAT('Si -', h.depreciacion), 'No') AS depreciacion, 
+                IF(b.combustible > 0, CONCAT('Si -', h.combustible), 'No') AS combustible
+                -- h.depreciacion,
+                -- h.combustible
+            FROM
+                plnempleado a
+                    INNER JOIN
+                plnlaboral b ON a.idlaboral = b.id
+                    INNER JOIN
+                plnempresa c ON b.idempresadebito = c.id
+                    INNER JOIN
+                proyecto d ON b.idproyecto = d.id
+                    INNER JOIN
+                plnpersonal e ON a.idpersonal = e.id
+                    INNER JOIN
+                puesto f ON b.idpuesto = f.id
+                    INNER JOIN
+                horarios g ON FIND_IN_SET(g.id, b.idhorarios)
+                    INNER JOIN
+                (SELECT 
+                    a.idplnempleado,
+                    movdepvehiculo AS depreciacion,
+                    movgasolina AS combustible
+                FROM
+                    plnbitacora a) h ON a.id = h.idplnempleado
+            WHERE
+                a.id = $idempleado";
+    $data = $db->getQuery($query)[0];
+
+    $dias_activos = [];
+    foreach ($dias_semana as $campo => $nombre_dia) {
+        if (isset($data->$campo) && (int)$data->$campo === 1) {
+            $dias_activos[] = $nombre_dia;
+        }
+    }
+
+    $data->dias = implode(', ', $dias_activos);
+
+    print json_encode([ 'encabezado' => $letra, 'empleado' => $data ]);
 });
 
 $app->run();

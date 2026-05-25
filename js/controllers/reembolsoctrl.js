@@ -5,10 +5,10 @@
     reembolsoctrl.controller('reembolsoCtrl', [
         '$scope', 'reembolsoSrvc', 'monedaSrvc', 'authSrvc', 'empresaSrvc', '$route', '$confirm', 'tipoReembolsoSrvc', 'DTOptionsBuilder', '$filter', 'tipoFacturaSrvc', 'tipoCompraSrvc', 'detContSrvc', 'cuentacSrvc',
         'toaster', '$uibModal', 'tipoMovTranBanSrvc', 'bancoSrvc', 'beneficiarioSrvc', 'tipoCombustibleSrvc', 'proveedorSrvc', 'localStorageSrvc', '$location', 'proyectoSrvc', 'tipogastoSrvc', 'periodoContableSrvc',
-        'presupuestoSrvc', 'compraSrvc', 'periodoIvaSrvc',
+        'presupuestoSrvc', 'compraSrvc', 'periodoIvaSrvc', 'Upload',
         ($scope, reembolsoSrvc, monedaSrvc, authSrvc, empresaSrvc, $route, $confirm, tipoReembolsoSrvc, DTOptionsBuilder, $filter, tipoFacturaSrvc, tipoCompraSrvc, detContSrvc, cuentacSrvc,
             toaster, $uibModal, tipoMovTranBanSrvc, bancoSrvc, beneficiarioSrvc, tipoCombustibleSrvc, proveedorSrvc, localStorageSrvc, $location, proyectoSrvc, tipogastoSrvc, periodoContableSrvc,
-            presupuestoSrvc, compraSrvc, periodoIvaSrvc
+            presupuestoSrvc, compraSrvc, periodoIvaSrvc, Upload
         ) => {
 
             $scope.monedas = [];
@@ -46,6 +46,7 @@
                 idemp: undefined, estatus: 1, tipo: undefined, fdel: moment().startOf('month').toDate(), fal: moment().endOf('month').toDate(),
                 fdelstr: undefined, falstr: undefined
             };
+            $scope.mismo = false;
             $scope.presupuesto = {};
             $scope.ot = {};
             var prov = { id: 0, concepto: null, retensionisr: 0 };
@@ -53,6 +54,21 @@
             $scope.creador_compra = undefined;
             $scope.ultimo_compra = undefined;
             var periodoIva = true;
+
+            $scope.selLiquidacion = idcuenta => {
+                // para cambiar cuenta de liquidacion en todas las compras si ya hay un reembolso
+                if ($scope.reembolso.id && $scope.reembolso.id > 0 && $scope.infocompras.cantidad > 0) {
+                    $confirm({ text: '¿Seguro(a) de seleccionar esta cuenta para liquidación? Se asignará a este reembolso y a todas sus compras.', title: 'Seleccionar cuenta de liquidación', ok: 'Sí', cancel: 'No' }).then(() => {
+                        reembolsoSrvc.editRow({ id: $scope.reembolso.id, idcuentac: idcuenta, idempresa: $scope.reembolso.idempresa, idusuario: $scope.uid }, 'ucnt').then(d => {
+                            $scope.reembolso.idcuentaliq = idcuenta;
+                            toaster.pop({ type: d.tipo, title: 'Modificar cuenta de liquidación', body: d.mensaje });
+                        });
+                    });
+                    $scope.getReembolso($scope.reembolso.id);
+                } else {
+                    return;
+                }
+            }
 
             $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap()
                 .withBootstrapOptions({
@@ -87,8 +103,18 @@
                 if (parseInt(usrLogged.workingon) > 0) {
                     $scope.params.idemp = +usrLogged.workingon;
                     $scope.uid = +usrLogged.uid;
+                    $scope.nombre = usrLogged.nombre;
+                    beneficiarioSrvc.lstBeneficiarios().then(function (d) {
+                        // console.log($scope.nombre);
+                        if (!$scope.permiso.m) {
+                            $scope.beneficiarios = filtraBeneficiariosPorUsuario(d);
+                        } else {
+                            $scope.beneficiarios = d;
+                        }
+                    });
                     authSrvc.gpr({ idusuario: parseInt(usrLogged.uid), ruta: $route.current.params.name }).then((d) => {
                         $scope.permiso = d;
+                        // console.log($scope.permiso);
                         empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then((d) => {
                             $scope.reembolso.idempresa = parseInt(d[0].id);
                             $scope.dectc = parseInt(d[0].dectc);
@@ -104,6 +130,16 @@
                     });
                 }
             });
+
+            $scope.enviarAprobacion = obj => {
+                $confirm({ text: '¿Seguro(a) de enviar este reembolso a aprobación? No se podrán hacer modificaciones hasta que sea aprobado o rechazado.', title: 'Enviar a aprobación', ok: 'Sí', cancel: 'No' }).then(() => {
+                    reembolsoSrvc.editRow(obj, 'env').then(d => {
+                        $scope.getLstReembolsos();
+                        $scope.getReembolso(obj.id);
+                        toaster.pop('info', 'Enviado a aprobación', 'El reembolso No. ' + obj.id + ' fue enviado a aprobación', 'timeout:1500');
+                    });
+                });
+            }
 
             $scope.esDePresupuesto = async () => {
                 if (+$scope.idot > 0 && !$scope.ot.id) {
@@ -133,7 +169,56 @@
 
             tipoCompraSrvc.lstTiposCompra().then(function (d) { $scope.tiposcompra = d; });
 
-            beneficiarioSrvc.lstBeneficiarios().then(function (d) { $scope.beneficiarios = d; });
+            $scope.selBene = (obj) => {
+                // console.log(obj);
+                $scope.reembolso.beneficiario = obj[0].nombre;
+                $scope.reembolso.fondoasignado = +obj[0].fondo;
+            }
+
+            function normalizaNombre(valor) {
+                return (valor || '')
+                    .toString()
+                    .toLowerCase()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
+                    .replace(/[^a-z0-9\s]/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .trim();
+            }
+
+            function nombresSonSimilares(nombreUsuario, nombreBeneficiario) {
+                var usr = normalizaNombre(nombreUsuario);
+                var ben = normalizaNombre(nombreBeneficiario);
+
+                if (!usr || !ben) {
+                    return false;
+                }
+
+                if (usr === ben || usr.indexOf(ben) !== -1 || ben.indexOf(usr) !== -1) {
+                    return true;
+                }
+
+                var tokensUsr = usr.split(' ').filter(function (t) { return t.length >= 3; });
+                var matches = 0;
+
+                for (var i = 0; i < tokensUsr.length; i++) {
+                    if (ben.indexOf(tokensUsr[i]) !== -1) {
+                        matches++;
+                    }
+                }
+
+                return tokensUsr.length > 0 && matches > 0;
+            }
+
+            function filtraBeneficiariosPorUsuario(lstBeneficiarios) {
+                if (!$scope.nombre) {
+                    return lstBeneficiarios;
+                }
+
+                return (lstBeneficiarios || []).filter(function (beneficiario) {
+                    return nombresSonSimilares($scope.nombre, beneficiario.nombre);
+                });
+            }
 
             $scope.loadUnidadesProyecto = (idproyecto) => proyectoSrvc.lstUnidadesProyecto(+idproyecto).then((d) => $scope.unidades = d);
 
@@ -239,7 +324,7 @@
                     iva: 0.00,
                     idmoneda: 1,
                     tipocambio: parseFloat('1').toFixed($scope.dectc),
-                    objTipoFactura: [],
+                    objTipoFactura: {},
                     conceptomayor: '',
                     retenerisr: 0,
                     isr: 0.00,
@@ -254,7 +339,7 @@
                     ordentrabajo: undefined,
                     retiva: 0.00
                 };
-                //console.log($scope.compra);
+                // console.log($scope.compra);
                 if (!!$scope.reembolso.objTipoReembolso && !!$scope.reembolso.objTipoReembolso.id) {
                     if (+$scope.reembolso.objTipoReembolso.id === 1) {
                         $scope.compra.idproyecto = $scope.reembolso.idproyecto;
@@ -265,6 +350,8 @@
                 $scope.$broadcast('angucomplete-alt:clearInput', 'txtNit');
                 $scope.periodoCerrado = false;
                 $scope.unidades = [];
+                $scope.compra.objTipoFactura = $filter('getById')($scope.tiposfactura, 1);
+                $scope.compra.objTipoCompra = $filter('getById')($scope.tiposcompra, 1);
                 goTop();
             };
 
@@ -299,6 +386,7 @@
                     if (d.length > 0) {
                         $scope.reembolso = procDataReemb(d)[0];
                         authSrvc.getPerfil($scope.reembolso.idusuario).then((usr) => { $scope.creador = usr[0].iniciales });
+                        $scope.mismo = +$scope.reembolso.idusuario === +$scope.uid;
                         if ($scope.reembolso.ultusuario > 0) {
                             authSrvc.getPerfil($scope.reembolso.ultusuario).then((usr) => { $scope.ultimo_usuario = usr[0].iniciales });
                         }
@@ -325,6 +413,7 @@
                     }
                     $scope.resetCompra();
                     $scope.loadProyectos();
+                    $scope.loadOTAdjuntos($scope.reembolso.id);
                     goTop();
                 });
             };
@@ -603,6 +692,7 @@
                         // revisar si el periodo de iva esta abierto
                         periodoIvaSrvc.validaFecha(fecha).then(d => {
                             periodoIva = parseInt(d.valida) === 1;
+                            $scope.periodoCerrado = +periodoIva === 0 && $scope.laCompra.totfact > 0 ? $scope.calcular() : false;
                         });
                     } else {
                         $scope.periodoCerrado = true;
@@ -630,6 +720,7 @@
                         // revisar si el periodo de iva esta abierto
                         periodoIvaSrvc.validaFechaFactura(fecha).then(d => {
                             periodoIva = parseInt(d.valida) === 1;
+                            $scope.periodoCerrado = +periodoIva === 0 && $scope.laCompra.totfact > 0 ? $scope.calcular() : false;
                         });
                     }
                     $scope.periodoCerrado = true;
@@ -885,6 +976,63 @@
                 });
             };
 
+            $scope.verCodigoAprobacion = (reembolso) => {
+                $uibModal.open({
+                    animation: true,
+                    templateUrl: 'modalCodigoAprobacion.html',
+                    controller: 'ModalCodigoAprobacionCtrl',
+                    resolve: {
+                        reembolso: function () {
+                            return reembolso;
+                        }
+                    }
+                });
+            }
+
+
+            $scope.resetReeAdjunot = () => $scope.remAdjunto = { idreembolso: undefined, ubicacion: undefined };
+
+            $scope.resetReeAdjunot();
+
+            $scope.upload = () => {
+                const file = $scope.file;
+                console.log(file);
+                if (file) {
+                    Upload.upload({
+                        url: 'php/upload.php',
+                        method: 'POST',
+                        file: file,
+                        sendFieldsAs: 'form',
+                        fields: {
+                            directorio: '../reem_adjunto/',
+                            prefijo: 'Reem_' + $scope.reembolso.id + '_'
+                        }
+                    }).then(() => {
+                        $scope.file = null;
+                        $scope.progressPercentage = 0;
+                    },
+                        () => { },
+                        (evt) => $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total)
+                    );
+                }
+            };
+
+            $scope.addRemAdjunto = (reemadjunto) => {
+                $scope.upload();
+                reemadjunto.idusuario = $scope.uid;
+                reemadjunto.idreembolso = $scope.reembolso.id;
+                reemadjunto.ubicacion = "reem_adjunto/" + 'Reem_' + reemadjunto.idreembolso + '_' + $scope.file.name;
+                reembolsoSrvc.editRow(reemadjunto, 'aareem').then(d => {
+                    toaster.pop({ type: d.tipo, title: 'Archivo adjunto', body: d.mensaje, timeout: 5000 });
+                    $scope.loadOTAdjuntos($scope.reembolso.id);
+                });
+            };
+
+            $scope.loadOTAdjuntos = (id) => {
+                id = id > 0 ? id : $scope.reembolso.id;
+                reembolsoSrvc.lstReemAdjuntos(id).then((d) => $scope.lstremadjuntos = d);
+            };
+
             $scope.printPendientes = function () {
                 var modalInstance = $uibModal.open({
                     animation: true,
@@ -896,6 +1044,15 @@
 
                 modalInstance.result.then(function () { return 0; }, function () { return 0; });
             };
+
+            $scope.delRemAdjunto = (id) => {
+                $confirm({ text: '¿Seguro(a) de eliminar este archivo adjunto?', title: 'Eliminar archivo adjunto', ok: 'Sí', cancel: 'No' }).then(() => {
+                    reembolsoSrvc.editRow({ id: id }, 'dareem').then(d => {
+                        toaster.pop({ type: d.tipo, title: 'Archivo adjunto', body: d.mensaje, timeout: 5000 });
+                        $scope.loadOTAdjuntos($scope.reembolso.id);
+                    });
+                });
+            }
 
             $scope.printSinCtaDeLiquidacion = function () {
                 var modalInstance = $uibModal.open({
@@ -1120,6 +1277,14 @@
         $scope.cancel = function () {
             $uibModalInstance.dismiss('cancel');
         };
+    }]);
+
+    reembolsoctrl.controller('ModalCodigoAprobacionCtrl', ['$scope', '$uibModalInstance', 'reembolso', function ($scope, $uibModalInstance, reembolso) {
+        $scope.codigoAprobacion = reembolso.codigoaprobacion;
+
+        $scope.cancel = function () {
+            $uibModalInstance.dismiss('cancel');
+        }
     }]);
     //------------------------------------------------------------------------------------------------------------------------------------------------//
     // reembolsoctrl.controller('ModalUpdDetContCtrl', ['$scope', '$uibModalInstance', 'detalle', 'cuentacSrvc', 'idempresa', 'detContSrvc', '$confirm', function ($scope, $uibModalInstance, detalle, cuentacSrvc, idempresa, detContSrvc, $confirm) {

@@ -1,3 +1,8 @@
+<style>
+    .red {
+        background-color: lightpink;
+    }
+</style>
 <div class="container" ng-controller="ventaCtrl">
     <ul class="nav nav-tabs">
         <li class="active">
@@ -178,6 +183,40 @@
                                         fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true" />
                                 </div>
                             </div>
+                            <div class="col-md-2 nopadding">
+                                <div class="form-group">
+                                    <label for="txtRetIVA">Ret. IVA:</label>
+                                    <div class="input-group">
+                                        <input name="txtRetIVA" id="txtRetIVA" type="number"
+                                            class="form-control input-sm" ng-model="venta.retiva"
+                                            placeholder="Ret. I.V.A." step="0.01" ng-disabled="true" />
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-danger btn-sm"
+                                                ng-click="delRetIva(venta)" title="Eliminar Ret. IVA"
+                                                ng-disabled="!permiso.d && venta.retiva == 0 ">
+                                                <i class="fi fi-sr-cross-circle"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 nopadding">
+                                <div class="form-group">
+                                    <label for="txtRetISR">Ret. ISR:</label>
+                                    <div class="input-group">
+                                        <input name="txtRetISR" id="txtRetISR" type="number"
+                                            class="form-control input-sm" ng-model="venta.retisr"
+                                            placeholder="Ret. I.S.R." step="0.01" ng-disabled="true" />
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-danger btn-sm" title="Eliminar ISR"
+                                                ng-disabled="!permiso.d && venta.retisr == 0"
+                                                ng-click="delRetIsr(venta)">
+                                                <i class="fi fi-sr-cross-circle"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="row" ng-show="venta.anulada === 1">
                             <div class="col-md-12">
@@ -212,8 +251,10 @@
                                 </div>
                             </div>
                             <!--Inicio mostrar datos de formulario de retencion iva-->
-                            <div class="row" ng-show="+venta.retisr > 0 && +venta.idtipofactura === 1 && +venta.anulada === 0 ">
-                                <div class="col-md-6 col-md-offset-3" ng-show="venta.noformiva != null && venta.noformisr != undefined ">
+                            <div class="row"
+                                ng-show="+venta.retisr > 0 && +venta.idtipofactura === 1 && +venta.anulada === 0 ">
+                                <div class="col-md-6 col-md-offset-3"
+                                    ng-show="venta.noformiva != null && venta.noformisr != undefined ">
                                     <div class="well well-sm" style="text-align: center">
                                         <h4>Formulario de retenci&oacute;n de I.V.A.</h4>
                                         <h5>No. formulario: {{venta.noformiva}}&nbsp;--&nbsp;No. acceso:
@@ -223,7 +264,8 @@
                                             {{venta.mespagoiva}}&nbsp;--&nbsp;A&ntilde;o: {{venta.aniopagoiva}}</h5>
                                     </div>
                                 </div>
-                                <div class="col-md-6 col-md-offset-3" ng-hide="venta.noformiva != null && venta.noformisr != undefined">
+                                <div class="col-md-6 col-md-offset-3"
+                                    ng-hide="venta.noformiva != null && venta.noformisr != undefined">
                                     <div class="well well-sm" style="text-align: center">
                                         <span style="font-weight: bold">
                                             FORMULARIO DE RETENCI&Oacute;N DE I.V.A. NO REGISTRADO.&nbsp;
@@ -250,23 +292,30 @@
                             ng-show="venta.id > 0" ng-click="retIvaIsr()">
                                 IVA/ISR
                             </button>
-                            -->                            
+                            -->
                             <button type="button" class="btn btn-primary" ng-disabled="periodoCerrado"
                                 ng-show="venta.id > 0" ng-click="modalModificaMontos()" data-toggle="tooltip"
                                 data-placement="auto" title="Modificar montos de factura...">
                                 <span class="glyphicon glyphicon-pencil"></span>
                             </button>
 
-                            <button type="button" class="btn btn-warning" ng-disabled="+venta.idtipofactura !== 1 || venta.anulada === 1 || periodoCerrado" ng-show="venta.id > 0" ng-click="anular(venta)">
+                            <button type="button" class="btn btn-warning"
+                                ng-disabled="+venta.idtipofactura !== 1 || venta.anulada === 1 || periodoCerrado"
+                                ng-show="venta.id > 0" ng-click="anular(venta)">
                                 <span class="glyphicon glyphicon-ban-circle"></span>
                             </button>
-                            <button type="button" class="btn btn-primary" ng-show="venta.id > 0 && +venta.idtipofactura === 1" ng-click="printVersion()">
+                            <button type="button" class="btn btn-primary"
+                                ng-show="venta.id > 0 && +venta.idtipofactura === 1" ng-click="printVersion()">
                                 <span class="glyphicon glyphicon-print"></span>
                             </button>
-                            <button type="button" class="btn btn-primary" ng-disabled="frmVenta.$invalid || venta.anulada === 1 || periodoCerrado" ng-show="venta.id > 0 && +venta.idtipofactura === 1 && +venta.connc === 0" ng-click="generaNC(venta)">
+                            <button type="button" class="btn btn-primary"
+                                ng-disabled="frmVenta.$invalid || venta.anulada === 1 || periodoCerrado"
+                                ng-show="venta.id > 0 && +venta.idtipofactura === 1 && +venta.connc === 0"
+                                ng-click="generaNC(venta)">
                                 NC
                             </button>
-                            <button type="button" class="btn btn-primary" ng-disabled="frmVenta.$invalid" ng-show="venta.id > 0" ng-click="resetVenta()">
+                            <button type="button" class="btn btn-primary" ng-disabled="frmVenta.$invalid"
+                                ng-show="venta.id > 0" ng-click="resetVenta()">
                                 <span class="glyphicon glyphicon-plus"></span>
                             </button>
                         </div>
@@ -414,19 +463,22 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="dc in losDetCont">
-                                <td>{{dc.desccuentacont}}</td>
-                                <td style="text-align: right">{{dc.debe | number:2}}</td>
-                                <td style="text-align: right">{{dc.haber | number:2}}</td>
-                                <td>{{dc.conceptomayor}}</td>
+                                <td ng-class="{'red': dc.anulado == 1}">{{dc.desccuentacont}}</td>
+                                <td ng-class="{'red': dc.anulado == 1}" style="text-align: right">{{dc.debe | number:2}}
+                                </td>
+                                <td ng-class="{'red': dc.anulado == 1}" style="text-align: right">{{dc.haber |
+                                    number:2}}</td>
+                                <td ng-class="{'red': dc.anulado == 1}">{{dc.conceptomayor}}</td>
                                 <td>
                                     <div class="btn-group" role="group" aria-label="...">
                                         <button type="button" class="btn btn-info btn-sm" ng-click="updDetCont(dc)"
-                                            ng-disabled="periodoCerrado" ng-hide="dc.id == 0" data-toggle="tooltip"
-                                            data-placement="auto" title="Modificar este detalle contable...">
+                                            ng-disabled="periodoCerrado || dc.anulado == 1" ng-hide="dc.id == 0"
+                                            data-toggle="tooltip" data-placement="auto"
+                                            title="Modificar este detalle contable...">
                                             <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
                                         </button>
                                         <button type="button" class="btn btn-danger btn-sm" ng-click="delDetCont(dc)"
-                                            ng-disabled="periodoCerrado" ng-hide="dc.id == 0">
+                                            ng-disabled="periodoCerrado || dc.anulado == 1" ng-hide="dc.id == 0">
                                             <span class="glyphicon glyphicon-trash"></span>
                                         </button>
                                     </div>
@@ -442,7 +494,8 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <h3>{{venta.cliente}}</h3>
-                        <h4>{{venta.objTipoFactura.siglas}}&nbsp;{{venta.serie}}&nbsp;-&nbsp;{{venta.numero}},&nbsp;{{venta.moneda}}&nbsp;{{venta.total | number:2}}
+                        <h4>{{venta.objTipoFactura.siglas}}&nbsp;{{venta.serie}}&nbsp;-&nbsp;{{venta.numero}},&nbsp;{{venta.moneda}}&nbsp;{{venta.total
+                            | number:2}}
                         </h4>
                         <h4>{{venta.conceptomayor}}</h4>
                     </div>

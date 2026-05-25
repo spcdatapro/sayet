@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row" ng-show="permiso.m">
     <div class="col-md-11">
         <form name="frmDetContReem" id="frmDetContReem" class="form-inline" ng-submit="frmDetContReem.$valid && addDetCont(detcont)" novalidate>
             <div class="form-group">
@@ -34,7 +34,7 @@
         </form>
     </div>
 </div>
-<div class="row">
+<div class="row" ng-show="permiso.m">
     <div class="col-md-11">
         <!--<table datatable="ng" dt-options="dtOptionsDetCont" class="table table-responsive table-hover">-->
         <div class="table-responsive">

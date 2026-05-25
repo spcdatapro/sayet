@@ -7,7 +7,7 @@
         $scope.params = { 
             mes: (moment().month() + 1).toString(), anio: moment().year(), empresas: undefined, proyectos: undefined, cliente: undefined
         };
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
         $scope.empresas = [];
         $scope.proyectos = [];
         $scope.lstClientes = [];

@@ -178,11 +178,14 @@ $app->post('/aprobados', function () {
     $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
     $promedido = [];
     $totales = ['monto_factura', 'iva', 'monto_cheque'];
+    $idproyecto = isset($d->idproyecto) ? implode(',', $d->idproyecto) : 0;
 
     // estampa
     $letra = new stdClass();
     $letra->estampa = new DateTime();
     $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+    $letra->anio = "Del ".$d->fecha_inicialstr." al ".$d->fecha_finalstr;
+    // $letra->agrupar = $d->ver == 1 ? 'Año' : ($d->ver == 2 ? 'Rango de años' : 'Todos los años');
 
     $query = "SELECT 
                 a.id,
@@ -197,10 +200,10 @@ $app->post('/aprobados', function () {
                 DATE_FORMAT(fechafactura, '%d/%m/%Y') AS fecha,
                 a.serie,
                 a.documento AS factura,
-                IFNULL(c.numban, c.numero) AS tran,
+                IF(c.numban = 0 OR c.numban IS NULL, c.numero, c.numban) AS tran,
                 a.subtotal AS monto_factura,
                 a.iva,
-                c.monto AS monto_cheque,
+                b.monto AS monto_cheque,
                 DATE_FORMAT(c.fecha, '%d/%m/%Y') AS fecha_elaborado,
                 IFNULL(d.iniciales, 'N.E') AS elaborado_por,
                 IF(c.revisado > 0, TRUE, FALSE) AS revisado,
@@ -233,16 +236,24 @@ $app->post('/aprobados', function () {
                 proveedor h ON a.idproveedor = h.id
                     INNER JOIN
                 proyecto i ON a.idproyecto = i.id
+                    LEFT JOIN 
+                detcontprov j ON h.id = j.idproveedor
+                    LEFT JOIN
+                cuentac k ON j.idcuentac = k.id
             WHERE
-                YEAR(a.fechafactura) BETWEEN $d->anio_inicial AND $d->anio_final
+                a.fechafactura BETWEEN '$d->fecha_inicialstr' AND '$d->fecha_finalstr'
                     AND (a.idreembolso = 0
-                    OR a.idreembolso IS NULL) ";
+                    OR a.idreembolso IS NULL) 
+                    AND h.hoja_control = 1 
+                    ";
     $query.= isset($d->idempresa) ? "AND a.idempresa = $d->idempresa " : "";
     $query.= isset($d->idproveedor) ? "AND a.idproveedor = $d->idproveedor " : ""; 
-    $query.= isset($d->idproyecto) ? "AND a.idproyecto = $d->idproyecto " : "";
+    $query.= $idproyecto > 0 ? "AND a.idproyecto IN($idproyecto) " : "";
+    $query.= isset($d->idcuenta) ? "AND j.idcuentac = $d->idcuenta " : "";
     $query.="       AND (a.ordentrabajo IS NULL
                     OR a.ordentrabajo = 0)
-            ORDER BY h.nombre , g.nomempresa , i.nomproyecto , a.fechafactura ASC";
+            ORDER BY g.nomempresa , i.nomproyecto , h.nombre , a.fechafactura ASC";
+            // echo $query; return;
     $data = $db->getQuery($query);
 
     if (count($data) > 0) {
@@ -316,6 +327,209 @@ $app->post('/aprobados', function () {
     }
 
     print json_encode(['encabezado' => $letra, 'data' => $transacciones]);
+});
+
+$app->post('/comparativo', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $totales = ['monto_factura', 'iva', 'monto_cheque'];
+    $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+    $idproyecto = isset($d->idproyecto) ? implode(',', $d->idproyecto) : 0;
+
+    // estampa
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+    $letra->rango = "Comparacion de ". $meses[$d->mes_comparar - 1] ." con ". $meses[$d->mes - 1] ." del ". $d->anio;
+
+    $query = "SELECT 
+                a.id,
+                e.id AS idempresa,
+                e.nombre AS empresa,
+                d.nomempresa AS abreviatura,
+                f.nomproyecto AS numero,
+                MONTH(a.fechafactura) AS idproyecto,
+                MONTH(a.fechafactura) AS proyecto,
+                MONTH(a.fechafactura) AS mes,
+                a.conceptomayor AS concepto,
+                DATE_FORMAT(fechafactura, '%d/%m/%Y') AS fecha,
+                a.serie,
+                a.documento AS factura,
+                IF(c.numban = 0 OR c.numban IS NULL,
+                    c.numero,
+                    c.numban) AS tran,
+                a.subtotal AS monto_factura,
+                a.iva,
+                b.monto AS monto_cheque,
+                d.nomempresa,
+                e.nombre AS proveedor,
+                f.nomproyecto,
+                c.tipotrans
+            FROM
+                compra a
+                    INNER JOIN
+                detpagocompra b ON b.idcompra = a.id
+                    INNER JOIN
+                tranban c ON b.idtranban = c.id
+                    INNER JOIN
+                empresa d ON a.idempresa = d.id
+                    INNER JOIN
+                proveedor e ON a.idproveedor = e.id
+                    INNER JOIN
+                proyecto f ON a.idproyecto = f.id
+            WHERE
+                YEAR(a.fechafactura) = $d->anio
+                    AND (a.idreembolso = 0
+                    OR a.idreembolso IS NULL)
+                    AND a.idempresa = $d->idempresa
+                    AND MONTH(a.fechafactura) IN ($d->mes , $d->mes_comparar) ";
+    $query.= $idproyecto > 0 ? "AND a.idproyecto IN($idproyecto) " : "";    
+    $query.= "AND (a.ordentrabajo IS NULL
+                    OR a.ordentrabajo = 0)
+                    AND e.hoja_control = 1
+            ORDER BY e.id , MONTH(a.fechafactura)";
+    $data = $db->getQuery($query);
+
+    if (count($data) > 0) {
+        $correlativos = [];
+        $nextCorrelativo = 1;
+        $facturasPorMes = [];
+        $metaPorKey = [];
+        $cuantosPorKey = [];
+        $diferentePorKey = [];
+        $mesesComparados = array_values(array_unique([(int)$d->mes_comparar, (int)$d->mes]));
+        $mesesPeriodo = count(array_unique($mesesComparados));
+
+        foreach ($data as $c) {
+            $key = $c->nomempresa . '|' . $c->proveedor . '|' . $c->nomproyecto;
+
+            if (!isset($correlativos[$key])) {
+                $correlativos[$key] = $nextCorrelativo++;
+                $metaPorKey[$key] = [
+                    'idempresa' => $correlativos[$key],
+                    'empresa' => $c->empresa,
+                    'abreviatura' => $c->abreviatura,
+                    'numero' => $c->numero,
+                    'concepto' => $c->concepto,
+                    'nomempresa' => $c->nomempresa,
+                    'proveedor' => $c->proveedor,
+                    'nomproyecto' => $c->nomproyecto,
+                    'tipotrans' => $c->tipotrans
+                ];
+            }
+
+            $c->idempresa = $correlativos[$key];
+            $c->idproyecto = (int)$c->mes;
+            $c->proyecto = $meses[$c->idproyecto - 1];
+
+            if (!isset($facturasPorMes[$key])) {
+                $facturasPorMes[$key] = [];
+            }
+            if (!isset($facturasPorMes[$key][$c->idproyecto])) {
+                $facturasPorMes[$key][$c->idproyecto] = 0;
+            }
+            $facturasPorMes[$key][$c->idproyecto]++;
+        }
+
+        foreach ($metaPorKey as $key => $meta) {
+            $mesA = $mesesComparados[0];
+            $mesB = $mesesComparados[1] ?? $mesesComparados[0];
+            $cntMesA = $facturasPorMes[$key][$mesA] ?? 0;
+            $cntMesB = $facturasPorMes[$key][$mesB] ?? 0;
+            $cntTotal = $cntMesA + $cntMesB;
+
+            if ($cntTotal === 0) {
+                $cuantosPorKey[$key] = 'Sin movimientos';
+            } else {
+                $freq = max(1, $mesesPeriodo) / $cntTotal;
+                if ($freq <= 1.25) {
+                    $cuantosPorKey[$key] = 'Mensual';
+                } elseif ($freq <= 2.25) {
+                    $cuantosPorKey[$key] = 'Bimensual';
+                } elseif ($freq <= 3.25) {
+                    $cuantosPorKey[$key] = 'Trimestral';
+                } elseif ($freq <= 6.5) {
+                    $cuantosPorKey[$key] = 'Semestral';
+                } elseif ($cntTotal < $mesesPeriodo) {
+                    $cuantosPorKey[$key] = 'Ocasional';
+                } else {
+                    $cuantosPorKey[$key] = 'Varios movimientos';
+                }
+            }
+
+            $diferentePorKey[$key] = ($cntMesA !== $cntMesB) ? 1 : 0;
+
+            foreach ($mesesComparados as $mesComparado) {
+                if (($facturasPorMes[$key][$mesComparado] ?? 0) > 0) {
+                    continue;
+                }
+
+                $vacio = new stdClass();
+                $vacio->id = 0;
+                $vacio->idempresa = $meta['idempresa'];
+                $vacio->empresa = $meta['empresa'];
+                $vacio->abreviatura = $meta['abreviatura'];
+                $vacio->numero = $meta['numero'];
+                $vacio->idproyecto = (int)$mesComparado;
+                $vacio->proyecto = $meses[$mesComparado - 1];
+                $vacio->mes = (int)$mesComparado;
+                $vacio->concepto = 'Sin transaccion';
+                $vacio->fecha = '';
+                $vacio->serie = '';
+                $vacio->factura = '';
+                $vacio->tran = '';
+                $vacio->monto_factura = 0;
+                $vacio->iva = 0;
+                $vacio->monto_cheque = 0;
+                $vacio->nomempresa = $meta['nomempresa'];
+                $vacio->proveedor = $meta['proveedor'];
+                $vacio->nomproyecto = $meta['nomproyecto'];
+                $vacio->tipotrans = $meta['tipotrans'];
+                $vacio->cuantos = $cuantosPorKey[$key];
+                $vacio->diferente = $diferentePorKey[$key];
+
+                $data[] = $vacio;
+            }
+        }
+
+        foreach ($data as $c) {
+            $key = $c->nomempresa . '|' . $c->proveedor . '|' . $c->nomproyecto;
+            $c->cuantos = $cuantosPorKey[$key] ?? 'Sin movimientos';
+            $c->diferente = $diferentePorKey[$key] ?? 0;
+            $c->idproyecto = (int)$c->mes;
+            $c->proyecto = $meses[$c->idproyecto - 1];
+        }
+
+        usort($data, function ($a, $b) use ($mesesComparados) {
+            if ($a->idempresa !== $b->idempresa) {
+                return $a->idempresa <=> $b->idempresa;
+            }
+
+            $ordenMesA = array_search((int)$a->mes, $mesesComparados);
+            $ordenMesB = array_search((int)$b->mes, $mesesComparados);
+
+            $ordenMesA = $ordenMesA === false ? 99 : $ordenMesA;
+            $ordenMesB = $ordenMesB === false ? 99 : $ordenMesB;
+
+            if ($ordenMesA !== $ordenMesB) {
+                return $ordenMesA <=> $ordenMesB;
+            }
+
+            return ((int)$a->id) <=> ((int)$b->id);
+        });
+
+        // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
+        $reporte = new GeneradorReportes($data, 'transacciones', $totales, true);
+        $transacciones = $reporte->getReporte();
+        $montos_generales = $reporte->getTotalesGenerales();
+        $success = true;
+    } else {
+        $transacciones = 'No se recibieron datos';
+        $success = false;
+    }
+
+    print json_encode(['data' => $transacciones, 'encabezado' => $letra]);
 });
 
 $app->run();

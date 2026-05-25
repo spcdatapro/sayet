@@ -1,0 +1,114 @@
+<style>
+    .app-modal-window .modal-dialog {
+        width: 625px;
+    }
+</style>
+<div class="container" ng-controller="aprobacionReembolso">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Aprobaci&oacute;n de reembolsos</div>
+        <div class="panel-body">
+            <table datatable="ng" dt-options="dtOptions" class="table table-condensed table-hover">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Solicita</th>
+                        <th>Fecha</th>
+                        <th>Beneficiario</th>
+                        <th style="text-align: right">Monto</th>
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
+                        <th style="text-align: center">Aprobar</th>
+                        <th style="text-align: center">Denegar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="p in reembolsos">
+                        <td>{{p.id}}</td>
+                        <td>{{p.nombre}}</td>
+                        <td>{{p.fecha}}</td>
+                        <td>{{p.beneficiario}}</td>
+                        <td style="text-align: right">{{p.moneda}}.{{p.monto | number:2}}</td>
+                        <td>
+                            <button type="button" class="btn btn-primary" ng-click="verDetReem(p)"
+                                title="Ver detalle">
+                                <i class="fi fi-sr-file-circle-info"></i>
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-primary" ng-click="verAdjuntos(p)"
+                                title="Ver adjuntos">
+                                <i class="fi fi-br-clip"></i>
+                            </button>
+                        </td>
+                        <td style="text-align: center">
+                            <input name="chkAprobada_{{p.id}}" id="chkAprobada_{{p.id}}" type="checkbox"
+                                class="form-control" ng-model="p.aprobada" ng-true-value="1" ng-false-value="0"
+                                ng-change="aprobar(p)" />
+                        </td>
+                        <td style="text-align: center">
+                            <input name="chkDenegada_{{p.id}}" id="chkDenegada_{{p.id}}" type="checkbox"
+                                class="form-control" ng-model="p.denegada" ng-true-value="1" ng-false-value="0"
+                                ng-change="denegar(p)" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!--Template de la modal //Este usa el controlador ModalCargosCtrl-->
+<script type="text/ng-template" id="modalDetalleReembolso.html">
+    <div class="modal-header">
+        <h4 class="modal-title">Reembolso No. {{reembolso.id}}</h4>
+    </div>
+    <div class="modal-body" style="height: 275px; overflow-y: scroll">
+        <table class="table table-hover table-condensed">
+            <thead>
+                <tr>
+                    <th>Documento</th>
+                    <th style="text-align: right">Monto</th>
+                    <th>Concepto</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="c in compras">
+                    <td>{{c.documento}}</td>
+                    <td style="text-align: right">{{c.moneda}}.{{c.monto | number:2}}</td>
+                    <td>{{c.concepto}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-info" type="button" ng-click="cancel()">Cerrar</button>
+    </div>
+</script>
+<script type="text/ng-template" id="modalAdjuntosReembolso.html">
+    <div class="modal-header">
+        <h4 class="modal-title">Reembolso No. {{reembolso.id}}</h4>
+        <h5>Documentos adjuntos</h5>
+    </div>
+    <div class="modal-body" style="height: 300px; overflow-y: auto">
+        <table class="table table-responsive table-hover table-condensed">
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>&nbsp;</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="adjunto in lstadjuntos">
+                <td>{{adjunto.nombre}}</td>
+                <td>
+                    <a class="btn btn-info" href="{{adjunto.ubicacion}}" target="_blank">
+                        <span class="glyphicon glyphicon-download"></span>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-info" type="button" ng-click="cancel()">Cerrar</button>
+    </div>
+</script>

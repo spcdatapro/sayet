@@ -2,7 +2,7 @@ angular.module('cpm')
 .factory('empServicios', ['comunFact', '$http', '$sce', function(comunFact, $http, $sce){
     var urlBase = 'pln/php/controllers/empleado.php';
 
-    var url = `${window.location.protocol}//${window.location.hostname}/sayet/pln/php/controllers/empleado.php/finiquito`;
+    var url = `${window.location.protocol}//${window.location.hostname}/pln/php/controllers/empleado.php/finiquito`;
 
     return {
         buscar: function(obj){
@@ -83,7 +83,9 @@ angular.module('cpm')
         eliminar: idempleado => comunFact.doDELETE(`${urlBase}/eliminar/${idempleado}`),
         nuevoEmpleado: obj => comunFact.doPOST(urlBase + '/crear', obj),
         darAlta: obj => comunFact.doPOST(urlBase + '/alta', obj),
-        darBaja: obj => comunFact.doPOST(urlBase + '/baja', obj)
+        darBaja: obj => comunFact.doPOST(urlBase + '/baja', obj),
+        eliminarArchivo: id => comunFact.doDELETE(`${urlBase}/eliminar_archivo/${id}`),
+        getHorarios: () => comunFact.doGET(urlBase + '/get_horarios'),
     };
 }])
 .factory('pstServicios', ['comunFact', function(comunFact){

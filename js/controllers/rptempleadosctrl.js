@@ -7,7 +7,7 @@
 
             $scope.empresas = [];
             $scope.params = { inactivos: 0, agrupar: '1', fecha: moment().toDate() };
-            $scope.content = `${window.location.origin}/sayet/blank.html`;
+            $scope.content = `${window.location.origin}/blank.html`
             $scope.cargando = false;
 
             // asignar la empresa en la que el usuario se encuentra

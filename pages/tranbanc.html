@@ -388,6 +388,11 @@
                                         <span class="glyphicon glyphicon-print"></span>
                                     </button>
                                     <button type="button" class="btn btn-primary" ng-show="editando"
+                                        ng-click="printVersion()" ng-disabled="cargando" ng-show="laTran.pendiente != 1 && laTran.tipotrans === 'R'"
+                                        title="imprimir detalle NC">
+                                        Detalle NC 
+                                    </button>
+                                    <button type="button" class="btn btn-primary" ng-show="editando"
                                         ng-disabled="cargando" ng-click="printSelloFactura(laTran.id)" ng-hide="laTran.pendiente == 1">
                                         <span>Sello factura</span>
                                     </button>

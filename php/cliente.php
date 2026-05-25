@@ -583,7 +583,7 @@ $app->post('/gencobros', function(){
 
 $app->get('/getcargos/:iddetcont', function($iddetcont){
     $db = new dbcpm();
-    $query = "SELECT a.id, a.iddetcont, a.fechacobro, a.monto, a.descuento, a.facturado, a.conceptoadicional FROM cargo a WHERE a.iddetcont = ".$iddetcont." ORDER BY a.fechacobro";
+    $query = "SELECT a.id, a.iddetcont, a.fechacobro, a.monto, a.descuento, a.facturado, a.conceptoadicional, a.proveedor, a.pedido, a.framework FROM cargo a WHERE a.iddetcont = ".$iddetcont." ORDER BY a.fechacobro";
     print $db->doSelectASJson($query);
 });
 
@@ -826,5 +826,53 @@ $app->get('/contrato_unidad/:idunidad', function($idunidad) {
                 idunidad LIKE '%$idunidad%'";
     print $db->doSelectASJson($query);
 });
+
+$app->post('/uprov', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "UPDATE cargo SET proveedor = '$d->valor' WHERE id = $d->id";
+    $db->doQuery($query);
+
+    // validar si se actualizo
+    $proveedor = $db->getOneField("SELECT proveedor FROM cargo WHERE id = $d->id");
+    if ($proveedor === $d->valor)        
+        print json_encode(['tipo' => 'success', 'mensaje' => 'Proveedor actualizado correctamente']);
+    else
+        print json_encode(['tipo' => 'error', 'mensaje' => 'No se pudo actualizar el proveedor']);
+    }
+);
+
+$app->post('/uped', function (){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "UPDATE cargo SET pedido = '$d->valor' WHERE id = $d->id";
+    $db->doQuery($query);
+
+    // validar si se actualizo
+    $pedido = $db->getOneField("SELECT pedido FROM cargo WHERE id = $d->id");
+    if ($pedido === $d->valor) 
+        print json_encode(['tipo' => 'success', 'mensaje' => 'Pedido actualizado correctamente']);
+    else
+        print json_encode(['tipo' => 'error', 'mensaje' => 'No se pudo actualizar el pedido']);
+    }
+);
+
+$app->post('/ufw', function (){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "UPDATE cargo SET framework = '$d->valor' WHERE id = $d->id";
+    $db->doQuery($query);
+
+    // validar si se actualizo
+    $framework = $db->getOneField("SELECT framework FROM cargo WHERE id = $d->id");
+    if ($framework === $d->valor)
+        print json_encode(['tipo' => 'success', 'mensaje' => 'Framework actualizado correctamente']);
+    else
+        print json_encode(['tipo' => 'error', 'mensaje' => 'No se pudo actualizar el framework']);
+    }
+);
 
 $app->run();

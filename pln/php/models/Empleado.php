@@ -408,10 +408,18 @@ class Empleado extends Principal
 		if (elemento($args, 'vence')) {
 			$this->set_dato('vence', $args['vence']);
 		}
+
+		if (elemento($args, 'inicio')) {
+			$this->set_dato('inicio', $args['inicio']);
+		}
+
+		if (elemento($args, 'idempresa')) {
+			$this->set_dato('idempresa', $args['idempresa']);
+		}
 		
 		if (isset($fl['archivo'])) {
 			$base = "archivos/emp/{$this->emp->id}/" . date('Y-m-d');
-			$ruta = BASEPATH . "/pln/{$base}";
+			$ruta = "/pln/{$base}";
 			$nom  = $fl['archivo']['name'];
 
 			if (!file_exists($ruta)) {
@@ -424,7 +432,7 @@ class Empleado extends Principal
 
 			$dir = basename(BASEPATH);
 
-			$link = "/{$dir}/pln/{$base}/{$nom}";
+			$link = "/pln/{$base}/{$nom}";
 
 			$this->set_dato('ruta', $link);
 			$this->set_dato('nombre', $nom);
@@ -445,7 +453,10 @@ class Empleado extends Principal
 		return $this->db->select(
 			'plnarchivo', 
 			'*', 
-			['idplnempleado[=]' => $this->emp->id]
+			['AND' => [
+				'idplnempleado[=]' => $this->emp->id,
+				'esconder[=]' => 0
+			]]
 		);
 	}
 
@@ -841,6 +852,7 @@ class Empleado extends Principal
 					FROM plnnomina
 					WHERE idplnempleado = {$this->emp->id} 
 					AND day(fecha) <> 15
+					AND esextraordinaria = 0
 					AND esbonocatorce = 0 
 					ORDER BY fecha DESC
 					LIMIT {$this->mesesCalculo}";
@@ -1404,7 +1416,7 @@ EOT;
 
 		if ($bit->idempresadebito > 0 && $bit->idplnmovimiento != 6) {
 			$nomempresa = $this->db->select("empresa","nomempresa",["id [=]" => $bit->idempresadebito])[0];
-		} else if ($antes !== null) {
+		} else if ($antes !== null && $bit->idplnmovimiento != 6) {
 			$antes = get_object_vars($antes);
 			// print_r($antes); return;
 			foreach ($antes as $a => $valor) {
@@ -1840,8 +1852,24 @@ EOT;
 			} else { 
 				$data['baja'] = null;
 			}
+
+			if (isset($data['del'])) {
+				$fecha = new DateTime($data['del']);
+				$data['del'] = $fecha->format('Y-m-d');
+			} else { 
+				$data['del'] = null;
+			}
+
+			if (isset($data['al'])) {
+				$fecha = new DateTime($data['al']);
+				$data['al'] = $fecha->format('Y-m-d');
+			} else { 
+				$data['al'] = null;
+			}
+
 			$idempleado = isset($data['idplnempleado']) ? $data['idplnempleado'] : null;
 			$idlaboral = isset($data['id']) ? $data['id'] : null;
+			$data['idhorarios'] = isset($data['idhorarios']) ? implode(',', $data['idhorarios']) : null;
 
 			unset($data['idplnempleado']);
 			unset($data['id']);
@@ -2272,5 +2300,20 @@ EOT;
 
 		$idbitacora = $this->db->insert('plnbitacora', $this->datos);
 		return $idbitacora;
+	}
+
+	public function eliminarArchivo ($id) {
+		$elm = $this->db->update('plnarchivo', ['esconder' => 1], ["id [=]" => $id]);
+		if ($elm) {
+			$respuesta = new StdClass;
+			$respuesta->tipo = 'success';
+			$respuesta->mensaje = 'Archivo eliminado con exito.';
+		} else {
+			$respuesta = new StdClass;
+			$respuesta->tipo = 'error';
+			$respuesta->mensaje = 'Error al eliminar archivo, favor comunicarse con IT.';
+		}
+
+		return $respuesta;
 	}
 }

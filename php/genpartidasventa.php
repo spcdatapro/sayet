@@ -108,7 +108,7 @@ $app->get('/generar', function(){
 $app->get('/regen', function(){
     $db = new dbcpm();
     $origen = 3;
-    $ids = "30297,30300,30301,30299,30316,30315,30312,30125,30150,30137,30136,30097,30101,30096,30100,30349,30098,30090,30350,30091,30092,30354,30095,30099,30094,30093";
+    $ids = "36797,36798";
     echo "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body><small><h3>Regeneración de facturas específicas</h3><h2>$ids</h2>";
 
     $query = "DELETE FROM detallecontable WHERE origen = $origen AND idorigen IN($ids)";
@@ -199,7 +199,7 @@ $app->get('/regen', function(){
     }
 
     //Habilitar esto solo cuando es una factura...
-    $url = 'http://localhost/sayet/php/fixdescuadreventa.php/fix';
+    $url = 'http://localhost/php/fixdescuadreventa.php/fix';
     $dataa = ['idfactura' => $ids];
     $db->CallJSReportAPI('POST', $url, json_encode($dataa));
     //Habilitar lo anterior solo cuando es una factura...
@@ -308,7 +308,7 @@ $app->post('/genpost', function(){
         }
     }
 
-    $url = 'http://localhost/sayet/php/fixdescuadreventa.php/fix';
+    $url = 'http://localhost/php/fixdescuadreventa.php/fix';
     $dataa = ['idfactura' => $ids];
     $db->CallJSReportAPI('POST', $url, json_encode($dataa));
 
@@ -329,7 +329,7 @@ $app->get('/gencontaventa', function() {
     $query.= isset($params->fal) ? "AND a.fecha <= '$params->fal' " : '';
 
     $facturas = $db->getQuery($query);
-    $url = 'http://localhost/sayet/php/genpartidasventa.php/genpost';
+    $url = 'http://localhost/php/genpartidasventa.php/genpost';
     foreach($facturas as $factura) {
             $data = ['ids' => $factura->id, 'idcontrato' => ((int)$factura->idcontrato > 0 ? 1 : 0)];
             $db->CallJSReportAPI('POST', $url, json_encode($data));

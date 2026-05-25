@@ -6,7 +6,7 @@
 
         $scope.paramsMovimientos = { del: moment().startOf('year').toDate(), al: moment().endOf('month').toDate() }
         $scope.empleados = [];
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
         $scope.cargando = false;
 
         empleadoSrvc.lstEmpleados().then(d => $scope.empleados = d);

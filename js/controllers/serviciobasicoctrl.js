@@ -180,7 +180,7 @@
         $scope.unidades = [];
         $scope.mes = mes;
         $scope.anio = anio;
-        $scope.content = `${window.location.origin}/sayet/blank.html`;
+        $scope.content = `${window.location.origin}/blank.html`
 
         // console.log('PROYECTOS', $scope.proyectos);
 

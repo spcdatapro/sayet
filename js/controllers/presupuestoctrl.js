@@ -563,6 +563,8 @@
 
         $scope.addOt = function (obj) {
             obj = setDataOt(obj);
+            obj.creador = $scope.usrdata.uid;
+            obj.creacion = moment().format('YYYY-MM-DD HH:mm:ss');
             //console.log(obj); return;
             presupuestoSrvc.editRow(obj, 'cd').then(function (d) {
                 $scope.getLstPresupuestos('1,2,3');
@@ -672,18 +674,22 @@
             }, function () { return 0; });
         };
 
-        $scope.groupPrint = (nvoformato) => {
+        $scope.groupPrint = () => {
             //console.log('NUEVO = ', nvoformato);
             const modalInstance = $uibModal.open({
                 animation: true,
                 templateUrl: 'modalGroupPrint.html',
                 controller: 'ModalGroupPrintCtrl',
                 resolve: {
-                    nuevoFormato: function () { return nvoformato; }
+                    // nuevoFormato: function () { return nvoformato; }
+                    tiposgasto:  () => $scope.tiposgasto
                 }
             });
 
-            modalInstance.result.then(() => { }, () => { });
+            modalInstance.result.then((params) => {
+                rpt = 'rJwZUvYDZg';
+                jsReportSrvc.getPDFReport(rpt, params).then(pdf => $window.open(pdf));
+            });
         };
 
         $scope.otAdjunto = {};
@@ -1031,44 +1037,48 @@
     }]);
 
     //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
-    presupuestoctrl.controller('ModalGroupPrintCtrl', ['$scope', '$uibModalInstance', '$filter', 'toaster', '$confirm', 'presupuestoSrvc', '$http', '$window', '$q', 'nuevoFormato', function ($scope, $uibModalInstance, $filter, toaster, $confirm, presupuestoSrvc, $http, $window, $q, nuevoFormato) {
-        $scope.params = { fecha: moment().toDate() };
+    presupuestoctrl.controller('ModalGroupPrintCtrl', ['$scope', '$uibModalInstance', '$filter', 'toaster', '$confirm', 'presupuestoSrvc', '$http', '$window', '$q', 'tiposgasto', function ($scope, $uibModalInstance, $filter, toaster, $confirm, presupuestoSrvc, $http, $window, $q, tiposgasto) {
+        $scope.params = { del: moment().toDate(), al: moment().toDate() };
         $scope.content = undefined;
+        console.log(tiposgasto)
+        $scope.tiposgasto = tiposgasto;
 
         $scope.ok = () => {
-            $scope.params.fechastr = moment($scope.params.fecha).format('YYYY-MM-DD');
-            presupuestoSrvc.lstOtsImprimir($scope.params).then(generados => {
-                const url = window.location.origin + ':5489/api/report';
-                let props = {}, file, formData = new FormData();
-                //console.log('NUEVO (MODAL) = ', nuevoFormato);
-                const shortId = nuevoFormato ? 'rJPo84G0w' : 'S1eAuyN2b';
+            $scope.params.delstr = moment($scope.params.del).format('YYYY-MM-DD');
+            $scope.params.alstr = moment($scope.params.al).format('YYYY-MM-DD');
 
-                const promises = generados.map(generado => {
-                    props = { 'template': { 'shortid': shortId }, 'data': { idot: generado.idot } };
-                    return $http.post(url, props, { responseType: 'arraybuffer' });
-                });
+            // presupuestoSrvc.lstOtsImprimir($scope.params).then(generados => {
+            //     const url = `${window.location.origin}/api/report`;
+            //     let props = {}, file, formData = new FormData();
+            //     //console.log('NUEVO (MODAL) = ', nuevoFormato);
+            //     const shortId = nuevoFormato ? 'rJPo84G0w' : 'S1eAuyN2b';
 
-                $q.all(promises).then((respuestas) => {
-                    for (let i = 0; i < generados.length; i++) {
-                        file = new Blob([respuestas[i].data], { type: 'application/pdf' });
-                        formData.append(`OT_${+generados[i].idot}`, file);
-                    }
+            //     const promises = generados.map(generado => {
+            //         props = { 'template': { 'shortid': shortId }, 'data': { idot: generado.idot } };
+            //         return $http.post(url, props, { responseType: 'arraybuffer' });
+            //     });
 
-                    $.ajax({
-                        url: "php/rptotgroup.php",
-                        type: 'POST',
-                        data: formData,
-                        contentType: false,
-                        processData: false,
-                        success: () => { },
-                        error: () => console.log("Se produjo un error al generar la impresión de OTs...")
-                    }).done(() => {
-                        const urlpdf = window.location.origin + '/sayet/php/pdfgenerator/OTs.pdf';
-                        $window.open(urlpdf);
-                        $uibModalInstance.close();
-                    });
-                });
-            });
+            //     $q.all(promises).then((respuestas) => {
+            //         for (let i = 0; i < generados.length; i++) {
+            //             file = new Blob([respuestas[i].data], { type: 'application/pdf' });
+            //             formData.append(`OT_${+generados[i].idot}`, file);
+            //         }
+
+            //         $.ajax({
+            //             url: "php/rptotgroup.php",
+            //             type: 'POST',
+            //             data: formData,
+            //             contentType: false,
+            //             processData: false,
+            //             success: () => { },
+            //             error: () => console.log("Se produjo un error al generar la impresión de OTs...")
+            //         }).done(() => {
+            //             const urlpdf = window.location.origin + '/sayet/php/pdfgenerator/OTs.pdf';
+            //             $window.open(urlpdf);
+            $uibModalInstance.close($scope.params);
+            //         });
+            //     });
+            // });
         };
 
         $scope.cancel = () => $uibModalInstance.dismiss('cancel');
