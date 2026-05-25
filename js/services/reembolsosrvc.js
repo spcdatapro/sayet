@@ -42,7 +42,9 @@
                 return comunFact.doPOST(urlBase + '/' + op, obj);
             },
             modificarISR: (idcompra, monto, idempresa, suma, idreembolso) => comunFact.doGET(`${urlBase}/uisr/${idcompra}/${monto}/${idempresa}/${suma}/${idreembolso}`),
-            modificarRIVA: (idcompra, monto, idempresa, suma, idreembolso) => comunFact.doGET(`${urlBase}/uriva/${idcompra}/${monto}/${idempresa}/${suma}/${idreembolso}`)
+            modificarRIVA: (idcompra, monto, idempresa, suma, idreembolso) => comunFact.doGET(`${urlBase}/uriva/${idcompra}/${monto}/${idempresa}/${suma}/${idreembolso}`),
+            reembolsosPendientes: () => comunFact.doGET(`${urlBase}/pendientes`),
+            lstReemAdjuntos: (idreembolso) => comunFact.doGET(`${urlBase}/lstremadjuntos/${idreembolso}`),
         };
     }]);
 
