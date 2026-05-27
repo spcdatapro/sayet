@@ -824,7 +824,7 @@ SUM(IF(true, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, (a.monto
                     //     $row->diferencia =  ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
                     // } else {
                         // Aplicar depósito contra saldo
-                        $row->ingreso = 100;
+                        $row->ingreso = $saldoFacturas[$factura];
                         $saldoFacturas[$factura] -= $row->deposito;
                         if ($countFacturas[$factura] > 2) {
                             $row->diferencia = 0;
@@ -839,32 +839,32 @@ SUM(IF(true, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, (a.monto
             // $row->diferencia = ($row->ingreso - $resta) * -1;
         }
 
-        for ($i = 0; $i < count($data); $i++) {
-            $actual = $data[$i];
-            $proximo = $i+1 == count($data) ? null : $data[$i+1];
-            $proximo2 = $i+2 >= count($data) ? null : $data[$i+2];
+        // for ($i = 0; $i < count($data); $i++) {
+        //     $actual = $data[$i];
+        //     $proximo = $i+1 == count($data) ? null : $data[$i+1];
+        //     $proximo2 = $i+2 >= count($data) ? null : $data[$i+2];
 
-            if (isset($proximo)) {
-                if ($proximo->idrecibocli == $actual->idrecibocli && $proximo->idrecibocli > 0) {
-                    // $proximo->diferencia = ($actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito)) * -1;
-                    $proximo->diferencia = $proximo->diferencia;
-                    $actual->iva = 0;
-                    $actual->isr = 0;
-                    $actual->ingreso = 0;
-                    $actual->diferencia = $actual->deposito;
-                }
-            }
-            if (isset($proximo2)) {
-                if ($proximo2->idrecibocli == $actual->idrecibocli && $proximo2->idrecibocli > 0) {
-                    // $proximo->diferencia = ($actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito)) * -1;
-                    $proximo2->diferencia = ($proximo2->ingreso - ($proximo2->deposito + $proximo2->isr + $proximo2->iva + $proximo->deposito + $actual->deposito)) * -1;
-                    $actual->iva = 0;
-                    $actual->isr = 0;
-                    $actual->ingreso = 0;
-                    $actual->diferencia = $actual->deposito;
-                }
-            }
-        }
+        //     if (isset($proximo)) {
+        //         if ($proximo->idrecibocli == $actual->idrecibocli && $proximo->idrecibocli > 0) {
+        //             // $proximo->diferencia = ($actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito)) * -1;
+        //             $proximo->diferencia = $proximo->diferencia;
+        //             $actual->iva = 0;
+        //             $actual->isr = 0;
+        //             $actual->ingreso = 0;
+        //             $actual->diferencia = $actual->deposito;
+        //         }
+        //     }
+        //     if (isset($proximo2)) {
+        //         if ($proximo2->idrecibocli == $actual->idrecibocli && $proximo2->idrecibocli > 0) {
+        //             // $proximo->diferencia = ($actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito)) * -1;
+        //             $proximo2->diferencia = ($proximo2->ingreso - ($proximo2->deposito + $proximo2->isr + $proximo2->iva + $proximo->deposito + $actual->deposito)) * -1;
+        //             $actual->iva = 0;
+        //             $actual->isr = 0;
+        //             $actual->ingreso = 0;
+        //             $actual->diferencia = $actual->deposito;
+        //         }
+        //     }
+        // }
 
         
         // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
