@@ -784,62 +784,60 @@ SUM(IF(true, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, (a.monto
 
     if (count($data) > 0) {
 
-        // $saldoFacturas = [];
-        // $montoFacturas = [];
-        // $isrFacturas = [];
-        // $countFacturas = [];
+        $saldoFacturas = [];
+        $montoFacturas = [];
+        $isrFacturas = [];
+        $countFacturas = [];
 
-        // // Pre-compute counts
-        // foreach ($data as $row) {
-        //     $facturas = explode(',', $row->factura);
-        //     foreach ($facturas as $factura) {
-        //         $factura = trim($factura);
-        //         $countFacturas[$factura] = ($countFacturas[$factura] ?? 0) + 1;
-        //     }
-        // }
+        // Pre-compute counts
+        foreach ($data as $row) {
+            $facturas = explode(',', $row->factura);
+            foreach ($facturas as $factura) {
+                $factura = trim($factura);
+                $countFacturas[$factura] = ($countFacturas[$factura] ?? 0) + 1;
+            }
+        }
 
-        // foreach ($data as $row) {
-        //     // Puede haber varias facturas en la misma fila
-        //     $facturas = explode(',', $row->factura);
-        //     // $row->ingreso = 0;
+        foreach ($data as $row) {
+            // Puede haber varias facturas en la misma fila
+            $facturas = explode(',', $row->factura);
+            // $row->ingreso = 0;
         
-        //     foreach ($facturas as $factura) {
-        //         $factura = trim($factura);
+            foreach ($facturas as $factura) {
+                $factura = trim($factura);
         
-        //         // Inicializar saldo si no existe
-        //         if (!isset($saldoFacturas[$factura])) {
-        //             $montoFacturas[$factura] = $row->ingreso;
-        //             $isrFacturas[$factura] = $row->isr;
-        //             $saldoFacturas[$factura] = $row->ingreso - ($row->deposito + $row->isr + $row->iva);
+                // Inicializar saldo si no existe
+                if (!isset($saldoFacturas[$factura])) {
+                    $montoFacturas[$factura] = $row->ingreso;
+                    $isrFacturas[$factura] = $row->isr;
+                    $saldoFacturas[$factura] = $row->ingreso - ($row->deposito + $row->isr + $row->iva);
 
-        //             $row->diferencia = ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
-        //             if ($countFacturas[$factura] > 1) {
-        //                 $row->diferencia = 0;
-        //             }
-        //         } else {
-        //             if (count($facturas) > 1) {
-        //                 $row->ingreso -= $montoFacturas[$factura];
-        //                 $row->ingreso += $saldoFacturas[$factura];
-        //                 $row->isr -= $isrFacturas[$factura];
-        //                 $row->diferencia =  ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
-        //             } else {
-        //                 // Aplicar depósito contra saldo
-        //                 $row->ingreso = $saldoFacturas[$factura];
-        //                 $saldoFacturas[$factura] -= $row->deposito;
-        //                 if ($countFacturas[$factura] > 2) {
-        //                     $row->diferencia = 0;
-        //                 } else {
-        //                     $row->diferencia =  ($row->ingreso - $row->deposito) * -1;
-        //                 }
-        //             }
-        //         }
-        //     }
+                    $row->diferencia = ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
+                    if ($countFacturas[$factura] > 1) {
+                        $row->diferencia = 0;
+                    }
+                } else {
+                    if (count($facturas) > 1) {
+                        $row->ingreso -= $montoFacturas[$factura];
+                        $row->ingreso += $saldoFacturas[$factura];
+                        $row->isr -= $isrFacturas[$factura];
+                        $row->diferencia =  ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
+                    } else {
+                        // Aplicar depósito contra saldo
+                        $row->ingreso = $saldoFacturas[$factura];
+                        $saldoFacturas[$factura] -= $row->deposito;
+                        if ($countFacturas[$factura] > 2) {
+                            $row->diferencia = 0;
+                        } else {
+                            $row->diferencia =  ($row->ingreso - $row->deposito) * -1;
+                        }
+                    }
+                }
+            }
         
-        //     // Recalcular diferencia con el ingreso ajustado
-        //     // $row->diferencia = ($row->ingreso - $resta) * -1;
-        // }
-
-
+            // Recalcular diferencia con el ingreso ajustado
+            // $row->diferencia = ($row->ingreso - $resta) * -1;
+        }
 
         for ($i = 0; $i < count($data); $i++) {
             $actual = $data[$i];
