@@ -864,7 +864,7 @@ $app->get('/selfacturas/:idproveedor/:idempresa', function($idproveedor, $idempr
                 DATE_FORMAT(a.fechafactura, '%d/%m/%Y') AS fecha,
                 FORMAT(a.totfact, 2) AS monto,
                 b.simbolo AS moneda,
-                FORMAT(a.totfact - IFNULL(c.monto, 0.00) - IFNULL(d.monto, 0.00) - IFNULL(a.isr, 0.00),
+                FORMAT(a.totfact - IFNULL(c.monto, 0.00) - IFNULL(d.monto, 0.00) - IFNULL(a.isr, 0.00) - IFNULL(a.retiva, 0.00),
                     2) AS saldo,
                 a.idmoneda,
                 a.idproyecto,
@@ -890,7 +890,7 @@ $app->get('/selfacturas/:idproveedor/:idempresa', function($idproveedor, $idempr
                 idtipofactura < 9 AND alcontado = 0
                     AND a.idempresa = $idempresa
                     AND a.idproveedor = $idproveedor
-                    AND ((IFNULL(a.totfact, 0.00) - IFNULL(c.monto, 0.00) - IFNULL(d.monto, 0.00) - IFNULL(a.isr, 0.00)) > 0)
+                    AND ((IFNULL(a.totfact, 0.00) - IFNULL(c.monto, 0.00) - IFNULL(d.monto, 0.00) - IFNULL(a.isr, 0.00) - IFNULL(a.retiva, 0.00)) > 0)
                     AND a.fechafactura >= 20210101
             ORDER BY a.fechafactura DESC ";
     print $db->doSelectASJson($query);    
