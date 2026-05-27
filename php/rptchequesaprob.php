@@ -38,8 +38,10 @@ $app->get('/gettxt/:idempresa/:fechastr/:idmoneda/:nombre(/:idbanco)', function(
     //print json_encode($data);
 
     $respuesta = $db->CallJSReportAPI('POST', $url, json_encode($data));
+    // Limpieza previa
+    $respuesta_limpia = limpiarTextoCSV($respuesta);
     //print iconv('UTF-8','Windows-1252', preg_replace('/[^\P{C}\n]+/u', '', $respuesta));
-	print iconv('UTF-8','Windows-1252', $respuesta);
+	print iconv('UTF-8','Windows-1252', $respuesta_limpia);
 });
 
 $app->get('/gettxt_notas/:fechastr/:idbanco/:nombre', function($fechastr, $idbanco, $nombre) use($app){
@@ -531,5 +533,33 @@ $app->post('/comparativo', function () {
 
     print json_encode(['data' => $transacciones, 'encabezado' => $letra]);
 });
+
+function limpiarTextoCSV($texto) {
+    // Mapa de sustitución de caracteres problemáticos
+    $map = [
+        'А' => 'A', // cirílica → latina
+        'В' => 'B',
+        'С' => 'C',
+        'Е' => 'E',
+        'Н' => 'H',
+        'К' => 'K',
+        'М' => 'M',
+        'О' => 'O',
+        'Р' => 'P',
+        'Т' => 'T',
+        'Х' => 'X',
+        'Ь' => '',  // eliminar si aparece
+    ];
+
+    // Sustituir caracteres según el mapa
+    $texto = strtr($texto, $map);
+
+    // Eliminar caracteres de control invisibles
+    $texto = preg_replace('/[^\P{C}\n]+/u', '', $texto);
+
+    // Normalizar a UTF-8 limpio
+    return $texto;
+}
+
 
 $app->run();
