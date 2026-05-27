@@ -818,8 +818,8 @@ SUM(IF(true, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, (a.monto
                     }
                 } else {
                     if (count($facturas) > 1) {
-                        $row->ingreso -= $montoFacturas[$factura];
-                        $row->ingreso += $saldoFacturas[$factura];
+                        // $row->ingreso -= $montoFacturas[$factura];
+                        $row->ingreso = $saldoFacturas[$factura];
                         $row->isr -= $isrFacturas[$factura];
                         $row->diferencia =  ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
                     } else {
