@@ -726,6 +726,7 @@ $app->post('/control_ingresos', function () {
                 c.simbolo AS abreviatura,
                 b.idempresa AS idproyecto,
                 d.abreviatura AS proyecto,
+                c.simbolo AS moneda,
                 b.siglas,
                 IF(a.numban = 0 OR a.numban IS NULL,
                     a.numero,
