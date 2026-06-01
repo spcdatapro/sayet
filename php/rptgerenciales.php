@@ -717,61 +717,66 @@ $app->post('/control_ingresos', function () {
     // tipo 
     $letra->tipo = $d->tipo == 1 ? 'por Empresa' : 'Personal';
     $d->tipo = $d->tipo == 1 ? '1 , 4' : '2, 3';
-
     $query = "SELECT 
-                c.idrecibocli,
                 a.id,
+                e.idrecibocli,
                 b.idmoneda AS idempresa,
-                CONCAT(e.nommoneda, ' ', e.simbolo) AS empresa,
+                CONCAT(c.nommoneda, ' ', c.simbolo) AS empresa,
                 NULL AS numero,
-                e.simbolo AS abreviatura,
+                c.simbolo AS abreviatura,
                 b.idempresa AS idproyecto,
-                f.abreviatura AS proyecto,
+                d.abreviatura AS proyecto,
                 b.siglas,
                 IF(a.numban = 0 OR a.numban IS NULL,
                     a.numero,
                     a.numban) AS tranban,
-                IFNULL(d.factura, 'SC') AS factura,
-                ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ingresodlr, 
-                d.ingreso + IFNULL(suma_extra, 0)
-                -- - (SELECT IFNULL(SUM(dc.monto), 0) FROM detcobroventa dc INNER JOIN recibocli reci ON dc.idrecibocli = reci.id WHERE dc.idfactura = d.idfactura AND reci.fecha != '$d->fechastr')
-                )), 0), 2) AS ingreso,
+                GROUP_CONCAT(f.factura) AS factura,
+                ROUND(IFNULL(SUM(IF(b.idmoneda = 2,
+                                    f.ingresodlr,
+                                    f.ingreso)),
+                                0),
+                        2) AS ingreso,
                 a.monto AS deposito,
-                ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.isrdlr, d.isr)), 0), 2) AS isr,
-                ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ivadlr, d.iva)), 0), 2) AS iva,
-                (ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ingresodlr, d.ingreso)), 0), 2) - a.monto - IFNULL(IF(d.ingreso - a.monto != 0, d.cobrado_prev, 0), 0.00) - ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ivadlr, d.iva)), 0), 2) - ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.isrdlr, d.isr)) - d.pago_extra, 0), 2)) * -1 AS diferencia,
-                e.simbolo AS moneda
+                IFNULL(IF(b.idmoneda = 2, f.isrdlr, f.isr), 0) AS isr,
+                IFNULL(IF(b.idmoneda = 2, f.ivadlr, f.iva), 0) AS iva,
+                ROUND(IFNULL(SUM(IF(b.idmoneda = 2,
+                                    f.ingresodlr,
+                                    f.ingreso)),
+                                0) - (a.monto + IFNULL(IF(b.idmoneda = 2, f.isrdlr, f.isr), 0) + IFNULL(IF(b.idmoneda = 2, f.ivadlr, f.iva), 0)),
+                        2) * - 1 AS diferencia
             FROM
                 tranban a
                     INNER JOIN
                 banco b ON a.idbanco = b.id
+                    INNER JOIN
+                moneda c ON b.idmoneda = c.id
+                    INNER JOIN
+                empresa d ON b.idempresa = d.id
                     LEFT JOIN
-                reclitran c ON c.idtranban = a.id
+                reclitran e ON e.idtranban = a.id
                     LEFT JOIN
                 (SELECT 
-                    a.idrecibocli,
-                    b.id AS idfactura,
+                    b.id,
+                        a.idrecibocli,
                         IF(COUNT(b.id) > 3, CAST(CONCAT(COUNT(b.id), '-FC') AS CHAR), GROUP_CONCAT(b.numeroadmin)) AS factura,
-                        SUM(IF(b.pagada = 1, IF(b.idmonedafact = 2, b.subtotalcnv, (a.monto + b.retisr + b.retiva) / b.tipocambio), IF(b.idmonedafact = 2, b.subtotalcnv, b.subtotal / b.tipocambio))) AS ingresodlr,
-                        SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr / b.tipocambio)) AS isrdlr,
-                        SUM(IF(b.idmonedafact = 2, b.retivacnv, b.retiva / b.tipocambio)) AS ivadlr,
-SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, (a.monto + b.retisr + b.retiva)), IF(b.idmonedafact = 2, b.subtotalcnv, b.subtotal))) AS ingreso,
-                        SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr)) AS isr,
-                        SUM(IF(b.idmonedafact = 2, b.retivacnv, b.retiva)) AS iva,
-                        IF(b.idmonedafact = 2, 1, b.tipocambio) AS tc_fact,
-                        IF(a.idrecibocli IN(23813), -3, 0.00) AS pago_extra,
-                        IF(a.idrecibocli IN(23813), 3, 0.00) AS suma_extra,
-                        IFNULL(IF((SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, (a.monto + b.retisr + b.retiva)), IF(b.idmonedafact = 2, b.subtotalcnv, b.subtotal))) -  SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr)) - SUM(IF(b.idmonedafact = 2, b.retivacnv, b.retiva))) < 0, (SELECT SUM(dc.monto) FROM detcobroventa dc WHERE dc.idfactura = b.id AND dc.idrecibocli != a.idrecibocli), 0),0) AS cobrado_prev
-                        -- 0 AS cobrado_prev
+                        SUM(b.subtotal) - c.pagos AS ingreso,
+                        SUM(b.retisr) AS isr,
+                        SUM(b.retiva) AS iva,
+                        SUM(b.subtotalcnv) - c.pagos AS ingresodlr,
+                        SUM(b.retisrcnv) AS isrdlr,
+                        SUM(b.retivacnv) AS ivadlr,
+                        b.idmonedafact
                 FROM
                     detcobroventa a
                 INNER JOIN factura b ON a.idfactura = b.id
-                GROUP BY a.idrecibocli
-                ORDER BY b.fecha) d ON d.idrecibocli = c.idrecibocli
-                    INNER JOIN
-                moneda e ON b.idmoneda = e.id
-                    INNER JOIN
-                empresa f ON b.idempresa = f.id
+                INNER JOIN (SELECT 
+                    a.idfactura,
+                        SUM(IF(b.fecha != '$d->fechastr', a.monto, 0)) AS pagos
+                FROM
+                    detcobroventa a
+                INNER JOIN recibocli b ON a.idrecibocli = b.id
+                GROUP BY a.idfactura) c ON c.idfactura = b.id
+                GROUP BY a.idrecibocli) f ON f.idrecibocli = e.idrecibocli
                     INNER JOIN
                 tipomovtranban g ON a.tipotrans = g.abreviatura
             WHERE
@@ -782,62 +787,71 @@ SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, 
             ORDER BY b.idmoneda , b.ordensumario , g.ordenalt , a.numero";
     $data = $db->getQuery($query);
 
+//     $query = "SELECT 
+//                 c.idrecibocli,
+//                 a.id,
+//                 b.idmoneda AS idempresa,
+//                 CONCAT(e.nommoneda, ' ', e.simbolo) AS empresa,
+//                 NULL AS numero,
+//                 e.simbolo AS abreviatura,
+//                 b.idempresa AS idproyecto,
+//                 f.abreviatura AS proyecto,
+//                 b.siglas,
+//                 IF(a.numban = 0 OR a.numban IS NULL,
+//                     a.numero,
+//                     a.numban) AS tranban,
+//                 IFNULL(d.factura, 'SC') AS factura,
+//                 ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ingresodlr, 
+//                 d.ingreso + IFNULL(suma_extra, 0)
+//                 -- - (SELECT IFNULL(SUM(dc.monto), 0) FROM detcobroventa dc INNER JOIN recibocli reci ON dc.idrecibocli = reci.id WHERE dc.idfactura = d.idfactura AND reci.fecha != '$d->fechastr')
+//                 )), 0), 2) AS ingreso,
+//                 a.monto AS deposito,
+//                 ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.isrdlr, d.isr)), 0), 2) AS isr,
+//                 ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ivadlr, d.iva)), 0), 2) AS iva,
+//                 (ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ingresodlr, d.ingreso)), 0), 2) - a.monto - IFNULL(IF(d.ingreso - a.monto != 0, d.cobrado_prev, 0), 0.00) - ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.ivadlr, d.iva)), 0), 2) - ROUND(IFNULL(SUM(IF(b.idmoneda = 2, d.isrdlr, d.isr)) - d.pago_extra, 0), 2)) * -1 AS diferencia,
+//                 e.simbolo AS moneda
+//             FROM
+//                 tranban a
+//                     INNER JOIN
+//                 banco b ON a.idbanco = b.id
+//                     LEFT JOIN
+//                 reclitran c ON c.idtranban = a.id
+//                     LEFT JOIN
+//                 (SELECT 
+//                     a.idrecibocli,
+//                     b.id AS idfactura,
+//                         IF(COUNT(b.id) > 3, CAST(CONCAT(COUNT(b.id), '-FC') AS CHAR), GROUP_CONCAT(b.numeroadmin)) AS factura,
+//                         SUM(IF(b.pagada = 1, IF(b.idmonedafact = 2, b.subtotalcnv, (a.monto + b.retisr + b.retiva) / b.tipocambio), IF(b.idmonedafact = 2, b.subtotalcnv, b.subtotal / b.tipocambio))) AS ingresodlr,
+//                         SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr / b.tipocambio)) AS isrdlr,
+//                         SUM(IF(b.idmonedafact = 2, b.retivacnv, b.retiva / b.tipocambio)) AS ivadlr,
+// SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, (a.monto + b.retisr + b.retiva)), IF(b.idmonedafact = 2, b.subtotalcnv, b.subtotal))) AS ingreso,
+//                         SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr)) AS isr,
+//                         SUM(IF(b.idmonedafact = 2, b.retivacnv, b.retiva)) AS iva,
+//                         IF(b.idmonedafact = 2, 1, b.tipocambio) AS tc_fact,
+//                         IF(a.idrecibocli IN(23813), -3, 0.00) AS pago_extra,
+//                         IF(a.idrecibocli IN(23813), 3, 0.00) AS suma_extra,
+//                         IFNULL(IF((SUM(IF(b.pagada = 1, IF(a.monto + b.retisr + b.retiva > b.subtotal, b.subtotal, (a.monto + b.retisr + b.retiva)), IF(b.idmonedafact = 2, b.subtotalcnv, b.subtotal))) -  SUM(IF(b.idmonedafact = 2, b.retisrcnv, b.retisr)) - SUM(IF(b.idmonedafact = 2, b.retivacnv, b.retiva))) < 0, (SELECT SUM(dc.monto) FROM detcobroventa dc WHERE dc.idfactura = b.id AND dc.idrecibocli != a.idrecibocli), 0),0) AS cobrado_prev
+//                         -- 0 AS cobrado_prev
+//                 FROM
+//                     detcobroventa a
+//                 INNER JOIN factura b ON a.idfactura = b.id
+//                 GROUP BY a.idrecibocli
+//                 ORDER BY b.fecha) d ON d.idrecibocli = c.idrecibocli
+//                     INNER JOIN
+//                 moneda e ON b.idmoneda = e.id
+//                     INNER JOIN
+//                 empresa f ON b.idempresa = f.id
+//                     INNER JOIN
+//                 tipomovtranban g ON a.tipotrans = g.abreviatura
+//             WHERE
+//                 a.fecha = '$d->fechastr'
+//                     AND a.tipotrans IN ('R' , 'D')
+//                     AND b.gruposumario IN ($d->tipo)
+//             GROUP BY a.id
+//             ORDER BY b.idmoneda , b.ordensumario , g.ordenalt , a.numero";
+    // $data = $db->getQuery($query);
+
     if (count($data) > 0) {
-
-        $saldoFacturas = [];
-        $montoFacturas = [];
-        $isrFacturas = [];
-        $countFacturas = [];
-
-        // Pre-compute counts
-        foreach ($data as $row) {
-            $facturas = explode(',', $row->factura);
-            foreach ($facturas as $factura) {
-                $factura = trim($factura);
-                $countFacturas[$factura] = ($countFacturas[$factura] ?? 0) + 1;
-            }
-        }
-
-        foreach ($data as $row) {
-            // Puede haber varias facturas en la misma fila
-            $facturas = explode(',', $row->factura);
-            // $row->ingreso = 0;
-        
-            foreach ($facturas as $factura) {
-                $factura = trim($factura);
-        
-                // Inicializar saldo si no existe
-                if (!isset($saldoFacturas[$factura])) {
-                    $montoFacturas[$factura] = $row->ingreso;
-                    $isrFacturas[$factura] = $row->isr;
-                    $saldoFacturas[$factura] = $row->ingreso - ($row->deposito + $row->isr + $row->iva);
-
-                    $row->diferencia = ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
-                    if ($countFacturas[$factura] > 1) {
-                        $row->diferencia = 0;
-                    }
-                } else {
-                    // if (count($facturas) > 1) {
-                    //     $row->ingreso -= $montoFacturas[$factura];
-                    //     $row->ingreso += $saldoFacturas[$factura];
-                    //     $row->isr -= $isrFacturas[$factura];
-                    //     $row->diferencia =  ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
-                    // } else {
-                        // Aplicar depósito contra saldo
-                        $row->ingreso = $saldoFacturas[$factura];
-                        $saldoFacturas[$factura] -= $row->deposito;
-                        if ($countFacturas[$factura] > 2) {
-                            $row->diferencia = 0;
-                        } else {
-                            $row->diferencia =  ($row->ingreso - $row->deposito) * -1;
-                        }
-                    // }
-                }
-            }
-        
-            // Recalcular diferencia con el ingreso ajustado
-            // $row->diferencia = ($row->ingreso - $resta) * -1;
-        }
 
         for ($i = 0; $i < count($data); $i++) {
             $actual = $data[$i];
