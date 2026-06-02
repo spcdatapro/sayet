@@ -132,8 +132,8 @@ $app->post('/altasbajas', function(){
                 a.id AS idempleado,
                 IFNULL(b.id, '9999') AS idempresa,
                 f.idproyecto,
-                IF(f.reingreso AND ($d->tipo = 3 OR $d->tipo = 4), '2',
-                IF(a.activo = 0 AND ($d->tipo = 3 OR $d->tipo = 2), '1', '0')) AS tipo,
+                IF(f.reingreso >= '$d->fdelstr' AND f.reingreso <= '$d->falstr' AND ($d->tipo = 3 OR $d->tipo = 4), '2',
+                IF(f.baja >= '$d->fdelstr' AND f.baja <= '$d->falstr' AND ($d->tipo = 3 OR $d->tipo = 2), '1', '0')) AS tipo,
                 IFNULL(b.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
                 c.nomproyecto AS proyecto,
                 CONCAT(e.primernombre, ' ', 
@@ -147,8 +147,8 @@ $app->post('/altasbajas', function(){
                 ' ', 
                 IFNULL(e.apellidocasada, '')) AS nombre,
                 IFNULL(d.descripcion, 'NO ESPECIFICADO') AS puesto,
-                IF(f.reingreso AND ($d->tipo = 3 OR $d->tipo = 4), DATE_FORMAT(f.reingreso, '%d/%m/%Y'),
-                IF(f.baja AND ($d->tipo = 3 OR $d->tipo = 2),
+                IF(f.reingreso >= '$d->fdelstr' AND f.reingreso <= '$d->falstr' AND ($d->tipo = 3 OR $d->tipo = 4), DATE_FORMAT(f.reingreso, '%d/%m/%Y'),
+                IF(f.baja >= '$d->fdelstr' AND f.baja <= '$d->falstr' AND ($d->tipo = 3 OR $d->tipo = 2),
                     DATE_FORMAT(f.baja, '%d/%m/%Y'),
                     DATE_FORMAT(f.ingreso, '%d/%m/%Y'))) AS fecha,
                 f.sueldo,
@@ -178,6 +178,7 @@ $app->post('/altasbajas', function(){
     $query.= isset($d->idproyecto) ? "AND f.idproyecto = $d->idproyecto " : "";
     $query.=   "ORDER BY 4 , 5 ,"; 
     $query.= $d->agrupar == 2 ? " 6 , 7" : " 7";
+    echo $query; return;
     $data = $db->getQuery($query);
 
     foreach($data as $dat) {
