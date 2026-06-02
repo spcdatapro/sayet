@@ -178,7 +178,6 @@ $app->post('/altasbajas', function(){
     $query.= isset($d->idproyecto) ? "AND f.idproyecto = $d->idproyecto " : "";
     $query.=   "ORDER BY 4 , 5 ,"; 
     $query.= $d->agrupar == 2 ? " 6 , 7" : " 7";
-    echo $query; return;
     $data = $db->getQuery($query);
 
     foreach($data as $dat) {
