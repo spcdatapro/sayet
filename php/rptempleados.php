@@ -133,7 +133,7 @@ $app->post('/altasbajas', function(){
                 IFNULL(b.id, '9999') AS idempresa,
                 f.idproyecto,
                 IF(f.reingreso >= '$d->fdelstr' AND f.reingreso <= '$d->falstr' AND ($d->tipo = 3 OR $d->tipo = 4), '2',
-                IF(f.baja >= '$d->fdelstr' AND f.baja <= '$d->falstr' AND ($d->tipo = 3 OR $d->tipo = 2), '1', '0')) AS tipo,
+                IF(a.activo = 0 AND f.baja >= '$d->fdelstr' AND f.baja <= '$d->falstr' AND ($d->tipo = 3 OR $d->tipo = 2), '1', '0')) AS tipo,
                 IFNULL(b.nombre, 'SIN EMPRESA DÉBITO') AS empresa,
                 c.nomproyecto AS proyecto,
                 CONCAT(e.primernombre, ' ', 
