@@ -763,7 +763,7 @@ $app->post('/control_ingresos', function () {
                         SUM(b.subtotal) - c.pagos AS ingreso,
                         SUM(b.retisr) AS isr,
                         SUM(b.retiva) AS iva,
-                        SUM(b.subtotalcnv) - c.pagos AS ingresodlr,
+                        SUM(IF(b.subtotalcnv > 0, b.subtotalcnv, b.subtotal / b.tipocambio)) - c.pagos AS ingresodlr,
                         SUM(b.retisrcnv) AS isrdlr,
                         SUM(b.retivacnv) AS ivadlr,
                         b.idmonedafact
