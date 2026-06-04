@@ -97,7 +97,7 @@ $app->post('/finanzas', function(){
                     LEFT JOIN
                 unidad f ON e.idunidad = f.id
                     LEFT JOIN
-                lectUraservicio g ON g.idfactura = a.id
+                lecturaservicio g ON g.idfactura = a.id
                     LEFT JOIN
                 unidad h ON g.idunidad = h.id
             WHERE
