@@ -493,11 +493,19 @@ class Empleado extends Principal
 	public function set_fecha($fecha)
 	{
 		$nstr = strtotime($fecha);
-		
+
 		$this->nfecha = $fecha;
 		$this->ndia   = date('d', $nstr);
 		$this->nmes   = date('m', $nstr);
 		$this->nanio  = date('Y', $nstr);
+	}
+
+	public function getDiasDelMes($mes = null, $anio = null)
+	{
+		if ($mes === null) $mes = $this->nmes;
+		if ($anio === null) $anio = $this->nanio;
+
+		return cal_days_in_month(CAL_GREGORIAN, (int)$mes, (int)$anio);
 	}
 
 	public function set_sueldo()
@@ -518,12 +526,12 @@ class Empleado extends Principal
 
 	public function get_gana_dia()
 	{
-		return $this->lab->sueldo/30;
+		return $this->lab->sueldo / $this->getDiasDelMes();
 	}
 
 	public function get_bono_dia()
 	{
-		return $this->lab->bonificacionley/30;
+		return $this->lab->bonificacionley / $this->getDiasDelMes();
 	}
 
 	public function get_gana_hora()
@@ -553,15 +561,16 @@ class Empleado extends Principal
 		$pago = new DateTime($this->nfecha);
 		$ingreso = new DateTime($this->getFechaIngreso());
 		$ipago = new DateTime($pago->format('Y-m-01'));
+		$t_dias = $this->getDiasDelMes($pago->format('m'), $pago->format('Y'));
 
 		if ($ipago >= $ingreso) {
 			if (empty($this->lab->baja)) {
-				$this->dtrabajados = $pago->format('d') == 15 ? 15 : 30;
+				$this->dtrabajados = $pago->format('d') == 15 ? 15 : $t_dias;
 			} else {
 				$baja = new DateTime($this->lab->baja);
 
 				if ($baja >= $pago) {
-					$this->dtrabajados = $pago->format('d') == 15 ? 15 : 30;
+					$this->dtrabajados = $pago->format('d') == 15 ? 15 : $t_dias;
 				} else  {
 					if ($baja < $ipago) {
 						$this->dtrabajados = 0;
@@ -930,9 +939,10 @@ class Empleado extends Principal
 			// para anios biciestos
 			$intervalo = ($interval->format('%a')+1) > 365 ? ($interval->format('%a')) : ($interval->format('%a')+1);
 			$dias  = ($intervalo/(365/15));
-			$monto = ($dias*($this->sueldoPromedio/30));
-		}	
-		
+			$diasDelMes = $this->getDiasDelMes($fin->format('m'), $fin->format('Y'));
+			$monto = ($dias*($this->sueldoPromedio / $diasDelMes));
+		}
+
 		$this->finiquitoVacaciones = (object)[
 			'dias'   => $dias,
 			'inicio' => $this->getFechaIngreso(),
@@ -1021,9 +1031,10 @@ class Empleado extends Principal
 
 	public function set_finiquito_sueldo($args = [])
 	{
+		$diasDelMes = $this->getDiasDelMes();
 		$res = [
-			'sdiario' => ($this->lab->sueldo/30),
-			'bdiario' => ($this->lab->bonificacionley/30)
+			'sdiario' => ($this->lab->sueldo / $diasDelMes),
+			'bdiario' => ($this->lab->bonificacionley / $diasDelMes)
 		];
 
 		$dias = elemento($args, 'dias_sueldo_pagar', 0);
