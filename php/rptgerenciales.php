@@ -760,10 +760,10 @@ $app->post('/control_ingresos', function () {
                     b.id,
                         a.idrecibocli,
                         IF(COUNT(b.id) > 3, CAST(CONCAT(COUNT(b.id), '-FC') AS CHAR), GROUP_CONCAT(b.numeroadmin)) AS factura,
-                        SUM(b.subtotal) - c.pagos AS ingreso,
+                        SUM(b.subtotal) - SUM(c.pagos) AS ingreso,
                         SUM(b.retisr) AS isr,
                         SUM(b.retiva) AS iva,
-                        SUM(IF(b.subtotalcnv > 0, b.subtotalcnv, b.subtotal / b.tipocambio)) - c.pagos AS ingresodlr,
+                        SUM(IF(b.subtotalcnv > 0, b.subtotalcnv, b.subtotal / b.tipocambio)) - SUM(c.pagos) AS ingresodlr,
                         SUM(b.retisrcnv) AS isrdlr,
                         SUM(b.retivacnv) AS ivadlr,
                         b.idmonedafact
