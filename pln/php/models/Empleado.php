@@ -510,7 +510,10 @@ class Empleado extends Principal
 
 	public function set_sueldo()
 	{
-		if ($this->dtrabajados == 30) {
+		$pago = new DateTime($this->nfecha);
+		$t_dias = $this->getDiasDelMes($pago->format('m'), $pago->format('Y'));
+
+		if ($this->dtrabajados == $t_dias) {
 			$this->sueldo = $this->lab->sueldo;
 		} else if ($this->dtrabajados == 15) {
 			$this->sueldo = round($this->lab->sueldo / 2, 2);
@@ -617,18 +620,17 @@ class Empleado extends Principal
 		if (empty($this->lab->descuentoisr)) {
 			return 0;
 		} else {
-			// if ($this->dtrabajados == 30) {
-				return $this->lab->descuentoisr;
-			// } else {
-				// return round(($this->emp->descuentoisr/30)*$this->dtrabajados, 2);
-			// }
+			return $this->lab->descuentoisr;
 		}
 	}
 
 	public function get_bono_ley()
 	{
+		$pago = new DateTime($this->nfecha);
+		$t_dias = $this->getDiasDelMes($pago->format('m'), $pago->format('Y'));
+
 		if ($this->dtrabajados > 0) {
-			if ($this->dtrabajados == 30) {
+			if ($this->dtrabajados == $t_dias) {
 				return $this->lab->bonificacionley;
 			} else {
 				return round($this->get_bono_dia()*$this->dtrabajados, 2);
