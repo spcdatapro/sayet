@@ -814,7 +814,7 @@ $app->post('/control_ingresos', function () {
                 $index[$factura] = ($index[$factura] ?? 0) + 1;
 
                 // Inicializar saldo si no existe
-                if (!isset($saldoFacturas[$factura]) && $countFacturas[$factura] > 1) {
+                if (!isset($saldoFacturas[$factura])) {
                     $montoFacturas[$factura] = $row->ingreso;
                     $isrFacturas[$factura] = $row->isr;
                     $saldoFacturas[$factura] = $row->ingreso - $row->deposito;
