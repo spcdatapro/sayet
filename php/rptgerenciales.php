@@ -7,6 +7,10 @@ require_once 'NumberToLetterConverter.class.php';
 $app = new \Slim\Slim();
 $app->response->headers->set('Content-Type', 'application/json');
 
+$app->get('/info', function () {
+    phpinfo();
+});
+
 $app->post('/finanzas', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
