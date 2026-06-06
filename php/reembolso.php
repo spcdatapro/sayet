@@ -46,7 +46,7 @@ $app->get('/getreembolso/:idreembolso(/:idot)', function($idreembolso, $idot = 0
     $idot = (int)$idot;
     $query = "SELECT a.id, a.idempresa, a.idtiporeembolso, b.desctiporeembolso AS tipo, a.finicio, a.ffin, a.beneficiario, ";
     $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto, a.idcuentaliq, a.ordentrabajo, ";
-    $query.= "a.idproyecto, a.pagado, a.idusuario, a.ultusuario, '37ce35dd-186e-4372-8b34-81893dd0dfed' AS firma_jefe ";
+    $query.= "a.idproyecto, a.pagado, a.idusuario, a.ultusuario, '37ce35dd-186e-4372-8b34-81893dd0dfed' AS firma_jefe, a.estatus_aprobacion, a.aprobar ";
     $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso ";
     $query.= "LEFT JOIN (SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) c ON a.id = c.idreembolso ";
     $query.= "WHERE ";
@@ -748,6 +748,89 @@ $app->get('/reembolso_aprobacion/:idreembolso', function ($idreembolso) {
     $result = array_values($compras);
 
     print json_encode(['encabezado' => $letra, 'compras' => $compras]);
+});
+
+$app->post('/env', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "UPDATE reembolso SET aprobar = 1, envioaprob = NOW() WHERE id = $d->id";
+    $db->doQuery($query);
+
+    return;
+});
+
+$app->post('/apr', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+    $uid = $db->generate_uuid();
+
+    $query = "UPDATE reembolso SET aprobador = $d->idusuario, aprobacion = NOW(), estatus_aprobacion = 1, codigo_aprobacion = '$uid' WHERE id = $d->id";
+    $db->doQuery($query);
+
+    return;
+});
+
+$app->post('/ngr', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "UPDATE reembolso SET aprobador = $d->idusuario, aprobacion = NOW(), estatus_aprobacion = 2 WHERE id = $d->id";
+    $db->doQuery($query);
+
+    return;
+});
+
+// Adjuntos endpoints
+$app->get('/lstremadjuntos/:idreembolso', function($idreembolso){
+    $db = new dbcpm();
+    $idreembolso = (int)$idreembolso;
+    $query = "SELECT id, idreembolso, nombre, ubicacion, idusuario, correlativo, IFNULL(DATE_FORMAT(fecha, '%d/%m/%Y'), '') AS fecha FROM reem_adjunto WHERE idreembolso = $idreembolso ORDER BY id, fecha ASC";
+    print json_encode($db->getQuery($query));
+});
+
+$app->post('/aareem', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $correlativo = $db->getOneField("SELECT correlativo FROM reem_adjunto WHERE idreembolso = $d->idreembolso ORDER BY correlativo DESC LIMIT 1");
+    $correlativo = $correlativo >= 1 ? $correlativo + 1 : 1;
+    $d->ubicacion = trim($d->ubicacion);
+
+    $query = "INSERT INTO reem_adjunto(idreembolso, nombre, ubicacion, fecha, idusuario, correlativo) VALUES ($d->idreembolso, '$d->nombre', '$d->ubicacion', DATE_FORMAT(NOW(), '%Y-%m-%d'), $d->idusuario, $correlativo)";
+    $db->doQuery($query);
+
+    $lastid = $db->getLastId();
+
+    if ($lastid > 0) {
+        $tipo = 'success';
+        $mensaje = 'Archivo adjunto agregado correctamente.';
+    } else {
+        $tipo = 'error';
+        $mensaje = 'No se ha podido agregar el archivo adjunto.';
+    }
+
+    print json_encode(['tipo' => $tipo, 'mensaje' => $mensaje]);
+});
+
+$app->post('/dareem', function(){
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "DELETE FROM reem_adjunto WHERE id = $d->id";
+    $db->doQuery($query);
+
+    $adjunto = $db->getOneField("SELECT ubicacion FROM reem_adjunto WHERE id = $d->id") > 0;
+
+    if (!$adjunto) {
+        $tipo = 'success';
+        $mensaje = 'Archivo adjunto eliminado correctamente.';
+    } else {
+        $tipo = 'error';
+        $mensaje = 'No se ha podido eliminar el archivo adjunto.';
+    }
+
+    print json_encode(['tipo' => $tipo, 'mensaje' => $mensaje]);
 });
 
 $app->run();

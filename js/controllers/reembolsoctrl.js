@@ -5,10 +5,10 @@
     reembolsoctrl.controller('reembolsoCtrl', [
         '$scope', 'reembolsoSrvc', 'monedaSrvc', 'authSrvc', 'empresaSrvc', '$route', '$confirm', 'tipoReembolsoSrvc', 'DTOptionsBuilder', '$filter', 'tipoFacturaSrvc', 'tipoCompraSrvc', 'detContSrvc', 'cuentacSrvc',
         'toaster', '$uibModal', 'tipoMovTranBanSrvc', 'bancoSrvc', 'beneficiarioSrvc', 'tipoCombustibleSrvc', 'proveedorSrvc', 'localStorageSrvc', '$location', 'proyectoSrvc', 'tipogastoSrvc', 'periodoContableSrvc',
-        'presupuestoSrvc', 'compraSrvc', 'periodoIvaSrvc',
+        'presupuestoSrvc', 'compraSrvc', 'periodoIvaSrvc', 'Upload',
         ($scope, reembolsoSrvc, monedaSrvc, authSrvc, empresaSrvc, $route, $confirm, tipoReembolsoSrvc, DTOptionsBuilder, $filter, tipoFacturaSrvc, tipoCompraSrvc, detContSrvc, cuentacSrvc,
             toaster, $uibModal, tipoMovTranBanSrvc, bancoSrvc, beneficiarioSrvc, tipoCombustibleSrvc, proveedorSrvc, localStorageSrvc, $location, proyectoSrvc, tipogastoSrvc, periodoContableSrvc,
-            presupuestoSrvc, compraSrvc, periodoIvaSrvc
+            presupuestoSrvc, compraSrvc, periodoIvaSrvc, Upload
         ) => {
 
             $scope.monedas = [];
@@ -130,6 +130,16 @@
                     });
                 }
             });
+
+            $scope.enviarAprobacion = obj => {
+                $confirm({ text: '¿Seguro(a) de enviar este reembolso a aprobación? No se podrán hacer modificaciones hasta que sea aprobado o rechazado.', title: 'Enviar a aprobación', ok: 'Sí', cancel: 'No' }).then(() => {
+                    reembolsoSrvc.editRow(obj, 'env').then(d => {
+                        $scope.getLstReembolsos();
+                        $scope.getReembolso(obj.id);
+                        toaster.pop('info', 'Enviado a aprobación', 'El reembolso No. ' + obj.id + ' fue enviado a aprobación', 'timeout:1500');
+                    });
+                });
+            }
 
             $scope.esDePresupuesto = async () => {
                 if (+$scope.idot > 0 && !$scope.ot.id) {
@@ -403,6 +413,7 @@
                     }
                     $scope.resetCompra();
                     $scope.loadProyectos();
+                    $scope.loadOTAdjuntos($scope.reembolso.id);
                     goTop();
                 });
             };
@@ -965,6 +976,63 @@
                 });
             };
 
+            $scope.verCodigoAprobacion = (reembolso) => {
+                $uibModal.open({
+                    animation: true,
+                    templateUrl: 'modalCodigoAprobacion.html',
+                    controller: 'ModalCodigoAprobacionCtrl',
+                    resolve: {
+                        reembolso: function () {
+                            return reembolso;
+                        }
+                    }
+                });
+            }
+
+
+            $scope.resetReeAdjunot = () => $scope.remAdjunto = { idreembolso: undefined, ubicacion: undefined };
+
+            $scope.resetReeAdjunot();
+
+            $scope.upload = () => {
+                const file = $scope.file;
+                console.log(file);
+                if (file) {
+                    Upload.upload({
+                        url: 'php/upload.php',
+                        method: 'POST',
+                        file: file,
+                        sendFieldsAs: 'form',
+                        fields: {
+                            directorio: '../reem_adjunto/',
+                            prefijo: 'Reem_' + $scope.reembolso.id + '_'
+                        }
+                    }).then(() => {
+                        $scope.file = null;
+                        $scope.progressPercentage = 0;
+                    },
+                        () => { },
+                        (evt) => $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total)
+                    );
+                }
+            };
+
+            $scope.addRemAdjunto = (reemadjunto) => {
+                $scope.upload();
+                reemadjunto.idusuario = $scope.uid;
+                reemadjunto.idreembolso = $scope.reembolso.id;
+                reemadjunto.ubicacion = "reem_adjunto/" + 'Reem_' + reemadjunto.idreembolso + '_' + $scope.file.name;
+                reembolsoSrvc.editRow(reemadjunto, 'aareem').then(d => {
+                    toaster.pop({ type: d.tipo, title: 'Archivo adjunto', body: d.mensaje, timeout: 5000 });
+                    $scope.loadOTAdjuntos($scope.reembolso.id);
+                });
+            };
+
+            $scope.loadOTAdjuntos = (id) => {
+                id = id > 0 ? id : $scope.reembolso.id;
+                reembolsoSrvc.lstReemAdjuntos(id).then((d) => $scope.lstremadjuntos = d);
+            };
+
             $scope.printPendientes = function () {
                 var modalInstance = $uibModal.open({
                     animation: true,
@@ -976,6 +1044,15 @@
 
                 modalInstance.result.then(function () { return 0; }, function () { return 0; });
             };
+
+            $scope.delRemAdjunto = (id) => {
+                $confirm({ text: '¿Seguro(a) de eliminar este archivo adjunto?', title: 'Eliminar archivo adjunto', ok: 'Sí', cancel: 'No' }).then(() => {
+                    reembolsoSrvc.editRow({ id: id }, 'dareem').then(d => {
+                        toaster.pop({ type: d.tipo, title: 'Archivo adjunto', body: d.mensaje, timeout: 5000 });
+                        $scope.loadOTAdjuntos($scope.reembolso.id);
+                    });
+                });
+            }
 
             $scope.printSinCtaDeLiquidacion = function () {
                 var modalInstance = $uibModal.open({
@@ -1200,6 +1277,14 @@
         $scope.cancel = function () {
             $uibModalInstance.dismiss('cancel');
         };
+    }]);
+
+    reembolsoctrl.controller('ModalCodigoAprobacionCtrl', ['$scope', '$uibModalInstance', 'reembolso', function ($scope, $uibModalInstance, reembolso) {
+        $scope.codigoAprobacion = reembolso.codigoaprobacion;
+
+        $scope.cancel = function () {
+            $uibModalInstance.dismiss('cancel');
+        }
     }]);
     //------------------------------------------------------------------------------------------------------------------------------------------------//
     // reembolsoctrl.controller('ModalUpdDetContCtrl', ['$scope', '$uibModalInstance', 'detalle', 'cuentacSrvc', 'idempresa', 'detContSrvc', '$confirm', function ($scope, $uibModalInstance, detalle, cuentacSrvc, idempresa, detContSrvc, $confirm) {

@@ -330,8 +330,16 @@
                                             </ul>
                                         </div>
                                         <input name="txtISR" id="txtISR" type="text" class="form-control"
-                                            ng-model="laCompra.isr" placeholder="I.S.R."
-                                            fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true" />
+                                               ng-model="laCompra.isr" placeholder="I.S.R."
+                                               fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true" />
+                                    
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-primary"
+                                                    ng-show="laCompra.objMoneda && laCompra.objMoneda.id == 2 && laCompra.totfact > 0"
+                                                    ng-click="abrirISR()">
+                                                Q
+                                            </button>
+                                        </div>                                    
                                     </div>
                                 </div>
                             </div>
@@ -1322,6 +1330,25 @@
                 <div class="modal-footer">
                     <button class="btn btn-default" data-dismiss="modal">Cancelar</button>
                     <button class="btn btn-primary" ng-click="guardarRetIVAQ()">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modalISR" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h4 class="modal-title">Ingresar I.S.R. en Quetzales</h4>
+                </div>
+                <div class="modal-body">
+                    <label>Monto en Quetzales:</label>
+                    <input type="number" class="form-control"
+                           ng-model="isrQtemp"
+                           min="0" step="0.001">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-primary" ng-click="guardarISR()">Aceptar</button>
                 </div>
             </div>
         </div>

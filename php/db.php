@@ -1,5 +1,8 @@
 <?php
+require_once '../vendor/autoload.php';
 require_once 'vendor/catfan/medoo/medoo.php';
+use Ramsey\Uuid\Uuid;
+
 error_reporting(E_ALL ^ E_DEPRECATED);
 class dbcpm{
 
@@ -348,5 +351,11 @@ class dbcpm{
             $msg = "Not logged in...";
         }
         return $resultado[] = $msg;
+    }
+
+    public function generate_uuid()
+    {
+        $myuuid = Uuid::uuid4();
+        return $myuuid->toString();
     }
 }

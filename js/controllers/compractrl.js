@@ -50,6 +50,7 @@
             $scope.creador = undefined;
             $scope.ultimo_usuario = undefined;
             $scope.laCompra.retiva_manual = 0;
+            $scope.laCompra.isr_manual = 0; 
             var periodoIva = true;
 
             empresaSrvc.lstEmpresas().then(function (d) { $scope.lasEmpresas = d; });
@@ -959,13 +960,14 @@
             };
             $scope.$watch('laCompra.objMoneda', function (nueva, vieja) {
                 if (!nueva || !vieja) return;
-                        
-                // Si ya es manual → NO recalcular, NO hacer nada.
-                if ($scope.laCompra.retiva_manual == 1) return;
-                        
-                // Si cambia de moneda y no es manual = recalculo normal
-                if (nueva.id !== vieja.id) {
-                    $scope.calcularRetIVA(); 
+
+                // Recalcular solo si no son manuales
+                if ($scope.laCompra.retiva_manual != 1 && nueva.id !== vieja.id) {
+                    $scope.calcularRetIVA();
+                }
+            
+                if ($scope.laCompra.isr_manual != 1 && nueva.id !== vieja.id) {
+                    $scope.calcularISR();
                 }
             });
             $scope.guardarRetIVAQ = function () {
@@ -1016,7 +1018,56 @@
                 });
             
                 $('#modalRetIVAQ').modal('hide');
-            };  
+            };
+            
+            $scope.calcularISR = function() {
+                if ($scope.laCompra.isr_manual == 1) return;  
+            };
+            $scope.abrirISR = function () {
+                $scope.isrQtemp = parseFloat($scope.laCompra.isr) || 0;
+                $('#modalISR').modal('show');
+            };
+            $scope.guardarISR = function () {
+                if (!$scope.laCompra.id || $scope.laCompra.id == 0) {
+                    if ($scope.isrQtemp == 0) {
+                        $scope.laCompra.isr_manual = 0;
+                        $scope.calcularISR();
+                    } else {
+                        $scope.laCompra.isr_manual = 1;
+                        $scope.laCompra.isr = $scope.isrQtemp;
+                    }
+                    $('#modalISR').modal('hide');
+                    return;
+                }
+            
+                let datos = angular.copy($scope.laCompra);
+                datos.iddocliquida = datos.iddocliquida || null;
+                datos.ctagastoprov = datos.ctagastoprov || null;
+                datos.fechaingresostr  = datos.fechaingresostr || datos.fechaingreso;
+                datos.fechafacturastr  = datos.fechafacturastr || datos.fechafactura;
+                datos.fechapagostr     = datos.fechapagostr    || datos.fechapago;
+                datos.conceptoprov = datos.conceptoprov  ||  null;    
+            
+                if ($scope.isrQtemp == 0) {
+                    datos.isr_manual = 0;
+                    datos.isr = 0;
+                } else {
+                    datos.isr_manual = 1;
+                    datos.isr = $scope.isrQtemp;
+                }
+            
+                compraSrvc.editRow(datos, 'u').then(function () {
+                    if ($scope.isrQtemp == 0) {
+                        $scope.laCompra.isr_manual = 0;
+                        $scope.calcularISR();
+                    } else {
+                        $scope.laCompra.isr_manual = 1;
+                        $scope.laCompra.isr = $scope.isrQtemp;
+                    }
+                });
+            
+                $('#modalISR').modal('hide');
+            }; 
                
         }]);
     //------------------------------------------------------------------------------------------------------------------------------------------------//

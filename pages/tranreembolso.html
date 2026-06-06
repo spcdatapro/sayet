@@ -2,6 +2,18 @@
     .app-modal-window .modal-dialog {
         width: 1000px;
     }
+
+    .amarillo {
+        background-color: #fff3cd !important;
+    }
+
+    .verde {
+        background-color: #d4edda !important;
+    }
+
+    .rojo {
+        background-color: #f8d7da !important;
+    }
 </style>
 <div class="container" ng-controller="reembolsoCtrl">
     <ul class="nav nav-tabs">
@@ -13,6 +25,9 @@
         </li>
         <li ng-show="reembolso.id > 0 && detcontreem.length > 0">
             <a show-tab href="#divDetCont" data-toggle="tab">DETALLE CONTABLE</a>
+        </li>
+        <li ng-show="reembolso.id > 0">
+            <a show-tab href="#divAdjuntosReem" data-toggle="tab">ADJUNTOS</a>
         </li>
         <li ng-show="false">
             <a show-tab href="#divPrintVer" data-toggle="tab">VERSI&Oacute;N IMPRIMIBLE</a>
@@ -79,8 +94,7 @@
                                     <select name="selBene" id="selBene" class="form-control"
                                         ng-model="reembolso.objBeneficiario"
                                         ng-options="obj.nitnombre for obj in beneficiarios | filter:{nitnombre:searchbene}"
-                                        ng-change="selBene(reembolso.objBeneficiario)"
-                                        multiple required>
+                                        ng-change="selBene(reembolso.objBeneficiario)" multiple required>
                                     </select>
                                 </div>
                             </div>
@@ -98,8 +112,9 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="selCtaLiq">Cuenta de liquidaci&oacute;n</label>
-                                    <ui-select id="selCtaLiq" ng-model="reembolso.idcuentaliq"  ng-disabled="!permiso.m"
-                                        title="Seleccione una cuenta contable..." theme="bootstrap" autofocus="false" ng-change="selLiquidacion(reembolso.idcuentaliq)">
+                                    <ui-select id="selCtaLiq" ng-model="reembolso.idcuentaliq" ng-disabled="!permiso.m"
+                                        title="Seleccione una cuenta contable..." theme="bootstrap" autofocus="false"
+                                        ng-change="selLiquidacion(reembolso.idcuentaliq)">
                                         <ui-select-match placeholder="Buscar cuenta contable..." allow-clear="true">
                                             <span ng-bind="$select.selected.nombrecta"></span>
                                         </ui-select-match>
@@ -120,7 +135,8 @@
                                     <label for="selIdSubTipoGastRee" class="control-label">Sub-tipo de gasto:</label>
                                     <ui-select id="selIdSubTipoGastRee" name="selIdSubTipoGastRee"
                                         ng-model="reembolso.idsubtipogasto" title="Seleccione un sub-tipo de gasto..."
-                                        theme="bootstrap" autofocus="false" ng-required="false" ng-disabled="!permiso.m">
+                                        theme="bootstrap" autofocus="false" ng-required="false"
+                                        ng-disabled="!permiso.m">
                                         <ui-select-match placeholder="Buscar sub-tipo de gasto..." allow-clear="false">
                                             <span ng-bind="$select.selected.descripcion"></span>
                                         </ui-select-match>
@@ -206,7 +222,7 @@
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
                                     <button type="button" class="btn btn-primary"
-                                        ng-disabled="frmReembolso.$invalid || !permiso.m || reembolso.estatus == 2 || periodoCerrado"
+                                        ng-disabled="frmReembolso.$invalid || !permiso.m || reembolso.estatus == 2 || periodoCerrado || (reembolso.aprobar == 1 && reembolso.estatus_aprobacion != 1)"
                                         ng-show="reembolso.id > 0" ng-click="updReembolso(reembolso)">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
@@ -231,11 +247,12 @@
                                         ng-click="printVersion()">
                                         <span class="glyphicon glyphicon-print"></span>
                                     </button>
-                                    <button type="button" class="btn btn-primary" ng-show="+reembolso.idempresa > 0 && permiso.m"
-                                        ng-click="printPendientes()">
+                                    <button type="button" class="btn btn-primary"
+                                        ng-show="+reembolso.idempresa > 0 && permiso.m" ng-click="printPendientes()">
                                         <span class="glyphicon glyphicon-print"></span>&nbsp;Pendientes
                                     </button>
-                                    <button type="button" class="btn btn-primary" ng-click="printSinCtaDeLiquidacion()" ng-show="permiso.m">
+                                    <button type="button" class="btn btn-primary" ng-click="printSinCtaDeLiquidacion()"
+                                        ng-show="permiso.m">
                                         <span class="glyphicon glyphicon-print"></span>&nbsp;Sin cta. de liquidación
                                     </button>
                                     <button type="button" class="btn btn-danger"
@@ -246,6 +263,17 @@
                                     <button type="button" class="btn btn-primary" ng-disabled="!permiso.c"
                                         ng-show="reembolso.id > 0" ng-click="resetReembolso()">
                                         <span class="glyphicon glyphicon-plus"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default"
+                                        ng-show="!permiso.m && reembolso.id > 0 && reembolso.estatus == 1 && reembolso.idtiporeembolso == 2 && reembolso.aprobar == 0"
+                                        ng-disabled="infocompras.cantidad == 0" ng-click="enviarAprobacion(reembolso)"
+                                        title="Enviar a aprobación">
+                                        <i class="fi fi-sr-file-export"></i> Enviar
+                                    </button>
+                                    <button type="button" class="btn btn-info" title="Ver codigo aprobacion"
+                                        ng-click="verCodigoAprobacion(reembolso)"
+                                        ng-show="reembolso.id > 0 && reembolso.estatus_aprobacion == 1">
+                                        <i class="fi fi-sr-eye"></i> Código
                                     </button>
                                 </div>
                             </div>
@@ -314,7 +342,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="r in reembolsos | filter:lookFor" ng-click="getReembolso(r.id)">
+                            <tr ng-repeat="r in reembolsos | filter:lookFor" ng-click="getReembolso(r.id)" ng-class="{ 'amarillo': +r.aprobar === 1 && +r.aprobador === 0, 'verde': +r.aprobar === 1 && +r.estatus_aprobacion === 1, 
+                        'rojo': +r.aprobar === 1 && +r.estatus_aprobacion === 2 }">
                                 <td style="text-align: right">{{r.id | padNumber:5}}</td>
                                 <td>{{r.tipo}}</td>
                                 <td>{{r.finicio | date:'dd/MM/yyyy'}}</td>
@@ -574,8 +603,8 @@
                                     ng-class="{'has-error':frmCompra.chkRetISR.$invalid && !frmCompra.chkRetISR.$pristine}">
                                     <label for="chkRetISR">Ret. ISR:</label>
                                     <input name="chkRetISR" id="chkRetISR" type="checkbox" class="form-control input-sm"
-                                        ng-model="compra.retenerisr" ng-change="calcISR()" ng-true-value="1" ng-disabled="!permiso.m"
-                                        ng-false-value="0" />
+                                        ng-model="compra.retenerisr" ng-change="calcISR()" ng-true-value="1"
+                                        ng-disabled="!permiso.m" ng-false-value="0" />
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -634,7 +663,7 @@
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
                                     <button type="button" class="btn btn-primary"
-                                        ng-disabled="frmCompra.$invalid || (!permiso.m && !mismo) || periodoCerrado"
+                                        ng-disabled="frmCompra.$invalid || (!permiso.m && !mismo) || periodoCerrado || (reembolso.aprobar == 1 && reembolso.estatus_aprobacion != 1)"
                                         ng-show="compra.id > 0" ng-click="updCompra(compra)">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
@@ -643,9 +672,8 @@
                                         ng-show="compra.id > 0 && permiso.m" ng-click="revisada(compra)">
                                         <span class="glyphicon glyphicon-ok"></span>&nbsp;Revisada
                                     </button>
-                                    <button type="button" class="btn btn-danger"
-                                        ng-disabled="periodoCerrado" ng-show="compra.id > 0 && permiso.e"
-                                        ng-click="delCompra(compra)">
+                                    <button type="button" class="btn btn-danger" ng-disabled="periodoCerrado"
+                                        ng-show="compra.id > 0 && permiso.e" ng-click="delCompra(compra)">
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </button>
                                     <button type="button" class="btn btn-primary"
@@ -776,6 +804,85 @@
                             </table>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div id="divAdjuntosReem" class="tab-pane fade">
+            <div class="panel panel-info">
+                <div class="panel-heading">Archivos adjuntos</div>
+                <div class="panel-body">
+                    <form name="frmRemAdjunto" id="frmRemAdjunto"
+                        ng-submit="frmRemAdjunto.$valid && addRemAdjunto(remadjunto)" class="check-element animate-show"
+                        ng-show="reembolso.id > 0" novalidate>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group"
+                                    ng-class="{'has-error':frmRemAdjunto.txtNomAdjunto.$invalid && !frmRemAdjunto.txtNomAdjunto.$pristine}">
+                                    <label for="txtNomRemAdjunto">Nombre:</label>
+                                    <input name="txtNomAdjunto" id="txtNomRemAdjunto" type="text" class="form-control"
+                                        ng-model="remadjunto.nombre" placeholder="Nombre del adjunto" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <button name="adjuntar_btn" id="adjuntar_btn_rem" type="button" class="btn btn-info"
+                                    ngf-select ng-model="file" name="file" ngf-multiple="false"
+                                    ngf-pattern="'image/*,application/pdf,.xls,.xlsx,.doc,.docx,.txt'"
+                                    ngf-accept="'image/*,application/pdf,.xls,.xlsx,.doc,.docx,.txt'"
+                                    ngf-max-size="200MB" style="width: 100%">
+                                    {{(file.name | textCleaner) || 'Seleccionar documento para subir'}}&nbsp;<span
+                                        class="glyphicon glyphicon-upload"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-1">
+                                <button type="submit" class="btn btn-info"
+                                    ng-disabled="frmRemAdjunto.$invalid || file == null || file == undefined">
+                                    <span class="glyphicon glyphicon-floppy-save"></span>
+                                </button>
+                            </div>
+                            <div class="col-md-2">
+                                <div>
+                                    <round-progress max="100" current="progressPercentage" color="#4CAF50"
+                                        bgcolor="#eaeaea" radius="25" stroke="10" semi="true" rounded="true"
+                                        clockwise="true" responsive="false" duration="800" animation="easeInOutQuart"
+                                        animation-delay="0">
+                                    </round-progress>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <hr />
+                    <table class="table table-responsive table-hover table-condensed">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Fecha</th>
+                                <th>Nombre</th>
+                                <th>&nbsp;</th>
+                                <th>&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="rem_adjunto in lstremadjuntos">
+                                <td>{{rem_adjunto.correlativo}}</td>
+                                <td>{{rem_adjunto.fecha}}</td>
+                                <td>{{rem_adjunto.nombre}}</td>
+                                <td>
+                                    <a class="btn btn-info" href="{{rem_adjunto.ubicacion}}" target="_blank">
+                                        <span class="glyphicon glyphicon-download"></span>
+                                    </a>
+                                </td>
+                                <td style="white-space: nowrap">
+                                    <button type="button" class="btn btn-danger"
+                                        ng-disabled="rem_adjunto.id_usuario == 21 && uid != 21"
+                                        ng-click="delRemAdjunto(rem_adjunto.id)">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -1014,4 +1121,13 @@
         </div>
     </script>
     <!--Fin de Template de la modal-->
+    <script type="text/ng-template" id="modalCodigoAprobacion.html">
+        <div class="modal-header">
+            <h4 class="modal-title">37ce35dd-186e-4372-8b34-81893dd0dfed</h4>
+        </div>
+        <div class="modal-footer">
+            <!--<button class="btn btn-warning" type="button" ng-click="ok()" ng-disabled="+obj.idrazonanula <= 0">Anular</button>-->
+            <button class="btn btn-primary" type="button" ng-click="cancel()">Terminar</button>
+        </div>
+    </script>
 </div>

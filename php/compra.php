@@ -341,13 +341,20 @@ $app->post('/c', function(){
 
 
     $d->retiva_manual = isset($d->retiva_manual) ? (int)$d->retiva_manual : 0;
-
-    if (isset($d->retiva_manual) && (int)$d->retiva_manual === 1) {
-        if ((float)$d->tipocambio > 0) {
-            $d->retIva = (float)$d->retiva / (float)$d->tipocambio;
-        }
+    $d->isr_manual    = isset($d->isr_manual) ? (int)$d->isr_manual : 0;
+    
+    // IVA manual
+    if ($d->retiva_manual === 1 && (float)$d->tipocambio > 0) {
+        $d->retIva = (float)$d->retiva / (float)$d->tipocambio;
     } else {
-        $d->retIva = 0.00; // se recalculará más abajo si aplica
+        $d->retIva = 0.00; // recalculará automáticamente más abajo si aplica
+    }
+    
+    // ISR manual
+    if ($d->isr_manual === 1 && (float)$d->tipocambio > 0) {
+        $d->isr = (float)$d->isr / (float)$d->tipocambio;
+    } else {
+        $d->isr = 0.00; // recalculará automáticamente más abajo si aplica
     }
 
     if(!isset($d->idunidad)){ $d->idunidad = 0; }
@@ -379,10 +386,12 @@ $app->post('/c', function(){
     }
 
     
-    if ($esLocalMonedaFact) {
-        $d->isr = !$calcisr ? 0.00 : $db->calculaISR((float)$d->subtotal);
-    } else {
-        $d->isr = !$calcisr ? 0.00 : round(($db->calculaISR((float)$d->subtotal * (float)$d->tipocambio)) / (float)$d->tipocambio, 2);
+    if (!$d->isr_manual) {
+        if ($esLocalMonedaFact) {
+            $d->isr = !$calcisr ? 0.00 : $db->calculaISR((float)$d->subtotal);
+        } else {
+            $d->isr = !$calcisr ? 0.00 : round(($db->calculaISR((float)$d->subtotal * (float)$d->tipocambio)) / (float)$d->tipocambio, 2);
+        }
     }
 
     $query = "INSERT INTO compra(idempresa, idproveedor, serie, documento, fechaingreso, mesiva, fechafactura, idtipocompra, ";
@@ -418,13 +427,20 @@ $app->post('/u', function(){
     $db = new dbcpm();
 
     $d->retiva_manual = isset($d->retiva_manual) ? (int)$d->retiva_manual : 0;
-
-    if (isset($d->retiva_manual) && (int)$d->retiva_manual === 1) {
-        if ((float)$d->tipocambio > 0) {
-            $d->retIva = (float)$d->retiva / (float)$d->tipocambio;
-        }
+    $d->isr_manual    = isset($d->isr_manual) ? (int)$d->isr_manual : 0;
+    
+    // IVA manual
+    if ($d->retiva_manual === 1 && (float)$d->tipocambio > 0) {
+        $d->retIva = (float)$d->retiva / (float)$d->tipocambio;
     } else {
-        $d->retIva = 0.00; // se recalculará más abajo si aplica
+        $d->retIva = 0.00; // recalculará automáticamente más abajo si aplica
+    }
+    
+    // ISR manual
+    if ($d->isr_manual === 1 && (float)$d->tipocambio > 0) {
+        $d->isr = (float)$d->isr / (float)$d->tipocambio;
+    } else {
+        $d->isr = 0.00; // recalculará automáticamente más abajo si aplica
     }
 
     if(!isset($d->idunidad)){ $d->idunidad = 0; }
@@ -457,10 +473,12 @@ $app->post('/u', function(){
     }
 
     
-    if ($esLocalMonedaFact) {
-        $d->isr = !$calcisr ? 0.00 : $db->calculaISR((float)$d->subtotal);
-    } else {
-        $d->isr = !$calcisr ? 0.00 : round(($db->calculaISR((float)$d->subtotal * (float)$d->tipocambio)) / (float)$d->tipocambio, 2);
+    if (!$d->isr_manual) {
+        if ($esLocalMonedaFact) {
+            $d->isr = !$calcisr ? 0.00 : $db->calculaISR((float)$d->subtotal);
+        } else {
+            $d->isr = !$calcisr ? 0.00 : round(($db->calculaISR((float)$d->subtotal * (float)$d->tipocambio)) / (float)$d->tipocambio, 2);
+        }
     }
 
     $query = "UPDATE compra SET ";
