@@ -863,7 +863,7 @@ class Empleado extends Principal
 					FROM plnnomina
 					WHERE idplnempleado = {$this->emp->id} 
 					AND day(fecha) <> 15
-					AND esextraordinaria = 0
+					-- AND esextraordinaria = 0
 					AND esbonocatorce = 0 
 					ORDER BY fecha DESC
 					LIMIT {$this->mesesCalculo}";
@@ -1089,10 +1089,11 @@ class Empleado extends Principal
 		$proyecto = $this->get_proyecto();
 
 		$texto_motivo = <<<EOT
-Desde la presente fecha se dan por terminadas las relaciones de trabajo entre el señor(a) {$this->emp->nombre} {$this->emp->apellidos} y {$empresa->nomempresa}.\n
-Por motivo: {$args['motivo']}.  \n 
-Puesto: $puesto->descripcion. \n
-Ubicación: $proyecto->nomproyecto. \n
+Desde la presente fecha se dan por terminadas las relaciones de trabajo entre {$empresa->nomempresa} y el señor(a).\n
+Nombre:         {$this->emp->nombre} {$this->emp->apellidos}.\n
+Puesto:          $puesto->descripcion. \n
+Motivo:          {$args['motivo']}.  \n 
+Ubicación:      $proyecto->nomproyecto. \n
 Recibe en esta misma fecha todas las prestaciones a que tiene derecho según el CÓDIGO DE TRABAJO VIGENTE, como se detalla a continuación:
 EOT;
 
