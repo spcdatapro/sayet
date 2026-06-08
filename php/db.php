@@ -1,5 +1,4 @@
 <?php
-require_once '../vendor/autoload.php';
 require_once 'vendor/catfan/medoo/medoo.php';
 use Ramsey\Uuid\Uuid;
 
