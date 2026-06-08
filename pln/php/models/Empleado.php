@@ -502,8 +502,8 @@ class Empleado extends Principal
 
 	public function getDiasDelMes($mes = null, $anio = null)
 	{
-		if ($mes === null) $mes = $this->nmes;
-		if ($anio === null) $anio = $this->nanio;
+		if ($mes === null) $mes = date('m');
+		if ($anio === null) $anio = date('Y');
 
 		return cal_days_in_month(CAL_GREGORIAN, (int)$mes, (int)$anio);
 	}
