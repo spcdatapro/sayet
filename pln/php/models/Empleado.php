@@ -1090,11 +1090,9 @@ class Empleado extends Principal
 
 		$texto_motivo = <<<EOT
 Desde la presente fecha se dan por terminadas las relaciones de trabajo entre {$empresa->nomempresa} y el señor(a).\n
-Nombre:         {$this->emp->nombre} {$this->emp->apellidos}.\n
-Puesto:          $puesto->descripcion. \n
-Motivo:          {$args['motivo']}.  \n 
-Ubicación:      $proyecto->nomproyecto. \n
-Recibe en esta misma fecha todas las prestaciones a que tiene derecho según el CÓDIGO DE TRABAJO VIGENTE, como se detalla a continuación:
+EOT;
+	$motivo_2 = <<<EOT
+Desde la presente fecha se dan por terminadas las relaciones de trabajo entre {$empresa->nomempresa} y el señor(a).\n
 EOT;
 
 		$fechaIngreso = formatoFecha($this->getFechaIngreso(),1);
@@ -1173,7 +1171,13 @@ EOT;
 			'lrecibi'                  => str_repeat("_", 35) ,
 			'trecibi'                  => 'Recibí Conforme',
 			'otrosdesc_razon'          => $args['otrosdesc_razon'],
-			'otrosdesc_monto'          => number_format(elemento($args, 'otrosdesc_monto', 0),2)
+			'otrosdesc_monto'          => number_format(elemento($args, 'otrosdesc_monto', 0),2),
+			// cambios don george
+			'nombre'				   => "Nombre:   "."{$this->emp->nombre} {$this->emp->apellidos}",
+			'puesto'			   	   => "Puesto:     "."{$puesto->descripcion}",
+			'motivo'		   	       => "Motivo:     "."{$args['motivo']}",
+			'proyecto'		   	       => "Proyecto:  "."{$proyecto->nomproyecto}",
+			'motivo_2'				   => "Recibe en esta misma fecha todas las prestaciones a que tiene derecho según el CÓDIGO DE TRABAJO VIGENTE, como se detalla a continuación:"
 		];
 
 		if ($args['meses_calculo'] == 'ficha') {
