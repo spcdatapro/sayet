@@ -537,6 +537,7 @@ class Nomina extends Principal
 					if ($dia == 15) {
 						if ($e->lab->frecuencia == 'quincenal') {
 							$datos['anticipo'] = $e->get_anticipo();
+							$datos['diastrabajados'] = $e->get_dias_trabajados();
 						}
 					} else {
 						$datos['descanticipo'] = $e->get_descanticipo();
