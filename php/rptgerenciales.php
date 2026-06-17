@@ -742,12 +742,12 @@ $app->post('/control_ingresos', function () {
                                 0),
                         2) AS ingreso,
                 a.monto AS deposito,
-                IFNULL(IF(b.idmoneda = 2, f.isrdlr, f.isr), 0) AS isr,
-                IFNULL(IF(b.idmoneda = 2, f.ivadlr, f.iva), 0) AS iva,
+                IFNULL(IF(b.idmoneda = 2, f.isrdlr, SUM(f.isr)), 0) AS isr,
+                IFNULL(IF(b.idmoneda = 2, f.ivadlr, SUM(f.iva)), 0) AS iva,
                 ROUND(IFNULL(SUM(IF(b.idmoneda = 2,
                                     f.ingresodlr,
                                     f.ingreso)),
-                                0) - (a.monto + IFNULL(IF(b.idmoneda = 2, f.isrdlr, f.isr), 0) + IFNULL(IF(b.idmoneda = 2, f.ivadlr, f.iva), 0)),
+                                0) - (a.monto + IFNULL(IF(b.idmoneda = 2, f.isrdlr, SUM(f.isr)), 0) + IFNULL(IF(b.idmoneda = 2, f.ivadlr, SUM(f.iva)), 0)),
                         2) * - 1 AS diferencia
             FROM
                 tranban a
