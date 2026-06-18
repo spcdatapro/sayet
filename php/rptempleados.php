@@ -2266,7 +2266,7 @@ $app->get('/informe_alta/:idempleado', function ($idempleado) {
                 e.correo,
                 e.telefono,
                 f.descripcion,
-                DATE_FORMAT(IFNULL(a.reingreso, a.ingreso),
+                DATE_FORMAT(IFNULL(IFNULL(b.reingreso, a.reingreso), IFNULL(b.ingreso, a.ingreso)),
                         '%d/%m/%Y') AS ingreso,
                 e.documento,
                 e.nit,
