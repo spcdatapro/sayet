@@ -1862,7 +1862,7 @@ EOT;
 				$fecha = new DateTime($data['reingreso']);
 				$data['reingreso'] = $fecha->format('Y-m-d');
 			} else { 
-				unset($data['reingreso']); 
+				$data['reingreso'] = null; 
 			}
 			if (isset($data['baja'])) { 
 				$fecha = new DateTime($data['baja']);
