@@ -226,7 +226,7 @@ $app->get('/lstprovsbyempresa/:idempresa/:idproyecto', function ($idempresa, $id
             WHERE (b.ordentrabajo IS NULL OR b.ordentrabajo = 0) ";
     $query.= $idempresa > 0 ? "AND b.idempresa = $idempresa " : "";
     $query.= $idproyecto > 0 ? "AND b.idproyecto = $idproyecto " : "";
-    $query.="AND a.debaja = 0 AND (b.idreembolso = 0 OR b.idreembolso IS NULL) 
+    $query.="AND (b.idreembolso = 0 OR b.idreembolso IS NULL) 
     AND a.hoja_control = 1 
     GROUP BY a.id ORDER BY a.nombre";
     $data = $db->getQuery($query);
