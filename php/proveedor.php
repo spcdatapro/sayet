@@ -219,7 +219,9 @@ $app->get('/lstdetcontprovifnull/:idprov/:idempresa', function($idprov, $idempre
 $app->get('/lstprovsbyempresa/:idempresa/:idproyecto', function ($idempresa, $idproyecto) {
     $db = new dbcpm();
 
-    $query = "SELECT a.id, a.nombre, a.nit, CONCAT('(', a.nit, ') ', a.nombre) AS nitnombre, CONCAT('(', d.codigo,') ', d.nombrecta) as cuentac FROM proveedor a INNER JOIN compra b ON b.idproveedor = a.id 
+    $query = "SELECT a.id, a.nombre, a.nit, CONCAT('(', a.nit, ') ', a.nombre) AS nitnombre, CONCAT('(', d.codigo,') ', d.nombrecta) as cuentac, 
+            IF(a.debaja = 1, true, false) AS historico, MAX(b.fechafactura) AS last_fecha
+            FROM proveedor a INNER JOIN compra b ON b.idproveedor = a.id 
             INNER JOIN detcontprov c ON a.id = c.idproveedor INNER JOIN cuentac d ON c.idcuentac = d.id
             WHERE (b.ordentrabajo IS NULL OR b.ordentrabajo = 0) ";
     $query.= $idempresa > 0 ? "AND b.idempresa = $idempresa " : "";

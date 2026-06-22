@@ -58,7 +58,10 @@
             if ($scope.params_proveedores.idproveedor > 0) {
                 return;
             } else {
-                proveedorSrvc.lstProveedoresByEmpresa(idempresa, idproyecto).then(d => { $scope.proveedores = d });
+                proveedorSrvc.lstProveedoresByEmpresa(idempresa, idproyecto).then(d => { 
+                    $scope.proveedores = d; 
+                    $scope.actualizarProveedores($scope.params_proveedores.fecha_inicial);
+                });
                 $scope.params_proveedores.idproveedor = undefined;
             }
         }
@@ -87,15 +90,15 @@
             params.fecha_inicialstr = moment(params.fecha_inicial).format('YYYY-MM-DD');
             params.fecha_finalstr = moment(params.fecha_final).format('YYYY-MM-DD');
             // control de errores en el reporteador
-            try {
-                jsReportSrvc.getPDFReport('HyoH1nfKxl', params).then(function (pdf) {
+            jsReportSrvc.getPDFReport('HyoH1nfKxl', params)
+                .then(function (pdf) {
                     $scope.content = pdf;
                     $scope.cargando = false;
                 })
-            } catch (err) {
-                $scope.cargando = false;
-                console.log(err);
-            }
+                .catch(function (err) {
+                    $scope.cargando = false;
+                    console.error('Error en getPdfProveedores:', err);
+                })
         }
 
         // excel isr 
@@ -107,8 +110,8 @@
             params.fecha_inicialstr = moment(params.fecha_inicial).format('YYYY-MM-DD');
             params.fecha_finalstr = moment(params.fecha_final).format('YYYY-MM-DD');
             // control de errores en el reporteador
-            try {
-                jsReportSrvc.getReport('By1YuG8Fex', params).then(function (result) {
+            jsReportSrvc.getReport('By1YuG8Fex', params)
+                .then(function (result) {
                     var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
                     let rango = undefined;
                     rango = params.fecha_inicialstr + '_' + params.fecha_finalstr;
@@ -116,10 +119,10 @@
 
                     $scope.cargando = false;
                 })
-            } catch (err) {
-                $scope.cargando = false;
-                console.log(err);
-            }
+                .catch(function (err) {
+                    $scope.cargando = false;
+                    console.error('Error en getXmlProveedores:', err);
+                })
         }
 
         $scope.getReportProveedores = params => {
@@ -145,15 +148,15 @@
             params.fecha_inicialstr = moment(params.fecha_inicial).format('YYYY-MM-DD');
             params.fecha_finalstr = moment(params.fecha_final).format('YYYY-MM-DD');
 
-            try {
-                jsReportSrvc.getPDFReport('BJ_JkGH8-l', params).then(function (pdf) {
+            jsReportSrvc.getPDFReport('BJ_JkGH8-l', params)
+                .then(function (pdf) {
                     $scope.content = pdf;
                     $scope.cargando = false;
                 })
-            } catch (err) {
-                $scope.cargando = false;
-                console.log(err);
-            }
+                .catch(function (err) {
+                    $scope.cargando = false;
+                    console.error('Error en getCaratula:', err);
+                })
         }
 
         $scope.getCaratulaXML = params => { 
@@ -164,9 +167,8 @@
             params.fecha_finalstr = moment(params.fecha_final).format('YYYY-MM-DD');
             // control de errores en el reporteador
 
-            // control de errores en el reporteador
-            try {
-                jsReportSrvc.getReport('SJNU9iqdbx', params).then(function (result) {
+            jsReportSrvc.getReport('SJNU9iqdbx', params)
+                .then(function (result) {
                     var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
                     let rango = undefined;
                     rango = params.fecha_inicialstr + '_' + params.fecha_finalstr;
@@ -174,10 +176,10 @@
 
                     $scope.cargando = false;
                 })
-            } catch (err) {
-                $scope.cargando = false;
-                console.log(err);
-            }
+                .catch(function (err) {
+                    $scope.cargando = false;
+                    console.error('Error en getCaratulaXML:', err);
+                })
         }
         // fin hoja de control proveedores
 
@@ -191,15 +193,15 @@
             params.anio = moment(params.fecha_inicial).year();
 
             // control de errores en el reporteador
-            try {
-                jsReportSrvc.getPDFReport('H1_synquWl', params).then(function (pdf) {
+            jsReportSrvc.getPDFReport('H1_synquWl', params)
+                .then(function (pdf) {
                     $scope.content = pdf;
                     $scope.cargando = false;
                 })
-            } catch (err) {
-                $scope.cargando = false;
-                console.log(err);
-            }
+                .catch(function (err) {
+                    $scope.cargando = false;
+                    console.error('Error en getPdfComparativo:', err);
+                })
         }
 
         $scope.getReportComparativo = params => {
@@ -228,8 +230,8 @@
             params.anio = moment(params.fecha_inicial).year();
 
             // control de errores en el reporteador
-            try {
-                jsReportSrvc.getReport('HkKigvgcZg', params).then(function (result) {
+            jsReportSrvc.getReport('HkKigvgcZg', params)
+                .then(function (result) {
                     var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
                     let rango = undefined;
                     rango = params.mes + '_' + params.mes_comparar + '_' + params.anio;
@@ -237,10 +239,10 @@
 
                     $scope.cargando = false;
                 })
-            } catch (err) {
-                $scope.cargando = false;
-                console.log(err);
-            }
+                .catch(function (err) {
+                    $scope.cargando = false;
+                    console.error('Error en getXmlComparativo:', err);
+                })
         }
 
         $scope.toggleMeses = d => {
@@ -249,6 +251,19 @@
 
         $scope.toggleAnios = d => {
             d.ver_anios = !d.ver_anios;
+        }
+
+        $scope.actualizarProveedores = (del) => {
+            if (moment(del).isValid()) {
+                $scope.proveedores.forEach(p => {
+                    if (moment(p.last_fecha).format('YYYY-MM-DD') >= moment(del).format('YYYY-MM-DD')) {
+                        p.historico = false;
+                    } else {
+                        p.historico = true;
+                    }
+                })
+            }
+            console.log($scope.proveedores);
         }
         // fin 
     }])
