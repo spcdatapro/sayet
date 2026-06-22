@@ -381,13 +381,16 @@ $app->post('/comparativo', function () {
                 proveedor e ON a.idproveedor = e.id
                     INNER JOIN
                 proyecto f ON a.idproyecto = f.id
+                    LEFT JOIN 
+                detcontprov j ON e.id = j.idproveedor
             WHERE
                 YEAR(a.fechafactura) = $d->anio
                     AND (a.idreembolso = 0
                     OR a.idreembolso IS NULL)
                     AND a.idempresa = $d->idempresa
                     AND MONTH(a.fechafactura) IN ($d->mes , $d->mes_comparar) ";
-    $query.= $idproyecto > 0 ? "AND a.idproyecto IN($idproyecto) " : "";    
+    $query.= $idproyecto > 0 ? "AND a.idproyecto IN($idproyecto) " : "";  
+    $query.= isset($d->idcuenta) ? "AND j.idcuentac = $d->idcuenta " : "";  
     $query.= "AND (a.ordentrabajo IS NULL
                     OR a.ordentrabajo = 0)
                     AND e.hoja_control = 1
@@ -398,9 +401,11 @@ $app->post('/comparativo', function () {
         $correlativos = [];
         $nextCorrelativo = 1;
         $facturasPorMes = [];
+        $facturasPorMesMonto = [];
         $metaPorKey = [];
         $cuantosPorKey = [];
         $diferentePorKey = [];
+        $diferenciaPorKey = [];
         $mesesComparados = array_values(array_unique([(int)$d->mes_comparar, (int)$d->mes]));
         $mesesPeriodo = count(array_unique($mesesComparados));
 
@@ -433,11 +438,19 @@ $app->post('/comparativo', function () {
                 $facturasPorMes[$key][$c->idproyecto] = 0;
             }
             $facturasPorMes[$key][$c->idproyecto]++;
+
+            if (!isset($facturasPorMesMonto[$key])) {
+                $facturasPorMesMonto[$key] = [];
+            }
+            if (!isset($facturasPorMesMonto[$key][$c->idproyecto])) {
+                $facturasPorMesMonto[$key][$c->idproyecto] = 0;
+            }
+            $facturasPorMesMonto[$key][$c->idproyecto] += $c->monto_cheque;
         }
 
         foreach ($metaPorKey as $key => $meta) {
-            $mesA = $mesesComparados[0];
-            $mesB = $mesesComparados[1] ?? $mesesComparados[0];
+            $mesA = (int)$d->mes;
+            $mesB = (int)$d->mes_comparar;
             $cntMesA = $facturasPorMes[$key][$mesA] ?? 0;
             $cntMesB = $facturasPorMes[$key][$mesB] ?? 0;
             $cntTotal = $cntMesA + $cntMesB;
@@ -462,6 +475,7 @@ $app->post('/comparativo', function () {
             }
 
             $diferentePorKey[$key] = ($cntMesA !== $cntMesB) ? 1 : 0;
+            $diferenciaPorKey[$key] = (($facturasPorMesMonto[$key][$mesA] ?? 0) - ($facturasPorMesMonto[$key][$mesB] ?? 0));
 
             foreach ($mesesComparados as $mesComparado) {
                 if (($facturasPorMes[$key][$mesComparado] ?? 0) > 0) {
@@ -491,6 +505,7 @@ $app->post('/comparativo', function () {
                 $vacio->tipotrans = $meta['tipotrans'];
                 $vacio->cuantos = $cuantosPorKey[$key];
                 $vacio->diferente = $diferentePorKey[$key];
+                $vacio->diferencia = $diferenciaPorKey[$key];
 
                 $data[] = $vacio;
             }
@@ -500,6 +515,7 @@ $app->post('/comparativo', function () {
             $key = $c->nomempresa . '|' . $c->proveedor . '|' . $c->nomproyecto;
             $c->cuantos = $cuantosPorKey[$key] ?? 'Sin movimientos';
             $c->diferente = $diferentePorKey[$key] ?? 0;
+            $c->diferencia = $diferenciaPorKey[$key] ?? 0;
             $c->idproyecto = (int)$c->mes;
             $c->proyecto = $meses[$c->idproyecto - 1];
         }

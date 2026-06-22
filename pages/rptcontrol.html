@@ -321,6 +321,7 @@
                             <th>Proyecto</th>
                             <th>Proveedor</th>
                             <th>Recurrencia</th>
+                            <th>Diferencia</th>
                         </tr>
                     </thead>
                     <tbody ng-repeat="d in data">
@@ -330,10 +331,11 @@
                             <td>{{d.numero}}</td>
                             <td>{{d.nombre}}</td>
                             <td>{{d.cuantos}}</td>
+                            <td style="text-align: right;">{{d.diferencia | number: 2}}</td>
                         </tr>
                         <!-- fila meses -->
                         <tr ng-if="d.ver_meses" ng-repeat-start="mes in d.proyectos">
-                            <th colspan="4" class="celeste" ng-click="mes.ver_detalle = !mes.ver_detalle">
+                            <th colspan="5" class="celeste" ng-click="mes.ver_detalle = !mes.ver_detalle">
                                 {{mes.nombre}}
                             </th>
                         </tr>
