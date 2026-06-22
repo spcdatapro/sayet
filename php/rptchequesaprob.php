@@ -254,6 +254,7 @@ $app->post('/aprobados', function () {
     $query.= isset($d->idcuenta) ? "AND j.idcuentac = $d->idcuenta " : "";
     $query.="       AND (a.ordentrabajo IS NULL
                     OR a.ordentrabajo = 0)
+            GROUP BY a.id
             ORDER BY g.nomempresa , i.nomproyecto , h.nombre , a.fechafactura ASC";
             // echo $query; return;
     $data = $db->getQuery($query);
