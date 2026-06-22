@@ -257,14 +257,14 @@
 
                         <!-- fila de años -->
                         <tr ng-if="d.ver_anios" ng-repeat="anio in d.proyectos">
-                            <th colspan="5" class="celeste" ng-click="anio.ver_detalle = !anio.ver_detalle">
+                            <th colspan="6" class="celeste" ng-click="anio.ver_detalle = !anio.ver_detalle">
                                 {{anio.nombre}}
                             </th>
                         </tr>
 
                         <!-- fila de transacciones -->
                         <tr ng-if="anio.ver_detalle" ng-repeat="anio in d.proyectos">
-                            <td colspan="5">
+                            <td colspan="6">
                                 <table class="table table-sm">
                                     <thead>
                                         <tr>

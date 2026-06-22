@@ -246,6 +246,10 @@
         $scope.toggleMeses = d => {
             d.ver_meses = !d.ver_meses;
         };
+
+        $scope.toggleAnios = d => {
+            d.ver_anios = !d.ver_anios;
+        }
         // fin 
     }])
 }())
