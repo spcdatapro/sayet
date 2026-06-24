@@ -794,53 +794,53 @@ $app->post('/control_ingresos', function () {
 
     if (count($data) > 0) {
 
-        $saldoFacturas = [];
-        $montoFacturas = [];
-        $isrFacturas = [];
-        $countFacturas = [];
+        // $saldoFacturas = [];
+        // $montoFacturas = [];
+        // $isrFacturas = [];
+        // $countFacturas = [];
 
-        // Pre-compute counts
-        foreach ($data as $row) {
-            $facturas = explode(',', $row->factura);
-            foreach ($facturas as $factura) {
-                $factura = trim($factura);
-                $countFacturas[$factura] = ($countFacturas[$factura] ?? 0) + 1;
-            }
-        }
+        // // Pre-compute counts
+        // foreach ($data as $row) {
+        //     $facturas = explode(',', $row->factura);
+        //     foreach ($facturas as $factura) {
+        //         $factura = trim($factura);
+        //         $countFacturas[$factura] = ($countFacturas[$factura] ?? 0) + 1;
+        //     }
+        // }
 
-        $index = [];
+        // $index = [];
 
-        foreach ($data as $row) {
-            // Puede haber varias facturas en la misma fila
-            $facturas = explode(',', $row->factura);
+        // foreach ($data as $row) {
+        //     // Puede haber varias facturas en la misma fila
+        //     $facturas = explode(',', $row->factura);
         
-            foreach ($facturas as $factura) {
-                $factura = trim($factura);
-                $index[$factura] = ($index[$factura] ?? 0) + 1;;
+        //     foreach ($facturas as $factura) {
+        //         $factura = trim($factura);
+        //         $index[$factura] = ($index[$factura] ?? 0) + 1;;
 
-                // Inicializar saldo si no existe
-                if (!isset($saldoFacturas[$factura])) {
-                    $montoFacturas[$factura] = $row->ingreso;
-                    $isrFacturas[$factura] = $row->isr;
-                    $saldoFacturas[$factura] = $row->ingreso - $row->deposito;
+        //         // Inicializar saldo si no existe
+        //         if (!isset($saldoFacturas[$factura])) {
+        //             $montoFacturas[$factura] = $row->ingreso;
+        //             $isrFacturas[$factura] = $row->isr;
+        //             $saldoFacturas[$factura] = $row->ingreso - $row->deposito;
 
-                    $row->diferencia = ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
-                    if ($countFacturas[$factura] > 1) {
-                        $row->diferencia = 0;
-                    }
-                } else {
-                    if ($countFacturas[$factura] == $index[$factura]) {
-                        $row->ingreso = $saldoFacturas[$factura];
-                        $row->diferencia =  ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
-                    } else {
-                        $row->ingreso = $saldoFacturas[$factura];
-                        $saldoFacturas[$factura] -= $row->deposito;
-                        $row->isr = 0;
-                        $row->diferencia = 0;
-                    }
-                }
-            }
-        }
+        //             $row->diferencia = ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
+        //             if ($countFacturas[$factura] > 1) {
+        //                 $row->diferencia = 0;
+        //             }
+        //         } else {
+        //             if ($countFacturas[$factura] == $index[$factura]) {
+        //                 $row->ingreso = $saldoFacturas[$factura];
+        //                 $row->diferencia =  ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
+        //             } else {
+        //                 $row->ingreso = $saldoFacturas[$factura];
+        //                 $saldoFacturas[$factura] -= $row->deposito;
+        //                 $row->isr = 0;
+        //                 $row->diferencia = 0;
+        //             }
+        //         }
+        //     }
+        // }
 
         for ($i = 0; $i < count($data); $i++) {
             $actual = $data[$i];
