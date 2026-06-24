@@ -834,7 +834,7 @@ $app->post('/control_ingresos', function () {
                     } else {
                         $row->ingreso = $saldoFacturas[$factura];
                         $saldoFacturas[$factura] -= $row->deposito;
-                        $row->isr = 0;
+                        $row->isr = 15;
                         $row->diferencia = 0;
                     }
                 }
