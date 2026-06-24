@@ -829,8 +829,6 @@ $app->post('/control_ingresos', function () {
                         $row->diferencia = 0;
                     }
                 } else {
-                    echo $countFacturas[$factura];
-                    echo $index[$factura];
                     if ($countFacturas[$factura] == $index[$factura]) {
                         $row->ingreso = $saldoFacturas[$factura];
                         $row->diferencia =  ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
