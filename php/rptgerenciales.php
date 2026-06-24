@@ -808,14 +808,15 @@ $app->post('/control_ingresos', function () {
             }
         }
 
+        $index = [];
+
         foreach ($data as $row) {
             // Puede haber varias facturas en la misma fila
             $facturas = explode(',', $row->factura);
-            $index = [];
         
             foreach ($facturas as $factura) {
                 $factura = trim($factura);
-                $index[$factura] = !isset($index[$factura]) ? 1 : $index[$factura] + 1;
+                $index[$factura] = ($index[$factura] ?? 0) + 1;;
 
                 // Inicializar saldo si no existe
                 if (!isset($saldoFacturas[$factura])) {
