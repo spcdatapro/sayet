@@ -815,7 +815,7 @@ $app->post('/control_ingresos', function () {
         
             foreach ($facturas as $factura) {
                 $factura = trim($factura);
-                $index[$factura] = $index[$factura] > 0 ? $index[$factura] + 1 : 1;
+                $index[$factura] = $index[$factura] ? $index[$factura] + 1 : 1;
 
                 // Inicializar saldo si no existe
                 if (!isset($saldoFacturas[$factura])) {
