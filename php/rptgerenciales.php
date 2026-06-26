@@ -818,6 +818,9 @@ $app->post('/control_ingresos', function () {
                 $factura = trim($factura);
                 $index[$factura] = ($index[$factura] ?? 0) + 1;;
 
+                if ($factura === '') {
+                    continue; // Saltar si la factura está vacía
+                }
                 // Inicializar saldo si no existe
                 if (!isset($saldoFacturas[$factura])) {
                     $montoFacturas[$factura] = $row->ingreso;
