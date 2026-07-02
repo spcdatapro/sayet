@@ -374,7 +374,6 @@ $app->post('/bono14', function(){
                 CONCAT(IFNULL(f.primernombre, ''), ' ', IFNULL(f.segundonombre, '')
                 , ' ', 
                 IFNULL(f.tercernombre, ''), ' ', 
-                IFNULL(f.primerapellido, ''), ' ',
                 IFNULL(f.primerapellido, ''), ' ', 
                 IFNULL(f.segundoapellido, ''), ' ', 
                 IFNULL(f.apellidocasada, '')) AS nombre,
