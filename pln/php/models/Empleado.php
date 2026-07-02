@@ -1035,8 +1035,8 @@ class Empleado extends Principal
 	{
 		$diasDelMes = $this->getDiasDelMes();
 		$res = [
-			'sdiario' => ($this->lab->sueldo / $diasDelMes),
-			'bdiario' => ($this->lab->bonificacionley / $diasDelMes)
+			'sdiario' => ($this->lab->sueldo / 30),
+			'bdiario' => ($this->lab->bonificacionley / 30)
 		];
 
 		$dias = elemento($args, 'dias_sueldo_pagar', 0);
