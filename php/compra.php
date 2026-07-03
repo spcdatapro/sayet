@@ -375,14 +375,16 @@ $app->post('/c', function(){
         $esNota = (int)$db->getOneField("SELECT notas FROM tipofactura WHERE id = $d->idtipofactura") === 1;
 
     if ($d->retiva_manual != 1 && !$esNota) {
-        if((int)$d->idtipofactura !== 5) {
+        // if((int)$d->idtipofactura !== 5) {
             $calcisr = (int)$db->getOneField("SELECT retensionisr FROM proveedor WHERE id = ".$d->idproveedor) === 1;
 
             // si la empresa es retenedora y el proveedor no es retenedor retener iva
-            if (($empresaRet && !$esRet) && (($d->totfact - $d->noafecto) * $d->tipocambio) >= 2500) {
+            if (($empresaRet && !$esRet) && (($d->totfact - $d->noafecto) * $d->tipocambio) >= 2500 && !$esPeque) {
                 $d->retIva = $db->retIVA((float)$d->iva, 0.15, 1, $esLocalMonedaFact);
+            } else if (($empresaRet && !$esRet) && (($d->totfact - $d->noafecto) * $d->tipocambio) >= 2500 && $esPeque) {
+                $d->retIva = $db->retIVA((float)$d->totfact, 0.05, 1, $esLocalMonedaFact);
             }
-        }
+        // }
     }
 
     
@@ -464,12 +466,14 @@ $app->post('/u', function(){
         $esNota = (int)$db->getOneField("SELECT notas FROM tipofactura WHERE id = $d->idtipofactura") === 1;
 
     if ($d->retiva_manual != 1 && !$esNota) {
-        if((int)$d->idtipofactura !== 5) {
+        // if((int)$d->idtipofactura !== 5) {
             // si la empresa es retenedora y el proveedor no es retenedor retener iva
-            if (($empresaRet && !$esRet) && (($d->totfact - $d->noafecto) * $d->tipocambio) >= 2500) {
+            if (($empresaRet && !$esRet) && (($d->totfact - $d->noafecto) * $d->tipocambio) >= 2500 && !$esPeque) {
                 $d->retIva = $db->retIVA((float)$d->iva, 0.15, 1, $esLocalMonedaFact);
+            } else if (($empresaRet && !$esRet) && (($d->totfact - $d->noafecto) * $d->tipocambio) >= 2500 && $esPeque) {
+                $d->retIva = $db->retIVA((float)$d->totfact, 0.05, 1, $esLocalMonedaFact);
             }
-        }
+        // }
     }
 
     
