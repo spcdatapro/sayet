@@ -1039,7 +1039,7 @@ class Empleado extends Principal
 			'bdiario' => ($this->lab->bonificacionley / 30)
 		];
 
-		$dias = elemento($args, 'dias_sueldo_pagar', 0);
+		$dias = elemento($args, 'dias_sueldo_pagar', 30);
 
 		if ($dias > 0) {
 			$res['dias']   = $dias;
