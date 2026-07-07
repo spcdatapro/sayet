@@ -768,7 +768,7 @@ $app->post('/control_ingresos', function () {
                         SUM(b.retisr) AS isr,
                         SUM(b.retiva) AS iva,
                         SUM(IF(b.subtotalcnv > 0, b.subtotalcnv, b.subtotal / b.tipocambio)) - SUM((SELECT SUM(IF(dc.idrecibocli != a.idrecibocli AND rc.fecha != '$d->fechastr', dc.monto, 0)) FROM detcobroventa dc INNER JOIN recibocli rc ON dc.idrecibocli = rc.id WHERE dc.idfactura = b.id)) AS ingresodlr,
-                        SUM(b.retisrcnv) AS isrdlr,
+                        SUM(IF(b.retisrcnv > 0, b.retisrcnv, b.retisr / b.tipocambio)) AS isrdlr,
                         SUM(b.retivacnv) AS ivadlr,
                         b.idmonedafact
                 FROM
