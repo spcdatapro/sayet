@@ -7,7 +7,7 @@
         $scope.params = { fdel: moment().toDate(), fal: moment().toDate(), idempresa: undefined, mediopago: null };
         $scope.empresas = [];
 
-        empresaSrvc.lstEmpresas().then(function (d) { $scope.empresas = d; });
+        empresaSrvc.lstEmpresasPlanilla().then(function (d) { $scope.empresas = d; });
 
         $scope.genND = function () {
             $scope.params.fdelstr = moment($scope.params.fdel).format('YYYY-MM-DD');
