@@ -4,8 +4,7 @@ angular.module('cpm')
         $scope.empresas = []
         $scope.empleados = []
 
-        empresaSrvc.lstEmpresasPlanilla().then(function(d){
-            console.log(d);
+        empresaSrvc.lstEmpresas().then(function(d){
             $scope.empresas = d;
             setTimeout(function() { $("#selectEmpresa").chosen({width:'100%'}) }, 3)
         })
