@@ -74,7 +74,7 @@ $app->post('/getnotasd', function(){
                     INNER JOIN
                 proveedor e ON d.idproveedor = e.id
             WHERE
-                a.fecha = '$d->fechastr' AND a.idbanco = $idbanco
+                a.fecha = '$d->fechastr' AND a.idbanco = $d->idbanco
                 AND a.tipotrans = 'B'
             GROUP BY a.id";
     print $db->doSelectAsJSON($query);
