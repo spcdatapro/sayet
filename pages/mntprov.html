@@ -226,17 +226,17 @@
                         </div>
                     </form>
                     <hr />
-                    <!-- <div class="row">
-                        <div class="col-md-12">
-                            <div class="checkbox">
-                                <label for="">
-                                    <input style="text-align: left;" name="chkActivos" id="chkActivos" type="checkbox"
-                                        class="checkbox" ng-model="todos" ng-true-value="1"
-                                        ng-false-value="0"> Todos
-                                </label>
-                            </div>
+                    <div class="row">
+                        <div class="col-md-3 form-inline">
+                            <label>Ver
+                                <select class="form-control input-sm" ng-model="ver_activos">
+                                    <option value="1">Activos</option>
+                                    <option value="2">Inactivos</option>
+                                    <option value="null">Todos</option>
+                                </select>
+                            </label>
                         </div>
-                    </div> -->
+                    </div>
                     <table datatable="ng" dt-options="dtOptions"
                         class="table table-responsive table-hover table-condensed">
                         <thead>

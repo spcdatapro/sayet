@@ -1,8 +1,8 @@
-(function(){
+(function () {
 
     var proveedorctrl = angular.module('cpm.proveedorctrl', ['cpm.proveedorsrvc']);
 
-    proveedorctrl.controller('proveedorCtrl', ['$scope', 'proveedorSrvc', 'DTOptionsBuilder', 'empresaSrvc', 'cuentacSrvc', 'authSrvc', '$confirm', 'monedaSrvc', '$filter', '$route', 'toaster', 'bancoSrvc', function($scope, proveedorSrvc, DTOptionsBuilder, empresaSrvc, cuentacSrvc, authSrvc, $confirm, monedaSrvc, $filter, $route, toaster, bancoSrvc){
+    proveedorctrl.controller('proveedorCtrl', ['$scope', 'proveedorSrvc', 'DTOptionsBuilder', 'empresaSrvc', 'cuentacSrvc', 'authSrvc', '$confirm', 'monedaSrvc', '$filter', '$route', 'toaster', 'bancoSrvc', function ($scope, proveedorSrvc, DTOptionsBuilder, empresaSrvc, cuentacSrvc, authSrvc, $confirm, monedaSrvc, $filter, $route, toaster, bancoSrvc) {
         //$scope.tituloPagina = 'CPM';
 
         $scope.elProv = {};
@@ -19,27 +19,29 @@
         $scope.dectc = 2;
         $scope.permiso = {};
         $scope.todos = 1;
+        $scope.ver_activos = '1';
+        $scope.todos_prov = [];
 
         $scope.dtOptions = DTOptionsBuilder.newOptions()
-        .withPaginationType('full_numbers')
-        .withDisplayLength(10)
-        .withBootstrap()
-        .withOption('deferRender', true)
-        .withOption('responsive', true);
+            .withPaginationType('full_numbers')
+            .withDisplayLength(10)
+            .withBootstrap()
+            .withOption('deferRender', true)
+            .withOption('responsive', true);
 
-        empresaSrvc.lstEmpresas().then(function(d){ $scope.lasEmpresas = d; });
+        empresaSrvc.lstEmpresas().then(function (d) { $scope.lasEmpresas = d; });
 
-        authSrvc.getSession().then(function(usrLogged){
-            if(parseInt(usrLogged.workingon) > 0){
-                authSrvc.gpr({idusuario: parseInt(usrLogged.uid), ruta:$route.current.params.name}).then(function(d){ $scope.permiso = d; });
-                empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function(r){
+        authSrvc.getSession().then(function (usrLogged) {
+            if (parseInt(usrLogged.workingon) > 0) {
+                authSrvc.gpr({ idusuario: parseInt(usrLogged.uid), ruta: $route.current.params.name }).then(function (d) { $scope.permiso = d; });
+                empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function (r) {
                     $scope.objEmpresa = r[0];
                     $scope.dectc = parseInt($scope.objEmpresa.dectc);
-                    monedaSrvc.lstMonedas().then(function(d){
+                    monedaSrvc.lstMonedas().then(function (d) {
                         $scope.monedas = d;
                         $scope.resetElProv();
                     });
-                    bancoSrvc.lstBancosPais().then(function(d){
+                    bancoSrvc.lstBancosPais().then(function (d) {
                         $scope.losBancosPais = d;
                         $scope.resetElProv();
                     });
@@ -47,29 +49,42 @@
             }
         });
 
-        $scope.$watch('objEmpresa', function(newValue, oldValue){
-            if(newValue != null && newValue != undefined){
+        $scope.$watch('objEmpresa', function (newValue, oldValue) {
+            if (newValue != null && newValue != undefined) {
                 $scope.getLstCuentas();
             }
         });
 
-        $scope.resetElProv = function(){
-            $scope.elProv = { direccion: '', telefono: '', correo: '', concepto: '', chequesa: '', retensionisr: 0, diascred: 0, objBancoPais: undefined,
-                limitecred: parseFloat(0.0), pequeniocont: 0, tipocambioprov: 1, objMoneda: {}, debaja: '0', cuentabanco: undefined, 
-                recurrente: '0', tipcuenta: 0, identificacion: undefined, retensioniva: 0 };
+        $scope.resetElProv = function () {
+            $scope.elProv = {
+                direccion: '', telefono: '', correo: '', concepto: '', chequesa: '', retensionisr: 0, diascred: 0, objBancoPais: undefined,
+                limitecred: parseFloat(0.0), pequeniocont: 0, tipocambioprov: 1, objMoneda: {}, debaja: '0', cuentabanco: undefined,
+                recurrente: '0', tipcuenta: 0, identificacion: undefined, retensioniva: 0
+            };
             $scope.editando = false;
             $scope.strProveedor = '';
-            monedaSrvc.getMoneda(parseInt($scope.objEmpresa.idmoneda)).then(function(d){
+            monedaSrvc.getMoneda(parseInt($scope.objEmpresa.idmoneda)).then(function (d) {
                 $scope.elProv.objMoneda = d[0];
                 $scope.elProv.objMoneda.tipocambioprov = parseFloat($scope.elProv.objMoneda.tipocambioprov).toFixed($scope.dectc);
                 $scope.elProv.tipocambioprov = parseFloat(d[0].tipocambio).toFixed($scope.dectc);
             });
         };
 
-        $scope.getLstProveedores = function(){
-            proveedorSrvc.lstProveedores($scope.todos).then(function(d){
+        $scope.getLstProveedores = function () {
+            proveedorSrvc.lstProveedores($scope.todos).then(function (d) {
+                $scope.todos_prov = d;
+                switch ($scope.ver_activos) {
+                    case '1':
+                        d = d.filter(function (e) { return e.debaja == 0; });
+                        break;
+                    case '2':
+                        d = d.filter(function (e) { return e.debaja == 1; });
+                        break;
+                    default:
+                        break;
+                }
                 $scope.losProvs = d;
-                for(var i = 0; i < $scope.losProvs.length; i++){
+                for (var i = 0; i < $scope.losProvs.length; i++) {
                     $scope.losProvs[i].retensionisr = parseInt($scope.losProvs[i].retensionisr);
                     $scope.losProvs[i].diascred = parseInt($scope.losProvs[i].diascred);
                     $scope.losProvs[i].limitecred = parseFloat($scope.losProvs[i].limitecred);
@@ -78,7 +93,21 @@
             });
         };
 
-        function procData(data){
+        $scope.$watch('ver_activos', function (newValue, oldValue) {
+            switch (newValue) {
+                case '1':
+                    $scope.losProvs = $scope.todos_prov.filter(function (e) { return e.debaja == 0; });
+                    break;
+                case '2':
+                    $scope.losProvs = $scope.todos_prov.filter(function (e) { return e.debaja == 1; });
+                    break;
+                default:
+                    $scope.losProvs = $scope.todos_prov;
+                    break;
+            }
+        });
+
+        function procData(data) {
             data.id = parseInt(data.id);
             data.retensionisr = parseInt(data.retensionisr);
             data.diascred = parseInt(data.diascred);
@@ -91,15 +120,15 @@
             return data;
         }
 
-        $scope.getLstDetCuentaC = function(idprov){
-            proveedorSrvc.lstDetCuentaC(parseInt(idprov)).then(function(det){
+        $scope.getLstDetCuentaC = function (idprov) {
+            proveedorSrvc.lstDetCuentaC(parseInt(idprov)).then(function (det) {
                 $scope.detContProv = det;
                 goTop();
             });
         };
 
-        $scope.getDataProv = function(idprov){
-            proveedorSrvc.getProveedor(parseInt(idprov)).then(function(d){
+        $scope.getDataProv = function (idprov) {
+            proveedorSrvc.getProveedor(parseInt(idprov)).then(function (d) {
                 /*
                 const provTmp = procData(d[0]);
                 $scope.elProv.id = provTmp.id;
@@ -131,13 +160,13 @@
             });
         };
 
-        $scope.existeProveedor = function(nit){
-            if(nit != null && nit != undefined && nit.length > 0){
-                proveedorSrvc.getProveedorByNit(nit.trim()).then(function(d){
-                    if(d.length > 0){
-                        $confirm({ text: "Este proveedore ya existe. ¿Desea cargar su información?", title: 'Mantenimiento de proveedor', ok: 'Sí', cancel: 'No'}).then(
-                            function() { $scope.getDataProv(+d[0].id); },
-                            function(){
+        $scope.existeProveedor = function (nit) {
+            if (nit != null && nit != undefined && nit.length > 0) {
+                proveedorSrvc.getProveedorByNit(nit.trim()).then(function (d) {
+                    if (d.length > 0) {
+                        $confirm({ text: "Este proveedore ya existe. ¿Desea cargar su información?", title: 'Mantenimiento de proveedor', ok: 'Sí', cancel: 'No' }).then(
+                            function () { $scope.getDataProv(+d[0].id); },
+                            function () {
                                 $scope.elProv.nit = undefined;
                                 $('#txtNit').focus();
                             }
@@ -147,7 +176,7 @@
             }
         };
 
-        function setDataProv(obj){
+        function setDataProv(obj) {
             obj.direccion = obj.direccion != null && obj.direccion != undefined ? obj.direccion.trim() : '';
             obj.telefono = obj.telefono != null && obj.telefono != undefined ? obj.telefono.trim() : '';
             obj.correo = obj.correo != null && obj.correo != undefined ? obj.correo.trim() : '';
@@ -160,24 +189,24 @@
             return obj;
         }
 
-        $scope.addProv = function(obj){
+        $scope.addProv = function (obj) {
             obj.idmoneda = parseInt(obj.objMoneda.id);
             obj.idbancopais = !!obj.objBancoPais ? parseInt(obj.objBancoPais.id) : 0;
             obj = setDataProv(obj);
-            proveedorSrvc.editRow(obj, 'c').then(function(d){
+            proveedorSrvc.editRow(obj, 'c').then(function (d) {
                 $scope.getLstProveedores();
                 $scope.resetElProv();
-                if(+d.lastid > 0){
+                if (+d.lastid > 0) {
                     $scope.getDataProv(+d.lastid);
                 }
             });
         };
 
-        $scope.updProv = function(data, id){
+        $scope.updProv = function (data, id) {
             data.idmoneda = parseInt(data.objMoneda.id);
             data.idbancopais = !!data.objBancoPais ? parseInt(data.objBancoPais.id) : 0;
             data = setDataProv(data);
-            proveedorSrvc.editRow(data, 'u').then(function(){
+            proveedorSrvc.editRow(data, 'u').then(function () {
                 // $scope.getLstProveedores();
                 $scope.resetElProv();
                 $scope.strProveedor = '';
@@ -186,45 +215,48 @@
             });
         };
 
-        $scope.delProv = function(id){
+        $scope.delProv = function (id) {
             $confirm({
                 text: "¿Seguro(a) de eliminar este proveedor? (Esto también eliminara el detalle contable.)",
                 title: 'Eliminar proveedor',
                 ok: 'Sí',
-                cancel: 'No'})
-                .then(function() {
+                cancel: 'No'
+            })
+                .then(function () {
                     //console.log(id);
-                    proveedorSrvc.editRow({id:id}, 'd').then(function(d){
-                        if(+d.tienecompras == 0){
+                    proveedorSrvc.editRow({ id: id }, 'd').then(function (d) {
+                        if (+d.tienecompras == 0) {
                             $scope.resetElProv();
                             $scope.getLstProveedores();
-                        }else{
-                            toaster.pop({ type: 'error', title: 'No se puede eliminar este proveedor',
-                            body: 'Este proveedor tiene compras asociadas. Debe eliminar las compras primero para poder eliminar el proveedor.', timeout: 9000 });   
-                        }                        
+                        } else {
+                            toaster.pop({
+                                type: 'error', title: 'No se puede eliminar este proveedor',
+                                body: 'Este proveedor tiene compras asociadas. Debe eliminar las compras primero para poder eliminar el proveedor.', timeout: 9000
+                            });
+                        }
                     });
                 });
         };
 
         $scope.getLstProveedores();
 
-        $scope.getLstCuentas = function(){
-            if($scope.objEmpresa.id !== null && $scope.objEmpresa.id !== undefined){
-                cuentacSrvc.getByTipo(parseInt($scope.objEmpresa.id), 0).then(function(d){
+        $scope.getLstCuentas = function () {
+            if ($scope.objEmpresa.id !== null && $scope.objEmpresa.id !== undefined) {
+                cuentacSrvc.getByTipo(parseInt($scope.objEmpresa.id), 0).then(function (d) {
                     $scope.lasCuentas = d;
                 });
             }
         };
 
-        $scope.addDetProv = function(obj){
+        $scope.addDetProv = function (obj) {
             obj.idproveedor = $scope.elProv.id;
             obj.idcuentac = $scope.elDetContProv.idcuentac != null && $scope.elDetContProv.idcuentac != undefined ? +$scope.elDetContProv.idcuentac : 0;
             obj.idcxp = $scope.elDetContProv.idcxp != null && $scope.elDetContProv.idcxp != undefined ? +$scope.elDetContProv.idcxp : 0;
-            if(+obj.idcuentac == 0 && +obj.idcxp == 0){
+            if (+obj.idcuentac == 0 && +obj.idcxp == 0) {
                 toaster.pop({ type: 'error', title: 'Faltan datos', body: 'Debe seleccionar por lo menos una cuenta...', timeout: 5000 });
                 $scope.elDetContProv = { idproveedor: $scope.elProv.id, idcuentac: undefined, idcxp: undefined };
-            }else{
-                proveedorSrvc.editRow(obj, 'cd').then(function(){
+            } else {
+                proveedorSrvc.editRow(obj, 'cd').then(function () {
                     $scope.getLstDetCuentaC($scope.elProv.id);
                     $scope.elDetContProv = { idproveedor: $scope.elProv.id, idcuentac: undefined, idcxp: undefined };
                     $scope.searchcta = "";
@@ -232,9 +264,9 @@
             }
         };
 
-        $scope.delDetProv = function(iddetprov){
-            $confirm({text: '¿Seguro(a) de eliminar esta cuenta?', title: 'Eliminar cuenta contable', ok: 'Sí', cancel: 'No'}).then(function() {
-                proveedorSrvc.editRow({id:iddetprov}, 'dd').then(function(){ $scope.getLstDetCuentaC($scope.elProv.id); $scope.elDetContProv = { idproveedor: $scope.elProv.id, idcuentac: undefined, idcxp: undefined }; });
+        $scope.delDetProv = function (iddetprov) {
+            $confirm({ text: '¿Seguro(a) de eliminar esta cuenta?', title: 'Eliminar cuenta contable', ok: 'Sí', cancel: 'No' }).then(function () {
+                proveedorSrvc.editRow({ id: iddetprov }, 'dd').then(function () { $scope.getLstDetCuentaC($scope.elProv.id); $scope.elDetContProv = { idproveedor: $scope.elProv.id, idcuentac: undefined, idcxp: undefined }; });
             });
         };
 
