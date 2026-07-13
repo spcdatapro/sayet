@@ -38,6 +38,7 @@
         $scope.getNotas = (params) => {
             const fechastr = moment(params.fecha).format('YYYY-MM-DD');
             const qstr = `${fechastr}/${params.idbanco}/notasd`;
+            console.log('php/rptchequesaprob.php/gettxt_notas/' + qstr);
             $window.open('php/rptchequesaprob.php/gettxt_notas/' + qstr);
         };
 
