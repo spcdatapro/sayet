@@ -51,7 +51,7 @@ $app->get('/gettxt_notas/:fechastr/:idbanco/:nombre', function($fechastr, $idban
     $app->response->headers->set('Content-Disposition', 'attachment;filename="'.trim($nombre).'.csv"'); 
 
     $url = 'http://localhost:5489/api/report';
-    $data = ['template' => ['shortid' => 'B1ICfUfDb'], 'data' => [ 'fechastr' => "$fechastr", 'idbanco' => $idbanco]];
+    $data = ['template' => ['shortid' => 'SyxKX2f4Ge'], 'data' => [ 'fechastr' => "$fechastr", 'idbanco' => $idbanco]];
 
     $respuesta = $db->CallJSReportAPI('POST', $url, json_encode($data));
 	print iconv('UTF-8','Windows-1252', $respuesta);
