@@ -753,7 +753,7 @@ $app->post('/prestamos', function(){
                     AND g.fecha <= '$fecha_fin'
                     AND g.fecha <= '$fecha_fin'
                     AND (g.finalizado = 0
-                    OR g.liquidacion >= '$fecha_fin') 
+                    OR g.liquidacion > '$fecha_inicio') 
                     AND DATE_FORMAT(g.fecha, '%Y-%m') != DATE_FORMAT('$fecha_inicio', '%Y-%m') ";
     $query.= isset($d->idempresa) ? "AND h.id = $d->idempresa " : "";
     $query.= "GROUP BY g.id UNION ALL ";
