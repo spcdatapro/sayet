@@ -955,7 +955,7 @@ $app->post('/prestamos', function(){
                     AND (g.finalizado = 0
                     OR g.liquidacion >= '$fecha_inicio')
                     AND g.id NOT IN (SELECT idplnprestamo FROM plnpresnom INNER JOIN plnnomina ON idplnnomina = plnnomina.id WHERE fecha <= '$fecha_fin' AND fecha >= '$fecha_inicio')
-                    AND DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m') ";
+                    AND (DATE_FORMAT(g.fecha, '%Y-%m') = DATE_FORMAT('$fecha_inicio', '%Y-%m') OR DATE_FORMAT(g.liquidacion, '%Y-%m') = DATE_FORMAT('20260701', '%Y-%m')) ";
     $query.= isset($d->idempresa) ? "AND h.id = $d->idempresa " : "";
     $query.= "GROUP BY g.id ORDER BY  2 , ";
     $query.= $d->agrupar == 2 ? " 6 , 8, 11" : " 8, 11";
