@@ -942,7 +942,7 @@ class Empleado extends Principal
 			$intervalo = ($interval->format('%a')+1) > 365 ? ($interval->format('%a')) : ($interval->format('%a')+1);
 			$dias  = ($intervalo/(365/15));
 			$diasDelMes = $this->getDiasDelMes($fin->format('m'), $fin->format('Y'));
-			$monto = ($dias*($this->sueldoPromedio / $diasDelMes));
+			$monto = ($dias*($this->sueldoPromedio / 30));
 		}
 
 		$this->finiquitoVacaciones = (object)[
