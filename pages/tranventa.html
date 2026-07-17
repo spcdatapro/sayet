@@ -309,7 +309,7 @@
                                 <span class="glyphicon glyphicon-print"></span>
                             </button>
                             <button type="button" class="btn btn-primary"
-                                ng-disabled="frmVenta.$invalid || venta.anulada === 1 || periodoCerrado"
+                                ng-disabled="frmVenta.$invalid || venta.anulada === 1"
                                 ng-show="venta.id > 0 && +venta.idtipofactura === 1 && +venta.connc === 0"
                                 ng-click="generaNC(venta)">
                                 NC
