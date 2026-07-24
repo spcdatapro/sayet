@@ -821,7 +821,7 @@ $app->post('/control_ingresos', function () {
                 if ($factura === '') {
                     continue; // Saltar si la factura está vacía
                 }
-                // Inicializar saldo si no existe
+                // Inicializar saldo si no existe -
                 if (!isset($saldoFacturas[$factura])) {
                     $montoFacturas[$factura] = $row->ingreso;
                     $isrFacturas[$factura] = $row->isr;
