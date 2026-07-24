@@ -529,7 +529,7 @@ class Empleado extends Principal
 
 	public function get_gana_dia()
 	{
-		return $this->lab->sueldo / 30;
+		return $this->lab->sueldo / $this->getDiasDelMes();
 	}
 
 	public function get_bono_dia()
@@ -539,7 +539,8 @@ class Empleado extends Principal
 
 	public function get_gana_hora()
 	{
-		return $this->get_gana_dia()/8;
+		$gana_dias_horas = $this->lab->sueldo / 30;
+		return $gana_dias_horas/8;
 	}
 
 	public function get_horas_extras_simples($args = [])
