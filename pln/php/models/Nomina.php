@@ -84,7 +84,7 @@ class Nomina extends Principal
 			['idplnnomina' => $args['idplnnomina']]
 		);
 
-		if (count($descprestamo) > 0 && isset($descprestamo)) {
+		if (count($descprestamo) > 0 && isset($nomina->descprestamo)) {
 			$monto = $nomina->descprestamo;
 			$descuento = totalCampo($descprestamo, 'monto');
 
