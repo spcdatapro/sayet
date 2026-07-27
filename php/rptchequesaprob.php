@@ -355,7 +355,12 @@ $app->post('/aprobados', function () {
         array_push($promedido, $compra->monto_cheque);
     }
 
-    print json_encode(['encabezado' => $letra] + $transacciones);
+    print json_encode([
+        'encabezado' => $letra,
+        'data' => $transacciones,
+        'activos' => $transacciones['activos'] ?? [],
+        'baja' => $transacciones['baja'] ?? []
+    ]);
 });
 
 $app->post('/comparativo', function () {
