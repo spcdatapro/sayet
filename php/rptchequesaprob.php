@@ -336,12 +336,12 @@ $app->post('/aprobados', function () {
         }
 
         $transacciones = [
-            $procesarGrupo($datosActivos),
-            $procesarGrupo($datosBaja)
+            'activos' => $procesarGrupo($datosActivos),
+            'baja' => $procesarGrupo($datosBaja)
         ];
         $success = true;
     } else {
-        $transacciones = [[], []];
+        $transacciones = ['activos' => [], 'baja' => []];
         $success = false;
     }
 
