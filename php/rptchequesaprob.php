@@ -264,41 +264,45 @@ $app->post('/aprobados', function () {
             // echo $query; return;
     $data = $db->getQuery($query);
 
-    if (count($data) > 0) {
+    $procesarGrupo = function($grupoData) use ($totales) {
+        if (count($grupoData) === 0) {
+            return [];
+        }
+
         $correlativos = [];
         $nextCorrelativo = 1;
 
-        foreach ($data as $c) {
+        foreach ($grupoData as $c) {
             // clave compuesta: empresa + proveedor + proyecto
             $key = $c->nomempresa . '|' . $c->proveedor . '|' . $c->nomproyecto;
-        
+
             // asignar correlativo único por combinación
             if (!isset($correlativos[$key])) {
                 $correlativos[$key] = $nextCorrelativo++;
             }
             $c->idempresa = $correlativos[$key];
-        
+
             // contar cuántos documentos hay con la misma combinación
             $cnt = 0;
-            foreach ($data as $x) {
+            foreach ($grupoData as $x) {
                 if ($x->nomempresa === $c->nomempresa &&
                     $x->proveedor === $c->proveedor &&
                     $x->nomproyecto === $c->nomproyecto) {
                     $cnt++;
                 }
             }
-        
+
             // meses del periodo (usa el campo mes de cada registro)
             $months = max(1, (int)$c->mes);
-        
+
             if ($cnt === 0) {
                 $c->cuantos = 'Sin movimientos';
                 continue;
             }
-        
+
             // frecuencia media: meses / cantidad de documentos
             $freq = $months / $cnt;
-        
+
             if ($freq <= 1.25) {
                 $c->cuantos = 'Mensual';
             } elseif ($freq <= 2.25) {
@@ -315,12 +319,29 @@ $app->post('/aprobados', function () {
         }
 
         // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
-        $reporte = new GeneradorReportes($data, 'transacciones', $totales, true);
-        $transacciones = $reporte->getReporte();
-        $montos_generales = $reporte->getTotalesGenerales();
+        $reporte = new GeneradorReportes($grupoData, 'transacciones', $totales, true);
+        return $reporte->getReporte();
+    };
+
+    if (count($data) > 0) {
+        $datosActivos = [];
+        $datosBaja = [];
+
+        foreach ($data as $registro) {
+            if ((int)$registro->debaja === 1) {
+                $datosBaja[] = $registro;
+            } else {
+                $datosActivos[] = $registro;
+            }
+        }
+
+        $transacciones = [
+            $procesarGrupo($datosActivos),
+            $procesarGrupo($datosBaja)
+        ];
         $success = true;
     } else {
-        $transacciones = 'No se recibieron datos';
+        $transacciones = [[], []];
         $success = false;
     }
 
