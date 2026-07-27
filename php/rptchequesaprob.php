@@ -219,7 +219,12 @@ $app->post('/aprobados', function () {
                 g.nomempresa,
                 h.nombre AS proveedor,
                 i.nomproyecto,
-                c.tipotrans
+                c.tipotrans, 
+                h.debaja,
+                CASE
+                    WHEN h.debaja = 1 THEN 'De baja'
+                    ELSE 'Activo'
+                END AS estado
             FROM
                 compra a
                     INNER JOIN
@@ -255,7 +260,7 @@ $app->post('/aprobados', function () {
     $query.="       AND (a.ordentrabajo IS NULL
                     OR a.ordentrabajo = 0)
             GROUP BY a.id
-            ORDER BY g.nomempresa , i.nomproyecto , h.nombre , a.fechafactura ASC";
+            ORDER BY h.debaja ASC, g.nomempresa , i.nomproyecto , h.nombre , a.fechafactura ASC";
             // echo $query; return;
     $data = $db->getQuery($query);
 
