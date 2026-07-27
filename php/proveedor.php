@@ -240,7 +240,7 @@ $app->get('/lstcuentasgastos/:idempresa', function ($idempresa) {
     $query = "SELECT a.id, CONCAT(codigo, ' - ', nombrecta) AS codnom FROM cuentac a INNER JOIN detcontprov b ON b.idcuentac = a.id 
     INNER JOIN proveedor c ON c.id = b.idproveedor
     WHERE a.idempresa = $idempresa 
-    AND c.hoja_control = 1
+    AND c.hoja_control = 1 AND a.codigo LIKE '5%'
     GROUP BY a.id 
     ORDER BY nombrecta";
     $data = $db->getQuery($query);
