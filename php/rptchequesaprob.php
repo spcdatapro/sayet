@@ -426,6 +426,7 @@ $app->post('/comparativo', function () {
     $query.= "AND (a.ordentrabajo IS NULL
                     OR a.ordentrabajo = 0)
                     AND e.hoja_control = 1
+            GROUP BY a.id
             ORDER BY e.id , MONTH(a.fechafactura)";
     $data = $db->getQuery($query);
 
