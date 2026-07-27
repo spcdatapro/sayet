@@ -335,13 +335,14 @@ $app->post('/aprobados', function () {
             }
         }
 
-        $transacciones = [
-            'activos' => $procesarGrupo($datosActivos),
-            'baja' => $procesarGrupo($datosBaja)
-        ];
+        $transacciones = $procesarGrupo($data);
+        $transaccionesActivos = $procesarGrupo($datosActivos);
+        $transaccionesBaja = $procesarGrupo($datosBaja);
         $success = true;
     } else {
-        $transacciones = ['activos' => [], 'baja' => []];
+        $transacciones = [];
+        $transaccionesActivos = [];
+        $transaccionesBaja = [];
         $success = false;
     }
 
@@ -358,8 +359,8 @@ $app->post('/aprobados', function () {
     print json_encode([
         'encabezado' => $letra,
         'data' => $transacciones,
-        'activos' => $transacciones['activos'] ?? [],
-        'baja' => $transacciones['baja'] ?? []
+        'activos' => $transaccionesActivos,
+        'baja' => $transaccionesBaja
     ]);
 });
 
