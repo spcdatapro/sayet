@@ -41,7 +41,7 @@
                 // globalizar usuario
                 $scope.usuario = usuario.uid;
                 // asignar empresa
-                $scope.params.idempresa = usuario.workingon.toString();
+                $scope.params.idempresa = params.idempresa.push(usuario.workingon);
             })
 
             // reporte en pantalla
