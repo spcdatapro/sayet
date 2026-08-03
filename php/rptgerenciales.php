@@ -1316,7 +1316,7 @@ $app->post('/ingresos', function () {
     $query .= isset($d->idempresa) ? "AND a.idempresa = $d->idempresa " : "";
     $query .= "AND a.anulado = 0
                 GROUP BY a.idempresa, d.idproyecto, MONTH(a.fecha)
-                ORDER BY 2, 6, 4";
+                ORDER BY 2, 6, 4 DESC";
     $data = $db->getQuery($query);
 
     $letra->fechas = $d->anio;
@@ -1324,7 +1324,7 @@ $app->post('/ingresos', function () {
 
     $meses_nombre = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
     $cuantos = count($data);
-    $max_mes_numero = $data[$cuantos - 1]->mes;
+    $max_mes_numero = $data[0]->mes;
 
     $empresa_nombres = [];
     $proyecto_nombres = [];
