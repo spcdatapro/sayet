@@ -1291,186 +1291,135 @@ $app->post('/ingresos', function () {
     $letra->estampa = new DateTime();
     $letra->estampa = $letra->estampa->format('d-m-Y H:i'); 
 
-    $query = "SELECT 
-                a.id,
-                a.idempresa,
-                e.nomempresa AS empresa,
-                MONTH(a.fecha) AS mes,
-                IFNULL(b.idproyecto, a.idproyecto) AS idproyecto,
-                IFNULL(b.proyecto, c.nomproyecto) AS proyecto,
-                ROUND(SUM(a.total), 2) AS monto_fact,
-                ROUND(SUM(d.monto), 2) AS monto_rec
-            FROM
-                factura a
-            	    INNER JOIN 
-                empresa e ON a.idempresa = e.id 
-                    LEFT JOIN
-                (SELECT 
-                    a.id AS idcontrato, a.idproyecto, b.nomproyecto AS proyecto
-                FROM
-                    contrato a
-                INNER JOIN proyecto b ON a.idproyecto = b.id) b ON a.idcontrato = b.idcontrato
-                    LEFT JOIN
-                proyecto c ON a.idproyecto = c.id
-                    LEFT JOIN
-                detcobroventa d ON d.idfactura = a.id
-            WHERE
-                YEAR(a.fecha) = $d->anio AND a.anulada = 0 ";
-    $query.= isset($d->idempresa) ? "AND a.idempresa = $d->idempresa " : "";
-    $query.= "      AND a.idtipofactura = 1
-                    AND (a.idfacturaafecta = 0
-                    OR a.idfacturaafecta IS NULL)
-            GROUP BY a.idempresa, idproyecto , mes
-            ORDER BY a.idempresa , proyecto , mes";
+        $query = "SELECT a.idempresa, e.nomempresa AS empresa, MONTH(a.fecha) AS mes, IFNULL(b.idproyecto, a.idproyecto) AS idproyecto,
+                IFNULL(b.proyecto, c.nomproyecto) AS proyecto, ROUND(SUM(a.subtotal), 2) AS monto_fact, 0.00 AS monto_rec
+            FROM factura a
+                INNER JOIN empresa e ON a.idempresa = e.id
+                LEFT JOIN (SELECT a.id AS idcontrato, a.idproyecto, b.nomproyecto AS proyecto FROM contrato a INNER JOIN proyecto b ON a.idproyecto = b.id) b ON a.idcontrato = b.idcontrato
+                LEFT JOIN proyecto c ON a.idproyecto = c.id
+            WHERE YEAR(a.fecha) = $d->anio AND a.anulada = 0 ";
+    $query .= isset($d->idempresa) ? "AND a.idempresa = $d->idempresa " : "";
+    $query .= "AND a.idtipofactura = 1 AND (a.idfacturaafecta = 0 OR a.idfacturaafecta IS NULL)
+                GROUP BY a.idempresa, IFNULL(b.idproyecto, a.idproyecto), MONTH(a.fecha)
+            UNION ALL
+            SELECT a.idempresa, b.nomempresa AS empresa, MONTH(a.fecha) AS mes, d.idproyecto, d.proyecto, 0.00 AS monto_fact, ROUND(SUM(c.monto), 2) AS monto_rec
+            FROM recibocli a
+                INNER JOIN empresa b ON a.idempresa = b.id
+                INNER JOIN detcobroventa c ON c.idrecibocli = a.id
+                INNER JOIN (
+                    SELECT a.id AS idfactura, IFNULL(b.idproyecto, a.idproyecto) AS idproyecto, IFNULL(b.proyecto, c.nomproyecto) AS proyecto
+                    FROM factura a
+                    LEFT JOIN (SELECT a.id AS idcontrato, a.idproyecto, b.nomproyecto AS proyecto FROM contrato a INNER JOIN proyecto b ON a.idproyecto = b.id) b ON a.idcontrato = b.idcontrato
+                    LEFT JOIN proyecto c ON a.idproyecto = c.id
+                ) d ON d.idfactura = c.idfactura
+            WHERE YEAR(a.fecha) = $d->anio ";
+    $query .= isset($d->idempresa) ? "AND a.idempresa = $d->idempresa " : "";
+    $query .= "AND a.anulado = 0
+                GROUP BY a.idempresa, d.idproyecto, MONTH(a.fecha)
+                ORDER BY 2, 6, 4";
     $data = $db->getQuery($query);
 
     $letra->fechas = $d->anio;
     $letra->empresa = isset($d->idempresa) ? (count($data) > 0 ? $data[0]->empresa : 'N/A') : 'Todas las empresas';
 
-    // Array de nombres de meses
-    $meses_nombre = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+    $meses_nombre = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    $max_mes_numero = 12;
 
-    // Calcular el número de mes máximo en todo el dataset
-    $max_mes_numero = 0;
-    $meses_por_proyecto = [];
-    
+    $empresa_nombres = [];
+    $proyecto_nombres = [];
+    $agrupado = [];
+
     foreach ($data as $row) {
-        $key = $row->idproyecto;
-        if (!isset($meses_por_proyecto[$key])) {
-            $meses_por_proyecto[$key] = [];
+        $idempresa = (int) $row->idempresa;
+        $idproyecto = (int) $row->idproyecto;
+        $mes = (int) $row->mes;
+
+        $empresa_nombres[$idempresa] = $row->empresa;
+        $proyecto_nombres[$idempresa . ':' . $idproyecto] = $row->proyecto;
+
+        if (!isset($agrupado[$idempresa])) {
+            $agrupado[$idempresa] = [];
         }
-        // Usar el mes como índice para evitar duplicados
-        $meses_por_proyecto[$key][$row->mes] = true;
-        // Encontrar el mes número máximo
-        if ($row->mes > $max_mes_numero) {
-            $max_mes_numero = $row->mes;
+        if (!isset($agrupado[$idempresa][$idproyecto])) {
+            $agrupado[$idempresa][$idproyecto] = [];
         }
-    }
-    
-    // Contar también la cantidad de meses para las columnas
-    $max_meses_cantidad = 0;
-    foreach ($meses_por_proyecto as $meses) {
-        $count = count($meses);
-        if ($count > $max_meses_cantidad) {
-            $max_meses_cantidad = $count;
+        if (!isset($agrupado[$idempresa][$idproyecto][$mes])) {
+            $agrupado[$idempresa][$idproyecto][$mes] = new stdClass();
+            $agrupado[$idempresa][$idproyecto][$mes]->mes = $mes;
+            $agrupado[$idempresa][$idproyecto][$mes]->nombre = $meses_nombre[$mes - 1];
+            $agrupado[$idempresa][$idproyecto][$mes]->monto_fact = 0;
+            $agrupado[$idempresa][$idproyecto][$mes]->monto_rec = 0;
         }
+
+        $agrupado[$idempresa][$idproyecto][$mes]->monto_fact += (float) $row->monto_fact;
+        $agrupado[$idempresa][$idproyecto][$mes]->monto_rec += (float) $row->monto_rec;
     }
 
-    // Restructurar datos agrupados por empresa y proyecto
     $empresas = [];
-    $idempresa_actual = null;
-    $empresa_obj = null;
-    $idproyecto_actual = null;
-    $proyecto_obj = null;
-    $totales_mes_empresa = []; // Para acumular totales por mes en cada empresa
-    $proyectos_index = []; // Índice para buscar proyectos existentes por idproyecto
+    foreach ($agrupado as $idempresa => $proyectos) {
+        $empresa_obj = new stdClass();
+        $empresa_obj->id = $idempresa;
+        $empresa_obj->idempresa = $idempresa;
+        $empresa_obj->nombre = isset($empresa_nombres[$idempresa]) ? $empresa_nombres[$idempresa] : 'N/A';
+        $empresa_obj->columnas = $max_mes_numero;
+        $empresa_obj->proyectos = [];
+        $empresa_obj->totales_mes = [];
+        $empresa_obj->totales = new stdClass();
+        $empresa_obj->totales->monto_fact = 0;
+        $empresa_obj->totales->monto_rec = 0;
 
-    foreach ($data as $row) {
-        // Si es una nueva empresa, crear objeto empresa
-        if ($row->idempresa != $idempresa_actual) {
-            $empresa_obj = new stdClass();
-            $empresa_obj->idempresa = $row->idempresa;
-            $empresa_obj->empresa = $row->empresa;
-            $empresa_obj->columnas = $max_meses_cantidad;
-            $empresa_obj->proyectos = [];
-            $empresa_obj->totales_mes = [];
-            array_push($empresas, $empresa_obj);
-            $idempresa_actual = $row->idempresa;
-            $idproyecto_actual = null;
-            $totales_mes_empresa = [];
-            $proyectos_index = []; // Reiniciar índice para la nueva empresa
-        }
-
-        // Verificar si el proyecto ya existe en esta empresa
-        if (!isset($proyectos_index[$row->idproyecto])) {
-            // Crear nuevo proyecto si no existe
+        foreach ($proyectos as $idproyecto => $meses) {
             $proyecto_obj = new stdClass();
-            $proyecto_obj->idproyecto = $row->idproyecto;
-            $proyecto_obj->proyecto = $row->proyecto;
+            $proyecto_obj->id = $idproyecto;
+            $proyecto_obj->idproyecto = $idproyecto;
+            $proyecto_obj->nombre = isset($proyecto_nombres[$idempresa . ':' . $idproyecto]) ? $proyecto_nombres[$idempresa . ':' . $idproyecto] : 'N/A';
             $proyecto_obj->meses = [];
+            $proyecto_obj->totales = new stdClass();
+            $proyecto_obj->totales->monto_fact = 0;
+            $proyecto_obj->totales->monto_rec = 0;
             $proyecto_obj->monto_fact_total = 0;
             $proyecto_obj->monto_rec_total = 0;
-            array_push($empresa_obj->proyectos, $proyecto_obj);
-            $proyectos_index[$row->idproyecto] = count($empresa_obj->proyectos) - 1;
-        } else {
-            // Obtener referencia al proyecto existente
-            $proyecto_idx = $proyectos_index[$row->idproyecto];
-            $proyecto_obj = $empresa_obj->proyectos[$proyecto_idx];
-        }
 
-        $idproyecto_actual = $row->idproyecto;
-
-        // Crear objeto mes
-        $mes_obj = new stdClass();
-        $mes_obj->mes = $row->mes;
-        $mes_obj->nombre = $meses_nombre[$row->mes - 1];
-        $mes_obj->monto_fact = $row->monto_fact;
-        $mes_obj->monto_rec = $row->monto_rec;
-        array_push($proyecto_obj->meses, $mes_obj);
-
-        // Acumular totales del proyecto
-        $proyecto_obj->monto_fact_total += $row->monto_fact;
-        $proyecto_obj->monto_rec_total += $row->monto_rec;
-
-        // Acumular totales por mes en la empresa
-        if (!isset($totales_mes_empresa[$row->mes])) {
-            $totales_mes_empresa[$row->mes] = new stdClass();
-            $totales_mes_empresa[$row->mes]->mes = $row->mes;
-            $totales_mes_empresa[$row->mes]->nombre = $meses_nombre[$row->mes - 1];
-            $totales_mes_empresa[$row->mes]->monto_fact = 0;
-            $totales_mes_empresa[$row->mes]->monto_rec = 0;
-        }
-        $totales_mes_empresa[$row->mes]->monto_fact += $row->monto_fact;
-        $totales_mes_empresa[$row->mes]->monto_rec += $row->monto_rec;
-    }
-
-    // Completar meses faltantes con ceros en cada proyecto (solo hasta el mes máximo encontrado)
-    foreach ($empresas as $empresa) {
-        foreach ($empresa->proyectos as $proyecto) {
-            // Obtener los meses que ya tiene el proyecto
-            $meses_existentes = [];
-            foreach ($proyecto->meses as $mes) {
-                $meses_existentes[$mes->mes] = true;
-            }
-
-            // Recorrer desde el mes 1 hasta el mes máximo encontrado y agregar los faltantes
             for ($mes_num = 1; $mes_num <= $max_mes_numero; $mes_num++) {
-                if (!isset($meses_existentes[$mes_num])) {
-                    // Crear objeto mes con valores en cero
-                    $mes_obj = new stdClass();
-                    $mes_obj->mes = $mes_num;
-                    $mes_obj->nombre = $meses_nombre[$mes_num - 1];
-                    $mes_obj->monto_fact = 0;
-                    $mes_obj->monto_rec = 0;
-                    array_push($proyecto->meses, $mes_obj);
+                $mes_obj = new stdClass();
+                $mes_obj->mes = $mes_num;
+                $mes_obj->nombre = $meses_nombre[$mes_num - 1];
+                $mes_obj->monto_fact = 0;
+                $mes_obj->monto_rec = 0;
+
+                if (isset($meses[$mes_num])) {
+                    $mes_obj->monto_fact = round((float) $meses[$mes_num]->monto_fact, 2);
+                    $mes_obj->monto_rec = round((float) $meses[$mes_num]->monto_rec, 2);
                 }
+
+                $proyecto_obj->meses[] = $mes_obj;
+                $proyecto_obj->totales->monto_fact += $mes_obj->monto_fact;
+                $proyecto_obj->totales->monto_rec += $mes_obj->monto_rec;
+                $proyecto_obj->monto_fact_total += $mes_obj->monto_fact;
+                $proyecto_obj->monto_rec_total += $mes_obj->monto_rec;
             }
 
-            // Ordenar los meses por número
-            usort($proyecto->meses, function ($a, $b) {
-                return $a->mes - $b->mes;
-            });
+            $empresa_obj->proyectos[] = $proyecto_obj;
+            $empresa_obj->totales->monto_fact += $proyecto_obj->totales->monto_fact;
+            $empresa_obj->totales->monto_rec += $proyecto_obj->totales->monto_rec;
         }
-    }
 
-    // Asignar totales de meses a cada empresa
-    foreach ($empresas as $empresa) {
-        // Recalcular totales por mes para esta empresa específica
-        $totales_mes_temp = [];
-        foreach ($empresa->proyectos as $proyecto) {
-            foreach ($proyecto->meses as $mes) {
-                if (!isset($totales_mes_temp[$mes->mes])) {
-                    $totales_mes_temp[$mes->mes] = new stdClass();
-                    $totales_mes_temp[$mes->mes]->mes = $mes->mes;
-                    $totales_mes_temp[$mes->mes]->nombre = $mes->nombre;
-                    $totales_mes_temp[$mes->mes]->monto_fact = 0;
-                    $totales_mes_temp[$mes->mes]->monto_rec = 0;
-                }
-                $totales_mes_temp[$mes->mes]->monto_fact += $mes->monto_fact;
-                $totales_mes_temp[$mes->mes]->monto_rec += $mes->monto_rec;
+        for ($mes_num = 1; $mes_num <= $max_mes_numero; $mes_num++) {
+            $total_mes = new stdClass();
+            $total_mes->mes = $mes_num;
+            $total_mes->nombre = $meses_nombre[$mes_num - 1];
+            $total_mes->monto_fact = 0;
+            $total_mes->monto_rec = 0;
+
+            foreach ($empresa_obj->proyectos as $proyecto) {
+                $total_mes->monto_fact += $proyecto->meses[$mes_num - 1]->monto_fact;
+                $total_mes->monto_rec += $proyecto->meses[$mes_num - 1]->monto_rec;
             }
+
+            $empresa_obj->totales_mes[] = $total_mes;
         }
-        $empresa->totales_mes = array_values($totales_mes_temp);
+
+        $empresas[] = $empresa_obj;
     }
 
     print json_encode([ 'encabezado' => $letra, 'ingresos' => $empresas ]);

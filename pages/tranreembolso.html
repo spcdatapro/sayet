@@ -365,17 +365,6 @@
                 <div class="panel-body">
                     <form name="frmCompra" id="frmCompra" ng-submit="frmCompra.$valid && addCompra(compra)" novalidate>
                         <div class="row">
-                            <div class="col-md-3">
-                                <div class="form-group"
-                                    ng-class="{'has-error':frmCompra.selTFact.$invalid && !frmCompra.selTFact.$pristine}">
-                                    <label for="selTFact">Tipo:</label>
-                                    <select name="selTFact" id="selTFact" class="form-control input-sm"
-                                        ng-model="compra.objTipoFactura"
-                                        ng-options="obj.desctipofact for obj in tiposfactura | filter:{paracompra:1}"
-                                        ng-change="calcIVA(compra); esrec();" ng-disabled="!permiso.m" required>
-                                    </select>
-                                </div>
-                            </div>
                             <div class="col-md-2">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmCompra.txtNit.$invalid && !frmCompra.txtNit.$pristine}">
@@ -393,7 +382,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-7">
+                            <div class="col-md-4">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmCompra.txtProveedor.$invalid && !frmCompra.txtProveedor.$pristine}">
                                     <label for="txtProveedor">Proveedor:</label>
@@ -402,9 +391,18 @@
                                         required />
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-1">
+                            <div class="col-md-2">
+                                <div class="form-group"
+                                    ng-class="{'has-error':frmCompra.selTFact.$invalid && !frmCompra.selTFact.$pristine}">
+                                    <label for="selTFact">Tipo:</label>
+                                    <select name="selTFact" id="selTFact" class="form-control input-sm"
+                                        ng-model="compra.objTipoFactura"
+                                        ng-options="obj.desctipofact for obj in tiposfactura | filter:{paracompra:1}"
+                                        ng-change="calcIVA(compra); esrec();" ng-disabled="!permiso.m" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmCompra.txtSerie.$invalid && !frmCompra.txtSerie.$pristine}">
                                     <label for="txtSerie">Serie:</label>
@@ -422,7 +420,9 @@
                                         min="1" ng-change="ingresoDocumento()" required />
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmCompra.txtFIng.$invalid && !frmCompra.txtFIng.$pristine}">
                                     <label for="txtFIng">Fecha de ingreso:</label>
@@ -431,7 +431,7 @@
                                         ng-change="setMesIva(compra.fechaingreso)" ng-disabled="!permiso.m" required />
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmCompra.txtMesIVA.$invalid && !frmCompra.txtMesIVA.$pristine}">
                                     <label for="txtMesIVA">Mes I.V.A.:</label>
@@ -449,7 +449,7 @@
                                         required />
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmCompra.selTComp.$invalid && !frmCompra.selTComp.$pristine}">
                                     <label for="selTComp">Tipo de compra:</label>
@@ -483,17 +483,6 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-2">
-                                <div class="form-group"
-                                    ng-class="{'has-error':frmCompra.txtTot.$invalid && !frmCompra.txtTot.$pristine}">
-                                    <label for="txtTot">Total:</label>
-                                    <input name="txtTot" id="txtTot" type="text" class="form-control input-sm"
-                                        ng-model="compra.totfact" fcsa-number="{ min:0, maxDecimals:2 }"
-                                        ng-change="calcIVA(compra); calcISR()"
-                                        ng-disabled="!(compra.objTipoFactura != null && compra.objTipoFactura != undefined)"
-                                        required />
-                                </div>
-                            </div>
                             <div class="col-md-4">
                                 <div class="form-group required"
                                     ng-class="{'has-error':frmCompra.selProy.$invalid && !frmCompra.selProy.$pristine}">
@@ -516,7 +505,7 @@
                                     </ui-select>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-4">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmCompra.selUnidad.$invalid && !frmCompra.selUnidad.$pristine}">
                                     <label for="selUnidad" class="control-label">Unidad (si aplica):</label>
@@ -550,17 +539,18 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-3">
                                 <div class="form-group"
-                                    ng-class="{'has-error':frmCompra.txtConcMay.$invalid && !frmCompra.txtConcMay.$pristine}">
-                                    <label for="txtConcMay">Concepto para el mayor:</label>
-                                    <input name="txtConcMay" id="txtConcMay" type="text" class="form-control input-sm"
-                                        ng-model="compra.conceptomayor" maxlength="500" required />
+                                    ng-class="{'has-error':frmCompra.txtTot.$invalid && !frmCompra.txtTot.$pristine}">
+                                    <label for="txtTot">Total:</label>
+                                    <input name="txtTot" id="txtTot" type="text" class="form-control input-sm"
+                                        ng-model="compra.totfact" fcsa-number="{ min:0, maxDecimals:2 }"
+                                        ng-change="calcIVA(compra); calcISR()"
+                                        ng-disabled="!(compra.objTipoFactura != null && compra.objTipoFactura != undefined)"
+                                        required />
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmCompra.txtIDP.$invalid && !frmCompra.txtIDP.$pristine}">
                                     <label for="txtIDP">I.D.P.:</label>
@@ -569,7 +559,7 @@
                                         required />
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmCompra.txtNoAfecto.$invalid && !frmCompra.txtNoAfecto.$pristine}">
                                     <label for="txtNoAfecto">No afecto:</label>
@@ -580,7 +570,7 @@
                                         required />
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmCompra.txtSubTot.$invalid && !frmCompra.txtSubTot.$pristine}">
                                     <label for="txtSubTot">Subtotal:</label>
@@ -589,7 +579,9 @@
                                         ng-disabled="true" required />
                                 </div>
                             </div>
-                            <div class="col-md-1">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmCompra.txtIVA.$invalid && !frmCompra.txtIVA.$pristine}">
                                     <label for="txtIVA">I.V.A.:</label>
@@ -598,7 +590,7 @@
                                         required />
                                 </div>
                             </div>
-                            <div class="col-md-1">
+                            <div class="col-md-3">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmCompra.chkRetISR.$invalid && !frmCompra.chkRetISR.$pristine}">
                                     <label for="chkRetISR">Ret. ISR:</label>
@@ -607,7 +599,7 @@
                                         ng-disabled="!permiso.m" ng-false-value="0" />
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="form-group"
                                     ng-class="{'has-error':frmCompra.txtISR.$invalid && !frmCompra.txtISR.$pristine}">
                                     <label for="txtISR" class="control-label">I.S.R.:</label>
@@ -631,7 +623,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="txtRiva" class="control-label">Ret. IVA:</label>
                                     <div class="input-group">
@@ -651,6 +643,16 @@
                                         <input name="txtRiva" id="txtRiva" type="number" class="form-control input-sm"
                                             ng-model="compra.retiva" ng-disabled="true" step=".01" />
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group"
+                                    ng-class="{'has-error':frmCompra.txtConcMay.$invalid && !frmCompra.txtConcMay.$pristine}">
+                                    <label for="txtConcMay">Concepto para el mayor:</label>
+                                    <input name="txtConcMay" id="txtConcMay" type="text" class="form-control input-sm"
+                                        ng-model="compra.conceptomayor" maxlength="500" required />
                                 </div>
                             </div>
                         </div>
