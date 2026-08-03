@@ -1325,7 +1325,7 @@ $app->post('/ingresos', function () {
 
     $meses_nombre = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
     $cuantos = count($data);
-    $max_mes_numero = 7;
+    $max_mes_numero = 0;
 
     $empresa_nombres = [];
     $proyecto_nombres = [];
@@ -1335,6 +1335,7 @@ $app->post('/ingresos', function () {
         $idempresa = (int) $row->idempresa;
         $idproyecto = (int) $row->idproyecto;
         $mes = (int) $row->mes;
+        $max_mes_numero = max($max_mes_numero, $mes);
 
         $empresa_nombres[$idempresa] = $row->empresa;
         $proyecto_nombres[$idempresa . ':' . $idproyecto] = $row->proyecto;
