@@ -1286,6 +1286,7 @@ $app->post('/resumen_prov', function () {
 $app->post('/ingresos', function () {
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    $ids_str = count($d->idempresa) > 0 ? implode(',', $d->idempresa) : "''";
 
     $letra = new stdClass();
     $letra->estampa = new DateTime();
@@ -1298,7 +1299,7 @@ $app->post('/ingresos', function () {
                 LEFT JOIN (SELECT a.id AS idcontrato, a.idproyecto, b.nomproyecto AS proyecto FROM contrato a INNER JOIN proyecto b ON a.idproyecto = b.id) b ON a.idcontrato = b.idcontrato
                 LEFT JOIN proyecto c ON a.idproyecto = c.id
             WHERE YEAR(a.fecha) = $d->anio AND a.anulada = 0 ";
-    $query .= isset($d->idempresa) ? "AND a.idempresa = $d->idempresa " : "";
+    $query.= count($d->idempresa) > 0 ? "AND a.idempresa IN($ids_str) " : "";
     $query .= "AND a.idtipofactura = 1 AND (a.idfacturaafecta = 0 OR a.idfacturaafecta IS NULL)
                 GROUP BY a.idempresa, IFNULL(b.idproyecto, a.idproyecto), MONTH(a.fecha)
             UNION ALL
@@ -1313,7 +1314,7 @@ $app->post('/ingresos', function () {
                     LEFT JOIN proyecto c ON a.idproyecto = c.id
                 ) d ON d.idfactura = c.idfactura
             WHERE YEAR(a.fecha) = $d->anio ";
-    $query .= isset($d->idempresa) ? "AND a.idempresa = $d->idempresa " : "";
+    $query.= count($d->idempresa) > 0 ? "AND a.idempresa IN($ids_str) " : "";
     $query .= "AND a.anulado = 0
                 GROUP BY a.idempresa, d.idproyecto, MONTH(a.fecha)
                 ORDER BY 2, 6, 4 DESC";

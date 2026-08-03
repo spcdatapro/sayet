@@ -43,9 +43,9 @@
                             <div class="form-group">
                                 <label class="control-label">Empresa:</label>
                                 <ui-select ng-model="params.idempresa" title="Seleccione una empresa..."
-                                    theme="bootstrap" autofocus="false">
-                                    <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
-                                        <span ng-bind="($select.selected.nomempresa)"></span>
+                                    theme="bootstrap" autofocus="false" multiple>
+                                    <ui-select-match placeholder="Seleccionar empresas" allow-clear="true">
+                                        <span>{{$item.abreviatura}}</span>
                                     </ui-select-match>
                                     <ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
                                         <div ng-bind-html="(item.nomempresa) | highlight: $select.search"></div>

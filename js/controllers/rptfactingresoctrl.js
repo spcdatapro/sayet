@@ -13,7 +13,7 @@
             $scope.usuario = undefined;
 
             // parametros para reporte
-            $scope.params = { anio: +moment().toDate().getFullYear() };
+            $scope.params = { anio: +moment().toDate().getFullYear(), idempresa: [] };
 
             // variable que guarda el reporte para mostrar en pantalla
             $scope.encabezado = {};
