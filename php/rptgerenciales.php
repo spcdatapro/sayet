@@ -1323,7 +1323,8 @@ $app->post('/ingresos', function () {
     $letra->empresa = isset($d->idempresa) ? (count($data) > 0 ? $data[0]->empresa : 'N/A') : 'Todas las empresas';
 
     $meses_nombre = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-    $max_mes_numero = 12;
+    $cuantos = count($data);
+    $max_mes_numero = $data[$cuantos - 1]->mes;
 
     $empresa_nombres = [];
     $proyecto_nombres = [];
