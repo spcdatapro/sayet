@@ -5,10 +5,10 @@
     reembolsoctrl.controller('reembolsoCtrl', [
         '$scope', 'reembolsoSrvc', 'monedaSrvc', 'authSrvc', 'empresaSrvc', '$route', '$confirm', 'tipoReembolsoSrvc', 'DTOptionsBuilder', '$filter', 'tipoFacturaSrvc', 'tipoCompraSrvc', 'detContSrvc', 'cuentacSrvc',
         'toaster', '$uibModal', 'tipoMovTranBanSrvc', 'bancoSrvc', 'beneficiarioSrvc', 'tipoCombustibleSrvc', 'proveedorSrvc', 'localStorageSrvc', '$location', 'proyectoSrvc', 'tipogastoSrvc', 'periodoContableSrvc',
-        'presupuestoSrvc', 'compraSrvc', 'periodoIvaSrvc', 'Upload',
+        'presupuestoSrvc', 'compraSrvc', 'periodoIvaSrvc', 'Upload', '$window',
         ($scope, reembolsoSrvc, monedaSrvc, authSrvc, empresaSrvc, $route, $confirm, tipoReembolsoSrvc, DTOptionsBuilder, $filter, tipoFacturaSrvc, tipoCompraSrvc, detContSrvc, cuentacSrvc,
             toaster, $uibModal, tipoMovTranBanSrvc, bancoSrvc, beneficiarioSrvc, tipoCombustibleSrvc, proveedorSrvc, localStorageSrvc, $location, proyectoSrvc, tipogastoSrvc, periodoContableSrvc,
-            presupuestoSrvc, compraSrvc, periodoIvaSrvc, Upload
+            presupuestoSrvc, compraSrvc, periodoIvaSrvc, Upload, $window
         ) => {
 
             $scope.monedas = [];
@@ -1032,6 +1032,10 @@
                 id = id > 0 ? id : $scope.reembolso.id;
                 reembolsoSrvc.lstReemAdjuntos(id).then((d) => $scope.lstremadjuntos = d);
             };
+
+            $scope.printAprobacion = id => {
+                jsReportSrvc.getPDFReport('BJfYiGkCWx', { idreembolso: id }).then((pdf) => $window.open(pdf) )
+            }
 
             $scope.printPendientes = function () {
                 var modalInstance = $uibModal.open({

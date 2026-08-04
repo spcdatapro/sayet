@@ -243,8 +243,12 @@
                                         ng-click="reabrirCC(reembolso)">
                                         <span class="glyphicon glyphicon-repeat"></span>
                                     </button>
-                                    <button type="button" class="btn btn-primary" ng-show="reembolso.id > 0"
+                                    <button type="button" class="btn btn-primary" ng-show="reembolso.id > 0 && permiso.m"
                                         ng-click="printVersion()">
+                                        <span class="glyphicon glyphicon-print"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-primary" ng-show="reembolso.id > 0 && !permiso.m"
+                                        ng-click="printAprobacion(reembolso.id)">
                                         <span class="glyphicon glyphicon-print"></span>
                                     </button>
                                     <button type="button" class="btn btn-primary"
