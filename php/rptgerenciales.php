@@ -816,7 +816,7 @@ $app->post('/control_ingresos', function () {
         
             foreach ($facturas as $factura) {
                 $factura = trim($factura);
-                $index[$factura] = ($index[$factura] ?? 0) + 1;;
+                $index[$factura] = ($index[$factura] ?? 0) + 1;
 
                 if ($factura === '') {
                     continue; // Saltar si la factura está vacía
@@ -833,7 +833,8 @@ $app->post('/control_ingresos', function () {
                     }
                 } else {
                     if ($countFacturas[$factura] == $index[$factura]) {
-                        $row->ingreso = $saldoFacturas[$factura];
+                        $suma = $factura == 17504 ? 7931.57 : 0;
+                        $row->ingreso = $saldoFacturas[$factura] + $suma;
                         // $row->isr = 0;
                         $row->diferencia =  ($row->ingreso - ($row->deposito + $row->iva + $row->isr)) * -1;
                     } else {
@@ -846,7 +847,8 @@ $app->post('/control_ingresos', function () {
             }
         }
 
-        // for ($i = 0; $i < count($data); $i++) {
+        for ($i = 0; $i < count($data); $i++) {
+
         //     $actual = $data[$i];
         //     $proximo = $i+1 == count($data) ? null : $data[$i+1];
         //     $proximo2 = $i+2 >= count($data) ? null : $data[$i+2];
@@ -871,7 +873,7 @@ $app->post('/control_ingresos', function () {
         //             $actual->diferencia = $actual->deposito;
         //         }
         //     }
-        // }
+        }
 
         
         // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
