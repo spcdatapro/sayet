@@ -5,10 +5,10 @@
     reembolsoctrl.controller('reembolsoCtrl', [
         '$scope', 'reembolsoSrvc', 'monedaSrvc', 'authSrvc', 'empresaSrvc', '$route', '$confirm', 'tipoReembolsoSrvc', 'DTOptionsBuilder', '$filter', 'tipoFacturaSrvc', 'tipoCompraSrvc', 'detContSrvc', 'cuentacSrvc',
         'toaster', '$uibModal', 'tipoMovTranBanSrvc', 'bancoSrvc', 'beneficiarioSrvc', 'tipoCombustibleSrvc', 'proveedorSrvc', 'localStorageSrvc', '$location', 'proyectoSrvc', 'tipogastoSrvc', 'periodoContableSrvc',
-        'presupuestoSrvc', 'compraSrvc', 'periodoIvaSrvc', 'Upload', '$window',
+        'presupuestoSrvc', 'compraSrvc', 'periodoIvaSrvc', 'Upload', '$window', 'jsReportSrvc',
         ($scope, reembolsoSrvc, monedaSrvc, authSrvc, empresaSrvc, $route, $confirm, tipoReembolsoSrvc, DTOptionsBuilder, $filter, tipoFacturaSrvc, tipoCompraSrvc, detContSrvc, cuentacSrvc,
             toaster, $uibModal, tipoMovTranBanSrvc, bancoSrvc, beneficiarioSrvc, tipoCombustibleSrvc, proveedorSrvc, localStorageSrvc, $location, proyectoSrvc, tipogastoSrvc, periodoContableSrvc,
-            presupuestoSrvc, compraSrvc, periodoIvaSrvc, Upload, $window
+            presupuestoSrvc, compraSrvc, periodoIvaSrvc, Upload, $window, jsReportSrvc
         ) => {
 
             $scope.monedas = [];
