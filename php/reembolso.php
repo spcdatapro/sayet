@@ -696,7 +696,7 @@ $app->get('/reembolso_aprobacion/:idreembolso', function ($idreembolso) {
                 c.proveedor,
                 a.fondoasignado,
                 d.iniciales AS jefe,
-                '37ce35dd-186e-4372-8b34-81893dd0dfed' AS firma_jefe,
+                a.codigo_aprobacion AS firma_jefe,
                 e.nomempresa AS empresa,
                 IFNULL(f.descripcion, 'N/E') AS subtipogasto,
                 g.nomproyecto AS proyecto
@@ -730,6 +730,8 @@ $app->get('/reembolso_aprobacion/:idreembolso', function ($idreembolso) {
             $letra->beneficiario = $row->beneficiario;
             $letra->empresa = $row->empresa;
             $letra->firma_jefe = $row->firma_jefe;
+            $letra->jefe = $row->jefe;
+            $letra->solicitante = $row->solicitante;
         }
         
         $letra->monto += $row->monto;
