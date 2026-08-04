@@ -1284,7 +1284,7 @@
     }]);
 
     reembolsoctrl.controller('ModalCodigoAprobacionCtrl', ['$scope', '$uibModalInstance', 'reembolso', function ($scope, $uibModalInstance, reembolso) {
-        $scope.codigoAprobacion = reembolso.codigoaprobacion;
+        $scope.codigoAprobacion = reembolso.codigo_aprobacion;
 
         $scope.cancel = function () {
             $uibModalInstance.dismiss('cancel');
