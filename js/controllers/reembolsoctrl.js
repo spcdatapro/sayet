@@ -976,15 +976,13 @@
                 });
             };
 
-            $scope.verCodigoAprobacion = (reembolso) => {
+            $scope.verCodigoAprobacion = reembolso => {
                 $uibModal.open({
                     animation: true,
                     templateUrl: 'modalCodigoAprobacion.html',
                     controller: 'ModalCodigoAprobacionCtrl',
                     resolve: {
-                        reembolso: function () {
-                            return reembolso;
-                        }
+                        reembolso: reembolso
                     }
                 });
             }
