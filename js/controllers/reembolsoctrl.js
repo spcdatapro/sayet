@@ -357,6 +357,7 @@
 
             $scope.getLstReembolsos = function () {
                 // console.log($scope.params);
+                $scope.params.idusuario = $scope.permiso.m ? 0 : $scope.uid;
                 $scope.params.fdelstr = moment($scope.params.fdel).format('YYYY-MM-DD');
                 $scope.params.falstr = moment($scope.params.fal).format('YYYY-MM-DD');
                 reembolsoSrvc.lstReembolsosPost($scope.params).then((d) => $scope.reembolsos = procDataReemb(d));

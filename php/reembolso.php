@@ -36,6 +36,7 @@ $app->post('/lstreembolsos', function(){
     $query.= (int)$d->estatus > 0 ? "AND a.estatus = $d->estatus " : '';
     $query.= (int)$d->tipo > 0 ? "AND a.idtiporeembolso = $d->tipo " : '';
     $query.= (int)$d->idot > 0 ? "AND a.ordentrabajo = $d->idot " : '';
+    $query.= (int)$d->idusuario > 0 ? "AND a.idusuario = $d->idusuario " : '';
     $query.= "ORDER BY a.estatus, a.finicio, b.desctiporeembolso";
     print $db->doSelectASJson($query);
 });
