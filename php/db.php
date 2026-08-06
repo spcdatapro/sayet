@@ -354,7 +354,21 @@ class dbcpm{
 
     public function generate_uuid()
     {
-        $myuuid = Uuid::uuid4();
-        return $myuuid->toString();
+        if (class_exists('Ramsey\\Uuid\\Uuid')) {
+            $myuuid = Uuid::uuid4();
+            return $myuuid->toString();
+        }
+
+        return sprintf(
+            '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0x0fff) | 0x4000,
+            mt_rand(0, 0x3fff) | 0x8000,
+            mt_rand(0, 0x0fff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff)
+        );
     }
 }
