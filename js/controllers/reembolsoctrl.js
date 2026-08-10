@@ -128,6 +128,18 @@
                             cuentacSrvc.getByTipo($scope.reembolso.idempresa, 0).then(function (d) { $scope.cuentasc = d; });
                         });
                     });
+
+                    tipogastoSrvc.lstSubTipoGasto().then(d => {
+                        tipogastoSrvc.getTipogastoUsuario(usrLogged.uid).then(autorizado => {
+                            let idtipogastos = [];
+                            autorizado.forEach(aut => {
+                                idtipogastos.push(aut.id);
+                            });
+
+                            $scope.subtiposgasto = idtipogastos.length > 0 ? d.filter(subtipogasto => idtipogastos.includes(subtipogasto.idtipogasto)) : d;
+                            // $scope.subtiposgasto = d;
+                        });
+                    });
                 }
             });
 
@@ -166,7 +178,7 @@
                 }
                 if (!$scope.permiso.m) {
                     $scope.tiposfactura = d.filter(function (item) {
-                    return [1, 3, 5].indexOf(parseInt(item.id)) !== -1;
+                        return [1, 3, 5].indexOf(parseInt(item.id)) !== -1;
                     });
                 } else {
                     $scope.tiposfactura = d;
@@ -244,8 +256,6 @@
                 }
                 $scope.combustibles = d;
             });
-
-            tipogastoSrvc.lstSubTipoGasto().then(function (d) { $scope.subtiposgasto = d; });
 
             function procDataReemb(d) {
                 for (var i = 0; i < d.length; i++) {
@@ -1039,7 +1049,7 @@
             };
 
             $scope.printAprobacion = id => {
-                jsReportSrvc.getPDFReport('BJfYiGkCWx', { idreembolso: id }).then((pdf) => $window.open(pdf) )
+                jsReportSrvc.getPDFReport('BJfYiGkCWx', { idreembolso: id }).then((pdf) => $window.open(pdf))
             }
 
             $scope.printPendientes = function () {

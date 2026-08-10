@@ -119,4 +119,50 @@ $app->post('/dcc', function(){
     $db->doQuery($query);
 });
 
+// permisos usuario
+$app->get('/usrgasto/:idgasto', function ($idgasto) {
+    $db = new dbcpm();
+    $query = "SELECT a.id, a.idusuario, b.nombre FROM usuario_tipogasto a INNER JOIN usuario b ON a.idusuario = b.id WHERE a.idtipogasto = $idgasto";
+    print $db->doSelectASJson($query);
+});
+
+$app->get('/ap/:idusuario/:idgasto', function ($idusuario, $idgasto) {
+    $db = new dbcpm();
+    $db->doQuery("INSERT INTO usuario_tipogasto(idusuario, idtipogasto) VALUES($idusuario, $idgasto)");
+    $lastid = $db->getLastId();
+
+    if ($lastid > 0) {
+        $tipo = 'success';
+        $mensaje = 'Se agrego el permiso del usuario correctamente.';
+    } else {
+        $tipo = 'error';
+        $mensaje = 'Error al agregar permiso, favor volver a intentar.';
+    }
+
+    print json_encode([ 'tipo' => $tipo, 'mensaje' => $mensaje ]);
+});
+
+$app->get('/qp/:id', function ($id) {
+    $db = new dbcpm();
+    $db->doQuery("DELETE FROM usuario_tipogasto WHERE id = $id");
+
+    $existe = $db->getOneField("SELECT id FROM usuario_tipogasto WHERE id = $id") > 0;
+
+    if (!$existe) {
+        $tipo = 'success';
+        $mensaje = 'Se quito el permiso del usuario correctamente.';
+    } else {
+        $tipo = 'error';
+        $mensaje = 'Error al quitar permiso, favor volver a intentar.';
+    }
+
+    print json_encode([ 'tipo' => $tipo, 'mensaje' => $mensaje ]);
+});
+
+$app->get('/tipogastousr/:idusuario', function ($idusuario) {
+    $db = new dbcpm();
+    $query = "SELECT id FROM tipogasto WHERE id IN(SELECT idtipogasto FROM usuario_tipogasto WHERE idusuario = $idusuario)";
+    print $db->doSelectASJson($query);
+});
+
 $app->run();

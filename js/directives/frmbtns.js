@@ -16,7 +16,8 @@
                 nf: "&",     //reset function
                 cf: "&",     //cancel function
                 ef: "&",     //edit function
-                pf: "&"      //print function
+                pf: "&",     //print function
+                usr: "&"     //user function
             }
         };
     }]);
