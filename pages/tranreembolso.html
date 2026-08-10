@@ -371,11 +371,22 @@
                         <div class="row">
                             <div class="col-md-2">
                                 <div class="form-group"
+                                    ng-class="{'has-error':frmCompra.selTFact.$invalid && !frmCompra.selTFact.$pristine}">
+                                    <label for="selTFact">Tipo:</label>
+                                    <select name="selTFact" id="selTFact" class="form-control input-sm"
+                                        ng-model="compra.objTipoFactura"
+                                        ng-options="obj.desctipofact for obj in tiposfactura | filter:{paracompra:1}"
+                                        ng-change="calcIVA(compra); esrec();" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group"
                                     ng-class="{'has-error':frmCompra.txtNit.$invalid && !frmCompra.txtNit.$pristine}">
                                     <label for="txtNit">N.I.T.:</label>
                                     <!--
                                     <input name="txtNit" id="txtNit" type="text" class="form-control form-control-sm input-sm"
-                                           ng-model="compra.nit" maxlength="50" required/>
+                                        ng-model="compra.nit" maxlength="50" required/>
                                     -->
                                     <div angucomplete-alt id="txtNit" placeholder="Buscar proveedor" pause="400"
                                         selected-object="nitSelected" remote-url="php/reembolso.php/srchnit/"
@@ -393,17 +404,6 @@
                                     <input name="txtProveedor" id="txtProveedor" type="text"
                                         class="form-control input-sm" ng-model="compra.proveedor" maxlength="150"
                                         required />
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group"
-                                    ng-class="{'has-error':frmCompra.selTFact.$invalid && !frmCompra.selTFact.$pristine}">
-                                    <label for="selTFact">Tipo:</label>
-                                    <select name="selTFact" id="selTFact" class="form-control input-sm"
-                                        ng-model="compra.objTipoFactura"
-                                        ng-options="obj.desctipofact for obj in tiposfactura | filter:{paracompra:1}"
-                                        ng-change="calcIVA(compra); esrec();" ng-disabled="!permiso.m" required>
-                                    </select>
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -523,7 +523,7 @@
                                 <div class="form-group"
                                     ng-class="{'has-error':frmCompra.selIdSubTipoGast.$invalid && !frmCompra.selIdSubTipoGast.$pristine}">
                                     <label for="selIdSubTipoGast" class="control-label">Sub-tipo de gasto:</label>
-                                    <ui-select id="selIdSubTipoGast" name="selIdSubTipoGast" ng-disabled="!permiso.m"
+                                    <ui-select id="selIdSubTipoGast" name="selIdSubTipoGast" 
                                         ng-model="compra.idsubtipogasto" title="Seleccione un sub-tipo de gasto..."
                                         theme="bootstrap" autofocus="false">
                                         <ui-select-match placeholder="Buscar sub-tipo de gasto..." allow-clear="false">

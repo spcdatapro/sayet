@@ -164,7 +164,13 @@
                     d[i].generaiva = parseInt(d[i].generaiva) === 1;
                     d[i].paracompra = parseInt(d[i].paracompra);
                 }
-                $scope.tiposfactura = d;
+                if (!$scope.permiso.m) {
+                    $scope.tiposfactura = d.filter(function (item) {
+                    return [1, 3, 5].indexOf(parseInt(item.id)) !== -1;
+                    });
+                } else {
+                    $scope.tiposfactura = d;
+                }
             });
 
             tipoCompraSrvc.lstTiposCompra().then(function (d) { $scope.tiposcompra = d; });
