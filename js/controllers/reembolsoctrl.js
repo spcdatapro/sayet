@@ -243,7 +243,7 @@
             $scope.loadProyectos = () => {
                 // console.log('REEMBOLSO = ', $scope.reembolso);
                 if (+$scope.reembolso.idempresa) {
-                    proyectoSrvc.lstProyectosPorEmpresa($scope.reembolso.idempresa).then(d => $scope.proyectos = d);
+                    proyectoSrvc.lstProyectosPorEmpresa($scope.reembolso.idempresa, $scope.uid).then(d => $scope.proyectos = d);
                 }
             }
 
