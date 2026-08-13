@@ -726,7 +726,7 @@ $app->get('/reembolso_aprobacion/:idreembolso', function ($idreembolso) {
         $numero++;
         if (!isset($reembolsos[$row->id])) {
             $letra->reembolso = $row->id;
-            $letra->monto = 0;
+            // $letra->monto = 0;
             $letra->fecha = $row->fecha;
             $letra->beneficiario = $row->beneficiario;
             $letra->empresa = $row->empresa;
