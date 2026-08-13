@@ -1,8 +1,9 @@
-(function(){
+(function () {
 
     var beneficiarioctrl = angular.module('cpm.beneficiarioctrl', []);
 
-    beneficiarioctrl.controller('beneficiarioCtrl', ['$scope', 'beneficiarioSrvc', 'DTOptionsBuilder', 'empresaSrvc', 'cuentacSrvc', 'authSrvc', '$confirm', 'monedaSrvc', '$filter', '$route', 'bancoSrvc', function($scope, beneficiarioSrvc, DTOptionsBuilder, empresaSrvc, cuentacSrvc, authSrvc, $confirm, monedaSrvc, $filter, $route, bancoSrvc){
+    beneficiarioctrl.controller('beneficiarioCtrl', ['$scope', 'beneficiarioSrvc', 'DTOptionsBuilder', 'empresaSrvc', 'cuentacSrvc', 'authSrvc', '$confirm', 'monedaSrvc', '$filter', '$route', 'bancoSrvc', '$uibModal', function
+        ($scope, beneficiarioSrvc, DTOptionsBuilder, empresaSrvc, cuentacSrvc, authSrvc, $confirm, monedaSrvc, $filter, $route, bancoSrvc, $uibModal) {
 
         $scope.bene = {};
         $scope.beneficiarios = [];
@@ -17,16 +18,16 @@
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true);
 
-        empresaSrvc.lstEmpresas().then(function(d){ $scope.lasEmpresas = d; });
-        bancoSrvc.lstBancosPais().then(function(d){ $scope.bancoPais = d; });
+        empresaSrvc.lstEmpresas().then(function (d) { $scope.lasEmpresas = d; });
+        bancoSrvc.lstBancosPais().then(function (d) { $scope.bancoPais = d; });
 
-        authSrvc.getSession().then(function(usrLogged){
-            if(parseInt(usrLogged.workingon) > 0){
-                authSrvc.gpr({idusuario: parseInt(usrLogged.uid), ruta:$route.current.params.name}).then(function(d){ $scope.permiso = d; });
-                empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function(r){
+        authSrvc.getSession().then(function (usrLogged) {
+            if (parseInt(usrLogged.workingon) > 0) {
+                authSrvc.gpr({ idusuario: parseInt(usrLogged.uid), ruta: $route.current.params.name }).then(function (d) { $scope.permiso = d; });
+                empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function (r) {
                     $scope.objEmpresa = r[0];
                     $scope.dectc = parseInt($scope.objEmpresa.dectc);
-                    monedaSrvc.lstMonedas().then(function(d){
+                    monedaSrvc.lstMonedas().then(function (d) {
                         $scope.monedas = d;
                         $scope.resetbene();
                     });
@@ -42,20 +43,22 @@
         });
         */
 
-        $scope.resetbene = function(){
-            $scope.bene = { direccion: '', telefono: '', correo: '', concepto: '', tipocambioprov: 1, objMoneda: {}, debaja: '0', cuentabanco: undefined,
-                            idbancopais: undefined, tipcuenta: 0, identificacion: undefined  };
+        $scope.resetbene = function () {
+            $scope.bene = {
+                direccion: '', telefono: '', correo: '', concepto: '', tipocambioprov: 1, objMoneda: {}, debaja: '0', cuentabanco: undefined,
+                idbancopais: undefined, tipcuenta: 0, identificacion: undefined
+            };
             $scope.editando = false;
             $scope.strBene = '';
-            monedaSrvc.getMoneda(parseInt($scope.objEmpresa.idmoneda)).then(function(d){
+            monedaSrvc.getMoneda(parseInt($scope.objEmpresa.idmoneda)).then(function (d) {
                 $scope.bene.objMoneda = d[0];
                 $scope.bene.objMoneda.tipocambioprov = parseFloat($scope.bene.objMoneda.tipocambioprov).toFixed($scope.dectc);
                 $scope.bene.tipocambioprov = parseFloat(d[0].tipocambio).toFixed($scope.dectc);
             });
         };
 
-        function procData(data){
-            for(var i = 0; i < data.length; i++){
+        function procData(data) {
+            for (var i = 0; i < data.length; i++) {
                 data[i].id = parseInt(data[i].id);
                 data[i].idmoneda = parseInt(data[i].idmoneda);
                 data[i].tipocambioprov = parseFloat(data[i].tipocambioprov).toFixed($scope.dectc);
@@ -65,17 +68,17 @@
             return data;
         }
 
-        $scope.getLstBeneficiarios = function(){ beneficiarioSrvc.lstBeneficiarios(true).then(function(d){ $scope.beneficiarios = procData(d); }); };
+        $scope.getLstBeneficiarios = function () { beneficiarioSrvc.lstBeneficiarios(true).then(function (d) { $scope.beneficiarios = procData(d); }); };
 
-        $scope.getLstDetCuentaC = function(idprov){
-            beneficiarioSrvc.lstDetCuentaC(parseInt(idprov)).then(function(det){
+        $scope.getLstDetCuentaC = function (idprov) {
+            beneficiarioSrvc.lstDetCuentaC(parseInt(idprov)).then(function (det) {
                 $scope.detContProv = det;
                 goTop();
             });
         };
 
-        $scope.getBene = function(idbene){
-            beneficiarioSrvc.getBeneficiario(parseInt(idbene)).then(function(d){
+        $scope.getBene = function (idbene) {
+            beneficiarioSrvc.getBeneficiario(parseInt(idbene)).then(function (d) {
                 $scope.bene = procData(d)[0];
                 $scope.bene.objMoneda = $filter('getById')($scope.monedas, $scope.bene.idmoneda);
                 $scope.bene.idbancopais = $filter('getById')($scope.bancoPais, $scope.bene.idbancopais);
@@ -84,38 +87,52 @@
             });
         };
 
-        $scope.addBene = function(obj){
+        $scope.addBene = function (obj) {
             obj.idmoneda = parseInt(obj.objMoneda.id);
             obj.idbancopais = !!obj.idbancopais ? parseInt(obj.idbancopais.id) : 0;
-            beneficiarioSrvc.editRow(obj, 'c').then(function(d){
+            beneficiarioSrvc.editRow(obj, 'c').then(function (d) {
                 $scope.getLstBeneficiarios();
                 $scope.getBene(d.lastid);
             });
         };
 
-        $scope.updBene = function(data, id){
+        $scope.updBene = function (data, id) {
             data.idmoneda = parseInt(data.objMoneda.id);
-            data.idbancopais = !!data.idbancopais ? parseInt(data.idbancopais.id) : 0; 
-            beneficiarioSrvc.editRow(data, 'u').then(function(){
+            data.idbancopais = !!data.idbancopais ? parseInt(data.idbancopais.id) : 0;
+            beneficiarioSrvc.editRow(data, 'u').then(function () {
                 $scope.getLstBeneficiarios();
                 $scope.getBene(id);
             });
         };
 
-        $scope.delBene = function(id){
+        $scope.delBene = function (id) {
             $confirm({
                 text: "¿Seguro(a) de eliminar este beneficiario?",
                 title: 'Eliminar beneficiario',
                 ok: 'Sí',
-                cancel: 'No'})
-                .then(function() {
+                cancel: 'No'
+            })
+                .then(function () {
                     //console.log(id);
-                    beneficiarioSrvc.editRow({id:id}, 'd').then(function(){
+                    beneficiarioSrvc.editRow({ id: id }, 'd').then(function () {
                         $scope.resetbene();
                         $scope.getLstBeneficiarios();
                     });
                 });
         };
+
+        $scope.verPermisos = bene => {
+            $uibModal.open({
+                animation: true,
+                templateUrl: 'modalUsuarioBene.html',
+                controller: 'ModalPermisosBene',
+                resolve: {
+                    bene
+                }
+            }).result.then(obj => {
+                console.log(obj);
+            });
+        }
 
         $scope.getLstBeneficiarios();
 
@@ -146,5 +163,66 @@
         */
 
     }]);
+
+    //-------------------------------------------------------------------------------------------------------------------------------
+    beneficiarioctrl.controller('ModalPermisosBene', ['$scope', '$uibModalInstance', 'bene', 'beneficiarioSrvc', 'authSrvc', 'toaster',
+        function ($scope, $uibModalInstance, bene, beneficiarioSrvc, authSrvc, toaster) {
+
+            $scope.bene = bene;
+            $scope.usuarios = [];
+            $scope.asignados = [];
+            $scope.idusuario = undefined;
+
+            function getAsignados(idbene) {
+                beneficiarioSrvc.getUsuarios(idbene).then(d => {
+                    $scope.asignados = d;
+                    lstUsuarios();
+                });
+            }
+
+            $scope.setUsuario = function (id) {
+                $scope.idusuario = id;
+            }
+
+            function lstUsuarios() {
+                authSrvc.lstPerfiles().then(d => {
+                    let excluido = [];
+                    $scope.asignados.forEach(usuario => {
+                        excluido.push(usuario.idusuario);
+                    });
+                    excluido.push('1');
+
+                    $scope.usuarios = d.filter(usuario => !excluido.includes(usuario.id));
+                });
+            }
+
+            $scope.asignarUsuario = function (idusuario, idbene) {
+                beneficiarioSrvc.agregarPermiso(idusuario, idbene).then(d => {
+                    toaster.pop({
+                        type: d.tipo, title: 'Permisos de beneficiario',
+                        body: d.mensaje, timeout: 10000
+                    });
+                    $scope.idusuario = undefined;
+                    getAsignados(idbene);
+                });
+            }
+
+            $scope.quitarUsuario = function (id) {
+                beneficiarioSrvc.quitarPermiso(id).then(d => {
+                    toaster.pop({
+                        type: d.tipo, title: 'Permisos de beneficiario',
+                        body: d.mensaje, timeout: 10000
+                    });
+                    getAsignados(bene.id);
+                });
+            }
+
+            $scope.cancel = function () {
+                $uibModalInstance.dismiss('cancel');
+            };
+
+            getAsignados(bene.id);
+
+        }]);
 
 }());

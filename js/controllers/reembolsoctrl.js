@@ -104,14 +104,6 @@
                     $scope.params.idemp = +usrLogged.workingon;
                     $scope.uid = +usrLogged.uid;
                     $scope.nombre = usrLogged.nombre;
-                    beneficiarioSrvc.lstBeneficiarios().then(function (d) {
-                        // console.log($scope.nombre);
-                        if (!$scope.permiso.m) {
-                            $scope.beneficiarios = filtraBeneficiariosPorUsuario(d);
-                        } else {
-                            $scope.beneficiarios = d;
-                        }
-                    });
                     authSrvc.gpr({ idusuario: parseInt(usrLogged.uid), ruta: $route.current.params.name }).then((d) => {
                         $scope.permiso = d;
                         // console.log($scope.permiso);
@@ -127,6 +119,17 @@
                             presupuestoSrvc.lstPagosOt($scope.reembolso.idempresa).then(function (d) { $scope.ots = d; });
                             cuentacSrvc.getByTipo($scope.reembolso.idempresa, 0).then(function (d) { $scope.cuentasc = d; });
                         });
+                    });
+
+                    beneficiarioSrvc.lstBeneficiarios().then(d => {
+                        beneficiarioSrvc.getBeneUsuario(usrLogged.uid).then(autorizado => {
+                            let idbeneficiarios = [];
+                            autorizado.forEach(aut => {
+                                idbeneficiarios.push(aut.id);
+                            });
+                            $scope.beneficiarios = idbeneficiarios.length > 0 ? d.filter(beneficiario => idbeneficiarios.includes(beneficiario.id)) : d;
+                        });
+                        // $scope.beneficiarios = d;
                     });
 
                     tipogastoSrvc.lstSubTipoGasto().then(d => {
