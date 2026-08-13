@@ -665,30 +665,43 @@
             }
 
             function getCuentaGastoProv(obj, op) {
-                switch (true) {
-                    case $scope.ctasGastoProv.length == 0:
-                        obj.ctagastoprov = 0;
-                        execUpdate(obj, op);
-                        break;
-                    case $scope.ctasGastoProv.length == 1:
-                        obj.ctagastoprov = parseInt($scope.ctasGastoProv[0].idcuentac);
-                        execUpdate(obj, op);
-                        break;
-                    case $scope.ctasGastoProv.length > 1:
-                        var modalInstance = $uibModal.open({
-                            animation: true,
-                            templateUrl: 'modalSelectCtaGastoProvReem.html',
-                            controller: 'ModalCtasGastoProvReemCtrl',
-                            resolve: {
-                                lstctasgasto: function () { return $scope.ctasGastoProv; }
-                            }
-                        });
-
-                        modalInstance.result.then(function (selectedItem) {
-                            obj.ctagastoprov = selectedItem.idcuentac;
+                if ($scope.permiso.m) {
+                    switch (true) {
+                        case $scope.ctasGastoProv.length == 0:
+                            obj.ctagastoprov = 0;
                             execUpdate(obj, op);
-                        }, function () { idcta = 0; });
-                        break;
+                            break;
+                        case $scope.ctasGastoProv.length == 1:
+                            obj.ctagastoprov = parseInt($scope.ctasGastoProv[0].idcuentac);
+                            execUpdate(obj, op);
+                            break;
+                        case $scope.ctasGastoProv.length > 1:
+                            var modalInstance = $uibModal.open({
+                                animation: true,
+                                templateUrl: 'modalSelectCtaGastoProvReem.html',
+                                controller: 'ModalCtasGastoProvReemCtrl',
+                                resolve: {
+                                    lstctasgasto: function () { return $scope.ctasGastoProv; }
+                                }
+                            });
+
+                            modalInstance.result.then(function (selectedItem) {
+                                obj.ctagastoprov = selectedItem.idcuentac;
+                                execUpdate(obj, op);
+                            }, function () { idcta = 0; });
+                            break;
+                    }
+                } else {
+                    switch (true) {
+                        case $scope.ctasGastoProv.length == 0:
+                            obj.ctagastoprov = 0;
+                            execUpdate(obj, op);
+                            break;
+                        default:
+                            obj.ctagastoprov = parseInt($scope.ctasGastoProv[0].idcuentac);
+                            execUpdate(obj, op);
+                            break;
+                    }
                 }
             }
 
