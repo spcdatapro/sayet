@@ -172,6 +172,28 @@ $app->get('/finiquitos', function () {
     print json_encode($pendientes);
 });
 
+$app->post('/dfin', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+    $estatus = new stdClass();
+
+    $db->doQuery("UPDATE plnfiniquito SET pendiente = 0 WHERE id = $d->id");
+
+    $exito = $db->getOneField("SELECT pendiente FROM plnfiniquito WHERE id = $d->id") == 0;
+
+    if ($exito) {
+        $estatus->exito = true;
+        $estatus->tipo = 'success';
+        $estatus->mensaje = 'Indemnizacion eliminada con exito.';
+    } else {
+        $estatus->exito = false;
+        $estatus->tipo = 'error';
+        $estatus->mensaje = 'Error al eliminar, favor volver a intentar.';
+    }
+
+    print json_encode($estatus);
+});
+
 $app->post('/premios', function () {
     $db = new dbcpm();
     $d = json_decode(file_get_contents('php://input'));

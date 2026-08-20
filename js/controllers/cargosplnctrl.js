@@ -2,8 +2,8 @@
 
     var controller = angular.module('cpm.cargosplnctrl', []);
 
-    controller.controller('cargosPlnCtrl', ['$scope', 'planillaSrvc', '$uibModal', 'toaster', 'authSrvc', 'empresaSrvc',
-        ($scope, planillaSrvc, $uibModal, toaster, authSrvc, empresaSrvc) => {
+    controller.controller('cargosPlnCtrl', ['$scope', 'planillaSrvc', '$uibModal', 'toaster', 'authSrvc', 'empresaSrvc', '$confirm',
+        ($scope, planillaSrvc, $uibModal, toaster, authSrvc, empresaSrvc, $confirm) => {
 
             $scope.idusuario = undefined;
             $scope.cargos = [];
@@ -12,7 +12,7 @@
             $scope.empresas = [];
             $scope.par_premios = { anio: moment().year() };
 
-            authSrvc.getSession().then((usuario) => {
+            authSrvc.getSession().then(usuario => {
                 $scope.idusuario = usuario.uid;
                 empresaSrvc.lstEmpresas().then(d => {
                     $scope.empresas = d;
@@ -42,7 +42,7 @@
                     resolve: {
                         data: data
                     }
-                }).result.then(function (obj) {
+                }).result.then(obj => {
                     $scope.generando = true;
                     obj.idusuario = $scope.idusuario;
                     planillaSrvc.generaTranFiniquito(obj).then((d) => {
@@ -71,7 +71,7 @@
                 })
             }
 
-            $scope.genTranPremio = (data) => {
+            $scope.genTranPremio = data => {
                 data.premio = true;
 
                 $uibModal.open({
@@ -82,16 +82,29 @@
                     resolve: {
                         data: data
                     }
-                }).result.then(function (obj) {
+                }).result.then(obj => {
                     $scope.generando = true;
                     obj.idusuario = $scope.idusuario;
-                    planillaSrvc.generaTranPremio(obj).then((d) => {
+                    planillaSrvc.generaTranPremio(obj).then(d => {
                         getPendientes();
                         $scope.generando = false;
                         toaster.pop({ type: d.tipo, title: 'Generación de transacción', body: d.mensaje, timeout: 10000 });
                     });
                 });
             };
+
+            $scope.eliminarCargo = idcargo => {
+                $confirm({
+                    text: 'Este proceso eliminará el el cargo pendiente de indeminización. ¿Seguro(a) de continuar?',
+                    title: 'Eliminar indemnización pendiente', ok: 'Sí', cancel: 'No'
+                }).then(() => {
+                    // codigo si afirmativo 
+                    planillaSrvc.editRow('dfin', { id: idcargo }).then(d => {
+                        getPendientes();
+                        toaster.pop({ type: d.tipo, title: 'Eliminar indemnización pendiente', body: d.mensaje, timeout: 10000 });
+                    });
+                });
+            }
 
             getPendientes();
 

@@ -83,10 +83,16 @@
                                 <td style="text-align:right">{{c.anticipos | number:2}}</td>
                                 <td style="text-align:right">{{c.total | number:2}}</td>
                                 <td style="text-align:center">
-                                    <button type="button" class="btn btn-default btn-sm" ng-click="genTranFiniquito(c)"
-                                        ng-disabled="generando">
-                                        <span class="glyphicon glyphicon-credit-card" aria-hidden="true"></span>
-                                    </button>
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-primary btn-sm" title="Generar pago"
+                                            ng-click="genTranFiniquito(c)" ng-disabled="generando">
+                                            <span class="glyphicon glyphicon-credit-card" aria-hidden="true"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-sm" ng-disabled="generando"
+                                            ng-click="eliminarCargo(c.id)" title="Eliminar cargo">
+                                            <i class="glyphicon glyphicon-trash"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             <tr ng-show="cargos.length == 0">
