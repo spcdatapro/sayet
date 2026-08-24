@@ -1873,6 +1873,7 @@ $app->post('/generar_gyt', function () {
 });
 
 $app->post('/trasladar_gyt', function () {
+    // set_time_limit(120); mas tiempo para esperar que cargue
     $db = new dbcpm();
     $d = json_decode(file_get_contents('php://input'));
 
