@@ -630,7 +630,7 @@ class Empleado extends Principal
 		$t_dias = $this->getDiasDelMes($pago->format('m'), $pago->format('Y'));
 
 		if ($this->dtrabajados > 0) {
-			if ($this->dtrabajados == $t_dias) {
+			if ($this->dtrabajados == 30) {
 				return $this->lab->bonificacionley;
 			} else {
 				return round($this->get_bono_dia()*$this->dtrabajados, 2);
