@@ -564,7 +564,8 @@ class Empleado extends Principal
 		$pago = new DateTime($this->nfecha);
 		$ingreso = new DateTime($this->getFechaIngreso());
 		$ipago = new DateTime($pago->format('Y-m-01'));
-		$t_dias = $this->getDiasDelMes($pago->format('m'), $pago->format('Y'));
+		// $t_dias = $this->getDiasDelMes($pago->format('m'), $pago->format('Y'));
+		$t_dias = 30;
 
 		if ($ipago >= $ingreso) {
 			if (empty($this->lab->baja)) {
