@@ -1,0 +1,111 @@
+<style>
+    .green {
+        background-color: #dff0d8 !important;
+    }
+</style>
+<div class="container-fluid" ng-controller="conBancoCtrl">
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a show-tab href="#divBI" data-toggle="tab">Banco Industrial (BI)</a>
+        </li>
+        <li>
+            <a show-tab href="#divGYT" data-toggle="tab">Banco G&T (G&T)</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade in active" id="divBI">
+            <div class="panel panel-default">
+                <div class="panel-heading">Banco industrial</div>
+                <div class="panel-body">
+                    <form name="formBI" id="formBI" novalidate>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group required">
+                                    <div class="form-group">
+                                        <label class="control-label">Fecha al:</label>
+                                        <input type="date" name="fchAl" id="fchAl" class="form-control"
+                                            ng-model="paramsBI.fal" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="btn-group btn-group-justified">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default" title="Traer documentos del banco"
+                                        ng-click="traerDocsBI()" ng-disabled="formBI.$invalid">
+                                        <i class="fi fi-rr-search"></i> Traer documentos del banco
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="divGYT">
+            <div class="panel panel-default">
+                <div class="panel-heading">Banco G&T</div>
+                <div class="panel-body">
+                    <form name="formGT" id="formGT" novalidate>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="form-group required">
+                                        <label class="control-label">Cuenta:</label>
+                                        <ui-select ng-model="paramsGYT.idcuenta" title="Seleccione una cuenta..."
+                                            theme="bootstrap" autofocus="false" required>
+                                            <ui-select-match placeholder="Buscar cuenta..." allow-clear="true">
+                                                <span ng-bind="($select.selected.bancomoneda)"></span>
+                                            </ui-select-match>
+                                            <ui-select-choices
+                                                repeat="item.id as item in cuentas | filter:$select.search"
+                                                group-by="'grupo'">
+                                                <div ng-bind-html="(item.nombrecta) | highlight: $select.search">
+                                                </div>
+                                            </ui-select-choices>
+                                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="form-group required">
+                                        <label class="control-label">Fecha:</label>
+                                        <input type="date" name="fch" id="fch" class="form-control"
+                                            ng-model="paramsGYT.fecha" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="btn-group btn-group-justified">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-default" title="Traer documentos del banco"
+                                        ng-click="traerDocsGYT(paramsGYT)" ng-disabled="formGT.$invalid">
+                                        <i class="fi fi-rr-search"></i> Traer documentos del banco
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" ng-show="cargando">
+        <div class="col-md-12">
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuemin="0"
+                    aria-valuemax="100" ng-style="{'width': progress + '%'}">
+                    <span class="sr-only">{{progress}}%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
