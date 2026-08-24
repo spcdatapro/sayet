@@ -1136,140 +1136,33 @@ $app->post('/conectar_banco', function () use ($app) {
     return;
 });
 
-$app->post('/wsmts/trasladar', function () {
-    $d = json_decode(file_get_contents('php://input'));
-
-    if (!isset($d->usuario) || trim($d->usuario) === '') {
-        print json_encode(['tipo' => 'error', 'mensaje' => 'Debe enviar el usuario para autenticar en GyT.']);
-        return;
-    }
-
-    if (!isset($d->cuenta) || trim($d->cuenta) === '') {
-        print json_encode(['tipo' => 'error', 'mensaje' => 'Debe enviar el número de cuenta para solicitar el estado de cuenta.']);
-        return;
-    }
-
-    $wsdlUrl = 'https://ws.ss.gytcontinental.com.gt/WsBancaMTS/WsMTS.svc?singleWsdl';
-    $llave = isset($d->llave) && trim($d->llave) !== '' ? trim($d->llave) : 'ME0G2gCzvqsBriW';
-    $usuario = trim($d->usuario);
-    $cuenta = trim($d->cuenta);
-    $reporte = isset($d->reporte) ? (int)$d->reporte : 29;
-    $fecha = isset($d->fecha) ? trim($d->fecha) : '';
-    $operacion = isset($d->operacion) ? trim($d->operacion) : 'TrasladarEstadoCta';
-
-    $operacionesValidas = ['TrasladarEstadoCta', 'TrasladarEstadoCtaFecha', 'GenerarEstadoCta', 'GenerarEstadoCtaFecha'];
-    if (!in_array($operacion, $operacionesValidas)) {
-        print json_encode([
-            'tipo' => 'error',
-            'mensaje' => 'Operación no válida.',
-            'operaciones_permitidas' => $operacionesValidas
-        ]);
-        return;
-    }
-
-    if (($operacion === 'TrasladarEstadoCtaFecha' || $operacion === 'GenerarEstadoCtaFecha') && $fecha === '') {
-        print json_encode(['tipo' => 'error', 'mensaje' => 'La operación seleccionada requiere el campo fecha.']);
-        return;
-    }
-
-    try {
-        $soapClient = new SoapClient($wsdlUrl, [
-            'trace' => 1,
-            'exceptions' => true,
-            'cache_wsdl' => WSDL_CACHE_NONE,
-            'connection_timeout' => 60
-        ]);
-
-        $authResponse = $soapClient->__soapCall('AutenticarUsuario', [[
-            'usuario' => $usuario,
-            'clave' => $llave,
-            'producto' => 'MT940'
-        ]]);
-
-        echo "<h3>REQUEST XML</h3>";
-        echo htmlentities($soapClient->__getLastRequest());
-        return;
-
-
-        $token = trim((string)wsMtsGetResultField($authResponse, 'AutenticarUsuarioResult'));
-        if ($token === '') {
-            print json_encode([
-                'tipo' => 'error',
-                'mensaje' => 'No fue posible autenticar usuario en GyT (token vacío).',
-                'respuesta_auth' => $authResponse
-            ]);
-            return;
-        }
-
-        $paramsOperacion = [
-            'usuario' => $usuario,
-            'token' => $token,
-            'reporte' => $reporte,
-            'cuenta' => $cuenta
-        ];
-
-        if ($operacion === 'TrasladarEstadoCtaFecha' || $operacion === 'GenerarEstadoCtaFecha') {
-            $paramsOperacion['fecha'] = $fecha;
-        }
-
-        $operacionResponse = $soapClient->__soapCall($operacion, [$paramsOperacion]);
-        $campoResultado = $operacion . 'Result';
-        $resultadoOperacion = wsMtsGetResultField($operacionResponse, $campoResultado);
-
-        $desconexionResponse = $soapClient->__soapCall('DesconectarUsuario', [[
-            'usuario' => $usuario
-        ]]);
-
-        print json_encode([
-            'tipo' => 'success',
-            'mensaje' => 'Consumo de webservice GyT ejecutado correctamente.',
-            'token' => $token,
-            'operacion' => $operacion,
-            'resultado_operacion' => $resultadoOperacion,
-            'respuesta_operacion' => $operacionResponse,
-            'respuesta_desconexion' => $desconexionResponse
-        ]);
-    } catch (SoapFault $e) {
-        print json_encode([
-            'tipo' => 'error',
-            'mensaje' => 'Error SOAP al consumir GyT: ' . $e->getMessage(),
-            'codigo' => $e->getCode()
-        ]);
-    } catch (Exception $e) {
-        print json_encode([
-            'tipo' => 'error',
-            'mensaje' => 'Error al consumir GyT: ' . $e->getMessage()
-        ]);
-    }
-});
-
 $app->post('/conciliacion_automatica', function () {
     $db = new dbcpm();
 
-    $query = "SELECT a.id, b.d_estado_cuenta AS id_real FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
+    $query = "SELECT a.id, b.d_estado_cuenta AS id_real, a.monto FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
             INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'C' AND operado = 0 AND c.mt940 = d.cuenta
-            AND b.idtranban IS NULL
+            AND (b.idtranban IS NULL OR b.d_estado_cuenta NOT IN (SELECT idecuenta FROM tranecuenta)) 
         UNION ALL 
             -- notas de debito
-            SELECT a.id, b.d_estado_cuenta AS id_real FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto 
+            SELECT a.id, b.d_estado_cuenta AS id_real, a.monto FROM tranban a INNER JOIN d_estado_cuenta b ON a.numban = b.referencia AND b.monto = a.monto 
             INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'D' AND a.tipotrans = 'B' AND operado = 0 AND c.mt940 = d.cuenta
-            AND b.idtranban IS NULL
+            AND (b.idtranban IS NULL OR b.d_estado_cuenta NOT IN (SELECT idecuenta FROM tranecuenta)) 
         UNION ALL 
             -- notas de credito
-            SELECT a.id, b.d_estado_cuenta AS id_real FROM tranban a INNER JOIN d_estado_cuenta b ON (a.numban = b.referencia OR a.numero = b.referencia) AND b.monto = a.monto 
+            SELECT a.id, b.d_estado_cuenta AS id_real, a.monto FROM tranban a INNER JOIN d_estado_cuenta b ON (a.numban = b.referencia OR a.numero = b.referencia) AND b.monto = a.monto 
             INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'R' AND operado = 0 AND c.mt940 = d.cuenta
-            AND b.idtranban IS NULL
+            AND (b.idtranban IS NULL OR b.d_estado_cuenta NOT IN (SELECT idecuenta FROM tranecuenta)) 
         UNION ALL 
             -- depositos 
-            SELECT a.id, b.d_estado_cuenta AS id_real FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
+            SELECT a.id, b.d_estado_cuenta AS id_real, a.monto FROM tranban a INNER JOIN d_estado_cuenta b ON a.numero = b.referencia AND b.monto = a.monto 
             INNER JOIN banco c ON a.idbanco = c.id INNER JOIN estado_cuenta d ON b.estado_cuenta = d.estado_cuenta WHERE b.tipo_transaccion = 'C' AND a.tipotrans = 'D' AND operado = 0 AND c.mt940 = d.cuenta
-            AND b.idtranban IS NULL";
+            AND (b.idtranban IS NULL OR b.d_estado_cuenta NOT IN (SELECT idecuenta FROM tranecuenta))";
     $match = $db->getQuery($query);
 
     $cuantos = count($match);
     if ($cuantos > 0) {
         foreach ($match as $key => $value) {
-            $query = "UPDATE d_estado_cuenta SET idtranban = $value->id WHERE d_estado_cuenta = $value->id_real AND idtranban IS NULL";
+            $query = "INSERT INTO tranecuenta (idtranban, idecuenta, monto) VALUES ($value->id, $value->id_real, $value->monto)";
             $db->doQuery($query);
         }
 
@@ -1807,6 +1700,308 @@ $app->post('/auto_emparejar', function () {
 
         print json_encode(['tipo' => 'success', 'mensaje' => "Se han emparejado los documentos seleccionados."]);
     }
+});
+
+$app->get('/token_gyt', function () {
+    date_default_timezone_set("America/Guatemala");
+    $db = new dbcpm();
+    $estatus = new stdClass();
+
+    // pSemilla YYYYMMDD 
+    $semilla    = date("Ymd"); 
+
+    // traer datos del usuario
+    $query = "SELECT usuario, clave, llave FROM usuario_banco WHERE id = 1";
+    $usuario = $db->getQuery($query)[0];
+
+    // Derivar la llave AES-256 con PBKDF2 (SHA1, 2 iteraciones, 32 bytes)
+    $aesKey = hash_pbkdf2("sha1", $usuario->usuario, $semilla, 2, 32, true);
+
+    // Cifrar con AES-256-CBC
+    $encrypted = openssl_encrypt($usuario->clave, "AES-256-CBC", $aesKey, OPENSSL_RAW_DATA, $usuario->llave);
+
+    // Convertir a Base64
+    $claveFinal = base64_encode($encrypted);
+
+    // Construir XML SOAP con el namespace correcto
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>
+    <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+        <s:Body>
+            <AutenticarUsuario xmlns="http://tempuri.org/">
+                <usuario>'.$usuario->usuario.'</usuario>
+                <clave>'.$claveFinal.'</clave>
+                <producto>01</producto>
+            </AutenticarUsuario>
+        </s:Body>
+    </s:Envelope>';
+
+    // Endpoint real
+    $url = "https://ws.ss.gytcontinental.com.gt/WsBancaMTS/WsMTS.svc";
+
+    // Headers SOAP CORRECTOS
+    $headers = [
+        "Content-Type: text/xml; charset=utf-8",
+        "SOAPAction: \"http://tempuri.org/IService1/AutenticarUsuario\"",
+        "Content-Length: " . strlen($xml)
+    ];
+
+    // Enviar request
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+    $response = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        echo "Error CURL: " . curl_error($ch);
+    }
+
+    curl_close($ch);
+
+    // Procesar la respuesta XML
+    $xml = simplexml_load_string($response);
+
+    // Registrar namespace del envelope
+    $xml->registerXPathNamespace('s', 'http://schemas.xmlsoap.org/soap/envelope/');
+    $xml->registerXPathNamespace('t', 'http://tempuri.org/');
+
+    // Buscar el nodo <respuesta>
+    $respuestaNodes = $xml->xpath('//t:AutenticarUsuarioResponse/t:AutenticarUsuarioResult/respuesta');
+
+    if ($respuestaNodes && isset($respuestaNodes[0])) {
+        $respuesta = $respuestaNodes[0];
+        if ((int)$respuesta->codigo === 0) {
+            $estatus->tipo = 'success';
+            $estatus->exito = true;
+            $estatus->mensaje = 'Token obtenido correctamente.';
+            $estatus->token = (string)$respuesta->token;
+        } else {
+            $estatus->tipo = 'error';
+            $estatus->exito = false;
+            $estatus->mensaje = 'Error al obtener token: ' . (string)$respuesta->codigo;
+        }
+        print json_encode($estatus);
+    } else {
+        echo json_encode([
+            'tipo' => 'error',
+            'exito' => false,
+            'mensaje' => 'No se encontró nodo <respuesta> en el XML'
+        ]);
+    }
+});
+
+$app->post('/generar_gyt', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $usuario = $db->getOneField("SELECT usuario FROM usuario_banco WHERE id = 1");
+    $cuenta = '0' . $db->getOneField("SELECT mt940 FROM banco WHERE id = $d->idcuenta");
+    $tipo    = "940";                 // MT940
+
+    /// Paso 1: GenerarEstadoCtaFecha
+    $xmlGenerar = '<?xml version="1.0" encoding="UTF-8"?>
+    <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+        <s:Body>
+            <GenerarEstadoCtaFecha xmlns="http://tempuri.org/">
+                <usuario>'.$usuario.'</usuario>
+                <token>'.$d->token.'</token>
+                <reporte>'.$tipo.'</reporte>
+                <cuenta>'.$cuenta.'</cuenta>
+                <fecha>'.$d->fechastr.'</fecha>
+            </GenerarEstadoCtaFecha>
+        </s:Body>
+    </s:Envelope>';
+
+    $url = "https://ws.ss.gytcontinental.com.gt/WsBancaMTS/WsMTS.svc";
+
+    $headersGenerar = [
+        "Content-Type: text/xml; charset=utf-8",
+        "SOAPAction: \"http://tempuri.org/IService1/GenerarEstadoCtaFecha\"",
+        "Content-Length: " . strlen($xmlGenerar)
+    ];
+
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlGenerar);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headersGenerar);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+    $response = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        echo "Error CURL: " . curl_error($ch);
+    }
+
+    curl_close($ch);
+
+    // Procesar la respuesta XML
+    $xml = simplexml_load_string($response);
+
+    // Registrar namespace del envelope y tempuri
+    $xml->registerXPathNamespace('s', 'http://schemas.xmlsoap.org/soap/envelope/');
+    $xml->registerXPathNamespace('t', 'http://tempuri.org/');
+
+    // Buscar el nodo <respuesta>
+    $respuestaNodes = $xml->xpath('//t:GenerarEstadoCtaFechaResponse/t:GenerarEstadoCtaFechaResult/respuesta');
+
+    $estatus = new stdClass();
+
+    if ($respuestaNodes && isset($respuestaNodes[0])) {
+        $respuesta = $respuestaNodes[0];
+        if ((int)$respuesta->codigo === 0) {
+            $estatus->tipo = 'success';
+            $estatus->exito = true;
+            $estatus->mensaje = (string)$respuesta->descripcion;
+        } else {
+            $estatus->tipo = 'error';
+            $estatus->exito = false;
+            $estatus->mensaje = 'Error al generar estado de cuenta: ' . (string)$respuesta->codigo;
+        }
+    } else {
+        $estatus->tipo = 'error';
+        $estatus->exito = false;
+        $estatus->mensaje = 'No se encontró nodo <respuesta> en el XML';
+    }
+
+    print json_encode($estatus);
+});
+
+$app->post('/trasladar_gyt', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    // Esperar un minuto antes de iniciar
+    sleep(60);
+
+    $usuario = $db->getOneField("SELECT usuario FROM usuario_banco WHERE id = 1");
+    $cuenta = '0' . $db->getOneField("SELECT mt940 FROM banco WHERE id = $d->idcuenta");
+    $tipo    = "940";                 // MT940
+
+    $url = "https://ws.ss.gytcontinental.com.gt/WsBancaMTS/WsMTS.svc";
+
+    // traslado
+    $xmlTrasladar = '<?xml version="1.0" encoding="UTF-8"?>
+    <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+        <s:Body>
+            <TrasladarEstadoCtaFecha xmlns="http://tempuri.org/">
+                <usuario>'.$usuario.'</usuario>
+                <token>'.$d->token.'</token>
+                <reporte>'.$tipo.'</reporte>
+                <cuenta>'.$cuenta.'</cuenta>
+                <fecha>'.$d->fechastr.'</fecha>
+            </TrasladarEstadoCtaFecha>
+        </s:Body>
+    </s:Envelope>';
+
+    $headersTrasladar = [
+        "Content-Type: text/xml; charset=utf-8",
+        "SOAPAction: \"http://tempuri.org/IService1/TrasladarEstadoCtaFecha\"",
+        "Content-Length: " . strlen($xmlTrasladar)
+    ];
+
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlTrasladar);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headersTrasladar);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+    $response = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        echo "Error CURL: " . curl_error($ch);
+    }
+
+    curl_close($ch);
+
+    // Procesar la respuesta XML
+    $xml = simplexml_load_string($response);
+
+    // Registrar namespaces
+    $xml->registerXPathNamespace('s', 'http://schemas.xmlsoap.org/soap/envelope/');
+    $xml->registerXPathNamespace('t', 'http://tempuri.org/');
+
+    // Buscar el nodo <respuesta>
+    $respuestaNodes = $xml->xpath('//t:TrasladarEstadoCtaFechaResponse/t:TrasladarEstadoCtaFechaResult/respuesta');
+
+    $estatus = new stdClass();
+
+    if ($respuestaNodes && isset($respuestaNodes[0])) {
+        $respuesta = $respuestaNodes[0];
+        if ((int)$respuesta->codigo === 0) {
+            $estatus->tipo = 'success';
+            $estatus->exito = true;
+            $estatus->mensaje = 'Archivo trasladado correctamente.';
+            $estatus->archivo = (string)$respuesta->Archivo;
+        } else {
+            $estatus->tipo = 'error';
+            $estatus->exito = false;
+            $estatus->mensaje = 'Error al trasladar estado de cuenta: ' . (string)$respuesta->codigo;
+        }
+    } else {
+        $estatus->tipo = 'error';
+        $estatus->exito = false;
+        $estatus->mensaje = 'No se encontró nodo <respuesta> en el XML';
+    }
+
+    print json_encode($estatus);
+
+});
+
+$app->post('/estadocta_gyt', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+    $estatus = new stdClass();
+
+    // no se usa, pero para que funcione conciliacion automatica
+    $dest = new SFTPConnInfo('localhost', 222, 'aponce', 'y%YgW$Qk3x#a59Su', '/');
+    $src = new SFTPConnInfo('190.242.184.121', 22, 'sftpSayet', 'S3Pd25S@y3t', '/');
+    $conciliacion = new ConciliacionAutomatica($src, $dest);
+
+    $cuenta = '0' . $db->getOneField("SELECT mt940 FROM banco WHERE id = $d->idcuenta");
+
+    $nombre = "$d->fechastr" . "$cuenta" . '.txt';
+    $archivo = $d->archivo; 
+
+    $existe = $db->getOneField("SELECT estado_cuenta FROM estado_cuenta WHERE nombre = '$nombre'") > 0;
+
+    if ($existe) {
+        $estatus->tipo = 'info';
+        $estatus->exito = false;
+        $estatus->mensaje = 'El archivo ya existe en la base de datos.';
+    } else {
+        $conciliacion->read_mt940_webservice($archivo, $nombre);
+
+        $exito = $db->getOneField("SELECT estado_cuenta FROM estado_cuenta WHERE nombre = '$nombre'") > 0;
+        if ($exito) {
+            $estatus->tipo = 'success';
+            $estatus->exito = true;
+            $estatus->mensaje = 'Archivo procesado correctamente.';
+        } else {
+            $estatus->tipo = 'error';
+            $estatus->exito = false;
+            $estatus->mensaje = 'Error al procesar el archivo, favor volver a intentar.';
+        }
+    }
+
+    return print json_encode($estatus);
+});
+
+$app->get('/prueba', function () {
+    // no se usa, pero para que funcione conciliacion automatica
+    $dest = new SFTPConnInfo('localhost', 222, 'aponce', 'y%YgW$Qk3x#a59Su', '/');
+    $src = new SFTPConnInfo('190.242.184.121', 22, 'sftpSayet', 'S3Pd25S@y3t', '/');
+    $conciliacion = new ConciliacionAutomatica($src, $dest);
+
+    $archivo = "ezE6RjAxR1RDT0dUR0NBWFhYMDAwMDAwMDAwMH17MjpJOTQwR1RDT0dUR0NYWFhYTn17NDoNCjoyMDoyMzA4MjAyNjEyNTUxNTgyDQo6MjU6MDY2MDAyNTgwMzYNCjoyOEM6MTQvMQ0KOjYwRjpDMjYwODIzR1RRMzcwNzcxMSwyMw0KOjYxOjI2MDgyM0M4NDgsODdGTVNDNjI2MjQyMTIvLzc2OQ0KOjg2Ok5FT05FVCBBRjowMzYzMDQwMDENCjo2MToyNjA4MjNDMTE1LDEzRk1TQzYyNjI0MjEzLy83NjkNCjo4NjpORU9ORVQgQUY6MDM2MzA0MDAyDQo6NjE6MjYwODIzQzE5ODEsMDNGTVNDNjI2MjQyMTQvLzc2OQ0KOjg2Ok5FT05FVCBBRjowMzYzMDQwMDMNCjo2MkY6QzI2MDgyM0dUUTM3MTA2NTYsMjYNCjo2NDpDMjYwODIzR1RRMzcxMDY1NiwyNg0KOjg2OkJJRU5FUyBJTk1PQklMSUFSSU9TLCBTT0NJRURBRCBBTk9OSU1BIE5vLk9wZXJhY2lvbmVzOjMNCi19DQo=";
+    $conciliacion->read_mt940_webservice($archivo, 'prueba2.txt');
 });
 
 function ordenAscendente(&$array, $dateField) {

@@ -69,20 +69,6 @@ class ConciliacionAutomatica
         return $this->bac_pk_folder;
     }
 
-    // private function filter_mt940($copiar = true)
-    // {
-    //     $archivos = $copiar ? $this->source_conn->conn->nlist('.') : $this->dest_conn->conn->nlist('.');
-    //     $mt940 = [];
-    //     $valid_ext = ['.pgp', '.gpg', '.txt', '.p12'];
-    //     foreach ($archivos as $archivo) {
-    //         $ext = substr($archivo, -4);
-    //         if (in_array($ext, $valid_ext)) {
-    //             $mt940[] = $archivo;
-    //         }
-    //     }
-    //     return $mt940;
-    // }
-
     private function filter_mt940($copiar = true, $ultFecha = null, $db = null)
     {
         date_default_timezone_set('America/Guatemala');
@@ -172,7 +158,6 @@ class ConciliacionAutomatica
         $ultFecha = DateTime::createFromFormat('dmY', $ultFecha);
         // fin de agregado
         if ($this->source_conn->connect()) {
-            // $archivosmt940 = $this->filter_mt940(true); Asi estaba antes de cambios para validacion de archivos
             $archivosmt940 = $this->filter_mt940(true, $ultFecha, $db);
             // agregado para validar que vengan todos los archivos
             $datos['errores'] = $archivosmt940->errores;
@@ -386,4 +371,60 @@ class ConciliacionAutomatica
         }
         return $datos;
     }
+
+    public function get_mt940_from_webservice($base64String, $outputFile = null)
+    {
+        // Decodificar el contenido Base64
+        $decodedData = base64_decode($base64String);
+
+        // Si quieres guardarlo en disco para reutilizar tu parser
+        if ($outputFile) {
+            file_put_contents($outputFile, $decodedData);
+            return file_get_contents($outputFile);
+        }
+
+        // Si prefieres devolverlo directamente como string
+        return $decodedData;
+    }
+
+    public function read_mt940_webservice($archivoBase64, $nombreArchivo = "estado_cuenta_MT940.txt")
+{
+    $datos = ['exito' => false];
+    try {
+        // Decodificar y guardar
+        $localFileName = $this->local_folder . $nombreArchivo;
+
+        // anade datos al archvio
+        file_put_contents($localFileName, base64_decode($archivoBase64));
+
+        // traer contenido antes de parsearlo
+        $contenido = file_get_contents($localFileName);
+
+        // Elimina líneas :86: que contienen "No.Operaciones"
+        $contenido = preg_replace('/^:86:.*No\.Operaciones.*$/m', '', $contenido);
+
+        // Parsear con Kingsquare
+        $parser = new \Kingsquare\Parser\Banking\Mt940();
+        $parsedStatements = $parser->parse($contenido);
+
+        $datos['json'] = [];
+        foreach ($parsedStatements as $statement) {
+            $datos['json'][] = $statement->jsonSerialize();
+        }
+
+        // Guardar en BD
+        // $datos = json_decode(json_encode($datos['json']));
+        $grabado = $this->save_to_db($nombreArchivo, json_decode(json_encode($datos['json'])));
+        if ($grabado) {
+            $datos['exito'] = true;
+            $datos['mensaje'] = "Archivo MT940 procesado desde WebService.";
+        }
+
+        unlink($localFileName);
+    } catch (Exception $e) {
+        $datos['mensaje'] = "Error al procesar archivo desde WebService: " . $e->getMessage();
+    }
+    return $datos;
+}
+
 }

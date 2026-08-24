@@ -73,7 +73,7 @@
                 return comunFact.doGET(`${urlBase}/revertir/${idtranban}`);
             },
             // documentos del banco 
-            concectarBanco: function () {
+            concectarBancoBI: () => {
                 return comunFact.doPOST(urlBase + '/conectar_banco');
             },
             conciliacionAutomatica: function () {
@@ -109,6 +109,18 @@
             datosReporteComparativo: obj => {
                 return comunFact.doPOST('php/rptchequesaprob.php/comparativo', obj);
             },
+            tokenGYT: () => {
+                return comunFact.doGET(urlBase + '/token_gyt');
+            },
+            generarGYT: obj => {
+                return comunFact.doPOST(urlBase + '/generar_gyt', obj);
+            },
+            trasladarGYT: obj => {
+                return comunFact.doPOST(urlBase + '/trasladar_gyt', obj);
+            },
+            estadoCtaGYT: obj => {
+                return comunFact.doPOST(urlBase + '/estadocta_gyt', obj);
+            }
         };
     }]);
 
