@@ -48,7 +48,6 @@
                                     if (d.exito) {
                                         try {
                                             tranBancSrvc.trasladarGYT(params).then(d => {
-                                                console.log(d); return;
                                                 toaster.pop({ type: d.tipo, title: 'Traslado de estado de cuenta', body: d.mensaje, timeout: 10000 });
                                                 if (d.exito) {
                                                     params.archivo = d.archivo;
