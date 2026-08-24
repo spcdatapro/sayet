@@ -27,7 +27,7 @@ angular.module('cpm')
         	nominaServicios.buscar(datos).then(function(data){
                 if (data.exito == 1) {
                     $scope.nomina = data.resultados;
-                    if (data.nomina != data.ingresados) {
+                    if (data.nomina < data.ingresados) {
                         toaster.pop('warning', 'Advertencia', 'La cantidad de empleados no concuerda, con la cantidad de registros, por favor revise la planilla antes de terminarla.');
                     }
                 } else {
