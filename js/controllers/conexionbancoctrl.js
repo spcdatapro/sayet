@@ -55,6 +55,7 @@
                                                     try {
                                                         tranBancSrvc.estadoCtaGYT(params).then(d => {
                                                             toaster.pop({ type: d.tipo, title: 'Estado de cuenta', body: d.mensaje, timeout: 60000 });
+                                                            $scope.cargando = false;
                                                         });
                                                     } catch (error) {
                                                         toaster.pop({ type: 'error', title: 'Error', body: 'Error en la comunicación, favor comunicarse con IT.', timeout: 10000 });
