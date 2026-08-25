@@ -154,7 +154,7 @@ class ConciliacionAutomatica
         $db = new dbcpm();
         $datos = ['exito' => false];
         // agregado para validar que vegnan todos los archivo
-        $ultFecha = $db->getOneField("SELECT SUBSTRING(nombre, 2, 8) AS fecha FROM estado_cuenta ORDER BY estado_cuenta DESC LIMIT 1");
+        $ultFecha = $db->getOneField("SELECT SUBSTRING(nombre, 2, 8) AS fecha FROM estado_cuenta WHERE nombre LIKE 'F%' ORDER BY estado_cuenta DESC LIMIT 1");
         $ultFecha = DateTime::createFromFormat('dmY', $ultFecha);
         // fin de agregado
         if ($this->source_conn->connect()) {
