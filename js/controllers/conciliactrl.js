@@ -121,7 +121,7 @@
                 estatusCarga(40);
 
                 // primero nos concetcamos al banco, para traer los documentos
-                tranBancSrvc.concectarBanco()
+                tranBancSrvc.concectarBancoBI()
                     .then(d => {
                         $scope.progress = 40;
                         toaster.pop({ type: d.tipo, title: 'Conexion a banco', body: d.mensaje, timeout: 10000 })
