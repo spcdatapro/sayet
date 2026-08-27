@@ -1,9 +1,9 @@
 <style>
     .amarillo {
         background-color: lightgoldenrodyellow;
-        text-align: center;
+        /* text-align: center; */
         border-radius: 5px;
-        font-size: 16px;
+        /* font-size: 16px; */
     }
 
     .celeste {
@@ -30,6 +30,19 @@
         width: 90%;
         /* o 1200px, lo que necesites */
         max-width: none;
+    }
+
+    .tabla-resumen {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .tabla-resumen table {
+        min-width: max-content;
+    }
+
+    .tabla-resumen .sticky-cell {
+        left: 0;
     }
 </style>
 <div class="container" ng-controller="rptFactIngresoCtrl">
@@ -69,21 +82,21 @@
                     <div class="btn-group">
                         <button type="button" class="btn btn-danger" ng-click="getPDF(params)"
                             ng-disabled="paramsRep.$invalid || cargando" title="Reporte PDF">
-                            <span class="fa fa-file-pdf-o" aria-hidden="true"></span> PDF
+                            <span class="fa fa-file-pdf-o" aria-hidden="true"></span>
                         </button>
                     </div>
                     <div class="btn-group" role="group">
                         <button type="button" class="btn btn-success" ng-click="getXML(params)"
                             ng-disabled="paramsRep.$invalid || cargando" title="Reporte Excel">
-                            <span class="fa fa-file-excel-o" aria-hidden="true"></span> Excel
+                            <span class="fa fa-file-excel-o" aria-hidden="true"></span>
                         </button>
                     </div>
-                    <!-- <div class="btn-group" role="group">
+                    <div class="btn-group" role="group">
                         <button type="button" class="btn btn-primary" ng-click="getResumen(params)"
                             ng-disabled="paramsRep.$invalid || cargando" title="Reporte en pantalla">
-                            <i class="fi fi-tr-file-download"></i> En pantalla
+                            <i class="fi fi-sr-file-download"></i>
                         </button>
-                    </div> -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -95,6 +108,54 @@
                 <span class="label label-primary">Generando reporte, por favor espere...</span>
                 <img ng-src="img/generando.gif" alt="Generando reporte..." style="width: 25px; height: 25px;" />
             </div>
+        </div>
+    </div>
+    <div id="tblResumen" ng-show="ver">
+        <div class="amarillo">
+            <div style="text-align: center;">REPORTE FACTURAS CONTRA RECIBO</div>
+        </div>
+        <br>
+        <div class="tabla-resumen sticky-table sticky-headers sticky-ltr-cells">
+            <table class="table table-hover">
+                <thead>
+                    <tr class="sticky-header">
+                        <th class="sticky-cell">&nbsp;</th>
+                        <th ng-repeat="mes in meses">{{mes.nombre}}</th>
+                        <th>Totales</th>
+                    </tr>
+                </thead>
+                <tbody ng-repeat="i in ingresos">
+                    <tr class="sticky-header">
+                        <th class="sticky-cell">{{i.nombre}}</th>
+                    </tr>
+                    <tr ng-repeat-start="p in i.proyectos" ng-click="detalleFacturas(p)" class="gris">
+                        <th class="sticky-cell">F {{p.nombre | limitTo:35}}</th>
+                        <td ng-repeat="m in p.meses" style="text-align: right;">{{m.monto_fact | number:2}}</td>
+                        <th style="text-align: right;">{{p.totales.monto_fact | number:2}}</th>
+                    </tr>
+                    <tr ng-show="p.detalle_facturas" ng-repeat="c in p.clientes" ng-click="detalleCliente(p)">
+                        <th class="sticky-cell">{{c.nombre}}</th>
+                        <th ng-repeat="m in c.meses" style="text-align: right;">{{m.monto | number:2}}</th>
+                    </tr>
+                    <tr class="amarillo" ng-click="detalleRecibos(p)">
+                        <th class="sticky-cell">R</th>
+                        <td ng-repeat="m in p.meses" style="text-align: right;">{{m.monto_rec | number:2}}</td>
+                        <th style="text-align: right;">{{p.totales.monto_rec | number:2}}</th>
+                    </tr>
+                    <tr ng-repeat-end ng-show="p.detalle_recibos" ng-repeat="r in p.recibos">
+                        <th class="sticky-cell">{{r.nombre}}</th>
+                        <th ng-repeat="m in r.meses" style="text-align: right;">{{m.monto | number:2}}</th>
+                    </tr>
+                    <tr>
+                        <th class="sticky-cell" style="text-align: center;">Total F:</th>
+                        <th ng-repeat="m in i.totales_mes" style="text-align: right;">{{m.monto_fact | number:2}}</th>
+                    </tr>
+                    <tr>
+                        <th class="sticky-cell" style="text-align: center;">Total R:</th>
+                        <th ng-repeat="m in i.totales_mes" style="text-align: right;">{{m.monto_rec | number:2}}</th>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
     <rpt-viewer contenido="content"></rpt-viewer>

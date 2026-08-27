@@ -1430,6 +1430,120 @@ $app->post('/ingresos', function () {
     print json_encode([ 'encabezado' => $letra, 'ingresos' => $empresas ]);
 });
 
+$app->get('/detalle_factura/:anio/:idproyecto', function ($anio, $idproyecto) {
+    $db = new dbcpm();
+
+    $query = "SELECT c.id AS idcliente, c.nombrecorto AS nombre, MONTH(a.fecha) AS mes, SUM(a.subtotal) AS monto 
+                FROM factura a INNER JOIN contrato b ON a.idcontrato = b.id INNER JOIN cliente c ON b.idcliente = c.id 
+                WHERE b.idproyecto = $idproyecto AND YEAR(a.fecha) = $anio
+                GROUP BY c.id, MONTH(a.fecha)
+                ORDER BY c.nombrecorto, MONTH(a.fecha)";
+    $filas = $db->getQuery($query);
+    $clientes = array();
+    $maxMes = 0;
+
+    foreach ($filas as $fila) {
+        $mes = (int) $fila->mes;
+        $maxMes = max($maxMes, $mes);
+
+        if (!isset($clientes[$fila->idcliente])) {
+            $clientes[$fila->idcliente] = array(
+                'nombre' => $fila->nombre,
+                'meses' => array()
+            );
+        }
+
+        $clientes[$fila->idcliente]['meses'][$mes] = array(
+            'mes' => $mes,
+            'monto' => (float) $fila->monto
+        );
+    }
+
+    foreach ($clientes as &$cliente) {
+        $meses = array();
+
+        for ($mes = 1; $mes <= $maxMes; $mes++) {
+            $meses[] = isset($cliente['meses'][$mes])
+                ? $cliente['meses'][$mes]
+                : array('mes' => $mes, 'monto' => 0);
+        }
+
+        $cliente['meses'] = $meses;
+    }
+    unset($cliente);
+
+    print(json_encode(array_values($clientes)));
+});
+
+$app->get('/detalle_recibo/:anio/:idproyecto', function ($anio, $idproyecto) {
+    $db = new dbcpm();
+
+    $query = "SELECT 
+                a.idcliente,
+                b.nombrecorto AS cliente,
+                MONTH(a.fecha) AS mes,
+                ROUND(SUM(c.monto), 2) AS monto
+            FROM
+                recibocli a
+                    INNER JOIN
+                cliente b ON a.idcliente = b.id
+                    INNER JOIN
+                detcobroventa c ON c.idrecibocli = a.id
+                    INNER JOIN
+                (SELECT 
+                    a.id AS idfactura,
+                        IFNULL(b.idproyecto, a.idproyecto) AS idproyecto,
+                        IFNULL(b.proyecto, c.nomproyecto) AS proyecto
+                FROM
+                    factura a
+                LEFT JOIN (SELECT 
+                    a.id AS idcontrato, a.idproyecto, b.nomproyecto AS proyecto
+                FROM
+                    contrato a
+                INNER JOIN proyecto b ON a.idproyecto = b.id) b ON a.idcontrato = b.idcontrato
+                LEFT JOIN proyecto c ON a.idproyecto = c.id) d ON d.idfactura = c.idfactura
+            WHERE
+                YEAR(a.fecha) = $anio
+                    AND d.idproyecto = $idproyecto
+            GROUP BY a.idcliente , MONTH(a.fecha)";
+    $filas = $db->getQuery($query);
+
+    $clientes = array();
+    $maxMes = 0;
+
+    foreach ($filas as $fila) {
+        $mes = (int) $fila->mes;
+        $maxMes = max($maxMes, $mes);
+
+        if (!isset($clientes[$fila->idcliente])) {
+            $clientes[$fila->idcliente] = array(
+                'nombre' => $fila->cliente,
+                'meses' => array()
+            );
+        }
+
+        $clientes[$fila->idcliente]['meses'][$mes] = array(
+            'mes' => $mes,
+            'monto' => (float) $fila->monto
+        );
+    }
+
+    foreach ($clientes as &$cliente) {
+        $meses = array();
+
+        for ($mes = 1; $mes <= $maxMes; $mes++) {
+            $meses[] = isset($cliente['meses'][$mes])
+                ? $cliente['meses'][$mes]
+                : array('mes' => $mes, 'monto' => 0);
+        }
+
+        $cliente['meses'] = $meses;
+    }
+    unset($cliente);
+
+    print(json_encode(array_values($clientes)));
+});
+
 function restarDiasHabiles($fecha) {
     $diasContados = 0;
     $dias_restantes = $fecha->format('d');
