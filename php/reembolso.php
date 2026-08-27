@@ -546,7 +546,8 @@ $app->post('/rptpendliquida', function(){
     $query = "SELECT COUNT(a.id) AS cantidad, IF(ISNULL(FORMAT(SUM(IF(ISNULL(d.totreembolso), 0.00, d.totreembolso)), 2)), 0.00, FORMAT(SUM(IF(ISNULL(d.totreembolso), 0.00, d.totreembolso)), 2)) AS sumtotreem ";
     $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso INNER JOIN empresa c ON c.id = a.idempresa ";
     $query.= "LEFT JOIN (SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) d ON a.id = d.idreembolso ";
-    $query.= "WHERE a.idtranban = 0 AND a.idempresa = $d->idempresa AND d.totreembolso > 0 ";
+    $query.= "LEFT JOIN (SELECT idreembolso, SUM(monto) AS pagado FROM dettranreem GROUP BY idreembolso) e ON e.idreembolso = a.id ";
+    $query.= "WHERE a.idtranban = 0 AND a.idempresa = $d->idempresa AND d.totreembolso > 0 AND (d.totreembolso - IFNULL(e.pagado, 0.00)) ";
     $query.= $d->fdelstr != '' ? "AND a.finicio >= '$d->fdelstr' " : "";
     $query.= $d->falstr != '' ? "AND a.finicio <= '$d->falstr' " : "";
     $pendientes->resumen = $db->getQuery($query)[0];
