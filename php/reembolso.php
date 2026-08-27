@@ -536,10 +536,11 @@ $app->post('/rptpendliquida', function(){
     $query.= "FORMAT(IF(ISNULL(d.totreembolso), 0.00, d.totreembolso), 2) AS totreembolso ";
     $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso INNER JOIN empresa c ON c.id = a.idempresa ";
     $query.= "LEFT JOIN (SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) d ON a.id = d.idreembolso ";
+    $query.= "LEFT JOIN (SELECT idreembolso, SUM(monto) AS pagado FROM dettranreem GROUP BY idreembolso) "; 
     $query.= "WHERE a.idtranban = 0 AND a.idempresa = $d->idempresa AND d.totreembolso > 0 ";
     $query.= $d->fdelstr != '' ? "AND a.finicio >= '$d->fdelstr' " : "";
     $query.= $d->falstr != '' ? "AND a.finicio <= '$d->falstr' " : "";
-    $query.= "ORDER BY c.nomempresa, a.finicio, a.beneficiario";
+    $query.= "AND (d.totreembolso - IFNULL(e.pagado, 0.00)) > 0 ORDER BY c.nomempresa, a.finicio, a.beneficiario";
     $pendientes->pendientes = $db->getQuery($query);
 
     $query = "SELECT COUNT(a.id) AS cantidad, IF(ISNULL(FORMAT(SUM(IF(ISNULL(d.totreembolso), 0.00, d.totreembolso)), 2)), 0.00, FORMAT(SUM(IF(ISNULL(d.totreembolso), 0.00, d.totreembolso)), 2)) AS sumtotreem ";
@@ -689,6 +690,8 @@ $app->get('/reembolso_aprobacion/:idreembolso', function ($idreembolso) {
                 a.id,
                 b.iniciales AS solicitante,
                 DATE_FORMAT(envioaprob, '%d/%m/%Y') AS fecha,
+                DATE_FORMAT(finicio, '%d/%m/%Y') AS creacion,
+                DATE_FORMAT(ffin, '%d/%m/%Y') AS fin,
                 beneficiario,
                 c.totfact AS monto,
                 c.documento,
