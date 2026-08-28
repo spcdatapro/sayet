@@ -534,7 +534,7 @@ class Empleado extends Principal
 
 	public function get_bono_dia()
 	{
-		return $this->lab->bonificacionley / $this->getDiasDelMes();
+		return $this->lab->bonificacionley / 30;
 	}
 
 	public function get_gana_hora()
