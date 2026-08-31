@@ -27,61 +27,67 @@
                 });
             }
 
-            $scope.traerDocsGYT = params => {
+            $scope.traerDocsGYT = async params => {
                 $scope.progress = 0;
                 $scope.cargando = true;
                 params.fechastr = moment(params.fecha).format('DDMMYYYY');
-                estatusCarga(25);
+                const fecha_db = moment(params.fecha).format('YYYY-MM-DD');
 
                 try {
-                    // traer token de GYT
-                    tranBancSrvc.tokenGYT().then(d => {
-                        toaster.pop({ type: d.tipo, title: 'Token', body: d.mensaje, timeout: 10000 });
-                        if (d.exito) {
-                            params.token = d.token;
-                            estatusCarga(50);
-                            // generar estado de cuenta
-                            try {
-                                estatusCarga(75);
-                                tranBancSrvc.generarGYT(params).then(d => {
-                                    toaster.pop({ type: d.tipo, title: 'Estado de cuenta', body: d.mensaje, timeout: 60000 });
-                                    if (d.exito) {
-                                        try {
-                                            tranBancSrvc.trasladarGYT(params).then(d => {
-                                                toaster.pop({ type: d.tipo, title: 'Traslado de estado de cuenta', body: d.mensaje, timeout: 10000 });
-                                                if (d.exito) {
-                                                    params.archivo = d.archivo;
-                                                    estatusCarga(100);
-                                                    try {
-                                                        tranBancSrvc.estadoCtaGYT(params).then(d => {
-                                                            toaster.pop({ type: d.tipo, title: 'Estado de cuenta', body: d.mensaje, timeout: 60000 });
-                                                            $scope.cargando = false;
-                                                        });
-                                                    } catch (error) {
-                                                        toaster.pop({ type: 'error', title: 'Error', body: 'Error en la comunicación, favor comunicarse con IT.', timeout: 10000 });
-                                                        console.error(error);
-                                                        $scope.cargando = false;
-                                                    }
-                                                } 
-                                            });
-                                        } catch (error) {
-                                            toaster.pop({ type: 'error', title: 'Error', body: 'Error en la comunicación, favor comunicarse con IT.', timeout: 10000 });
-                                            console.error(error);
-                                            $scope.cargando = false;
-                                        }
-                                    }
-                                });
-                            } catch (error) {
-                                toaster.pop({ type: 'error', title: 'Error', body: 'Error en la comunicación, favor comunicarse con IT.', timeout: 10000 });
-                                console.error(error);
-                                $scope.cargando = false;
-                            }
+                    const f = await tranBancSrvc.lastFechaGYT(fecha_db);
+                    let fechaDel = moment(f).startOf('day');
+                    let fechaActual = moment(fechaDel).add(1, 'day');
+                    let fechaFinal = moment(params.fecha).startOf('day');
+                    const totalDias = Math.max(1, fechaFinal.diff(fechaActual, 'days') + 1);
+                    let indiceDia = 0;
+
+                    while (fechaActual.isSameOrBefore(fechaFinal)) {
+                        indiceDia++;
+                        let paramsDia = angular.copy(params);
+                        paramsDia.fecha = moment(fechaActual).toDate();
+                        paramsDia.fechastr = moment(fechaActual).format('DDMMYYYY');
+
+                        let porcentaje = Math.min(99, Math.round((indiceDia / totalDias) * 99));
+                        if (indiceDia === totalDias) {
+                            porcentaje = 99;
                         }
-                    });
+                        estatusCarga(porcentaje);
+
+                        const tokenRes = await tranBancSrvc.tokenGYT();
+                        toaster.pop({ type: tokenRes.tipo, title: 'Token', body: tokenRes.mensaje, timeout: 10000 });
+
+                        if (!tokenRes.exito) {
+                            fechaActual.add(1, 'day');
+                            continue;
+                        }
+
+                        paramsDia.token = tokenRes.token;
+
+                        const generarRes = await tranBancSrvc.generarGYT(paramsDia);
+                        toaster.pop({ type: generarRes.tipo, title: 'Estado de cuenta', body: generarRes.mensaje, timeout: 60000 });
+
+                        if (!generarRes.exito) {
+                            fechaActual.add(1, 'day');
+                            continue;
+                        }
+
+                        const trasladoRes = await tranBancSrvc.trasladarGYT(paramsDia);
+                        toaster.pop({ type: trasladoRes.tipo, title: 'Traslado de estado de cuenta', body: trasladoRes.mensaje, timeout: 10000 });
+
+                        if (trasladoRes.exito) {
+                            paramsDia.archivo = trasladoRes.archivo;
+                            const estadoRes = await tranBancSrvc.estadoCtaGYT(paramsDia);
+                            toaster.pop({ type: estadoRes.tipo, title: 'Estado de cuenta', body: estadoRes.mensaje, timeout: 10000 });
+                        }
+
+                        fechaActual.add(1, 'day');
+                    }
+
+                    $scope.cargando = false;
                 } catch (error) {
+                    $scope.cargando = false;
                     toaster.pop({ type: 'error', title: 'Error', body: 'Error en la comunicación, favor comunicarse con IT.', timeout: 10000 });
                     console.error(error);
-                    $scope.cargando = false;
                 }
             }
 

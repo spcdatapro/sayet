@@ -1970,13 +1970,17 @@ $app->post('/estadocta_gyt', function () {
 
     $nombre = "$d->fechastr" . "$cuenta" . '.txt';
     $archivo = $d->archivo; 
+    $fecha_bd = new DateTime($d->fecha);
+    $fecha_bd = $fecha_bd->format('Y-m-d');
+    $fecha = new DateTime($d->fecha);
+    $fecha = $fecha->format('d/m/Y');
 
     $existe = $db->getOneField("SELECT estado_cuenta FROM estado_cuenta WHERE nombre = '$nombre'") > 0;
 
     if ($existe) {
         $estatus->tipo = 'info';
         $estatus->exito = false;
-        $estatus->mensaje = 'El archivo ya existe en la base de datos.';
+        $estatus->mensaje = 'El archivo de ' . $fecha . ' ya existe en la base de datos.';
     } else {
         $conciliacion->read_mt940_webservice($archivo, $nombre);
 
@@ -1984,7 +1988,9 @@ $app->post('/estadocta_gyt', function () {
         if ($exito) {
             $estatus->tipo = 'success';
             $estatus->exito = true;
-            $estatus->mensaje = 'Archivo procesado correctamente.';
+            $estatus->mensaje = 'Archivo de ' . $fecha . ' procesado correctamente.';
+            // guardadr ultima fecha para proxima
+            $db->doQuery("INSERT INTO log_ecuenta (fecha, cantidad) VALUES ('$fecha_bd', 1)");
         } else {
             $estatus->tipo = 'error';
             $estatus->exito = false;
@@ -1993,6 +1999,18 @@ $app->post('/estadocta_gyt', function () {
     }
 
     return print json_encode($estatus);
+});
+
+$app->get('/last_gyt/:fecha', function ($fecha) {
+    $db = new dbcpm();
+
+    $ultimaFecha = $db->getOneField("SELECT fecha FROM log_ecuenta WHERE fecha < '$fecha' ORDER BY fecha DESC LIMIT 1");
+
+    if ($ultimaFecha === null || $ultimaFecha === false || $ultimaFecha === '') {
+        $ultimaFecha = $fecha;
+    }
+
+    print json_encode($ultimaFecha);
 });
 
 $app->get('/prueba', function () {
