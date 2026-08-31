@@ -8,7 +8,7 @@
             // variables
             $scope.cuentas = [];
             $scope.paramsBI = { fal: moment().subtract(1, 'day').toDate() };
-            $scope.paramsGYT = { fecha: moment().subtract(1, 'day').toDate() };
+            $scope.paramsGYT = { fecha: moment().subtract(1, 'day').toDate(), idcuenta: null };
             $scope.progress = 0;
 
             bancoSrvc.lstBancosMT940().then(d => {
@@ -28,22 +28,30 @@
             }
 
             $scope.traerDocsGYT = async params => {
+                const payload = angular.copy(params || {});
+
+                if (!payload || !payload.fecha || !payload.idcuenta) {
+                    toaster.pop({ type: 'warning', title: 'Banco G&T', body: 'Debe seleccionar la cuenta y la fecha para continuar.', timeout: 6000 });
+                    return;
+                }
+
                 $scope.progress = 0;
                 $scope.cargando = true;
-                params.fechastr = moment(params.fecha).format('DDMMYYYY');
-                const fecha_db = moment(params.fecha).format('YYYY-MM-DD');
+                payload.idcuenta = Number(payload.idcuenta);
+                payload.fechastr = moment(payload.fecha).format('DDMMYYYY');
+                const fecha_db = moment(payload.fecha).format('YYYY-MM-DD');
 
                 try {
                     const f = await tranBancSrvc.lastFechaGYT(fecha_db);
-                    let fechaDel = moment(f).startOf('day');
+                    let fechaDel = moment(f || fecha_db).startOf('day');
                     let fechaActual = moment(fechaDel).add(1, 'day');
-                    let fechaFinal = moment(params.fecha).startOf('day');
+                    let fechaFinal = moment(payload.fecha).startOf('day');
                     const totalDias = Math.max(1, fechaFinal.diff(fechaActual, 'days') + 1);
                     let indiceDia = 0;
 
                     while (fechaActual.isSameOrBefore(fechaFinal)) {
                         indiceDia++;
-                        let paramsDia = angular.copy(params);
+                        let paramsDia = angular.copy(payload);
                         paramsDia.fecha = moment(fechaActual).toDate();
                         paramsDia.fechastr = moment(fechaActual).format('DDMMYYYY');
 
