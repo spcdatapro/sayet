@@ -1873,15 +1873,29 @@ $app->post('/generar_gyt', function () {
 });
 
 $app->post('/trasladar_gyt', function () {
-    set_time_limit(120);
+    set_time_limit(180);
     $db = new dbcpm();
     $d = json_decode(file_get_contents('php://input'));
 
-    // Esperar un minuto antes de iniciar
-    sleep(60);
+    if (!isset($d->idcuenta) || empty($d->idcuenta) || !isset($d->token) || empty($d->token) || !isset($d->fechastr) || empty($d->fechastr)) {
+        print json_encode([
+            'tipo' => 'error',
+            'exito' => false,
+            'mensaje' => 'Faltan datos requeridos para trasladar el estado de cuenta: cuenta, fecha o token.'
+        ]);
+        return;
+    }
 
     $usuario = $db->getOneField("SELECT usuario FROM usuario_banco WHERE id = 1");
     $cuenta = '0' . $db->getOneField("SELECT mt940 FROM banco WHERE id = $d->idcuenta");
+    if (empty($cuenta) || $cuenta === '0') {
+        print json_encode([
+            'tipo' => 'error',
+            'exito' => false,
+            'mensaje' => 'La cuenta seleccionada no tiene MT940 configurado.'
+        ]);
+        return;
+    }
     $tipo    = "940";                 // MT940
 
     $url = "https://ws.ss.gytcontinental.com.gt/WsBancaMTS/WsMTS.svc";
