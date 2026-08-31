@@ -75,6 +75,9 @@ $app->get('/descuadre_reem/:del/:al', function ($del, $al) {
     $letra = new stdClass();
     $letra->estampa = new DateTime();
     $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+    $fdel = new DateTime($del);
+    $fal = new DateTime($al);
+    $letra->fechas = 'Del ' . $fdel->format('d/m/Y') . ' al ' . $fal->format('d/m/Y');
 
     $query = "SELECT 
                 e.id AS idempresa,
