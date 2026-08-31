@@ -1374,7 +1374,7 @@
         $scope.genReporte = function () {
             $scope.params.fdelstr = moment($scope.params.fdel).isValid() ? moment($scope.params.fdel).format('YYYY-MM-DD') : '';
             $scope.params.falstr = moment($scope.params.fal).isValid() ? moment($scope.params.fal).format('YYYY-MM-DD') : '';
-            jsReportSrvc.getPDFReport(test ? 'S1cKUhgAm' : 'S1cKUhgAm', $scope.params).then(function (pdf) { $scope.content = pdf; });
+            jsReportSrvc.getPDFReport(test ? 'SkhrCImOGx' : 'SkhrCImOGx', $scope.params).then(function (pdf) { $scope.content = pdf; });
         };
 
         $scope.genReporte();
