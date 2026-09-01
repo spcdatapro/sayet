@@ -1230,7 +1230,7 @@ $app->post('/traer_documentos', function () {
             $query.="AND a.idtranban IS NULL ORDER BY 2, 3, 4, 5";
             break;
         case 3: 
-            $query = "SELECT a.d_estado_cuenta AS id, c.id AS idempresa, a.fecha AS concilia, SUBSTRING(b.siglas, 1, 2) AS nomempresa, 
+            $query = "SELECT a.d_estado_cuenta AS id, c.id AS idempresa, a.fecha AS concilia, e.abreviatura AS nomempresa, 
                         IF(a.tipo_transaccion = 'C', '(C) Créditos', '(D) Débitos') AS tipotrans, a.referencia AS numero_tran, a.descripcion AS beneficiario, 
                         IF(a.tipo_transaccion = 'D', a.monto, NULL) AS debito, IF(a.tipo_transaccion = 'C', a.monto, NULL) AS credito, a.monto, b.saldo_inicial AS abreviatura, 
                         b.saldo_final AS numero, IF(a.tipo_transaccion = 'C', 1, 2) AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, d.simbolo AS moneda, a.impreso
