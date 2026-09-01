@@ -72,7 +72,7 @@
                         paramsDia.token = tokenRes.token;
 
                         const generarRes = await tranBancSrvc.generarGYT(paramsDia);
-                        toaster.pop({ type: generarRes.tipo, title: 'Estado de cuenta', body: generarRes.mensaje, timeout: 60000 });
+                        toaster.pop({ type: generarRes.tipo, title: 'Estado de cuenta', body: generarRes.mensaje, timeout: 30000 });
 
                         if (!generarRes.exito) {
                             fechaActual.add(1, 'day');

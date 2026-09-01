@@ -1877,6 +1877,8 @@ $app->post('/trasladar_gyt', function () {
     $db = new dbcpm();
     $d = json_decode(file_get_contents('php://input'));
 
+    sleep(30);
+
     if (!isset($d->idcuenta) || empty($d->idcuenta) || !isset($d->token) || empty($d->token) || !isset($d->fechastr) || empty($d->fechastr)) {
         print json_encode([
             'tipo' => 'error',
