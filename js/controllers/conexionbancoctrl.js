@@ -42,10 +42,15 @@
                 const fecha_db = moment(payload.fecha).format('YYYY-MM-DD');
 
                 try {
-                    const f = await tranBancSrvc.lastFechaGYT(fecha_db);
-                    let fechaDel = moment(f || fecha_db).startOf('day');
-                    let fechaActual = moment(fechaDel).add(1, 'day');
-                    let fechaFinal = moment(payload.fecha).startOf('day');
+                    const f = await Promise.race([
+                        tranBancSrvc.lastFechaGYT(fecha_db),
+                        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout lastFechaGYT')), 15000))
+                    ]);
+
+                    const fechaSolicitada = moment(payload.fecha).startOf('day');
+                    const fechaUltima = moment(f || fecha_db).startOf('day');
+                    let fechaActual = fechaUltima.isSame(fechaSolicitada, 'day') ? fechaSolicitada.clone() : fechaUltima.clone().add(1, 'day');
+                    let fechaFinal = fechaSolicitada.clone();
                     const totalDias = Math.max(1, fechaFinal.diff(fechaActual, 'days') + 1);
                     let indiceDia = 0;
 
@@ -61,7 +66,10 @@
                         }
                         estatusCarga(porcentaje);
 
-                        const tokenRes = await tranBancSrvc.tokenGYT();
+                        const tokenRes = await Promise.race([
+                            tranBancSrvc.tokenGYT(),
+                            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout tokenGYT')), 15000))
+                        ]);
                         toaster.pop({ type: tokenRes.tipo, title: 'Token', body: tokenRes.mensaje, timeout: 10000 });
 
                         if (!tokenRes.exito) {
@@ -71,7 +79,10 @@
 
                         paramsDia.token = tokenRes.token;
 
-                        const generarRes = await tranBancSrvc.generarGYT(paramsDia);
+                        const generarRes = await Promise.race([
+                            tranBancSrvc.generarGYT(paramsDia),
+                            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout generarGYT')), 30000))
+                        ]);
                         toaster.pop({ type: generarRes.tipo, title: 'Estado de cuenta', body: generarRes.mensaje, timeout: 30000 });
 
                         if (!generarRes.exito) {
@@ -79,12 +90,18 @@
                             continue;
                         }
 
-                        const trasladoRes = await tranBancSrvc.trasladarGYT(paramsDia);
+                        const trasladoRes = await Promise.race([
+                            tranBancSrvc.trasladarGYT(paramsDia),
+                            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout trasladarGYT')), 6560000))
+                        ]);
                         toaster.pop({ type: trasladoRes.tipo, title: 'Traslado de estado de cuenta', body: trasladoRes.mensaje, timeout: 10000 });
 
                         if (trasladoRes.exito) {
                             paramsDia.archivo = trasladoRes.archivo;
-                            const estadoRes = await tranBancSrvc.estadoCtaGYT(paramsDia);
+                            const estadoRes = await Promise.race([
+                                tranBancSrvc.estadoCtaGYT(paramsDia),
+                                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout estadoCtaGYT')), 30000))
+                            ]);
                             toaster.pop({ type: estadoRes.tipo, title: 'Estado de cuenta', body: estadoRes.mensaje, timeout: 10000 });
                         }
 
@@ -94,7 +111,7 @@
                     $scope.cargando = false;
                 } catch (error) {
                     $scope.cargando = false;
-                    toaster.pop({ type: 'error', title: 'Error', body: 'Error en la comunicación, favor comunicarse con IT.', timeout: 10000 });
+                    toaster.pop({ type: 'error', title: 'Error', body: 'Tiempo de espera agotado o no hubo respuesta del servicio G&T.', timeout: 10000 });
                     console.error(error);
                 }
             }

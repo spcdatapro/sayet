@@ -2020,7 +2020,7 @@ $app->post('/estadocta_gyt', function () {
 $app->get('/last_gyt/:fecha', function ($fecha) {
     $db = new dbcpm();
 
-    $ultimaFecha = $db->getOneField("SELECT fecha FROM log_ecuenta WHERE fecha < '$fecha' ORDER BY fecha DESC LIMIT 1");
+    $ultimaFecha = $db->getOneField("SELECT fecha FROM log_ecuenta WHERE fecha <= '$fecha' ORDER BY fecha DESC LIMIT 1");
 
     if ($ultimaFecha === null || $ultimaFecha === false || $ultimaFecha === '') {
         $ultimaFecha = $fecha;
