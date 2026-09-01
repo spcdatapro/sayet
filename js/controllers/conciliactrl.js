@@ -118,16 +118,16 @@
             $scope.buscarDocumentos = () => {
                 $scope.cargando = true;
 
-                estatusCarga(40);
+                estatusCarga(80);
 
                 // primero nos concetcamos al banco, para traer los documentos
-                tranBancSrvc.concectarBancoBI()
-                    .then(d => {
-                        $scope.progress = 40;
-                        toaster.pop({ type: d.tipo, title: 'Conexion a banco', body: d.mensaje, timeout: 10000 })
+                // tranBancSrvc.concectarBancoBI()
+                //     .then(d => {
+                //         $scope.progress = 40;
+                //         toaster.pop({ type: d.tipo, title: 'Conexion a banco', body: d.mensaje, timeout: 10000 })
 
-                        if (d.tipo === 'success') {
-                            estatusCarga(80);
+                //         if (d.tipo === 'success') {
+                //             estatusCarga(80);
 
                             // si la conxeion es exitosa, entonces buscamos documetos para conciliar
                             tranBancSrvc.conciliacionAutomatica()
@@ -150,8 +150,8 @@
                                             $scope.trans = d.bancos;
                                         })
                                 })
-                        }
-                    })
+                        // }
+                    // })
             }
 
             function estatusCarga(limite) {

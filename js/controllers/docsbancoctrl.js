@@ -88,16 +88,15 @@
                 // $scope.params.delstr = '20250501';
                 // $scope.params.alstr = '20250501';
 
-                estatusCarga(40);
+                estatusCarga(80);
 
                 // primero nos concetcamos al banco, para traer los documentos
-                tranBancSrvc.concectarBancoBI()
-                    .then(d => {
-                        $scope.progress = 40;
-                        toaster.pop({ type: d.tipo, title: 'Conexion a banco', body: d.mensaje, timeout: 10000 })
+                // tranBancSrvc.concectarBancoBI()
+                    // .then(d => {
+                        // $scope.progress = 40;
+                        // toaster.pop({ type: d.tipo, title: 'Conexion a banco', body: d.mensaje, timeout: 10000 })
 
-                        if (d.tipo === 'success' || d.tipo === 'warning') {
-                            estatusCarga(80);
+                        // if (d.tipo === 'success' || d.tipo === 'warning') {
 
                             // si la conxeion es exitosa, entonces buscamos documetos para conciliar
                             tranBancSrvc.traerDocumentos($scope.params)
@@ -109,8 +108,8 @@
                                     $scope.documentos = d.bancos.filter(tran => tran.idtipotrans == 1);
                                     $scope.ya_busco = true;
                                 })
-                        }
-                    })
+                        // }
+                    // })
             }
 
             $scope.buscar = () => {
