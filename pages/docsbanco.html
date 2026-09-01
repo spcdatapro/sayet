@@ -202,7 +202,7 @@
                         <tr ng-repeat="t in paginatedEmpleados() | filter:search" ng-class="{'green': +t.impreso === 1}">
                             <td>{{t.concilia | date:'dd/MM/yyyy'}}</td>
                             <td>{{t.tipotrans}}</td>
-                            <td>{{t.nomempresa}}-{{t.numero_tran}}</td>
+                            <td>{{t.siglas}}-{{t.numero_tran}}</td>
                             <td style="text-align: right;" ng-show="t.debito > 0">{{t.moneda}}.{{t.debito | number:2}}</td>
                             <td style="text-align: right;" ng-hide="t.debito > 0">{{t.debito | number:2}}</td>
                             <td style="text-align: right;"ng-show="t.credito > 0">{{t.moneda}}.{{t.credito | number:2}}</td>
