@@ -1238,7 +1238,7 @@ $app->post('/traer_documentos', function () {
                         INNER JOIN moneda d ON c.idmoneda = d.id INNER JOIN empresa e ON c.idempresa = e.id
                         WHERE b.estado_cuenta NOT IN(1, 2, 3, 4) AND c.idempresa = $d->idempresa ";
             $query.= isset($d->delstr) && isset($d->alstr) ? "AND a.fecha BETWEEN '$d->delstr' AND '$d->alstr'" : "";  
-            $query.="ORDER BY 2, 3, 4, 5";
+            $query.="ORDER BY 2, 3, 4, 5 , 6";
             break;
     }
     $datos = $db->getQuery($query);
