@@ -43,7 +43,7 @@
 
                 try {
                     const f = await Promise.race([
-                        tranBancSrvc.lastFechaGYT(fecha_db),
+                        tranBancSrvc.lastFechaGYT(fecha_db, params.idcuenta),
                         new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout lastFechaGYT')), 15000))
                     ]);
 

@@ -2006,7 +2006,7 @@ $app->post('/estadocta_gyt', function () {
             $estatus->exito = true;
             $estatus->mensaje = 'Archivo de ' . $fecha . ' procesado correctamente.';
             // guardadr ultima fecha para proxima
-            $db->doQuery("INSERT INTO log_ecuenta (fecha, cantidad) VALUES ('$fecha_bd', 1)");
+            $db->doQuery("INSERT INTO log_ecuenta (fecha, idcuenta) VALUES ('$fecha_bd', $d->idcuenta)");
         } else {
             $estatus->tipo = 'error';
             $estatus->exito = false;
@@ -2017,10 +2017,10 @@ $app->post('/estadocta_gyt', function () {
     return print json_encode($estatus);
 });
 
-$app->get('/last_gyt/:fecha', function ($fecha) {
+$app->get('/last_gyt/:fecha/:idcuenta', function ($fecha, $idcuenta) {
     $db = new dbcpm();
 
-    $ultimaFecha = $db->getOneField("SELECT fecha FROM log_ecuenta WHERE fecha <= '$fecha' ORDER BY fecha DESC LIMIT 1");
+    $ultimaFecha = $db->getOneField("SELECT fecha FROM log_ecuenta WHERE fecha <= '$fecha' AND idcuenta = $idcuenta ORDER BY fecha DESC LIMIT 1");
 
     if ($ultimaFecha === null || $ultimaFecha === false || $ultimaFecha === '') {
         $ultimaFecha = $fecha;

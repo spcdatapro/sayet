@@ -121,8 +121,8 @@
             estadoCtaGYT: obj => {
                 return comunFact.doPOST(urlBase + '/estadocta_gyt', obj);
             },
-            lastFechaGYT: fecha => {
-                return comunFact.doGET(urlBase + '/last_gyt/' + fecha);
+            lastFechaGYT: (fecha, idcuenta) => {
+                return comunFact.doGET(urlBase + '/last_gyt/' + fecha + '/' + idcuenta);
             }
         };
     }]);
