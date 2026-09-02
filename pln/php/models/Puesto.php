@@ -66,6 +66,30 @@ class Puesto extends Principal
 
 		return FALSE;
 	}
+
+	public function eliminar($id) : object {
+		$datos = $this->db->has('plnempleado', ['idplnpuesto' => $id]);
+
+		if ($datos) {
+			$respuesta = new StdClass;
+			$respuesta->tipo = 'warning';
+			$respuesta->mensaje = 'No se puede eliminar el puesto, ya que tiene empleados asociados.';
+			return $respuesta;
+		}
+
+		$elm = $this->db->delete('plnpuesto', ["id [=]" => $id]);
+
+		if ($elm) {
+			$respuesta = new StdClass;
+			$respuesta->tipo = 'success';
+			$respuesta->mensaje = 'Puesto eliminado con exito.';
+		} else {
+			$respuesta = new StdClass;
+			$respuesta->tipo = 'error';
+			$respuesta->mensaje = 'Error al eliminar puesto, favor comunicarse con IT.';
+		}
+		return $respuesta;
+	}
 }
 
 ?>

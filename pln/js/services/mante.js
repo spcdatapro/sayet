@@ -101,6 +101,7 @@ angular.module('cpm')
         guardar: function(datos){
             return comunFact.doPOST(urlBase + '/guardar', datos);
         }, 
+        eliminar: idpuesto => comunFact.doDELETE(urlBase + '/eliminar/' + idpuesto),
         lista: function(obj){
             return comunFact.doGET(urlBase + '/lista');
         },

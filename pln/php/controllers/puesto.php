@@ -69,4 +69,10 @@ $app->post('/guardar', function(){
     enviar_json($data);
 });
 
+$app->delete('/eliminar/:id', function($id){
+	$p = new Puesto();
+
+	print json_encode($p->eliminar($id));
+});
+
 $app->run();

@@ -962,8 +962,8 @@ angular.module('cpm')
             };
         }
     ])
-    .controller('MntPuestoController', ['$scope', '$http', 'pstServicios',
-        function ($scope, $http, pstServicios) {
+    .controller('MntPuestoController', ['$scope', '$http', 'pstServicios', '$confirm', 'toaster',
+        function ($scope, $http, pstServicios, $confirm, toaster) {
             $scope.formulario = false;
             $scope.resultados = false;
             $scope.puestos = [];
@@ -977,6 +977,18 @@ angular.module('cpm')
                 $scope.emp = {};
                 $scope.formulario = true;
                 $scope.hay = false;
+            };
+
+            $scope.eliminar = puesto => {
+                $confirm({
+                    text: '¿Seguro(a) de eliminar el puesto de ' + puesto.descripcion + '?',
+                    title: 'Eliminar puesto', ok: 'Sí', cancel: 'No'
+                }).then(() => {
+                    pstServicios.eliminar(puesto.id).then(d => {
+                        toaster.pop({ type: d.tipo, title: 'Eliminar puesto', body: d.mensaje, timeout: 10000 });
+                        $scope.buscar({});
+                    });
+                });
             };
 
             $scope.guardar = function (emp) {

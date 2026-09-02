@@ -72,6 +72,7 @@ angular.module('cpm')
         lista: function(obj){
             return comunFact.doGET(urlBase + '/lista');
         },
+        eliminar: idpuesto => comunFact.doDELETE(urlBase + '/eliminar/' + idpuesto),
     };
 }])
 .factory('preServicios', ['comunFact', function(comunFact){
