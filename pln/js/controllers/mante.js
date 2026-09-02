@@ -397,17 +397,17 @@ angular.module('cpm')
 
                     arc.vence = moment(arc.fchvence).isValid() ? $scope.formatoFecha(arc.fchvence) : undefined;
 
-                    empServicios.agregarArchivo($scope.emp.id, arc).then(function (data) {
+                    empServicios.agregarArchivo($scope.emp.id, arc).then(data => {
+                        console.log(data);
                         $scope.getArchivos($scope.emp.id);
+                        $scope.nuevoArchivo();
                         alert(data.mensaje);
-                        $btn.button('reset');
-
                     });
                 }
             }
 
             $scope.getArchivos = idempleado => {
-                empServicios.getArchivos(idempleado).then(function (data) {
+                empServicios.getArchivos(idempleado).then(data => {
                     data.archivos.forEach(arch => {
                         arch.tipo = $filter('getById')($scope.archivotipo, arch.idplnarchivotipo).descripcion;
                         arch.fecha = moment(arch.fecha).toDate();
@@ -888,6 +888,8 @@ angular.module('cpm')
             $scope.nuevoArchivo = () => {
                 $scope.arc = {};
                 $scope.form_archivo = true;
+                document.getElementById('inputArchivo').value = '';
+                arc = {};
             }
 
             $scope.eliminarArchivo = id => {
