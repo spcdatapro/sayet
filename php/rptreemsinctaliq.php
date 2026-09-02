@@ -106,7 +106,7 @@ $app->get('/descuadre_reem/:del/:al', function ($del, $al) {
                 empresa e ON a.idempresa = e.id
             WHERE
                 ABS(d.debe - d.haber) > 0
-                    AND a.finicio BETWEEN $del AND $al";
+                    AND a.finicio BETWEEN '$del' AND '$al'";
     $data = $db->getQuery($query);
 
     $empresas = [];

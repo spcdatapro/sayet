@@ -2029,16 +2029,6 @@ $app->get('/last_gyt/:fecha/:idcuenta', function ($fecha, $idcuenta) {
     print json_encode($ultimaFecha);
 });
 
-$app->get('/prueba', function () {
-    // no se usa, pero para que funcione conciliacion automatica
-    $dest = new SFTPConnInfo('localhost', 222, 'aponce', 'y%YgW$Qk3x#a59Su', '/');
-    $src = new SFTPConnInfo('190.242.184.121', 22, 'sftpSayet', 'S3Pd25S@y3t', '/');
-    $conciliacion = new ConciliacionAutomatica($src, $dest);
-
-    $archivo = "ezE6RjAxR1RDT0dUR0NBWFhYMDAwMDAwMDAwMH17MjpJOTQwR1RDT0dUR0NYWFhYTn17NDoNCjoyMDoyMzA4MjAyNjEyNTUxNTgyDQo6MjU6MDY2MDAyNTgwMzYNCjoyOEM6MTQvMQ0KOjYwRjpDMjYwODIzR1RRMzcwNzcxMSwyMw0KOjYxOjI2MDgyM0M4NDgsODdGTVNDNjI2MjQyMTIvLzc2OQ0KOjg2Ok5FT05FVCBBRjowMzYzMDQwMDENCjo2MToyNjA4MjNDMTE1LDEzRk1TQzYyNjI0MjEzLy83NjkNCjo4NjpORU9ORVQgQUY6MDM2MzA0MDAyDQo6NjE6MjYwODIzQzE5ODEsMDNGTVNDNjI2MjQyMTQvLzc2OQ0KOjg2Ok5FT05FVCBBRjowMzYzMDQwMDMNCjo2MkY6QzI2MDgyM0dUUTM3MTA2NTYsMjYNCjo2NDpDMjYwODIzR1RRMzcxMDY1NiwyNg0KOjg2OkJJRU5FUyBJTk1PQklMSUFSSU9TLCBTT0NJRURBRCBBTk9OSU1BIE5vLk9wZXJhY2lvbmVzOjMNCi19DQo=";
-    $conciliacion->read_mt940_webservice($archivo, 'prueba2.txt');
-});
-
 function ordenAscendente(&$array, $dateField) {
     usort($array, function($a, $b) use ($dateField) {
         return strtotime($a->$dateField) - strtotime($b->$dateField);
