@@ -419,7 +419,7 @@ class Empleado extends Principal
 		
 		if (isset($fl['archivo'])) {
 			$base = "archivos/emp/{$this->emp->id}/" . date('Y-m-d');
-			$ruta = "/pln/{$base}";
+			$ruta = BASEPATH . "/pln/{$base}";
 			$nom  = $fl['archivo']['name'];
 
 			if (!file_exists($ruta)) {
