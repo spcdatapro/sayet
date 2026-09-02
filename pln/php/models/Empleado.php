@@ -1927,7 +1927,7 @@ EOT;
 				$despues = (object)$this->db->get('plnlaboral', '*',['id[=]' => $idlaboral]);
 
 				if ($upd) {
-					if ($lab['sueldo'] != $data['sueldo'] || $lab['bonificacionley'] != $data['bonificacionley'] || $lab['descuentoisr'] != $data['descuentoisr']) {
+					if ($lab['sueldo'] != $data['sueldo'] || $lab['bonificacionley'] != $data['bonificacionley']) {
 						$objeto = json_decode(json_encode($lab));
 						$objeto->movobservaciones = 'Aumento de sueldo';
 						$this->generarBitacora($idempleado, 7, $objeto, 'Aumento de sueldo', 0, null, $antes, $despues);
