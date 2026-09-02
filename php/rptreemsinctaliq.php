@@ -84,7 +84,7 @@ $app->get('/descuadre_reem/:del/:al', function ($del, $al) {
                 e.nomempresa AS empresa,
                 a.id AS reem,
                 c.iniciales AS usuario,
-                b.fechaingreso AS fecha,
+                DATE_FORMAT(b.fechaingreso, '%d/%m/%Y') AS fecha,
                 b.documento AS factura,
                 b.totfact AS monto,
                 b.conceptomayor AS concepto
