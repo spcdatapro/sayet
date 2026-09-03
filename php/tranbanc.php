@@ -1301,7 +1301,8 @@ $app->post('/prntnotas', function () {
                 c.nomcuenta AS nombre,
                 c.nocuenta,
                 CONCAT(d.codgface, d.simbolo) AS moneda,
-                a.monto
+                a.monto,
+                e.logo 
             FROM
                 d_estado_cuenta a
                     INNER JOIN
@@ -1310,6 +1311,8 @@ $app->post('/prntnotas', function () {
                 banco c ON c.mt940 = b.cuenta
                     INNER JOIN
                 moneda d ON c.idmoneda = d.id
+                    LEFT JOIN 
+                bancopais e ON c.bancopais = e.id
             WHERE
                 a.d_estado_cuenta = $d->idnota";
     $datos = $db->getQuery($query)[0];
