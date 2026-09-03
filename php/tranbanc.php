@@ -1312,7 +1312,7 @@ $app->post('/prntnotas', function () {
                     INNER JOIN
                 moneda d ON c.idmoneda = d.id
                     LEFT JOIN 
-                bancopais e ON c.bancopais = e.id
+                bancopais e ON c.idbancopais = e.id
             WHERE
                 a.d_estado_cuenta = $d->idnota";
     $datos = $db->getQuery($query)[0];
