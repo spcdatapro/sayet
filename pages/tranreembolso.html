@@ -222,7 +222,7 @@
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
                                     <button type="button" class="btn btn-primary"
-                                        ng-disabled="false"
+                                        ng-disabled="frmReembolso.$invalid || !permiso.m || reembolso.estatus == 2 || periodoCerrado || (reembolso.aprobar == 1 && reembolso.estatus_aprobacion != 1)"
                                         ng-show="reembolso.id > 0" ng-click="updReembolso(reembolso)">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
@@ -669,7 +669,7 @@
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
                                     <button type="button" class="btn btn-primary"
-                                        ng-disabled="frmCompra.$invalid || (!permiso.m && !mismo) || periodoCerrado || (reembolso.aprobar == 1 && reembolso.estatus_aprobacion != 1)"
+                                        ng-disabled="frmCompra.$invalid || (!permiso.m && !mismo) || periodoCerrado || (reembolso.aprobar == 1 && reembolso.estatus_aprobacion != 1 && !permiso.m)"
                                         ng-show="compra.id > 0" ng-click="updCompra(compra)">
                                         <span class="glyphicon glyphicon-floppy-save"></span>
                                     </button>
