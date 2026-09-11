@@ -34,7 +34,7 @@ $app->post('/factemitidas', function(){
 
     $qGen = "SELECT a.id, a.idempresa, b.nomempresa AS empresa, b.abreviatura AS abreviaempre, a.serie, a.numero, 
     IF(a.anulada = 0, TRIM(a.nombre), 'ANULADA') AS cliente, IF(c.tipo IS NULL, TRIM(SUBSTR(a.conceptomayor, LOCATE('(', a.conceptomayor) + 1, LOCATE(')', a.conceptomayor) - 10)), c.tipo) AS tipo, 
-    (IF(a.anulada = 0, IF(a.idmonedafact = 1, a.subtotal, a.subtotalcnv), 0.00) * IF(a.idtipofacura IN(9, 13),-1, 1)) AS total, IF(c.periodo IS NULL, TRIM(SUBSTR(a.conceptomayor, (LOCATE(')', a.conceptomayor) + 1))), c.periodo) AS periodo, b.ordensumario, 
+    IF(a.anulada = 0, IF(a.idmonedafact = 1, a.subtotal, a.subtotalcnv), 0.00) * IF(a.idtipofactura IN (9, 13), -1, 1) AS total, IF(c.periodo IS NULL, TRIM(SUBSTR(a.conceptomayor, (LOCATE(')', a.conceptomayor) + 1))), c.periodo) AS periodo, b.ordensumario, 
     a.idmonedafact, f.simbolo AS monedafact, a.serieadmin, a.numeroadmin, IFNULL(e.idproyecto, a.idproyecto) AS idproyecto, IFNULL(e.proyecto, g.nomproyecto) AS proyecto
     FROM factura a 
     INNER JOIN empresa b ON b.id = a.idempresa 
