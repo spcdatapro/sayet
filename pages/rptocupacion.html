@@ -143,10 +143,14 @@
                         </ul>
                     </div>
                     <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-success" ng-click="getXML(params)"
+                        <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown"
                             ng-disabled="paramsRep.$invalid || cargando" title="Reporte excel">
                             <span class="fa fa-file-excel-o" aria-hidden="true"></span> Excel
                         </button>
+                        <ul class="dropdown-menu">
+                            <li><a ng-click="getXML(params, 'Bk9uyL23gg', false)">Reporte general</a></li>
+                            <li><a ng-click="getXML(params, 'BJoXS5gtGe', true)">Reporte detalle</a></li>
+                        </ul>
                     </div>
                     <div class="btn-group" role="group">
                         <button type="button" class="btn btn-primary" ng-click="getResumen(params)"

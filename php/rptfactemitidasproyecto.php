@@ -34,7 +34,7 @@ $app->post('/factemitidas', function(){
 
     $qGen = "SELECT a.id, a.idempresa, b.nomempresa AS empresa, b.abreviatura AS abreviaempre, a.serie, a.numero, 
     IF(a.anulada = 0, TRIM(a.nombre), 'ANULADA') AS cliente, IF(c.tipo IS NULL, TRIM(SUBSTR(a.conceptomayor, LOCATE('(', a.conceptomayor) + 1, LOCATE(')', a.conceptomayor) - 10)), c.tipo) AS tipo, 
-    IF(a.anulada = 0, IF(a.idmonedafact = 1, a.subtotal, a.subtotalcnv), 0.00) AS total, IF(c.periodo IS NULL, TRIM(SUBSTR(a.conceptomayor, (LOCATE(')', a.conceptomayor) + 1))), c.periodo) AS periodo, b.ordensumario, 
+    IF(a.anulada = 0, IF(a.idmonedafact = 1, a.subtotal, a.subtotalcnv), 0.00) * IF(a.idtipofacura IN(9, 13),-1, 1) AS total, IF(c.periodo IS NULL, TRIM(SUBSTR(a.conceptomayor, (LOCATE(')', a.conceptomayor) + 1))), c.periodo) AS periodo, b.ordensumario, 
     a.idmonedafact, f.simbolo AS monedafact, a.serieadmin, a.numeroadmin, IFNULL(e.idproyecto, a.idproyecto) AS idproyecto, IFNULL(e.proyecto, g.nomproyecto) AS proyecto
     FROM factura a 
     INNER JOIN empresa b ON b.id = a.idempresa 
@@ -53,7 +53,7 @@ $app->post('/factemitidas', function(){
     $qGen.= ") c ON a.id = c.idfactura LEFT JOIN cliente d ON d.id = a.idcliente ";
     $qGen.= "LEFT JOIN (SELECT v.id AS idcontrato, v.idproyecto, u.nomproyecto AS proyecto FROM contrato v INNER JOIN proyecto u ON u.id = v.idproyecto) e ON a.idcontrato = e.idcontrato ";
     $qGen.= "LEFT JOIN moneda f ON f.id = a.idmonedafact LEFT JOIN proyecto g ON g.id = a.idproyecto ";
-    $qGen.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.esparqueo = 0 AND LENGTH(a.numero) > 0 AND a.idtipofactura NOT IN(9, 13) ";
+    $qGen.= "WHERE a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' AND a.esparqueo = 0 AND LENGTH(a.numero) > 0 ";
     $qGen.= $d->idempresa != '' ? "AND a.idempresa IN($d->idempresa) " : '';
     $qGen.= trim($d->cliente) != '' && (int)$d->idcliente > 0 ? "AND a.anulada = 0 AND (a.idcliente = $d->idcliente OR a.nombre LIKE '%$d->cliente%' OR a.nit LIKE '%$d->cliente%' OR d.nombre LIKE '%$d->cliente%' OR d.nombrecorto LIKE '%$d->cliente%') " : '';
     $qGen.= trim($d->cliente) != '' && (int)$d->idcliente == 0 ? "AND a.anulada = 0 AND (a.nombre LIKE '%$d->cliente%' OR a.nit LIKE '%$d->cliente%' OR d.nombre LIKE '%$d->cliente%' OR d.nombrecorto LIKE '%$d->cliente%') " : '';

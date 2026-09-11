@@ -87,15 +87,16 @@
             }
 
             // excel
-            $scope.getXML = params => {
+            $scope.getXML = (params, rpt, detallado) => {
                 // estatus de carga
                 $scope.cargando = true;
 
-                jsReportSrvc.getReport('Bk9uyL23gg', params).then(function (result) {
+                jsReportSrvc.getReport(rpt, params).then(function (result) {
                     var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
                     let rango = $filter('getById')($scope.proyectos, params.idproyecto).nomproyecto;
+                    let nombre = detallado ? 'Reporte_Ocupacion_Detalle_' + rango + '.xlsx' : 'Reporte_Ocupacion_' + rango + '.xlsx';
 
-                    saveAs(file, 'Reporte_Ocupacion_' + rango + '.xlsx');
+                    saveAs(file, nombre);
 
                     $scope.cargando = false;
                 })
