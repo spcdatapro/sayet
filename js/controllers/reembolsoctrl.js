@@ -1064,7 +1064,7 @@
                 $scope.upload();
                 reemadjunto.idusuario = $scope.uid;
                 reemadjunto.idreembolso = $scope.reembolso.id;
-                reemadjunto.ubicacion = "reem_adjunto/" + 'Reem_' + reemadjunto.idreembolso + '_' + $scope.file.name;
+                reemadjunto.ubicacion = "reem_adjunto/" + 'Reem_' + reemadjunto.idreembolso + '_' + $filter('textCleaner')($scope.file.name);
                 reembolsoSrvc.editRow(reemadjunto, 'aareem').then(d => {
                     toaster.pop({ type: d.tipo, title: 'Archivo adjunto', body: d.mensaje, timeout: 5000 });
                     $scope.loadOTAdjuntos($scope.reembolso.id);
