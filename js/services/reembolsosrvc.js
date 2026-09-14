@@ -45,6 +45,7 @@
             modificarRIVA: (idcompra, monto, idempresa, suma, idreembolso) => comunFact.doGET(`${urlBase}/uriva/${idcompra}/${monto}/${idempresa}/${suma}/${idreembolso}`),
             reembolsosPendientes: () => comunFact.doGET(`${urlBase}/pendientes`),
             lstReemAdjuntos: (idreembolso) => comunFact.doGET(`${urlBase}/lstremadjuntos/${idreembolso}`),
+            reembolsosAprobados: () => comunFact.doGET(`${urlBase}/aprobados`),
         };
     }]);
 

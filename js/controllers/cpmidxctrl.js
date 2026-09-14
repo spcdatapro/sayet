@@ -1,8 +1,10 @@
-(function(){
+(function () {
 
     var cpmidxctrl = angular.module('cpm.cpmidxctrl', ['cpm.authsrvc', 'toaster']);
 
-    cpmidxctrl.controller('cpmIdxCtrl', ['$scope', '$rootScope', '$uibModal', '$window', 'authSrvc', 'toaster', 'empresaSrvc', '$interval', 'presupuestoSrvc', 'desktopNotification', '$confirm', 'tranBancSrvc', function($scope, $rootScope, $uibModal, $window, authSrvc, toaster, empresaSrvc, $interval, presupuestoSrvc, desktopNotification, $confirm, tranBancSrvc){
+    cpmidxctrl.controller('cpmIdxCtrl', ['$scope', '$rootScope', '$uibModal', '$window', 'authSrvc', 'toaster', 'empresaSrvc', '$interval', 'presupuestoSrvc', 
+        'desktopNotification', '$confirm', 'tranBancSrvc', 'reembolsoSrvc', '$location', 'localStorageSrvc',
+        function ($scope, $rootScope, $uibModal, $window, authSrvc, toaster, empresaSrvc, $interval, presupuestoSrvc, desktopNotification, $confirm, tranBancSrvc, reembolsoSrvc, $location, localStorageSrvc) {
         $scope.tituloPagina = 'CPM - Bienvenido';
 
         $scope.menuUsr = [];
@@ -12,45 +14,45 @@
         $scope.notificaciones = [];
         var intervalo;
 
-        function chkSolPago(){
-            presupuestoSrvc.lstNotificaciones().then(function(d){
+        function chkSolPago() {
+            presupuestoSrvc.lstNotificaciones().then(function (d) {
                 var notificar = '';
-                for(var i = 0; i < d.length; i++){
-                    if(notificar != ''){ notificar += '\r\n'; }
+                for (var i = 0; i < d.length; i++) {
+                    if (notificar != '') { notificar += '\r\n'; }
                     notificar += d[i].notificacion;
                 }
-                if(notificar != ''){
+                if (notificar != '') {
                     desktopNotification.show('Nueva solicitud de pago de OT', {
                         icon: 'img/sayet.ico',
                         body: notificar,
-                        onClick: function(){
+                        onClick: function () {
                             var modalInstance = $uibModal.open({
                                 animation: true,
                                 templateUrl: 'modalNotificaciones.html',
                                 controller: 'ModalNotificacionesCtrl',
-                                resolve:{
-                                    ots: function(){ return d; },
-                                    usr: function(){ return $scope.usr; }
+                                resolve: {
+                                    ots: function () { return d; },
+                                    usr: function () { return $scope.usr; }
                                 }
                             });
 
-                            modalInstance.result.then(function(){ }, function(){ });
+                            modalInstance.result.then(function () { }, function () { });
                         }
                     });
                 }
             });
         }
 
-        function chkVenceFactura(){
-            if($scope.qEmpresa){
-                if($scope.qEmpresa.formspend && +$scope.qEmpresa.formspend > 0 && +$scope.qEmpresa.formspend <= 20){
+        function chkVenceFactura() {
+            if ($scope.qEmpresa) {
+                if ($scope.qEmpresa.formspend && +$scope.qEmpresa.formspend > 0 && +$scope.qEmpresa.formspend <= 20) {
                     desktopNotification.show('Cantidad de facturas muy baja', {
                         icon: 'img/sayet.ico',
                         body: 'Quedan ' + $scope.qEmpresa.formspend + ' facturas por imprimir de ' + $scope.qEmpresa.nomempresa.trim() + '; favor prestar atención.'
                     });
                 }
 
-                if($scope.qEmpresa.mesesfaltan && +$scope.qEmpresa.mesesfaltan >= 0 && +$scope.qEmpresa.mesesfaltan <= 1){
+                if ($scope.qEmpresa.mesesfaltan && +$scope.qEmpresa.mesesfaltan >= 0 && +$scope.qEmpresa.mesesfaltan <= 1) {
                     desktopNotification.show('Vencimiento de facturas', {
                         icon: 'img/sayet.ico',
                         body: 'Queda un mes o menos para el vencimiento de las factuas de ' + $scope.qEmpresa.nomempresa.trim() + '; favor prestar atención.'
@@ -59,7 +61,7 @@
             }
         }
 
-        function faltanArchivosMT940 (usr) {
+        function faltanArchivosMT940(usr) {
             if (usr == 1 || usr == 22 || usr == 28 || usr == 14 || usr == 17 || usr == 6) {
                 tranBancSrvc.getErroresMT940().then(errores => {
                     console.log(errores);
@@ -73,10 +75,10 @@
                                     animation: true,
                                     templateUrl: 'modalErrores.html',
                                     controller: 'ModalErroresCtrl',
-                                    resolve:{
+                                    resolve: {
                                         errores: () => errores
                                     }
-                                }).result.then(() => { 
+                                }).result.then(() => {
 
                                 });
                             }
@@ -86,13 +88,46 @@
             }
         }
 
-        authSrvc.getSession().then(function(usrLogged){
-            authSrvc.getMenu(parseInt(usrLogged.uid)).then(function(res){
+        function reembolsosPendientes(permiso) {
+            if (permiso.m) {
+                reembolsoSrvc.reembolsosAprobados().then(aprobados => {
+                    if (aprobados.length > 0) {
+
+                        console.log(aprobados);
+                        desktopNotification.show('Reembolsos pendientes', {
+                            icon: 'img/sayet.ico',
+                            body: 'Hay ' + aprobados.length + ' nuevos reembolsos aprobados.',
+                            onClick: () => {
+                                $uibModal.open({
+                                    animation: true,
+                                    templateUrl: 'modalAprobados.html',
+                                    controller: 'ModalAprobadosCtrl',
+                                    resolve: {
+                                        aprobados: () => aprobados
+                                    }
+                                }).result.then(idreembolso => {
+                                    // guardar id en cookies
+                                    localStorageSrvc.set('idreembolso', idreembolso);
+                                    // llevarlos a la pagina
+                                    $location.path('tranreembolso');
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+        authSrvc.getSession().then(function (usrLogged) {
+            authSrvc.getMenu(parseInt(usrLogged.uid)).then(function (res) {
                 $scope.menuUsr = res;
                 $scope.usr = usrLogged;
                 faltanArchivosMT940(usrLogged.uid);
+                authSrvc.gpr({ idusuario: usrLogged.uid, ruta: 'tranreembolso' }).then(permisos => {
+                    reembolsosPendientes(permisos);
+                });
 
-                empresaSrvc.lstEmpresas().then(function(d) { 
+                empresaSrvc.lstEmpresas().then(function (d) {
                     empresaSrvc.getEmpresaUsuario(usrLogged.uid).then(function (autorizado) {
                         let idempresas = [];
                         autorizado.forEach(aut => {
@@ -100,27 +135,27 @@
                         });
 
                         $scope.lasEmpresas = idempresas.length > 0 ? d.filter(empresa => idempresas.includes(empresa.id)) : d;
-                    }); 
+                    });
                 });
 
-                if(parseInt(usrLogged.workingon) === 0){
-                    authSrvc.getUltimaEmpresa(+$scope.usr.uid).then(function(ue){
+                if (parseInt(usrLogged.workingon) === 0) {
+                    authSrvc.getUltimaEmpresa(+$scope.usr.uid).then(function (ue) {
                         var tmpworkingon = +ue.ultempre > 0 ? +ue.ultempre : 4;
-                        empresaSrvc.getEmpresa(tmpworkingon).then(function(r){
+                        empresaSrvc.getEmpresa(tmpworkingon).then(function (r) {
                             $scope.qEmpresa = r[0];
-                            authSrvc.setEmpresaSess(r[0].id).then(function(s){ $rootScope.workingon = parseInt(s.workingon); });
+                            authSrvc.setEmpresaSess(r[0].id).then(function (s) { $rootScope.workingon = parseInt(s.workingon); });
                             chkVenceFactura();
                         });
                     });
-                }else{
-                    empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function(r){
+                } else {
+                    empresaSrvc.getEmpresa(parseInt(usrLogged.workingon)).then(function (r) {
                         $scope.qEmpresa = r[0];
                         chkVenceFactura();
                     });
                 }
 
-                authSrvc.getPermiso($scope.usr.uid, 'tranbanc', 'c').then(function(d){
-                    if(+d.permiso == 1){
+                authSrvc.getPermiso($scope.usr.uid, 'tranbanc', 'c').then(function (d) {
+                    if (+d.permiso == 1) {
                         chkSolPago();
                         intervalo = $interval(chkSolPago, (120 * 60000));
                     }
@@ -128,36 +163,36 @@
             });
         });
 
-        $scope.$watch('qEmpresa', function(newValue, oldValue) {
+        $scope.$watch('qEmpresa', function (newValue, oldValue) {
             var oldEmp = oldValue.nomempresa != null && oldValue.nomempresa != undefined ? oldValue.nomempresa : 'ninguna';
-            var msg = 'Cambió la empresa que está trabajando de '+ oldEmp + ' a ' + newValue.nomempresa;
+            var msg = 'Cambió la empresa que está trabajando de ' + oldEmp + ' a ' + newValue.nomempresa;
             toaster.pop('info', 'Cambio de empresa de trabajo', msg);
         });
 
-        $scope.openSetEmpresa = function(){
+        $scope.openSetEmpresa = function () {
             var modalInstance = $uibModal.open({
                 animation: true,
                 templateUrl: 'modalSelectEmpresa.html',
                 controller: 'ModalInstanceCtrl',
-                resolve:{
-                    empresas: function(){ return $scope.lasEmpresas; }
+                resolve: {
+                    empresas: function () { return $scope.lasEmpresas; }
                 }
             });
 
-            modalInstance.result.then(function(selectedItem){
+            modalInstance.result.then(function (selectedItem) {
                 $scope.qEmpresa = selectedItem;
-                authSrvc.setEmpresaSess(selectedItem.id).then(function(r){
+                authSrvc.setEmpresaSess(selectedItem.id).then(function (r) {
                     $rootScope.workingon = parseInt(r.workingon);
                     $window.location.reload();
                 });
-            }, function(){
+            }, function () {
                 toaster.pop('warning', 'Cambio de empresa de trabajo', 'Canceló el cambio de empresa...');
             });
         };
 
-        $scope.doLogOut = function(){
-            authSrvc.setUltimaEmpresa(+$scope.usr.uid, +$scope.qEmpresa.id).then(function(){
-                authSrvc.doLogOut().then(function(res){
+        $scope.doLogOut = function () {
+            authSrvc.setUltimaEmpresa(+$scope.usr.uid, +$scope.qEmpresa.id).then(function () {
+                authSrvc.doLogOut().then(function (res) {
                     $rootScope.logged = false;
                     $rootScope.uid = 0;
                     $rootScope.fullname = null;
@@ -166,7 +201,7 @@
                     $rootScope.workingon = 0;
                     $window.location.href = 'index.html';
                 });
-                if(angular.isDefined(intervalo)){
+                if (angular.isDefined(intervalo)) {
                     $interval.cancel(intervalo);
                     intervalo = undefined;
                 }
@@ -174,17 +209,17 @@
         };
     }]);
 
-    cpmidxctrl.controller('ModalInstanceCtrl', ['$scope', '$rootScope', '$uibModalInstance', 'empresas', function($scope, $rootScope, $uibModalInstance, empresas){
+    cpmidxctrl.controller('ModalInstanceCtrl', ['$scope', '$rootScope', '$uibModalInstance', 'empresas', function ($scope, $rootScope, $uibModalInstance, empresas) {
         $scope.lasEmpresas = empresas;
         $scope.objEmpresa = {};
 
         $scope.seleccionada = true;
 
-        $scope.yaSelecciono = function(){
+        $scope.yaSelecciono = function () {
 
-            if($rootScope.workingon)
+            if ($rootScope.workingon)
 
-            $scope.seleccionada = !($scope.objEmpresa.id != null && $scope.objEmpresa.id != undefined);
+                $scope.seleccionada = !($scope.objEmpresa.id != null && $scope.objEmpresa.id != undefined);
         };
 
         $scope.ok = function () {
@@ -197,11 +232,11 @@
 
     }]);
 
-    cpmidxctrl.controller('ModalNotificacionesCtrl', ['$scope', '$rootScope', '$uibModalInstance', 'presupuestoSrvc', 'ots', 'usr', function($scope, $rootScope, $uibModalInstance, presupuestoSrvc, ots, usr){
+    cpmidxctrl.controller('ModalNotificacionesCtrl', ['$scope', '$rootScope', '$uibModalInstance', 'presupuestoSrvc', 'ots', 'usr', function ($scope, $rootScope, $uibModalInstance, presupuestoSrvc, ots, usr) {
         $scope.ots = ots;
 
         $scope.ok = function () {
-            presupuestoSrvc.setNotificado(usr.uid).then(function(){ $uibModalInstance.close(); });
+            presupuestoSrvc.setNotificado(usr.uid).then(function () { $uibModalInstance.close(); });
         };
 
         $scope.cancel = function () {
@@ -210,7 +245,7 @@
 
     }]);
 
-    cpmidxctrl.controller('ModalErroresCtrl', ['$scope', '$uibModalInstance', 'tranBancSrvc', 'errores',  function($scope, $uibModalInstance, tranBancSrvc, errores){
+    cpmidxctrl.controller('ModalErroresCtrl', ['$scope', '$uibModalInstance', 'tranBancSrvc', 'errores', function ($scope, $uibModalInstance, tranBancSrvc, errores) {
         $scope.errores = errores;
 
         $scope.revisarError = (id) => {
@@ -219,7 +254,22 @@
                     $scope.errores = $scope.errores.filter(err => err.id !== id);
                 }
             })
-        } 
+        }
+
+        $scope.cancel = function () {
+            $uibModalInstance.dismiss('cancel');
+        };
+
+    }]);
+
+    cpmidxctrl.controller('ModalAprobadosCtrl', ['$scope', '$uibModalInstance', 'aprobados', function ($scope, $uibModalInstance, aprobados) {
+        console.log(aprobados);
+        $scope.aprobados = aprobados;
+
+        // para llevarlos al reembolso que seleccionen
+        $scope.irReembolso = idreembolso => {
+            $uibModalInstance.close(idreembolso);
+        };
 
         $scope.cancel = function () {
             $uibModalInstance.dismiss('cancel');

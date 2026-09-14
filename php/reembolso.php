@@ -840,4 +840,29 @@ $app->post('/dareem', function(){
     print json_encode(['tipo' => $tipo, 'mensaje' => $mensaje]);
 });
 
+$app->get('/aprobados', function(){
+    $db = new dbcpm();
+    $query = "SELECT 
+                a.id AS reembolso,
+                a.beneficiario,
+                a.finicio AS fecha,
+                b.iniciales AS creador,
+                c.iniciales AS aprobador,
+                a.aprobacion,
+                d.abreviatura AS empresa
+            FROM
+                reembolso a
+                    INNER JOIN
+                usuario b ON a.idusuario = b.id
+                    INNER JOIN
+                usuario c ON a.aprobador = c.id
+                    INNER JOIN
+                empresa d ON a.idempresa = d.id
+            WHERE
+                aprobar = 1 AND estatus_aprobacion = 1
+                    AND estatus = 1
+            ORDER BY aprobacion , finicio DESC";
+    print json_encode($db->getQuery($query));
+});
+
 $app->run();

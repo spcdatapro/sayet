@@ -55,6 +55,15 @@
             $scope.ultimo_compra = undefined;
             var periodoIva = true;
 
+            function getReembolsoInicial() {
+                const idreembolso = localStorageSrvc.get('idreembolso');
+                if (idreembolso != null && idreembolso != undefined) {
+                    localStorageSrvc.clear('idreembolso');
+                    $scope.getReembolso(+idreembolso);
+                }
+            };
+
+
             $scope.selLiquidacion = idcuenta => {
                 // para cambiar cuenta de liquidacion en todas las compras si ya hay un reembolso
                 if ($scope.reembolso.id && $scope.reembolso.id > 0 && $scope.infocompras.cantidad > 0) {
@@ -379,7 +388,10 @@
                 $scope.params.idusuario = $scope.permiso.m ? 0 : $scope.uid;
                 $scope.params.fdelstr = moment($scope.params.fdel).format('YYYY-MM-DD');
                 $scope.params.falstr = moment($scope.params.fal).format('YYYY-MM-DD');
-                reembolsoSrvc.lstReembolsosPost($scope.params).then((d) => $scope.reembolsos = procDataReemb(d));
+                reembolsoSrvc.lstReembolsosPost($scope.params).then((d) => {
+                    $scope.reembolsos = procDataReemb(d);
+                    getReembolsoInicial();
+                });
             };
 
             $scope.getDetReem = function (idreem) {
