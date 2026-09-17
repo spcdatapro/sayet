@@ -59,10 +59,10 @@
                                 tab_text = tab_text + "<tr><th>" + e.fechastr + "</th><th colspan='2'>" + e.referencia + "</th><th colspan='2'>" + e.concepto + "</th></tr>";
 
                                 e.dld.forEach(function (d) {
-                                    tab_text = tab_text + "<tr><td></td><td>" + d.codigo + "</td><td>" + d.nombrecta + "</td><td>" + d.debestr + "</td><td>" + d.haberstr + "</td></tr>";
+                                    tab_text = tab_text + "<tr><td></td><td>" + d.codigo + "</td><td>" + d.nombrecta + "</td><td>" + d.debe + "</td><td>" + d.haber + "</td></tr>";
                                 });
 
-                                tab_text = tab_text + "<tr><td></td><td></td><th>Totales</th><th>" + data.empresa.debestr + "</th><th>" + data.empresa.haberstr + "</th></tr>";
+                                tab_text = tab_text + "<tr><td></td><td></td><th>Totales</th><th>" + e.debe + "</th><th>" + e.haber + "</th></tr>";
                             }
                         });
 
@@ -70,7 +70,7 @@
 
                         var a = document.createElement('a');
                         document.body.appendChild(a);
-                        a.href = 'data:application/vnd.oasis.opendocument.spreadsheet,' + encodeURIComponent(tab_text);
+                        a.href = 'data:application/vnd.ms-excel;charset=utf-8,%EF%BB%BF' + encodeURIComponent(tab_text);
                         a.download = 'Libro_diario_' + empresa + '_' + moment($scope.params.del).format('DDMMYYYY') + '_' + moment($scope.params.al).format('DDMMYYYY') + '.xls';
                         a.click();
                     } catch (error) {
