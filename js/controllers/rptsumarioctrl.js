@@ -19,6 +19,10 @@
         $scope.getRptSumario = function () {
             $scope.estaGenerando = true;
             $scope.params.fechastr = moment($scope.params.fecha).format('YYYY-MM-DD');
+            if ($scope.params.pormes == '1') {
+                $scope.params.fechaini = moment($scope.params.fecha_ini).format('YYYY-MM-DD');
+                $scope.params.fechafin = moment($scope.params.fecha_fin).format('YYYY-MM-DD');
+            }
             jsReportSrvc.getPDFReport(test ? 'H13Q-o81-' : 'By_inM6jp', $scope.params).then(function (pdf) {
                 $scope.content = pdf;
                 $scope.estaGenerando = false;
