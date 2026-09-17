@@ -273,7 +273,6 @@ $app->post('/sumario', function(){
                     AND b.propia = 1 ";
     $query.= $d->idmoneda != 3 ? "AND a.idmoneda = $d->idmoneda GROUP BY a.id ORDER BY a.gruposumario, a.idmoneda, a.ordensumario" : "GROUP BY a.id ORDER BY a.gruposumario, a.idmoneda, a.ordensumario";
     $data = $db->getQuery($query);
-    echo $query; return;
     
     $cntsCuentas = count($data);
 
