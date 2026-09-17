@@ -43,6 +43,7 @@
 
             var url = '/php/rptlibdia.php/librodiario'
 
+            try {
             $.post(url, $scope.params, function (data) {
                 var tab_text = '<table>'
                 tab_text = tab_text + "<tr><th colspan='5'> " + data.empresa.nomempresa + " </th></tr>";
@@ -72,6 +73,10 @@
                 a.click()
                 $scope.cargando = false;
             })
+            } catch (error) {
+                console.error(error);
+                $scope.cargando = false;
+            }
         }
 
     }]);
