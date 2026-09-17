@@ -41,45 +41,52 @@
             $scope.params.fdelstr = moment($scope.params.del).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.al).format('YYYY-MM-DD');
 
-            var url = '/php/rptlibdia.php/librodiario'
+            var url = '/php/rptlibdia.php/librodiario';
 
-            try {
-            $.post(url, $scope.params, function (data) {
-                const empresa = data.empresa.abreviatura;
-                var tab_text = '<table>'
-                tab_text = tab_text + "<tr><th colspan='5'> " + data.empresa.nomempresa + " </th></tr>";
-                tab_text = tab_text + "<tr><th colspan='5'>Libro Diario</th></tr>";
-                tab_text = tab_text + "<tr><th colspan='5'>Del " + data.empresa.del + " al " + data.empresa.al + "</th></tr>";
-                tab_text = tab_text + "<tr><th>Fecha</th><th colspan='2'>Referencia</th><th colspan='2'>Concepto</th></tr>";
-                tab_text = tab_text + "<tr><th></th><th>Código</th><th>Cuenta</th><th>Debe</th><th>Haber</th></tr>";
+            $.post(url, $scope.params)
+                .done(function (data) {
+                    try {
+                        const empresa = data.empresa.abreviatura;
+                        var tab_text = '<table>';
+                        tab_text = tab_text + "<tr><th colspan='5'> " + data.empresa.nomempresa + " </th></tr>";
+                        tab_text = tab_text + "<tr><th colspan='5'>Libro Diario</th></tr>";
+                        tab_text = tab_text + "<tr><th colspan='5'>Del " + data.empresa.del + " al " + data.empresa.al + "</th></tr>";
+                        tab_text = tab_text + "<tr><th>Fecha</th><th colspan='2'>Referencia</th><th colspan='2'>Concepto</th></tr>";
+                        tab_text = tab_text + "<tr><th></th><th>Código</th><th>Cuenta</th><th>Debe</th><th>Haber</th></tr>";
 
-                data.ld.forEach(e => {
-                    if (e.dld.length) {
-                        tab_text = tab_text + "<tr><th>" + e.fechastr + "</th><th colspan='2'>" + e.referencia + "</th><th colspan='2'>" + e.concepto + "</th></tr>";
+                        data.ld.forEach(e => {
+                            if (e.dld.length) {
+                                tab_text = tab_text + "<tr><th>" + e.fechastr + "</th><th colspan='2'>" + e.referencia + "</th><th colspan='2'>" + e.concepto + "</th></tr>";
 
-                        e.dld.forEach(function (d) {
-                            tab_text = tab_text + "<tr><td></td><td>" + d.codigo + "</td><td>" + d.nombrecta + "</td><td>" + d.debestr + "</td><td>" + d.haberstr + "</td></tr>"
-                        })
+                                e.dld.forEach(function (d) {
+                                    tab_text = tab_text + "<tr><td></td><td>" + d.codigo + "</td><td>" + d.nombrecta + "</td><td>" + d.debestr + "</td><td>" + d.haberstr + "</td></tr>";
+                                });
 
-                        tab_text = tab_text + "<tr><td></td><td></td><th>Totales</th><th>" + data.empresa.debestr + "</th><th>" + data.empresa.haberstr + "</th></tr>"
+                                tab_text = tab_text + "<tr><td></td><td></td><th>Totales</th><th>" + data.empresa.debestr + "</th><th>" + data.empresa.haberstr + "</th></tr>";
+                            }
+                        });
+
+                        tab_text = tab_text + '</table>';
+
+                        var a = document.createElement('a');
+                        document.body.appendChild(a);
+                        a.href = 'data:application/vnd.oasis.opendocument.spreadsheet,' + encodeURIComponent(tab_text);
+                        a.download = 'Libro_diario_' + empresa + '_' + moment($scope.params.del).format('DDMMYYYY') + '_' + moment($scope.params.al).format('DDMMYYYY') + '.xls';
+                        a.click();
+                    } catch (error) {
+                        console.error(error);
+                        toaster.pop({ type: 'error', title: 'Error', body: 'Ocurrió un error al generar el reporte.', timeout: 5000 });
                     }
                 })
-
-                tab_text = tab_text + '</table>'
-
-                var a = document.createElement('a')
-                document.body.appendChild(a)
-                a.href = 'data:application/vnd.oasis.opendocument.spreadsheet,' + encodeURIComponent(tab_text)
-                a.download = 'Libro_diario_' + empresa + '_' + moment($scope.params.del).format('DDMMYYYY') + '_' + moment($scope.params.al).format('DDMMYYYY') + '.xls'
-                a.click()
-                $scope.cargando = false;
-            })
-            } catch (error) {
-                console.error(error);
-                toaster.pop({ type: 'error', title: 'Error', body: 'Ocurrió un error al generar el reporte.', timeout: 5000 });
-                $scope.cargando = false;
-            }
-        }
+                .fail(function () {
+                    toaster.pop({ type: 'error', title: 'Error', body: 'Ocurrió un error al generar el reporte.', timeout: 5000 });
+                })
+                .always(function () {
+                    $scope.$applyAsync(function () {
+                        $scope.cargando = false;
+                    });
+                });
+        };
 
     }]);
 }());
