@@ -229,7 +229,7 @@ $app->post('/sumario', function(){
                 SUM(IF(d.tipotrans IN ('D' , 'R')
                         AND d.fecha $fecha_anterior,
                     d.monto,
-                    IF(d.fecha $fecha_anterior,
+                    IF(d.fecha $fecha_actual,
                         d.monto * - 1, 
                         NULL))) AS saldoanterior,
                 SUM(IF(d.fecha $fecha_movimientos AND d.tipotrans = 'D',
