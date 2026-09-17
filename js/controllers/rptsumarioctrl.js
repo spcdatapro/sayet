@@ -4,7 +4,7 @@
 
     rptsumarioctrl.controller('rptSumarioCtrl', ['$scope', 'jsReportSrvc', 'monedaSrvc', 'bancoSrvc', '$sce', '$http', '$window', '$q', '$filter', 'Upload', 'authSrvc', function ($scope, jsReportSrvc, monedaSrvc, bancoSrvc, $sce, $http, $window, $q, $filter, Upload, authSrvc) {
 
-        $scope.params = { fecha: moment().toDate(), idmoneda: '1', solomov: 1, tipo: '1', pormes: '0' };
+        $scope.params = { fecha: moment().toDate(), idmoneda: '1', solomov: 1, tipo: '1', pormes: 0 };
         $scope.content = '';
         // variable para mostrar que esta cargando
         $scope.estaGenerando = false;
@@ -19,7 +19,7 @@
         $scope.getRptSumario = function () {
             $scope.estaGenerando = true;
             $scope.params.fechastr = moment($scope.params.fecha).format('YYYY-MM-DD');
-            if ($scope.params.pormes == '1') {
+            if ($scope.params.pormes == 1) {
                 $scope.params.fechaini = moment($scope.params.fecha_ini).format('YYYY-MM-DD');
                 $scope.params.fechafin = moment($scope.params.fecha_fin).format('YYYY-MM-DD');
             }
@@ -29,7 +29,7 @@
             });
         };
 
-        $scope.resetParams = function () { $scope.params = { fecha: moment().toDate(), idmoneda: '1', solomov: 1, tipo: '1' }; };
+        $scope.resetParams = function () { $scope.params = { fecha: moment().toDate(), idmoneda: '1', solomov: 1, tipo: '1', pormes: 0 }; };
 
         $scope.getSumarioGeneral = function () {
             $scope.estaGenerando = true;
