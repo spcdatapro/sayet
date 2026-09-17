@@ -199,7 +199,7 @@ $app->post('/sumario', function(){
 
     $encabezado = new StdClass;
     $encabezado->moneda = $d->idmoneda == 3 ? 'Todas' : $db->getOneField("SELECT CONCAT(nommoneda, ' (', simbolo, ')') FROM moneda WHERE id = $d->idmoneda");
-    $encabezado->fechas = $d->pormes ? "Del ".date("d/m/Y", strtotime($d->fechaini))." Al ".date("d/m/Y", strtotime($d->fechafin)) : "Resúmen del día: ".date("d/m/Y", strtotime($d->fechastr));
+    // $encabezado->tipo = $d->tipo == 1 ? 'EMPRESA' : $d->tipo == 2 ? 'PERSONAL' : 'GENERAL';
 
     if ($d->tipo == 1) {
         $grupos = '1, 4';
@@ -214,10 +214,6 @@ $app->post('/sumario', function(){
         $encabezado->tipo = 'GENERAL';
     }
 
-    $fecha_movimientos = $d->pormes ? "BETWEEN '$d->fechaini' AND '$d->fechafin'" : "= '$d->fechastr'";
-    $fecha_anterior = $d->pormes ? "< '$d->fechaini'" : "< '$d->fechastr'";
-    $fecha_actual = $d->pormes ? "<= '$d->fechafin'" : "<= '$d->fechastr'";
-
     $query = "SELECT 
                 a.id,
                 a.gruposumario AS grupo,
@@ -227,27 +223,27 @@ $app->post('/sumario', function(){
                 c.simbolo AS moneda,
                 c.eslocal,
                 SUM(IF(d.tipotrans IN ('D' , 'R')
-                        AND d.fecha $fecha_anterior,
+                        AND d.fecha < '$d->fechastr',
                     d.monto,
-                    IF(d.fecha $fecha_actual,
+                    IF(d.fecha < '$d->fechastr',
                         d.monto * - 1, 
                         NULL))) AS saldoanterior,
-                SUM(IF(d.fecha $fecha_movimientos AND d.tipotrans = 'D',
+                SUM(IF(d.fecha = '$d->fechastr' AND d.tipotrans = 'D',
                     d.monto,
                     0)) AS depositos,
-                SUM(IF(d.fecha $fecha_movimientos AND d.tipotrans = 'C',
+                SUM(IF(d.fecha = '$d->fechastr' AND d.tipotrans = 'C',
                     d.monto,
                     0)) AS girados,
-                SUM(IF(d.fecha $fecha_movimientos AND d.tipotrans = 'R',
+                SUM(IF(d.fecha = '$d->fechastr' AND d.tipotrans = 'R',
                     d.monto,
                     0)) AS credito,
-                SUM(IF(d.fecha $fecha_movimientos AND d.tipotrans = 'B',
+                SUM(IF(d.fecha = '$d->fechastr' AND d.tipotrans = 'B',
                     d.monto,
                     0)) AS debito,
                 SUM(IF(d.tipotrans IN ('D' , 'R') 
-                        AND d.fecha $fecha_movimientos,
+                        AND d.fecha <= '$d->fechastr',
                     d.monto,
-                    IF(d.fecha $fecha_actual,
+                    IF(d.fecha <= '$d->fechastr',
                         d.monto * - 1, 
                         NULL))) AS saldoactual
             FROM
@@ -359,8 +355,8 @@ $app->post('/sumario', function(){
 
     $fecha_ant = date("Y-m-d", strtotime($d->fechastr . " -1 day"));
 
-    $encabezado->tc = $d->pormes ?  $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio WHERE fecha = '$d->fechafin' LIMIT 1") : $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio WHERE fecha = '$d->fechastr' LIMIT 1");
-    $encabezado->tcant = $d->pormes ? $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio WHERE fecha = '$d->fechaini' LIMIT 1") : $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio WHERE fecha = '$fecha_ant' LIMIT 1");
+    $encabezado->tc = $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio WHERE fecha = '$d->fechastr' LIMIT 1");
+    $encabezado->tcant = $db->getOneField("SELECT ROUND(tipocambio, 5) FROM tipocambio WHERE fecha = '$fecha_ant' LIMIT 1");
 
     $encabezado->tcant = $encabezado->tcant > 0 ? $encabezado->tcant : $encabezado->tc;
 
