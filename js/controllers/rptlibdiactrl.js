@@ -2,7 +2,7 @@
 
     var rptlibdiactrl = angular.module('cpm.rptlibdiactrl', []);
 
-    rptlibdiactrl.controller('rptLibroDiarioCtrl', ['$scope', 'empresaSrvc', 'authSrvc', 'jsReportSrvc', '$sce', function ($scope, empresaSrvc, authSrvc, jsReportSrvc, $sce) {
+    rptlibdiactrl.controller('rptLibroDiarioCtrl', ['$scope', 'empresaSrvc', 'authSrvc', 'jsReportSrvc', '$sce', 'toaster', function ($scope, empresaSrvc, authSrvc, jsReportSrvc, $sce, toaster) {
 
         $scope.params = { del: moment().startOf('month').toDate(), al: moment().endOf('month').toDate(), idempresa: 0, vercierre: 1 };
         $scope.empresa = {};
@@ -45,6 +45,7 @@
 
             try {
             $.post(url, $scope.params, function (data) {
+                const empresa = data.empresa.abreviatura;
                 var tab_text = '<table>'
                 tab_text = tab_text + "<tr><th colspan='5'> " + data.empresa.nomempresa + " </th></tr>";
                 tab_text = tab_text + "<tr><th colspan='5'>Libro Diario</th></tr>";
@@ -69,12 +70,13 @@
                 var a = document.createElement('a')
                 document.body.appendChild(a)
                 a.href = 'data:application/vnd.oasis.opendocument.spreadsheet,' + encodeURIComponent(tab_text)
-                a.download = 'Libro_diario_' + moment($scope.params.del).format('DDMMYYYY') + '_' + moment($scope.params.al).format('DDMMYYYY') + '.xls'
+                a.download = 'Libro_diario_' + empresa + '_' + moment($scope.params.del).format('DDMMYYYY') + '_' + moment($scope.params.al).format('DDMMYYYY') + '.xls'
                 a.click()
                 $scope.cargando = false;
             })
             } catch (error) {
                 console.error(error);
+                toaster.pop({ type: 'error', title: 'Error', body: 'Ocurrió un error al generar el reporte.', timeout: 5000 });
                 $scope.cargando = false;
             }
         }
