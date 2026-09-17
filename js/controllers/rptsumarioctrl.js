@@ -36,7 +36,7 @@
                 $scope.params.fechaini = moment($scope.params.fecha_ini).format('YYYY-MM-DD');
                 $scope.params.fechafin = moment($scope.params.fecha_fin).format('YYYY-MM-DD');
             }
-            jsReportSrvc.getReport('SyAinfTj6', $scope.params).then(function (result) {
+            jsReportSrvc.getReport('B1DTPhFKfg', $scope.params).then(function (result) {
                 var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
                 var nombre = $scope.params.pormes == 1 ? 'Sumario_' + moment($scope.params.fecha_ini).format('DDMMYYYY') + '_' + moment($scope.params.fecha_fin).format('DDMMYYYY') : 'Sumario_' + moment($scope.params.fecha).format('DDMMYYYY');
                 saveAs(file, nombre + '.xlsx');
