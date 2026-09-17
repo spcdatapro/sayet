@@ -72,7 +72,7 @@ $app->post('/rptlibdia', function(){
 });
 
 $app->post('/librodiario', function(){
-    $d = json_decode(file_get_contents('php://input'));
+    $d = empty($_POST) ? json_decode(file_get_contents('php://input')) : ((object)$_POST);
     $db = new dbcpm();
 
     $conta = new contabilidad($d->fdelstr, $d->falstr, $d->idempresa, (int)$d->vercierre);

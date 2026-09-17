@@ -18,9 +18,10 @@
 
         var test = false;
         $scope.getLibroDiario = function () {
+            $scope.cargando = true;
             $scope.params.fdelstr = moment($scope.params.del).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.al).format('YYYY-MM-DD');
-            jsReportSrvc.getPDFReport(test ? '' : 'ByXFp8o-Z', $scope.params).then(function (pdf) { $scope.content = pdf; });
+            jsReportSrvc.getPDFReport(test ? '' : 'ByXFp8o-Z', $scope.params).then(function (pdf) { $scope.content = pdf; $scope.cargando = false; });
         };
 
 
@@ -35,7 +36,7 @@
             });
         };
 
-        $scope.getLibroDiarioXLSX2 = function () {
+        $scope.getLibroDiarioXLSX2 = () => {
             $scope.cargando = true;
             $scope.params.fdelstr = moment($scope.params.del).format('YYYY-MM-DD');
             $scope.params.falstr = moment($scope.params.al).format('YYYY-MM-DD');
