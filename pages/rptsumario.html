@@ -58,14 +58,18 @@
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn btn-primary btn-sm"
+            <button type="button" class="btn btn-danger btn-sm"
                 ng-disabled="params.fecha == null || params.fecha == undefined" ng-click="getRptSumario()">
-                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                <i class="fa fa-file-pdf-o" aria-hidden="true" title="PDF"></i>
+            </button>
+            <button type="button" class="btn btn-success btn-sm"
+                ng-disabled="params.fecha == null || params.fecha == undefined" ng-click="getRptSumarioXML()">
+                <i class="fa fa-file-excel-o" aria-hidden="true" title="Excel"></i>
             </button>
             <button type="button" class="btn btn-primary btn-sm"
                 ng-disabled="params.fecha == null || params.fecha == undefined || params.pormes"
                 ng-click="getSumarioGeneral()">
-                <i class="fa fa-globe" aria-hidden="true"></i>
+                <i class="fa fa-globe" aria-hidden="true" title="Resúmen General"></i>
             </button>
             <div class="btn-group">
                 <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"
