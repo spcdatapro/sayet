@@ -241,11 +241,11 @@ $app->post('/sumario', function(){
                 SUM(IF(d.fecha $fecha_movimientos AND d.tipotrans = 'R',
                     d.monto,
                     0)) AS credito,
-                SUM(IF(d.fecha $fecha_actual AND d.tipotrans = 'B',
+                SUM(IF(d.fecha $fecha_movimientos AND d.tipotrans = 'B',
                     d.monto,
                     0)) AS debito,
                 SUM(IF(d.tipotrans IN ('D' , 'R') 
-                        AND d.fecha $fecha_actual,
+                        AND d.fecha $fecha_movimientos,
                     d.monto,
                     IF(d.fecha $fecha_actual,
                         d.monto * - 1, 
@@ -273,6 +273,7 @@ $app->post('/sumario', function(){
                     AND b.propia = 1 ";
     $query.= $d->idmoneda != 3 ? "AND a.idmoneda = $d->idmoneda GROUP BY a.id ORDER BY a.gruposumario, a.idmoneda, a.ordensumario" : "GROUP BY a.id ORDER BY a.gruposumario, a.idmoneda, a.ordensumario";
     $data = $db->getQuery($query);
+    echo $query; return;
     
     $cntsCuentas = count($data);
 
