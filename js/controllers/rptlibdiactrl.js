@@ -52,10 +52,10 @@
                 tab_text = tab_text + "<tr><th></th><th>Código</th><th>Cuenta</th><th>Debe</th><th>Haber</th></tr>";
 
                 data.ld.forEach(e => {
-                    if (e.dlm.length) {
+                    if (e.dld.length) {
                         tab_text = tab_text + "<tr><th>" + e.fechastr + "</th><th colspan='2'>" + e.referencia + "</th><th colspan='2'>" + e.concepto + "</th></tr>";
 
-                        e.dlm.forEach(function (d) {
+                        e.dld.forEach(function (d) {
                             tab_text = tab_text + "<tr><td></td><td>" + d.codigo + "</td><td>" + d.nombrecta + "</td><td>" + d.debestr + "</td><td>" + d.haberstr + "</td></tr>"
                         })
 
