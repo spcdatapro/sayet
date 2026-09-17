@@ -13,19 +13,19 @@
                 <div class="col-md-4" ng-show="!params.pormes">
                     <div class="form-group">
                         <label>Fecha:</label>
-                        <input type="date" ng-model="params.fecha" class="form-control" />
+                        <input type="date" ng-model="params.fecha" class="form-control" max="{{ today | date: 'yyyy-MM-dd' }}" />
                     </div>
                 </div>
                 <div class="col-md-4" ng-show="params.pormes">
                     <div class="form-group">
                         <label for="fecha_ini" class="control-label">Fecha Inicio:</label>
-                        <input type="date" id="fecha_ini" ng-model="params.fecha_ini" class="form-control" />
+                        <input type="date" id="fecha_ini" ng-model="params.fecha_ini" class="form-control" max="{{ today | date: 'yyyy-MM-dd' }}" />
                     </div>
                 </div>
                 <div class="col-md-4" ng-show="params.pormes">
                     <div class="form-group">
                         <label for="fecha_fin" class="control-label">Fecha Fin:</label>
-                        <input type="date" id="fecha_fin" ng-model="params.fecha_fin" class="form-control" />
+                        <input type="date" id="fecha_fin" ng-model="params.fecha_fin" class="form-control" max="{{ today | date: 'yyyy-MM-dd' }}" />
                     </div>
                 </div>
             </div>
@@ -59,7 +59,10 @@
                 </div>
             </div>
             <button type="button" class="btn btn-primary btn-sm"
-                ng-disabled="params.fecha == null || params.fecha == undefined" ng-click="getRptSumario()">
+                ng-disabled="params.fecha == null || params.fecha == undefined || 
+                (params.pormes && (params.fecha_fin == null || params.fecha_fin == undefined || params.fecha_fin > today || params.fecha_ini > params.fecha_fin || params.fecha_ini > today || params.fecha_fin > today)) 
+                || (!params.pormes && (params.fecha == null || params.fecha == undefined || params.fecha > today))"
+                ng-click="getRptSumario()">
                 <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
             </button>
             <button type="button" class="btn btn-primary btn-sm"

@@ -4,7 +4,8 @@
 
     rptsumarioctrl.controller('rptSumarioCtrl', ['$scope', 'jsReportSrvc', 'monedaSrvc', 'bancoSrvc', '$sce', '$http', '$window', '$q', '$filter', 'Upload', 'authSrvc', function ($scope, jsReportSrvc, monedaSrvc, bancoSrvc, $sce, $http, $window, $q, $filter, Upload, authSrvc) {
 
-        $scope.params = { fecha: moment().toDate(), idmoneda: '1', solomov: 1, tipo: '1', pormes: 0 };
+        $scope.params = { fecha: moment().toDate(), idmoneda: '1', solomov: 1, tipo: '1', pormes: 0, fecha_ini: moment().startOf('month').toDate(), fecha_fin: moment().toDate() };
+        $scope.today = new Date();
         $scope.content = '';
         // variable para mostrar que esta cargando
         $scope.estaGenerando = false;
@@ -29,7 +30,7 @@
             });
         };
 
-        $scope.resetParams = function () { $scope.params = { fecha: moment().toDate(), idmoneda: '1', solomov: 1, tipo: '1', pormes: 0 }; };
+        $scope.resetParams = function () { $scope.params = { fecha: moment().toDate(), idmoneda: '1', solomov: 1, tipo: '1', pormes: 0, fecha_ini: moment().startOf('month').toDate(), fecha_fin: moment().toDate() }; };
 
         $scope.getSumarioGeneral = function () {
             $scope.estaGenerando = true;
