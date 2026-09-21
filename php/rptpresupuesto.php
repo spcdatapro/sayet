@@ -567,6 +567,113 @@ $app->post('/pagos_diarios', function () {
     print json_encode(['encabezado' => $letra, 'pagos' => $resultadoAgrupado]);
 });
 
+$app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
+    $db = new dbcpm();
+
+    $letra = new stdClass();
+
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+
+    $query = "SELECT 
+                a.id,
+                b.id AS idpresupuesto,
+                CONCAT(b.idpresupuesto, '-', b.correlativo) AS presupuesto,
+                CONCAT(d.siglas, '-', a.documento) AS documento,
+                a.subtotal,
+                a.iva,
+                a.retiva,
+                a.isr,
+                DATE_FORMAT(a.fechaingreso, '%d/%m/%Y') AS fecha,
+                c.nombre AS proveedor
+            FROM
+                compra a
+                    INNER JOIN
+                detpresupuesto b ON a.ordentrabajo = b.id
+                    INNER JOIN
+                proveedor c ON a.idproveedor = c.id
+                    INNER JOIN
+                tipofactura d ON a.idtipofactura = d.id
+            WHERE
+                b.idpresupuesto = $idpresupuesto
+            UNION ALL SELECT 
+                a.id,
+                b.id AS idpresupuesto,
+                CONCAT(b.idpresupuesto, '-', b.correlativo) AS presupuesto,
+                CONCAT(e.siglas, '-', a.documento) AS documento,
+                a.subtotal,
+                a.iva,
+                a.retiva,
+                a.isr,
+                DATE_FORMAT(a.fechaingreso, '%d/%m/%Y') AS fecha,
+                c.nombre AS proveedor
+            FROM
+                compra a
+                    INNER JOIN
+                reembolso d ON a.idreembolso = d.id
+                    INNER JOIN
+                detpresupuesto b ON d.ordentrabajo = b.id
+                    INNER JOIN
+                proveedor c ON a.idproveedor = c.id
+                    INNER JOIN
+                tipofactura e ON a.idtipofactura = e.id
+            WHERE
+                b.idpresupuesto = $idpresupuesto
+            ORDER BY 2 , 9";
+    $data = $db->getQuery($query);
+    $agrupado = [];
+
+    foreach ($data as $compra) {
+        $presupuesto = $compra->presupuesto;
+
+        if (!isset($agrupado[$presupuesto])) {
+            $agrupado[$presupuesto] = [
+                'presupuesto' => $presupuesto,
+                'compras' => [],
+                't_isr' => 0,
+                't_iva' => 0,
+                't_retiva' => 0,
+                't_subtotal' => 0,
+                'total' => 0
+            ];
+        }
+
+        $subtotal = (float) $compra->subtotal;
+        $iva      = (float) $compra->iva;
+        $retiva   = (float) $compra->retiva;
+        $isr      = (float) $compra->isr;
+
+        // Total de la compra después de retenciones
+        $total = $subtotal + $iva - $retiva - $isr;
+
+        $agrupado[$presupuesto]['compras'][] = [
+            'documento' => $compra->documento,
+            'subtotal' => $subtotal,
+            'iva' => $iva,
+            'retiva' => $retiva,
+            'isr' => $isr,
+            'fecha' => $compra->fecha,
+            'proveedor' => $compra->proveedor
+        ];
+
+        $agrupado[$presupuesto]['t_subtotal'] += $subtotal;
+        $agrupado[$presupuesto]['t_iva'] += $iva;
+        $agrupado[$presupuesto]['t_retiva'] += $retiva;
+        $agrupado[$presupuesto]['t_isr'] += $isr;
+        $agrupado[$presupuesto]['total'] += $total;
+    }
+
+    foreach ($agrupado as &$grupo) {
+        $grupo['t_subtotal'] = round($grupo['t_subtotal'], 2);
+        $grupo['t_iva'] = round($grupo['t_iva'], 2);
+        $grupo['t_retiva'] = round($grupo['t_retiva'], 2);
+        $grupo['t_isr'] = round($grupo['t_isr'], 2);
+        $grupo['total'] = round($grupo['total'], 2);
+    }
+
+    print json_encode(['encabezado' => $letra, 'presupuesto' => array_values($agrupado)]);
+});
+
 function getPagos($orden, $db, $esmultiple, $ids = null) {
     $cntsOts = $esmultiple ? count($orden->ots) : 1;
 
