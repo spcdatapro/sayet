@@ -588,7 +588,9 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
                 a.isr,
                 DATE_FORMAT(a.fechaingreso, '%d/%m/%Y') AS fecha,
                 c.nombre AS proveedor,
-                f.simbolo AS moneda
+                f.simbolo AS moneda, 
+                a.tipocambio,
+                a.idmoneda
             FROM
                 compra a
                     INNER JOIN
@@ -613,7 +615,9 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
                 a.isr,
                 DATE_FORMAT(a.fechaingreso, '%d/%m/%Y') AS fecha,
                 c.nombre AS proveedor,
-                f.simbolo AS moneda
+                f.simbolo AS moneda,
+                a.tipocambio,
+                a.idmoneda
             FROM
                 compra a
                     INNER JOIN
@@ -653,6 +657,17 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
         $isr      = (float) $compra->isr;
         $total    = (float) $compra->total;
 
+        // Convertir a moneda local únicamente los totales del presupuesto.
+        $factorCambio = ((int) $compra->idmoneda === 2)
+            ? (float) $compra->tipocambio
+            : 1;
+
+        $totalSubtotal = $subtotal * $factorCambio;
+        $totalIva      = $iva * $factorCambio;
+        $totalRetiva   = $retiva * $factorCambio;
+        $totalIsr      = $isr * $factorCambio;
+        $totalCompra   = $total * $factorCambio;
+
         $agrupado[$presupuesto]['compras'][] = [
             'documento' => $compra->documento,
             'subtotal' => $subtotal,
@@ -665,11 +680,11 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
             'moneda' => $compra->moneda
         ];
 
-        $agrupado[$presupuesto]['t_subtotal'] += $subtotal;
-        $agrupado[$presupuesto]['t_iva'] += $iva;
-        $agrupado[$presupuesto]['t_retiva'] += $retiva;
-        $agrupado[$presupuesto]['t_isr'] += $isr;
-        $agrupado[$presupuesto]['total'] += $total;
+        $agrupado[$presupuesto]['t_subtotal'] += $totalSubtotal;
+        $agrupado[$presupuesto]['t_iva'] += $totalIva;
+        $agrupado[$presupuesto]['t_retiva'] += $totalRetiva;
+        $agrupado[$presupuesto]['t_isr'] += $totalIsr;
+        $agrupado[$presupuesto]['total'] += $totalCompra;
     }
 
     foreach ($agrupado as &$grupo) {
