@@ -587,7 +587,8 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
                 a.retiva,
                 a.isr,
                 DATE_FORMAT(a.fechaingreso, '%d/%m/%Y') AS fecha,
-                c.nombre AS proveedor
+                c.nombre AS proveedor,
+                f.simbolo AS moneda
             FROM
                 compra a
                     INNER JOIN
@@ -596,6 +597,8 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
                 proveedor c ON a.idproveedor = c.id
                     INNER JOIN
                 tipofactura d ON a.idtipofactura = d.id
+                    INNER JOIN 
+                moneda f ON a.idmoneda = f.id
             WHERE
                 b.idpresupuesto = $idpresupuesto
             UNION ALL SELECT 
@@ -609,7 +612,8 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
                 a.retiva,
                 a.isr,
                 DATE_FORMAT(a.fechaingreso, '%d/%m/%Y') AS fecha,
-                c.nombre AS proveedor
+                c.nombre AS proveedor,
+                f.simbolo AS moneda
             FROM
                 compra a
                     INNER JOIN
@@ -620,6 +624,8 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
                 proveedor c ON a.idproveedor = c.id
                     INNER JOIN
                 tipofactura e ON a.idtipofactura = e.id
+                    INNER JOIN 
+                moneda f ON a.idmoneda = f.id
             WHERE
                 b.idpresupuesto = $idpresupuesto
             ORDER BY 2 , 9";
