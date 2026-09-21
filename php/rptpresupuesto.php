@@ -715,16 +715,15 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
         $total = round($total, 2);
     }
 
+    $letra->subtotal = $totalGeneral['t_subtotal'];
+    $letra->iva = $totalGeneral['t_iva'];
+    $letra->retiva = $totalGeneral['t_retiva'];
+    $letra->isr = $totalGeneral['t_isr'];
+    $letra->total = $totalGeneral['total'];
+
     print json_encode([
         'encabezado' => $letra,
-        'presupuesto' => [
-            'items' => array_values($agrupado),
-            'subtotal' => $totalGeneral['t_subtotal'],
-            'iva' => $totalGeneral['t_iva'],
-            'retiva' => $totalGeneral['t_retiva'],
-            'isr' => $totalGeneral['t_isr'],
-            'total' => $totalGeneral['total']
-        ]
+        'presupuesto' => array_values($agrupado)
     ]);
 });
 
