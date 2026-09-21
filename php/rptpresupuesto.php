@@ -581,6 +581,7 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
                 b.id AS idpresupuesto,
                 CONCAT(b.idpresupuesto, '-', b.correlativo) AS presupuesto,
                 CONCAT(d.siglas, '-', a.documento) AS documento,
+                a.totfact AS total,
                 a.subtotal,
                 a.iva,
                 a.retiva,
@@ -643,15 +644,14 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
         $iva      = (float) $compra->iva;
         $retiva   = (float) $compra->retiva;
         $isr      = (float) $compra->isr;
-
-        // Total de la compra después de retenciones
-        $total = $subtotal + $iva - $retiva - $isr;
+        $total    = (float) $compra->total;
 
         $agrupado[$presupuesto]['compras'][] = [
             'documento' => $compra->documento,
             'subtotal' => $subtotal,
             'iva' => $iva,
             'retiva' => $retiva,
+            'total' => $total,
             'isr' => $isr,
             'fecha' => $compra->fecha,
             'proveedor' => $compra->proveedor
