@@ -574,6 +574,7 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
 
     $letra->estampa = new DateTime();
     $letra->estampa = $letra->estampa->format('d-m-Y H:i');
+    $letra->presupuesto = $idpresupuesto;
 
     $query = "SELECT 
                 a.id,
