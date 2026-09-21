@@ -661,7 +661,8 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
             'total' => $total,
             'isr' => $isr,
             'fecha' => $compra->fecha,
-            'proveedor' => $compra->proveedor
+            'proveedor' => $compra->proveedor,
+            'moneda' => $compra->moneda
         ];
 
         $agrupado[$presupuesto]['t_subtotal'] += $subtotal;
