@@ -695,7 +695,37 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
         $grupo['total'] = round($grupo['total'], 2);
     }
 
-    print json_encode(['encabezado' => $letra, 'presupuesto' => array_values($agrupado)]);
+    $totalGeneral = [
+        't_subtotal' => 0,
+        't_iva' => 0,
+        't_retiva' => 0,
+        't_isr' => 0,
+        'total' => 0
+    ];
+
+    foreach ($agrupado as $grupo) {
+        $totalGeneral['t_subtotal'] += $grupo['t_subtotal'];
+        $totalGeneral['t_iva'] += $grupo['t_iva'];
+        $totalGeneral['t_retiva'] += $grupo['t_retiva'];
+        $totalGeneral['t_isr'] += $grupo['t_isr'];
+        $totalGeneral['total'] += $grupo['total'];
+    }
+
+    foreach ($totalGeneral as &$total) {
+        $total = round($total, 2);
+    }
+
+    print json_encode([
+        'encabezado' => $letra,
+        'presupuesto' => [
+            'items' => array_values($agrupado),
+            'subtotal' => $totalGeneral['t_subtotal'],
+            'iva' => $totalGeneral['t_iva'],
+            'retiva' => $totalGeneral['t_retiva'],
+            'isr' => $totalGeneral['t_isr'],
+            'total' => $totalGeneral['total']
+        ]
+    ]);
 });
 
 function getPagos($orden, $db, $esmultiple, $ids = null) {
