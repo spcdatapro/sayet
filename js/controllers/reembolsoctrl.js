@@ -532,10 +532,12 @@
 
             function calcIDP(genidp) {
                 if (genidp) {
-                    var galones = $scope.compra.galones != null && $scope.compra.galones != undefined ? parseFloat($scope.compra.galones) : 0.00;
-                    var impuesto = $scope.compra.objTipoCombustible.impuesto != null && $scope.compra.objTipoCombustible.impuesto != undefined ? parseFloat($scope.compra.objTipoCombustible.impuesto) : 0.00;
+                    const galones = $scope.compra.galones != null && $scope.compra.galones != undefined ? parseFloat($scope.compra.galones) : 0.00;
+                    const impuesto = $scope.compra.objTipoCombustible.impuesto != null && $scope.compra.objTipoCombustible.impuesto != undefined ? parseFloat($scope.compra.objTipoCombustible.impuesto) : 0.00;
+                    let monto = 0.00;
+                    monto = $scope.compra.objTipoCombustible.id == 2 ? (galones * 0.9) * impuesto : galones * impuesto;
                     //console.log(galones); console.log(impuesto); console.log((galones * impuesto).toFixed(2));
-                    return (galones * impuesto).toFixed(2);
+                    return monto.toFixed(2);
                 }
                 return 0.00;
             }

@@ -281,7 +281,9 @@
                     const galones = !!$scope.laCompra.galones ? parseFloat($scope.laCompra.galones) : 0.00;
                     //const impuesto = $scope.laCompra.objTipoCombustible.impuesto != null && $scope.laCompra.objTipoCombustible.impuesto != undefined ? parseFloat($scope.laCompra.objTipoCombustible.impuesto) : 0.00;
                     const impuesto = !!$scope.laCompra.objTipoCombustible.impuesto ? parseFloat($scope.laCompra.objTipoCombustible.impuesto) : 0.00;
-                    return (galones * impuesto).toFixed(2);
+                    let monto = 0.00;
+                    monto = $scope.laCompra.objTipoCombustible.id == 2 ? (galones * 0.9) * impuesto : galones * impuesto; 
+                    return monto.toFixed(2);
                 }
                 return 0.00;
             }
