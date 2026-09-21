@@ -603,6 +603,7 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
                 b.id AS idpresupuesto,
                 CONCAT(b.idpresupuesto, '-', b.correlativo) AS presupuesto,
                 CONCAT(e.siglas, '-', a.documento) AS documento,
+                a.totfact AS total,
                 a.subtotal,
                 a.iva,
                 a.retiva,
