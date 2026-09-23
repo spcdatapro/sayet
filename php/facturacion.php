@@ -679,7 +679,7 @@ $app->post('/gengface', function() use($app){
             $query.= "CONCAT(UPPER(TRIM(e.desctiposervventa)), ', ', TRIM(d.nomproyecto), ', ', ";
             $query.= "TRIM(UnidadesPorContrato(c.id)), ', Mes de ', ".($periodo == '' ? "f.nombre, ' del año ', a.anio" : ("'".$periodo."'"))."), ";
             $query.= "TRIM(a.descripcion)), ";
-            $query.= "TRIM(a.descripcion)), ' ', IFNULL(a.conceptoadicional, '')))  AS descripcion, ";
+            $query.= "TRIM(a.descripcion)), ' ', IFNULL(a.conceptoadicional, ''), ' TC: ', a.tipocambio))  AS descripcion, ";
 
 			$query.= "a.cantidad ";
             $query.= "FROM detfact a INNER JOIN factura b ON b.id = a.idfactura LEFT JOIN contrato c ON c.id = b.idcontrato LEFT JOIN proyecto d ON d.id = c.idproyecto ";
@@ -693,7 +693,7 @@ $app->post('/gengface', function() use($app){
             $query.= "ROUND(IF(b.idmonedafact = 1, a.montoflatconiva, a.montoflatconivacnv) - (IF(b.idmonedafact = 1, a.montoflatconiva, a.montoflatconivacnv) / 1.12), 2) AS iva, ";
             $query.= "TRUNCATE(IF(b.idmonedafact = 1, a.preciounitario, a.preciounitariocnv) + IF(b.idmonedafact = 1, a.descuento, a.descuentocnv), 2) AS montounitario, ";
 
-            $query.= "a.idtiposervicio, TRIM(CONCAT(a.descripcion, ' ', IFNULL(a.conceptoadicional, ''))) AS descripcion, ";
+            $query.= "a.idtiposervicio, TRIM(CONCAT(a.descripcion, ' ', IFNULL(a.conceptoadicional, ''), ' TC: ', a.tipocambio)) AS descripcion, ";
 			$query.= "a.cantidad ";
             $query.= "FROM detfact a INNER JOIN factura b ON b.id = a.idfactura INNER JOIN tiposervicioventa e ON e.id = a.idtiposervicio INNER JOIN mes f ON f.id = a.mes ";
             $query.= "WHERE b.idcliente = 0 AND a.idfactura = $factura->idfactura ";
@@ -794,7 +794,7 @@ $app->post('/genfel', function() use($app) {
         IF(b.idmonedafact = 1, a.importeexento, a.importeexentocnv) AS importeexento,
         IF(b.exentoiva = 0, IF(b.idmonedafact = 1, a.importeneto, a.importenetocnv), 0.00) AS importeneto,
         IF(b.idmonedafact = 1, a.importeiva, a.importeivacnv) AS importeiva, 0 AS importeotros, 
-        IF(b.idmonedafact = 1, a.importetotal, a.importetotalcnv) AS importetotal, IF(b.exentoiva = 0, a.idtiposervicio, 5) AS producto, TRIM(a.descripcionlarga) AS descripcion, IF(b.idtipoventa = 1, 'B', 'S') AS tipoventa
+        IF(b.idmonedafact = 1, a.importetotal, a.importetotalcnv) AS importetotal, IF(b.exentoiva = 0, a.idtiposervicio, 5) AS producto, CONCAT(TRIM(a.descripcionlarga), ' TC: ', b.tipocambio) AS descripcion, IF(b.idtipoventa = 1, 'B', 'S') AS tipoventa
         FROM detfact a INNER JOIN factura b ON b.id = a.idfactura
         WHERE a.idfactura = $factura->id";
         // print $query;
