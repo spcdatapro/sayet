@@ -637,7 +637,9 @@ $app->get('/pendientes', function (){
                 c.totfact AS monto,
                 c.documento,
                 c.conceptomayor AS concepto,
-                d.simbolo AS moneda
+                d.simbolo AS moneda,
+                a.estatus_aprobacion AS estatus,
+                e.nombre AS proveedor
             FROM
                 reembolso a
                     INNER JOIN
@@ -646,6 +648,8 @@ $app->get('/pendientes', function (){
                 compra c ON c.idreembolso = a.id
                     INNER JOIN
                 moneda d ON c.idmoneda = d.id
+                    INNER JOIN
+                proveedor e ON c.idproveedor = e.id
             WHERE
                 aprobar = 1 AND aprobador = 0
             ORDER BY fecha";
@@ -661,6 +665,7 @@ $app->get('/pendientes', function (){
                 'beneficiario' => $row->beneficiario,
                 'monto' => 0,
                 'moneda' => $row->moneda,
+                'estatus' => $row->estatus,
                 'compras' => []
             ];
         }
@@ -670,7 +675,8 @@ $app->get('/pendientes', function (){
             'monto' => $row->monto,
             'documento' => $row->documento,
             'concepto' => $row->concepto,
-            'moneda' => $row->moneda
+            'moneda' => $row->moneda,
+            'proveedor' => $row->proveedor
         ];
     }
     
@@ -761,7 +767,7 @@ $app->post('/env', function () {
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $query = "UPDATE reembolso SET aprobar = 1, envioaprob = NOW() WHERE id = $d->id";
+    $query = "UPDATE reembolso SET aprobar = 1, envioaprob = NOW(), estatus_aprobacion = 4 WHERE id = $d->id";
     $db->doQuery($query);
 
     return;
@@ -783,6 +789,16 @@ $app->post('/ngr', function () {
     $db = new dbcpm();
 
     $query = "UPDATE reembolso SET aprobador = $d->idusuario, aprobacion = NOW(), estatus_aprobacion = 2 WHERE id = $d->id";
+    $db->doQuery($query);
+
+    return;
+});
+
+$app->post('/rvr', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $query = "UPDATE reembolso SET estatus_aprobacion = 3 WHERE id = $d->id";
     $db->doQuery($query);
 
     return;

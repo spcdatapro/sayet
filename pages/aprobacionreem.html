@@ -1,6 +1,27 @@
 <style>
-    .app-modal-window .modal-dialog {
-        width: 625px;
+    .chk-aprobacion {
+        display: block;
+        width: 20px !important;
+        height: 20px !important;
+        margin: 0 auto;
+        padding: 0;
+    }
+
+    .tabla-scroll {
+        max-height: 300px;
+        overflow-y: auto;
+        display: block;
+        border: 1px solid #ddd;
+        padding: 0;
+    }
+
+    .modal-reembolso-grande .modal-dialog {
+        width: 90vw;
+        height: 80vh;
+    }
+
+    .verde {
+        background-color: #d4edda !important;
     }
 </style>
 <div class="container" ng-controller="aprobacionReembolso">
@@ -16,47 +37,69 @@
                         <th>Beneficiario</th>
                         <th style="text-align: right">Monto</th>
                         <th>&nbsp;</th>
-                        <th>&nbsp;</th>
                         <th style="text-align: center">Aprobar</th>
                         <th style="text-align: center">Denegar</th>
+                        <th style="text-align: center">Revisar</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="p in reembolsos">
+                    <tr ng-repeat="p in reembolsos" ng-class="{verde: +p.estatus === 3}">
                         <td>{{p.id}}</td>
                         <td>{{p.nombre}}</td>
                         <td>{{p.fecha}}</td>
                         <td>{{p.beneficiario}}</td>
                         <td style="text-align: right">{{p.moneda}}.{{p.monto | number:2}}</td>
                         <td>
-                            <button type="button" class="btn btn-primary" ng-click="verDetReem(p)"
-                                title="Ver detalle">
-                                <i class="fi fi-sr-file-circle-info"></i>
-                            </button>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-primary" ng-click="verAdjuntos(p)"
-                                title="Ver adjuntos">
-                                <i class="fi fi-br-clip"></i>
-                            </button>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-default btn-sm" ng-click="verDetReem(p)"
+                                    title="Ver compras">
+                                    <i class="fi fi-sr-file-circle-info"></i>
+                                </button>
+                                <button type="button" class="btn btn-default btn-sm" ng-click="verRevision(p)"
+                                    title="Ver pantalla de revision">
+                                    <i class="fi fi-sr-screen"></i>
+                                </button>
+                                <button type="button" class="btn btn-default btn-sm" ng-click="verAdjuntos(p)"
+                                    title="Ver adjuntos">
+                                    <i class="fi fi-br-clip"></i>
+                                </button>
+                            </div>
                         </td>
                         <td style="text-align: center">
                             <input name="chkAprobada_{{p.id}}" id="chkAprobada_{{p.id}}" type="checkbox"
-                                class="form-control" ng-model="p.aprobada" ng-true-value="1" ng-false-value="0"
-                                ng-change="aprobar(p)" />
+                                class="chk-aprobacion form-control" ng-model="p.aprobada" ng-true-value="1"
+                                ng-false-value="0" ng-change="aprobar(p)" title="Aprobar reembolso"
+                                ng-disabled="!permiso.m" />
                         </td>
                         <td style="text-align: center">
                             <input name="chkDenegada_{{p.id}}" id="chkDenegada_{{p.id}}" type="checkbox"
-                                class="form-control" ng-model="p.denegada" ng-true-value="1" ng-false-value="0"
-                                ng-change="denegar(p)" />
+                                class="chk-aprobacion form-control" ng-model="p.denegada" ng-true-value="1"
+                                ng-false-value="0" ng-change="denegar(p)" title="Denegar reembolso"
+                                ng-disabled="!permiso.m" />
+                        </td>
+                        <td style="text-align: center">
+                            <input name="chkRevisada_{{p.id}}" id="chkRevisada_{{p.id}}" type="checkbox"
+                                class="chk-aprobacion form-control" ng-model="p.revisada" ng-true-value="1"
+                                ng-false-value="0" ng-change="revisar(p)" title="Revisar reembolso"
+                                ng-disabled="!permiso.m" />
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
+        <div class="panel-footer">
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon verde"></span>
+                        <input type="text" class="form-control" ng-model="info" disabled />
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-<!--Template de la modal //Este usa el controlador ModalCargosCtrl-->
+<!-- modal de compras -->
 <script type="text/ng-template" id="modalDetalleReembolso.html">
     <div class="modal-header">
         <h4 class="modal-title">Reembolso No. {{reembolso.id}}</h4>
@@ -83,6 +126,7 @@
         <button class="btn btn-info" type="button" ng-click="cancel()">Cerrar</button>
     </div>
 </script>
+<!-- modal de adjuntos -->
 <script type="text/ng-template" id="modalAdjuntosReembolso.html">
     <div class="modal-header">
         <h4 class="modal-title">Reembolso No. {{reembolso.id}}</h4>
@@ -107,6 +151,62 @@
             </tr>
             </tbody>
         </table>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-info" type="button" ng-click="cancel()">Cerrar</button>
+    </div>
+</script>
+<!-- modal de panalla de revision -->
+<script type="text/ng-template" id="modalRevisionReembolso.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Pantalla de revisión</h3>
+        <h4>Reembolso No. {{reembolso.id}}</h4>
+    </div>
+    <div class="modal-body" style="height: 70vh; overflow-y: auto">
+        <div class="col-md-6 tabla-scroll">
+            <table class="table table-condensed">
+                <caption>Compras sistema</caption>
+                <thead>
+                    <tr>
+                        <th>Documento</th>
+                        <th style="text-align: right">Monto</th>
+                        <th>Proveedor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="c in compras">
+                        <td>{{c.documento}}</td>
+                        <td style="text-align: right">{{c.moneda}}.{{c.monto | number:2}}</td>
+                        <td>{{c.proveedor}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <div ng-show="ver_adjunto">
+                <iframe ng-src="{{previewUrl}}"
+                    style="width: 100%; height: 520px; border: 1px solid #ddd; background: #f5f5f5;"
+                    frameborder="0"></iframe>
+            </div>
+            <table class="table table-responsive table-condensed">
+                <caption>Documentos adjuntos</caption>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="adjunto in lstadjuntos">
+                        <td>{{adjunto.nombre}}</td>
+                        <td>
+                            <button class="btn btn-info" ng-click="previewAdjunto(adjunto)" target="_blank">
+                                <i class="fi fi-sr-overview"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
     <div class="modal-footer">
         <button class="btn btn-info" type="button" ng-click="cancel()">Cerrar</button>
