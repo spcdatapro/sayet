@@ -1616,13 +1616,14 @@ $app->get('/emparejar_debitos/:del/:al/:idempresa', function ($del, $al, $idempr
             FROM tranban a
             INNER JOIN banco b ON a.idbanco = b.id
             LEFT JOIN d_estado_cuenta c ON a.monto = c.monto AND a.fecha != c.fecha
-            LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta
+            LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta 
             INNER JOIN moneda e ON b.idmoneda = e.id
+            LEFT JOIN tranecuenta f ON c.d_estado_cuenta = f.idecuenta
             WHERE a.fecha >= '$del' AND a.fecha <= '$al'
             AND b.mt940 IS NOT NULL
             AND a.tipotrans IN ('C','B')
             AND b.mt940 = d.cuenta
-            AND (c.idtranban IS NULL OR c.idtranban = 0)
+            AND ((c.idtranban IS NULL OR c.idtranban = 0) OR ((c.monto - f.monto) > 0))
             AND b.idempresa = $idempresa 
             AND a.id NOT IN (
                 SELECT a.id
@@ -1698,7 +1699,10 @@ $app->post('/auto_emparejar', function () {
                 $db->doQuery("UPDATE tranban SET operado = 1, fechaoperado = '$item->fechaban' WHERE id = $idtranban");
             }
 
-            $db->doQuery("UPDATE d_estado_cuenta SET idtranaban = $idtranban WHERE d_estado_cuenta = $idbanco");
+            $query = "INSERT INTO tranecuenta (idtranban, idecuenta, monto) VALUES ($idtranban, $idbanco, $item->monto)";
+            $db->doQuery($query);
+
+            // $db->doQuery("UPDATE d_estado_cuenta SET idtranaban = $idtranban WHERE d_estado_cuenta = $idbanco");
         }
 
         print json_encode(['tipo' => 'success', 'mensaje' => "Se han emparejado los documentos seleccionados."]);
