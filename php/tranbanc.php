@@ -1596,7 +1596,7 @@ $app->get('/emparejar_debitos/:del/:al/:idempresa', function ($del, $al, $idempr
                 a.operado AS emparejado, a.idbanco, a.tipotrans
             FROM tranban a
             INNER JOIN banco b ON a.idbanco = b.id
-            LEFT JOIN d_estado_cuenta c ON a.fecha = c.fecha AND a.monto = c.monto
+            LEFT JOIN d_estado_cuenta c ON a.fecha = c.fecha AND a.monto <= c.monto
             LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta
             INNER JOIN moneda e ON b.idmoneda = e.id
             WHERE a.fecha >= '$del' AND a.fecha <= '$al'
@@ -1641,7 +1641,7 @@ $app->get('/emparejar_debitos/:del/:al/:idempresa', function ($del, $al, $idempr
                 SELECT a.id
                 FROM tranban a
                 INNER JOIN banco b ON a.idbanco = b.id
-                LEFT JOIN d_estado_cuenta c ON a.fecha = c.fecha AND a.monto = c.monto
+                LEFT JOIN d_estado_cuenta c ON a.fecha = c.fecha AND a.monto <= c.monto
                 LEFT JOIN estado_cuenta d ON d.estado_cuenta = c.estado_cuenta
                 WHERE a.fecha >= '$del' AND a.fecha <= '$al'
                     AND b.mt940 IS NOT NULL
