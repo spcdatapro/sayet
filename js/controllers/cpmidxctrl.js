@@ -149,7 +149,7 @@
                 authSrvc.gpr({ idusuario: usrLogged.uid, ruta: 'tranreembolso' }).then(permisos => {
                     reembolsosAprobados(permisos);
                 });
-                authSrvc.getPermiso(usrLogged.uid, 'aprobacionreem').then(permisos => {
+                authSrvc.gpr({ idusuario: usrLogged.uid, ruta: 'aprobacionreem' }).then(permisos => {
                     reembolsosPendientes(permisos);
                 });
 
