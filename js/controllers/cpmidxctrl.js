@@ -86,7 +86,7 @@
             }
         }
 
-        function reembolsosPendientes(permiso) {
+        function reembolsosAprobados(permiso) {
             if (permiso.m) {
                 reembolsoSrvc.reembolsosAprobados().then(aprobados => {
                     if (aprobados.length > 0) {
@@ -115,12 +115,41 @@
             }
         }
 
+        function reembolsosPendientes (permisos) {
+            if (permisos.m) {
+                reembolsoSrvc.reembolsosPendientes().then(pendientes => {
+                    if (pendientes.length > 0) {
+                        desktopNotification.show('Reembolsos pendientes', {
+                            icon: 'img/sayet.ico',
+                            body: 'Hay ' + pendientes.length + ' reembolsos pendientes de aprobacion.',
+                            onClick: () => {
+                                $uibModal.open({
+                                    animation: true,
+                                    templateUrl: 'modalPendientes.html',
+                                    controller: 'ModalPendientesCtrl',
+                                    resolve: {
+                                        pendientes: () => pendientes
+                                    }
+                                }).result.then(() => {
+                                    // llevarlos a la pagina
+                                    $location.path('aprobacionreem');
+                                });
+                            }
+                        });
+                    }
+                })
+            }
+        }
+
         authSrvc.getSession().then(function (usrLogged) {
             authSrvc.getMenu(parseInt(usrLogged.uid)).then(function (res) {
                 $scope.menuUsr = res;
                 $scope.usr = usrLogged;
                 faltanArchivosMT940(usrLogged.uid);
                 authSrvc.gpr({ idusuario: usrLogged.uid, ruta: 'tranreembolso' }).then(permisos => {
+                    reembolsosAprobados(permisos);
+                });
+                authSrvc.getPermiso(usrLogged.uid, 'aprobacionreem').then(permisos => {
                     reembolsosPendientes(permisos);
                 });
 
@@ -268,6 +297,20 @@
         };
 
         $scope.cancel = function () {
+            $uibModalInstance.dismiss('cancel');
+        };
+
+    }]);
+
+    cpmidxctrl.controller('ModalPendientesCtrl', ['$scope', '$uibModalInstance', 'aprobados', function ($scope, $uibModalInstance, aprobados) {
+        $scope.aprobados = aprobados;
+
+        // para llevarlos al reembolso que seleccionen
+        $scope.irReembolso = idreembolso => {
+            $uibModalInstance.close(idreembolso);
+        };
+
+        $scope.cancel = () => {
             $uibModalInstance.dismiss('cancel');
         };
 

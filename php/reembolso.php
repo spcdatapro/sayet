@@ -639,7 +639,8 @@ $app->get('/pendientes', function (){
                 c.conceptomayor AS concepto,
                 d.simbolo AS moneda,
                 a.estatus_aprobacion AS estatus,
-                IFNULL(e.nombre, 'CF') AS proveedor
+                IFNULL(e.nombre, 'CF') AS proveedor,
+                f.estatus AS descripcion
             FROM
                 reembolso a
                     INNER JOIN
@@ -650,6 +651,8 @@ $app->get('/pendientes', function (){
                 moneda d ON c.idmoneda = d.id
                     LEFT JOIN
                 proveedor e ON c.idproveedor = e.id
+                    INNER JOIN 
+                estatus_reembolso f ON a.estatus_aprobacion = f.id
             WHERE
                 aprobar = 1 AND aprobador = 0
             ORDER BY fecha";
