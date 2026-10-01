@@ -68,7 +68,7 @@
         $scope.getAntiCliXLSX = (params) => {
             $scope.cargando = true;
             params.falstr = moment(params.al).format('YYYY-MM-DD');
-            jsReportSrvc.getReport('ryQhx5gNr', params).then((result) => {
+            jsReportSrvc.getReport('SkRirvMBW', params).then((result) => {
                 const file = new Blob([result.data], {type: 'application/vnd.ms-excel'});
                 const nombre = `ASC_${moment($scope.params.al).format('DDMMYYYY')}_${moment().format('DDMMYYYYHHmmss')}`;
                 saveAs(file, `${nombre}.xlsx`);
