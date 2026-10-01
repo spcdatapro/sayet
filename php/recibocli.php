@@ -436,7 +436,7 @@ $app->post('/prntrecint', function() {
     $recibo = $db->getQuery($query);
 
     if (count($recibo) > 0) {
-        $recibo[0]->montoletras = $n2l->to_word($recibo[0]->total, 'GTQ');
+        $recibo[0]->montoletras = $n2l->to_word(abs($recibo[0]->total), 'GTQ');
 
         $query = "SELECT b.codigo, b.nombrecta AS cuenta, FORMAT(a.debe, 2) AS debe, FORMAT(a.haber, 2) AS haber, a.conceptomayor AS concepto ";
         $query.= "FROM detallecontable a INNER JOIN cuentac b ON b.id = a.idcuenta ";
