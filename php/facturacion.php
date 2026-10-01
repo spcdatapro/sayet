@@ -988,7 +988,7 @@ $app->get('/revertir/:idfactura', function($idfactura){
     $query = "UPDATE cargo SET facturado = 0 AND idfactura = 0 WHERE idfactura = $idfactura";
     $db->doQuery($query);
 
-    $query = "UPDATE lecturaservicio SET facturado = 0, idfactura = 0, estatus = 3 WHERE idfactura = $idfactura";
+    $query = "UPDATE lecturaservicio SET facturado = 0, idfactura = 0, estatus = 2 WHERE idfactura = $idfactura";
     $db->doQuery($query);
 
     $query = "DELETE FROM detfact WHERE idfactura = $idfactura";
