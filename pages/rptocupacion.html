@@ -56,11 +56,11 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group required">
+                            <div class="form-group">
                                 <label class="control-label">Proyecto:</label>
                                 <ui-select ng-model="params.idproyecto" title="Seleccione un proyecto..."
-                                    theme="bootstrap" autofocus="true" required>
-                                    <ui-select-match placeholder="Buscar proyecto..." allow-clear="false">
+                                    theme="bootstrap" autofocus="true">
+                                    <ui-select-match placeholder="Buscar proyecto..." allow-clear="true">
                                         <span ng-bind="($select.selected.nomproyecto)"></span>
                                     </ui-select-match>
                                     <ui-select-choices repeat="item.id as item in proyectos | filter:$select.search">
@@ -176,16 +176,19 @@
             <caption style="text-align: center; " class="amarillo">
                 <h3 style="color: black;">Reporte de ocupaci&oacute;n</h3>
                 <h4 style="color: black;">{{encabezado.proyecto}}</h4>
-                <h5 style="color: black;">{{encabezado.metros | number: 2}}m<sup>2</sup></h5>
+                <h5 ng-if="encabezado.metros !== null" style="color: black;">{{encabezado.metros | number: 2}}m<sup>2</sup></h5>
             </caption>
             <tbody ng-repeat="anio in anios">
                 <tr ng-click="anio.detalle = !anio.detalle" class="celeste">
                     <th colspan="{{anio.columnas}}">{{ anio.anio }}</th>
                 </tr>
-                <tr ng-show="anio.detalle">
+                <tr ng-repeat-start="proyecto in anio.proyectos" ng-show="anio.detalle" ng-click="proyecto.detalle = !proyecto.detalle" class="gris">
+                    <th colspan="{{anio.columnas}}">{{proyecto.proyecto}} ({{proyecto.metros | number: 2}}m<sup>2</sup>)</th>
+                </tr>
+                <tr ng-show="proyecto.detalle">
                     <th>&nbsp;</th>
                     <th style="vertical-align: middle;">Promedio</th>
-                    <th ng-repeat="mes in anio.meses">
+                    <th ng-repeat="mes in proyecto.meses">
                         <div
                             style="display:flex; align-items:center; justify-content:space-between; white-space:nowrap;">
                             <span>{{mes.mes}}</span>
@@ -196,20 +199,20 @@
                         </div>
                     </th>
                 </tr>
-                <tr ng-show="anio.detalle">
+                <tr ng-show="proyecto.detalle">
                     <th>Metros</th>
-                    <td>{{anio.promedio_metros_ocupados | number: 2}}m<sup>2</sup></td>
-                    <td ng-repeat="mes in anio.meses">{{mes.metros_ocupados | number: 2}}m<sup>2</sup></td>
+                    <td>{{proyecto.promedio_metros_ocupados | number: 2}}m<sup>2</sup></td>
+                    <td ng-repeat="mes in proyecto.meses">{{mes.metros_ocupados | number: 2}}m<sup>2</sup></td>
                 </tr>
-                <tr ng-show="anio.detalle">
+                <tr ng-show="proyecto.detalle">
                     <th>Porcentaje</th>
-                    <td>{{anio.promedio_porcentaje_ocupado | number: 2}}%</td>
-                    <td ng-repeat="mes in anio.meses">{{mes.porcentaje_ocupado | number: 2}}%</td>
+                    <td>{{proyecto.promedio_porcentaje_ocupado | number: 2}}%</td>
+                    <td ng-repeat="mes in proyecto.meses">{{mes.porcentaje_ocupado | number: 2}}%</td>
                 </tr>
-                <tr ng-show="anio.detalle">
+                <tr ng-repeat-end ng-show="proyecto.detalle">
                     <th>Monto</th>
-                    <td>Q.{{anio.promedio_total | number: 2}}</td>
-                    <td ng-repeat="mes in anio.meses">Q.{{mes.total | number: 2}}</td>
+                    <td>Q.{{proyecto.promedio_total | number: 2}}</td>
+                    <td ng-repeat="mes in proyecto.meses">Q.{{mes.total | number: 2}}</td>
                 </tr>
             </tbody>
         </table>

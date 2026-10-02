@@ -93,7 +93,8 @@
 
                 jsReportSrvc.getReport(rpt, params).then(function (result) {
                     var file = new Blob([result.data], { type: 'application/vnd.ms-excel' });
-                    let rango = $filter('getById')($scope.proyectos, params.idproyecto).nomproyecto;
+                    let proyecto = $filter('getById')($scope.proyectos, params.idproyecto);
+                    let rango = proyecto ? proyecto.nomproyecto : 'Todos_los_proyectos';
                     let nombre = detallado ? 'Reporte_Ocupacion_Detalle_' + rango + '.xlsx' : 'Reporte_Ocupacion_' + rango + '.xlsx';
 
                     saveAs(file, nombre);

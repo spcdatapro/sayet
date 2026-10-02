@@ -1060,6 +1060,7 @@ $app->post('/ocupacion', function() {
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
     date_default_timezone_set("America/Guatemala");
+    $filtro_idproyecto = isset($d->idproyecto) ? (int)$d->idproyecto : 0;
 
     $d->mes_del = (int)$d->mes_del + 1;
     $d->mes_al = (int)$d->mes_al + 1;
@@ -1073,6 +1074,7 @@ $app->post('/ocupacion', function() {
 
     // Traer datos para todo el rango de años y meses solicitado
     $query = "SELECT 
+                a.id AS idproyecto,
                 a.nomproyecto AS proyecto,
                 a.metros_rentable AS mdisponibles,
                 b.id AS idunidad,
@@ -1109,100 +1111,102 @@ $app->post('/ocupacion', function() {
                     LEFT JOIN 
                 tiposervicioventa h ON g.idtiposervicio = h.id
             WHERE
-                a.id = $d->idproyecto AND b.idtipolocal NOT IN (9, 17)
-            GROUP BY b.id, YEAR(d.fecha), MONTH(d.fecha)
+                b.idtipolocal NOT IN (9, 17) AND (a.idempresa = $d->idempresa OR a.id IN (SELECT idproyecto FROM empresa_proyecto WHERE idempresa = $d->idempresa)) ";
+    $query.= $filtro_idproyecto > 0 ? "AND a.id = $filtro_idproyecto " : "";
+    $query.= "GROUP BY b.id, YEAR(d.fecha), MONTH(d.fecha)
             ORDER BY YEAR(d.fecha), MONTH(d.fecha), b.id";
     $data = $db->getQuery($query);
 
-    // Guardar copia para encabezado (si hay datos)
-    $orig = $data;
+    $datos_por_proyecto = [];
+    foreach ($data as $unidad) {
+        $idproyecto = (int)$unidad->idproyecto;
+        if (!isset($datos_por_proyecto[$idproyecto])) {
+            $datos_por_proyecto[$idproyecto] = [
+                'nombre' => $unidad->proyecto,
+                'metros' => (float)$unidad->mdisponibles,
+                'unidades' => []
+            ];
+        }
+        $datos_por_proyecto[$idproyecto]['unidades'][] = $unidad;
+    }
 
-    $result = [];
-
-    // número de meses en el rango (para promedios por año)
+    $anios = [];
     $num_months_range = ($d->mes_al - $d->mes_del) + 1;
     $num_months_range = $num_months_range > 0 ? $num_months_range : 1;
 
-    // Agrupar por año y por mes dentro de cada año
     for ($y = $d->anio_del; $y <= $d->anio_al; $y++) {
         $yearObj = new stdClass();
         $yearObj->anio = $y;
-        $yearObj->meses = [];
+        $yearObj->proyectos = [];
+        $yearObj->columnas = contarMeses($d->mes_del, $d->mes_al) + 2;
 
-        // acumuladores por año para calcular promedios
-        $sum_porcentaje_anual = 0;
-        $sum_total_anual = 0;
-        $sum_metros_anual = 0;
+        foreach ($datos_por_proyecto as $idproyecto => $proyecto) {
+            $proyecto_obj = new stdClass();
+            $proyecto_obj->idproyecto = (int)$idproyecto;
+            $proyecto_obj->proyecto = $proyecto['nombre'];
+            $proyecto_obj->metros = round($proyecto['metros'], 2);
+            $proyecto_obj->meses = [];
 
-        for ($m = $d->mes_del; $m <= $d->mes_al; $m++) {
-            $data_mes = new StdClass();
-            $data_mes->mes = $meses_nombre[$m - 1];
-            $procentaje = [];
-            $metros = [];
-            $data_mes->total = 0;
-            $data_mes->detalles = [];
+            $sum_porcentaje_anual = 0;
+            $sum_total_anual = 0;
+            $sum_metros_anual = 0;
 
-            // recorrer datos y extraer los que correspondan a este mes y año
-            for ($j = 0; $j < count($data); $j++) {
-                $unidad = $data[$j];
-                if ((int)$unidad->mes == $m && (int)$unidad->anio == $y) {
-                    array_push($procentaje, (float)$unidad->porcentaje);
-                    array_push($metros, (float)$unidad->medida);
-                    $data_mes->total += (float)$unidad->total;
-                
-                    // Guardar detalle de la unidad
-                    $detalle = new StdClass();
-                    $detalle->unidad = $unidad->unidad;
-                    $detalle->tipo = $unidad->tipo;     
-                    $detalle->medida = (float)$unidad->medida;
-                    $detalle->porcentaje = (float)$unidad->porcentaje;
-                    $detalle->cliente = $unidad->cliente;
-                    $detalle->servicio = $unidad->tipo_servicio;
-                    $detalle->total = (float)$unidad->total;
-                    array_push($data_mes->detalles, $detalle);
-                
-                    // eliminar la entrada ya procesada
-                    array_splice($data, $j, 1);
-                    $j--;
+            for ($m = $d->mes_del; $m <= $d->mes_al; $m++) {
+                $data_mes = new StdClass();
+                $data_mes->mes = $meses_nombre[$m - 1];
+                $porcentajes = [];
+                $metros = [];
+                $data_mes->total = 0;
+                $data_mes->detalles = [];
+
+                foreach ($proyecto['unidades'] as $unidad) {
+                    if ((int)$unidad->mes == $m && (int)$unidad->anio == $y) {
+                        $porcentajes[] = (float)$unidad->porcentaje;
+                        $metros[] = (float)$unidad->medida;
+                        $data_mes->total += (float)$unidad->total;
+
+                        $detalle = new StdClass();
+                        $detalle->unidad = $unidad->unidad;
+                        $detalle->tipo = $unidad->tipo;
+                        $detalle->medida = (float)$unidad->medida;
+                        $detalle->porcentaje = (float)$unidad->porcentaje;
+                        $detalle->cliente = $unidad->cliente;
+                        $detalle->servicio = $unidad->tipo_servicio;
+                        $detalle->total = (float)$unidad->total;
+                        $data_mes->detalles[] = $detalle;
+                    }
                 }
+
+                $data_mes->porcentaje_ocupado = round(array_sum($porcentajes), 2);
+                $data_mes->metros_ocupados = round(array_sum($metros), 2);
+                $data_mes->porcentaje_vacante = round(100 - $data_mes->porcentaje_ocupado, 2);
+                $data_mes->total = round($data_mes->total, 2);
+                $data_mes->unidades_ocupadas = count($porcentajes);
+
+                $sum_porcentaje_anual += $data_mes->porcentaje_ocupado;
+                $sum_total_anual += $data_mes->total;
+                $sum_metros_anual += $data_mes->metros_ocupados;
+                $proyecto_obj->meses[] = $data_mes;
             }
 
-            $data_mes->porcentaje_ocupado = round(array_sum($procentaje), 2);
-            $data_mes->metros_ocupados = round(array_sum($metros), 2);
-            $data_mes->porcentaje_vacante = round(100 - $data_mes->porcentaje_ocupado, 2);
-            $data_mes->total = round($data_mes->total, 2);
-            $data_mes->unidades_ocupadas = count($procentaje);
-
-            // acumular para promedios anuales
-            $sum_porcentaje_anual += $data_mes->porcentaje_ocupado;
-            $sum_total_anual += $data_mes->total;
-            $sum_metros_anual += $data_mes->metros_ocupados;
-
-            array_push($yearObj->meses, $data_mes);
+            $proyecto_obj->promedio_porcentaje_ocupado = round($sum_porcentaje_anual / $num_months_range, 2);
+            $proyecto_obj->promedio_total = round($sum_total_anual / $num_months_range, 2);
+            $proyecto_obj->promedio_metros_ocupados = round($sum_metros_anual / $num_months_range, 2);
+            $yearObj->proyectos[] = $proyecto_obj;
         }
 
-        // calcular promedios por año (promedio sobre todos los meses del rango)
-        $yearObj->promedio_porcentaje_ocupado = round($sum_porcentaje_anual / $num_months_range, 2);
-        $yearObj->promedio_total = round($sum_total_anual / $num_months_range, 2);
-        $yearObj->promedio_metros_ocupados = round($sum_metros_anual / $num_months_range, 2);
-        $yearObj->columnas = contarMeses($d->mes_del, $d->mes_al) + 2;
-        $yearObj->columna_tres = floor((contarMeses($d->mes_del, $d->mes_al) + 1) / 4);
-
-        array_push($result, $yearObj);
-    }
-
-    // Rellenar encabezado con información del proyecto si hay datos originales
-    if (count($orig) > 0) {
-        $letra->proyecto = $orig[0]->proyecto;
-        $letra->metros = round($orig[0]->mdisponibles, 2);
-    } else {
-        $letra->proyecto = $db->getOneField("SELECT nomproyecto FROM proyecto WHERE id = $d->idproyecto");
-        $letra->metros = 0;
+        $anios[] = $yearObj;
     }
 
     $letra->columnas = contarMeses($d->mes_del, $d->mes_al) + 1;
-
-    print json_encode([ 'encabezado' => $letra, 'anios' => $result ]);
+    if ($filtro_idproyecto > 0) {
+        $letra->proyecto = $db->getOneField("SELECT nomproyecto FROM proyecto WHERE id = $filtro_idproyecto");
+        $letra->metros = count($datos_por_proyecto) > 0 ? round(reset($datos_por_proyecto)['metros'], 2) : 0;
+    } else {
+        $letra->proyecto = 'Todos los proyectos';
+        $letra->metros = null;
+    }
+    print json_encode([ 'encabezado' => $letra, 'anios' => $anios ]);
 });
 
 $app->post('/resumen_prov', function () {
