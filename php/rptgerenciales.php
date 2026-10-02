@@ -1145,6 +1145,7 @@ $app->post('/ocupacion', function() {
             $proyecto_obj->idproyecto = (int)$idproyecto;
             $proyecto_obj->proyecto = $proyecto['nombre'];
             $proyecto_obj->metros = round($proyecto['metros'], 2);
+            $proyecto_obj->columnas = $yearObj->columnas;
             $proyecto_obj->meses = [];
 
             $sum_porcentaje_anual = 0;
