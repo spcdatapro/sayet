@@ -10,7 +10,7 @@
 		$scope.usrdata = {};
 		$scope.lecturas = [];
 
-		authSrvc.getSession().then((usrLogged) => {
+		authSrvc.getSession().then(usrLogged => {
 			// traer empresas permitidas por el usuario
 			empresaSrvc.lstEmpresas().then(function (d) {
 				empresaSrvc.getEmpresaUsuario(usrLogged.uid).then(function (autorizado) {
