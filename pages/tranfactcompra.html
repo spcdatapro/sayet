@@ -17,6 +17,9 @@
         <li ng-show="editando">
             <a show-tab href="#divFrmDetContCompra" data-toggle="tab">DETALLE CONTABLE</a>
         </li>
+        <li ng-hide="true">
+            <a show-tab href="#divCargaMasiva" data-toggle="tab">CARGA MASIVA</a>
+        </li>
         <li ng-show="false">
             <a show-tab href="#divPrintVer" data-toggle="tab">VERSI&Oacute;N IMPRIMIBLE</a>
         </li>
@@ -330,16 +333,16 @@
                                             </ul>
                                         </div>
                                         <input name="txtISR" id="txtISR" type="text" class="form-control"
-                                               ng-model="laCompra.isr" placeholder="I.S.R."
-                                               fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true" />
-                                    
+                                            ng-model="laCompra.isr" placeholder="I.S.R."
+                                            fcsa-number="{ min:0, maxDecimals: 2 }" required ng-disabled="true" />
+
                                         <div class="input-group-btn">
                                             <button type="button" class="btn btn-primary"
-                                                    ng-show="laCompra.objMoneda && laCompra.objMoneda.id == 2 && laCompra.totfact > 0"
-                                                    ng-click="abrirISR()">
+                                                ng-show="laCompra.objMoneda && laCompra.objMoneda.id == 2 && laCompra.totfact > 0"
+                                                ng-click="abrirISR()">
                                                 Q
                                             </button>
-                                        </div>                                    
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -402,8 +405,8 @@
                                             </ul>
                                         </div>
                                         <input name="retIVA" id="retIVA" type="text" class="form-control"
-                                            ng-model="laCompra.retiva" fcsa-number="{ min:0, maxDecimals: 2 }"
-                                            required ng-disabled="true">
+                                            ng-model="laCompra.retiva" fcsa-number="{ min:0, maxDecimals: 2 }" required
+                                            ng-disabled="true">
                                         <div class="input-group-btn">
                                             <button type="button" class="btn btn-primary"
                                                 ng-show="laCompra.objMoneda && laCompra.objMoneda.id == 2 && laCompra.totfact > 0"
@@ -906,6 +909,33 @@
                 </div>
             </div>
         </div>
+        <div id="divCargaMasiva" class="tab-pane fade">
+            <div class="panel panel-default">
+                <div class="panel-heading">Carga masiva de compras</div>
+                <div class="panel-body">
+                    <h4>Seleccionar archivo:</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input name="txtFile" id="txtFile" type="file" class="form-group"
+                                on-read-file="showContent($fileContent)" />
+                        </div>
+                    </div>
+                    <div ng-if="content">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Contenido del archivo:</h5>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-sm btn-primary pull-right" ng-click="procesarCompras()" title="Procesar archivo">
+                                    <i class="fi fi-rr-process"></i> Procesar
+                                </button>
+                            </div>
+                        </div>
+                        <pre>{{ content }}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="divPrintVer" class="tab-pane fade">
             <div id="toPrint">
                 <div class="row">
@@ -1323,9 +1353,7 @@
                 </div>
                 <div class="modal-body">
                     <label>Monto en Quetzales:</label>
-                    <input type="number" class="form-control"
-                           ng-model="retivaQtemp"
-                           min="0" step="0.001">
+                    <input type="number" class="form-control" ng-model="retivaQtemp" min="0" step="0.001">
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-default" data-dismiss="modal">Cancelar</button>
@@ -1342,9 +1370,7 @@
                 </div>
                 <div class="modal-body">
                     <label>Monto en Quetzales:</label>
-                    <input type="number" class="form-control"
-                           ng-model="isrQtemp"
-                           min="0" step="0.001">
+                    <input type="number" class="form-control" ng-model="isrQtemp" min="0" step="0.001">
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-default" data-dismiss="modal">Cancelar</button>
@@ -1353,4 +1379,4 @@
             </div>
         </div>
     </div>
-    </div>
+</div>

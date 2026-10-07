@@ -50,7 +50,7 @@
             $scope.creador = undefined;
             $scope.ultimo_usuario = undefined;
             $scope.laCompra.retiva_manual = 0;
-            $scope.laCompra.isr_manual = 0; 
+            $scope.laCompra.isr_manual = 0;
             var periodoIva = true;
 
             empresaSrvc.lstEmpresas().then(function (d) { $scope.lasEmpresas = d; });
@@ -282,7 +282,7 @@
                     //const impuesto = $scope.laCompra.objTipoCombustible.impuesto != null && $scope.laCompra.objTipoCombustible.impuesto != undefined ? parseFloat($scope.laCompra.objTipoCombustible.impuesto) : 0.00;
                     const impuesto = !!$scope.laCompra.objTipoCombustible.impuesto ? parseFloat($scope.laCompra.objTipoCombustible.impuesto) : 0.00;
                     let monto = 0.00;
-                    monto = $scope.laCompra.objTipoCombustible.id == 2 ? (galones * 0.9) * impuesto : galones * impuesto; 
+                    monto = $scope.laCompra.objTipoCombustible.id == 2 ? (galones * 0.9) * impuesto : galones * impuesto;
                     return monto.toFixed(2);
                 }
                 return 0.00;
@@ -953,8 +953,8 @@
                     })
             }
 
-            $scope.calcularRetIVA = function(){
-                if ($scope.laCompra.retiva_manual == 1) return;  
+            $scope.calcularRetIVA = function () {
+                if ($scope.laCompra.retiva_manual == 1) return;
             };
             $scope.abrirRetIVAQ = function () {
                 $scope.retivaQtemp = parseFloat($scope.laCompra.retiva) || 0;
@@ -967,14 +967,14 @@
                 if ($scope.laCompra.retiva_manual != 1 && nueva.id !== vieja.id) {
                     $scope.calcularRetIVA();
                 }
-            
+
                 if ($scope.laCompra.isr_manual != 1 && nueva.id !== vieja.id) {
                     $scope.calcularISR();
                 }
             });
             $scope.guardarRetIVAQ = function () {
                 if (!$scope.laCompra.id || $scope.laCompra.id == 0) {
-                
+
                     if ($scope.retivaQtemp == 0) {
                         // 0 significa NO manual
                         $scope.laCompra.retiva_manual = 0;
@@ -982,23 +982,23 @@
                     } else {
                         // cualquier número > 0 = manual
                         $scope.laCompra.retiva_manual = 1;
-                        $scope.laCompra.retiva = $scope.retivaQtemp;                        
+                        $scope.laCompra.retiva = $scope.retivaQtemp;
                     }
-            
-                
+
+
                     $('#modalRetIVAQ').modal('hide');
                     return;
                 }
-            
-                
+
+
                 let datos = angular.copy($scope.laCompra);
                 datos.iddocliquida = datos.iddocliquida || null;
                 datos.ctagastoprov = datos.ctagastoprov || null;
-                datos.fechaingresostr  = datos.fechaingresostr || datos.fechaingreso;
-                datos.fechafacturastr  = datos.fechafacturastr || datos.fechafactura;
-                datos.fechapagostr     = datos.fechapagostr    || datos.fechapago;
-                datos.conceptoprov = datos.conceptoprov  ||  null;    
-                
+                datos.fechaingresostr = datos.fechaingresostr || datos.fechaingreso;
+                datos.fechafacturastr = datos.fechafacturastr || datos.fechafactura;
+                datos.fechapagostr = datos.fechapagostr || datos.fechapago;
+                datos.conceptoprov = datos.conceptoprov || null;
+
                 if ($scope.retivaQtemp == 0) {
                     datos.retiva_manual = 0;
                     datos.retiva = 0;
@@ -1006,7 +1006,7 @@
                     datos.retiva_manual = 1;
                     datos.retiva = $scope.retivaQtemp;
                 }
-            
+
                 compraSrvc.editRow(datos, 'u').then(function () {
                     if ($scope.retivaQtemp == 0) {
                         // dejarla automática visualmente
@@ -1018,12 +1018,12 @@
                         $scope.laCompra.retiva = $scope.retivaQtemp;
                     }
                 });
-            
+
                 $('#modalRetIVAQ').modal('hide');
             };
-            
-            $scope.calcularISR = function() {
-                if ($scope.laCompra.isr_manual == 1) return;  
+
+            $scope.calcularISR = function () {
+                if ($scope.laCompra.isr_manual == 1) return;
             };
             $scope.abrirISR = function () {
                 $scope.isrQtemp = parseFloat($scope.laCompra.isr) || 0;
@@ -1041,15 +1041,15 @@
                     $('#modalISR').modal('hide');
                     return;
                 }
-            
+
                 let datos = angular.copy($scope.laCompra);
                 datos.iddocliquida = datos.iddocliquida || null;
                 datos.ctagastoprov = datos.ctagastoprov || null;
-                datos.fechaingresostr  = datos.fechaingresostr || datos.fechaingreso;
-                datos.fechafacturastr  = datos.fechafacturastr || datos.fechafactura;
-                datos.fechapagostr     = datos.fechapagostr    || datos.fechapago;
-                datos.conceptoprov = datos.conceptoprov  ||  null;    
-            
+                datos.fechaingresostr = datos.fechaingresostr || datos.fechaingreso;
+                datos.fechafacturastr = datos.fechafacturastr || datos.fechafactura;
+                datos.fechapagostr = datos.fechapagostr || datos.fechapago;
+                datos.conceptoprov = datos.conceptoprov || null;
+
                 if ($scope.isrQtemp == 0) {
                     datos.isr_manual = 0;
                     datos.isr = 0;
@@ -1057,7 +1057,7 @@
                     datos.isr_manual = 1;
                     datos.isr = $scope.isrQtemp;
                 }
-            
+
                 compraSrvc.editRow(datos, 'u').then(function () {
                     if ($scope.isrQtemp == 0) {
                         $scope.laCompra.isr_manual = 0;
@@ -1067,10 +1067,45 @@
                         $scope.laCompra.isr = $scope.isrQtemp;
                     }
                 });
-            
+
                 $('#modalISR').modal('hide');
-            }; 
-               
+            };
+
+            // carga masiva de compras CSV
+            $scope.showContent = $fileContent => {
+                $scope.content = $fileContent;
+            };
+
+            $scope.procesarCompras = () => {
+                const archivo = $scope.content;
+                const primeraLinea = archivo.trim().split("\n")[0];
+
+                // revisamos si el archivo tiene el formato esperado (columnas separadas por "|")
+                if (primeraLinea.includes("|")) {
+                    // dividimos el contenido del archivo en líneas y procesamos cada línea
+                    let linea = archivo.split("\n");
+                    linea.forEach((ln, index) => {
+                        if (index > 0) {
+                            if (ln.trim() !== "") {
+                                // procesamos los datos de la línea "|"
+                                let datos = ln.replace('\r', '').replace('\n', '').trim().split('|');
+                                // armamos el objeto de compra para enivarlo a php
+                                let compra = {
+                                    idempresa: $scope.usuario.workingon, fecha: moment(moment(datos[0]).toDate()).format('YYYY-MM-DD'),
+                                    tipofactura: datos[2], serie: datos[3], documento: datos[4], nit: datos[8], nombre: datos[9], moneda: datos[17],
+                                    // tipocambio: pendiente de confirmar como trabajar
+                                    total: datos[18], iva: datos[19], anulado: datos[20] === 'No' ? false : true,  idp: datos[22], tasa_municipal: datos[27]
+                                };
+                            }
+                        }
+                    });
+                } else {
+                    toaster.pop({
+                        type: 'error', title: 'Error en el archivo',
+                        body: 'El arvhivo no tiene el formato esperado. Asegúrese de que el archivo sea CSV y las columnas estén separadas por "|" (pipe).', timeout: 9000
+                    });
+                }
+            }
         }]);
     //------------------------------------------------------------------------------------------------------------------------------------------------//
     compractrl.controller('ModalCtasGastoProvCtrl', ['$scope', '$uibModalInstance', 'lstctasgasto', function ($scope, $uibModalInstance, lstctasgasto) {
