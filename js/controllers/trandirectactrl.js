@@ -160,6 +160,7 @@
             obj.haber = parseFloat(obj.haber);
             obj.idcuenta = parseInt(obj.objCuenta[0].id);
             obj.idproyecto = +obj.idproyecto;
+            obj.idusuario = $scope.usuario.uid;
             // console.log(obj); return;
 
             if (obj.conceptomayor) {
@@ -185,10 +186,12 @@
             var modalInstance = $uibModal.open({
                 animation: true,
                 templateUrl: 'modalUpdDetCont.html',
+                // en venta
                 controller: 'ModalUpdDetContCtrl',
                 resolve: {
                     detalle: function () { return obj; },
-                    idempresa: function () { return +$scope.laDirecta.idempresa; }
+                    idempresa: function () { return +$scope.laDirecta.idempresa; },
+                    idusuario: function () { return $scope.usuario.uid; }
                 }
             });
 
@@ -199,7 +202,7 @@
 
         $scope.delDetCont = function (obj) {
             $confirm({ text: '¿Seguro(a) de eliminar esta cuenta?', title: 'Eliminar cuenta contable', ok: 'Sí', cancel: 'No' }).then(function () {
-                detContSrvc.editRow({ id: obj.id }, 'd').then(function () { $scope.getDetCont(obj.idorigen); });
+                detContSrvc.editRow({ id: obj.id, idusuario: $scope.usuario.uid }, 'd').then(function () { $scope.getDetCont(obj.idorigen); });
             });
         };
 

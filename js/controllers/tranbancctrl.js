@@ -628,7 +628,7 @@
                 text: '¿Seguro(a) de eliminar esta transacción? (Se liberarán los documentos de soporte, se eliminará el detalle contable de esta transacción y, en el caso de los cheques, se reseteará el correlativo a este número)',
                 title: 'Eliminar cuenta contable', ok: 'Sí', cancel: 'No'
             }).then(function () {
-                tranBancSrvc.editRow({ id: obj.id }, 'd').then(function () { $scope.getLstTran(); $scope.resetLaTran(); });
+                tranBancSrvc.editRow({ id: obj.id, idusuario: $scope.uid }, 'd').then(function () { $scope.getLstTran(); $scope.resetLaTran(); });
             });
         };
 
@@ -694,6 +694,7 @@
             obj.debe = parseFloat(obj.debe);
             obj.haber = parseFloat(obj.haber);
             obj.idcuenta = parseInt(obj.objCuenta.id);
+            obj.idusuario = $scope.usuario.uid;
             detContSrvc.editRow(obj, 'c').then(function () {
                 detContSrvc.lstDetalleCont($scope.origen, parseInt($scope.laTran.id)).then(function (detc) {
                     $scope.losDetCont = procDataDet(detc);
@@ -717,10 +718,12 @@
             var modalInstance = $uibModal.open({
                 animation: true,
                 templateUrl: 'modalUpdDetCont.html',
+                // controlador en venta
                 controller: 'ModalUpdDetContCtrl',
                 resolve: {
                     detalle: function () { return obj; },
-                    idempresa: function () { return +$scope.laEmpresa.id; }
+                    idempresa: function () { return +$scope.laEmpresa.id; },
+                    idusuario: function () { return $scope.usuario.uid; }
                 }
             });
 
@@ -731,7 +734,7 @@
 
         $scope.delDetCont = function (obj) {
             $confirm({ text: '¿Seguro(a) de eliminar esta cuenta?', title: 'Eliminar cuenta contable', ok: 'Sí', cancel: 'No' }).then(function () {
-                detContSrvc.editRow({ id: obj.id }, 'd').then(function () { $scope.getDetCont(obj.idorigen); $scope.checkTotales(+obj.idorigen); });
+                detContSrvc.editRow({ id: obj.id, idusuario: $scope.usuario.uid }, 'd').then(function () { $scope.getDetCont(obj.idorigen); $scope.checkTotales(+obj.idorigen); });
             });
         };
 

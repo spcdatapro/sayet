@@ -403,6 +403,11 @@ $app->post('/drisr', function () {
     $cnt_retiva = $db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 14");
     $db->doQuery("UPDATE factura SET ultusuario = $d->idusuario WHERE id = $d->idfactura");
 
+    $query = "INSERT INTO auditoria (idusuario, tabla, cambio, fecha, tipo) VALUES(";
+    $query.= "$d->idusuario, 'factura', 'Eliminacion de retencion de ISR', NOW(), 'U'";
+    $query.= ")";
+    $db->doQuery($query);
+
     if ($cnt_retisr > 0) {
         $query = "UPDATE factura SET retisr = 0 WHERE id = $d->idfactura";
         $db->doQuery($query);
@@ -429,6 +434,11 @@ $app->post('/driva', function () {
     $cnt_retisr = $db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 13");
 
     $db->doQuery("UPDATE factura SET ultusuario = $d->idusuario WHERE id = $d->idfactura");
+    
+    $query = "INSERT INTO auditoria (idusuario, tabla, cambio, fecha, tipo) VALUES(";
+    $query.= "$d->idusuario, 'factura', 'Eliminacion de retencion de IVA', NOW(), 'U'";
+    $query.= ")";
+    $db->doQuery($query);
 
     if ($cnt_retiva > 0) {
         $query = "UPDATE factura SET retiva = 0 WHERE id = $d->idfactura";

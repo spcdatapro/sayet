@@ -15,10 +15,12 @@
         $scope.elDetCont = {};
         $scope.origen = 7;
         $scope.cuentas = [];
+        $scope.usr = {};
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
 
         authSrvc.getSession().then(function(usrLogged){
+            $scope.usr = usrLogged;
             if(parseInt(usrLogged.workingon) > 0){
                 authSrvc.gpr({idusuario: parseInt(usrLogged.uid), ruta:$route.current.params.name}).then(function(d){ $scope.permiso = d; });
                 $scope.recprov.idempresa = parseInt(usrLogged.workingon);
@@ -221,6 +223,7 @@
             obj.debe = parseFloat(obj.debe);
             obj.haber = parseFloat(obj.haber);
             obj.idcuenta = parseInt(obj.objCuenta[0].id);
+            obj.idusuario = $scope.usr.uid;
             detContSrvc.editRow(obj, 'c').then(function(){
                 detContSrvc.lstDetalleCont($scope.origen, $scope.recprov.id).then(function(detc){
                     $scope.lstdetcont = procDetCont(detc);
@@ -232,7 +235,7 @@
 
         $scope.delDetCont = function(obj){
             $confirm({text: '¿Seguro(a) de eliminar esta cuenta?', title: 'Eliminar cuenta contable', ok: 'Sí', cancel: 'No'}).then(function() {
-                detContSrvc.editRow({id:obj.id}, 'd').then(function(){ $scope.loadDetCont(obj.idorigen); });
+                detContSrvc.editRow({id:obj.id, idusuario: $scope.usr.uid}, 'd').then(function(){ $scope.loadDetCont(obj.idorigen); });
             });
         };
 

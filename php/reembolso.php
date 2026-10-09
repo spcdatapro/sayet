@@ -89,6 +89,10 @@ $app->post('/c', function(){
     $query.= "'$d->tblbeneficiario', 1, $d->idtiporeembolso, $d->fondoasignado, $d->idsubtipogasto, $d->idcuentaliq, $d->ordentrabajo, $d->idproyecto, $d->idusuario";
     $query.=")";
     $db->doQuery($query);
+
+    // $db, $idorigen, $origen, $idusuario, $movimiento, $antes = null
+    insertarBitacora($db, $db->getLastId(), 5, $d->idusuario, 'C');
+
     print json_encode(['lastid' => $db->getLastId()]);
 });
 
@@ -97,18 +101,23 @@ $app->post('/u', function(){
     if(!isset($d->ordentrabajo)) { $d->ordentrabajo = 0; }
     if(!isset($d->idproyecto)) { $d->idproyecto = 0; }
     $db = new dbcpm();
+    $antes = $db->getQuery("SELECT * FROM reembolso WHERE id = ".$d->id)[0];
     $fftmp = $d->ffinstr == '' ? 'NULL' : "'".$d->ffinstr."'";
     $query = "UPDATE reembolso SET finicio = '$d->finiciostr', ffin = ".$fftmp.", beneficiario = '$d->beneficiario', ";
     $query.= "idbeneficiario = $d->idbeneficiario, tblbeneficiario = '$d->tblbeneficiario', idtiporeembolso = $d->idtiporeembolso, ";
     $query.= "fondoasignado = $d->fondoasignado, idsubtipogasto = $d->idsubtipogasto, idcuentaliq = $d->idcuentaliq, ordentrabajo = $d->ordentrabajo, idproyecto = $d->idproyecto, ";
     $query.= "ultusuario = $d->idusuario ";
     $query.= "WHERE id = ".$d->id;
+
+    insertarBitacora($db, $d->id, 5, $d->idusuario, 'M', $antes);
+
     $db->doQuery($query);
 });
 
 $app->post('/d', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    $antes = $db->getQuery("SELECT * FROM reembolso WHERE id = ".$d->id)[0];
     $query = "DELETE detallecontable ";
     $query.= "FROM detallecontable INNER JOIN compra ON compra.id = detallecontable.idorigen AND detallecontable.origen = ".$d->origen." ";
     $query.= "INNER JOIN reembolso ON reembolso.id = compra.idreembolso ";
@@ -116,6 +125,8 @@ $app->post('/d', function(){
     $db->doQuery($query);
     $db->doQuery("DELETE FROM compra WHERE idreembolso = ".$d->id);
     $db->doQuery("DELETE FROM reembolso WHERE id = ".$d->id);
+    // insertarBitacora($db, $d->id, 5, $d->idusuario, 'E', $antes);
+    insertarBitacora($db, $d->id, 5, $d->idusuario, 'E', $antes);
 });
 
 $app->post('/reapertura', function(){
@@ -339,6 +350,8 @@ $app->post('/cd', function(){
     insertaDetalleContable($d, $db, $lastid);
     updateIdProveedor($db, $lastid);
 
+    insertarBitacora($db, $lastid, 2, $d->idusuario, 'C');
+
     print json_encode(['lastid' => $lastid]);
 });
 
@@ -369,6 +382,8 @@ $app->post('/ud', function(){
         }
     }
 
+    $antes = $db->getQuery("SELECT * FROM compra WHERE id = ".$d->id)[0];
+
     $query = "UPDATE compra SET ";
     $query.= "idtipofactura = ".$d->idtipofactura.", idproveedor = ".$d->idproveedor.", proveedor = '".$d->proveedor."', ";
     $query.= "nit = '".$d->nit."', serie = '".$d->serie."', documento = ".$d->documento.", fechaingreso = '".$d->fechaingresostr."', mesiva = ".$d->mesiva.", ";
@@ -385,6 +400,7 @@ $app->post('/ud', function(){
     $db->doQuery($query);
     insertaDetalleContable($d, $db, $d->id);
     updateIdProveedor($db, $d->id);
+    insertarBitacora($db, $d->id, 2, $d->idusuario, 'M', $antes);
 
     print json_encode(['lastid' => $d->id]);
 });
@@ -397,8 +413,10 @@ $app->get('/setrevisada/:idcompra', function($idcompra){
 $app->post('/dd', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    $antes = $db->getQuery("SELECT * FROM compra WHERE id = ".$d->id)[0];
     $db->doQuery("DELETE FROM detallecontable WHERE origen = ".$d->origen." AND idorigen = ".$d->id);
     $db->doQuery("DELETE FROM compra WHERE id = ".$d->id);
+    insertarBitacora($db, $d->id, 2, $d->idusuario, 'E', $antes);
 });
 
 $app->post('/cierre', function(){
@@ -883,5 +901,24 @@ $app->get('/aprobados', function(){
             ORDER BY aprobacion , finicio DESC";
     print json_encode($db->getQuery($query));
 });
+
+function insertarBitacora ($db, $idorigen, $origen, $idusuario, $movimiento, $antes = null) {
+    if ($idorigen == 0 || $origen == 0 || $idusuario == 0 || $movimiento == '') {
+        return;
+    }
+
+    if ($origen == 2) {
+        $resultado = $db->getQuery("SELECT * FROM compra WHERE id = $idorigen");
+        $despues = isset($resultado[0]) ? $resultado[0] : null;
+    } else {
+        $resultado = $db->getQuery("SELECT * FROM reembolso WHERE id = $idorigen");
+        $despues = isset($resultado[0]) ? $resultado[0] : null;
+    }
+
+    $query = "INSERT INTO bitacora(idorigen, origen, fecha, idusuario, movimiento, antes, despues) VALUES 
+    ($idorigen, $origen, DATE_FORMAT(NOW(), '%Y-%m-%d'), $idusuario, '$movimiento', " 
+    . ($antes ? "'" . json_encode($antes) . "'" : 'NULL') . ", " . ($despues !== null ? "'" . json_encode($despues) . "'" : 'NULL') . ")";
+    $db->doQuery($query);
+}
 
 $app->run();

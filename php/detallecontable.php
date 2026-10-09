@@ -48,6 +48,13 @@ $app->post('/c', function(){
     $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor, idproyecto) ";
     $query.= "VALUES($d->origen, $d->idorigen, $d->idcuenta, $d->debe, $d->haber, '$d->conceptomayor', $d->idproyecto)";
     $db->doQuery($query);
+
+    $lastid = $db->getLastId();
+
+    // $db, $idorigen, $origen, $idusuario, $movimiento, $antes = null
+    if(isset($d->idusuario)) {
+        insertarBitacora($db, $lastid, 6, $d->idusuario, 'C');
+    }
 });
 
 $app->post('/u', function(){
@@ -59,6 +66,8 @@ $app->post('/u', function(){
         $existe = $db->getOneField("SELECT id FROM compraproyecto WHERE idcompra = $d->idorigen AND idcuentac = $d->anterior");
         $cuenta = $db->getOneField("SELECT codigo FROM cuentac WHERE id = $d->idcuenta");   
     }
+
+    $antes = $db->getQuery("SELECT * FROM detallecontable WHERE id = ".$d->id)[0];
 
     if($existe > 0) {
         if (preg_match('/^[56]/', $cuenta)) {
@@ -74,11 +83,17 @@ $app->post('/u', function(){
     $query = "UPDATE detallecontable SET idcuenta = $d->idcuenta, debe = $d->debe, haber = $d->haber, ";
     $query.= "conceptomayor = '$d->conceptomayor' WHERE id = $d->id";
     $db->doQuery($query);
+
+    if(isset($d->idusuario)) {
+        insertarBitacora($db, $d->id, 6, $d->idusuario, 'M', $antes);
+    }
 });
 
 $app->post('/d', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+
+    $antes = $db->getQuery("SELECT * FROM detallecontable WHERE id = ".$d->id)[0];
 
     if(isset($d->idcompra)) {
         $idcuenta = $db->getOneField("SELECT idcuenta FROM detallecontable WHERE id = $d->id");
@@ -91,6 +106,10 @@ $app->post('/d', function(){
 
     $query = "DELETE FROM detallecontable WHERE id = ".$d->id;
     $db->doQuery($query);
+
+    if(isset($d->idusuario)) {
+        insertarBitacora($db, $d->id, 6, $d->idusuario, 'E', $antes);
+    }
 });
 
 $app->post('/rptdetcontfact', function(){
@@ -145,5 +164,18 @@ $app->post('/rptdetcontdocs', function(){
     print json_encode($data);
 });
 
+function insertarBitacora ($db, $idorigen, $origen, $idusuario, $movimiento, $antes = null) {
+    if ($idorigen == 0 || $origen == 0 || $idusuario == 0 || $movimiento == '') {
+        return;
+    }
+
+    $resultado = $db->getQuery("SELECT * FROM detallecontable WHERE id = $idorigen");
+    $despues = isset($resultado[0]) ? $resultado[0] : null;
+
+    $query = "INSERT INTO bitacora(idorigen, origen, fecha, idusuario, movimiento, antes, despues) VALUES 
+    ($idorigen, $origen, DATE_FORMAT(NOW(), '%Y-%m-%d'), $idusuario, '$movimiento', " 
+    . ($antes ? "'" . json_encode($antes) . "'" : 'NULL') . ", " . ($despues !== null ? "'" . json_encode($despues) . "'" : 'NULL') . ")";
+    $db->doQuery($query);
+}
 
 $app->run();

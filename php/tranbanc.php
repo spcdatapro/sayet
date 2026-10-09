@@ -190,6 +190,8 @@ $app->post('/c', function(){
             }
         }
     }
+    // ($db, $idorigen, $origen, $idusuario, $movimiento, $antes = null)
+    insertarBitacora($db, $lastid, 1, $d->idusuario, 'C');
     print json_encode([ 'lastid' => $lastid, 'tipo' => $tipo, 'mensaje' => $mensaje ]);
 });
 
@@ -197,6 +199,7 @@ $app->post('/u', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
     $d->numban = !isset($d->numban) ? 'null' : $d->numban;
+    $antes = $db->getQuery("SELECT * FROM tranban WHERE id = ".$d->id)[0];
     $query = "UPDATE tranban SET tipotrans = '".$d->tipotrans."', ";
     $query.= "fecha = '$d->fechastr', monto = $d->monto, beneficiario = '$d->beneficiario', concepto = '$d->concepto', ";
     $query.= "operado = $d->operado, numero = $d->numero, anticipo = $d->anticipo, idbeneficiario = $d->idbeneficiario, ";
@@ -204,6 +207,8 @@ $app->post('/u', function(){
     $query.= "iddetpagopresup = $d->iddetpagopresup, idproyecto = $d->idproyecto, iddocliquida = $d->iddocliquida, numban = $d->numban, ultusuario = $d->idusuario ";
     $query.= "WHERE id = $d->id";
     $db->doQuery($query);
+
+    insertarBitacora($db, $d->id, 1, $d->idusuario, 'M', $antes);
 
     //Fix para que libere compras o pagos de OTs si ponenen la palabra ANULADO en beneficiario o concepto. 04/11/2020
     $enBene = strpos(strtoupper($d->beneficiario), 'ANULA');
@@ -276,6 +281,8 @@ $app->post('/d', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
+    $antes = $db->getQuery("SELECT * FROM tranban WHERE id = ".$d->id)[0];
+
     $tran = $db->getQuery("SELECT tipotrans, numero, idbanco, iddetpresup, iddetpagopresup FROM tranban WHERE id = $d->id")[0];
     if(trim($tran->tipotrans) == 'C'){ $db->doQuery("UPDATE banco SET correlativo = $tran->numero WHERE id = $tran->idbanco"); }
 
@@ -295,6 +302,8 @@ $app->post('/d', function(){
         $db->doQuery($query);
         updateGastosOT($tran->iddetpresup);
     }
+
+    insertarBitacora($db, $d->id, 1, $d->idusuario, 'E', $antes);
 
 });
 
@@ -2040,6 +2049,20 @@ function ordenAscendente(&$array, $dateField) {
     usort($array, function($a, $b) use ($dateField) {
         return strtotime($a->$dateField) - strtotime($b->$dateField);
     });
+}
+
+function insertarBitacora ($db, $idorigen, $origen, $idusuario, $movimiento, $antes = null) {
+    if ($idorigen == 0 || $origen == 0 || $idusuario == 0 || $movimiento == '') {
+        return;
+    }
+
+    $resultado = $db->getQuery("SELECT * FROM tranban WHERE id = $idorigen");
+    $despues = isset($resultado[0]) ? $resultado[0] : null;
+
+    $query = "INSERT INTO bitacora(idorigen, origen, fecha, idusuario, movimiento, antes, despues) VALUES 
+    ($idorigen, $origen, DATE_FORMAT(NOW(), '%Y-%m-%d'), $idusuario, '$movimiento', " 
+    . ($antes ? "'" . json_encode($antes) . "'" : 'NULL') . ", " . ($despues !== null ? "'" . json_encode($despues) . "'" : 'NULL') . ")";
+    $db->doQuery($query);
 }
 
 $app->run();

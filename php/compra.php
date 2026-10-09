@@ -408,6 +408,8 @@ $app->post('/c', function(){
 
     $lastid = $db->getLastId();
     if((int)$lastid > 0){
+        // insertar bitacora ($idorigen, $origen, $idusuario, $movimiento) 
+        insertarBitacora($db, $lastid, 2, $d->idusuario, 'C');
         //Inicia inserción automática de detalle contable de la factura
         insertaDetalleContable($d, $lastid);
         //Fin de inserción automática de detalle contable de la factura
@@ -485,6 +487,8 @@ $app->post('/u', function(){
         }
     }
 
+    $antes = $db->getQuery("SELECT * FROM compra WHERE id = ".$d->id)[0];
+
     $query = "UPDATE compra SET ";
     $query.= "idproveedor = ".$d->idproveedor.", serie = '".$d->serie."', documento = ".$d->documento.", fechaingreso = '".$d->fechaingresostr."', ";
     $query.= "mesiva = ".$d->mesiva.", fechafactura = '".$d->fechafacturastr."', idtipocompra = ".$d->idtipocompra.", conceptomayor =  '".$d->conceptomayor."', ";
@@ -514,6 +518,8 @@ $app->post('/u', function(){
         generarDetalleServicio($db, $d, $d->id);
     } 
 
+    // insertamos bitacora
+    insertarBitacora($db, $d->id, 2, $d->idusuario, 'M', $antes);
     //Inicia inserción automática de detalle contable de la factura
     insertaDetalleContable($d, $d->id);
     //Fin de inserción automática de detalle contable de la factura
@@ -530,8 +536,11 @@ $app->post('/u', function(){
 $app->post('/d', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    $antes = $db->getQuery("SELECT * FROM compra WHERE id = ".$d->id)[0];
     $db->doQuery("DELETE FROM detallecontable WHERE origen = 2 AND idorigen = ".$d->id);
     $db->doQuery("DELETE FROM compra WHERE id = ".$d->id);
+    // insertamos bitacora
+    insertarBitacora($db, $d->id, 2, $d->idusuario, 'E', $antes);
 });
 
 $app->post('/uisr', function(){
@@ -1201,5 +1210,19 @@ $app->get('/uriva/:idcompra/:monto/:idempresa/:suma/:tc', function ($idcompra, $
 
     print json_encode(['tipo' => 'success', 'mensaje' => 'Se ha modificado correctamente.']);
 });
+
+function insertarBitacora ($db, $idorigen, $origen, $idusuario, $movimiento, $antes = null) {
+    if ($idorigen == 0 || $origen == 0 || $idusuario == 0 || $movimiento == '') {
+        return;
+    }
+
+    $resultado = $db->getQuery("SELECT * FROM compra WHERE id = $idorigen");
+    $despues = isset($resultado[0]) ? $resultado[0] : null;
+
+    $query = "INSERT INTO bitacora(idorigen, origen, fecha, idusuario, movimiento, antes, despues) VALUES 
+    ($idorigen, $origen, DATE_FORMAT(NOW(), '%Y-%m-%d'), $idusuario, '$movimiento', " 
+    . ($antes ? "'" . json_encode($antes) . "'" : 'NULL') . ", " . ($despues !== null ? "'" . json_encode($despues) . "'" : 'NULL') . ")";
+    $db->doQuery($query);
+}
 
 $app->run();

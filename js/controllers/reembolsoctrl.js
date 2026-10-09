@@ -881,6 +881,7 @@
                 obj.origen = $scope.origen;
                 obj.idcuenta = obj.objCuenta.id;
                 obj.activada = 0;
+                obj.idusuario = $scope.uid;
                 //console.log(obj); return;
                 detContSrvc.editRow(obj, 'c').then(function () {
                     $scope.rowFacturaExpanded({ id: obj.idorigen });
@@ -892,10 +893,12 @@
                 var modalInstance = $uibModal.open({
                     animation: true,
                     templateUrl: 'modalUpdDetCont.html',
+                    // controlador en venta
                     controller: 'ModalUpdDetContCtrl',
                     resolve: {
                         detalle: function () { return obj; },
-                        idempresa: function () { return +$scope.reembolso.idempresa; }
+                        idempresa: function () { return +$scope.reembolso.idempresa; },
+                        idusuario: function () { return $scope.uid; }
                     }
                 });
 
@@ -914,7 +917,7 @@
                     text: '¿Seguro(a) de eliminar esta cuenta?',
                     title: 'Eliminar cuenta', ok: 'Sí', cancel: 'No'
                 }).then(function () {
-                    detContSrvc.editRow({ id: obj.id }, 'd').then(function () {
+                    detContSrvc.editRow({ id: obj.id, idusuario: $scope.uid }, 'd').then(function () {
                         $scope.rowFacturaExpanded({ id: obj.idorigen });
                         $scope.detcont = { debe: 0.00, haber: 0.00 };
                     });

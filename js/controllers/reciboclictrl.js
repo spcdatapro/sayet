@@ -235,6 +235,7 @@
                 obj.tipo = +$scope.fltrre.tipo;
                 obj.concepto = obj.concepto != null && obj.concepto != undefined ? obj.concepto : '';
                 obj.notas = obj.notas != null && obj.notas != undefined ? obj.notas : '';
+                obj.idusuario = $scope.usr.uid;
 
                 return obj;
             }
@@ -266,7 +267,7 @@
 
             $scope.delRecCli = function (obj) {
                 $confirm({ text: '¿Seguro(a) de eliminar el recibo de clientes No. ' + $scope.reccli.serie + '-' + $scope.reccli.correlativo + '?', title: 'Eliminar recibo de clientes', ok: 'Sí', cancel: 'No' }).then(function () {
-                    reciboClientesSrvc.editRow({ id: $scope.reccli.id }, 'd').then(function () {
+                    reciboClientesSrvc.editRow({ id: $scope.reccli.id, idusuario: $scope.usr.uid }, 'd').then(function () {
                         //Inicio modificacion
                         //$scope.getLstRecibosCli(obj.idempresa); 
                         $scope.getLstRecibosCli();
@@ -412,6 +413,7 @@
                 obj.debe = parseFloat(obj.debe);
                 obj.haber = parseFloat(obj.haber);
                 obj.idcuenta = parseInt(obj.objCuenta.id);
+                obj.idusuario = $scope.usr.uid;
                 detContSrvc.editRow(obj, 'c').then(function () {
                     detContSrvc.lstDetalleCont($scope.origen, $scope.reccli.id).then(function (detc) {
                         $scope.lstdetcont = procDetCont(detc);
@@ -430,7 +432,7 @@
 
             $scope.delDetCont = (obj) => {
                 $confirm({ text: '¿Seguro(a) de eliminar esta cuenta?', title: 'Eliminar cuenta contable', ok: 'Sí', cancel: 'No' }).then(() => {
-                    detContSrvc.editRow({ id: obj.id }, 'd').then(() => { $scope.loadDetCont(obj.idorigen); });
+                    detContSrvc.editRow({ id: obj.id, idusuario: $scope.usr.uid }, 'd').then(() => { $scope.loadDetCont(obj.idorigen); });
                 });
             };
 
@@ -438,10 +440,12 @@
                 var modalInstance = $uibModal.open({
                     animation: true,
                     templateUrl: 'modalUpdDetCont.html',
+                    // controlador en venta
                     controller: 'ModalUpdDetContCtrl',
                     resolve: {
                         detalle: () => obj,
-                        idempresa: () => $scope.reccli.idempresa
+                        idempresa: () => $scope.reccli.idempresa,
+                        idusuario: () => $scope.usr.uid
                     }
                 });
 

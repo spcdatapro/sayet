@@ -714,7 +714,7 @@
                     text: '¿Seguro(a) de eliminar esta factura de compra? (También se eliminará su detalle contable)',
                     title: 'Eliminar factura de compra', ok: 'Sí', cancel: 'No'
                 }).then(() => {
-                    compraSrvc.editRow({ id: obj.id }, 'd').then(() => {
+                    compraSrvc.editRow({ id: obj.id, idusuario: $scope.usuario.uid }, 'd').then(() => {
                         $scope.getLstCompras();
                         $scope.resetCompra();
                     });
@@ -859,6 +859,7 @@
                 obj.debe = parseFloat(obj.debe);
                 obj.haber = parseFloat(obj.haber);
                 obj.idcuenta = parseInt(obj.objCuenta.id);
+                obj.idusuario = $scope.usuario.uid;
                 detContSrvc.editRow(obj, 'c').then(function () {
                     detContSrvc.lstDetalleCont($scope.origen, parseInt($scope.laCompra.id)).then(function (detc) {
                         $scope.losDetCont = procDataDet(detc);
@@ -876,7 +877,8 @@
                     controller: 'ModalUpdDetContCtrl',
                     resolve: {
                         detalle: function () { return obj; },
-                        idempresa: function () { return +$scope.laCompra.idempresa; }
+                        idempresa: function () { return +$scope.laCompra.idempresa; },
+                        idusuario: function () { return $scope.usuario.uid; }
                     }
                 });
 
@@ -890,7 +892,7 @@
 
             $scope.delDetCont = function (obj) {
                 $confirm({ text: '¿Seguro(a) de eliminar esta cuenta?', title: 'Eliminar cuenta contable', ok: 'Sí', cancel: 'No' }).then(function () {
-                    detContSrvc.editRow({ id: obj.id, idcompra: $scope.laCompra.id }, 'd').then(function () { $scope.getDetCont(obj.idorigen); });
+                    detContSrvc.editRow({ id: obj.id, idcompra: $scope.laCompra.id, idusuario: $scope.usuario.uid }, 'd').then(function () { $scope.getDetCont(obj.idorigen); });
                 });
             };
 

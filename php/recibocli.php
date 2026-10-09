@@ -223,6 +223,8 @@ $app->post('/c', function(){
     $lastid = $db->getLastId();
     print json_encode(['lastid' => $db->getLastId()]);
     if((int)$lastid > 0){
+        // insertar bitacora ($db, $idorigen, $origen, $idusuario, $movimiento, $antes = null)
+        insertarBitacora($db, $lastid, 12, $d->idusuario, 'C', null);
         //Correlativo
         getCorrelativoInterno($d, $db, $lastid);
     }
@@ -233,17 +235,22 @@ $app->post('/u', function(){
     if(!isset($d->tipo)){ $d->tipo = 1; }
     if(!isset($d->concepto)){ $d->conceto = ''; }
     $db = new dbcpm();
+    $antes = $db->getQuery("SELECT * FROM recibocli WHERE id = $d->id")[0];
     $query = "UPDATE recibocli SET ";
     $query.= "fecha = '$d->fechastr', idcliente = $d->idcliente, espropio = $d->espropio, idtranban = $d->idtranban, ";
     $query.= "serie = '$d->serie', concepto = '$d->concepto', ";
     $query.= "usuariocrea = '$d->usuariocrea', nit = '$d->nit', notas = '$d->notas' ";
     $query.= "WHERE id = $d->id";
     $db->doQuery($query);
+
+    // insertar bitacora
+    insertarBitacora($db, $d->id, 12, $d->idusuario, 'M', $antes);
 });
 
 $app->post('/d', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    $antes = $db->getQuery("SELECT * FROM recibocli WHERE id = $d->id")[0];
 
     //Rony 2017-11-21 Mantiene los registro de facturas aplicadas al recibo en un array
     $datos = [];
@@ -264,6 +271,8 @@ $app->post('/d', function(){
     $db->doQuery("DELETE FROM detcobroventa WHERE idrecibocli = $d->id");
     $db->doQuery("DELETE FROM recibocli WHERE id = ".$d->id);
 
+    // insertar bitacora
+    insertarBitacora($db, $d->id, 12, $d->idusuario, 'E', $antes);
 });
 
 $app->post('/anula', function(){
@@ -729,6 +738,20 @@ function deleteTranBan ($id, $db) {
     $db->doQuery("DELETE FROM detallecontable WHERE origen = 1 AND idorigen = $id");
     $db->doQuery("DELETE FROM reclitran WHERE idtranban = $id");
     $db->doQuery("DELETE FROM tranban WHERE id = $id");
+}
+
+function insertarBitacora ($db, $idorigen, $origen, $idusuario, $movimiento, $antes = null) {
+    if ($idorigen == 0 || $origen == 0 || $idusuario == 0 || $movimiento == '') {
+        return;
+    }
+
+    $resultado = $db->getQuery("SELECT * FROM recibocli WHERE id = $idorigen");
+    $despues = isset($resultado[0]) ? $resultado[0] : null;
+
+    $query = "INSERT INTO bitacora(idorigen, origen, fecha, idusuario, movimiento, antes, despues) VALUES 
+    ($idorigen, $origen, DATE_FORMAT(NOW(), '%Y-%m-%d'), $idusuario, '$movimiento', " 
+    . ($antes ? "'" . json_encode($antes) . "'" : 'NULL') . ", " . ($despues !== null ? "'" . json_encode($despues) . "'" : 'NULL') . ")";
+    $db->doQuery($query);
 }
 
 $app->run();

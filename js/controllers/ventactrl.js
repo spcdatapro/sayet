@@ -361,6 +361,7 @@
             obj.debe = parseFloat(parseFloat(obj.debe).toFixed(2));
             obj.haber = parseFloat(parseFloat(obj.haber).toFixed(2));
             obj.idcuenta = parseInt(obj.objCuenta.id);
+            obj.idusuario = $scope.usrdata.uid;
             detContSrvc.editRow(obj, 'c').then(function () {
                 detContSrvc.lstDetalleCont($scope.origen, parseInt($scope.venta.id)).then(function (detc) {
                     $scope.losDetCont = procDataDet(detc);
@@ -377,7 +378,8 @@
                 controller: 'ModalUpdDetContCtrl',
                 resolve: {
                     detalle: function () { return obj; },
-                    idempresa: function () { return +$scope.venta.idempresa; }
+                    idempresa: function () { return +$scope.venta.idempresa; },
+                    idusuario: function () { return $scope.usrdata.uid; }
                 }
             });
 
@@ -388,7 +390,7 @@
 
         $scope.delDetCont = function (obj) {
             $confirm({ text: '¿Seguro(a) de eliminar esta cuenta?', title: 'Eliminar cuenta contable', ok: 'Sí', cancel: 'No' }).then(function () {
-                detContSrvc.editRow({ id: obj.id }, 'd').then(function () { $scope.getDetalleContable(obj.idorigen); });
+                detContSrvc.editRow({ id: obj.id, idusuario: $scope.usrdata.uid }, 'd').then(function () { $scope.getDetalleContable(obj.idorigen); });
             });
         };
 
@@ -523,7 +525,8 @@
         };
     }]);
     //------------------------------------------------------------------------------------------------------------------------------------------------//
-    ventactrl.controller('ModalUpdDetContCtrl', ['$scope', '$uibModalInstance', 'detalle', 'cuentacSrvc', 'idempresa', 'detContSrvc', '$confirm', function ($scope, $uibModalInstance, detalle, cuentacSrvc, idempresa, detContSrvc, $confirm) {
+    ventactrl.controller('ModalUpdDetContCtrl', ['$scope', '$uibModalInstance', 'detalle', 'cuentacSrvc', 'idempresa','idusuario', 'detContSrvc', '$confirm', 
+        function ($scope, $uibModalInstance, detalle, cuentacSrvc, idempresa, idusuario, detContSrvc, $confirm) {
         detalle.idcuenta = detalle.idcuenta.toString();
         $scope.detcont = detalle;
         $scope.cuentas = [];
@@ -539,6 +542,7 @@
 
         $scope.actualizar = function (obj) {
             obj.anterior = anterior;
+            obj.idusuario = idusuario;
             $confirm({ text: '¿Seguro(a) de guardar los cambios?', title: 'Modificar detalle contable', ok: 'Sí', cancel: 'No' })
                 .then(() => {
                     detContSrvc.editRow(obj, 'u')
