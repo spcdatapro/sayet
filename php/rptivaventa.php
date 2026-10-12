@@ -24,6 +24,10 @@ $app->post('/ivaventa', function(){
     $query.= "AND a.retiva > 0 ";
     $query.= "UNION ";
     $query.= "SELECT a.id AS idempresa, TRIM(a.nomempresa) AS nomempresa, TRIM(a.abreviatura) AS abreviatura, a.ordensumario FROM empresa a WHERE a.id = 8 ";
+    $query.= "UNION ALL SELECT a.id AS idempresa, TRIM(a.nomempresa) AS nomempresa, TRIM(a.abreviatura) AS abrevitura, a.ordensumario FROM empresa a INNER JOIN retiva_venta b ON b.idempresa = a.id ";
+    $query.= "WHERE ";
+    $query.= $d->fdelstr == '' || $d->falstr == '' ? "MONTH(b.fecha) = $d->mes AND YEAR(b.fecha) = $d->anio " : '';
+    $query.= $d->fdelstr != '' && $d->falstr != '' ? "b.fecha >= '$d->fdelstr' AND b.fecha <= '$d->falstr' " : '';
     $query.= "ORDER BY 4";
     $info->empresas = $db->getQuery($query);
     $cntEmp = count($info->empresas);
@@ -39,7 +43,12 @@ $app->post('/ivaventa', function(){
         $query.= $d->fdelstr != '' && $d->falstr != '' ? "AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' " : '';
         $query.= $d->cliente != '' ? "AND a.nombre = '$d->cliente' " : '';
         $query.= "AND a.retiva > 0 AND a.idempresa = $empresa->idempresa ";
-        $query.= "ORDER BY ".((int)$d->ordenalfa === 1 ? 'a.nombre, ' : '')."a.serie, a.numero, a.fecha";
+        $query.="UNION ALL SELECT a.id AS idfactura, IFNULL(b.serie, 'INSERTADO') AS serie, IFNULL(b.numero, '') AS numero, c.nombre, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, 
+        0.00 AS baase, 0.00 AS iva, a.monto AS retiva, a.formulario AS noformiva, 0.00 AS porretiva 
+        FROM retiva_venta a LEFT JOIN factura b ON a.idfactura = a.id INNER JOIN cliente c ON a.idcliente = c.id WHERE a.idempresa = $empresa->idempresa ";
+        $query.= $d->fdelstr == '' || $d->falstr == '' ? "AND MONTH(a.fecha) = $d->mes AND YEAR(a.fecha) = $d->anio " : '';
+        $query.= $d->fdelstr != '' && $d->falstr != '' ? "AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' " : '';
+        $query.= "ORDER BY ".((int)$d->ordenalfa === 1 ? '4 , ' : '')."2 , 3 , 5";
 
         if((int)$empresa->idempresa == 8){
             $query = "SELECT a.idtipofactura, a.id AS idfactura, a.serie, a.numero, a.nombre, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, ";
@@ -68,7 +77,14 @@ $app->post('/ivaventa', function(){
             $query.= $d->cliente != '' && (int)$empresa->idempresa != 8 ? "AND a.nombre = '$d->cliente' " : '';
             $query.= "AND a.idempresa = $empresa->idempresa ";
             $query.= (int)$empresa->idempresa != 8 ? "AND a.retiva > 0 " : "AND a.idcliente = 108 ";
-            $empresa->facturas[] = $db->getQuery($query)[0];
+            $suma = $db->getQuery($query)[0];
+            $query = "SELECT IFNULL(monto, 0) FROM retiva_venta WHERE idempresa = $empresa->idempresa ";
+            $query.= $d->fdelstr == '' || $d->falstr == '' ? "AND MONTH(fecha) = $d->mes AND YEAR(fecha) = $d->anio " : '';
+            $query.= $d->fdelstr != '' && $d->falstr != '' ? "AND fecha >= '$d->fdelstr' AND fecha <= '$d->falstr' " : '';
+            $insertado = (int)$db->getOneField($query);
+
+            $suma->retiva += $insertado;
+            $empresa->facturas[] = $suma;
         }
     }
 
@@ -83,9 +99,14 @@ $app->post('/ivaventa', function(){
     $query.= "AND ((a.retiva > 0) OR (a.idempresa = 8 AND a.idcliente = 108))";
     $sumas = $db->getQuery($query)[0];
 
+    $query = "SELECT IFNULL(monto, 0) FROM retiva_venta WHERE ";
+    $query.= $d->fdelstr == '' || $d->falstr == '' ? "MONTH(fecha) = $d->mes AND YEAR(fecha) = $d->anio " : '';
+    $query.= $d->fdelstr != '' && $d->falstr != '' ? "fecha >= '$d->fdelstr' AND fecha <= '$d->falstr' " : '';
+    $insertado = (int)$db->getOneField($query);
+
     $info->generales->totalbase = $sumas->totbase;
     $info->generales->totaliva = $sumas->totiva;
-    $info->generales->totalretiva = $sumas->totretiva;
+    $info->generales->totalretiva = $sumas->totretiva + $insertado;
 
     print json_encode($info);
 });
