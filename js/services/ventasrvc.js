@@ -12,7 +12,9 @@
             lstDetVenta: (idfactura) => comunFact.doGET(`${urlBase}/lstdetfact/${idfactura}`),
             getDetVenta: (iddetfact) => comunFact.doGET(`${urlBase}/getdetfact/${iddetfact}`),
             editRow: (obj, op) => comunFact.doPOST(`${urlBase}/${op}`, obj),
-            lstClientes: () => comunFact.doGET(`${urlBase}/clientes`)
+            lstClientes: () => comunFact.doGET(`${urlBase}/clientes`),
+            factClienteFecha: (idcliente, fecha, idempresa) =>comunFact.doGET(`${urlBase}/facts_cliente/${idcliente}/${fecha}/${idempresa}`),
+            getFormularios: (idempresa, anio) => comunFact.doGET(`${urlBase}/formularios_iva/${idempresa}/${anio}`)
         };
     }]);
 

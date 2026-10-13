@@ -459,4 +459,97 @@ $app->post('/driva', function () {
 
 });
 
+$app->get('/facts_cliente/:idcliente/:fecha/:idempresa', function ($idcliente, $fecha, $idempresa) {
+    $db = new dbcpm;
+
+    // formatear fecha y separar inicio/fin del mes
+    $inicio = new DateTime($fecha);
+    $inicio->modify('first day of this month');
+    $fdel = $inicio->format('Y-m-d');
+
+    $fin = clone $inicio;
+    $fin->modify('last day of this month');
+    $fal = $fin->format('Y-m-d');
+
+    $query = "SELECT a.id, a.serie, a.numero, a.idcliente, DATE_FORMAT(a.fecha, '%d/%m/%Y') AS fecha, CONCAT(a.serieadmin, '-', a.numeroadmin) AS factura 
+                FROM factura a WHERE a.idcliente = $idcliente AND a.fecha BETWEEN '$fdel' AND '$fal' AND a.idempresa = $idempresa";
+    $facturas = $db->getQuery($query); 
+
+    return print json_encode($facturas);
+});
+
+$app->get('/formularios_iva/:idempresa/:anio', function ($idempresa, $anio) {
+    $db = new dbcpm;
+
+    $query = "SELECT a.id, a.idfactura, a.fecha, a.idcliente, a.monto, a.formulario AS numero, b.nombrecorto AS cliente, CONCAT(c.serieadmin, '-', c.numeroadmin) AS factura,
+                    a.idempresa
+            FROM retiva_venta a 
+            INNER JOIN cliente b ON a.idcliente = b.id
+            LEFT JOIN factura c ON a.idfactura = c.id
+            WHERE YEAR(a.fecha) = $anio AND a.idempresa = $idempresa";
+    $formularios = $db->getQuery($query); 
+
+    return print json_encode($formularios);
+}); 
+
+$app->post('/ariva', function () {
+    $db = new dbcpm;
+    $d = json_decode(file_get_contents('php://input'));
+
+    $d->idfactura = isset($d->idfactura) ? $d->idfactura : 'NULL';
+
+    $db->doQuery("INSERT INTO retiva_venta(idempresa, idcliente, idfactura, monto, formulario, fecha) 
+                VALUES ($d->idempresa, $d->idcliente, $d->idfactura, $d->monto, $d->numero, '$d->fechastr')");
+
+    $lastid = $db->getLastId();
+
+    if ($lastid > 0) {
+        $mensaje = "Fromulario guardado con exito";
+        $tipo = "success";
+        $d->id = $lastid;
+    } else {
+        $mensaje = "Error al guardar formulario, favor revisar.";
+        $tipo = "error";
+    }
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "formulario" => $d]);
+});
+
+$app->post('/uriva', function () {
+    $db = new dbcpm;
+    $d = json_decode(file_get_contents('php://input'));
+
+    $d->idfactura = isset($d->idfactura) ? $d->idfactura : 'NULL';
+
+    $db->doQuery("UPDATE retiva_venta idempresa = $d->idempresa, idcliente = $d->idcliente, 
+    idfactura = $d->idfactura, monto = $d->monto, formulario = $d->numero, fecha = '$d->fechastr'");
+
+    $lastid = $db->getLastId();
+
+    $mensaje = "Formulario actualizado con exito";
+    $tipo = "success";
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "formulario" => $d]);
+});
+
+$app->post('/driva_manual', function () {
+    $db = new dbcpm();
+    $d = json_decode(file_get_contents('php://input'));
+
+    $query = "DELETE FROM retiva_venta WHERE id = $d->id";
+    $db->doQuery($query);
+
+    $existe = $db->getOneField("SELECT id FROM retiva_venta WHERE id = $d->id") > 1;
+
+    if (!$existe) {
+        $mensaje = "Registro eliminado con exito";
+        $tipo = "success";
+    } else {
+        $mensaje = "Error al eliminar registro, favor revisar.";
+        $tipo = "error";
+    }
+
+    print json_encode(["mensaje" => $mensaje, "tipo" => $tipo, "id" => $d->idempresa]);
+});
+
 $app->run();
