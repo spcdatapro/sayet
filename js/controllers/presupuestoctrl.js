@@ -748,7 +748,7 @@
             };
             presupuestoSrvc.editRow($scope.otAdjunto, 'aaot').then(ubicacion => {
                 // descargo el archivo de una vez para que comprueben que se subio con exito
-                const url = `${window.location.origin} + ${ubicacion}`;
+                const url = `${window.location.origin}/${ubicacion}`;
                 $window.open(url);
                 if ($scope.ot && $scope.ot.id) {
                     $scope.loadOTAdjuntos();
