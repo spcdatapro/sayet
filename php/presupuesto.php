@@ -1298,6 +1298,8 @@ $app->post('/aaot', function () {
     $query .= "$d->idot,'$d->nomadjunto', '$d->ubicacion', '$d->esmultiple', '$fecha', $numero, $d->idusuario ";
     $query .= ")";
     $db->doQuery($query);
+
+    return print json_encode($d->ubicacion);
 });
 
 $app->post('/daot', function () {

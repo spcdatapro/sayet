@@ -711,7 +711,7 @@
 
         $scope.upload = () => {
             const file = $scope.file;
-            console.log(file);
+            // console.log(file);
             if (file) {
                 Upload.upload({
                     url: 'php/upload.php',
@@ -746,7 +746,10 @@
             } else {
                 $scope.otAdjunto.esmultiple = 1
             };
-            presupuestoSrvc.editRow($scope.otAdjunto, 'aaot').then(() => {
+            presupuestoSrvc.editRow($scope.otAdjunto, 'aaot').then(ubicacion => {
+                // descargo el archivo de una vez para que comprueben que se subio con exito
+                const url = `${window.location.origin} + ${ubicacion}`;
+                $window.open(url);
                 if ($scope.ot && $scope.ot.id) {
                     $scope.loadOTAdjuntos();
                 } else {
