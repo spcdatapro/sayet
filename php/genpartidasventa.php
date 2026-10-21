@@ -245,8 +245,11 @@ $app->post('/genpost', function(){
             if((int)$d->idcontrato > 0){
                 $query = "SELECT TRIM(idcuentac) FROM contrato WHERE id = $factura->idcontrato";
                 $codctacliente = $db->getOneField($query);
-            }else{
-                $codctacliente = '1120199';
+            }
+
+            if ($codctacliente == NULL || $codctacliente == '') {
+                $codctacliente = $db->getOneField("SELECT c.codigo FROM detcontempresa a INNER JOIN cuentac b ON a.idcuentac = b.id 
+                WHERE idtipoconfig = 30 AND idempresa = $factura->idempresa");
             }
 
             echo "Codigo cuenta cliente = $codctacliente de empresa $factura->idempresa<br/>";
