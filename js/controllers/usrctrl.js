@@ -2,13 +2,14 @@
 
     var usrctrl = angular.module('cpm.usrctrl', ['cpm.authsrvc', 'toaster']);
 
-    usrctrl.controller('cpmUsrCtrl', ['$scope', 'authSrvc', 'toaster', 'DTOptionsBuilder', function($scope, authSrvc, toaster, DTOptionsBuilder){
+    usrctrl.controller('cpmUsrCtrl', ['$scope', 'authSrvc', 'toaster', 'DTOptionsBuilder', '$route', function($scope, authSrvc, toaster, DTOptionsBuilder, $route){
         $scope.tituloPagina = 'Perfil de ';
 
         $scope.perfil = {};
         $scope.permisos = [];
         $scope.editando = true;
         $scope.losPerfiles = [];
+        $scope.usuario = undefined;
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap();
 
@@ -43,13 +44,16 @@
 
         authSrvc.getSession().then(function(usrLogged){
             $scope.halaPerfil(parseInt(usrLogged.uid));
+            $scope.getLstPerfiles(usrLogged.uid);
         });
 
-        $scope.getLstPerfiles = function(){
-            authSrvc.lstPerfiles().then(function(d){ $scope.losPerfiles = d; });
+        $scope.getLstPerfiles = idusurio => {
+            authSrvc.lstPerfiles().then(d => {
+                authSrvc.gpr({ idusuario: idusurio, ruta: $route.current.params.name }).then(p =>  {
+                    $scope.losPerfiles = !p.c ? d.filter(usuario => usuario.id === idusurio) : d
+                });
+            });
         };
-
-        $scope.getLstPerfiles();
 
         $scope.resetPerfil = function(){
             $scope.perfil = {};
