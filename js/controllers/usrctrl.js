@@ -10,6 +10,7 @@
         $scope.editando = true;
         $scope.losPerfiles = [];
         $scope.usuario = undefined;
+        $scope.per_modulo = [];
 
         $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap();
 
@@ -17,6 +18,11 @@
             data.id = parseInt(data.id);
             return data;
         };
+
+        authSrvc.getSession().then(function(usrLogged){
+            $scope.halaPerfil(parseInt(usrLogged.uid));
+            $scope.getLstPerfiles(usrLogged.uid);
+        });
 
         $scope.getLosPermisos = function(){
             authSrvc.getPermisos($scope.perfil.id).then(function(respuesta){
@@ -42,14 +48,11 @@
             });
         };
 
-        authSrvc.getSession().then(function(usrLogged){
-            $scope.halaPerfil(parseInt(usrLogged.uid));
-            $scope.getLstPerfiles(usrLogged.uid);
-        });
-
         $scope.getLstPerfiles = idusurio => {
             authSrvc.lstPerfiles().then(d => {
                 authSrvc.gpr({ idusuario: idusurio, ruta: $route.current.params.name }).then(p =>  {
+                    console.log(p);
+                    $scope.per_modulo = p;
                     $scope.losPerfiles = !p.c ? d.filter(usuario => usuario.id === idusurio) : d
                 });
             });
