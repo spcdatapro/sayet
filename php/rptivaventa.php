@@ -107,7 +107,7 @@ $app->post('/ivaventa', function(){
 
     $info->generales->totalbase = $sumas->totbase;
     $info->generales->totaliva = $sumas->totiva;
-    $info->generales->totalretiva = $sumas->totretiva + $insertado;
+    $info->generales->totalretiva = (int)$sumas->totretiva + (int)$insertado;
 
     print json_encode($info);
 });
