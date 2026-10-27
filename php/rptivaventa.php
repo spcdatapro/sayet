@@ -82,6 +82,7 @@ $app->post('/ivaventa', function(){
             $query.= $d->fdelstr == '' || $d->falstr == '' ? "AND MONTH(fecha) = $d->mes AND YEAR(fecha) = $d->anio " : '';
             $query.= $d->fdelstr != '' && $d->falstr != '' ? "AND fecha >= '$d->fdelstr' AND fecha <= '$d->falstr' " : '';
             $insertado = (int)$db->getOneField($query);
+            $insertado = $insertado > 0 ? $insertado : 0;
 
             $suma->retiva += $insertado;
             $empresa->facturas[] = $suma;
