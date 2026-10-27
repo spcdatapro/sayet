@@ -84,7 +84,7 @@ $app->post('/ivaventa', function(){
             $insertado = (int)$db->getOneField($query);
             $insertado = $insertado > 0 ? $insertado : (int)0;
 
-            $suma->retiva += (int)$insertado;
+            $suma->retiva = (int)$suma->retiva + (int)$insertado;
             $empresa->facturas[] = $suma;
         }
     }
