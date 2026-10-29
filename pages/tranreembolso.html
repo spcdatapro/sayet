@@ -268,8 +268,13 @@
                                         ng-show="reembolso.id > 0" ng-click="resetReembolso()">
                                         <span class="glyphicon glyphicon-plus"></span>
                                     </button>
+                                    <button type="button" class="btn btn-info" title="Ver razon denegada"
+                                        ng-click="verNotasDenegada(reembolso)"
+                                        ng-show="reembolso.id > 0 && reembolso.estatus_aprobacion == 2">
+                                        <i class="fi fi-sr-note-sticky"></i>
+                                    </button>
                                     <button type="button" class="btn btn-default"
-                                        ng-show="!permiso.m && reembolso.id > 0 && reembolso.estatus == 1 && reembolso.aprobar == 0"
+                                        ng-show="(!permiso.m && reembolso.id > 0 && reembolso.estatus == 1 && reembolso.aprobar == 0) || reembolso.estatus_aprobacion == 2"
                                         ng-disabled="infocompras.cantidad == 0" ng-click="enviarAprobacion(reembolso)"
                                         title="Enviar a aprobación">
                                         <i class="fi fi-sr-file-export"></i> Enviar
@@ -1130,6 +1135,18 @@
     <script type="text/ng-template" id="modalCodigoAprobacion.html">
         <div class="modal-header">
             <h4 class="modal-title">{{codigoAprobacion}}</h4>
+        </div>
+        <div class="modal-footer">
+            <!--<button class="btn btn-warning" type="button" ng-click="ok()" ng-disabled="+obj.idrazonanula <= 0">Anular</button>-->
+            <button class="btn btn-primary" type="button" ng-click="cancel()">Terminar</button>
+        </div>
+    </script>
+    <script type="text/ng-template" id="modalRazonDenegada.html">
+        <div class="modal-header">
+            <h4 class="modal-title">Razon Denegada</h4>
+        </div>
+        <div class="modal-body">
+            <p>{{razon}}</p>
         </div>
         <div class="modal-footer">
             <!--<button class="btn btn-warning" type="button" ng-click="ok()" ng-disabled="+obj.idrazonanula <= 0">Anular</button>-->

@@ -47,7 +47,7 @@ $app->get('/getreembolso/:idreembolso(/:idot)', function($idreembolso, $idot = 0
     $idot = (int)$idot;
     $query = "SELECT a.id, a.idempresa, a.idtiporeembolso, b.desctiporeembolso AS tipo, a.finicio, a.ffin, a.beneficiario, ";
     $query.= "a.estatus, a.idbeneficiario, a.tblbeneficiario, IF(ISNULL(c.totreembolso), 0.00, c.totreembolso) AS totreembolso, a.fondoasignado, a.idsubtipogasto, a.idcuentaliq, a.ordentrabajo, ";
-    $query.= "a.idproyecto, a.pagado, a.idusuario, a.ultusuario, a.codigo_aprobacion, a.estatus_aprobacion, a.aprobar ";
+    $query.= "a.idproyecto, a.pagado, a.idusuario, a.ultusuario, a.codigo_aprobacion, a.estatus_aprobacion, a.aprobar, a.razon_denegado ";
     $query.= "FROM reembolso a INNER JOIN tiporeembolso b ON b.id = a.idtiporeembolso ";
     $query.= "LEFT JOIN (SELECT idreembolso, SUM(totfact) AS totreembolso FROM compra WHERE idreembolso > 0 GROUP BY idreembolso) c ON a.id = c.idreembolso ";
     $query.= "WHERE ";
@@ -809,7 +809,7 @@ $app->post('/ngr', function () {
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $query = "UPDATE reembolso SET aprobador = $d->idusuario, aprobacion = NOW(), estatus_aprobacion = 2 WHERE id = $d->id";
+    $query = "UPDATE reembolso SET aprobador = $d->idusuario, aprobacion = NOW(), estatus_aprobacion = 2, razon_denegado = '$d->razon' WHERE id = $d->id";
     $db->doQuery($query);
 
     return;

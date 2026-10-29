@@ -1037,6 +1037,17 @@
                 });
             }
 
+            $scope.verNotasDenegada = reembolso => {
+                $uibModal.open({
+                    animation: true,
+                    templateUrl: 'modalRazonDenegada.html',
+                    controller: 'ModalRazonDenegadaCtrl',
+                    resolve: {
+                        reembolso: reembolso
+                    }
+                });
+            }
+
 
             $scope.resetReeAdjunot = () => $scope.remAdjunto = { idreembolso: undefined, ubicacion: undefined };
 
@@ -1398,5 +1409,13 @@
 
     }]);
 
+    reembolsoctrl.controller('ModalRazonDenegadaCtrl', ['$scope', '$uibModalInstance', 'reembolso', function ($scope, $uibModalInstance, reembolso) {
+        console.log(reembolso)
+        $scope.razon = reembolso.razon_denegado;
+
+        $scope.cancel = () => {
+            $uibModalInstance.dismiss('cancel');
+        }
+    }]);
 
 }());

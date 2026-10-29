@@ -212,3 +212,29 @@
         <button class="btn btn-info" type="button" ng-click="cancel()">Cerrar</button>
     </div>
 </script>
+<!-- modal de panalla de negar -->
+<script type="text/ng-template" id="modalNegarReem.html">
+    <div class="modal-header">
+        <h4 class="modal-title">Denegar reembolso</h4>
+    </div>
+    <div class="modal-body" style="height: 70vh; overflow-y: auto">
+        <div class="row">
+            <div class="col-md-12">
+                <h5>¿Esta seguro(a) de denegar el reembolso No. {{reembolso.id}}?</h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group required">
+                    <label for="razon" class="control-label required">Ingresar razon:</label>
+                    <textarea name="razon" id="razon" ng-model="razon" class="form-control"
+                        placeholder="Compra 389230 con monto incorrecto" requiered></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-success" type="button" ng-click="ok(razon)" ng-disabled="!razon || razon.lenght == 0">Aceptar</button>
+        <button class="btn btn-default" type="button" ng-click="cancel()">Cancelar</button>
+    </div>
+</script>

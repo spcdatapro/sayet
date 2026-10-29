@@ -74,16 +74,24 @@
                 }
             };
 
-            $scope.denegar = (obj) => {
+            $scope.denegar = obj => {
                 if (+obj.denegada === 1) {
-                    $confirm({ text: '¿Esta seguro(a) de denegar el reembolso No. ' + obj.id + '?', title: 'Denegar reembolso', ok: 'Sí', cancel: 'No' }).then(function () {
+                    $uibModal.open({
+                        animation: true,
+                        templateUrl: 'modalNegarReem.html',
+                        controller: 'ModalNegarReemCtrl',
+                        windowClass: 'app-modal-window',
+                        resolve: {
+                            reembolso: obj
+                        }
+                    }).result.then(obj => {
                         obj.idusuario = $scope.usuario.uid;
-                        reembolsoSrvc.editRow(obj, 'ngr').then(function () {
+                        reembolsoSrvc.editRow(obj, 'ngr').then(() => {
                             getPendientes();
-                            toaster.pop('info', 'Reembolso denegado', 'Se denegó el reembolso No. ' + obj.id, 'timeout:1500');
+                            toaster.pop('info', 'Reembolso denegado', 'Se denego el reembolso No. ' + obj.id, 'timeout:1500');
                         });
                     }, () => {
-                        obj.revisada = 0;
+                        obj.denegada = 0;
                     });
                 }
             };
@@ -112,7 +120,7 @@
     }]);
 
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
-    controller.controller('ModalAdjuntoReemCtrl', ['$scope', '$uibModalInstance', 'toaster', 'reembolso', 'reembolsoSrvc', '$uibModal', function ($scope, $uibModalInstance, toaster, reembolso, reembolsoSrvc, $uibModal) {
+    controller.controller('ModalAdjuntoReemCtrl', ['$scope', '$uibModalInstance', 'reembolso', 'reembolsoSrvc', function ($scope, $uibModalInstance, reembolso, reembolsoSrvc) {
         $scope.reembolso = reembolso;
         $scope.lstadjuntos = [];
 
@@ -126,7 +134,7 @@
     }]);
 
     //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
-    controller.controller('ModalRevisionReemCtrl', ['$scope', '$uibModalInstance', 'toaster', 'reembolso', 'reembolsoSrvc', '$uibModal', function ($scope, $uibModalInstance, toaster, reembolso, reembolsoSrvc, $uibModal) {
+    controller.controller('ModalRevisionReemCtrl', ['$scope', '$uibModalInstance', 'reembolso', 'reembolsoSrvc', function ($scope, $uibModalInstance, reembolso, reembolsoSrvc) {
         $scope.reembolso = reembolso;
         $scope.compras = reembolso.compras;
         $scope.lstadjuntos = [];
@@ -144,5 +152,20 @@
         $scope.cancel = () => $uibModalInstance.dismiss('cancel');
 
         $scope.loadAdjuntos();
+    }]);
+
+    controller.controller('ModalNegarReemCtrl', ['$scope', '$uibModalInstance', 'toaster', 'reembolso', 'reembolsoSrvc', function ($scope, $uibModalInstance, toaster, reembolso, reembolsoSrvc) {
+        $scope.reembolso = reembolso;
+        $scope.razon = '';
+
+
+        // se marca como denegada
+        $scope.ok = razon => {
+            $scope.reembolso.razon = razon;
+            $uibModalInstance.close($scope.reembolso);
+        }
+
+        // se cancela la negacion
+        $scope.cancel = () => $uibModalInstance.dismiss('cancel');
     }]);
 }());
