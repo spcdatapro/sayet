@@ -351,11 +351,11 @@ $app->get('/docspend/:idempresa/:idcliente/:nit(/:tipo)', function($idempresa, $
 //API para detalle de recibos de clientes
 $app->get('/lstdetreccli/:idrecibo', function($idrecibo){
     $db = new dbcpm();
-    $query = "SELECT 0 AS oby, a.id, a.idfactura, a.idrecibocli, d.siglas, b.serie, b.numero, b.fecha, c.simbolo, b.total, a.monto, a.interes ";
+    $query = "SELECT 0 AS oby, a.id, a.idfactura, a.idrecibocli, d.siglas, b.serie, b.numero, b.fecha, c.simbolo, b.total, a.monto, a.interes, b.conceptomayor AS concepto, CONCAT(b.serieadmin, '-', b.numeroadmin) AS factura ";
     $query.= "FROM detcobroventa a INNER JOIN factura b ON b.id = a.idfactura INNER JOIN moneda c ON c.id = b.idmoneda INNER JOIN tipofactura d ON d.id = b.idtipofactura ";
     $query.= "WHERE a.idrecibocli = $idrecibo ";
     $query.= "UNION ";
-    $query.= "SELECT 1 AS oby, '' AS id, '' AS idfactura, '' AS idrecibocli, '' AS siglas, '' AS serie, 'Total' AS numero, '' AS fecha, '' AS simbolo, '' AS total, SUM(a.monto), '' AS interes ";
+    $query.= "SELECT 1 AS oby, '' AS id, '' AS idfactura, '' AS idrecibocli, '' AS siglas, '' AS serie, 'Total' AS numero, '' AS fecha, '' AS simbolo, '' AS total, SUM(a.monto), '' AS interes, '' AS concepto, '' AS factura ";
     $query.= "FROM detcobroventa a INNER JOIN factura b ON b.id = a.idfactura INNER JOIN moneda c ON c.id = b.idmoneda INNER JOIN tipofactura d ON d.id = b.idtipofactura ";
     $query.= "WHERE a.idrecibocli = $idrecibo ";
     $query.= "ORDER BY 1, fecha";

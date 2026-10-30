@@ -32,6 +32,7 @@
             $scope.empresas = [];
             $scope.total = undefined;
             $scope.trans_banco = [];
+            $scope.concepto_libre = false;
 
             $scope.dtOptions = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withBootstrap().withOption('responsive', true).withOption('fnRowCallback', rowCallback);
             $scope.selected = {}; //Rony 2017-11-16 Editar monto abono
@@ -254,6 +255,7 @@
             };
 
             $scope.updRecCli = function (obj) {
+                $scope.concepto_libre = false;
                 obj = setRecCliData(obj);
                 //console.log(obj); return;
                 reciboClientesSrvc.editRow(obj, 'u').then(function () {
@@ -324,7 +326,7 @@
                         $scope.total = 0;
                     }
                     $scope.lstdetreccli = procDetaDetRec(d);
-                    console.log($scope.lstdetreccli.length);
+                    // console.log($scope.lstdetreccli.length);
                     getTrans($scope.total);
                 });
             };
@@ -597,6 +599,35 @@
                     $scope.pagoreccli.monto = tran.monto;
                     $scope.pagoreccli.tran = idtran;
                 }
+            }
+
+            $scope.conceptoAutomatico = tipo => {
+                let concepto = '';
+                // tipo 1 = cancelacion, 2 = abono, 3 = libre
+                switch (tipo) { 
+                    case 1: 
+                        concepto = 'CANCELACIÓN ';
+                        $scope.lstdetreccli.forEach(f => {
+                            if (f.oby == 0) {
+                                concepto += f.factura + ': '; 
+                                concepto += f.concepto + ' - ';
+                            }
+                        }); 
+                        break;
+                    case 2: 
+                        concepto = 'ABONO ';
+                        $scope.lstdetreccli.forEach(f => {
+                            if (f.oby == 0) {
+                                concepto += f.factura + ': '; 
+                                concepto += f.concepto + ' - ';
+                            }
+                        }); 
+                        break;
+                    case 3: 
+                        $scope.concepto_libre = true;
+                }
+
+                $scope.reccli.concepto = concepto;
             }
 
         }]);

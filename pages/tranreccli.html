@@ -123,7 +123,7 @@
                                 <div class="form-group">
                                     <label for="selTranBan">Concepto:</label>
                                     <textarea class="form-control" ng-model="reccli.concepto"
-                                        placeholder="Concepto del recibo" rows="3"
+                                        placeholder="Concepto del recibo" rows="3" ng-disabled="!concepto_libre"
                                         ng-disabled="+fltrre.tipo > 1 && !editando"></textarea>
                                 </div>
                             </div>
@@ -175,6 +175,19 @@
                             <button type="button" class="btn btn-primary" ng-show="reccli.id > 0"
                                 ng-click="resetRecCli()" ng-disabled="!permiso.c" ng-hide="editando" title="nuevo">
                                 <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                            <button type="button" class="btn btn-danger" ng-show="lstdetreccli.length && reccli.id > 0 && editando"
+                                ng-click="conceptoAutomatico(1)" ng-disabled="!permiso.c"
+                                title="Concepto de cancelacion">
+                                <i class="glyphicon glyphicon-edit"></i> Cancelación
+                            </button>
+                            <button type="button" class="btn btn-success" ng-show="lstdetreccli.length > 0 && reccli.id > 0 && editando"
+                                ng-click="conceptoAutomatico(2)" ng-disabled="!permiso.c" title="Concepto de abono">
+                                <i class="glyphicon glyphicon-edit"></i> Abono
+                            </button>
+                            <button type="button" class="btn btn-primary" ng-show="lstdetreccli.length > 0 && reccli.id > 0 && editando"
+                                ng-click="conceptoAutomatico(3)" ng-disabled="!permiso.c" title="Editar concepto">
+                                <i class="glyphicon glyphicon-edit"></i> Libre
                             </button>
                         </div>
                     </form>
@@ -375,7 +388,8 @@
                                 <div class="form-group">
                                     <label for="selTrans" class="control-label">Transacciónes disponibles</label>
                                     <ui-select ng-model="pagoreccli.tran" title="Seleccione una transacción..."
-                                        theme="bootstrap" autofocus="false" ng-change="selTran(pagoreccli.tran)" ng-disabled="false">
+                                        theme="bootstrap" autofocus="false" ng-change="selTran(pagoreccli.tran)"
+                                        ng-disabled="false">
                                         <ui-select-match placeholder="Buscar transacción..." allow-clear="false">
                                             <span ng-bind="($select.selected.numero)"></span>
                                         </ui-select-match>
