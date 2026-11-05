@@ -169,13 +169,14 @@ function insertaDetalleContable($d, $idorigen){
         $ctaproveedores = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 5");
     }    
 
+    $esnota = (int)$db->getOneField("SELECT notas FROM tipofactura WHERE id = $d->idtipofactura") === 1;
     $ctaisrretenido = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 8");
     $ctaidp = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$d->idempresa." AND idtipoconfig = 9");
     $ctaivaretener = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = $d->idempresa AND idtipoconfig = 28");
     $d->conceptoprov.= ", ".$d->serie." - ".$d->documento;
     $d->idp = (float)$d->idp;
 
-    if ($d->idtipofactura <= 8) {
+    if (!$esnota) {
         
         if($ctagastoprov > 0){
             $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
