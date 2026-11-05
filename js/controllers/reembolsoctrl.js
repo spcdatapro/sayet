@@ -545,7 +545,7 @@
             $scope.calcIVA = function (obj) {
                 var total = 0.00, noafecto = 0.00, subtotal = 0.00, genidp = esCombustible(), idp = 0.00, exento = 0.00, isr = 0.00;
                 $scope.compra.idp = calcIDP(genidp);
-                if (obj.objTipoFactura.generaiva && obj.totfact != null && obj.totfact != undefined) {
+                if (obj.objTipoFactura.generaiva && obj.totfact != null && obj.totfact != undefined && obj.objTipoCompra.id != 5) {
                     if (periodoIva) {
                         total = parseFloat(parseFloat($scope.compra.totfact).toFixed(2));
                         //console.log('TOTAL = ' + total);
@@ -569,8 +569,8 @@
                     total = parseFloat(parseFloat($scope.compra.totfact).toFixed(2));
                     noafecto = parseFloat(parseFloat($scope.compra.noafecto).toFixed(2));
                     idp = parseFloat(parseFloat($scope.compra.idp).toFixed(2));
-                    subtotal = total;
-                    $scope.compra.subtotal = subtotal;
+                    // subtotal = total;
+                    $scope.compra.subtotal = total;
                     $scope.compra.iva = 0.00;
                 }
             };

@@ -300,6 +300,7 @@
 
                 //if ($scope.laCompra.objTipoFactura != null && $scope.laCompra.objTipoFactura != undefined) { geniva = parseInt($scope.laCompra.objTipoFactura.generaiva) === 1; }
                 if (!!$scope.laCompra.objTipoFactura) { geniva = parseInt($scope.laCompra.objTipoFactura.generaiva) === 1; }
+                geniva = $scope.laCompra.objTipoCompra.id == 5 ? false : geniva; 
 
                 $scope.laCompra.idp = calcIDP(genidp);
 
