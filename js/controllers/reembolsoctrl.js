@@ -190,7 +190,7 @@
                 }
                 if (!$scope.permiso.m) {
                     $scope.tiposfactura = d.filter(function (item) {
-                        return [1, 3, 5].indexOf(parseInt(item.id)) !== -1;
+                        return [1, 3, 5, 14].indexOf(parseInt(item.id)) !== -1;
                     });
                 } else {
                     $scope.tiposfactura = d;
