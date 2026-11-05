@@ -12,7 +12,7 @@
             $scope.cargando = false;
             $scope.modificaciones = false;
             // ulitmo dia del anio
-            const ultima_fecha = moment().endOf('year');
+            let ultima_fecha = moment().endOf('year');
 
             // mantener una copia original y detectar modificaciones solo para registros existentes
             $scope._originalVacaciones = null;
@@ -64,6 +64,7 @@
             $scope.getHistorial = idempleado => {
                 if ($scope.vacaciones.anio >= 2000) {
                     $scope.cargando = true;
+                    ultima_fecha = moment($scope.vacaciones.anio + '-12-31');
                     $scope.resetParams(idempleado);
                     // globalizar nombre de empleado seleccionado
                     $scope.empleado = $filter('getById')($scope.empleados, idempleado).nombre;
@@ -135,8 +136,6 @@
             }
 
             function calcularDiasRestantes(idempleado, historial) {
-                console.log(historial);
-                console.log(asuetos);
                 // traer fecha de ingreso del empleado
                 const fecha_ingreso = $filter('getById')($scope.empleados, idempleado).ingreso;
                 const anio = moment(fecha_ingreso).toDate().getFullYear();
@@ -150,7 +149,6 @@
                     // de lo contrario utilizar los 15 dias de vacaciones de ley
                     dias_restantes = 15;
                 }
-                console.log(dias_restantes);
 
                 if (historial.length > 0) {
                     // si tiene historial restar los dias que ha utilizado

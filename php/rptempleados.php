@@ -2430,4 +2430,116 @@ $app->get('/informe_alta/:idempleado', function ($idempleado) {
     print json_encode([ 'encabezado' => $letra, 'empleado' => $data ]);
 });
 
+$app->get('/solicitud_vacaciones/:idempleado/:anio', function ($idempleado, $anio) {
+    date_default_timezone_set("America/Guatemala");
+    $db = new dbcpm();
+
+    $ultima_fecha = new DateTime($anio . '-12-31');
+    $nombres_dias = [1 => 'lunes', 2 => 'martes', 3 => 'miércoles', 4 => 'jueves', 5 => 'viernes', 6 => 'sábado', 7 => 'domingo'];
+    $meses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+
+    // encabezado
+    $letra = new stdClass();
+    // datos empleado
+    $empleado = new stdClass();
+    // datos vacacion solicitada
+    $vacacion = new stdClass();
+    // datos detalle de vacaciones
+    $detalle = [];
+
+    $letra->estampa = new DateTime();
+    $letra->fecha = 'Guatemala, ' . $letra->estampa->format('d') . ' de ' . $meses[(int)$letra->estampa->format('m') - 1] . ' de ' . $letra->estampa->format('Y');
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i'); 
+
+    $vacacion->gozados = 0;
+
+    $query = "SELECT 
+                a.id,
+                CONCAT(TRIM(b.primernombre),
+                        ' ',
+                        TRIM(IFNULL(b.segundonombre, '')),
+                        TRIM(IFNULL(b.tercernombre, '')),
+                        ' ',
+                        TRIM(b.primerapellido),
+                        ' ',
+                        TRIM(IFNULL(b.segundoapellido, '')),
+                        TRIM(IFNULL(b.apellidocasada, ''))) AS nombre,
+                b.documento,
+                d.nombre AS empresa,
+                DATE_FORMAT(IFNULL(c.reingreso, c.ingreso),
+                        '%d/%m/%Y') AS ingreso,
+                e.nomproyecto AS proyecto,
+                f.descripcion AS puesto,
+                DATE_FORMAT(g.fecha, '%d/%m/%Y') AS solicitud,
+                DATE_FORMAT(g.fechainicio, '%d/%m/%Y') AS inicio,
+                DATE_FORMAT(g.fechafin, '%d/%m/%Y') AS fin,
+                g.dias,
+                g.observaciones
+            FROM
+                plnempleado a
+                    INNER JOIN
+                plnpersonal b ON a.idpersonal = b.id
+                    INNER JOIN
+                plnlaboral c ON a.idlaboral = c.id
+                    INNER JOIN
+                plnempresa d ON c.idempresaactual = d.id
+                    LEFT JOIN
+                proyecto e ON c.idproyecto = e.id
+                    INNER JOIN
+                plnpuesto f ON a.idplnpuesto = f.id
+                    INNER JOIN
+                plnvacaciones g ON g.idplnempleado = a.id
+            WHERE
+                a.id = $idempleado AND g.anio = $anio
+            ORDER BY g.fecha DESC";
+    $data = $db->getQuery($query);
+
+    $ingreso = new DateTime($data[0]->ingreso);
+
+    if ((int)$anio === (int)$ingreso->format('Y')) {
+        $vacacion->devengados = round(($ultima_fecha->diff($ingreso)->days + 1) * 15 / 365, 2);
+        $vacacion->inicio = $data[0]->ingreso;
+        $vacacion->fin = $ultima_fecha->format('d/m/Y');
+    } else {
+        $vacacion->devengados = 15;
+        $vacacion->inicio = new DateTime($anio . '-01-01');
+        $vacacion->fin = $ultima_fecha->format('d/m/Y');
+    }
+
+    foreach ($data as $v) {
+        $vacacion->gozados += round((float)$v->dias, 2);
+
+        $fecha_inicio = DateTime::createFromFormat('!d/m/Y', $v->inicio);
+        $fecha_fin = DateTime::createFromFormat('!d/m/Y', $v->fin);
+
+        $dias_semana = [];
+
+        if ($fecha_inicio && $fecha_fin) {
+            $fecha = clone $fecha_inicio;
+            while ($fecha <= $fecha_fin) {
+                $dias_semana[] = $nombres_dias[(int)$fecha->format('N')];
+                $fecha->modify('+1 day');
+            }
+        }
+
+        $detalle[] = [
+            'fecha' => $v->solicitud,
+            'dias_semana' => implode(', ', $dias_semana),
+            'dias' => $v->dias,
+            'observaciones' => $v->observaciones
+        ];
+    }
+
+    $vacacion->disponible = $vacacion->devengados - $vacacion->gozados;
+
+    $empleado->nombre = $data[0]->nombre;
+    $empleado->documento = $data[0]->documento;
+    $empleado->empresa = $data[0]->empresa;
+    $empleado->ingreso = $data[0]->ingreso;
+    $empleado->proyecto = $data[0]->proyecto;
+    $empleado->puesto = $data[0]->puesto;
+    $empleado->codigo = $data[0]->id;
+
+    return print json_encode(['encabezado' => $letra, 'empleado' => $empleado, 'vacacion' => $vacacion, 'detalle' => $detalle]);
+});
 $app->run();
