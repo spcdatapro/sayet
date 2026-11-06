@@ -709,52 +709,52 @@
 
         $scope.resetOTAdjunot();
 
-        $scope.upload = () => {
-            const file = $scope.file;
-            // console.log(file);
-            if (file) {
-                Upload.upload({
-                    url: 'php/upload.php',
-                    method: 'POST',
-                    file: file,
-                    sendFieldsAs: 'form',
-                    fields: {
-                        directorio: '../ots_adjunto/',
-                        prefijo: 'OT_' + $scope.ot.id + '_'
-                    }
-                }).then(() => {
-                    $scope.file = null;
-                    $scope.progressPercentage = 0;
-                },
-                    () => { },
-                    (evt) => $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total)
-                );
-            }
+        $scope.upload = (file, prefijo) => {
+            return Upload.upload({
+                url: 'php/upload.php',
+                method: 'POST',
+                file: file,
+                sendFieldsAs: 'form',
+                fields: {
+                    directorio: '../ots_adjunto/',
+                    prefijo: prefijo
+                }
+            }).then(response => {
+                $scope.file = null;
+                $scope.progressPercentage = 0;
+                return response;
+            }, null, evt => {
+                $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+            });
         };
 
         $scope.addOTAdjunto = () => {
-            $scope.upload();
-            if ($scope.ot.id > 0) {
-                $scope.otAdjunto.idot = $scope.ot.id
-            } else {
-                $scope.otAdjunto.idot = $scope.presupuesto.id
-            };
+            if (!$scope.file || $scope.subiendoOTAdjunto) return;
+
+            const esOT = Number($scope.ot && $scope.ot.id) > 0;
+            const idAdjunto = esOT ? $scope.ot.id : $scope.presupuesto.id;
+            const prefijo = esOT ? `OT_${idAdjunto}_` : `OT_${idAdjunto}_1_`;
+            $scope.subiendoOTAdjunto = true;
+            $scope.otAdjunto.idot = idAdjunto;
             $scope.otAdjunto.idusuario = $scope.userId;
-            $scope.otAdjunto.ubicacion = "ots_adjunto/" + 'OT_' + (($scope.ot && $scope.ot.id) ? $scope.ot.id : (`${$scope.presupuesto.id}_1`)) + '_' + $filter('textCleaner')($scope.file.name);
-            if ($scope.ot.id > 0) {
-                $scope.otAdjunto.esmultiple = 0
-            } else {
-                $scope.otAdjunto.esmultiple = 1
-            };
-            presupuestoSrvc.editRow($scope.otAdjunto, 'aaot').then(ubicacion => {
-                // descargo el archivo de una vez para que comprueben que se subio con exito
-                const url = `${window.location.origin}/${ubicacion}`;
-                $window.open(url);
-                if ($scope.ot && $scope.ot.id) {
-                    $scope.loadOTAdjuntos();
-                } else {
-                    $scope.loadOTAdjuntos($scope.presupuesto.id, 1);
-                }
+            $scope.otAdjunto.ubicacion = "ots_adjunto/" + prefijo + $filter('textCleaner')($scope.file.name);
+            $scope.otAdjunto.esmultiple = esOT ? 0 : 1;
+
+            $scope.upload($scope.file, prefijo).then(() =>
+                presupuestoSrvc.editRow($scope.otAdjunto, 'aaot').then(() => {
+                    toaster.pop('success', 'Archivo adjunto', 'El archivo se subió y adjuntó correctamente.', 'timeout:5000');
+                    if (esOT) {
+                        $scope.loadOTAdjuntos();
+                    } else {
+                        $scope.loadOTAdjuntos($scope.presupuesto.id, 1);
+                    }
+                }, () => {
+                    toaster.pop('error', 'Archivo adjunto', 'El archivo se subió, pero no se pudo registrar el adjunto.', 'timeout:5000');
+                }),
+            () => {
+                toaster.pop('error', 'Archivo adjunto', 'No se pudo subir el archivo. Verifique e intente nuevamente.', 'timeout:5000');
+            }).finally(() => {
+                $scope.subiendoOTAdjunto = false;
             });
         };
 
