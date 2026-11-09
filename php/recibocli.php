@@ -351,7 +351,7 @@ $app->get('/docspend/:idempresa/:idcliente/:nit(/:tipo)', function($idempresa, $
 //API para detalle de recibos de clientes
 $app->get('/lstdetreccli/:idrecibo', function($idrecibo){
     $db = new dbcpm();
-    $query = "SELECT 0 AS oby, a.id, a.idfactura, a.idrecibocli, d.siglas, b.serie, b.numero, b.fecha, c.simbolo, b.total, a.monto, a.interes, IFNULL(d.descripcionlarga, b.conceptomayor) AS concepto, CONCAT(b.serieadmin, '-', b.numeroadmin) AS factura ";
+    $query = "SELECT 0 AS oby, a.id, a.idfactura, a.idrecibocli, d.siglas, b.serie, b.numero, b.fecha, c.simbolo, b.total, a.monto, a.interes, IFNULL(d.descripcion, b.conceptomayor) AS concepto, CONCAT(b.serieadmin, '-', b.numeroadmin) AS factura ";
     $query.= "FROM detcobroventa a INNER JOIN factura b ON b.id = a.idfactura INNER JOIN moneda c ON c.id = b.idmoneda INNER JOIN tipofactura d ON d.id = b.idtipofactura LEFT JOIN detfact d ON d.idfactura = b.id ";
     $query.= "WHERE a.idrecibocli = $idrecibo ";
     $query.= "UNION ";
