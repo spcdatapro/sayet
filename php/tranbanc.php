@@ -81,7 +81,7 @@ function insertaDetalleContable($d, $idorigen){
     //Si es C o B, va de la cuenta por liquidar o de la cuenta de proveedores en el debe al banco en el haber
     $idempresa = (int)$db->getOneField("SELECT idempresa FROM banco WHERE id = ".$d->idbanco);
     $ctabco = (int)$db->getOneField("SELECT idcuentac FROM banco WHERE id = ".$d->idbanco);
-    $tc = (float)$db->getOneField("SELECT a.tipocambio FROM moneda a INNER JOIN banco b ON a.id = b.idmoneda WHERE b.id = ".$d->idbanco);
+    $tc = $tc > 1 ? $tc : (float)$db->getOneField("SELECT a.tipocambio FROM moneda a INNER JOIN banco b ON a.id = b.idmoneda WHERE b.id = ".$d->idbanco);
 
     $cuenta = (int)$db->getOneField("SELECT idcuentac FROM detcontempresa WHERE idempresa = ".$idempresa." AND idtipoconfig = ".((int)$d->anticipo === 1 ? 5 : 3));
 
