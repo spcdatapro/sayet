@@ -652,7 +652,8 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
                 't_bienes' => 0,
                 't_servicio' => 0,
                 't_otros' => 0,
-                'total' => 0
+                'total' => 0,
+                't_peque' => 0,
             ];
         }
 
@@ -691,7 +692,9 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
         $agrupado[$presupuesto]['t_isr'] += $totalIsr;
         $agrupado[$presupuesto]['total'] += $totalCompra;
 
-        if ((int) $compra->idtipocompra === 1) {
+        if ((int) $compra->idtipocompra === 3) {
+            $agrupado[$presupuesto]['t_peque'] += $totalSubtotal;
+        } elseif ((int) $compra->idtipocompra === 1) {
             $agrupado[$presupuesto]['t_bienes'] += $totalSubtotal;
         } elseif ((int) $compra->idtipocompra === 2) {
             $agrupado[$presupuesto]['t_servicio'] += $totalSubtotal;
@@ -709,6 +712,7 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
         $grupo['t_retiva'] = round($grupo['t_retiva'], 2);
         $grupo['t_isr'] = round($grupo['t_isr'], 2);
         $grupo['total'] = round($grupo['total'], 2);
+        $grupo['t_peque'] = round($grupo['t_peque'], 2);
     }
 
     $totalGeneral = [
@@ -716,6 +720,7 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
         't_bienes' => 0,
         't_servicio' => 0,
         't_otros' => 0,
+        't_peque' => 0,
         't_iva' => 0,
         't_retiva' => 0,
         't_isr' => 0,
@@ -727,6 +732,7 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
         $totalGeneral['t_bienes'] += $grupo['t_bienes'];
         $totalGeneral['t_servicio'] += $grupo['t_servicio'];
         $totalGeneral['t_otros'] += $grupo['t_otros'];
+        $totalGeneral['t_peque'] += $grupo['t_peque'];
         $totalGeneral['t_iva'] += $grupo['t_iva'];
         $totalGeneral['t_retiva'] += $grupo['t_retiva'];
         $totalGeneral['t_isr'] += $grupo['t_isr'];
@@ -741,6 +747,7 @@ $app->get('/compras_ot/:idpresupuesto', function ($idpresupuesto) {
     $letra->bienes = $totalGeneral['t_bienes'];
     $letra->servicio = $totalGeneral['t_servicio'];
     $letra->otros = $totalGeneral['t_otros'];
+    $letra->peque = $totalGeneral['t_peque'];
     $letra->iva = $totalGeneral['t_iva'];
     $letra->retiva = $totalGeneral['t_retiva'];
     $letra->isr = $totalGeneral['t_isr'];
