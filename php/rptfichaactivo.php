@@ -17,7 +17,6 @@ $app->post('/lstactivo', function(){
         $f[3] = $d->iddepto != '' ? "c.id IN($d->iddepto)" : "";
         $f[4] = $d->ffl != '' ? "(a.finca LIKE '%$d->ffl%' OR a.folio LIKE '%$d->ffl%' OR a.libro LIKE '%$d->ffl%')" : "";
         $f[5] = $d->id != '' ? "a.id IN($d->id)" : "";
-        $f[6] = $d->estatus == 1 ? "a.debaja = 0" : ($d->estatus == 2 ? "a.debaja = 1" : "");
         for($x = 1; $x <= 5; $x++){
             if($fltr != "" && $f[$x] != ""){ $fltr .= " AND "; }
             $fltr.= $f[$x];
@@ -38,6 +37,7 @@ $app->post('/lstactivo', function(){
     $query.= "LEFT JOIN municipio c ON a.departamento = c.id ";
     $query.= "LEFT JOIN tipo_activo d ON a.tipo_activo = d.id LEFT JOIN bitacoraactivo e ON a.id = e.idactivo ";
     $query.= $where.$fltr;
+    // $query.= $d->estatus == 1 ? "AND a.debaja = 0 " : ($d->estatus == 2 ? "AND a.debaja = 1 " : "");
     $query.= "ORDER BY b.propia DESC, b.nomempresa, c.nomdepto, c.nombre, CAST(digits(a.finca) AS UNSIGNED), CAST(digits(a.folio) AS UNSIGNED), CAST(digits(a.libro) AS UNSIGNED)";
     print $db->doSelectASJson($query);
 });
