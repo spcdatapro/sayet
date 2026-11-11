@@ -9,20 +9,27 @@ $app->post('/lstactivo', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $where = ($d->id != '' && isset($d->id)) || ($d->idempresa != '' && isset($d->idempresa)) || ($d->idtipo != '' && isset($d->idtipo)) 
-    || ($d->iddepto != '' && isset($d->iddepto)) || ($d->ffl != '' && isset($d->ffl)) || ($d->estatus != '' && isset($d->estatus)) ? "WHERE " : "";
+    $id = isset($d->id) ? trim($d->id) : '';
+    $idempresa = isset($d->idempresa) ? trim($d->idempresa) : '';
+    $idtipo = isset($d->idtipo) ? trim($d->idtipo) : '';
+    $iddepto = isset($d->iddepto) ? trim($d->iddepto) : '';
+    $ffl = isset($d->ffl) ? trim($d->ffl) : '';
+    $estatus = isset($d->estatus) ? $d->estatus : '';
+
+    $where = ($id !== '' || $idempresa !== '' || $idtipo !== '' || $iddepto !== '' || $ffl !== '' || $estatus !== '') ? "WHERE " : "";
     $fltr = "";
     if($where != ''){
-        $f[1] = $d->idempresa != '' && isset($d->idempresa) ? "a.idempresa IN($d->idempresa)" : "";
-        $f[2] = $d->idtipo != '' && isset($d->idtipo) ? "d.id IN($d->idtipo)" : "";
-        $f[3] = $d->iddepto != '' && isset($d->iddepto) ? "c.id IN($d->iddepto)" : "";
-        $f[4] = $d->ffl != '' && isset($d->ffl) ? "(a.finca LIKE '%$d->ffl%' OR a.folio LIKE '%$d->ffl%' OR a.libro LIKE '%$d->ffl%')" : "";
-        $f[5] = $d->id != '' && isset($d->id) ? "a.id IN($d->id)" : "";
-        $f[6] = $d->estatus == 1 ? "a.debaja = 0" : ($d->estatus == 2 ? "a.debaja = 1" : "");
-        for($x = 1; $x <= 5; $x++){
-            if($fltr != "" && $f[$x] != ""){ $fltr .= " AND "; }
-            $fltr.= $f[$x];
-        }
+        $f = [];
+
+        if($idempresa !== ''){ $f[] = "a.idempresa IN($idempresa)"; }
+        if($idtipo !== ''){ $f[] = "d.id IN($idtipo)"; }
+        if($iddepto !== ''){ $f[] = "c.id IN($iddepto)"; }
+        if($ffl !== ''){ $f[] = "(a.finca LIKE '%$ffl%' OR a.folio LIKE '%$ffl%' OR a.libro LIKE '%$ffl%')"; }
+        if($id !== ''){ $f[] = "a.id IN($id)"; }
+        if($estatus == 1){ $f[] = "a.debaja = 0"; }
+        elseif($estatus == 2){ $f[] = "a.debaja = 1"; }
+
+        $fltr = implode(' AND ', $f);
     }
 
     $query = "SELECT a.id, a.idempresa, a.departamento, a.finca, a.folio, a.libro, a.horizontal, a.direccion_cat, ";
@@ -39,7 +46,6 @@ $app->post('/lstactivo', function(){
     $query.= "LEFT JOIN municipio c ON a.departamento = c.id ";
     $query.= "LEFT JOIN tipo_activo d ON a.tipo_activo = d.id LEFT JOIN bitacoraactivo e ON a.id = e.idactivo ";
     $query.= $where.$fltr;
-    // $query.= $d->estatus == 1 ? "AND a.debaja = 0 " : ($d->estatus == 2 ? "AND a.debaja = 1 " : "");
     $query.= "ORDER BY b.propia DESC, b.nomempresa, c.nomdepto, c.nombre, CAST(digits(a.finca) AS UNSIGNED), CAST(digits(a.folio) AS UNSIGNED), CAST(digits(a.libro) AS UNSIGNED)";
     print $db->doSelectASJson($query);
 });
