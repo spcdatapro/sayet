@@ -823,7 +823,6 @@ $app->post('/control_ingresos', function () {
                 }
                 // Inicializar saldo si no existe -
                 if (!isset($saldoFacturas[$factura])) {
-                    $row->ingreso = 0;
                     $montoFacturas[$factura] = $row->ingreso;
                     $isrFacturas[$factura] = $row->isr;
                     $saldoFacturas[$factura] = $row->ingreso - $row->deposito;
