@@ -813,7 +813,6 @@ $app->post('/control_ingresos', function () {
         foreach ($data as $row) {
             // Puede haber varias facturas en la misma fila
             $facturas = explode(',', $row->factura);
-            $saldoFacturas = [];
         
             foreach ($facturas as $factura) {
                 $factura = trim($factura);
@@ -842,7 +841,7 @@ $app->post('/control_ingresos', function () {
                         $row->ingreso = $saldoFacturas[$factura];
                         $saldoFacturas[$factura] -= $row->deposito;
                         $row->isr = 0;
-                        $row->diferencia = $row->diferencia;
+                        $row->diferencia = 0;
                     }
                 }
             }
