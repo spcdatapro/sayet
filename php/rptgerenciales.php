@@ -842,7 +842,7 @@ $app->post('/control_ingresos', function () {
                         $row->ingreso = $saldoFacturas[$factura];
                         $saldoFacturas[$factura] -= $row->deposito;
                         $row->isr = 0;
-                        $row->diferencia = ($row->ingreso - ($row->deposito + $row->iva + $row->isr)) * -1;
+                        $row->diferencia = $row->diferencia;
                     }
                 }
             }
