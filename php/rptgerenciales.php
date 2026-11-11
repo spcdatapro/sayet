@@ -825,7 +825,7 @@ $app->post('/control_ingresos', function () {
                 if (!isset($saldoFacturas[$factura])) {
                     $montoFacturas[$factura] = $row->ingreso;
                     $isrFacturas[$factura] = $row->isr;
-                    $saldoFacturas[$factura] = $row->ingreso - 0;
+                    $saldoFacturas[$factura] = $row->ingreso - $row->deposito;
 
                     $row->diferencia = ($row->ingreso - ($row->deposito + $row->isr + $row->iva)) * -1;
                     if ($countFacturas[$factura] > 1) {
