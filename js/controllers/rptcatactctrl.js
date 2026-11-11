@@ -4,7 +4,7 @@
 
     rptcatactctrl.controller('rptCatActCtrl', ['$scope', 'jsReportSrvc', 'empresaSrvc', 'tipoactivoSrvc', 'municipioSrvc', function($scope, jsReportSrvc, empresaSrvc, tipoactivoSrvc, municipioSrvc){
 
-        $scope.params = {idempresa:"", idtipo:"", iddepto:"", id:"", ffl:""};
+        $scope.params = {idempresa:"", idtipo:"", iddepto:"", id:"", ffl:"", estatus:"1"};
         $scope.empresas = [];
         $scope.tipos = [];
         $scope.deptos = [];
@@ -18,10 +18,10 @@
 
         $scope.getRptCatAct = function(){
             //console.log($scope.params); return;
-            jsReportSrvc.getPDFReport(test ? 'H1J5Bya7l' : 'H1KeVl67g', $scope.params).then(function(pdf){ $scope.content = pdf; });
+            jsReportSrvc.getPDFReport(test ? 'H1J5Bya7l' : 'H1KeVl67g', $scope.params).then(pdf => $scope.content = pdf );
         };
 
-        $scope.resetParams = function(){ $scope.params = {idempresa:"", idtipo:"", iddepto:"", id:"", ffl:""}; };
+        $scope.resetParams = function(){ $scope.params = {idempresa:"", idtipo:"", iddepto:"", id:"", ffl:"", estatus:"1"}; };
 
     }]);
 }());

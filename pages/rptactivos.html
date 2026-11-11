@@ -6,42 +6,78 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="selEmpresas">Empresa:</label>
-                        <select name="selEmpresas" id="selEmpresas" class="form-control" ng-model="params.idempresa"
-                                ng-options="obj.id as obj.nomempresa for obj in empresas">
-                        </select>
+                        <ui-select ng-model="params.idempresa" title="Seleccione una empresa..." theme="bootstrap"
+                            autofocus="false">
+                            <ui-select-match placeholder="Buscar empresa..." allow-clear="true">
+                                <span ng-bind="($select.selected.nomempresa)"></span>
+                            </ui-select-match>
+                            <ui-select-choices repeat="item.id as item in empresas | filter:$select.search">
+                                <div ng-bind-html="(item.nomempresa) | highlight: $select.search"></div>
+                            </ui-select-choices>
+                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                        </ui-select>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="selTipo"></label>
-                        <select name="selTipo" id="selTipo" class="form-control" ng-model="params.idtipo"
-                                ng-options="obj.id as obj.descripcion for obj in tipos">
-                        </select>
+                        <label for="selTipo">Tipo:</label>
+                        <ui-select ng-model="params.idtipo" title="Seleccione una tipo..." theme="bootstrap"
+                            autofocus="false" required>
+                            <ui-select-match placeholder="Buscar tipo..." allow-clear="true">
+                                <span ng-bind="($select.selected.descripcion)"></span>
+                            </ui-select-match>
+                            <ui-select-choices repeat="item.id as item in tipos | filter:$select.search">
+                                <div ng-bind-html="(item.descripcion) | highlight: $select.search"></div>
+                            </ui-select-choices>
+                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                        </ui-select>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="selDepto"></label>
-                        <select name="selDepto" id="selDepto" class="form-control" ng-model="params.iddepto"
-                                ng-options="obj.id as obj.descripcion for obj in deptos">
-                        </select>
+                        <label for="selDepto">Departamento:</label>
+                        <ui-select ng-model="params.iddepto" title="Seleccione una departamento..." theme="bootstrap"
+                            autofocus="false" required>
+                            <ui-select-match placeholder="Buscar departamento..." allow-clear="true">
+                                <span ng-bind="($select.selected.descripcion)"></span>
+                            </ui-select-match>
+                            <ui-select-choices repeat="item.id as item in deptos | filter:$select.search">
+                                <div ng-bind-html="(item.descripcion) | highlight: $select.search"></div>
+                            </ui-select-choices>
+                            <ui-select-no-choice>No hay resultados...</ui-select-no-choice>
+                        </ui-select>
                     </div>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-3">
+                    <div class="form-group required">
+                        <label for="estatus" class="control-label">Estatus:</label>
+                        <select name="estatus" id="estatus" class="form-control" ng-model="params.estatus" required>
+                            <option value="1">De alta</option>
+                            <option value="2">De baja</option>
+                            <option value="3">Todos</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-9">
                     <div class="form-group">
                         <label for="txtFFL">Finca/Folio/Libro:</label>
-                        <input name="txtFFL" id="txtFFL" type="text" class="form-control" ng-model="params.ffl" placeholder="Finca o Folio o Libro"/>
+                        <input name="txtFFL" id="txtFFL" type="text" class="form-control" ng-model="params.ffl"
+                            placeholder="Finca o Folio o Libro" />
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn btn-primary btn-sm" ng-click="getRptCatAct()">
-                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-            </button>
-            <button type="button" class="btn btn-primary btn-sm" ng-click="resetParams()">
-                <i class="fa fa-refresh" aria-hidden="true"></i>
-            </button>
+        </div>
+        <div class="panel-footer text-right">
+            <div class="btn-group">
+                <button type="button" class="btn btn-danger" ng-click="getRptCatAct()" title="Reporte PDF">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-primary" ng-click="resetParams()" title="Restablecer parámetros">
+                    <i class="fa fa-refresh" aria-hidden="true"></i>
+                </button>
+            </div>
         </div>
     </div>
     <rpt-viewer contenido="content"></rpt-viewer>

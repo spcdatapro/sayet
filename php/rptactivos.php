@@ -29,6 +29,7 @@ $app->post('/lista', function(){
             $query.= ") e ON a.id = e.idactivo ";
             $query.= "WHERE a.idempresa = $act->id AND d.id = $muni->id ";
             $query.= $d->idtipo != '' ? "AND c.id IN($d->idtipo) " : "";
+            $query.= $d->estatus == 1 ? "AND a.debaja = 0 " : ($d->estatus == 2 ? "AND a.debaja = 1 " : "");
             //$query.= "ORDER BY c.descripcion, a.finca, a.folio, a.libro";
             $query.= "ORDER BY CAST(digits(a.finca) AS UNSIGNED), CAST(digits(a.folio) AS UNSIGNED), CAST(digits(a.libro) AS UNSIGNED)";
             $muni->lista = $db->getQuery($query);
