@@ -12,12 +12,13 @@ $app->post('/lstactivo', function(){
     $where = $d->id != '' || $d->idempresa != '' || $d->idtipo != '' || $d->iddepto != '' || $d->ffl != '' ? "WHERE " : "";
     $fltr = "";
     if($where != ''){
-        $f[1] = $d->idempresa != '' ? "a.idempresa IN($d->idempresa)" : "";
-        $f[2] = $d->idtipo != '' ? "d.id IN($d->idtipo)" : "";
-        $f[3] = $d->iddepto != '' ? "c.id IN($d->iddepto)" : "";
-        $f[4] = $d->ffl != '' ? "(a.finca LIKE '%$d->ffl%' OR a.folio LIKE '%$d->ffl%' OR a.libro LIKE '%$d->ffl%')" : "";
-        $f[5] = $d->id != '' ? "a.id IN($d->id)" : "";
-        for($x = 1; $x <= 5; $x++){
+        $f[1] = $d->idempresa != '' && isset($d->idempresa) ? "a.idempresa IN($d->idempresa)" : "";
+        $f[2] = $d->idtipo != '' && isset($d->idtipo) ? "d.id IN($d->idtipo)" : "";
+        $f[3] = $d->iddepto != '' && isset($d->iddepto) ? "c.id IN($d->iddepto)" : "";
+        $f[4] = $d->ffl != '' && isset($d->ffl) ? "(a.finca LIKE '%$d->ffl%' OR a.folio LIKE '%$d->ffl%' OR a.libro LIKE '%$d->ffl%')" : "";
+        $f[5] = $d->id != '' && isset($d->id) ? "a.id IN($d->id)" : "";
+        $f[6] = $d->estatus == 1 ? "a.debaja = 0" : ($d->estatus == 2 ? "a.debaja = 1" : "");
+        for($x = 1; $x <= 6; $x++){
             if($fltr != "" && $f[$x] != ""){ $fltr .= " AND "; }
             $fltr.= $f[$x];
         }
