@@ -37,6 +37,7 @@ $app->post('/lstactivo', function(){
     $query.= "LEFT JOIN municipio c ON a.departamento = c.id ";
     $query.= "LEFT JOIN tipo_activo d ON a.tipo_activo = d.id LEFT JOIN bitacoraactivo e ON a.id = e.idactivo ";
     $query.= $where.$fltr;
+    $query.= $d->estatus == 1 ? "AND a.debaja = 0 " : ($d->estatus == 2 ? "AND a.debaja = 1 " : "");
     $query.= "ORDER BY b.propia DESC, b.nomempresa, c.nomdepto, c.nombre, CAST(digits(a.finca) AS UNSIGNED), CAST(digits(a.folio) AS UNSIGNED), CAST(digits(a.libro) AS UNSIGNED)";
     print $db->doSelectASJson($query);
 });
