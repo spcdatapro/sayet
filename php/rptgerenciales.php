@@ -833,13 +833,13 @@ $app->post('/control_ingresos', function () {
                     }
                 } else {
                     if ($countFacturas[$factura] == $index[$factura]) {
-                        $suma = $factura == 18661 ? 50 : 0;
+                        $suma = 0;
                         $row->ingreso = $saldoFacturas[$factura] + $suma;
                         // $row->isr = 0;
                         $row->diferencia =  ($row->ingreso - ($row->deposito + $row->iva + $row->isr)) * -1;
                     } else {
                         $row->ingreso = $saldoFacturas[$factura];
-                        $saldoFacturas[$factura] -= $row->deposito;
+                        $saldoFacturas[$factura] = 0;
                         $row->isr = 0;
                         $row->diferencia = 0;
                     }
