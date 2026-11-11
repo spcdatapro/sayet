@@ -9,7 +9,8 @@ $app->post('/lstactivo', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
 
-    $where = $d->id != '' || $d->idempresa != '' || $d->idtipo != '' || $d->iddepto != '' || $d->ffl != '' ? "WHERE " : "";
+    $where = ($d->id != '' && isset($d->id)) || ($d->idempresa != '' && isset($d->idempresa)) || ($d->idtipo != '' && isset($d->idtipo)) 
+    || ($d->iddepto != '' && isset($d->iddepto)) || ($d->ffl != '' && isset($d->ffl)) || ($d->estatus != '' && isset($d->estatus)) ? "WHERE " : "";
     $fltr = "";
     if($where != ''){
         $f[1] = $d->idempresa != '' && isset($d->idempresa) ? "a.idempresa IN($d->idempresa)" : "";
@@ -18,7 +19,7 @@ $app->post('/lstactivo', function(){
         $f[4] = $d->ffl != '' && isset($d->ffl) ? "(a.finca LIKE '%$d->ffl%' OR a.folio LIKE '%$d->ffl%' OR a.libro LIKE '%$d->ffl%')" : "";
         $f[5] = $d->id != '' && isset($d->id) ? "a.id IN($d->id)" : "";
         $f[6] = $d->estatus == 1 ? "a.debaja = 0" : ($d->estatus == 2 ? "a.debaja = 1" : "");
-        for($x = 1; $x <= 6; $x++){
+        for($x = 1; $x <= 5; $x++){
             if($fltr != "" && $f[$x] != ""){ $fltr .= " AND "; }
             $fltr.= $f[$x];
         }
