@@ -736,6 +736,7 @@ $app->post('/control_ingresos', function () {
                     a.numero,
                     a.numban) AS tranban,
                 GROUP_CONCAT(f.factura) AS factura,
+                GROUP_CONCAT(f.factura_key) AS factura_key,
                 ROUND(IFNULL(SUM(IF(b.idmoneda = 2,
                                     f.ingresodlr,
                                     f.ingreso)),
@@ -764,6 +765,9 @@ $app->post('/control_ingresos', function () {
                     b.id,
                         a.idrecibocli,
                         IF(COUNT(b.id) > 3, CAST(CONCAT(COUNT(b.id), '-FC') AS CHAR), GROUP_CONCAT(b.numeroadmin)) AS factura,
+                        IF(COUNT(b.id) > 3,
+                            CONCAT(COUNT(b.id), '-FC-', GROUP_CONCAT(b.id ORDER BY b.id SEPARATOR '-')),
+                            GROUP_CONCAT(b.numeroadmin)) AS factura_key,
                         SUM(b.subtotal) - SUM((SELECT SUM(IF(dc.idrecibocli != a.idrecibocli AND rc.fecha != '$d->fechastr', dc.monto, 0)) FROM detcobroventa dc INNER JOIN recibocli rc ON dc.idrecibocli = rc.id WHERE dc.idfactura = b.id)) AS ingreso,
                         SUM(b.retisr) AS isr,
                         SUM(b.retiva) AS iva,
@@ -801,9 +805,12 @@ $app->post('/control_ingresos', function () {
 
         // Pre-compute counts
         foreach ($data as $row) {
-            $facturas = explode(',', $row->factura);
+            $facturas = explode(',', $row->factura_key ?? '');
             foreach ($facturas as $factura) {
                 $factura = trim($factura);
+                if ($factura === '') {
+                    continue;
+                }
                 $countFacturas[$factura] = ($countFacturas[$factura] ?? 0) + 1;
             }
         }
@@ -812,15 +819,14 @@ $app->post('/control_ingresos', function () {
 
         foreach ($data as $row) {
             // Puede haber varias facturas en la misma fila
-            $facturas = explode(',', $row->factura);
+            $facturas = explode(',', $row->factura_key ?? '');
         
             foreach ($facturas as $factura) {
                 $factura = trim($factura);
-                $index[$factura] = ($index[$factura] ?? 0) + 1;
-
                 if ($factura === '') {
-                    continue; // Saltar si la factura está vacía
+                    continue;
                 }
+                $index[$factura] = ($index[$factura] ?? 0) + 1;
                 // Inicializar saldo si no existe -
                 if (!isset($saldoFacturas[$factura])) {
                     $montoFacturas[$factura] = $row->ingreso;
@@ -845,36 +851,8 @@ $app->post('/control_ingresos', function () {
                     }
                 }
             }
+            unset($row->factura_key);
         }
-
-        for ($i = 0; $i < count($data); $i++) {
-
-        //     $actual = $data[$i];
-        //     $proximo = $i+1 == count($data) ? null : $data[$i+1];
-        //     $proximo2 = $i+2 >= count($data) ? null : $data[$i+2];
-
-        //     if (isset($proximo)) {
-        //         if ($proximo->idrecibocli == $actual->idrecibocli && $proximo->idrecibocli > 0) {
-        //             // $proximo->diferencia = ($actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito)) * -1;
-        //             $proximo->diferencia = $proximo->diferencia;
-        //             $actual->iva = 0;
-        //             $actual->isr = 0;
-        //             $actual->ingreso = 0;
-        //             $actual->diferencia = $actual->deposito;
-        //         }
-        //     }
-        //     if (isset($proximo2)) {
-        //         if ($proximo2->idrecibocli == $actual->idrecibocli && $proximo2->idrecibocli > 0) {
-        //             // $proximo->diferencia = ($actual->ingreso - ($actual->deposito + $actual->isr + $actual->iva + $proximo->deposito)) * -1;
-        //             $proximo2->diferencia = ($proximo2->ingreso - ($proximo2->deposito + $proximo2->isr + $proximo2->iva + $proximo->deposito + $actual->deposito)) * -1;
-        //             $actual->iva = 0;
-        //             $actual->isr = 0;
-        //             $actual->ingreso = 0;
-        //             $actual->diferencia = $actual->deposito;
-        //         }
-        //     }
-        }
-
         
         // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
         $reporte = new GeneradorReportes($data, 'transacciones', $totales, true);
