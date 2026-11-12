@@ -2495,7 +2495,6 @@ $app->get('/solicitud_vacaciones/:idempleado/:anio/:idvacacion', function ($idem
     $data = $db->getQuery($query);
 
     $ingreso = DateTime::createFromFormat('!d/m/Y', $data[0]->ingreso);
-    $solicitud = DateTime::createFromFormat('!d/m/Y', $data[0]->solicitud);
 
     if ((int)$anio === (int)$ingreso->format('Y')) {
         $vacacion->devengados = round(($ultima_fecha->diff($ingreso)->days + 1) * 15 / 365, 2);
@@ -2510,8 +2509,7 @@ $app->get('/solicitud_vacaciones/:idempleado/:anio/:idvacacion', function ($idem
 
     foreach ($data as $v) {
         if ($v->id == $idvacacion) {
-            $vacacion->gozados += round((float)$v->dias, 2);
-
+            $solicitud = DateTime::createFromFormat('!d/m/Y', $v->solicitud);
             $fecha_inicio = DateTime::createFromFormat('!d/m/Y', $v->inicio);
             $fecha_fin = DateTime::createFromFormat('!d/m/Y', $v->fin);
             $dias_pendientes = (int) round((float)$v->dias * 100);
@@ -2533,7 +2531,15 @@ $app->get('/solicitud_vacaciones/:idempleado/:anio/:idvacacion', function ($idem
         }
     }
 
+    foreach ($data as $v) {
+        $fecha_solicitud = DateTime::createFromFormat('!d/m/Y', $v->solicitud);
+        if ($fecha_solicitud && $fecha_solicitud <= $solicitud) {
+            $vacacion->gozados += round((float)$v->dias, 2);
+        }
+    }
+
     $vacacion->disponible = $vacacion->devengados - $vacacion->gozados;
+    $vacacion->disponible = round($vacacion->disponible, 2);
 
     $empleado->nombre = $data[0]->nombre;
     $empleado->documento = $data[0]->documento;
