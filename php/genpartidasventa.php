@@ -248,8 +248,8 @@ $app->post('/genpost', function(){
             }
 
             if ($codctacliente == NULL || $codctacliente == '') {
-                $codctacliente = $db->getOneField("SELECT c.codigo FROM detcontempresa a INNER JOIN cuentac b ON a.idcuentac = b.id 
-                WHERE idtipoconfig = 30 AND idempresa = $factura->idempresa");
+                $codctacliente = $db->getOneField("SELECT b.codigo FROM detcontempresa a INNER JOIN cuentac b ON a.idcuentac = b.id 
+                WHERE a.idtipoconfig = 30 AND a.idempresa = $factura->idempresa");
             }
 
             echo "Codigo cuenta cliente = $codctacliente de empresa $factura->idempresa<br/>";
