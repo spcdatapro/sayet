@@ -2494,8 +2494,8 @@ $app->get('/solicitud_vacaciones/:idempleado/:anio/:idvacacion', function ($idem
             ORDER BY g.fecha DESC";
     $data = $db->getQuery($query);
 
-    $ingreso = new DateTime($data[0]->ingreso);
-    $solicitud = new DateTime($data[0]->solicitud);
+    $ingreso = DateTime::createFromFormat('!d/m/Y', $data[0]->ingreso);
+    $solicitud = DateTime::createFromFormat('!d/m/Y', $data[0]->solicitud);
 
     if ((int)$anio === (int)$ingreso->format('Y')) {
         $vacacion->devengados = round(($ultima_fecha->diff($ingreso)->days + 1) * 15 / 365, 2);
