@@ -2430,7 +2430,7 @@ $app->get('/informe_alta/:idempleado', function ($idempleado) {
     print json_encode([ 'encabezado' => $letra, 'empleado' => $data ]);
 });
 
-$app->get('/solicitud_vacaciones/:idempleado/:anio', function ($idempleado, $anio) {
+$app->get('/solicitud_vacaciones/:idempleado/:anio/:idvacacion', function ($idempleado, $anio, $idvacacion) {
     date_default_timezone_set("America/Guatemala");
     $db = new dbcpm();
 
@@ -2454,7 +2454,8 @@ $app->get('/solicitud_vacaciones/:idempleado/:anio', function ($idempleado, $ani
     $vacacion->gozados = 0;
 
     $query = "SELECT 
-                a.id,
+                g.id,
+                a.id AS codigo,
                 CONCAT(TRIM(b.primernombre),
                         ' ',
                         TRIM(IFNULL(b.segundonombre, '')),
@@ -2507,27 +2508,28 @@ $app->get('/solicitud_vacaciones/:idempleado/:anio', function ($idempleado, $ani
     }
 
     foreach ($data as $v) {
-        $vacacion->gozados += round((float)$v->dias, 2);
+        if ($v->id == $idvacacion) {
+            $vacacion->gozados += round((float)$v->dias, 2);
 
-        $fecha_inicio = DateTime::createFromFormat('!d/m/Y', $v->inicio);
-        $fecha_fin = DateTime::createFromFormat('!d/m/Y', $v->fin);
+            $fecha_inicio = DateTime::createFromFormat('!d/m/Y', $v->inicio);
+            $fecha_fin = DateTime::createFromFormat('!d/m/Y', $v->fin);
+            $dias_pendientes = (int) round((float)$v->dias * 100);
 
-        $dias_semana = [];
-
-        if ($fecha_inicio && $fecha_fin) {
-            $fecha = clone $fecha_inicio;
-            while ($fecha <= $fecha_fin) {
-                $dias_semana[] = $nombres_dias[(int)$fecha->format('N')];
-                $fecha->modify('+1 day');
+            if ($fecha_inicio && $fecha_fin) {
+                $fecha = clone $fecha_inicio;
+                while ($fecha <= $fecha_fin && $dias_pendientes > 0) {
+                    $dias_del_dia = min(100, $dias_pendientes);
+                    $detalle[] = [
+                        'fecha' => $fecha->format('d/m/Y'),
+                        'dias_semana' => $nombres_dias[(int)$fecha->format('N')],
+                        'dias' => round($dias_del_dia / 100, 2),
+                        'observaciones' => $v->observaciones
+                    ];
+                    $dias_pendientes -= $dias_del_dia;
+                    $fecha->modify('+1 day');
+                }
             }
         }
-
-        $detalle[] = [
-            'fecha' => $v->solicitud,
-            'dias_semana' => implode(', ', $dias_semana),
-            'dias' => $v->dias,
-            'observaciones' => $v->observaciones
-        ];
     }
 
     $vacacion->disponible = $vacacion->devengados - $vacacion->gozados;
@@ -2538,7 +2540,7 @@ $app->get('/solicitud_vacaciones/:idempleado/:anio', function ($idempleado, $ani
     $empleado->ingreso = $data[0]->ingreso;
     $empleado->proyecto = $data[0]->proyecto;
     $empleado->puesto = $data[0]->puesto;
-    $empleado->codigo = $data[0]->id;
+    $empleado->codigo = $data[0]->codigo;
 
     return print json_encode(['encabezado' => $letra, 'empleado' => $empleado, 'vacacion' => $vacacion, 'detalle' => $detalle]);
 });
