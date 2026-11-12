@@ -50,8 +50,8 @@ $app->post('/rptisr', function(){
     $query.= "TRUNCATE(a.retisr, 2) AS retisr, ";
     $query.= "IF(a.anulada = 0, a.total, 0.00) AS totfact, '$retenido' as retenido, '$parqueo' as parqueo, a.idtipofactura ";
     $query.= "FROM factura a LEFT JOIN contrato b ON b.id = a.idcontrato LEFT JOIN tipofactura c ON c.id = a.idtipofactura LEFT JOIN cliente d ON d.id = a.idcliente ";
-	$query.= "WHERE a.anulada = 0 and a.idtipoventa <> 5 AND c.id <> 5 AND a.idempresa = $idempresa AND a.idtipofactura NOT IN(9, 13)";
-	// $query.= (int)$resumen === 1 ? '' : 'AND a.idtipofactura NOT IN(9, 13) ';
+	$query.= "WHERE a.anulada = 0 and a.idtipoventa <> 5 AND c.id <> 5 AND a.idempresa = $idempresa ";
+	$query.= (int)$resumen === 1 ? '' : 'AND a.idtipofactura NOT IN(9, 13) ';
 	$query.= $d->fdelstr == '' || $d->falstr == '' ? "AND a.mesiva = $mes AND YEAR(a.fecha) = $anio " : '';
 	$query.= $d->fdelstr != '' && $d->falstr != '' ? "AND a.fecha >= '$d->fdelstr' AND a.fecha <= '$d->falstr' " : '';
 	$query.= $qrret;
