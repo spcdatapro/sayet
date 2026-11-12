@@ -2504,6 +2504,7 @@ $app->get('/solicitud_vacaciones/:idempleado/:anio/:idvacacion', function ($idem
     } else {
         $vacacion->devengados = 15;
         $vacacion->inicio = new DateTime($anio . '-01-01');
+        $vacacion->inicio = $vacacion->inicio->format('d/m/Y');
         $vacacion->fin = $ultima_fecha->format('d/m/Y');
     }
 
