@@ -2448,7 +2448,6 @@ $app->get('/solicitud_vacaciones/:idempleado/:anio/:idvacacion', function ($idem
     $detalle = [];
 
     $letra->estampa = new DateTime();
-    $letra->fecha = 'Guatemala, ' . $letra->estampa->format('d') . ' de ' . $meses[(int)$letra->estampa->format('m') - 1] . ' de ' . $letra->estampa->format('Y');
     $letra->estampa = $letra->estampa->format('d-m-Y H:i'); 
 
     $vacacion->gozados = 0;
@@ -2496,6 +2495,7 @@ $app->get('/solicitud_vacaciones/:idempleado/:anio/:idvacacion', function ($idem
     $data = $db->getQuery($query);
 
     $ingreso = new DateTime($data[0]->ingreso);
+    $solicitud = new DateTime($data[0]->solicitud);
 
     if ((int)$anio === (int)$ingreso->format('Y')) {
         $vacacion->devengados = round(($ultima_fecha->diff($ingreso)->days + 1) * 15 / 365, 2);
@@ -2542,6 +2542,8 @@ $app->get('/solicitud_vacaciones/:idempleado/:anio/:idvacacion', function ($idem
     $empleado->proyecto = $data[0]->proyecto;
     $empleado->puesto = $data[0]->puesto;
     $empleado->codigo = $data[0]->codigo;
+
+    $letra->fecha = 'Guatemala, ' . $solicitud->format('d') . ' de ' . $meses[(int)$solicitud->format('m') - 1] . ' de ' . $solicitud->format('Y');
 
     return print json_encode(['encabezado' => $letra, 'empleado' => $empleado, 'vacacion' => $vacacion, 'detalle' => $detalle]);
 });
