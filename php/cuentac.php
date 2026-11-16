@@ -8,7 +8,7 @@ $app->response->headers->set('Content-Type', 'application/json');
 //API para cuentas contables
 $app->get('/lstctas/:idempresa', function($idempresa){
     $db = new dbcpm();
-    $query = "SELECT id, idempresa, codigo, nombrecta, tipocuenta, CONCAT('(', codigo, ') ', nombrecta) AS codcta ";
+    $query = "SELECT id, idempresa, codigo, nombrecta, tipocuenta, CONCAT('(', codigo, ') ', nombrecta) AS codcta, anulada ";
     $query.= "FROM cuentac ";
     $query.= "WHERE idempresa = $idempresa ";
     $query.= "ORDER BY codigo";
@@ -27,7 +27,7 @@ $app->get('/getbytipo/:idempresa/:tipo', function($idempresa, $tipo){
     $db = new dbcpm();
     $conn = $db->getConn();
     $query = "SELECT id, idempresa, codigo, nombrecta, tipocuenta, CONCAT('(', codigo, ') ', nombrecta) AS codcta ";
-    $query.= "FROM cuentac WHERE idempresa = ".$idempresa." AND tipocuenta = ".$tipo;
+    $query.= "FROM cuentac WHERE idempresa = ".$idempresa." AND tipocuenta = ".$tipo." AND anulada = 0";
     $data = $conn->query($query)->fetchAll(5);
     print json_encode($data);
 });
@@ -61,8 +61,25 @@ $app->post('/d', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
     $conn = $db->getConn();
+    $se_uso = (int)$db->getOneField("SELECT COUNT(*) FROM detallecontable WHERE idcuenta = $d->id");
+
+    if ($se_uso > 0) {
+        print json_encode(['mensaje' => 'No se puede eliminar la cuenta contable porque ya ha sido utilizada en un asiento contable.', 'tipo' => 'error']);
+        return;
+    }
     $query = "DELETE FROM cuentac WHERE id = ".$d->id;
     $del = $conn->query($query);
+    print json_encode(['mensaje' => 'Cuenta contable eliminada correctamente.', 'tipo' => 'success']);
+    return;
+});
+
+$app->post('/anl', function () {
+    $d = json_decode(file_get_contents('php://input'));
+    $db = new dbcpm();
+
+    $db->doQuery("UPDATE cuentac SET anulada = 1 WHERE id = $d->id");
+    print json_encode(['mensaje' => 'Cuenta contable anulada correctamente.', 'tipo' => 'success']);
+    return;
 });
 
 $app->run();

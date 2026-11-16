@@ -2,7 +2,8 @@
 
     var cuentacctrl = angular.module('cpm.cuentacctrl', ['cpm.cuentacsrvc']);
 
-    cuentacctrl.controller('cuentacCtrl', ['$scope', 'authSrvc', 'cuentacSrvc', 'empresaSrvc', 'DTOptionsBuilder', '$confirm', 'jsReportSrvc', '$window', function($scope, authSrvc, cuentacSrvc, empresaSrvc, DTOptionsBuilder, $confirm, jsReportSrvc, $window){
+    cuentacctrl.controller('cuentacCtrl', ['$scope', 'authSrvc', 'cuentacSrvc', 'empresaSrvc', 'DTOptionsBuilder', '$confirm', 'jsReportSrvc', '$window', 'toaster', 
+        function($scope, authSrvc, cuentacSrvc, empresaSrvc, DTOptionsBuilder, $confirm, jsReportSrvc, $window, toaster){
         //$scope.tituloPagina = 'CPM';
 
         $scope.laCta = {};
@@ -94,7 +95,19 @@
 
         $scope.delCuenta = function(id){
             $confirm({text: '¿Seguro(a) de eliminar esta cuenta?', title: 'Eliminar cuenta contable', ok: 'Sí', cancel: 'No'}).then(function() {
-                cuentacSrvc.editRow({id:id}, 'd').then(function(){ $scope.getLstCuentas(); });
+                cuentacSrvc.editRow({id:id}, 'd').then(d => { 
+                        toaster.pop(d.tipo, 'Eliminar cuenta contable', d.mensaje);
+                        $scope.getLstCuentas(); 
+                    });
+            });
+        };
+
+        $scope.anulCuenta = function(id){
+            $confirm({text: '¿Seguro(a) de anular esta cuenta?', title: 'Anular cuenta contable', ok: 'Sí', cancel: 'No'}).then(function() {
+                cuentacSrvc.editRow({id:id}, 'anl').then(d => { 
+                        toaster.pop(d.tipo, 'Anular cuenta contable', d.mensaje);
+                        $scope.getLstCuentas(); 
+                    });
             });
         };
 
