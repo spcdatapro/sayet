@@ -594,7 +594,7 @@
                     const tran = $filter('getById')($scope.trans_banco, idtran);
                     $scope.pagoreccli.idtipotrans = '3';
                     $scope.pagoreccli.numero = +tran.numero;
-                    $scope.pagoreccli.idbanco = '2';
+                    $scope.pagoreccli.idbanco = tran.bancopais.toString();
                     $scope.pagoreccli.objMoneda = $filter('getById')($scope.lasMonedas, tran.idmoneda);
                     $scope.pagoreccli.monto = tran.monto;
                     $scope.pagoreccli.tran = idtran;
