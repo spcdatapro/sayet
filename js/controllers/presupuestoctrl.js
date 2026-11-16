@@ -245,6 +245,10 @@
             jsReportSrvc.getPDFReport(resumen ? 'S183YxGZ_' : 'H1w6yuaWd', { idot: idpresupuesto, tipos: tipos }).then(function (pdf) { $window.open(pdf); });
         };
 
+        $scope.printComparativo = idpresupuesto => {
+            jsReportSrvc.getPDFReport('r1px91yczx', { idpresupuesto: idpresupuesto}).then(pdf => $window.open(pdf));
+        };
+
         $scope.printOt = async function (idot, esPresupuesto) {
             let qOt = {};
             if (esPresupuesto) {
