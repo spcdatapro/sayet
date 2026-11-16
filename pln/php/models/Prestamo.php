@@ -388,6 +388,7 @@ class Prestamo extends Principal
 
 	public function get_vencimiento()
 	{
+		$this->pre->ciotamneusal = $this->pre->cuotamensual > 0 ? $this->pre->cuotamensual : 1;
 		$meses = ceil($this->pre->monto/$this->pre->cuotamensual)-1;
 		$sql   = "select DATE_ADD('{$this->pre->iniciopago}', INTERVAL {$meses} MONTH) as fecha";
 		$res   = $this->db->query($sql)->fetchAll();
