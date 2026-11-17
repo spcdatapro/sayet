@@ -3,35 +3,42 @@
 		<div class="col-sm-offset-3 col-sm-6">
 			<div class="jumbotron" id="contenidoGenerar">
 				<form ng-submit="generar(gen)">
-				  <div class="form-group form-group-sm">
-				    <label for="selectEmpresa">Empresa:</label>
-				    <select class="form-control" ng-model="gen.empresa" id="selectEmpresa">
-				    	<option value="">- TODAS -</option>
-				    	<option ng-repeat="option in empresas" value="{{option.id}}">{{option.nomempresa}}</option>
-				    </select>
-				  </div>
-				  <div class="form-group form-group-sm">
-				    <label for="inputFecha">Fecha</label>
-				    <input type="date" ng-model="gen.fch" class="form-control" placeholder="Fecha" ng-blur="expression" required>
-				  </div>
-				  <div class="checkbox" title="Incluye generación de bono 14, funciona únicamente el 15/07">
-				    <label>
-				      <input type="checkbox" ng-model="gen.bono14"> Bono 14
-				    </label>
-				  </div>
-				  <div class="checkbox" title="Incluye generación de aguinaldo, funciona únicamente el 15/12">
-				    <label>
-				      <input type="checkbox" ng-model="gen.aguinaldo"> Aguinaldo
-				    </label>
+					<div class="form-group form-group-sm">
+						<label for="selectEmpresa">Empresa:</label>
+						<select class="form-control" ng-model="gen.empresa" id="selectEmpresa">
+							<option value="">- TODAS -</option>
+							<option ng-repeat="option in empresas" value="{{option.id}}">{{option.nomempresa}}</option>
+						</select>
+					</div>
+					<div class="form-group form-group-sm">
+						<label for="inputFecha">Fecha</label>
+						<input type="date" ng-model="gen.fch" class="form-control" placeholder="Fecha"
+							ng-blur="expression" required>
+					</div>
+					<div class="checkbox" title="Incluye generación de bono 14, funciona únicamente el 15/07">
+						<label>
+							<input type="checkbox" ng-model="gen.bono14"> Bono 14
+						</label>
+					</div>
+					<div class="checkbox" title="Incluye generación de aguinaldo, funciona únicamente el 15/12">
+						<label>
+							<input type="checkbox" ng-model="gen.aguinaldo"> Aguinaldo
+						</label>
 					</div>
 					<div class="checkbox" title="Incluye generación de Vacaciones, funciona únicamente el 31/12">
-				    <label>
-				      <input type="checkbox" ng-model="gen.vacaciones"> Vacaciones
-				    </label>
-				  </div>
-				  <button type="submit" class="btn btn-primary btn-block" id="btnBuscar" data-loading-text="Generando...">
-				  	<i class="glyphicon glyphicon-cog"></i> Generar
-				  </button>
+						<label>
+							<input type="checkbox" ng-model="gen.vacaciones"> Vacaciones
+						</label>
+					</div>
+					<div class="checkbox" title="Planilla extraordinaria, evitar fechas de corte.">
+						<label>
+							<input type="checkbox" ng-model="gen.extraordinaria"> Extraordinaria
+						</label>
+					</div>
+					<button type="submit" class="btn btn-primary btn-block" id="btnBuscar"
+						data-loading-text="Generando...">
+						<i class="glyphicon glyphicon-cog"></i> Generar
+					</button>
 				</form>
 			</div>
 		</div>

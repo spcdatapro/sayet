@@ -444,7 +444,12 @@ class Nomina extends Principal
 	 */
 	public function verificar_planilla_cerrada($args=[])
 	{
-		$periodo = $this->db->get("plnperiodo", '*', ['fin' => $args['fecha']]);
+		$periodo = $this->db->get("plnperiodo", '*', [
+			'AND' => [
+				'inicio[<=]' => $args['fecha'],
+				'fin[>=]' => $args['fecha']
+			]
+		]);
 
 		if ($periodo) {
 			if (isset($periodo['scalar'])) {
@@ -461,6 +466,8 @@ class Nomina extends Principal
 
 	public function generar(Array $args)
 	{
+		$extraordinaria = isset($args['extraordinaria']) ? $args['extraordinaria'] : false;
+
 		if ($this->verificar_planilla_cerrada($args)) {
 			$this->set_mensaje('Esta planilla se encuentra cerrada, no puedo editar datos. Por favor verifique que tenga el período abierto.');
 			return false;
@@ -533,85 +540,108 @@ class Nomina extends Principal
 						}
 					}
 
-					# Pago cada quincena
-					if ($dia == 15) {
-						if ($e->lab->frecuencia == 'quincenal') {
-							$datos['anticipo'] = $e->get_anticipo();
-							$datos['diastrabajados'] = $e->get_dias_trabajados();
+					#planilla extraordinaria se genera fuer ade fechas de cierre
+					if ($extraordinaria && $dia != 31 && $dia != 15) {
+						$datos['esextraordinaria'] = 1;
+
+						$sueldo = (float)$e->lab->sueldo;
+						if ($sueldo >= 15000) {
+							$datos['otrosingresos'] = 5000;
+						} elseif ($sueldo > 5000) {
+							$datos['otrosingresos'] = 3000;
+						} elseif ($sueldo >= 0.01) {
+							$datos['otrosingresos'] = 1500;
 						}
-					} else {
-						$datos['descanticipo'] = $e->get_descanticipo();
-						$datos['bonificacion'] = $e->get_bono_ley();
-						$datos['sueldoordinario'] = $e->get_sueldo();
-						$datos['diastrabajados'] = $e->get_dias_trabajados();
-						$datos['descisr'] = $e->get_descuento_isr();
-						$datos['descigss'] = $e->get_descingss([
-							"vacaciones" => $datos["vacaciones"]
+
+						$this->db->update("plnnomina", $datos, [
+							'AND' => [
+								"id"        => $row['id'], 
+								'terminada' => 0
+							]
 						]);
-						
-						$prest = $e->get_descprestamo(['sin_idplnnomina' => $row['id']]);
-						$embargo = $e->get_descembargo(['sin_idplnnomina' => $row['id']]);
-						
-						$datos['descprestamo'] = $prest['total'];
-						$datos['descembargo'] = $embargo['total'];
+					}
 
-						foreach ($prest['prestamo'] as $prestamo) {
-							$tmp = (object)$this->db->get(
-								"plnpresnom", 
-								['*'], 
-								[
-									'AND' => [
-										'idplnprestamo' => $prestamo['id'], 
-										'idplnnomina'   => $row['id']
-									]
-								]
-							);
-
-							if (isset($tmp->scalar)) {
-								$this->db->insert(
-									"plnpresnom", 
-									[
-										'idplnprestamo' => $prestamo['id'],
-										'idplnnomina'   => $row['id'],
-										'monto'         => $prestamo['cuota']
-									]
-								);
-							} else {
-								$this->db->update(
-									"plnpresnom", 
-									['monto' => $prestamo['cuota']],
-									['id' => $tmp->id]
-								);
+					# Pago cada quincena
+					if (!$extraordinaria) {
+						if ($dia == 15) {
+							if ($e->lab->frecuencia == 'quincenal') {
+								$datos['anticipo'] = $e->get_anticipo();
+								$datos['diastrabajados'] = $e->get_dias_trabajados();
 							}
-						}
+						} else {
+							$datos['descanticipo'] = $e->get_descanticipo();
+							$datos['bonificacion'] = $e->get_bono_ley();
+							$datos['sueldoordinario'] = $e->get_sueldo();
+							$datos['diastrabajados'] = $e->get_dias_trabajados();
+							$datos['descisr'] = $e->get_descuento_isr();
+							$datos['descigss'] = $e->get_descingss([
+								"vacaciones" => $datos["vacaciones"]
+							]);
 
-						foreach ($embargo['prestamo'] as $prestamo) {
-							$tmp = (object)$this->db->get(
-								"plnpresnom", 
-								['*'], 
-								[
-									'AND' => [
-										'idplnprestamo' => $prestamo['id'], 
-										'idplnnomina'   => $row['id']
-									]
-								]
-							);
+							$prest = $e->get_descprestamo(['sin_idplnnomina' => $row['id']]);
+							$embargo = $e->get_descembargo(['sin_idplnnomina' => $row['id']]);
 
-							if (isset($tmp->scalar)) {
-								$this->db->insert(
+							$datos['descprestamo'] = $prest['total'];
+							$datos['descembargo'] = $embargo['total'];
+
+							foreach ($prest['prestamo'] as $prestamo) {
+								$tmp = (object)$this->db->get(
 									"plnpresnom", 
+									['*'], 
 									[
-										'idplnprestamo' => $prestamo['id'],
-										'idplnnomina'   => $row['id'],
-										'monto'         => $prestamo['cuota']
+										'AND' => [
+											'idplnprestamo' => $prestamo['id'], 
+											'idplnnomina'   => $row['id']
+										]
 									]
 								);
-							} else {
-								$this->db->update(
+
+								if (isset($tmp->scalar)) {
+									$this->db->insert(
+										"plnpresnom", 
+										[
+											'idplnprestamo' => $prestamo['id'],
+											'idplnnomina'   => $row['id'],
+											'monto'         => $prestamo['cuota']
+										]
+									);
+								} else {
+									$this->db->update(
+										"plnpresnom", 
+										['monto' => $prestamo['cuota']],
+										['id' => $tmp->id]
+									);
+								}
+							}
+
+							foreach ($embargo['prestamo'] as $prestamo) {
+								$tmp = (object)$this->db->get(
 									"plnpresnom", 
-									['monto' => $prestamo['cuota']],
-									['id' => $tmp->id]
+									['*'], 
+									[
+										'AND' => [
+											'idplnprestamo' => $prestamo['id'], 
+											'idplnnomina'   => $row['id']
+										]
+									]
 								);
+
+								if (isset($tmp->scalar)) {
+									$this->db->insert(
+										"plnpresnom", 
+										[
+											'idplnprestamo' => $prestamo['id'],
+											'idplnnomina'   => $row['id'],
+											'monto'         => $prestamo['cuota']
+										]
+									);
+								} else {
+									$this->db->update(
+										"plnpresnom", 
+										['monto' => $prestamo['cuota']],
+										['id' => $tmp->id]
+									);
+								}
 							}
 						}
 					}

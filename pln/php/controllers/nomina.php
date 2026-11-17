@@ -25,7 +25,7 @@ $app->get('/buscar', function(){
 	$dia    = date('d', strtotime($fecha));
 	$ultimo = date('t', strtotime($fecha));
 
-	if (in_array($dia, array(15, $ultimo))) {
+	// if (in_array($dia, array(15, $ultimo))) {
 		if ($b->verificar_planilla_cerrada(['fecha' => $_GET['fecha']])) {
 			$datos['mensaje'] = "Esta planilla se encuentra cerrada, no puedo editar datos. Por favor verifique que tenga el período abierto.";
 		} else {
@@ -34,9 +34,9 @@ $app->get('/buscar', function(){
 			$datos['nomina'] = count($datos['resultados']);
 			$datos['ingresados'] = $b->cantidad_empleados($_GET);
 		}
-	} else {
-		$datos['mensaje'] = "Fecha incorrecta, por favor verifique.";
-	}
+	// } else {
+		// $datos['mensaje'] = "Fecha incorrecta, por favor verifique.";
+	// }
 	
 	enviar_json($datos);
 });
@@ -421,10 +421,11 @@ $app->post('/generar', function(){
 
 	$datos  = ['exito' => 0];
 	$fecha  = $_POST['fecha'];
+	$extraordinaria = isset($_POST['extraordinaria']) ? $_POST['extraordinaria'] : false;
 	$dia    = date('d', strtotime($fecha));
 	$ultimo = date('t', strtotime($fecha));
 
-	if (in_array($dia, array(15, $ultimo))) {
+	if (in_array($dia, array(15, $ultimo)) || $extraordinaria) {
 		if ($n->generar($_POST)) {
 			$datos['exito']   = 1;
 			$datos['mensaje'] = "Nómina generada con éxito.";
