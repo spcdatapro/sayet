@@ -2655,6 +2655,6 @@ $app->get('/pln_aguinaldo/:anio', function ($anio) {
         $empleado->promedio = round($suma / 12, 2);
     }
 
-    print json_encode($data);
+    print json_encode(['empleados' => $data, 'encabezado' => $letra]);
 });
 $app->run();
