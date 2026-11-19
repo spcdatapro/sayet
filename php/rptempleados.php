@@ -2637,7 +2637,8 @@ $app->get('/pln_aguinaldo/:anio/:agrupar/:idempresa', function ($anio, $agrupar,
                 MAX(CASE
                     WHEN YEAR(e.fecha) = $anio THEN e.aguinaldo
                 END) AS aguinaldo,
-                f.abreviatura
+                f.abreviatura,
+                f.numeropat AS numero
             FROM
                 plnempleado a
                     INNER JOIN
@@ -2686,6 +2687,6 @@ $app->get('/pln_aguinaldo/:anio/:agrupar/:idempresa', function ($anio, $agrupar,
         $letra->$t = array_sum($montos_generales->$t);
     }
 
-    print json_encode(['encabezado' => $letra, 'empleados' => $empleados]);
+    print json_encode(['encabezado' => $letra, 'empresas' => $empleados]);
 });
 $app->run();
