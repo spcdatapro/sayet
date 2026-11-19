@@ -2555,13 +2555,23 @@ $app->get('/solicitud_vacaciones/:idempleado/:anio/:idvacacion', function ($idem
 });
 
 $app->get('/pln_aguinaldo/:anio', function ($anio) {
+    date_default_timezone_set("America/Guatemala");
     $db = new dbcpm();
 
     $fdel = new DateTime(($anio - 1) . '-12-01');
     $fal = new DateTime($anio . '-12-31');
+    $fal_encabezado = new DateTime($anio . '-11-30');
 
     $fdel = $fdel->format('Y-m-d');
     $fal = $fal->format('Y-m-d');
+    $fdel_encabezado = $fdel->format('d/m/Y');
+    $fal_encabezado = $fal_encabezado->format('d/m/Y');
+
+    $letra = new stdClass();
+    $letra->estampa = new DateTime();
+    $letra->estampa = $letra->estampa->format('d-m-Y H:i'); 
+    $letra->del = $fdel_encabezado;
+    $letra->al = $fal_encabezado;
 
     $query = "SELECT 
                 a.id AS codigo,
