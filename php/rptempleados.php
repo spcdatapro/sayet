@@ -2572,6 +2572,7 @@ $app->get('/pln_aguinaldo/:anio', function ($anio) {
     $letra->estampa = $letra->estampa->format('d-m-Y H:i'); 
     $letra->del = $fdel_encabezado;
     $letra->al = $fal_encabezado;
+    $letra->aguinaldo = 0;
 
     $query = "SELECT 
                 a.id AS codigo,
@@ -2651,6 +2652,7 @@ $app->get('/pln_aguinaldo/:anio', function ($anio) {
     foreach ($data as $empleado) {
         $suma = 0;
 
+        $letra->aguinaldo += isset($empleado->aguinaldo) ? (float)$empleado->aguinaldo : 0;
         foreach ($meses_sueldo as $mes) {
             $suma += isset($empleado->$mes) ? (float)$empleado->$mes : 0;
         }
