@@ -2562,9 +2562,9 @@ $app->get('/pln_aguinaldo/:anio', function ($anio) {
     $fal = new DateTime($anio . '-12-31');
     $fal_encabezado = new DateTime($anio . '-11-30');
 
+    $fdel_encabezado = $fdel->format('d/m/Y');
     $fdel = $fdel->format('Y-m-d');
     $fal = $fal->format('Y-m-d');
-    $fdel_encabezado = $fdel->format('d/m/Y');
     $fal_encabezado = $fal_encabezado->format('d/m/Y');
 
     $letra = new stdClass();
