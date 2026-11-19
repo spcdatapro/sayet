@@ -2622,7 +2622,10 @@ $app->get('/pln_aguinaldo/:anio', function ($anio) {
                 END) AS octubre,
                 MAX(CASE
                     WHEN MONTH(e.fecha) = 11 THEN e.sueldoordinarioreporte
-                END) AS noviembre
+                END) AS noviembre,
+                MAX(CASE
+                    WHEN YEAR(e.fecha) = $anio THEN e.aguinaldo
+                END) AS aguinaldo
             FROM
                 plnempleado a
                     INNER JOIN
