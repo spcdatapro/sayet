@@ -2558,6 +2558,8 @@ $app->get('/pln_aguinaldo/:anio', function ($anio) {
     date_default_timezone_set("America/Guatemala");
     $db = new dbcpm();
 
+    $anio_ant = (int)$anio - 1;
+
     $fdel = new DateTime(($anio - 1) . '-12-01');
     $fal = new DateTime($anio . '-12-31');
     $fal_encabezado = new DateTime($anio . '-11-30');
@@ -2589,7 +2591,7 @@ $app->get('/pln_aguinaldo/:anio', function ($anio) {
                 DATE_FORMAT(IFNULL(d.reingreso, d.ingreso), '%d/%m/%Y') AS ingreso,
                 MAX(e.aguinaldodias) AS dias,
                 MAX(CASE
-                    WHEN MONTH(e.fecha) = 12 AND YEAR(e.fecha) = $anio THEN e.sueldoordinarioreporte
+                    WHEN MONTH(e.fecha) = 12 AND YEAR(e.fecha) = $anio_ant THEN e.sueldoordinarioreporte
                 END) AS diciembre,
                 MAX(CASE
                     WHEN MONTH(e.fecha) = 1 THEN e.sueldoordinarioreporte
