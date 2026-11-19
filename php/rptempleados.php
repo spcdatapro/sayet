@@ -2553,4 +2553,98 @@ $app->get('/solicitud_vacaciones/:idempleado/:anio/:idvacacion', function ($idem
 
     return print json_encode(['encabezado' => $letra, 'empleado' => $empleado, 'vacacion' => $vacacion, 'detalle' => $detalle]);
 });
+
+$app->get('/pln_aguinaldo/:anio', function ($anio) {
+    $db = new dbcpm();
+
+    $fdel = new DateTime(($anio - 1) . '-12-01');
+    $fal = new DateTime($anio . '-12-31');
+
+    $fdel = $fdel->format('Y-m-d');
+    $fal = $fal->format('Y-m-d');
+
+    $query = "SELECT 
+                a.id AS codigo,
+                CONCAT(TRIM(b.primernombre),
+                        ' ',
+                        TRIM(IFNULL(b.segundonombre, '')),
+                        TRIM(IFNULL(b.tercernombre, '')),
+                        ' ',
+                        TRIM(b.primerapellido),
+                        ' ',
+                        TRIM(IFNULL(b.segundoapellido, '')),
+                        TRIM(IFNULL(b.apellidocasada, ''))) AS nombre,
+                c.descripcion AS puesto,
+                IFNULL(d.reingreso, d.ingreso) AS ingreso,
+                SUM(e.diastrabajados) AS dias,
+                MAX(CASE
+                    WHEN MONTH(e.fecha) = 12 THEN e.sueldoordinarioreporte
+                END) AS diciembre,
+                MAX(CASE
+                    WHEN MONTH(e.fecha) = 1 THEN e.sueldoordinarioreporte
+                END) AS enero,
+                MAX(CASE
+                    WHEN MONTH(e.fecha) = 2 THEN e.sueldoordinarioreporte
+                END) AS febrero,
+                MAX(CASE
+                    WHEN MONTH(e.fecha) = 3 THEN e.sueldoordinarioreporte
+                END) AS marzo,
+                MAX(CASE
+                    WHEN MONTH(e.fecha) = 4 THEN e.sueldoordinarioreporte
+                END) AS abril,
+                MAX(CASE
+                    WHEN MONTH(e.fecha) = 5 THEN e.sueldoordinarioreporte
+                END) AS mayo,
+                MAX(CASE
+                    WHEN MONTH(e.fecha) = 6 THEN e.sueldoordinarioreporte
+                END) AS junio,
+                MAX(CASE
+                    WHEN MONTH(e.fecha) = 7 THEN e.sueldoordinarioreporte
+                END) AS julio,
+                MAX(CASE
+                    WHEN MONTH(e.fecha) = 8 THEN e.sueldoordinarioreporte
+                END) AS agosto,
+                MAX(CASE
+                    WHEN MONTH(e.fecha) = 9 THEN e.sueldoordinarioreporte
+                END) AS septiembre,
+                MAX(CASE
+                    WHEN MONTH(e.fecha) = 10 THEN e.sueldoordinarioreporte
+                END) AS octubre,
+                MAX(CASE
+                    WHEN MONTH(e.fecha) = 11 THEN e.sueldoordinarioreporte
+                END) AS noviembre
+            FROM
+                plnempleado a
+                    INNER JOIN
+                plnpersonal b ON a.idpersonal = b.id
+                    INNER JOIN
+                plnpuesto c ON a.idplnpuesto = c.id
+                    INNER JOIN
+                plnlaboral d ON a.idlaboral = d.id
+                    INNER JOIN
+                plnnomina e ON e.idplnempleado = a.id
+            WHERE
+                e.fecha BETWEEN '$fdel' AND '$fal'
+            GROUP BY a.id
+                HAVING MAX(CASE WHEN YEAR(e.fecha) = $anio THEN e.aguinaldo END) > 0
+            ORDER BY 2";
+    $data = $db->getQuery($query);
+
+    $meses_sueldo = [
+        'diciembre', 'enero', 'febrero', 'marzo', 'abril', 'mayo',
+        'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre'
+    ];
+
+    foreach ($data as $empleado) {
+        $suma = 0;
+
+        foreach ($meses_sueldo as $mes) {
+            $suma += isset($empleado->$mes) ? (float)$empleado->$mes : 0;
+        }
+
+        $empleado->promedio = round($suma / 12, 2);
+    }
+
+    print json_encode($data);
+});
 $app->run();
