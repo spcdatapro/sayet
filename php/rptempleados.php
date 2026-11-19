@@ -2554,9 +2554,13 @@ $app->get('/solicitud_vacaciones/:idempleado/:anio/:idvacacion', function ($idem
     return print json_encode(['encabezado' => $letra, 'empleado' => $empleado, 'vacacion' => $vacacion, 'detalle' => $detalle]);
 });
 
-$app->get('/pln_aguinaldo/:anio', function ($anio) {
+$app->get('/pln_aguinaldo/:anio/:agrupar/:idempresa', function ($anio, $agrupar, $idempresa) {
     date_default_timezone_set("America/Guatemala");
     $db = new dbcpm();
+
+    // array para totales si se tiene que modificar por reporte
+    $totales = ['aguinaldo'];
+    $porproyecto = $agrupar == 2 ? true : false;
 
     $anio_ant = (int)$anio - 1;
 
@@ -2577,6 +2581,10 @@ $app->get('/pln_aguinaldo/:anio', function ($anio) {
     $letra->aguinaldo = 0;
 
     $query = "SELECT 
+                f.id AS idempresa, 
+                IFNULL(g.id, 9999) AS idproyecto,
+                f.nombre AS empresa, 
+                g.nomproyecto AS proyecto,
                 a.id AS codigo,
                 CONCAT(TRIM(b.primernombre),
                         ' ',
@@ -2628,7 +2636,8 @@ $app->get('/pln_aguinaldo/:anio', function ($anio) {
                 END) AS noviembre,
                 MAX(CASE
                     WHEN YEAR(e.fecha) = $anio THEN e.aguinaldo
-                END) AS aguinaldo
+                END) AS aguinaldo,
+                f.abreviatura
             FROM
                 plnempleado a
                     INNER JOIN
@@ -2639,11 +2648,17 @@ $app->get('/pln_aguinaldo/:anio', function ($anio) {
                 plnlaboral d ON a.idlaboral = d.id
                     INNER JOIN
                 plnnomina e ON e.idplnempleado = a.id
+                    INNER JOIN 
+                plnempresa f ON d.idempresaactual = f.id 
+                    LEFT JOIN 
+                proyecto g ON d.idproyecto = g.id
             WHERE
-                e.fecha BETWEEN '$fdel' AND '$fal'
-            GROUP BY a.id
-                HAVING MAX(CASE WHEN YEAR(e.fecha) = $anio THEN e.aguinaldo END) > 0
-            ORDER BY 2";
+                e.fecha BETWEEN '$fdel' AND '$fal' ";
+    $query.= $idempresa > 0 ? " AND d.idempresadebito = $idempresa " : "";
+    $query.= "GROUP BY a.id
+                HAVING MAX(CASE WHEN YEAR(e.fecha) = $anio THEN e.aguinaldo END) > 0 ";
+    $query.= "ORDER BY 3 ,";
+    $query.= $agrupar == 2 ? " 4 , 6" : " 6";
     $data = $db->getQuery($query);
 
     $meses_sueldo = [
@@ -2662,6 +2677,15 @@ $app->get('/pln_aguinaldo/:anio', function ($anio) {
         $empleado->promedio = round($suma / 12, 2);
     }
 
-    print json_encode(['empleados' => $data, 'encabezado' => $letra]);
+    // funcion contructora para reporteria espera: datos de la bd, nombre de los datos, nombre en array de los montos que se quire total, si se agrupa por proyecto (opcional)
+    $reporte = new GeneradorReportes($data, 'empleados', $totales, $porproyecto);
+    $empleados = $reporte->getReporte();
+    $montos_generales = $reporte->getTotalesGenerales();
+
+    foreach($totales as $t) {
+        $letra->$t = array_sum($montos_generales->$t);
+    }
+
+    print json_encode(['encabezado' => $letra, 'empleados' => $empleados]);
 });
 $app->run();
