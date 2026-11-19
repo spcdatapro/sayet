@@ -2585,7 +2585,7 @@ $app->get('/pln_aguinaldo/:anio', function ($anio) {
                         TRIM(IFNULL(b.segundoapellido, '')),
                         TRIM(IFNULL(b.apellidocasada, ''))) AS nombre,
                 c.descripcion AS puesto,
-                IFNULL(d.reingreso, d.ingreso) AS ingreso,
+                DATE_FORMAT(IFNULL(d.reingreso, d.ingreso), '%d/%m/%Y') AS ingreso,
                 SUM(e.diastrabajados) AS dias,
                 MAX(CASE
                     WHEN MONTH(e.fecha) = 12 THEN e.sueldoordinarioreporte
