@@ -1246,9 +1246,9 @@ $app->post('/traer_documentos', function () {
             break;
         case 3: 
             $query = "SELECT a.d_estado_cuenta AS id, c.id AS idempresa, a.fecha AS concilia, e.abreviatura AS nomempresa, 
-                        IF(a.tipo_transaccion = 'C', '(C) Créditos', '(D) Débitos') AS tipotrans, a.referencia AS numero_tran, a.descripcion AS beneficiario, 
-                        IF(a.tipo_transaccion = 'D', a.monto, NULL) AS debito, IF(a.tipo_transaccion = 'C', a.monto, NULL) AS credito, a.monto, b.saldo_inicial AS abreviatura, 
-                        b.saldo_final AS numero, IF(a.tipo_transaccion = 'C', 1, 2) AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, d.simbolo AS moneda, a.impreso
+                        IF(a.tipo_transaccion = 'C' OR a.descripcion LIKE '%NOTA DE CREDITO%', '(C) Créditos', '(D) Débitos') AS tipotrans, a.referencia AS numero_tran, a.descripcion AS beneficiario, 
+                        IF(a.tipo_transaccion = 'D', a.monto, NULL) AS debito, IF(a.tipo_transaccion = 'C' OR a.descripcion LIKE '%NOTA DE CREDITO%', a.monto, NULL) AS credito, a.monto, b.saldo_inicial AS abreviatura, 
+                        b.saldo_final AS numero, IF(a.tipo_transaccion = 'C' OR a.descripcion LIKE '%NOTA DE CREDITO%', 1, 2) AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, d.simbolo AS moneda, a.impreso
                         FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta INNER JOIN banco c ON c.mt940 = b.cuenta
                         INNER JOIN moneda d ON c.idmoneda = d.id INNER JOIN empresa e ON c.idempresa = e.id
                         WHERE b.estado_cuenta NOT IN(1, 2, 3, 4) ";
