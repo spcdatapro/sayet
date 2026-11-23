@@ -198,6 +198,8 @@ $app->post('/c', function(){
 $app->post('/u', function(){
     $d = json_decode(file_get_contents('php://input'));
     $db = new dbcpm();
+    $ttsalida = ['C', 'B'];
+    $tentrada = ['D', 'R'];
     $d->numban = !isset($d->numban) ? 'null' : $d->numban;
     $antes = $db->getQuery("SELECT * FROM tranban WHERE id = ".$d->id)[0];
     $query = "UPDATE tranban SET tipotrans = '".$d->tipotrans."', ";
@@ -225,14 +227,14 @@ $app->post('/u', function(){
         }
     }
 
-    //$query = "DELETE FROM detallecontable WHERE origen = 1 AND idorigen = $d->id";
+    // reinsertar detalle contable
+    $query = "DELETE FROM detallecontable WHERE origen = 1 AND idorigen = $d->id";
     $db->doQuery($query);
-    $ttsalida = ['C', 'B'];
-    $tentrada = ['D', 'R'];
+
     if(in_array($d->tipotrans, $ttsalida)){
         //if($d->tipotrans === 'C'){ $db->doQuery("UPDATE banco SET correlativo = correlativo + 1 WHERE id = ".$d->idbanco); }
         //Inserta detalle contable
-        //insertaDetalleContable($d, $d->id);
+        insertaDetalleContable($d, $d->id);
         //Actualización de pago de OT, en caso de que tenga OT
         if((int)$d->iddetpresup > 0 && (int)$d->iddetpagopresup > 0){
             $query = "UPDATE detpagopresup SET pagado = 1, origen = 1, idorigen = $d->id WHERE id = $d->iddetpagopresup";
@@ -240,19 +242,23 @@ $app->post('/u', function(){
             updateGastosOT($d->iddetpresup);
         }
     } elseif(in_array($d->tipotrans, $tentrada)){
-        $recibos = count($d->recibocli);
-        if ($recibos > 0) {
-            $idrecibocli = strlen($d->idrecibocli) > 0 ? explode(",", $d->idrecibocli) : [];  
-            $i = 0;
-            while ($recibos > $i) {
-                $recibo = $d->recibocli[$i];
-                if (!isset($idrecibocli) || !in_array($recibo, $idrecibocli)) {
-                    $db->doQuery("INSERT INTO reclitran(idrecibocli, idtranban, monto) VALUES($recibo, $d->id, $d->monto)");
-                }
-                $i++;
+        $cuenta_cliente = 0;
+        $ctabco = (int)$db->getOneField("SELECT idcuentac FROM banco WHERE id = ".$d->idbanco);
+        $monto = round(((float)$d->monto * (float)$d->tipocambio), 2);
+        if($ctabco > 0){
+            $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) VALUES(";
+            $query.= "1, ".$d->id.", ".$ctabco.", $monto, 0.00, '".$d->concepto."')";
+            $db->doQuery($query);
+        }
+        if ($d->idrecibocli > 0) {
+            if ($cuenta_cliente > 0) {
+                $query = "INSERT INTO detallecontable(origen, idorigen, idcuenta, debe, haber, conceptomayor) 
+                    VALUES(1, $d->id, $cuenta_cliente, 0.00, $monto, '$d->concepto')";
+                $db->doQuery($query);
+            } else {
+                $tipo = "warning";
+                $mensaje = "No se encontro cuenta de cliente, favor revisar.";
             }
-        } else {
-            $db->doQuery("DELETE FROM reclitran WHERE idtranban = $d->id");
         }
     }
 
