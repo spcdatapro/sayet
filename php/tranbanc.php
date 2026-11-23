@@ -1251,7 +1251,8 @@ $app->post('/traer_documentos', function () {
                         b.saldo_final AS numero, IF(a.tipo_transaccion = 'C', 1, 2) AS idtipotrans, CONCAT(c.siglas, '-', c.nocuenta) AS empresa, c.siglas, d.simbolo AS moneda, a.impreso
                         FROM d_estado_cuenta a INNER JOIN estado_cuenta b ON a.estado_cuenta = b.estado_cuenta INNER JOIN banco c ON c.mt940 = b.cuenta
                         INNER JOIN moneda d ON c.idmoneda = d.id INNER JOIN empresa e ON c.idempresa = e.id
-                        WHERE b.estado_cuenta NOT IN(1, 2, 3, 4) AND c.idempresa = $d->idempresa ";
+                        WHERE b.estado_cuenta NOT IN(1, 2, 3, 4) ";
+            $query.= isset($d->idempresa) ? "AND c.idempresa = $d->idempresa " : "";
             $query.= isset($d->delstr) && isset($d->alstr) ? "AND a.fecha BETWEEN '$d->delstr' AND '$d->alstr'" : "";  
             $query.="ORDER BY 2, 3, 4, 5 , 6";
             break;
