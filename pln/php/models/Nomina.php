@@ -544,7 +544,7 @@ class Nomina extends Principal
 					if ($extraordinaria && $dia != 31 && $dia != 15) {
 						$datos['esextraordinaria'] = 1;
 
-						$sueldo = (float)$e->lab->sueldo;
+						$sueldo = (float)$e->lab->sueldo + (float)$e->lab->bonificacionley;
 						if ($sueldo >= 15000) {
 							$datos['otrosingresos'] = 5000;
 						} elseif ($sueldo > 5000) {
