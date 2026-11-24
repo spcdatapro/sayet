@@ -504,7 +504,8 @@ class Nomina extends Principal
 						"vacasdias"              => 0,
 						"descvacas"              => 0,
 						"vacaciones"             => 0,
-						"descvacasdias"          => 0
+						"descvacasdias"          => 0,
+						"otrosingresos"          => 0
 					];
 
 					# Solo deja calcular bono el 15 de la primera quincena
