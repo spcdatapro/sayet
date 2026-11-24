@@ -541,7 +541,7 @@ class Nomina extends Principal
 					}
 
 					#planilla extraordinaria se genera fuer ade fechas de cierre
-					if ($extraordinaria && $dia != 31 && $dia != 15) {
+					if ($extraordinaria && ($dia != 31 && $dia != 15 && $dia != 30)) {
 						$datos['esextraordinaria'] = 1;
 
 						$sueldo = (float)$e->lab->sueldo + (float)$e->lab->bonificacionley;
