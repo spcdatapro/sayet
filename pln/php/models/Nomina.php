@@ -766,7 +766,7 @@ class Nomina extends Principal
 			$where .= "AND a.aguinaldo > 0 ";
 		}
 
-		if (isset($args["extra"]) && $args["extra"]) {
+		if (isset($args["extra"]) && $args["extra"] === true) {
 			$where .= "AND a.esextraordinaria = 1 ";
 		} else{
 			$where .= "AND a.esextraordinaria = 0 ";
