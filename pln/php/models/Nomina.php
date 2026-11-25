@@ -779,7 +779,7 @@ class Nomina extends Principal
 		}
 
 		$sql = <<<EOT
-SELECT k
+SELECT
     a.*, 
     CONCAT(e.primernombre, ' ', IFNULL(e.segundonombre, ''), ' ', IFNULL(e.tercernombre, '')) AS nombre, 
     CONCAT(IFNULL(e.primerapellido, ''), ' ', IFNULL(e.segundoapellido, ''), ' ', IFNULL(e.apellidocasada, '')) AS apellidos,
