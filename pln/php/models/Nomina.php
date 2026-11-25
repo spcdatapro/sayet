@@ -766,11 +766,11 @@ class Nomina extends Principal
 			$where .= "AND a.aguinaldo > 0 ";
 		}
 
-		// if (elemento($args, "extra") && $args["extra"] == 1) {
-		// 	$where .= "AND a.esextraordinaria = 1 ";
-		// } else{
-		// 	$where .= "AND a.esextraordinaria = 0 ";
-		// }
+		if (!elemento($_GET, 'excel')) {
+			$where .= "AND a.esextraordinaria = 0 ";
+		} else{
+			$where .= "AND a.esextraordinaria = 1 ";
+		}
 
 		$orden = "c.ordenreppres";
 
@@ -779,7 +779,7 @@ class Nomina extends Principal
 		}
 
 		$sql = <<<EOT
-SELECT 
+SELECT k
     a.*, 
     CONCAT(e.primernombre, ' ', IFNULL(e.segundonombre, ''), ' ', IFNULL(e.tercernombre, '')) AS nombre, 
     CONCAT(IFNULL(e.primerapellido, ''), ' ', IFNULL(e.segundoapellido, ''), ' ', IFNULL(e.apellidocasada, '')) AS apellidos,
